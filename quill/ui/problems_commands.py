@@ -21,7 +21,9 @@ What a listener gets, and why:
   it current. F6 reaches it; Escape comes back. While it is shown, saving
   checks the file again, and so does a pause in typing when the pane's Check
   After a Pause box is checked (off by default). Those checks are quiet: the
-  only thing said is the new count, and only when it changed.
+  only thing said is the new count, and only when it changed. Its Files
+  chooser lists every open document's problems too (built-in checkers for the
+  others), and Enter on one brings that document forward.
 """
 
 from __future__ import annotations
@@ -41,6 +43,7 @@ from quill.core.problems import (
 )
 from quill.core.problems.model import Problem, list_row
 from quill.core.problems.outside import tools_for
+from quill.core.problems.pane import OpenProblemDocument, combine_reports
 
 if TYPE_CHECKING:
     from quill.ui.problems_pane import ProblemsPane
@@ -63,6 +66,9 @@ class ProblemsCommandsMixin:
     _problems_was_modified: bool = False
     _problems_auto_running: bool = False
     _problems_last_auto_changed: bool = False
+    # The pane's Files chooser, and, in All open files, what each row is.
+    _problems_all_files: bool = False
+    _problems_pane_origins: list[tuple[object, Problem]] | None = None
 
     # -- the commands ------------------------------------------------------- #
 
@@ -100,9 +106,21 @@ class ProblemsCommandsMixin:
     def _problems_pane_go_to(self, index: int) -> None:
         """Enter on a pane row: the caret to that problem, focus to the editor."""
         report = self._problems_report
-        if report is None or not 0 <= index < len(report.problems):
+        if report is None:
             return
-        problem = report.problems[index]
+        origins = self._problems_pane_origins
+        if origins is not None:
+            # All open files: the row may be another document's.
+            if not 0 <= index < len(origins):
+                return
+            key, problem = origins[index]
+            if key != self._problems_document_key():
+                self._problems_go_to_document(key, problem.line, problem.column)
+                return
+        else:
+            if not 0 <= index < len(report.problems):
+                return
+            problem = report.problems[index]
         if self._problems_checked_text == self._problems_text():
             self._problems_go_to(offset_for(self._problems_text(), problem.line, problem.column))
             return
@@ -129,8 +147,58 @@ class ProblemsCommandsMixin:
         if pane is None or not pane.is_shown():
             return False
         before = pane.count_sentence() if pane.report is not None else None
-        pane.show_report(report)
+        if self._problems_all_files:
+            combined, origins = self._all_open_files_report(report)
+            self._problems_pane_origins = origins
+            pane.show_report(combined)
+        else:
+            self._problems_pane_origins = None
+            pane.show_report(report)
         return before != pane.count_sentence()
+
+    def _all_open_files_report(
+        self, current: CheckReport
+    ) -> tuple[CheckReport, list[tuple[object, Problem]]]:
+        """This document's report beside a fresh check of every other open one.
+
+        The others get the built-in checkers only, at once: an outside tool for
+        each of twenty tabs is not something to start on a key press.
+        """
+        here = self._problems_document_key()
+        parts: list[tuple[object, str, CheckReport]] = []
+        documents = self._problems_open_documents()
+        if not any(document.key == here for document in documents):
+            parts.append((here, "", current))
+        for document in documents:
+            if document.key == here:
+                parts.append((here, document.name, current))
+                continue
+            report = check_document(
+                document.text,
+                language=document.language,
+                path=document.path,
+                modified=document.modified,
+                outside=False,
+            )
+            if report.problems:
+                parts.append((document.key, document.name, report))
+        return combine_reports(parts)
+
+    def _problems_set_all_files(self, all_files: bool) -> None:
+        """The pane's Files chooser: refill, and say the new count."""
+        self._problems_all_files = all_files
+        report = self._problems_report
+        if report is None:
+            if self._problems_can_check():
+                self._run_problem_check(lambda _report: self._say_pane_count())
+            return
+        self._feed_problems_pane(report)
+        self._say_pane_count()
+
+    def _say_pane_count(self) -> None:
+        pane = self._problems_pane(create=False)
+        if pane is not None:
+            self._problems_say(pane.count_sentence())
 
     def _present_problems(self, report: CheckReport) -> None:
         pane = self._problems_pane(create=False)
@@ -269,6 +337,17 @@ class ProblemsCommandsMixin:
     def _problems_can_check(self) -> bool:
         """False where this document has nothing a checker reads."""
         return True
+
+    def _problems_open_documents(self) -> list[OpenProblemDocument]:
+        """Every open document, for the pane's All open files; [] means just this one."""
+        return []
+
+    def _problems_document_key(self) -> object:
+        """This document's key among :meth:`_problems_open_documents`."""
+        return None
+
+    def _problems_go_to_document(self, key: object, line: int, column: int) -> None:
+        """Bring another open document forward with its caret at *line*, *column*."""
 
     def _problems_pause_enabled(self) -> bool:
         """Check After a Pause: the ``problems_check_after_pause`` setting."""

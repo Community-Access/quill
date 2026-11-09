@@ -61,3 +61,19 @@ def test_the_count_sentence_is_short_and_says_what_is_hidden() -> None:
     assert count_sentence(3) == "3 problems"
     assert count_sentence(3, 3) == "3 problems"
     assert count_sentence(4, 2) == "4 problems, 2 shown"
+
+
+def test_combined_reports_name_each_document_and_remember_the_origin() -> None:
+    from quill.core.problems.pane import combine_reports
+
+    other = CheckReport(
+        language="json", problems=(Problem(2, 1, "error", "Bad", "JSON"),), checked_with=("JSON",)
+    )
+    combined, origins = combine_reports([(0, "page.html", REPORT), (3, "data.json", other)])
+    assert len(combined.problems) == len(PROBLEMS) + 1
+    assert combined.problems[-1].document == "data.json"
+    assert origins[-1] == (3, other.problems[0])
+    assert set(combined.checked_with) == {"HTML", "JSON"}
+    assert pane_row(combined.problems[-1]) == "data.json: Error, line 2, column 1: Bad (JSON)"
+    empty, none = combine_reports([])
+    assert empty.problems == () and none == []

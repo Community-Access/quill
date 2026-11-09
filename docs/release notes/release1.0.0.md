@@ -26,8 +26,9 @@ back without closing it. Two choosers at the top narrow it to errors only, or
 to one checker, and say the new count. If you've edited since the check,
 Enter checks again and finds the same problem where it is now. While it's on,
 saving checks the file again, and a Check after a pause box does the same
-when you stop typing; either way you hear only a changed count. QUILL Lite
-has the same pane.
+when you stop typing; either way you hear only a changed count. A Files chooser lists every open
+document's problems at once, and Enter on one brings that document forward.
+QUILL Lite has the same pane.
 
 ## Sign in to GitHub without a token
 

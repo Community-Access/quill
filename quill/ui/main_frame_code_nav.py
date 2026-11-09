@@ -215,6 +215,7 @@ class CodeNavMixin(ProblemsCommandsMixin):
             tick=self._problems_tick,
             pause_enabled=self._problems_pause_enabled(),
             set_pause_enabled=self._problems_set_pause_enabled,
+            set_all_files=self._problems_set_all_files,
         )
         pane.panel.SetMinSize(dip_size(pane.panel, -1, 140))
         pane.panel.Hide()
@@ -258,6 +259,36 @@ class CodeNavMixin(ProblemsCommandsMixin):
         menu_bar = self.frame.GetMenuBar()
         if item_id is not None and menu_bar is not None:
             menu_bar.Check(item_id, shown)
+
+    def _problems_open_documents(self) -> list[Any]:
+        from quill.core.language_profile import get_profile_for_path
+        from quill.core.problems.pane import OpenProblemDocument
+
+        documents = []
+        for index, tab in enumerate(list(getattr(self, "_document_tabs", []) or [])):
+            document = tab.document
+            path = getattr(document, "path", None)
+            profile = getattr(tab, "_language_profile", None) or get_profile_for_path(path)
+            documents.append(
+                OpenProblemDocument(
+                    key=index,
+                    name=getattr(document, "name", "") or "Untitled",
+                    text=str(tab.editor.GetValue()),
+                    language=language_key(getattr(profile, "name", None), path),
+                    path=path,
+                    modified=bool(getattr(document, "modified", True)),
+                )
+            )
+        return documents
+
+    def _problems_document_key(self) -> object:
+        return int(getattr(self, "_active_tab_index", 0) or 0)
+
+    def _problems_go_to_document(self, key: object, line: int, column: int) -> None:
+        from quill.core.problems import offset_for
+
+        self._select_tab(int(key))  # type: ignore[attr-defined, call-overload]
+        self._problems_go_to(offset_for(self._problems_text(), line, column))
 
     def _problems_pause_enabled(self) -> bool:
         return bool(getattr(self.settings, "problems_check_after_pause", False))

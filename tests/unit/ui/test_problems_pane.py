@@ -51,6 +51,7 @@ def pane(wx_session_app: Any):
         "say": [],
         "tick": [],
         "pause": [],
+        "scope": [],
     }
     widget = ProblemsPane(
         wx,
@@ -61,6 +62,7 @@ def pane(wx_session_app: Any):
         say=record["say"].append,
         tick=lambda: record["tick"].append(True),
         set_pause_enabled=record["pause"].append,
+        set_all_files=record["scope"].append,
     )
     widget.record = record  # type: ignore[attr-defined]
     yield widget
@@ -164,6 +166,15 @@ def test_check_after_a_pause_box_is_off_and_tells_the_host(pane) -> None:
     assert pane.record["say"] == [], "the reader says a check box's new state"
 
 
+def test_the_files_chooser_tells_the_host(pane) -> None:
+    assert not pane.all_files()
+    pane._scope.SetSelection(1)
+    pane._on_scope(None)
+    assert pane.all_files()
+    assert pane.record["scope"] == [True]
+
+
 def test_every_control_has_inline_help(pane) -> None:
-    for control in (pane.panel, pane._show, pane._source, pane._pause, pane._list):
+    controls = (pane.panel, pane._scope, pane._show, pane._source, pane._pause, pane._list)
+    for control in controls:
         assert control.GetHelpText()

@@ -2,6 +2,15 @@
 
 ## 1.0.0
 
+### The Problems pane lists every open document (2026-11-08)
+
+- A **Files** chooser heads the Problems pane: this file, or **All open
+  files**. Each row then starts with the document's name, and Enter on
+  another document's problem brings it to the front with the caret there.
+- The other documents use QUILL's built-in checkers; the outside tools you
+  have installed run only for the one in front. QUILL Lite does the same
+  across its windows.
+
 ### The Problems pane checks on save, and after a pause if you like (2026-11-08)
 
 - While the Problems pane is on, saving checks the file again.

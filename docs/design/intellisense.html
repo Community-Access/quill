@@ -740,14 +740,16 @@ names: same case, then names from imported files, then defined names. On
 this machine the walk of <code>quill/core</code> (1,773 files) took
 about 25 s, almost all of it in <code>open()</code> (antivirus); that is
 the case for ripgrep in the layer 4 phase.</li>
+<li>2026-11-08: Problems pane P2, second half. The Files chooser (this
+file, All open files) lists every open document’s problems through
+<code>combine_reports</code>, the others checked with the built-in
+checkers only; Enter on another document brings it forward. P2 is
+complete.</li>
 </ul>
 <h2 id="remaining-tasks">Remaining tasks</h2>
 <ul class="task-list">
-<li><label><input type="checkbox" />Problems pane P2 to P4 (P1 is PR
-#1798).</label></li>
-<li><label><input type="checkbox" />P2, second half: all open files in
-the pane, with a This file / All open files chooser and Go To switching
-documents.</label></li>
+<li><label><input type="checkbox" />Problems pane P3 and P4 (P1 is PR
+#1798, P2 PRs #1804 and this one).</label></li>
 <li><label><input type="checkbox" />Read the licence of each server
 package before bundling it (TypeScript, vscode-langservers-extracted,
 Pyright, the Roslyn language server).</label></li>

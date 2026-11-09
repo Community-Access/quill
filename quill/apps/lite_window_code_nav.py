@@ -135,6 +135,7 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
             tick=self._problems_tick,
             pause_enabled=self._problems_pause_enabled(),
             set_pause_enabled=self._problems_set_pause_enabled,
+            set_all_files=self._problems_set_all_files,
         )
         pane.panel.SetMinSize(dip_size(pane.panel, -1, 140))
         pane.panel.Hide()
@@ -175,6 +176,32 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
         pane = self._problems_pane(create=False)
         if pane is not None:
             pane.focus()
+
+    def _problems_open_documents(self) -> list[Any]:
+        from quill.core.problems.pane import OpenProblemDocument
+
+        frames = list(getattr(self.app, "frames", []) or []) or [self]
+        return [
+            OpenProblemDocument(
+                key=frame,
+                name=frame.document_name(),
+                text=str(frame.control.GetValue()),
+                language=frame._problems_language(),
+                path=getattr(frame, "path", None),
+                modified=bool(getattr(frame, "modified", True)),
+            )
+            for frame in frames
+        ]
+
+    def _problems_document_key(self) -> object:
+        return self
+
+    def _problems_go_to_document(self, key: object, line: int, column: int) -> None:
+        from quill.core.problems import offset_for
+
+        frame: Any = key
+        self.app.focus_frame(frame)
+        frame._problems_go_to(offset_for(str(frame.control.GetValue()), line, column))
 
     def _problems_pause_enabled(self) -> bool:
         return bool(getattr(self.app.settings, "problems_check_after_pause", False))

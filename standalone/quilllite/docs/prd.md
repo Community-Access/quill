@@ -1891,7 +1891,7 @@ QUILL's Navigate > Code, in QUILL Lite with the same rows, letters and keys (fam
 ## The Problems pane (2026-11-08)
 
 - **View > Problems Pane** (`cmd_toggle_problems_pane`, no key, as in QUILL, for the reason recorded there): QUILL's pane, from the shared `quill/ui/problems_pane.py` and `quill/ui/problems_commands.py`, docked under the text and above the status bar. The setting is `problems_pane_visible`, QUILL's field name, and applies to every open window through `reapply_settings`.
-- F6 goes from the text to the pane, then to the status bar; F6 in the pane with the bar hidden goes back to the text. Enter goes to a problem (re-checking after an edit), Escape returns and leaves the pane open, and Show and Source narrow the list. While shown, Check This File fills the pane rather than opening `choose_from_rows`. Saving checks again, and so does a pause in typing when the pane's Check after a pause box (`problems_check_after_pause`, QUILL's field, off by default) is checked; only a changed count is said.
+- F6 goes from the text to the pane, then to the status bar; F6 in the pane with the bar hidden goes back to the text. Enter goes to a problem (re-checking after an edit), Escape returns and leaves the pane open, and Show and Source narrow the list. While shown, Check This File fills the pane rather than opening `choose_from_rows`. Saving checks again, and so does a pause in typing when the pane's Check after a pause box (`problems_check_after_pause`, QUILL's field, off by default) is checked; only a changed count is said. The Files chooser lists every open window's problems (built-in checkers), and Enter on another window's row brings it forward with `focus_frame`.
 
 ## Word documents and table navigation (2026-10-17)
 

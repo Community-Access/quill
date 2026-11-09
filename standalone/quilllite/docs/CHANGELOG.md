@@ -2,6 +2,11 @@
 
 ## 2.0.0
 
+### The Problems pane lists every open document (2026-11-08)
+
+- The pane's Files chooser shows this document or all open windows'
+  problems, each row naming its document; Enter brings that window forward.
+
 ### The Problems pane checks on save (2026-11-08)
 
 - While the pane is on, saving checks the document again, and a Check after a

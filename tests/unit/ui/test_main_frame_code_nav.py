@@ -361,3 +361,40 @@ def test_no_quiet_checks_while_the_pane_is_hidden() -> None:
     host.document.modified = False
     host._problems_tick(now=1.0)
     assert host.said == [] and host._problems_report is None
+
+
+# -- All open files ------------------------------------------------------------
+
+
+class _Tab:
+    def __init__(self, text: str, name: str) -> None:
+        self.editor = _Editor(text)
+        self.document = SimpleNamespace(path=Path(name), name=name, modified=True)
+        self._language_profile = get_profile_for_path(Path(name))
+
+
+def test_all_open_files_lists_every_document_and_goes_to_another() -> None:
+    host = _PaneHost('{"a": }\n', "data.json")
+    host._problems_pane_widget.shown = True
+    host.document.name = "data.json"
+    other = _Tab("[a]\nx=1\nx=2\n", "settings.ini")
+    host._document_tabs = [SimpleNamespace(editor=host.editor, document=host.document), other]
+    host._active_tab_index = 0
+    selected: list[int] = []
+
+    def select(index: int) -> None:
+        selected.append(index)
+        host._active_tab_index = index
+        host.editor = host._document_tabs[index].editor
+
+    host._select_tab = select
+    host.tools_check_this_file()
+    host._problems_set_all_files(True)
+    pane = host._problems_pane_widget
+    assert [p.document for p in pane.report.problems] == ["data.json", "settings.ini"]
+    assert host.said[-1] == "2 problems"
+    host._problems_pane_go_to(1)
+    assert selected == [1]
+    assert host.editor.caret == other.editor.text.index("x=2")
+    host._problems_set_all_files(False)
+    assert len(pane.report.problems) == 1 and host._problems_pane_origins is None

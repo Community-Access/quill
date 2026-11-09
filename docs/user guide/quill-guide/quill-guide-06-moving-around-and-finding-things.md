@@ -1226,7 +1226,13 @@ there until you turn it off again. QUILL remembers whether it's on.
 - If you've changed the document since the check, Enter checks it again first
   and goes to the same problem where it is now. If your change fixed it, you
   hear "That problem is gone." and the new count.
-- **Shift+Tab** from the list reaches the two choosers at the top. **Show**
+- **Files**, the first chooser at the top, picks this file or **All open
+  files**. With all open files, each row starts with the document's name,
+  such as "notes.md: Warning, line 4, column 1: ...", and Enter on another
+  document's problem brings that tab to the front with the caret on it. The
+  other documents are checked with QUILL's own checkers only; the tools you
+  have installed run for the one in front of you.
+- **Shift+Tab** from the list reaches the choosers at the top. **Show**
   picks all problems, errors and warnings, or errors only. **Source** picks
   one checker, such as JSON or ruff. Changing either says the new count, for
   example "4 problems, 1 shown".
