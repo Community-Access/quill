@@ -14,7 +14,10 @@ the document, not by the text of a selection.
 
 from __future__ import annotations
 
+import sys
 from types import SimpleNamespace
+
+import pytest
 
 from quill.apps.lite_window_tools import DocumentToolsMixin
 from quill.core.document_text import DocumentText
@@ -151,3 +154,65 @@ def test_indent_covers_every_line_the_selection_touches() -> None:
     win.cmd_indent()
     value = win.control.GetValue()
     assert value.startswith("    alpha\n    bravo\ncharlie")
+
+
+# -- review 2026-11-09 -----------------------------------------------------------
+
+
+class _RecordingControl(_Control):
+    """Records every write, so a whole-document rewrite cannot hide."""
+
+    def __init__(self, text: str) -> None:
+        super().__init__(text)
+        self.writes: list[tuple[int, int, str]] = []
+
+    def Replace(self, start: int, end: int, text: str) -> None:
+        self.writes.append((start, end, text))
+        super().Replace(start, end, text)
+
+
+def test_indent_writes_only_the_line_starts_so_formatting_survives() -> None:
+    """QUILL Lite 1: replacing the whole document dropped a rich document's headings."""
+    text = "# Title\nalpha\nbravo\ncharlie\n"
+    win = _Window(text)
+    win.control = _RecordingControl(text)
+    win.control.SetSelection(text.index("alpha"), text.index("charlie") - 1)
+    win.cmd_indent()
+    assert win.control.GetValue() == "# Title\n    alpha\n    bravo\ncharlie\n"
+    assert win.control.writes == [
+        (text.index("bravo"), text.index("bravo"), "    "),
+        (text.index("alpha"), text.index("alpha"), "    "),
+    ], "two inserts at two line starts, nothing else rewritten"
+    win.control.writes.clear()
+    win.control.SetSelection(text.index("alpha") + 4, text.index("alpha") + 4)
+    win.cmd_outdent()
+    assert win.control.GetValue() == "# Title\nalpha\n    bravo\ncharlie\n"
+    assert win.control.writes == [(text.index("alpha"), text.index("alpha") + 4, "")]
+
+
+def test_nothing_to_indent_is_said_for_indent_once() -> None:
+    """QUILL Lite 13: "Nothing to outdent" was said for Indent."""
+    win = _Window("alpha\n")
+    unchanged = lambda text, start, end: (text, start, end)  # noqa: E731
+    assert win._shift_indent(unchanged, verb="Indented") is False
+    assert win._shift_indent(unchanged, verb="Outdented") is False
+    assert win.announcements == ["Nothing to indent", "Nothing to outdent"]
+    assert win.control.GetValue() == "alpha\n" and win.modified is False
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="UTF-16 positions are wxMSW's")
+def test_indent_after_an_emoji_selects_in_the_controls_units() -> None:
+    """QUILL Lite 14: format_ops counts code points, the control UTF-16 units."""
+    text = "\U0001f600 a\nb\n"
+
+    class _Utf16Control(_RecordingControl):
+        def GetLastPosition(self) -> int:  # noqa: N802
+            return len(self._text.encode("utf-16-le")) // 2
+
+    win = _Window(text)
+    win.control = _Utf16Control(text)
+    # The caret on line 2, in units: the emoji is two of them.
+    win.control.SetSelection(5, 5)
+    win.cmd_indent()
+    assert win.control.writes == [(5, 5, "    ")], "line 2's start, in units"
+    assert win.control.selection == (9, 9)

@@ -274,6 +274,29 @@ it like every other cell, and it’s never read out on its own. It goes
 away when the mode does.</li>
 </ul>
 <h3
+id="problems-word-prediction-and-the-code-keys-fixes-2026-11-09">Problems,
+Word Prediction and the code keys: fixes (2026-11-09)</h3>
+<ul>
+<li>An emoji early in a file no longer throws Next Problem, Go To on a
+Problems row, Next Indent Change, Word Prediction or Parameter Hints off
+by one.</li>
+<li>Word Prediction inserts for the word at the caret when you press
+Enter, not the word it last saw, so typing fast and pressing Enter no
+longer gives you “countern”. Moving the caret, clicking, switching
+windows or moving focus away closes the list, and Ctrl+Z takes a whole
+prediction back in one step.</li>
+<li>The Problems pane no longer copies the whole document twice a second
+to see whether it changed, Parameter Hints As You Type reads one
+character instead of the whole file, and All Open Files checks the other
+documents in the background.</li>
+<li>The Quick Fix list is called Quick Fix and names the problem it
+fixes.</li>
+<li>Rebuilding the menus no longer piles up handlers for View &gt;
+Problems.</li>
+<li>Escape in an open Show or Source list on the Problems pane closes
+the list and leaves you in the pane.</li>
+</ul>
+<h3
 id="language-servers-vs-codes-smarts-inside-quill-2026-11-08">Language
 servers: VS Code’s smarts, inside QUILL (2026-11-08)</h3>
 <ul>

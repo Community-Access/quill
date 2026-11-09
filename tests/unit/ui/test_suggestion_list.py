@@ -201,3 +201,92 @@ def test_no_background_runner_means_no_project_walk(tmp_path, monkeypatch) -> No
     host._suggest_in_background = lambda work, done: False  # type: ignore[method-assign]
     host._show_intellisense_popup(manual=True)
     assert suggestion_list._PROJECT_BUILDS == set()
+
+
+# -- review 2026-11-09 -----------------------------------------------------------
+
+
+class _UndoEditor(_Editor):
+    """Records the select-and-write pair replace_as_one_undo uses."""
+
+    def __init__(self, text: str, caret: int) -> None:
+        super().__init__(text, caret)
+        self.selection = (caret, caret)
+        self.writes: list[tuple[int, int, str]] = []
+
+    def SetSelection(self, start: int, end: int) -> None:  # noqa: N802
+        self.selection, self.caret = (start, end), start
+
+    def WriteText(self, text: str) -> None:  # noqa: N802
+        from quill.core.text_units import text_index
+
+        start, end = self.selection
+        self.writes.append((start, end, text))
+        # Positions are the control's UTF-16 units; the string is code points.
+        first, last = text_index(self.text, start), text_index(self.text, end)
+        self.text = self.text[:first] + text + self.text[last:]
+
+
+def test_enter_inserts_for_the_word_at_the_caret_now_not_at_the_last_refresh() -> None:
+    """QUILL 7: type-and-Enter before the list caught up gave "countern"."""
+    host = _Host("the coun", 8)
+    host._show_intellisense_popup(manual=True)
+    chosen = host._intellisense_popup.selected_suggestion()
+    host.editor.text, host.editor.caret = "the count", 9  # typed; no refresh yet
+    host._handle_intellisense_key_down(_key(_WX.WXK_RETURN))
+    assert host.editor.text == f"the {chosen.inserted_text}"
+
+
+def test_a_caret_key_closes_the_list_and_still_moves_the_caret() -> None:
+    """QUILL 7: Left, Home and the like are not typing."""
+    wx_keys = SimpleNamespace(**vars(_WX), WXK_LEFT=314, WXK_HOME=313)
+    host = _Host("the coun", 8)
+    host._wx = wx_keys
+    host._show_intellisense_popup(manual=True)
+    assert host._handle_intellisense_key_down(_key(314)) is False, "the key goes on"
+    assert not host._intellisense_popup.visible
+    assert host.editor.text == "the coun"
+
+
+def test_focus_leaving_the_text_closes_the_list(monkeypatch) -> None:
+    """QUILL 7 / QUILL Lite 9: deactivation or focus elsewhere hides it."""
+    host = _Host("the coun", 8)
+    host._show_intellisense_popup(manual=True)
+    focus: list[Any] = [host.editor]
+    host._intellisense_popup.contains = lambda window: False
+    host._suggest_wx = lambda: SimpleNamespace(  # type: ignore[method-assign]
+        Window=SimpleNamespace(FindFocus=lambda: focus[0])
+    )
+    host._hide_unless_focus_is_ours()
+    assert host._intellisense_popup.visible, "still in the text: stays"
+    focus[0] = None  # another program is in front
+    host._hide_unless_focus_is_ours()
+    assert not host._intellisense_popup.visible
+
+
+@pytest.mark.skipif(__import__("sys").platform != "win32", reason="UTF-16 positions are wxMSW's")
+def test_an_emoji_before_the_word_does_not_shift_the_insert() -> None:
+    """QUILL 5 and QUILL 12: the right span, in the control's units, as one undo step."""
+    text = "\U0001f600 the coun is here"
+    host = _Host(text, 0)
+    host.editor = _UndoEditor(text, len("\U0001f600 the coun".encode("utf-16-le")) // 2)
+    host._show_intellisense_popup(manual=True)
+    chosen = host._intellisense_popup.selected_suggestion()
+    host._handle_intellisense_key_down(_key(_WX.WXK_TAB))
+    assert host.editor.text == f"\U0001f600 the {chosen.inserted_text} is here"
+    assert host.editor.writes == [(7, 11, chosen.inserted_text)], "one select-and-write"
+    assert host.editor.caret == 7 + len(chosen.inserted_text)
+
+
+def test_a_loose_file_starts_no_project_walk(tmp_path, monkeypatch) -> None:
+    """QUILL Lite 12: no marker, no index of the folder around it."""
+    from quill.ui import suggestion_list
+
+    monkeypatch.setattr(suggestion_list, "_PROJECT_INDEXES", {})
+    monkeypatch.setattr(suggestion_list, "_PROJECT_BUILDS", set())
+    jobs: list[Any] = []
+    host = _Host("rect", 4)
+    host._suggest_in_background = lambda work, done: jobs.append(work) or True  # type: ignore[method-assign]
+    host.document = SimpleNamespace(path=str(tmp_path / "main.py"))
+    host._show_intellisense_popup(manual=True)
+    assert jobs == []

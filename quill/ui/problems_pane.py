@@ -40,6 +40,7 @@ first state) and ``set_pause_enabled(bool)`` (when it is changed).
 
 from __future__ import annotations
 
+import sys
 from collections.abc import Callable
 from typing import Any
 
@@ -56,6 +57,9 @@ from quill.core.problems.pane import (
 )
 
 __all__ = ["NOT_CHECKED_ROW", "TICK_MS", "ProblemsPane"]
+
+#: The Win32 message that asks a combo box whether its list is dropped down.
+_CB_GETDROPPEDSTATE = 0x0157
 
 #: How often the pane asks whether a quiet check is due, in milliseconds.
 TICK_MS = 500
@@ -167,6 +171,9 @@ class ProblemsPane:
         self.panel.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         self._timer = wx.Timer(self.panel)
         self.panel.Bind(wx.EVT_TIMER, self._on_timer, self._timer)
+        # A timer outlives nothing: when the window goes, it stops, rather than
+        # firing into a destroyed window (review 2026-11-09, QUILL Lite 2).
+        self.panel.Bind(wx.EVT_WINDOW_DESTROY, self._on_destroy)
         self._fill()
 
     # -- what the host calls ------------------------------------------------- #
@@ -185,6 +192,19 @@ class ProblemsPane:
             self._timer.Start(TICK_MS)
         else:
             self._timer.Stop()
+
+    def stop(self) -> None:
+        """Stop the quiet-check timer for good. Safe to call more than once."""
+        self._tick = None
+        try:
+            self._timer.Stop()
+        except RuntimeError:
+            pass  # already gone with its window
+
+    def _on_destroy(self, event: Any) -> None:
+        if event.GetEventObject() is self.panel:
+            self.stop()
+        event.Skip()
 
     def pause_enabled(self) -> bool:
         return bool(self._pause.GetValue())
@@ -309,6 +329,12 @@ class ProblemsPane:
         wx = self._wx
         key = event.GetKeyCode()
         if key == wx.WXK_ESCAPE:
+            if self._dropdown_open():
+                # Escape closes the open Show or Source list and nothing else;
+                # leaving the pane too would be two things for one key
+                # (review 2026-11-09, QUILL 19 and QUILL Lite 16).
+                event.Skip()
+                return
             self._back_to_editor()
             return
         if key in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER) and self._list.HasFocus():
@@ -323,6 +349,22 @@ class ProblemsPane:
                 self._switch_files()
             return
         event.Skip()
+
+    def _dropdown_open(self) -> bool:
+        """True when one of the pane's choosers has focus with its list dropped down."""
+        try:
+            focus = self._wx.Window.FindFocus()
+        except Exception:  # noqa: BLE001 - no focus is not a failure
+            return False
+        if focus is None or not any(focus is chooser for chooser in self._choosers()):
+            return False
+        shown = getattr(focus, "IsPopupShown", None)
+        if callable(shown):
+            return bool(shown())
+        return _combo_dropped_down(focus)
+
+    def _choosers(self) -> tuple[Any, ...]:
+        return (self._scope, self._show, self._source)
 
     def _on_context_menu(self, _event: Any) -> None:
         wx = self._wx
@@ -357,3 +399,20 @@ class ProblemsPane:
         problem = self._report.problems[index]
         self._copy_text(problem.message)
         self._say("Message copied")
+
+
+def _combo_dropped_down(window: Any) -> bool:
+    """Whether a native combo box (``wx.Choice`` on Windows) has its list open.
+
+    ``wx.Choice`` has no ``IsPopupShown``; Windows answers ``CB_GETDROPPEDSTATE``.
+    False anywhere else, and whenever the question cannot be asked.
+    """
+    if sys.platform != "win32":
+        return False
+    try:
+        import ctypes
+
+        handle = int(window.GetHandle())
+        return bool(ctypes.windll.user32.SendMessageW(handle, _CB_GETDROPPEDSTATE, 0, 0))
+    except Exception:  # noqa: BLE001 - unknown means closed
+        return False

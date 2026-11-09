@@ -90,3 +90,27 @@ def test_installed_servers_are_only_found_on_the_path(monkeypatch) -> None:
     monkeypatch.setattr(servers.shutil, "which", lambda name: f"C:/llvm/{name}.exe")
     resolved = resolve_server(spec)
     assert resolved is not None and resolved.argv[0] == "C:/llvm/clangd.exe"
+
+
+def test_server_presence_is_asked_of_the_disk_at_most_twice_a_minute(monkeypatch) -> None:
+    """Review 2026-11-09, QUILL Lite 11: the pane's tick must not probe the disk."""
+    from quill.core.lsp import servers
+
+    asked: list[str] = []
+
+    def resolve(spec):
+        asked.append(spec.name)
+        return None
+
+    monkeypatch.setattr(servers, "resolve_server", resolve)
+    servers.forget_server_presence()
+    spec = servers.LANGUAGE_SERVERS[0]
+    assert servers.server_present(spec, now=100.0) is False
+    assert servers.server_present(spec, now=110.0) is False
+    assert asked == [spec.name], "the second answer is remembered"
+    servers.server_present(spec, now=100.0 + servers.PRESENCE_SECONDS)
+    assert len(asked) == 2, "and asked again once it is old"
+    servers.forget_server_presence()
+    servers.server_present(spec, now=131.0)
+    assert len(asked) == 3
+    servers.forget_server_presence()
