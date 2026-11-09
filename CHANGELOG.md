@@ -20,8 +20,8 @@
   it too, and "what can I say about bookmarks" narrows it.
 - What Can I Do Here? is now **What Can I Say Here?**, on the same key.
 - **F11 is commands only and never starts or stops dictation.** Speak a
-  Command, which was on F11, is now **Next Phrase Is a Dictation Command** on
-  the Dictation menu, with no key. The command word ("QUILL scratch that")
+  Command, which was on F11, is now **Next Phrase Is a Dictation Command**, on
+  Ctrl+Alt+Shift+Q (Q for QUILL). The command word ("QUILL scratch that")
   does the same, and dictation keeps Ctrl+F11.
 
 ### One list of every command (2026-11-08)

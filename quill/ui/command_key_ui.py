@@ -59,8 +59,7 @@ SOMETHING_ELSE = "Something else..."
 ShowModal = Callable[[Any, str], int]
 
 
-def _dialog(wx: Any, parent: Any, title: str, width: int, height: int) -> Any:
-    dialog = wx.Dialog(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+def _sized(dialog: Any, width: int, height: int) -> Any:
     dialog.SetSize(dip_size(dialog, width, height))
     return dialog
 
@@ -88,7 +87,11 @@ def ask_for_command(wx: Any, parent: Any, show_modal: ShowModal, initial: str = 
     """The box. Returns what was typed, or None on Escape."""
     from quill.ui.dialog_contract import apply_modal_ids
 
-    dialog = _dialog(wx, parent, BOX_TITLE, 520, 160)
+    dialog = _sized(
+        wx.Dialog(parent, title=BOX_TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER),
+        520,
+        160,
+    )
     sizer = wx.BoxSizer(wx.VERTICAL)
     sizer.Add(wx.StaticText(dialog, label="&Command:"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
     entry = wx.TextCtrl(dialog, value=initial, style=wx.TE_PROCESS_ENTER)
@@ -134,7 +137,9 @@ def _pick_from_list(
     from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
 
     chosen: dict[str, int | None] = {"index": None}
-    dialog = _dialog(wx, parent, title, 640, 420)
+    dialog = _sized(
+        wx.Dialog(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER), 640, 420
+    )
     sizer = wx.BoxSizer(wx.VERTICAL)
     sizer.Add(wx.StaticText(dialog, label=label), 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
     listing = wx.ListBox(dialog, choices=list(rows), style=wx.LB_SINGLE)
@@ -234,7 +239,11 @@ def confirm_command(wx: Any, parent: Any, show_modal: ShowModal, question: str) 
     """One line, Enter to go ahead, Escape to cancel (10.6)."""
     from quill.ui.dialog_contract import apply_modal_ids
 
-    dialog = _dialog(wx, parent, CONFIRM_TITLE, 480, 150)
+    dialog = _sized(
+        wx.Dialog(parent, title=CONFIRM_TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER),
+        480,
+        150,
+    )
     sizer = wx.BoxSizer(wx.VERTICAL)
     text = wx.StaticText(dialog, label=question)
     text.SetHelpText("The command you asked for, which changes or stops something.")
@@ -297,8 +306,13 @@ class WxCommandKeyHost:
 
     # -- the lists ----------------------------------------------------------
 
+    def _registered(self, command_id: str) -> bool:
+        """Whether the registry has *command_id*. A registry that cannot say has nothing."""
+        get = getattr(self.registry, "get", None)
+        return bool(callable(get) and get(command_id) is not None)
+
     def _reason(self, spec: CommandSpec) -> str:
-        if self.registry.get(spec.id) is None:
+        if not self._registered(spec.id):
             return ""
         reason = str(self.registry.unavailable_reason(spec.id) or "")
         if not reason and self._probe is not None:
@@ -311,7 +325,7 @@ class WxCommandKeyHost:
     def candidates(self) -> Sequence[Candidate]:
         out: list[Candidate] = []
         for spec in rows_for_app(self.app):
-            if spec.risk is Risk.NEVER or self.registry.get(spec.id) is None:
+            if spec.risk is Risk.NEVER or not self._registered(spec.id):
                 continue
             if self._reason(spec):
                 continue
@@ -325,7 +339,7 @@ class WxCommandKeyHost:
             if not spec.offered:
                 never.append(spec)
                 continue
-            if self.registry.get(spec.id) is None:
+            if not self._registered(spec.id):
                 continue
             reason = self._reason(spec)
             if reason:
