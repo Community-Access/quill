@@ -17,6 +17,7 @@ from typing import Any
 
 import wx
 
+from quill.core.github import workbench_menu
 from quill.core.lite.textfile import ENCODING_CHOICES, NEWLINE_CHOICES
 from quill.core.status_cell_width import ratchet_width
 from quill.core.status_message import IDLE_MESSAGE, StatusMessage, current_message
@@ -33,6 +34,7 @@ __all__ = [
     "native_cell_labels",
     "newline_name",
     "page_cell_text",
+    "workbench_cell",
 ]
 
 #: How long caret movement may leave the bar stale. QUILL's own coalescing
@@ -244,6 +246,13 @@ CELLS: tuple[StatusCell, ...] = (
     # Decision 19 (codex.md 10A.10, 2026-10-31): which AI is in use, short, after
     # every editing cell so it cannot push one onto another row. QUILL has the
     # same cell. The message stays last, for the reason given below it.
+    # GitHub Workbench Mode's readout (2026-11-08), worded in workbench_menu so
+    # QUILL's cell says the same; shown only while the mode is on.
+    StatusCell(
+        workbench_menu.STATUS_CELL_KEY,
+        workbench_menu.STATUS_CELL_LABEL,
+        workbench_menu.STATUS_CELL_HELP,
+    ),
     StatusCell(
         "project",
         "Project",
@@ -324,9 +333,22 @@ def project_cell(frame: object) -> str:
         return ""
 
 
+def workbench_cell(frame: object) -> str:
+    """The Workbench cell's text, or "" (and so hidden) when the mode is off."""
+    text = getattr(frame, "github_workbench_status_text", None)
+    try:
+        return str(text()) if callable(text) else ""
+    except Exception:  # noqa: BLE001 - a status cell never takes the bar down
+        return ""
+
+
 def shared_ai_cells(frame: object) -> dict[str, str]:
-    """The Project and AI cells, which QUILL shows with the same words."""
-    return {"project": project_cell(frame), "ai": ai_cell(frame)}
+    """The Workbench, Project and AI cells, which QUILL shows with the same words."""
+    return {
+        workbench_menu.STATUS_CELL_KEY: workbench_cell(frame),
+        "project": project_cell(frame),
+        "ai": ai_cell(frame),
+    }
 
 
 def encoding_name(codec: str) -> str:
@@ -355,6 +377,7 @@ _SELF_NAMING = frozenset({
     "list",
     "saved",
     "ai",
+    workbench_menu.STATUS_CELL_KEY,  # "Workbench: owner/name" names itself
 })
 
 
@@ -386,7 +409,7 @@ def native_cell_labels(values: Mapping[str, str]) -> list[str]:
 
 #: Cells shown only while they have something to say; hidden, they leave the
 #: row and the arrow keys step over them.
-SHOWN_ONLY_WITH_TEXT = frozenset({"page", "project"})
+SHOWN_ONLY_WITH_TEXT = frozenset({"page", "project", workbench_menu.STATUS_CELL_KEY})
 
 
 def page_cell_text(text: str, position: int) -> str:

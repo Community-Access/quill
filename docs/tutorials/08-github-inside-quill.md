@@ -27,7 +27,9 @@ Tools (`Alt+G`), and the GitHub rows of the File and Tools menus move into it,
 next to rows that open the views below in one step: **Inbox...**,
 **Issues and Pull Requests...**, **Actions Runs...** and the rest. The menu
 paths in this tutorial are the ones you see with the mode off; with it on,
-look in the GitHub menu instead. Turn it off from the same place, or with
+look in the GitHub menu instead. While it's on, the status bar has a
+**Workbench** cell naming the repository you're working in; press `F6` and
+arrow to it to check. Turn the mode off from the same place, or with
 **GitHub > Leave Workbench Mode**.
 
 ## 0. Sign in (once)
@@ -52,10 +54,10 @@ app can see its repositories, approve QUILL once on GitHub, under
 **Settings > Applications > Authorized OAuth Apps** (chapter 10 of the GitHub
 guide has the details).
 
-**Add Token (Advanced)...** is still there for when you want a token you made
-yourself, such as a fine-grained token limited to a few repositories. Make
-one on github.com under **Settings > Developer settings > Personal access
-tokens**, then paste it in.
+That's all most people ever need. There is also an **Add Token
+(Advanced)...** button, for a few special cases such as an organization that
+blocks sign-in apps; chapter 10 of the GitHub guide, "Advanced: using a
+token", explains when and how.
 
 You can browse public repositories without signing in, though GitHub limits
 how many requests you can make. Everything that *writes* to GitHub needs an

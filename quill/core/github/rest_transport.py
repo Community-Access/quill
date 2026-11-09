@@ -31,6 +31,7 @@ from quill.core.github.rate_limits import (
     secondary_wait_seconds,
     wait_message,
 )
+from quill.core.github.token_health import TOKEN_EXPIRY
 from quill.core.net import verified_ssl_context
 
 API_ROOT = "https://api.github.com"
@@ -182,6 +183,7 @@ def request_json(
     except Exception as exc:  # noqa: BLE001 - network failures become visible
         raise GitHubRestError(f"Could not reach GitHub: {exc}") from exc
     limits.observe(response_headers)
+    TOKEN_EXPIRY.observe(token, response_headers)  # the expiry warning's source
     if len(raw) > _MAX_RESPONSE_BYTES:
         raise GitHubRestError("GitHub's reply was larger than QUILL reads in one request.")
     return RestResponse(status, response_headers, _decode(raw))

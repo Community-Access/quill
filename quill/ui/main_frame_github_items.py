@@ -140,6 +140,7 @@ class GitHubItemsMixin:
                 self._wx.ICON_INFORMATION | self._wx.OK,
             )
             return
+        self._watch_github_token_expiry(token)  # main_frame_github_accounts
         # Prefill from the current document's GitHub origin when available so a
         # user editing a file from a repo can review that repo's issues in one
         # step instead of retyping owner/repo.
@@ -192,6 +193,7 @@ class GitHubItemsMixin:
         except Exception as exc:  # noqa: BLE001
             self._set_status(f"Could not open {full_name}: {exc}")
             return
+        self._watch_github_token_expiry(token)
         from quill.ui.github_items_dialog import GitHubItemsDialog
 
         GitHubItemsDialog(

@@ -7,6 +7,10 @@ QUILL's own (:mod:`quill.ui.github_accounts_flow`, shared by both editors); this
 module is QUILL Lite's end of it -- the window, its voice, its message box and a
 worker thread.
 
+The token expiry warning's QUILL Lite half is here as well (2026-11-08): the
+Workbench's gate hands its token to ``_watch_github_token_expiry``, and the
+Notifications entry it leaves opens Manage GitHub Accounts again.
+
 The empty Lite window borrows these handlers too (``ShellMenuMixin`` has this
 mixin as a base), so nothing here may reach for a document.
 """
@@ -33,6 +37,15 @@ _NOT_SIGNED_IN = (
     "As a guest it can still read public repositories.\n\n"
     "Choose Manage GitHub Accounts to sign in with GitHub now, or Continue as Guest."
 )
+
+
+def _lite_notice_path(window: object) -> object:
+    """QUILL Lite's notifications file, for a window without the dictation mixin."""
+    from quill.core.lite.paths import data_dir
+    from quill.core.notifications import notifications_path
+
+    folder = getattr(getattr(window, "app", None), "data_dir", None)
+    return notifications_path(folder if folder is not None else data_dir())
 
 
 class GitHubAccountsLiteMixin:
@@ -68,6 +81,25 @@ class GitHubAccountsLiteMixin:
     def cmd_github_manage_accounts(self) -> None:
         """File > Manage GitHub Accounts: the same window QUILL opens."""
         self._lite_github_accounts_flow().manage()
+
+    def open_github_accounts_notice(self) -> None:
+        """A token-expiry entry in Notifications: Manage GitHub Accounts."""
+        self.cmd_github_manage_accounts()
+
+    def _watch_github_token_expiry(self, token: str | None) -> None:
+        """At the Workbench's gate: warn once a day about a token that expires soon."""
+        from quill.ui.github_token_expiry import ExpiryHost, watch_token_expiry
+
+        path = getattr(self, "_dictation_notification_path", None)
+        watch_token_expiry(
+            ExpiryHost(
+                say=self._announce,  # type: ignore[attr-defined]
+                call_after=wx.CallAfter,
+                app_name="QUILL Lite",
+                notice_path=path() if callable(path) else _lite_notice_path(self),
+            ),
+            token,
+        )
 
     def _github_workbench_as_guest(self, reopen: Callable[[], None]) -> bool:
         """Ask before opening the Workbench with no account. True to go on as a guest.

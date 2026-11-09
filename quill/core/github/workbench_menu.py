@@ -48,6 +48,9 @@ __all__ = [
     "NEW_COMMAND_IDS",
     "NORMAL_REMOTE_ROWS",
     "REPOSITORY_ROWS",
+    "STATUS_CELL_HELP",
+    "STATUS_CELL_KEY",
+    "STATUS_CELL_LABEL",
     "TOGGLE_COMMAND_ID",
     "TOGGLE_LITE_HANDLER",
     "TOGGLE_VIEW_LABEL",
@@ -61,6 +64,7 @@ __all__ = [
     "lite_handlers",
     "lite_rows",
     "readout_label",
+    "status_cell_text",
 ]
 
 #: The menu's title on the bar. G is free on both bars.
@@ -250,6 +254,27 @@ NEW_COMMAND_IDS: tuple[str, ...] = (
     "github.workbench_explore",
     "github.clone_repository",
 )
+
+
+#: The status-bar readout both editors show while the mode is on (2026-11-08):
+#: its key in each editor's cell table, the name a screen reader gives it, and
+#: what F1 says about it. It is never announced (GATE-13): entering and leaving
+#: the mode already is, and the cell's text is only ever read when somebody
+#: arrives on it.
+STATUS_CELL_KEY = "workbench"
+STATUS_CELL_LABEL = "Workbench"
+STATUS_CELL_HELP = (
+    "GitHub Workbench Mode is on, and this is the repository the GitHub menu works "
+    "on: the one the current document belongs to. It reads Workbench alone when the "
+    "document is not in a GitHub repository. Shown only while the mode is on; "
+    "View, GitHub Workbench Mode turns it off."
+)
+
+
+def status_cell_text(repository: str) -> str:
+    """``"Workbench: owner/name"``, or ``"Workbench"`` when no repository is known."""
+    name = (repository or "").strip()
+    return f"{STATUS_CELL_LABEL}: {name}" if name else STATUS_CELL_LABEL
 
 
 def readout_label(repository: str) -> str:

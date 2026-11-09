@@ -12,6 +12,11 @@ frame's own base list (and ``main_frame.py``'s size budget) did not change. The
 
 Sign In with GitHub waits for GitHub on the frame's task manager, so the
 fifteen-minute wait for a device code is a tracked task, never the UI thread.
+
+The token expiry warning's frame half is here too (2026-11-08): the Workbench's
+openers hand their token to :meth:`GitHubAccountsMixin._watch_github_token_expiry`,
+and the Notifications entry it leaves opens this window again
+(:meth:`GitHubAccountsMixin.open_github_accounts_notice`).
 """
 
 from __future__ import annotations
@@ -55,3 +60,30 @@ class GitHubAccountsMixin:
 
     def _github_sign_in(self) -> None:
         self._github_accounts_flow().sign_in()
+
+    def open_github_accounts_notice(self) -> None:
+        """A token-expiry entry in Notifications: Manage GitHub Accounts."""
+        self.manage_github_accounts()
+
+    def _watch_github_token_expiry(self, token: str | None) -> None:
+        """At the Workbench's gate: warn once a day about a token that expires soon."""
+        from quill.ui.github_token_expiry import ExpiryHost, watch_token_expiry
+
+        def after_notice() -> None:
+            # The Notifications cell appears once there is something in it.
+            from quill.core.notifications import load_notifications
+
+            self._notifications = load_notifications()
+            refresh = getattr(self, "_refresh_statusbar", None)
+            if callable(refresh):
+                refresh()
+
+        watch_token_expiry(
+            ExpiryHost(
+                say=self._announce,
+                call_after=self._wx.CallAfter,
+                app_name="QUILL",
+                after_notice=after_notice,
+            ),
+            token,
+        )

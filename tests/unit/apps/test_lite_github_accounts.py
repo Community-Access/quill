@@ -43,7 +43,7 @@ def github_says(monkeypatch, wx_call_after):
     wx_call_after()
     saved: list[tuple[str, str]] = []
 
-    def save(login: str, token: str) -> SimpleNamespace:
+    def save(login: str, token: str, **_kwargs: object) -> SimpleNamespace:
         saved.append((login, token))
         return SimpleNamespace(login=login, id=login)
 

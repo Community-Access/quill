@@ -278,10 +278,20 @@ Explore GitHub opens Explore on its default. They are
 <code>quill/ui/github_workbench_commands.py</code>, shared, and go
 through each editor’s existing opener and gates. The switch announces
 “Workbench mode on. GitHub menu added.” and “Workbench mode off.”
-through the announcement service; nothing else in the mode speaks. It is
-not remembered across sessions. In QUILL the mode needs GitHub Remote
-Access (<code>core.github_remote</code>), which since 2026-11-08 no
-longer depends on <code>core.developer</code>.</p>
+through the announcement service; nothing else in the mode speaks. While
+it is on, both editors’ status bars carry a <strong>Workbench</strong>
+cell (“Workbench: owner/name”, or “Workbench” with no repository),
+worded once in <code>workbench_menu</code>
+(<code>STATUS_CELL_KEY</code>, <code>status_cell_text</code>): QUILL’s
+in <code>quill/ui/main_frame_github_status.py</code> (a
+<code>workbench</code> item in <code>STATUS_BAR_ITEMS</code>, hidden by
+default and shown only in the mode), QUILL Lite’s in
+<code>quill/apps/lite_status_cells.py</code> (shown only with text). It
+is reached with F6 and the arrow keys like every cell and is never
+announced (GATE-13); the repository is looked up once per document path
+while the mode is on. It is not remembered across sessions. In QUILL the
+mode needs GitHub Remote Access (<code>core.github_remote</code>), which
+since 2026-11-08 no longer depends on <code>core.developer</code>.</p>
 <p><strong>Clone Repository.</strong> QUILL: <strong>File &gt; Open from
 Remote &gt; Clone Repository…</strong>; QUILL Lite: <strong>File &gt;
 Clone Repository…</strong> (<strong>Alt+F</strong>, then
@@ -326,9 +336,35 @@ Copilot’s token stays in its own entry. The scopes requested are
 <code>repo workflow gist read:org project security_events user:follow delete_repo</code>,
 each justified beside <code>WORKBENCH_SCOPES</code>, so one sign-in
 covers every Workbench command. <strong>Add Token (Advanced)…</strong>
-keeps the pasted-token route for fine-grained or limited tokens.
+keeps the pasted-token route for fine-grained or limited tokens; the
+guides teach it only in chapter 10, “Advanced: using a token”.
 Organizations that restrict OAuth apps must approve QUILL once (Settings
 &gt; Applications &gt; Authorized OAuth Apps &gt; Request or Grant).</p>
+<p><strong>Tokens (2026-11-08).</strong> Each account records how it was
+added (<code>added_by</code>: <code>sign_in</code>, <code>token</code>,
+or <code>unknown</code> for accounts saved before) and a small state
+(<code>account_state</code> in <code>github-accounts.json</code>, never
+a secret): whether the sign-in suggestion was shown, the token’s expiry
+as GitHub reported it, and the day the expiry was last mentioned.
+<code>quill/core/github/token_health.py</code> decides both messages.
+The <strong>suggestion</strong>: when the active account has a classic
+token (<code>ghp_</code>, or <code>X-OAuth-Scopes</code> on a pasted
+one) with a broad scope, Manage GitHub Accounts says “This account uses
+a token. Sign In with GitHub is easier to keep up to date.” once, then
+asks; Yes opens Sign In with GitHub, No opens the window as usual, and
+it is never asked again for that account. The <strong>expiry
+warning</strong>: <code>TOKEN_EXPIRY</code> records
+<code>GitHub-Authentication-Token-Expiration</code> from every REST
+reply and every items-provider repository read (the token as a SHA-256
+fingerprint, in memory); each editor’s Workbench gate calls
+<code>quill/ui/github_token_expiry.py</code>’s
+<code>watch_token_expiry</code>, which, for a token expiring within
+seven days or already expired (the latter from the filed expiry, since a
+dead token’s replies carry no header), says one sentence at most once a
+day per account and adds a Notifications entry whose target
+<code>github-accounts</code> opens Manage GitHub Accounts. No new
+network endpoint: both read headers of replies the Workbench already
+receives.</p>
 <p>In QUILL, <strong>File &gt; Open from Remote &gt; Open GitHub
 Reference</strong> accepts a pasted repository or GitHub URL. The Items
 window also has <strong>Open Link…</strong> in both QUILL and QUILL

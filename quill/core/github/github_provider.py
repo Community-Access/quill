@@ -76,6 +76,23 @@ class GitHubRemoteProvider(RemoteProvider):
             self._gh = gh.Github()
         self._token = token
         self.last_auth_error = ""
+        #: What the identity reply said about the token itself (2026-11-08):
+        #: its ``X-OAuth-Scopes`` (``None`` when GitHub sent none, which is a
+        #: fine-grained token) and its expiry header (``""`` when it has none).
+        self.last_scopes_header: str | None = None
+        self.last_expiration_header = ""
+
+    def _remember_token_headers(self, user: Any) -> None:
+        from quill.core.github.token_health import EXPIRY_HEADER, SCOPES_HEADER, header_value
+
+        headers = getattr(user, "raw_headers", None)
+        scopes = header_value(headers, SCOPES_HEADER)
+        if scopes is None:
+            reported = getattr(self._gh, "oauth_scopes", None)
+            if isinstance(reported, list):
+                scopes = ", ".join(str(scope) for scope in reported)
+        self.last_scopes_header = scopes
+        self.last_expiration_header = header_value(headers, EXPIRY_HEADER) or ""
 
     def get_identity(self) -> RemoteAccount | None:
         if not self._token:
@@ -83,11 +100,16 @@ class GitHubRemoteProvider(RemoteProvider):
         try:
             user = self._gh.get_user()
             self.last_auth_error = ""
+            login = user.login
+            try:
+                self._remember_token_headers(user)
+            except Exception:  # noqa: BLE001 - the headers are a nicety, the login is not
+                pass
             return RemoteAccount(
                 provider="github",
-                account_id=f"github:{user.login}",
-                display_name=user.name or user.login,
-                login=user.login,
+                account_id=f"github:{login}",
+                display_name=user.name or login,
+                login=login,
             )
         except Exception as exc:  # noqa: BLE001 - authentication errors are non-fatal
             self.last_auth_error = github_exception_hint(exc) or (

@@ -2,6 +2,17 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## Signing in to GitHub, kept simple
+
+The GitHub Guide now teaches one way to connect, **Sign In with GitHub**.
+Tokens are still there for the few people who need them, and chapter 10 says
+who that is and how. If you added an account with a broad classic token, QUILL
+mentions once that signing in is easier to keep up to date, and leaves it at
+that if you say no. If a token is about to expire, the Workbench tells you a
+few days ahead, once a day, with a Notifications entry that takes you to
+Manage GitHub Accounts. And while GitHub Workbench Mode is on, a **Workbench**
+cell on the status bar names the repository you're working in.
+
 ## QUILL speaks code the way VS Code thinks it
 
 Here's a small moment that used to take a long time. You're in a JavaScript

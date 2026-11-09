@@ -180,6 +180,7 @@ If you press F6 while the bar is hidden, QUILL Lite tells you it is hidden.
 | **Encoding** | How this file stores its letters and accents | change it |
 | **Line Endings** | How this file marks the end of a line | change it |
 | **Saved State** | Whether you have unsaved changes | saves |
+| **Workbench** | The repository the GitHub menu works on, such as "Workbench: community-access/quill", or just "Workbench" when the document isn't in a GitHub repository. Only there while GitHub Workbench Mode is on | says it again |
 | **Project** | The open project and its git branch, and "waiting for you" when the project task needs an answer. Only there while a project is open, in the Developer profile | opens Do a Project Task |
 | **AI** | Which AI is in use, such as "AI: ChatGPT plan" | opens Choose Your AI |
 
