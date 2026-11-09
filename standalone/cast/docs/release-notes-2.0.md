@@ -196,7 +196,7 @@ are in Preferences, in The library section.
 ### Dictation
 
 **Edit > Dictate Here** (**Ctrl+F11**) dictates into a search
-box, such as Add Podcast's name box, through QUILL Transcribe, released on 1
+box, such as Add Podcast's name box, through QUILL Transcribe, new in
 November 2026. That section of the user guide now says what happens when
 QUILL Transcribe is running, not running or not installed, and that your
 voice stays on your computer unless you chose an online speech provider in

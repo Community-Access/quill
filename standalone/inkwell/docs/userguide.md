@@ -121,7 +121,7 @@ opens an app with nothing held down:
 - **Open Quill Weather**: Alt+Q, then W (or Ctrl+Alt+Shift+F9)
 - **Open Quill Converter**: Alt+Q, then V (or Ctrl+Alt+Shift+F10)
 - **Open QUILL Transcribe**: Alt+Q, then T (or Ctrl+Alt+Shift+F11). QUILL
-  Transcribe, released on 1 November 2026, types what you say into any
+  Transcribe, new in November 2026, types what you say into any
   program; section 20 explains how it and Dictate Anywhere share the work.
 
 The tray icon's menu has a shorter list: **Open QUILL**, **Open Quill Radio**,
@@ -690,7 +690,7 @@ to QUILL Transcribe, and it does the dictating; Inkwell's status line says so.
 When QUILL Transcribe is not running, Inkwell dictates as described here. If
 QUILL or QUILL Lite's **Dictate in Other Programs...** finds QUILL Transcribe
 running, it hands your settings to QUILL Transcribe instead of Inkwell.
-QUILL Transcribe is released on 1 November 2026. To open it from Inkwell,
+QUILL Transcribe is new in November 2026. To open it from Inkwell,
 press Alt+Q, then T, or Ctrl+Alt+Shift+F11 (see "Opening the other QuillVille
 apps" in section 3).
 
@@ -743,7 +743,7 @@ because Inkwell looks for the speech part only beside itself.
 1. **Use Windows speech recognition.** Press Ctrl+Alt+D, choose **Windows
    speech recognition** in the **Speech engine** list, and press OK. Remember
    to say the punctuation.
-2. **Install QUILL Transcribe** (released on 1 November 2026; Alt+Q, then T
+2. **Install QUILL Transcribe** (new in November 2026; Alt+Q, then T
    offers to download it). Its installer carries the built-in models and the
    speech part. While QUILL Transcribe is running, it does the dictating
    whenever you press your Dictate Anywhere key, with its own model, so you

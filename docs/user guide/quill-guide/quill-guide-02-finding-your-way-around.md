@@ -554,7 +554,7 @@ show-and-hide key, `Ctrl+Alt+Shift+F12`, brings it forward from any program.)
 - **Open Quill Inkwell** (`Alt+Q`, `I`, or `Ctrl+Alt+Shift+F10`), which
   expands your abbreviations in every program
 - **Open QUILL Transcribe** (`Alt+Q`, `T`, or `Ctrl+Alt+Shift+F11`), which
-  types what you say into any program. It is released on 1 November 2026.
+  types what you say into any program. It is new in November 2026.
 
 For example, to start dictating into an email, press `Ctrl+Alt+Shift+F11`.
 QUILL Transcribe opens (or comes to the front if it is already running), and

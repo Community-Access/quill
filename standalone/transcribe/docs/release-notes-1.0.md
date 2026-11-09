@@ -1,141 +1,64 @@
 # QUILL Transcribe 1.0 Release Notes
 
-Version 1.0.0 (build 3), planned for November 1, 2026; the packages have not
-yet been published.
+*Version 1.0.0, the beta, November 2026. Help > About shows the exact build
+you have.*
 
-## A note on the shared runtime's licence
+Imagine dictating straight into your email, a web form, a chat window or a
+spreadsheet cell, with the same speech models you know from QUILL and QUILL
+Lite, and never once copying and pasting. That is QUILL Transcribe. It sits in
+your tray, and when you press your key in any field, in any program, what you
+say is typed right there.
 
-Installed Transcribe uses the shared QuillVille Runtime, which includes
-PyMuPDF 1.28.2 under AGPL-3.0 through GLOW. Transcribe does not itself expose
-GLOW. The exact source of PyMuPDF, and of every other GPL part, is published
-with each release, and the portable package leaves it out.
+Here are the moments we think you'll love. Each has its own part further down.
 
-QUILL Transcribe is new. It types what you say into the program you are using,
-with the same speech models and dictation you know from QUILL and QUILL Lite.
+### Talk anywhere
 
-## The short version
+Put the cursor where you want to write, press **Alt+Shift+Backslash**, and
+speak. Each phrase is typed when you pause. Press the key again, or say "stop
+dictation", to stop. Prefer to hold the key while you talk, or to
+say "Quill dictate" to start? Turn either on in More Dictation Settings.
 
-Choose your model, press your key in the field you want, and speak. Your words
-go into that field and nowhere else. Your speech stays on your computer unless
-you choose an internet model yourself.
+### It never talks over your screen reader
 
-## New in build 3
+A phrase arrives faster than a screen reader can echo it, so you would hear
+"period" after every sentence. QUILL Transcribe quietly hushes the echo, so
+what you hear is your own words, or a soft tone, never a stream of
+punctuation.
 
-**Help > What's New** (Ctrl+Shift+F1) opens QUILL Transcribe's changelog in
-your browser, on the same key as in every standalone QuillVille app.
+### Your words never land in the wrong place
 
-**Pinned to the taskbar, QUILL Transcribe opens as itself.** Its shortcuts now carry
-its own taskbar identity, as Quill Radio's have since 3.0.2, so pinning
-the running QUILL Transcribe pins its shortcut. An older pin that asks "Several
-QuillVille apps are installed" now opens the app you pick through its own
-launcher, with all of its settings. To replace an old pin, unpin it and pin
-QUILL Transcribe again after you update. Reported on QUILLVille for QUILL Lite; every
-QuillVille app has the fix.
+Move to another program mid-sentence, and QUILL Transcribe stops typing and
+tells you. What you say next is held, not typed anywhere, until you choose
+Resume, Resume in This Field, or Discard.
 
-**Sharp at any display scaling.** QUILL Transcribe handles each monitor's
-scaling itself, so its windows stay sharp at 125, 150 and 200 percent and on
-monitors with different scaling.
+### Fix it by voice, even in other programs
 
-## New in this release
+Say "QUILL" before a command and it is never typed: "QUILL scratch that",
+"replace Tuesday with Wednesday", "delete last sentence". They work in other
+programs, on the words QUILL Transcribe typed itself. "QUILL review that"
+(**Shift+F4**) lets you hear a phrase before it goes in.
 
-Everything in QUILL Transcribe is new, but if you tried a test build, these
-are the things that arrived since. The full list, grouped by area, is in the
-changelog (`CHANGELOG` in the docs folder); each part of the user guide named
-here explains one in full.
+### The right model, chosen for you
 
-**Starting and stopping.** The start and stop key is **Alt+Shift+Backslash**
-from the start, chosen in **File > Start and Stop Key...**
-(**Ctrl+Alt+Shift+D**), and every key box has **Record Key**. Hold the key
-to talk, or say the wake phrase "Quill dictate" (both off until you turn
-them on). Three more keys you can choose ask for Dictation Status, resume, or
-discard held words from the program you are in. A list of programs
-dictation never types into is in More Dictation Settings (**Alt+N**).
+The built-in Moonshine works the moment you install, with no internet.
+**Recommended for this computer** names the model that suits your computer,
+from our own tests on real voices: on a typical 8 GB computer, NVIDIA
+Parakeet gets about half as many words wrong in English, and a fraction as
+many in Spanish. One button switches to it.
 
-**What you hear.** Your screen reader no longer says "c" or "period" after
-each phrase. A soft tick plays while a slow phrase is worked on. The words
-heard so far appear on a braille display, and **Dictation Status**
-(**Alt+F9**) says what dictation is doing in one sentence. Emoji are typed
-whole.
+### Recordings, too
 
-**Commands and correcting.** Say "QUILL" before a command so it is never
-typed ("QUILL scratch that"), or press **F11** and say it. Spell an address
-across pauses, say a Markdown link, and insert snippets, abbreviations and
-clips by voice. "Correct that", "replace Tuesday with Wednesday" and
-"delete last sentence" work in other programs on the words QUILL
-Transcribe typed itself. Dictation profiles (**Ctrl+Shift+F**), a dictation
-style, and "QUILL review that" (**Shift+F4**) are there when you want
-them. See "Commands while dictating into other programs".
+**Transcribe a Recording** turns an audio or video file into text in the
+background, and can even translate Spanish into English.
 
-**Your words and settings.** Your dictation settings can be shared with
-QUILL, QUILL Lite and Quill Inkwell (**Alt+Q** in More Dictation
-Settings). My Words and Phrases (**Alt+Shift+F10**) imports and exports.
-**Recent Phrases** (**Shift+F11**) keeps what could not be typed until you
-type or discard it, and a dictation history is kept only if you turn it on.
+### Learn it in minutes
 
-**Models.** **Recommended for this computer** says which model suits your
-computer and why, every model has a tier, and twelve speech providers can be
-used with your own account. See "Models".
+**Practice Dictation** (**Ctrl+Shift+P**) has its own field and a
+recognition test, and **Help > Tutorials** (**Ctrl+Alt+F1**) has five short
+lessons.
 
-**Advice tested on real speech.** The recommendation now rests on tests with
-recordings of real people, not a synthetic voice. For English on a computer
-with 8 GB of memory and four cores it names NVIDIA Parakeet Unified 0.6B,
-which got 3.2 percent of words wrong on audiobooks no model was trained on,
-against 6.5 for the built-in Moonshine. For Spanish on 8 GB it names NVIDIA
-Parakeet TDT 0.6B v3: 4.4 percent wrong, against 30.5 for the built-in
-Whisper. On 4 GB the built-in models are still the advice. Moonshine base no
-longer drops phrases longer than about eight and a half seconds, and no
-longer loses a word where a long phrase is cut: the pieces overlap by half a
-second. See "How we chose: tested on real speech".
-
-**A better Spanish model, said once.** The first time you dictate in Spanish
-on a computer that can run Parakeet TDT v3 (in practice, 8 GB of memory and
-four cores), while your Spanish would go to the built-in Whisper, you hear
-one sentence. For example: "For Spanish, NVIDIA Parakeet TDT 0.6B v3 gets
-about 6 percent of words wrong, against 29 for the built-in model. It is a
-670 MB download in the model list." Nothing is downloaded or changed. You
-hear it once across every QuillVille program, and a computer with 4 GB hears
-nothing. See "Dictating in Spanish".
-
-**Switch to Recommended Model, and free the old one.** The Model Library
-(**Ctrl+L**) has a new button, **Switch to Recommended Model** (**Alt+H**).
-It makes the recommended model your model and changes nothing else. If the
-model is not on this computer yet, nothing is downloaded: you are told, and
-taken to its row so you can download it first. When you move away from a
-downloaded model, in Choose Model or the Model Library, a question offers to
-delete the old one. For example: "Now using NVIDIA Parakeet Unified 0.6B.
-Delete Whisper medium to free 946 MB?" No is the default, and the question
-says that QUILL, QUILL Lite and QUILL Transcribe share its files. It is not
-asked while dictation is running. **Remove** now says how much space was
-freed. See "The recommendation" and "The Model Library".
-
-**Removed: five English-only models.** Distil-Whisper small.en, Whisper
-small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
-large-v3 are no longer offered. Whisper base.en and every Whisper model
-without ".en" in its name stay. On real recordings, NVIDIA Parakeet Unified
-0.6B got 3.2 percent of words wrong on the held-out audiobooks, against 3.6
-to 6.3 for these five. It also ran faster on one processor thread, in the
-same or a smaller memory tier. If one of them was your model, it becomes Parakeet
-Unified if you have already downloaded it, and otherwise the built-in model.
-Nothing is downloaded, and you are told once, the next time dictation starts.
-The downloaded files are not deleted: they stay in
-`%LOCALAPPDATA%\QuillVille\Dictation\models` (in a portable copy,
-`data\dictation\models` inside the portable folder), in a folder named
-`whisper-small.en-int8`, `whisper-distil-small.en-int8`,
-`whisper-medium.en-int8`, `whisper-distil-medium.en-int8` or
-`whisper-distil-large-v3-int8`. Delete that folder to free the space. To use
-Parakeet Unified, open the Model Library (**Ctrl+L**), download it, and press
-**Use for Dictation** (**Alt+U**). See "Models removed in October 2026".
-
-**Practice.** **Practice Dictation** (**Ctrl+Shift+P**) has a field of its
-own and a recognition test, and **Help > Tutorials...** (**Ctrl+Alt+F1**)
-has five lessons. See "Practice and lessons".
-
-**Recordings and sounds.** Transcribe a Recording can translate Spanish into
-English (**Alt+E**), and Review Transcript can type the transcript into a
-field (**Alt+F**). **Options > App Sounds Play On...** (**Ctrl+Shift+S**)
-chooses where QUILL Transcribe's sounds play, and **Alt+Shift+M** turns them
-off. In the window, **Alt+W** opens the Window menu and **Discard Held
-Words** is **Alt+C**.
+Your speech stays on your computer unless you choose an internet model
+yourself.
 
 ## What is in 1.0
 
@@ -214,6 +137,129 @@ Quill Cast and Quill Radio have no speech engine of their own. Their Edit >
 Dictate Here (Ctrl+F11) asks QUILL Transcribe to dictate into the box you are
 in, starting it in the tray if it is not running.
 
+---
+
+## If you tried a test build
+
+Everything in QUILL Transcribe is new, but if you tried a test build, these
+are the things that arrived since. The full list, grouped by area, is in the
+changelog (`CHANGELOG` in the docs folder); each part of the user guide named
+here explains one in full.
+
+**Starting and stopping.** The start and stop key is **Alt+Shift+Backslash**
+from the start, chosen in **File > Start and Stop Key...**
+(**Ctrl+Alt+Shift+D**), and every key box has **Record Key**. Hold the key
+to talk, or say the wake phrase "Quill dictate" (both off until you turn
+them on). Three more keys you can choose ask for Dictation Status, resume, or
+discard held words from the program you are in. A list of programs
+dictation never types into is in More Dictation Settings (**Alt+N**).
+
+**What you hear.** Your screen reader no longer says "c" or "period" after
+each phrase. A soft tick plays while a slow phrase is worked on. The words
+heard so far appear on a braille display, and **Dictation Status**
+(**Alt+F9**) says what dictation is doing in one sentence. Emoji are typed
+whole.
+
+**Commands and correcting.** Say "QUILL" before a command so it is never
+typed ("QUILL scratch that"), or choose **Next Phrase Is a Dictation
+Command** on the Dictation menu (**Alt+D**, then **M**) and say it. Spell an address
+across pauses, say a Markdown link, and insert snippets, abbreviations and
+clips by voice. "Correct that", "replace Tuesday with Wednesday" and
+"delete last sentence" work in other programs on the words QUILL
+Transcribe typed itself. Dictation profiles (**Ctrl+Shift+F**), a dictation
+style, and "QUILL review that" (**Shift+F4**) are there when you want
+them. See "Commands while dictating into other programs".
+
+**Your words and settings.** Your dictation settings can be shared with
+QUILL, QUILL Lite and Quill Inkwell (**Alt+Q** in More Dictation
+Settings). My Words and Phrases (**Alt+Shift+F10**) imports and exports.
+**Recent Phrases** (**Shift+F11**) keeps what could not be typed until you
+type or discard it, and a dictation history is kept only if you turn it on.
+
+**Models.** **Recommended for this computer** says which model suits your
+computer and why, every model has a tier, and twelve speech providers can be
+used with your own account. See "Models".
+
+**Advice tested on real speech.** The recommendation now rests on tests with
+recordings of real people, not a synthetic voice. For English on a computer
+with 8 GB of memory and four cores it names NVIDIA Parakeet Unified 0.6B,
+which got 3.2 percent of words wrong on audiobooks no model was trained on,
+against 6.5 for the built-in Moonshine. For Spanish on 8 GB it names NVIDIA
+Parakeet TDT 0.6B v3: 4.4 percent wrong, against 30.5 for the built-in
+Whisper. On 4 GB the built-in models are still the advice. Moonshine base no
+longer drops phrases longer than about eight and a half seconds, and no
+longer loses a word where a long phrase is cut: the pieces overlap by half a
+second. See "How we chose: tested on real speech".
+
+**A better Spanish model, said once.** The first time you dictate in Spanish
+on a computer that can run Parakeet TDT v3 (in practice, 8 GB of memory and
+four cores), while your Spanish would go to the built-in Whisper, you hear
+one sentence. For example: "For Spanish, NVIDIA Parakeet TDT 0.6B v3 gets
+about 6 percent of words wrong, against 29 for the built-in model. It is a
+670 MB download in the model list." Nothing is downloaded or changed. You
+hear it once across every QuillVille program, and a computer with 4 GB hears
+nothing. See "Dictating in Spanish".
+
+**Switch to Recommended Model, and free the old one.** The Model Library
+(**Ctrl+L**) has a new button, **Switch to Recommended Model** (**Alt+H**).
+It makes the recommended model your model and changes nothing else. If the
+model is not on this computer yet, nothing is downloaded: you are told, and
+taken to its row so you can download it first. When you move away from a
+downloaded model, in Choose Model or the Model Library, a question offers to
+delete the old one. For example: "Now using NVIDIA Parakeet Unified 0.6B.
+Delete Whisper medium to free 946 MB?" No is the default, and the question
+says that QUILL, QUILL Lite and QUILL Transcribe share its files. It is not
+asked while dictation is running. **Remove** now says how much space was
+freed. See "The recommendation" and "The Model Library".
+
+**Removed: five English-only models.** Distil-Whisper small.en, Whisper
+small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
+large-v3 are no longer offered. Whisper base.en and every Whisper model
+without ".en" in its name stay. On real recordings, NVIDIA Parakeet Unified
+0.6B got 3.2 percent of words wrong on the held-out audiobooks, against 3.6
+to 6.3 for these five. It also ran faster on one processor thread, in the
+same or a smaller memory tier. If one of them was your model, it becomes Parakeet
+Unified if you have already downloaded it, and otherwise the built-in model.
+Nothing is downloaded, and you are told once, the next time dictation starts.
+The downloaded files are not deleted: they stay in
+`%LOCALAPPDATA%\QuillVille\Dictation\models` (in a portable copy,
+`data\dictation\models` inside the portable folder), in a folder named
+`whisper-small.en-int8`, `whisper-distil-small.en-int8`,
+`whisper-medium.en-int8`, `whisper-distil-medium.en-int8` or
+`whisper-distil-large-v3-int8`. Delete that folder to free the space. To use
+Parakeet Unified, open the Model Library (**Ctrl+L**), download it, and press
+**Use for Dictation** (**Alt+U**). See "Models removed in October 2026".
+
+**Practice.** **Practice Dictation** (**Ctrl+Shift+P**) has a field of its
+own and a recognition test, and **Help > Tutorials...** (**Ctrl+Alt+F1**)
+has five lessons. See "Practice and lessons".
+
+**Recordings and sounds.** Transcribe a Recording can translate Spanish into
+English (**Alt+E**), and Review Transcript can type the transcript into a
+field (**Alt+F**). **Options > App Sounds Play On...** (**Ctrl+Shift+S**)
+chooses where QUILL Transcribe's sounds play, and **Alt+Shift+M** turns them
+off. In the window, **Alt+W** opens the Window menu and **Discard Held
+Words** is **Alt+C**.
+
+### In the last test build
+
+**Help > What's New** (Ctrl+Shift+F1) opens QUILL Transcribe's changelog in
+your browser, on the same key as in every standalone QuillVille app.
+
+**Pinned to the taskbar, QUILL Transcribe opens as itself.** Its shortcuts now carry
+its own taskbar identity, as Quill Radio's have since 3.0.2, so pinning
+the running QUILL Transcribe pins its shortcut. An older pin that asks "Several
+QuillVille apps are installed" now opens the app you pick through its own
+launcher, with all of its settings. To replace an old pin, unpin it and pin
+QUILL Transcribe again after you update. Reported on QUILLVille for QUILL Lite; every
+QuillVille app has the fix.
+
+**Sharp at any display scaling.** QUILL Transcribe handles each monitor's
+scaling itself, so its windows stay sharp at 125, 150 and 200 percent and on
+monitors with different scaling.
+
+---
+
 ## Good to know
 
 - QUILL Transcribe never reads what is already in the other program.
@@ -235,3 +281,12 @@ in, starting it in the tray if it is not running.
 
 Questions and problems: Get Help from Support in the Help menu, or
 support@community-access.org.
+
+---
+
+## A note on the shared runtime's licence
+
+Installed Transcribe uses the shared QuillVille Runtime, which includes
+PyMuPDF 1.28.2 under AGPL-3.0 through GLOW. Transcribe does not itself expose
+GLOW. The exact source of PyMuPDF, and of every other GPL part, is published
+with each release, and the portable package leaves it out.

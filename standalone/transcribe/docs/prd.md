@@ -8,8 +8,8 @@ other GPL, LGPL or AGPL part, is published with each release
 builds leave GLOW out. See the PyMuPDF licensing record and Licences and
 Notices.
 
-Version 1.0.0. Status: implemented; releases 1 November 2026 (first public
-release). In `RELEASED_APPS` from 2026-10-16, so every public QuillVille menu,
+Version 1.0.0. Status, 2026-11-09: implemented, going out as a public beta
+(the first public release). In `RELEASED_APPS` from 2026-10-16, so every public QuillVille menu,
 tray menu and companion-install offer lists it, and Quill Cast's and Quill
 Radio's Edit > Dictate Here shows in public builds. Its own QuillVille menu is
 five rows (QUILL, Quill Radio, Quill Weather, Quill Converter, Quill Inkwell on

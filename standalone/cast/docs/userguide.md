@@ -1816,7 +1816,7 @@ answer it starts on.
   Transcribe's start and stop key, or say "stop dictation".
 - Dictate Here is for typing into a box. Cast's own commands are still keys
   and menus: you cannot say "play" to play an episode.
-- QUILL Transcribe is released on 1 November 2026. From then on every copy of
+- QUILL Transcribe is new in November 2026. With it, every copy of
   Quill Cast and Quill Radio shows Dictate Here on its Edit menu, whether or
   not QUILL Transcribe is installed yet.
 

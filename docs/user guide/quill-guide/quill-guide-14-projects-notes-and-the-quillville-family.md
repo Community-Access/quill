@@ -824,7 +824,7 @@ Internet radio is not part of QUILL. It is **Quill Radio**, a free app of its
 own in the QuillVille family, with its own window, its own keyboard-first
 design, and its own complete User Guide (open it from the app's Help menu).
 The other companions are the same: **Quill Weather**, **QUILL Audio Studio**,
-**Quill Inkwell**, **Quill Converter**, **QUILL Transcribe** (released on 1
+**Quill Inkwell**, **Quill Converter**, **QUILL Transcribe** (new in
 November 2026, it types what you say into any program, not only into QUILL),
 and the rest.
 
