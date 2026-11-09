@@ -194,6 +194,12 @@ class FakeControl:
         start, end = self._sel
         return self._text[start:end]
 
+    def GetScreenPosition(self) -> Any:  # noqa: N802 - wx spelling
+        """Where a floating list (Word Prediction) is placed; the origin here."""
+        from types import SimpleNamespace
+
+        return SimpleNamespace(x=0, y=0)
+
     def SetFocus(self) -> None:
         self.focused = True
 
@@ -890,6 +896,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_tools import DocumentToolsMixin
     from quill.apps.lite_window_typing import DocumentTypingMixin
     from quill.apps.lite_window_view import DocumentViewCommandsMixin
+    from quill.apps.lite_window_word_prediction import DocumentWordPredictionMixin
     from quill.apps.lite_window_wordpress import DocumentWordPressMixin
     from quill.apps.lite_window_words import DocumentWordsMixin
     from quill.ui.highlight_commands import HighlightCommandsMixin
@@ -983,6 +990,8 @@ def lite_window(tmp_path, lite_settings):
         DocumentFoldingMixin,
         DocumentCodeNavMixin,
         ExtendSelectionMixin,
+        # Edit > Word Prediction, 2026-11-08: QUILL's shared list.
+        DocumentWordPredictionMixin,
         # The Insert menu, the document's markup language and the list cue,
         # added 2026-09-15. Here rather than in a stub of its own because the
         # heading and formatting commands ask it what the document is written in

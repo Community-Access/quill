@@ -76,6 +76,7 @@ from quill.apps.lite_window_tools import DocumentToolsMixin
 from quill.apps.lite_window_typing import DocumentTypingMixin
 from quill.apps.lite_window_view import DocumentViewCommandsMixin
 from quill.apps.lite_window_watch import DocumentDiskWatchMixin
+from quill.apps.lite_window_word_prediction import DocumentWordPredictionMixin
 from quill.apps.lite_window_wordpress import DocumentWordPressMixin
 from quill.apps.lite_window_words import DocumentWordsMixin
 from quill.core.document_text import DocumentText
@@ -158,10 +159,9 @@ class DocumentFrame(
     # Folding (bad.md P3.6) and Navigate > Code (2026-11-06): skimming by structure.
     DocumentFoldingMixin,
     DocumentCodeNavMixin,
-    # Extend Selection Mode, 2026-09-17 (bad.md P2.13, Tier 2). QUILL Lite deleted
-    # its own attempt in d20fabe; QUILL's is the mechanism that works on wxMSW, so
-    # it was extracted rather than written a third time.
+    # Extend Selection Mode (bad.md P2.13): QUILL's, the mechanism that works on wxMSW.
     ExtendSelectionMixin,
+    DocumentWordPredictionMixin,  # Edit > Word Prediction, QUILL's list (2026-11-08)
     DocumentStatusMixin,
     DocumentHeadingsMixin,
     DocumentMarkupMixin,

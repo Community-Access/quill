@@ -15,6 +15,14 @@ computer, private ones included, without writing your token anywhere. And
 what it does. GitHub no longer needs the Developer profile, so the workbench is
 there in most profiles, as it always has been in QUILL Lite.
 
+## Word Prediction in every profile
+
+**Ctrl+.** now opens Word Prediction in every profile, including the two that
+left it out. It only opens when you press the key; Word Prediction As You
+Type is still off unless you turn it on. QUILL Lite has the same list on the
+same key.
+
+
 ## A Problems pane that stays open
 
 Check This File's list closed as soon as you picked a problem. Now you can

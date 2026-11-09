@@ -55,9 +55,10 @@ PROJECT_FILE_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
 #: Edit > Agent Work: undoing and stopping are Edit's verbs. A submenu because
 #: Edit has five letters left (J, K, Q, W, Z) and a row with no key needs one.
 PROJECT_EDIT_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
-    ("&Edit", "Agent &Work", "", "", "sub"),
-    ("&Edit|Agent &Work", "&Undo Last Agent Turn", "", "cmd_undo_agent_turn", ""),
-    ("&Edit|Agent &Work", "&Stop Agent", "", "cmd_stop_agent", ""),
+    # K, not W: Edit > Word Prediction is in every profile and needs the W.
+    ("&Edit", "Agent Wor&k", "", "", "sub"),
+    ("&Edit|Agent Wor&k", "&Undo Last Agent Turn", "", "cmd_undo_agent_turn", ""),
+    ("&Edit|Agent Wor&k", "&Stop Agent", "", "cmd_stop_agent", ""),
 )
 
 #: View: the two records a task leaves, opened as documents.

@@ -7766,7 +7766,17 @@ Insert Markdown Tag… (semantic snippet picker).</li>
 Manage Snippets… (<code>Ctrl+Alt+Shift+Space</code>) with searchable
 filtering, placeholder prompts, and starter-pack onboarding.</li>
 <li>Prediction helpers: Word Prediction… (<code>Ctrl+.</code>) with
-words, HTML tags, and Markdown tag completions.</li>
+words, HTML tags, and Markdown tag completions. Since 2026-11-08 the key
+works in every profile (<code>edit.word_prediction</code> maps to
+<code>core.edit</code>), while <code>core.intellisense</code> governs
+only Toggle Word Prediction As You Type
+(<code>intellisense_as_you_type</code>, off by default). The list is
+<code>quill/ui/suggestion_list.py</code> (<code>SuggestionPopup</code>,
+<code>SuggestionListMixin</code>), shared with QUILL Lite, whose Edit
+&gt; Word Prediction… (<code>cmd_word_prediction</code>, Ctrl+., rule 2)
+is <code>quill/apps/lite_window_word_prediction.py</code>; QUILL’s
+adapter is <code>quill/ui/main_frame_intellisense.py</code>. Plan of
+record: <code>docs/design/intellisense.md</code>.</li>
 <li>Surface-aware formatting shortcuts (Markdown/HTML only):
 <code>Ctrl+B</code> bold, <code>Ctrl+I</code> italic, and heading levels
 <code>Ctrl+Alt+1</code> through <code>Ctrl+Alt+6</code>.</li>

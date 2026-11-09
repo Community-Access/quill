@@ -261,6 +261,7 @@
   ["QUILL Lite", "core/lite/commands.py Undo", "Ctrl+Z"],
   ["QUILL Lite", "core/lite/commands.py Unfold Everything", "Ctrl+Shift+F10"],
   ["QUILL Lite", "core/lite/commands.py Unselect All", "Ctrl+Shift+A"],
+  ["QUILL Lite", "core/lite/commands.py Word Prediction...", "Ctrl+."],
   ["QUILL Lite", "core/lite/commands.py Word Wrap", "Alt+Z"],
   ["QUILL Lite", "core/lite/commands.py lowercase", "Ctrl+Shift+K"],
   ["QUILL Lite", "core/lite/commands_ai.py AI Assistant...", "Ctrl+Alt+G"],

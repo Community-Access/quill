@@ -164,14 +164,19 @@ Measured 2026-11-08: no chord near Ctrl+Shift+M is free in both editors, so the 
 5. **Parameter hints on Ctrl+Shift+.** if it's free in both editors? Recommendation: yes.
 6. **Language servers before or after tree-sitter?** Recommendation: servers first for the languages they cover, since they're better than a parser there, and tree-sitter later for the long tail of other languages.
 
+## Progress
+
+- 2026-11-08: Problems pane P1 in both editors (PR #1798): docked, F6, Show and Source filters, Go To with a re-check after edits, the count sentence; no chord (rule 9).
+- 2026-11-08: Phase 1. The suggestion list moved into `quill/ui/suggestion_list.py`; QUILL's `main_frame_intellisense.py` is its adapter and QUILL Lite's is `quill/apps/lite_window_word_prediction.py` (Edit > Word Prediction..., Ctrl+.). The key works in every QUILL profile; "as you type" stays off by default and still follows the profile.
+
 ## Remaining tasks
 
-- [ ] Problems pane P1 (in progress on branch `claude/intellisense-problems-pane-e3cdff`), then P2 to P4.
+- [ ] Problems pane P2 to P4 (P1 is PR #1798).
 - [ ] P2: check when you save, as well as after a pause (both off by default, both say the count only when it changes).
 - [ ] Read the licence of each server package before bundling it (TypeScript, vscode-langservers-extracted, Pyright, the Roslyn language server).
 - [ ] Measure Node plus the servers in the shared runtime.
+- [ ] Layer 4 phase: bundle ripgrep (`rg.exe`, about 5 MB) beside Node in the shared runtime, pinned and SHA-256 checked like Pandoc. Read its licence (MIT or Unlicense) from the release first, record it in THIRD-PARTY-NOTICES and the component inventory, and add a network-audit note that it is local only. Layer 2's project index uses it when present and falls back to the pure-Python walk. Ask Jeff before the first download (parent session, 2026-11-08, with Jeff's go-ahead).
 - [ ] Choose a key for parameter hints: Ctrl+Shift+. is taken in both editors (measured 2026-11-08).
-- [ ] Phase 1: shared list, Lite command, every profile.
 - [ ] Phase 2: layer 1.
 - [ ] Phase 3: layer 2.
 - [ ] Measure the tree-sitter grammar size for the languages we care about, before phase 4.
