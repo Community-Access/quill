@@ -11,6 +11,7 @@ meant for a background task; nothing here may run on the UI thread.
 
 from __future__ import annotations
 
+import atexit
 import logging
 import threading
 import time
@@ -42,6 +43,8 @@ logger = logging.getLogger(__name__)
 
 #: How long a check waits for a server's diagnostics after sending the text.
 DIAGNOSTICS_WAIT = 3.0
+#: How long a server may sit unused before it is stopped (it restarts on demand).
+IDLE_STOP = 15 * 60.0
 #: After a server fails to start, how long before it is tried again.
 RETRY_AFTER = 300.0
 
@@ -55,7 +58,22 @@ class LanguageServerPool:
         self._failed: dict[tuple[str, Path], float] = {}
         self._diagnostics: dict[str, list[dict[str, Any]]] = {}
         self._arrived: dict[str, threading.Event] = {}
+        self._used: dict[tuple[str, Path], float] = {}
         self._lock = threading.Lock()
+
+    def _stop_idle(self) -> None:
+        """Stop any server nobody has asked anything for :data:`IDLE_STOP` seconds."""
+        now = time.monotonic()
+        with self._lock:
+            idle = [
+                (key, client)
+                for key, client in self._clients.items()
+                if now - self._used.get(key, now) > IDLE_STOP
+            ]
+            for key, _client in idle:
+                self._clients.pop(key, None)
+        for _key, client in idle:
+            client.stop()
 
     # -- which server ----------------------------------------------------------- #
 
@@ -74,7 +92,9 @@ class LanguageServerPool:
         if spec is None:
             return None
         key = (spec.name, root)
+        self._stop_idle()
         with self._lock:
+            self._used[key] = time.monotonic()
             client = self._clients.get(key)
             if client is not None and client.alive:
                 return client
@@ -237,9 +257,10 @@ _POOL_LOCK = threading.Lock()
 
 
 def shared_pool() -> LanguageServerPool:
-    """The process's one pool, made on first use."""
+    """The process's one pool, made on first use; every server stops at exit."""
     global _POOL
     with _POOL_LOCK:
         if _POOL is None:
             _POOL = LanguageServerPool()
+            atexit.register(_POOL.shutdown)
         return _POOL

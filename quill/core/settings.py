@@ -176,6 +176,12 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     problems_pane_visible: bool = False  # View > Problems > Show Pane; QUILL Lite's name too
     problems_check_after_pause: bool = False  # the pane's check box; QUILL Lite's too
     problems_all_open_files: bool = False  # View > Problems > All Open Files; Lite's too
+    # Language servers (Navigate > Code > Language Servers...); QUILL Lite's names too.
+    language_servers_enabled: bool = True
+    language_servers_off: list[str] = field(default_factory=list)
+    language_server_completions: bool = True
+    language_server_problems: bool = True
+    parameter_hints_as_you_type: bool = False
     intellisense_as_you_type: bool = False
     snippet_trigger_expansion: bool = True
     preview_browser: str = "system"
@@ -981,6 +987,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         problems_pane_visible = bool(data.get("problems_pane_visible", False))
         problems_check_after_pause = bool(data.get("problems_check_after_pause", False))
         problems_all_open_files = bool(data.get("problems_all_open_files", False))
+        language_servers = _language_server_fields(data)
         intellisense_as_you_type = bool(data.get("intellisense_as_you_type", False))
         snippet_trigger_expansion = bool(data.get("snippet_trigger_expansion", True))
         preview_browser = str(data.get("preview_browser", "system")).strip() or "system"
@@ -1733,6 +1740,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             problems_pane_visible=problems_pane_visible,
             problems_check_after_pause=problems_check_after_pause,
             problems_all_open_files=problems_all_open_files,
+            **language_servers,
             intellisense_as_you_type=intellisense_as_you_type,
             snippet_trigger_expansion=snippet_trigger_expansion,
             preview_browser=preview_browser,
@@ -2044,6 +2052,18 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
 
 def settings_path() -> Path:
     return app_data_dir() / "settings.json"
+
+
+def _language_server_fields(data: dict[str, Any]) -> dict[str, Any]:
+    """The language-server switches, read the way QUILL Lite reads them."""
+    off = data.get("language_servers_off", [])
+    return {
+        "language_servers_enabled": bool(data.get("language_servers_enabled", True)),
+        "language_servers_off": [str(name) for name in off] if isinstance(off, list) else [],
+        "language_server_completions": bool(data.get("language_server_completions", True)),
+        "language_server_problems": bool(data.get("language_server_problems", True)),
+        "parameter_hints_as_you_type": bool(data.get("parameter_hints_as_you_type", False)),
+    }
 
 
 def load_settings() -> Settings:

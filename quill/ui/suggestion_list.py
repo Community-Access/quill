@@ -237,6 +237,60 @@ class SuggestionListMixin:
             context, suggestions = build_intellisense_suggestions(
                 text, cursor, dictionary, limit=SUGGESTION_LIMIT
             )
+        if manual and alias is not None and context is not None:
+            if self._ask_language_server(text, cursor, context, suggestions):
+                return True
+        return self._present_suggestions(context, suggestions, manual=manual)
+
+    def _ask_language_server(
+        self,
+        text: str,
+        cursor: int,
+        context: IntellisenseContext,
+        local: list[IntellisenseSuggestion],
+    ) -> bool:
+        """Layer 4: when a server is running for this file, its list comes first.
+
+        True when the request went out; the list appears when it answers (or
+        with layers 1 and 2 alone if it has nothing). The text and caret must
+        still be where they were, or the answer is dropped: a list for a word
+        you have since changed would insert the wrong thing.
+        """
+        path = self._suggest_path()
+        ready = getattr(self, "_ls_completions_ready", None)
+        if not callable(ready) or not ready(path):
+            return False
+
+        def done(items: list[Any] | None) -> None:
+            if self._suggest_text() != text or self._suggest_caret() != cursor:
+                return
+            rows = [
+                IntellisenseSuggestion(
+                    label=item.label,
+                    inserted_text=item.insert,
+                    caret_offset=len(item.insert),
+                    kind=item.kind,
+                )
+                for item in items or []
+            ]
+            labels = {row.label for row in rows}
+            merged = rows + [row for row in local if row.label not in labels]
+            if not self._present_suggestions(context, merged[:SUGGESTION_LIMIT], manual=True):
+                self._suggest_say("No predictions available")
+
+        request = getattr(self, "_ls_request_completions", None)
+        return callable(request) and bool(request(path, text, cursor, context.fragment, done))
+
+    def _present_suggestions(
+        self,
+        context: IntellisenseContext | None,
+        suggestions: list[IntellisenseSuggestion],
+        *,
+        manual: bool,
+    ) -> bool:
+        popup = self._suggest_popup()
+        if popup is None:
+            return False
         if not suggestions:
             if popup.is_visible():
                 self._hide_intellisense_popup()

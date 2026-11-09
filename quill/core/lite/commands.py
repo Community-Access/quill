@@ -805,6 +805,9 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate|&Code", "&Check This File...", "Ctrl+Alt+/", "cmd_check_this_file", ""),
     ("&Navigate|&Code", "Next P&roblem", "Ctrl+Alt+.", "cmd_next_problem", ""),
     ("&Navigate|&Code", "Previous Pro&blem", "Ctrl+Alt+,", "cmd_previous_problem", ""),
+    ("&Navigate|&Code", "", "", "", "sep"),
+    ("&Navigate|&Code", "Parameter &Hints", "", "cmd_parameter_hints", ""),
+    ("&Navigate|&Code", "&Language Servers...", "", "cmd_language_servers", ""),
     # -- Navigate > Bookmarks ------------------------------------------------
     # A place you meant to come back to. There is no scrollbar thumb to remember
     # the position of and no glance that finds the place again, so a bookmark is

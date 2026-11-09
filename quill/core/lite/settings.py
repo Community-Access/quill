@@ -320,6 +320,12 @@ class Settings(DictationSettings):
     problems_pane_visible: bool = False  # View > Problems, its pane box: QUILL's names
     problems_check_after_pause: bool = False
     problems_all_open_files: bool = False
+    #: Language servers (Navigate > Code > Language Servers...); QUILL's names.
+    language_servers_enabled: bool = True
+    language_servers_off: list[str] = field(default_factory=list)
+    language_server_completions: bool = True
+    language_server_problems: bool = True
+    parameter_hints_as_you_type: bool = False
     #: Check spelling as you type. On, but never in a source or configuration
     #: file: the per-document default comes from the extension
     #: (quill.core.spellcheck_filetypes), and this is the answer for everything
