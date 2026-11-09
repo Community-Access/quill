@@ -16,8 +16,9 @@ your text alone. It's QUILL's list, on QUILL's key.
 
 Turn on **View > Problems Pane** and the problems Check This File finds stay
 under the document while you fix them, in every window. F6 reaches the pane,
-Enter goes to a problem, and Escape comes back without closing it. It's
-QUILL's pane, shared with QUILL.
+Enter goes to a problem, and Escape comes back without closing it. Saving
+checks again, and so can a pause in typing. It's QUILL's pane, shared with
+QUILL.
 
 ## Sign in to GitHub without a token
 

@@ -18,11 +18,15 @@ What a listener gets, and why:
 * **View > Problems Pane** docks the same problems below the editor, where they
   stay while you work (:mod:`quill.ui.problems_pane`). While it is shown, Check
   This File fills it instead of opening the modal list, and every check keeps
-  it current. F6 reaches it; Escape comes back.
+  it current. F6 reaches it; Escape comes back. While it is shown, saving
+  checks the file again, and so does a pause in typing when the pane's Check
+  After a Pause box is checked (off by default). Those checks are quiet: the
+  only thing said is the new count, and only when it changed.
 """
 
 from __future__ import annotations
 
+import time
 from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -41,7 +45,10 @@ from quill.core.problems.outside import tools_for
 if TYPE_CHECKING:
     from quill.ui.problems_pane import ProblemsPane
 
-__all__ = ["ProblemsCommandsMixin"]
+__all__ = ["PAUSE_SECONDS", "ProblemsCommandsMixin"]
+
+#: How long the text must stay still before Check After a Pause checks it.
+PAUSE_SECONDS = 1.5
 
 
 class ProblemsCommandsMixin:
@@ -49,6 +56,13 @@ class ProblemsCommandsMixin:
 
     _problems_report: CheckReport | None = None
     _problems_checked_text: str | None = None
+    # The pane's timer (_problems_tick): what the text was last time, when it
+    # last changed, whether it was modified, and whether a quiet check is out.
+    _problems_seen_text: str | None = None
+    _problems_changed_at: float = 0.0
+    _problems_was_modified: bool = False
+    _problems_auto_running: bool = False
+    _problems_last_auto_changed: bool = False
 
     # -- the commands ------------------------------------------------------- #
 
@@ -149,7 +163,48 @@ class ProblemsCommandsMixin:
 
     # -- running the check -------------------------------------------------- #
 
-    def _run_problem_check(self, then: Callable[[CheckReport], None]) -> None:
+    # -- checking on its own: after a save, and after a pause ---------------- #
+
+    def _problems_tick(self, now: float | None = None) -> None:
+        """The pane's timer, twice a second while it is shown.
+
+        Checks the file again, quietly, when it has just been saved, and -- with
+        Check After a Pause on -- when you have stopped typing for
+        :data:`PAUSE_SECONDS`. Never while you type, never twice for the same
+        text, and the only thing ever said is the new count, when it changed.
+        """
+        pane = self._problems_pane(create=False)
+        if pane is None or not pane.is_shown() or not self._problems_can_check():
+            return
+        now = time.monotonic() if now is None else now
+        text = self._problems_text()
+        modified = self._problems_modified()
+        if text != self._problems_seen_text:
+            self._problems_seen_text = text
+            self._problems_changed_at = now
+        just_saved = self._problems_was_modified and not modified
+        self._problems_was_modified = modified
+        if self._problems_auto_running or text == self._problems_checked_text:
+            return
+        paused = self._problems_pause_enabled() and now - self._problems_changed_at >= PAUSE_SECONDS
+        if just_saved or paused:
+            self._problems_auto_check()
+
+    def _problems_auto_check(self) -> None:
+        self._problems_auto_running = True
+
+        def then(report: CheckReport) -> None:
+            self._problems_auto_running = False
+            if self._problems_last_auto_changed:
+                pane = self._problems_pane(create=False)
+                if pane is not None:
+                    self._problems_say(pane.count_sentence())
+
+        self._run_problem_check(then, quiet=True)
+
+    def _run_problem_check(
+        self, then: Callable[[CheckReport], None], *, quiet: bool = False
+    ) -> None:
         text = self._problems_text()
         language = self._problems_language()
         path = self._problems_path()
@@ -164,12 +219,13 @@ class ProblemsCommandsMixin:
         def done(report: CheckReport) -> None:
             self._problems_report = report
             self._problems_checked_text = text
-            self._feed_problems_pane(report)
+            self._problems_last_auto_changed = self._feed_problems_pane(report)
             then(report)
 
         if outside and tools_for(language):
             # An outside tool can take seconds; the window stays responsive.
-            self._problems_say("Checking this file")
+            if not quiet:
+                self._problems_say("Checking this file")
             self._problems_in_background(work, done)
             return
         done(work())
@@ -213,6 +269,13 @@ class ProblemsCommandsMixin:
     def _problems_can_check(self) -> bool:
         """False where this document has nothing a checker reads."""
         return True
+
+    def _problems_pause_enabled(self) -> bool:
+        """Check After a Pause: the ``problems_check_after_pause`` setting."""
+        return False
+
+    def _problems_set_pause_enabled(self, enabled: bool) -> None:
+        """The pane's check box: remember the choice."""
 
     def _problems_pane(self, *, create: bool) -> ProblemsPane | None:
         """The docked pane; built (hidden) on first use when *create*."""

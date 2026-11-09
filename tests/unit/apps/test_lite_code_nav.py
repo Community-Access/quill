@@ -167,6 +167,9 @@ class _FakePane:
     def is_shown(self) -> bool:
         return self.shown
 
+    def set_shown(self, shown: bool) -> None:
+        self.shown = bool(shown)
+
     def has_focus(self) -> bool:
         return self.focused
 
@@ -288,3 +291,13 @@ def test_problems_pane_is_quills_command() -> None:
     keys = {row[3]: row[2] for row in COMMANDS}
     assert COMMAND_EQUIVALENTS["cmd_toggle_problems_pane"] == "view.problems_pane"
     assert keys["cmd_toggle_problems_pane"] == DEFAULT_KEYMAP["view.problems_pane"] == ""
+
+
+def test_check_after_a_pause_is_remembered_for_the_app(lite_window) -> None:
+    win = lite_window("<b>x", cursor=0)
+    assert win._problems_pause_enabled() is False
+    queued = win.app.queued_settings
+    win._problems_set_pause_enabled(True)
+    assert win.app.settings.problems_check_after_pause is True
+    assert win._problems_pause_enabled() is True
+    assert win.app.queued_settings == queued + 1

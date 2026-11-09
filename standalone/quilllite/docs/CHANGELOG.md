@@ -2,6 +2,12 @@
 
 ## 2.0.0
 
+### The Problems pane checks on save (2026-11-08)
+
+- While the pane is on, saving checks the document again, and a Check after a
+  pause box (off by default) checks it when you stop typing. Only a changed
+  count is said. QUILL's pane, shared.
+
 ### Word Prediction knows your project (2026-11-08)
 
 - After the file's own names, Word Prediction adds names from the other code

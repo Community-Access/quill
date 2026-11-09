@@ -181,6 +181,9 @@ class _FakePane:
     def is_shown(self) -> bool:
         return self.shown
 
+    def set_shown(self, shown: bool) -> None:
+        self.shown = bool(shown)
+
     def has_focus(self) -> bool:
         return self.focused
 
@@ -188,7 +191,9 @@ class _FakePane:
         self.report = report
 
     def count_sentence(self) -> str:
-        return "count"
+        from quill.core.problems.pane import count_sentence
+
+        return count_sentence(len(self.report.problems) if self.report else 0)
 
     def focus(self) -> None:
         self.focus_calls += 1
@@ -283,3 +288,76 @@ def test_problems_pane_row_matches_quill_lite() -> None:
     assert row[0] == "&View" and row[1] == "&Problems Pane"
     assert COMMAND_EQUIVALENTS[row[3]] == "view.problems_pane"
     assert DEFAULT_KEYMAP["view.problems_pane"] == row[2] == ""
+
+
+# -- quiet checks: after a save, after a pause ---------------------------------
+
+
+def _shown_host(text: str) -> _PaneHost:
+    host = _PaneHost(text, "data.json")
+    host._problems_pane_widget.shown = True
+    host.settings.problems_check_after_pause = False
+    return host
+
+
+def test_saving_checks_again_and_says_only_a_changed_count() -> None:
+    host = _shown_host('{"a": }\n')
+    host.document.modified = True
+    host._problems_tick(now=0.0)
+    assert host.said == [], "nothing happens while the file is still modified"
+    host.document.modified = False
+    host._problems_tick(now=1.0)
+    assert host.said == ["1 problem"]
+    host.document.modified = True
+    host.editor.text = '{"a": 2}\n'
+    host._problems_tick(now=2.0)
+    host.document.modified = False
+    host._problems_tick(now=3.0)
+    assert host.said[-1] == "No problems"
+
+
+def test_a_save_that_leaves_the_count_alone_says_nothing() -> None:
+    host = _shown_host('{"a": }\n')
+    host.tools_check_this_file()
+    said = len(host.said)
+    host.editor.text = '{"b": }\n'
+    host.document.modified = True
+    host._problems_tick(now=0.0)
+    host.document.modified = False
+    host._problems_tick(now=0.5)
+    assert len(host.said) == said
+    assert host._problems_checked_text == host.editor.text
+
+
+def test_check_after_a_pause_waits_for_the_pause_and_is_off_by_default() -> None:
+    from quill.ui.problems_commands import PAUSE_SECONDS
+
+    host = _shown_host('{"a": 1}\n')
+    host.document.modified = True
+    host._problems_tick(now=0.0)
+    host.editor.text = '{"a": }\n'
+    host._problems_tick(now=1.0)
+    host._problems_tick(now=1.0 + PAUSE_SECONDS + 1)
+    assert host.said == [], "off by default"
+    host._problems_set_pause_enabled(True)
+    assert host.settings.problems_check_after_pause is True
+    host._problems_tick(now=10.0)
+    assert host.said == ["1 problem"], "turned on, the unchecked text is checked"
+    host.editor.text = '{"a": 3}\n'
+    host._problems_tick(now=20.0)
+    host._problems_tick(now=20.0 + PAUSE_SECONDS / 2)
+    assert host.said == ["1 problem"], "not until the text has been still long enough"
+    host._problems_tick(now=20.0 + PAUSE_SECONDS)
+    assert host.said == ["1 problem", "No problems"]
+    host._problems_tick(now=40.0)
+    assert len(host.said) == 2, "the same text is never checked twice"
+
+
+def test_no_quiet_checks_while_the_pane_is_hidden() -> None:
+    host = _shown_host('{"a": }\n')
+    host._problems_pane_widget.shown = False
+    host.document.modified = True
+    host._problems_tick(now=0.0)
+    host.document.modified = False
+    host._problems_tick(now=1.0)
+    assert host.said == [] and host._problems_report is None

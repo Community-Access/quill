@@ -1231,6 +1231,11 @@ there until you turn it off again. QUILL remembers whether it's on.
   one checker, such as JSON or ruff. Changing either says the new count, for
   example "4 problems, 1 shown".
 - The context key (or Shift+F10) on a row has **Go To** and **Copy Message**.
+- While the pane is on, saving checks the file again. If you'd also like it
+  checked when you stop typing for a moment, check **Check after a pause**,
+  beside the choosers. It's off unless you turn it on, and QUILL remembers it.
+  These checks are quiet: you hear only the new count, such as "2 problems",
+  and only when it has changed.
 
 The pane has no shortcut key of its own. The obvious one, Ctrl+Shift+M, is Set
 Mark, and nothing near it was free in both QUILL and QUILL Lite. Once you've

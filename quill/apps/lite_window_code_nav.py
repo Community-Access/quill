@@ -132,6 +132,9 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
             back_to_editor=self._problems_back_to_editor,
             copy_text=self._problems_copy,
             say=self._problems_say,
+            tick=self._problems_tick,
+            pause_enabled=self._problems_pause_enabled(),
+            set_pause_enabled=self._problems_set_pause_enabled,
         )
         pane.panel.SetMinSize(dip_size(pane.panel, -1, 140))
         pane.panel.Hide()
@@ -160,7 +163,7 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
             return
         if not shown and pane.has_focus():
             self.control.SetFocus()
-        pane.panel.Show(shown)
+        pane.set_shown(shown)
         self.Layout()
 
     def problems_pane_takes_f6(self) -> bool:
@@ -172,6 +175,13 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
         pane = self._problems_pane(create=False)
         if pane is not None:
             pane.focus()
+
+    def _problems_pause_enabled(self) -> bool:
+        return bool(getattr(self.app.settings, "problems_check_after_pause", False))
+
+    def _problems_set_pause_enabled(self, enabled: bool) -> None:
+        self.app.settings.problems_check_after_pause = enabled
+        self.app._queue_settings_save()
 
     def _problems_back_to_editor(self) -> None:
         self.control.SetFocus()
