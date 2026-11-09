@@ -507,7 +507,8 @@ line, then “and 2 more”)</td>
 </tr>
 <tr>
 <td>Formatting</td>
-<td>whitespace or line endings only</td>
+<td>only whitespace, blank lines, line endings or line wrapping changed
+(6.7 defines it exactly)</td>
 <td>“Formatting only: indentation, 6 lines.”</td>
 </tr>
 <tr>
@@ -591,14 +592,73 @@ bounded and cited the way <code>diff_explanation.py</code> already
 bounds a diff explanation. It is a button, never automatic, and it says
 which AI was asked.</p>
 <h2 id="6-walking-and-reviewing">6. Walking and reviewing</h2>
-<h3 id="61-one-walk-across-everything">6.1 One walk across
-everything</h3>
-<p><strong>Next Change</strong> and <strong>Previous Change</strong>
-move through every change of every file in outline order; <strong>Next
-File</strong> and <strong>Previous File</strong> jump files. The outline
-follows along, so the tree always shows where you are, and Tab still
-reads the details. The existing Next Unresolved and Next Unvisited
-stay.</p>
+<h3 id="61-next-and-previous-change-everywhere">6.1 Next and previous
+change, everywhere</h3>
+<p>Moving from change to change is the most used thing in a review, so
+it works the same way in every place a change can be: the review
+outline, the diff window’s Differences and Patch lines, Before and
+After, and Compare Documents.</p>
+<table>
+<thead>
+<tr>
+<th>Move</th>
+<th>Key</th>
+<th>What you hear</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Next change / Previous change</td>
+<td><code>Ctrl+Alt+Shift+.</code> / <code>Ctrl+Alt+Shift+,</code></td>
+<td>the change’s gist, then “change 3 of 12”</td>
+</tr>
+<tr>
+<td>First change / Last change</td>
+<td><code>Ctrl+Alt+Shift+Home</code> /
+<code>Ctrl+Alt+Shift+End</code></td>
+<td>the gist, and “first change” or “last change”</td>
+</tr>
+<tr>
+<td>Next file / Previous file</td>
+<td><code>Ctrl+Down</code> / <code>Ctrl+Up</code></td>
+<td>the file, its kind and size, and how many changes it has</td>
+</tr>
+<tr>
+<td>Next undecided change</td>
+<td><code>Ctrl+Alt+Shift+U</code></td>
+<td>a change you have not accepted or declined</td>
+</tr>
+<tr>
+<td>Next unresolved thread / Next unvisited thread</td>
+<td><code>Alt+U</code> / <code>Alt+V</code>, as today</td>
+<td>as today</td>
+</tr>
+<tr>
+<td>Go to change number</td>
+<td><code>Ctrl+G</code> in the review window</td>
+<td>asks for a number, as Go To Line does</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Across files.</strong> Next Change moves through every
+change in every file, in outline order; at a file’s last change, the
+next press says the new file’s name first. Next File skips the rest of a
+file.</li>
+<li><strong>At the ends.</strong> The walk does not wrap silently: at
+the last change you hear “last change” and a soft end sound, and the
+next press says “back to the first change” before it wraps (the same
+edge sounds Compare Documents uses).</li>
+<li><strong>The outline follows.</strong> The tree’s selection moves
+with every step, so it always shows where you are, and Tab still reads
+the details.</li>
+<li><strong>Where you are</strong>, any time: the window’s status says
+“change 3 of 12, file 2 of 7”, and Review Progress (6.4) says it as a
+sentence.</li>
+<li><strong>Counting what you skip.</strong> When formatting-only or
+decided changes are skipped (6.7, 6.6), the count says so once, the
+first time: “12 changes, 4 formatting only, skipped.”</li>
+</ul>
 <h3 id="62-three-depths-three-keys">6.2 Three depths, three keys</h3>
 <ul>
 <li><strong>Gist</strong>: what you hear when you arrive.</li>
@@ -712,6 +772,59 @@ everything was accepted, and <strong>Include the tally</strong> adds
 that line to the review message. You can change all of it; Submit Review
 is still the only thing that sends.</li>
 </ul>
+<h3 id="67-formatting-only-changes-show-skip-or-hide">6.7
+Formatting-only changes: show, skip or hide</h3>
+<p>Some changes are purely visual: indentation, spaces at the end of a
+line, blank lines, line endings, a long line wrapped onto two. Often
+nobody cares. Sometimes it matters a great deal: a reformat can hide a
+real change, and in some files the spacing <em>is</em> the meaning. So
+it is a choice, with a sensible default, a key to flip it for one
+review, and a hard safety rule.</p>
+<p><strong>What counts as formatting only.</strong> A change is
+formatting only when, after removing the kinds of formatting you chose
+to ignore, the before and after are identical, token for token. The
+kinds, each a preference:</p>
+<ul>
+<li>indentation (leading spaces and tabs);</li>
+<li>spaces at the end of a line;</li>
+<li>blank lines added or removed;</li>
+<li>line endings (CRLF and LF);</li>
+<li>re-wrapped lines (the same words, split across lines
+differently).</li>
+</ul>
+<p><strong>Never formatting, whatever the setting.</strong> Indentation
+is meaning in Python, YAML, Makefiles, CoffeeScript, Haskell and F#, and
+in Markdown lists and code blocks; a tab against spaces matters in a
+Makefile; trailing spaces end a line break in Markdown; whitespace
+inside a string is text. In those places an indentation, trailing-space
+or tab change is described as a real change, and the gist says why:
+“Indentation changed, which changes the code in Python: lines 12 to 18
+moved into the if block.”</p>
+<p><strong>The three ways to treat them</strong> (the preference
+<strong>Formatting-only changes</strong>):</p>
+<ul>
+<li><strong>Show</strong> (the default): they are walked like any
+change, with their own short gist, “Formatting only: indentation, 6
+lines”, so they cost one sentence and never surprise you.</li>
+<li><strong>Skip when walking</strong>: Next and Previous Change pass
+over them; they stay in the outline and in Before and After, marked
+“formatting only”, and the count says how many were skipped. Accepting
+them all is one command, Accept Formatting Changes, which asks
+first.</li>
+<li><strong>Hide</strong>: they are left out of the outline, the walk
+and the counts, as GitHub’s “Hide whitespace” does. A file whose only
+changes are formatting reads as one row: “styles.css, formatting only”.
+A line in the window’s status always says how many are hidden, so
+nothing disappears unannounced.</li>
+</ul>
+<p><strong>Flip it for this review.</strong> <strong>Formatting Changes:
+Show, Skip or Hide</strong> (<code>Ctrl+Shift+W</code>, after GitHub’s
+“w” for whitespace) cycles the three for the open review only, and says
+the result and the count: “Formatting-only changes hidden: 4.” Closing
+the review returns to the preference.</p>
+<p><strong>Comments still land.</strong> A thread or a pending comment
+on a hidden formatting change is never hidden: its change shows, marked,
+so no conversation is lost.</p>
 <h2 id="7-commenting">7. Commenting</h2>
 <ul>
 <li><strong>Comment on This Change</strong> anchors to the change’s
@@ -796,6 +909,22 @@ starting with it, and reviewers use that to find a file by name.</p>
 <td><code>Ctrl+Alt+Shift+.</code> / <code>Ctrl+Alt+Shift+,</code></td>
 <td>Compare Documents’ Next and Previous Difference: the same idea gets
 the same key (F8 is Start Selection in the editors)</td>
+</tr>
+<tr>
+<td>First Change / Last Change</td>
+<td><code>Ctrl+Alt+Shift+Home</code> /
+<code>Ctrl+Alt+Shift+End</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Go to Change Number</td>
+<td><code>Ctrl+G</code> in the review window</td>
+<td>Go To Line’s key, for the same idea</td>
+</tr>
+<tr>
+<td>Formatting Changes: Show, Skip or Hide</td>
+<td><code>Ctrl+Shift+W</code></td>
+<td>for this review only; the preference is the default</td>
 </tr>
 <tr>
 <td>Next File / Previous File</td>
@@ -910,6 +1039,23 @@ chatty, the sentence is changed, not the default.</p>
 <td>Fold generated and lock files</td>
 <td>On</td>
 <td>On, Off</td>
+</tr>
+<tr>
+<td>Formatting-only changes</td>
+<td>Show</td>
+<td>Show, Skip when walking, Hide</td>
+</tr>
+<tr>
+<td>Formatting to ignore</td>
+<td>Indentation, end-of-line spaces, blank lines, line endings,
+re-wrapped lines (all on)</td>
+<td>each on or off</td>
+</tr>
+<tr>
+<td>Treat spacing as meaning in Python, YAML, Makefiles, Markdown lists
+and code</td>
+<td>Always (not a preference)</td>
+<td>not offered: a safety rule</td>
 </tr>
 <tr>
 <td>Braille: compact change forms</td>
@@ -1113,9 +1259,10 @@ dictation.</td>
 </tr>
 <tr>
 <td>2</td>
-<td>Walking: Next/Previous Change and File across the pull request,
-three depths, comment on this change; the Before and After window
-(section 6.3), shared with Compare Documents.</td>
+<td>Walking: Next/Previous Change, First/Last, by number, and File
+across the pull request; formatting-only changes shown, skipped or
+hidden (6.7); three depths, comment on this change; the Before and After
+window (section 6.3), shared with Compare Documents.</td>
 <td>large</td>
 </tr>
 <tr>
@@ -1184,6 +1331,13 @@ the code exactly; Words or Symbols when turned on.</li>
 5, <code>diff_lines.py</code>, <code>compare_service.py</code> and
 <code>pr_summary.py</code> as they are on <code>main</code>. Nothing
 built yet.</li>
+<li><strong>2026-11-09, later still.</strong> Jeff: “we need ways to go
+to the next and previous change and we should be able to ignore
+formatting only changes if configured … Sometimes it matters, other
+times it does not.” 6.1 now covers moving between changes everywhere
+(first, last, by number, across files, at the ends); 6.7 defines
+formatting only, the three treatments, the per-review key and the safety
+rule; the preferences gained both.</li>
 <li><strong>2026-11-09, later.</strong> Jeff: “go with great defaults
 but allow the user to fine tune this the way they wish.” Section 10
 lists every preference with its default; section 14 records the
