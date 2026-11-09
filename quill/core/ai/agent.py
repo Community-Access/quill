@@ -10,36 +10,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from quill.core.command_catalogue import agent_ok_ids
+
 ACTIONS = ("answer", "insert", "replace", "run")
 
 # Curated safe, automatable commands the agent may run. Ids must exist in the
-# CommandRegistry; unknown/disabled ones are filtered at runtime.
-SAFE_TOOL_IDS: tuple[str, ...] = (
-    "file.save",
-    "file.save_all",
-    "file.new",
-    "edit.undo",
-    "edit.redo",
-    "edit.select_all",
-    "format.bold",
-    "format.italic",
-    "format.upper_case",
-    "format.lower_case",
-    "format.title_case",
-    "format.sentence_case",
-    "format.insert_bullet_list",
-    "format.insert_numbered_list",
-    "tools.word_count",
-    "tools.spell_check_dialog",
-    "tools.read_aloud_start_pause",
-    "tools.read_aloud_stop",
-    "navigate.next_heading",
-    "navigate.previous_heading",
-    "navigate.outline_navigator",
-    "edit.find",
-    "view.toggle_soft_wrap",
-    "app.command_palette",
-)
+# CommandRegistry; unknown/disabled ones are filtered at runtime. A view of the
+# family command catalogue's ``agent_ok`` rows (docs/design/command-key.md 12):
+# a row is agent-safe only when it is SAFE, which GATE-CATALOGUE checks.
+SAFE_TOOL_IDS: tuple[str, ...] = agent_ok_ids("quill")
 
 
 @dataclass(frozen=True, slots=True)

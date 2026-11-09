@@ -19,6 +19,7 @@ import re
 from dataclasses import dataclass, field
 
 from quill.core.ai.agent import SAFE_TOOL_IDS
+from quill.core.command_catalogue import aliases_for
 
 __all__ = [
     "VoiceCommand",
@@ -34,34 +35,10 @@ __all__ = [
     "voice_commands_available",
 ]
 
-# Extra spoken aliases beyond each command's registry title. Keyed by command id;
-# every id here is also in SAFE_TOOL_IDS (a test asserts the converse direction).
-_ALIASES: dict[str, tuple[str, ...]] = {
-    "file.save": ("save", "save file", "save document"),
-    "file.save_all": ("save all", "save everything"),
-    "file.new": ("new", "new document", "new file"),
-    "edit.undo": ("undo",),
-    "edit.redo": ("redo",),
-    "edit.select_all": ("select all",),
-    "format.bold": ("bold", "make bold"),
-    "format.italic": ("italic", "make italic"),
-    "format.upper_case": ("uppercase", "upper case", "make uppercase"),
-    "format.lower_case": ("lowercase", "lower case", "make lowercase"),
-    "format.title_case": ("title case",),
-    "format.sentence_case": ("sentence case",),
-    "format.insert_bullet_list": ("bullet list", "insert bullet list", "bulleted list"),
-    "format.insert_numbered_list": ("numbered list", "insert numbered list"),
-    "tools.word_count": ("word count", "count words"),
-    "tools.spell_check_dialog": ("spell check", "check spelling"),
-    "tools.read_aloud_start_pause": ("read aloud", "start reading", "pause reading"),
-    "tools.read_aloud_stop": ("stop reading", "stop read aloud"),
-    "navigate.next_heading": ("next heading",),
-    "navigate.previous_heading": ("previous heading", "prior heading"),
-    "navigate.outline_navigator": ("outline", "outline navigator", "show outline"),
-    "edit.find": ("find", "search", "find text"),
-    "view.toggle_soft_wrap": ("soft wrap", "toggle soft wrap", "word wrap"),
-    "app.command_palette": ("command palette", "commands", "show commands"),
-}
+# The spoken aliases beyond each command's registry title live in the family
+# command catalogue now (docs/design/command-key.md 5.5); this was ``_ALIASES``.
+# Every agent-safe row has them, and only agent-safe ids are offered here.
+
 
 #: Phrases that cancel the listening session instead of running a command.
 CANCEL_PHRASES = frozenset({"cancel", "never mind", "nevermind", "stop", "dismiss"})
@@ -104,7 +81,7 @@ def normalize(text: str) -> str:
 
 
 def _phrases_for(command_id: str, title: str) -> tuple[str, ...]:
-    phrases = set(_ALIASES.get(command_id, ()))
+    phrases = set(aliases_for(command_id))
     normalized_title = normalize(title)
     if normalized_title:
         phrases.add(normalized_title)
