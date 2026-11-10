@@ -4287,6 +4287,74 @@ share. Not yet tried against the live site or with a screen reader.
   `tests/unit/ui/wordpress/test_wp_workbench_window.py` (20, a real frame on
   a fake site). The live regression has not been run on this branch.
 
+### 2026-11-10: the WordPress Workbench, W5 to W8, and the default way in
+
+The rest of the Workbench PRD's phases, one commit each, on the same branch
+as W1 to W4. None of it has met the live site or a screen reader yet.
+
+- **W1 to W4 leftovers.** File > WordPress > Properties is now built from the
+  Workbench's item sheet (`workbench_copy_sheet.py`, PRD 8): the editor's
+  sheet keeps the fields a working copy sends, and the Workbench's new fields
+  reach it. View > Load More and Load All (`workbench_listing.py`, a page
+  limit the loaders read, up to ten thousand rows), Columns, and Group By as
+  a Group node of child values under Posts, Pages, Media, Comments and
+  Plugins. New Here for every creatable kind, Merge Into and Convert to
+  Category or Tag (`workbench_create.py`), Send Password Reset as a wp-admin
+  pointer, Roles and What They May Do, Empty Spam (tier 3) and Not Spam, and
+  Allow This Sender. F1 on the tree and the list answers from
+  `workbench_node_help.py`, which a test holds to every node and row type.
+- **W5 coverage.** `workbench_coverage.py` classifies every route by rule
+  (covered, schema_built, planned, wp_admin_only, out_of_scope, each with its
+  home), and `quill/tools/wordpress_coverage_audit.py` is the gate over the
+  recorded index with `route_coverage.json` as the snapshot, in
+  platform_report as wordpress-coverage: 802 routes, 143 covered, 33 built
+  from their schema, 386 planned, 158 in wp-admin only, 82 out of scope.
+  More from This Site lists namespaces with the routes reached, and a node per
+  namespace lists its routes (`workbench_discovered.py`); the Content Model
+  lists post types and taxonomies with who registered them, read only
+  (QUILL Site Types detected by namespace); Abilities run with their input
+  schema as a sheet and a preview.
+- **W6, the default.** The Tools > WordPress doors open the Workbench unless
+  Workbench Options > Use the classic WordPress windows is checked
+  (`workbench_options.py`, `workbench_flag.py`); the environment variable
+  still overrides for developers. Tools > WordPress > Open WordPress
+  Workbench is the first row in both editors, on the layer's H, with a
+  command catalogue row. The classic windows have no surface module of their
+  own (they are the shared list window), so the reachability snapshot has
+  nothing to mark parked.
+- **W7.** `workbench_bold.py`: Copy to Site (plan as preview, terms by
+  name, links rewritten, pictures read from the source host and uploaded),
+  Compare Sites, Take a Snapshot, the Calendar with a node per day, Read Site
+  as Document (opened in the editor for its exports). The editorial queue on
+  items (Approve and Schedule, Send Back with a Note, Assign a Reviewer,
+  through block notes). `workbench_io.py`: Export List as CSV or Excel,
+  Import Posts from a Spreadsheet, and the REST Console's completion,
+  capability, parameters and answer tree (`quill/ui/wordpress_rest_console.py`).
+  Watches (`workbench_watches.py`) run on the editor's existing two-minute
+  WordPress timer through `wordpress_watch_commands.py`, at most every
+  fifteen minutes, first round silent. The Practice Site
+  (`workbench_practice.py`) starts WordPress Playground through the bundled
+  Node with a blueprint that leaves QUILL an application password, and
+  connects it; `scripts/fetch_build_deps.py --only wp-playground-cli` stages
+  `@wp-playground/cli` 1.0.28 (GPL-2.0-or-later) from
+  `scripts/wp_playground/package.json`. That entry has never been run: no
+  download was made, there is no lockfile yet, and the pin is to verify.
+- **W8.** `workbench_across.py`: By Name under each site (terms, field
+  values, authors, media usage, patterns, links, blocks and shortcodes,
+  forms, from one scan kept five minutes), Across Sites (Ctrl+0) for terms,
+  plugins, themes, people and settings with Variants and Missing From, Site
+  Sets and the scope, Make Them the Same with a site-by-site preview (terms,
+  plugin status, settings), Promote to Network where a site reports
+  network-only plugins, and the Fleet view.
+- **15.11, core first.** `workbench_sweep.py`: Content Audit, Media >
+  Housekeeping, Privacy Requests (wp-admin pointers, as core has no route),
+  and the redirect offered after a slug change only where `redirection/v1`
+  is in the index (its body is from the plugin's documentation, to verify).
+- Tests: `test_wp_workbench_leftovers.py`, `test_wp_workbench_bold_core.py`,
+  `test_wp_workbench_across_core.py`, `test_wordpress_coverage_audit.py`, and
+  in the real frame `test_wp_workbench_lists.py`, `test_wp_workbench_default.py`,
+  `test_wp_workbench_bold.py` and `test_wp_workbench_across.py`.
+
 ## 19. Remaining tasks
 
 **wp-admin parity (9.18), Jeff 2026-11-04, "we should have all of this":**
@@ -4312,28 +4380,48 @@ This list is kept current. A task is removed when it is done and checked, and
 the progress log above says what was done. Everything not listed here is
 built.
 
-### WordPress Workbench (Workbench PRD, after W1 to W4)
+### WordPress Workbench (Workbench PRD, after W1 to W8)
 - Run `docs/qa/wordpress-live-run.py` and a screen-reader pass (NVDA and
-  JAWS) on the Workbench before the flag comes off: nothing has met a live
-  site, and Delete and Ctrl+Z being kept from the filter box rests on wx's
-  key hook running before menu accelerators.
-- File > WordPress > Properties is still its own dialog over the working
-  copy; sharing the Workbench's item sheet with it (PRD 8) is left.
-- Load All and paging past the first 300 rows; Columns and Group By.
-- Users: Send Password Reset (no REST route), Sessions, others' application
-  passwords; roles' capabilities listed on the Users node's sheet.
-- New Here for posts, pages, custom types, terms and menus (only users and
-  application passwords so far); Merge Into and tag-to-category on terms.
+  JAWS) on the Workbench: nothing from W1 to W8 has met a live site, and
+  Delete and Ctrl+Z being kept from the filter box rests on wx's key hook
+  running before menu accelerators. The Workbench is now the default, so this
+  comes before the next release.
+- The Practice Site: run `python scripts/fetch_build_deps.py --only
+  wp-playground-cli` once (it has never run), commit the lockfile it writes,
+  confirm the `@wp-playground/cli` pin and its entry point
+  (`wp-playground.js`), add it to the shared runtime's build and to
+  `quill/data/third_party/components.json`, and check on a live run that the
+  blueprint leaves the application password and that Playground accepts it
+  over plain HTTP on 127.0.0.1. Playground fetches WordPress itself on first
+  start unless that is staged too; decide before shipping (15.1 says
+  bundled).
+- The WordPress Workbench's own APP_KEYMAPS entry (Part C): its keys are the
+  window's menu table today, so they are not rebindable.
+- Users: Sessions and others' application passwords; the PRD's Users, the
+  rest (invite from a spreadsheet, sign out everywhere).
 - Spam: the provider states, thresholds, blocklist and question bank on the
-  Spam page (needs QAF's spam work, 13a.3 and 13a.6); Empty Spam; allow the
-  sender from now on; the weekly Watch.
+  Spam page (needs QAF's spam work, 13a.3 and 13a.6); the weekly Watch.
 - Form plugins after Gravity Forms: Jetpack Forms, Formidable, Fluent Forms,
   WPForms, Contact Form 7, each verified against its API first; import into
   QAF (13b.3).
-- Updates, Accessibility, Broken Links, Orders, Shop, Podcast, Calendar,
-  Search, Watches and Practice Site nodes (W5 to W8).
-- F1 on Workbench nodes and rows from the help catalogue (Part D); the
-  WordPress Workbench in the user guide once the flag comes off.
+- Updates, Accessibility, Broken Links, Orders, Shop, Podcast and Search
+  nodes; Global Styles as a node.
+- 15.12 operations beyond listing: rename, split and reassign a value
+  everywhere from By Name; Make Them the Same for themes, people and menus;
+  install a plugin on the sites missing it; compare global styles.
+- 15.11 plugin rows (Redirection beyond the slug offer, backups, security,
+  caching, multilingual, memberships, courses, stats and the rest): each
+  behind its namespace, after its API is checked against a live install.
+  The redirect body is from the plugin's documentation and is unverified.
+- This Post in the Workbench (File > WordPress) and the Media Library's
+  picking mode for Insert Picture (PRD 14).
+- QUILL Site Types (12b, decision 12): the plugin, then making types and
+  fields from the Content Model.
+- The classic windows: remove them, Workbench Options' choice and the
+  conftest setting one release after this one (decision 7).
+- The Workbench in the WordPress and Forms manual
+  (`docs/user guide/wordpress-and-forms/`); the editors' user guides have
+  their section.
 
 ### Workbench groundwork (Workbench PRD WP-R-030 to WP-R-034)
 - Run `docs/qa/wordpress-live-run.py` on the branch before it merges:
