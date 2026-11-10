@@ -73,6 +73,26 @@ def _statuses(parent: str, kind: str) -> tuple[NodeSpec, ...]:
     )
 
 
+def _group(
+    parent: str, loader: str, columns: tuple[str, ...], row_type: str, **kw: Any
+) -> NodeSpec:
+    """The node View > Group By fills with one child per value (none until grouped)."""
+    return _n(
+        f"{parent}_group",
+        "Group",
+        parent,
+        loader=loader,
+        columns=columns,
+        row_type=row_type,
+        home=False,
+        dynamic=True,
+        **kw,
+    )
+
+
+GROUPED = ("posts", "pages", "media", "comments", "plugins")
+"""The nodes Group By can group: each has a ``<key>_group`` dynamic child."""
+
 _ATTENTION = Scope.ACCOUNT
 
 _FIXED: tuple[NodeSpec, ...] = (
@@ -184,6 +204,7 @@ _SITE: tuple[NodeSpec, ...] = (
         row_type="item",
     ),
     *_statuses("posts", "post"),
+    _group("posts", "items:post", _ITEM_COLUMNS, "item", preset=(("status", "any"),)),
     _n(
         "pages",
         "Pages",
@@ -194,6 +215,7 @@ _SITE: tuple[NodeSpec, ...] = (
         row_type="item",
     ),
     *_statuses("pages", "page"),
+    _group("pages", "items:page", _ITEM_COLUMNS, "item", preset=(("status", "any"),)),
     _n(
         "content_types",
         "More Content Types",
@@ -239,6 +261,7 @@ _SITE: tuple[NodeSpec, ...] = (
             ("no_alt", "Without Alt Text"),
         )
     ),
+    _group("media", "media:all", ("title", "type", "alt_text", "uploaded"), "media"),
     _n(
         "comments",
         "Comments",
@@ -264,6 +287,7 @@ _SITE: tuple[NodeSpec, ...] = (
             ("trash", "Trash", "trash"),
         )
     ),
+    _group("comments", "comments:all", ("author", "on", "status", "when"), "comment"),
     _n(
         "categories",
         "Categories",
@@ -407,6 +431,7 @@ _SITE: tuple[NodeSpec, ...] = (
         columns=("plugin", "version", "status", "author"),
         row_type="plugin",
     ),
+    _group("plugins", "plugins:all", ("plugin", "version", "status", "author"), "plugin"),
     _n(
         "settings",
         "Settings",

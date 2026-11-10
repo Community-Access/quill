@@ -24,6 +24,7 @@ from quill.core.wordpress import site_types as stypes
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.comments import post_titles
 from quill.core.wordpress.site import Account, SiteInfo, friendly_date, kind_route, rendered
+from quill.core.wordpress.workbench_listing import pages_for
 from quill.core.wordpress.workbench_rows import (
     WbRow,
     comment_row,
@@ -61,7 +62,8 @@ def page_params(params: Mapping[str, object] | None = None) -> dict[str, object]
 def _collect(
     api: WordPressApi, route: str, params: Mapping[str, object], *, max_pages: int = MAX_PAGES
 ) -> list[dict[str, Any]]:
-    return list(api.iter_collection(route, params, per_page=PER_PAGE, max_pages=max_pages))
+    pages = pages_for(max_pages)
+    return list(api.iter_collection(route, params, per_page=PER_PAGE, max_pages=pages))
 
 
 def _authors(api: WordPressApi, ids: Sequence[int]) -> dict[int, str]:

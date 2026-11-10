@@ -116,6 +116,13 @@ WORDPRESS_ACTIONS = ActionTable(
                 help="Approve it; on a comment held as spam, Not Spam. Ctrl+Shift+A.",
             ),
             _a(
+                "allow_sender",
+                "Not Spam, and Allow This Sender",
+                tier=Tier.ORGANIZE,
+                needs="moderate_comments",
+                help="Approve it and let this person's next comments through. Ctrl+Alt+W.",
+            ),
+            _a(
                 "unapprove",
                 "Unapprove",
                 tier=Tier.ORGANIZE,
@@ -161,6 +168,20 @@ WORDPRESS_ACTIONS = ActionTable(
         ),
         "term": (
             _a("show_posts", "Show Its Posts", default=True, help="The posts filed under it."),
+            _a(
+                "merge_into",
+                "Merge Into...",
+                tier=Tier.DESTRUCTIVE,
+                needs="manage_categories",
+                help="File its posts under another term, then delete it. Ctrl+Shift+G.",
+            ),
+            _a(
+                "convert_term",
+                "Convert to Category or Tag...",
+                tier=Tier.DESTRUCTIVE,
+                needs="manage_categories",
+                help="Make a tag a category, or a category a tag, posts and all. Ctrl+Shift+K.",
+            ),
             _DELETE,
             _SHEET,
         ),
@@ -173,6 +194,13 @@ WORDPRESS_ACTIONS = ActionTable(
                 needs="promote_users",
                 help="Choose another role for this person.",
             ),
+            _a(
+                "send_password_reset",
+                "Send Password Reset",
+                needs="edit_users",
+                help="Opens their wp-admin screen to send the reset email. Ctrl+Shift+W.",
+            ),
+            _a("roles", "Roles and What They May Do", help="Each role in plain words. Ctrl+Alt+R."),
             _a(
                 "remove_user",
                 "Remove...",
@@ -250,6 +278,11 @@ WORDPRESS_ACTIONS = ActionTable(
         },
         "node": (
             _a("refresh", "Refresh", default=True, help="Load this view again. F5."),
+            _a("new_here", "New Here...", tier=Tier.WRITE, help="Make something new here. Ctrl+N."),
+            _a("load_more", "Load More", help="Read three hundred more rows. Ctrl+Shift+L."),
+            _a("load_all", "Load All", help="Read every row the site has. Ctrl+Alt+L."),
+            _a("columns", "Columns...", help="Choose the columns this list shows. Ctrl+Alt+C."),
+            _a("group_by", "Group By...", help="A child node per value of a column. Ctrl+Alt+G."),
             _a("what_can_i_do", "What Can I Do Here?", help="What your role allows. Shift+F1."),
             _SHEET,
         ),
@@ -307,6 +340,10 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
         "&View",
         (
             _row("refresh", "&Refresh", "F5", "Load this view again from the site."),
+            _row("load_more", "Load &More", "Ctrl+Shift+L", "Read three hundred more rows."),
+            _row("load_all", "Load A&ll", "Ctrl+Alt+L", "Read every row the site has."),
+            _row("columns", "&Columns...", "Ctrl+Alt+C", "Choose the columns this list shows."),
+            _row("group_by", "&Group By...", "Ctrl+Alt+G", "A child node per value of a column."),
             None,
             _row("back", "&Back", "Alt+Left", "The view you were on before. Backspace too."),
             _row("forward", "&Forward", "Alt+Right", "The view you went back from."),
@@ -346,6 +383,25 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
             _row("unapprove", "U&napprove", "Ctrl+Shift+U", "Back to waiting."),
             _row("spam", "&Spam", "Ctrl+Shift+S", "Mark the selection as spam."),
             _row("reply", "&Reply...", "Ctrl+Shift+M", "Reply to the selected comment."),
+            _row(
+                "allow_sender",
+                "Not Spam, and A&llow This Sender",
+                "Ctrl+Alt+W",
+                "Approve the comment and let this person's next ones through.",
+            ),
+            _row("merge_into", "&Merge Into...", "Ctrl+Shift+G", "Fold this term into another."),
+            _row(
+                "convert_term",
+                "Con&vert to Category or Tag...",
+                "Ctrl+Shift+K",
+                "A tag becomes a category, or a category a tag.",
+            ),
+            _row(
+                "send_password_reset",
+                "Send Pass&word Reset",
+                "Ctrl+Shift+W",
+                "Open this person's wp-admin screen to send the reset email.",
+            ),
             None,
             _row("trash", "Move to &Trash", "Delete", "Into WordPress's Trash; Restore undoes it."),
             _row("restore", "R&estore from Trash", "Ctrl+Shift+R", "Out of the Trash."),
@@ -368,6 +424,13 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
                 "view_as", "&View As Role...", "Ctrl+Alt+V", "See the site as another role would."
             ),
             _row("access", "Workbench &Access...", "Ctrl+Alt+A", "Read Only, Organize or Full."),
+            _row("roles", "&Roles and What They May Do", "Ctrl+Alt+R", "Each role in plain words."),
+            _row(
+                "empty_spam",
+                "E&mpty Spam...",
+                "Ctrl+Alt+E",
+                "Delete every comment held as spam on this site, after you confirm.",
+            ),
         ),
     ),
     MenuSpec(
