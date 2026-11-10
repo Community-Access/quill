@@ -31,7 +31,6 @@ __all__ = [
     "add_paths",
     "app_of",
     "ask_files",
-    "ask_folder",
     "ask_text",
     "commit",
     "confirm",
@@ -175,16 +174,6 @@ def ask_files(host: Any, *, title: str = "Add Media Files") -> list[str]:
         return [str(path) for path in chooser.GetPaths()]
 
 
-def ask_folder(host: Any, *, title: str = "Add a Folder") -> str:
-    """A folder somebody picks, or ""."""
-    import wx
-
-    with wx.DirDialog(_parent(host), title, style=wx.DD_DIR_MUST_EXIST) as chooser:
-        if show_modal_dialog(host, chooser, title) != wx.ID_OK:
-            return ""
-        return str(chooser.GetPath())
-
-
 def ask_text(host: Any, prompt: str, title: str, value: str = "") -> str | None:
     """One line of text, or ``None`` when cancelled. The platform's own prompt."""
     import wx
@@ -232,14 +221,19 @@ def add_paths(
     position: int | None = None,
     name: str = "",
     folder: str = "",
+    subfolders: bool = True,
+    follow: bool = True,
     then: Callable[[Playlist, list[int]], None] | None = None,
 ) -> None:
     """Add every playable file in *paths* (folders opened) to a playlist.
 
     With no *playlist_id*, a new playlist is made and named *name* -- or after
     the files' own folder, which is what anybody would have typed. *position*
-    inserts before that row; ``None`` appends. *folder* makes the new playlist
-    follow that folder for files added to it later.
+    inserts before that row; ``None`` appends. *folder* remembers the folder on
+    the new playlist, so Check the Folder Now can look again; *follow* makes it
+    add new files whenever the playlist opens. *subfolders* is Include
+    Subfolders: off, only the files right in a folder are added, and the new
+    playlist keeps that choice for every later look.
     """
     if not paths:
         return
@@ -249,11 +243,11 @@ def add_paths(
     def _work(**_kwargs: Any) -> list[str]:
         from quill.core.radio.local_media_files import find_media_files
 
-        return [str(path) for path in find_media_files(paths)]
+        return [str(path) for path in find_media_files(paths, recursive=subfolders)]
 
     def _ok(found: object) -> None:
         files = [str(path) for path in found] if isinstance(found, list) else []
-        _place(host, files, playlist_id, position, name, folder, then)
+        _place(host, files, playlist_id, position, name, folder, then, subfolders, follow)
 
     _submit(host, "radio-local-media-scan", _work, _ok)
 
@@ -266,21 +260,29 @@ def _place(
     name: str,
     folder: str,
     then: Callable[[Playlist, list[int]], None] | None,
+    subfolders: bool = True,
+    follow: bool = True,
 ) -> None:
     lib = library(host)
     playlist = lib.find(playlist_id) if playlist_id else None
     if not files:
         where = "that folder" if folder else "what you chose"
+        if folder and not subfolders:
+            where = "that folder itself (its subfolders were left out)"
         announce(host, f"No music or video files were found in {where}. Nothing was added.")
         return
-    from quill.core.radio.local_media_files import name_for_files
+    from quill.core.radio.local_media_files import describe_found, name_for_files
 
     made = playlist is None
     if playlist is None:
-        playlist = lib.add_playlist(name or name_for_files(files))
+        # A folder names its playlist: with discs in subfolders the files share
+        # no one folder, and "My Playlist" is not what anybody added.
+        folder_name = Path(folder).name if folder else ""
+        playlist = lib.add_playlist(name or folder_name or name_for_files(files))
         if folder:
             playlist.folder = folder
-            playlist.watch = True
+            playlist.watch = follow
+            playlist.subfolders = subfolders
     from quill.core.radio import local_media_edit
 
     new_items = [playlist.make_item(path, title="") for path in files]
@@ -291,6 +293,10 @@ def _place(
     commit(host, browse_select=f"localplaylist:{playlist.id}")
     count = len(new_items)
     noun = f"{count} item{'' if count == 1 else 's'}"
+    if folder:
+        # What a folder held is the news when it was typed in: "42 audio files
+        # and 3 videos" says the right folder was found.
+        noun = describe_found(files)
     if made:
         announce(host, f"Made a playlist called {playlist.name}, with {noun}.")
     elif position is None:
@@ -367,6 +373,7 @@ def rescan_folder(host: Any, playlist_id: str, *, quiet: bool = False) -> None:
         return
     snapshot = Playlist(id=playlist.id, name=playlist.name, items=list(playlist.items))
     snapshot.folder = playlist.folder
+    snapshot.subfolders = playlist.subfolders
 
     def _work(**_kwargs: Any) -> list[str]:
         from quill.core.radio.local_media_files import new_files_in

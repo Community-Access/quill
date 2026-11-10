@@ -895,3 +895,86 @@ def test_release_with_no_assets_announces_and_does_not_drill_open(dlg) -> None:
     assert dlg._drill_release is release
     assert dlg._rows == []
     assert "no downloadable assets" in dlg.announcements[-1]
+
+
+# ---------------------------------------------------------------------------
+# Context menu layout (GitHub PRD section 5; Workbench Phase 0)
+
+
+def _context_menu_labels(dlg, monkeypatch, model, view: str) -> tuple[list[str], list[str]]:
+    """(top-level labels, every label including submenus) of the item context menu."""
+    dlg._view = view
+    dlg._rows = [model]
+    dlg._list.DeleteAllItems()
+    dlg._list.InsertItem(0, "row")
+    dlg._list.Select(0)
+    top: list[str] = []
+    everything: list[str] = []
+
+    def walk(menu) -> None:
+        for item in menu.GetMenuItems():
+            everything.append(item.GetItemLabelText())
+            if item.GetSubMenu() is not None:
+                walk(item.GetSubMenu())
+
+    def popup(_self, menu) -> None:
+        top.extend(item.GetItemLabelText() for item in menu.GetMenuItems())
+        walk(menu)
+
+    monkeypatch.setattr(wx.ListCtrl, "PopupMenu", popup)
+    dlg._on_item_context_menu(None)
+    return top, everything
+
+
+def test_issue_context_menu_puts_enter_first_and_keeps_codespaces_off(dlg, monkeypatch) -> None:
+    from quill.ui.github_items_view import VIEW_ISSUES
+
+    issue = GitHubItem(
+        number=7, title="Bug", state="open", url="https://github.com/o/r/issues/7", is_pr=False
+    )
+    top, everything = _context_menu_labels(dlg, monkeypatch, issue, VIEW_ISSUES)
+    assert top[0] == "Open on GitHub"
+    assert len(top) <= 8
+    assert "More" in top
+    assert not any("Codespaces" in label for label in everything)
+    assert not any("Rate Limit" in label for label in everything)
+    assert "Browse Repository Files..." not in everything
+    assert "Milestones..." not in everything
+    assert everything.count("Open on GitHub") == 1
+
+
+def test_pr_and_branch_context_menus_offer_codespaces(dlg, monkeypatch) -> None:
+    from quill.core.github.items_provider import GitHubBranch
+    from quill.ui.github_items_view import VIEW_BRANCHES, VIEW_ISSUES
+
+    pr = GitHubItem(
+        number=5, title="Fix", state="open", url="https://github.com/o/r/pull/5", is_pr=True
+    )
+    _top, everything = _context_menu_labels(dlg, monkeypatch, pr, VIEW_ISSUES)
+    assert "Open in GitHub Codespaces..." in everything
+    top, everything = _context_menu_labels(
+        dlg, monkeypatch, GitHubBranch(name="main", commit_sha="abc1234"), VIEW_BRANCHES
+    )
+    assert top[0] == "Commits"
+    assert "Open in GitHub Codespaces..." in everything
+
+
+def test_release_context_menu_starts_with_assets_and_has_no_codespaces(dlg, monkeypatch) -> None:
+    release = GitHubRelease(tag="v1", name="One", url="https://github.com/o/r/releases/v1")
+    top, everything = _context_menu_labels(dlg, monkeypatch, release, VIEW_RELEASES)
+    assert top[0] == "Assets"
+    assert not any("Codespaces" in label for label in everything)
+
+
+def test_empty_list_context_menu_has_no_rate_limit(dlg, monkeypatch) -> None:
+    dlg._rows = []
+    dlg._list.DeleteAllItems()
+    labels: list[str] = []
+    monkeypatch.setattr(
+        wx.ListCtrl,
+        "PopupMenu",
+        lambda _self, menu: labels.extend(item.GetItemLabelText() for item in menu.GetMenuItems()),
+    )
+    dlg._on_item_context_menu(None)
+    assert "Refresh" in labels
+    assert not any("Rate Limit" in label for label in labels)

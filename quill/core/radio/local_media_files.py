@@ -27,14 +27,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
-from quill.core.radio.local_media import Playlist, is_media_file, path_key
+from quill.core.radio.local_media import VIDEO_SUFFIXES, Playlist, is_media_file, path_key
 from quill.core.radio.natural_order import natural_key
 
 __all__ = [
     "IMPORT_WILDCARD",
     "PlaylistEntry",
+    "clean_folder_text",
+    "describe_found",
     "export_m3u",
     "find_media_files",
+    "folder_problem",
     "name_for_files",
     "parse_playlist_text",
     "read_playlist_file",
@@ -50,6 +53,54 @@ IMPORT_WILDCARD = (
 
 #: The Export picker: M3U8 first, because UTF-8 keeps every accented title.
 EXPORT_WILDCARD = "M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u"
+
+
+# --- a folder typed or pasted ------------------------------------------------------
+
+
+def clean_folder_text(text: str) -> str:
+    """A folder path as somebody typed or pasted it, made ready to look in.
+
+    File Explorer's Copy as Path puts the path in double quotes, and a pasted
+    line often brings a space or a line ending with it, so those are taken off.
+    ``%USERPROFILE%``-style variables and a leading ``~`` are expanded, because
+    people type them. Nothing else is changed: spaces inside the path, as in
+    ``d:\\other files\\downloads``, are part of it.
+    """
+    value = (text or "").strip()
+    while len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
+        value = value[1:-1].strip()
+    if not value:
+        return ""
+    return os.path.expanduser(os.path.expandvars(value))
+
+
+def folder_problem(text: str) -> str:
+    """Why *text* cannot be added as a folder, in a sentence, or "" when it can."""
+    value = clean_folder_text(text)
+    if not value:
+        return "Type or paste the path of a folder, or choose Browse to pick one."
+    path = Path(value)
+    if _is_file(path):
+        return (
+            f"{value} is a file, not a folder. Add Media Files adds a single file; "
+            f"or type the folder it is in."
+        )
+    if not _is_dir(path):
+        return f"There is no folder at {value}. Check the spelling, or choose Browse."
+    return ""
+
+
+def describe_found(files: Sequence[Path | str]) -> str:
+    """``"42 audio files and 3 videos"``: what a folder held, for the listener."""
+    videos = sum(1 for f in files if Path(f).suffix.lower() in VIDEO_SUFFIXES)
+    audio = len(files) - videos
+    parts = []
+    if audio:
+        parts.append(f"{audio} audio file{'' if audio == 1 else 's'}")
+    if videos:
+        parts.append(f"{videos} video{'' if videos == 1 else 's'}")
+    return " and ".join(parts) or "no media files"
 
 
 # --- finding files ---------------------------------------------------------------
@@ -117,18 +168,22 @@ def _name_key(path: Path) -> tuple[object, ...]:
     return natural_key(path.name)
 
 
-def new_files_in(playlist: Playlist, *, recursive: bool = True) -> list[Path]:
+def new_files_in(playlist: Playlist, *, recursive: bool | None = None) -> list[Path]:
     """Files in the playlist's folder that the playlist does not hold yet.
 
     What keeps a folder playlist in step with the folder: run when the playlist
-    is opened, so music copied in since last time is simply there.
+    is opened, so music copied in since last time is simply there. Subfolders
+    count when the playlist says so (``Playlist.subfolders``, the Include
+    Subfolders choice made when the folder was added), unless *recursive* says
+    otherwise.
     """
     if not playlist.folder:
         return []
+    deep = playlist.subfolders if recursive is None else recursive
     known = playlist.paths()
     return [
         path
-        for path in find_media_files([playlist.folder], recursive=recursive)
+        for path in find_media_files([playlist.folder], recursive=deep)
         if path_key(str(path)) not in known
     ]
 

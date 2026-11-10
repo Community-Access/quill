@@ -249,9 +249,13 @@ tells you where things landed every time you move them.
 1. **Open it with Ctrl+O** (**Station > Local Media...**). The first time it is
    empty, and your cursor is already on **Add Media Files...**, so pressing
    Ctrl+O twice takes you straight to picking files.
-2. **Bring in a folder** with **Ctrl+Alt+O**. Every file in it, and in the
-   folders inside it, comes in the order you would read the names, so track 2
-   comes before track 10. The playlist is named after the folder.
+2. **Bring in a folder** with **Ctrl+Alt+O**. Just type or paste where it is,
+   like `d:\other files\downloads`, or choose Browse to pick it. Every file in
+   it, and in the folders inside it, comes in the order you would read the
+   names, so track 2 comes before track 10. Only want the files right in that
+   folder? Uncheck **Include subfolders**. The playlist is named after the
+   folder, and Quill Radio tells you what it found: "42 audio files and 3
+   videos".
 3. **Follow the Folder** (Ctrl+Alt+F) is on for a playlist made from a folder:
    copy new music into the folder later and it joins the playlist the next
    time you open it. **Check the Folder Now** (F5) looks straight away.

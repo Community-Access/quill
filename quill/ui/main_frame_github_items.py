@@ -145,6 +145,17 @@ class GitHubItemsMixin:
         # user editing a file from a repo can review that repo's issues in one
         # step instead of retyping owner/repo.
         initial_repo = self._github_items_initial_repo()
+        from quill.ui.github_workbench_commands import open_in_workbench_window
+
+        # The Workbench window, behind its developer flag (both editors, one call).
+        if open_in_workbench_window(
+            self.frame,
+            provider,
+            repository=initial_repo,
+            view=initial_view,
+            announce=self._announce,
+        ):
+            return
         from quill.ui.github_items_dialog import GitHubItemsDialog
 
         # Nothing said on the way in: the dialog's title and its focused list

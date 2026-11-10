@@ -47,17 +47,23 @@ def _open_window(host: Any, playlist_id: str = "", item_id: int = 0) -> None:
 
 def _add(host: Any, playlist_id: str, *, folder: bool) -> None:
     if folder:
-        chosen = ui.ask_folder(host)
-        paths = [chosen] if chosen else []
-    else:
-        paths = ui.ask_files(host)
-    if paths:
+        from quill.ui.radio.local_media_folder_dialog import ask_folder_choice
+
+        choice = ask_folder_choice(host, new_playlist=not playlist_id)
+        if choice is None:
+            return
         ui.add_paths(
             host,
-            paths,
+            [choice.path],
             playlist_id=playlist_id,
-            folder=paths[0] if folder and not playlist_id else "",
+            folder="" if playlist_id else choice.path,
+            subfolders=choice.subfolders,
+            follow=choice.follow,
         )
+        return
+    paths = ui.ask_files(host)
+    if paths:
+        ui.add_paths(host, paths, playlist_id=playlist_id)
 
 
 def perform(source: Any, playlist_id: str, action_id: str, item_id: int = 0) -> None:

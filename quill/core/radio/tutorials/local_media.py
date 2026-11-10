@@ -35,10 +35,12 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Bring in a folder",
                 body=(
-                    "Add a Folder takes every file in a folder and the folders inside "
-                    "it, in the order you would read the names, so track 2 comes "
-                    "before track 10. The playlist is named after the folder, and it "
-                    "picks up new files you copy there later."
+                    "Add a Folder asks where the folder is: type or paste its path, or "
+                    "choose Browse. It takes every file in the folder and the folders "
+                    "inside it (uncheck Include subfolders for just the folder itself), "
+                    "in the order you would read the names, so track 2 comes before "
+                    "track 10. The playlist is named after the folder, and it picks up "
+                    "new files you copy there later."
                 ),
                 keys=("Ctrl+Alt+O",),
                 hear="Made a playlist called, then the folder's name.",

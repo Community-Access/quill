@@ -8,6 +8,31 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased] - 2026-11-07
 
+### Add a Folder: type or paste the path, and choose about subfolders (2026-11-09)
+
+Chris Nova asked to type the path to a folder, such as `d:\other files\downloads`,
+and have Local Media find all the music in it. **Add a Folder...** (Ctrl+Alt+O,
+in the Local Media window and on the Local Media branch of Browse Stations) now
+opens a small box instead of going straight to the Windows folder picker:
+
+- **Folder:** type or paste the path. File Explorer's Copy as Path quotes are
+  taken off, and `%USERPROFILE%` and `~` are understood. **Browse...** still
+  opens the Windows folder picker.
+- **Include subfolders**, checked by default as before: unchecked, only the
+  files right in the folder are added, and the playlist keeps that choice
+  every time it looks at the folder again (Follow the Folder and Check the
+  Folder Now).
+- **Keep up with the folder**, shown when the folder makes a new playlist and
+  checked by default as before.
+- A path that is not a folder is said next to the box and the box stays open.
+- The result says what the folder held: "Made a playlist called downloads,
+  with 42 audio files and 3 videos."
+- The box offers the last folder added this session.
+
+(`quill/ui/radio/local_media_folder_dialog.py`, `quill/core/radio/local_media_files.py`
+`clean_folder_text`, `folder_problem` and `describe_found`, and `Playlist.subfolders`
+in `quill/core/radio/local_media.py`.)
+
 ### Change how requests are understood (2026-11-09)
 
 - **What Can I Say Here?** (**Ctrl+Alt+Shift+F1**) has **Change How Requests

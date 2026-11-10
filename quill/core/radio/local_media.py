@@ -223,6 +223,9 @@ class Playlist:
     #: new files that appear there are added whenever the playlist is opened.
     folder: str = ""
     watch: bool = False
+    #: Whether the folder's subfolders count too, when it is looked at again.
+    #: On unless somebody unchecked Include Subfolders when adding the folder.
+    subfolders: bool = True
     shuffle: bool = False
     repeat: str = REPEAT_OFF
     #: The item that last started playing, for Continue Where I Left Off.
@@ -292,6 +295,8 @@ class Playlist:
             data["folder"] = self.folder
         if self.watch:
             data["watch"] = True
+        if not self.subfolders:
+            data["subfolders"] = False
         if self.shuffle:
             data["shuffle"] = True
         if self.repeat != REPEAT_OFF:
@@ -396,6 +401,7 @@ def _parse_playlist(raw: object, used_ids: set[str]) -> Playlist | None:
         name=name,
         folder=str(raw.get("folder") or ""),
         watch=bool(raw.get("watch", False)),
+        subfolders=bool(raw.get("subfolders", True)),
         shuffle=bool(raw.get("shuffle", False)),
         repeat=normalize_repeat_mode(raw.get("repeat")),
         last_item_id=_int(raw.get("last_item_id")),
