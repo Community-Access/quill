@@ -78,7 +78,7 @@
   Guide walks through it.
 - **The classic windows are still there, for one release.** If you would
   rather keep GitHub Items and Explore GitHub for now, open the Workbench, then
-  **Tools > Workbench Options...** (**Ctrl+Shift+O**), and on the Privacy page
+  **Workbench Options...** on the GitHub Workbench window's own Tools menu, and on the Privacy page
   check **Use the classic GitHub windows**. They will be retired in the release
   after this one.
 - Inside the Workbench, an action it does not do itself yet still opens GitHub

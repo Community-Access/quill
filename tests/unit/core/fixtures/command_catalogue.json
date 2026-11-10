@@ -200,6 +200,7 @@
         "github.workbench_inbox",
         "github.workbench_issues",
         "github.workbench_my_work",
+        "github.workbench_pulls",
         "github.workbench_releases",
         "help.about_quill",
         "help.context_help",
