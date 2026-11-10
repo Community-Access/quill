@@ -131,6 +131,16 @@ class WordPressCommands(
             return None
         return copy, profile
 
+    def workbench_door(self, command_id: str) -> bool:
+        """Open the WordPress Workbench for a Tools > WordPress door, behind its flag.
+
+        True when the Workbench opened (the door's own window is skipped); False,
+        without the developer flag, so every door works exactly as before.
+        """
+        from quill.ui.wordpress_workbench_window import open_from_door
+
+        return open_from_door(self, command_id)
+
     def need_site(self) -> st.SiteStore | None:
         store = self.sites()
         if store.sites:

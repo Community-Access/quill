@@ -97,6 +97,8 @@ class WordPressAdminCommands(
     # the Comments window
 
     def cmd_comments(self, status: str = "hold") -> None:
+        if status == "hold" and self.workbench_door("wordpress.comments"):
+            return  # the developer flag sends this door to the WordPress Workbench
         profile = self.admin_site("Comments")
         if profile is not None:
             self._load_comments(profile, status)

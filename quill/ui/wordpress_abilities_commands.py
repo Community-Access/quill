@@ -46,6 +46,8 @@ class WordPressAbilitiesCommands(WordPressApiSiteBase):
     # Abilities: the list, each off until checked
 
     def cmd_abilities(self) -> None:
+        if self.workbench_door("wordpress.abilities"):
+            return  # the developer flag sends this door to the WordPress Workbench
         profile = self.chosen_site("Abilities")
         if profile is None:
             return

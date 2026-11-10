@@ -189,6 +189,8 @@ class WordPressMediaLibrary:
     # the window (6.1, 6.3)
 
     def cmd_media_library(self) -> None:
+        if self.workbench_door("wordpress.media_library"):
+            return  # the developer flag sends this door to the WordPress Workbench
         target = self._media_site("Media Library")
         if target is None:
             return

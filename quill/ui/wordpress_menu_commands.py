@@ -54,6 +54,8 @@ class WordPressMenuCommands(WordPressAdminBase):
 
     def cmd_menus(self, page_id: int = 0, *, menu_id: int = 0) -> None:
         """The Menus window. With *page_id*, first add that page to a menu the person picks."""
+        if not page_id and not menu_id and self.workbench_door("wordpress.menus"):
+            return  # the developer flag sends this door to the WordPress Workbench
         profile = self.admin_site("Menus")
         if profile is None:
             return
@@ -394,6 +396,8 @@ class WordPressMenuCommands(WordPressAdminBase):
     # Widgets (classic themes)
 
     def cmd_widgets(self) -> None:
+        if self.workbench_door("wordpress.widgets"):
+            return  # the developer flag sends this door to the WordPress Workbench
         profile = self.admin_site("Widgets")
         if profile is None:
             return
