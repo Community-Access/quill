@@ -27,10 +27,18 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.wordpress.workbench_places import (
+    ACROSS_NODES,
+    BY_NAME_NODES,
+    HOUSEKEEPING,
+    SWEEP_NODES,
+)
 from quill.core.workbench.tree import NodeSpec, Scope, TreeSpec
 
 __all__ = [
+    "DYNAMIC_NAMESPACE",
     "DYNAMIC_TAXONOMY",
+    "GROUPED",
     "DYNAMIC_TYPE",
     "PLANNED_WORDS",
     "START_NODE",
@@ -41,6 +49,7 @@ __all__ = [
 START_NODE = "start"
 DYNAMIC_TYPE = "custom_type"
 DYNAMIC_TAXONOMY = "custom_taxonomy"
+DYNAMIC_NAMESPACE = "more_namespace"
 
 _ITEM_COLUMNS = ("title", "status", "author", "modified")
 _POST_STATUSES = (
@@ -72,6 +81,26 @@ def _statuses(parent: str, kind: str) -> tuple[NodeSpec, ...]:
         for key, label, status in _POST_STATUSES
     )
 
+
+def _group(
+    parent: str, loader: str, columns: tuple[str, ...], row_type: str, **kw: Any
+) -> NodeSpec:
+    """The node View > Group By fills with one child per value (none until grouped)."""
+    return _n(
+        f"{parent}_group",
+        "Group",
+        parent,
+        loader=loader,
+        columns=columns,
+        row_type=row_type,
+        home=False,
+        dynamic=True,
+        **kw,
+    )
+
+
+GROUPED = ("posts", "pages", "media", "comments", "plugins")
+"""The nodes Group By can group: each has a ``<key>_group`` dynamic child."""
 
 _ATTENTION = Scope.ACCOUNT
 
@@ -146,7 +175,14 @@ _FIXED: tuple[NodeSpec, ...] = (
         row_type="form_entry",
     ),
     _n("orders", "Orders", "attention", loader="planned:orders"),
-    _n("watches", "Watches", "attention", loader="planned:watches"),
+    _n(
+        "watches",
+        "Watches",
+        "attention",
+        loader="watches:kinds",
+        columns=("watch", "state"),
+        row_type="fact",
+    ),
     _n(
         "sites",
         "Sites",
@@ -155,9 +191,31 @@ _FIXED: tuple[NodeSpec, ...] = (
         row_type="site",
         template="site",
     ),
-    _n("calendar", "Calendar", loader="planned:calendar"),
+    _n(
+        "calendar",
+        "Calendar",
+        loader="calendar:days",
+        columns=("day", "scheduled", "published"),
+        row_type="day",
+    ),
+    _n(
+        "calendar_day",
+        "Day",
+        "calendar",
+        loader="calendar:day",
+        columns=("title", "site", "status", "date"),
+        row_type="item",
+        dynamic=True,
+    ),
+    *ACROSS_NODES,
     _n("search", "Search", loader="planned:search"),
-    _n("practice", "Practice Site", loader="planned:practice"),
+    _n(
+        "practice",
+        "Practice Site",
+        loader="practice:status",
+        columns=("fact", "value"),
+        row_type="fact",
+    ),
     _n("help", "Help and Learning"),
     _n("how_it_thinks", "How WordPress Thinks", "help"),
     _n("words", "Words", "help", loader="help:words", columns=("word", "meaning"), row_type="help"),
@@ -184,6 +242,7 @@ _SITE: tuple[NodeSpec, ...] = (
         row_type="item",
     ),
     *_statuses("posts", "post"),
+    _group("posts", "items:post", _ITEM_COLUMNS, "item", preset=(("status", "any"),)),
     _n(
         "pages",
         "Pages",
@@ -194,6 +253,7 @@ _SITE: tuple[NodeSpec, ...] = (
         row_type="item",
     ),
     *_statuses("pages", "page"),
+    _group("pages", "items:page", _ITEM_COLUMNS, "item", preset=(("status", "any"),)),
     _n(
         "content_types",
         "More Content Types",
@@ -239,6 +299,8 @@ _SITE: tuple[NodeSpec, ...] = (
             ("no_alt", "Without Alt Text"),
         )
     ),
+    _group("media", "media:all", ("title", "type", "alt_text", "uploaded"), "media"),
+    HOUSEKEEPING,
     _n(
         "comments",
         "Comments",
@@ -264,6 +326,7 @@ _SITE: tuple[NodeSpec, ...] = (
             ("trash", "Trash", "trash"),
         )
     ),
+    _group("comments", "comments:all", ("author", "on", "status", "when"), "comment"),
     _n(
         "categories",
         "Categories",
@@ -407,6 +470,7 @@ _SITE: tuple[NodeSpec, ...] = (
         columns=("plugin", "version", "status", "author"),
         row_type="plugin",
     ),
+    _group("plugins", "plugins:all", ("plugin", "version", "status", "author"), "plugin"),
     _n(
         "settings",
         "Settings",
@@ -431,13 +495,32 @@ _SITE: tuple[NodeSpec, ...] = (
         columns=("ability", "category", "says"),
         row_type="ability",
     ),
+    *BY_NAME_NODES,
+    *SWEEP_NODES,
+    _n(
+        "content_model",
+        "Content Model",
+        "site",
+        loader="model:all",
+        columns=("name", "kind", "registered_by", "in_rest"),
+        row_type="model",
+    ),
     _n(
         "more",
         "More from This Site",
         "site",
         loader="routes:namespaces",
-        columns=("namespace", "routes"),
+        columns=("namespace", "routes", "reached"),
         row_type="namespace",
+    ),
+    _n(
+        DYNAMIC_NAMESPACE,
+        "Namespace",
+        "more",
+        loader="routes:namespace",
+        columns=("route", "methods", "coverage"),
+        row_type="route",
+        dynamic=True,
     ),
 )
 
@@ -457,10 +540,7 @@ PLANNED_WORDS: dict[str, str] = {
     ),
     "broken_links": "Links that lead nowhere, from Check the Whole Site, in a later phase.",
     "orders": "New shop orders on sites with a shop. Tools > WordPress > Shop Orders has them.",
-    "watches": "Things you asked QUILL to watch for you, in a later phase.",
-    "calendar": "Every site's scheduled and published content, by day, in a later phase.",
     "search": "One search across every site, in a later phase.",
-    "practice": "A practice WordPress site on this computer, in a later phase.",
     "global_styles": "The site's global styles. Tools > WordPress > Looks > Site Styles has them.",
     "shop": "Products, orders and customers. Tools > WordPress > Shop Orders has the orders.",
     "podcast": "Podcast episodes and the feed. File > WordPress > Post This Episode sends one.",

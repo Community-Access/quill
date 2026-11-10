@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 585.
+Editor commands with default bindings: 586.
 
 ## The QUILL editor
 
@@ -595,6 +595,7 @@ Editor commands with default bindings: 585.
 | Ctrl+Alt+Shift+Grave, D | Save Draft to Site | `wordpress.save_draft` |
 | Ctrl+Alt+Shift+Grave, E | Schedule Publish... | `wordpress.schedule` |
 | Ctrl+Alt+Shift+Grave, G | New Page... | `wordpress.new_page` |
+| Ctrl+Alt+Shift+Grave, H | Open WordPress Workbench... | `wordpress.workbench` |
 | Ctrl+Alt+Shift+Grave, I | Open on Site | `wordpress.open_on_site` |
 | Ctrl+Alt+Shift+Grave, K | Check Before Publishing... | `wordpress.check` |
 | Ctrl+Alt+Shift+Grave, L | Open Local Draft... | `wordpress.open_local_draft` |

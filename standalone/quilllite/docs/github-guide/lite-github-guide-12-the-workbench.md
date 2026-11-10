@@ -180,7 +180,7 @@ The help keys work everywhere in the window:
 ## Workbench Options
 
 GitHub's preferences live in the Workbench, not in the editor's Options:
-**Tools > Workbench Options...**, `Ctrl+Shift+O`. It has five pages. General
+**Workbench Options...**, on the Workbench window's own Tools menu. It has five pages. General
 says where the window opens and how lists start. Notifications and Inbox says
 how often GitHub is checked, whether each check plays a sound, and whether a
 new notification may interrupt speech. Lists, Repositories (your pinned

@@ -4,7 +4,8 @@ A mixin of :class:`~quill.ui.wordpress_commands.WordPressCommands` (through
 :class:`~quill.ui.wordpress_page_commands.WordPressPageCommands`), shared by
 QUILL and QUILL Lite.
 
-One repeating timer from the host (``start_repeating``) drives two jobs, every
+One repeating timer from the host (``start_repeating``) drives two jobs (and
+the Workbench's Watches, :mod:`quill.ui.wordpress_watch_commands`), every
 two minutes, from the moment a WordPress document is first opened or started
 in a window until that window closes (the timer belongs to the window):
 
@@ -97,7 +98,9 @@ class WordPressOfflineCommands:
     def tick(self) -> None:
         # A timer handler that raises would surface as a crash report every two
         # minutes; a missed autosave is logged and the next tick tries again.
-        for job in (self.autosave_now, self.retry_queue):
+        from quill.ui.wordpress_watch_commands import watch_round
+
+        for job in (self.autosave_now, self.retry_queue, lambda: watch_round(self)):
             try:
                 job()
             except Exception:  # noqa: BLE001

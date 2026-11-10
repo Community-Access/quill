@@ -138,9 +138,20 @@ def test_delete_never_is_a_default_and_properties_ends_every_menu() -> None:
         assert WORDPRESS_ACTIONS.rows_for(kind)[-1].command_id == command("sheet")
 
 
-def test_the_flag_is_off_unless_asked() -> None:
-    assert not workbench_window_enabled({})
-    assert workbench_window_enabled({"QUILL_WORDPRESS_WORKBENCH_WINDOW": "1"})
+def test_the_workbench_is_the_default_and_classic_windows_are_a_choice(tmp_path) -> None:
+    from quill.core.wordpress.workbench_options import (
+        WorkbenchOptions,
+        load_options,
+        save_options,
+    )
+
+    assert workbench_window_enabled({}, base=tmp_path)
+    save_options(WorkbenchOptions(classic_windows=True), tmp_path)
+    assert load_options(tmp_path).classic_windows
+    assert not workbench_window_enabled({}, base=tmp_path)
+    assert workbench_window_enabled({"QUILL_WORDPRESS_WORKBENCH_WINDOW": "1"}, base=tmp_path)
+    save_options(WorkbenchOptions(), tmp_path)
+    assert not workbench_window_enabled({"QUILL_WORDPRESS_WORKBENCH_WINDOW": "0"}, base=tmp_path)
 
 
 # --------------------------------------------------------------------------- #

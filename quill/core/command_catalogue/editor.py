@@ -337,6 +337,20 @@ _REVIEWED: tuple[CommandSpec, ...] = (
         group="Navigate",
         announces_itself=True,
     ),
+    CommandSpec(
+        "wordpress.workbench",
+        "Open WordPress Workbench",
+        "Open the window for your WordPress sites",
+        aliases=("wordpress workbench", "open the workbench", "my wordpress sites"),
+        examples=(
+            "open the wordpress workbench",
+            "show me my wordpress sites",
+            "what needs me on my sites",
+        ),
+        risk=_S,
+        kind=Kind.OPENS_DIALOG,
+        group="Tools",
+    ),
 )
 
 #: Every QUILL row: the agents' list first, in its old order, then the rest.

@@ -17,6 +17,7 @@ away from the filter box.
 
 from __future__ import annotations
 
+from quill.core.wordpress.workbench_places import places_rows
 from quill.core.workbench.actions import ActionRow, ActionTable, Tier
 from quill.core.workbench.menus import MenuRow, MenuSpec
 
@@ -75,6 +76,12 @@ _DELETE = _a(
     help="Gone for good, after you confirm by name. Shift+Delete.",
 )
 _OPEN_SITE = _a("open_on_site", "Open on the Site", help="In your browser. Shift+Enter.")
+_COPY_TO_SITE = _a(
+    "copy_to_site",
+    "Copy to Site...",
+    tier=Tier.WRITE,
+    help="To another of your sites, after a preview. Ctrl+Shift+Y.",
+)
 
 WORDPRESS_ACTIONS = ActionTable(
     {
@@ -98,6 +105,28 @@ WORDPRESS_ACTIONS = ActionTable(
             _RESTORE,
             _DELETE,
             _a("copy_link", "Copy Link", help="Its address on the site. Ctrl+Shift+C."),
+            _COPY_TO_SITE,
+            _a(
+                "approve_schedule",
+                "Approve and Schedule...",
+                tier=Tier.WRITE,
+                needs="publish",
+                help="Publish it now or at a time you give. Ctrl+Shift+D.",
+            ),
+            _a(
+                "send_back",
+                "Send Back with a Note...",
+                tier=Tier.WRITE,
+                needs="edit",
+                help="Back to draft, with a note for its writer. Ctrl+Shift+B.",
+            ),
+            _a(
+                "assign_reviewer",
+                "Assign a Reviewer...",
+                tier=Tier.WRITE,
+                needs="edit",
+                help="A note naming who reviews it. Ctrl+Shift+J.",
+            ),
             _SHEET,
         ),
         "media": (
@@ -114,6 +143,13 @@ WORDPRESS_ACTIONS = ActionTable(
                 tier=Tier.ORGANIZE,
                 needs="moderate_comments",
                 help="Approve it; on a comment held as spam, Not Spam. Ctrl+Shift+A.",
+            ),
+            _a(
+                "allow_sender",
+                "Not Spam, and Allow This Sender",
+                tier=Tier.ORGANIZE,
+                needs="moderate_comments",
+                help="Approve it and let this person's next comments through. Ctrl+Alt+W.",
             ),
             _a(
                 "unapprove",
@@ -161,6 +197,21 @@ WORDPRESS_ACTIONS = ActionTable(
         ),
         "term": (
             _a("show_posts", "Show Its Posts", default=True, help="The posts filed under it."),
+            _a(
+                "merge_into",
+                "Merge Into...",
+                tier=Tier.DESTRUCTIVE,
+                needs="manage_categories",
+                help="File its posts under another term, then delete it. Ctrl+Shift+G.",
+            ),
+            _a(
+                "convert_term",
+                "Convert to Category or Tag...",
+                tier=Tier.DESTRUCTIVE,
+                needs="manage_categories",
+                help="Make a tag a category, or a category a tag, posts and all. Ctrl+Shift+K.",
+            ),
+            _COPY_TO_SITE,
             _DELETE,
             _SHEET,
         ),
@@ -173,6 +224,13 @@ WORDPRESS_ACTIONS = ActionTable(
                 needs="promote_users",
                 help="Choose another role for this person.",
             ),
+            _a(
+                "send_password_reset",
+                "Send Password Reset",
+                needs="edit_users",
+                help="Opens their wp-admin screen to send the reset email. Ctrl+Shift+W.",
+            ),
+            _a("roles", "Roles and What They May Do", help="Each role in plain words. Ctrl+Alt+R."),
             _a(
                 "remove_user",
                 "Remove...",
@@ -227,8 +285,34 @@ WORDPRESS_ACTIONS = ActionTable(
             _a("open_kind", "Open Its List", default=True, help="Select its node in the tree."),
             _SHEET,
         ),
+        "namespace": (
+            _a("open_namespace", "List Its Routes", default=True, help="Select its node. Enter."),
+            _SHEET,
+        ),
+        "route": (
+            _a("read_route", "Read It", default=True, help="Ask the site and read the answer."),
+            _a("route_schema", "What It Accepts", help="Its arguments and fields, from the site."),
+            _SHEET,
+        ),
+        "ability": (
+            _a(
+                "run_ability",
+                "Run...",
+                default=True,
+                help="Fill in its input, see the preview, then run it. Enter.",
+            ),
+            _SHEET,
+        ),
+        "model": (_READ, _SHEET),
+        **places_rows(_READ, _SHEET),
+        "day": (
+            _a("open_day", "Open This Day", default=True, help="List what the day holds."),
+            _SHEET,
+        ),
+        "pattern": (_READ, _COPY_TO_SITE, _SHEET),
         "form": (
             _a("show_entries", "Show Its Responses", default=True, help="The form's responses."),
+            _COPY_TO_SITE,
             _SHEET,
         ),
         **{
@@ -238,11 +322,8 @@ WORDPRESS_ACTIONS = ActionTable(
                 "setting",
                 "problem",
                 "help",
-                "namespace",
-                "ability",
                 "menu",
                 "template",
-                "pattern",
                 "font",
                 "sidebar",
                 "mixed",
@@ -250,6 +331,11 @@ WORDPRESS_ACTIONS = ActionTable(
         },
         "node": (
             _a("refresh", "Refresh", default=True, help="Load this view again. F5."),
+            _a("new_here", "New Here...", tier=Tier.WRITE, help="Make something new here. Ctrl+N."),
+            _a("load_more", "Load More", help="Read three hundred more rows. Ctrl+Shift+L."),
+            _a("load_all", "Load All", help="Read every row the site has. Ctrl+Alt+L."),
+            _a("columns", "Columns...", help="Choose the columns this list shows. Ctrl+Alt+C."),
+            _a("group_by", "Group By...", help="A child node per value of a column. Ctrl+Alt+G."),
             _a("what_can_i_do", "What Can I Do Here?", help="What your role allows. Shift+F1."),
             _SHEET,
         ),
@@ -301,12 +387,24 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
                 "Hide rows like the selected one, by a column you choose.",
             ),
             _row("only_mine", "Only &Mine", "Ctrl+Alt+M", "Only what you wrote, or all again."),
+            None,
+            _row("export_list", "E&xport List...", "Ctrl+Shift+X", "This list as Excel or CSV."),
+            _row(
+                "import_posts",
+                "&Import Posts from a Spreadsheet...",
+                "Ctrl+Shift+I",
+                "Posts or pages from an Excel or CSV file, previewed row by row.",
+            ),
         ),
     ),
     MenuSpec(
         "&View",
         (
             _row("refresh", "&Refresh", "F5", "Load this view again from the site."),
+            _row("load_more", "Load &More", "Ctrl+Shift+L", "Read three hundred more rows."),
+            _row("load_all", "Load A&ll", "Ctrl+Alt+L", "Read every row the site has."),
+            _row("columns", "&Columns...", "Ctrl+Alt+C", "Choose the columns this list shows."),
+            _row("group_by", "&Group By...", "Ctrl+Alt+G", "A child node per value of a column."),
             None,
             _row("back", "&Back", "Alt+Left", "The view you were on before. Backspace too."),
             _row("forward", "&Forward", "Alt+Right", "The view you went back from."),
@@ -333,6 +431,10 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
             _row("go_appearance", "Appearanc&e", "Ctrl+Shift+7", "Themes, templates, patterns."),
             _row("go_settings", "Settin&gs", "Ctrl+Shift+8", "This site's settings."),
             _row("go_health", "Site &Health", "Ctrl+Shift+9", "This site's health checks."),
+            _row("go_across", "Acr&oss Sites", "Ctrl+0", "The same name on every site."),
+            _row("go_calendar", "Calen&dar", "Ctrl+3", "Every site's content, by day."),
+            _row("go_watches", "&Watches", "Ctrl+5", "What the Workbench watches for you."),
+            _row("go_practice", "P&ractice Site", "Ctrl+6", "The WordPress site on this computer."),
             None,
             _row("go_parent", "Paren&t Node", "Alt+Up", "The node above this one in the tree."),
         ),
@@ -346,6 +448,39 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
             _row("unapprove", "U&napprove", "Ctrl+Shift+U", "Back to waiting."),
             _row("spam", "&Spam", "Ctrl+Shift+S", "Mark the selection as spam."),
             _row("reply", "&Reply...", "Ctrl+Shift+M", "Reply to the selected comment."),
+            _row(
+                "allow_sender",
+                "Not Spam, and A&llow This Sender",
+                "Ctrl+Alt+W",
+                "Approve the comment and let this person's next ones through.",
+            ),
+            _row("merge_into", "&Merge Into...", "Ctrl+Shift+G", "Fold this term into another."),
+            _row(
+                "convert_term",
+                "Con&vert to Category or Tag...",
+                "Ctrl+Shift+K",
+                "A tag becomes a category, or a category a tag.",
+            ),
+            _row(
+                "approve_schedule",
+                "Approve and S&chedule...",
+                "Ctrl+Shift+D",
+                "Publish what waits for review, now or at a time.",
+            ),
+            _row(
+                "send_back",
+                "Send &Back with a Note...",
+                "Ctrl+Shift+B",
+                "Back to draft, with a note.",
+            ),
+            _row("assign_reviewer", "Assi&gn a Reviewer...", "Ctrl+Shift+J", "Name a reviewer."),
+            _row("copy_to_site", "C&opy to Site...", "Ctrl+Shift+Y", "To another of your sites."),
+            _row(
+                "send_password_reset",
+                "Send Pass&word Reset",
+                "Ctrl+Shift+W",
+                "Open this person's wp-admin screen to send the reset email.",
+            ),
             None,
             _row("trash", "Move to &Trash", "Delete", "Into WordPress's Trash; Restore undoes it."),
             _row("restore", "R&estore from Trash", "Ctrl+Shift+R", "Out of the Trash."),
@@ -368,6 +503,41 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
                 "view_as", "&View As Role...", "Ctrl+Alt+V", "See the site as another role would."
             ),
             _row("access", "Workbench &Access...", "Ctrl+Alt+A", "Read Only, Organize or Full."),
+            _row("roles", "&Roles and What They May Do", "Ctrl+Alt+R", "Each role in plain words."),
+            _row(
+                "empty_spam",
+                "E&mpty Spam...",
+                "Ctrl+Alt+E",
+                "Delete every comment held as spam on this site, after you confirm.",
+            ),
+            None,
+            _row("compare_sites", "Compare S&ites...", "Ctrl+Alt+K", "What differs from another."),
+            _row("site_sets", "Site Se&ts...", "Ctrl+Alt+T", "Name a set of your sites."),
+            _row("scope", "Across Sites Sc&ope...", "Ctrl+Alt+Y", "Every site, or one set."),
+            _row(
+                "snapshot", "Take a S&napshot...", "Ctrl+Alt+S", "Everything but media, saved here."
+            ),
+            _row(
+                "read_site",
+                "Read Site as &Document",
+                "Ctrl+Alt+D",
+                "The pages as one document in the editor.",
+            ),
+        ),
+    ),
+    MenuSpec(
+        "&Tools",
+        (
+            _row(
+                "options",
+                "Workbench &Options...",
+                "Ctrl+Shift+O",
+                "Use the classic WordPress windows, and the Watches.",
+            ),
+            _row("rest_console", "&REST Console...", "Ctrl+Shift+T", "Any route on the site."),
+            _row(
+                "practice", "&Practice Site...", "Ctrl+Alt+P", "Start, stop, connect or reset it."
+            ),
         ),
     ),
     MenuSpec(
@@ -386,7 +556,7 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
         (_row("help_view", "&Help for This View", "F1", "What this view and control do."),),
     ),
 )
-"""The bar, in order: File, Edit, View, Go, Item, Site, Window, Help."""
+"""The bar, in order: File, Edit, View, Go, Item, Site, Tools, Window, Help."""
 
 GO_NODES: dict[str, tuple[str, str]] = {
     command("go_start"): ("", "start"),
@@ -401,5 +571,9 @@ GO_NODES: dict[str, tuple[str, str]] = {
     command("go_appearance"): ("site", "themes"),
     command("go_settings"): ("site", "settings"),
     command("go_health"): ("site", "site_health"),
+    command("go_across"): ("", "across"),
+    command("go_calendar"): ("", "calendar"),
+    command("go_watches"): ("", "watches"),
+    command("go_practice"): ("", "practice"),
 }
 """Where each Go row lands: (template, node key); a template node is the current site's."""

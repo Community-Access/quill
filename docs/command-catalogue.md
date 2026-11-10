@@ -6,7 +6,7 @@ Each command has a name, its key when it has one, what it does, and some of the 
 
 ## QUILL
 
-52 commands can be asked for in a sentence here.
+53 commands can be asked for in a sentence here.
 
 ### QUILL: Edit
 
@@ -101,6 +101,8 @@ Each command has a name, its key when it has one, what it does, and some of the 
 
 - **Next Misspelling (Ctrl+F7).** Move to the next misspelled word.
   Say: "go to the next spelling mistake"; "find the next typo"; "next misspelled word".
+- **Open WordPress Workbench (Ctrl+Alt+Shift+Grave, H).** Open the window for your WordPress sites.
+  Say: "open the wordpress workbench"; "show me my wordpress sites"; "what needs me on my sites".
 - **Read Aloud (Ctrl+Shift+Grave, R).** Read the document aloud, or pause reading.
   Say: "read this to me"; "read the document out loud"; "pause the reading".
 - **Sounds On or Off (Alt+Shift+M).** Turn QUILL's sounds on or off.
@@ -159,7 +161,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 ## QUILL Lite
 
-43 commands can be asked for in a sentence here.
+44 commands can be asked for in a sentence here.
 
 ### QUILL Lite: Edit
 
@@ -244,6 +246,8 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 - **Next Misspelling (Ctrl+F7).** Move to the next misspelled word.
   Say: "go to the next spelling mistake"; "find the next typo"; "next misspelled word".
+- **Open WordPress Workbench (Ctrl+Alt+Shift+Grave, H).** Open the window for your WordPress sites.
+  Say: "open the wordpress workbench"; "show me my wordpress sites"; "what needs me on my sites".
 - **Sounds On or Off (Alt+Shift+M).** Turn QUILL's sounds on or off.
   Say: "turn the sounds off"; "stop the beeps"; "sounds back on".
 - **Spelling (F7).** Check the spelling of the document.

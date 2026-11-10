@@ -80,6 +80,16 @@ LANGUAGE_SERVERS_PACKAGES = {
 }
 LICENSES_SUMMARY = "LANGUAGE-SERVERS-LICENSES.txt"
 
+#: WordPress Playground's command-line tool, for the Practice Site (WordPress
+#: PRD 15.1). GPL-2.0-or-later, like WordPress; each package's licence stays in
+#: its folder and PLAYGROUND-LICENSES.txt lists them. The pin is the version
+#: named in scripts/wp_playground/package.json. Not yet fetched or run: the
+#: first fetch writes package-lock.json beside it, which is then committed so
+#: later fetches are `npm ci`, as the language servers are.
+PLAYGROUND_DIR = Path(__file__).with_name("wp_playground")
+PLAYGROUND_PACKAGES = {"@wp-playground/cli": "1.0.28"}
+PLAYGROUND_LICENSES = "PLAYGROUND-LICENSES.txt"
+
 
 def _node_zip(tmp: Path, progress: Callable[[float, str], None] | None) -> zipfile.ZipFile:
     archive = tmp / NODE_ZIP
@@ -147,13 +157,50 @@ def fetch_language_servers(dest: Path, node: Path, npm: Path) -> Path:
     return dest
 
 
+def fetch_wp_playground(dest: Path, node: Path, npm: Path) -> Path:
+    """Install the pinned Playground tool into *dest* (``npm ci`` once a lockfile exists)."""
+    package = json.loads((PLAYGROUND_DIR / "package.json").read_text(encoding="utf-8"))
+    if package.get("dependencies") != PLAYGROUND_PACKAGES:
+        raise ReleaseAssetError("scripts/wp_playground/package.json drifted from its pin")
+    if dest.exists():
+        shutil.rmtree(dest)
+    dest.mkdir(parents=True)
+    lock = PLAYGROUND_DIR / "package-lock.json"
+    for source in (PLAYGROUND_DIR / "package.json", lock):
+        if source.is_file():
+            shutil.copy2(source, dest / source.name)
+    verb = "ci" if lock.is_file() else "install"
+    command = [
+        str(node),
+        str(npm / "bin" / "npm-cli.js"),
+        verb,
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--omit=dev",
+        "--loglevel=error",
+    ]
+    result = subprocess.run(  # noqa: S603 - fixed argv, the pinned Node and npm
+        command, cwd=dest, capture_output=True, text=True, check=False
+    )
+    if result.returncode != 0:
+        raise ReleaseAssetError(f"npm {verb} failed: {result.stderr.strip()[-2000:]}")
+    if not lock.is_file() and (dest / "package-lock.json").is_file():
+        shutil.copy2(dest / "package-lock.json", lock)  # commit it: later fetches are npm ci
+    _prune(dest / "node_modules")
+    _write_licence_summary(dest, PLAYGROUND_LICENSES, "WordPress Playground's tool")
+    return dest
+
+
 def _prune(modules: Path) -> None:
     """Drop source maps: debugging aids, a large share of the bytes, never read."""
     for path in modules.rglob("*.map"):
         path.unlink()
 
 
-def _write_licence_summary(dest: Path) -> None:
+def _write_licence_summary(
+    dest: Path, name: str = LICENSES_SUMMARY, what: str = "The language servers QUILL runs"
+) -> None:
     rows: list[str] = []
     for manifest in sorted((dest / "node_modules").rglob("package.json")):
         holder = manifest.parent.parent
@@ -170,12 +217,12 @@ def _write_licence_summary(dest: Path) -> None:
         licence = data.get("license") or data.get("licenses") or "see the package"
         rows.append(f"{data['name']} {data['version']}: {licence}")
     text = (
-        "The language servers QUILL runs, and the licence each package declares.\n"
+        f"{what}, and the licence each package declares.\n"
         "Every package's own licence file is inside its folder under node_modules.\n\n"
         + "\n".join(sorted(set(rows)))
         + "\n"
     )
-    (dest / LICENSES_SUMMARY).write_text(text, encoding="utf-8")
+    (dest / name).write_text(text, encoding="utf-8")
 
 
 def fetch_ripgrep(dest: Path, *, progress: Callable[[float, str], None] | None = None) -> Path:
