@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 337 audited sites (223 helped, 114 named-help).</p>
+<p>Control coverage: 341 audited sites (227 helped, 114 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -297,6 +297,11 @@ the arrow keys. Escape closes it.</p>
 directories do not know, by pasting its own stream address. Name it what
 you like; it lands in your favorites as a custom station and plays like
 any other.</p>
+<p><strong>Add a Folder.</strong> Type or paste the path of a folder, or
+choose Browse to pick one, and Quill Radio adds every song, audiobook
+and video in it. Include Subfolders looks inside the folders within it
+too; Keep Up with the Folder adds files that appear there later,
+whenever the playlist opens.</p>
 <p><strong>Add from YouTube Playlist.</strong> Bring the entries of a
 YouTube playlist in as playable items. Pick the ones you want; each
 arrives as its own row in your favorites.</p>
@@ -857,6 +862,26 @@ level) (<code>quill/ui/radio/import_stations_dialog.py</code>)</h4>
 <li><code>combo</code>: Where the imported stations land in your
 favorites: pick an existing folder, or type a new name to create
 one.</li>
+</ul>
+<h4
+id="addfolderdialog-quilluiradiolocal_media_folder_dialogpy">AddFolderDialog
+(<code>quill/ui/radio/local_media_folder_dialog.py</code>)</h4>
+<ul>
+<li><code>self.path</code>: The folder to add, for example d:\other
+files\downloads. Type it, or paste it from File Explorer’s Copy as Path;
+quotes around it are fine.</li>
+<li><code>self.browse</code>: Pick the folder in the Windows folder
+picker instead of typing it.</li>
+<li><code>self.problem</code>: Says why a folder cannot be added, when
+it cannot.</li>
+<li><code>self.subfolders</code>: Checked, the media in folders inside
+this one is added too, an album’s discs in order. Unchecked, only the
+files right in this folder.</li>
+<li><code>self.follow</code>: Checked, files that appear in the folder
+later are added whenever the playlist opens. Follow the Folder in the
+Local Media menu changes this later.</li>
+<li><code>self.ok</code>: Look in the folder and add what is there.</li>
+<li><code>self.cancel</code>: Close without adding anything.</li>
 </ul>
 <h4 id="module-level-quilluiradiolocal_media_managepy">(module level)
 (<code>quill/ui/radio/local_media_manage.py</code>)</h4>
