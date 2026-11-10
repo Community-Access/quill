@@ -69,3 +69,10 @@ def test_make_them_the_same_previews_every_site_first(bench, monkeypatch) -> Non
     bench.provider.do_make_same(None, row)
     assert previews and previews[0]["lines"] == [f"{SITE}: already matches; nothing to do"]
     assert not [w for w in bench.api.writes if "categories" in w[1]]
+
+
+def test_the_content_audit_and_privacy_requests_have_rows(bench) -> None:
+    _go(bench, NodeRef("site", "privacy_requests", SITE))
+    assert [r.key for r in bench.rows] == ["export", "erase"]
+    _go(bench, NodeRef("site", "content_audit", SITE))
+    assert any(r.cell("problem") == "Very short" for r in bench.rows)

@@ -76,6 +76,7 @@ from quill.ui.wordpress_workbench_lists import WorkbenchListCommands
 from quill.ui.wordpress_workbench_options import WorkbenchOptionsCommands
 from quill.ui.wordpress_workbench_people import WorkbenchPeopleCommands
 from quill.ui.wordpress_workbench_sheets import WorkbenchSheetCommands
+from quill.ui.wordpress_workbench_sweep import WorkbenchSweepCommands
 from quill.ui.workbench_frame import NodeRef, WorkbenchFrame
 from quill.ui.workbench_status_bar import StatusCell
 
@@ -94,6 +95,7 @@ class WordPressWorkbenchProvider(
     WorkbenchOptionsCommands,
     WorkbenchBoldCommands,
     WorkbenchAcrossCommands,
+    WorkbenchSweepCommands,
     WorkbenchRowCommands,
     WorkbenchSheetCommands,
     WorkbenchPeopleCommands,
@@ -270,6 +272,8 @@ class WordPressWorkbenchProvider(
             return [r for r in self.across_list(what) if local_matches(r, query.conditions)]
         if family == "scan":
             return list(self.scan_rows(self.split(ref.instance)[0], what))
+        if family == "sweep":
+            return list(self.sweep_rows(self.split(ref.instance)[0], what))
         if family == "attention":
             contexts = []
             for name in self._profiles:

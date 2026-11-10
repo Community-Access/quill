@@ -1,4 +1,4 @@
-"""The Workbench's W8 places: their nodes and their rows' actions (PRD 15.11, 15.12).
+"""The Workbench's W8 and 15.11 places: their nodes and their rows' actions (PRD 15.11, 15.12).
 
 Kept beside :mod:`quill.core.wordpress.workbench_tree` and
 :mod:`quill.core.wordpress.workbench_actions`, which splice these in, so
@@ -6,6 +6,7 @@ each of those stays one readable table:
 
 - :data:`ACROSS_NODES`: Across Sites (Ctrl+0) and its kinds, and the Fleet;
 - :data:`BY_NAME_NODES`: each site's By Name branch, a node per kind;
+- :data:`SWEEP_NODES`: Content Audit and Privacy Requests;
 - :data:`PLACES_ROWS`: what the rows of those places offer.
 
 Wx-free.
@@ -20,7 +21,7 @@ from quill.core.wordpress.workbench_across import ACROSS_KINDS, SITE_KINDS
 from quill.core.workbench.actions import ActionRow, Tier
 from quill.core.workbench.tree import NodeSpec, Scope
 
-__all__ = ["ACROSS_NODES", "BY_NAME_NODES", "PLACES_ROWS"]
+__all__ = ["ACROSS_NODES", "BY_NAME_NODES", "PLACES_ROWS", "SWEEP_NODES"]
 
 _PREFIX = "wordpress.workbench."
 
@@ -65,6 +66,35 @@ BY_NAME_NODES: tuple[NodeSpec, ...] = (
         )
         for kind, label in SITE_KINDS.items()
     ),
+)
+
+SWEEP_NODES: tuple[NodeSpec, ...] = (
+    _n(
+        "content_audit",
+        "Content Audit",
+        "site",
+        loader="sweep:audit",
+        columns=("problem", "status"),
+        row_type="problem",
+    ),
+    _n(
+        "privacy_requests",
+        "Privacy Requests",
+        "site",
+        loader="sweep:privacy",
+        columns=("problem", "status"),
+        row_type="problem",
+    ),
+)
+
+HOUSEKEEPING = _n(
+    "media_housekeeping",
+    "Housekeeping",
+    "media",
+    loader="sweep:housekeeping",
+    columns=("problem", "status"),
+    row_type="problem",
+    home=False,
 )
 
 

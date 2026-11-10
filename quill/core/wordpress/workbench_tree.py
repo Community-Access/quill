@@ -27,7 +27,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.core.wordpress.workbench_places import ACROSS_NODES, BY_NAME_NODES
+from quill.core.wordpress.workbench_places import (
+    ACROSS_NODES,
+    BY_NAME_NODES,
+    HOUSEKEEPING,
+    SWEEP_NODES,
+)
 from quill.core.workbench.tree import NodeSpec, Scope, TreeSpec
 
 __all__ = [
@@ -295,6 +300,7 @@ _SITE: tuple[NodeSpec, ...] = (
         )
     ),
     _group("media", "media:all", ("title", "type", "alt_text", "uploaded"), "media"),
+    HOUSEKEEPING,
     _n(
         "comments",
         "Comments",
@@ -490,6 +496,7 @@ _SITE: tuple[NodeSpec, ...] = (
         row_type="ability",
     ),
     *BY_NAME_NODES,
+    *SWEEP_NODES,
     _n(
         "content_model",
         "Content Model",

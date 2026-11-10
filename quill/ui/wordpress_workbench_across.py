@@ -60,14 +60,18 @@ class WorkbenchAcrossCommands:
 
     # -- within a site --------------------------------------------------------------
 
-    def scan_rows(self, site: str, kind: str) -> list[WbRow]:
-        """Off the UI thread: one within-site kind, from a scan kept five minutes."""
+    def site_scan(self, site: str) -> Any:
+        """Off the UI thread: the site's scan, read again after five minutes."""
         scans: dict[str, tuple[float, Any]] = self.__dict__.setdefault("_scans", {})
         kept = scans.get(site)
         if kept is None or time.time() - kept[0] > _SCAN_SECONDS:
             kept = (time.time(), scan_site(self.ctx(site).api, site))
             scans[site] = kept
-        return kind_rows(kept[1], kind)
+        return kept[1]
+
+    def scan_rows(self, site: str, kind: str) -> list[WbRow]:
+        """Off the UI thread: one within-site kind."""
+        return kind_rows(self.site_scan(site), kind)
 
     def do_where_used(self, _ref: Any, row: WbRow | None) -> None:
         if row is None or row.kind != "value":

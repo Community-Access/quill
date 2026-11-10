@@ -2,12 +2,21 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
+
 from quill.core.wordpress.workbench_across import (
     SiteScan,
     across_rows,
     fleet_rows,
     kind_rows,
     same_everywhere_plan,
+)
+from quill.core.wordpress.workbench_sweep import (
+    content_audit,
+    media_housekeeping,
+    privacy_rows,
+    redirect_body,
+    redirect_offered,
 )
 
 _TEXT = (
@@ -95,3 +104,28 @@ def test_the_fleet_reads_every_site_in_one_list() -> None:
     rows = fleet_rows([("A", {"version": "6.9", "waiting": 2}), ("B", {"error": "timed out"})])
     assert rows[0].detail == "A: WordPress 6.9, 2 comments waiting."
     assert rows[1].detail == "B: not answering: timed out."
+
+
+def test_the_content_audit_and_media_housekeeping_find_their_problems() -> None:
+    scan = _scan()
+    problems = {
+        r.cell("problem") for r in content_audit(scan, now=datetime(2026, 11, 10, tzinfo=UTC))
+    }
+    assert {"Nothing links to it", "Not changed in a year", "A heading skips a level"} <= problems
+    house = {(r.key, r.cell("problem")) for r in media_housekeeping(scan)}
+    assert ("11:unused", "Used nowhere") in house
+    assert ("11:large", "Very large") in house
+    assert ("11:transcript", "Audio without a transcript") in house
+
+
+def test_privacy_points_to_wp_admin_and_redirects_wait_for_their_plugin() -> None:
+    rows = privacy_rows("Radio", "https://r.example/", ["/wp/v2/posts"])
+    assert [r.link for r in rows] == [
+        "https://r.example/wp-admin/export-personal-data.php",
+        "https://r.example/wp-admin/erase-personal-data.php",
+    ]
+    assert not redirect_offered(["wp/v2"]) and redirect_offered(["redirection/v1"])
+    body = redirect_body("https://r.example/old-name/", "https://r.example/new-name/")
+    assert body["url"] == "/old-name/" and body["action_data"] == {
+        "url": "https://r.example/new-name/"
+    }

@@ -96,6 +96,11 @@ NODE_HELP: Mapping[str, str] = {
     "by_name_links": "Every link in the content, and the pages it is on.",
     "by_name_blocks": "Blocks and shortcodes, and the pages that use them.",
     "by_name_forms": "Forms placed in pages, and where.",
+    "media_housekeeping": "Files used nowhere, very large files, video without captions, audio "
+    "without a transcript.",
+    "content_audit": "Pages nobody links to, pages not changed in a year, duplicate titles, very "
+    "long or short pages, headings that skip a level.",
+    "privacy_requests": "Personal data export and erase requests, or where wp-admin keeps them.",
     "group": "The rows of the list above that share one value, from View > Group By.",
 }
 """One sentence per node key; status children and group nodes share their parent's."""
