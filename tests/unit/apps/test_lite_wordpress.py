@@ -104,6 +104,7 @@ class _Window(DocumentWordPressMixin):
         (lambda w: w.cmd_wp_accessibility_statement(), "cmd_accessibility_statement"),
         (lambda w: w.cmd_wp_palette_report(), "cmd_palette_report"),
         (lambda w: w.cmd_wp_in_short(), "cmd_in_short"),
+        (lambda w: w.cmd_wp_workbench(), "cmd_workbench"),
         (lambda w: w.cmd_wp_media_library(), "cmd_media_library"),
         (lambda w: w.cmd_wp_alt_text_review(), "cmd_alt_text_review"),
         (lambda w: w.cmd_wp_visual_review(), "cmd_visual_review"),

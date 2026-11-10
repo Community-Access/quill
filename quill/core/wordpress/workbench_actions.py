@@ -451,6 +451,17 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
         ),
     ),
     MenuSpec(
+        "&Tools",
+        (
+            _row(
+                "options",
+                "Workbench &Options...",
+                "Ctrl+Shift+O",
+                "Use the classic WordPress windows, and the Watches.",
+            ),
+        ),
+    ),
+    MenuSpec(
         "&Window",
         (
             _row(
@@ -466,7 +477,7 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
         (_row("help_view", "&Help for This View", "F1", "What this view and control do."),),
     ),
 )
-"""The bar, in order: File, Edit, View, Go, Item, Site, Window, Help."""
+"""The bar, in order: File, Edit, View, Go, Item, Site, Tools, Window, Help."""
 
 GO_NODES: dict[str, tuple[str, str]] = {
     command("go_start"): ("", "start"),

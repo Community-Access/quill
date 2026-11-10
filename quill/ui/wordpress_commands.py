@@ -141,6 +141,19 @@ class WordPressCommands(
 
         return open_from_door(self, command_id)
 
+    def cmd_workbench(self) -> None:
+        """Tools > WordPress > Open WordPress Workbench: always the Workbench (W6)."""
+        import os
+
+        from quill.ui.wordpress_workbench_window import open_workbench
+
+        open_workbench(
+            self,
+            announce=self.host.announce,
+            safe_mode=os.environ.get("QUILL_SAFE_MODE", "") == "1",
+            data_dir=getattr(self, "_data_dir", None),
+        )
+
     def need_site(self) -> st.SiteStore | None:
         store = self.sites()
         if store.sites:

@@ -17,9 +17,11 @@ and no new way in; every call runs off the UI thread through the frame's
 task runner; nothing is announced on focus or on opening (GATE-13), and what
 is said goes through the editor's announce, which speaks and brailles.
 
-Reached behind the developer flag (:mod:`quill.core.wordpress.workbench_flag`)
-through :func:`open_from_door`, which the Tools > WordPress handlers in
-:mod:`quill.ui.wordpress_commands` call in both editors: QUILL Lite is never
+The default way in from Tools > WordPress (W6): :func:`open_from_door`,
+which the Tools > WordPress handlers in :mod:`quill.ui.wordpress_commands`
+call in both editors, opens it unless Workbench Options says Use the classic
+WordPress windows (:mod:`quill.core.wordpress.workbench_flag`); Tools >
+WordPress > Open WordPress Workbench always opens it. QUILL Lite is never
 ahead.
 """
 
@@ -69,6 +71,7 @@ from quill.core.workbench.tree import NodeSpec
 from quill.ui.wordpress_workbench_commands import WorkbenchRowCommands
 from quill.ui.wordpress_workbench_discovered import WorkbenchDiscoveredCommands
 from quill.ui.wordpress_workbench_lists import WorkbenchListCommands
+from quill.ui.wordpress_workbench_options import WorkbenchOptionsCommands
 from quill.ui.wordpress_workbench_people import WorkbenchPeopleCommands
 from quill.ui.wordpress_workbench_sheets import WorkbenchSheetCommands
 from quill.ui.workbench_frame import NodeRef, WorkbenchFrame
@@ -86,6 +89,7 @@ _REMOTE = frozenset({"items", "media", "comments", "users", "terms", "patterns"}
 class WordPressWorkbenchProvider(
     WorkbenchListCommands,
     WorkbenchDiscoveredCommands,
+    WorkbenchOptionsCommands,
     WorkbenchRowCommands,
     WorkbenchSheetCommands,
     WorkbenchPeopleCommands,
@@ -535,14 +539,14 @@ def open_workbench(
 
 
 def open_from_door(commands: Any, command_id: str) -> bool:
-    """Open the Workbench for a Tools > WordPress door, when the developer flag is on.
+    """Open the Workbench for a Tools > WordPress door: the default (W6).
 
-    Returns False (and does nothing) without the flag, so the door goes on to
-    its own window exactly as before.
+    Returns False (and does nothing) when Use the classic WordPress windows is
+    chosen in Workbench Options, so the door goes on to its own window.
     """
     from quill.core.wordpress.workbench_flag import workbench_window_enabled
 
-    if not workbench_window_enabled():
+    if not workbench_window_enabled(base=getattr(commands, "_data_dir", None)):
         return False
     import os
 

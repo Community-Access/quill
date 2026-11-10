@@ -279,6 +279,10 @@ class DocumentWordPressMixin:
         """Tools > WordPress > In Short."""
         self._wordpress().cmd_in_short()
 
+    def cmd_wp_workbench(self) -> None:
+        """Tools > WordPress > Open WordPress Workbench."""
+        self._wordpress().cmd_workbench()
+
     def cmd_wp_media_library(self) -> None:
         """Tools > WordPress > Media Library."""
         self._wordpress().cmd_media_library()

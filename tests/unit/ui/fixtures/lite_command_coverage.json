@@ -452,6 +452,7 @@
   "cmd_wp_what_changed": "covered",
   "cmd_wp_where_am_i": "covered",
   "cmd_wp_widgets": "covered",
+  "cmd_wp_workbench": "covered",
   "cmd_zoom_in": "covered",
   "cmd_zoom_out": "covered",
   "cmd_zoom_reset": "covered"

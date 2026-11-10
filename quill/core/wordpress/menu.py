@@ -205,6 +205,10 @@ TOOLS_ROWS: tuple[Entry, ...] = (
     Submenu(
         "WordPress",
         (
+            # The Workbench comes first (W6). Every letter of its name is taken
+            # in this menu, so its key is the WordPress layer's H, not a letter.
+            ("wordpress.workbench", "Open WordPress Workbench...", "cmd_workbench"),
+            None,
             ("wordpress.check", "Check Before &Publishing...", "cmd_check"),
             ("wordpress.check_page", "Check &This Page", "cmd_check_page"),
             ("wordpress.check_site", "Check the &Whole Site...", "cmd_check_site"),
@@ -310,6 +314,9 @@ LAYER_KEYS: dict[str, str] = {
     "K": "wordpress.check",
     "U": "wordpress.upload_files",
     "X": "wordpress.alt_text_review",
+    # H for the Workbench, the home of every site (W6): no letter of its name
+    # is free in Tools > WordPress, and W is Open by Address.
+    "H": "wordpress.workbench",
 }
 
 #: Commands about the page in front of you: enabled only in a WordPress
