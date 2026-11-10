@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from quill.core.workbench.tree import NodeSpec
 
 __all__ = ["MEMBERSHIP_NODES"]
 
 
-def _node(key: str, label: str, parent: str | None = None, **kwargs: object) -> NodeSpec:
+def _node(key: str, label: str, parent: str | None = None, **kwargs: Any) -> NodeSpec:
     return NodeSpec(key, label, parent, **kwargs)
 
 
