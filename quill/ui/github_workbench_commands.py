@@ -22,7 +22,7 @@ from collections.abc import Callable
 
 from quill.ui.github_items_view import VIEW_ISSUES, VIEW_RELEASES, VIEW_RUNS
 
-__all__ = ["EXPLORE_VIEWS", "ITEMS_VIEWS", "GitHubWorkbenchCommands"]
+__all__ = ["EXPLORE_VIEWS", "ITEMS_VIEWS", "GitHubWorkbenchCommands", "open_in_workbench_window"]
 
 #: Explore's view for each Explore row, by QUILL command id.
 EXPLORE_VIEWS: dict[str, str | None] = {
@@ -85,3 +85,30 @@ class GitHubWorkbenchCommands:
 
     def explore(self) -> None:
         self.run("github.workbench_explore")
+
+
+def open_in_workbench_window(
+    editor: object,
+    provider: object,
+    *,
+    repository: str = "",
+    view: str = "",
+    announce: Callable[[str], None] | None = None,
+) -> bool:
+    """Open the GitHub Workbench window instead of GitHub Items, when asked to.
+
+    Both editors' GitHub Items openers call this after their own gates (Safe
+    Mode, consent, sign-in) have made *provider*. While the window is a spike
+    it answers only behind the developer flag
+    (:mod:`quill.core.github.workbench_flag`) and returns False otherwise, so
+    the opener goes on to GitHub Items exactly as before. When it returns
+    True the window owns *provider* and closes it with itself.
+    """
+    from quill.core.github.workbench_flag import workbench_window_enabled
+
+    if not workbench_window_enabled():
+        return False
+    from quill.ui.github_workbench_window import open_github_workbench
+
+    open_github_workbench(editor, provider, repository=repository, view=view, announce=announce)
+    return True
