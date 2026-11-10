@@ -4142,6 +4142,63 @@ request. Each entry says what is done and how it was checked.
   resolved conversations, no force pushes, no deletion; admins can still merge.
   The feature branches stay local, since `main` contains them.
 
+### 2026-11-09: what the site says about itself, lists and groups, and the one query
+
+The groundwork from the WordPress Workbench PRD that does not wait for the
+shared Workbench engine (WP-R-030 to WP-R-034). Not yet tried against the
+live site.
+
+- **Taxonomies and statuses come from the site (WP-R-031).**
+  `quill/core/wordpress/site_taxonomies.py` reads `wp/v2/taxonomies` and
+  `wp/v2/statuses` with `context=edit` (and the public answer for an account
+  that may not ask for it), and keeps each connection's answer for ten
+  minutes. `taxonomy_route()` now uses a taxonomy's own `rest_base` and
+  `rest_namespace` instead of guessing `wp/v2/{slug}`; categories and tags
+  never cost a request of their own, and a site that will not say keeps the
+  old guess. A hierarchical custom term keeps its parent on update, and Merge
+  moves posts by the taxonomy's field (`genres`, not `genre`).
+- **Writing types, by status (WP-R-032, core).** `site_types.py` returns each
+  type with its names, namespace and taxonomies, and can list one type's
+  items in one status (the plugins' statuses included), count each status
+  from `X-WP-Total`, offer the core six statuses then the site's own, and make
+  a new item of any type with its terms. A type outside `wp/v2` has its whole
+  route as its kind. The browsing and New commands are left for the
+  Workbench, where the PRD puts them (a node per type, File > New per type);
+  Open is unchanged.
+- **Lists and groups in Custom Fields (WP-R-033).** Registered meta of type
+  `array` (with `items`) and `object` (with `properties`) is now edited, not
+  counted: `custom_field_shapes.py` says each one in a sentence, types what
+  was typed into the schema's types, and keeps every key a group came with.
+  In both editors, Custom Fields (and Properties after it) opens **Lists and
+  Groups** after the plain fields; a group is one form, and a list opens with
+  Add, Edit, Remove, Move Up, Move Down and Keep Changes. Changes are kept
+  with the working copy and sent with the next Save Draft to Site or Publish.
+  Only a list with no `items` schema, or a list of lists, is still left
+  alone. Meta on terms, users and comments is read and written by the same
+  functions (`object_route`, `meta_schema_for`, `site_values_for`,
+  `send_meta`); no window offers it yet.
+- **One query builder (WP-R-030 groundwork).** `query.py` is the attribute
+  table the Filter Builder will read, every `wp/v2` collection argument with
+  a label, a kind and its operators, plus taxonomies by rule and each route's
+  own enums. `build()` sends what QUILL never did: `tax_relation`, every
+  `_exclude`, `modified_after` and `modified_before`, `search_columns`,
+  `search_semantics`, `ignore_sticky`, and terms "all of".
+- **The combination test (WP-R-030).** `quill/tools/wordpress_combination_audit.py`
+  (rostered in `platform_report` as `wordpress-combinations`) checks the 150
+  `wp/v2` routes of the recorded index
+  (`tests/unit/core/wordpress/fixtures/rest_index_test_site.json`): every
+  collection argument known, every enum value offered and said in words,
+  every writable property a field kind, every method an action. Seven plugin
+  orderings without a spoken label are its planned gaps; the list may only
+  shrink.
+- **Advanced Custom Fields, read (WP-R-034).** `field_plugins.read_acf()`
+  reads ACF's `acf` field where the schema shows it, into the same form.
+- Tests: `test_wp_discovery.py`, `test_wp_custom_field_shapes.py`,
+  `test_wp_query.py`, `test_wp_field_plugins.py`,
+  `test_wordpress_combination_audit.py`, and five more in
+  `test_wp_api_writing_fields.py`. The live regression
+  (`docs/qa/wordpress-live-run.py`) has not been run on this branch.
+
 ## 19. Remaining tasks
 
 **wp-admin parity (9.18), Jeff 2026-11-04, "we should have all of this":**
@@ -4166,6 +4223,19 @@ request. Each entry says what is done and how it was checked.
 This list is kept current. A task is removed when it is done and checked, and
 the progress log above says what was done. Everything not listed here is
 built.
+
+### Workbench groundwork (Workbench PRD WP-R-030 to WP-R-034)
+- Run `docs/qa/wordpress-live-run.py` on the branch before it merges:
+  taxonomy discovery, Custom Fields lists and groups, and a custom type's
+  terms have only met recorded responses.
+- Custom types in the Workbench: a node per type with its statuses, New per
+  type, batch and filters (the core is in `site_types.py`).
+- Custom fields on terms, users and comments: a window or sheet page (the
+  core is in `custom_fields.py`).
+- Advanced Custom Fields: send changes back as `{"acf": ...}` and show the
+  fields in Custom Fields; Meta Box, Pods and CMB2.
+- The Filter Builder on `query.py`, and spoken labels for the seven plugin
+  orderings the combination test lists as planned.
 
 ### Every route, and more value (9.16)
 - **Waiting on Jeff:** the icons list, upload in pieces and Regenerate Sizes,

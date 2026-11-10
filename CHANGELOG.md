@@ -2,6 +2,21 @@
 
 ## 1.0.0
 
+### WordPress custom fields that hold lists and groups (2026-11-09)
+
+- **Lists and groups in Custom Fields.** A site's custom fields that hold a
+  list (speakers, a schedule's rows, picture numbers) or a group of fields
+  (an address) used to be counted and left alone. Now **Lists and Groups**
+  comes after the plain fields in File > WordPress > Custom Fields, and after
+  Properties. Each row says what the field holds. Enter on a group opens one
+  form; Enter on a list opens it with Add, Edit, Remove, Move Up, Move Down
+  and Keep Changes. Changes go to the site with your next Save Draft to Site
+  or Publish, and anything in a group QUILL does not show is kept as it was.
+- **Categories of any kind, at their real address.** QUILL now asks the site
+  where each kind of category lives, such as product categories or event
+  categories, instead of guessing from its name, so a plugin's categories
+  that live somewhere unexpected work.
+
 ### Fixes from today's reports (2026-11-09)
 
 - **QUILL no longer closes a moment after it starts.** On wxPython 4.3.2, QUILL

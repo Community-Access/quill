@@ -7766,6 +7766,80 @@ a pull request with one approval, resolved conversations, no force
 pushes, no deletion; admins can still merge. The feature branches stay
 local, since <code>main</code> contains them.</li>
 </ul>
+<h3
+id="2026-11-09-what-the-site-says-about-itself-lists-and-groups-and-the-one-query">2026-11-09:
+what the site says about itself, lists and groups, and the one
+query</h3>
+<p>The groundwork from the WordPress Workbench PRD that does not wait
+for the shared Workbench engine (WP-R-030 to WP-R-034). Not yet tried
+against the live site.</p>
+<ul>
+<li><strong>Taxonomies and statuses come from the site
+(WP-R-031).</strong>
+<code>quill/core/wordpress/site_taxonomies.py</code> reads
+<code>wp/v2/taxonomies</code> and <code>wp/v2/statuses</code> with
+<code>context=edit</code> (and the public answer for an account that may
+not ask for it), and keeps each connection’s answer for ten minutes.
+<code>taxonomy_route()</code> now uses a taxonomy’s own
+<code>rest_base</code> and <code>rest_namespace</code> instead of
+guessing <code>wp/v2/{slug}</code>; categories and tags never cost a
+request of their own, and a site that will not say keeps the old guess.
+A hierarchical custom term keeps its parent on update, and Merge moves
+posts by the taxonomy’s field (<code>genres</code>, not
+<code>genre</code>).</li>
+<li><strong>Writing types, by status (WP-R-032, core).</strong>
+<code>site_types.py</code> returns each type with its names, namespace
+and taxonomies, and can list one type’s items in one status (the
+plugins’ statuses included), count each status from
+<code>X-WP-Total</code>, offer the core six statuses then the site’s
+own, and make a new item of any type with its terms. A type outside
+<code>wp/v2</code> has its whole route as its kind. The browsing and New
+commands are left for the Workbench, where the PRD puts them (a node per
+type, File &gt; New per type); Open is unchanged.</li>
+<li><strong>Lists and groups in Custom Fields (WP-R-033).</strong>
+Registered meta of type <code>array</code> (with <code>items</code>) and
+<code>object</code> (with <code>properties</code>) is now edited, not
+counted: <code>custom_field_shapes.py</code> says each one in a
+sentence, types what was typed into the schema’s types, and keeps every
+key a group came with. In both editors, Custom Fields (and Properties
+after it) opens <strong>Lists and Groups</strong> after the plain
+fields; a group is one form, and a list opens with Add, Edit, Remove,
+Move Up, Move Down and Keep Changes. Changes are kept with the working
+copy and sent with the next Save Draft to Site or Publish. Only a list
+with no <code>items</code> schema, or a list of lists, is still left
+alone. Meta on terms, users and comments is read and written by the same
+functions (<code>object_route</code>, <code>meta_schema_for</code>,
+<code>site_values_for</code>, <code>send_meta</code>); no window offers
+it yet.</li>
+<li><strong>One query builder (WP-R-030 groundwork).</strong>
+<code>query.py</code> is the attribute table the Filter Builder will
+read, every <code>wp/v2</code> collection argument with a label, a kind
+and its operators, plus taxonomies by rule and each route’s own enums.
+<code>build()</code> sends what QUILL never did:
+<code>tax_relation</code>, every <code>_exclude</code>,
+<code>modified_after</code> and <code>modified_before</code>,
+<code>search_columns</code>, <code>search_semantics</code>,
+<code>ignore_sticky</code>, and terms “all of”.</li>
+<li><strong>The combination test (WP-R-030).</strong>
+<code>quill/tools/wordpress_combination_audit.py</code> (rostered in
+<code>platform_report</code> as <code>wordpress-combinations</code>)
+checks the 150 <code>wp/v2</code> routes of the recorded index
+(<code>tests/unit/core/wordpress/fixtures/rest_index_test_site.json</code>):
+every collection argument known, every enum value offered and said in
+words, every writable property a field kind, every method an action.
+Seven plugin orderings without a spoken label are its planned gaps; the
+list may only shrink.</li>
+<li><strong>Advanced Custom Fields, read (WP-R-034).</strong>
+<code>field_plugins.read_acf()</code> reads ACF’s <code>acf</code> field
+where the schema shows it, into the same form.</li>
+<li>Tests: <code>test_wp_discovery.py</code>,
+<code>test_wp_custom_field_shapes.py</code>,
+<code>test_wp_query.py</code>, <code>test_wp_field_plugins.py</code>,
+<code>test_wordpress_combination_audit.py</code>, and five more in
+<code>test_wp_api_writing_fields.py</code>. The live regression
+(<code>docs/qa/wordpress-live-run.py</code>) has not been run on this
+branch.</li>
+</ul>
 <h2 id="19-remaining-tasks">19. Remaining tasks</h2>
 <p><strong>wp-admin parity (9.18), Jeff 2026-11-04, “we should have all
 of this”:</strong></p>
@@ -7808,6 +7882,24 @@ in docs/user guide/wordpress-and-forms/.</label></li>
 <p>This list is kept current. A task is removed when it is done and
 checked, and the progress log above says what was done. Everything not
 listed here is built.</p>
+<h3
+id="workbench-groundwork-workbench-prd-wp-r-030-to-wp-r-034">Workbench
+groundwork (Workbench PRD WP-R-030 to WP-R-034)</h3>
+<ul>
+<li>Run <code>docs/qa/wordpress-live-run.py</code> on the branch before
+it merges: taxonomy discovery, Custom Fields lists and groups, and a
+custom type’s terms have only met recorded responses.</li>
+<li>Custom types in the Workbench: a node per type with its statuses,
+New per type, batch and filters (the core is in
+<code>site_types.py</code>).</li>
+<li>Custom fields on terms, users and comments: a window or sheet page
+(the core is in <code>custom_fields.py</code>).</li>
+<li>Advanced Custom Fields: send changes back as
+<code>{"acf": ...}</code> and show the fields in Custom Fields; Meta
+Box, Pods and CMB2.</li>
+<li>The Filter Builder on <code>query.py</code>, and spoken labels for
+the seven plugin orderings the combination test lists as planned.</li>
+</ul>
 <h3 id="every-route-and-more-value-916">Every route, and more value
 (9.16)</h3>
 <ul>
