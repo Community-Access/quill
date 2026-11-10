@@ -435,6 +435,12 @@ PURPOSES: dict[str, str] = {
         "everything a row can do, and Ctrl+O adds files. Removing an item never "
         "touches the file on your computer."
     ),
+    "Add a Folder": (
+        "Type or paste the path of a folder, or choose Browse to pick one, and "
+        "Quill Radio adds every song, audiobook and video in it. Include "
+        "Subfolders looks inside the folders within it too; Keep Up with the "
+        "Folder adds files that appear there later, whenever the playlist opens."
+    ),
     "Local Media Item Properties": (
         "Everything known about one file in a playlist: its title, artist and "
         "album, its length, where it is on your computer and whether it is still "

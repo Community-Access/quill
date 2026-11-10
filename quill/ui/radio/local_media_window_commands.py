@@ -72,14 +72,19 @@ class LocalMediaCommandsMixin:
 
     def _add(self, *, folder: bool, position: int | None) -> None:
         playlist = self._playlist()
+        target = playlist.id if playlist is not None else ""
+        subfolders, follow = True, True
         if folder:
-            chosen = ui.ask_folder(self._host)
-            paths = [chosen] if chosen else []
+            from quill.ui.radio.local_media_folder_dialog import ask_folder_choice
+
+            choice = ask_folder_choice(self._host, new_playlist=not target)
+            paths = [choice.path] if choice is not None else []
+            if choice is not None:
+                subfolders, follow = choice.subfolders, choice.follow
         else:
             paths = ui.ask_files(self._host)
         if not paths:
             return
-        target = playlist.id if playlist is not None else ""
 
         def _then(made: Playlist, ids: list[int]) -> None:
             rows = [made.index_of(item_id) for item_id in ids]
@@ -91,6 +96,8 @@ class LocalMediaCommandsMixin:
             playlist_id=target,
             position=position,
             folder=paths[0] if folder and not target else "",
+            subfolders=subfolders,
+            follow=follow,
             then=_then,
         )
 
