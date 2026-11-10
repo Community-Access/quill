@@ -54,8 +54,20 @@ class WorkbenchActionsMixin:
             self._say("Could not open this in your browser.")
 
     def show_properties(self) -> None:
-        """Alt+Enter: the selected row's sheet (several rows, and nodes, come later)."""
+        """Alt+Enter: the selected rows' sheet, or the tree node's.
+
+        A provider with ``open_properties(ref, rows)`` owns the whole job:
+        one row, several rows (one sheet, Mixed values), or no rows when focus
+        is in the tree (the node's own object, or the view's options). One
+        without it gets the read-only single-row sheet.
+        """
         chosen = self.selected_indices()
+        opener = getattr(self.provider, "open_properties", None)
+        if callable(opener) and self.current is not None:
+            in_tree = self._wx.Window.FindFocus() is self.tree
+            rows = [] if in_tree else [self.rows[i] for i in chosen]
+            opener(self.current, rows)
+            return
         on_list = self._wx.Window.FindFocus() is self.list or bool(chosen)
         if not on_list or self.current is None:
             self._say("Properties of a tree node come in a later preview.")
