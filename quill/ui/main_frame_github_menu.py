@@ -73,7 +73,8 @@ _NEW_TITLES: dict[str, str] = {
     table.TOGGLE_COMMAND_ID: "GitHub Workbench Mode",
     "github.workbench_inbox": "GitHub Inbox...",
     "github.workbench_my_work": "GitHub My Work...",
-    "github.workbench_issues": "GitHub Issues and Pull Requests...",
+    "github.workbench_issues": "GitHub Issues...",
+    "github.workbench_pulls": "GitHub Pull Requests...",
     "github.workbench_actions_runs": "GitHub Actions Runs...",
     "github.workbench_releases": "GitHub Releases...",
     "github.workbench_explore": "Explore GitHub...",
@@ -106,7 +107,18 @@ class GitHubWorkbenchMenuMixin:
         return GitHubWorkbenchCommands(
             open_items=lambda view: self.open_github_items_viewer(initial_view=view),
             open_explore=self.open_github_explore,
+            open_workbench=lambda node: self.open_github_items_viewer(node=node),
         )
+
+    def _github_editor_command(self, command_id: str) -> bool:
+        """Run one of QUILL's own commands for the Workbench (its Repository Actions)."""
+        if self.commands.get(command_id) is None:
+            return False
+        self.commands.run(command_id)
+        return True
+
+    def _github_editor_has(self, command_id: str) -> bool:
+        return self.commands.get(command_id) is not None
 
     def _github_workbench_available(self) -> bool:
         return bool(self._feature_enabled("core.github_remote"))
@@ -264,6 +276,10 @@ class GitHubWorkbenchMenuMixin:
         assert isinstance(first, table.Row) and first.command_id == table.TOGGLE_COMMAND_ID
         menu.Append(leave_id, self._menu_label(_(first.label), table.TOGGLE_COMMAND_ID))
         self._github_fill(menu, rest)
+        # The rows that left the menu keep a menu id, so a key somebody bound to
+        # one still fires while the mode is on (GitHub PRD section 6).
+        for row in table.MOVED_OUT_ROWS:
+            self._github_row_id(row.command_id)
         # A literal, so the bar gates read it (test_menu_bar_access_keys, the menu
         # shape gate); a test holds it equal to table.GITHUB_MENU_TITLE.
         menu_bar.Append(menu, _("&GitHub"))
@@ -283,7 +299,11 @@ class GitHubWorkbenchMenuMixin:
     def _command_to_menu_id_map(self) -> dict[str, int]:
         """Add the GitHub rows, so a key bound to one fires in either mode."""
         mapping: dict[str, int] = super()._command_to_menu_id_map()  # type: ignore[misc]
-        for command_id in (*table.command_ids(), *table.command_ids(table.NORMAL_REMOTE_ROWS)):
+        for command_id in (
+            *table.command_ids(),
+            *table.command_ids(table.NORMAL_REMOTE_ROWS),
+            *table.command_ids(table.MOVED_OUT_ROWS),
+        ):
             if command_id in mapping:
                 continue
             attribute = _EXISTING_IDS.get(command_id)

@@ -255,7 +255,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 584.</p>
+<p>Editor commands with default bindings: 585.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -2417,7 +2417,7 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>(unbound by default)</td>
-<td>Clone repository</td>
+<td>Clone Repository…</td>
 <td><code>github.clone_repository</code></td>
 </tr>
 <tr>
@@ -2504,6 +2504,11 @@ your own customised keymap.</p>
 <td>(unbound by default)</td>
 <td>Workbench my work</td>
 <td><code>github.workbench_my_work</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Workbench pulls</td>
+<td><code>github.workbench_pulls</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
@@ -4740,6 +4745,420 @@ never inside the QUILL editor.</p>
 <td>Ctrl+F5</td>
 <td>Describe picture</td>
 <td><code>beacon.describe_picture</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="github-workbench-app-keys">GitHub Workbench (app keys)</h2>
+<p>App keys, not editor keys: these apply inside the app named above and
+never inside the QUILL editor.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+<th>Command id</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alt+1</td>
+<td>Where Am I</td>
+<td><code>github.workbench.where_am_i</code></td>
+</tr>
+<tr>
+<td>Alt+2</td>
+<td>Say Selection</td>
+<td><code>github.workbench.say_selection</code></td>
+</tr>
+<tr>
+<td>Alt+3</td>
+<td>Say Item State</td>
+<td><code>github.workbench.say_item</code></td>
+</tr>
+<tr>
+<td>Alt+4</td>
+<td>Say Counts</td>
+<td><code>github.workbench.say_counts</code></td>
+</tr>
+<tr>
+<td>Alt+5</td>
+<td>Say Your Access</td>
+<td><code>github.workbench.say_access</code></td>
+</tr>
+<tr>
+<td>Alt+6</td>
+<td>Say Rate Limit</td>
+<td><code>github.workbench.say_rate</code></td>
+</tr>
+<tr>
+<td>Alt+7</td>
+<td>Say Filter</td>
+<td><code>github.workbench.say_filter</code></td>
+</tr>
+<tr>
+<td>Alt+8</td>
+<td>Say Loading</td>
+<td><code>github.workbench.say_loading</code></td>
+</tr>
+<tr>
+<td>Alt+9</td>
+<td>Say Account</td>
+<td><code>github.workbench.say_account</code></td>
+</tr>
+<tr>
+<td>Alt+Enter</td>
+<td>Properties…</td>
+<td><code>github.workbench.properties</code></td>
+</tr>
+<tr>
+<td>Alt+F1</td>
+<td>What Is This?</td>
+<td><code>github.workbench.glossary</code></td>
+</tr>
+<tr>
+<td>Alt+F4</td>
+<td>Close Workbench</td>
+<td><code>github.workbench.close</code></td>
+</tr>
+<tr>
+<td>Alt+Home</td>
+<td>Inbox (second key)</td>
+<td><code>github.workbench.inbox_home</code></td>
+</tr>
+<tr>
+<td>Alt+Left</td>
+<td>Back</td>
+<td><code>github.workbench.back</code></td>
+</tr>
+<tr>
+<td>Alt+PageDown</td>
+<td>Load More</td>
+<td><code>github.workbench.load_more</code></td>
+</tr>
+<tr>
+<td>Alt+Right</td>
+<td>Forward</td>
+<td><code>github.workbench.forward</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+F1</td>
+<td>Workbench Keys</td>
+<td><code>github.workbench.keys</code></td>
+</tr>
+<tr>
+<td>Alt+Up</td>
+<td>Parent Node</td>
+<td><code>github.workbench.go_parent</code></td>
+</tr>
+<tr>
+<td>Ctrl+0</td>
+<td>Across Repositories</td>
+<td><code>github.workbench.go_across</code></td>
+</tr>
+<tr>
+<td>Ctrl+1</td>
+<td>Inbox</td>
+<td><code>github.workbench.go_inbox</code></td>
+</tr>
+<tr>
+<td>Ctrl+2</td>
+<td>Current Repository</td>
+<td><code>github.workbench.go_repository</code></td>
+</tr>
+<tr>
+<td>Ctrl+3</td>
+<td>Search</td>
+<td><code>github.workbench.go_search</code></td>
+</tr>
+<tr>
+<td>Ctrl+4</td>
+<td>People</td>
+<td><code>github.workbench.go_people</code></td>
+</tr>
+<tr>
+<td>Ctrl+5</td>
+<td>Gists</td>
+<td><code>github.workbench.go_gists</code></td>
+</tr>
+<tr>
+<td>Ctrl+6</td>
+<td>Projects</td>
+<td><code>github.workbench.go_projects</code></td>
+</tr>
+<tr>
+<td>Ctrl+7</td>
+<td>Watches</td>
+<td><code>github.workbench.go_watches</code></td>
+</tr>
+<tr>
+<td>Ctrl+8</td>
+<td>Saved Searches</td>
+<td><code>github.workbench.go_saved_searches</code></td>
+</tr>
+<tr>
+<td>Ctrl+9</td>
+<td>Start Here</td>
+<td><code>github.workbench.go_start</code></td>
+</tr>
+<tr>
+<td>Ctrl+A</td>
+<td>Select All</td>
+<td><code>github.workbench.select_all</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+F</td>
+<td>Filter Builder…</td>
+<td><code>github.workbench.filter_builder</code></td>
+</tr>
+<tr>
+<td>Ctrl+C</td>
+<td>Copy</td>
+<td><code>github.workbench.copy</code></td>
+</tr>
+<tr>
+<td>Ctrl+Cancel</td>
+<td>Cancel Run… (Ctrl+Break, in the list)</td>
+<td><code>github.workbench.cancel_run</code></td>
+</tr>
+<tr>
+<td>Ctrl+D</td>
+<td>Add to or Remove from Favorites</td>
+<td><code>github.workbench.favorite</code></td>
+</tr>
+<tr>
+<td>Ctrl+E</td>
+<td>Filter…</td>
+<td><code>github.workbench.filter</code></td>
+</tr>
+<tr>
+<td>Ctrl+Enter</td>
+<td>Open in Editor</td>
+<td><code>github.workbench.open_in_editor</code></td>
+</tr>
+<tr>
+<td>Ctrl+F1</td>
+<td>GitHub Workbench Guide</td>
+<td><code>github.workbench.guide_chapter</code></td>
+</tr>
+<tr>
+<td>Ctrl+F5</td>
+<td>Refresh Ignoring Cache</td>
+<td><code>github.workbench.refresh_uncached</code></td>
+</tr>
+<tr>
+<td>Ctrl+G</td>
+<td>Go to Number…</td>
+<td><code>github.workbench.go_to_number</code></td>
+</tr>
+<tr>
+<td>Ctrl+L</td>
+<td>Open GitHub Address…</td>
+<td><code>github.workbench.open_address</code></td>
+</tr>
+<tr>
+<td>Ctrl+N</td>
+<td>New Here…</td>
+<td><code>github.workbench.new_here</code></td>
+</tr>
+<tr>
+<td>Ctrl+Q</td>
+<td>Mark Read</td>
+<td><code>github.workbench.mark_read</code></td>
+</tr>
+<tr>
+<td>Ctrl+R</td>
+<td>Refresh (second key)</td>
+<td><code>github.workbench.refresh_alias</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+0</td>
+<td>Insights</td>
+<td><code>github.workbench.go_insights</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+1</td>
+<td>Issues</td>
+<td><code>github.workbench.go_issues</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+2</td>
+<td>Pull Requests</td>
+<td><code>github.workbench.go_pulls</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+3</td>
+<td>Discussions</td>
+<td><code>github.workbench.go_discussions</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+4</td>
+<td>Actions Runs</td>
+<td><code>github.workbench.go_runs</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+5</td>
+<td>Files</td>
+<td><code>github.workbench.go_files</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+6</td>
+<td>Releases</td>
+<td><code>github.workbench.go_releases</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+7</td>
+<td>Repository Projects</td>
+<td><code>github.workbench.go_repo_projects</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+8</td>
+<td>Security</td>
+<td><code>github.workbench.go_security</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+9</td>
+<td>Settings</td>
+<td><code>github.workbench.go_settings</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+A</td>
+<td>Assign to Copilot…</td>
+<td><code>github.workbench.assign_copilot</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+B</td>
+<td>Compare Branches…</td>
+<td><code>github.workbench.compare</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+C</td>
+<td>Copy Link</td>
+<td><code>github.workbench.copy_link</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+D</td>
+<td>File Differences…</td>
+<td><code>github.workbench.diff</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+E</td>
+<td>Switch to Editor</td>
+<td><code>github.workbench.switch_to_editor</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Enter</td>
+<td>Merge…</td>
+<td><code>github.workbench.merge</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F</td>
+<td>Filter… (second key)</td>
+<td><code>github.workbench.filter_alias</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F1</td>
+<td>Search Help…</td>
+<td><code>github.workbench.search_help</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F5</td>
+<td>Re-run Failed Jobs</td>
+<td><code>github.workbench.rerun_failed</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+G</td>
+<td>Repository Actions…</td>
+<td><code>github.workbench.repository_actions</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+K</td>
+<td>Manage GitHub Accounts…</td>
+<td><code>github.workbench.manage_accounts</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+L</td>
+<td>GitHub API Rate Limit</td>
+<td><code>github.workbench.rate_limit</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+M</td>
+<td>Comment…</td>
+<td><code>github.workbench.comment</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+N</td>
+<td>New…</td>
+<td><code>github.workbench.new_any</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+O</td>
+<td>Workbench Options…</td>
+<td><code>github.workbench.options</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Q</td>
+<td>Mark All Read in View</td>
+<td><code>github.workbench.mark_all_read</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+R</td>
+<td>Run Workflow on Branch…</td>
+<td><code>github.workbench.run_workflow</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+T</td>
+<td>Start in Local Worktree…</td>
+<td><code>github.workbench.start_worktree</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+W</td>
+<td>What Failed…</td>
+<td><code>github.workbench.what_failed</code></td>
+</tr>
+<tr>
+<td>Delete</td>
+<td>Remove, safely (in the list)</td>
+<td><code>github.workbench.remove</code></td>
+</tr>
+<tr>
+<td>F1</td>
+<td>Help for This View</td>
+<td><code>github.workbench.help_view</code></td>
+</tr>
+<tr>
+<td>F5</td>
+<td>Refresh</td>
+<td><code>github.workbench.refresh</code></td>
+</tr>
+<tr>
+<td>F6</td>
+<td>Next Pane</td>
+<td><code>github.workbench.next_pane</code></td>
+</tr>
+<tr>
+<td>F9</td>
+<td>Say Last Result Again</td>
+<td><code>github.workbench.repeat_result</code></td>
+</tr>
+<tr>
+<td>Shift+Enter</td>
+<td>Open on GitHub</td>
+<td><code>github.workbench.open_on_github</code></td>
+</tr>
+<tr>
+<td>Shift+F1</td>
+<td>What Can I Do Here?…</td>
+<td><code>github.workbench.what_can_i_do</code></td>
+</tr>
+<tr>
+<td>Shift+F6</td>
+<td>Previous Pane</td>
+<td><code>github.workbench.previous_pane</code></td>
+</tr>
+<tr>
+<td>Shift+F9</td>
+<td>Explain That</td>
+<td><code>github.workbench.explain_result</code></td>
 </tr>
 </tbody>
 </table>

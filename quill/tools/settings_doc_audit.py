@@ -60,6 +60,9 @@ STATUSES = frozenset({DOCUMENTED, INTERNAL, GRANDFATHERED, MISSING})
 _CORPUS_PATHS = (
     "docs/user guide/userguide.md",
     "quill/core/help/topics.json",
+    # The GitHub Workbench's own preferences (github_workbench.json) are in the
+    # Workbench reference, generated from their authored help (GitHub PRD 4.1).
+    "docs/github/workbench-reference.md",
 )
 _CORPUS_GLOBS = (
     # The user guide's chapters (quill/core/user_guide_files.py); the contents
@@ -76,9 +79,17 @@ _CORPUS_GLOBS = (
 
 
 def setting_fields() -> list[str]:
+    """Every editor setting, then every GitHub Workbench preference.
+
+    The Workbench's preferences live in ``github_workbench.json``
+    (:mod:`quill.core.github.workbench_prefs`), not in ``Settings``, and are
+    held to the same rule: a new one is ``missing`` until it is documented.
+    """
+    from quill.core.github.workbench_prefs import WorkbenchPrefs
     from quill.core.settings import Settings
 
-    return [field.name for field in dataclasses.fields(Settings)]
+    names = [field.name for field in dataclasses.fields(Settings)]
+    return names + [field.name for field in dataclasses.fields(WorkbenchPrefs)]
 
 
 @lru_cache(maxsize=1)

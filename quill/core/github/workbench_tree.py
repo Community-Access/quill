@@ -177,6 +177,24 @@ _FIXED: tuple[NodeSpec, ...] = (
     _n("gists", "Gists"),
     _n("my_gists", "My Gists", "gists", needs=_SIGN_IN, loader="explore:gists", row_type="gist"),
     _n("projects", "Projects", needs=_SIGN_IN, loader="projects:mine", row_type="project"),
+    # Places still to come, shown so Ctrl+7 and Ctrl+0 land somewhere that says
+    # what they will hold (PRD 22.5 Watches, 22.11 Across Repositories).
+    _n("watches", "Watches"),
+    _n("across", "Across Repositories"),
+    # Help is a place, not only a key (Part D11): the same branch in both
+    # Workbenches, every node a list you can type through and filter.
+    _n("help", "Help and Learning"),
+    *(
+        _n(key, label, "help", loader=f"help:{view}", row_type="help_topic")
+        for key, label, view in (
+            ("help_tasks", "Do Something", "tasks"),
+            ("help_guide", "The Guide", "guide"),
+            ("help_words", "Words", "words"),
+            ("help_keys", "Keys", "keys"),
+            ("help_changes", "What Changed", "changes"),
+            ("help_ask", "Ask a Person", "ask"),
+        )
+    ),
 )
 
 

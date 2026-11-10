@@ -33,6 +33,16 @@ _KINDS = {
     "discussion": "discussion",
     "security": "security_alert",
     "cache": "cache",
+    # The Phase 3 loaders' rows (quill/ui/github_workbench_loaders.py).
+    "saved_search": "saved_search",
+    "file": "file",
+    "folder": "folder",
+    "milestone": "milestone",
+    "project": "project",
+    "org": "organization",
+    "favorite": "favorite",
+    "admin_action": "admin_action",
+    "help_topic": "help_topic",
 }
 
 #: My Work's sources, as Explore labels them, for each reason preset.

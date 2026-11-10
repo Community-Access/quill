@@ -45,6 +45,7 @@ __all__ = [
     "LITE_GITHUB_MENU",
     "LITE_NORMAL_HANDLERS",
     "LOCAL_GIT_ROWS",
+    "MOVED_OUT_ROWS",
     "NEW_COMMAND_IDS",
     "NORMAL_REMOTE_ROWS",
     "REPOSITORY_ROWS",
@@ -204,43 +205,52 @@ LITE_NORMAL_HANDLERS: tuple[str, ...] = (
 # The GitHub menu
 # ---------------------------------------------------------------------------
 
-#: The GitHub menu, in order. The repository readout (a disabled row, the one
-#: exemption from the accelerator rule) goes above all of it when the window
-#: knows a repository; see :func:`readout_label`.
+#: The GitHub menu, in order: a short list of doors into the GitHub Workbench
+#: window (GitHub PRD section 6, Phase 4). The repository readout (a disabled
+#: row, the one exemption from the accelerator rule) goes above all of it when
+#: the window knows a repository; see :func:`readout_label`.
 WORKBENCH_ROWS: tuple[Entry, ...] = (
     # V: L is Local Git's, below.
     Row(TOGGLE_COMMAND_ID, "Lea&ve Workbench Mode", TOGGLE_LITE_HANDLER),
     None,
-    # Your work.
-    Row("github.workbench_inbox", "&Inbox...", "cmd_github_inbox"),
-    Row("github.workbench_my_work", "My &Work...", "cmd_github_my_work"),
-    Row("github.view_notifications", "&Notifications...", "cmd_github_notifications"),
+    # The doors: the Workbench, and the places people open it for.
+    Row("file.open_github_items", "Open GitHub &Workbench", "cmd_github_workbench"),
+    Row("github.workbench_inbox", "&Inbox", "cmd_github_inbox"),
+    # S: I is Inbox's.
+    Row("github.workbench_issues", "This Repository's I&ssues", "cmd_github_issues"),
+    Row("github.workbench_pulls", "This Repository's &Pull Requests", "cmd_github_pulls"),
+    Row("github.workbench_actions_runs", "&Actions Runs", "cmd_github_actions_runs"),
     None,
-    # This repository.
-    Row("github.workbench_issues", "Issues and &Pull Requests...", "cmd_github_issues"),
-    Row("github.workbench_actions_runs", "&Actions Runs...", "cmd_github_actions_runs"),
-    Row("github.workbench_releases", "R&eleases...", "cmd_github_releases"),
-    # T: I is Inbox's.
-    Row("file.open_github_items", "Repository I&tems...", "cmd_github_workbench"),
-    None,
-    # Find.
-    Row("github.workbench_explore", "E&xplore GitHub...", "cmd_github_explore"),
-    Row("file.open_github_reference", "Open GitHub &Reference..."),
-    Row("file.open_github_repository", "&Open a Repository..."),
+    # D: A is Actions Runs'. QUILL only: QUILL Lite has no such command.
+    Row("file.open_github_reference", "Open GitHub A&ddress..."),
     Row("github.clone_repository", "&Clone Repository...", "cmd_github_clone"),
     None,
-    # Files (QUILL only: QUILL Lite has no such commands).
-    Row("file.open_github_file_url", "GitHub File &URL..."),
+    # The working copy (QUILL only: QUILL Lite has no such commands).
     Row("file.github_save_back", "Co&mmit to GitHub..."),
     Row("sync.sync_folder", "S&ync Folder with GitHub..."),
-    Submenu("Repository A&dmin", _ADMIN_ROWS),
     Submenu("&Local Git", LOCAL_GIT_ROWS),
-    Submenu("Code&spaces", _CODESPACE_ROWS),
     None,
     # A few times a year, so last, as the AI menu's Accounts and Usage is.
     Row("file.github_manage_accounts", "Mana&ge GitHub Accounts...", "cmd_github_manage_accounts"),
-    # H: G is Manage Accounts', I is Inbox's. Help keeps its own row too.
+    # H: G is Manage Accounts'. Help keeps its own row too.
     Row("help.github_guide", "Open Git&Hub Guide", "cmd_github_guide"),
+)
+
+#: The rows that left the GitHub menu in Phase 4 (GitHub PRD section 6). Each
+#: keeps its command id, its registration and any key somebody bound to it,
+#: and opens the Workbench at the matching place (My Work, Notifications,
+#: Releases, Repository Items, Explore GitHub) or runs as before (Repository
+#: Admin and Codespaces, which the Workbench's Repository > Repository
+#: Actions... now lists). Inbox is the one door for "what needs me".
+MOVED_OUT_ROWS: tuple[Row, ...] = (
+    Row("github.workbench_my_work", "My &Work...", "cmd_github_my_work"),
+    Row("github.view_notifications", "&Notifications...", "cmd_github_notifications"),
+    Row("github.workbench_releases", "R&eleases...", "cmd_github_releases"),
+    Row("github.workbench_explore", "E&xplore GitHub...", "cmd_github_explore"),
+    Row("file.open_github_repository", "&Open a Repository..."),
+    Row("file.open_github_file_url", "GitHub File &URL..."),
+    *(row for row in _ADMIN_ROWS if isinstance(row, Row)),
+    *(row for row in _CODESPACE_ROWS if isinstance(row, Row)),
 )
 
 #: The command ids this program added (everything else in the table existed).
@@ -253,6 +263,8 @@ NEW_COMMAND_IDS: tuple[str, ...] = (
     "github.workbench_releases",
     "github.workbench_explore",
     "github.clone_repository",
+    # Phase 4 (GitHub PRD section 6): the Workbench's Pull Requests door.
+    "github.workbench_pulls",
 )
 
 
@@ -390,15 +402,19 @@ LiteRow = tuple[str, str, str, str, str]
 def lite_rows() -> tuple[LiteRow, ...]:
     """The GitHub menu's own rows for QUILL Lite's command table.
 
-    Only the commands that exist *nowhere else* in that table (Inbox, My Work,
-    Notifications, the three views, Explore): the moved rows keep their one row
-    in File, the switch its row in View and the guide its row in Help, so every
-    handler is in the table once. :func:`lite_arrange` builds the real menu.
+    Only the commands that exist *nowhere else* in that table (Inbox, the three
+    repository doors, and the rows that left the menu in Phase 4 but keep their
+    command: My Work, Notifications, Releases, Explore): the moved rows keep
+    their one row in File, the switch its row in View and the guide its row in
+    Help, so every handler is in the table once. :func:`lite_arrange` builds the
+    real menu, which holds only :data:`LITE_GITHUB_MENU`; the rest stay in the
+    Command Palette.
     """
     elsewhere = {*LITE_NORMAL_HANDLERS, TOGGLE_LITE_HANDLER, "cmd_github_guide"}
+    moved = tuple(row for row in MOVED_OUT_ROWS if row.lite_handler)
     return tuple(
         (GITHUB_MENU_TITLE, row.label, "", row.lite_handler, "")
-        for row in _walk(LITE_GITHUB_MENU)
+        for row in (*_walk(LITE_GITHUB_MENU), *moved)
         if row.lite_handler not in elsewhere
     )
 

@@ -177,6 +177,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.beacon_help_audit"),
     ),
     Gate(
+        "github-help",
+        "GATE-GITHUB-HELP: every GitHub window, control, node, row and option answers F1",
+        (sys.executable, "-m", "quill.tools.github_help_audit"),
+    ),
+    Gate(
         "lite-help",
         "GATE-LITE-HELP: every QUILL Lite surface and control answers F1",
         (sys.executable, "-m", "quill.tools.lite_help_audit"),

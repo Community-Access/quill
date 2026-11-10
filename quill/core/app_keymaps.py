@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from quill.core.app_keymaps_ai import SMALL_APP_AI_KEYMAPS, with_agent_tasks
 from quill.core.family_chords import SHOW_HIDE_DEFAULTS
+from quill.core.github.workbench_window_menu import WORKBENCH_KEYMAP_ID, WORKBENCH_KEYS
 from quill.core.keymap import DEFAULT_KEYMAP
 from quill.core.radio.dial_tuning import DIAL_KEYS
 from quill.core.radio.song_marks import SONG_MARK_KEYS
@@ -509,6 +510,7 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
         **SMALL_APP_AI_KEYMAPS["weather"],  # AI rows, rule-11 comments: app_keymaps_ai.py
     },
     **{app: rows for app, rows in SMALL_APP_AI_KEYMAPS.items() if app != "weather"},
+    WORKBENCH_KEYMAP_ID: dict(WORKBENCH_KEYS),  # the GitHub Workbench window (PRD Part C)
 })
 
 #: The QuillVille menu's sibling launchers, numbered in menu order. Kept here

@@ -1,6 +1,7 @@
 """Every contents page lists all of the GitHub Guide, and every route to it works.
 
-The GitHub Guide is eleven chapters. QUILL's contents page listed five until
+The GitHub Guide is twelve chapters (eleven until Chapter 12, the Workbench,
+2026-11-10). QUILL's contents page listed five until
 2026-11-08, so six chapters were reachable only from inside the guide itself.
 """
 
@@ -31,10 +32,10 @@ def _chapters(folder: Path, prefix: str) -> set[str]:
 
 
 @pytest.mark.parametrize("contents", list(_CONTENTS), ids=lambda p: p.name)
-def test_every_contents_page_lists_all_eleven_chapters(contents: Path) -> None:
+def test_every_contents_page_lists_all_twelve_chapters(contents: Path) -> None:
     folder, prefix = _CONTENTS[contents]
     chapters = _chapters(folder, prefix)
-    assert len(chapters) == 11
+    assert len(chapters) == 12
     text = contents.read_text(encoding="utf-8")
     linked = set(re.findall(rf"({re.escape(prefix)}\d\d-[a-z0-9-]+)\.html", text))
     assert linked == chapters, sorted(chapters - linked)
@@ -50,7 +51,7 @@ def test_the_rendered_guide_links_every_github_chapter_to_its_shipped_page() -> 
     guide = {path.resolve() for path in ugf.guide_files(ugf.QUILL_GUIDE)}
     localised = ugf._localise_links(ugf.QUILL_GUIDE, text, guide)
     uris = set(re.findall(r"\]\((file:[^)#\s]*github-guide-\d\d-[^)#\s]*\.html)", localised))
-    assert len(uris) == 11
+    assert len(uris) == 12
     assert "](./github-guide/" not in localised
 
 

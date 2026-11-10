@@ -1119,11 +1119,13 @@ page.
 
 **View > GitHub Workbench Mode** (**Alt+V**, then **K**) is for an afternoon of
 GitHub work. A **GitHub** menu (**Alt+G**) joins the menu bar after Tools, and
-the three GitHub rows above move into it, next to rows that open a view in
-one step: **Inbox...**, **My Work...**, **Notifications...**,
-**Issues and Pull Requests...**, **Actions Runs...**, **Releases...** and
-**Explore GitHub...**. Its first row, **Leave Workbench Mode**, turns it off
-again, and the rows go back to File. The mode belongs to one window; the
+the three GitHub rows above move into it, next to the doors into the GitHub
+Workbench: **Open GitHub Workbench**, **Inbox**, **This Repository's Issues**,
+**This Repository's Pull Requests** and **Actions Runs**. My Work...,
+Notifications..., Releases... and Explore GitHub... are no longer on the menu,
+but they are still in the Command Palette, and each opens the Workbench at the
+matching place. Its first row, **Leave Workbench Mode**, turns it off again,
+and the rows go back to File. The mode belongs to one window; the
 others keep their own menus. It works in the empty window too, where it makes
 a GitHub launcher with nothing to write in. Chapter 2 of the GitHub Guide
 walks through the menu.

@@ -93,11 +93,19 @@ class GitHubWorkbenchLiteMixin:
 
     # -- the two windows ---------------------------------------------------- #
 
-    def open_github_items(self, initial_view: str = "", reference: Any = None) -> None:
-        """GitHub Items, on a view (the GitHub menu) or a reference (from Explore)."""
+    def open_github_items(
+        self, initial_view: str = "", reference: Any = None, node: str = ""
+    ) -> None:
+        """GitHub Items, on a view (the GitHub menu) or a reference (from Explore).
+
+        With the GitHub Workbench in use, the Workbench window instead, at
+        *node* (a door's place) or *initial_view* (an Items view).
+        """
         from quill.ui.github_items_dialog import GitHubItemsDialog
 
-        provider = self._github_provider(lambda: self.open_github_items(initial_view, reference))
+        provider = self._github_provider(
+            lambda: self.open_github_items(initial_view, reference, node)
+        )
         if provider is None:
             return
         from quill.ui.github_workbench_commands import open_in_workbench_window
@@ -109,6 +117,11 @@ class GitHubWorkbenchLiteMixin:
             repository=self._github_repository(),
             view=initial_view,
             announce=self._announce,  # type: ignore[attr-defined]
+            node=node,
+            editor_command=self._github_editor_command,
+            editor_command_available=self._github_editor_has,
+            open_file_url=self._open_github_file_reference,  # type: ignore[attr-defined]
+            guide_product="quilllite",
         ):
             return
         try:
@@ -151,7 +164,30 @@ class GitHubWorkbenchLiteMixin:
     def _github_views(self) -> Any:
         from quill.ui.github_workbench_commands import GitHubWorkbenchCommands
 
-        return GitHubWorkbenchCommands(self.open_github_items, self.open_github_explore)
+        return GitHubWorkbenchCommands(
+            self.open_github_items,
+            self.open_github_explore,
+            lambda node: self.open_github_items(node=node),
+        )
+
+    def _github_editor_handler(self, command_id: str) -> Any:
+        """QUILL Lite's handler for QUILL's *command_id*, or None (the parity table)."""
+        from quill.core.lite.parity import COMMAND_EQUIVALENTS
+
+        name = next((h for h, cid in COMMAND_EQUIVALENTS.items() if cid == command_id), "")
+        handler = getattr(self, name, None) if name else None
+        return handler if callable(handler) else None
+
+    def _github_editor_command(self, command_id: str) -> bool:
+        """Run QUILL Lite's own command for the Workbench (its Repository Actions)."""
+        handler = self._github_editor_handler(command_id)
+        if handler is None:
+            return False
+        handler()
+        return True
+
+    def _github_editor_has(self, command_id: str) -> bool:
+        return self._github_editor_handler(command_id) is not None
 
     # -- the rows ----------------------------------------------------------- #
 
@@ -174,6 +210,10 @@ class GitHubWorkbenchLiteMixin:
     def cmd_github_issues(self) -> None:
         """GitHub > Issues and Pull Requests...: GitHub Items on its issues view."""
         self._github_views().issues()
+
+    def cmd_github_pulls(self) -> None:
+        """GitHub > This Repository's Pull Requests: the Workbench's Pull Requests node."""
+        self._github_views().pulls()
 
     def cmd_github_actions_runs(self) -> None:
         """GitHub > Actions Runs...: GitHub Items on its runs view."""

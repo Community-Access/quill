@@ -56,10 +56,11 @@ class MonitorSpec:
     """The per-monitor defaults and limits behind the shared triple.
 
     ``interval_setting`` names the :class:`~quill.core.settings.Settings` field
-    holding the user's chosen cadence, and ``interval_unit`` says whether that
-    field is stored in seconds or minutes -- a watched folder is tuned in
-    seconds, a feed check in minutes, and forcing either into the other's unit
-    would make one of the two spin boxes absurd.
+    holding the user's chosen cadence (for GitHub, the field of
+    :class:`quill.core.github.workbench_prefs.WorkbenchPrefs`), and
+    ``interval_unit`` says whether that field is stored in seconds or minutes
+    -- a watched folder is tuned in seconds, a feed check in minutes, and
+    forcing either into the other's unit would make one of the two spin boxes absurd.
 
     The weather monitor keeps its cadence in its own config file
     (``core/weather/monitor.py``) rather than in ``Settings``; its
@@ -141,10 +142,12 @@ MONITOR_SPECS: dict[str, MonitorSpec] = {
         default_seconds=15 * _SECONDS_PER_MINUTE,
         minimum_seconds=5 * _SECONDS_PER_MINUTE,
         maximum_seconds=24 * _SECONDS_PER_HOUR,
-        interval_setting="github_poll_interval_minutes",
+        # Read off the GitHub Workbench's own preferences, not the editor's
+        # Settings (GitHub PRD 4.1): quill.core.github.workbench_prefs.
+        interval_setting="poll_interval_minutes",
         interval_unit="minutes",
-        tick_setting="github_poll_audible_tick",
-        interrupt_setting="github_poll_interrupt_speech",
+        tick_setting="poll_audible_tick",
+        interrupt_setting="poll_interrupt_speech",
     ),
 }
 

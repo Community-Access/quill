@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 12: The GitHub Workbench, place by place</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-12-the-github-workbench-place-by-place">Chapter 12: The
+GitHub Workbench, place by place</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>The GitHub Workbench is one window for everything GitHub: what needs
+you, your repositories, searches, people, gists and projects. This
+chapter walks through it the way the window is laid out, one place at a
+time, starting with Start Here. By the end you will know where each
+thing lives, how to get there in one key, and how to ask the window what
+you can do wherever you are.</p>
+<p>Every later section assumes three things, so here they are first.</p>
+<ul>
+<li><strong>Three panes.</strong> The tree on the left says where you
+are. The list says what is there. The details say what the selected row
+is. <code>F6</code> moves from pane to pane and then to the status bar;
+<code>Shift+F6</code> goes the other way.</li>
+<li><strong>Enter does the obvious thing.</strong> On an issue it reads
+it, on a pull request it opens the review, on a run it shows the jobs,
+on a repository it opens the repository’s own place in the tree.</li>
+<li><strong>You can always ask.</strong> <code>Shift+F1</code> lists
+everything you can do with what is selected, with each key, and says why
+anything greyed out is greyed. <code>F1</code> says what the place and
+the control you are on are for.</li>
+</ul>
+<h2 id="opening-it">Opening it</h2>
+<p>In either editor, turn on <strong>View &gt; GitHub Workbench
+Mode</strong> (<code>Alt+V</code>, then <code>K</code>), and the GitHub
+menu (<code>Alt+G</code>) has the doors in: the Workbench itself, Inbox,
+this repository’s issues, its pull requests and its Actions runs. Each
+door opens the window at that place. If the window is already open, the
+door brings it forward instead of opening a second one.</p>
+<p>The Workbench is a window of its own, not a dialog. The editor stays
+usable while it is open, and <code>Alt+Tab</code> moves between them.
+Inside the Workbench, <code>Ctrl+Shift+E</code> brings back the editor
+that opened it. <code>Alt+F4</code> closes the Workbench;
+<code>Escape</code> never does. Escape clears the filter box first, and
+then goes back to where you were.</p>
+<p>The window remembers where you were for each account: the place you
+had selected, the branches of the tree you had open, and the
+repositories you visited. Next time it opens there, unless you have
+chosen Inbox or Start Here in Workbench Options.</p>
+<h2 id="start-here">Start Here</h2>
+<p>The first place in the tree, and the place the window opens until you
+have signed in. Its details pane says what the window is, whether you
+are signed in, and the five keys to learn first: <code>F6</code>,
+<code>Enter</code>, <code>Shift+F1</code>, <code>Alt+Enter</code> and
+<code>Backspace</code>. <code>Ctrl+9</code> comes back here from
+anywhere.</p>
+<h2 id="needs-my-attention">Needs My Attention</h2>
+<p>Everything waiting on you, across GitHub. <code>Ctrl+1</code> goes
+straight to Inbox, the first place under it.</p>
+<ul>
+<li><strong>Inbox</strong> gathers what needs you: notifications, review
+requests, assignments and mentions, in one list.</li>
+<li><strong>Notifications</strong> is GitHub’s own list.
+<code>Ctrl+Q</code> marks the selected one read, <code>Delete</code>
+marks it done, and <code>Ctrl+Shift+Q</code> marks the whole list read;
+it asks first when there are more than twenty.</li>
+<li><strong>Review Requests</strong>, <strong>Assigned to Me</strong>,
+<strong>Mentions</strong>, <strong>My Open Pull Requests</strong> and
+<strong>My Open Issues</strong> are the same work split by why it is
+yours.</li>
+<li><strong>My Activity Feed</strong> is what you did lately.</li>
+</ul>
+<p>When one of these is empty, the details pane says so and says what
+would fill it, so an empty list never leaves you wondering whether it
+loaded.</p>
+<h2 id="repositories">Repositories</h2>
+<p>The repository you are working in comes first, then Pinned,
+Favorites, your own repositories, Starred, Watched and your
+organizations. <code>Ctrl+2</code> goes to the repository you are
+working in. <code>Ctrl+L</code> opens any other one: type
+<code>owner/name</code>, or paste a link, and it gets a place of its own
+here.</p>
+<p>Every repository has the same places under it, in the same order, so
+once you know one you know them all. <code>Ctrl+Shift+1</code> to
+<code>Ctrl+Shift+0</code> jump to them:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Place</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+Shift+1</code></td>
+<td>Issues</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+2</code></td>
+<td>Pull Requests</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+3</code></td>
+<td>Discussions</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+4</code></td>
+<td>Actions, on its Runs</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+5</code></td>
+<td>Code, on its Files</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+6</code></td>
+<td>Releases</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+7</code></td>
+<td>The repository’s Projects</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+8</code></td>
+<td>Security</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+9</code></td>
+<td>Settings</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+0</code></td>
+<td>Insights</td>
+</tr>
+</tbody>
+</table>
+<p>A few things worth knowing:</p>
+<ul>
+<li><strong>Issues and Pull Requests</strong> has both in one list,
+newest first, if you prefer reading them the way an inbox reads.</li>
+<li><strong>Files</strong> lists the default branch a folder at a time.
+Enter on a folder opens it, and the first row, Up one folder, comes back
+out. Enter on a file opens it in the editor.</li>
+<li><strong>Settings</strong> lists the settings you can change, General
+and Branch Protection. Enter on one opens the same dialog the editor has
+always used, and that dialog asks before anything changes.</li>
+<li><strong>Repository Actions</strong>, <code>Ctrl+Shift+G</code>,
+lists everything else you can do with the repository: star it, fork it,
+clone it, Codespaces, and its administration.</li>
+</ul>
+<p><code>Ctrl+N</code> makes something new where you are: an issue in
+Issues, a saved search under Saved Searches, a pin under Pinned.
+<code>Ctrl+Shift+N</code> asks what to make.</p>
+<h2 id="search">Search</h2>
+<p>Choose a search, press <code>Ctrl+E</code> to move to the filter box,
+type, and press Enter. Plain words narrow the list you are looking at;
+GitHub’s own words, such as <code>is:open author:@me label:bug</code>,
+ask GitHub. <code>Ctrl+8</code> goes to Saved Searches, and
+<code>Ctrl+N</code> in a search keeps it there.</p>
+<h2 id="people-gists-and-projects">People, Gists and Projects</h2>
+<p><code>Ctrl+4</code> goes to People: who you follow and who follows
+you. Enter on a person gives them a place in the tree, with their
+repositories and activity. <code>Ctrl+5</code> goes to your gists and
+<code>Ctrl+6</code> to Projects; each repository’s own Projects are
+under it.</p>
+<p>Two places are shown but not built yet, so their keys already land
+somewhere that says what they will hold: Watches (<code>Ctrl+7</code>)
+and Across Repositories (<code>Ctrl+0</code>).</p>
+<h2 id="doing-things-to-what-is-selected">Doing things to what is
+selected</h2>
+<p>Enter does the obvious thing; the Applications key, or
+<code>Shift+F10</code>, opens the context menu, with the obvious thing
+first and Properties last; and <code>Alt+Enter</code> shows everything
+about the selected row on one sheet.</p>
+<p>The keys you will use most:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+Shift+M</code></td>
+<td>Comment on the selected issue or pull request</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+D</code></td>
+<td>The selected pull request’s changed files</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Enter</code></td>
+<td>Merge the selected pull request</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+W</code></td>
+<td>Say what failed in the selected run</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+F5</code></td>
+<td>Run the failed jobs again</td>
+</tr>
+<tr>
+<td><code>Ctrl+D</code></td>
+<td>Keep the selected row under Favorites, or take it out</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+C</code></td>
+<td>Copy the selected row’s address</td>
+</tr>
+<tr>
+<td><code>Shift+Enter</code></td>
+<td>Open it on GitHub, in your browser</td>
+</tr>
+<tr>
+<td><code>Delete</code></td>
+<td>Remove it safely: mark a notification done, close an issue after
+asking</td>
+</tr>
+</tbody>
+</table>
+<p>Anything the Workbench does not do itself yet opens GitHub Items on
+that one item, in front of the Workbench, so nothing you could do before
+is out of reach.</p>
+<h2 id="hearing-where-you-are">Hearing where you are</h2>
+<p><code>Alt+1</code> to <code>Alt+9</code> say something and move
+nothing: where you are, what is selected, the selected item’s state, the
+counts, your access, GitHub’s hourly allowance, the filter, what is
+loading, and your account. <code>F9</code> says the last result again,
+and <code>Shift+F9</code> explains it: what it means, and what you might
+do next.</p>
+<h2 id="help-and-learning">Help and Learning</h2>
+<p>The last place in the tree is help you can walk through like any
+other list.</p>
+<ul>
+<li><strong>Do Something</strong> has tasks in plain words, such as Fix
+a failed run. Enter reads the steps; Take Me There, on the context menu,
+goes to the place.</li>
+<li><strong>The Guide</strong> lists this book’s chapters. Enter opens
+one.</li>
+<li><strong>Words</strong> is the GitHub glossary. Type a word to jump
+to it.</li>
+<li><strong>Keys</strong> has every key in the window, grouped by what
+it does.</li>
+<li><strong>What Changed</strong> says what is new.</li>
+<li><strong>Ask a Person</strong> says how to write to <a
+href="mailto:support@community-access.org">support@community-access.org</a>.</li>
+</ul>
+<p>The help keys work everywhere in the window:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>F1</code></td>
+<td>What this place and this control are for</td>
+</tr>
+<tr>
+<td><code>Shift+F1</code></td>
+<td>What can I do here, with each key</td>
+</tr>
+<tr>
+<td><code>Alt+F1</code></td>
+<td>What the GitHub word for the selected row means</td>
+</tr>
+<tr>
+<td><code>Ctrl+F1</code></td>
+<td>This guide, at the chapter for where you are</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+F1</code></td>
+<td>Search all of help: places, commands, words and tasks</td>
+</tr>
+<tr>
+<td><code>Alt+Shift+F1</code></td>
+<td>Every key in the window</td>
+</tr>
+</tbody>
+</table>
+<h2 id="workbench-options">Workbench Options</h2>
+<p>GitHub’s preferences live in the Workbench, not in the editor’s
+Options: <strong>Tools &gt; Workbench Options…</strong>,
+<code>Ctrl+Shift+O</code>. It has five pages. General says where the
+window opens and how lists start. Notifications and Inbox says how often
+GitHub is checked, whether each check plays a sound, and whether a new
+notification may interrupt speech. Lists, Repositories (your pinned
+repositories and favorites) and Privacy follow. Privacy is also where
+you can go back to the classic GitHub Items and Explore GitHub windows
+for this release, by checking Use the classic GitHub windows.</p>
+<p>You never have to open it: the Workbench works as it comes.</p>
+<hr />
+<ul>
+<li>Previous: <a href="github-guide-11-keyboard-reference.html">Chapter
+11: Keyboard reference</a></li>
+<li><a href="github-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

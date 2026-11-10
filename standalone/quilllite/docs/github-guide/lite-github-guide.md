@@ -18,6 +18,8 @@ two differ, a short paragraph starting **In QUILL Lite** says how.
 - **Something went wrong?** Chapter 10 has the sentences QUILL says when
   GitHub refuses, and what to do about each.
 - **Looking up a key?** Chapter 11 has every one, window by window.
+- **Using the GitHub Workbench window?** Chapter 12 walks through it, place
+  by place.
 
 Each chapter is a level 3 heading on this page, so pressing 3 in JAWS or NVDA
 moves from chapter to chapter. Every chapter page starts with its title as a
@@ -150,6 +152,17 @@ signing in, exactly what goes over the network, and how to reach a person.
 ### [Chapter 11: Keyboard reference](lite-github-guide-11-keyboard-reference.html)
 
 Every key the workbench answers to, one window at a time.
+
+### [Chapter 12: The GitHub Workbench, place by place](lite-github-guide-12-the-workbench.html)
+
+The one window for GitHub, a place at a time: Start Here, Needs My Attention,
+each repository's parts, Search, People, the help keys and Workbench Options.
+
+- [Opening it](lite-github-guide-12-the-workbench.html#opening-it)
+- [Repositories](lite-github-guide-12-the-workbench.html#repositories)
+- [Doing things to what is selected](lite-github-guide-12-the-workbench.html#doing-things-to-what-is-selected)
+- [Help and Learning](lite-github-guide-12-the-workbench.html#help-and-learning)
+- [Workbench Options](lite-github-guide-12-the-workbench.html#workbench-options)
 
 ---
 

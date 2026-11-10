@@ -2,6 +2,104 @@
 
 ## 1.0.0
 
+### The GitHub Workbench is the GitHub window now (2026-11-10)
+
+- **One window for GitHub.** Every door into GitHub, in the GitHub menu and in
+  File and Tools, now opens the GitHub Workbench: one window with a tree of
+  places, its own menus and keys, and help everywhere. Chapter 12 of the GitHub
+  Guide walks through it.
+- **The classic windows are still there, for one release.** If you would
+  rather keep GitHub Items and Explore GitHub for now, open the Workbench, then
+  **Tools > Workbench Options...** (**Ctrl+Shift+O**), and on the Privacy page
+  check **Use the classic GitHub windows**. They will be retired in the release
+  after this one.
+- Inside the Workbench, an action it does not do itself yet still opens GitHub
+  Items on that one item, so nothing you could do before is out of reach.
+- QUILL Lite has the same, and the same choice.
+
+### Help everywhere in the GitHub Workbench (2026-11-10)
+
+- **F1 knows where you are.** In the Workbench, F1 says what the window is
+  for and what the place you are on holds, then what the focused control
+  does. On the list it adds what Enter does to a row.
+- **Shift+F1, What Can I Do Here?** Every action for the selected row, in the
+  order of its context menu, each with its key. A greyed one says why, and
+  Enter runs any of the others.
+- **Alt+F1, What Is This?** The GitHub word for the selected row (issue, run,
+  release, fork and fifty others), explained in plain words with where you
+  meet it.
+- **Ctrl+F1** opens the GitHub Guide at the chapter for where you are, and
+  **Ctrl+Shift+F1, Search Help**, finds places, commands with their keys,
+  GitHub words and tasks. Enter goes there, runs it or reads it.
+- **Help and Learning** is a branch of the tree: Do Something (tasks in plain
+  words, with Take Me There), The Guide, Words, Keys, What Changed and Ask a
+  Person.
+- **Start Here** teaches the five keys to learn first, and an empty list now
+  says why it is empty and what would fill it.
+- **A new chapter of the GitHub Guide,** Chapter 12, walks through the
+  Workbench place by place.
+- QUILL Lite has the same, from the same shared window and guide.
+
+### The GitHub menu becomes a short list of doors (2026-11-10)
+
+With GitHub Workbench Mode on, the GitHub menu now holds only the ways into the
+GitHub Workbench and the few things that belong to the editor.
+
+- **The doors:** Open GitHub Workbench, Inbox, This Repository's Issues, This
+  Repository's Pull Requests and Actions Runs. Each opens the Workbench at that
+  place.
+- **Then the rest:** Clone Repository, and in QUILL Open GitHub Address,
+  Commit to GitHub, Sync Folder with GitHub and Local Git; then Manage GitHub
+  Accounts and Open GitHub Guide.
+- **Nothing is lost.** My Work, Notifications, Releases, Repository Items and
+  Explore GitHub left the menu but keep their commands, in the Command Palette
+  and on any key you gave them, and each opens the Workbench at the matching
+  place. Repository administration and Codespaces are on the Workbench's own
+  Repository menu, under Repository Actions.
+- **This Repository's Pull Requests** is new: the Workbench's Pull Requests
+  node for the repository you are in.
+- QUILL Lite has the same menu, less QUILL's own rows, from the same table.
+
+### The GitHub Workbench gets its menus, its keys and its own options (2026-11-10)
+
+This step gives the GitHub Workbench window everything a window needs to
+be lived in.
+
+- **A full menu bar.** File, Edit, View, Go, Item, Repository, Account, Tools,
+  Window and Help, each row showing its key. A row that does not apply here is
+  greyed, and its help line says why.
+- **Keys you can guess.** **Ctrl+1** to **Ctrl+9** go to the big places (Inbox,
+  your repository, Search, People, Gists, Projects, Watches, Saved Searches,
+  Start Here), and **Ctrl+Shift+1** to **Ctrl+Shift+0** to the parts of the
+  repository you are in: Issues, Pull Requests, Discussions, Actions, Files,
+  Releases, Projects, Security, Settings and Insights. **Alt+1** to **Alt+9**
+  say something without moving you: where you are, what is selected, the
+  item's state, the counts, your access, the rate limit, the filter, what is
+  loading and your account. **Alt+Enter** is Properties, **Ctrl+L** opens a
+  GitHub address, **Ctrl+G** goes to a number, **Ctrl+E** moves to the filter,
+  **F5** refreshes, and **F9** says the last result again while **Shift+F9**
+  explains it. Plain letters always jump to a name as you type.
+- **Delete and Ctrl+N do the obvious thing here.** Delete marks a notification
+  done, removes a saved search, or closes an issue after asking; Ctrl+N makes
+  something new where you are, such as an issue in Issues.
+- **Every node loads.** Files (folder by folder), Milestones, a repository's
+  Projects, Pinned, Favorites, Saved Searches, Organizations and the settings
+  pages now fill their lists. Watches and Across Repositories say what they
+  will hold.
+- **Actions on the selection.** Comment, close or reopen, re-run, mark read or
+  done, star, favorites and pins work in the window itself. Repository Actions
+  (**Ctrl+Shift+G**) lists everything else for the repository. What is not
+  rebuilt yet, such as merging, opens GitHub Items on that one item.
+- **It remembers where you were**: the last node, the open branches and the
+  repositories you visited, for each account.
+- **Workbench Options** (**Tools**, **Ctrl+Shift+O**) is where GitHub preferences
+  live now: where the window opens, the default list, sort and state, how
+  often notifications are checked, whether a check plays a sound or interrupts
+  speech, pinned repositories and favorites, and privacy. The three GitHub
+  check settings moved out of the main Options, and the choices you had made
+  come with them.
+- QUILL Lite has the same, from the same shared window.
+
 ### The WordPress Workbench, for trying out (2026-11-09)
 
 - **One window for your WordPress sites.** The WordPress Workbench is the same

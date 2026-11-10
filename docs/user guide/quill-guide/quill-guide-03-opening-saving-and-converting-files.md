@@ -1470,9 +1470,9 @@ it is missing, QUILL offers its download page. See
 #### GitHub Workbench Mode
 
 **View > GitHub Workbench Mode** (`Alt+V`, then `K`) adds a **GitHub** menu
-after Tools and moves these File and Tools rows into it, with a few more that
-open Inbox, My Work, Issues and Pull Requests and the other views in one step.
-Turn it off and the rows go back. See
+after Tools: a short list of doors into the GitHub Workbench (Inbox, This
+Repository's Issues, This Repository's Pull Requests, Actions Runs) and the
+editor's own GitHub commands. Turn it off and the rows go back. See
 [GitHub Workbench Mode and the GitHub menu](../github-guide/github-guide-02-getting-around.html#github-workbench-mode-and-the-github-menu).
 
 #### The one-sentence summary

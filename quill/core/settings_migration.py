@@ -88,6 +88,17 @@ RETIRED_SETTINGS_KEYS = frozenset({
     "save_as_surface_sync",
 })
 
+#: Settings keys that moved to another store and are dropped here on load,
+#: without the retired-keys notice: the values were carried across first, so
+#: nothing was lost. The GitHub check's three moved to the GitHub Workbench's
+#: own preferences (``quill/core/github/workbench_prefs.py``, GitHub PRD 4.1),
+#: which ``settings._hand_moved_settings_to_workbench`` copies in beforehand.
+MOVED_SETTINGS_KEYS = frozenset({
+    "github_poll_interval_minutes",
+    "github_poll_audible_tick",
+    "github_poll_interrupt_speech",
+})
+
 #: Retired keys actually seen in the loaded document this launch (consume-once
 #: via :func:`pop_retired_settings_keys`). In-process only, like
 #: ``migration_backup._recent_migrations``.
@@ -178,6 +189,8 @@ def migrate(raw: object) -> dict[str, Any]:
     else:
         # Legacy flat document: every key is already a candidate field.
         flat = {str(key): value for key, value in raw.items() if key != "schema_version"}
+    for key in MOVED_SETTINGS_KEYS & flat.keys():
+        flat.pop(key)
     for key in sorted(RETIRED_SETTINGS_KEYS & flat.keys()):
         flat.pop(key)
         if key not in _retired_keys_seen:
@@ -241,7 +254,7 @@ def _known_setting_keys() -> set[str]:
     # Fields this build recognizes, plus keys it deliberately retires -- neither
     # is "unknown". Anything else in a same-version file was written by a newer
     # sibling app and must survive this build's rewrite.
-    return {f.name for f in fields(Settings)} | set(RETIRED_SETTINGS_KEYS)
+    return {f.name for f in fields(Settings)} | RETIRED_SETTINGS_KEYS | MOVED_SETTINGS_KEYS
 
 
 def reconcile_unknown_overrides(raw: dict[str, Any], desired: dict[str, Any]) -> dict[str, Any]:

@@ -759,9 +759,6 @@
             "podcast_check_interval_minutes": "int",
             "podcast_check_audible_tick": "bool",
             "podcast_check_interrupt_speech": "bool",
-            "github_poll_interval_minutes": "int",
-            "github_poll_audible_tick": "bool",
-            "github_poll_interrupt_speech": "bool",
             "import_export_recursive": "bool",
             "import_export_overwrite": "str",
             "import_export_output_layout": "str",
@@ -1179,9 +1176,6 @@
           "podcast_check_interval_minutes": "accessibility",
           "podcast_check_audible_tick": "accessibility",
           "podcast_check_interrupt_speech": "accessibility",
-          "github_poll_interval_minutes": "accessibility",
-          "github_poll_audible_tick": "accessibility",
-          "github_poll_interrupt_speech": "accessibility",
           "import_export_recursive": "editing",
           "import_export_overwrite": "editing",
           "import_export_output_layout": "editing",
@@ -1351,7 +1345,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": ""
+      "note": "GitHub PRD 4.1: the GitHub check's three settings moved to github_workbench.json; older builds read the file without them and use their defaults."
     },
     "radio.favorites": {
       "current": 1,

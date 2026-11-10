@@ -69,9 +69,11 @@ class GitHubProjectsDialog(GitHubProjectsActionsMixin):
             6,
         )
         self._repo = wx.TextCtrl(self.dialog, value=initial_repo, style=wx.TE_PROCESS_ENTER)
+        self._repo.SetHelpText("The repository, as owner/name. Enter loads its Projects.")
         self._repo.SetName("Repository whose GitHub Projects to load")
         repo_row.Add(self._repo, 1, wx.RIGHT, 6)
         self._load_btn = wx.Button(self.dialog, label="&Load Projects")
+        self._load_btn.SetHelpText("Load the repository named in the box above.")
         self._load_btn.SetName("Load Projects for this repository")
         repo_row.Add(self._load_btn)
         root.Add(repo_row, 0, wx.EXPAND | wx.ALL, 8)
@@ -84,12 +86,16 @@ class GitHubProjectsDialog(GitHubProjectsActionsMixin):
             6,
         )
         self._project_choice = wx.Choice(self.dialog, choices=[])
+        self._project_choice.SetHelpText(
+            "The repository's Project boards. Choose one to list its items."
+        )
         self._project_choice.SetName("GitHub Project to view")
         project_row.Add(self._project_choice, 1)
         root.Add(project_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         root.Add(wx.StaticText(self.dialog, label="Project items"), 0, wx.LEFT, 8)
         self._list = wx.ListBox(self.dialog, choices=[])
+        self._list.SetHelpText("The board's items. Arrow to one to read it below.")
         self._list.SetName("Project items; ready work is marked in each row")
         set_spoken_name(self._list, "GitHub Project items")
         root.Add(self._list, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
@@ -103,6 +109,7 @@ class GitHubProjectsDialog(GitHubProjectsActionsMixin):
             self.dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
         )
+        self._details.SetHelpText("The selected item in full, read-only.")
         self._details.SetName("Selected project item fields, blockers, and sub-issues")
         root.Add(self._details, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         self._status = wx.StaticText(
@@ -113,12 +120,16 @@ class GitHubProjectsDialog(GitHubProjectsActionsMixin):
 
         actions = wx.BoxSizer(wx.HORIZONTAL)
         self._next_btn = wx.Button(self.dialog, label="&Next Unblocked")
+        self._next_btn.SetHelpText("Move to the next item that nothing is blocking.")
         self._next_btn.SetName("Select the next open issue or pull request without an open blocker")
         self._open_btn = wx.Button(self.dialog, label="Open on GitHub")
+        self._open_btn.SetHelpText("Open the selected item on GitHub in your browser.")
         self._open_btn.SetName("Open the selected project item on GitHub")
         self._actions_btn = wx.Button(self.dialog, label="&Actions...")
+        self._actions_btn.SetHelpText("More things to do with the selected item, as a menu.")
         self._actions_btn.SetName("Edit project fields, blockers, and sub-issues")
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
+        close_btn.SetHelpText("Close this window. Escape does the same.")
         close_btn.SetName("Close GitHub Projects")
         for button in (self._next_btn, self._open_btn, self._actions_btn):
             actions.Add(button, 0, wx.RIGHT, 6)

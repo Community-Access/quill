@@ -179,8 +179,14 @@ class GitHubPullReviewDialog(
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         self._next_unresolved_btn = wx.Button(panel, label="Next &Unresolved")
+        self._next_unresolved_btn.SetHelpText(
+            "Move to the next review thread nobody has resolved yet."
+        )
         self._next_unresolved_btn.SetName("Move to the next known unresolved review thread")
         self._next_unvisited_btn = wx.Button(panel, label="Next Un&visited")
+        self._next_unvisited_btn.SetHelpText(
+            "Move to the next review thread you have not read yet."
+        )
         self._next_unvisited_btn.SetName(
             "Move to the next review thread not yet visited in this session"
         )

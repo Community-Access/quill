@@ -66,14 +66,18 @@ class TypedConfirmDialog:
         label = wx.StaticText(panel, label=f'Type "{expected}" to confirm:')
         sizer.Add(label, flag=wx.LEFT | wx.RIGHT, border=12)
         self._entry = wx.TextCtrl(panel)
+        self._entry.SetHelpText("Type exactly what the line above asks for, to confirm.")
         self._entry.SetName(f"Type {expected} to confirm")
         sizer.Add(self._entry, flag=wx.EXPAND | wx.ALL, border=12)
 
         btn_sizer = wx.StdDialogButtonSizer()
         ok_btn = wx.Button(panel, wx.ID_OK, label=confirm_label)
+        ok_btn.SetHelpText("Do it on GitHub. This is the button that makes the change.")
         ok_btn.SetDefault()
         btn_sizer.AddButton(ok_btn)
-        btn_sizer.AddButton(wx.Button(panel, wx.ID_CANCEL, label="Cancel"))
+        cancel_button = wx.Button(panel, wx.ID_CANCEL, label="Cancel")
+        cancel_button.SetHelpText("Close without changing anything. Escape does the same.")
+        btn_sizer.AddButton(cancel_button)
         btn_sizer.Realize()
         sizer.Add(btn_sizer, flag=wx.EXPAND | wx.ALL, border=8)
 
@@ -127,11 +131,15 @@ class CreateRepositoryDialog:
 
         grid.Add(wx.StaticText(panel, label="Repository name"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._name_ctrl = wx.TextCtrl(panel)
+        self._name_ctrl.SetHelpText("The new repository's name, such as my-project.")
         self._name_ctrl.SetName("Repository name")
         grid.Add(self._name_ctrl, 1, wx.EXPAND)
 
         grid.Add(wx.StaticText(panel, label="Description (optional)"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._description_ctrl = wx.TextCtrl(panel)
+        self._description_ctrl.SetHelpText(
+            "A short sentence about what the repository is for. You can leave it empty."
+        )
         self._description_ctrl.SetName("Description")
         grid.Add(self._description_ctrl, 1, wx.EXPAND)
 
@@ -141,6 +149,9 @@ class CreateRepositoryDialog:
             wx.ALIGN_CENTER_VERTICAL,
         )
         self._org_ctrl = wx.TextCtrl(panel)
+        self._org_ctrl.SetHelpText(
+            "An organization to create it in. Leave it empty to create it on your account."
+        )
         self._org_ctrl.SetName("Organization, blank for your own account")
         grid.Add(self._org_ctrl, 1, wx.EXPAND)
 
@@ -153,9 +164,12 @@ class CreateRepositoryDialog:
 
         btn_sizer = wx.StdDialogButtonSizer()
         ok_btn = wx.Button(panel, wx.ID_OK, label="Create")
+        ok_btn.SetHelpText("Do it on GitHub. This is the button that makes the change.")
         ok_btn.SetDefault()
         btn_sizer.AddButton(ok_btn)
-        btn_sizer.AddButton(wx.Button(panel, wx.ID_CANCEL, label="Cancel"))
+        cancel_button = wx.Button(panel, wx.ID_CANCEL, label="Cancel")
+        cancel_button.SetHelpText("Close without changing anything. Escape does the same.")
+        btn_sizer.AddButton(cancel_button)
         btn_sizer.Realize()
         sizer.Add(btn_sizer, flag=wx.EXPAND | wx.ALL, border=8)
 
@@ -219,6 +233,7 @@ class BranchProtectionDialog:
         grid.Add(wx.StaticText(panel, label="Branch"), 0, wx.ALIGN_CENTER_VERTICAL)
         choices = list(branches) or [default_branch]
         self._branch_choice = wx.Choice(panel, choices=choices)
+        self._branch_choice.SetHelpText("The branch these protection rules are for.")
         self._branch_choice.SetName("Branch to configure")
         initial = choices.index(default_branch) if default_branch in choices else 0
         self._branch_choice.SetSelection(initial)
@@ -243,6 +258,9 @@ class BranchProtectionDialog:
             wx.ALIGN_CENTER_VERTICAL,
         )
         self._review_spin = wx.SpinCtrl(panel, min=0, max=6, initial=0)
+        self._review_spin.SetHelpText(
+            "How many approving reviews a pull request needs before it can merge."
+        )
         set_accessible_name(self._review_spin, "Required approving reviews")
         rules_grid.Add(self._review_spin, 0)
 
@@ -252,6 +270,7 @@ class BranchProtectionDialog:
             wx.ALIGN_CENTER_VERTICAL,
         )
         self._checks_ctrl = wx.TextCtrl(panel)
+        self._checks_ctrl.SetHelpText("Checks that must pass before merging, separated by commas.")
         self._checks_ctrl.SetName("Required status checks, comma separated")
         rules_grid.Add(self._checks_ctrl, 1, wx.EXPAND)
         rules_sizer.Add(rules_grid, flag=wx.EXPAND | wx.ALL, border=8)
@@ -263,9 +282,12 @@ class BranchProtectionDialog:
 
         btn_sizer = wx.StdDialogButtonSizer()
         ok_btn = wx.Button(panel, wx.ID_OK, label="Apply")
+        ok_btn.SetHelpText("Do it on GitHub. This is the button that makes the change.")
         ok_btn.SetDefault()
         btn_sizer.AddButton(ok_btn)
-        btn_sizer.AddButton(wx.Button(panel, wx.ID_CANCEL, label="Cancel"))
+        cancel_button = wx.Button(panel, wx.ID_CANCEL, label="Cancel")
+        cancel_button.SetHelpText("Close without changing anything. Escape does the same.")
+        btn_sizer.AddButton(cancel_button)
         btn_sizer.Realize()
         sizer.Add(btn_sizer, flag=wx.EXPAND | wx.ALL, border=8)
 
