@@ -921,6 +921,20 @@ def _github_rate_limits_start_clear() -> Iterator[None]:
         conditional.reset_caches()
 
 
+@pytest.fixture(autouse=True)
+def _wordpress_discovery_starts_clear() -> Iterator[None]:
+    """No test inherits what another test's fake site said about its taxonomies.
+
+    ``quill.core.wordpress.site_taxonomies`` keeps each connection's answer for
+    a few minutes, keyed by address and account, and the fakes share
+    addresses. Only cleared when the module is already loaded.
+    """
+    yield
+    discovered = sys.modules.get("quill.core.wordpress.site_taxonomies")
+    if discovered is not None:
+        discovered.clear_cache()
+
+
 #: Every Radio history writer built in this process (weakly), so each test can
 #: wait for the saves it started before the next test begins.
 _RADIO_HISTORY_WRITERS: weakref.WeakSet[Any] = weakref.WeakSet()
