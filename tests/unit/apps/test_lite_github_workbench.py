@@ -42,6 +42,9 @@ class _Host(GitHubWorkbenchLiteMixin):
 @pytest.fixture
 def opened(monkeypatch):
     """Patch the gates and both windows; return the log of what opened, on which view."""
+    # These pin the classic windows (Workbench Options, Use the classic GitHub
+    # windows); the Workbench, the default since Phase 6, is tested elsewhere.
+    monkeypatch.setenv("QUILL_GITHUB_WORKBENCH_WINDOW", "0")
     calls: list[object] = []
 
     class _Provider:

@@ -137,14 +137,14 @@ def open_in_workbench_window(
     announce: Callable[[str], None] | None = None,
     **extras: Any,
 ) -> bool:
-    """Open the GitHub Workbench window instead of GitHub Items, when asked to.
+    """Open the GitHub Workbench window instead of GitHub Items (the default).
 
     Both editors' GitHub Items openers call this after their own gates (Safe
-    Mode, consent, sign-in) have made *provider*. While the window is a spike
-    it answers only behind the developer flag
-    (:mod:`quill.core.github.workbench_flag`) and returns False otherwise, so
-    the opener goes on to GitHub Items exactly as before. When it returns
-    True the window owns *provider* and closes it with itself.
+    Mode, consent, sign-in) have made *provider*. It returns False only when
+    the person chose the classic windows in Workbench Options (or a developer
+    forced them, :mod:`quill.core.github.workbench_flag`), so the opener goes
+    on to GitHub Items exactly as before. When it returns True the window
+    owns *provider* and closes it with itself.
     """
     from quill.core.github.workbench_flag import workbench_window_enabled
 

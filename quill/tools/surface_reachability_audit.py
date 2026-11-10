@@ -65,6 +65,23 @@ UNREACHABLE = "unreachable"
 
 STATUSES = frozenset({REACHABLE, DYNAMIC, PARKED})
 
+#: Surfaces still imported but parked as a fallback, with the reason: the
+#: snapshot says ``parked`` for them even though an entry point reaches them,
+#: so retiring them later is a reviewed deletion rather than a surprise.
+PARKED_FALLBACKS: dict[str, str] = {
+    "quill.ui.github_items_dialog": (
+        "GitHub PRD Phase 6, decision 4: the GitHub Workbench is the default; GitHub "
+        "Items opens from the doors only with Workbench Options' Use the classic "
+        "GitHub windows, and from the Workbench on one item it does not yet rebuild. "
+        "Retired after one release."
+    ),
+    "quill.ui.github_explore_dialog": (
+        "GitHub PRD Phase 6, decision 4: Explore GitHub's views are Workbench nodes; "
+        "the dialog opens only with Use the classic GitHub windows. Retired after "
+        "one release."
+    ),
+}
+
 
 def _module_name(path: Path) -> str:
     return path.relative_to(REPO_ROOT).with_suffix("").as_posix().replace("/", ".")
@@ -147,6 +164,9 @@ def build_snapshot() -> dict[str, str]:
     previous = load_snapshot()
     out: dict[str, str] = {}
     for module in surface_modules():
+        if module in PARKED_FALLBACKS:
+            out[module] = PARKED
+            continue
         if module in reached:
             out[module] = REACHABLE
             continue

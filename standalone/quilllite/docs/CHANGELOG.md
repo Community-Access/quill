@@ -2,6 +2,21 @@
 
 ## 2.0.0
 
+### The GitHub Workbench is the GitHub window now (2026-11-10)
+
+- **One window for GitHub.** Every door into GitHub, in the GitHub menu and in
+  File and Tools, now opens the GitHub Workbench: one window with a tree of
+  places, its own menus and keys, and help everywhere. Chapter 12 of the GitHub
+  Guide walks through it.
+- **The classic windows are still there, for one release.** If you would
+  rather keep GitHub Items and Explore GitHub for now, open the Workbench, then
+  **Tools > Workbench Options...** (**Ctrl+Shift+O**), and on the Privacy page
+  check **Use the classic GitHub windows**. They will be retired in the release
+  after this one.
+- Inside the Workbench, an action it does not do itself yet still opens GitHub
+  Items on that one item, so nothing you could do before is out of reach.
+- QUILL has the same, and the same choice.
+
 ### Help everywhere in the GitHub Workbench (2026-11-10)
 
 - **F1 knows where you are.** In the Workbench, F1 says what the window is
@@ -47,9 +62,8 @@ GitHub Workbench and the few things that belong to the editor.
 
 ### The GitHub Workbench gets its menus, its keys and its own options (2026-11-10)
 
-The GitHub Workbench window is still a preview you turn on with
-`QUILL_GITHUB_WORKBENCH_WINDOW=1`. This step gives it everything a window
-needs to be lived in.
+This step gives the GitHub Workbench window everything a window needs to
+be lived in.
 
 - **A full menu bar.** File, Edit, View, Go, Item, Repository, Account, Tools,
   Window and Help, each row showing its key. A row that does not apply here is

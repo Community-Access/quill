@@ -5,6 +5,15 @@ GitHub it calls. For a book on doing the work, written for screen-reader
 users, read [The GitHub Guide for QUILL and QUILL Lite](https://www.quillforall.org/docs/github-guide.html),
 which ships with both editors.
 
+**The GitHub Workbench window is the default (2026-11-10).** Every GitHub door
+in both editors opens one window, `quill/ui/workbench_frame.py` with the GitHub
+provider `quill/ui/github_workbench_window.py`; its tree, menus, keys, context
+menus, options and glossary are generated at the end of this page. GitHub
+Items and Explore GitHub, described below, are parked for one release behind
+Workbench Options, Use the classic GitHub windows
+(`quill/core/github/workbench_flag.py`), and GitHub Items still opens on one
+item for actions the Workbench does not yet rebuild.
+
 QUILL and QUILL Lite share the GitHub Items and Explore windows. QUILL Lite
 opens the workbench from **File > GitHub Workbench** (**Alt+F**, then **G**). In QUILL, use **File >
 Open from Remote > GitHub Items**. Public repository reading works without an
