@@ -23,6 +23,9 @@ from quill.ui.wordpress_workbench_window import (  # noqa: E402
     SEP,
     WordPressWorkbenchProvider,
 )
+from quill.ui.wordpress_workbench_window import (  # noqa: E402
+    open_from_door as _real_open_from_door,
+)
 from quill.ui.workbench_frame import NodeRef, WorkbenchFrame  # noqa: E402
 
 SITE = "Community Radio"
@@ -414,11 +417,17 @@ def test_planned_nodes_say_where_the_feature_lives_today(bench) -> None:
     assert "Check the Whole Site" in bench.provider.unavailable(NodeRef("", "accessibility"), node)
 
 
-def test_the_door_opens_nothing_with_the_classic_windows(monkeypatch) -> None:
-    from quill.ui.wordpress_workbench_window import open_from_door
+def test_the_door_always_opens_the_workbench(monkeypatch) -> None:
+    from types import SimpleNamespace
+
+    from quill.ui import wordpress_workbench_window as window
 
     monkeypatch.setenv("QUILL_WORDPRESS_WORKBENCH_WINDOW", "0")
-    assert open_from_door(object(), "wordpress.comments") is False
+    opened: list[dict[str, Any]] = []
+    monkeypatch.setattr(window, "open_workbench", lambda _commands, **kw: opened.append(kw))
+    commands = SimpleNamespace(host=SimpleNamespace(announce=lambda _text: None), _data_dir=None)
+    assert _real_open_from_door(commands, "wordpress.comments") is True
+    assert opened and opened[0]["node"] == "comments"
 
 
 @pytest.fixture

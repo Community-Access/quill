@@ -104,9 +104,9 @@ class GitHubItemsMixin:
             self._set_status("Could not open the GitHub link in your default browser.")
 
     def open_github_items_viewer(
-        self, initial_view: str = "", node: str = "", then: str = ""
+        self, initial_view: str = "", node: str = "", then: str = "", repository: str = ""
     ) -> None:
-        """File > Open Remote > GitHub Items..., and the GitHub menu's doors.
+        """File > Open Remote > GitHub Workbench, and the GitHub menu's doors.
 
         *initial_view* is the Items view to open on (``"runs"``, ``"releases"``);
         empty for the issues view, as it always opened. *node* is the GitHub
@@ -149,11 +149,10 @@ class GitHubItemsMixin:
         # Prefill from the current document's GitHub origin when available so a
         # user editing a file from a repo can review that repo's issues in one
         # step instead of retyping owner/repo.
-        initial_repo = self._github_items_initial_repo()
+        initial_repo = repository or self._github_items_initial_repo()
         from quill.ui.github_workbench_commands import open_in_workbench_window
 
-        # The Workbench window, behind its developer flag (both editors, one call).
-        if open_in_workbench_window(
+        open_in_workbench_window(
             self.frame,
             provider,
             repository=initial_repo,
@@ -164,27 +163,7 @@ class GitHubItemsMixin:
             editor_command=self._github_editor_command,
             editor_command_available=self._github_editor_has,
             open_file_url=self.open_github_file_url,
-        ):
-            return
-        from quill.ui.github_items_dialog import GitHubItemsDialog
-
-        # Nothing said on the way in: the dialog's title and its focused list
-        # are what the screen reader says next (GATE-13).
-        GitHubItemsDialog(
-            self.frame,
-            provider,
-            initial_repo=initial_repo,
-            initial_view=initial_view,
-            open_file_reference_cb=self.open_github_file_url,
-            announce_cb=self._announce,
-            ai_acquire_cb=self._github_ai_summarizer,
-            start_issue_worktree_cb=self.start_github_issue_worktree,
-            gist_source_cb=self._github_gist_source,
-        ).show()
-        try:
-            provider.close()
-        except Exception:  # noqa: BLE001 - close is best-effort cleanup
-            pass
+        )
 
     def open_github_items_viewer_for(
         self,
@@ -192,45 +171,20 @@ class GitHubItemsMixin:
         *,
         initial_reference: GitHubReference | None = None,
     ) -> None:
-        """Open the shared Items dialog pre-filled with a selected repository."""
-        from quill.core.github.items_provider import (
-            GitHubItemsError,
-            GitHubItemsProvider,
-            refuse_in_safe_mode,
-        )
-
-        try:
-            refuse_in_safe_mode(self._safe_mode)
-        except GitHubItemsError as exc:
-            self._show_message_box(
-                str(exc), "GitHub Items", self._wx.ICON_INFORMATION | self._wx.OK
-            )
-            return
-        if not self._ensure_github_ready():
-            return
-        token = load_github_token()
-        try:
-            provider = GitHubItemsProvider(token=token or None)
-        except Exception as exc:  # noqa: BLE001
-            self._set_status(f"Could not open {full_name}: {exc}")
-            return
-        self._watch_github_token_expiry(token)
-        from quill.ui.github_items_dialog import GitHubItemsDialog
-
-        GitHubItemsDialog(
-            self.frame,
-            provider,
-            initial_repo=full_name,
-            initial_reference=initial_reference,
-            open_file_reference_cb=self.open_github_file_url,
-            announce_cb=self._announce,
-            start_issue_worktree_cb=self.start_github_issue_worktree,
-            gist_source_cb=self._github_gist_source,
-        ).show()
-        try:
-            provider.close()
-        except Exception:  # noqa: BLE001 - close is best-effort cleanup
-            pass
+        """Open the Workbench at the matching place in a selected repository."""
+        node = "overview"
+        if initial_reference is not None:
+            node = {
+                "issue": "issues",
+                "pull_request": "pulls",
+                "discussion": "discussions",
+                "release": "releases",
+                "branch": "branches",
+                "tag": "tags",
+                "commit": "commits",
+            }.get(initial_reference.kind, "overview")
+        self.open_github_items_viewer(node=node, repository=full_name)
+        return
 
     def _github_gist_source(self) -> tuple[str, str]:
         """(file name, text) a new gist starts from: the selection, else the document."""

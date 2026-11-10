@@ -101,8 +101,6 @@ class GitHubWorkbenchLiteMixin:
         With the GitHub Workbench in use, the Workbench window instead, at
         *node* (a door's place) or *initial_view* (an Items view).
         """
-        from quill.ui.github_items_dialog import GitHubItemsDialog
-
         provider = self._github_provider(
             lambda: self.open_github_items(initial_view, reference, node)
         )
@@ -110,11 +108,20 @@ class GitHubWorkbenchLiteMixin:
             return
         from quill.ui.github_workbench_commands import open_in_workbench_window
 
-        # The Workbench window, behind its developer flag (both editors, one call).
-        if reference is None and open_in_workbench_window(
+        if reference is not None:
+            node = {
+                "issue": "issues",
+                "pull_request": "pulls",
+                "discussion": "discussions",
+                "release": "releases",
+                "branch": "branches",
+                "tag": "tags",
+                "commit": "commits",
+            }.get(getattr(reference, "kind", ""), "overview")
+        open_in_workbench_window(
             self,
             provider,
-            repository=self._github_repository(),
+            repository=getattr(reference, "repository", "") or self._github_repository(),
             view=initial_view,
             announce=self._announce,  # type: ignore[attr-defined]
             node=node,
@@ -122,44 +129,20 @@ class GitHubWorkbenchLiteMixin:
             editor_command_available=self._github_editor_has,
             open_file_url=self._open_github_file_reference,  # type: ignore[attr-defined]
             guide_product="quilllite",
-        ):
-            return
-        try:
-            GitHubItemsDialog(
-                self,
-                provider,
-                initial_repo=reference.repository if reference else self._github_repository(),
-                initial_reference=reference,
-                initial_view=initial_view,
-                open_file_reference_cb=self._open_github_file_reference,  # type: ignore[attr-defined]
-                announce_cb=self._announce,  # type: ignore[attr-defined]
-                gist_source_cb=getattr(self, "_github_gist_source", None),
-            ).show()
-        finally:
-            provider.close()
+        )
 
     def open_github_explore(self, initial_view: str | None = None) -> None:
         """Explore GitHub on a view; Enter on an issue or pull request opens it in Items."""
-        from quill.ui.github_explore_dialog import GitHubExploreDialog
-
-        provider = self._github_provider(lambda: self.open_github_explore(initial_view))
-        if provider is None:
-            return
-        chosen: list[Any] = []
-        try:
-            GitHubExploreDialog(
-                self,
-                provider,
-                initial_repo=self._github_repository(),
-                initial_view=initial_view,
-                announce_cb=self._announce,  # type: ignore[attr-defined]
-                on_open_reference=chosen.append,
-                gist_source_cb=getattr(self, "_github_gist_source", None),
-            ).show()
-        finally:
-            provider.close()
-        if chosen:
-            self.open_github_items(reference=chosen[0])
+        node = {
+            "notifications": "notifications",
+            "activity": "my_activity",
+            "attention": "inbox",
+            "my_work": "attention",
+            "repositories": "repositories",
+            "starred": "starred",
+            "watched": "watched",
+        }.get(initial_view or "", "search")
+        self.open_github_items(node=node)
 
     def _github_views(self) -> Any:
         from quill.ui.github_workbench_commands import GitHubWorkbenchCommands

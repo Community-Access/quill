@@ -181,6 +181,21 @@ class FormsOutlineCommands:
         )
         if picked is None:
             raise fd.Refused("Nothing changed.")
+        plan = fd.type_change_plan(model, item_id, kinds[picked])
+        message = plan.summary + "\n\n" + "\n".join(plan.review_lines())
+        if plan.blocked:
+            raise fd.Refused(
+                f"This field needs {', '.join(plan.blocked)} before it can become "
+                f"{ft.spoken(kinds[picked])}."
+            )
+        if not dlg.confirm(
+            self.host.parent,
+            self.host.show_modal,
+            title="Change Type",
+            message=message,
+            yes_label="Change Type",
+        ):
+            raise fd.Refused("Nothing changed.")
         return fd.change_type(model, item_id, kinds[picked])
 
     def _remove(self, model: fd.Model, item_id: str) -> str:

@@ -11,9 +11,9 @@ guide, because there is a lot to say and you may only need part of it.
   nothing to a published post. Then dip into the rest as you need it.
 - **Only want forms?** Start at Chapter 8. Chapter 9 covers putting a form on
   a site, which needs Chapter 1's connection first.
-- **Looking something up?** Chapter 13 describes every window, field and
-  button, and Appendix A lists every WordPress feature QUILL uses and what
-  your site needs for each.
+- **Looking something up?** Chapter 13 describes the WordPress Workbench and
+  its supported plugin integrations. Appendix A lists the WordPress features
+  QUILL uses and what your site needs for each.
 - **Something went wrong?** Chapter 11 has the sentences QUILL says when
   something fails, and what to do about each.
 
@@ -218,21 +218,17 @@ The WordPress keys and their whole table, and the keys inside the windows.
 - [Commands without a key](wordpress-forms-12-keys.html#commands-without-a-key)
 - [Keys inside the windows](wordpress-forms-12-keys.html#keys-inside-the-windows)
 
-### [Chapter 13: Every window, field and button](wordpress-forms-13-window-reference.html)
+### [Chapter 13: WordPress Workbench reference](wordpress-forms-13-window-reference.html)
 
-A reference, in menu order: every WordPress window, what each field and
-button does on your site, what you hear, and which roles can use it.
+The shared workspace for managing sites, content, supported plugins and
+membership data.
 
-- [How to read this chapter](wordpress-forms-13-window-reference.html#how-to-read-this-chapter)
-- [File > WordPress](wordpress-forms-13-window-reference.html#file--wordpress)
-- [Edit > WordPress](wordpress-forms-13-window-reference.html#edit--wordpress)
-- [View](wordpress-forms-13-window-reference.html#view)
-- [Insert](wordpress-forms-13-window-reference.html#insert)
-- [Format > WordPress](wordpress-forms-13-window-reference.html#format--wordpress)
-- [Tools > WordPress: checking](wordpress-forms-13-window-reference.html#tools--wordpress-checking)
-- [Tools > WordPress: pictures and media](wordpress-forms-13-window-reference.html#tools--wordpress-pictures-and-media)
-- [Tools > WordPress: the site's content](wordpress-forms-13-window-reference.html#tools--wordpress-the-sites-content)
-- [Tools > WordPress > Manage](wordpress-forms-13-window-reference.html#tools--wordpress--manage)
+- [Open the Workbench](wordpress-forms-13-window-reference.html#open-the-workbench)
+- [Move around](wordpress-forms-13-window-reference.html#move-around)
+- [Access and confirmations](wordpress-forms-13-window-reference.html#access-and-confirmations)
+- [Supported plugin integrations](wordpress-forms-13-window-reference.html#supported-plugin-integrations)
+- [Practice Site](wordpress-forms-13-window-reference.html#practice-site)
+- [Useful keys](wordpress-forms-13-window-reference.html#useful-keys)
 
 ### [Appendix A: Every WordPress feature QUILL uses](wordpress-forms-appendix-a-features.html)
 

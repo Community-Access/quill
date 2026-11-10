@@ -68,6 +68,20 @@ NODE_HELP: Mapping[str, str] = {
     "forms": "The site's forms, from every form plugin QUILL reads.",
     "form_entries": "Responses to the site's forms.",
     "form_spam": "Form responses held as spam.",
+    "memberships": (
+        "Paid Memberships Pro levels, orders, subscriptions and renewals, when its Abilities API "
+        "is available."
+    ),
+    "membership_levels": (
+        "Paid Memberships Pro membership levels and their signup and billing terms."
+    ),
+    "membership_orders": (
+        "Paid Memberships Pro order summaries. The API omits card and billing details."
+    ),
+    "membership_subscriptions": "Paid Memberships Pro subscriptions and their next payment dates.",
+    "membership_renewals": (
+        "Paid Memberships Pro subscriptions due for renewal now or within thirty days."
+    ),
     "shop": "Products, orders and customers, on a site with a shop.",
     "podcast": "Podcast episodes and the feed.",
     "people": "The people on the site and the passwords made for apps.",
@@ -110,8 +124,12 @@ ROW_HELP: Mapping[str, str] = {
     "media": "A file in the media library. Enter opens it; Alt+Enter edits its alt text.",
     "comment": "A comment. Ctrl+Shift+A approves, Ctrl+Shift+S marks it as spam.",
     "form_entry": "A form response. Enter reads it in full.",
+    "pmpro": "A Paid Memberships Pro level, order or subscription. Alt+Enter reads its details.",
     "term": "A category, tag or term. Enter lists its posts; Merge Into folds it into another.",
-    "user": "A person on the site. Change Role and Remove are on the context menu.",
+    "user": (
+        "A person on the site. Change Role, Remove, and any exposed membership details are on "
+        "the context menu."
+    ),
     "plugin": "A plugin. Activate or Deactivate is on the context menu.",
     "theme": "A theme. Activate is on the context menu.",
     "app_password": "An application password. Delete revokes it.",
@@ -119,6 +137,9 @@ ROW_HELP: Mapping[str, str] = {
     "writing_type": "A kind of content. Enter opens its list.",
     "taxonomy": "A way of grouping. Enter opens its terms.",
     "form": "A form. Enter lists its responses.",
+    "gravity_form": (
+        "A Gravity Forms form. Enter lists responses; Change a Field Type edits one control."
+    ),
     "fact": "A fact about the site. Enter reads it in the details pane.",
     "setting": "A setting. Alt+Enter changes it.",
     "problem": "A problem a check found. Enter reads what it means.",

@@ -211,29 +211,22 @@ def test_closing_the_window_closes_the_provider(bench) -> None:
     assert bench.items.closed
 
 
-def test_the_window_is_the_default_and_the_classic_windows_are_a_choice(
-    monkeypatch, quill_data_dir
-) -> None:
-    """Phase 6 (decision 4): the Workbench by default; classic only when chosen."""
-    from quill.core.github.workbench_flag import ENV_VAR, workbench_window_enabled
+def test_every_github_door_opens_the_workbench(monkeypatch, quill_data_dir) -> None:
+    """The retired Items and Explore dialogs are no longer an alternate route."""
+    from quill.core.github.workbench_flag import workbench_window_enabled
     from quill.core.github.workbench_prefs import WorkbenchPrefs, save_prefs
     from quill.ui import github_workbench_commands
 
-    monkeypatch.delenv(ENV_VAR, raising=False)
     assert workbench_window_enabled()
-    save_prefs(WorkbenchPrefs(use_classic_windows=True))
-    assert not workbench_window_enabled()
-    assert not github_workbench_commands.open_in_workbench_window(None, _Items())
-    monkeypatch.setenv(ENV_VAR, "1")  # a developer can still force either
-    assert workbench_window_enabled()
-    monkeypatch.setenv(ENV_VAR, "0")
     save_prefs(WorkbenchPrefs())
-    assert not workbench_window_enabled()
-    monkeypatch.delenv(ENV_VAR)
+    assert workbench_window_enabled()
     opened: list[tuple[str, str]] = []
     monkeypatch.setattr(
         "quill.ui.github_workbench_window.open_github_workbench",
-        lambda _editor, _items, *, repository, view, announce: opened.append((repository, view)),
+        lambda _editor, _items, *, repository, view, announce, **_kw: opened.append((
+            repository,
+            view,
+        )),
     )
     assert github_workbench_commands.open_in_workbench_window(
         None, _Items(), repository=REPO, view="runs"
@@ -241,13 +234,13 @@ def test_the_window_is_the_default_and_the_classic_windows_are_a_choice(
     assert opened == [(REPO, "runs")]
 
 
-def test_the_classic_windows_are_parked_in_the_reachability_snapshot() -> None:
-    from quill.tools.surface_reachability_audit import PARKED, PARKED_FALLBACKS, load_snapshot
+def test_the_retired_dialogs_are_unreachable() -> None:
+    from quill.tools.surface_reachability_audit import PARKED_FALLBACKS, UNREACHABLE, load_snapshot
 
     snapshot = load_snapshot()
+    assert not PARKED_FALLBACKS
     for module in ("quill.ui.github_items_dialog", "quill.ui.github_explore_dialog"):
-        assert module in PARKED_FALLBACKS
-        assert snapshot[module] == PARKED
+        assert snapshot[module] == UNREACHABLE
 
 
 def test_both_editors_reach_the_window_through_the_one_shared_call() -> None:

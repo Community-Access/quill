@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core.forms import model as M
+from quill.core.forms.type_conversion import plan_type_change
 
 Model = dict[str, Any]
 Item = dict[str, Any]
@@ -243,17 +244,23 @@ def remove(model: Model, item_id: str) -> str:
 
 
 def change_type(model: Model, item_id: str, kind: str) -> str:
+    plan = type_change_plan(model, item_id, kind)
+    if not plan.can_apply:
+        raise Refused(
+            f"This field needs {', '.join(plan.blocked)} before it can become "
+            f"{M.TYPE_NAMES.get(kind, kind)}."
+        )
     where = _need(model, item_id)
-    item = where.siblings[where.index]
-    item["type"] = kind
-    if kind in M.CHOICE_TYPES and not (
-        item.get("choices") or item.get("choice_library") or item.get("cascade")
-    ):
-        item["choices"] = [{"value": "choice-1", "label": "Choice 1"}]
-    if kind not in M.CHOICE_TYPES and kind not in M.OPTIONAL_CHOICE_TYPES:
-        for key in ("choices", "choice_library", "cascade"):
-            item.pop(key, None)
+    where.siblings[where.index] = plan.field
     return f"Changed to {M.TYPE_NAMES.get(kind, kind)}."
+
+
+def type_change_plan(model: Model, item_id: str, kind: str):
+    """The field after conversion and what the confirmation should explain."""
+    item = M.find(model, item_id)
+    if item is None:
+        raise Refused("That question is no longer in the form.")
+    return plan_type_change(item, kind)
 
 
 def rename(model: Model, item_id: str, label: str) -> str:

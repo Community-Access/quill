@@ -16,7 +16,7 @@ built from the same tables, every command runs the same handler, and a test
 checks that neither editor has a second copy of anything. So:
 
 - every command is in the same menu, with the same name, in both editors;
-- every window, field and button is the same, and says the same things;
+- the WordPress Workbench, forms, and their keyboard commands are shared;
 - the WordPress keys are the same letters (Chapter 12);
 - a draft that QUILL Cast or QUILL Studio leaves for you is in Open Local
   Draft in either editor.

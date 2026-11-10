@@ -42,9 +42,7 @@ def generate() -> str:
         "## The GitHub Workbench window, generated",
         "",
         "Everything below is generated from the tables the window is built from. "
-        "The window is the GitHub Workbench; the classic GitHub Items and Explore "
-        "GitHub windows stay for one release behind Workbench Options, "
-        "Use the classic GitHub windows.",
+        "The GitHub Workbench is the single GitHub management window in QUILL and QUILL Lite.",
         "",
         "### The Navigator tree",
         "",

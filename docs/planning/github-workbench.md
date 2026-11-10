@@ -1,6 +1,8 @@
 # GHManage + Quill Developer Experience Plan
 
-> **Implementation status (2026-11-06):** QUILL and QUILL Lite share the GitHub
+> **Implementation status (2026-11-10):** The accepted product scope is the
+> [GitHub Workbench PRD](../Product%20Requirement%20Documents%20and%20Specifications/github-workbench-prd.md).
+> QUILL and QUILL Lite share the GitHub
 > Items viewer. Its PR review reader uses an expandable native outline: PR,
 > changed files with review threads, general conversations, and checks. The
 > selected node drives a readable detail field, and context menus expose
@@ -19,7 +21,8 @@
 > expansion; its durable scope and acceptance live in
 > [the GitHub Workbench Roadmap](./github-roadmap.md). Manual Windows
 > assistive-technology acceptance is user-owned and separate from engineering
-> completion and merge.
+> completion. Current delivery gaps are tracked in the
+> [Workbench implementation status](./workbench-implementation-status.md).
 
 This document is the pre-implementation design plan for making GitHub a native, first-class part of the QUILL developer experience. It is intentionally ambitious: we want to make GitHub work feel as integrated as writing code, reviewing diffs, navigating branches, and shipping changes — not bolted on as a separate tool.
 

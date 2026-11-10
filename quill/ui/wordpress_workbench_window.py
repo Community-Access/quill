@@ -17,12 +17,10 @@ and no new way in; every call runs off the UI thread through the frame's
 task runner; nothing is announced on focus or on opening (GATE-13), and what
 is said goes through the editor's announce, which speaks and brailles.
 
-The default way in from Tools > WordPress (W6): :func:`open_from_door`,
-which the Tools > WordPress handlers in :mod:`quill.ui.wordpress_commands`
-call in both editors, opens it unless Workbench Options says Use the classic
-WordPress windows (:mod:`quill.core.wordpress.workbench_flag`); Tools >
-WordPress > Open WordPress Workbench always opens it. QUILL Lite is never
-ahead.
+The one way in from Tools > WordPress (W6): :func:`open_from_door`, which
+the Tools > WordPress handlers in :mod:`quill.ui.wordpress_commands` call in
+both editors. The retired classic management windows are not an alternate
+route. QUILL Lite is never ahead.
 """
 
 from __future__ import annotations
@@ -555,15 +553,7 @@ def open_workbench(
 
 
 def open_from_door(commands: Any, command_id: str) -> bool:
-    """Open the Workbench for a Tools > WordPress door: the default (W6).
-
-    Returns False (and does nothing) when Use the classic WordPress windows is
-    chosen in Workbench Options, so the door goes on to its own window.
-    """
-    from quill.core.wordpress.workbench_flag import workbench_window_enabled
-
-    if not workbench_window_enabled(base=getattr(commands, "_data_dir", None)):
-        return False
+    """Open the WordPress Workbench for a Tools > WordPress door."""
     import os
 
     open_workbench(

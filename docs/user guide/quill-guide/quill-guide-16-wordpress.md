@@ -76,10 +76,8 @@ site's API offers, the **Practice Site**, a WordPress site on your own
 computer for learning with nothing at stake (in builds that include it), and
 **Workbench Options**. There you can turn on **Watches**, which tell you about
 new comments, form responses, updates and scheduled posts going live while
-QUILL is open, checked at most every fifteen minutes. For this release,
-Workbench Options also has **Use the classic WordPress windows**: check it
-and the rows of Tools > WordPress open their old windows again. Open
-WordPress Workbench always opens the Workbench.
+QUILL is open, checked at most every fifteen minutes. WordPress management
+doors open the Workbench; the separate management windows have been retired.
 
 ## The keys you will use every day
 

@@ -190,30 +190,16 @@ class GitHubExtrasMixin:
 
         Enter on an issue or pull request opens it in the GitHub Items viewer.
         """
-        token = self._gh_admin_ready()
-        if token is None:
-            return
-        from quill.core.github.items_provider import GitHubItemsProvider
-        from quill.ui.github_explore_dialog import GitHubExploreDialog
-
-        provider = GitHubItemsProvider(token=token)
-        self._watch_github_token_expiry(token)  # main_frame_github_accounts
-        chosen: list[Any] = []
-        try:
-            GitHubExploreDialog(
-                self.frame,
-                provider,
-                initial_repo=self._github_items_initial_repo(),
-                initial_view=initial_view,
-                announce_cb=self._announce,
-                on_open_reference=chosen.append,
-                # GitHubItemsMixin's, on MainFrame; optional, as the dialog takes it.
-                gist_source_cb=getattr(self, "_github_gist_source", None),
-            ).show()
-        finally:
-            provider.close()
-        if chosen:
-            self.open_github_items_viewer_for(chosen[0].repository, initial_reference=chosen[0])
+        node = {
+            "notifications": "notifications",
+            "activity": "my_activity",
+            "attention": "inbox",
+            "my_work": "attention",
+            "repositories": "repositories",
+            "starred": "starred",
+            "watched": "watched",
+        }.get(initial_view or "", "search")
+        self.open_github_items_viewer(node=node)
 
     # ------------------------------------------------------------------
     # Security alerts

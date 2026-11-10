@@ -272,14 +272,11 @@ class _ClosedWindow:
 
 
 @pytest.fixture(autouse=True)
-def _classic_wordpress_windows(monkeypatch: pytest.MonkeyPatch) -> None:
-    """These tests drive the classic windows behind each Tools > WordPress door.
+def _exercise_legacy_handlers_directly(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep isolated handler tests below the retired public Workbench doors."""
+    from quill.ui import wordpress_workbench_window
 
-    The Workbench is the default (W6); the classic windows are what the doors
-    open with Use the classic WordPress windows, which this sets for the run.
-    The Workbench's own tests build its window directly and are unaffected.
-    """
-    monkeypatch.setenv("QUILL_WORDPRESS_WORKBENCH_WINDOW", "0")
+    monkeypatch.setattr(wordpress_workbench_window, "open_from_door", lambda *_args: False)
 
 
 @pytest.fixture

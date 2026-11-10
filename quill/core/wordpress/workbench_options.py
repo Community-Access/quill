@@ -1,11 +1,7 @@
-"""The WordPress Workbench's own options, kept beside the site list (decision 7, W6).
+"""The WordPress Workbench's own options, kept beside the site list (W6).
 
-The Workbench is where Tools > WordPress leads in both editors. For one
-release the old windows stay parked behind one choice, **Use the classic
-WordPress windows**, for anyone partway through work in them; with it on,
-each Tools > WordPress door opens its own window again, as before the
-Workbench. The choice lives here rather than in Settings because it belongs
-to the Workbench and goes away with the classic windows.
+The Workbench is the only site-management window in both editors. These
+options control Watches and Site Sets.
 
 :func:`load_options` and :func:`save_options` read and write
 ``workbench_options.json`` beside ``wordpress_sites.json``, atomically. A
@@ -20,17 +16,13 @@ from pathlib import Path
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.wordpress.sites import sites_path
 
-__all__ = ["CLASSIC_LABEL", "WorkbenchOptions", "load_options", "options_path", "save_options"]
-
-CLASSIC_LABEL = "Use the classic WordPress windows"
-"""The choice's words, the same in the Options sheet, the docs and the help."""
+__all__ = ["WorkbenchOptions", "load_options", "options_path", "save_options"]
 
 
 @dataclass
 class WorkbenchOptions:
     """What the person chose. Every field has the default a new install gets."""
 
-    classic_windows: bool = False
     watch_minutes: int = 15
     #: Watches (15.7) on, by kind; none until the person turns them on.
     watches: tuple[str, ...] = ()
@@ -50,7 +42,6 @@ def load_options(base: Path | None = None) -> WorkbenchOptions:
     watches = raw.get("watches")
     sets = raw.get("site_sets")
     return WorkbenchOptions(
-        classic_windows=bool(raw.get("classic_windows", False)),
         watch_minutes=max(15, int(minutes)) if isinstance(minutes, int) else 15,
         watches=tuple(str(w) for w in watches)
         if isinstance(watches, list)

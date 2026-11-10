@@ -91,12 +91,6 @@ PREF_HELP: dict[str, tuple[str, str, str]] = {
         "The first few times you visit a place, its details start with a short "
         "paragraph on what it is for.",
     ),
-    "use_classic_windows": (
-        "Privacy",
-        "Use the &classic GitHub windows",
-        "Open GitHub Items and Explore GitHub, as before the Workbench, from the "
-        "editor's GitHub doors. Kept for one release, then retired.",
-    ),
 }
 
 #: How each choice value reads in the dialog.
@@ -265,40 +259,7 @@ SURFACE_PURPOSES: dict[str, str] = {
     "Pending Deployments": "Deployments waiting on you: approve or reject each one.",
     "What Failed": "The failing steps of a run and their log lines, in one place.",
     "Jobs for": "A run's jobs and steps, with each job's log and annotations.",
-    "GitHub Items": (
-        "GitHub Items, the classic window: one repository's issues, pull requests, "
-        "branches, commits, tags, releases and workflow runs."
-    ),
-    "Explore GitHub": (
-        "Explore GitHub, the classic window: searches, your own work, people and "
-        "repository administration."
-    ),
 }
-
-#: Words that mark a classic GitHub window title as one of the family's own,
-#: so the gate covers those windows' controls without asking every one of
-#: twenty-seven older dialogs for a purpose line this change did not write.
-_CLASSIC_WORDS = (
-    "GitHub",
-    "Pull Request",
-    "Issue",
-    "Release",
-    "Workflow",
-    "Branch",
-    "Commit",
-    "Gist",
-    "Codespace",
-    "Repository",
-    "Milestone",
-    "Project",
-    "Notification",
-    "Review",
-    "Label",
-    "Clone",
-    "Compare",
-    "Timeline",
-    "Diff",
-)
 
 #: ``"<template>:<key>"`` -> what F1 says about the node (D3, layer 2).
 NODE_HELP: dict[str, str] = {

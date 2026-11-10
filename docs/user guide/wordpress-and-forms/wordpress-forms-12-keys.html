@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Chapter 12: Every WordPress and Forms key</title>
+  <title>wordpress-forms-12-keys</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -180,68 +180,8 @@
       vertical-align: middle;
     }
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* The skip link above targets main, and a focusable main needs a ring for
-       the sighted keyboard user. These pages load no external stylesheet, so it
-       has to be inline; the colour is the site theme's --focus, hardcoded
-       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
-       makes main the click-focus target for every paragraph inside it, so
-       :focus would box the whole page on any ordinary click. The offset is inset
-       because main is full-bleed and an outset ring gets clipped into two
-       vertical lines. */
-    main[tabindex="-1"]:focus-visible {
-      outline: 3px solid #b8540a;
-      outline-offset: -3px;
-    }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-    /* Pandoc's own styles.html partial, injected near the top of this template,
-       ships `table { display: block; overflow-x: auto; }`. display: block takes
-       the table role out of the accessibility tree in Blink and Gecko, and the
-       row and cell roles go with it, so every rendered table reads as a flat run
-       of words -- 62 of them in QUILL Lite's user guide alone, all of them
-       keyboard reference tables, on a site whose readers are overwhelmingly
-       screen-reader users. Restoring display: table is not a preference.
-
-       The scroll affordance it was there for is given up rather than moved,
-       because Pandoc emits a bare table with no wrapper element to hang overflow
-       on -- the wrapper pattern compare.html uses is not available here. So the
-       exchange is a certain and total loss of table semantics against a possible
-       sideways page scroll on the widest tables, and the cells are taught to
-       break so that stays possible rather than likely.
-
-       This override also covers the governance pages built by
-       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
-       version nobody pins -- whatever styles.html that ships, this wins. */
-    table {
-      display: table;
-      overflow-x: visible;
-    }
-    table th,
-    table td {
-      overflow-wrap: break-word;
-      word-break: break-word;
-    }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content" tabindex="-1">
 <h1 id="chapter-12-every-wordpress-and-forms-key">Chapter 12: Every
 WordPress and Forms key</h1>
 <h2 id="what-this-chapter-covers">What this chapter covers</h2>
@@ -254,7 +194,7 @@ their menus and from the Command Palette.</p>
 <p>The WordPress commands share one starting key:
 <strong>Ctrl+Alt+Shift+Grave</strong>. Grave is the key below Escape,
 also called the backtick key. Hold Ctrl, Alt and Shift, press Grave, and
-let go. QUILL says “WordPress keys”. Then press one letter.</p>
+let go. QUILL says "WordPress keys". Then press one letter.</p>
 <p>The six you will use every day:</p>
 <ul>
 <li><strong>O</strong> opens a page or post;</li>
@@ -267,20 +207,20 @@ let go. QUILL says “WordPress keys”. Then press one letter.</p>
 <p><strong>How it behaves:</strong></p>
 <ul>
 <li><strong>Escape</strong> after the WordPress key leaves it and says
-“Left WordPress keys”.</li>
-<li>A letter with no command says so, for example “No WordPress command
-on Q.”, and types nothing.</li>
+"Left WordPress keys".</li>
+<li>A letter with no command says so, for example "No WordPress command
+on Q.", and types nothing.</li>
 <li>If you wait more than about four seconds, the WordPress key gives up
 quietly and your next key types as normal.</li>
 <li>The command then speaks for itself, as it does from the menu.</li>
 <li>The menus show each key beside its row, in brackets, such as
-“(Ctrl+Alt+Shift+Grave, O)”.</li>
+"(Ctrl+Alt+Shift+Grave, O)".</li>
 <li>If you move a WordPress command to another letter in the Keyboard
 Manager, the menus, the key lists and the WordPress keys all
 follow.</li>
 </ul>
 <p><strong>Why the letters are what they are.</strong> Wherever a File
-&gt; WordPress row’s underlined letter was free, that is its key, so the
+&gt; WordPress row's underlined letter was free, that is its key, so the
 menu teaches the key. Where two rows wanted one letter, the everyday one
 kept it: Publish kept P, so New Page went to G; Media Library kept M, so
 Compare with Site is C; Switch Site kept S, and Sites, the list you only
@@ -413,7 +353,7 @@ WordPress page; their key then says why, as the menu row does.</p>
 <h2 id="the-quill-key-and-the-wordpress-key">The QUILL key and the
 WordPress key</h2>
 <p>In QUILL, Ctrl+Shift+Grave, the same key without Alt, is the QUILL
-key, which starts QUILL’s own layer of commands. The two never clash:
+key, which starts QUILL's own layer of commands. The two never clash:
 one has Alt and one does not. QUILL Lite has no QUILL key, so in QUILL
 Lite the WordPress key is the only one of its kind.</p>
 <h2 id="commands-without-a-key">Commands without a key</h2>
@@ -425,11 +365,11 @@ use now and then, not every hour. Reach them by:</p>
 <li><strong>the menus.</strong> File &gt; WordPress opens with Alt+F,
 then W, in both editors.</li>
 <li><strong>the Command Palette,</strong> Ctrl+Shift+P, in both editors.
-Type “WordPress” or “form”, or part of a command’s name, and press
+Type "WordPress" or "form", or part of a command's name, and press
 Enter.</li>
 </ul>
 <h2 id="keys-you-already-know">Keys you already know</h2>
-<p>These are the editor’s ordinary keys, and they work the same in a
+<p>These are the editor's ordinary keys, and they work the same in a
 WordPress page or a form:</p>
 <ul>
 <li><strong>Ctrl+S</strong> saves on this computer, and never sends
@@ -441,7 +381,7 @@ command made to the document, as one step.</li>
 </ul>
 <h2 id="keys-inside-the-windows">Keys inside the windows</h2>
 <ul>
-<li><strong>Enter</strong> runs a list window’s main action: Open in the
+<li><strong>Enter</strong> runs a list window's main action: Open in the
 Open window, Play or Insert in the Media Library, Read in Responses, Go
 to It in the checking lists.</li>
 <li><strong>Escape</strong> closes a window without changing anything,
@@ -469,15 +409,14 @@ WordPress.</li>
 <li><strong>Quill Converter:</strong> File &gt; Upload to
 WordPress.</li>
 </ul>
-<p>Each app’s own menu shows its key beside the row.</p>
+<p>Each app's own menu shows its key beside the row.</p>
 <h2 id="where-to-next">Where to next</h2>
 <ul>
 <li>Previous: <a href="wordpress-forms-11-troubleshooting.html">Chapter
 11: Troubleshooting</a></li>
 <li>Next: <a href="wordpress-forms-13-window-reference.html">Chapter 13:
-Every window, field and button</a></li>
+WordPress Workbench reference</a></li>
 <li><a href="wordpress-forms-guide.html">Contents</a></li>
 </ul>
-</main>
 </body>
 </html>

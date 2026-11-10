@@ -5,20 +5,18 @@ GitHub it calls. For a book on doing the work, written for screen-reader
 users, read [The GitHub Guide for QUILL and QUILL Lite](https://www.quillforall.org/docs/github-guide.html),
 which ships with both editors.
 
-**The GitHub Workbench window is the default (2026-11-10).** Every GitHub door
-in both editors opens one window, `quill/ui/workbench_frame.py` with the GitHub
-provider `quill/ui/github_workbench_window.py`; its tree, menus, keys, context
-menus, options and glossary are generated at the end of this page. GitHub
-Items and Explore GitHub, described below, are parked for one release behind
-Workbench Options, Use the classic GitHub windows
-(`quill/core/github/workbench_flag.py`), and GitHub Items still opens on one
-item for actions the Workbench does not yet rebuild.
+**The GitHub Workbench is the only GitHub management window (2026-11-10).**
+Every GitHub door in both editors opens one window,
+`quill/ui/workbench_frame.py` with the GitHub provider
+`quill/ui/github_workbench_window.py`; its tree, menus, keys, context menus,
+options and glossary are generated at the end of this page. The separate
+Items and Explore management windows and their fallback preference are retired.
 
-QUILL and QUILL Lite share the GitHub Items and Explore windows. QUILL Lite
-opens the workbench from **File > GitHub Workbench** (**Alt+F**, then **G**). In QUILL, use **File >
-Open from Remote > GitHub Items**. Public repository reading works without an
-account. Account views and writes require a signed-in GitHub account. Safe Mode
-and the first-use network consent still apply.
+QUILL and QUILL Lite share the Workbench. QUILL Lite opens it from
+**File > GitHub Workbench** (**Alt+F**, then **G**). In QUILL, use
+**File > Open from Remote > GitHub Items**. Public repository reading works
+without an account. Account views and writes require a signed-in GitHub
+account. Safe Mode and first-use network consent still apply.
 
 **GitHub Workbench Mode.** **View > GitHub Workbench Mode** (**Alt+V**, then
 **K**), a per-window check item in both editors, adds a **GitHub** menu
@@ -528,7 +526,7 @@ For every window, key and refusal in plain words, read
 
 ## The GitHub Workbench window, generated
 
-Everything below is generated from the tables the window is built from. The window is the GitHub Workbench; the classic GitHub Items and Explore GitHub windows stay for one release behind Workbench Options, Use the classic GitHub windows.
+Everything below is generated from the tables the window is built from. The GitHub Workbench is the single GitHub management window in QUILL and QUILL Lite.
 
 ### The Navigator tree
 
@@ -862,7 +860,6 @@ Keys the window answers that are not menu rows:
 | `speak_column_names` | Lists | Say column names before values | Put each column's name before its value in a list row, as in Number 42, Title Crash on start. Off keeps rows short. |
 | `health_snapshot_opt_in` | Privacy | Load the repository Health Snapshot | Insights, Health Snapshot reads extra data from GitHub about a repository's activity. It loads only when this is checked. |
 | `first_time_help` | Privacy | Show First time here? help | The first few times you visit a place, its details start with a short paragraph on what it is for. |
-| `use_classic_windows` | Privacy | Use the classic GitHub windows | Open GitHub Items and Explore GitHub, as before the Workbench, from the editor's GitHub doors. Kept for one release, then retired. |
 
 ### GitHub words
 

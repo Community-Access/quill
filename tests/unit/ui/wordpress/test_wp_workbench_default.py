@@ -25,21 +25,23 @@ def test_open_wordpress_workbench_is_first_in_tools_wordpress_with_a_key() -> No
 bench = _bench
 
 
-def test_workbench_options_turn_the_classic_windows_on_and_off(bench, monkeypatch) -> None:
-    monkeypatch.delenv("QUILL_WORDPRESS_WORKBENCH_WINDOW", raising=False)
+def test_workbench_options_only_change_watch_choices(bench, monkeypatch) -> None:
+    from quill.core.wordpress.workbench_watches import KINDS
     from quill.ui.workbench_frame import NodeRef
 
     bench.select(NodeRef("", "start"))
     base = bench.provider._data_dir
-    assert workbench_window_enabled(base=base)
+    assert workbench_window_enabled()
     monkeypatch.setattr(wdlg, "ask_checks", lambda *a, **k: [0])
     bench.run(command("options"))
-    assert load_options(base).classic_windows
-    assert not workbench_window_enabled(base=base)
-    assert any("classic windows" in s for s in bench.said)
+    first_watch = next(iter(KINDS))
+    assert load_options(base).watches == (first_watch,)
+    assert workbench_window_enabled()
+    assert "saved" in bench.said[-1].lower()
     monkeypatch.setattr(wdlg, "ask_checks", lambda *a, **k: [])
     bench.run(command("options"))
-    assert workbench_window_enabled(base=base)
+    assert load_options(base).watches == ()
+    assert workbench_window_enabled()
 
 
 def test_the_editor_row_always_opens_the_workbench(monkeypatch) -> None:

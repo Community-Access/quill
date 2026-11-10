@@ -424,18 +424,35 @@ def load_menus(ctx: SiteContext) -> list[WbRow]:
 
 def load_abilities(ctx: SiteContext) -> list[WbRow]:
     from quill.core.wordpress.abilities import list_abilities
+    from quill.core.wordpress.workbench_discovered import registered_by
 
-    return [
-        _simple(
-            ctx,
-            "ability",
-            a.name,
-            {"ability": a.label, "category": a.category, "says": a.description},
-            f"{a.label}: {a.description}",
-            raw={"name": a.name, "readonly": a.readonly, "destructive": a.destructive},
+    rows: list[WbRow] = []
+    for ability in list_abilities(ctx.api):
+        namespace = ability.name.split("/", 1)[0]
+        owner = registered_by(namespace)
+        plugin = "" if owner == "a plugin or the theme" else owner
+        detail = f"{plugin}: " if plugin else ""
+        rows.append(
+            _simple(
+                ctx,
+                "ability",
+                ability.name,
+                {
+                    "ability": ability.label,
+                    "plugin": plugin,
+                    "category": ability.category,
+                    "says": ability.description,
+                },
+                f"{detail}{ability.label}: {ability.description}",
+                raw={
+                    "name": ability.name,
+                    "plugin": plugin,
+                    "readonly": ability.readonly,
+                    "destructive": ability.destructive,
+                },
+            )
         )
-        for a in list_abilities(ctx.api)
-    ]
+    return rows
 
 
 def load_namespaces(ctx: SiteContext) -> list[WbRow]:
@@ -543,6 +560,10 @@ def load(
         from quill.core.wordpress.workbench_forms import load_forms
 
         return load_forms(ctx, what)
+    if family == "pmpro":
+        from quill.core.wordpress.workbench_pmpro import load_pmpro
+
+        return load_pmpro(ctx, what)
     found = simple.get(family)
     if found is None:
         raise WordPressApiError(f"The Workbench does not know how to load {loader}.")
