@@ -1068,5 +1068,6 @@
   "quill/ui/work_persona_dialog.py::WorkPersonaDialog._on_browse_folder::wx.DirDialog": "native",
   "quill/ui/work_persona_dialog.py::WorkPersonaDialog._on_shortcut::wx.DirDialog": "native",
   "quill/ui/workbench_frame_actions.py::WorkbenchActionsMixin.open_address::wx.TextEntryDialog": "native",
-  "quill/ui/workbench_properties_dialog.py::WorkbenchPropertiesDialog.__init__::wx.Dialog": "hardened_custom"
+  "quill/ui/workbench_properties_dialog.py::WorkbenchPropertiesDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/workbench_sheet_editor.py::WorkbenchSheetEditor.__init__::wx.Dialog": "hardened_custom"
 }

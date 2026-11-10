@@ -24,6 +24,8 @@ class WordPressPeopleCommands(WordPressAdminBase):
     # Users
 
     def cmd_users(self) -> None:
+        if self.workbench_door("wordpress.users"):
+            return  # the developer flag sends this door to the WordPress Workbench
         profile = self.admin_site("Users")
         if profile is None:
             return
@@ -309,6 +311,8 @@ class WordPressPeopleCommands(WordPressAdminBase):
     # Application Passwords
 
     def cmd_app_passwords(self) -> None:
+        if self.workbench_door("wordpress.app_passwords"):
+            return  # the developer flag sends this door to the WordPress Workbench
         profile = self.admin_site("Application Passwords")
         if profile is not None:
             self._load_app_passwords(profile)

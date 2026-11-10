@@ -545,5 +545,6 @@
   "quill.ui.wordpress_schedule_dialog": "reachable",
   "quill.ui.work_persona_dialog": "reachable",
   "quill.ui.workbench_frame": "reachable",
-  "quill.ui.workbench_properties_dialog": "reachable"
+  "quill.ui.workbench_properties_dialog": "reachable",
+  "quill.ui.workbench_sheet_editor": "reachable"
 }

@@ -2,6 +2,57 @@
 
 ## 1.0.0
 
+### The WordPress Workbench, for trying out (2026-11-09)
+
+- **One window for your WordPress sites.** The WordPress Workbench is the same
+  kind of window as the GitHub Workbench: a tree that says where you are, a
+  list of what is there, the details of the selected one, and a status bar
+  you reach with F6. It is still being built, so it is off unless you start
+  QUILL with the developer setting `QUILL_WORDPRESS_WORKBENCH_WINDOW=1`.
+  Then the Tools > WordPress windows for Comments, Media Library, Categories
+  and Tags, Menus, Site Check, Site Settings, Site Map, and under Manage,
+  Users, Application Passwords, Plugins, Themes, Fonts, Synced Patterns,
+  Widgets and AI Abilities open the Workbench at the right place instead.
+  Without the setting nothing changes.
+- **Needs My Attention, from every site at once:** comments waiting, posts
+  pending review, scheduled posts, your drafts, Site Health problems, form
+  responses, and everything held as spam. A site that does not answer is one
+  row saying so, and the rest still show.
+- **Every part of a site has a place:** Overview, Posts and Pages by status
+  (pages as a tree under their parents), each of the site's own content types
+  and taxonomies (Events, Products, Genres), Media by kind and Without Alt
+  Text, Comments by status, Categories, Tags, Menus, Appearance, Forms,
+  People, Plugins, Settings, Site Health, Abilities, and every REST
+  namespace the site offers.
+- **Enter on a post or page opens it in the editor,** where writing happens.
+  Ctrl+Enter previews it on the site and Shift+Enter opens it there.
+- **Alt+Enter is Properties on anything:** a post's General, Organize,
+  Featured Image, Excerpt, Discussion and Meta pages; a picture's alt text and
+  caption; a comment, a category, a person, a plugin, a setting, the site
+  itself; and, for anything a plugin adds, a sheet built from what the site
+  says about it. Before a change is sent, QUILL checks nobody changed it on
+  the site since you opened it, and afterwards it says if the site did not
+  keep something. Select several and Alt+Enter changes them together, with
+  a preview and a result for each.
+- **Delete moves to the Trash,** and Ctrl+Z puts the last change back.
+  Shift+Delete deletes permanently, after you confirm by name.
+- **Comments and spam:** Ctrl+Shift+A approves, or on held spam says Not
+  Spam; Ctrl+Shift+U unapproves; Ctrl+Shift+S marks as spam; Ctrl+Shift+M
+  replies. Spam and Not Spam work on QUILL Accessible Forms entries too, and
+  on Gravity Forms entries where the site has it.
+- **Filters reach the whole site:** type words, or `status:draft`,
+  `category:news`, `-tag:old`, `after:2026-01-01`; Ctrl+Shift+F opens the
+  Filter Builder, and Edit has Show Only Like This, Hide Like This and Only
+  Mine.
+- **Only what you may do is offered,** with the reason: "Publishing pages
+  needs the Editor role or higher. You are an Author on Community Radio."
+  Shift+F1 says what you can do here. Change a person's role, remove someone
+  with their posts given to another person, and make or revoke application
+  passwords; QUILL never lets you remove your own Administrator role or the
+  last Administrator. Site > Workbench Access sets Read Only, Organize or Full
+  for each site, and View As Role shows a site as another role would see it.
+- QUILL Lite has the same window, from the same shared code.
+
 ### WordPress custom fields that hold lists and groups (2026-11-09)
 
 - **Lists and groups in Custom Fields.** A site's custom fields that hold a

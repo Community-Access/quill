@@ -39,6 +39,8 @@ class WordPressStructureCommands(WordPressAdminBase):
     # Site Map (9.9)
 
     def cmd_site_map(self) -> None:
+        if self.workbench_door("wordpress.site_map"):
+            return  # the developer flag sends this door to the WordPress Workbench
         profile = self.admin_site("Site Map")
         if profile is None:
             return

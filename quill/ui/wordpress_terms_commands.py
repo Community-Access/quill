@@ -21,6 +21,8 @@ if TYPE_CHECKING:
 
 class WordPressTermsCommands(WordPressAdminBase):
     def cmd_manage_terms(self) -> None:
+        if self.workbench_door("wordpress.manage_terms"):
+            return  # the developer flag sends this door to the WordPress Workbench
         profile = self.admin_site("Categories and Tags")
         if profile is None:
             return

@@ -24,6 +24,8 @@ class WordPressManageCommands(WordPressDesignCommands):
     # Site Check (9.10)
 
     def cmd_site_check(self) -> None:
+        if self.workbench_door("wordpress.site_check"):
+            return  # the developer flag sends this door to the WordPress Workbench
         profile = self.admin_site("Site Check")
         if profile is None:
             return
@@ -54,6 +56,8 @@ class WordPressManageCommands(WordPressDesignCommands):
     # Site Settings (9.10, 9.13)
 
     def cmd_site_settings(self) -> None:
+        if self.workbench_door("wordpress.site_settings"):
+            return  # the developer flag sends this door to the WordPress Workbench
         profile = self.admin_site("Site Settings")
         if profile is None:
             return
@@ -220,6 +224,8 @@ class WordPressManageCommands(WordPressDesignCommands):
     # Plugins (9.13)
 
     def cmd_plugins(self) -> None:
+        if self.workbench_door("wordpress.plugins"):
+            return  # the developer flag sends this door to the WordPress Workbench
         profile = self.admin_site("Plugins")
         if profile is None:
             return
@@ -381,6 +387,8 @@ class WordPressManageCommands(WordPressDesignCommands):
     # Themes (9.13)
 
     def cmd_themes(self) -> None:
+        if self.workbench_door("wordpress.themes"):
+            return  # the developer flag sends this door to the WordPress Workbench
         profile = self.admin_site("Themes")
         if profile is None:
             return
