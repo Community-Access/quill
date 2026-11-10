@@ -37,6 +37,7 @@ NODE_HELP: Mapping[str, str] = {
     "calendar": "Every site's scheduled and published content, a day to a node.",
     "search": "One search across every site's posts, pages, media, comments and people.",
     "practice": "A practice WordPress site on this computer, where nothing is at stake.",
+    "calendar_day": "What was published or is scheduled on one day, on every site.",
     "help": "Words, keys, and how WordPress thinks.",
     "how_it_thinks": "How WordPress thinks, in a paragraph.",
     "words": "WordPress's own words, each explained.",
@@ -111,6 +112,7 @@ ROW_HELP: Mapping[str, str] = {
     "font": "An installed font.",
     "sidebar": "A sidebar and its widgets.",
     "mixed": "Something that needs you. Enter reads it in full.",
+    "day": "A day with scheduled or published content. Enter lists it.",
 }
 """One sentence per row type."""
 

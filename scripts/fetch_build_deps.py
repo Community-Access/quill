@@ -94,6 +94,7 @@ Usage::
     python scripts/fetch_build_deps.py --only codex    # the OpenAI Codex app-server
     python scripts/fetch_build_deps.py --only phonon   # Phonon 31m voices for Read Aloud
     python scripts/fetch_build_deps.py --only nodejs --only language-servers --only ripgrep
+    python scripts/fetch_build_deps.py --only wp-playground-cli   # the Practice Site (untested)
 
 The cache lives under ``build/deps/`` (already gitignored) unless
 ``QUILL_BUILD_DEPS_DIR`` overrides it. Re-running is cheap: a component whose
@@ -287,6 +288,7 @@ COMPONENTS = (
     "nodejs",
     "language-servers",
     "ripgrep",
+    "wp-playground-cli",
 )
 
 #: component -> (cache subdirectory, the file that proves it is really staged).
@@ -301,6 +303,7 @@ _LAYOUT: dict[str, tuple[str, str]] = {
     "nodejs": ("nodejs", "node.exe"),
     "language-servers": ("language-servers", "LANGUAGE-SERVERS-LICENSES.txt"),
     "ripgrep": ("ripgrep", "rg.exe"),
+    "wp-playground-cli": ("wp-playground-cli", "PLAYGROUND-LICENSES.txt"),
 }
 
 #: component -> the licence/notice files that must sit beside its exe.
@@ -776,12 +779,15 @@ def _fetch_layer4(component: str, *, force: bool = False) -> Path:
         return dest
     print(f"  {component}: staging (SHA-256 or lockfile pinned)...")
     npm = deps_root() / "nodejs-npm"
-    if component == "nodejs" or (component == "language-servers" and not npm.is_dir()):
+    needs_npm = component in ("language-servers", "wp-playground-cli")
+    if component == "nodejs" or (needs_npm and not npm.is_dir()):
         layer4.fetch_nodejs(component_dir("nodejs"), npm, progress=_progress)
     if component == "language-servers":
         layer4.fetch_language_servers(dest, component_dir("nodejs") / "node.exe", npm)
     if component == "ripgrep":
         layer4.fetch_ripgrep(dest, progress=_progress)
+    if component == "wp-playground-cli":
+        layer4.fetch_wp_playground(dest, component_dir("nodejs") / "node.exe", npm)
     print(f"  {component}: staged at {dest}")
     return dest
 
@@ -803,7 +809,7 @@ def fetch_all(components: tuple[str, ...], *, force: bool = False) -> dict[str, 
             staged[component] = fetch_codex(force=force)
         elif component == "phonon":
             staged[component] = fetch_phonon(force=force)
-        elif component in ("nodejs", "language-servers", "ripgrep"):
+        elif component in ("nodejs", "language-servers", "ripgrep", "wp-playground-cli"):
             staged[component] = _fetch_layer4(component, force=force)
         else:  # pragma: no cover - argparse constrains the choices
             raise ReleaseAssetError(f"Unknown build dependency: {component!r}")

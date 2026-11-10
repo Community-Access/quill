@@ -75,6 +75,12 @@ _DELETE = _a(
     help="Gone for good, after you confirm by name. Shift+Delete.",
 )
 _OPEN_SITE = _a("open_on_site", "Open on the Site", help="In your browser. Shift+Enter.")
+_COPY_TO_SITE = _a(
+    "copy_to_site",
+    "Copy to Site...",
+    tier=Tier.WRITE,
+    help="To another of your sites, after a preview. Ctrl+Shift+Y.",
+)
 
 WORDPRESS_ACTIONS = ActionTable(
     {
@@ -98,6 +104,28 @@ WORDPRESS_ACTIONS = ActionTable(
             _RESTORE,
             _DELETE,
             _a("copy_link", "Copy Link", help="Its address on the site. Ctrl+Shift+C."),
+            _COPY_TO_SITE,
+            _a(
+                "approve_schedule",
+                "Approve and Schedule...",
+                tier=Tier.WRITE,
+                needs="publish",
+                help="Publish it now or at a time you give. Ctrl+Shift+D.",
+            ),
+            _a(
+                "send_back",
+                "Send Back with a Note...",
+                tier=Tier.WRITE,
+                needs="edit",
+                help="Back to draft, with a note for its writer. Ctrl+Shift+B.",
+            ),
+            _a(
+                "assign_reviewer",
+                "Assign a Reviewer...",
+                tier=Tier.WRITE,
+                needs="edit",
+                help="A note naming who reviews it. Ctrl+Shift+J.",
+            ),
             _SHEET,
         ),
         "media": (
@@ -182,6 +210,7 @@ WORDPRESS_ACTIONS = ActionTable(
                 needs="manage_categories",
                 help="Make a tag a category, or a category a tag, posts and all. Ctrl+Shift+K.",
             ),
+            _COPY_TO_SITE,
             _DELETE,
             _SHEET,
         ),
@@ -255,10 +284,6 @@ WORDPRESS_ACTIONS = ActionTable(
             _a("open_kind", "Open Its List", default=True, help="Select its node in the tree."),
             _SHEET,
         ),
-        "form": (
-            _a("show_entries", "Show Its Responses", default=True, help="The form's responses."),
-            _SHEET,
-        ),
         "namespace": (
             _a("open_namespace", "List Its Routes", default=True, help="Select its node. Enter."),
             _SHEET,
@@ -278,6 +303,16 @@ WORDPRESS_ACTIONS = ActionTable(
             _SHEET,
         ),
         "model": (_READ, _SHEET),
+        "day": (
+            _a("open_day", "Open This Day", default=True, help="List what the day holds."),
+            _SHEET,
+        ),
+        "pattern": (_READ, _COPY_TO_SITE, _SHEET),
+        "form": (
+            _a("show_entries", "Show Its Responses", default=True, help="The form's responses."),
+            _COPY_TO_SITE,
+            _SHEET,
+        ),
         **{
             kind: (_READ, _SHEET)
             for kind in (
@@ -287,7 +322,6 @@ WORDPRESS_ACTIONS = ActionTable(
                 "help",
                 "menu",
                 "template",
-                "pattern",
                 "font",
                 "sidebar",
                 "mixed",
@@ -351,6 +385,14 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
                 "Hide rows like the selected one, by a column you choose.",
             ),
             _row("only_mine", "Only &Mine", "Ctrl+Alt+M", "Only what you wrote, or all again."),
+            None,
+            _row("export_list", "E&xport List...", "Ctrl+Shift+X", "This list as Excel or CSV."),
+            _row(
+                "import_posts",
+                "&Import Posts from a Spreadsheet...",
+                "Ctrl+Shift+I",
+                "Posts or pages from an Excel or CSV file, previewed row by row.",
+            ),
         ),
     ),
     MenuSpec(
@@ -387,6 +429,9 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
             _row("go_appearance", "Appearanc&e", "Ctrl+Shift+7", "Themes, templates, patterns."),
             _row("go_settings", "Settin&gs", "Ctrl+Shift+8", "This site's settings."),
             _row("go_health", "Site &Health", "Ctrl+Shift+9", "This site's health checks."),
+            _row("go_calendar", "Calen&dar", "Ctrl+3", "Every site's content, by day."),
+            _row("go_watches", "&Watches", "Ctrl+5", "What the Workbench watches for you."),
+            _row("go_practice", "P&ractice Site", "Ctrl+6", "The WordPress site on this computer."),
             None,
             _row("go_parent", "Paren&t Node", "Alt+Up", "The node above this one in the tree."),
         ),
@@ -413,6 +458,20 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
                 "Ctrl+Shift+K",
                 "A tag becomes a category, or a category a tag.",
             ),
+            _row(
+                "approve_schedule",
+                "Approve and S&chedule...",
+                "Ctrl+Shift+D",
+                "Publish what waits for review, now or at a time.",
+            ),
+            _row(
+                "send_back",
+                "Send &Back with a Note...",
+                "Ctrl+Shift+B",
+                "Back to draft, with a note.",
+            ),
+            _row("assign_reviewer", "Assi&gn a Reviewer...", "Ctrl+Shift+J", "Name a reviewer."),
+            _row("copy_to_site", "C&opy to Site...", "Ctrl+Shift+Y", "To another of your sites."),
             _row(
                 "send_password_reset",
                 "Send Pass&word Reset",
@@ -448,6 +507,17 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
                 "Ctrl+Alt+E",
                 "Delete every comment held as spam on this site, after you confirm.",
             ),
+            None,
+            _row("compare_sites", "Compare S&ites...", "Ctrl+Alt+K", "What differs from another."),
+            _row(
+                "snapshot", "Take a S&napshot...", "Ctrl+Alt+S", "Everything but media, saved here."
+            ),
+            _row(
+                "read_site",
+                "Read Site as &Document",
+                "Ctrl+Alt+D",
+                "The pages as one document in the editor.",
+            ),
         ),
     ),
     MenuSpec(
@@ -458,6 +528,10 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
                 "Workbench &Options...",
                 "Ctrl+Shift+O",
                 "Use the classic WordPress windows, and the Watches.",
+            ),
+            _row("rest_console", "&REST Console...", "Ctrl+Shift+T", "Any route on the site."),
+            _row(
+                "practice", "&Practice Site...", "Ctrl+Alt+P", "Start, stop, connect or reset it."
             ),
         ),
     ),
@@ -492,5 +566,8 @@ GO_NODES: dict[str, tuple[str, str]] = {
     command("go_appearance"): ("site", "themes"),
     command("go_settings"): ("site", "settings"),
     command("go_health"): ("site", "site_health"),
+    command("go_calendar"): ("", "calendar"),
+    command("go_watches"): ("", "watches"),
+    command("go_practice"): ("", "practice"),
 }
 """Where each Go row lands: (template, node key); a template node is the current site's."""

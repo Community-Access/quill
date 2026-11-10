@@ -68,6 +68,7 @@ from quill.core.workbench.filters import Query, describe
 from quill.core.workbench.history import ChangeHistory
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import NodeSpec
+from quill.ui.wordpress_workbench_bold import WorkbenchBoldCommands
 from quill.ui.wordpress_workbench_commands import WorkbenchRowCommands
 from quill.ui.wordpress_workbench_discovered import WorkbenchDiscoveredCommands
 from quill.ui.wordpress_workbench_lists import WorkbenchListCommands
@@ -90,6 +91,7 @@ class WordPressWorkbenchProvider(
     WorkbenchListCommands,
     WorkbenchDiscoveredCommands,
     WorkbenchOptionsCommands,
+    WorkbenchBoldCommands,
     WorkbenchRowCommands,
     WorkbenchSheetCommands,
     WorkbenchPeopleCommands,
@@ -208,6 +210,8 @@ class WordPressWorkbenchProvider(
     def dynamic_children(self, node: NodeSpec, ref: NodeRef) -> Sequence[tuple[str, str]]:
         if node.key.endswith("_group"):
             return self.group_children(node, ref)
+        if node.key == "calendar_day":
+            return self.day_children()
         site = self.split(ref.instance)[0]
         if node.key == DYNAMIC_NAMESPACE:
             return self.namespace_children(site)
@@ -258,6 +262,8 @@ class WordPressWorkbenchProvider(
             return list(help_rows(what))
         if family == "sites":
             return [self._site_row(name) for name in self._profiles]
+        if family in ("calendar", "watches", "practice"):
+            return list(self.fixed_rows(family, what, ref.instance))
         if family == "attention":
             contexts = []
             for name in self._profiles:

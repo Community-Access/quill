@@ -2,8 +2,9 @@
 
 A mixin on :class:`quill.ui.wordpress_workbench_window.WordPressWorkbenchProvider`
 for Tools > Workbench Options: **Use the classic WordPress windows** (the old
-Tools > WordPress windows, parked for one release). The choices are kept by
-:mod:`quill.core.wordpress.workbench_options` beside the site list; the doors read them through
+Tools > WordPress windows, parked for one release) and which Watches run
+(15.7). The choices are kept by :mod:`quill.core.wordpress.workbench_options`
+beside the site list; the doors read them through
 :func:`quill.core.wordpress.workbench_flag.workbench_window_enabled`.
 """
 
@@ -18,6 +19,7 @@ from quill.core.wordpress.workbench_options import (
     load_options,
     save_options,
 )
+from quill.core.wordpress.workbench_watches import KINDS
 from quill.ui import wordpress_workbench_dialogs as wdlg
 
 __all__ = ["WorkbenchOptionsCommands"]
@@ -36,8 +38,10 @@ class WorkbenchOptionsCommands:
 
     def do_options(self, _ref: Any, _row: Any) -> None:
         options = self.options()
-        rows = [CLASSIC_LABEL]
+        kinds = list(KINDS)
+        rows = [CLASSIC_LABEL, *(f"Watch: {KINDS[k]}" for k in kinds)]
         checked = [0] if options.classic_windows else []
+        checked += [i + 1 for i, k in enumerate(kinds) if k in options.watches]
         picked = wdlg.ask_checks(
             self.parent,
             self.show_modal,
@@ -46,12 +50,14 @@ class WorkbenchOptionsCommands:
             rows=rows,
             checked=checked,
             help_text="Use the classic WordPress windows sends each Tools > WordPress door to "
-            "its own window again, for this release only.",
+            "its own window again, for this release only. Each Watch is said when it happens, "
+            "checked at most every fifteen minutes while the editor is open.",
         )
         if picked is None:
             return
         classic = 0 in picked
         options.classic_windows = classic
+        options.watches = tuple(k for i, k in enumerate(kinds) if i + 1 in picked)
         save_options(options, self._data_dir)
         if classic:
             self.say(
