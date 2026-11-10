@@ -146,6 +146,7 @@ class GitHubReviewDraftDialog:
         submit_btn.SetName("Submit this review to GitHub")
         submit_btn.SetHelpText("Send the selected review action to GitHub now.")
         cancel_btn = wx.Button(panel, wx.ID_CANCEL, label="Save Draft and Close")
+        cancel_btn.SetHelpText("Keep the review as a draft on this computer and close.")
         cancel_btn.SetName("Save the local review draft and close")
         buttons.AddButton(submit_btn)
         buttons.AddButton(cancel_btn)

@@ -171,6 +171,9 @@ class GitHubNavigationState:
         account_data = asdict(value)
         account_data["history"] = [asdict(location) for location in self.history]
         account_data["history_index"] = self.history_index
+        previous = self._accounts.get(self.account_key)
+        if isinstance(previous, dict) and isinstance(previous.get(_WORKBENCH), dict):
+            account_data[_WORKBENCH] = previous[_WORKBENCH]  # the Workbench's place survives
         accounts[self.account_key] = account_data
         if len(accounts) > _MAX_ACCOUNTS:
             accounts = dict(list(accounts.items())[-_MAX_ACCOUNTS:])
@@ -183,4 +186,103 @@ class GitHubNavigationState:
         return True
 
 
-__all__ = ["GitHubItemsContext", "GitHubNavigationState", "account_key_for_token"]
+#: The Workbench window's place, inside each account's entry (GitHub PRD 3.1, 9).
+_WORKBENCH = "workbench"
+_MAX_EXPANDED = 200
+_MAX_INSTANCES = 20
+
+#: A node, as the Workbench names it: (template, key, instance).
+Place = tuple[str, str, str]
+
+
+@dataclass(frozen=True, slots=True)
+class WorkbenchPlace:
+    """Where the Workbench window was for one account: never a credential.
+
+    *last* is the node that was selected, *expanded* the nodes that were open,
+    and *repositories* and *people* the instances the tree showed, most
+    recent first, so a big account never means re-expanding everything.
+    """
+
+    last: Place | None = None
+    expanded: tuple[Place, ...] = ()
+    repositories: tuple[str, ...] = ()
+    people: tuple[str, ...] = ()
+
+
+def _place(value: object) -> Place | None:
+    if not isinstance(value, list | tuple) or len(value) != 3:
+        return None
+    if not all(isinstance(part, str) and len(part) <= 256 for part in value):
+        return None
+    return (str(value[0]), str(value[1]), str(value[2]))
+
+
+def _names(value: object, *, repository: bool) -> tuple[str, ...]:
+    if not isinstance(value, list):
+        return ()
+    found: list[str] = []
+    for entry in value:
+        name = _valid_repository(entry) if repository else str(entry).strip()[:100]
+        if name and isinstance(entry, str) and name not in found:
+            found.append(name)
+    return tuple(found[:_MAX_INSTANCES])
+
+
+def load_workbench_place(account_key: str, path: Path | None = None) -> WorkbenchPlace:
+    """The Workbench's place for *account_key*, or an empty one."""
+    raw = read_json(path or app_data_dir() / _FILENAME, default={})
+    accounts = raw.get("accounts", {}) if isinstance(raw, dict) else {}
+    account = accounts.get(account_key, {}) if isinstance(accounts, dict) else {}
+    data = account.get(_WORKBENCH, {}) if isinstance(account, dict) else {}
+    if not isinstance(data, dict):
+        return WorkbenchPlace()
+    expanded_raw = data.get("expanded", [])
+    expanded = (
+        tuple(p for p in (_place(v) for v in expanded_raw) if p is not None)[:_MAX_EXPANDED]
+        if isinstance(expanded_raw, list)
+        else ()
+    )
+    return WorkbenchPlace(
+        last=_place(data.get("last")),
+        expanded=expanded,
+        repositories=_names(data.get("repositories"), repository=True),
+        people=_names(data.get("people"), repository=False),
+    )
+
+
+def save_workbench_place(account_key: str, place: WorkbenchPlace, path: Path | None = None) -> bool:
+    """Keep *place* for *account_key*, beside GitHub Items' resume state."""
+    target = path or app_data_dir() / _FILENAME
+    raw = read_json(target, default={})
+    accounts = raw.get("accounts", {}) if isinstance(raw, dict) else {}
+    if not isinstance(accounts, dict):
+        accounts = {}
+    account = (
+        dict(accounts.get(account_key, {})) if isinstance(accounts.get(account_key), dict) else {}
+    )
+    account[_WORKBENCH] = {
+        "last": list(place.last) if place.last else None,
+        "expanded": [list(p) for p in place.expanded[:_MAX_EXPANDED]],
+        "repositories": list(place.repositories[:_MAX_INSTANCES]),
+        "people": list(place.people[:_MAX_INSTANCES]),
+    }
+    accounts = {k: v for k, v in accounts.items() if k != account_key}
+    accounts[account_key] = account
+    if len(accounts) > _MAX_ACCOUNTS:
+        accounts = dict(list(accounts.items())[-_MAX_ACCOUNTS:])
+    try:
+        write_json_atomic(target, {"accounts": accounts})
+    except OSError:
+        return False
+    return True
+
+
+__all__ = [
+    "GitHubItemsContext",
+    "GitHubNavigationState",
+    "WorkbenchPlace",
+    "account_key_for_token",
+    "load_workbench_place",
+    "save_workbench_place",
+]

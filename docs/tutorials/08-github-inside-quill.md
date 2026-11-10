@@ -23,9 +23,9 @@ There are three parts, and you can use any of them on its own:
 
 **A shorter way to all of it.** Turn on **View > GitHub Workbench Mode**
 (`Alt+V`, then `K`), in either app. A **GitHub** menu joins the menu bar after
-Tools (`Alt+G`), and the GitHub rows of the File and Tools menus move into it,
-next to rows that open the views below in one step: **Inbox...**,
-**Issues and Pull Requests...**, **Actions Runs...** and the rest. The menu
+Tools (`Alt+G`), with the doors into the GitHub Workbench: **Inbox**,
+**This Repository's Issues**, **This Repository's Pull Requests**,
+**Actions Runs** and **Open GitHub Workbench** itself. The menu
 paths in this tutorial are the ones you see with the mode off; with it on,
 look in the GitHub menu instead. While it's on, the status bar has a
 **Workbench** cell naming the repository you're working in; press `F6` and

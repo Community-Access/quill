@@ -156,9 +156,11 @@ class GitHubIssueDraftDialog:
 
         buttons = wx.StdDialogButtonSizer()
         create_btn = wx.Button(panel, wx.ID_OK, label="Create Issue")
+        create_btn.SetHelpText("Create the issue on GitHub with this title and text.")
         create_btn.SetDefault()
         create_btn.SetName("Create issue on GitHub")
         cancel_btn = wx.Button(panel, wx.ID_CANCEL, label="Cancel")
+        cancel_btn.SetHelpText("Close without creating the issue.")
         cancel_btn.SetName("Cancel issue creation")
         buttons.AddButton(create_btn)
         buttons.AddButton(cancel_btn)

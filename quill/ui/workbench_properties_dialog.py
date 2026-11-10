@@ -20,7 +20,7 @@ from collections.abc import Callable, Mapping
 from typing import Any
 
 from quill.core.workbench.properties import FieldKind, SheetSpec, as_text
-from quill.ui.dialog_contract import bind_close_button, show_modal_dialog
+from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_modal_dialog
 from quill.ui.dpi import dip_size
 
 __all__ = ["WorkbenchPropertiesDialog", "field_text"]
@@ -98,7 +98,7 @@ class WorkbenchPropertiesDialog:
         buttons.Add(close_button)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
         self.dialog.SetSizer(root)
-        self.dialog.SetEscapeId(wx.ID_CANCEL)
+        apply_modal_ids(self.dialog, escape_id=wx.ID_CANCEL)
 
     def text(self) -> str:
         return as_text(self.sheet, self.values, title=self.title)

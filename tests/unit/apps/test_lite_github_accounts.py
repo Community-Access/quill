@@ -150,6 +150,9 @@ def test_a_token_github_does_not_confirm_is_never_saved(
 @pytest.fixture
 def workbench(monkeypatch):
     """The Workbench's gates passed and its viewer recorded."""
+    # These pin the classic windows (Workbench Options, Use the classic GitHub
+    # windows); the Workbench, the default since Phase 6, is tested elsewhere.
+    monkeypatch.setenv("QUILL_GITHUB_WORKBENCH_WINDOW", "0")
     opened: list[object] = []
 
     class _Provider:

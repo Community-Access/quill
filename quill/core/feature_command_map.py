@@ -59,6 +59,7 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "github.workbench_inbox": "core.github_remote",
     "github.workbench_my_work": "core.github_remote",
     "github.workbench_issues": "core.github_remote",
+    "github.workbench_pulls": "core.github_remote",
     "github.workbench_actions_runs": "core.github_remote",
     "github.workbench_releases": "core.github_remote",
     "github.workbench_explore": "core.github_remote",

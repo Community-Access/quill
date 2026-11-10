@@ -52,21 +52,27 @@ From the top:
   reader says it is unavailable. When there is no repository, the row is left
   out.
 - **Leave Workbench Mode** (`V`), the way out, where you already are.
-- **Inbox...** (`I`), **My Work...** (`W`) and **Notifications...** (`N`):
-  Explore GitHub, opened straight on your attention queue, your work or your
-  notifications. Chapter 3 covers all three.
-- **Issues and Pull Requests...** (`P`), **Actions Runs...** (`A`) and
-  **Releases...** (`E`): GitHub Items, opened straight on that view of the
-  current repository. **Repository Items...** (`T`) opens GitHub Items as it
-  always has.
-- **Explore GitHub...** (`X`), **Clone Repository...** (`C`) and, in QUILL,
-  **Open GitHub Reference...** (`R`) and **Open a Repository...** (`O`).
-- In QUILL only: **GitHub File URL...** (`U`), **Commit to GitHub...** (`M`),
-  **Sync Folder with GitHub...** (`Y`), and three submenus,
-  **Repository Admin** (`D`), **Local Git** (`L`) and **Codespaces** (`S`),
-  which hold what Tools > Git and GitHub holds the rest of the time.
+- **Open GitHub Workbench** (`W`): the GitHub Workbench window, where you left
+  it, or on Inbox or Start Here if that is what you chose in Workbench Options.
+- **Inbox** (`I`): the Workbench, on what needs you. Chapter 3 covers it.
+- **This Repository's Issues** (`S`), **This Repository's Pull Requests**
+  (`P`) and **Actions Runs** (`A`): the Workbench, on that part of the
+  repository the document you have open belongs to.
+- **Clone Repository...** (`C`) and, in QUILL, **Open GitHub Address...**
+  (`D`), which takes a link, `owner/name` or `owner/name#42`.
+- In QUILL only: **Commit to GitHub...** (`M`), **Sync Folder with GitHub...**
+  (`Y`) and the **Local Git** submenu (`L`), because they are about the copy of
+  the repository on your computer rather than about GitHub.
 - **Manage GitHub Accounts...** (`G`) and **Open GitHub Guide** (`H`), last.
   Help keeps its own Open GitHub Guide row too.
+
+That is the whole menu. Everything else moved into the Workbench, where it has
+a place in the tree or a row in its own menus: My Work and Notifications are
+under Needs My Attention, Releases is under each repository, Explore GitHub's
+searches are under Search, and the repository settings and Codespaces are on
+the Workbench's Repository menu. The old commands still work from the Command
+Palette, and a key you gave one still works too; each opens the Workbench at
+the matching place.
 
 QUILL Lite's GitHub menu is the same menu with QUILL's own rows left out, so
 the letters are the same in both apps.

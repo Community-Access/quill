@@ -5,6 +5,15 @@ GitHub it calls. For a book on doing the work, written for screen-reader
 users, read [The GitHub Guide for QUILL and QUILL Lite](https://www.quillforall.org/docs/github-guide.html),
 which ships with both editors.
 
+**The GitHub Workbench window is the default (2026-11-10).** Every GitHub door
+in both editors opens one window, `quill/ui/workbench_frame.py` with the GitHub
+provider `quill/ui/github_workbench_window.py`; its tree, menus, keys, context
+menus, options and glossary are generated at the end of this page. GitHub
+Items and Explore GitHub, described below, are parked for one release behind
+Workbench Options, Use the classic GitHub windows
+(`quill/core/github/workbench_flag.py`), and GitHub Items still opens on one
+item for actions the Workbench does not yet rebuild.
+
 QUILL and QUILL Lite share the GitHub Items and Explore windows. QUILL Lite
 opens the workbench from **File > GitHub Workbench** (**Alt+F**, then **G**). In QUILL, use **File >
 Open from Remote > GitHub Items**. Public repository reading works without an
@@ -514,3 +523,338 @@ acceptance matrix.
 For a guided walkthrough, read [Tutorial 8](../tutorials/08-github-inside-quill.md).
 For every window, key and refusal in plain words, read
 [The GitHub Guide for QUILL and QUILL Lite](https://www.quillforall.org/docs/github-guide.html).
+
+<!-- BEGIN GENERATED: python -m quill.tools.build_workbench_reference --write -->
+
+## The GitHub Workbench window, generated
+
+Everything below is generated from the tables the window is built from. The window is the GitHub Workbench; the classic GitHub Items and Explore GitHub windows stay for one release behind Workbench Options, Use the classic GitHub windows.
+
+### The Navigator tree
+
+| Node | Under | What it is |
+| --- | --- | --- |
+| Start Here (`:start`) | the top | Start Here: what the Workbench is, whether you are signed in, and the five keys to learn first. |
+| Needs My Attention (`:attention`) | the top | Needs My Attention: everything waiting on you, across GitHub. Inbox first, then notifications, review requests and your own open work. |
+| Inbox (`:inbox`) | attention | Inbox: one list of what needs you, from notifications, review requests, assignments and mentions. Enter opens a row; Delete marks it done. |
+| Notifications (`:notifications`) | attention | Notifications: what GitHub has told you about, unread first. Ctrl+Q marks one read, Delete marks it done, and Ctrl+Shift+Q marks the whole view read. |
+| Review Requests (`:review_requests`) | attention | Review Requests: pull requests somebody asked you to review. Enter opens the review. |
+| Assigned to Me (`:assigned`) | attention | Assigned to Me: issues and pull requests assigned to you, anywhere. |
+| Mentions (`:mentions`) | attention | Mentions: issues and pull requests where somebody wrote your name. |
+| My Open Pull Requests (`:my_pulls`) | attention | My Open Pull Requests: pull requests you opened that are still open. |
+| My Open Issues (`:my_issues`) | attention | My Open Issues: issues you opened that are still open. |
+| My Activity Feed (`:my_activity`) | attention | My Activity Feed: what you did on GitHub lately, newest first. |
+| Repositories (`:repositories`) | the top | Repositories: the one you are working in first, then pinned, favorites, yours, starred, watched and your organizations'. Enter on a repository opens its node. |
+| Pinned (`:pinned`) | repositories | Pinned: repositories you keep at hand, on this computer. Delete takes one out; Ctrl+N pins the current repository. |
+| Favorites (`:favorites`) | repositories | Favorites: issues, pull requests and other items you kept, on this computer. Ctrl+D adds or removes the selected row anywhere in the window. |
+| My Repositories (`:my_repositories`) | repositories | My Repositories: the repositories your account owns or can push to. |
+| Starred (`:starred`) | repositories | Starred: repositories you starred on GitHub. |
+| Watched (`:watched`) | repositories | Watched: repositories whose activity GitHub tells you about. |
+| Organizations (`:organizations`) | repositories | Organizations: the organizations you belong to. Enter on one opens its repositories. |
+| Search (`:search`) | the top | Search: GitHub's searches. Choose one, type in the filter box with Ctrl+E, and press Enter. |
+| Issues and Pull Requests (`:search_issues`) | search | Search Issues and Pull Requests: everything GitHub finds for the words and qualifiers in the filter box, such as is:open author:@me. Ctrl+N saves the search. |
+| Code (`:search_code`) | search | Search Code: files whose text matches the filter box. Needs sign-in. |
+| Commits (`:search_commits`) | search | Search Commits: commits whose message matches the filter box. |
+| Repositories (`:search_repositories`) | search | Search Repositories: repositories whose name or description matches the filter box. |
+| Saved Searches (`:saved_searches`) | search | Saved Searches: searches you kept, on this computer. Enter runs one; Delete removes it. |
+| People (`:people`) | the top | People: who you follow, who follows you, and anybody you look up. |
+| People I Follow (`:following`) | people | People I Follow: accounts you follow. Enter opens a person's node. |
+| My Followers (`:followers`) | people | My Followers: accounts that follow you. |
+| Find a Person... (`:find_person`) | people | Find a Person: type a login with Ctrl+L, and the person gets a node of their own here. |
+| Gists (`:gists`) | the top | Gists: small shared files and snippets. |
+| My Gists (`:my_gists`) | gists | My Gists: gists you made. Enter edits one. |
+| Projects (`:projects`) | the top | Projects: your Project boards. Each repository's own Projects are under it, Ctrl+Shift+7. |
+| Watches (`:watches`) | the top | Watches: tell me when something happens. Coming in a later release. |
+| Across Repositories (`:across`) | the top | Across Repositories: every kind of thing, by name, everywhere. Coming in a later release. |
+| Help and Learning (`:help`) | the top | Help and Learning: the guide, the GitHub words, the keys, what changed, and tasks in plain words that take you to the place. |
+| Do Something (`:help_tasks`) | help | Do Something: tasks in plain words. Enter reads one; Take Me There, on its context menu, goes to the place it is about. |
+| The Guide (`:help_guide`) | help | The Guide: the GitHub Workbench Guide's chapters. Ctrl+F1 opens the guide at the chapter for where you are. |
+| Words (`:help_words`) | help | Words: the GitHub glossary. Type a word to jump to it; the details say what it means and where you meet it. |
+| Keys (`:help_keys`) | help | Keys: every key in the Workbench, grouped by what it does. |
+| What Changed (`:help_changes`) | help | What Changed: what is new in the GitHub Workbench in this version. |
+| Ask a Person (`:help_ask`) | help | Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email. |
+| owner/name (`repository:repository`) | repository | A repository: its issues, pull requests, actions, code, releases and settings, each a node below. Ctrl+Shift+1 to Ctrl+Shift+0 jump to them. |
+| Overview (`repository:overview`) | repository, repository | Overview: the repository's README, description and community profile. |
+| Issues (`repository:issues`) | repository, repository | Issues: this repository's open issues. Ctrl+N files a new one; Delete closes the selected one after asking. |
+| Pull Requests (`repository:pulls`) | repository, repository | Pull Requests: this repository's open pull requests. Enter opens the review; Ctrl+Shift+D lists the changed files. |
+| Issues and Pull Requests (`repository:issues_and_pulls`) | repository, repository | Issues and Pull Requests: both in one list, newest first, the way an inbox reads. |
+| Discussions (`repository:discussions`) | repository, repository | Discussions: the repository's conversations that are not issues. |
+| Actions (`repository:actions`) | repository, repository | Actions: the repository's workflow runs, workflows and caches. |
+| Runs (`repository:runs`) | repository, actions | Runs: each time a workflow ran. Enter shows its jobs and logs; Ctrl+Shift+W says what failed; Ctrl+Shift+F5 re-runs the failed jobs. |
+| Workflows (`repository:workflows`) | repository, actions | Workflows: the automations defined in the repository. |
+| Caches (`repository:caches`) | repository, actions | Caches: files Actions kept between runs. Delete removes one. |
+| Code (`repository:code`) | repository, repository | Code: files, branches, commits, tags, and the upstream of a fork. |
+| Files (`repository:files`) | repository, code | Files: the repository's files on its default branch, a folder at a time. Enter opens a folder, or a file in the editor. |
+| Branches (`repository:branches`) | repository, code | Branches: lines of work. Enter lists a branch's commits. |
+| Commits (`repository:commits`) | repository, code | Commits: saved changes, newest first. |
+| Tags (`repository:tags`) | repository, code | Tags: names for particular commits, usually versions. |
+| Upstream (`repository:upstream`) | repository, code | Upstream: the repository this one was forked from. Forks only. |
+| Releases (`repository:releases`) | repository, repository | Releases: published versions and their files. Enter lists the files. |
+| Labels (`repository:labels`) | repository, repository | Labels: tags for issues and pull requests. Enter finds the issues. |
+| Milestones (`repository:milestones`) | repository, repository | Milestones: goals with a date. Enter lists the issues and pull requests in one. |
+| Projects (`repository:repo_projects`) | repository, repository | Projects: this repository's Project boards. |
+| Activity (`repository:activity`) | repository, repository | Activity: what happened in the repository lately. |
+| People (`repository:people`) | repository, repository | People: contributors, forks, and who has access. |
+| Contributors and People (`repository:contributors`) | repository, people | Contributors and People: who has worked on the repository. |
+| Forks (`repository:forks`) | repository, people | Forks: copies of this repository on other accounts. |
+| Collaborators and Team Access (`repository:access`) | repository, people | Collaborators and Team Access: who may do what here. |
+| Insights (`repository:insights`) | repository, repository | Insights: traffic, contributors and the community profile. |
+| Traffic and Contributors (`repository:traffic`) | repository, insights | Traffic and Contributors: views, clones and who contributes. |
+| Health Snapshot (`repository:health`) | repository, insights | Health Snapshot: extra activity data, loaded only when you turn it on in Workbench Options. |
+| Community Profile (`repository:community`) | repository, insights | Community Profile: the README, license and guidelines GitHub checks. |
+| Deployments and Environments (`repository:deployments`) | repository, repository | Deployments and Environments: where the code was deployed. |
+| GitHub Pages (`repository:pages`) | repository, repository | GitHub Pages: the website built from this repository. |
+| Security (`repository:security`) | repository, repository | Security: alerts about vulnerable code and leaked secrets. |
+| Alerts (`repository:alerts`) | repository, security | Alerts: open security alerts. Enter reads one. |
+| Dismissed and Resolved Alerts (`repository:alerts_closed`) | repository, security | Dismissed and Resolved Alerts: alerts no longer open. |
+| Settings (`repository:settings`) | repository, repository | Settings: names of secrets, branch protection and general settings. |
+| Secret and Variable Names (`repository:secrets`) | repository, settings | Secret and Variable Names: the names only; GitHub never shows values. |
+| Branch Protection (`repository:branch_protection`) | repository, settings | Branch Protection: who may change a branch and what a change needs first. Enter opens the setting. |
+| General (`repository:general`) | repository, settings | General: the name, visibility and default branch. Enter opens one. |
+| person (`person:person`) | person | A person: their repositories, activity, followers and who they follow. |
+| Repositories (`person:person_repositories`) | person, person | Repositories: this person's public repositories. |
+| Activity (`person:person_activity`) | person, person | Activity: what this person did lately on GitHub. |
+| Followers (`person:person_followers`) | person, person | Followers: who follows this person. |
+| Following (`person:person_following`) | person, person | Following: who this person follows. |
+| organization (`organization:organization`) | organization | An organization: its repositories. |
+| Repositories (`organization:organization_repositories`) | organization, organization | Repositories: the organization's repositories you can see. |
+
+### The menu bar and its keys
+
+#### File
+
+| Row | Key | What it does |
+| --- | --- | --- |
+| New Here... | Ctrl+N | Something new where you are: an issue in Issues, a saved search in Saved Searches. |
+| New... | Ctrl+Shift+N | Choose what to create, wherever you are. |
+| Open GitHub Address... | Ctrl+L | Type or paste owner/name, #42, owner/name#42 or any GitHub link to go there. |
+| Go to Number... | Ctrl+G | Go to an issue or pull request in this repository by its number. |
+| Open on GitHub | Shift+Enter | Open the selected row, or the node, in your browser. |
+| Open in Editor | Ctrl+Enter | Open the selected file in the editor that opened this window. |
+| Close Workbench | Alt+F4 | Close this window. The editor stays. |
+
+#### Edit
+
+| Row | Key | What it does |
+| --- | --- | --- |
+| Copy | Ctrl+C | Copy the selected rows as text; in a text box, its own selection. |
+| Copy Link | Ctrl+Shift+C | Copy the selected row's address. |
+| Filter... | Ctrl+E | Move to the filter box. Ctrl+Shift+F too. |
+| Filter Builder... | Ctrl+Alt+F | Build a filter one condition at a time. Coming in a later release. |
+| Select All | Ctrl+A | Select every row in the list; in a text box, all its text. |
+
+#### View
+
+| Row | Key | What it does |
+| --- | --- | --- |
+| Refresh | F5 | Load this view again from GitHub. |
+| Refresh Ignoring Cache | Ctrl+F5 | Load this view again, asking GitHub for everything afresh. |
+| Load More | Alt+PageDown | Load the next page of rows, if GitHub has more. |
+| Back | Alt+Left | The view you were on before. Backspace too. |
+| Forward | Alt+Right | The view you went back from. |
+| Next Pane | F6 | Tree, filter, list, details, status bar. |
+| Previous Pane | Shift+F6 | The same panes, backwards. |
+| Where Am I | Alt+1 | Say the node and the filter in effect. |
+| Say Selection | Alt+2 | Say how many rows are selected. |
+| Say Item State | Alt+3 | Say the selected item's state in one line. |
+| Say Counts | Alt+4 | Say how many rows this view holds. |
+| Say Your Access | Alt+5 | Say what you can do here. |
+| Say Rate Limit | Alt+6 | Say how much of the GitHub API is left. |
+| Say Filter | Alt+7 | Say the filter in effect, in words. |
+| Say Loading | Alt+8 | Say what is loading, or when it loaded. |
+| Say Account | Alt+9 | Say the account, and whether you are signed in. |
+
+#### Go
+
+| Row | Key | What it does |
+| --- | --- | --- |
+| Inbox | Ctrl+1 | What needs you, across GitHub. Alt+Home too. |
+| Current Repository | Ctrl+2 | The repository this window opened on. |
+| Search | Ctrl+3 | Search GitHub. |
+| People | Ctrl+4 | People you follow and who follow you. |
+| Gists | Ctrl+5 | Your gists. |
+| Projects | Ctrl+6 | Projects. |
+| Watches | Ctrl+7 | Watches: tell me when it happens. Coming later. |
+| Saved Searches | Ctrl+8 | Searches you saved. |
+| Start Here | Ctrl+9 | What this window is and how it works. |
+| Across Repositories | Ctrl+0 | Every kind of thing, by name, everywhere. Coming later. |
+| Issues | Ctrl+Shift+1 | This repository's issues. |
+| Pull Requests | Ctrl+Shift+2 | This repository's pull requests. |
+| Discussions | Ctrl+Shift+3 | This repository's discussions. |
+| Actions Runs | Ctrl+Shift+4 | This repository's workflow runs. |
+| Files | Ctrl+Shift+5 | This repository's files. |
+| Releases | Ctrl+Shift+6 | This repository's releases. |
+| Repository Projects | Ctrl+Shift+7 | Its Projects. |
+| Security | Ctrl+Shift+8 | Its security alerts. |
+| Settings | Ctrl+Shift+9 | Its settings. |
+| Insights | Ctrl+Shift+0 | Its traffic and community profile. |
+| Parent Node | Alt+Up | The node above this one in the tree. |
+
+#### Item
+
+| Row | Key | What it does |
+| --- | --- | --- |
+| Properties... | Alt+Enter | Everything about the selected row on one sheet. |
+| Comment... | Ctrl+Shift+M | Write a comment on the selected item. |
+| File Differences... | Ctrl+Shift+D | The selected pull request's changed files. |
+| Merge... | Ctrl+Shift+Enter | Merge the selected pull request. |
+| Assign to Copilot... | Ctrl+Shift+A | Ask Copilot to work on the selected issue. |
+| Start in Local Worktree... | Ctrl+Shift+T | A branch and a folder on this computer for the selected item. |
+| What Failed... | Ctrl+Shift+W | The failing steps of the selected run, and their log lines. |
+| Re-run Failed Jobs | Ctrl+Shift+F5 | Run only what failed in the selected run again. |
+| Mark Read | Ctrl+Q | Mark the selected notification read. |
+| Mark All Read in View | Ctrl+Shift+Q | Mark every notification in this view read. Asks first when there are many. |
+| Add to or Remove from Favorites | Ctrl+D | Keep the selected row under Repositories, Favorites. |
+
+#### Repository
+
+| Row | Key | What it does |
+| --- | --- | --- |
+| Compare Branches... | Ctrl+Shift+B | Commits ahead and behind between two branches, and the changed files. |
+| Run Workflow on Branch... | Ctrl+Shift+R | Start a workflow that can be started by hand, on a branch. |
+| Repository Actions... | Ctrl+Shift+G | Everything else for this repository: star, watch, fork, clone, Codespaces, settings and administration, as a list you can run from. |
+
+#### Account
+
+| Row | Key | What it does |
+| --- | --- | --- |
+| Manage GitHub Accounts... | Ctrl+Shift+K | Add, switch, sign in again or remove GitHub accounts. |
+| GitHub API Rate Limit | Ctrl+Shift+L | How much of the GitHub API is left, and when it resets. |
+
+#### Tools
+
+| Row | Key | What it does |
+| --- | --- | --- |
+| Workbench Options... | Ctrl+Shift+O | Where the Workbench opens, how notifications check, lists and privacy. |
+
+#### Window
+
+| Row | Key | What it does |
+| --- | --- | --- |
+| Switch to Editor | Ctrl+Shift+E | Bring forward the editor that opened this window. |
+
+#### Help
+
+| Row | Key | What it does |
+| --- | --- | --- |
+| Help for This View | F1 | What this view and control do. |
+| What Can I Do Here?... | Shift+F1 | Every action for the selection, its key, and why any is greyed. |
+| What Is This? | Alt+F1 | The GitHub word for this row, explained. |
+| GitHub Workbench Guide | Ctrl+F1 | The guide, opened at the chapter for where you are. |
+| Search Help... | Ctrl+Shift+F1 | Type a few words to find a help topic, a command or a GitHub word. |
+| Workbench Keys | Alt+Shift+F1 | Every key in this window, by family. |
+| Say Last Result Again | F9 | Say the last result again. |
+| Explain That | Shift+F9 | What the last result means and what you might do next. |
+
+Keys the window answers that are not menu rows:
+
+| Key | Command id |
+| --- | --- |
+| Ctrl+Shift+F | `github.workbench.filter_alias` |
+| Alt+Home | `github.workbench.inbox_home` |
+| Ctrl+R | `github.workbench.refresh_alias` |
+| Delete | `github.workbench.remove` |
+| Ctrl+Cancel | `github.workbench.cancel_run` |
+
+### Context menus, by row type
+
+- **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., React..., View Timeline..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Set Issue Type..., Reorder Sub-issues..., Add to or Remove from Favorites; Properties...
+- **pull_request**: Review..., File Differences..., Comment..., Merge..., Copy Link, Open on GitHub; More: Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Summarize Discussion, React..., Labels..., Assignees..., Add to or Remove from Favorites; Properties...
+- **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., View Artifacts...; More: Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
+- **workflow**: Runs, Run Workflow on Branch..., Open on GitHub, Copy Link; Properties...
+- **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., Copy Link, Open on GitHub; Properties...
+- **release_asset**: Download, Copy Link, Delete Asset...; Properties...
+- **branch**: Commits, Compare Branches..., Open in Codespaces..., Copy Name, Delete Branch...; Properties...
+- **commit**: Open, Commit Comments..., Copy Link, Open on GitHub; Properties...
+- **tag**: Open, Commit Comments..., Copy Link, Open on GitHub; Properties...
+- **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally; Properties...
+- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Pin, Add to or Remove from Favorites; More: Open on GitHub, Open in Codespaces...; Properties...
+- **person**: Open, Follow or Unfollow, Open on GitHub; Properties...
+- **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
+- **gist**: Edit Gist..., Star or Unstar, Copy Link, Open on GitHub, Delete Gist...; Properties...
+- **discussion**: Open Discussion Thread, Copy Link, Open on GitHub; Properties...
+- **security_alert**: Open, Dismiss or Reopen Alert..., Open on GitHub; Properties...
+- **cache**: Show Details, Delete Cache...; Properties...
+- **saved_search**: Run, Remove Saved Search; Properties...
+- **result**: Open, Copy Link, Open on GitHub; Properties...
+- **file**: Open in Editor, Copy Link, Open on GitHub; Properties...
+- **folder**: Open Folder, Open on GitHub; Properties...
+- **milestone**: Find Issues in Milestone, Copy Link, Open on GitHub; Properties...
+- **project**: Open on GitHub, Copy Link; Properties...
+- **organization**: Open, Open on GitHub; Properties...
+- **favorite**: Open, Copy Link, Open on GitHub, Add to or Remove from Favorites; Properties...
+- **admin_action**: Open; Properties...
+- **help_topic**: Open, Take Me There; Properties...
+- **node**: Refresh, Open on GitHub, Help for This View; Properties...
+
+### Workbench Options
+
+| Setting | Page | Label | What it does |
+| --- | --- | --- | --- |
+| `open_on` | General | Open the Workbench on | Where the window opens when no menu row asks for a place: Inbox (Start Here until you have signed in), Start Here, or wherever you were last time. |
+| `list_mode` | General | List shows | Quick lists show a few columns, fast to arrow through; Full lists show every column GitHub Items knows for that view. |
+| `default_sort` | General | Sort issues and pull requests by | The order a list of issues and pull requests opens in. Newest first is the usual choice. |
+| `default_state` | General | Show issues that are | Open, closed or all, when a list opens. The filter box can always say is:open or is:closed for one list. |
+| `poll_interval_minutes` | Notifications and Inbox | Check for new notifications every (minutes) | How often GitHub is checked for new notifications, from 5 minutes to a day. GitHub may ask for longer, and then it gets longer. |
+| `poll_audible_tick` | Notifications and Inbox | Play a sound on each check | A short sound every time GitHub is checked, so silence means the check stopped rather than found nothing. Off by default. |
+| `poll_interrupt_speech` | Notifications and Inbox | New notifications interrupt speech | Say a new notification at once, cutting across what is being said. Off means it waits its turn. |
+| `include_read_notifications` | Notifications and Inbox | Include read notifications | Show notifications you have already read, as well as unread ones, in Notifications. |
+| `speak_column_names` | Lists | Say column names before values | Put each column's name before its value in a list row, as in Number 42, Title Crash on start. Off keeps rows short. |
+| `health_snapshot_opt_in` | Privacy | Load the repository Health Snapshot | Insights, Health Snapshot reads extra data from GitHub about a repository's activity. It loads only when this is checked. |
+| `first_time_help` | Privacy | Show First time here? help | The first few times you visit a place, its details start with a short paragraph on what it is for. |
+| `use_classic_windows` | Privacy | Use the classic GitHub windows | Open GitHub Items and Explore GitHub, as before the Workbench, from the editor's GitHub doors. Kept for one release, then retired. |
+
+### GitHub words
+
+- **Actions**: GitHub's automation: workflows that run on events, such as a push.
+- **Artifact**: A file a run produced and kept, to download.
+- **Assignee**: The person an issue or pull request is given to.
+- **Branch**: A line of work: a name that follows the newest commit of one set of changes. Under Code, Branches.
+- **Branch protection**: Rules that decide who may change a branch and what a change needs.
+- **Cache**: Files Actions keeps between runs to make them faster. Under Actions, Caches.
+- **Check**: A test or other run that reports passing or failing on a commit.
+- **Codespace**: A computer in the cloud with the repository ready to work on. It can cost money.
+- **Collaborator**: Somebody given access to one repository.
+- **Commit**: A saved change, with a message saying why. Under Code, Commits.
+- **Deployment**: Code sent to an environment, such as a website.
+- **Discussion**: A conversation in a repository that is not an issue.
+- **Draft**: A pull request that is not ready for review yet.
+- **Environment**: A named place code is deployed to, with its own rules and secrets.
+- **Favorite**: An item kept on this computer under Repositories, Favorites.
+- **Fork**: Your own copy of somebody else's repository, from which you can propose changes back. Under People, Forks.
+- **Gist**: A small shared file or snippet, with its own history.
+- **Inbox**: The Workbench's one list of what needs you, made from notifications, review requests, assignments and mentions.
+- **Issue**: A note about a bug, an idea or a task, with a conversation under it. Under a repository's Issues.
+- **Job**: One part of a run, on one machine, made of steps.
+- **Label**: A coloured tag on issues and pull requests, such as bug. Under Labels.
+- **Mention**: Your login written with an at sign, such as @you, which notifies you.
+- **Merge**: Bringing a pull request's changes into the branch it targets. Item, Merge, Ctrl+Shift+Enter.
+- **Milestone**: A goal with a due date that issues and pull requests belong to.
+- **Notification**: GitHub telling you something happened on a thread you are part of. Under Needs My Attention.
+- **Organization**: An account many people share, which owns repositories and teams.
+- **Pin**: A repository kept on this computer under Repositories, Pinned.
+- **Project**: A board or table for planning issues and pull requests.
+- **Pull request**: A proposed change: commits on one branch that somebody asks to merge into another, with a review. Under a repository's Pull Requests.
+- **Rate limit**: How many requests GitHub allows an account each hour. Account, GitHub API Rate Limit, Ctrl+Shift+L.
+- **Rebase**: Replaying commits on top of another branch, so the history reads as one straight line.
+- **Release**: A published version, with notes and files to download. Under a repository's Releases.
+- **Repository**: A project's folder on GitHub: its files, their history, and its issues and pull requests. Under Repositories in the tree.
+- **Review**: Reading a pull request's changes and approving them, asking for changes, or commenting. Enter on a pull request.
+- **Role**: What somebody may do: read, triage, write, maintain or admin.
+- **Ruleset**: A newer, named set of branch and tag rules that can cover many branches.
+- **Run**: One time a workflow ran, with its jobs, steps and logs. Under Actions, Runs.
+- **Saved search**: A search kept on this computer, to run again. Under Saved Searches.
+- **Secret**: A value, such as a password, that workflows use and GitHub never shows.
+- **Security alert**: A warning that code, a dependency or a secret in it is at risk.
+- **Squash**: Merging a pull request as one single commit, instead of all of its commits.
+- **Star**: A bookmark on a repository, which also shows you like it.
+- **Tag**: A name for one particular commit, usually a version number. Under Code, Tags.
+- **Team**: A group of people in an organization, given access together.
+- **Triage**: The role that may label, assign and close issues, but not push code.
+- **Upstream**: The repository a fork was copied from. Under Code, Upstream, on a fork.
+- **Variable**: A value workflows use that is not secret.
+- **Watch**: Asking GitHub to tell you about a repository's activity.
+- **Workflow**: One automation, defined in a file in the repository. Under Actions, Workflows.
+- **Workflow dispatch**: Starting a workflow by hand, on a branch you choose.
+
+<!-- END GENERATED -->

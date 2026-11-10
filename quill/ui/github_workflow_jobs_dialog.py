@@ -84,6 +84,9 @@ class WorkflowJobsDialog:
         if not run_attempt:
             attempt_labels = ["Current attempt (number unavailable)"]
         self._attempt_choice = wx.Choice(panel, choices=attempt_labels)
+        self._attempt_choice.SetHelpText(
+            "Which attempt of the run to show, when it ran more than once."
+        )
         self._attempt_choice.SetName("Workflow run attempt")
         self._attempt_choice.SetSelection(0)
         attempt_row.Add(self._attempt_choice, 0)
@@ -97,12 +100,16 @@ class WorkflowJobsDialog:
         root.Add(attempt_row, 0, wx.EXPAND | wx.ALL, 8)
         root.Add(wx.StaticText(panel, label="Workflow jobs"), 0, wx.ALL, 8)
         self._list = wx.ListBox(panel, choices=[])
+        self._list.SetHelpText("The run's jobs. Arrow to one to see its steps below.")
         self._list.SetName("Workflow jobs; select a job to read status or load its log")
         set_spoken_name(self._list, "Workflow jobs")
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         root.Add(wx.StaticText(panel, label="Job details and log"), 0, wx.ALL, 8)
         self._detail = wx.TextCtrl(
             panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP | wx.TE_RICH2
+        )
+        self._detail.SetHelpText(
+            "The selected item in full, read-only. Arrow through it line by line."
         )
         self._detail.SetName("Selected workflow job details and plain-text log")
         root.Add(self._detail, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
@@ -111,12 +118,16 @@ class WorkflowJobsDialog:
         root.Add(self._status, 0, wx.EXPAND | wx.ALL, 8)
         actions = wx.BoxSizer(wx.HORIZONTAL)
         self._log_btn = wx.Button(panel, label="Load &Log")
+        self._log_btn.SetHelpText("Load the selected job's log into the box below.")
         self._log_btn.SetName("Load selected job's text log")
         self._annotations_btn = wx.Button(panel, label="Load A&nnotations")
+        self._annotations_btn.SetHelpText("Load the errors and warnings the selected job reported.")
         self._annotations_btn.SetName("Load selected job's check annotations")
         self._open_btn = wx.Button(panel, label="Open &Job on GitHub")
+        self._open_btn.SetHelpText("Open the selected job on GitHub in your browser.")
         self._open_btn.SetName("Open selected workflow job in browser")
         self._open_run_btn = wx.Button(panel, label="Open &Run on GitHub")
+        self._open_run_btn.SetHelpText("Open the whole run on GitHub in your browser.")
         self._open_run_btn.SetName("Open this workflow run in browser")
         self._digest_btn = wx.Button(panel, label="What &Failed...")
         self._digest_btn.SetName("Read what failed in this run as one text")
@@ -130,6 +141,7 @@ class WorkflowJobsDialog:
             "Re-requests the selected job's check run. QUILL asks first; needs a signed-in account."
         )
         close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
+        close_btn.SetHelpText("Close this window. Escape does the same.")
         close_btn.SetName("Close workflow jobs")
         actions.Add(self._log_btn, 0, wx.RIGHT, 6)
         actions.Add(self._annotations_btn, 0, wx.RIGHT, 6)

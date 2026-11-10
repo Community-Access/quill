@@ -21,23 +21,16 @@ QUILL Lite's menu.
 | Letter | Row |
 | --- | --- |
 | `V` | Leave Workbench Mode |
-| `I` | Inbox... |
-| `W` | My Work... |
-| `N` | Notifications... |
-| `P` | Issues and Pull Requests... |
-| `A` | Actions Runs... |
-| `E` | Releases... |
-| `T` | Repository Items... |
-| `X` | Explore GitHub... |
-| `R` | Open GitHub Reference... (QUILL only) |
-| `O` | Open a Repository... (QUILL only) |
+| `W` | Open GitHub Workbench |
+| `I` | Inbox |
+| `S` | This Repository's Issues |
+| `P` | This Repository's Pull Requests |
+| `A` | Actions Runs |
+| `D` | Open GitHub Address... (QUILL only) |
 | `C` | Clone Repository... |
-| `U` | GitHub File URL... (QUILL only) |
 | `M` | Commit to GitHub... (QUILL only) |
 | `Y` | Sync Folder with GitHub... (QUILL only) |
-| `D` | Repository Admin submenu (QUILL only) |
 | `L` | Local Git submenu (QUILL only) |
-| `S` | Codespaces submenu (QUILL only) |
 | `G` | Manage GitHub Accounts... |
 | `H` | Open GitHub Guide |
 
@@ -360,3 +353,4 @@ GitHub and Use Repository have no access key.
 
 - Previous: [Chapter 10: Troubleshooting, privacy and help](lite-github-guide-10-troubleshooting.html)
 - [Contents](lite-github-guide.html)
+- Next: [Chapter 12: The GitHub Workbench, place by place](lite-github-guide-12-the-workbench.html)

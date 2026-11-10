@@ -378,6 +378,7 @@ reference for every window. Chapter 3's GitHub section is a short map of it.
 - [Chapter 9: Codespaces and the GitHub CLI](./github-guide/github-guide-09-codespaces-and-the-cli.html)
 - [Chapter 10: Troubleshooting, privacy and help](./github-guide/github-guide-10-troubleshooting.html)
 - [Chapter 11: Keyboard reference](./github-guide/github-guide-11-keyboard-reference.html)
+- [Chapter 12: The GitHub Workbench, place by place](./github-guide/github-guide-12-the-workbench.html)
 
 Help > Open GitHub Guide opens it from inside QUILL.
 

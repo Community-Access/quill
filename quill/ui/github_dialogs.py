@@ -52,9 +52,12 @@ class GitHubConsentDialog:
         sizer.Add(text, flag=wx.ALL, border=12)
         btn_sizer = wx.StdDialogButtonSizer()
         ok_btn = wx.Button(panel, wx.ID_OK, label="Continue")
+        ok_btn.SetHelpText("Agree and go on. QUILL then talks to GitHub for you.")
         ok_btn.SetDefault()
         btn_sizer.AddButton(ok_btn)
-        btn_sizer.AddButton(wx.Button(panel, wx.ID_CANCEL, label="Cancel"))
+        cancel_button = wx.Button(panel, wx.ID_CANCEL, label="Cancel")
+        cancel_button.SetHelpText("Close without changing anything. Escape does the same.")
+        btn_sizer.AddButton(cancel_button)
         btn_sizer.Realize()
         sizer.Add(btn_sizer, flag=wx.EXPAND | wx.ALL, border=8)
         panel.SetSizer(sizer)
@@ -138,11 +141,15 @@ class GitHubSignInDialog:
 
         btn_sizer = wx.StdDialogButtonSizer()
         self._connect_btn = wx.Button(panel, wx.ID_OK, label="Connect")
+        self._connect_btn.SetHelpText("Sign in with the token you typed or the browser sign-in.")
         self._connect_btn.SetDefault()
         btn_sizer.AddButton(self._connect_btn)
         anon_btn = wx.Button(panel, wx.ID_APPLY, label="Continue Anonymously")
+        anon_btn.SetHelpText("Go on without signing in. Public repositories can still be read.")
         btn_sizer.AddButton(anon_btn)
-        btn_sizer.AddButton(wx.Button(panel, wx.ID_CANCEL, label="Cancel"))
+        cancel_button = wx.Button(panel, wx.ID_CANCEL, label="Cancel")
+        cancel_button.SetHelpText("Close without changing anything. Escape does the same.")
+        btn_sizer.AddButton(cancel_button)
         btn_sizer.Realize()
         sizer.Add(btn_sizer, flag=wx.EXPAND | wx.ALL, border=8)
 
@@ -230,6 +237,9 @@ class GitHubManageAccountsDialog:
                 for account in self._accounts
             ]
             self._choice = wx.Choice(panel, choices=labels)
+            self._choice.SetHelpText(
+                "The GitHub accounts QUILL knows. Choose one to use or remove."
+            )
             self._choice.SetName("Saved GitHub accounts")
             selected = next(
                 (
@@ -268,6 +278,7 @@ class GitHubManageAccountsDialog:
         btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
         btn_sizer.Add(sign_in_btn, flag=wx.RIGHT, border=8)
         self._switch_btn = wx.Button(panel, int(self._switch_id), label="Use Selected Account")
+        self._switch_btn.SetHelpText("Make the selected account the one QUILL uses for GitHub.")
         self._switch_btn.SetName("Use selected GitHub account")
         self._switch_btn.Enable(
             self._selected_account_id() is not None
@@ -275,6 +286,9 @@ class GitHubManageAccountsDialog:
         )
         btn_sizer.Add(self._switch_btn, flag=wx.RIGHT, border=8)
         self._remove_btn = wx.Button(panel, int(self._remove_id), label="Remove Selected Account")
+        self._remove_btn.SetHelpText(
+            "Forget the selected account on this computer. Its token is removed."
+        )
         self._remove_btn.SetName("Remove selected GitHub account")
         self._remove_btn.Enable(bool(self._accounts) or has_token)
         btn_sizer.Add(self._remove_btn, flag=wx.RIGHT, border=8)
@@ -289,6 +303,7 @@ class GitHubManageAccountsDialog:
 
         sizer.AddSpacer(8)
         close_btn = wx.Button(panel, wx.ID_OK, label="Done")
+        close_btn.SetHelpText("Close Manage GitHub Accounts.")
         # Sign In with GitHub is the default until there is an account to use;
         # after that Enter closes, so a second sign-in is never an accident.
         if active is None and not (has_token and login):

@@ -373,6 +373,11 @@
   "quill/ui/github_run_digest_dialog.py::RunFailureDigestDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_sub_issue_order_dialog.py::SubIssueOrderDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_timeline_dialog.py::GitHubTimelineDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/github_workbench_actions.py::GitHubWorkbenchActionsMixin._ask_text::wx.TextEntryDialog": "native",
+  "quill/ui/github_workbench_actions.py::GitHubWorkbenchActionsMixin._choose::wx.SingleChoiceDialog": "native",
+  "quill/ui/github_workbench_actions.py::GitHubWorkbenchActionsMixin._confirm::wx.MessageDialog": "native",
+  "quill/ui/github_workbench_options.py::WorkbenchOptionsDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/github_workbench_writes.py::GitHubWorkbenchWritesMixin._do_star::wx.MessageDialog": "native",
   "quill/ui/github_workflow_jobs_dialog.py::WorkflowJobsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_workflow_jobs_dialog.py::WorkflowJobsDialog._rerequest_check::wx.MessageDialog": "native",
   "quill/ui/global_hotkeys_dialog.py::GlobalHotkeysDialog.__init__::wx.Dialog": "hardened_custom",
@@ -1071,6 +1076,9 @@
   "quill/ui/work_persona_dialog.py::WorkPersonaDialog._on_browse_folder::wx.DirDialog": "native",
   "quill/ui/work_persona_dialog.py::WorkPersonaDialog._on_shortcut::wx.DirDialog": "native",
   "quill/ui/workbench_frame_actions.py::WorkbenchActionsMixin.open_address::wx.TextEntryDialog": "native",
+  "quill/ui/workbench_help_dialogs.py::ActionListDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/workbench_help_dialogs.py::HelpTextDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/workbench_help_dialogs.py::SearchHelpDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/workbench_properties_dialog.py::WorkbenchPropertiesDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/workbench_sheet_editor.py::WorkbenchSheetEditor.__init__::wx.Dialog": "hardened_custom"
 }

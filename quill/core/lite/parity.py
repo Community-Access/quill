@@ -336,6 +336,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_github_my_work": "github.workbench_my_work",
     "cmd_github_notifications": "github.view_notifications",
     "cmd_github_issues": "github.workbench_issues",
+    "cmd_github_pulls": "github.workbench_pulls",
     "cmd_github_actions_runs": "github.workbench_actions_runs",
     "cmd_github_releases": "github.workbench_releases",
     "cmd_github_explore": "github.workbench_explore",

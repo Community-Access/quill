@@ -56,17 +56,16 @@ _QUIET_BACKGROUND: tuple[tuple[str, object], ...] = (
     ("watch_folder_interrupt_speech", False),
     ("weather_monitor_audible_tick", False),
     ("weather_monitor_interrupt_speech", False),
-    ("github_poll_audible_tick", False),
-    ("github_poll_interrupt_speech", False),
 )
 
 RECIPES: tuple[Bundle, ...] = (
     Bundle(
         "quiet_background",
         "Quiet background work",
-        "Background checks -- podcasts, a watched folder, the weather, GitHub -- stop "
+        "Background checks -- podcasts, a watched folder, the weather -- stop "
         "ticking and stop cutting across what is being said. They still run, and "
-        "what they find is still kept.",
+        "what they find is still kept. The GitHub check has its own choices, in "
+        "the GitHub Workbench's Tools menu, Workbench Options.",
         _QUIET_BACKGROUND,
     ),
     Bundle(
