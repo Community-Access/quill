@@ -69,6 +69,7 @@ class WorkbenchProvider(Protocol):
     def unavailable(self, ref: NodeRef, node: NodeSpec) -> str: ...
     def load(self, ref: NodeRef, node: NodeSpec, query: Query) -> list[object]: ...
     def columns(self, node: NodeSpec) -> tuple[str, ...]: ...
+    def remote_words(self, node: NodeSpec) -> bool: ...
     def cells(self, row: object, columns: tuple[str, ...]) -> list[str]: ...
     def detail(self, row: object) -> str: ...
     def row_type(self, node: NodeSpec, row: object) -> str: ...
@@ -204,6 +205,17 @@ class WorkbenchFrame(WorkbenchActionsMixin):
             bar.Append(menu, spec.title)
         self.frame.SetMenuBar(bar)
 
+    def rebuild_tree(self) -> None:
+        """Build the tree again after an instance was added; the selection is kept."""
+        current = self.current
+        self._navigating = True
+        try:
+            self._build_tree()
+        finally:
+            self._navigating = False
+        if current is not None and current in self._items:
+            self.select(current, remember=False)
+
     def _build_tree(self) -> None:
         tree, spec = self.tree, self.provider.tree
         tree.DeleteAllItems()
@@ -291,6 +303,10 @@ class WorkbenchFrame(WorkbenchActionsMixin):
         if remember and self.current is not None and self.current != ref:
             self.history.append(self.current)
             self.forward.clear()
+        if self.current != ref and not self.query.is_empty:
+            # A filter belongs to the list it was typed for; a new node starts clean.
+            self.query = Query()
+            self.filter.ChangeValue("")
         self.current = ref
         node = self.node(ref)
         self.details.ChangeValue(self.provider.node_help(ref, node))
@@ -402,7 +418,8 @@ class WorkbenchFrame(WorkbenchActionsMixin):
         self._say(message)
 
     def _fill_list(self) -> None:
-        words = self.query.words
+        remote = self.current is not None and self.provider.remote_words(self.node(self.current))
+        words = () if remote else self.query.words
         columns = self._columns or ("name",)
         self.rows = [
             row
@@ -424,7 +441,8 @@ class WorkbenchFrame(WorkbenchActionsMixin):
         """Enter in the filter box: words filter here, qualifiers ask the service."""
         before = self.query
         self.query = parse(self.filter.GetValue())
-        if self.query.conditions != before.conditions:
+        remote = self.current is not None and self.provider.remote_words(self.node(self.current))
+        if self.query.conditions != before.conditions or (remote and self.query != before):
             self.reload()
         else:
             self._fill_list()

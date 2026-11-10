@@ -256,6 +256,12 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a("remove_search", "Remove Saved Search", _O, "", "Forget it on this device."),
         _PROPERTIES,
     ),
+    "result": (
+        _default("open", "Open", "Read it in the details pane."),
+        _COPY_LINK,
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
     "node": (
         _default("refresh", "Refresh", "Load this view again. F5 does the same."),
         _OPEN_WEB,

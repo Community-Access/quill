@@ -142,7 +142,7 @@ def test_escape_clears_the_filter_then_goes_back(bench) -> None:
 
 
 def test_a_node_that_is_not_in_the_preview_explains_itself(bench) -> None:
-    _go(bench, NodeRef("repository", "labels", REPO))
+    _go(bench, NodeRef("repository", "milestones", REPO))
     assert "not in this preview yet" in bench.details.GetValue()
     assert bench.rows == []
 

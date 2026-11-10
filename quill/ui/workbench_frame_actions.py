@@ -132,7 +132,7 @@ class WorkbenchActionsMixin:
         if ref is None:
             self._say("That is not a repository name or GitHub link.")
             return
-        self._build_tree()
+        self.rebuild_tree()
         self.frame.SetTitle(self.provider.window_title(ref.instance))
         self.select(ref)
         self.tree.SetFocus()

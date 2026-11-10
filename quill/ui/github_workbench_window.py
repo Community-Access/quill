@@ -1,10 +1,13 @@
 """The GitHub provider for the Workbench window, and the one way to open it.
 
-Phase 1 spike (GitHub PRD section 11): the window's tree is the whole of
-:data:`quill.core.github.workbench_tree.GITHUB_TREE`, and the seven GitHub
-Items views load in it through the same provider calls GitHub Items makes
-(no new network call). Every other node is shown, says what it will hold,
-and points at the window that still has it, so nothing seems to vanish.
+Phases 1 and 2 (GitHub PRD section 11): the window's tree is the whole of
+:data:`quill.core.github.workbench_tree.GITHUB_TREE`. GitHub Items' seven views
+load in it through the provider calls GitHub Items makes, and Explore GitHub's
+views through Explore's own client (:mod:`quill.ui.github_workbench_explore`),
+so there is no new network call. Enter on a repository or person row selects
+its node. The few nodes with no loader here yet (Files, Milestones, Projects,
+the admin pages) are shown, say what they will hold, and point at the window
+that still has them, so nothing seems to vanish.
 
 Reached only behind the developer flag
 (:mod:`quill.core.github.workbench_flag`), through
@@ -17,6 +20,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from typing import Any
 
+from quill.core.github.explore_models import ExploreRow
 from quill.core.github.item_actions import GITHUB_ACTIONS
 from quill.core.github.items_provider import (
     GitHubBranch,
@@ -34,7 +38,7 @@ from quill.core.github.workbench_tree import GITHUB_TREE, START_NODE, node_for_i
 from quill.core.github.workbench_window_menu import GO_NODES, WINDOW_MENU
 from quill.core.workbench.filters import Query, describe, render
 from quill.core.workbench.properties import SheetSpec
-from quill.core.workbench.tree import Need, NodeSpec
+from quill.core.workbench.tree import Need, NodeSpec, Scope
 from quill.ui.github_items_view import (
     VIEW_COLUMNS,
     item_detail,
@@ -43,6 +47,12 @@ from quill.ui.github_items_view import (
     parse_repo_reference,
     row_cells,
     sort_items,
+)
+from quill.ui.github_workbench_explore import (
+    EXPLORE_PREFIX,
+    explore_row_type,
+    explore_unavailable,
+    load_explore,
 )
 from quill.ui.workbench_frame import NodeRef, WorkbenchFrame
 from quill.ui.workbench_status_bar import StatusCell
@@ -55,9 +65,9 @@ START_HERE = (
     "say what the selected one is. F6 moves from pane to pane and then to the status "
     "bar. Enter does the obvious thing; the Applications key lists everything else; "
     "Alt+Enter opens Properties. Backspace or Alt+Left goes back. F1 says what any "
-    "control does.\n\nThis is an early preview: GitHub Items' seven views live under "
-    "each repository here. Everything else in the tree is shown so you can see where "
-    "it will go, and GitHub Items and Explore GitHub still have it."
+    "control does.\n\nThis is an early preview. Every view GitHub Items and Explore "
+    "GitHub have is in this tree. A few nodes, such as Files and Milestones, are shown "
+    "so you can see where they will go, and GitHub Items still has them."
 )
 
 _ROW_TYPES: tuple[tuple[type, str], ...] = (
@@ -93,8 +103,10 @@ class GitHubWorkbenchProvider:
     ) -> None:
         self.items = items
         self._repositories: list[str] = [repository] if repository else []
+        self._people: list[str] = []
         self._announce = announce
         self.frame: WorkbenchFrame | None = None
+        self._explore: Any = None
 
     # -- the tree -----------------------------------------------------------------
 
@@ -102,16 +114,23 @@ class GitHubWorkbenchProvider:
         return f"{self.name} - {instance}" if instance else self.name
 
     def instances(self, template: str) -> Sequence[str]:
-        return tuple(self._repositories) if template == "repository" else ()
+        found = {"repository": self._repositories, "person": self._people}.get(template, [])
+        return tuple(found)
 
     def add_instance(self, template: str, address: str) -> NodeRef | None:
-        name = parse_repo_reference(address)
-        if template != "repository" or name is None:
+        """Put a repository (owner/name or a link) or a person (a login) in the tree."""
+        if template == "person":
+            name = address.strip().lstrip("@")
+            store = self._people
+        else:
+            name = parse_repo_reference(address) or ""
+            store = self._repositories
+        if template not in ("repository", "person") or not name:
             return None
-        if name in self._repositories:
-            self._repositories.remove(name)
-        self._repositories.insert(0, name)
-        return NodeRef("repository", "repository", name)
+        if name in store:
+            store.remove(name)
+        store.insert(0, name)
+        return NodeRef(template, template, name)
 
     def node_help(self, ref: NodeRef, node: NodeSpec) -> str:
         if ref == NodeRef("", START_NODE):
@@ -133,10 +152,15 @@ class GitHubWorkbenchProvider:
             if not ref.instance:
                 return "Open a repository first: Ctrl+L, or File > Open GitHub Address."
             return ""
+        if node.loader.startswith(EXPLORE_PREFIX):
+            query = self.frame.query if self.frame is not None else Query()
+            return explore_unavailable(
+                node, instance=ref.instance, signed_in=self.signed_in, query=query
+            )
         if Need.SIGN_IN in node.needs and not self.signed_in:
             return "Sign in to GitHub to see this: GitHub menu > Manage GitHub Accounts."
         return (
-            "This view is not in this preview yet. Explore GitHub still has it, "
+            "This view is not in this preview yet. GitHub Items still has it, "
             "from the editor's GitHub menu."
         )
 
@@ -147,7 +171,13 @@ class GitHubWorkbenchProvider:
     # -- rows ---------------------------------------------------------------------
 
     def load(self, ref: NodeRef, node: NodeSpec, query: Query) -> list[object]:
-        """Fetch a node's rows. Runs off the UI thread; the calls are GitHub Items' own."""
+        """Fetch a node's rows off the UI thread, with Items' and Explore's own calls."""
+        if node.loader.startswith(EXPLORE_PREFIX):
+            if self._explore is None:
+                from quill.core.github.explore import GitHubExploreClient
+
+                self._explore = GitHubExploreClient(self.items)
+            return list(load_explore(self._explore, node, instance=ref.instance, query=query))
         view, repo, items = node.loader.removeprefix("items:"), ref.instance, self.items
         limit = DEFAULT_PAGE_LIMIT
         preset = dict(node.preset)
@@ -176,17 +206,29 @@ class GitHubWorkbenchProvider:
         return list(fetch()) if fetch is not None else []
 
     def columns(self, node: NodeSpec) -> tuple[str, ...]:
+        if node.loader.startswith(EXPLORE_PREFIX):
+            return ("result",)
         return VIEW_COLUMNS.get(node.loader.removeprefix("items:"), ())
 
+    def remote_words(self, node: NodeSpec) -> bool:
+        """A search node sends the whole filter to GitHub; every other list filters here."""
+        return node.scope is Scope.QUERY
+
     def cells(self, row: object, columns: tuple[str, ...]) -> list[str]:
+        if isinstance(row, ExploreRow):
+            return [row.label]
         return row_cells(row, columns, full=False)
 
     def detail(self, row: object) -> str:
+        if isinstance(row, ExploreRow):
+            return row.detail
         if isinstance(row, GitHubItem):
             return item_detail(row, [])[0]
         return model_detail(row)
 
     def row_type(self, node: NodeSpec, row: object) -> str:
+        if isinstance(row, ExploreRow):
+            return explore_row_type(row)
         if isinstance(row, GitHubItem):
             return "pull_request" if row.is_pr else "issue"
         return next((kind for cls, kind in _ROW_TYPES if isinstance(row, cls)), "node")
@@ -204,7 +246,7 @@ class GitHubWorkbenchProvider:
     # -- commands -----------------------------------------------------------------
 
     def supports(self, command_id: str) -> bool:
-        return command_id in {"github.workbench.open", "github.workbench.review"}
+        return command_id in _SUPPORTED
 
     def run(self, command_id: str, ref: NodeRef, row: object) -> bool:
         frame = self.frame
@@ -212,6 +254,16 @@ class GitHubWorkbenchProvider:
             return False
         if command_id == "github.workbench.open":
             frame.details.SetFocus()
+            return True
+        drill = _DRILLS.get(command_id)
+        if drill is not None and isinstance(row, ExploreRow):
+            # Enter on a repository or a person selects its node (PRD 3.3 drill-downs).
+            target = self.add_instance(drill, row.repo if drill == "repository" else row.key)
+            if target is None:
+                return False
+            frame.rebuild_tree()
+            frame.select(target)
+            frame.tree.SetFocus()
             return True
         if isinstance(row, GitHubItem) and row.is_pr:
             from quill.ui.github_pr_review_dialog import GitHubPullReviewDialog
@@ -229,7 +281,9 @@ class GitHubWorkbenchProvider:
 
         def repository() -> str:
             current = frame.current
-            return current.instance if current is not None and current.instance else ""
+            if current is None or current.template != "repository":
+                return ""
+            return current.instance
 
         def items_text() -> str:
             if frame.current is None or not frame.node(frame.current).loader:
@@ -290,6 +344,12 @@ class GitHubWorkbenchProvider:
             pass
 
 
+_DRILLS = {
+    "github.workbench.open_repository": "repository",
+    "github.workbench.open_person": "person",
+}
+_SUPPORTED = frozenset({"github.workbench.open", "github.workbench.review", *_DRILLS})
+
 _OPEN: dict[str, WorkbenchFrame] = {}
 
 
@@ -323,7 +383,7 @@ def open_github_workbench(
         provider = existing.provider
         if repository and isinstance(provider, GitHubWorkbenchProvider):
             provider.add_instance("repository", repository)
-            existing._build_tree()
+            existing.rebuild_tree()
         existing.show(_start_ref(repository, view))
         return existing
     provider = GitHubWorkbenchProvider(items, repository, announce=say)
