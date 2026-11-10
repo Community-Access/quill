@@ -872,16 +872,17 @@ class GitHubItemsProvider(
         *,
         state: str | None = None,
         add_labels: Sequence[str] = (),
+        remove_labels: Sequence[str] = (),
+        add_assignees: Sequence[str] = (),
+        remove_assignees: Sequence[str] = (),
     ) -> list[str]:
         """Apply a batch change to issues/PRs; returns per-item error strings.
 
-        The one deliberate exception to the viewer's read-only rule (Unified
-        GitHub Management "Batch Operations"), and still tightly scoped:
-        close/reopen (``state``) and adding labels — no deletions, no content
-        edits. Requires an authenticated session (the anonymous viewer stays
-        fully read-only), and the UI gates every call behind an explicit
-        consent dialog naming the exact items. Failures are collected
-        per-item so one bad number never aborts the rest.
+        Removal is as available as adding (GitHub PRD 16.1, GH-R-041): close or
+        reopen, labels and assignees added and removed. Each change's tier and
+        requirement are in ``write_requirements``; the UI previews a batch and
+        the Workbench's own batches go through ``quill.core.github.batch``.
+        Needs a signed-in session; one bad number never aborts the rest.
         """
         if not self._token:
             raise GitHubItemsError(
@@ -898,6 +899,12 @@ class GitHubItemsProvider(
                     issue.edit(state=state)
                 if add_labels:
                     issue.add_to_labels(*[str(label) for label in add_labels])
+                for label in remove_labels:
+                    issue.remove_from_labels(str(label))
+                if add_assignees:
+                    issue.add_to_assignees(*[str(login) for login in add_assignees])
+                if remove_assignees:
+                    issue.remove_from_assignees(*[str(login) for login in remove_assignees])
             except Exception as exc:  # noqa: BLE001 - collect, keep going
                 errors.append(f"#{number}: {exc}")
         return errors

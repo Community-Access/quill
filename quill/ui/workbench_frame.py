@@ -38,10 +38,11 @@ from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 from quill.ui.workbench_frame_actions import WorkbenchActionsMixin
 from quill.ui.workbench_frame_commands import WorkbenchCommandsMixin
+from quill.ui.workbench_frame_groups import GroupRef, WorkbenchGroupsMixin
 from quill.ui.workbench_frame_help import WorkbenchHelpMixin
 from quill.ui.workbench_status_bar import StatusCell, WorkbenchStatusBar
 
-__all__ = ["NodeRef", "WorkbenchFrame", "WorkbenchProvider"]
+__all__ = ["GroupRef", "NodeRef", "WorkbenchFrame", "WorkbenchProvider"]
 
 
 @dataclass(frozen=True)
@@ -88,7 +89,9 @@ Background = Callable[
 ]
 
 
-class WorkbenchFrame(WorkbenchCommandsMixin, WorkbenchHelpMixin, WorkbenchActionsMixin):
+class WorkbenchFrame(
+    WorkbenchCommandsMixin, WorkbenchHelpMixin, WorkbenchActionsMixin, WorkbenchGroupsMixin
+):
     """One Workbench window over one provider."""
 
     def __init__(
@@ -120,6 +123,7 @@ class WorkbenchFrame(WorkbenchCommandsMixin, WorkbenchHelpMixin, WorkbenchAction
         self._items: dict[NodeRef, Any] = {}
         self._columns: tuple[str, ...] = ()
         self._navigating = False
+        self._groups: dict[GroupRef, tuple[Any, list[object]]] = {}
         instance = next(iter(provider.instances("repository")), "")
         self.frame = wx.Frame(None, title=provider.window_title(instance))
         self.frame.SetSize(dip_size(self.frame, 980, 680))
@@ -303,13 +307,17 @@ class WorkbenchFrame(WorkbenchCommandsMixin, WorkbenchHelpMixin, WorkbenchAction
             return  # the tree empties itself as the window is destroyed
         item = event.GetItem()
         ref = self.tree.GetItemData(item) if self.tree and item.IsOk() else None  # not when closing
-        if isinstance(ref, NodeRef):
+        if isinstance(ref, GroupRef):
+            self._show_group(ref)
+        elif isinstance(ref, NodeRef):
             self._show_node(ref, remember=not self._navigating)
 
     def _show_node(self, ref: NodeRef, *, remember: bool) -> None:
         if remember and self.current is not None and self.current != ref:
             self.history.append(self.current)
             self.forward.clear()
+        if self._groups and self.current != ref:
+            self.show_groups([])
         if self.current != ref and not self.query.is_empty:
             # A filter belongs to the list it was typed for; a new node starts clean.
             self.query = Query()
@@ -458,6 +466,9 @@ class WorkbenchFrame(WorkbenchCommandsMixin, WorkbenchHelpMixin, WorkbenchAction
             if empty:
                 node_words = self.provider.node_help(self.current, self.node(self.current))
                 self.details.ChangeValue(f"{empty}\n\n{node_words}")
+        after = getattr(self.provider, "after_fill", None)
+        if callable(after):
+            after(self)
         self.status.refresh()
 
     def apply_filter(self) -> None:

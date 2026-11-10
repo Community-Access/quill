@@ -31,8 +31,7 @@ class GitHubExtrasMixin:
     GitHub commands to ``MainFrame``."""
 
     # ------------------------------------------------------------------
-    # Organizations (Teams explicitly out of scope; docs/planning/github.md
-    # section 1)
+    # Organizations (teams: the GitHub Workbench's Team sheet, PRD 18.3.3)
 
     def github_browse_organization(self) -> None:
         """Tools > GitHub > Browse Organization Repositories..."""

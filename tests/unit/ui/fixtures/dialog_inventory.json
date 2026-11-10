@@ -303,6 +303,7 @@
   "quill/ui/github_explore_queue.py::GitHubExploreQueueMixin._show_error::wx.MessageDialog": "native",
   "quill/ui/github_explore_repo_actions.py::GitHubExploreRepoActionsMixin._choose_watch_level.ask::wx.SingleChoiceDialog": "native",
   "quill/ui/github_file_runs_dialog.py::GitHubFileRunsDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/github_filter_builder_dialog.py::FilterBuilderDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_gist_editor_dialog.py::GitHubGistEditorDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_gist_editor_dialog.py::GitHubGistEditorDialog._delete_file::wx.MessageDialog": "native",
   "quill/ui/github_gist_editor_dialog.py::GitHubGistEditorDialog._prompt::wx.TextEntryDialog": "native",
@@ -376,7 +377,13 @@
   "quill/ui/github_workbench_actions.py::GitHubWorkbenchActionsMixin._ask_text::wx.TextEntryDialog": "native",
   "quill/ui/github_workbench_actions.py::GitHubWorkbenchActionsMixin._choose::wx.SingleChoiceDialog": "native",
   "quill/ui/github_workbench_actions.py::GitHubWorkbenchActionsMixin._confirm::wx.MessageDialog": "native",
+  "quill/ui/github_workbench_list_dialog.py::WorkbenchListDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_workbench_options.py::WorkbenchOptionsDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/github_workbench_properties.py::GitHubWorkbenchPropertiesMixin._choose_conflicts::wx.MessageDialog": "native",
+  "quill/ui/github_workbench_properties.py::GitHubWorkbenchPropertiesMixin.confirm_tier::wx.MessageDialog": "native",
+  "quill/ui/github_workbench_results.py::show_results::wx.Dialog": "hardened_custom",
+  "quill/ui/github_workbench_tools.py::GitHubWorkbenchToolsMixin._tool_change_history.save_csv::wx.FileDialog": "native",
+  "quill/ui/github_workbench_view.py::GitHubWorkbenchViewMixin.choose_columns::wx.MultiChoiceDialog": "native",
   "quill/ui/github_workbench_writes.py::GitHubWorkbenchWritesMixin._do_star::wx.MessageDialog": "native",
   "quill/ui/github_workflow_jobs_dialog.py::WorkflowJobsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_workflow_jobs_dialog.py::WorkflowJobsDialog._rerequest_check::wx.MessageDialog": "native",
@@ -1077,5 +1084,6 @@
   "quill/ui/workbench_help_dialogs.py::HelpTextDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/workbench_help_dialogs.py::SearchHelpDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/workbench_properties_dialog.py::WorkbenchPropertiesDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/workbench_properties_sheet.py::PropertiesSheet.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/workbench_sheet_editor.py::WorkbenchSheetEditor.__init__::wx.Dialog": "hardened_custom"
 }

@@ -99,6 +99,7 @@ GLOSSARY: dict[str, str] = {
 
 #: Each row type -> the glossary word Alt+F1 explains for it.
 ROW_TYPE_WORDS: dict[str, str] = {
+    "team": "Team",
     "issue": "Issue",
     "pull_request": "Pull request",
     "mixed": "Issue",

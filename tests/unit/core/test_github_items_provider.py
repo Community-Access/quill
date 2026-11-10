@@ -1182,6 +1182,35 @@ def test_update_items_applies_state_and_labels_collecting_errors(
     assert len(errors) == 1 and errors[0].startswith("#13:")
 
 
+def test_update_items_removes_as_readily_as_it_adds(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    """GH-R-041: the old add-only batch rule is lifted; removal is as available."""
+    done: list[tuple[str, int, tuple]] = []
+
+    def get_issue(number: int):
+        return SimpleNamespace(
+            remove_from_labels=lambda label: done.append(("unlabel", number, (label,))),
+            add_to_assignees=lambda *who: done.append(("assign", number, who)),
+            remove_from_assignees=lambda *who: done.append(("unassign", number, who)),
+        )
+
+    repo.get_issue = get_issue  # type: ignore[attr-defined]
+    errors = provider.update_items(
+        "owner/repo",
+        [4],
+        remove_labels=("triage",),
+        add_assignees=("kelly",),
+        remove_assignees=("sam",),
+    )
+    assert errors == []
+    assert done == [
+        ("unlabel", 4, ("triage",)),
+        ("assign", 4, ("kelly",)),
+        ("unassign", 4, ("sam",)),
+    ]
+
+
 def test_update_items_rejects_unknown_state(provider: GitHubItemsProvider) -> None:
     with pytest.raises(GitHubItemsError, match="Unknown state"):
         provider.update_items("owner/repo", [1], state="merged")

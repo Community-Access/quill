@@ -34,6 +34,17 @@ lists them in :data:`CONTROL_KEYS`.
 from __future__ import annotations
 
 from quill.core.github.item_actions import PROPERTIES_COMMAND
+from quill.core.github.workbench_view_menu import (
+    ACCOUNT_ROWS,
+    COLUMNS_ROW,
+    FILTER_SUB,
+    GO_ROWS,
+    GROUP_SUB,
+    LOAD_ALL_ROW,
+    SHOW_SUB,
+    SORT_SUB,
+    STATE_SUB,
+)
 from quill.core.workbench.menus import MenuRow, MenuSpec, rows
 
 __all__ = [
@@ -101,6 +112,20 @@ _EDIT = MenuSpec(
     "&Edit",
     (
         _row(
+            "undo_change",
+            "&Undo GitHub Change",
+            "Ctrl+Z",
+            "Reverse your last change on GitHub, where GitHub allows it. In a text box, "
+            "Ctrl+Z undoes your typing instead.",
+        ),
+        _row(
+            "redo_change",
+            "&Redo GitHub Change",
+            "Ctrl+Y",
+            "Make the change you just undid again.",
+        ),
+        None,
+        _row(
             "copy",
             "&Copy",
             "Ctrl+C",
@@ -113,7 +138,8 @@ _EDIT = MenuSpec(
             "filter_builder",
             "Filter &Builder...",
             "Ctrl+Alt+F",
-            "Build a filter one condition at a time. Coming in a later release.",
+            "Build a filter one condition at a time: every attribute, an operator and a "
+            "value from the repository, written into the filter box as GitHub's syntax.",
         ),
         None,
         _row(
@@ -141,6 +167,14 @@ _VIEW = MenuSpec(
             "Alt+PageDown",
             "Load the next page of rows, if GitHub has more.",
         ),
+        LOAD_ALL_ROW,
+        None,
+        SHOW_SUB,
+        STATE_SUB,
+        SORT_SUB,
+        FILTER_SUB,
+        GROUP_SUB,
+        COLUMNS_ROW,
         None,
         _row("back", "&Back", "Alt+Left", "The view you were on before. Backspace too."),
         _row("forward", "&Forward", "Alt+Right", "The view you went back from."),
@@ -175,12 +209,12 @@ _GO = MenuSpec(
             "Ctrl+2",
             "The repository this window opened on.",
         ),
-        _row("go_search", "Searc&h", "Ctrl+3", "Search GitHub."),
+        _row("go_search", "Search", "Ctrl+3", "Search GitHub."),
         _row("go_people", "Peop&le", "Ctrl+4", "People you follow and who follow you."),
         _row("go_gists", "Gis&ts", "Ctrl+5", "Your gists."),
         _row("go_projects", "Pro&jects", "Ctrl+6", "Projects."),
         _row("go_watches", "&Watches", "Ctrl+7", "Watches: tell me when it happens. Coming later."),
-        _row("go_saved_searches", "Sa&ved Searches", "Ctrl+8", "Searches you saved."),
+        _row("go_saved_searches", "Saved Searches", "Ctrl+8", "Searches you saved."),
         _row("go_start", "Start Her&e", "Ctrl+9", "What this window is and how it works."),
         _row(
             "go_across",
@@ -190,7 +224,7 @@ _GO = MenuSpec(
         ),
         None,
         _row("go_issues", "Iss&ues", "Ctrl+Shift+1", "This repository's issues."),
-        _row("go_pulls", "&Pull Requests", "Ctrl+Shift+2", "This repository's pull requests."),
+        _row("go_pulls", "Pull Re&quests", "Ctrl+Shift+2", "This repository's pull requests."),
         _row("go_discussions", "&Discussions", "Ctrl+Shift+3", "This repository's discussions."),
         _row("go_runs", "&Actions Runs", "Ctrl+Shift+4", "This repository's workflow runs."),
         _row("go_files", "&Files", "Ctrl+Shift+5", "This repository's files."),
@@ -201,6 +235,8 @@ _GO = MenuSpec(
         _row("go_insights", "Ins&ights", "Ctrl+Shift+0", "Its traffic and community profile."),
         None,
         _row("go_parent", "Parent N&ode", "Alt+Up", "The node above this one in the tree."),
+        None,
+        *GO_ROWS,
     ),
 )
 
@@ -305,6 +341,7 @@ _ACCOUNT = MenuSpec(
             "Ctrl+Shift+L",
             "How much of the GitHub API is left, and when it resets.",
         ),
+        *ACCOUNT_ROWS,
     ),
 )
 
@@ -427,10 +464,10 @@ CONTROL_KEYS: dict[str, str] = {
 }
 
 #: Rows that name a place or tool still to come: they explain and do nothing else.
-PLACEHOLDER_COMMANDS = frozenset({f"{_P}filter_builder", f"{_P}go_watches", f"{_P}go_across"})
+PLACEHOLDER_COMMANDS = frozenset({f"{_P}go_watches", f"{_P}go_across"})
 
 WORKBENCH_KEYS: dict[str, str] = {
-    **{row.command_id: row.key for _menu, row in rows(WINDOW_MENU)},
+    **{row.command_id: row.key for _menu, row in rows(WINDOW_MENU) if row.key},
     **ALIAS_KEYS,
     **CONTROL_KEYS,
 }

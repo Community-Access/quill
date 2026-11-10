@@ -25,6 +25,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.workbench.menus import all_rows
 from quill.ui.workbench_help_dialogs import (
     ActionChoice,
     ActionListDialog,
@@ -151,9 +152,7 @@ class WorkbenchHelpMixin:
                 row.label.replace("&", "").rstrip("."),
                 getattr(self, "_keys", {}).get(row.command_id, ""),
             )
-            for spec in self.provider.menu
-            for row in spec.rows
-            if row is not None
+            for _spec, row in all_rows(self.provider.menu)
         }
 
         def search(words: str) -> list[ActionChoice]:

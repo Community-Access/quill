@@ -34,6 +34,7 @@ def generate() -> str:
     from quill.core.github.item_actions import GITHUB_ACTIONS
     from quill.core.github.workbench_tree import GITHUB_TREE
     from quill.core.github.workbench_window_menu import WINDOW_MENU, WORKBENCH_KEYS
+    from quill.core.workbench.menus import MenuSub, all_rows
 
     out = [
         BEGIN,
@@ -65,7 +66,16 @@ def generate() -> str:
             "| --- | --- | --- |",
         ]
         for row in spec.rows:
-            if row is not None:
+            if isinstance(row, MenuSub):
+                title = row.title.replace("&", "")
+                for inner in row.rows:
+                    if inner is not None:
+                        label = f"{title} > {inner.label.replace('&', '')}"
+                        key = inner.key or "(submenu letter)"
+                        out.append(f"| {_cell(label)} | {key} | {_cell(inner.help)} |")
+                if row.dynamic:
+                    out.append(f"| {_cell(title)} | (submenu letter) | {_cell(row.help)} |")
+            elif row is not None:
                 label = row.label.replace("&", "")
                 out.append(f"| {_cell(label)} | {row.key} | {_cell(row.help)} |")
         out.append("")
@@ -75,7 +85,7 @@ def generate() -> str:
         "| Key | Command id |",
         "| --- | --- |",
     ]
-    menu_ids = {row.command_id for spec in WINDOW_MENU for row in spec.rows if row}
+    menu_ids = {row.command_id for _spec, row in all_rows(WINDOW_MENU)}
     for command_id, key in WORKBENCH_KEYS.items():
         if command_id not in menu_ids:
             out.append(f"| {key} | `{command_id}` |")

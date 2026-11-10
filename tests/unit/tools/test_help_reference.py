@@ -53,6 +53,7 @@ _AUDITS = {
     "Quill Converter": "converter",
     "Quill Beacon": "beacon",
     "QUILL Lite": "lite",
+    "GitHub Workbench": "github",
 }
 
 

@@ -2038,6 +2038,11 @@
     "body": "Opens GitHub Items on the issues and pull requests of the repository you are working in, or asks which one. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as GitHub Items."
   },
   {
+    "id": "github.workbench_pulls",
+    "title": "GitHub: This Repository's Pull Requests",
+    "body": "Opens the GitHub Workbench on the pull requests of the repository you are working in, or asks which one. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as the rest of the Workbench."
+  },
+  {
     "id": "github.workbench_actions_runs",
     "title": "GitHub: Actions Runs",
     "body": "Opens GitHub Items on the repository's recent workflow runs, with their status and result. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as GitHub Items."

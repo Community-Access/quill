@@ -162,13 +162,18 @@ def test_the_pull_request_menu_starts_with_review_and_ends_with_properties(bench
     bench.list.Select(0)
     # Merge is not rebuilt yet: it opens GitHub Items on this pull request.
     assert bench.can_run("github.workbench.merge")
-    assert not bench.can_run("github.workbench.filter_builder")
+    assert bench.can_run("github.workbench.filter_builder")
 
 
-def test_alt_enter_opens_a_read_only_sheet_for_the_selected_row(bench, monkeypatch) -> None:
+def test_alt_enter_opens_the_sheet_for_the_selected_row(bench, monkeypatch) -> None:
+    from tests.github_api_fake import FakeGitHubApi
+
+    api = FakeGitHubApi()
+    api.answer("GET", "/repos/owner/repo/pulls/2", {"number": 2, "title": "Fix it"})
+    bench.provider.api = api  # never GitHub itself
     shown: list[Any] = []
     monkeypatch.setattr(
-        "quill.ui.workbench_properties_dialog.show_modal_dialog",
+        "quill.ui.workbench_properties_sheet.show_modal_dialog",
         lambda dialog, title: shown.append((dialog.GetTitle(), title)) or wx.ID_CANCEL,
     )
     _go(bench, NodeRef("repository", "pulls", REPO))
