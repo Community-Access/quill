@@ -202,7 +202,8 @@ def test_repository_actions_submenu_is_offered_for_a_repository(explore) -> None
     assert [item.GetItemLabelText() for item in submenu.GetMenuItems()][-1] == (
         "Delete Repository..."
     )
-    assert added == ["GitHub API Rate Limit\tCtrl+Shift+L"]
+    # The rate limit is on no context menu; Ctrl+Shift+L says it (GitHub PRD 5, rule 5).
+    assert added == []
     menu.Destroy()
 
 

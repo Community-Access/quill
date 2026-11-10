@@ -74,3 +74,51 @@ def test_mark_all_read_is_offered_only_in_notifications() -> None:
     assert "Mark All Read..." in _offered(_Explore("notifications"), row)
     assert "Mark All Read..." not in _offered(_Explore("search"), row)
     assert "Mark All Read..." in _offered(_Explore("notifications"), None)
+
+
+def _laid_out(explore: _Explore, row: ExploreRow | None) -> list[str]:
+    """The top-level labels the menu shows once the Workbench rules lay it out."""
+    from quill.ui.github_context_rows import ContextRows
+    from quill.ui.github_explore_context_menu import VIEW_ROW_LABELS
+
+    rows = ContextRows(view_labels=VIEW_ROW_LABELS)
+    explore._fill_context_menu(rows, rows.add, row)
+
+    class _Menu:
+        def __init__(self) -> None:
+            self.labels: list[str] = []
+
+        def Append(self, _id: object, label: str) -> None:
+            self.labels.append(label)
+
+        def AppendSubMenu(self, _sub: object, label: str) -> None:
+            self.labels.append(label)
+
+        def Enable(self, *_args: object) -> None:
+            pass
+
+        def Bind(self, *_args: object, **_kwargs: object) -> None:
+            pass
+
+    fake_wx = SimpleNamespace(Menu=_Menu, NewIdRef=object, EVT_MENU=None)
+    menu = _Menu()
+    rows.populate(fake_wx, menu, item_selected=bool(row))
+    return menu.labels
+
+
+def test_the_first_row_is_what_enter_does() -> None:
+    repo = ExploreRow(label="o/r", detail="", repo="o/r", kind="repo", key="o/r")
+    assert _laid_out(_Explore("repositories"), repo)[0] == "Use Repository"
+    note = ExploreRow(label="Thread", detail="", kind="notification", key="9")
+    assert _laid_out(_Explore("notifications"), note)[0] == "Open"
+    issue = ExploreRow(label="Fix", detail="", url="https://x", repo="o/r", kind="issue", key="1")
+    assert _laid_out(_Explore("search"), issue)[0] == "Open on GitHub"
+
+
+def test_view_rows_follow_the_items_own_rows_under_this_view() -> None:
+    row = ExploreRow(label="bug", detail="", repo="o/r", kind="label", key="bug")
+    labels = _laid_out(_Explore("labels"), row)
+    assert "Refresh" not in labels
+    assert "Create Label..." not in labels
+    assert labels[-1] == "This View"
+    assert "Refresh" in _laid_out(_Explore("labels"), None)

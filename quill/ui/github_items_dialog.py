@@ -229,22 +229,41 @@ class GitHubItemsDialog(
             6,
         )
         self._repo_ctrl = wx.TextCtrl(panel, value=self._repo, style=wx.TE_PROCESS_ENTER)
+        self._repo_ctrl.SetHelpText(
+            "Type owner/name, or paste a GitHub link, then press Enter to load it."
+        )
         self._repo_ctrl.SetName("Repository in owner slash repo format")
         self._load_btn = wx.Button(panel, label="Load")
+        self._load_btn.SetHelpText(
+            "Load the issues, branches or runs of the repository typed above."
+        )
         self._load_btn.SetName("Load repository")
         # No access key: Alt+P moves between comments, and every other letter of the
         # name is taken in this window (GATE-14: no key rather than a duplicate).
         self._pinned_btn = wx.Button(panel, label="Pinned...")
+        self._pinned_btn.SetHelpText(
+            "Pick a pinned repository to load, or pin or unpin the loaded one."
+        )
         self._pinned_btn.SetName("Pinned repositories menu")
         self._favorites_btn = wx.Button(panel, label="Fa&vorites...")
+        self._favorites_btn.SetHelpText(
+            "Items you marked with Ctrl+D, in any repository, to open in a browser."
+        )
         self._favorites_btn.SetName("Favorited items menu")
         self._explore_btn = wx.Button(panel, label="&Explore...")
+        self._explore_btn.SetHelpText(
+            "Searches, notifications, people and repository views beyond this list."
+        )
         self._explore_btn.SetName(
             "Explore My Work, activity, people, repositories, labels, and Pages"
         )
         self._projects_btn = wx.Button(panel, label="Pro&jects...")
+        self._projects_btn.SetHelpText(
+            "GitHub Projects: browse items and change their fields. Needs sign-in."
+        )
         self._projects_btn.SetName("Browse and edit GitHub Projects, blockers, and sub-issues")
         self._upstream_btn = wx.Button(panel, label="View &Upstream")
+        self._upstream_btn.SetHelpText("For a fork, loads the repository it was forked from.")
         self._upstream_btn.SetName(
             "Open the repository this fork was forked from; enabled only for forks"
         )
@@ -276,13 +295,22 @@ class GitHubItemsDialog(
             6,
         )
         self._search_ctrl = wx.TextCtrl(panel, value=self._search_query, style=wx.TE_PROCESS_ENTER)
+        self._search_ctrl.SetHelpText(
+            "GitHub search syntax, such as is:open label:bug. Empty restores the list."
+        )
         self._search_ctrl.SetName(
             "Search issues and pull requests with full GitHub search syntax; "
             "empty search restores the normal list"
         )
         self._search_btn = wx.Button(panel, label="Search")
+        self._search_btn.SetHelpText(
+            "Run the search typed in the search box against the loaded repository."
+        )
         self._search_btn.SetName("Run search")
         self._reference_btn = wx.Button(panel, label="Open Link...")
+        self._reference_btn.SetHelpText(
+            "Paste a GitHub link or owner/name#42 to go straight to it."
+        )
         self._reference_btn.SetName("Open a GitHub URL or repository reference")
         search_row.Add(self._search_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
         search_row.Add(self._search_btn, 0, wx.RIGHT, 12)
@@ -294,6 +322,9 @@ class GitHubItemsDialog(
         )
         self._quick_filter_ctrl = wx.TextCtrl(
             panel, value=self._quick_filter_query, style=wx.TE_PROCESS_ENTER
+        )
+        self._quick_filter_ctrl.SetHelpText(
+            "Narrows the loaded list as you type. Nothing is fetched."
         )
         self._quick_filter_ctrl.SetName(
             "Quick filter; narrows the currently loaded list as you type, no network "
@@ -307,6 +338,9 @@ class GitHubItemsDialog(
         filt = wx.BoxSizer(wx.HORIZONTAL)
         filt.Add(wx.StaticText(panel, label="V&iew:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
         self._view_choice = wx.Choice(panel, choices=[label for _, label in VIEWS])
+        self._view_choice.SetHelpText(
+            "What the list shows: issues and pull requests, branches, commits and more."
+        )
         self._view_choice.SetName("View")
         self._view_choice.SetSelection(
             next(i for i, (key, _) in enumerate(VIEWS) if key == self._view)
@@ -315,18 +349,21 @@ class GitHubItemsDialog(
 
         filt.Add(wx.StaticText(panel, label="&Show:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
         self._show_choice = wx.Choice(panel, choices=["Both", "Issues", "PRs"])
+        self._show_choice.SetHelpText("In Issues and PRs, show issues, pull requests or both.")
         self._show_choice.SetName("Show issues PRs or both")
         self._show_choice.SetSelection({"both": 0, "issues": 1, "prs": 2}[self._show])
         filt.Add(self._show_choice, 0, wx.RIGHT, 10)
 
         filt.Add(wx.StaticText(panel, label="S&tate:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
         self._state_choice = wx.Choice(panel, choices=["Open", "Closed", "All"])
+        self._state_choice.SetHelpText("Show open, closed or all issues and pull requests.")
         self._state_choice.SetName("State filter")
         self._state_choice.SetSelection({"open": 0, "closed": 1, "all": 2}[self._state])
         filt.Add(self._state_choice, 0, wx.RIGHT, 10)
 
         filt.Add(wx.StaticText(panel, label="S&ort:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
         self._sort_choice = wx.Choice(panel, choices=[label for _, label in SORT_ORDERS])
+        self._sort_choice.SetHelpText("The order of issues and pull requests in the list.")
         self._sort_choice.SetName("Sort order")
         self._sort_choice.SetSelection(
             next(index for index, (key, _label) in enumerate(SORT_ORDERS) if key == self._sort)
@@ -340,11 +377,15 @@ class GitHubItemsDialog(
             4,
         )
         self._mode_choice = wx.Choice(panel, choices=["Quick (compact)", "Full (field names)"])
+        self._mode_choice.SetHelpText(
+            "Quick reads values only; Full says each column's name before its value."
+        )
         self._mode_choice.SetName("List mode")
         self._mode_choice.SetSelection(0)
         filt.Add(self._mode_choice, 1, wx.EXPAND | wx.RIGHT, 10)
 
         self._columns_btn = wx.Button(panel, label="Colu&mns...")
+        self._columns_btn.SetHelpText("Choose which columns this view's list shows.")
         self._columns_btn.SetName("Choose which columns are shown in the list for this view")
         filt.Add(self._columns_btn, 0)
         root.Add(filt, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -374,6 +415,10 @@ class GitHubItemsDialog(
             panel,
             style=wx.LC_REPORT | wx.BORDER_SIMPLE,
         )
+        self._list.SetHelpText(
+            "Enter opens the row; the Applications key lists what you can do with it. Ctrl+Shift+L "
+            "says how much of the GitHub API rate limit is left."
+        )
         self._list.SetName("GitHub items list; select several rows for batch actions")
         set_spoken_name(self._list, "GitHub items; select several rows for batch actions")
         root.Add(self._list, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
@@ -383,6 +428,9 @@ class GitHubItemsDialog(
         self._details = wx.TextCtrl(
             panel,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
+        )
+        self._details.SetHelpText(
+            "The selected row in full. Alt+N and Alt+P move between comments."
         )
         self._details.SetName("Details")
         root.Add(self._details, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
@@ -394,14 +442,21 @@ class GitHubItemsDialog(
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         self._refresh_btn = wx.Button(panel, label="Refresh")
+        self._refresh_btn.SetHelpText("Load this view again from GitHub. Ctrl+R does the same.")
         self._refresh_btn.SetName("Refresh")
         self._more_btn = wx.Button(panel, label="View More")
+        self._more_btn.SetHelpText("Load the next page of results.")
         self._more_btn.SetName("View more results")
         self._open_btn = wx.Button(panel, label="Open in Browser")
+        self._open_btn.SetHelpText("Open the selected row on GitHub in your browser.")
         self._open_btn.SetName("Open selected item in browser")
         self._goto_btn = wx.Button(panel, label="Go To #...")
+        self._goto_btn.SetHelpText("Jump to an issue or pull request by its number.")
         self._goto_btn.SetName("Go to issue or PR by number")
         self._diff_btn = wx.Button(panel, label="&Diff...")
+        self._diff_btn.SetHelpText(
+            "The selected pull request's changed files, one comparison per file."
+        )
         self._diff_btn.SetName(
             "View the selected pull request's changed files as accessible comparisons"
         )
@@ -413,22 +468,35 @@ class GitHubItemsDialog(
             "Read review threads and check runs, and submit an approval or review request."
         )
         self._summarize_btn = wx.Button(panel, label="Summari&ze")
+        self._summarize_btn.SetHelpText(
+            "An AI summary of the selected issue or pull request's discussion."
+        )
         self._summarize_btn.SetName("Summarize the selected discussion with AI")
         self._compare_btn = wx.Button(panel, label="&Compare...")
+        self._compare_btn.SetHelpText(
+            "Compare two branches: commits ahead and behind, and changed files."
+        )
         self._compare_btn.SetName(
             "Compare two branches: ahead/behind counts, commits, and changed files"
         )
         self._batch_btn = wx.Button(panel, label="&Batch...")
+        self._batch_btn.SetHelpText(
+            "Close, reopen, label, set a milestone or assign every selected item."
+        )
         self._batch_btn.SetName(
             "Batch actions on the checked items: close, reopen, add label, "
             "set milestone, add assignees"
         )
         self._actions_btn = wx.Button(panel, label="&Actions...")
+        self._actions_btn.SetHelpText(
+            "Write actions for this view: new issue, merge, delete branch, re-run."
+        )
         self._actions_btn.SetName(
             "Write actions for the current view: new issue or pull request, merge, "
             "delete branch, re-run workflow, reply to or edit or delete a comment"
         )
         cancel_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
+        cancel_btn.SetHelpText("Close GitHub Items. Escape does the same.")
         cancel_btn.SetName("Close dialog")
         for b in (
             self._refresh_btn,
@@ -1088,79 +1156,6 @@ class GitHubItemsDialog(
     # rather than a wall of mostly-disabled buttons -- what's offered
     # depends on the current view, the selected row, and whether the cursor
     # is parked on a specific comment.
-
-    def _on_actions_menu(self, _event: object) -> None:
-        wx = self._wx
-        if not self._repo:
-            self._announce("Load a repository first.")
-            return
-        if not self._provider.is_authenticated:
-            self._announce(
-                "Write actions need a signed-in GitHub account; this session is read-only."
-            )
-            return
-        menu = wx.Menu()
-        entries: list[tuple[object, object]] = []
-
-        def _add(label: str, handler: object) -> None:
-            item_id = wx.NewIdRef()
-            menu.Append(item_id, label)
-            entries.append((item_id, handler))
-
-        if self._view == VIEW_ISSUES:
-            _add("New Issue...", self._new_issue)
-            _add("New Pull Request...", self._new_pull_request)
-            selected = self._selected_indices()
-            if len(selected) == 1:
-                model = self._rows[selected[0]]
-                if isinstance(model, GitHubItem) and model.is_pr and not model.is_merged:
-                    _add(f"Merge Pull Request #{model.number}...", self._merge_selected_pr)
-            if self._current_comment >= 0:
-                _add("Edit This Comment...", self._edit_current_comment)
-                _add("Delete This Comment...", self._delete_current_comment)
-                _add("React to This Comment...", self._react_to_current_comment)
-            if self._comment_target is not None:
-                _add("Reply to Thread...", self._reply_to_thread)
-        elif self._view == VIEW_BRANCHES:
-            selected = self._selected_indices()
-            if len(selected) == 1 and isinstance(self._rows[selected[0]], GitHubBranch):
-                branch = self._rows[selected[0]]
-                _add(f"Delete Branch {branch.name!r}...", self._delete_selected_branch)
-        elif self._view == VIEW_WORKFLOWS:
-            selected = self._selected_indices()
-            if len(selected) == 1:
-                workflow = self._rows[selected[0]]
-                _add(
-                    f"Run {workflow.name!r} on Branch...",
-                    lambda: self._run_selected_workflow(workflow),
-                )
-        elif self._view == VIEW_RUNS:
-            selected = self._selected_indices()
-            if len(selected) == 1:
-                _add("Re-run Workflow", self._rerun_selected_workflow)
-                _add("View Jobs and Logs...", self._view_jobs_for_selected)
-                _add("View Artifacts...", self._view_artifacts_for_selected)
-                self._add_run_actions(_add)
-        elif self._view == VIEW_RELEASES:
-            self._add_release_actions(_add)
-
-        if not entries:
-            menu.Destroy()
-            self._announce("No write actions available here. Select a row first.")
-            return
-
-        def _on_pick(event: object) -> None:
-            picked = event.GetId()
-            for item_id, handler in entries:
-                if int(picked) == int(item_id):
-                    handler()
-                    return
-
-        menu.Bind(wx.EVT_MENU, _on_pick)
-        try:
-            self._actions_btn.PopupMenu(menu)
-        finally:
-            menu.Destroy()
 
     def _merge_selected_pr(self) -> None:
         selected = self._selected_indices()

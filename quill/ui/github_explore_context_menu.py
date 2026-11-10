@@ -10,9 +10,24 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.github.explore_views import QUERY_VIEWS
+from quill.ui.github_context_rows import ContextRows
 from quill.ui.github_explore_queue import queue_item_key as _queue_item_key
 
-__all__ = ["GitHubExploreContextMenuMixin"]
+__all__ = ["VIEW_ROW_LABELS", "GitHubExploreContextMenuMixin"]
+
+#: Rows about the whole view, not the selected result. With a result selected
+#: they go under This View, after the result's own rows (GitHub PRD section 5,
+#: rule 2); with nothing selected they are the menu.
+VIEW_ROW_LABELS = frozenset({
+    "Mark All Read...",
+    "Create Label...",
+    "Save Search",
+    "Remove Saved Search",
+    "Queue Options...",
+    "New Discussion...",
+    "New Gist...",
+    "Refresh",
+})
 
 
 class GitHubExploreContextMenuMixin:
@@ -28,14 +43,10 @@ class GitHubExploreContextMenuMixin:
                     self._list.SetSelection(index)
                     self._select(None)
         menu = wx.Menu()
-
-        def add(label: str, action: object, enabled: bool = True) -> None:
-            item_id = wx.NewIdRef()
-            menu.Append(item_id, label)
-            menu.Enable(item_id, enabled)
-            menu.Bind(wx.EVT_MENU, lambda _event, callback=action: callback(), id=item_id)
-
-        self._fill_context_menu(menu, add, self._selected())
+        row = self._selected()
+        rows = ContextRows(view_labels=VIEW_ROW_LABELS)
+        self._fill_context_menu(rows, rows.add, row)
+        rows.populate(wx, menu, item_selected=bool(row))
         try:
             self._list.PopupMenu(menu)
         finally:
@@ -49,6 +60,13 @@ class GitHubExploreContextMenuMixin:
         action after it.
         """
         if row:
+            # First, what Enter does on this row (GitHub PRD section 5, rule 1).
+            if row.kind == "notification":
+                add("Open", lambda: self._activate(None))
+            elif row.kind == "discussion" and row.key.isdecimal():
+                add("Open Discussion Thread...", lambda: self._open_discussion_thread(row))
+            elif row.repo and row.kind == "repo":
+                add("Use Repository", lambda: self._use_repo(None))
             add("Open on GitHub", lambda: self._open(None), bool(row.url))
             add("Copy Link", lambda: self._copy(row.url, "link"), bool(row.url))
             add("Copy Details", lambda: self._copy(row.detail, "details"))

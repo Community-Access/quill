@@ -76,7 +76,6 @@ class GitHubExploreRepoActionsMixin:
             add(f"Unfollow @{row.key}", lambda: self._set_following(row.key, False))
         if signed_in and row is not None and row.kind == "cache" and row.key:
             add("Delete Cache...", lambda: self._delete_cache(row))
-        add("GitHub API Rate Limit\tCtrl+Shift+L", self._show_rate_limit)
 
     def _on_explore_char_hook(self, event: Any) -> None:
         wx = self._wx

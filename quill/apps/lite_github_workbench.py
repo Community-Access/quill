@@ -100,6 +100,17 @@ class GitHubWorkbenchLiteMixin:
         provider = self._github_provider(lambda: self.open_github_items(initial_view, reference))
         if provider is None:
             return
+        from quill.ui.github_workbench_commands import open_in_workbench_window
+
+        # The Workbench window, behind its developer flag (both editors, one call).
+        if reference is None and open_in_workbench_window(
+            self,
+            provider,
+            repository=self._github_repository(),
+            view=initial_view,
+            announce=self._announce,  # type: ignore[attr-defined]
+        ):
+            return
         try:
             GitHubItemsDialog(
                 self,
