@@ -37,6 +37,7 @@ from quill.core.workbench.tree import NodeSpec, TreeSpec
 from quill.ui.dpi import dip_size
 from quill.ui.workbench_frame_actions import WorkbenchActionsMixin
 from quill.ui.workbench_frame_commands import WorkbenchCommandsMixin
+from quill.ui.workbench_frame_help import WorkbenchHelpMixin
 from quill.ui.workbench_status_bar import StatusCell, WorkbenchStatusBar
 
 __all__ = ["NodeRef", "WorkbenchFrame", "WorkbenchProvider"]
@@ -86,7 +87,7 @@ Background = Callable[
 ]
 
 
-class WorkbenchFrame(WorkbenchCommandsMixin, WorkbenchActionsMixin):
+class WorkbenchFrame(WorkbenchCommandsMixin, WorkbenchHelpMixin, WorkbenchActionsMixin):
     """One Workbench window over one provider."""
 
     def __init__(
@@ -302,6 +303,7 @@ class WorkbenchFrame(WorkbenchCommandsMixin, WorkbenchActionsMixin):
         self._set_columns(node)
         self.rows, self._loaded = [], []
         self.list.DeleteAllItems()
+        self.refresh_control_help()
         reason = self.provider.unavailable(ref, node)
         if reason or not node.loader:
             if reason:
@@ -424,6 +426,12 @@ class WorkbenchFrame(WorkbenchCommandsMixin, WorkbenchActionsMixin):
         if self.rows:
             self.list.Select(0)
             self.list.Focus(0)
+        elif not self.loading and self.current is not None:
+            # An empty list is help too (D4): why it is empty and what fills it.
+            empty = self.empty_words()
+            if empty:
+                node_words = self.provider.node_help(self.current, self.node(self.current))
+                self.details.ChangeValue(f"{empty}\n\n{node_words}")
         self.status.refresh()
 
     def apply_filter(self) -> None:

@@ -336,3 +336,7 @@ reach a person.
 ### [Chapter 11: Keyboard reference](github-guide/lite-github-guide-11-keyboard-reference.html)
 
 Every key the workbench answers to, one window at a time.
+
+### [Chapter 12: The GitHub Workbench, place by place](github-guide/lite-github-guide-12-the-workbench.html)
+
+The one window for GitHub, a place at a time, with its keys and its help.

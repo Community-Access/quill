@@ -59,6 +59,11 @@ FRAME_VERBS = frozenset({
     "say_access",
     "say_rate",
     "say_account",
+    "what_can_i_do",
+    "glossary",
+    "guide_chapter",
+    "search_help",
+    "keys",
 })
 
 
@@ -102,6 +107,7 @@ class WorkbenchCommandsMixin:
             row.command_id: row.key for spec in self.provider.menu for row in spec.rows if row
         }
         keys = bound_keys(getattr(self.provider, "keymap_id", ""), defaults)
+        self._keys = keys
         self._menu_items: dict[str, Any] = {}
         bar = wx.MenuBar()
         for spec in self.provider.menu:
@@ -173,7 +179,12 @@ class WorkbenchCommandsMixin:
             "say_loading": lambda: self._say(self.loading_words()),
             "close": self.frame.Close,
             "switch_to_editor": self.switch_to_editor,
-            "help_view": self.show_help,
+            "help_view": self.show_layered_help,
+            "what_can_i_do": self.what_can_i_do,
+            "glossary": self.what_is_this,
+            "guide_chapter": self.guide_chapter,
+            "search_help": self.search_help,
+            "keys": self.show_keys,
             "open_address": self.open_address,
             "repeat_result": self.repeat_result,
             "explain_result": self.explain_result,

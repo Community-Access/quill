@@ -80,6 +80,7 @@ class ArtifactsDialog:
         self._list = wx.ListCtrl(
             panel, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=dip_size(panel, -1, 220)
         )
+        self._list.SetHelpText("The run's artifacts: name, size and when they expire.")
         self._list.SetName("Artifacts")
         self._list.InsertColumn(0, "Name", width=dip(self._list, 280))
         self._list.InsertColumn(1, "Size", width=dip(self._list, 90))
@@ -88,12 +89,20 @@ class ArtifactsDialog:
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         self._download_selected_btn = wx.Button(panel, label="Download &Selected...")
+        self._download_selected_btn.SetHelpText(
+            "Download the selected artifact to a folder you choose."
+        )
         self._download_selected_btn.SetName("Download selected artifact")
         self._download_all_btn = wx.Button(panel, label="Download &All...")
+        self._download_all_btn.SetHelpText(
+            "Download every artifact of this run to a folder you choose."
+        )
         self._download_all_btn.SetName("Download all artifacts")
         self._refresh_btn = wx.Button(panel, label="&Refresh")
+        self._refresh_btn.SetHelpText("Load the list again from GitHub.")
         self._refresh_btn.SetName("Refresh artifact list")
         self._browser_btn = wx.Button(panel, label="Open Run in &Browser")
+        self._browser_btn.SetHelpText("Open this on GitHub in your browser.")
         self._browser_btn.SetName("Open this workflow run in the default web browser")
         self._browser_btn.Enable(bool(run_url))
         btn_row.Add(self._download_selected_btn, 0, wx.RIGHT, 6)
@@ -107,7 +116,9 @@ class ArtifactsDialog:
         root.Add(self._status, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         close_row = wx.StdDialogButtonSizer()
-        close_row.AddButton(wx.Button(panel, id=wx.ID_CANCEL, label="&Close"))
+        cancel_button = wx.Button(panel, id=wx.ID_CANCEL, label="&Close")
+        cancel_button.SetHelpText("Close without changing anything. Escape does the same.")
+        close_row.AddButton(cancel_button)
         close_row.Realize()
         root.Add(close_row, 0, wx.EXPAND | wx.ALL, 8)
 

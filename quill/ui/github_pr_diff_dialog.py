@@ -89,12 +89,18 @@ class GitHubPullDiffDialog(GitHubPullDiffCommentsMixin):
         root.Add(header, 0, wx.ALL, 8)
 
         self._files = wx.ListBox(panel, choices=[pull_diff_file_label(f) for f in diff.files])
+        self._files.SetHelpText(
+            "The changed files, one per row. Arrow to a file to read its changes below."
+        )
         self._files.SetName("Changed files; select one to hear its differences")
         root.Add(self._files, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         root.Add(wx.StaticText(panel, label="Differences"), 0, wx.LEFT | wx.TOP, 8)
         self._detail = wx.TextCtrl(
             panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP | wx.TE_RICH2
+        )
+        self._detail.SetHelpText(
+            "The selected item in full, read-only. Arrow through it line by line."
         )
         self._detail.SetName("Differences for the selected file, spoken the Compare Documents way")
         root.Add(self._detail, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
@@ -112,6 +118,7 @@ class GitHubPullDiffDialog(GitHubPullDiffCommentsMixin):
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
+        close_btn.SetHelpText("Close this window. Escape does the same.")
         close_btn.SetName("Close diff viewer")
         self._explain_btn = wx.Button(panel, wx.ID_ANY, label="Explain Selected Change with AI")
         self._explain_btn.SetName(

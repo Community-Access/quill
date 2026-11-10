@@ -2,6 +2,29 @@
 
 ## 2.0.0
 
+### Help everywhere in the GitHub Workbench (2026-11-10)
+
+- **F1 knows where you are.** In the Workbench, F1 says what the window is
+  for and what the place you are on holds, then what the focused control
+  does. On the list it adds what Enter does to a row.
+- **Shift+F1, What Can I Do Here?** Every action for the selected row, in the
+  order of its context menu, each with its key. A greyed one says why, and
+  Enter runs any of the others.
+- **Alt+F1, What Is This?** The GitHub word for the selected row (issue, run,
+  release, fork and fifty others), explained in plain words with where you
+  meet it.
+- **Ctrl+F1** opens the GitHub Guide at the chapter for where you are, and
+  **Ctrl+Shift+F1, Search Help**, finds places, commands with their keys,
+  GitHub words and tasks. Enter goes there, runs it or reads it.
+- **Help and Learning** is a branch of the tree: Do Something (tasks in plain
+  words, with Take Me There), The Guide, Words, Keys, What Changed and Ask a
+  Person.
+- **Start Here** teaches the five keys to learn first, and an empty list now
+  says why it is empty and what would fill it.
+- **A new chapter of the GitHub Guide,** Chapter 12, walks through the
+  Workbench place by place.
+- QUILL has the same, from the same shared window and guide.
+
 ### The GitHub menu becomes a short list of doors (2026-11-10)
 
 With GitHub Workbench Mode on, the GitHub menu now holds only the ways into the

@@ -117,6 +117,7 @@ class GitHubReleaseNotesDialog:
             "Copy the draft name and Markdown body. This does not publish them."
         )
         close_btn = wx.Button(panel, wx.ID_CANCEL, label="Close")
+        close_btn.SetHelpText("Close the release notes.")
         close_btn.SetName("Close release notes draft")
         buttons.AddButton(self._copy_btn)
         buttons.AddButton(close_btn)

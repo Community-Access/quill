@@ -353,3 +353,4 @@ GitHub and Use Repository have no access key.
 
 - Previous: [Chapter 10: Troubleshooting, privacy and help](lite-github-guide-10-troubleshooting.html)
 - [Contents](lite-github-guide.html)
+- Next: [Chapter 12: The GitHub Workbench, place by place](lite-github-guide-12-the-workbench.html)

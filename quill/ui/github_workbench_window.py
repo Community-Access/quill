@@ -59,6 +59,7 @@ from quill.ui.github_workbench_explore import (
     explore_unavailable,
     load_explore,
 )
+from quill.ui.github_workbench_help import HELP_PREFIX, GitHubWorkbenchHelpMixin
 from quill.ui.github_workbench_loaders import LOCAL_PREFIXES, load_local
 from quill.ui.github_workbench_place import GitHubWorkbenchPlaceMixin
 from quill.ui.workbench_frame import NodeRef, WorkbenchFrame
@@ -67,14 +68,19 @@ from quill.ui.workbench_status_bar import StatusCell
 __all__ = ["START_HERE", "GitHubWorkbenchProvider", "open_github_workbench"]
 
 START_HERE = (
-    "The GitHub Workbench is one window for GitHub. It has three panes. The tree, "
-    "where you are now, says where you are. The list says what is there. The details "
-    "say what the selected one is. F6 moves from pane to pane and then to the status "
-    "bar. Enter does the obvious thing; the Applications key lists everything else; "
-    "Alt+Enter opens Properties. Backspace or Alt+Left goes back. F1 says what any "
-    "control does.\n\nThis is an early preview. Every view GitHub Items and Explore "
-    "GitHub have is in this tree. A few nodes, such as Files and Milestones, are shown "
-    "so you can see where they will go, and GitHub Items still has them."
+    "Start Here. The GitHub Workbench is one window for GitHub, in three panes: the "
+    "tree, where you are now, says where you are; the list says what is there; the "
+    "details say what the selected one is.\n\n"
+    "Five keys to learn first:\n"
+    "F6 moves between the panes, and then to the status bar.\n"
+    "Enter does the obvious thing with what is selected.\n"
+    "Shift+F1 lists everything you can do with it, with each key.\n"
+    "Alt+Enter shows everything about it.\n"
+    "Backspace goes back to where you were.\n\n"
+    "Ctrl+1 goes to Inbox, what needs you. Ctrl+2 goes to the repository you are working "
+    "in. F1 says what any place or control is; Ctrl+F1 opens the GitHub Workbench Guide "
+    "at the chapter for where you are; Help and Learning, at the bottom of the tree, has "
+    "tasks in plain words, the GitHub words and every key."
 )
 
 _ROW_TYPES: tuple[tuple[type, str], ...] = (
@@ -96,7 +102,9 @@ _NEEDS_WORDS = {
 }
 
 
-class GitHubWorkbenchProvider(GitHubWorkbenchPlaceMixin, GitHubWorkbenchActionsMixin):
+class GitHubWorkbenchProvider(
+    GitHubWorkbenchPlaceMixin, GitHubWorkbenchActionsMixin, GitHubWorkbenchHelpMixin
+):
     """GitHub, for :class:`~quill.ui.workbench_frame.WorkbenchFrame`."""
 
     name = "GitHub Workbench"
@@ -115,8 +123,10 @@ class GitHubWorkbenchProvider(GitHubWorkbenchPlaceMixin, GitHubWorkbenchActionsM
         editor_command: Callable[[str], bool] | None = None,
         editor_command_available: Callable[[str], bool] | None = None,
         open_file_url: Callable[[str], None] | None = None,
+        guide_product: str = "quill",
     ) -> None:
         self.items = items
+        self._guide_product = guide_product
         self._repositories: list[str] = [repository] if repository else []
         self._people: list[str] = []
         self._organizations: list[str] = []
@@ -162,7 +172,10 @@ class GitHubWorkbenchProvider(GitHubWorkbenchPlaceMixin, GitHubWorkbenchActionsM
             return f"{START_HERE}\n\n{signed_in}"
         what = node.label if not ref.instance else f"{node.label}, {ref.instance}"
         needs = ", ".join(_NEEDS_WORDS[need] for need in sorted(node.needs))
-        lines = [what + "."]
+        authored = self.catalogue_node_help(ref.template, node.key)
+        lines = [authored or what + "."]
+        if ref.instance and authored:
+            lines.insert(0, f"{ref.instance}.")
         if needs:
             lines.append(f"Needs {needs}.")
         if node.key in _PLACEHOLDERS:
@@ -173,6 +186,8 @@ class GitHubWorkbenchProvider(GitHubWorkbenchPlaceMixin, GitHubWorkbenchActionsM
 
     def unavailable(self, ref: NodeRef, node: NodeSpec) -> str:
         if not node.loader:
+            return ""
+        if node.loader.startswith(HELP_PREFIX):
             return ""
         if node.loader.startswith("items:"):
             if not ref.instance:
@@ -208,6 +223,8 @@ class GitHubWorkbenchProvider(GitHubWorkbenchPlaceMixin, GitHubWorkbenchActionsM
 
                 self._explore = GitHubExploreClient(self.items)
             return list(load_explore(self._explore, node, instance=ref.instance, query=query))
+        if node.loader.startswith(HELP_PREFIX):
+            return list(self.load_help(node))
         if node.loader.startswith(LOCAL_PREFIXES):
             folder = self._folders.get(ref.instance, "")
             return list(load_local(self.items, node, instance=ref.instance, folder=folder))
@@ -239,7 +256,7 @@ class GitHubWorkbenchProvider(GitHubWorkbenchPlaceMixin, GitHubWorkbenchActionsM
         return list(fetch()) if fetch is not None else []
 
     def columns(self, node: NodeSpec) -> tuple[str, ...]:
-        if node.loader.startswith((EXPLORE_PREFIX, *LOCAL_PREFIXES)):
+        if node.loader.startswith((EXPLORE_PREFIX, HELP_PREFIX, *LOCAL_PREFIXES)):
             return ("result",)
         return VIEW_COLUMNS.get(node.loader.removeprefix("items:"), ())
 

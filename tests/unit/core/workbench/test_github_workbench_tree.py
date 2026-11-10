@@ -36,6 +36,7 @@ def test_the_top_level_is_the_prd_order() -> None:
         "Projects",
         "Watches",
         "Across Repositories",
+        "Help and Learning",
     ]
 
 

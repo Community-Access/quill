@@ -73,6 +73,9 @@ class GitHubCompareBranchesDialog:
         commits_panel = wx.Panel(notebook)
         commits_sizer = wx.BoxSizer(wx.VERTICAL)
         self._commits_list = wx.ListCtrl(commits_panel, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
+        self._commits_list.SetHelpText(
+            "The commits one branch has that the other does not, newest first."
+        )
         self._commits_list.SetName(f"Commits between {comparison.base} and {comparison.head}")
         for i, col in enumerate(("SHA", "Author", "Date", "Message")):
             self._commits_list.InsertColumn(i, col, width=170 if col == "Message" else 110)
@@ -91,12 +94,18 @@ class GitHubCompareBranchesDialog:
         self._files = wx.ListBox(
             files_panel, choices=[pull_diff_file_label(f) for f in comparison.files]
         )
+        self._files.SetHelpText(
+            "The changed files, one per row. Arrow to a file to read its changes below."
+        )
         self._files.SetName("Changed files; select one to hear its differences")
         set_spoken_name(self._files, "Changed files; select one to hear its differences")
         files_sizer.Add(self._files, 1, wx.EXPAND | wx.ALL, 6)
         files_sizer.Add(wx.StaticText(files_panel, label="Differences"), 0, wx.LEFT | wx.TOP, 6)
         self._detail = wx.TextCtrl(
             files_panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP | wx.TE_RICH2
+        )
+        self._detail.SetHelpText(
+            "The selected item in full, read-only. Arrow through it line by line."
         )
         self._detail.SetName(
             f"Differences for the selected file, {comparison.base} vs {comparison.head}"
@@ -109,9 +118,11 @@ class GitHubCompareBranchesDialog:
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         self._browser_btn = wx.Button(panel, label="Open on &GitHub")
+        self._browser_btn.SetHelpText("Open this on GitHub in your browser.")
         self._browser_btn.SetName("Open this comparison on GitHub in your browser")
         self._browser_btn.Enable(bool(comparison.permalink_url))
         close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
+        close_btn.SetHelpText("Close this window. Escape does the same.")
         close_btn.SetName("Close comparison")
         btn_row.Add(self._browser_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()

@@ -121,6 +121,7 @@ class GitHubWorkbenchLiteMixin:
             editor_command=self._github_editor_command,
             editor_command_available=self._github_editor_has,
             open_file_url=self._open_github_file_reference,  # type: ignore[attr-defined]
+            guide_product="quilllite",
         ):
             return
         try:

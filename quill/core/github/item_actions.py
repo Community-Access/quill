@@ -305,7 +305,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _PROPERTIES,
     ),
     "help_topic": (
-        _default("open", "Open", "Read the topic in the details pane."),
+        _default("open_topic", "Open", "Read the topic, or open the chapter it names."),
         _a("take_me_there", "Take Me There", help="Go to the place the topic is about."),
         _PROPERTIES,
     ),
