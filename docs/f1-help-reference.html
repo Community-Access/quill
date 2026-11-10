@@ -5676,9 +5676,1606 @@ playback to its start.</li>
 <li><code>self.transcript</code>: The episode’s transcript as read-only
 text, when one is available. Empty otherwise.</li>
 </ul>
+<h2 id="github-workbench">GitHub Workbench</h2>
+<p>Control coverage: 309 audited sites (309 helped).</p>
+<h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
+for</h3>
+<p><strong>Artifacts.</strong> The files a workflow run kept: download
+one or all of them.</p>
+<p><strong>Change History.</strong> Every change the Workbench made on
+GitHub, newest first: what, when, before and after, and whether GitHub
+confirmed it. Undo This Change reverses one where GitHub allows it. Kept
+on this device for 90 days; secret values never appear.</p>
+<p><strong>Changed on GitHub.</strong> Somebody changed this field on
+GitHub since you opened the sheet. Keep Theirs leaves their value; Use
+Mine saves yours over it.</p>
+<p><strong>Columns.</strong> Choose which columns this list shows. Space
+checks or clears one.</p>
+<p><strong>Discussion #.</strong> One discussion thread: read it, and
+reply if you are signed in.</p>
+<p><strong>Explore GitHub.</strong> Explore GitHub, the classic window:
+searches, your own work, people and repository administration.</p>
+<p><strong>Filter Builder.</strong> Build a filter one condition at a
+time: an attribute, an operator and a value from the repository. The
+query appears as you go, in GitHub’s own syntax; OK puts it in the
+filter box, Save as Search also keeps it.</p>
+<p><strong>GitHub Items.</strong> GitHub Items, the classic window: one
+repository’s issues, pull requests, branches, commits, tags, releases
+and workflow runs.</p>
+<p><strong>GitHub Permissions.</strong> Every permission the Workbench
+can use, what it unlocks and whether you have it. Add Permissions asks
+for every missing one in one sign-in; Copy Command, the classic token
+page and the fine-grained steps are the other ways.</p>
+<p><strong>GitHub Workbench.</strong> One window for GitHub. The tree on
+the left says where you are, the list says what is there, and the
+details say what the selected one is. F6 moves between them, Enter does
+the obvious thing, Shift+F1 lists everything you can do, and Alt+Enter
+shows everything about the selection.</p>
+<p><strong>GitHub Workbench Keys.</strong> Every key in the GitHub
+Workbench, grouped by what it does.</p>
+<p><strong>Jobs for.</strong> A run’s jobs and steps, with each job’s
+log and annotations.</p>
+<p><strong>New Discussion.</strong> Start a discussion in the
+repository: a category, a title and what to say.</p>
+<p><strong>Pending Deployments.</strong> Deployments waiting on you:
+approve or reject each one.</p>
+<p><strong>Preview.</strong> What is about to change on GitHub, in
+words. Enter goes ahead; Escape changes nothing.</p>
+<p><strong>Properties of.</strong> One sheet for several objects. A
+field the same on all shows its value; one that differs says Mixed and
+is left alone unless you change it; a check box on some of them is in
+its third state.</p>
+<p><strong>Search Help.</strong> Type a few words to find a help topic,
+a place, a command or a GitHub word. Enter goes there, runs it or reads
+it.</p>
+<p><strong>Type to Confirm.</strong> This change is hard to reverse, so
+it waits for the name typed exactly. Anything else changes nothing.</p>
+<p><strong>What Can I Do Here.</strong> Every action for what is
+selected, in the order of its context menu, with its key. Enter runs the
+action; a greyed one says why it is greyed.</p>
+<p><strong>What Failed.</strong> The failing steps of a run and their
+log lines, in one place.</p>
+<p><strong>What Is This.</strong> A GitHub word, explained in plain
+language, with where you meet it.</p>
+<p><strong>Workbench Options.</strong> The GitHub Workbench’s own
+preferences: where it opens, how lists start, how often notifications
+are checked, your pinned repositories and favorites, and privacy. OK
+saves, Cancel changes nothing.</p>
+<h3 id="every-place-in-the-tree">Every place in the tree</h3>
+<p><strong>Start Here.</strong> Start Here: what the Workbench is,
+whether you are signed in, and the five keys to learn first.</p>
+<p><strong>Needs My Attention.</strong> Needs My Attention: everything
+waiting on you, across GitHub. Inbox first, then notifications, review
+requests and your own open work.</p>
+<p><strong>Inbox.</strong> Inbox: one list of what needs you, from
+notifications, review requests, assignments and mentions. Enter opens a
+row; Delete marks it done.</p>
+<p><strong>Notifications.</strong> Notifications: what GitHub has told
+you about, unread first. Ctrl+Q marks one read, Delete marks it done,
+and Ctrl+Shift+Q marks the whole view read.</p>
+<p><strong>Review Requests.</strong> Review Requests: pull requests
+somebody asked you to review. Enter opens the review.</p>
+<p><strong>Assigned to Me.</strong> Assigned to Me: issues and pull
+requests assigned to you, anywhere.</p>
+<p><strong>Mentions.</strong> Mentions: issues and pull requests where
+somebody wrote your name.</p>
+<p><strong>My Open Pull Requests.</strong> My Open Pull Requests: pull
+requests you opened that are still open.</p>
+<p><strong>My Open Issues.</strong> My Open Issues: issues you opened
+that are still open.</p>
+<p><strong>My Activity Feed.</strong> My Activity Feed: what you did on
+GitHub lately, newest first.</p>
+<p><strong>Repositories.</strong> Repositories: the one you are working
+in first, then pinned, favorites, yours, starred, watched and your
+organizations’. Enter on a repository opens its node.</p>
+<p><strong>Pinned.</strong> Pinned: repositories you keep at hand, on
+this computer. Delete takes one out; Ctrl+N pins the current
+repository.</p>
+<p><strong>Favorites.</strong> Favorites: issues, pull requests and
+other items you kept, on this computer. Ctrl+D adds or removes the
+selected row anywhere in the window.</p>
+<p><strong>My Repositories.</strong> My Repositories: the repositories
+your account owns or can push to.</p>
+<p><strong>Starred.</strong> Starred: repositories you starred on
+GitHub.</p>
+<p><strong>Watched.</strong> Watched: repositories whose activity GitHub
+tells you about.</p>
+<p><strong>Organizations.</strong> Organizations: the organizations you
+belong to. Enter on one opens its repositories.</p>
+<p><strong>Search.</strong> Search: GitHub’s searches. Choose one, type
+in the filter box with Ctrl+E, and press Enter.</p>
+<p><strong>Issues and Pull Requests.</strong> Search Issues and Pull
+Requests: everything GitHub finds for the words and qualifiers in the
+filter box, such as is:open author:@me. Ctrl+N saves the search.</p>
+<p><strong>Code.</strong> Search Code: files whose text matches the
+filter box. Needs sign-in.</p>
+<p><strong>Commits.</strong> Search Commits: commits whose message
+matches the filter box.</p>
+<p><strong>Repositories.</strong> Search Repositories: repositories
+whose name or description matches the filter box.</p>
+<p><strong>Saved Searches.</strong> Saved Searches: searches you kept,
+on this computer. Enter runs one; Delete removes it.</p>
+<p><strong>People.</strong> People: who you follow, who follows you, and
+anybody you look up.</p>
+<p><strong>People I Follow.</strong> People I Follow: accounts you
+follow. Enter opens a person’s node.</p>
+<p><strong>My Followers.</strong> My Followers: accounts that follow
+you.</p>
+<p><strong>Find a Person….</strong> Find a Person: type a login with
+Ctrl+L, and the person gets a node of their own here.</p>
+<p><strong>Gists.</strong> Gists: small shared files and snippets.</p>
+<p><strong>My Gists.</strong> My Gists: gists you made. Enter edits
+one.</p>
+<p><strong>Projects.</strong> Projects: your Project boards. Each
+repository’s own Projects are under it, Ctrl+Shift+7.</p>
+<p><strong>Watches.</strong> Watches: tell me when something happens.
+Coming in a later release.</p>
+<p><strong>Across Repositories.</strong> Across Repositories: every kind
+of thing, by name, everywhere. Coming in a later release.</p>
+<p><strong>Help and Learning.</strong> Help and Learning: the guide, the
+GitHub words, the keys, what changed, and tasks in plain words that take
+you to the place.</p>
+<p><strong>Do Something.</strong> Do Something: tasks in plain words.
+Enter reads one; Take Me There, on its context menu, goes to the place
+it is about.</p>
+<p><strong>The Guide.</strong> The Guide: the GitHub Workbench Guide’s
+chapters. Ctrl+F1 opens the guide at the chapter for where you are.</p>
+<p><strong>Words.</strong> Words: the GitHub glossary. Type a word to
+jump to it; the details say what it means and where you meet it.</p>
+<p><strong>Keys.</strong> Keys: every key in the Workbench, grouped by
+what it does.</p>
+<p><strong>What Changed.</strong> What Changed: what is new in the
+GitHub Workbench in this version.</p>
+<p><strong>Ask a Person.</strong> Ask a Person: write to <a
+href="mailto:support@community-access.org">support@community-access.org</a>.
+Nothing is sent until you send it from your own email.</p>
+<p><strong>repository: owner/name.</strong> A repository: its issues,
+pull requests, actions, code, releases and settings, each a node below.
+Ctrl+Shift+1 to Ctrl+Shift+0 jump to them.</p>
+<p><strong>repository: Overview.</strong> Overview: the repository’s
+README, description and community profile.</p>
+<p><strong>repository: Issues.</strong> Issues: this repository’s open
+issues. Ctrl+N files a new one; Delete closes the selected one after
+asking.</p>
+<p><strong>repository: Pull Requests.</strong> Pull Requests: this
+repository’s open pull requests. Enter opens the review; Ctrl+Shift+D
+lists the changed files.</p>
+<p><strong>repository: Issues and Pull Requests.</strong> Issues and
+Pull Requests: both in one list, newest first, the way an inbox
+reads.</p>
+<p><strong>repository: Discussions.</strong> Discussions: the
+repository’s conversations that are not issues.</p>
+<p><strong>repository: Actions.</strong> Actions: the repository’s
+workflow runs, workflows and caches.</p>
+<p><strong>repository: Runs.</strong> Runs: each time a workflow ran.
+Enter shows its jobs and logs; Ctrl+Shift+W says what failed;
+Ctrl+Shift+F5 re-runs the failed jobs.</p>
+<p><strong>repository: Workflows.</strong> Workflows: the automations
+defined in the repository.</p>
+<p><strong>repository: Caches.</strong> Caches: files Actions kept
+between runs. Delete removes one.</p>
+<p><strong>repository: Code.</strong> Code: files, branches, commits,
+tags, and the upstream of a fork.</p>
+<p><strong>repository: Files.</strong> Files: the repository’s files on
+its default branch, a folder at a time. Enter opens a folder, or a file
+in the editor.</p>
+<p><strong>repository: Branches.</strong> Branches: lines of work. Enter
+lists a branch’s commits.</p>
+<p><strong>repository: Commits.</strong> Commits: saved changes, newest
+first.</p>
+<p><strong>repository: Tags.</strong> Tags: names for particular
+commits, usually versions.</p>
+<p><strong>repository: Upstream.</strong> Upstream: the repository this
+one was forked from. Forks only.</p>
+<p><strong>repository: Releases.</strong> Releases: published versions
+and their files. Enter lists the files.</p>
+<p><strong>repository: Labels.</strong> Labels: tags for issues and pull
+requests. Enter finds the issues.</p>
+<p><strong>repository: Milestones.</strong> Milestones: goals with a
+date. Enter lists the issues and pull requests in one.</p>
+<p><strong>repository: Projects.</strong> Projects: this repository’s
+Project boards.</p>
+<p><strong>repository: Activity.</strong> Activity: what happened in the
+repository lately.</p>
+<p><strong>repository: People.</strong> People: contributors, forks, and
+who has access.</p>
+<p><strong>repository: Contributors and People.</strong> Contributors
+and People: who has worked on the repository.</p>
+<p><strong>repository: Forks.</strong> Forks: copies of this repository
+on other accounts.</p>
+<p><strong>repository: Collaborators and Team Access.</strong>
+Collaborators and Team Access: who may do what here.</p>
+<p><strong>repository: Insights.</strong> Insights: traffic,
+contributors and the community profile.</p>
+<p><strong>repository: Traffic and Contributors.</strong> Traffic and
+Contributors: views, clones and who contributes.</p>
+<p><strong>repository: Health Snapshot.</strong> Health Snapshot: extra
+activity data, loaded only when you turn it on in Workbench Options.</p>
+<p><strong>repository: Community Profile.</strong> Community Profile:
+the README, license and guidelines GitHub checks.</p>
+<p><strong>repository: Deployments and Environments.</strong>
+Deployments and Environments: where the code was deployed.</p>
+<p><strong>repository: GitHub Pages.</strong> GitHub Pages: the website
+built from this repository.</p>
+<p><strong>repository: Security.</strong> Security: alerts about
+vulnerable code and leaked secrets.</p>
+<p><strong>repository: Alerts.</strong> Alerts: open security alerts.
+Enter reads one.</p>
+<p><strong>repository: Dismissed and Resolved Alerts.</strong> Dismissed
+and Resolved Alerts: alerts no longer open.</p>
+<p><strong>repository: Settings.</strong> Settings: names of secrets,
+branch protection and general settings.</p>
+<p><strong>repository: Secret and Variable Names.</strong> Secret and
+Variable Names: the names only; GitHub never shows values.</p>
+<p><strong>repository: Branch Protection.</strong> Branch Protection:
+who may change a branch and what a change needs first. Enter opens the
+setting.</p>
+<p><strong>repository: General.</strong> General: the name, visibility
+and default branch. Enter opens one.</p>
+<p><strong>person: person.</strong> A person: their repositories,
+activity, followers and who they follow.</p>
+<p><strong>person: Repositories.</strong> Repositories: this person’s
+public repositories.</p>
+<p><strong>person: Activity.</strong> Activity: what this person did
+lately on GitHub.</p>
+<p><strong>person: Followers.</strong> Followers: who follows this
+person.</p>
+<p><strong>person: Following.</strong> Following: who this person
+follows.</p>
+<p><strong>organization: organization.</strong> An organization: its
+repositories.</p>
+<p><strong>organization: Repositories.</strong> Repositories: the
+organization’s repositories you can see.</p>
+<h3 id="every-menu-row">Every menu row</h3>
+<p><strong>File &gt; New Here….</strong> Something new where you are: an
+issue in Issues, a saved search in Saved Searches.</p>
+<p><strong>File &gt; New….</strong> Choose what to create, wherever you
+are.</p>
+<p><strong>File &gt; Open GitHub Address….</strong> Type or paste
+owner/name, #42, owner/name#42 or any GitHub link to go there.</p>
+<p><strong>File &gt; Go to Number….</strong> Go to an issue or pull
+request in this repository by its number.</p>
+<p><strong>File &gt; Open on GitHub.</strong> Open the selected row, or
+the node, in your browser.</p>
+<p><strong>File &gt; Open in Editor.</strong> Open the selected file in
+the editor that opened this window.</p>
+<p><strong>File &gt; Close Workbench.</strong> Close this window. The
+editor stays.</p>
+<p><strong>Edit &gt; Undo GitHub Change.</strong> Reverse your last
+change on GitHub, where GitHub allows it. In a text box, Ctrl+Z undoes
+your typing instead.</p>
+<p><strong>Edit &gt; Redo GitHub Change.</strong> Make the change you
+just undid again.</p>
+<p><strong>Edit &gt; Copy.</strong> Copy the selected rows as text; in a
+text box, its own selection.</p>
+<p><strong>Edit &gt; Copy Link.</strong> Copy the selected row’s
+address.</p>
+<p><strong>Edit &gt; Filter….</strong> Move to the filter box.
+Ctrl+Shift+F too.</p>
+<p><strong>Edit &gt; Filter Builder….</strong> Build a filter one
+condition at a time: every attribute, an operator and a value from the
+repository, written into the filter box as GitHub’s syntax.</p>
+<p><strong>Edit &gt; Select All.</strong> Select every row in the list;
+in a text box, all its text.</p>
+<p><strong>View &gt; Refresh.</strong> Load this view again from
+GitHub.</p>
+<p><strong>View &gt; Refresh Ignoring Cache.</strong> Load this view
+again, asking GitHub for everything afresh.</p>
+<p><strong>View &gt; Load More.</strong> Load the next page of rows, if
+GitHub has more.</p>
+<p><strong>View &gt; Load All.</strong> Load every page, so a filter
+over the loaded rows is sure to see everything.</p>
+<p><strong>View &gt; Issues.</strong> Show issues here.</p>
+<p><strong>View &gt; Pull Requests.</strong> Show pull requests
+here.</p>
+<p><strong>View &gt; Both.</strong> Show both here.</p>
+<p><strong>View &gt; Open.</strong> Show open items.</p>
+<p><strong>View &gt; Closed.</strong> Show closed items.</p>
+<p><strong>View &gt; All.</strong> Show all items.</p>
+<p><strong>View &gt; Newest First.</strong> Order the list this way.</p>
+<p><strong>View &gt; Oldest First.</strong> Order the list this way.</p>
+<p><strong>View &gt; Title, A to Z.</strong> Order the list this
+way.</p>
+<p><strong>View &gt; Title, Z to A.</strong> Order the list this
+way.</p>
+<p><strong>View &gt; Recently Updated.</strong> Order the list this
+way.</p>
+<p><strong>View &gt; Least Recently Updated.</strong> Order the list
+this way.</p>
+<p><strong>View &gt; Most Comments.</strong> Order the list this
+way.</p>
+<p><strong>View &gt; Assigned to Me.</strong> Show only items assigned
+to me. Checked when it is on; it combines with the others and with what
+you type in the filter box.</p>
+<p><strong>View &gt; Assigned To….</strong> Show only items assigned to
+someone you name. Checked when it is on; it combines with the others and
+with what you type in the filter box.</p>
+<p><strong>View &gt; Opened by Me.</strong> Show only items opened by
+me. Checked when it is on; it combines with the others and with what you
+type in the filter box.</p>
+<p><strong>View &gt; Opened By….</strong> Show only items opened by
+someone you name. Checked when it is on; it combines with the others and
+with what you type in the filter box.</p>
+<p><strong>View &gt; Mentions Me.</strong> Show only items mentions me.
+Checked when it is on; it combines with the others and with what you
+type in the filter box.</p>
+<p><strong>View &gt; Review Requested from Me.</strong> Show only items
+review requested from me. Checked when it is on; it combines with the
+others and with what you type in the filter box.</p>
+<p><strong>View &gt; Reviewed by Me.</strong> Show only items reviewed
+by me. Checked when it is on; it combines with the others and with what
+you type in the filter box.</p>
+<p><strong>View &gt; No Assignee.</strong> Show only items no assignee.
+Checked when it is on; it combines with the others and with what you
+type in the filter box.</p>
+<p><strong>View &gt; No Milestone.</strong> Show only items no
+milestone. Checked when it is on; it combines with the others and with
+what you type in the filter box.</p>
+<p><strong>View &gt; No Label.</strong> Show only items no label.
+Checked when it is on; it combines with the others and with what you
+type in the filter box.</p>
+<p><strong>View &gt; No Project.</strong> Show only items no project.
+Checked when it is on; it combines with the others and with what you
+type in the filter box.</p>
+<p><strong>View &gt; No Type.</strong> Show only items no type. Checked
+when it is on; it combines with the others and with what you type in the
+filter box.</p>
+<p><strong>View &gt; Drafts.</strong> Show only items drafts. Checked
+when it is on; it combines with the others and with what you type in the
+filter box.</p>
+<p><strong>View &gt; Has Conflicts.</strong> Show only items has
+conflicts. Checked when it is on; it combines with the others and with
+what you type in the filter box. Filtered over the loaded rows: Load All
+to be sure.</p>
+<p><strong>View &gt; Checks Failing.</strong> Show only items checks
+failing. Checked when it is on; it combines with the others and with
+what you type in the filter box.</p>
+<p><strong>View &gt; Updated This Week.</strong> Show only items updated
+this week. Checked when it is on; it combines with the others and with
+what you type in the filter box.</p>
+<p><strong>View &gt; Clear These Filters.</strong> Turn every quick
+filter off.</p>
+<p><strong>View &gt; No Grouping.</strong> A flat list again.</p>
+<p><strong>View &gt; Label.</strong> Put the list’s groups in the tree,
+one node per label.</p>
+<p><strong>View &gt; Milestone.</strong> Put the list’s groups in the
+tree, one node per milestone.</p>
+<p><strong>View &gt; Assignee.</strong> Put the list’s groups in the
+tree, one node per assignee.</p>
+<p><strong>View &gt; Author.</strong> Put the list’s groups in the tree,
+one node per author.</p>
+<p><strong>View &gt; Type.</strong> Put the list’s groups in the tree,
+one node per type.</p>
+<p><strong>View &gt; State.</strong> Put the list’s groups in the tree,
+one node per state.</p>
+<p><strong>View &gt; Repository.</strong> Put the list’s groups in the
+tree, one node per repository.</p>
+<p><strong>View &gt; Review State.</strong> Put the list’s groups in the
+tree, one node per review state.</p>
+<p><strong>View &gt; Columns….</strong> Choose which columns this list
+shows, and their order.</p>
+<p><strong>View &gt; Back.</strong> The view you were on before.
+Backspace too.</p>
+<p><strong>View &gt; Forward.</strong> The view you went back from.</p>
+<p><strong>View &gt; Next Pane.</strong> Tree, filter, list, details,
+status bar.</p>
+<p><strong>View &gt; Previous Pane.</strong> The same panes,
+backwards.</p>
+<p><strong>View &gt; Where Am I.</strong> Say the node and the filter in
+effect.</p>
+<p><strong>View &gt; Say Selection.</strong> Say how many rows are
+selected.</p>
+<p><strong>View &gt; Say Item State.</strong> Say the selected item’s
+state in one line.</p>
+<p><strong>View &gt; Say Counts.</strong> Say how many rows this view
+holds.</p>
+<p><strong>View &gt; Say Your Access.</strong> Say what you can do
+here.</p>
+<p><strong>View &gt; Say Rate Limit.</strong> Say how much of the GitHub
+API is left.</p>
+<p><strong>View &gt; Say Filter.</strong> Say the filter in effect, in
+words.</p>
+<p><strong>View &gt; Say Loading.</strong> Say what is loading, or when
+it loaded.</p>
+<p><strong>View &gt; Say Account.</strong> Say the account, and whether
+you are signed in.</p>
+<p><strong>Go &gt; Inbox.</strong> What needs you, across GitHub.
+Alt+Home too.</p>
+<p><strong>Go &gt; Current Repository.</strong> The repository this
+window opened on.</p>
+<p><strong>Go &gt; Search.</strong> Search GitHub.</p>
+<p><strong>Go &gt; People.</strong> People you follow and who follow
+you.</p>
+<p><strong>Go &gt; Gists.</strong> Your gists.</p>
+<p><strong>Go &gt; Projects.</strong> Projects.</p>
+<p><strong>Go &gt; Watches.</strong> Watches: tell me when it happens.
+Coming later.</p>
+<p><strong>Go &gt; Saved Searches.</strong> Searches you saved.</p>
+<p><strong>Go &gt; Start Here.</strong> What this window is and how it
+works.</p>
+<p><strong>Go &gt; Across Repositories.</strong> Every kind of thing, by
+name, everywhere. Coming later.</p>
+<p><strong>Go &gt; Issues.</strong> This repository’s issues.</p>
+<p><strong>Go &gt; Pull Requests.</strong> This repository’s pull
+requests.</p>
+<p><strong>Go &gt; Discussions.</strong> This repository’s
+discussions.</p>
+<p><strong>Go &gt; Actions Runs.</strong> This repository’s workflow
+runs.</p>
+<p><strong>Go &gt; Files.</strong> This repository’s files.</p>
+<p><strong>Go &gt; Releases.</strong> This repository’s releases.</p>
+<p><strong>Go &gt; Repository Projects.</strong> Its Projects.</p>
+<p><strong>Go &gt; Security.</strong> Its security alerts.</p>
+<p><strong>Go &gt; Settings.</strong> Its settings.</p>
+<p><strong>Go &gt; Insights.</strong> Its traffic and community
+profile.</p>
+<p><strong>Go &gt; Parent Node.</strong> The node above this one in the
+tree.</p>
+<p><strong>Go &gt; Next Unread.</strong> Move to the next unread row in
+this list.</p>
+<p><strong>Go &gt; Previous Unread.</strong> Move to the previous unread
+row in this list.</p>
+<p><strong>Item &gt; Properties….</strong> Everything about the selected
+row on one sheet.</p>
+<p><strong>Item &gt; Comment….</strong> Write a comment on the selected
+item.</p>
+<p><strong>Item &gt; File Differences….</strong> The selected pull
+request’s changed files.</p>
+<p><strong>Item &gt; Merge….</strong> Merge the selected pull
+request.</p>
+<p><strong>Item &gt; Assign to Copilot….</strong> Ask Copilot to work on
+the selected issue.</p>
+<p><strong>Item &gt; Start in Local Worktree….</strong> A branch and a
+folder on this computer for the selected item.</p>
+<p><strong>Item &gt; What Failed….</strong> The failing steps of the
+selected run, and their log lines.</p>
+<p><strong>Item &gt; Re-run Failed Jobs.</strong> Run only what failed
+in the selected run again.</p>
+<p><strong>Item &gt; Mark Read.</strong> Mark the selected notification
+read.</p>
+<p><strong>Item &gt; Mark All Read in View.</strong> Mark every
+notification in this view read. Asks first when there are many.</p>
+<p><strong>Item &gt; Add to or Remove from Favorites.</strong> Keep the
+selected row under Repositories, Favorites.</p>
+<p><strong>Repository &gt; Compare Branches….</strong> Commits ahead and
+behind between two branches, and the changed files.</p>
+<p><strong>Repository &gt; Run Workflow on Branch….</strong> Start a
+workflow that can be started by hand, on a branch.</p>
+<p><strong>Repository &gt; Repository Actions….</strong> Everything else
+for this repository: star, watch, fork, clone, Codespaces, settings and
+administration, as a list you can run from.</p>
+<p><strong>Account &gt; Manage GitHub Accounts….</strong> Add, switch,
+sign in again or remove GitHub accounts.</p>
+<p><strong>Account &gt; GitHub API Rate Limit.</strong> How much of the
+GitHub API is left, and when it resets.</p>
+<p><strong>Account &gt; GitHub Permissions….</strong> Every permission
+the Workbench can use, what it unlocks, whether you have it, and one
+step to add the missing ones.</p>
+<p><strong>Account &gt; Change History….</strong> Every change the
+Workbench made on GitHub: before and after, and Undo where GitHub allows
+it.</p>
+<p><strong>Account &gt; My Access Here….</strong> Your effective role
+here, and where each part comes from.</p>
+<p><strong>Account &gt; View As Role….</strong> What a role could do
+here, read-only: nothing you do is sent.</p>
+<p><strong>Account &gt; Compare Roles….</strong> Two roles side by side:
+what one may do that the other may not.</p>
+<p><strong>Account &gt; Why Can’t They?….</strong> Name a person and an
+action; hear what stops them and who can fix it.</p>
+<p><strong>Account &gt; Access Review….</strong> Every person and
+repository pair in an organization, with role and source: filterable,
+exportable as CSV.</p>
+<p><strong>Account &gt; Bulk Access Changes….</strong> One team or
+person, many repositories: previewed, then a result per change.</p>
+<p><strong>Account &gt; Workbench Level for This Account….</strong> Read
+Only, Organize or Full: what the Workbench may change with this account,
+whatever GitHub would allow.</p>
+<p><strong>Tools &gt; Workbench Options….</strong> Where the Workbench
+opens, how notifications check, lists and privacy.</p>
+<p><strong>Window &gt; Switch to Editor.</strong> Bring forward the
+editor that opened this window.</p>
+<p><strong>Help &gt; Help for This View.</strong> What this view and
+control do.</p>
+<p><strong>Help &gt; What Can I Do Here?….</strong> Every action for the
+selection, its key, and why any is greyed.</p>
+<p><strong>Help &gt; What Is This?.</strong> The GitHub word for this
+row, explained.</p>
+<p><strong>Help &gt; GitHub Workbench Guide.</strong> The guide, opened
+at the chapter for where you are.</p>
+<p><strong>Help &gt; Search Help….</strong> Type a few words to find a
+help topic, a command or a GitHub word.</p>
+<p><strong>Help &gt; Workbench Keys.</strong> Every key in this window,
+by family.</p>
+<p><strong>Help &gt; Say Last Result Again.</strong> Say the last result
+again.</p>
+<p><strong>Help &gt; Explain That.</strong> What the last result means
+and what you might do next.</p>
+<h3 id="every-context-menu-row">Every context-menu row</h3>
+<p><strong>Open.</strong> Read the issue and its comments in the details
+pane.</p>
+<p><strong>Comment.</strong> Write a comment and post it.</p>
+<p><strong>Close or Reopen.</strong> Close it with a reason, or reopen
+it.</p>
+<p><strong>Labels.</strong> Add or remove labels.</p>
+<p><strong>Assignees.</strong> Choose who it is assigned to.</p>
+<p><strong>Copy Link.</strong> Copy the item’s GitHub address.</p>
+<p><strong>Open on GitHub.</strong> Open the item in your browser.</p>
+<p><strong>Milestone.</strong> Set or clear its milestone.</p>
+<p><strong>React.</strong> Add or remove a reaction.</p>
+<p><strong>View Timeline.</strong> Everything that happened to it, in
+order.</p>
+<p><strong>Summarize Discussion.</strong> An AI summary of the
+thread.</p>
+<p><strong>Start in Local Worktree.</strong> Make a branch and a local
+folder to work on it, and open them in the editor.</p>
+<p><strong>Assign to Copilot.</strong> Ask Copilot to work on it.</p>
+<p><strong>Lock or Unlock Conversation.</strong> Stop or allow new
+comments.</p>
+<p><strong>Pin or Unpin Issue.</strong> Pin it to the top of the issues
+list.</p>
+<p><strong>Transfer Issue.</strong> Move it to another repository.</p>
+<p><strong>Set Issue Type.</strong> Bug, feature, task and so on.</p>
+<p><strong>Reorder Sub-issues.</strong> Change the order of
+sub-issues.</p>
+<p><strong>Add to or Remove from Favorites.</strong> Keep it in
+Favorites.</p>
+<p><strong>Properties.</strong> Everything about this item on one sheet.
+Alt+Enter opens it from anywhere.</p>
+<p><strong>Review.</strong> Read the review threads and checks, and
+review it.</p>
+<p><strong>File Differences.</strong> The changed files, one comparison
+per file.</p>
+<p><strong>Merge.</strong> Merge it, with the methods the repository
+allows.</p>
+<p><strong>Open in Codespaces.</strong> Open GitHub’s Codespaces page
+for this. Starting a Codespace can cost money, so QUILL asks first.</p>
+<p><strong>Commit Comments.</strong> Comments on the commit and its
+lines.</p>
+<p><strong>Jobs and Logs.</strong> The run’s jobs, steps and logs.</p>
+<p><strong>What Failed.</strong> The failing steps and their log
+lines.</p>
+<p><strong>Re-run Failed Jobs Only.</strong> Run only what failed
+again.</p>
+<p><strong>Re-run Workflow.</strong> Run the whole workflow again.</p>
+<p><strong>Cancel Run.</strong> Stop the run. QUILL asks first.</p>
+<p><strong>View Artifacts.</strong> Files the run produced, to
+download.</p>
+<p><strong>Combined Check Status.</strong> Every check on the commit, at
+once.</p>
+<p><strong>Review Pending Deployments.</strong> Approve or reject
+deployments waiting on you.</p>
+<p><strong>Approve Run from a Fork.</strong> Let a fork’s run start.</p>
+<p><strong>Delete Run.</strong> Delete the run and its logs.</p>
+<p><strong>Runs.</strong> This workflow’s runs.</p>
+<p><strong>Run Workflow on Branch.</strong> Start it on a branch.</p>
+<p><strong>Assets.</strong> The release’s files and their download
+counts.</p>
+<p><strong>Edit Release.</strong> Change its notes, name and flags.</p>
+<p><strong>Draft Release Notes.</strong> Notes drafted from the
+changes.</p>
+<p><strong>Upload Asset.</strong> Add a file to the release.</p>
+<p><strong>Download.</strong> Download the file in your browser.</p>
+<p><strong>Delete Asset.</strong> Remove the file from the release.</p>
+<p><strong>Commits.</strong> The branch’s commits.</p>
+<p><strong>Compare Branches.</strong> Commits ahead and behind, and
+changed files.</p>
+<p><strong>Copy Name.</strong> Copy the branch name.</p>
+<p><strong>Delete Branch.</strong> Delete the branch on GitHub.</p>
+<p><strong>Mark Read.</strong> Mark it read on GitHub.</p>
+<p><strong>Mark Done.</strong> Clear it from your notifications.</p>
+<p><strong>Snooze for One Day.</strong> Hide it here until tomorrow.</p>
+<p><strong>Unsubscribe from Thread.</strong> Stop notifications for
+it.</p>
+<p><strong>Unsnooze Locally.</strong> Show a snoozed notification
+again.</p>
+<p><strong>Open.</strong> Select the repository’s node in the tree.</p>
+<p><strong>Star or Unstar.</strong> Star it, or take the star away.</p>
+<p><strong>Watch or Unwatch.</strong> Choose how much it notifies
+you.</p>
+<p><strong>Clone.</strong> Copy it to a folder on this computer.</p>
+<p><strong>Pin.</strong> Keep it under Repositories &gt; Pinned.</p>
+<p><strong>Open.</strong> Select the person’s node in the tree.</p>
+<p><strong>Follow or Unfollow.</strong> Follow them, or stop.</p>
+<p><strong>Find Issues with Label.</strong> Issues and pull requests
+with it.</p>
+<p><strong>Edit Label.</strong> Change its name, color or
+description.</p>
+<p><strong>Delete Label.</strong> Delete the label everywhere.</p>
+<p><strong>Edit Gist.</strong> Change the gist’s files and
+description.</p>
+<p><strong>Star or Unstar.</strong> Star it, or take the star away.</p>
+<p><strong>Delete Gist.</strong> Delete the gist.</p>
+<p><strong>Open Discussion Thread.</strong> Read the whole thread.</p>
+<p><strong>Dismiss or Reopen Alert.</strong> Dismiss with a reason.</p>
+<p><strong>Show Details.</strong> The cache’s key, size and last
+use.</p>
+<p><strong>Delete Cache.</strong> Delete this Actions cache.</p>
+<p><strong>Run.</strong> Run the saved search.</p>
+<p><strong>Remove Saved Search.</strong> Forget it on this device.</p>
+<p><strong>Open in Editor.</strong> Open the file in the editor, to read
+or edit.</p>
+<p><strong>Find Issues in Milestone.</strong> Its issues and pull
+requests.</p>
+<p><strong>Open.</strong> Select the organization’s node in the
+tree.</p>
+<p><strong>Open.</strong> Open the settings dialog for this; it asks
+before saving.</p>
+<p><strong>Open.</strong> Read the topic, or open the chapter it
+names.</p>
+<p><strong>Take Me There.</strong> Go to the place the topic is
+about.</p>
+<p><strong>Refresh.</strong> Load this view again. F5 does the same.</p>
+<p><strong>Help for This View.</strong> What this view shows. F1 does
+the same.</p>
+<h3 id="every-workbench-option">Every Workbench option</h3>
+<p><strong>General: Open the Workbench on.</strong> Where the window
+opens when no menu row asks for a place: Inbox (Start Here until you
+have signed in), Start Here, or wherever you were last time.</p>
+<p><strong>General: List shows.</strong> Quick lists show a few columns,
+fast to arrow through; Full lists show every column GitHub Items knows
+for that view.</p>
+<p><strong>General: Sort issues and pull requests by.</strong> The order
+a list of issues and pull requests opens in. Newest first is the usual
+choice.</p>
+<p><strong>General: Show issues that are.</strong> Open, closed or all,
+when a list opens. The filter box can always say is:open or is:closed
+for one list.</p>
+<p><strong>Notifications and Inbox: Check for new notifications every
+(minutes).</strong> How often GitHub is checked for new notifications,
+from 5 minutes to a day. GitHub may ask for longer, and then it gets
+longer.</p>
+<p><strong>Notifications and Inbox: Play a sound on each check.</strong>
+A short sound every time GitHub is checked, so silence means the check
+stopped rather than found nothing. Off by default.</p>
+<p><strong>Notifications and Inbox: New notifications interrupt
+speech.</strong> Say a new notification at once, cutting across what is
+being said. Off means it waits its turn.</p>
+<p><strong>Notifications and Inbox: Include read notifications.</strong>
+Show notifications you have already read, as well as unread ones, in
+Notifications.</p>
+<p><strong>Lists: Say column names before values.</strong> Put each
+column’s name before its value in a list row, as in Number 42, Title
+Crash on start. Off keeps rows short.</p>
+<p><strong>Privacy: Load the repository Health Snapshot.</strong>
+Insights, Health Snapshot reads extra data from GitHub about a
+repository’s activity. It loads only when this is checked.</p>
+<p><strong>Privacy: Show First time here? help.</strong> The first few
+times you visit a place, its details start with a short paragraph on
+what it is for.</p>
+<p><strong>Privacy: Use the classic GitHub windows.</strong> Open GitHub
+Items and Explore GitHub, as before the Workbench, from the editor’s
+GitHub doors. Kept for one release, then retired.</p>
+<h3 id="every-authored-control-help-sentence-9">Every authored control
+help sentence</h3>
+<h4
+id="artifactsdialog-quilluigithub_artifacts_dialogpy">ArtifactsDialog
+(<code>quill/ui/github_artifacts_dialog.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: The run’s artifacts: name, size and when
+they expire.</li>
+<li><code>self._download_selected_btn</code>: Download the selected
+artifact to a folder you choose.</li>
+<li><code>self._download_all_btn</code>: Download every artifact of this
+run to a folder you choose.</li>
+<li><code>self._refresh_btn</code>: Load the list again from
+GitHub.</li>
+<li><code>self._browser_btn</code>: Open this on GitHub in your
+browser.</li>
+<li><code>cancel_button</code>: Close without changing anything. Escape
+does the same.</li>
+</ul>
+<h4
+id="clonerepositorydialog-quilluigithub_clonepy">CloneRepositoryDialog
+(<code>quill/ui/github_clone.py</code>)</h4>
+<ul>
+<li><code>self._repo</code>: The repository to copy to this computer:
+owner/name, such as octocat/hello-world, or its address from GitHub’s
+Code button.</li>
+<li><code>self._folder</code>: The folder the copy goes in. QUILL makes
+a new folder inside it named after the repository.</li>
+<li><code>browse</code>: Choose the folder the copy goes in.</li>
+<li><code>ok</code>: Copy the repository into the folder.</li>
+<li><code>cancel</code>: Close without cloning.</li>
+</ul>
+<h4
+id="githubcommitcommentsdialog-quilluigithub_commit_comments_dialogpy">GitHubCommitCommentsDialog
+(<code>quill/ui/github_commit_comments_dialog.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: Each comment as its author, date and first
+line. Tab reads the whole comment; Enter moves there.</li>
+<li><code>self._detail</code>: The whole comment: who wrote it, when,
+where, and its text.</li>
+<li><code>self._body</code>: The text of your comment. Markdown works,
+as it does on GitHub.</li>
+<li><code>self._path</code>: Leave empty to comment on the whole commit,
+or type a path the commit changed, such as docs/readme.md.</li>
+<li><code>self._line</code>: A line number in that file, from 1 up.
+Leave empty to comment on the file as a whole.</li>
+<li><code>self._post_btn</code>: Send the new comment to GitHub. QUILL
+says posted only when GitHub returns it.</li>
+<li><code>self._refresh_btn</code>: Read the commit’s comments from
+GitHub again.</li>
+<li><code>close_btn</code>: Close the commit comments.</li>
+</ul>
+<h4
+id="githubcomparebranchesdialog-quilluigithub_compare_branches_dialogpy">GitHubCompareBranchesDialog
+(<code>quill/ui/github_compare_branches_dialog.py</code>)</h4>
+<ul>
+<li><code>self._commits_list</code>: The commits one branch has that the
+other does not, newest first.</li>
+<li><code>self._files</code>: The changed files, one per row. Arrow to a
+file to read its changes below.</li>
+<li><code>self._detail</code>: The selected item in full, read-only.
+Arrow through it line by line.</li>
+<li><code>self._browser_btn</code>: Open this on GitHub in your
+browser.</li>
+<li><code>close_btn</code>: Close this window. Escape does the
+same.</li>
+</ul>
+<h4 id="githubconsentdialog-quilluigithub_dialogspy">GitHubConsentDialog
+(<code>quill/ui/github_dialogs.py</code>)</h4>
+<ul>
+<li><code>ok_btn</code>: Agree and go on. QUILL then talks to GitHub for
+you.</li>
+<li><code>cancel_button</code>: Close without changing anything. Escape
+does the same.</li>
+</ul>
+<h4 id="githubsignindialog-quilluigithub_dialogspy">GitHubSignInDialog
+(<code>quill/ui/github_dialogs.py</code>)</h4>
+<ul>
+<li><code>self._token_ctrl</code>: A personal access token you made on
+GitHub. QUILL asks GitHub whose it is before it keeps it.</li>
+<li><code>self._connect_btn</code>: Sign in with the token you typed or
+the browser sign-in.</li>
+<li><code>anon_btn</code>: Go on without signing in. Public repositories
+can still be read.</li>
+<li><code>cancel_button</code>: Close without changing anything. Escape
+does the same.</li>
+</ul>
+<h4
+id="githubmanageaccountsdialog-quilluigithub_dialogspy">GitHubManageAccountsDialog
+(<code>quill/ui/github_dialogs.py</code>)</h4>
+<ul>
+<li><code>sign_in_btn</code>: Signs in with a short code: QUILL copies
+it and opens GitHub’s page, you type it there and approve QUILL. The
+account is added and becomes active.</li>
+<li><code>self._switch_btn</code>: Make the selected account the one
+QUILL uses for GitHub.</li>
+<li><code>self._remove_btn</code>: Forget the selected account on this
+computer. Its token is removed.</li>
+<li><code>add_btn</code>: Paste a personal access token you made on
+GitHub, for example a fine-grained token limited to a few
+repositories.</li>
+<li><code>close_btn</code>: Close Manage GitHub Accounts.</li>
+<li><code>self._choice</code>: The GitHub accounts QUILL knows. Choose
+one to use or remove.</li>
+</ul>
+<h4
+id="githubdiscussiondialog-quilluigithub_discussion_dialogpy">GitHubDiscussionDialog
+(<code>quill/ui/github_discussion_dialog.py</code>)</h4>
+<ul>
+<li><code>list_label</code>: The discussion, then each comment followed
+by its replies.</li>
+<li><code>self._list</code>: The first row is the discussion itself.
+Each comment says who wrote it, whether it is the answer, and how many
+replies it has.</li>
+<li><code>detail_label</code>: The selected row in full.</li>
+<li><code>self._detail</code>: Read-only. Polls read as one option to a
+line, with votes.</li>
+<li><code>self._status</code>: Says what is loading, what changed, or
+why it failed.</li>
+<li><code>self._reply_btn</code>: On the discussion row, adds a comment;
+on a comment or reply, replies under that comment.</li>
+<li><code>self._answer_btn</code>: Marks the selected comment as the
+discussion’s answer, or unmarks it when it already is. Only in
+categories that take answers. QUILL asks first.</li>
+<li><code>self._open_btn</code>: Opens the discussion or comment in your
+browser.</li>
+<li><code>self._refresh_btn</code>: Asks GitHub for the thread
+again.</li>
+<li><code>close_btn</code>: Close this window.</li>
+</ul>
+<h4
+id="newdiscussiondialog-quilluigithub_discussion_dialogpy">NewDiscussionDialog
+(<code>quill/ui/github_discussion_dialog.py</code>)</h4>
+<ul>
+<li><code>category_label</code>: Where the discussion goes, as the
+repository sets them up.</li>
+<li><code>self._category</code>: A category that takes answers lets
+someone mark a comment as the answer.</li>
+<li><code>title_label</code>: The discussion’s title. Required.</li>
+<li><code>self._title</code>: Required.</li>
+<li><code>body_label</code>: What you want to discuss. Required.
+Markdown works.</li>
+<li><code>self._body</code>: Required. Markdown works.</li>
+<li><code>self._error</code>: Says what to fill in before the discussion
+can start.</li>
+<li><code>ok</code>: Start the discussion on GitHub.</li>
+<li><code>cancel</code>: Close without starting anything.</li>
+</ul>
+<h4
+id="githubexploredialog-quilluigithub_explore_dialogpy">GitHubExploreDialog
+(<code>quill/ui/github_explore_dialog.py</code>)</h4>
+<ul>
+<li><code>self._view</code>: What to explore: your inbox, notifications,
+searches, people or a repository.</li>
+<li><code>self._repo</code>: The repository owner/name that repository
+views such as Labels use.</li>
+<li><code>self._person</code>: A GitHub username, for the person
+views.</li>
+<li><code>self._query</code>: What to search for. The view chooses what
+is searched: issues and pull requests, code, commits or repositories.
+GitHub qualifiers such as repo: work.</li>
+<li><code>self._saved_btn</code>: Run or remove a search you saved on
+this device.</li>
+<li><code>self._save_btn</code>: Save the search typed above on this
+device, to run again later.</li>
+<li><code>self._load_btn</code>: Load the chosen view. Enter in the
+boxes above does the same.</li>
+<li><code>self._queue_options_btn</code>: Choose the inbox’s
+repositories and categories, and save filters.</li>
+<li><code>self._list</code>: Enter opens the result; the Applications
+key lists what you can do with it. Ctrl+Shift+L says how much of the
+GitHub API rate limit is left.</li>
+<li><code>self._detail</code>: The selected result in full.</li>
+<li><code>self._open_btn</code>: Open the selected result on GitHub in
+your browser.</li>
+<li><code>self._use_btn</code>: Load the selected result’s repository in
+GitHub Items.</li>
+<li><code>close_btn</code>: Close Explore GitHub. Escape does the
+same.</li>
+</ul>
+<h4
+id="githubexplorenotificationsmixin-quilluigithub_explore_notificationspy">GitHubExploreNotificationsMixin
+(<code>quill/ui/github_explore_notifications.py</code>)</h4>
+<ul>
+<li><code>self._include_read</code>: Checked, the list shows read
+notifications as well as unread ones. Changing it loads the inbox
+again.</li>
+<li><code>self._done_btn</code>: Takes the notification off your GitHub
+inbox, as Done does on github.com, and moves to the next one. Delete in
+the list does the same.</li>
+<li><code>self._unsubscribe_btn</code>: Stops notifications for this
+thread until you comment or are mentioned, and takes it out of the
+list.</li>
+<li><code>self._read_all_btn</code>: Marks every notification in your
+GitHub inbox read, up to the moment this list was loaded. Anything newer
+stays unread. QUILL asks first.</li>
+</ul>
+<h4
+id="githubfilerunsdialog-quilluigithub_file_runs_dialogpy">GitHubFileRunsDialog
+(<code>quill/ui/github_file_runs_dialog.py</code>)</h4>
+<ul>
+<li><code>detail_label</code>: Everything known about the selected
+row.</li>
+<li><code>self._detail</code>: Read-only. The commit, its author and
+date, and its address.</li>
+<li><code>self._status</code>: Says whether the list is loading, ready,
+or failed to load.</li>
+<li><code>self._open_btn</code>: Opens the selected row’s commit in your
+browser.</li>
+<li><code>self._refresh_btn</code>: Asks GitHub again.</li>
+<li><code>close_btn</code>: Close this window.</li>
+</ul>
+<h4
+id="filterbuilderdialog-quilluigithub_filter_builder_dialogpy">FilterBuilderDialog
+(<code>quill/ui/github_filter_builder_dialog.py</code>)</h4>
+<ul>
+<li><code>self.attribute</code>: What to filter on: every attribute
+GitHub search knows for issues and pull requests. Has conflicts is
+checked over the loaded rows.</li>
+<li><code>self.operator</code>: How to compare: is, is not, any of, none
+of, has none, has any; dates before, after, between or in the last n
+days; numbers more than, less than, between.</li>
+<li><code>self.value</code>: The value: choose one from the repository,
+or type it. Me means you. For any of and none of, separate several with
+commas; a date is year-month-day.</li>
+<li><code>self.second</code>: For between: the second value, the end of
+the range.</li>
+<li><code>self.group</code>: Or groups: conditions in the same group
+must all match; a different group is joined with Or, which GitHub’s
+issue search allows.</li>
+<li><code>add</code>: Add this condition to the list. Insert does it
+too.</li>
+<li><code>remove</code>: Remove the selected condition. Delete does it
+too.</li>
+<li><code>self.conditions</code>: The conditions so far, in words.
+Delete removes one.</li>
+<li><code>self.sort</code>: Sort and order: created, updated, comments,
+reactions, interactions.</li>
+<li><code>self.preview</code>: The query the conditions make, in
+GitHub’s own syntax.</li>
+<li><code>save</code>: Use this filter and keep it under Saved Searches.
+Ctrl+S.</li>
+<li><code>ok</code>: Write this filter into the filter box and apply it.
+Ctrl+Enter.</li>
+<li><code>cancel</code>: Change nothing.</li>
+</ul>
+<h4
+id="githubgisteditordialog-quilluigithub_gist_editor_dialogpy">GitHubGistEditorDialog
+(<code>quill/ui/github_gist_editor_dialog.py</code>)</h4>
+<ul>
+<li><code>self._description</code>: A short line that says what the gist
+is. GitHub shows it in the gist list.</li>
+<li><code>self._files</code>: The gist’s files. Choose one to read or
+change its text below; Enter moves there.</li>
+<li><code>self._text</code>: The chosen file’s text. A file too large
+for GitHub to send whole is read-only.</li>
+<li><code>add_btn</code>: Add a new file to the gist, with a name such
+as notes.md.</li>
+<li><code>self._rename_btn</code>: Give the chosen file a new name.</li>
+<li><code>self._delete_btn</code>: Remove the chosen file from the gist
+when you save. QUILL asks first.</li>
+<li><code>ok_btn</code>: Send the gist to GitHub. QUILL says it is saved
+only when GitHub confirms it.</li>
+<li><code>cancel_btn</code>: Close without sending anything to
+GitHub.</li>
+<li><code>self._public</code>: Checked, anyone can find the gist. Not
+checked, it is secret: unlisted, but anyone with its link can still read
+it. GitHub does not let you change this later.</li>
+</ul>
+<h4
+id="githubissuedraftdialog-quilluigithub_issue_draft_dialogpy">GitHubIssueDraftDialog
+(<code>quill/ui/github_issue_draft_dialog.py</code>)</h4>
+<ul>
+<li><code>self._draft_notice</code>: A saved issue draft is private to
+this account and repository. It is never submitted automatically.</li>
+<li><code>self._title</code>: Required. Up to 256 characters.</li>
+<li><code>self._body</code>: Optional. Markdown is submitted as plain
+issue text.</li>
+<li><code>self._labels</code>: Optional repository labels. Leave blank
+for none.</li>
+<li><code>self._assignees</code>: Optional usernames separated by
+commas; @ is optional.</li>
+<li><code>self._discard_btn</code>: Remove this draft from this device
+without submitting it.</li>
+<li><code>create_btn</code>: Create the issue on GitHub with this title
+and text.</li>
+<li><code>cancel_btn</code>: Close without creating the issue.</li>
+</ul>
+<h4
+id="githubitemsdialog-quilluigithub_items_dialogpy">GitHubItemsDialog
+(<code>quill/ui/github_items_dialog.py</code>)</h4>
+<ul>
+<li><code>self._repo_ctrl</code>: Type owner/name, or paste a GitHub
+link, then press Enter to load it.</li>
+<li><code>self._load_btn</code>: Load the issues, branches or runs of
+the repository typed above.</li>
+<li><code>self._pinned_btn</code>: Pick a pinned repository to load, or
+pin or unpin the loaded one.</li>
+<li><code>self._favorites_btn</code>: Items you marked with Ctrl+D, in
+any repository, to open in a browser.</li>
+<li><code>self._explore_btn</code>: Searches, notifications, people and
+repository views beyond this list.</li>
+<li><code>self._projects_btn</code>: GitHub Projects: browse items and
+change their fields. Needs sign-in.</li>
+<li><code>self._upstream_btn</code>: For a fork, loads the repository it
+was forked from.</li>
+<li><code>self._files_btn</code>: Folders and files, README, file
+history and blame.</li>
+<li><code>self._milestones_btn</code>: Each milestone’s percent done,
+open and closed counts.</li>
+<li><code>self._search_ctrl</code>: GitHub search syntax, such as
+is:open label:bug. Empty restores the list.</li>
+<li><code>self._search_btn</code>: Run the search typed in the search
+box against the loaded repository.</li>
+<li><code>self._reference_btn</code>: Paste a GitHub link or
+owner/name#42 to go straight to it.</li>
+<li><code>self._quick_filter_ctrl</code>: Narrows the loaded list as you
+type. Nothing is fetched.</li>
+<li><code>self._view_choice</code>: What the list shows: issues and pull
+requests, branches, commits and more.</li>
+<li><code>self._show_choice</code>: In Issues and PRs, show issues, pull
+requests or both.</li>
+<li><code>self._state_choice</code>: Show open, closed or all issues and
+pull requests.</li>
+<li><code>self._sort_choice</code>: The order of issues and pull
+requests in the list.</li>
+<li><code>self._mode_choice</code>: Quick reads values only; Full says
+each column’s name before its value.</li>
+<li><code>self._columns_btn</code>: Choose which columns this view’s
+list shows.</li>
+<li><code>self._back_btn</code>: Restore the previous repository, view,
+filters, and selected row.</li>
+<li><code>self._forward_btn</code>: Restore the next repository, view,
+filters, and selected row.</li>
+<li><code>self._list</code>: Enter opens the row; the Applications key
+lists what you can do with it. Ctrl+Shift+L says how much of the GitHub
+API rate limit is left.</li>
+<li><code>self._details</code>: The selected row in full. Alt+N and
+Alt+P move between comments.</li>
+<li><code>self._refresh_btn</code>: Load this view again from GitHub.
+Ctrl+R does the same.</li>
+<li><code>self._more_btn</code>: Load the next page of results.</li>
+<li><code>self._open_btn</code>: Open the selected row on GitHub in your
+browser.</li>
+<li><code>self._goto_btn</code>: Jump to an issue or pull request by its
+number.</li>
+<li><code>self._diff_btn</code>: The selected pull request’s changed
+files, one comparison per file.</li>
+<li><code>self._review_btn</code>: Read review threads and check runs,
+and submit an approval or review request.</li>
+<li><code>self._summarize_btn</code>: An AI summary of the selected
+issue or pull request’s discussion.</li>
+<li><code>self._compare_btn</code>: Compare two branches: commits ahead
+and behind, and changed files.</li>
+<li><code>self._batch_btn</code>: Close, reopen, label, set a milestone
+or assign every selected item.</li>
+<li><code>self._actions_btn</code>: Write actions for this view: new
+issue, merge, delete branch, re-run.</li>
+<li><code>cancel_btn</code>: Close GitHub Items. Escape does the
+same.</li>
+</ul>
+<h4
+id="githublinecommentdialog-quilluigithub_line_comment_dialogpy">GitHubLineCommentDialog
+(<code>quill/ui/github_line_comment_dialog.py</code>)</h4>
+<ul>
+<li><code>self._quoted</code>: The diff lines this comment is attached
+to, read-only.</li>
+<li><code>self._suggest</code>: Writes a suggestion block holding these
+lines’ current text into the comment. Edit the code inside it; the
+author can accept it on GitHub with one click.</li>
+<li><code>self._body</code>: What you want to say about these lines.
+Markdown works.</li>
+<li><code>self._status</code>: Says why the comment could not be used
+yet.</li>
+<li><code>self._add_btn</code>: Keep this comment on this device. It
+goes to GitHub with your review when you submit it from Compose
+Review.</li>
+<li><code>self._post_btn</code>: Post this one comment to GitHub now,
+outside a review.</li>
+<li><code>cancel_btn</code>: Close without keeping this comment.</li>
+</ul>
+<h4
+id="milestoneformdialog-quilluigithub_milestones_dialogpy">MilestoneFormDialog
+(<code>quill/ui/github_milestones_dialog.py</code>)</h4>
+<ul>
+<li><code>name_label</code>: The milestone’s name, as GitHub shows
+it.</li>
+<li><code>self._name</code>: Required. For example Release 2.0.</li>
+<li><code>desc_label</code>: What the milestone is for. Optional.</li>
+<li><code>self._description</code>: Optional. Plain text or
+Markdown.</li>
+<li><code>due_label</code>: When the milestone is due. Leave it empty
+for no due date.</li>
+<li><code>self._due</code>: Type a date like 2026-12-12, or leave it
+empty for no due date.</li>
+<li><code>self._error</code>: Says what to fix before the milestone can
+be saved.</li>
+<li><code>ok</code>: Save the milestone on GitHub.</li>
+<li><code>cancel</code>: Close without changing anything.</li>
+</ul>
+<h4
+id="githubmilestonesdialog-quilluigithub_milestones_dialogpy">GitHubMilestonesDialog
+(<code>quill/ui/github_milestones_dialog.py</code>)</h4>
+<ul>
+<li><code>state_label</code>: Which milestones to list.</li>
+<li><code>self._state</code>: Open milestones, closed ones, or all of
+them.</li>
+<li><code>list_label</code>: Each milestone with how far along it is and
+when it is due.</li>
+<li><code>self._list</code>: Each line says the percent done, how many
+issues are open and closed, and the due date. Enter opens the milestone
+on GitHub.</li>
+<li><code>detail_label</code>: The selected milestone’s description and
+address.</li>
+<li><code>self._detail</code>: Read-only.</li>
+<li><code>self._status</code>: Says what is loading, what changed, or
+why it failed.</li>
+<li><code>self._new_btn</code>: Create a milestone with a title,
+description and due date.</li>
+<li><code>self._edit_btn</code>: Change the selected milestone’s title,
+description or date.</li>
+<li><code>self._close_ms_btn</code>: Closes the selected open milestone,
+or reopens a closed one. QUILL asks first.</li>
+<li><code>self._open_btn</code>: Opens the selected milestone’s page on
+GitHub.</li>
+<li><code>self._refresh_btn</code>: Asks GitHub for the milestones
+again.</li>
+<li><code>close_btn</code>: Close this window.</li>
+</ul>
+<h4
+id="pendingdeploymentsdialog-quilluigithub_pending_deployments_dialogpy">PendingDeploymentsDialog
+(<code>quill/ui/github_pending_deployments_dialog.py</code>)</h4>
+<ul>
+<li><code>env_label</code>: The environments this run is waiting
+on.</li>
+<li><code>self._envs</code>: One check box per environment. The ones you
+are allowed to approve start checked; GitHub refuses the others.</li>
+<li><code>comment_label</code>: The comment GitHub records with your
+review.</li>
+<li><code>self._comment</code>: Say why you approve or reject. GitHub
+records it on the run and requires it.</li>
+<li><code>self._status</code>: Says what is loading and what GitHub
+confirmed.</li>
+<li><code>self._approve_btn</code>: Lets the run deploy to the checked
+environments.</li>
+<li><code>self._reject_btn</code>: Stops the run deploying to the
+checked environments.</li>
+<li><code>close_btn</code>: Close this window without reviewing.</li>
+<li><code>box</code>: Checked, Approve or Reject applies to this
+environment.</li>
+</ul>
+<h4
+id="githubpulldiffcommentsmixin-quilluigithub_pr_diff_commentspy">GitHubPullDiffCommentsMixin
+(<code>quill/ui/github_pr_diff_comments.py</code>)</h4>
+<ul>
+<li><code>self._marks_choice</code>: How patch lines are marked: words
+(Added line, Removed line) or symbols (plus and minus). Symbols need
+your screen reader to read punctuation.</li>
+<li><code>self._marks_note</code>: Reminds you that symbols are spoken
+only with punctuation.</li>
+<li><code>self._patch_list</code>: The selected file’s changes, one line
+per row. Shift with the arrows selects a run of lines. Enter comments on
+the selected lines.</li>
+<li><code>self._comment_line_btn</code>: Write a comment on the selected
+patch line, for your review or to post now.</li>
+<li><code>self._comment_lines_btn</code>: Comment on the selected run of
+lines, or type a start and end line.</li>
+<li><code>self._copy_diff_btn</code>: Copy the whole pull request as a
+unified diff.</li>
+<li><code>self._open_diff_btn</code>: Save the whole pull request as a
+.diff file and open it in the app your computer uses for .diff
+files.</li>
+<li><code>self._pending_label</code>: How many line comments wait for
+your review. Submit them from Compose Review.</li>
+</ul>
+<h4
+id="githubpulldiffdialog-quilluigithub_pr_diff_dialogpy">GitHubPullDiffDialog
+(<code>quill/ui/github_pr_diff_dialog.py</code>)</h4>
+<ul>
+<li><code>self._files</code>: The changed files, one per row. Arrow to a
+file to read its changes below.</li>
+<li><code>self._detail</code>: The selected item in full, read-only.
+Arrow through it line by line.</li>
+<li><code>self._hunk</code>: Read the changed line and its surrounding
+patch context.</li>
+<li><code>close_btn</code>: Close this window. Escape does the
+same.</li>
+<li><code>self._explain_btn</code>: Send this selected file’s bounded
+diff to the configured AI provider after consent. The output includes
+the source file and head SHA.</li>
+</ul>
+<h4
+id="githubpullreviewdialog-quilluigithub_pr_review_dialogpy">GitHubPullReviewDialog
+(<code>quill/ui/github_pr_review_dialog.py</code>)</h4>
+<ul>
+<li><code>self._one_line</code>: Review decision, failing checks, open
+threads, auto-merge and how far behind the base branch it is. Said once
+when the review opens.</li>
+<li><code>self._header</code>: Draft, merge readiness, review approvals,
+checks, and thread counts.</li>
+<li><code>thread_label</code>: Expand the pull request, files, and
+checks.</li>
+<li><code>self._outline</code>: Up and Down select; Right expands; Left
+collapses; Tab reads details. Ctrl+R replies to a selected thread.
+Shift+F10 opens actions.</li>
+<li><code>self._since_check</code>: Show only the files that changed
+since the commit you last reviewed, and hear how many. Says plainly when
+that commit was force-pushed away.</li>
+<li><code>self._thread_detail</code>: The selected review conversation,
+including file and line context.</li>
+<li><code>summary_label</code>: Plain-language pull request status and
+reviewer summary.</li>
+<li><code>self._policy_btn</code>: Read branch protection, applicable
+rulesets, CODEOWNERS location, merge-queue status, and the pull request
+head revision.</li>
+<li><code>self._summary</code>: Copyable summary of the pull request’s
+review and merge status.</li>
+<li><code>checks_label</code>: Continuous-integration checks on the pull
+request’s latest commit.</li>
+<li><code>self._check_list</code>: Double-click a check to open its
+details on GitHub.</li>
+<li><code>self._status</code>: Reports loading progress and the outcome
+of review actions.</li>
+<li><code>self._next_unresolved_btn</code>: Move to the next review
+thread nobody has resolved yet.</li>
+<li><code>self._next_unvisited_btn</code>: Move to the next review
+thread you have not read yet.</li>
+<li><code>self._browser_btn</code>: Open the pull request page in your
+default browser.</li>
+<li><code>self._copy_btn</code>: Copy the loaded review summary to the
+clipboard.</li>
+<li><code>self._timeline_btn</code>: One line per event, newest last:
+labels, reviews, commits, force-pushes and merges.</li>
+<li><code>self._submit_btn</code>: Review drafts save locally.
+Submitting is a separate explicit action in the composer.</li>
+<li><code>self._reply_btn</code>: Post a reply to the selected review
+conversation.</li>
+<li><code>self._reviewers_btn</code>: Request reviews from one or more
+GitHub usernames.</li>
+<li><code>self._draft_btn</code>: Toggle whether the pull request is a
+draft or ready for review.</li>
+<li><code>self._update_btn</code>: Merge the base branch into this pull
+request’s branch.</li>
+<li><code>self._merge_btn</code>: Turn auto-merge on with a merge method
+or off, add the pull request to the merge queue or take it out, or hear
+how many required checks pass.</li>
+<li><code>close_btn</code>: Close the review window.</li>
+</ul>
+<h4
+id="githubprojectsdialog-quilluigithub_projects_dialogpy">GitHubProjectsDialog
+(<code>quill/ui/github_projects_dialog.py</code>)</h4>
+<ul>
+<li><code>self._repo</code>: The repository, as owner/name. Enter loads
+its Projects.</li>
+<li><code>self._load_btn</code>: Load the repository named in the box
+above.</li>
+<li><code>self._project_choice</code>: The repository’s Project boards.
+Choose one to list its items.</li>
+<li><code>self._list</code>: The board’s items. Arrow to one to read it
+below.</li>
+<li><code>self._details</code>: The selected item in full,
+read-only.</li>
+<li><code>self._next_btn</code>: Move to the next item that nothing is
+blocking.</li>
+<li><code>self._open_btn</code>: Open the selected item on GitHub in
+your browser.</li>
+<li><code>self._actions_btn</code>: More things to do with the selected
+item, as a menu.</li>
+<li><code>close_btn</code>: Close this window. Escape does the
+same.</li>
+</ul>
+<h4
+id="editreleasedialog-quilluigithub_release_edit_dialogpy">EditReleaseDialog
+(<code>quill/ui/github_release_edit_dialog.py</code>)</h4>
+<ul>
+<li><code>self._name</code>: The release’s title on GitHub. Leave it
+blank and GitHub shows the tag instead.</li>
+<li><code>self._body</code>: The release notes, in Markdown. Arrow
+through them like a document; Tab leaves the box.</li>
+<li><code>self._draft</code>: Checked, the release stays a draft that
+only people with push access see. Clear it to publish the release; QUILL
+asks first, because watchers are notified.</li>
+<li><code>self._prerelease</code>: Checked, GitHub marks the release as
+not ready for production and does not show it as the latest
+release.</li>
+<li><code>save</code>: Sends these four fields to GitHub.</li>
+<li><code>cancel</code>: Closes without changing the release.</li>
+</ul>
+<h4
+id="githubreleasenotesdialog-quilluigithub_release_notes_dialogpy">GitHubReleaseNotesDialog
+(<code>quill/ui/github_release_notes_dialog.py</code>)</h4>
+<ul>
+<li><code>self._generate_btn</code>: Ask GitHub to generate Markdown for
+the entered previous and target tags. This does not create a
+release.</li>
+<li><code>self._name</code>: Edit the generated release name before
+copying it.</li>
+<li><code>self._body</code>: Review and edit the generated Markdown
+before copying it.</li>
+<li><code>self._copy_btn</code>: Copy the draft name and Markdown body.
+This does not publish them.</li>
+<li><code>close_btn</code>: Close the release notes.</li>
+</ul>
+<h4
+id="typedconfirmdialog-quilluigithub_repo_admin_dialogspy">TypedConfirmDialog
+(<code>quill/ui/github_repo_admin_dialogs.py</code>)</h4>
+<ul>
+<li><code>self._entry</code>: Type exactly what the line above asks for,
+to confirm.</li>
+<li><code>ok_btn</code>: Do it on GitHub. This is the button that makes
+the change.</li>
+<li><code>cancel_button</code>: Close without changing anything. Escape
+does the same.</li>
+</ul>
+<h4
+id="createrepositorydialog-quilluigithub_repo_admin_dialogspy">CreateRepositoryDialog
+(<code>quill/ui/github_repo_admin_dialogs.py</code>)</h4>
+<ul>
+<li><code>self._name_ctrl</code>: The new repository’s name, such as
+my-project.</li>
+<li><code>self._description_ctrl</code>: A short sentence about what the
+repository is for. You can leave it empty.</li>
+<li><code>self._org_ctrl</code>: An organization to create it in. Leave
+it empty to create it on your account.</li>
+<li><code>ok_btn</code>: Do it on GitHub. This is the button that makes
+the change.</li>
+<li><code>cancel_button</code>: Close without changing anything. Escape
+does the same.</li>
+</ul>
+<h4
+id="branchprotectiondialog-quilluigithub_repo_admin_dialogspy">BranchProtectionDialog
+(<code>quill/ui/github_repo_admin_dialogs.py</code>)</h4>
+<ul>
+<li><code>self._branch_choice</code>: The branch these protection rules
+are for.</li>
+<li><code>self._review_spin</code>: How many approving reviews a pull
+request needs before it can merge.</li>
+<li><code>self._checks_ctrl</code>: Checks that must pass before
+merging, separated by commas.</li>
+<li><code>ok_btn</code>: Do it on GitHub. This is the button that makes
+the change.</li>
+<li><code>cancel_button</code>: Close without changing anything. Escape
+does the same.</li>
+</ul>
+<h4
+id="githubrepofilesdialog-quilluigithub_repo_files_dialogpy">GitHubRepoFilesDialog
+(<code>quill/ui/github_repo_files_dialog.py</code>)</h4>
+<ul>
+<li><code>ref_label</code>: Which version of the repository to
+browse.</li>
+<li><code>self._ref_ctrl</code>: Type a branch, a tag or a commit SHA,
+or pick a branch or tag from the list, then press Enter or Go.</li>
+<li><code>self._go_btn</code>: Loads the top folder of the repository at
+the version above.</li>
+<li><code>tree_label</code>: The repository’s folders and files.</li>
+<li><code>self._tree</code>: Right arrow or Enter opens a folder and
+Left closes it. Enter on a file shows its text in Contents. Each file
+says its size.</li>
+<li><code>contents_label</code>: The text of the file or README you
+opened.</li>
+<li><code>self._contents</code>: Read-only. Arrow through it like a
+document; Ctrl+A then Ctrl+C copies. Open in Editor opens the file for
+editing.</li>
+<li><code>self._status</code>: Says what is loading, what loaded, or why
+it failed.</li>
+<li><code>self._view_btn</code>: Shows the selected file’s text,
+read-only, in Contents.</li>
+<li><code>self._edit_btn</code>: Opens the selected file in the editor,
+the same way as opening a GitHub file link, so you can edit it.</li>
+<li><code>self._readme_btn</code>: Shows the README GitHub shows for the
+selected folder, or for the whole repository when nothing is
+selected.</li>
+<li><code>self._history_btn</code>: Lists the commits that changed the
+selected file or folder, newest first.</li>
+<li><code>self._blame_btn</code>: Lists the file in runs of lines, each
+with the author, date, short SHA and commit title. Needs a signed-in
+account.</li>
+<li><code>close_btn</code>: Close this window.</li>
+</ul>
+<h4
+id="githubrepositorybrowserdialog-quilluigithub_repository_browser_dialogpy">GitHubRepositoryBrowserDialog
+(<code>quill/ui/github_repository_browser_dialog.py</code>)</h4>
+<ul>
+<li><code>self._repo_ctrl</code>: The repository, as owner/name or a
+link. Enter loads it.</li>
+<li><code>self._load_btn</code>: Load the repository named in the box
+above.</li>
+<li><code>self._ref_choice</code>: The branch or tag whose files are
+listed.</li>
+<li><code>self._list</code>: The folder’s files and folders. Enter opens
+one.</li>
+<li><code>self._open_btn</code>: Open the selected file in the
+editor.</li>
+<li><code>self._go_up_btn</code>: Go to the folder above this one.</li>
+<li><code>self._refresh_btn</code>: List this folder again from
+GitHub.</li>
+<li><code>self._show_all_refs_btn</code>: List every branch and tag, not
+only the usual ones.</li>
+<li><code>self._copy_url_btn</code>: Copy the selected file’s GitHub
+address.</li>
+<li><code>cancel_btn</code>: Close without opening a file.</li>
+</ul>
+<h4
+id="githubreviewdraftdialog-quilluigithub_review_draft_dialogpy">GitHubReviewDraftDialog
+(<code>quill/ui/github_review_draft_dialog.py</code>)</h4>
+<ul>
+<li><code>self._notice</code>: This review is saved on this device and
+is not sent until Submit Review is activated.</li>
+<li><code>self._event</code>: Select the review decision to submit after
+checking the current diff.</li>
+<li><code>self._body</code>: Required for Comment and Request Changes.
+Saved locally until submitted.</li>
+<li><code>self._stale_confirm</code>: The saved review was created for a
+different pull request head commit.</li>
+<li><code>self._discard_btn</code>: Remove the review draft from this
+device without submitting it.</li>
+<li><code>submit_btn</code>: Send the selected review action to GitHub
+now.</li>
+<li><code>cancel_btn</code>: Keep the review as a draft on this computer
+and close.</li>
+<li><code>pending</code>: Line comments you added from the diff are sent
+in the same request as the review.</li>
+</ul>
+<h4
+id="runfailuredigestdialog-quilluigithub_run_digest_dialogpy">RunFailureDigestDialog
+(<code>quill/ui/github_run_digest_dialog.py</code>)</h4>
+<ul>
+<li><code>label</code>: Each failed job, its failed steps, annotations,
+and log lines.</li>
+<li><code>self._text</code>: Read-only. Each failed job, then its failed
+steps, then annotations with file and line, then the last 40 log lines
+of each failed step, with timestamps and colour codes removed. Arrow
+through it; Ctrl+A then Ctrl+C copies.</li>
+<li><code>self._status</code>: Says whether the digest is loading,
+ready, or failed to load.</li>
+<li><code>self._copy_btn</code>: Copies the whole digest to the
+clipboard as plain text.</li>
+<li><code>self._refresh_btn</code>: Asks GitHub again, for a run that
+was still finishing.</li>
+<li><code>close_btn</code>: Close this window.</li>
+</ul>
+<h4
+id="subissueorderdialog-quilluigithub_sub_issue_order_dialogpy">SubIssueOrderDialog
+(<code>quill/ui/github_sub_issue_order_dialog.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: The parent issue’s sub-issues, first to
+last. Move Up and Move Down change the selected one’s place on GitHub;
+Enter opens it in your browser.</li>
+<li><code>self._up</code>: Moves the selected sub-issue one place
+earlier, on GitHub.</li>
+<li><code>self._down</code>: Moves the selected sub-issue one place
+later, on GitHub.</li>
+<li><code>close</code>: Closes this window. Every move has already been
+sent.</li>
+</ul>
+<h4
+id="githubtimelinedialog-quilluigithub_timeline_dialogpy">GitHubTimelineDialog
+(<code>quill/ui/github_timeline_dialog.py</code>)</h4>
+<ul>
+<li><code>self._text</code>: One line per event with its date and who
+did it, newest last. The last line says whether this is the whole
+history.</li>
+<li><code>self._copy_btn</code>: Copy the whole history to the
+clipboard.</li>
+<li><code>close_btn</code>: Close the timeline.</li>
+</ul>
+<h4
+id="workbenchlistdialog-quilluigithub_workbench_list_dialogpy">WorkbenchListDialog
+(<code>quill/ui/github_workbench_list_dialog.py</code>)</h4>
+<ul>
+<li><code>self.details</code>: The selected row in full.</li>
+<li><code>close</code>: Close this window. Escape does the same.</li>
+</ul>
+<h4
+id="workbenchoptionsdialog-quilluigithub_workbench_optionspy">WorkbenchOptionsDialog
+(<code>quill/ui/github_workbench_options.py</code>)</h4>
+<ul>
+<li><code>self.notebook</code>: The option pages. Ctrl+Tab moves to the
+next page.</li>
+<li><code>ok</code>: Save these choices and close.</li>
+<li><code>cancel</code>: Close without changing anything. Escape does
+the same.</li>
+<li><code>self.pinned</code>: Repositories kept under Repositories,
+Pinned, in the tree.</li>
+<li><code>unpin</code>: Take the selected repository out of Pinned when
+you press OK.</li>
+<li><code>self.favorites</code>: Items kept under Repositories,
+Favorites, in the tree.</li>
+<li><code>remove</code>: Take the selected item out of Favorites when
+you press OK.</li>
+<li><code>forget</code>: Forget the Workbench’s last place, open nodes
+and recent repositories on this computer, when you press OK. Nothing on
+GitHub changes.</li>
+<li><code>clear</code>: Empty Favorites on this computer when you press
+OK.</li>
+</ul>
+<h4 id="module-level-quilluigithub_workbench_resultspy">(module level)
+(<code>quill/ui/github_workbench_results.py</code>)</h4>
+<ul>
+<li><code>results</code>: One line per item: Done, Skipped because it
+was already so, or Failed and why. The last line is the totals.</li>
+<li><code>copy</code>: Copy every line as text. Ctrl+C does the
+same.</li>
+<li><code>close</code>: Close the results.</li>
+<li><code>again</code>: Run the failed items again. F8 does the
+same.</li>
+</ul>
+<h4
+id="workflowjobsdialog-quilluigithub_workflow_jobs_dialogpy">WorkflowJobsDialog
+(<code>quill/ui/github_workflow_jobs_dialog.py</code>)</h4>
+<ul>
+<li><code>self._attempt_choice</code>: Which attempt of the run to show,
+when it ran more than once.</li>
+<li><code>self._list</code>: The run’s jobs. Arrow to one to see its
+steps below.</li>
+<li><code>self._detail</code>: The selected item in full, read-only.
+Arrow through it line by line.</li>
+<li><code>self._log_btn</code>: Load the selected job’s log into the box
+below.</li>
+<li><code>self._annotations_btn</code>: Load the errors and warnings the
+selected job reported.</li>
+<li><code>self._open_btn</code>: Open the selected job on GitHub in your
+browser.</li>
+<li><code>self._open_run_btn</code>: Open the whole run on GitHub in
+your browser.</li>
+<li><code>self._digest_btn</code>: Opens a read-only text of every
+failed job, its failed steps, annotations and the last 40 log lines of
+each failed step.</li>
+<li><code>self._rerequest_btn</code>: Re-requests the selected job’s
+check run. QUILL asks first; needs a signed-in account.</li>
+<li><code>close_btn</code>: Close this window. Escape does the
+same.</li>
+</ul>
+<h4 id="workbenchframe-quilluiworkbench_framepy">WorkbenchFrame
+(<code>quill/ui/workbench_frame.py</code>)</h4>
+<ul>
+<li><code>self.tree</code>: Where you are. Arrows move, Right and Left
+open and close a branch, and typing jumps to a name. F6 moves to the
+filter box.</li>
+<li><code>self.list</code>: What is here. Enter does the default action,
+the Applications key lists the rest, and Alt+Enter opens
+Properties.</li>
+<li><code>self.details</code>: The selected row in full, or what this
+view shows and needs.</li>
+</ul>
+<h4
+id="actionlistdialog-quilluiworkbench_help_dialogspy">ActionListDialog
+(<code>quill/ui/workbench_help_dialogs.py</code>)</h4>
+<ul>
+<li><code>self.list</code>: Arrow to an action and press Enter to do it.
+A greyed one says why it cannot be done here.</li>
+<li><code>self.detail</code>: What the selected action does, and why it
+is greyed if it is.</li>
+<li><code>run</code>: Do the selected action. Enter does the same.</li>
+<li><code>close</code>: Close this list without doing anything. Escape
+does the same.</li>
+</ul>
+<h4 id="helptextdialog-quilluiworkbench_help_dialogspy">HelpTextDialog
+(<code>quill/ui/workbench_help_dialogs.py</code>)</h4>
+<ul>
+<li><code>self.text</code>: Read with the arrow keys. Escape closes
+it.</li>
+<li><code>close</code>: Close this window. Escape does the same.</li>
+</ul>
+<h4
+id="searchhelpdialog-quilluiworkbench_help_dialogspy">SearchHelpDialog
+(<code>quill/ui/workbench_help_dialogs.py</code>)</h4>
+<ul>
+<li><code>self.box</code>: Type a few words, such as who can merge or
+re-run. The results below narrow as you type; Enter moves to them.</li>
+<li><code>self.results</code>: Each result says what it is: a place, a
+command with its key, a GitHub word or a task. Enter goes there, runs it
+or reads it.</li>
+<li><code>go</code>: Do the selected result. Enter does the same.</li>
+<li><code>close</code>: Close Search Help. Escape does the same.</li>
+</ul>
+<h4
+id="workbenchpropertiesdialog-quilluiworkbench_properties_dialogpy">WorkbenchPropertiesDialog
+(<code>quill/ui/workbench_properties_dialog.py</code>)</h4>
+<ul>
+<li><code>self.notebook</code>: The sheet’s pages. Ctrl+Tab moves to the
+next page.</li>
+<li><code>copy_button</code>: Copy every page of this sheet as plain
+text.</li>
+<li><code>close_button</code>: Close the sheet. Escape does the
+same.</li>
+</ul>
+<h4
+id="propertiessheet-quilluiworkbench_properties_sheetpy">PropertiesSheet
+(<code>quill/ui/workbench_properties_sheet.py</code>)</h4>
+<ul>
+<li><code>self.dialog</code>: Everything about it on one sheet. Ctrl+Tab
+moves between pages, Ctrl+1 to Ctrl+9 jump to one; OK saves and closes,
+Ctrl+S saves and stays, F5 reloads.</li>
+<li><code>self.notebook</code>: The sheet’s pages. Ctrl+Tab moves to the
+next page.</li>
+<li><code>self.status</code>: When the sheet was loaded from GitHub, and
+what the last save did.</li>
+<li><code>cancel</code>: Close the sheet without saving. Escape does the
+same.</li>
+<li><code>ok</code>: Save what you changed and close the sheet.
+Ctrl+Enter too.</li>
+<li><code>apply</code>: Save what you changed and keep the sheet open.
+Ctrl+S too.</li>
+</ul>
+<h4
+id="workbenchsheeteditor-quilluiworkbench_sheet_editorpy">WorkbenchSheetEditor
+(<code>quill/ui/workbench_sheet_editor.py</code>)</h4>
+<ul>
+<li><code>self.dialog</code>: Everything about it on one sheet. Ctrl+Tab
+moves between pages; OK saves and closes, Apply saves and stays.</li>
+<li><code>self.notebook</code>: The sheet’s pages. Ctrl+Tab moves to the
+next page.</li>
+<li><code>copy_button</code>: Copy every page of this sheet as plain
+text.</li>
+<li><code>cancel</code>: Close the sheet without saving. Escape does the
+same.</li>
+<li><code>ok</code>: Save what you changed and close the sheet.</li>
+<li><code>apply</code>: Save what you changed and keep the sheet
+open.</li>
+</ul>
+<h4
+id="workbenchstatusbar-quilluiworkbench_status_barpy">WorkbenchStatusBar
+(<code>quill/ui/workbench_status_bar.py</code>)</h4>
+<ul>
+<li><code>self.panel</code>: F6 reaches the status bar; arrows move
+across its cells.</li>
+</ul>
 <h2 id="quill-lite">QUILL Lite</h2>
 <p>Control coverage: 297 audited sites (297 helped).</p>
-<h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
+<h3 id="every-window-and-what-it-is-for-10">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
 rewrite, proofread or explain the passage shown here, or to answer a
@@ -6138,7 +7735,7 @@ on. Escape returns you to it.</p>
 <p><strong>Windows titled “Key for …”.</strong> Press the key
 combination you want, and it appears in the box. Pressing another
 replaces it. Escape leaves the command on the key it has now.</p>
-<h3 id="every-authored-control-help-sentence-9">Every authored control
+<h3 id="every-authored-control-help-sentence-10">Every authored control
 help sentence</h3>
 <h4 id="module-level-quillappslite_dialogspy">(module level)
 (<code>quill/apps/lite_dialogs.py</code>)</h4>

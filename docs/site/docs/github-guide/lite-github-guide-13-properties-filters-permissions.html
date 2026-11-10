@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 13: Properties, filters and permissions</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-13-properties-filters-and-permissions">Chapter 13:
+Properties, filters and permissions</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>Everything the GitHub Workbench shows has a Properties sheet, and the
+sheet is where you change it. This chapter covers the sheet, changing
+many things at once, undoing a change, filtering a list on anything, and
+the permissions side: what you are allowed to do, how to get what you
+are missing, and how to manage who else has access.</p>
+<h2 id="properties-altenter-on-anything">Properties: Alt+Enter on
+anything</h2>
+<p>Select a row in the list and press <code>Alt+Enter</code>. A
+Properties sheet opens for it: an issue, a pull request, a repository, a
+label, a milestone, a branch, a release, a workflow run, a person, a
+team, a gist, an alert, and the rest. <strong>Item &gt;
+Properties…</strong> and the last row of every context menu open the
+same sheet. In the tree, <code>Alt+Enter</code> on a repository opens
+the repository’s own sheet.</p>
+<p>The sheet is a set of pages. The first is always General.</p>
+<ul>
+<li><code>Ctrl+Tab</code> and <code>Ctrl+Shift+Tab</code> move between
+pages, and <code>Ctrl+1</code> to <code>Ctrl+9</code> jump to one.</li>
+<li>Every fact is a box you can Tab to and read, even the ones you
+cannot change, so a braille display can pan through them. Dates are
+written out.</li>
+<li><code>F5</code> loads it again from GitHub.
+<code>Ctrl+Shift+C</code> copies the whole sheet as text, and the Copy
+Link and Open on GitHub buttons do what they say.</li>
+</ul>
+<p>The sheet remembers the page you used last for each kind of thing. If
+you set milestones all morning, the next issue’s sheet opens on
+Organize.</p>
+<h3 id="changing-things">Changing things</h3>
+<p>A field you are allowed to change is an ordinary control. A field you
+are not allowed to change is read-only, and the line under it says why,
+for example “changing this needs triage access to owner/name; you have
+read access”, and who can change that. <code>F1</code> on the field says
+the same.</p>
+<ul>
+<li>Labels, assignees, reviewers and your reactions are lists of check
+boxes. Space checks or clears one.</li>
+<li>New Label… and New Milestone… beside their lists make a new one on
+GitHub and check it straight away.</li>
+<li><strong>OK</strong> saves and closes. <strong>Apply</strong>, or
+<code>Ctrl+S</code>, saves and keeps the sheet open.
+<code>Ctrl+Enter</code> is OK from anywhere, even in a long text box.
+Escape is Cancel.</li>
+</ul>
+<p>The menus still name the common changes. <strong>Item &gt;
+Labels…</strong>, <strong>Assignees…</strong> and
+<strong>Milestone…</strong> open the sheet at the right page. There are
+no separate keys for single properties: <code>Alt+Enter</code>, then the
+page.</p>
+<h3 id="saving-safely">Saving safely</h3>
+<ul>
+<li><strong>If somebody else changed it meanwhile,</strong> the sheet
+says so before anything is sent: “Changed on GitHub since you opened
+this: milestone is now 2027.2.” For each such field you choose Keep
+Theirs or Use Mine.</li>
+<li><strong>Only what really changed is reported.</strong> After saving,
+the Workbench reads the object again and says one sentence about what
+changed: “Issue #42: added bug, removed docs.” GitHub sometimes accepts
+a change it then ignores, usually because of access; when that happens
+the sentence names the field.</li>
+<li><strong>Access and settings are previewed.</strong> A change to who
+has access, or to a repository setting, is read back to you in words
+first, and Enter goes ahead. Anything hard to reverse, such as making a
+private repository public, also asks you to type its name.</li>
+</ul>
+<h2 id="many-at-once">Many at once</h2>
+<p>Select several rows (Shift and Ctrl with the arrows, or
+<code>Ctrl+A</code>) and press <code>Alt+Enter</code>. One sheet opens
+for all of them, titled “Properties of 5 issues”.</p>
+<ul>
+<li>A field that is the same on all of them shows its value. One that
+differs says Mixed and is left alone unless you change it.</li>
+<li>A label on some of them is a check box in its third state, read as
+“bug, on 3 of 5”. Check it to put it on all of them, clear it to take it
+off all of them, or leave it.</li>
+<li>You hear a preview first: “Change 14 issues: add bug, remove triage.
+3 of them already have bug.” Enter goes ahead.</li>
+<li>Then a list of results, one line per item: Done, Skipped because it
+was already so, or Failed and why. Copy Results copies them, and Retry
+Failed (<code>F8</code>) runs the failed ones again.</li>
+</ul>
+<p>Batches pause a second between items, because GitHub limits how
+quickly one account may make changes.</p>
+<h2 id="undoing-a-change">Undoing a change</h2>
+<p><code>Ctrl+Z</code> in the list or the tree undoes your last change
+on GitHub, where GitHub allows it, and <code>Ctrl+Y</code> makes it
+again. In a text box they undo and redo your typing as usual. The same
+commands are <strong>Edit &gt; Undo GitHub Change</strong> and
+<strong>Redo GitHub Change</strong>.</p>
+<p><strong>Account &gt; Change History…</strong>
+(<code>Ctrl+Shift+H</code>) lists every change the Workbench has made,
+newest first: what, when, before and after, and whether GitHub confirmed
+it. Undo This Change reverses the selected one. You can save the list as
+a CSV file or clear it. It stays on this computer for 90 days, and a
+secret’s value is never in it.</p>
+<h2 id="filtering">Filtering</h2>
+<p>The filter box (<code>Ctrl+E</code>) takes plain words, which narrow
+the loaded list, and GitHub’s own search terms such as
+<code>label:bug</code> or <code>no:milestone</code>, which ask GitHub.
+Three other ways write into the same box.</p>
+<ul>
+<li><strong>View &gt; Quick Filters:</strong> Assigned to Me, Assigned
+To…, Opened by Me, Opened By…, Mentions Me, Review Requested from Me,
+Reviewed by Me, No Assignee, No Milestone, No Label, No Project, No
+Type, Drafts, Has Conflicts, Checks Failing and Updated This Week. Each
+one is checked while it is on, they combine, and the window title names
+them. Clear These Filters turns them all off.</li>
+<li><strong>Show Only and Hide:</strong> the context menu of a row has
+both, with every value in that row: “label bug”, “author
+dependabot”.</li>
+<li><strong>The Filter Builder,</strong> <code>Ctrl+Alt+F</code>: choose
+an attribute, an operator and a value, then Add Condition
+(<code>Insert</code>). The values come from the repository, and Me is
+offered for every person. The query appears as you go, so you learn
+GitHub’s syntax by watching it. OK puts it in the filter box; Save as
+Search also keeps it under Saved Searches.</li>
+</ul>
+<p>Has Conflicts is the one GitHub’s search cannot answer, so the
+Workbench checks the pull requests already loaded and the Items cell of
+the status bar says so. <strong>View &gt; Load All</strong>
+(<code>Ctrl+Shift+Page Down</code>) loads every page to be sure.</p>
+<h3 id="shaping-the-list">Shaping the list</h3>
+<ul>
+<li><strong>View &gt; Show</strong> chooses issues, pull requests or
+both, and <strong>View &gt; Open or Closed</strong> which ones.</li>
+<li><strong>View &gt; Sort By</strong> orders the list, and <strong>View
+&gt; Columns…</strong> (<code>Ctrl+Shift+U</code>) chooses its
+columns.</li>
+<li><strong>View &gt; Group By</strong> puts the groups in the tree as
+nodes: by label, milestone, assignee, author, type, state, repository or
+review state. Each node reads with its count, and selecting it shows
+that group.</li>
+<li><strong>Go &gt; Next Unread</strong> (<code>Ctrl+Period</code>) and
+<strong>Previous Unread</strong> (<code>Ctrl+Shift+Period</code>) move
+between unread notifications. Go also has submenus for your pinned
+repositories, favorites and saved searches.</li>
+</ul>
+<h2 id="permissions">Permissions</h2>
+<h3 id="yours">Yours</h3>
+<p><strong>Account &gt; GitHub Permissions…</strong>
+(<code>Ctrl+Shift+P</code>) lists every permission the Workbench can
+use, what it unlocks, and whether you have it, such as “project: set an
+item’s projects and edit project fields. You do not have it.”</p>
+<ul>
+<li><strong>Add Permissions…</strong> asks for every missing one the
+next time you sign in with GitHub, so you approve once on GitHub’s
+page.</li>
+<li><strong>Copy Command</strong> copies the
+<code>gh auth refresh</code> command that adds them for the GitHub
+command-line tool.</li>
+<li><strong>Classic Token Page</strong> opens GitHub’s new-token page
+with the scopes listed, and <strong>Fine-grained Steps</strong> copies
+what to set on a fine-grained token, by GitHub’s own names.</li>
+<li><strong>Check Again</strong> reads your permissions again and says
+what changed.</li>
+</ul>
+<p>A fine-grained token does not tell anyone its permissions, so for one
+of those the list says “This token’s permissions are set on GitHub”
+rather than guessing.</p>
+<h3 id="read-only-organize-or-full">Read Only, Organize or Full</h3>
+<p><strong>Account &gt; Roles and Access &gt; Workbench Level for This
+Account…</strong> sets what the Workbench may change with an account,
+whatever GitHub would allow. Read Only changes nothing, which suits
+demonstrating or looking around someone else’s organization. Organize
+allows labels, assignees, comments and the like, but not access,
+settings or deleting. Full allows everything your access allows. Safe
+Mode makes every account Read Only.</p>
+<h3 id="who-else-has-access">Who else has access</h3>
+<p>A repository’s sheet has an Access page: the people with access, the
+teams, and pending invitations. Select a row and use Add…, Change… or
+Remove (<code>Insert</code>, <code>F2</code> and <code>Delete</code>
+work too). Each change is read back to you first, and recorded in Change
+History. The Workbench refuses to remove your own admin access or the
+last owner, and says who else could do it. Organization and team sheets
+work the same way for members and maintainers.</p>
+<p><strong>Account &gt; Roles and Access</strong> also has:</p>
+<ul>
+<li><strong>My Access Here…</strong>, your role on this repository and
+where it comes from;</li>
+<li><strong>View As Role…</strong> and <strong>Compare Roles…</strong>,
+what a role may do, read-only;</li>
+<li><strong>Why Can’t They?…</strong>, what stops a person doing
+something, and who can change it;</li>
+<li><strong>Access Review…</strong>, every person and repository pair in
+an organization with their role, copied as CSV too;</li>
+<li><strong>Bulk Access Changes…</strong>, one team or person on many
+repositories at once, previewed, with a result per change.</li>
+</ul>
+<h3 id="rules-in-plain-words">Rules in plain words</h3>
+<p>A ruleset’s sheet, and a branch’s protection, list every rule as a
+check box with its settings, and a Summary page reads the whole thing as
+sentences: “On the default branch: changes need a pull request with 2
+approvals including a code owner; checks build and test must pass; force
+pushes are blocked.” Read that page first.</p>
+<hr />
+<ul>
+<li>Previous: <a href="lite-github-guide-12-the-workbench.html">Chapter
+12: The GitHub Workbench, place by place</a></li>
+<li><a href="github-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

@@ -560,6 +560,7 @@ Everything below is generated from the tables the window is built from. The wind
 | People (`:people`) | the top | People: who you follow, who follows you, and anybody you look up. |
 | People I Follow (`:following`) | people | People I Follow: accounts you follow. Enter opens a person's node. |
 | My Followers (`:followers`) | people | My Followers: accounts that follow you. |
+| My Teams (`:my_teams`) | people | My Teams: every team you belong to, across your organizations. Alt+Enter opens a team's sheet. |
 | Find a Person... (`:find_person`) | people | Find a Person: type a login with Ctrl+L, and the person gets a node of their own here. |
 | Gists (`:gists`) | the top | Gists: small shared files and snippets. |
 | My Gists (`:my_gists`) | gists | My Gists: gists you made. Enter edits one. |
@@ -618,6 +619,7 @@ Everything below is generated from the tables the window is built from. The wind
 | Following (`person:person_following`) | person, person | Following: who this person follows. |
 | organization (`organization:organization`) | organization | An organization: its repositories. |
 | Repositories (`organization:organization_repositories`) | organization, organization | Repositories: the organization's repositories you can see. |
+| Teams (`organization:organization_teams`) | organization, organization | Teams: the organization's teams, as GitHub nests them. Alt+Enter opens a team's sheet: its members and maintainers, repositories and roles, child teams and code review assignment. |
 
 ### The menu bar and its keys
 
@@ -637,10 +639,12 @@ Everything below is generated from the tables the window is built from. The wind
 
 | Row | Key | What it does |
 | --- | --- | --- |
+| Undo GitHub Change | Ctrl+Z | Reverse your last change on GitHub, where GitHub allows it. In a text box, Ctrl+Z undoes your typing instead. |
+| Redo GitHub Change | Ctrl+Y | Make the change you just undid again. |
 | Copy | Ctrl+C | Copy the selected rows as text; in a text box, its own selection. |
 | Copy Link | Ctrl+Shift+C | Copy the selected row's address. |
 | Filter... | Ctrl+E | Move to the filter box. Ctrl+Shift+F too. |
-| Filter Builder... | Ctrl+Alt+F | Build a filter one condition at a time. Coming in a later release. |
+| Filter Builder... | Ctrl+Alt+F | Build a filter one condition at a time: every attribute, an operator and a value from the repository, written into the filter box as GitHub's syntax. |
 | Select All | Ctrl+A | Select every row in the list; in a text box, all its text. |
 
 #### View
@@ -650,6 +654,47 @@ Everything below is generated from the tables the window is built from. The wind
 | Refresh | F5 | Load this view again from GitHub. |
 | Refresh Ignoring Cache | Ctrl+F5 | Load this view again, asking GitHub for everything afresh. |
 | Load More | Alt+PageDown | Load the next page of rows, if GitHub has more. |
+| Load All | Ctrl+Shift+PageDown | Load every page, so a filter over the loaded rows is sure to see everything. |
+| Show > Issues | (submenu letter) | Show issues here. |
+| Show > Pull Requests | (submenu letter) | Show pull requests here. |
+| Show > Both | (submenu letter) | Show both here. |
+| Open or Closed > Open | (submenu letter) | Show open items. |
+| Open or Closed > Closed | (submenu letter) | Show closed items. |
+| Open or Closed > All | (submenu letter) | Show all items. |
+| Sort By > Newest First | (submenu letter) | Order the list this way. |
+| Sort By > Oldest First | (submenu letter) | Order the list this way. |
+| Sort By > Title, A to Z | (submenu letter) | Order the list this way. |
+| Sort By > Title, Z to A | (submenu letter) | Order the list this way. |
+| Sort By > Recently Updated | (submenu letter) | Order the list this way. |
+| Sort By > Least Recently Updated | (submenu letter) | Order the list this way. |
+| Sort By > Most Comments | (submenu letter) | Order the list this way. |
+| Quick Filters > Assigned to Me | (submenu letter) | Show only items assigned to me. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > Assigned To... | (submenu letter) | Show only items assigned to someone you name. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > Opened by Me | (submenu letter) | Show only items opened by me. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > Opened By... | (submenu letter) | Show only items opened by someone you name. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > Mentions Me | (submenu letter) | Show only items mentions me. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > Review Requested from Me | (submenu letter) | Show only items review requested from me. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > Reviewed by Me | (submenu letter) | Show only items reviewed by me. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > No Assignee | (submenu letter) | Show only items no assignee. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > No Milestone | (submenu letter) | Show only items no milestone. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > No Label | (submenu letter) | Show only items no label. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > No Project | (submenu letter) | Show only items no project. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > No Type | (submenu letter) | Show only items no type. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > Drafts | (submenu letter) | Show only items drafts. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > Has Conflicts | (submenu letter) | Show only items has conflicts. Checked when it is on; it combines with the others and with what you type in the filter box. Filtered over the loaded rows: Load All to be sure. |
+| Quick Filters > Checks Failing | (submenu letter) | Show only items checks failing. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > Updated This Week | (submenu letter) | Show only items updated this week. Checked when it is on; it combines with the others and with what you type in the filter box. |
+| Quick Filters > Clear These Filters | (submenu letter) | Turn every quick filter off. |
+| Group By > No Grouping | (submenu letter) | A flat list again. |
+| Group By > Label | (submenu letter) | Put the list's groups in the tree, one node per label. |
+| Group By > Milestone | (submenu letter) | Put the list's groups in the tree, one node per milestone. |
+| Group By > Assignee | (submenu letter) | Put the list's groups in the tree, one node per assignee. |
+| Group By > Author | (submenu letter) | Put the list's groups in the tree, one node per author. |
+| Group By > Type | (submenu letter) | Put the list's groups in the tree, one node per type. |
+| Group By > State | (submenu letter) | Put the list's groups in the tree, one node per state. |
+| Group By > Repository | (submenu letter) | Put the list's groups in the tree, one node per repository. |
+| Group By > Review State | (submenu letter) | Put the list's groups in the tree, one node per review state. |
+| Columns... | Ctrl+Shift+U | Choose which columns this list shows, and their order. |
 | Back | Alt+Left | The view you were on before. Backspace too. |
 | Forward | Alt+Right | The view you went back from. |
 | Next Pane | F6 | Tree, filter, list, details, status bar. |
@@ -689,6 +734,11 @@ Everything below is generated from the tables the window is built from. The wind
 | Settings | Ctrl+Shift+9 | Its settings. |
 | Insights | Ctrl+Shift+0 | Its traffic and community profile. |
 | Parent Node | Alt+Up | The node above this one in the tree. |
+| Next Unread | Ctrl+. | Move to the next unread row in this list. |
+| Previous Unread | Ctrl+Shift+. | Move to the previous unread row in this list. |
+| Pinned | (submenu letter) | Your pinned repositories; Enter goes there. |
+| Favorites | (submenu letter) | Your favorite items; Enter opens one. |
+| Run a Saved Search | (submenu letter) | Your saved searches; Enter runs one under Search. |
 
 #### Item
 
@@ -720,6 +770,15 @@ Everything below is generated from the tables the window is built from. The wind
 | --- | --- | --- |
 | Manage GitHub Accounts... | Ctrl+Shift+K | Add, switch, sign in again or remove GitHub accounts. |
 | GitHub API Rate Limit | Ctrl+Shift+L | How much of the GitHub API is left, and when it resets. |
+| GitHub Permissions... | Ctrl+Shift+P | Every permission the Workbench can use, what it unlocks, whether you have it, and one step to add the missing ones. |
+| Change History... | Ctrl+Shift+H | Every change the Workbench made on GitHub: before and after, and Undo where GitHub allows it. |
+| Roles and Access > My Access Here... | (submenu letter) | Your effective role here, and where each part comes from. |
+| Roles and Access > View As Role... | (submenu letter) | What a role could do here, read-only: nothing you do is sent. |
+| Roles and Access > Compare Roles... | (submenu letter) | Two roles side by side: what one may do that the other may not. |
+| Roles and Access > Why Can't They?... | (submenu letter) | Name a person and an action; hear what stops them and who can fix it. |
+| Roles and Access > Access Review... | (submenu letter) | Every person and repository pair in an organization, with role and source: filterable, exportable as CSV. |
+| Roles and Access > Bulk Access Changes... | (submenu letter) | One team or person, many repositories: previewed, then a result per change. |
+| Roles and Access > Workbench Level for This Account... | (submenu letter) | Read Only, Organize or Full: what the Workbench may change with this account, whatever GitHub would allow. |
 
 #### Tools
 
@@ -781,6 +840,7 @@ Keys the window answers that are not menu rows:
 - **folder**: Open Folder, Open on GitHub; Properties...
 - **milestone**: Find Issues in Milestone, Copy Link, Open on GitHub; Properties...
 - **project**: Open on GitHub, Copy Link; Properties...
+- **team**: Members and Access..., Copy Link, Open on GitHub; Properties...
 - **organization**: Open, Open on GitHub; Properties...
 - **favorite**: Open, Copy Link, Open on GitHub, Add to or Remove from Favorites; Properties...
 - **admin_action**: Open; Properties...

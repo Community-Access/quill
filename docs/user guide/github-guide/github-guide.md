@@ -19,7 +19,7 @@ two differ, a short paragraph starting **In QUILL Lite** says how.
   GitHub refuses, and what to do about each.
 - **Looking up a key?** Chapter 11 has every one, window by window.
 - **Using the GitHub Workbench window?** Chapter 12 walks through it, place
-  by place.
+  by place, and Chapter 13 covers Properties, filters and permissions.
 
 Each chapter is a level 3 heading on this page, so pressing 3 in JAWS or NVDA
 moves from chapter to chapter. Every chapter page starts with its title as a
@@ -163,6 +163,18 @@ each repository's parts, Search, People, the help keys and Workbench Options.
 - [Doing things to what is selected](github-guide-12-the-workbench.html#doing-things-to-what-is-selected)
 - [Help and Learning](github-guide-12-the-workbench.html#help-and-learning)
 - [Workbench Options](github-guide-12-the-workbench.html#workbench-options)
+
+### [Chapter 13: Properties, filters and permissions](github-guide-13-properties-filters-permissions.html)
+
+Alt+Enter on anything: the Properties sheet, changing many things at once,
+undoing a change, filtering a list on anything, and permissions: yours, and
+who else has access.
+
+- [Properties: Alt+Enter on anything](github-guide-13-properties-filters-permissions.html#properties-alt-enter-on-anything)
+- [Many at once](github-guide-13-properties-filters-permissions.html#many-at-once)
+- [Undoing a change](github-guide-13-properties-filters-permissions.html#undoing-a-change)
+- [Filtering](github-guide-13-properties-filters-permissions.html#filtering)
+- [Permissions](github-guide-13-properties-filters-permissions.html#permissions)
 
 ---
 

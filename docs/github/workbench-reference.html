@@ -1547,6 +1547,17 @@ number.</td>
 </thead>
 <tbody>
 <tr>
+<td>Undo GitHub Change</td>
+<td>Ctrl+Z</td>
+<td>Reverse your last change on GitHub, where GitHub allows it. In a
+text box, Ctrl+Z undoes your typing instead.</td>
+</tr>
+<tr>
+<td>Redo GitHub Change</td>
+<td>Ctrl+Y</td>
+<td>Make the change you just undid again.</td>
+</tr>
+<tr>
 <td>Copy</td>
 <td>Ctrl+C</td>
 <td>Copy the selected rows as text; in a text box, its own
@@ -1565,8 +1576,9 @@ selection.</td>
 <tr>
 <td>Filter Builder…</td>
 <td>Ctrl+Alt+F</td>
-<td>Build a filter one condition at a time. Coming in a later
-release.</td>
+<td>Build a filter one condition at a time: every attribute, an operator
+and a value from the repository, written into the filter box as GitHub’s
+syntax.</td>
 </tr>
 <tr>
 <td>Select All</td>
@@ -1599,6 +1611,231 @@ release.</td>
 <td>Load More</td>
 <td>Alt+PageDown</td>
 <td>Load the next page of rows, if GitHub has more.</td>
+</tr>
+<tr>
+<td>Load All</td>
+<td>Ctrl+Shift+PageDown</td>
+<td>Load every page, so a filter over the loaded rows is sure to see
+everything.</td>
+</tr>
+<tr>
+<td>Show &gt; Issues</td>
+<td>(submenu letter)</td>
+<td>Show issues here.</td>
+</tr>
+<tr>
+<td>Show &gt; Pull Requests</td>
+<td>(submenu letter)</td>
+<td>Show pull requests here.</td>
+</tr>
+<tr>
+<td>Show &gt; Both</td>
+<td>(submenu letter)</td>
+<td>Show both here.</td>
+</tr>
+<tr>
+<td>Open or Closed &gt; Open</td>
+<td>(submenu letter)</td>
+<td>Show open items.</td>
+</tr>
+<tr>
+<td>Open or Closed &gt; Closed</td>
+<td>(submenu letter)</td>
+<td>Show closed items.</td>
+</tr>
+<tr>
+<td>Open or Closed &gt; All</td>
+<td>(submenu letter)</td>
+<td>Show all items.</td>
+</tr>
+<tr>
+<td>Sort By &gt; Newest First</td>
+<td>(submenu letter)</td>
+<td>Order the list this way.</td>
+</tr>
+<tr>
+<td>Sort By &gt; Oldest First</td>
+<td>(submenu letter)</td>
+<td>Order the list this way.</td>
+</tr>
+<tr>
+<td>Sort By &gt; Title, A to Z</td>
+<td>(submenu letter)</td>
+<td>Order the list this way.</td>
+</tr>
+<tr>
+<td>Sort By &gt; Title, Z to A</td>
+<td>(submenu letter)</td>
+<td>Order the list this way.</td>
+</tr>
+<tr>
+<td>Sort By &gt; Recently Updated</td>
+<td>(submenu letter)</td>
+<td>Order the list this way.</td>
+</tr>
+<tr>
+<td>Sort By &gt; Least Recently Updated</td>
+<td>(submenu letter)</td>
+<td>Order the list this way.</td>
+</tr>
+<tr>
+<td>Sort By &gt; Most Comments</td>
+<td>(submenu letter)</td>
+<td>Order the list this way.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; Assigned to Me</td>
+<td>(submenu letter)</td>
+<td>Show only items assigned to me. Checked when it is on; it combines
+with the others and with what you type in the filter box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; Assigned To…</td>
+<td>(submenu letter)</td>
+<td>Show only items assigned to someone you name. Checked when it is on;
+it combines with the others and with what you type in the filter
+box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; Opened by Me</td>
+<td>(submenu letter)</td>
+<td>Show only items opened by me. Checked when it is on; it combines
+with the others and with what you type in the filter box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; Opened By…</td>
+<td>(submenu letter)</td>
+<td>Show only items opened by someone you name. Checked when it is on;
+it combines with the others and with what you type in the filter
+box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; Mentions Me</td>
+<td>(submenu letter)</td>
+<td>Show only items mentions me. Checked when it is on; it combines with
+the others and with what you type in the filter box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; Review Requested from Me</td>
+<td>(submenu letter)</td>
+<td>Show only items review requested from me. Checked when it is on; it
+combines with the others and with what you type in the filter box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; Reviewed by Me</td>
+<td>(submenu letter)</td>
+<td>Show only items reviewed by me. Checked when it is on; it combines
+with the others and with what you type in the filter box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; No Assignee</td>
+<td>(submenu letter)</td>
+<td>Show only items no assignee. Checked when it is on; it combines with
+the others and with what you type in the filter box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; No Milestone</td>
+<td>(submenu letter)</td>
+<td>Show only items no milestone. Checked when it is on; it combines
+with the others and with what you type in the filter box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; No Label</td>
+<td>(submenu letter)</td>
+<td>Show only items no label. Checked when it is on; it combines with
+the others and with what you type in the filter box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; No Project</td>
+<td>(submenu letter)</td>
+<td>Show only items no project. Checked when it is on; it combines with
+the others and with what you type in the filter box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; No Type</td>
+<td>(submenu letter)</td>
+<td>Show only items no type. Checked when it is on; it combines with the
+others and with what you type in the filter box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; Drafts</td>
+<td>(submenu letter)</td>
+<td>Show only items drafts. Checked when it is on; it combines with the
+others and with what you type in the filter box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; Has Conflicts</td>
+<td>(submenu letter)</td>
+<td>Show only items has conflicts. Checked when it is on; it combines
+with the others and with what you type in the filter box. Filtered over
+the loaded rows: Load All to be sure.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; Checks Failing</td>
+<td>(submenu letter)</td>
+<td>Show only items checks failing. Checked when it is on; it combines
+with the others and with what you type in the filter box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; Updated This Week</td>
+<td>(submenu letter)</td>
+<td>Show only items updated this week. Checked when it is on; it
+combines with the others and with what you type in the filter box.</td>
+</tr>
+<tr>
+<td>Quick Filters &gt; Clear These Filters</td>
+<td>(submenu letter)</td>
+<td>Turn every quick filter off.</td>
+</tr>
+<tr>
+<td>Group By &gt; No Grouping</td>
+<td>(submenu letter)</td>
+<td>A flat list again.</td>
+</tr>
+<tr>
+<td>Group By &gt; Label</td>
+<td>(submenu letter)</td>
+<td>Put the list’s groups in the tree, one node per label.</td>
+</tr>
+<tr>
+<td>Group By &gt; Milestone</td>
+<td>(submenu letter)</td>
+<td>Put the list’s groups in the tree, one node per milestone.</td>
+</tr>
+<tr>
+<td>Group By &gt; Assignee</td>
+<td>(submenu letter)</td>
+<td>Put the list’s groups in the tree, one node per assignee.</td>
+</tr>
+<tr>
+<td>Group By &gt; Author</td>
+<td>(submenu letter)</td>
+<td>Put the list’s groups in the tree, one node per author.</td>
+</tr>
+<tr>
+<td>Group By &gt; Type</td>
+<td>(submenu letter)</td>
+<td>Put the list’s groups in the tree, one node per type.</td>
+</tr>
+<tr>
+<td>Group By &gt; State</td>
+<td>(submenu letter)</td>
+<td>Put the list’s groups in the tree, one node per state.</td>
+</tr>
+<tr>
+<td>Group By &gt; Repository</td>
+<td>(submenu letter)</td>
+<td>Put the list’s groups in the tree, one node per repository.</td>
+</tr>
+<tr>
+<td>Group By &gt; Review State</td>
+<td>(submenu letter)</td>
+<td>Put the list’s groups in the tree, one node per review state.</td>
+</tr>
+<tr>
+<td>Columns…</td>
+<td>Ctrl+Shift+U</td>
+<td>Choose which columns this list shows, and their order.</td>
 </tr>
 <tr>
 <td>Back</td>
@@ -1782,6 +2019,31 @@ release.</td>
 <td>Alt+Up</td>
 <td>The node above this one in the tree.</td>
 </tr>
+<tr>
+<td>Next Unread</td>
+<td>Ctrl+.</td>
+<td>Move to the next unread row in this list.</td>
+</tr>
+<tr>
+<td>Previous Unread</td>
+<td>Ctrl+Shift+.</td>
+<td>Move to the previous unread row in this list.</td>
+</tr>
+<tr>
+<td>Pinned</td>
+<td>(submenu letter)</td>
+<td>Your pinned repositories; Enter goes there.</td>
+</tr>
+<tr>
+<td>Favorites</td>
+<td>(submenu letter)</td>
+<td>Your favorite items; Enter opens one.</td>
+</tr>
+<tr>
+<td>Run a Saved Search</td>
+<td>(submenu letter)</td>
+<td>Your saved searches; Enter runs one under Search.</td>
+</tr>
 </tbody>
 </table>
 <h4 id="item">Item</h4>
@@ -1901,6 +2163,57 @@ from.</td>
 <td>GitHub API Rate Limit</td>
 <td>Ctrl+Shift+L</td>
 <td>How much of the GitHub API is left, and when it resets.</td>
+</tr>
+<tr>
+<td>GitHub Permissions…</td>
+<td>Ctrl+Shift+P</td>
+<td>Every permission the Workbench can use, what it unlocks, whether you
+have it, and one step to add the missing ones.</td>
+</tr>
+<tr>
+<td>Change History…</td>
+<td>Ctrl+Shift+H</td>
+<td>Every change the Workbench made on GitHub: before and after, and
+Undo where GitHub allows it.</td>
+</tr>
+<tr>
+<td>Roles and Access &gt; My Access Here…</td>
+<td>(submenu letter)</td>
+<td>Your effective role here, and where each part comes from.</td>
+</tr>
+<tr>
+<td>Roles and Access &gt; View As Role…</td>
+<td>(submenu letter)</td>
+<td>What a role could do here, read-only: nothing you do is sent.</td>
+</tr>
+<tr>
+<td>Roles and Access &gt; Compare Roles…</td>
+<td>(submenu letter)</td>
+<td>Two roles side by side: what one may do that the other may not.</td>
+</tr>
+<tr>
+<td>Roles and Access &gt; Why Can’t They?…</td>
+<td>(submenu letter)</td>
+<td>Name a person and an action; hear what stops them and who can fix
+it.</td>
+</tr>
+<tr>
+<td>Roles and Access &gt; Access Review…</td>
+<td>(submenu letter)</td>
+<td>Every person and repository pair in an organization, with role and
+source: filterable, exportable as CSV.</td>
+</tr>
+<tr>
+<td>Roles and Access &gt; Bulk Access Changes…</td>
+<td>(submenu letter)</td>
+<td>One team or person, many repositories: previewed, then a result per
+change.</td>
+</tr>
+<tr>
+<td>Roles and Access &gt; Workbench Level for This Account…</td>
+<td>(submenu letter)</td>
+<td>Read Only, Organize or Full: what the Workbench may change with this
+account, whatever GitHub would allow.</td>
 </tr>
 </tbody>
 </table>
