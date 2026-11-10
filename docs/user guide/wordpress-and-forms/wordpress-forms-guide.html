@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>WordPress and Forms in QUILL and QUILL Lite</title>
+  <title>wordpress-forms-guide</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -180,74 +180,14 @@
       vertical-align: middle;
     }
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* The skip link above targets main, and a focusable main needs a ring for
-       the sighted keyboard user. These pages load no external stylesheet, so it
-       has to be inline; the colour is the site theme's --focus, hardcoded
-       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
-       makes main the click-focus target for every paragraph inside it, so
-       :focus would box the whole page on any ordinary click. The offset is inset
-       because main is full-bleed and an outset ring gets clipped into two
-       vertical lines. */
-    main[tabindex="-1"]:focus-visible {
-      outline: 3px solid #b8540a;
-      outline-offset: -3px;
-    }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-    /* Pandoc's own styles.html partial, injected near the top of this template,
-       ships `table { display: block; overflow-x: auto; }`. display: block takes
-       the table role out of the accessibility tree in Blink and Gecko, and the
-       row and cell roles go with it, so every rendered table reads as a flat run
-       of words -- 62 of them in QUILL Lite's user guide alone, all of them
-       keyboard reference tables, on a site whose readers are overwhelmingly
-       screen-reader users. Restoring display: table is not a preference.
-
-       The scroll affordance it was there for is given up rather than moved,
-       because Pandoc emits a bare table with no wrapper element to hang overflow
-       on -- the wrapper pattern compare.html uses is not available here. So the
-       exchange is a certain and total loss of table semantics against a possible
-       sideways page scroll on the widest tables, and the cells are taught to
-       break so that stays possible rather than likely.
-
-       This override also covers the governance pages built by
-       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
-       version nobody pins -- whatever styles.html that ships, this wins. */
-    table {
-      display: table;
-      overflow-x: visible;
-    }
-    table th,
-    table td {
-      overflow-wrap: break-word;
-      word-break: break-word;
-    }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content" tabindex="-1">
 <h1 id="wordpress-and-forms-in-quill-and-quill-lite">WordPress and Forms
 in QUILL and QUILL Lite</h1>
 <p>This is the manual for two things QUILL and QUILL Lite share: looking
 after WordPress websites, and writing accessible forms. Everything in it
 works the same way in both editors. It is a book of its own, beside each
-editor’s user guide, because there is a lot to say and you may only need
+editor's user guide, because there is a lot to say and you may only need
 part of it.</p>
 <h2 id="how-to-read-this-manual">How to read this manual</h2>
 <ul>
@@ -255,19 +195,20 @@ part of it.</p>
 They take you from nothing to a published post. Then dip into the rest
 as you need it.</li>
 <li><strong>Only want forms?</strong> Start at Chapter 8. Chapter 9
-covers putting a form on a site, which needs Chapter 1’s connection
+covers putting a form on a site, which needs Chapter 1's connection
 first.</li>
-<li><strong>Looking something up?</strong> Chapter 13 describes every
-window, field and button, and Appendix A lists every WordPress feature
-QUILL uses and what your site needs for each.</li>
+<li><strong>Looking something up?</strong> Chapter 13 describes the
+WordPress Workbench and its supported plugin integrations. Appendix A
+lists the WordPress features QUILL uses and what your site needs for
+each.</li>
 <li><strong>Something went wrong?</strong> Chapter 11 has the sentences
 QUILL says when something fails, and what to do about each.</li>
 </ul>
-<p>Every chapter starts with a short “what this chapter covers” and ends
+<p>Every chapter starts with a short "what this chapter covers" and ends
 with links to the chapters either side and back to these contents.
-Headings are real headings, so your screen reader’s heading keys move
+Headings are real headings, so your screen reader's heading keys move
 through each chapter.</p>
-<p>Throughout the manual, “Community Radio” stands for your own site’s
+<p>Throughout the manual, "Community Radio" stands for your own site's
 name, which QUILL says in its place. The guided lessons in <strong>Help
 &gt; Tutorials</strong>, in both editors, walk through the commonest
 tasks on a test site, and tell you what you should hear at each
@@ -433,7 +374,7 @@ href="wordpress-forms-04-pictures-and-media.html#captions-transcripts-and-listen
 transcripts and listening versions</a></li>
 <li><a
 href="wordpress-forms-04-pictures-and-media.html#posting-from-quills-other-apps">Posting
-from QUILL’s other apps</a></li>
+from QUILL's other apps</a></li>
 </ul>
 <h3 id="chapter-5-comments-categories-tags-and-menus"><a
 href="wordpress-forms-05-comments-categories-menus.html">Chapter 5:
@@ -485,7 +426,7 @@ accessibility statement</a></li>
 href="wordpress-forms-07-running-your-site.html">Chapter 7: Running your
 site</a></h3>
 <p>Site health and settings, users and passwords, plugins, themes and
-fonts, patterns and widgets, the site’s look, the plugins QUILL works
+fonts, patterns and widgets, the site's look, the plugins QUILL works
 with, and AI abilities.</p>
 <ul>
 <li><a href="wordpress-forms-07-running-your-site.html#site-check">Site
@@ -507,7 +448,7 @@ href="wordpress-forms-07-running-your-site.html#changing-many-pages-at-once">Cha
 many pages at once</a></li>
 <li><a
 href="wordpress-forms-07-running-your-site.html#the-sites-look">The
-site’s look</a></li>
+site's look</a></li>
 <li><a
 href="wordpress-forms-07-running-your-site.html#plugins-quill-works-with">Plugins
 QUILL works with</a></li>
@@ -646,41 +587,29 @@ without a key</a></li>
 <li><a href="wordpress-forms-12-keys.html#keys-inside-the-windows">Keys
 inside the windows</a></li>
 </ul>
-<h3 id="chapter-13-every-window-field-and-button"><a
-href="wordpress-forms-13-window-reference.html">Chapter 13: Every
-window, field and button</a></h3>
-<p>A reference, in menu order: every WordPress window, what each field
-and button does on your site, what you hear, and which roles can use
-it.</p>
+<h3 id="chapter-13-wordpress-workbench-reference"><a
+href="wordpress-forms-13-window-reference.html">Chapter 13: WordPress
+Workbench reference</a></h3>
+<p>The shared workspace for managing sites, content, supported plugins
+and membership data.</p>
 <ul>
 <li><a
-href="wordpress-forms-13-window-reference.html#how-to-read-this-chapter">How
-to read this chapter</a></li>
+href="wordpress-forms-13-window-reference.html#open-the-workbench">Open
+the Workbench</a></li>
+<li><a href="wordpress-forms-13-window-reference.html#move-around">Move
+around</a></li>
 <li><a
-href="wordpress-forms-13-window-reference.html#file--wordpress">File
-&gt; WordPress</a></li>
+href="wordpress-forms-13-window-reference.html#access-and-confirmations">Access
+and confirmations</a></li>
 <li><a
-href="wordpress-forms-13-window-reference.html#edit--wordpress">Edit
-&gt; WordPress</a></li>
+href="wordpress-forms-13-window-reference.html#supported-plugin-integrations">Supported
+plugin integrations</a></li>
 <li><a
-href="wordpress-forms-13-window-reference.html#view">View</a></li>
+href="wordpress-forms-13-window-reference.html#practice-site">Practice
+Site</a></li>
 <li><a
-href="wordpress-forms-13-window-reference.html#insert">Insert</a></li>
-<li><a
-href="wordpress-forms-13-window-reference.html#format--wordpress">Format
-&gt; WordPress</a></li>
-<li><a
-href="wordpress-forms-13-window-reference.html#tools--wordpress-checking">Tools
-&gt; WordPress: checking</a></li>
-<li><a
-href="wordpress-forms-13-window-reference.html#tools--wordpress-pictures-and-media">Tools
-&gt; WordPress: pictures and media</a></li>
-<li><a
-href="wordpress-forms-13-window-reference.html#tools--wordpress-the-sites-content">Tools
-&gt; WordPress: the site’s content</a></li>
-<li><a
-href="wordpress-forms-13-window-reference.html#tools--wordpress--manage">Tools
-&gt; WordPress &gt; Manage</a></li>
+href="wordpress-forms-13-window-reference.html#useful-keys">Useful
+keys</a></li>
 </ul>
 <h3 id="appendix-a-every-wordpress-feature-quill-uses"><a
 href="wordpress-forms-appendix-a-features.html">Appendix A: Every
@@ -690,7 +619,7 @@ key, and what happens on a site that does not offer it.</p>
 <ul>
 <li><a
 href="wordpress-forms-appendix-a-features.html#writing-and-the-sites-content">Writing
-and the site’s content</a></li>
+and the site's content</a></li>
 <li><a
 href="wordpress-forms-appendix-a-features.html#blocks-and-patterns">Blocks
 and patterns</a></li>
@@ -699,7 +628,7 @@ href="wordpress-forms-appendix-a-features.html#pictures-and-media">Pictures
 and media</a></li>
 <li><a
 href="wordpress-forms-appendix-a-features.html#the-sites-look">The
-site’s look</a></li>
+site's look</a></li>
 <li><a
 href="wordpress-forms-appendix-a-features.html#menus-and-widgets">Menus
 and widgets</a></li>
@@ -710,6 +639,5 @@ the site</a></li>
 href="wordpress-forms-appendix-a-features.html#plugins-quill-recognises">Plugins
 QUILL recognises</a></li>
 </ul>
-</main>
 </body>
 </html>

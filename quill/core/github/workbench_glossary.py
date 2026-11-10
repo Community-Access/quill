@@ -284,9 +284,8 @@ _CHAPTER_FOR: dict[str, str] = {
 WHAT_CHANGED: tuple[tuple[str, str], ...] = (
     (
         "One window for GitHub",
-        "GitHub Items and Explore GitHub are now one window, the GitHub Workbench, with "
-        "a tree of places. The classic windows are still there for one release: "
-        "Workbench Options, Use the classic GitHub windows.",
+        "GitHub Items and Explore GitHub are one window, the GitHub Workbench, with "
+        "a tree of places. The old dialogs are retired; every editor door opens here.",
     ),
     (
         "Menus with their keys",

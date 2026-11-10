@@ -34,12 +34,16 @@ from quill.core.wordpress.workbench_edit import (
     set_comment_status,
     trash,
 )
-from quill.core.wordpress.workbench_forms import set_entry_spam
+from quill.core.wordpress.workbench_forms import (
+    set_entry_spam,
+)
 from quill.core.wordpress.workbench_permissions import deactivate_warning
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.wordpress.workbench_tree import DYNAMIC_TAXONOMY, DYNAMIC_TYPE
 from quill.core.workbench.history import Change
 from quill.ui import wordpress_dialogs as dlg
+from quill.ui.wordpress_workbench_gravity_commands import WorkbenchGravityCommands
+from quill.ui.wordpress_workbench_membership_commands import WorkbenchMembershipCommands
 
 __all__ = ["WorkbenchRowCommands"]
 
@@ -50,7 +54,7 @@ def _count(rows: Sequence[object], noun: str) -> str:
     return f"{len(rows)} {noun}{'' if len(rows) == 1 else 's'}"
 
 
-class WorkbenchRowCommands:
+class WorkbenchRowCommands(WorkbenchGravityCommands, WorkbenchMembershipCommands):
     """Open, preview, publish, Trash, delete, moderate and reply."""
 
     frame: Any

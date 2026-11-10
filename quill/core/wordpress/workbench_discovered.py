@@ -69,22 +69,11 @@ CORE_TYPES = frozenset({
 })
 
 _OWNERS: tuple[tuple[str, str], ...] = (
-    ("tribe_", "The Events Calendar"),
-    ("tec_", "The Events Calendar"),
-    ("product", "WooCommerce"),
-    ("shop_", "WooCommerce"),
-    ("pa_", "WooCommerce"),
-    ("elementor", "Elementor"),
-    ("acf", "Advanced Custom Fields"),
-    ("wpcf7", "Contact Form 7"),
+    ("pmpro", "Paid Memberships Pro"),
+    ("gravity", "Gravity Forms"),
+    ("gf", "Gravity Forms"),
     ("qaf", "QUILL Accessible Forms"),
     ("baf", "QUILL Accessible Forms"),
-    ("jetpack", "Jetpack"),
-    ("feedback", "Jetpack"),
-    ("wpseo", "Yoast SEO"),
-    ("yoast", "Yoast SEO"),
-    ("sfwd", "LearnDash"),
-    ("course", "a learning plugin"),
 )
 
 
@@ -98,6 +87,10 @@ def registered_by(slug: str, rest_namespace: str = "wp/v2") -> str:
             return owner
     namespace = (rest_namespace or "wp/v2").strip("/")
     if namespace != "wp/v2":
+        owner = namespace.split("/", 1)[0].lower()
+        for prefix, name in _OWNERS:
+            if owner.startswith(prefix):
+                return name
         return f"the plugin behind {namespace}"
     return "a plugin or the theme"
 

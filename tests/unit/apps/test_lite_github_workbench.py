@@ -41,46 +41,33 @@ class _Host(GitHubWorkbenchLiteMixin):
 
 @pytest.fixture
 def opened(monkeypatch):
-    """Patch the gates and both windows; return the log of what opened, on which view."""
-    # These pin the classic windows (Workbench Options, Use the classic GitHub
-    # windows); the Workbench, the default since Phase 6, is tested elsewhere.
-    monkeypatch.setenv("QUILL_GITHUB_WORKBENCH_WINDOW", "0")
+    """Patch the gates and shared Workbench; return where each door opens."""
     calls: list[object] = []
 
     class _Provider:
         def __init__(self, *, token=None) -> None:
+            self.token = token
             calls.append(("provider", token))
-
-        def close(self) -> None:
-            calls.append("closed")
-
-    class _Items:
-        def __init__(self, _parent, _provider, *, initial_repo="", initial_view="", **_kw):
-            calls.append(("items", initial_repo, initial_view))
-
-        def show(self) -> None:
-            pass
-
-    class _Explore:
-        def __init__(self, _parent, _provider, *, initial_view=None, **_kw) -> None:
-            calls.append(("explore", initial_view))
-
-        def show(self) -> None:
-            pass
 
     monkeypatch.setattr("quill.core.github.github_provider.require_pygithub", lambda: None)
     monkeypatch.setattr("quill.core.github.consent.load_github_consent_complete", lambda: True)
     monkeypatch.setattr("quill.core.github.token_store.load_github_token", lambda: "secret")
     monkeypatch.setattr("quill.core.github.local_repo.detect_github_repo", lambda _p: "owner/repo")
     monkeypatch.setattr("quill.core.github.items_provider.GitHubItemsProvider", _Provider)
-    monkeypatch.setattr("quill.ui.github_items_dialog.GitHubItemsDialog", _Items)
-    monkeypatch.setattr("quill.ui.github_explore_dialog.GitHubExploreDialog", _Explore)
+
+    def open_workbench(_editor, provider, **kwargs):
+        calls.append(("workbench", provider.token, kwargs))
+
+    monkeypatch.setattr("quill.ui.github_workbench_window.open_github_workbench", open_workbench)
     return calls
 
 
-def test_lite_github_workbench_uses_shared_viewer_and_closes_provider(opened) -> None:
+def test_lite_github_workbench_uses_shared_workbench(opened) -> None:
     DocumentToolsMixin.cmd_github_workbench(_Host())
-    assert opened == [("provider", "secret"), ("items", "owner/repo", ""), "closed"]
+    assert opened[0] == ("provider", "secret")
+    assert opened[1][0:2] == ("workbench", "secret")
+    assert opened[1][2]["repository"] == "owner/repo"
+    assert opened[1][2]["node"] == ""
 
 
 def test_lite_github_workbench_refuses_safe_mode_before_network(monkeypatch) -> None:
@@ -98,22 +85,24 @@ def test_lite_github_workbench_refuses_safe_mode_before_network(monkeypatch) -> 
 
 
 @pytest.mark.parametrize(
-    ("press", "expected"),
+    ("press", "node"),
     [
-        (lambda h: h.cmd_github_inbox(), ("explore", "attention")),
-        (lambda h: h.cmd_github_my_work(), ("explore", "my_work")),
-        (lambda h: h.cmd_github_notifications(), ("explore", "notifications")),
-        (lambda h: h.cmd_github_explore(), ("explore", None)),
-        (lambda h: h.cmd_github_issues(), ("items", "owner/repo", "issues")),
-        (lambda h: h.cmd_github_pulls(), ("items", "owner/repo", "issues")),
-        (lambda h: h.cmd_github_actions_runs(), ("items", "owner/repo", "runs")),
-        (lambda h: h.cmd_github_releases(), ("items", "owner/repo", "releases")),
+        (lambda h: h.cmd_github_inbox(), "inbox"),
+        (lambda h: h.cmd_github_my_work(), "attention"),
+        (lambda h: h.cmd_github_notifications(), "notifications"),
+        (lambda h: h.cmd_github_explore(), "search"),
+        (lambda h: h.cmd_github_issues(), "issues"),
+        (lambda h: h.cmd_github_pulls(), "pulls"),
+        (lambda h: h.cmd_github_actions_runs(), "runs"),
+        (lambda h: h.cmd_github_releases(), "releases"),
     ],
 )
-def test_each_github_menu_row_opens_its_view_through_the_one_gate(opened, press, expected) -> None:
+def test_each_github_menu_row_opens_its_node_through_the_one_gate(opened, press, node) -> None:
     host = _Host()
     press(host)
-    assert opened == [("provider", "secret"), expected, "closed"]
+    assert opened[0] == ("provider", "secret")
+    assert opened[1][0:2] == ("workbench", "secret")
+    assert opened[1][2]["node"] == node
     assert host.said == []  # the window's title says it (GATE-13)
 
 
@@ -135,10 +124,8 @@ def test_with_the_workbench_in_use_each_door_opens_its_node(
     opened, monkeypatch, press, node
 ) -> None:
     """GitHub PRD section 6: old and new command ids alike open the Workbench there."""
-    from quill.core.github.workbench_flag import ENV_VAR
     from quill.core.github.workbench_tree import GITHUB_TREE
 
-    monkeypatch.setenv(ENV_VAR, "1")
     seen: list[dict[str, object]] = []
     monkeypatch.setattr(
         "quill.ui.github_workbench_window.open_github_workbench",

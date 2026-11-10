@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -51,6 +52,16 @@ class Ability:
     readonly: bool = False
     destructive: bool = False
     input_schema: dict[str, Any] = field(default_factory=dict)
+    idempotent: bool = False
+
+    @property
+    def run_method(self) -> str:
+        """The Abilities REST method implied by WordPress's annotations."""
+        if self.readonly:
+            return "GET"
+        if self.destructive and self.idempotent:
+            return "DELETE"
+        return "POST"
 
     def spoken(self, on: bool) -> str:
         kind = "changes nothing" if self.readonly else "can change the site"
@@ -83,6 +94,7 @@ def ability_from(raw: Any) -> Ability | None:
         readonly=bool(notes.get("readonly", False)),
         destructive=bool(notes.get("destructive", False)),
         input_schema=dict(schema or {}),
+        idempotent=bool(notes.get("idempotent", False)),
     )
 
 
@@ -92,11 +104,25 @@ def list_abilities(api: WordPressApi) -> list[Ability]:
 
 
 def run_ability(api: WordPressApi, ability: Ability, given: dict[str, Any]) -> Any:
-    """Run one ability. A read-only one is a GET, the rest a POST (the API's rule)."""
+    """Run one ability using its annotated method and bracketed query input."""
     route = f"{NAMESPACE}/abilities/{ability.name}/run"
-    if ability.readonly:
-        params = {"input": json.dumps(given)} if given else {}
-        return api.request("GET", route, params=params).payload
+    method = ability.run_method
+    if method in ("GET", "DELETE"):
+        params: dict[str, Any] = {}
+
+        def flatten(value: Any, key: str) -> None:
+            if isinstance(value, Mapping):
+                for name, child in value.items():
+                    flatten(child, f"{key}[{name}]")
+            elif isinstance(value, (list, tuple)):
+                for index, child in enumerate(value):
+                    flatten(child, f"{key}[{index}]")
+            else:
+                params[key] = value
+
+        for name, value in given.items():
+            flatten(value, f"input[{name}]")
+        return api.request(method, route, params=params).payload
     return api.post(route, {"input": given} if given else {})
 
 

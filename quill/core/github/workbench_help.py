@@ -20,7 +20,6 @@ from quill.core.github.workbench_glossary import (
     WHAT_CHANGED,
 )
 from quill.core.github.workbench_help_text import (
-    _CLASSIC_WORDS,
     _EMPTY,
     CHOICE_WORDS,
     NODE_HELP,
@@ -125,18 +124,9 @@ def explain_result(text: str) -> str:
 
 
 def is_known_title(title: str) -> bool:
-    """Whether a window titled *title* has an authored purpose here.
-
-    The classic GitHub windows' dialogs are many and older than this gate; any
-    title naming GitHub or one of its parts counts as known when it starts
-    with a catalogued title, so a new window must still be added here.
-    """
+    """Whether a GitHub Workbench surface has an authored purpose here."""
     text = title.strip()
-    return any(text.startswith(known) for known in SURFACE_PURPOSES) or _classic(text)
-
-
-def _classic(title: str) -> bool:
-    return any(word.lower() in title.lower() for word in _CLASSIC_WORDS)
+    return any(text.startswith(known) for known in SURFACE_PURPOSES)
 
 
 # ---------------------------------------------------------------------------

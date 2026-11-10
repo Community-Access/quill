@@ -6,9 +6,8 @@ Repository's Pull Requests and Actions Runs. The rows that left the menu (My
 Work, Notifications, Releases, Explore GitHub) keep their command ids, and
 every one of them opens the GitHub Workbench window at the matching node
 (:data:`WORKBENCH_NODES`) whenever the Workbench is the window in use
-(:func:`quill.core.github.workbench_flag.workbench_window_enabled`); with the
-classic windows chosen they open GitHub Items or Explore GitHub on their view,
-as before.
+(:func:`quill.core.github.workbench_flag.workbench_window_enabled`). The
+classic GitHub Items and Explore GitHub windows are no longer entry points.
 
 One class, :class:`GitHubWorkbenchCommands`, holds them. It owns no gate: Safe
 Mode, the first-use consent and the sign-in check stay in the one opener each
@@ -134,16 +133,11 @@ class GitHubWorkbenchCommands:
 
     def run(self, command_id: str) -> None:
         """Run one of the rows above by QUILL's command id."""
-        from quill.core.github.workbench_flag import workbench_window_enabled
-
-        if self._open_workbench is not None and workbench_window_enabled():
-            self._open_workbench(WORKBENCH_NODES[command_id])
-        elif command_id in ITEMS_VIEWS:
-            self._open_items(ITEMS_VIEWS[command_id])
-        elif command_id in EXPLORE_VIEWS:
-            self._open_explore(EXPLORE_VIEWS[command_id])
-        else:
+        if command_id not in WORKBENCH_NODES:
             raise KeyError(command_id)
+        if self._open_workbench is None:
+            raise RuntimeError("The GitHub Workbench window is not available.")
+        self._open_workbench(WORKBENCH_NODES[command_id])
 
     def inbox(self) -> None:
         self.run("github.workbench_inbox")
@@ -182,19 +176,7 @@ def open_in_workbench_window(
     announce: Callable[[str], None] | None = None,
     **extras: Any,
 ) -> bool:
-    """Open the GitHub Workbench window instead of GitHub Items (the default).
-
-    Both editors' GitHub Items openers call this after their own gates (Safe
-    Mode, consent, sign-in) have made *provider*. It returns False only when
-    the person chose the classic windows in Workbench Options (or a developer
-    forced them, :mod:`quill.core.github.workbench_flag`), so the opener goes
-    on to GitHub Items exactly as before. When it returns True the window
-    owns *provider* and closes it with itself.
-    """
-    from quill.core.github.workbench_flag import workbench_window_enabled
-
-    if not workbench_window_enabled():
-        return False
+    """Open the only GitHub management window after the editor's normal gates."""
     from quill.ui.github_workbench_window import open_github_workbench
 
     open_github_workbench(

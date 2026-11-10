@@ -334,7 +334,6 @@
   "tts_normalization_enabled": "grandfathered",
   "upgrade_prompt_braille_pack": "grandfathered",
   "upgrade_prompt_kokoro_onnx": "grandfathered",
-  "use_classic_windows": "documented",
   "use_simple_file_dialog": "grandfathered",
   "vault_daily_pattern": "documented",
   "vault_root": "documented",

@@ -265,8 +265,11 @@ questions".
 - **Rename...** changes what the question says.
 - **Change Id...** changes its id, and every rule that mentions it changes
   too.
-- **Change Type...** makes it a different kind of question. Its label, help
-  and rules stay.
+- **Change Type...** makes it a different kind of question. QUILL previews
+  which shared settings and choices it will keep, any defaults it will adjust,
+  and properties the new control cannot use. Conversions that need extra
+  setup first, such as a calculation without an expression, are refused.
+  Confirm the preview to apply the change; Ctrl+Z in the document undoes it.
 - **Duplicate** puts a copy straight after it.
 - **Remove...** takes it out, after asking you first.
 

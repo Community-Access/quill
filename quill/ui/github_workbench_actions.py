@@ -259,10 +259,12 @@ class GitHubWorkbenchActionsMixin(GitHubWorkbenchWritesMixin):
             return row.url
         return str(getattr(row, "url", "") or getattr(row, "html_url", "") or "")
 
-    def _ask_text(self, title: str, prompt: str, *, multiline: bool = False) -> str:
+    def _ask_text(
+        self, title: str, prompt: str, *, multiline: bool = False, value: str = ""
+    ) -> str:
         wx = self.frame._wx
         style = wx.OK | wx.CANCEL | (wx.TE_MULTILINE if multiline else 0)
-        with wx.TextEntryDialog(self.frame.frame, prompt, title, style=style) as dialog:
+        with wx.TextEntryDialog(self.frame.frame, prompt, title, value, style=style) as dialog:
             dialog.SetName(prompt.rstrip(":"))
             if show_modal_dialog(dialog, title) != wx.ID_OK:
                 return ""
@@ -444,38 +446,104 @@ class GitHubWorkbenchActionsMixin(GitHubWorkbenchWritesMixin):
         if not repository:
             self._say("Open a repository first. Ctrl+L opens one by name or link.")
             return
-        title = self._ask_text("New Issue", f"Title of the new issue in {repository}:")
+        fetch = getattr(self.items, "fetch_issue_templates", None)
+        if not callable(fetch):
+            self._create_issue_from_template(repository, None)
+            return
+
+        def read_templates() -> tuple[tuple[Any, ...], str]:
+            try:
+                return tuple(fetch(repository)), ""
+            except Exception as exc:  # noqa: BLE001 - a template failure need not block a blank issue
+                return (), str(exc)
+
+        def choose(result: tuple[tuple[Any, ...], str]) -> None:
+            templates, problem = result
+            if problem:
+                self._say(
+                    f"Could not load issue templates. A blank issue is still available: {problem}"
+                )
+            usable = [t for t in templates if t.supported and not t.body_truncated]
+            unsupported = [t for t in templates if not t.supported or t.body_truncated]
+            if unsupported:
+                self._say(
+                    "This repository also has structured issue forms or a template too large "
+                    "for QUILL to fill. Choose a fillable Markdown template or a blank issue."
+                )
+            if not usable:
+                self._create_issue_from_template(repository, None)
+                return
+            labels = ["Blank issue", *[f"{t.name}: {t.about}".rstrip(": ") for t in usable]]
+            selected = self._choose(
+                "New Issue",
+                f"Choose a template for {repository}:",
+                labels,
+            )
+            if selected < 0:
+                return
+            self._create_issue_from_template(
+                repository, None if selected == 0 else usable[selected - 1]
+            )
+
+        self._background("read issue templates", read_templates, choose)
+
+    def _create_issue_from_template(self, repository: str, template: Any | None) -> None:
+        from quill.core.github.issue_templates import GitHubIssueTemplate
+
+        selected = template if isinstance(template, GitHubIssueTemplate) else None
+        title = self._ask_text(
+            "New Issue",
+            f"Title of the new issue in {repository}:",
+            value=selected.title if selected else "",
+        )
         if not title:
             return
         body = self._ask_text(
-            "New Issue", "What it is about (you can leave this empty):", multiline=True
+            "New Issue",
+            "What it is about (you can leave this empty):",
+            multiline=True,
+            value=selected.body if selected else "",
         )
+        labels = selected.labels if selected else ()
+        assignees = selected.assignees if selected else ()
+        shown_body = body[:2000]
+        if len(body) > len(shown_body):
+            shown_body += "\n\n[The preview is shortened; the full text will be sent.]"
+        preview = (
+            f"Create an issue in {repository}?\n\n"
+            f"Title: {title}\n"
+            f"Template: {selected.name if selected else 'Blank issue'}\n"
+            f"Labels: {', '.join(labels) or 'none'}\n"
+            f"Assignees: {', '.join(assignees) or 'none'}\n\n"
+            f"Body:\n{shown_body or '(empty)'}"
+        )
+        if not self._confirm("Preview New Issue", preview):
+            return
         self._background(
             "create the issue",
-            lambda: self.items.create_issue(repository, title, body),
+            lambda: self.items.create_issue(
+                repository, title, body, labels=labels, assignees=assignees
+            ),
             lambda item: (self._say(f"Created issue #{item.number}."), self.frame.reload()),
         )
 
     # -- GitHub Items, on one item ---------------------------------------------------
 
     def _open_classic(self, ref: Any, row: object, *, reference: str = "") -> None:
-        """GitHub Items, opened on *row*, for the actions not yet rebuilt here."""
+        """Show an issue or pull request in its Workbench list, not a second window."""
         from quill.core.github.references import GitHubReferenceError, parse_github_reference
-        from quill.ui.github_items_dialog import GitHubItemsDialog
 
         url = reference or self._row_url(row)
         try:
             parsed = parse_github_reference(url) if url else None
         except GitHubReferenceError:
             parsed = None
-        repository = ref.instance if ref is not None and ref.instance else ""
-        GitHubItemsDialog(
-            self.frame.frame,
-            self.items,
-            initial_repo=parsed.repository if parsed is not None else repository,
-            initial_reference=parsed
-            if parsed is not None and parsed.supports_native_view
-            else None,
-            open_file_reference_cb=self._open_file_url,
-            announce_cb=self._say,
-        ).show()
+        if parsed is None or parsed.kind not in {"issue", "pull_request"} or not parsed.number:
+            self.frame.open_in_browser()
+            return
+        repository = parsed.repository or (ref.instance if ref is not None else "")
+        if not repository:
+            self._say("Open a repository first. Ctrl+L opens one by name or link.")
+            return
+        node = "pulls" if parsed.kind == "pull_request" else "issues"
+        self._go_filtered("repository", node, repository, f"number:{parsed.number}")

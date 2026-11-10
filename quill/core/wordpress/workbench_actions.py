@@ -195,6 +195,7 @@ WORDPRESS_ACTIONS = ActionTable(
             ),
             _SHEET,
         ),
+        "pmpro": (_READ, _SHEET),
         "term": (
             _a("show_posts", "Show Its Posts", default=True, help="The posts filed under it."),
             _a(
@@ -223,6 +224,11 @@ WORDPRESS_ACTIONS = ActionTable(
                 tier=Tier.WRITE,
                 needs="promote_users",
                 help="Choose another role for this person.",
+            ),
+            _a(
+                "pmpro_memberships",
+                "Show Memberships...",
+                help="Read this person's current and past Paid Memberships Pro memberships.",
             ),
             _a(
                 "send_password_reset",
@@ -313,6 +319,19 @@ WORDPRESS_ACTIONS = ActionTable(
         "form": (
             _a("show_entries", "Show Its Responses", default=True, help="The form's responses."),
             _COPY_TO_SITE,
+            _SHEET,
+        ),
+        "gravity_form": (
+            _a("show_entries", "Show Its Responses", default=True, help="The form's responses."),
+            _a(
+                "change_gravity_field_type",
+                "Change a Field Type...",
+                tier=Tier.WRITE,
+                needs="gravityforms_create_form",
+                help=(
+                    "Change a supported Gravity Forms control after reviewing a full-form preview."
+                ),
+            ),
             _SHEET,
         ),
         **{
@@ -532,7 +551,7 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
                 "options",
                 "Workbench &Options...",
                 "Ctrl+Shift+O",
-                "Use the classic WordPress windows, and the Watches.",
+                "Choose which Watches the Workbench announces.",
             ),
             _row("rest_console", "&REST Console...", "Ctrl+Shift+T", "Any route on the site."),
             _row(

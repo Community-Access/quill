@@ -138,5 +138,5 @@ Each app's own menu shows its key beside the row.
 ## Where to next
 
 - Previous: [Chapter 11: Troubleshooting](wordpress-forms-11-troubleshooting.html)
-- Next: [Chapter 13: Every window, field and button](wordpress-forms-13-window-reference.html)
+- Next: [Chapter 13: WordPress Workbench reference](wordpress-forms-13-window-reference.html)
 - [Contents](wordpress-forms-guide.html)

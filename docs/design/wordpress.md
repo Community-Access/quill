@@ -1,13 +1,14 @@
 # WordPress in QUILL and QUILL Lite
 
-Payment integration is specified by the current
-[implementation notes](forms-payments-design.html) and
-[QAF plugin contract](forms-payments-plugin-contract.html). These supersede
-the initial payment proposal: desktop authoring and reporting share the
-WordPress transport; provider credentials and checkout remain plugin-owned.
+The accepted product scope is now the [WordPress Workbench PRD](../Product%20Requirement%20Documents%20and%20Specifications/wordpress-workbench-prd.md).
+This document preserves the earlier publishing plan and implementation log;
+the current code status, plugin scope, and remaining work are recorded in the
+[Workbench implementation status](../planning/workbench-implementation-status.md).
 
-Product requirements, draft 0.1, 2026-11-03. Status: proposed, nothing built
-beyond what section 2 says already exists.
+Payment integration remains governed by the current
+[implementation notes](forms-payments-design.html) and
+[QAF plugin contract](forms-payments-plugin-contract.html): provider
+credentials and checkout stay plugin-owned.
 
 ## 1. What this is
 
@@ -4314,14 +4315,10 @@ as W1 to W4. None of it has met the live site or a screen reader yet.
   lists post types and taxonomies with who registered them, read only
   (QUILL Site Types detected by namespace); Abilities run with their input
   schema as a sheet and a preview.
-- **W6, the default.** The Tools > WordPress doors open the Workbench unless
-  Workbench Options > Use the classic WordPress windows is checked
-  (`workbench_options.py`, `workbench_flag.py`); the environment variable
-  still overrides for developers. Tools > WordPress > Open WordPress
-  Workbench is the first row in both editors, on the layer's H, with a
-  command catalogue row. The classic windows have no surface module of their
-  own (they are the shared list window), so the reachability snapshot has
-  nothing to mark parked.
+- **W6, complete.** The Tools > WordPress doors always open the Workbench.
+  The classic-window preference and environment override are removed.
+  Open WordPress Workbench remains the first row in both editors, on the
+  layer's H, with a command catalogue row.
 - **W7.** `workbench_bold.py`: Copy to Site (plan as preview, terms by
   name, links rewritten, pictures read from the source host and uploaded),
   Compare Sites, Take a Snapshot, the Calendar with a node per day, Read Site
@@ -4401,9 +4398,10 @@ built.
   rest (invite from a spreadsheet, sign out everywhere).
 - Spam: the provider states, thresholds, blocklist and question bank on the
   Spam page (needs QAF's spam work, 13a.3 and 13a.6); the weekly Watch.
-- Form plugins after Gravity Forms: Jetpack Forms, Formidable, Fluent Forms,
-  WPForms, Contact Form 7, each verified against its API first; import into
-  QAF (13b.3).
+- QAF and Gravity Forms are the supported form integrations. Paid Memberships
+  Pro is the supported membership integration through the site's documented
+  Abilities API. Other plugin-specific integrations are outside the current
+  implementation scope; see the [current scope record](../planning/workbench-implementation-status.md).
 - Updates, Accessibility, Broken Links, Orders, Shop, Podcast and Search
   nodes; Global Styles as a node.
 - 15.12 operations beyond listing: rename, split and reassign a value
@@ -4417,8 +4415,8 @@ built.
   picking mode for Insert Picture (PRD 14).
 - QUILL Site Types (12b, decision 12): the plugin, then making types and
   fields from the Content Model.
-- The classic windows: remove them, Workbench Options' choice and the
-  conftest setting one release after this one (decision 7).
+- **Completed:** remove the classic WordPress management-window choice and
+  route all management doors to the Workbench.
 - The Workbench in the WordPress and Forms manual
   (`docs/user guide/wordpress-and-forms/`); the editors' user guides have
   their section.

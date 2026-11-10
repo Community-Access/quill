@@ -185,8 +185,8 @@ says where the window opens and how lists start. Notifications and Inbox says
 how often GitHub is checked, whether each check plays a sound, and whether a
 new notification may interrupt speech. Lists, Repositories (your pinned
 repositories and favorites) and Privacy follow. Privacy is also where you can
-go back to the classic GitHub Items and Explore GitHub windows for this
-release, by checking Use the classic GitHub windows.
+review the Workbench's GitHub privacy settings. The former Items and Explore
+windows are retired; every GitHub management door opens the Workbench.
 
 You never have to open it: the Workbench works as it comes.
 

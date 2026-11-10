@@ -11,11 +11,11 @@ rest (Create and Fork Repository, Commit Multiple Files, Browse Organization
 and the Codespaces pair) open the Workbench on the repository and run the
 editor's own dialog from it, so there is still one implementation.
 
-With the classic windows chosen, or when the Workbench itself asks the editor
-for the command, each runs exactly as before. This mixin sits ahead of the
+The Workbench can call an editor-owned command from its own context. The
+``_FROM_WORKBENCH`` guard lets that command reach its existing implementation
+without opening a second management window. This mixin sits ahead of the
 admin, extras and gh-bridge mixins in ``MainFrame``'s order, so the command
-registry and the menu bindings, which both call ``self.github_*()``, reach it
-without a line changing in those modules.
+registry and menu bindings, which both call ``self.github_*()``, reach it.
 """
 
 from __future__ import annotations
@@ -38,7 +38,7 @@ def _door(command_id: str) -> Any:
         getattr(super(GitHubAdminDoorsMixin, self), method)()
 
     run.__name__ = method
-    run.__doc__ = f"{command_id}: in the Workbench when it is the window in use."
+    run.__doc__ = f"{command_id}: open the Workbench and continue there."
     return run
 
 

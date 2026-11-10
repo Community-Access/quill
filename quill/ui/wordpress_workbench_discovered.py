@@ -21,7 +21,11 @@ import json
 from collections.abc import Callable
 from typing import Any
 
-from quill.core.wordpress.abilities import ability_from, result_text, run_ability
+from quill.core.wordpress.abilities import (
+    ability_from,
+    result_text,
+    run_ability,
+)
 from quill.core.wordpress.workbench_discovered import (
     ability_input,
     ability_preview,
@@ -51,6 +55,7 @@ class WorkbenchDiscoveredCommands:
     ctx: Callable[[str], Any]
     show_modal: Callable[[Any, str], int]
     write_refusal: Callable[[WbRow, Tier], str]
+    say: Callable[[str], None]
 
     def namespace_children(self, site: str) -> list[tuple[str, str]]:
         from quill.ui.wordpress_workbench_window import SEP
@@ -145,7 +150,8 @@ class WorkbenchDiscoveredCommands:
                 self.say("The site did not describe this ability.")
                 return
             if not ability.readonly:
-                reason = self.write_refusal(row, Tier.WRITE)
+                tier = Tier.DESTRUCTIVE if ability.destructive else Tier.WRITE
+                reason = self.write_refusal(row, tier)
                 if reason:
                     self.say(reason)
                     return

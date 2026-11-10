@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Chapter 16: WordPress</title>
+  <title>quill-guide-16-wordpress</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -180,68 +180,8 @@
       vertical-align: middle;
     }
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* The skip link above targets main, and a focusable main needs a ring for
-       the sighted keyboard user. These pages load no external stylesheet, so it
-       has to be inline; the colour is the site theme's --focus, hardcoded
-       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
-       makes main the click-focus target for every paragraph inside it, so
-       :focus would box the whole page on any ordinary click. The offset is inset
-       because main is full-bleed and an outset ring gets clipped into two
-       vertical lines. */
-    main[tabindex="-1"]:focus-visible {
-      outline: 3px solid #b8540a;
-      outline-offset: -3px;
-    }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-    /* Pandoc's own styles.html partial, injected near the top of this template,
-       ships `table { display: block; overflow-x: auto; }`. display: block takes
-       the table role out of the accessibility tree in Blink and Gecko, and the
-       row and cell roles go with it, so every rendered table reads as a flat run
-       of words -- 62 of them in QUILL Lite's user guide alone, all of them
-       keyboard reference tables, on a site whose readers are overwhelmingly
-       screen-reader users. Restoring display: table is not a preference.
-
-       The scroll affordance it was there for is given up rather than moved,
-       because Pandoc emits a bare table with no wrapper element to hang overflow
-       on -- the wrapper pattern compare.html uses is not available here. So the
-       exchange is a certain and total loss of table semantics against a possible
-       sideways page scroll on the widest tables, and the cells are taught to
-       break so that stays possible rather than likely.
-
-       This override also covers the governance pages built by
-       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
-       version nobody pins -- whatever styles.html that ships, this wins. */
-    table {
-      display: table;
-      overflow-x: visible;
-    }
-    table th,
-    table td {
-      overflow-wrap: break-word;
-      word-break: break-word;
-    }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content" tabindex="-1">
 <h1 id="chapter-16-wordpress">Chapter 16: WordPress</h1>
 <p>Payment forms use this same WordPress connection. Tools &gt; Forms
 configures Stripe/PayPal payments and reads provider/webhook readiness;
@@ -259,7 +199,7 @@ computer.</p>
 <p><strong>Turning it on.</strong> WordPress is on in every feature
 profile except Essential. If you do not see <strong>File &gt;
 WordPress</strong>, choose another profile, or switch on WordPress by
-itself, in <strong>Profiles and Features…</strong>.</p>
+itself, in <strong>Profiles and Features...</strong>.</p>
 <p>This chapter is the short version. Connecting a site, blocks,
 pictures and the Media Library, scheduling, checking a page before you
 publish, comments, menus and running the site are all in the <a
@@ -303,10 +243,10 @@ menus, settings, and the More Media and Manage submenus</td>
 </tbody>
 </table>
 <p>To get started, choose <strong>File &gt; WordPress &gt; Connect a
-Site…</strong>, type your site’s address, and press <strong>Get Password
-with My Browser</strong>. Every command is also in the Command Palette
-(<code>Ctrl+Shift+P</code>): type “WordPress”, or part of a command’s
-name.</p>
+Site...</strong>, type your site's address, and press <strong>Get
+Password with My Browser</strong>. Every command is also in the Command
+Palette (<code>Ctrl+Shift+P</code>): type "WordPress", or part of a
+command's name.</p>
 <h2 id="the-wordpress-workbench">The WordPress Workbench</h2>
 <p>Writing happens in the editor; looking after your sites happens in
 the WordPress Workbench, one window for every site you have connected.
@@ -323,14 +263,14 @@ every site at once: comments waiting, posts waiting for review,
 scheduled posts, your drafts, Site Health problems, form responses and
 anything held as spam. Under <strong>Sites</strong>, each site has its
 posts and pages, its media, comments, people, plugins, settings and the
-rest. <strong>Calendar</strong> lists every site’s scheduled and
+rest. <strong>Calendar</strong> lists every site's scheduled and
 published posts a day at a time, and <strong>Across Sites</strong> shows
 the same tag, plugin, person or setting on all your sites at once, with
 where they differ and which sites are missing it.</p>
 <p>Enter on a post or page opens it here in the editor. Alt+Enter shows
 the Properties of anything, the same sheet File &gt; WordPress &gt;
 Properties shows for the post you are writing. Delete moves to the
-Trash, and the Edit menu’s Undo WordPress Change puts the last change
+Trash, and the Edit menu's Undo WordPress Change puts the last change
 back. Every command says what it needs: if your role on a site does not
 allow something, the menu says which role would, rather than leaving you
 to find out.</p>
@@ -339,23 +279,21 @@ items at once, copying to another site, importing from a spreadsheet and
 making settings the same across sites all show a preview first, one line
 for each thing that will change, and nothing goes until you press the
 button that names the change.</p>
-<p>The Workbench’s own Tools menu has the <strong>REST Console</strong>,
-for anything the site’s API offers, the <strong>Practice Site</strong>,
+<p>The Workbench's own Tools menu has the <strong>REST Console</strong>,
+for anything the site's API offers, the <strong>Practice Site</strong>,
 a WordPress site on your own computer for learning with nothing at stake
 (in builds that include it), and <strong>Workbench Options</strong>.
 There you can turn on <strong>Watches</strong>, which tell you about new
 comments, form responses, updates and scheduled posts going live while
-QUILL is open, checked at most every fifteen minutes. For this release,
-Workbench Options also has <strong>Use the classic WordPress
-windows</strong>: check it and the rows of Tools &gt; WordPress open
-their old windows again. Open WordPress Workbench always opens the
-Workbench.</p>
+QUILL is open, checked at most every fifteen minutes. WordPress
+management doors open the Workbench; the separate management windows
+have been retired.</p>
 <h2 id="the-keys-you-will-use-every-day">The keys you will use every
 day</h2>
 <p>The WordPress commands share one key,
 <code>Ctrl+Alt+Shift+Grave</code>: the key below Escape, with Ctrl, Alt
-and Shift held down. Press it and let go, and QUILL says “WordPress
-keys”. Then press one letter:</p>
+and Shift held down. Press it and let go, and QUILL says "WordPress
+keys". Then press one letter:</p>
 <table>
 <thead>
 <tr>
@@ -407,7 +345,7 @@ keys”. Then press one letter:</p>
 </tbody>
 </table>
 <p><strong>Escape</strong> after the WordPress key leaves it again. The
-menus show every command’s letter beside its row, and the manual has the
+menus show every command's letter beside its row, and the manual has the
 full table. QUILL and QUILL Lite use the same letters, so moving between
 them costs you nothing.</p>
 <p>QUILL finds the grave key by where it sits, the key above Tab, not by
@@ -423,6 +361,5 @@ updates and support</a></li>
 <li>Next: <a href="quill-guide-17-forms.html">Chapter 17: Forms</a></li>
 <li><a href="../userguide.html">Contents</a></li>
 </ul>
-</main>
 </body>
 </html>

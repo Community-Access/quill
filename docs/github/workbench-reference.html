@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>GitHub Workbench: keyboard and screen reader reference</title>
+  <title>workbench-reference</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -180,68 +180,8 @@
       vertical-align: middle;
     }
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* The skip link above targets main, and a focusable main needs a ring for
-       the sighted keyboard user. These pages load no external stylesheet, so it
-       has to be inline; the colour is the site theme's --focus, hardcoded
-       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
-       makes main the click-focus target for every paragraph inside it, so
-       :focus would box the whole page on any ordinary click. The offset is inset
-       because main is full-bleed and an outset ring gets clipped into two
-       vertical lines. */
-    main[tabindex="-1"]:focus-visible {
-      outline: 3px solid #b8540a;
-      outline-offset: -3px;
-    }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-    /* Pandoc's own styles.html partial, injected near the top of this template,
-       ships `table { display: block; overflow-x: auto; }`. display: block takes
-       the table role out of the accessibility tree in Blink and Gecko, and the
-       row and cell roles go with it, so every rendered table reads as a flat run
-       of words -- 62 of them in QUILL Lite's user guide alone, all of them
-       keyboard reference tables, on a site whose readers are overwhelmingly
-       screen-reader users. Restoring display: table is not a preference.
-
-       The scroll affordance it was there for is given up rather than moved,
-       because Pandoc emits a bare table with no wrapper element to hang overflow
-       on -- the wrapper pattern compare.html uses is not available here. So the
-       exchange is a certain and total loss of table semantics against a possible
-       sideways page scroll on the widest tables, and the cells are taught to
-       break so that stays possible rather than likely.
-
-       This override also covers the governance pages built by
-       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
-       version nobody pins -- whatever styles.html that ships, this wins. */
-    table {
-      display: table;
-      overflow-x: visible;
-    }
-    table th,
-    table td {
-      overflow-wrap: break-word;
-      word-break: break-word;
-    }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content" tabindex="-1">
 <h1 id="github-workbench-keyboard-and-screen-reader-reference">GitHub
 Workbench: keyboard and screen reader reference</h1>
 <p>This is the technical reference: what each window does and which part
@@ -249,23 +189,19 @@ of GitHub it calls. For a book on doing the work, written for
 screen-reader users, read <a
 href="https://www.quillforall.org/docs/github-guide.html">The GitHub
 Guide for QUILL and QUILL Lite</a>, which ships with both editors.</p>
-<p><strong>The GitHub Workbench window is the default
+<p><strong>The GitHub Workbench is the only GitHub management window
 (2026-11-10).</strong> Every GitHub door in both editors opens one
 window, <code>quill/ui/workbench_frame.py</code> with the GitHub
 provider <code>quill/ui/github_workbench_window.py</code>; its tree,
 menus, keys, context menus, options and glossary are generated at the
-end of this page. GitHub Items and Explore GitHub, described below, are
-parked for one release behind Workbench Options, Use the classic GitHub
-windows (<code>quill/core/github/workbench_flag.py</code>), and GitHub
-Items still opens on one item for actions the Workbench does not yet
-rebuild.</p>
-<p>QUILL and QUILL Lite share the GitHub Items and Explore windows.
-QUILL Lite opens the workbench from <strong>File &gt; GitHub
-Workbench</strong> (<strong>Alt+F</strong>, then <strong>G</strong>). In
-QUILL, use <strong>File &gt; Open from Remote &gt; GitHub
-Items</strong>. Public repository reading works without an account.
-Account views and writes require a signed-in GitHub account. Safe Mode
-and the first-use network consent still apply.</p>
+end of this page. The separate Items and Explore management windows and
+their fallback preference are retired.</p>
+<p>QUILL and QUILL Lite share the Workbench. QUILL Lite opens it from
+<strong>File &gt; GitHub Workbench</strong> (<strong>Alt+F</strong>,
+then <strong>G</strong>). In QUILL, use <strong>File &gt; Open from
+Remote &gt; GitHub Items</strong>. Public repository reading works
+without an account. Account views and writes require a signed-in GitHub
+account. Safe Mode and first-use network consent still apply.</p>
 <p><strong>GitHub Workbench Mode.</strong> <strong>View &gt; GitHub
 Workbench Mode</strong> (<strong>Alt+V</strong>, then
 <strong>K</strong>), a per-window check item in both editors, adds a
@@ -276,7 +212,7 @@ build it from one wx-free table,
 <code>quill/core/github/workbench_menu.py</code> (QUILL:
 <code>quill/ui/main_frame_github_menu.py</code>; QUILL Lite:
 <code>quill/apps/lite_github_workbench.py</code>, which also serves the
-empty window). QUILL Lite’s menu is the table less QUILL’s own rows.
+empty window). QUILL Lite's menu is the table less QUILL's own rows.
 Rows keep their command ids, so a user-bound key follows the row;
 nothing in the mode has a default chord. New entry points open a view
 directly: Inbox, My Work and Notifications open Explore on
@@ -286,16 +222,16 @@ Releases open Items on <code>issues</code>, <code>runs</code> and
 <code>releases</code> (the new <code>initial_view</code> argument);
 Explore GitHub opens Explore on its default. They are
 <code>quill/ui/github_workbench_commands.py</code>, shared, and go
-through each editor’s existing opener and gates. The switch announces
-“Workbench mode on. GitHub menu added.” and “Workbench mode off.”
+through each editor's existing opener and gates. The switch announces
+"Workbench mode on. GitHub menu added." and "Workbench mode off."
 through the announcement service; nothing else in the mode speaks. While
-it is on, both editors’ status bars carry a <strong>Workbench</strong>
-cell (“Workbench: owner/name”, or “Workbench” with no repository),
+it is on, both editors' status bars carry a <strong>Workbench</strong>
+cell ("Workbench: owner/name", or "Workbench" with no repository),
 worded once in <code>workbench_menu</code>
-(<code>STATUS_CELL_KEY</code>, <code>status_cell_text</code>): QUILL’s
+(<code>STATUS_CELL_KEY</code>, <code>status_cell_text</code>): QUILL's
 in <code>quill/ui/main_frame_github_status.py</code> (a
 <code>workbench</code> item in <code>STATUS_BAR_ITEMS</code>, hidden by
-default and shown only in the mode), QUILL Lite’s in
+default and shown only in the mode), QUILL Lite's in
 <code>quill/apps/lite_status_cells.py</code> (shown only with text). It
 is reached with F6 and the arrow keys like every cell and is never
 announced (GATE-13); the repository is looked up once per document path
@@ -303,10 +239,10 @@ while the mode is on. It is not remembered across sessions. In QUILL the
 mode needs GitHub Remote Access (<code>core.github_remote</code>), which
 since 2026-11-08 no longer depends on <code>core.developer</code>.</p>
 <p><strong>Clone Repository.</strong> QUILL: <strong>File &gt; Open from
-Remote &gt; Clone Repository…</strong>; QUILL Lite: <strong>File &gt;
-Clone Repository…</strong> (<strong>Alt+F</strong>, then
+Remote &gt; Clone Repository...</strong>; QUILL Lite: <strong>File &gt;
+Clone Repository...</strong> (<strong>Alt+F</strong>, then
 <strong>Y</strong>); both: <strong>GitHub &gt; Clone
-Repository…</strong> in workbench mode. Shared window
+Repository...</strong> in workbench mode. Shared window
 <code>quill/ui/github_clone.py</code>, core
 <code>quill/core/github/clone.py</code>. Git is found by
 <code>quill.core.git_binaries.find_git</code>: <code>QUILL_GIT</code>
@@ -315,7 +251,7 @@ then <code>git</code> on <code>PATH</code>, then the optional component
 copy. It runs <code>git clone -- &lt;url&gt; &lt;folder&gt;</code>
 through <code>run_subprocess_safely</code> (argv, no shell) on the task
 manager. For an https github.com clone the signed-in token travels only
-in the child’s environment, as
+in the child's environment, as
 <code>GIT_CONFIG_COUNT</code>/<code>GIT_CONFIG_KEY_n</code>/<code>GIT_CONFIG_VALUE_n</code>
 setting <code>http.https://github.com/.extraheader</code> for that
 process; it is never in argv, <code>.git/config</code>, the remote URL
@@ -327,74 +263,74 @@ sentence offers the Git for Windows download page.</p>
 <p><strong>Signing in.</strong> Manage GitHub Accounts (QUILL:
 <strong>File &gt; Open from Remote</strong>; QUILL Lite:
 <strong>File</strong>, <strong>Alt+F</strong> then <strong>H</strong>)
-offers <strong>Sign In with GitHub…</strong> first, and as the default
-button while no account is saved. It is GitHub’s OAuth device flow
+offers <strong>Sign In with GitHub...</strong> first, and as the default
+button while no account is saved. It is GitHub's OAuth device flow
 (<code>quill/core/github/oauth_sign_in.py</code>, UI in
 <code>quill/ui/github_device_sign_in.py</code>): QUILL posts to
-<code>github.com/login/device/code</code> with the app’s own OAuth
+<code>github.com/login/device/code</code> with the app's own OAuth
 client id (the same per-app registration My GitHub Copilot uses,
 <code>copilot_auth.CLIENT_IDS</code>), puts the user code on the
 clipboard and in a read-only field that takes focus, opens
 <code>github.com/login/device</code>, and polls
-<code>github.com/login/oauth/access_token</code> at GitHub’s interval on
+<code>github.com/login/oauth/access_token</code> at GitHub's interval on
 a worker thread, adding five seconds on <code>slow_down</code>. Expiry,
 a declined request, Cancel and a network failure each end in one
-sentence in the step’s What to do field. The token is then checked with
+sentence in the step's What to do field. The token is then checked with
 <code>GET /user</code> and saved with <code>save_github_account</code>,
 exactly like a pasted token, in the same store as every other account;
-Copilot’s token stays in its own entry. The scopes requested are
+Copilot's token stays in its own entry. The scopes requested are
 <code>repo workflow gist read:org project security_events user:follow delete_repo</code>,
 each justified beside <code>WORKBENCH_SCOPES</code>, so one sign-in
-covers every Workbench command. <strong>Add Token (Advanced)…</strong>
+covers every Workbench command. <strong>Add Token (Advanced)...</strong>
 keeps the pasted-token route for fine-grained or limited tokens; the
-guides teach it only in chapter 10, “Advanced: using a token”.
+guides teach it only in chapter 10, "Advanced: using a token".
 Organizations that restrict OAuth apps must approve QUILL once (Settings
 &gt; Applications &gt; Authorized OAuth Apps &gt; Request or Grant).</p>
 <p><strong>Tokens (2026-11-08).</strong> Each account records how it was
 added (<code>added_by</code>: <code>sign_in</code>, <code>token</code>,
 or <code>unknown</code> for accounts saved before) and a small state
 (<code>account_state</code> in <code>github-accounts.json</code>, never
-a secret): whether the sign-in suggestion was shown, the token’s expiry
+a secret): whether the sign-in suggestion was shown, the token's expiry
 as GitHub reported it, and the day the expiry was last mentioned.
 <code>quill/core/github/token_health.py</code> decides both messages.
 The <strong>suggestion</strong>: when the active account has a classic
 token (<code>ghp_</code>, or <code>X-OAuth-Scopes</code> on a pasted
-one) with a broad scope, Manage GitHub Accounts says “This account uses
-a token. Sign In with GitHub is easier to keep up to date.” once, then
+one) with a broad scope, Manage GitHub Accounts says "This account uses
+a token. Sign In with GitHub is easier to keep up to date." once, then
 asks; Yes opens Sign In with GitHub, No opens the window as usual, and
 it is never asked again for that account. The <strong>expiry
 warning</strong>: <code>TOKEN_EXPIRY</code> records
 <code>GitHub-Authentication-Token-Expiration</code> from every REST
 reply and every items-provider repository read (the token as a SHA-256
-fingerprint, in memory); each editor’s Workbench gate calls
-<code>quill/ui/github_token_expiry.py</code>’s
+fingerprint, in memory); each editor's Workbench gate calls
+<code>quill/ui/github_token_expiry.py</code>'s
 <code>watch_token_expiry</code>, which, for a token expiring within
 seven days or already expired (the latter from the filed expiry, since a
-dead token’s replies carry no header), says one sentence at most once a
+dead token's replies carry no header), says one sentence at most once a
 day per account and adds a Notifications entry whose target
 <code>github-accounts</code> opens Manage GitHub Accounts. No new
 network endpoint: both read headers of replies the Workbench already
 receives.</p>
 <p>In QUILL, <strong>File &gt; Open from Remote &gt; Open GitHub
 Reference</strong> accepts a pasted repository or GitHub URL. The Items
-window also has <strong>Open Link…</strong> in both QUILL and QUILL
+window also has <strong>Open Link...</strong> in both QUILL and QUILL
 Lite. Repository links open Items; issue links select the exact issue;
 pull-request links open its review reader; branch links select that
 branch; and GitHub file links open in QUILL at the linked line. QUILL
 Lite opens file and other unsupported object links in the browser after
 explaining that the workbench has no native view for that object.
-Browser fallback never attaches QUILL’s GitHub token. Malformed or
+Browser fallback never attaches QUILL's GitHub token. Malformed or
 credential-bearing URLs are refused.</p>
 <h2 id="the-interaction-pattern">The interaction pattern</h2>
 <p>The Items window is a repository list with a read-only detail field.
 Choose a view, arrow through its rows, then Tab to read the selected
 item in full. Shift+Tab returns to the list. The
-<strong>Actions</strong> button and the selected row’s context menu
+<strong>Actions</strong> button and the selected row's context menu
 expose commands relevant to that item. Open the context menu with
 Shift+F10, the Applications key, or right-click. <strong>M</strong>
 switches between compact and fully labelled list speech.
 <strong>Alt+N</strong> and <strong>Alt+P</strong> move between comments
-in an issue or PR’s details. <strong>Ctrl+F</strong> searches GitHub in
+in an issue or PR's details. <strong>Ctrl+F</strong> searches GitHub in
 the loaded repository; <strong>Ctrl+Shift+F</strong> filters the already
 loaded rows locally. <strong>Ctrl+D</strong> saves the selected item as
 a favorite.</p>
@@ -405,12 +341,12 @@ GitHub.</p>
 <p>The PR review window uses an actual expandable tree. The root PR
 contains Changed files, General conversations when present, and Checks.
 Files contain review threads. Left and Right collapse or expand; Up and
-Down move between visible nodes. Tab reads the selected node’s complete
+Down move between visible nodes. Tab reads the selected node's complete
 detail, then Shift+Tab returns to the tree. On a thread,
 <strong>Ctrl+R</strong> replies; <strong>Ctrl+Shift+R</strong> resolves
 or reopens it after confirmation, if GitHub permits. The context menu
 also contains these commands, copy actions, and Open File Differences. A
-thread’s file and line select the matching file and exact changed line
+thread's file and line select the matching file and exact changed line
 when its patch still contains that line. If the line is outdated or
 absent, the diff explains the missing location. No action is triggered
 merely by reading or expanding. <strong>Next Unresolved</strong> moves
@@ -446,7 +382,7 @@ assets, workflow definitions, and workflow runs. Enter on a branch opens
 its commits; Backspace returns to branches. Enter on a release opens its
 assets and download counts. A workflow definition can be dispatched on a
 chosen branch. On a run, <strong>Jobs and Logs</strong> lists its jobs
-and loads a selected job’s text log. <strong>View Artifacts</strong>
+and loads a selected job's text log. <strong>View Artifacts</strong>
 lists downloads. The context menu exposes the same applicable commands
 as the buttons, including copy and browser actions. On an issue or PR,
 <strong>Start in Local Worktree</strong> can prepare a separate local
@@ -455,14 +391,14 @@ remote. QUILL shows the starting local branch and any uncommitted
 changes first. Those changes stay in the existing folder; the new
 worktree starts from the local commit and does not fetch, push, or
 change the GitHub repository.</p>
-<p>Workflow diagnostics show each job’s steps, the selected attempt, and
+<p>Workflow diagnostics show each job's steps, the selected attempt, and
 the head SHA. Choose an earlier attempt from the attempt list;
 <strong>Load Annotations</strong> reads the check-run annotations when
 GitHub grants access, and reports permission errors instead of treating
 them as no findings. Annotation output is capped at 100 entries with a
 truncation message. Job logs are limited to 4 MB and mark truncation.
 The run and job links open their exact GitHub pages.</p>
-<p><strong>Projects</strong> opens the selected repository’s GitHub
+<p><strong>Projects</strong> opens the selected repository's GitHub
 Projects v2 boards in a list/detail view. Project rows show the fields
 available to your account; issue details include blockers, sub-issues,
 and parent progress. <strong>Next Unblocked</strong> moves to the next
@@ -472,24 +408,24 @@ iteration fields, or add/remove blocker and sub-issue links. Each remote
 change names its target and effect in a confirmation. Permission errors
 and incomplete project pages remain visible in the status.</p>
 <p>Explore adds your repositories and work, starred and watched
-repositories, people you follow and followers, a person’s public
+repositories, people you follow and followers, a person's public
 repositories and activity, repository activity and people, forks,
 labels, Pages site and build history, notifications, and security
 alerts. Private information and certain actions depend on the GitHub
-token’s permissions and repository access. An API failure appears as a
+token's permissions and repository access. An API failure appears as a
 status message; empty results are distinguished from errors. The
 Security view combines Dependabot, code-scanning, and secret-scanning
 alerts. Secret values are never loaded into the view. If the account
 cannot read a category or the feature is disabled, the view labels that
 category unavailable instead of presenting it as having no findings.</p>
 <h2 id="notifications-triage">Notifications triage</h2>
-<p>Explore’s <strong>GitHub notifications</strong> view is the account’s
+<p>Explore's <strong>GitHub notifications</strong> view is the account's
 whole inbox. In QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub
 &gt; Notifications</strong> opens Explore straight at it; in QUILL Lite,
 choose <strong>Explore</strong> in Items and pick the view. After each
-load QUILL says the unread count once, for example “12 unread”. Each row
-reads its state, then why it arrived in words (“review requested”, “you
-were mentioned”, “your team was mentioned”), then the repository and
+load QUILL says the unread count once, for example "12 unread". Each row
+reads its state, then why it arrived in words ("review requested", "you
+were mentioned", "your team was mentioned"), then the repository and
 title.</p>
 <p>Under the list, shown only in this view: <strong>Include read
 notifications</strong> (Alt+I), <strong>Mark Done</strong> (Alt+D),
@@ -500,7 +436,7 @@ Mark All Read asks first and marks only what arrived before the list
 loaded. Enter marks the row read, then opens a pull request in the
 review window, an issue in Items at that issue, and anything else in the
 browser. The context menu offers the same actions.</p>
-<p>QUILL honours GitHub’s <code>X-Poll-Interval</code>: a refresh sooner
+<p>QUILL honours GitHub's <code>X-Poll-Interval</code>: a refresh sooner
 than GitHub allows keeps the current list and says how long to wait. A
 refresh after that sends <code>If-Modified-Since</code>, so an unchanged
 inbox costs no rate limit.</p>
@@ -510,32 +446,32 @@ that view, the Actions menu or the context menu) opens a read-only text
 field holding one digest: each failed job, its failed steps, the
 annotations with <code>file:line</code>, then the last 40 meaningful log
 lines of each failed step with timestamps and ANSI codes removed. A
-step’s lines are the ones stamped inside its start and finish times; if
-GitHub gave no times, the digest says so and uses the end of the job’s
+step's lines are the ones stamped inside its start and finish times; if
+GitHub gave no times, the digest says so and uses the end of the job's
 log. <strong>Jobs and Logs</strong> has the same digest as <strong>What
 Failed</strong> (Alt+F), for the attempt you chose, and
 <strong>Re-request Check</strong> (Alt+C) for the selected job.</p>
 <p>The same menus add <strong>Re-run Failed Jobs Only</strong>,
-<strong>Cancel Run</strong> (GitHub answers “accepted”, so QUILL says it
+<strong>Cancel Run</strong> (GitHub answers "accepted", so QUILL says it
 is stopping the run), <strong>Delete Run</strong> (the confirmation
 names the run, branch and result, and says logs and artifacts go with
 it), <strong>Approve Run from a Fork</strong>, <strong>Review Pending
 Deployments</strong> (a window listing waiting environments as check
 boxes, a required comment, and Approve and Reject) and <strong>Combined
-Check Status</strong>, a single line such as “3 of 4 checks pass;
-failing: test.”</p>
+Check Status</strong>, a single line such as "3 of 4 checks pass;
+failing: test."</p>
 <h2 id="auto-merge-and-the-merge-queue">Auto-merge and the merge
 queue</h2>
-<p>The review window’s <strong>Auto-Merge and Queue</strong> button
-(Alt+A) and the pull request’s context menu hold <strong>Enable
+<p>The review window's <strong>Auto-Merge and Queue</strong> button
+(Alt+A) and the pull request's context menu hold <strong>Enable
 Auto-Merge</strong> (with a merge-method chooser), <strong>Disable
 Auto-Merge</strong>, <strong>Add to Merge Queue</strong>, <strong>Remove
 from Merge Queue</strong> and <strong>Combined Check Status</strong>.
 After <strong>Check Merge Policy</strong>, the combined status counts
-only required checks (“3 of 4 required checks pass”). A check node’s
+only required checks ("3 of 4 required checks pass"). A check node's
 context menu has <strong>Re-request Check</strong>; a legacy commit
 status cannot be re-requested and QUILL says so. Each change asks first
-and reports GitHub’s confirmed result. Known refusals, such as
+and reports GitHub's confirmed result. Known refusals, such as
 auto-merge being turned off for the repository, are said as what to do
 next.</p>
 <h2 id="repository-files-blame-and-history">Repository files, blame and
@@ -550,26 +486,26 @@ shows it read-only in <strong>Contents</strong>. <strong>Open in
 Editor</strong> (Alt+E) opens it for editing: QUILL uses the same path
 as a GitHub file link, so Commit to GitHub works afterwards; QUILL Lite
 opens the text as a new untitled document. <strong>README</strong>
-(Alt+R) shows the selected folder’s or the repository’s README. Binary
-files and files over GitHub’s 1 MB contents limit say so instead of
+(Alt+R) shows the selected folder's or the repository's README. Binary
+files and files over GitHub's 1 MB contents limit say so instead of
 showing text.</p>
 <p><strong>History</strong> (Alt+H) lists the commits that changed the
 selected path. <strong>Blame</strong> (Alt+L) lists the file in runs,
-neighbouring ranges from one commit joined into one: “Lines 10 to 14:
-author, date, short SHA, commit title”. In both lists Alt+N and Alt+P
+neighbouring ranges from one commit joined into one: "Lines 10 to 14:
+author, date, short SHA, commit title". In both lists Alt+N and Alt+P
 move to the next and previous row from anywhere in the window, and Enter
 or <strong>Open Commit</strong> (Alt+O) opens the commit on GitHub.
 Blame uses GraphQL <code>blame(path:)</code> on the commit and needs a
 signed-in account.</p>
 <h2 id="milestones-and-batch-changes">Milestones and batch changes</h2>
 <p><strong>Milestones</strong> in Items (no access key; Tab to it, or
-use the context menu) lists milestones as words: “Release 2.0: 61
-percent done, 5 open, 8 closed, due 12 December”. <strong>Show</strong>
+use the context menu) lists milestones as words: "Release 2.0: 61
+percent done, 5 open, 8 closed, due 12 December". <strong>Show</strong>
 (Alt+S) picks open, closed or all. <strong>New</strong> (Alt+N) and
 <strong>Edit</strong> (Alt+E) take a title, description and a
 year-month-day due date; <strong>Close Milestone</strong> or
 <strong>Reopen Milestone</strong> (Alt+L) asks first. Every change is
-reported from GitHub’s reply.</p>
+reported from GitHub's reply.</p>
 <p>The <strong>Batch</strong> menu adds <strong>Set milestone</strong>
 (the open milestones, or clear it) and <strong>Add assignees</strong>
 (usernames separated by commas) beside Close, Reopen and Add label. The
@@ -577,18 +513,18 @@ confirmation names the items; the result counts what GitHub confirmed,
 and names anyone GitHub did not assign.</p>
 <h2 id="discussions-and-security-triage">Discussions and security
 triage</h2>
-<p>In Explore’s Discussions view, Enter (or <strong>Open Discussion
+<p>In Explore's Discussions view, Enter (or <strong>Open Discussion
 Thread</strong> on the context menu) opens a thread window: the
-discussion, then each comment followed by its replies. It says “Answered
-by” and the name, and reads a poll one option to a line (“Option A: 12
-votes, 40 percent”). <strong>Reply</strong> (Alt+R) comments on the
+discussion, then each comment followed by its replies. It says "Answered
+by" and the name, and reads a poll one option to a line ("Option A: 12
+votes, 40 percent"). <strong>Reply</strong> (Alt+R) comments on the
 discussion or replies under the selected comment; <strong>Mark as
 Answer</strong> (Alt+M) marks or unmarks the selected comment after
 asking, when the category takes answers and GitHub says you may.
-<strong>New Discussion</strong> on the view’s context menu picks a
+<strong>New Discussion</strong> on the view's context menu picks a
 category and takes a title and body.</p>
 <p>In the security views, <strong>Dismiss Alert</strong> on the context
-menu offers GitHub’s own reasons for that alert kind (Dependabot:
+menu offers GitHub's own reasons for that alert kind (Dependabot:
 <code>fix_started</code>, <code>inaccurate</code>,
 <code>no_bandwidth</code>, <code>not_used</code>,
 <code>tolerable_risk</code>; code scanning: <code>false positive</code>,
@@ -598,7 +534,7 @@ menu offers GitHub’s own reasons for that alert kind (Dependabot:
 of up to 280 characters, and a confirmation. <strong>Dismissed and
 resolved security alerts</strong> is its own view, where <strong>Reopen
 Alert</strong> asks and then reopens. QUILL reports a change only when
-the alert’s new state comes back from GitHub.</p>
+the alert's new state comes back from GitHub.</p>
 <h2 id="line-comments-the-timeline-and-reactions">Line comments, the
 timeline and reactions</h2>
 <table>
@@ -663,8 +599,8 @@ commit</td>
 <code>reviewThreads</code>, <code>autoMergeRequest</code>,
 <code>mergeStateStatus</code>, and <code>baseRef.compare</code> for a
 same-repository branch). Its readiness phrase goes through the same
-rules as the review header, so partial or unknown data reads as “merge
-readiness unknown”, never as ready. The query takes aliases, so several
+rules as the review header, so partial or unknown data reads as "merge
+readiness unknown", never as ready. The query takes aliases, so several
 pull requests can share one request.</p>
 <p>A line comment posts through <code>POST /pulls/{n}/comments</code>
 with <code>commit_id</code>, <code>path</code>, <code>line</code>,
@@ -675,16 +611,16 @@ review and every pending comment in one
 <code>POST /pulls/{n}/reviews</code>, and refuses when the head has
 moved since. The outline lists pending comments, each with Edit and
 Delete (Delete asks first).</p>
-<p>Changed since my last review reads the account’s latest review
+<p>Changed since my last review reads the account's latest review
 <code>commit_id</code> and compares it with the head
 (<code>GET /compare/{reviewed}...{head}</code>). A missing commit, after
 a force-push, is said plainly and the filter shows every file.</p>
 <p>The timeline reads <code>GET /issues/{n}/timeline</code>, up to five
 pages of 100, and says when it stopped early. Reactions list, add and
 remove through the REST reactions endpoints for issues, issue comments
-and review comments; removal deletes only the signed-in account’s own
-reaction. Counts read in words in comment details (“3 thumbs up, 1
-heart”).</p>
+and review comments; removal deletes only the signed-in account's own
+reaction. Counts read in words in comment details ("3 thumbs up, 1
+heart").</p>
 <h2 id="search-insights-and-repository-actions">Search, insights and
 repository actions</h2>
 <table>
@@ -734,17 +670,17 @@ claimed.</p>
 <code>traffic/clones</code>, <code>traffic/popular/referrers</code>,
 <code>traffic/popular/paths</code> and <code>contributors</code>. The
 first row is the whole picture in one sentence; every other row is one
-figure set (“Views on 2026-11-01: 120 views, 30 unique visitors”), so
+figure set ("Views on 2026-11-01: 120 views, 30 unique visitors"), so
 the list is the numbers table. A 403 on traffic is said as needing push
 access, and the contributors still load. The community profile reads
 <code>community/profile</code> as present or missing for each checklist
 item, after the health percentage.</p>
 <p>Repository Actions: Sync Fork with Upstream
-(<code>POST /merge-upstream</code>, with the upstream’s lead counted
-first through <code>compare</code> so the result can say “Merged 3
-commits”; “Already up to date” when GitHub reports no merge), Set Topics
+(<code>POST /merge-upstream</code>, with the upstream's lead counted
+first through <code>compare</code> so the result can say "Merged 3
+commits"; "Already up to date" when GitHub reports no merge), Set Topics
 (<code>PUT /topics</code>, checked locally first), Watch Level
-(<code>/subscription</code>; Releases only is not in GitHub’s API, so it
+(<code>/subscription</code>; Releases only is not in GitHub's API, so it
 opens the repository page), Archive and Unarchive (<code>PATCH</code>
 with <code>archived</code>, refused if the reply disagrees), Create
 Repository from This Template (<code>POST /generate</code>) and Delete
@@ -791,7 +727,7 @@ housekeeping</h2>
 </table>
 <p>Edit Release finds the release again by tag (drafts have no tag URL)
 and sends <code>PATCH /releases/{id}</code>; the sentence it says is
-built from GitHub’s reply, and a publish GitHub did not perform is
+built from GitHub's reply, and a publish GitHub did not perform is
 reported as such. Upload Asset posts to
 <code>uploads.github.com/.../releases/{id}/assets?name=</code> with
 redirects refused, reading the file in blocks so progress is said at 25,
@@ -802,7 +738,7 @@ reason) and Unlock; Transfer (<code>transferIssue</code>), Pin and Unpin
 (<code>pinIssue</code>, <code>unpinIssue</code>) and Set Issue Type
 (<code>issueTypes</code>, <code>updateIssueIssueType</code>) through
 GraphQL; Reorder Sub-issues sends
-<code>PATCH /sub_issues/priority</code> with the neighbour’s ID and
+<code>PATCH /sub_issues/priority</code> with the neighbour's ID and
 reads the order back, so the list shows what GitHub holds.</p>
 <h2 id="rate-limits-and-conditional-requests">Rate limits and
 conditional requests</h2>
@@ -813,13 +749,13 @@ reads <code>GET /rate_limit</code> (free) and GraphQL
 a quarter of the allowance, quadruples it under a tenth, and waits for
 the reset at zero. A secondary limit (<code>Retry-After</code>, or a 403
 or 429 naming one) is recorded once; until it passes, every request
-stops before the network with “GitHub asked QUILL to wait 60 seconds”,
+stops before the network with "GitHub asked QUILL to wait 60 seconds",
 and Explore folds the warnings it caused into that one sentence.</p>
 <p><code>conditional_requests.py</code> keeps the last ETag and body of
 each repeated read per account (64 reads, 256 KB each, in
 <code>github_etag_cache.json</code>) and sends
 <code>If-None-Match</code>; a 304 shows the stored body and costs no
-rate limit. Explore says “No changes since the last load” when a reload
+rate limit. Explore says "No changes since the last load" when a reload
 found the same rows.</p>
 <h2 id="copilot-commit-comments-gists-and-queue-summaries">Copilot,
 commit comments, gists and queue summaries</h2>
@@ -886,23 +822,23 @@ commit comments, gists and queue summaries</h2>
 </table>
 <p>Request Copilot Review sends
 <code>POST /pulls/{n}/requested_reviewers</code> with
-<code>copilot-pull-request-reviewer[bot]</code>, the login GitHub’s
+<code>copilot-pull-request-reviewer[bot]</code>, the login GitHub's
 Copilot code review documentation names for the REST API, and reads the
-reply’s <code>requested_reviewers</code> back: GitHub can answer 201 and
+reply's <code>requested_reviewers</code> back: GitHub can answer 201 and
 leave Copilot off, which is how an account or repository without Copilot
 code review answers, and QUILL says so rather than reporting a request.
-A 422 is said as “Copilot code review may not be available”.</p>
-<p>Assign to Copilot follows GitHub’s “Using Copilot cloud agent via the
-API”. One GraphQL query reads
+A 422 is said as "Copilot code review may not be available".</p>
+<p>Assign to Copilot follows GitHub's "Using Copilot cloud agent via the
+API". One GraphQL query reads
 <code>suggestedActors(capabilities: [CAN_BE_ASSIGNED])</code> and the
-issue’s ID, state and assignees; without <code>copilot-swe-agent</code>
+issue's ID, state and assignees; without <code>copilot-swe-agent</code>
 among the actors, QUILL says the coding agent is not available and sends
 nothing. Otherwise it asks, then sends
-<code>replaceActorsForAssignable</code> with the existing assignees’ IDs
-plus the agent’s, so nobody already assigned is dropped. Both calls
+<code>replaceActorsForAssignable</code> with the existing assignees' IDs
+plus the agent's, so nobody already assigned is dropped. Both calls
 carry
 <code>GraphQL-Features: issues_copilot_assignment_api_support,coding_agent_model_selection</code>.
-Success is said only when the mutation’s assignee list holds the
+Success is said only when the mutation's assignee list holds the
 agent.</p>
 <p>Commit Comments reads <code>GET /commits/{sha}/comments</code> (100 a
 page, up to ten pages, and says when there were more) and posts with
@@ -917,12 +853,12 @@ in which a deleted file is <code>null</code> and a renamed one carries
 <code>filename</code>. A file GitHub truncated is never sent back.
 Create and save are confirmed against the files and description GitHub
 returns.</p>
-<p>The attention queue adds <code>pr_summary.py</code>’s sentence to
+<p>The attention queue adds <code>pr_summary.py</code>'s sentence to
 each pull request row from one aliased GraphQL request per refresh
 (<code>attention_queue_summaries.py</code>), covering the twenty newest
-pull requests. It keeps the summary’s rules: unknown or partial data
-reads “merge readiness unknown”, a pull request GitHub did not answer
-for reads “Summary unavailable”, and the row’s reason stays the first
+pull requests. It keeps the summary's rules: unknown or partial data
+reads "merge readiness unknown", a pull request GitHub did not answer
+for reads "Summary unavailable", and the row's reason stays the first
 line of its details. A summary gap is said in the status line but does
 not mark the queue itself incomplete.</p>
 <h2 id="review-and-write-safety">Review and write safety</h2>
@@ -933,16 +869,16 @@ each require a deliberate command and confirmation where appropriate.
 Actions are disabled if the PR is closed, the account is signed out, or
 GitHub denies that permission. If the review-thread state cannot be
 retrieved, threads remain readable while resolution controls are
-unavailable. Refresh to observe changes made elsewhere. If the review’s
+unavailable. Refresh to observe changes made elsewhere. If the review's
 diff cannot be loaded, the threads and checks still appear and QUILL
-says “Could not load the diff” with the reason. A refresh that finishes
+says "Could not load the diff" with the reason. A refresh that finishes
 after a newer one started is dropped, so it can never overwrite newer
 data.</p>
 <p>The Items <strong>Batch</strong> menu operates on checked issue or PR
 rows. Its confirmation names the targeted items. Visibility changes,
-merges and branch deletion have stronger typed confirmations in QUILL’s
+merges and branch deletion have stronger typed confirmations in QUILL's
 administration flows, and Delete Repository in Explore (both apps) needs
-the repository’s full name typed. QUILL Lite currently shares the Items,
+the repository's full name typed. QUILL Lite currently shares the Items,
 Explore, diff, and review surfaces; the separate repository
 administration and Local Git menus still belong to QUILL. This product
 difference is tracked in the workbench plan.</p>
@@ -968,7 +904,7 @@ REST transport. Wave 4 adds <code>search_views.py</code>,
 <code>repo_insights.py</code>, <code>repo_actions.py</code>,
 <code>release_admin.py</code>, <code>issue_housekeeping.py</code>,
 <code>rate_limits.py</code> and <code>conditional_requests.py</code>,
-with Explore’s routing in <code>explore_extra_views.py</code>. The last
+with Explore's routing in <code>explore_extra_views.py</code>. The last
 four add <code>copilot.py</code>, <code>commit_comments.py</code>,
 <code>gists.py</code> and <code>attention_queue_summaries.py</code>. The
 REST calls PyGithub lacks go through <code>rest_transport.py</code>,
@@ -989,9 +925,8 @@ Guide for QUILL and QUILL Lite</a>.</p>
 <h2 id="the-github-workbench-window-generated">The GitHub Workbench
 window, generated</h2>
 <p>Everything below is generated from the tables the window is built
-from. The window is the GitHub Workbench; the classic GitHub Items and
-Explore GitHub windows stay for one release behind Workbench Options,
-Use the classic GitHub windows.</p>
+from. The GitHub Workbench is the single GitHub management window in
+QUILL and QUILL Lite.</p>
 <h3 id="the-navigator-tree">The Navigator tree</h3>
 <table>
 <thead>
@@ -1066,7 +1001,7 @@ open.</td>
 <td>Repositories (<code>:repositories</code>)</td>
 <td>the top</td>
 <td>Repositories: the one you are working in first, then pinned,
-favorites, yours, starred, watched and your organizations’. Enter on a
+favorites, yours, starred, watched and your organizations'. Enter on a
 repository opens its node.</td>
 </tr>
 <tr>
@@ -1107,7 +1042,7 @@ its repositories.</td>
 <tr>
 <td>Search (<code>:search</code>)</td>
 <td>the top</td>
-<td>Search: GitHub’s searches. Choose one, type in the filter box with
+<td>Search: GitHub's searches. Choose one, type in the filter box with
 Ctrl+E, and press Enter.</td>
 </tr>
 <tr>
@@ -1149,7 +1084,7 @@ up.</td>
 <tr>
 <td>People I Follow (<code>:following</code>)</td>
 <td>people</td>
-<td>People I Follow: accounts you follow. Enter opens a person’s
+<td>People I Follow: accounts you follow. Enter opens a person's
 node.</td>
 </tr>
 <tr>
@@ -1161,10 +1096,10 @@ node.</td>
 <td>My Teams (<code>:my_teams</code>)</td>
 <td>people</td>
 <td>My Teams: every team you belong to, across your organizations.
-Alt+Enter opens a team’s sheet.</td>
+Alt+Enter opens a team's sheet.</td>
 </tr>
 <tr>
-<td>Find a Person… (<code>:find_person</code>)</td>
+<td>Find a Person... (<code>:find_person</code>)</td>
 <td>people</td>
 <td>Find a Person: type a login with Ctrl+L, and the person gets a node
 of their own here.</td>
@@ -1182,7 +1117,7 @@ of their own here.</td>
 <tr>
 <td>Projects (<code>:projects</code>)</td>
 <td>the top</td>
-<td>Projects: your Project boards. Each repository’s own Projects are
+<td>Projects: your Project boards. Each repository's own Projects are
 under it, Ctrl+Shift+7.</td>
 </tr>
 <tr>
@@ -1212,7 +1147,7 @@ on its context menu, goes to the place it is about.</td>
 <tr>
 <td>The Guide (<code>:help_guide</code>)</td>
 <td>help</td>
-<td>The Guide: the GitHub Workbench Guide’s chapters. Ctrl+F1 opens the
+<td>The Guide: the GitHub Workbench Guide's chapters. Ctrl+F1 opens the
 guide at the chapter for where you are.</td>
 </tr>
 <tr>
@@ -1249,19 +1184,19 @@ them.</td>
 <tr>
 <td>Overview (<code>repository:overview</code>)</td>
 <td>repository, repository</td>
-<td>Overview: the repository’s README, description and community
+<td>Overview: the repository's README, description and community
 profile.</td>
 </tr>
 <tr>
 <td>Issues (<code>repository:issues</code>)</td>
 <td>repository, repository</td>
-<td>Issues: this repository’s open issues. Ctrl+N files a new one;
+<td>Issues: this repository's open issues. Ctrl+N files a new one;
 Delete closes the selected one after asking.</td>
 </tr>
 <tr>
 <td>Pull Requests (<code>repository:pulls</code>)</td>
 <td>repository, repository</td>
-<td>Pull Requests: this repository’s open pull requests. Enter opens the
+<td>Pull Requests: this repository's open pull requests. Enter opens the
 review; Ctrl+Shift+D lists the changed files.</td>
 </tr>
 <tr>
@@ -1274,13 +1209,13 @@ inbox reads.</td>
 <tr>
 <td>Discussions (<code>repository:discussions</code>)</td>
 <td>repository, repository</td>
-<td>Discussions: the repository’s conversations that are not
+<td>Discussions: the repository's conversations that are not
 issues.</td>
 </tr>
 <tr>
 <td>Actions (<code>repository:actions</code>)</td>
 <td>repository, repository</td>
-<td>Actions: the repository’s workflow runs, workflows and caches.</td>
+<td>Actions: the repository's workflow runs, workflows and caches.</td>
 </tr>
 <tr>
 <td>Runs (<code>repository:runs</code>)</td>
@@ -1308,13 +1243,13 @@ fork.</td>
 <tr>
 <td>Files (<code>repository:files</code>)</td>
 <td>repository, code</td>
-<td>Files: the repository’s files on its default branch, a folder at a
+<td>Files: the repository's files on its default branch, a folder at a
 time. Enter opens a folder, or a file in the editor.</td>
 </tr>
 <tr>
 <td>Branches (<code>repository:branches</code>)</td>
 <td>repository, code</td>
-<td>Branches: lines of work. Enter lists a branch’s commits.</td>
+<td>Branches: lines of work. Enter lists a branch's commits.</td>
 </tr>
 <tr>
 <td>Commits (<code>repository:commits</code>)</td>
@@ -1352,7 +1287,7 @@ requests in one.</td>
 <tr>
 <td>Projects (<code>repository:repo_projects</code>)</td>
 <td>repository, repository</td>
-<td>Projects: this repository’s Project boards.</td>
+<td>Projects: this repository's Project boards.</td>
 </tr>
 <tr>
 <td>Activity (<code>repository:activity</code>)</td>
@@ -1461,7 +1396,7 @@ follow.</td>
 <tr>
 <td>Repositories (<code>person:person_repositories</code>)</td>
 <td>person, person</td>
-<td>Repositories: this person’s public repositories.</td>
+<td>Repositories: this person's public repositories.</td>
 </tr>
 <tr>
 <td>Activity (<code>person:person_activity</code>)</td>
@@ -1487,13 +1422,13 @@ follow.</td>
 <td>Repositories
 (<code>organization:organization_repositories</code>)</td>
 <td>organization, organization</td>
-<td>Repositories: the organization’s repositories you can see.</td>
+<td>Repositories: the organization's repositories you can see.</td>
 </tr>
 <tr>
 <td>Teams (<code>organization:organization_teams</code>)</td>
 <td>organization, organization</td>
-<td>Teams: the organization’s teams, as GitHub nests them. Alt+Enter
-opens a team’s sheet: its members and maintainers, repositories and
+<td>Teams: the organization's teams, as GitHub nests them. Alt+Enter
+opens a team's sheet: its members and maintainers, repositories and
 roles, child teams and code review assignment.</td>
 </tr>
 </tbody>
@@ -1510,24 +1445,24 @@ roles, child teams and code review assignment.</td>
 </thead>
 <tbody>
 <tr>
-<td>New Here…</td>
+<td>New Here...</td>
 <td>Ctrl+N</td>
 <td>Something new where you are: an issue in Issues, a saved search in
 Saved Searches.</td>
 </tr>
 <tr>
-<td>New…</td>
+<td>New...</td>
 <td>Ctrl+Shift+N</td>
 <td>Choose what to create, wherever you are.</td>
 </tr>
 <tr>
-<td>Open GitHub Address…</td>
+<td>Open GitHub Address...</td>
 <td>Ctrl+L</td>
 <td>Type or paste owner/name, #42, owner/name#42 or any GitHub link to
 go there.</td>
 </tr>
 <tr>
-<td>Go to Number…</td>
+<td>Go to Number...</td>
 <td>Ctrl+G</td>
 <td>Go to an issue or pull request in this repository by its
 number.</td>
@@ -1579,18 +1514,18 @@ selection.</td>
 <tr>
 <td>Copy Link</td>
 <td>Ctrl+Shift+C</td>
-<td>Copy the selected row’s address.</td>
+<td>Copy the selected row's address.</td>
 </tr>
 <tr>
-<td>Filter…</td>
+<td>Filter...</td>
 <td>Ctrl+E</td>
 <td>Move to the filter box. Ctrl+Shift+F too.</td>
 </tr>
 <tr>
-<td>Filter Builder…</td>
+<td>Filter Builder...</td>
 <td>Ctrl+Alt+F</td>
 <td>Build a filter one condition at a time: every attribute, an operator
-and a value from the repository, written into the filter box as GitHub’s
+and a value from the repository, written into the filter box as GitHub's
 syntax.</td>
 </tr>
 <tr>
@@ -1703,7 +1638,7 @@ everything.</td>
 with the others and with what you type in the filter box.</td>
 </tr>
 <tr>
-<td>Quick Filters &gt; Assigned To…</td>
+<td>Quick Filters &gt; Assigned To...</td>
 <td>(submenu letter)</td>
 <td>Show only items assigned to someone you name. Checked when it is on;
 it combines with the others and with what you type in the filter
@@ -1716,7 +1651,7 @@ box.</td>
 with the others and with what you type in the filter box.</td>
 </tr>
 <tr>
-<td>Quick Filters &gt; Opened By…</td>
+<td>Quick Filters &gt; Opened By...</td>
 <td>(submenu letter)</td>
 <td>Show only items opened by someone you name. Checked when it is on;
 it combines with the others and with what you type in the filter
@@ -1808,45 +1743,45 @@ combines with the others and with what you type in the filter box.</td>
 <tr>
 <td>Group By &gt; Label</td>
 <td>(submenu letter)</td>
-<td>Put the list’s groups in the tree, one node per label.</td>
+<td>Put the list's groups in the tree, one node per label.</td>
 </tr>
 <tr>
 <td>Group By &gt; Milestone</td>
 <td>(submenu letter)</td>
-<td>Put the list’s groups in the tree, one node per milestone.</td>
+<td>Put the list's groups in the tree, one node per milestone.</td>
 </tr>
 <tr>
 <td>Group By &gt; Assignee</td>
 <td>(submenu letter)</td>
-<td>Put the list’s groups in the tree, one node per assignee.</td>
+<td>Put the list's groups in the tree, one node per assignee.</td>
 </tr>
 <tr>
 <td>Group By &gt; Author</td>
 <td>(submenu letter)</td>
-<td>Put the list’s groups in the tree, one node per author.</td>
+<td>Put the list's groups in the tree, one node per author.</td>
 </tr>
 <tr>
 <td>Group By &gt; Type</td>
 <td>(submenu letter)</td>
-<td>Put the list’s groups in the tree, one node per type.</td>
+<td>Put the list's groups in the tree, one node per type.</td>
 </tr>
 <tr>
 <td>Group By &gt; State</td>
 <td>(submenu letter)</td>
-<td>Put the list’s groups in the tree, one node per state.</td>
+<td>Put the list's groups in the tree, one node per state.</td>
 </tr>
 <tr>
 <td>Group By &gt; Repository</td>
 <td>(submenu letter)</td>
-<td>Put the list’s groups in the tree, one node per repository.</td>
+<td>Put the list's groups in the tree, one node per repository.</td>
 </tr>
 <tr>
 <td>Group By &gt; Review State</td>
 <td>(submenu letter)</td>
-<td>Put the list’s groups in the tree, one node per review state.</td>
+<td>Put the list's groups in the tree, one node per review state.</td>
 </tr>
 <tr>
-<td>Columns…</td>
+<td>Columns...</td>
 <td>Ctrl+Shift+U</td>
 <td>Choose which columns this list shows, and their order.</td>
 </tr>
@@ -1883,7 +1818,7 @@ combines with the others and with what you type in the filter box.</td>
 <tr>
 <td>Say Item State</td>
 <td>Alt+3</td>
-<td>Say the selected item’s state in one line.</td>
+<td>Say the selected item's state in one line.</td>
 </tr>
 <tr>
 <td>Say Counts</td>
@@ -1980,32 +1915,32 @@ combines with the others and with what you type in the filter box.</td>
 <tr>
 <td>Issues</td>
 <td>Ctrl+Shift+1</td>
-<td>This repository’s issues.</td>
+<td>This repository's issues.</td>
 </tr>
 <tr>
 <td>Pull Requests</td>
 <td>Ctrl+Shift+2</td>
-<td>This repository’s pull requests.</td>
+<td>This repository's pull requests.</td>
 </tr>
 <tr>
 <td>Discussions</td>
 <td>Ctrl+Shift+3</td>
-<td>This repository’s discussions.</td>
+<td>This repository's discussions.</td>
 </tr>
 <tr>
 <td>Actions Runs</td>
 <td>Ctrl+Shift+4</td>
-<td>This repository’s workflow runs.</td>
+<td>This repository's workflow runs.</td>
 </tr>
 <tr>
 <td>Files</td>
 <td>Ctrl+Shift+5</td>
-<td>This repository’s files.</td>
+<td>This repository's files.</td>
 </tr>
 <tr>
 <td>Releases</td>
 <td>Ctrl+Shift+6</td>
-<td>This repository’s releases.</td>
+<td>This repository's releases.</td>
 </tr>
 <tr>
 <td>Repository Projects</td>
@@ -2070,37 +2005,37 @@ combines with the others and with what you type in the filter box.</td>
 </thead>
 <tbody>
 <tr>
-<td>Properties…</td>
+<td>Properties...</td>
 <td>Alt+Enter</td>
 <td>Everything about the selected row on one sheet.</td>
 </tr>
 <tr>
-<td>Comment…</td>
+<td>Comment...</td>
 <td>Ctrl+Shift+M</td>
 <td>Write a comment on the selected item.</td>
 </tr>
 <tr>
-<td>File Differences…</td>
+<td>File Differences...</td>
 <td>Ctrl+Shift+D</td>
-<td>The selected pull request’s changed files.</td>
+<td>The selected pull request's changed files.</td>
 </tr>
 <tr>
-<td>Merge…</td>
+<td>Merge...</td>
 <td>Ctrl+Shift+Enter</td>
 <td>Merge the selected pull request.</td>
 </tr>
 <tr>
-<td>Assign to Copilot…</td>
+<td>Assign to Copilot...</td>
 <td>Ctrl+Shift+A</td>
 <td>Ask Copilot to work on the selected issue.</td>
 </tr>
 <tr>
-<td>Start in Local Worktree…</td>
+<td>Start in Local Worktree...</td>
 <td>Ctrl+Shift+T</td>
 <td>A branch and a folder on this computer for the selected item.</td>
 </tr>
 <tr>
-<td>What Failed…</td>
+<td>What Failed...</td>
 <td>Ctrl+Shift+W</td>
 <td>The failing steps of the selected run, and their log lines.</td>
 </tr>
@@ -2138,18 +2073,18 @@ many.</td>
 </thead>
 <tbody>
 <tr>
-<td>Compare Branches…</td>
+<td>Compare Branches...</td>
 <td>Ctrl+Shift+B</td>
 <td>Commits ahead and behind between two branches, and the changed
 files.</td>
 </tr>
 <tr>
-<td>Run Workflow on Branch…</td>
+<td>Run Workflow on Branch...</td>
 <td>Ctrl+Shift+R</td>
 <td>Start a workflow that can be started by hand, on a branch.</td>
 </tr>
 <tr>
-<td>Repository Actions…</td>
+<td>Repository Actions...</td>
 <td>Ctrl+Shift+G</td>
 <td>Everything else for this repository: star, watch, fork, clone,
 Codespaces, settings and administration, as a list you can run
@@ -2168,7 +2103,7 @@ from.</td>
 </thead>
 <tbody>
 <tr>
-<td>Manage GitHub Accounts…</td>
+<td>Manage GitHub Accounts...</td>
 <td>Ctrl+Shift+K</td>
 <td>Add, switch, sign in again or remove GitHub accounts.</td>
 </tr>
@@ -2178,52 +2113,52 @@ from.</td>
 <td>How much of the GitHub API is left, and when it resets.</td>
 </tr>
 <tr>
-<td>GitHub Permissions…</td>
+<td>GitHub Permissions...</td>
 <td>Ctrl+Shift+P</td>
 <td>Every permission the Workbench can use, what it unlocks, whether you
 have it, and one step to add the missing ones.</td>
 </tr>
 <tr>
-<td>Change History…</td>
+<td>Change History...</td>
 <td>Ctrl+Shift+H</td>
 <td>Every change the Workbench made on GitHub: before and after, and
 Undo where GitHub allows it.</td>
 </tr>
 <tr>
-<td>Roles and Access &gt; My Access Here…</td>
+<td>Roles and Access &gt; My Access Here...</td>
 <td>(submenu letter)</td>
 <td>Your effective role here, and where each part comes from.</td>
 </tr>
 <tr>
-<td>Roles and Access &gt; View As Role…</td>
+<td>Roles and Access &gt; View As Role...</td>
 <td>(submenu letter)</td>
 <td>What a role could do here, read-only: nothing you do is sent.</td>
 </tr>
 <tr>
-<td>Roles and Access &gt; Compare Roles…</td>
+<td>Roles and Access &gt; Compare Roles...</td>
 <td>(submenu letter)</td>
 <td>Two roles side by side: what one may do that the other may not.</td>
 </tr>
 <tr>
-<td>Roles and Access &gt; Why Can’t They?…</td>
+<td>Roles and Access &gt; Why Can't They?...</td>
 <td>(submenu letter)</td>
 <td>Name a person and an action; hear what stops them and who can fix
 it.</td>
 </tr>
 <tr>
-<td>Roles and Access &gt; Access Review…</td>
+<td>Roles and Access &gt; Access Review...</td>
 <td>(submenu letter)</td>
 <td>Every person and repository pair in an organization, with role and
 source: filterable, exportable as CSV.</td>
 </tr>
 <tr>
-<td>Roles and Access &gt; Bulk Access Changes…</td>
+<td>Roles and Access &gt; Bulk Access Changes...</td>
 <td>(submenu letter)</td>
 <td>One team or person, many repositories: previewed, then a result per
 change.</td>
 </tr>
 <tr>
-<td>Roles and Access &gt; Workbench Level for This Account…</td>
+<td>Roles and Access &gt; Workbench Level for This Account...</td>
 <td>(submenu letter)</td>
 <td>Read Only, Organize or Full: what the Workbench may change with this
 account, whatever GitHub would allow.</td>
@@ -2241,7 +2176,7 @@ account, whatever GitHub would allow.</td>
 </thead>
 <tbody>
 <tr>
-<td>Workbench Options…</td>
+<td>Workbench Options...</td>
 <td>Ctrl+Shift+O</td>
 <td>Where the Workbench opens, how notifications check, lists and
 privacy.</td>
@@ -2281,7 +2216,7 @@ privacy.</td>
 <td>What this view and control do.</td>
 </tr>
 <tr>
-<td>What Can I Do Here?…</td>
+<td>What Can I Do Here?...</td>
 <td>Shift+F1</td>
 <td>Every action for the selection, its key, and why any is greyed.</td>
 </tr>
@@ -2296,7 +2231,7 @@ privacy.</td>
 <td>The guide, opened at the chapter for where you are.</td>
 </tr>
 <tr>
-<td>Search Help…</td>
+<td>Search Help...</td>
 <td>Ctrl+Shift+F1</td>
 <td>Type a few words to find a help topic, a command or a GitHub
 word.</td>
@@ -2351,73 +2286,73 @@ word.</td>
 </table>
 <h3 id="context-menus-by-row-type">Context menus, by row type</h3>
 <ul>
-<li><strong>issue</strong>: Open, Comment…, Close or Reopen…, Labels…,
-Assignees…, Copy Link; More: Open on GitHub, Milestone…, React…, View
-Timeline…, Summarize Discussion, Start in Local Worktree…, Assign to
-Copilot…, Lock or Unlock Conversation…, Pin or Unpin Issue, Transfer
-Issue…, Set Issue Type…, Reorder Sub-issues…, Add to or Remove from
-Favorites; Properties…</li>
-<li><strong>pull_request</strong>: Review…, File Differences…, Comment…,
-Merge…, Copy Link, Open on GitHub; More: Start in Local Worktree…, Open
-in Codespaces…, Commit Comments…, View Timeline…, Summarize Discussion,
-React…, Labels…, Assignees…, Add to or Remove from Favorites;
-Properties…</li>
-<li><strong>run</strong>: Jobs and Logs, What Failed…, Re-run Failed
-Jobs Only, Re-run Workflow, Cancel Run…, View Artifacts…; More: Open on
-GitHub, Combined Check Status, Review Pending Deployments…, Approve Run
-from a Fork…, Delete Run…, Copy Link; Properties…</li>
-<li><strong>workflow</strong>: Runs, Run Workflow on Branch…, Open on
-GitHub, Copy Link; Properties…</li>
-<li><strong>release</strong>: Assets, Edit Release…, Draft Release
-Notes…, Upload Asset…, Copy Link, Open on GitHub; Properties…</li>
-<li><strong>release_asset</strong>: Download, Copy Link, Delete Asset…;
-Properties…</li>
-<li><strong>branch</strong>: Commits, Compare Branches…, Open in
-Codespaces…, Copy Name, Delete Branch…; Properties…</li>
-<li><strong>commit</strong>: Open, Commit Comments…, Copy Link, Open on
-GitHub; Properties…</li>
-<li><strong>tag</strong>: Open, Commit Comments…, Copy Link, Open on
-GitHub; Properties…</li>
+<li><strong>issue</strong>: Open, Comment..., Close or Reopen...,
+Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone...,
+React..., View Timeline..., Summarize Discussion, Start in Local
+Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin
+or Unpin Issue, Transfer Issue..., Set Issue Type..., Reorder
+Sub-issues..., Add to or Remove from Favorites; Properties...</li>
+<li><strong>pull_request</strong>: Review..., File Differences...,
+Comment..., Merge..., Copy Link, Open on GitHub; More: Start in Local
+Worktree..., Open in Codespaces..., Commit Comments..., View
+Timeline..., Summarize Discussion, React..., Labels..., Assignees...,
+Add to or Remove from Favorites; Properties...</li>
+<li><strong>run</strong>: Jobs and Logs, What Failed..., Re-run Failed
+Jobs Only, Re-run Workflow, Cancel Run..., View Artifacts...; More: Open
+on GitHub, Combined Check Status, Review Pending Deployments..., Approve
+Run from a Fork..., Delete Run..., Copy Link; Properties...</li>
+<li><strong>workflow</strong>: Runs, Run Workflow on Branch..., Open on
+GitHub, Copy Link; Properties...</li>
+<li><strong>release</strong>: Assets, Edit Release..., Draft Release
+Notes..., Upload Asset..., Copy Link, Open on GitHub; Properties...</li>
+<li><strong>release_asset</strong>: Download, Copy Link, Delete
+Asset...; Properties...</li>
+<li><strong>branch</strong>: Commits, Compare Branches..., Open in
+Codespaces..., Copy Name, Delete Branch...; Properties...</li>
+<li><strong>commit</strong>: Open, Commit Comments..., Copy Link, Open
+on GitHub; Properties...</li>
+<li><strong>tag</strong>: Open, Commit Comments..., Copy Link, Open on
+GitHub; Properties...</li>
 <li><strong>notification</strong>: Open, Mark Read, Mark Done, Snooze
 for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally;
-Properties…</li>
+Properties...</li>
 <li><strong>repository</strong>: Open, Star or Unstar, Watch or Unwatch,
-Clone…, Pin, Add to or Remove from Favorites; More: Open on GitHub, Open
-in Codespaces…; Properties…</li>
+Clone..., Pin, Add to or Remove from Favorites; More: Open on GitHub,
+Open in Codespaces...; Properties...</li>
 <li><strong>person</strong>: Open, Follow or Unfollow, Open on GitHub;
-Properties…</li>
-<li><strong>label</strong>: Find Issues with Label, Edit Label…, Delete
-Label…; Properties…</li>
-<li><strong>gist</strong>: Edit Gist…, Star or Unstar, Copy Link, Open
-on GitHub, Delete Gist…; Properties…</li>
+Properties...</li>
+<li><strong>label</strong>: Find Issues with Label, Edit Label...,
+Delete Label...; Properties...</li>
+<li><strong>gist</strong>: Edit Gist..., Star or Unstar, Copy Link, Open
+on GitHub, Delete Gist...; Properties...</li>
 <li><strong>discussion</strong>: Open Discussion Thread, Copy Link, Open
-on GitHub; Properties…</li>
-<li><strong>security_alert</strong>: Open, Dismiss or Reopen Alert…,
-Open on GitHub; Properties…</li>
-<li><strong>cache</strong>: Show Details, Delete Cache…;
-Properties…</li>
+on GitHub; Properties...</li>
+<li><strong>security_alert</strong>: Open, Dismiss or Reopen Alert...,
+Open on GitHub; Properties...</li>
+<li><strong>cache</strong>: Show Details, Delete Cache...;
+Properties...</li>
 <li><strong>saved_search</strong>: Run, Remove Saved Search;
-Properties…</li>
+Properties...</li>
 <li><strong>result</strong>: Open, Copy Link, Open on GitHub;
-Properties…</li>
+Properties...</li>
 <li><strong>file</strong>: Open in Editor, Copy Link, Open on GitHub;
-Properties…</li>
+Properties...</li>
 <li><strong>folder</strong>: Open Folder, Open on GitHub;
-Properties…</li>
+Properties...</li>
 <li><strong>milestone</strong>: Find Issues in Milestone, Copy Link,
-Open on GitHub; Properties…</li>
+Open on GitHub; Properties...</li>
 <li><strong>project</strong>: Open on GitHub, Copy Link;
-Properties…</li>
-<li><strong>team</strong>: Members and Access…, Copy Link, Open on
-GitHub; Properties…</li>
+Properties...</li>
+<li><strong>team</strong>: Members and Access..., Copy Link, Open on
+GitHub; Properties...</li>
 <li><strong>organization</strong>: Open, Open on GitHub;
-Properties…</li>
+Properties...</li>
 <li><strong>favorite</strong>: Open, Copy Link, Open on GitHub, Add to
-or Remove from Favorites; Properties…</li>
-<li><strong>admin_action</strong>: Open; Properties…</li>
-<li><strong>help_topic</strong>: Open, Take Me There; Properties…</li>
+or Remove from Favorites; Properties...</li>
+<li><strong>admin_action</strong>: Open; Properties...</li>
+<li><strong>help_topic</strong>: Open, Take Me There; Properties...</li>
 <li><strong>node</strong>: Refresh, Open on GitHub, Help for This View;
-Properties…</li>
+Properties...</li>
 </ul>
 <h3 id="workbench-options">Workbench Options</h3>
 <table>
@@ -2491,7 +2426,7 @@ Notifications.</td>
 <td><code>speak_column_names</code></td>
 <td>Lists</td>
 <td>Say column names before values</td>
-<td>Put each column’s name before its value in a list row, as in Number
+<td>Put each column's name before its value in a list row, as in Number
 42, Title Crash on start. Off keeps rows short.</td>
 </tr>
 <tr>
@@ -2499,7 +2434,7 @@ Notifications.</td>
 <td>Privacy</td>
 <td>Load the repository Health Snapshot</td>
 <td>Insights, Health Snapshot reads extra data from GitHub about a
-repository’s activity. It loads only when this is checked.</td>
+repository's activity. It loads only when this is checked.</td>
 </tr>
 <tr>
 <td><code>first_time_help</code></td>
@@ -2508,18 +2443,11 @@ repository’s activity. It loads only when this is checked.</td>
 <td>The first few times you visit a place, its details start with a
 short paragraph on what it is for.</td>
 </tr>
-<tr>
-<td><code>use_classic_windows</code></td>
-<td>Privacy</td>
-<td>Use the classic GitHub windows</td>
-<td>Open GitHub Items and Explore GitHub, as before the Workbench, from
-the editor’s GitHub doors. Kept for one release, then retired.</td>
-</tr>
 </tbody>
 </table>
 <h3 id="github-words">GitHub words</h3>
 <ul>
-<li><strong>Actions</strong>: GitHub’s automation: workflows that run on
+<li><strong>Actions</strong>: GitHub's automation: workflows that run on
 events, such as a push.</li>
 <li><strong>Artifact</strong>: A file a run produced and kept, to
 download.</li>
@@ -2549,21 +2477,21 @@ yet.</li>
 with its own rules and secrets.</li>
 <li><strong>Favorite</strong>: An item kept on this computer under
 Repositories, Favorites.</li>
-<li><strong>Fork</strong>: Your own copy of somebody else’s repository,
+<li><strong>Fork</strong>: Your own copy of somebody else's repository,
 from which you can propose changes back. Under People, Forks.</li>
 <li><strong>Gist</strong>: A small shared file or snippet, with its own
 history.</li>
-<li><strong>Inbox</strong>: The Workbench’s one list of what needs you,
+<li><strong>Inbox</strong>: The Workbench's one list of what needs you,
 made from notifications, review requests, assignments and mentions.</li>
 <li><strong>Issue</strong>: A note about a bug, an idea or a task, with
-a conversation under it. Under a repository’s Issues.</li>
+a conversation under it. Under a repository's Issues.</li>
 <li><strong>Job</strong>: One part of a run, on one machine, made of
 steps.</li>
 <li><strong>Label</strong>: A coloured tag on issues and pull requests,
 such as bug. Under Labels.</li>
 <li><strong>Mention</strong>: Your login written with an at sign, such
 as @you, which notifies you.</li>
-<li><strong>Merge</strong>: Bringing a pull request’s changes into the
+<li><strong>Merge</strong>: Bringing a pull request's changes into the
 branch it targets. Item, Merge, Ctrl+Shift+Enter.</li>
 <li><strong>Milestone</strong>: A goal with a due date that issues and
 pull requests belong to.</li>
@@ -2577,17 +2505,17 @@ Repositories, Pinned.</li>
 pull requests.</li>
 <li><strong>Pull request</strong>: A proposed change: commits on one
 branch that somebody asks to merge into another, with a review. Under a
-repository’s Pull Requests.</li>
+repository's Pull Requests.</li>
 <li><strong>Rate limit</strong>: How many requests GitHub allows an
 account each hour. Account, GitHub API Rate Limit, Ctrl+Shift+L.</li>
 <li><strong>Rebase</strong>: Replaying commits on top of another branch,
 so the history reads as one straight line.</li>
 <li><strong>Release</strong>: A published version, with notes and files
-to download. Under a repository’s Releases.</li>
-<li><strong>Repository</strong>: A project’s folder on GitHub: its
+to download. Under a repository's Releases.</li>
+<li><strong>Repository</strong>: A project's folder on GitHub: its
 files, their history, and its issues and pull requests. Under
 Repositories in the tree.</li>
-<li><strong>Review</strong>: Reading a pull request’s changes and
+<li><strong>Review</strong>: Reading a pull request's changes and
 approving them, asking for changes, or commenting. Enter on a pull
 request.</li>
 <li><strong>Role</strong>: What somebody may do: read, triage, write,
@@ -2617,13 +2545,12 @@ Under Code, Upstream, on a fork.</li>
 <li><strong>Variable</strong>: A value workflows use that is not
 secret.</li>
 <li><strong>Watch</strong>: Asking GitHub to tell you about a
-repository’s activity.</li>
+repository's activity.</li>
 <li><strong>Workflow</strong>: One automation, defined in a file in the
 repository. Under Actions, Workflows.</li>
 <li><strong>Workflow dispatch</strong>: Starting a workflow by hand, on
 a branch you choose.</li>
 </ul>
 <!-- END GENERATED -->
-</main>
 </body>
 </html>

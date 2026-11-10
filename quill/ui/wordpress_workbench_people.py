@@ -23,6 +23,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.wordpress import site_admin as admin
+from quill.core.wordpress.workbench_actions import command as workbench_command
 from quill.core.wordpress.workbench_people import (
     change_role,
     create_app_password,
@@ -60,6 +61,7 @@ _EDIT_NEEDS = {
     "plugin": "activate_plugins",
     "setting": "manage_options",
     "form_entry": "edit_posts",
+    "gravity_form": "gravityforms_create_form",
     "menu": "edit_theme_options",
     "template": "edit_theme_options",
     "pattern": "edit_posts",
@@ -164,11 +166,18 @@ class WorkbenchPeopleCommands:
         """Why *command_id* may not run on *row* now ("" when it may)."""
         if row is None or not row.site:
             return ""
+        if command_id == workbench_command("change_gravity_field_type"):
+            if row.kind != "gravity_form" or row.subkind != "gravity":
+                return "This is not a Gravity Forms form. QAF fields are changed in Form Outline."
         kind = row.kind if row.kind in self.actions.row_types else "fact"
         action = next((a for a in self.actions.rows_for(kind) if a.command_id == command_id), None)
         if action is None:
             return ""
-        if not tier_allowed(action.tier, self.access_for(row.site)):
+        tier = action.tier
+        if row.kind == "ability" and command_id == workbench_command("run_ability"):
+            if not row.raw.get("readonly", False):
+                tier = Tier.DESTRUCTIVE if row.raw.get("destructive", False) else Tier.WRITE
+        if not tier_allowed(tier, self.access_for(row.site)):
             return self._access_sentence(row.site)
         account = self.account_for(row.site)
         needed = capability_for(action, row.kind, row.subkind)

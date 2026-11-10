@@ -33,6 +33,7 @@ from quill.core.wordpress.workbench_places import (
     HOUSEKEEPING,
     SWEEP_NODES,
 )
+from quill.core.wordpress.workbench_pmpro_tree import MEMBERSHIP_NODES
 from quill.core.workbench.tree import NodeSpec, Scope, TreeSpec
 
 __all__ = [
@@ -426,6 +427,7 @@ _SITE: tuple[NodeSpec, ...] = (
         columns=("form", "plugin", "entries", "status"),
         row_type="form",
     ),
+    *MEMBERSHIP_NODES,
     _n(
         "form_entries",
         "Responses",
@@ -492,7 +494,7 @@ _SITE: tuple[NodeSpec, ...] = (
         "Abilities",
         "site",
         loader="abilities:all",
-        columns=("ability", "category", "says"),
+        columns=("ability", "plugin", "category", "says"),
         row_type="ability",
     ),
     *BY_NAME_NODES,

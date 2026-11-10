@@ -2346,11 +2346,7 @@ Control coverage: 309 audited sites (309 helped).
 
 **Discussion #.** One discussion thread: read it, and reply if you are signed in.
 
-**Explore GitHub.** Explore GitHub, the classic window: searches, your own work, people and repository administration.
-
 **Filter Builder.** Build a filter one condition at a time: an attribute, an operator and a value from the repository. The query appears as you go, in GitHub's own syntax; OK puts it in the filter box, Save as Search also keeps it.
-
-**GitHub Items.** GitHub Items, the classic window: one repository's issues, pull requests, branches, commits, tags, releases and workflow runs.
 
 **GitHub Permissions.** Every permission the Workbench can use, what it unlocks and whether you have it. Add Permissions asks for every missing one in one sign-in; Copy Command, the classic token page and the fine-grained steps are the other ways.
 
@@ -2999,8 +2995,6 @@ Control coverage: 309 audited sites (309 helped).
 **Privacy: Load the repository Health Snapshot.** Insights, Health Snapshot reads extra data from GitHub about a repository's activity. It loads only when this is checked.
 
 **Privacy: Show First time here? help.** The first few times you visit a place, its details start with a short paragraph on what it is for.
-
-**Privacy: Use the classic GitHub windows.** Open GitHub Items and Explore GitHub, as before the Workbench, from the editor's GitHub doors. Kept for one release, then retired.
 
 ### Every authored control help sentence
 

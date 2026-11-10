@@ -120,5 +120,5 @@ listed as "Did not answer:" and its name, and the rest carry on.
 
 ## Where to next
 
-- Previous: [Chapter 13: Every window, field and button](wordpress-forms-13-window-reference.html)
+- Previous: [Chapter 13: WordPress Workbench reference](wordpress-forms-13-window-reference.html)
 - [Contents](wordpress-forms-guide.html)

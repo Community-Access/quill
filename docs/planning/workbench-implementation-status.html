@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>workbench-implementation-status</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<h1 id="github-and-wordpress-workbench-implementation-status">GitHub and
+WordPress Workbench implementation status</h1>
+<p><strong>Updated:</strong> 2026-11-10<br />
+<strong>Workspace:</strong> <code>D:\quill</code><br />
+<strong>Status:</strong> Implementation is in progress.</p>
+<p>The accepted specifications are the <a
+href="../Product%20Requirement%20Documents%20and%20Specifications/github-workbench-prd.md">GitHub
+Workbench PRD</a> and <a
+href="../Product%20Requirement%20Documents%20and%20Specifications/wordpress-workbench-prd.md">WordPress
+Workbench PRD</a>. This page records delivery state and later decisions;
+the PRDs remain the complete statement of accepted product
+requirements.</p>
+<h2 id="current-scope-decisions">Current scope decisions</h2>
+<ul>
+<li>WordPress plugin-specific integrations in this implementation are
+limited to <strong>QUILL Accessible Forms (QAF), Gravity Forms, and Paid
+Memberships Pro</strong>.</li>
+<li>QAF and Gravity Forms are the supported form systems. Paid
+Memberships Pro is supported through its documented WordPress Abilities
+API for levels, member memberships, orders, subscriptions, and search.
+The site's own capability checks remain authoritative for every
+operation.</li>
+<li>Other plugin-specific form and membership integrations are outside
+the current delivery scope. The general WordPress route and Abilities
+discovery features remain part of the Workbench.</li>
+<li>The classic GitHub Items/Explore and WordPress management-window
+fallback choices are retired. The editor doors open the Workbench.</li>
+</ul>
+<h2 id="github">GitHub</h2>
+<p>The editor menu and QUILL Lite now route GitHub browsing doors to the
+shared Workbench. The classic-window preference and environment override
+have been removed. Existing native Items, Explore, review, permissions,
+and repository administration features remain available through their
+Workbench nodes. New issue creation now discovers readable Markdown
+issue templates, offers a template or blank start, carries supported
+title/body/label/assignee defaults, and previews the issue before
+submission. GitHub's structured YAML issue forms and oversized templates
+remain unsupported in this flow.</p>
+<p>The accepted GitHub PRD's remaining delivery sequence is still
+open:</p>
+<ol type="1">
+<li><strong>Phase 11 — Coverage:</strong> vendor the GitHub API
+snapshot, add the coverage table and <code>GATE-GITHUB-COVER</code>, and
+generate the coverage chapter.</li>
+<li><strong>Phase 12 — Templates (partial):</strong> Markdown
+issue-template selection, prefill, and preview are implemented.
+Discussion forms and the Templates node, builder, interop, checks,
+starters, saving, copying, and community files remain.</li>
+<li><strong>Phase 13 — Beyond parity:</strong> API Console, Read as
+Document, Watches, editor commands, repository lists, role comparison,
+Dry Run, practice repository, and the remaining features named in PRD
+section 22.</li>
+<li><strong>Remaining feature coverage:</strong> move each item in PRD
+section 14 from the planned list into an implemented Workbench surface
+or document its actual API limitation. Across Repositories and
+Repository Sets are not complete.</li>
+</ol>
+<p>Manual NVDA, JAWS, Narrator, braille, scaling, and live-account
+acceptance remain outstanding. The engineering checklist is in the <a
+href="./github-roadmap.md">GitHub Workbench roadmap</a>.</p>
+<h2 id="wordpress">WordPress</h2>
+<p>The management-window fallback and preference have been removed.
+Common plugin discovery labels are narrowed to QAF, Gravity Forms, and
+Paid Memberships Pro. The shared API and Abilities surfaces continue to
+expose what each connected site actually offers.</p>
+<h3 id="form-control-conversion">Form control conversion</h3>
+<ul>
+<li><strong>QAF:</strong> Form Outline now previews a field type change,
+retains shared field properties and compatible choice data, adjusts
+single/multiple defaults, and blocks target types whose required setup
+is missing. An automatically created choice matches an existing default
+value.</li>
+<li><strong>Gravity Forms:</strong> the Workbench exposes a field
+conversion action for common text, paragraph, email, number, drop-down,
+radio, and checkbox controls. It reads the full form, previews the
+selected field's changes, preserves the rest of the form, checks for
+concurrent edits, then sends the complete form object through REST v2
+PUT after confirmation. The action requires the site's
+<code>gravityforms_create_form</code> capability and Full Workbench
+access. Complex field families are left untouched.</li>
+<li>Conversion actions use the existing labelled field picker and
+preview dialogs. Manual screen-reader, keyboard, and scale checks remain
+part of acceptance.</li>
+</ul>
+<h3 id="paid-memberships-pro">Paid Memberships Pro</h3>
+<p>PMPro abilities appear with the provider name in the Workbench's
+Abilities list. Read and write inputs use the bracketed
+<code>input[field]</code> query format. Read-only abilities use GET;
+destructive, idempotent abilities use DELETE; other writes use POST.
+PMPro's own permission callback remains authoritative, including when a
+site customizes its capability names. QUILL also requires Full Workbench
+access and a per-run preview for every write. Cancelling a membership
+can also cancel the member's recurring subscription at the payment
+gateway, so the preview must keep that consequence visible. This API
+surface requires WordPress 6.9 or later and Paid Memberships Pro 3.9 or
+later.</p>
+<p>The Workbench now has read-only Membership Levels, Orders,
+Subscriptions and Renewals Due lists backed by PMPro's abilities. Orders
+show the summary fields PMPro exposes and omit card and billing details.
+Change and Cancel remain explicit, previewed ability commands, with the
+site's permission callback deciding whether the connected account may
+run them.</p>
+<p>The User context menu also has <strong>Show Memberships...</strong>.
+It reads that user's current and past levels when the site exposes the
+PMPro ability, and lets the site enforce its member-view permission.</p>
+<h3 id="remaining-wordpress-work">Remaining WordPress work</h3>
+<ul>
+<li>Stage and run the small local WordPress Playground starter through
+the pinned CLI, then verify its local launch and application-password
+handoff. The starter blueprint is implemented; the CLI and runtime
+payload remain build-staged.</li>
+<li>Finish the Workbench manual and align the existing WordPress
+implementation log with the accepted PRD.</li>
+<li>Review permissions, settings documentation, generated help, surface
+reachability, route coverage, and the remaining W0–W8 / WP-R
+checklists.</li>
+<li>Complete the live-site and assistive-technology acceptance listed in
+the PRD when an authorized test site and screen-reader environment are
+available.</li>
+</ul>
+<h2 id="documentation-source-handling">Documentation source
+handling</h2>
+<p>Both accepted PRDs have been copied into the repository's product
+specifications folder. The temporary copies <code>D:\wt\github.md</code>
+and <code>D:\wt\wordpress.md</code> were removed after import. The
+handoff note remains at
+<code>D:\wt\quill-workbench-handoff-2026-11-10.md</code>. Each Markdown
+document changed for this work has generated <code>.html</code> and
+<code>.epub</code> siblings.</p>
+<h2 id="verification-record">Verification record</h2>
+<ul>
+<li>Editor diagnostics found no errors in the changed core, UI, and
+existing routing-test files.</li>
+<li>No tests or builds have been run in this continuation.</li>
+</ul>
+</body>
+</html>

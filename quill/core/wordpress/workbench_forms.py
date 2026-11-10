@@ -23,6 +23,8 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping, Sequence
+from copy import deepcopy
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from quill.core.forms import qaf_site
@@ -35,15 +37,197 @@ if TYPE_CHECKING:
 
 __all__ = [
     "GRAVITY_NAMESPACE",
+    "GRAVITY_FIELD_TYPES",
+    "GravityFieldTypeChange",
     "PLUGIN_NAMES",
     "form_plugins",
+    "plan_gravity_field_type_change",
     "load_forms",
     "set_entry_spam",
 ]
 
 GRAVITY_NAMESPACE = "gf/v2"
 PLUGIN_NAMES = {"qaf": "QUILL Accessible Forms", "gravity": "Gravity Forms"}
+GRAVITY_FIELD_TYPES = {
+    "text": "Single line text",
+    "textarea": "Paragraph text",
+    "email": "Email address",
+    "number": "Number",
+    "select": "Drop-down list",
+    "radio": "Radio buttons",
+    "checkbox": "Checkboxes",
+}
+_GRAVITY_CHOICE_TYPES = frozenset({"select", "radio", "checkbox"})
+_GRAVITY_SINGLE_CHOICE_TYPES = frozenset({"select", "radio"})
+_GRAVITY_CHOICE_ONLY = (
+    "choices",
+    "inputs",
+    "enableChoiceValue",
+    "enableOtherChoice",
+    "enableSelectAll",
+    "enablePrice",
+    "randomize",
+)
 _MAX_ENTRIES = 300
+
+
+@dataclass(frozen=True, slots=True)
+class GravityFieldTypeChange:
+    """An immutable preview of a type change inside a complete Gravity form."""
+
+    form: dict[str, Any]
+    field_id: str
+    field_label: str
+    old_type: str
+    new_type: str
+    kept: tuple[str, ...]
+    adjusted: tuple[str, ...]
+    removed: tuple[str, ...]
+
+    @property
+    def summary(self) -> str:
+        old = GRAVITY_FIELD_TYPES.get(self.old_type, self.old_type)
+        new = GRAVITY_FIELD_TYPES.get(self.new_type, self.new_type)
+        return f"Change {self.field_label} (field {self.field_id}) from {old} to {new}."
+
+    def review_lines(self) -> list[str]:
+        lines = ["Kept: " + (", ".join(self.kept) if self.kept else "the field id") + "."]
+        if self.adjusted:
+            lines.append("Adjusted: " + "; ".join(self.adjusted) + ".")
+        if self.removed:
+            lines.append("Cannot carry over: " + ", ".join(self.removed) + ".")
+        lines.append("QUILL will send the complete form, preserving its other fields and settings.")
+        return lines
+
+
+def plan_gravity_field_type_change(
+    form: Mapping[str, Any], field_id: str, new_type: str
+) -> GravityFieldTypeChange:
+    """Prepare a common Gravity Forms field conversion without mutating *form*."""
+    if new_type not in GRAVITY_FIELD_TYPES:
+        raise ValueError(f"{new_type!r} is not a supported Gravity Forms field type.")
+    source_fields = form.get("fields")
+    if not isinstance(source_fields, list):
+        raise ValueError("Gravity Forms did not return a fields list for this form.")
+    index = next(
+        (
+            number
+            for number, field in enumerate(source_fields)
+            if isinstance(field, dict) and str(field.get("id", "")) == str(field_id)
+        ),
+        None,
+    )
+    if index is None:
+        raise ValueError(f"Gravity Forms field {field_id} is no longer in this form.")
+
+    original = source_fields[index]
+    old_type = str(original.get("type", "text"))
+    if old_type not in GRAVITY_FIELD_TYPES:
+        raise ValueError(
+            f"{original.get('label') or field_id} uses {old_type}, which QUILL does not convert."
+        )
+    converted_form = deepcopy(dict(form))
+    field = converted_form["fields"][index]
+    adjusted: list[str] = []
+    removed: list[str] = []
+    if old_type != new_type:
+        field["type"] = new_type
+        if new_type in _GRAVITY_CHOICE_TYPES:
+            existing_choices = field.get("choices")
+            choices = (
+                [deepcopy(choice) for choice in existing_choices if isinstance(choice, dict)]
+                if isinstance(existing_choices, list)
+                else []
+            )
+            if not choices:
+                default = field.get("defaultValue")
+                label = str(default).strip() if default not in (None, "") else "Choice 1"
+                choices = [
+                    {"text": label, "value": str(default or "choice-1"), "isSelected": False}
+                ]
+                adjusted.append("added a starter choice so the new control can be filled in")
+            field["choices"] = choices
+            if new_type == "checkbox":
+                old_inputs = field.get("inputs")
+                old_inputs = old_inputs if isinstance(old_inputs, list) else []
+                inputs: list[dict[str, Any]] = []
+                for number, choice in enumerate(choices, start=1):
+                    old_input = old_inputs[number - 1] if number <= len(old_inputs) else {}
+                    item = deepcopy(old_input) if isinstance(old_input, dict) else {}
+                    item["id"] = f"{field_id}.{number}"
+                    item["label"] = str(
+                        choice.get("text") or choice.get("value") or f"Choice {number}"
+                    )
+                    inputs.append(item)
+                field["inputs"] = inputs
+            else:
+                if "inputs" in field:
+                    field.pop("inputs")
+                    removed.append("checkbox input records")
+            if new_type in _GRAVITY_SINGLE_CHOICE_TYPES:
+                selected = [choice for choice in choices if choice.get("isSelected")]
+                if len(selected) > 1:
+                    keep = selected[0]
+                    for choice in choices:
+                        choice["isSelected"] = choice is keep
+                    adjusted.append(
+                        "kept only the first selected default for a single-choice control"
+                    )
+        else:
+            for key in _GRAVITY_CHOICE_ONLY:
+                if key in field:
+                    field.pop(key)
+                    removed.append(key.replace("_", " "))
+
+        default = field.get("defaultValue")
+        if isinstance(default, list) and new_type in _GRAVITY_SINGLE_CHOICE_TYPES and default:
+            field["defaultValue"] = default[0]
+            adjusted.append("kept the first selected default for a single-choice control")
+        elif isinstance(default, list) and new_type not in _GRAVITY_CHOICE_TYPES:
+            field["defaultValue"] = ", ".join(str(value) for value in default)
+            adjusted.append("kept selected values as comma-separated text")
+        if (
+            old_type == "checkbox"
+            and new_type in _GRAVITY_SINGLE_CHOICE_TYPES
+            and isinstance(default, str)
+        ):
+            values = [part.strip() for part in default.split(",") if part.strip()]
+            if len(values) > 1:
+                field["defaultValue"] = values[0]
+                adjusted.append("kept the first selected default for a single-choice control")
+
+    shared = (
+        "id",
+        "label",
+        "description",
+        "adminLabel",
+        "isRequired",
+        "size",
+        "cssClass",
+        "placeholder",
+        "defaultValue",
+        "visibility",
+        "conditionalLogic",
+        "noDuplicates",
+        "allowsPrepopulate",
+        "inputName",
+    )
+    kept_fields = [key for key in shared if key in field]
+    if new_type in _GRAVITY_CHOICE_TYPES and field.get("choices"):
+        kept_fields.append(f"{len(field['choices'])} choices")
+    if new_type == "checkbox" and field.get("inputs"):
+        kept_fields.append(f"{len(field['inputs'])} checkbox option settings")
+    kept = tuple(kept_fields)
+    return GravityFieldTypeChange(
+        converted_form,
+        str(field_id),
+        str(original.get("label") or f"Field {field_id}"),
+        old_type,
+        new_type,
+        kept,
+        tuple(adjusted),
+        tuple(removed),
+    )
 
 
 def form_plugins(ctx: SiteContext) -> tuple[str, ...]:
@@ -166,7 +350,7 @@ def _gravity_rows(ctx: SiteContext, which: str) -> list[WbRow]:
     if which == "all":
         return [
             WbRow(
-                kind="form",
+                kind="gravity_form",
                 site=ctx.name,
                 key=form_id,
                 cells={
