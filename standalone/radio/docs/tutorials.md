@@ -1245,7 +1245,7 @@ Make a playlist from music, audiobooks or video on your computer, play it, shuff
    - Keys: Ctrl+O
    - You should hear: Local Media, then Add Media Files button.
 
-2. **Bring in a folder.** Add a Folder takes every file in a folder and the folders inside it, in the order you would read the names, so track 2 comes before track 10. The playlist is named after the folder, and it picks up new files you copy there later.
+2. **Bring in a folder.** Add a Folder asks where the folder is: type or paste its path, or choose Browse. It takes every file in the folder and the folders inside it (uncheck Include subfolders for just the folder itself), in the order you would read the names, so track 2 comes before track 10. The playlist is named after the folder, and it picks up new files you copy there later.
    - Keys: Ctrl+Alt+O
    - You should hear: Made a playlist called, then the folder's name.
    - Worth knowing: Add Media Files (Ctrl+O) is the same, for files you pick one by one.
