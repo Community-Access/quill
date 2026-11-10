@@ -177,3 +177,10 @@ def test_classify_arg() -> None:
     assert q.classify_arg("genre_exclude", {"type": ["object", "array"]}, ["genre"]) == "taxonomy"
     assert q.classify_arg("colour", {"type": "string"}) == "schema_built"
     assert q.classify_arg("mystery", {}) == "missing"
+
+
+def test_values_are_said_in_words_where_wordpress_uses_code() -> None:
+    assert q.value_label("orderby", "modified") == "Date changed"
+    assert q.value_label("tax_relation", "OR") == "Any of these"
+    assert q.value_label("orderby", "price") == "price"
+    assert "status" in q.SITE_LABELLED

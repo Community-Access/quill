@@ -1,0 +1,12 @@
+{
+ "_about": "Gaps the combination test (WP-R-030) finds in the test site's recorded index, each one planned work. This list may only shrink: regenerate with python -m quill.tools.wordpress_combination_audit --write and read the diff.",
+ "gaps": {
+  "GET ?orderby=favorite_count": "planned: value has no spoken label",
+  "GET ?orderby=popularity": "planned: value has no spoken label",
+  "GET ?orderby=post__in": "planned: value has no spoken label",
+  "GET ?orderby=price": "planned: value has no spoken label",
+  "GET ?orderby=random": "planned: value has no spoken label",
+  "GET ?orderby=rating": "planned: value has no spoken label",
+  "GET ?orderby=sales": "planned: value has no spoken label"
+ }
+}

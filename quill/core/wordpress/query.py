@@ -44,6 +44,8 @@ __all__ = [
     "ATTRIBUTES",
     "OPERATORS",
     "PAGING",
+    "SITE_LABELLED",
+    "VALUE_LABELS",
     "Attribute",
     "Condition",
     "QueryError",
@@ -51,7 +53,9 @@ __all__ = [
     "attributes_for_route",
     "build",
     "classify_arg",
+    "enum_values",
     "kind_for_schema",
+    "value_label",
 ]
 
 #: The operators each kind of attribute offers, in the order the builder lists them.
@@ -218,6 +222,80 @@ ATTRIBUTES: Mapping[str, Attribute] = {
     )
 }
 
+#: Arguments whose values the site names itself at run time: statuses from
+#: ``wp/v2/statuses``, post types and taxonomies from ``wp/v2/types`` and
+#: ``wp/v2/taxonomies``. No spoken label is kept for them here.
+SITE_LABELLED = frozenset({"status", "subtype", "has_published_posts"})
+
+#: The spoken words for each value an argument offers, where WordPress's own
+#: word is not one a person would say.
+VALUE_LABELS: Mapping[str, Mapping[str, str]] = {
+    "order": {"asc": "Oldest or A first", "desc": "Newest or Z first"},
+    "orderby": {
+        "author": "Author",
+        "date": "Date published",
+        "date_gmt": "Date published",
+        "id": "Id",
+        "include": "The order asked for",
+        "include_slugs": "The order of the slugs asked for",
+        "modified": "Date changed",
+        "parent": "Parent",
+        "relevance": "Best match for the words",
+        "slug": "Slug",
+        "title": "Title",
+        "menu_order": "Menu order",
+        "name": "Name",
+        "count": "How many items use it",
+        "term_group": "Term group",
+        "description": "Description",
+        "email": "Email address",
+        "url": "Web address",
+        "registered_date": "Date registered",
+        "post": "Post",
+        "type": "Type",
+    },
+    "search_columns": {
+        "post_title": "Title",
+        "post_content": "Content",
+        "post_excerpt": "Excerpt",
+        "email": "Email address",
+        "name": "Name",
+        "id": "Id",
+        "username": "Username",
+        "slug": "Slug",
+    },
+    "search_semantics": {"exact": "The exact phrase"},
+    "tax_relation": {"AND": "All of these", "OR": "Any of these"},
+    "format": {
+        "standard": "Standard",
+        "aside": "Aside",
+        "chat": "Chat",
+        "gallery": "Gallery",
+        "link": "Link",
+        "image": "Image",
+        "quote": "Quote",
+        "status": "Status",
+        "video": "Video",
+        "audio": "Audio",
+    },
+    "media_type": {
+        "image": "Pictures",
+        "video": "Video",
+        "audio": "Audio",
+        "text": "Text files",
+        "application": "Documents and other files",
+    },
+    "type": {"post": "Items", "term": "Terms", "post-format": "Formats"},
+    "who": {"authors": "Authors"},
+    "context": {"view": "As visitors see it", "embed": "Embedded", "edit": "For editing"},
+}
+
+
+def value_label(argument: str, value: str) -> str:
+    """The spoken word for one value of *argument*; the value itself when none is kept."""
+    return VALUE_LABELS.get(argument, {}).get(value, value)
+
+
 #: The ``_exclude`` arguments, each the "is none of" half of an attribute above.
 _EXCLUDE_OF: Mapping[str, str] = {a.exclude: a.name for a in ATTRIBUTES.values() if a.exclude}
 
@@ -263,7 +341,7 @@ def kind_for_schema(schema: Mapping[str, Any]) -> str:
     return ""
 
 
-def _enum(schema: Mapping[str, Any] | None) -> tuple[str, ...]:
+def enum_values(schema: Mapping[str, Any] | None) -> tuple[str, ...]:
     if not schema:
         return ()
     found = schema.get("enum")
@@ -309,7 +387,7 @@ def attribute_for(
             found = Attribute(name, words[:1].upper() + words[1:], kind, "", schema_built=True)
     if found is None:
         return None
-    values = _merge_values(found.values, _enum(schema)) if base_name == name else found.values
+    values = _merge_values(found.values, enum_values(schema)) if base_name == name else found.values
     return replace(found, values=values) if values != found.values else found
 
 
