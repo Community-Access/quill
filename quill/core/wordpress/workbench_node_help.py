@@ -80,6 +80,22 @@ NODE_HELP: Mapping[str, str] = {
     "more": "Every family of routes on this site, by namespace, and how many are reached.",
     "more_namespace": "One namespace's routes, with their methods and where each is reached.",
     "content_model": "The site's post types and taxonomies, and who registered each, read only.",
+    "across": "The same name on every site, or a Site Set: where copies differ, what is missing.",
+    "across_terms": "Each tag and category by name, on every site: differing slugs, sites without.",
+    "across_plugins": "Each plugin by name, on every site: versions, active or not, missing.",
+    "across_themes": "Each theme by name, on every site.",
+    "across_users": "Each person, by email, on every site, with their role on each.",
+    "across_settings": "Each setting, on every site, and where the values drift.",
+    "fleet": "Every site in one list, read row by row.",
+    "by_name": "Everything on this site by name: terms, fields, authors, media, links, blocks.",
+    "by_name_terms": "Every term of every taxonomy, with how many posts each has.",
+    "by_name_fields": "Every custom field value, and how many items have it.",
+    "by_name_authors": "Every author, with what they have written by status.",
+    "by_name_media_usage": "Every file in the library, and where it is used.",
+    "by_name_patterns": "Synced patterns, and the pages that use them.",
+    "by_name_links": "Every link in the content, and the pages it is on.",
+    "by_name_blocks": "Blocks and shortcodes, and the pages that use them.",
+    "by_name_forms": "Forms placed in pages, and where.",
     "group": "The rows of the list above that share one value, from View > Group By.",
 }
 """One sentence per node key; status children and group nodes share their parent's."""
@@ -112,6 +128,9 @@ ROW_HELP: Mapping[str, str] = {
     "font": "An installed font.",
     "sidebar": "A sidebar and its widgets.",
     "mixed": "Something that needs you. Enter reads it in full.",
+    "value": "One value, wherever it is used. Enter lists where.",
+    "across": "One name across sites. Alt+Enter shows its variants and the sites missing it.",
+    "fleet": "One site in the fleet. Enter selects it in the tree.",
     "day": "A day with scheduled or published content. Enter lists it.",
 }
 """One sentence per row type."""

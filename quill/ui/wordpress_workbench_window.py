@@ -68,6 +68,7 @@ from quill.core.workbench.filters import Query, describe
 from quill.core.workbench.history import ChangeHistory
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import NodeSpec
+from quill.ui.wordpress_workbench_across import WorkbenchAcrossCommands
 from quill.ui.wordpress_workbench_bold import WorkbenchBoldCommands
 from quill.ui.wordpress_workbench_commands import WorkbenchRowCommands
 from quill.ui.wordpress_workbench_discovered import WorkbenchDiscoveredCommands
@@ -92,6 +93,7 @@ class WordPressWorkbenchProvider(
     WorkbenchDiscoveredCommands,
     WorkbenchOptionsCommands,
     WorkbenchBoldCommands,
+    WorkbenchAcrossCommands,
     WorkbenchRowCommands,
     WorkbenchSheetCommands,
     WorkbenchPeopleCommands,
@@ -264,6 +266,10 @@ class WordPressWorkbenchProvider(
             return [self._site_row(name) for name in self._profiles]
         if family in ("calendar", "watches", "practice"):
             return list(self.fixed_rows(family, what, ref.instance))
+        if family == "across":
+            return [r for r in self.across_list(what) if local_matches(r, query.conditions)]
+        if family == "scan":
+            return list(self.scan_rows(self.split(ref.instance)[0], what))
         if family == "attention":
             contexts = []
             for name in self._profiles:

@@ -27,6 +27,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.wordpress.workbench_places import ACROSS_NODES, BY_NAME_NODES
 from quill.core.workbench.tree import NodeSpec, Scope, TreeSpec
 
 __all__ = [
@@ -201,6 +202,7 @@ _FIXED: tuple[NodeSpec, ...] = (
         row_type="item",
         dynamic=True,
     ),
+    *ACROSS_NODES,
     _n("search", "Search", loader="planned:search"),
     _n(
         "practice",
@@ -487,6 +489,7 @@ _SITE: tuple[NodeSpec, ...] = (
         columns=("ability", "category", "says"),
         row_type="ability",
     ),
+    *BY_NAME_NODES,
     _n(
         "content_model",
         "Content Model",

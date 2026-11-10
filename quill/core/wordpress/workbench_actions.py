@@ -17,6 +17,7 @@ away from the filter box.
 
 from __future__ import annotations
 
+from quill.core.wordpress.workbench_places import places_rows
 from quill.core.workbench.actions import ActionRow, ActionTable, Tier
 from quill.core.workbench.menus import MenuRow, MenuSpec
 
@@ -303,6 +304,7 @@ WORDPRESS_ACTIONS = ActionTable(
             _SHEET,
         ),
         "model": (_READ, _SHEET),
+        **places_rows(_READ, _SHEET),
         "day": (
             _a("open_day", "Open This Day", default=True, help="List what the day holds."),
             _SHEET,
@@ -429,6 +431,7 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
             _row("go_appearance", "Appearanc&e", "Ctrl+Shift+7", "Themes, templates, patterns."),
             _row("go_settings", "Settin&gs", "Ctrl+Shift+8", "This site's settings."),
             _row("go_health", "Site &Health", "Ctrl+Shift+9", "This site's health checks."),
+            _row("go_across", "Acr&oss Sites", "Ctrl+0", "The same name on every site."),
             _row("go_calendar", "Calen&dar", "Ctrl+3", "Every site's content, by day."),
             _row("go_watches", "&Watches", "Ctrl+5", "What the Workbench watches for you."),
             _row("go_practice", "P&ractice Site", "Ctrl+6", "The WordPress site on this computer."),
@@ -509,6 +512,8 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
             ),
             None,
             _row("compare_sites", "Compare S&ites...", "Ctrl+Alt+K", "What differs from another."),
+            _row("site_sets", "Site Se&ts...", "Ctrl+Alt+T", "Name a set of your sites."),
+            _row("scope", "Across Sites Sc&ope...", "Ctrl+Alt+Y", "Every site, or one set."),
             _row(
                 "snapshot", "Take a S&napshot...", "Ctrl+Alt+S", "Everything but media, saved here."
             ),
@@ -566,6 +571,7 @@ GO_NODES: dict[str, tuple[str, str]] = {
     command("go_appearance"): ("site", "themes"),
     command("go_settings"): ("site", "settings"),
     command("go_health"): ("site", "site_health"),
+    command("go_across"): ("", "across"),
     command("go_calendar"): ("", "calendar"),
     command("go_watches"): ("", "watches"),
     command("go_practice"): ("", "practice"),

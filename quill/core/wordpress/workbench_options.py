@@ -14,7 +14,7 @@ missing or unreadable file is the defaults. Wx-free.
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 from quill.core.storage import read_json, write_json_atomic
@@ -32,8 +32,10 @@ class WorkbenchOptions:
 
     classic_windows: bool = False
     watch_minutes: int = 15
-    #: Watches (15.7) on, by kind: comment, form_response, update, published.
-    watches: tuple[str, ...] = ("comment", "form_response", "update", "published")
+    #: Watches (15.7) on, by kind; none until the person turns them on.
+    watches: tuple[str, ...] = ()
+    #: Site Sets (15.12): a name, and the site names in it.
+    site_sets: dict[str, list[str]] = field(default_factory=dict)
 
 
 def options_path(base: Path | None = None) -> Path:
@@ -46,12 +48,16 @@ def load_options(base: Path | None = None) -> WorkbenchOptions:
         return WorkbenchOptions()
     minutes = raw.get("watch_minutes", 15)
     watches = raw.get("watches")
+    sets = raw.get("site_sets")
     return WorkbenchOptions(
         classic_windows=bool(raw.get("classic_windows", False)),
         watch_minutes=max(15, int(minutes)) if isinstance(minutes, int) else 15,
         watches=tuple(str(w) for w in watches)
         if isinstance(watches, list)
         else WorkbenchOptions().watches,
+        site_sets={str(k): [str(s) for s in v] for k, v in sets.items() if isinstance(v, list)}
+        if isinstance(sets, dict)
+        else {},
     )
 
 
