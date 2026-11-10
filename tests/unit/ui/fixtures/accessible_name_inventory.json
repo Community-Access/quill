@@ -1471,9 +1471,11 @@
   "quill/ui/work_persona_dialog.py::WorkPersonaDialog.__init__::wx.ListBox#2": "named",
   "quill/ui/work_persona_dialog.py::WorkPersonaDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/work_persona_dialog.py::WorkPersonaDialog.__init__::wx.TextCtrl#2": "named",
-  "quill/ui/workbench_frame.py::WorkbenchFrame._build::wx.ListCtrl": "named",
+  "quill/ui/workbench_frame.py::WorkbenchFrame._build::wx.ListCtrl": "modal-hook",
   "quill/ui/workbench_frame.py::WorkbenchFrame._build::wx.TextCtrl": "named",
   "quill/ui/workbench_frame.py::WorkbenchFrame._build::wx.TextCtrl#2": "named",
-  "quill/ui/workbench_frame.py::WorkbenchFrame._build::wx.TreeCtrl": "named",
-  "quill/ui/workbench_properties_dialog.py::WorkbenchPropertiesDialog.__init__::wx.TextCtrl": "named"
+  "quill/ui/workbench_frame.py::WorkbenchFrame._build::wx.TreeCtrl": "modal-hook",
+  "quill/ui/workbench_properties_dialog.py::WorkbenchPropertiesDialog.__init__::wx.TextCtrl": "named",
+  "quill/ui/workbench_sheet_editor.py::WorkbenchSheetEditor._control::wx.Choice": "modal-hook",
+  "quill/ui/workbench_sheet_editor.py::WorkbenchSheetEditor._control::wx.TextCtrl": "modal-hook"
 }
