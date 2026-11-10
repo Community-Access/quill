@@ -30,7 +30,9 @@ from typing import Any
 from quill.core.workbench.tree import NodeSpec, Scope, TreeSpec
 
 __all__ = [
+    "DYNAMIC_NAMESPACE",
     "DYNAMIC_TAXONOMY",
+    "GROUPED",
     "DYNAMIC_TYPE",
     "PLANNED_WORDS",
     "START_NODE",
@@ -41,6 +43,7 @@ __all__ = [
 START_NODE = "start"
 DYNAMIC_TYPE = "custom_type"
 DYNAMIC_TAXONOMY = "custom_taxonomy"
+DYNAMIC_NAMESPACE = "more_namespace"
 
 _ITEM_COLUMNS = ("title", "status", "author", "modified")
 _POST_STATUSES = (
@@ -457,12 +460,29 @@ _SITE: tuple[NodeSpec, ...] = (
         row_type="ability",
     ),
     _n(
+        "content_model",
+        "Content Model",
+        "site",
+        loader="model:all",
+        columns=("name", "kind", "registered_by", "in_rest"),
+        row_type="model",
+    ),
+    _n(
         "more",
         "More from This Site",
         "site",
         loader="routes:namespaces",
-        columns=("namespace", "routes"),
+        columns=("namespace", "routes", "reached"),
         row_type="namespace",
+    ),
+    _n(
+        DYNAMIC_NAMESPACE,
+        "Namespace",
+        "more",
+        loader="routes:namespace",
+        columns=("route", "methods", "coverage"),
+        row_type="route",
+        dynamic=True,
     ),
 )
 

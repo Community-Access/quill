@@ -188,3 +188,80 @@ def test_the_editor_properties_use_the_workbench_sheet(wx_session_app, monkeypat
     assert answer is not None
     assert answer.tag_ids == [9] and answer.category_ids == [5]
     assert answer.extra == {"format": "aside"}
+
+
+# -- W5 -------------------------------------------------------------------------
+
+_ABILITY = {
+    "name": "acme/count",
+    "label": "Count Things",
+    "description": "Counts things.",
+    "meta": {"annotations": {"readonly": True}},
+    "input_schema": {"properties": {"limit": {"type": "integer", "default": 5}}},
+}
+
+
+def test_more_from_this_site_lists_a_namespace_and_its_routes(bench) -> None:
+    bench.provider.discover(SITE)
+    bench.rebuild_tree()
+    _go(bench, NodeRef("site", "more", SITE))
+    assert [r.key for r in bench.rows] == ["wp/v2"]
+    ref = NodeRef("site", "more_namespace", f"{SITE}{SEP}wp/v2")
+    _go(bench, ref)
+    assert [r.key for r in bench.rows] == ["/wp/v2/posts"]
+    assert bench.rows[0].cell("coverage") == "covered"
+
+
+def test_the_content_model_lists_types_with_who_registered_them(bench) -> None:
+    _go(bench, NodeRef("site", "content_model", SITE))
+    owners = {r.key: r.cell("registered_by") for r in bench.rows}
+    assert owners["post"] == "WordPress"
+    assert owners["event"] == "a plugin or the theme"
+
+
+def test_an_ability_runs_after_its_sheet_and_preview(bench, monkeypatch) -> None:
+    from quill.ui import workbench_sheet_editor as editor_module
+
+    ran: list[Any] = []
+    bench.api.get_original = bench.api.get
+
+    def get(route: str, **params: Any) -> Any:
+        if route == "wp-abilities/v1/abilities/acme/count":
+            return dict(_ABILITY)
+        return bench.api.get_original(route, **params)
+
+    monkeypatch.setattr(bench.api, "get", get)
+
+    class _Response:
+        payload = {"count": 3}
+
+    monkeypatch.setattr(
+        bench.api,
+        "request",
+        lambda method, route, **kw: (ran.append((method, route, kw)), _Response())[1],
+    )
+
+    class _Editor:
+        def __init__(self, parent, sheet, values, **kw) -> None:
+            self.sheet, self.values, self.kw = sheet, values, kw
+
+        def show(self) -> int:
+            from quill.core.workbench.properties import SheetState
+
+            state = SheetState(self.sheet, loaded=dict(self.values))
+            state.edited["limit"] = "9"
+            self.kw["on_save"](state)
+            return wx.ID_OK
+
+    monkeypatch.setattr(editor_module, "WorkbenchSheetEditor", _Editor)
+    previews: list[Any] = []
+    monkeypatch.setattr(wdlg, "ask_preview", lambda *a, **k: (previews.append(k), True)[1])
+    reports: list[str] = []
+    monkeypatch.setattr(dlg, "show_report", lambda *a, **k: reports.append(k["text"]))
+    from quill.core.wordpress.workbench_rows import WbRow
+
+    row = WbRow("ability", SITE, "acme/count", {"ability": "Count Things"}, "", raw={})
+    bench.provider.do_run_ability(None, row)
+    assert previews and previews[0]["lines"] == ["limit: 9"]
+    assert ran and ran[0][1] == "wp-abilities/v1/abilities/acme/count/run"
+    assert reports

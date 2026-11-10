@@ -55,6 +55,7 @@ from quill.core.wordpress.workbench_node_help import row_help
 from quill.core.wordpress.workbench_permissions import AccessStore
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.wordpress.workbench_tree import (
+    DYNAMIC_NAMESPACE,
     DYNAMIC_TYPE,
     PLANNED_WORDS,
     START_NODE,
@@ -66,6 +67,7 @@ from quill.core.workbench.history import ChangeHistory
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import NodeSpec
 from quill.ui.wordpress_workbench_commands import WorkbenchRowCommands
+from quill.ui.wordpress_workbench_discovered import WorkbenchDiscoveredCommands
 from quill.ui.wordpress_workbench_lists import WorkbenchListCommands
 from quill.ui.wordpress_workbench_people import WorkbenchPeopleCommands
 from quill.ui.wordpress_workbench_sheets import WorkbenchSheetCommands
@@ -83,6 +85,7 @@ _REMOTE = frozenset({"items", "media", "comments", "users", "terms", "patterns"}
 
 class WordPressWorkbenchProvider(
     WorkbenchListCommands,
+    WorkbenchDiscoveredCommands,
     WorkbenchRowCommands,
     WorkbenchSheetCommands,
     WorkbenchPeopleCommands,
@@ -202,6 +205,8 @@ class WordPressWorkbenchProvider(
         if node.key.endswith("_group"):
             return self.group_children(node, ref)
         site = self.split(ref.instance)[0]
+        if node.key == DYNAMIC_NAMESPACE:
+            return self.namespace_children(site)
         found = self._types if node.key == DYNAMIC_TYPE else self._taxonomies
         return tuple((f"{site}{SEP}{kind}", label) for kind, label in found.get(site, []))
 
@@ -474,7 +479,7 @@ class WordPressWorkbenchProvider(
         for site in list(self._profiles):
 
             def done(_result: object, site: str = site) -> None:
-                if self.frame is not None and (self._types.get(site) or self._taxonomies.get(site)):
+                if self.frame is not None:
                     self.frame.rebuild_tree()
 
             self.background(f"discovering {site}", lambda s=site: self.discover(s), done)

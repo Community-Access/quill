@@ -210,3 +210,75 @@ def test_every_node_and_row_type_has_f1_help() -> None:
     for kind in WORDPRESS_ACTIONS.row_types:
         if kind != "node":
             assert kind in ROW_HELP, kind
+
+
+# -- W5: what a site says about itself ------------------------------------------
+
+
+def test_the_content_model_says_who_registered_each_type() -> None:
+    from quill.core.wordpress.workbench_discovered import model_rows, registered_by
+
+    assert registered_by("post") == "WordPress"
+    assert registered_by("tribe_events") == "The Events Calendar"
+    assert registered_by("product") == "WooCommerce"
+    assert registered_by("event") == "a plugin or the theme"
+    assert registered_by("book", "acme/v1") == "the plugin behind acme/v1"
+
+    class _Types:
+        def get(self, route: str, **_p: Any) -> Any:
+            if route == "wp/v2/types":
+                return {"post": {"name": "Posts", "rest_base": "posts"}, "event": {"name": "E"}}
+            return {"genre": {"name": "Genres", "rest_base": "genres"}}
+
+    rows = model_rows(_Types(), "S")  # type: ignore[arg-type]
+    assert [(r.key, r.cell("registered_by")) for r in rows] == [
+        ("post", "WordPress"),
+        ("event", "a plugin or the theme"),
+        ("genre", "a plugin or the theme"),
+    ]
+    assert "Read only" in rows[0].detail
+
+
+def test_routes_list_by_namespace_with_where_each_is_reached() -> None:
+    from quill.core.wordpress.workbench_discovered import namespace_rows, route_rows
+
+    namespaces = ["wp/v2", "acme/v1"]
+    routes = {"/wp/v2/posts": ["GET", "POST"], "/acme/v1/things": ["GET"]}
+    ns = namespace_rows("S", namespaces, list(routes))
+    assert [(r.key, r.cell("routes"), r.cell("reached")) for r in ns] == [
+        ("wp/v2", "1", "1"),
+        ("acme/v1", "1", "1"),
+    ]
+    rows = route_rows("S", "acme/v1", namespaces, routes)
+    assert [r.key for r in rows] == ["/acme/v1/things"]
+    assert rows[0].cell("coverage") == "built from what the site says"
+
+
+def test_an_ability_runs_from_its_input_schema_after_a_preview() -> None:
+    from quill.core.wordpress.abilities import Ability
+    from quill.core.wordpress.workbench_discovered import (
+        ability_input,
+        ability_preview,
+        ability_sheet,
+        ability_values,
+    )
+
+    ability = Ability(
+        "acme/count",
+        "Count Things",
+        "Counts things.",
+        readonly=True,
+        input_schema={
+            "properties": {
+                "limit": {"type": "integer", "default": 5},
+                "kind": {"type": "string", "enum": ["a", "b"]},
+            }
+        },
+    )
+    keys = {spec.key for spec in ability_sheet(ability).fields()}
+    assert {"limit", "kind"} <= keys
+    assert ability_values(ability)["limit"] == 5
+    given = ability_input(ability, {"limit": "12", "kind": "b", "about": "x"})
+    assert given == {"limit": 12, "kind": "b"}
+    summary, lines = ability_preview("Radio", ability, given)
+    assert "only reads" in summary and lines == ["limit: 12", 'kind: "b"']

@@ -259,6 +259,25 @@ WORDPRESS_ACTIONS = ActionTable(
             _a("show_entries", "Show Its Responses", default=True, help="The form's responses."),
             _SHEET,
         ),
+        "namespace": (
+            _a("open_namespace", "List Its Routes", default=True, help="Select its node. Enter."),
+            _SHEET,
+        ),
+        "route": (
+            _a("read_route", "Read It", default=True, help="Ask the site and read the answer."),
+            _a("route_schema", "What It Accepts", help="Its arguments and fields, from the site."),
+            _SHEET,
+        ),
+        "ability": (
+            _a(
+                "run_ability",
+                "Run...",
+                default=True,
+                help="Fill in its input, see the preview, then run it. Enter.",
+            ),
+            _SHEET,
+        ),
+        "model": (_READ, _SHEET),
         **{
             kind: (_READ, _SHEET)
             for kind in (
@@ -266,8 +285,6 @@ WORDPRESS_ACTIONS = ActionTable(
                 "setting",
                 "problem",
                 "help",
-                "namespace",
-                "ability",
                 "menu",
                 "template",
                 "pattern",

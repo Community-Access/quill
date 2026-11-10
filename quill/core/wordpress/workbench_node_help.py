@@ -76,7 +76,9 @@ NODE_HELP: Mapping[str, str] = {
     "settings": "The site's settings the REST API can read and change.",
     "site_health": "WordPress's own checks of how well the site is set up.",
     "abilities": "What the site's Abilities API offers, each a command you can run.",
-    "more": "Every other family of routes on this site, by namespace.",
+    "more": "Every family of routes on this site, by namespace, and how many are reached.",
+    "more_namespace": "One namespace's routes, with their methods and where each is reached.",
+    "content_model": "The site's post types and taxonomies, and who registered each, read only.",
     "group": "The rows of the list above that share one value, from View > Group By.",
 }
 """One sentence per node key; status children and group nodes share their parent's."""
@@ -100,6 +102,8 @@ ROW_HELP: Mapping[str, str] = {
     "problem": "A problem a check found. Enter reads what it means.",
     "help": "A word or key. Enter reads it in full.",
     "namespace": "A family of routes. Enter lists what it offers.",
+    "route": "A route on the site. Enter reads it; Alt+Enter shows what it accepts.",
+    "model": "A post type or taxonomy. Alt+Enter shows its fields; who registered it says why.",
     "ability": "An ability the site offers. Enter runs it, after a preview.",
     "menu": "A menu. Enter reads where it is shown.",
     "template": "A template or template part.",

@@ -439,22 +439,43 @@ def load_abilities(ctx: SiteContext) -> list[WbRow]:
 
 
 def load_namespaces(ctx: SiteContext) -> list[WbRow]:
+    from quill.core.wordpress.workbench_discovered import namespace_rows
+
     info = ctx.info
     if info is None:
         return []
-    rows = []
-    for namespace in info.namespaces:
-        count = sum(1 for r in info.routes if r.strip("/").startswith(namespace))
-        rows.append(
-            _simple(
-                ctx,
-                "namespace",
-                namespace,
-                {"namespace": namespace, "routes": str(count)},
-                f"{namespace}: {count} routes on this site.",
-            )
-        )
-    return rows
+    return namespace_rows(ctx.name, info.namespaces, info.routes)
+
+
+def index_routes(ctx: SiteContext) -> dict[str, list[str]]:
+    """Every route of the site's index with its methods (one request for the index)."""
+    raw = ctx.api.get("")
+    routes = raw.get("routes") if isinstance(raw, dict) else None
+    found: dict[str, list[str]] = {}
+    for route, info in (routes or {}).items() if isinstance(routes, dict) else ():
+        methods: list[str] = []
+        if isinstance(info, dict):
+            if isinstance(info.get("methods"), list):
+                methods = [str(m) for m in info["methods"]]
+            for endpoint in info.get("endpoints") or []:
+                if isinstance(endpoint, dict):
+                    methods += [str(m) for m in endpoint.get("methods") or [] if m not in methods]
+        found[str(route)] = sorted(set(methods), key=methods.index)
+    return found
+
+
+def load_routes(ctx: SiteContext, namespace: str) -> list[WbRow]:
+    from quill.core.wordpress.workbench_discovered import route_rows
+
+    namespaces = ctx.info.namespaces if ctx.info is not None else (namespace,)
+    return route_rows(ctx.name, namespace, namespaces, index_routes(ctx))
+
+
+def load_model(ctx: SiteContext) -> list[WbRow]:
+    from quill.core.wordpress.workbench_discovered import model_rows
+
+    namespaces = ctx.info.namespaces if ctx.info is not None else ()
+    return model_rows(ctx.api, ctx.name, namespaces=namespaces)
 
 
 def overview(ctx: SiteContext) -> list[WbRow]:
@@ -466,6 +487,10 @@ def overview(ctx: SiteContext) -> list[WbRow]:
             ("WordPress version", info.wp_version or "not said"),
             ("REST namespaces", str(len(info.namespaces))),
         ]
+        from quill.core.wordpress.workbench_coverage import classify
+
+        reached = sum(1 for r in info.routes if classify(r).status in ("covered", "schema_built"))
+        facts.append(("Routes the Workbench reaches", f"{reached} of {len(info.routes)}"))
     if account is not None:
         facts.append(("Your role", account.role_name))
     for kind, label in (("post", "Posts"), ("page", "Pages")):
@@ -508,7 +533,10 @@ def load(
         "widgets": lambda: load_sidebars(ctx),
         "menus": lambda: load_menus(ctx),
         "abilities": lambda: load_abilities(ctx),
-        "routes": lambda: load_namespaces(ctx),
+        "routes": lambda: (
+            load_routes(ctx, dynamic) if what == "namespace" else load_namespaces(ctx)
+        ),
+        "model": lambda: load_model(ctx),
         "site": lambda: overview(ctx),
     }
     if family == "forms":
