@@ -259,7 +259,9 @@ it.
 
 **File > WordPress > Custom Fields...** shows just the extra fields your
 site's plugins and theme keep for a page, such as an SEO title or an event
-date. **File > WordPress > Plugin Fields...** changes the fields of The
+date. Fields that hold a list or a group, such as speakers or an address,
+come next in their own window, where you can add, change, remove and
+reorder the items. **File > WordPress > Plugin Fields...** changes the fields of The
 Events Calendar, WooCommerce, Yoast SEO and Rank Math, where your site has
 them.
 

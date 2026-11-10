@@ -14,6 +14,7 @@ from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
 from typing import Any
 
+from quill.core.wordpress import site_taxonomies as taxonomies
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.site_types import writing_types
 
@@ -115,7 +116,13 @@ class Item:
 
 
 def kind_route(kind: str) -> str:
-    """``post`` -> ``wp/v2/posts``; a custom type uses its REST base."""
+    """``post`` -> ``wp/v2/posts``; a custom type uses its REST base.
+
+    A type served outside ``wp/v2`` has its whole route as its kind
+    (``library/v1/books``, from :mod:`~quill.core.wordpress.site_types`).
+    """
+    if "/" in kind:
+        return kind.strip("/")
     return {"post": "wp/v2/posts", "page": "wp/v2/pages"}.get(kind, f"wp/v2/{kind}")
 
 
@@ -438,17 +445,25 @@ class Term:
     description: str = ""
 
 
-def taxonomy_route(taxonomy: str) -> str:
-    return {"category": "wp/v2/categories", "post_tag": "wp/v2/tags"}.get(
-        taxonomy, f"wp/v2/{taxonomy}"
-    )
+def taxonomy_route(taxonomy: str, api: WordPressApi | None = None) -> str:
+    """The route for *taxonomy*: the site's own ``rest_base`` once known (WP-R-031)."""
+    found = taxonomies.lookup(api, taxonomy)
+    return found.route if found else f"wp/v2/{taxonomy_field(taxonomy)}"
+
+
+def taxonomy_field(taxonomy: str, api: WordPressApi | None = None) -> str:
+    """The field a post carries the taxonomy's terms in (``categories``, ``genre``)."""
+    found = taxonomies.lookup(api, taxonomy)
+    return found.rest_base if found else taxonomies.CORE_TAXONOMY_BASES.get(taxonomy, taxonomy)
 
 
 def list_terms(api: WordPressApi, taxonomy: str, *, search: str = "") -> list[Term]:
     params: dict[str, object] = {"context": "edit", "orderby": "name", "hide_empty": False}
     if search.strip():
         params["search"] = search.strip()
-    return [_term(raw, taxonomy) for raw in api.iter_collection(taxonomy_route(taxonomy), params)]
+    return [
+        _term(raw, taxonomy) for raw in api.iter_collection(taxonomy_route(taxonomy, api), params)
+    ]
 
 
 def create_term(
@@ -467,7 +482,7 @@ def create_term(
         body["parent"] = parent
     if description:
         body["description"] = description
-    return _term(api.post(taxonomy_route(taxonomy), body), taxonomy)
+    return _term(api.post(taxonomy_route(taxonomy, api), body), taxonomy)
 
 
 def update_term(api: WordPressApi, term: Term) -> Term:
@@ -476,14 +491,16 @@ def update_term(api: WordPressApi, term: Term) -> Term:
         "slug": term.slug,
         "description": term.description,
     }
-    if term.taxonomy == "category":
+    found = taxonomies.lookup(api, term.taxonomy)
+    if term.taxonomy == "category" or (found is not None and found.hierarchical):
         body["parent"] = term.parent
-    return _term(api.post(f"{taxonomy_route(term.taxonomy)}/{term.id}", body), term.taxonomy)
+    route = f"{taxonomy_route(term.taxonomy, api)}/{term.id}"
+    return _term(api.post(route, body), term.taxonomy)
 
 
 def delete_term(api: WordPressApi, taxonomy: str, term_id: int) -> None:
     # Terms have no Trash; WordPress insists on force=true.
-    api.delete(f"{taxonomy_route(taxonomy)}/{term_id}", force=True)
+    api.delete(f"{taxonomy_route(taxonomy, api)}/{term_id}", force=True)
 
 
 def merge_terms(api: WordPressApi, taxonomy: str, source: int, target: int) -> int:
@@ -492,9 +509,7 @@ def merge_terms(api: WordPressApi, taxonomy: str, source: int, target: int) -> i
     The API has no merge, so this is one batch of post updates and a delete.
     Returns how many posts moved (wordpress.md 9.13).
     """
-    field_name = (
-        "categories" if taxonomy == "category" else "tags" if taxonomy == "post_tag" else taxonomy
-    )
+    field_name = taxonomy_field(taxonomy, api)
     requests: list[dict[str, Any]] = []
     for raw in api.iter_collection(
         "wp/v2/posts",

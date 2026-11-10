@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import replace
 from typing import Any
 
@@ -374,3 +375,140 @@ def test_without_moderation_there_is_nothing_to_mark(
     _comments(wpx, wp_site, caps={"read": True})
     labels = [a.label for a in wp_dialogs.window["actions"]]
     assert "Mar&k" not in labels and "&Do with Marked..." not in labels
+
+
+# --------------------------------------------------------------------------- #
+# custom fields that are lists and groups (WP-R-033)
+
+LIST_SCHEMA = {
+    "schema": {
+        "properties": {
+            "meta": {
+                "properties": {
+                    "seo_title": {"type": "string"},
+                    "speakers": {"type": "array", "items": {"type": "string"}},
+                    "seats": {"type": "array", "items": {"type": "integer"}},
+                    "venue": {
+                        "type": "object",
+                        "properties": {
+                            "city": {"type": "string"},
+                            "capacity": {"type": "integer"},
+                        },
+                    },
+                }
+            }
+        }
+    }
+}
+
+
+def _lists_site(wp_site: Any, *, scalars: bool = True) -> None:
+    site(wp_site)
+    schema = json.loads(json.dumps(LIST_SCHEMA))
+    if not scalars:
+        schema["schema"]["properties"]["meta"]["properties"].pop("seo_title")
+    wp_site.on("OPTIONS", f"{API}/posts", schema)
+    wp_site.on(
+        "GET",
+        f"{API}/posts/41",
+        {
+            "meta": {
+                "seo_title": "Old",
+                "speakers": ["Ann", "Bo"],
+                "seats": [4],
+                "venue": {"city": "Springfield", "capacity": 80, "floor": "2"},
+            }
+        },
+    )
+
+
+def test_lists_and_groups_come_after_the_plain_fields(
+    wpx: Any, wp_site: Any, wp_dialogs: Any, form: Form
+) -> None:
+    _lists_site(wp_site)
+    open_doc(wpx)
+    form.answers.append({"seo_title": "New"})
+    wpx.cmd_custom_fields()
+    assert "3 lists and groups come next" in form[0]["purpose"]
+    assert kept(wpx) == {"seo_title": "New"}
+    window = wp_dialogs.window
+    assert window["title"] == "Lists and Groups"
+    assert window["rows"] == [
+        "Speakers, a list of 2 items: Ann; Bo",
+        "Seats, a list of 1 item: 4",
+        "Venue, a group: City Springfield, Capacity 80, Floor 2",
+    ]
+
+
+def test_a_list_is_added_to_reordered_and_kept_whole(
+    wpx: Any, wp_site: Any, wp_dialogs: Any, form: Form
+) -> None:
+    _lists_site(wp_site, scalars=False)
+    open_doc(wpx)
+    wpx.cmd_custom_fields()
+    assert form == []  # no plain fields, straight to the lists
+    wp_dialogs.enter(0)
+    assert wp_dialogs.window["title"] == "Speakers"
+    assert wp_dialogs.window["rows"] == ["Ann", "Bo"]
+    wp_dialogs.answer("ask_text", "Cy")
+    added = wp_dialogs.press("&Add...", 1)
+    assert added.rows == ["Ann", "Bo", "Cy"] and added.select == 2
+    moved = wp_dialogs.press("Move &Up", 2)
+    assert moved.rows == ["Ann", "Cy", "Bo"] and moved.select == 1
+    assert wp_dialogs.press("Move &Up", 0) is None
+    assert wpx.host.announced[-1] == "Already at the top."
+    removed = wp_dialogs.press("Re&move", 0)
+    assert removed.rows == ["Cy", "Bo"]
+    from quill.ui import wordpress_dialogs as dlg
+
+    assert wp_dialogs.press("&Keep Changes") is dlg.CLOSE
+    assert kept(wpx) == {"speakers": ["Cy", "Bo"]}
+    assert wpx.host.announced[-1] == (
+        "Speakers kept with your copy. It goes to Community Radio when you next send."
+    )
+
+
+def test_a_list_of_numbers_refuses_words_and_keeps_numbers(
+    wpx: Any, wp_site: Any, wp_dialogs: Any, form: Form
+) -> None:
+    _lists_site(wp_site, scalars=False)
+    open_doc(wpx)
+    wpx.cmd_custom_fields()
+    wp_dialogs.enter(1)
+    wp_dialogs.answer("ask_text", "lots", "12")
+    assert wp_dialogs.press("&Add...", 0) is None
+    assert wpx.host.announced[-1] == "That needs a number. Nothing was added or changed."
+    assert wp_dialogs.press("&Edit...", 0).rows == ["12"]
+    wp_dialogs.press("&Keep Changes")
+    assert kept(wpx) == {"seats": [12]}
+
+
+def test_a_group_is_one_form_and_keeps_keys_it_does_not_show(
+    wpx: Any, wp_site: Any, wp_dialogs: Any, form: Form
+) -> None:
+    _lists_site(wp_site, scalars=False)
+    open_doc(wpx)
+    wpx.cmd_custom_fields()
+    form.answers.append({"city": "Shelbyville", "capacity": "90"})
+    after = wp_dialogs.enter(2)
+    assert [f.key for f in form[0]["fields"]] == ["city", "capacity"]
+    assert after.rows[2] == "Venue, a group: City Shelbyville, Capacity 90, Floor 2"
+    assert kept(wpx) == {"venue": {"city": "Shelbyville", "capacity": 90, "floor": "2"}}
+
+
+def test_a_list_put_back_as_it_was_is_not_sent(
+    wpx: Any, wp_site: Any, wp_dialogs: Any, form: Form
+) -> None:
+    _lists_site(wp_site, scalars=False)
+    copy = open_doc(wpx)
+    copy.properties["meta"] = {"speakers": ["Zed"]}
+    wpx.local.save(copy)
+    wpx.cmd_custom_fields()
+    wp_dialogs.enter(0)
+    assert wp_dialogs.window["rows"] == ["Zed"]
+    wp_dialogs.answer("ask_text", "Ann", "Bo")
+    wp_dialogs.press("&Edit...", 0)
+    wp_dialogs.press("&Add...", 0)
+    wp_dialogs.press("&Keep Changes")
+    assert kept(wpx) == {}
+    assert wpx.host.announced[-1] == "Speakers is the same as on Community Radio."

@@ -23,6 +23,7 @@ from quill.core.wordpress import custom_fields as cf
 from quill.core.wordpress import site_features as sf
 from quill.ui import wordpress_block_dialogs as bdlg
 from quill.ui import wordpress_dialogs as dlg
+from quill.ui.wordpress_custom_field_lists import WordPressCustomFieldLists
 from quill.ui.wordpress_notes_commands import WordPressNotesCommands
 from quill.ui.wordpress_picture_edit_commands import WordPressPictureEditCommands
 
@@ -34,7 +35,9 @@ if TYPE_CHECKING:
 Moderation = tuple[str, str, str, str]
 
 
-class WordPressApiWritingCommands(WordPressNotesCommands, WordPressPictureEditCommands):
+class WordPressApiWritingCommands(
+    WordPressNotesCommands, WordPressPictureEditCommands, WordPressCustomFieldLists
+):
     # ------------------------------------------------------------------ #
     # custom fields (9.15)
 
@@ -57,16 +60,24 @@ class WordPressApiWritingCommands(WordPressNotesCommands, WordPressPictureEditCo
         def show(found: tuple[dict[str, Any], dict[str, Any]]) -> None:
             schema, values = found
             fresh = self.local.copy_for_path(self.host.current_path()) or copy  # type: ignore[attr-defined]
-            form = cf.build_form(schema, values, dict(fresh.properties.get("meta") or {}))
-            if not form.fields:
+            kept = dict(fresh.properties.get("meta") or {})
+            form = cf.build_form(schema, values, kept)
+            if not form.fields and not form.structured:
                 if not quiet:
                     self.host.announce(f"{profile.name} has no custom fields for a {kind}.")
+                return
+            if not form.fields:
+                self.edit_lists_and_groups(form, fresh, profile)
                 return
             more = (
                 f" {form.left_alone} more are lists or groups QUILL leaves as they are."
                 if form.left_alone
                 else ""
             )
+            if form.structured:
+                lists = len(form.structured)
+                noun = "list or group comes" if lists == 1 else "lists and groups come"
+                more += f" {lists} {noun} next, one at a time."
             answers = bdlg.ask_fields(
                 self.host.parent,
                 self.host.show_modal,
@@ -87,17 +98,18 @@ class WordPressApiWritingCommands(WordPressNotesCommands, WordPressPictureEditCo
                     f"{exc.field_label} needs a number. Nothing was kept; try again."
                 )
                 return
-            fresh.properties["meta"] = changed
+            fresh.properties["meta"] = cf.merge_kept(kept, form, changed)
             self.local.save(fresh)  # type: ignore[attr-defined]
             count = len(changed)
             if not count:
                 self.host.announce("No custom fields changed.")
-                return
-            noun = "field" if count == 1 else "fields"
-            self.host.announce(
-                f"{count} custom {noun} kept with your copy. They go to {profile.name} when you "
-                "next send."
-            )
+            else:
+                noun = "field" if count == 1 else "fields"
+                self.host.announce(
+                    f"{count} custom {noun} kept with your copy. They go to {profile.name} when "
+                    "you next send."
+                )
+            self.edit_lists_and_groups(form, fresh, profile)
 
         self.with_feature(
             profile, "custom_fields", f"reading {profile.name}'s custom fields", work, show

@@ -376,7 +376,7 @@ def delete_terms(api: WordPressApi, terms: list[Term]) -> int:
     api.batch([
         {
             "method": "DELETE",
-            "path": f"/{taxonomy_route(t.taxonomy)}/{t.id}?force=true",
+            "path": f"/{taxonomy_route(t.taxonomy, api)}/{t.id}?force=true",
         }
         for t in terms
     ])
