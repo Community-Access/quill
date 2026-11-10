@@ -141,6 +141,7 @@ def duplicate_playlist(host: Any, playlist_id: str) -> Playlist | None:
     twin.items = [copy.copy(item) for item in playlist.items]
     twin.next_item_id = playlist.next_item_id
     twin.folder, twin.watch = playlist.folder, playlist.watch
+    twin.subfolders = playlist.subfolders
     twin.shuffle, twin.repeat = playlist.shuffle, playlist.repeat
     lib.playlists.insert(lib.index_of(playlist_id) + 1, twin)
     ui.commit(host, browse_select=f"localplaylist:{twin.id}")

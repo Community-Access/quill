@@ -4884,14 +4884,29 @@ front rather than opening a second copy.
 #### Bring in a whole folder, step by step
 
 1. In the empty window, press **Ctrl+Alt+O** (**Local Media > Add a
-   Folder...**), or choose the **Add a Folder...** button.
-2. Choose the folder and press **Enter**. You hear "Looking for media in", and
-   the folder's name.
-3. Every file in it comes in, and the files in the folders inside it too, in
-   the order you would read the names: track 2 comes before track 10, and disc
-   one comes before disc two.
-4. You hear "Made a playlist called", the folder's name, and how many items it
-   has.
+   Folder...**), or choose the **Add a Folder...** button. The **Add a Folder**
+   box opens with your cursor in **Folder**.
+2. Type or paste the folder's path, for example `d:\other files\downloads`.
+   Spaces in the path are fine. If you copied it with File Explorer's **Copy
+   as Path**, the quotes around it are fine too. Rather pick it? Choose
+   **Browse...** (Alt+B) and the usual Windows folder picker opens.
+3. Two check boxes sit under the path, and both start checked:
+   - **Include subfolders** (Alt+S): the music in the folders inside this one
+     comes in too. Uncheck it to add only the files right in this folder. The
+     playlist remembers your choice whenever it looks at the folder again.
+   - **Keep up with the folder** (Alt+K): files you put in the folder later
+     join the playlist the next time you open it (this is Follow the Folder,
+     below).
+4. Press **Enter**. If there is no folder at that path, Quill Radio says so
+   right away and leaves the box open, so you can fix the spelling. Otherwise
+   you hear "Looking for media in", and the folder's name.
+5. The files come in the order you would read the names: track 2 comes before
+   track 10, and disc one comes before disc two.
+6. You hear "Made a playlist called", the folder's name, and what was in it,
+   for example "42 audio files and 3 videos".
+
+The box remembers the last folder you added, so adding a few folders from the
+same place is quick.
 
 Once you have playlists, **Add a Folder...** in the window adds the folder's
 files to the end of the playlist you are on. To make a brand new playlist from
