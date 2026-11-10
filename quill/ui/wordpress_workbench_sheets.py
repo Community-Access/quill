@@ -266,6 +266,8 @@ class WorkbenchSheetCommands:
 
         def done(result: Any) -> None:
             self.say(result.sentence)
+            if "slug" in body and hasattr(self, "offer_redirect"):
+                self.offer_redirect(row, str(fresh.get("link", "") or ""))
             undo = dict(result.undo)
             if undo:
                 self.history.record(

@@ -204,139 +204,102 @@ class PropertiesAnswer:
     comments_open: bool
     sticky: bool
     password: str = field(repr=False, default="")
+    #: The sheet's other fields the person changed (format, parent, template, featured image).
+    extra: dict[str, Any] = field(default_factory=dict)
+    #: Category or tag names that match nothing on the site, left out.
+    unknown_terms: list[str] = field(default_factory=list)
 
 
-class PropertiesDialog(wx.Dialog):
-    STATUS_CHOICES = (
-        ("draft", "Draft"),
-        ("pending", "Pending review"),
-        ("publish", "Published"),
-        ("private", "Private"),
-    )
-
-    def __init__(
-        self,
-        parent: wx.Window,
-        *,
-        kind: str,
-        title: str,
-        slug: str,
-        status: str,
-        excerpt: str,
-        categories: Sequence[tuple[int, str]],
-        tags: Sequence[tuple[int, str]],
-        chosen_categories: Sequence[int],
-        chosen_tags: Sequence[int],
-        comments_open: bool,
-        sticky: bool,
-        facts: str,
-    ) -> None:
-        super().__init__(
-            parent, title="WordPress Properties", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
-        self.SetHelpText(
-            "Everything about this page or post apart from its text. Changes are kept with your "
-            "working "
-            "copy and go to the site with your next Save Draft to Site or Publish."
-        )
-        self._categories = list(categories)
-        self._tags = list(tags)
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        self.facts = wx.TextCtrl(self, value=facts, style=wx.TE_MULTILINE | wx.TE_READONLY)
-        self.facts.SetHelpText(
-            "Which site this belongs to, its address, its author and when it last changed."
-        )
-        self.facts.SetMinSize(dip_size(self, 460, 80))
-        labelled_row(sizer, self, "&About:", self.facts)
-        self.title = wx.TextCtrl(self, value=title)
-        self.title.SetHelpText("The title the theme shows at the top.")
-        labelled_row(sizer, self, "&Title:", self.title)
-        self.slug = wx.TextCtrl(self, value=slug)
-        self.slug.SetHelpText("The last part of the web address.")
-        labelled_row(sizer, self, "S&lug:", self.slug)
-        labels = [label for _v, label in self.STATUS_CHOICES]
-        self.status = wx.Choice(self, choices=labels)
-        self.status.SetHelpText(
-            "Draft and Pending review are not public. Published is public. Private is visible "
-            "only to "
-            "editors and administrators."
-        )
-        values = [v for v, _l in self.STATUS_CHOICES]
-        self.status.SetSelection(values.index(status) if status in values else 0)
-        labelled_row(sizer, self, "&Status:", self.status)
-        self.excerpt = wx.TextCtrl(self, value=excerpt, style=wx.TE_MULTILINE)
-        self.excerpt.SetHelpText(
-            "A short summary some themes show in lists and search results. Optional."
-        )
-        labelled_row(sizer, self, "&Excerpt:", self.excerpt)
-        self.category_list: CheckGroup | None = None
-        self.tag_list: CheckGroup | None = None
-        if kind == "post":
-            self.category_list = _check_group(
-                sizer,
-                self,
-                "Categories",
-                [n for _i, n in self._categories],
-                "Check each category this post belongs to. Space checks or unchecks.",
-            )
-            for index, (term_id, _n) in enumerate(self._categories):
-                self.category_list.Check(index, term_id in chosen_categories)
-            self.tag_list = _check_group(
-                sizer,
-                self,
-                "Tags",
-                [n for _i, n in self._tags],
-                "Check each tag for this post. Space checks or unchecks.",
-            )
-            for index, (term_id, _n) in enumerate(self._tags):
-                self.tag_list.Check(index, term_id in chosen_tags)
-        self.comments = wx.CheckBox(self, label="Allow co&mments")
-        self.comments.SetHelpText("Whether visitors can leave comments on this page or post.")
-        self.comments.SetValue(comments_open)
-        sizer.Add(self.comments, 0, wx.ALL, 8)
-        self.sticky = wx.CheckBox(self, label="Keep at the top of the &blog")
-        self.sticky.SetHelpText(
-            "A sticky post stays first on the blog page until you uncheck this."
-        )
-        self.sticky.SetValue(sticky)
-        self.sticky.Show(kind == "post")
-        sizer.Add(self.sticky, 0, wx.ALL, 8)
-        self.password = wx.TextCtrl(self, style=wx.TE_PASSWORD)
-        self.password.SetHelpText(
-            "Visitors must type this password to read it. Leave empty for no password."
-        )
-        labelled_row(sizer, self, "Pass&word to read it (optional):", self.password)
-        sizer.Add(_buttons(self), 0, wx.EXPAND | wx.ALL, 8)
-        self.SetSizerAndFit(sizer)
-        apply_modal_ids(self)
-
-    def answer(self) -> PropertiesAnswer:
-        def checked(box: CheckGroup | None, items: list[tuple[int, str]]) -> list[int]:
-            return [items[i][0] for i in box.GetCheckedItems()] if box is not None else []
-
-        return PropertiesAnswer(
-            title=self.title.GetValue().strip(),
-            slug=self.slug.GetValue().strip(),
-            status=self.STATUS_CHOICES[max(0, self.status.GetSelection())][0],
-            excerpt=self.excerpt.GetValue().strip(),
-            category_ids=checked(self.category_list, self._categories),
-            tag_ids=checked(self.tag_list, self._tags),
-            comments_open=self.comments.GetValue(),
-            sticky=self.sticky.GetValue(),
-            password=self.password.GetValue(),
-        )
+def _copy_to_clipboard(text: str) -> None:
+    if text and wx.TheClipboard.Open():
+        try:
+            wx.TheClipboard.SetData(wx.TextDataObject(text))
+        finally:
+            wx.TheClipboard.Close()
 
 
 def ask_properties(
-    parent: wx.Window, show_modal: ShowModal, **kwargs: Any
+    parent: wx.Window,
+    show_modal: ShowModal,
+    *,
+    kind: str,
+    title: str,
+    slug: str,
+    status: str,
+    excerpt: str,
+    categories: Sequence[tuple[int, str]],
+    tags: Sequence[tuple[int, str]],
+    chosen_categories: Sequence[int],
+    chosen_tags: Sequence[int],
+    comments_open: bool,
+    sticky: bool,
+    facts: str,
+    properties: dict[str, Any] | None = None,
 ) -> PropertiesAnswer | None:
-    dialog = PropertiesDialog(parent, **kwargs)
-    try:
-        if show_modal(dialog, "WordPress Properties") != wx.ID_OK:
-            return None
-        return dialog.answer()
-    finally:
-        dialog.Destroy()
+    """The working copy's Properties: the Workbench's item sheet (PRD 8), kept with the copy.
+
+    *show_modal* is accepted for the callers' shape; the sheet shows itself
+    through the dialog contract.
+    """
+    del show_modal
+    from quill.core.wordpress.workbench_copy_sheet import copy_answer, copy_sheet, copy_values
+    from quill.ui.workbench_sheet_editor import WorkbenchSheetEditor
+
+    props: dict[str, Any] = dict(properties or {})
+    props.update(
+        slug=slug,
+        excerpt=excerpt,
+        categories=list(chosen_categories),
+        tags=list(chosen_tags),
+        comment_status="open" if comments_open else "closed",
+        sticky=sticky,
+    )
+    sheet = copy_sheet(kind)
+    values = copy_values(
+        title=title,
+        status=status,
+        properties=props,
+        facts=facts,
+        categories=categories,
+        tags=tags,
+    )
+    pending: dict[str, Any] = {}
+
+    def keep(state: Any) -> None:
+        # Apply keeps the sheet open and starts the next round from what was kept.
+        pending.update({change.key: change.after for change in state.pending()})
+
+    editor = WorkbenchSheetEditor(
+        parent,
+        sheet,
+        values,
+        title="WordPress Properties",
+        copy_text=_copy_to_clipboard,
+        on_save=keep,
+    )
+    editor.dialog.SetHelpText(
+        "Everything about this page or post apart from its text, on the same sheet the "
+        "WordPress Workbench shows. Changes are kept with your working copy and go to the "
+        "site with your next Save Draft to Site or Publish."
+    )
+    if editor.show() != wx.ID_OK and not pending:
+        return None
+    got = copy_answer(pending, categories=categories, tags=tags)
+    changed = dict(got.properties)
+    return PropertiesAnswer(
+        title=got.title if got.title is not None else title,
+        slug=str(changed.pop("slug", slug)),
+        status=got.status or status,
+        excerpt=str(changed.pop("excerpt", excerpt)),
+        category_ids=list(changed.pop("categories", chosen_categories)),
+        tag_ids=list(changed.pop("tags", chosen_tags)),
+        comments_open=str(changed.pop("comment_status", "open" if comments_open else "closed"))
+        != "closed",
+        sticky=bool(changed.pop("sticky", sticky)),
+        password=got.password,
+        extra=changed,
+        unknown_terms=got.unknown_terms,
+    )
 
 
 # --------------------------------------------------------------------------- #

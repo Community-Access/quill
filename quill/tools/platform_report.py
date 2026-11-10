@@ -317,6 +317,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.wordpress_combination_audit"),
     ),
     Gate(
+        "wordpress-coverage",
+        "WordPress PRD 12: every route on the test site has a home or a reason",
+        (sys.executable, "-m", "quill.tools.wordpress_coverage_audit"),
+    ),
+    Gate(
         "release-feeds",
         "GATE-FEED: signed v2 update feeds; warns 14 days before one expires",
         (sys.executable, "-m", "quill.tools.release_feed_audit"),

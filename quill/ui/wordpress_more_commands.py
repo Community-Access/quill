@@ -229,6 +229,7 @@ class WordPressMoreCommands:
                 comments_open=props.get("comment_status", "open") != "closed",
                 sticky=bool(props.get("sticky")),
                 facts=facts,
+                properties=props,
             )
             if answer is None:
                 return
@@ -242,12 +243,15 @@ class WordPressMoreCommands:
                 comment_status="open" if answer.comments_open else "closed",
                 sticky=answer.sticky,
             )
+            props.update(getattr(answer, "extra", None) or {})
             if answer.password:
                 props["password"] = answer.password
             self.local.save(copy)
+            unknown = getattr(answer, "unknown_terms", None) or []
+            missing = f" Not on the site, so left out: {', '.join(unknown)}." if unknown else ""
             self.host.announce(
                 f"Kept with your copy: {len(answer.category_ids)} categories, "
-                f"{len(answer.tag_ids)} tags. They go to the site when you next send."
+                f"{len(answer.tag_ids)} tags. They go to the site when you next send.{missing}"
             )
             # The site's own custom fields, when it registers any (9.15).
             custom = getattr(self, "custom_fields_after_properties", None)

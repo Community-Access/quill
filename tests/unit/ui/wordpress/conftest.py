@@ -271,6 +271,17 @@ class _ClosedWindow:
         return None
 
 
+@pytest.fixture(autouse=True)
+def _classic_wordpress_windows(monkeypatch: pytest.MonkeyPatch) -> None:
+    """These tests drive the classic windows behind each Tools > WordPress door.
+
+    The Workbench is the default (W6); the classic windows are what the doors
+    open with Use the classic WordPress windows, which this sets for the run.
+    The Workbench's own tests build its window directly and are unaffected.
+    """
+    monkeypatch.setenv("QUILL_WORDPRESS_WORKBENCH_WINDOW", "0")
+
+
 @pytest.fixture
 def wp_response() -> type[FakeResponse]:
     """The response class, for a route that must answer with headers or a status."""

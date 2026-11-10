@@ -2,6 +2,74 @@
 
 ## 1.0.0
 
+### The WordPress Workbench is where Tools > WordPress leads (2026-11-10)
+
+- **The Workbench is the way in now.** Every row of Tools > WordPress that
+  had its own window (Comments, Media Library, Categories and Tags, Menus,
+  Site Check, Site Settings, Site Map, and Manage's Users, Application
+  Passwords, Plugins, Themes, Fonts, Synced Patterns, Widgets and AI
+  Abilities) opens the Workbench at its place, and the new first row, Open
+  WordPress Workbench, opens it from anywhere (the WordPress key, then H).
+  For this release the old windows are still there: Workbench Options > Use
+  the classic WordPress windows brings them back.
+- **Long lists, your way.** Load More, on the Workbench's View menu, reads three hundred more rows
+  and Load All reads every one; the status bar says when a list stopped
+  short. Columns chooses what a list shows, and Group By puts a node for
+  each value (each status, each author) under the list's Group branch.
+- **New Here makes what the place holds:** a draft post or page, an item of
+  the site's own content types, a category, tag or term, a menu, a person or
+  an application password.
+- **Terms and people.** Merge Into folds one category or tag into another;
+  Convert makes a tag a category or a category a tag, posts and all; both
+  preview how many items move. Send Password Reset opens the person's
+  wp-admin screen, because WordPress keeps that out of its API, and Roles
+  and What They May Do lists each role in plain words.
+- **Spam.** Empty Spam deletes every comment held as spam after you
+  confirm; Not Spam, and Allow This Sender approves a comment and explains
+  how the site treats that person from now on.
+- **File > WordPress > Properties is the Workbench's sheet,** so the
+  editor and the Workbench show the same fields for a post, and the format,
+  parent, template and featured image now go with your copy too.
+- **F1 on any place or row** says what it is and what Enter does there.
+- **Everything the site offers, accounted for.** More from This Site lists
+  each REST namespace with how many of its routes the Workbench reaches, and
+  each namespace's routes with their methods. The Content Model lists the
+  site's post types and taxonomies and who registered each. The site's AI
+  Abilities run as commands: their input is a sheet, and a preview comes
+  before anything runs.
+- **Site to site.** Copy to Site sends posts, pages, terms, patterns, menus
+  and forms to another of your sites, with pictures uploaded and links
+  pointed at the new site, after a preview of every create and replace.
+  Compare Sites lists what differs, and Take a Snapshot saves every post,
+  page, term, menu, pattern and setting to this computer.
+- **The calendar and the queue.** Calendar lists each day's scheduled and
+  published posts across your sites. Waiting for review has Approve and
+  Schedule, Send Back with a Note and Assign a Reviewer.
+- **Read Site as Document** opens the site's pages as one document, a
+  heading per page, ready for the editor's exports to Word, EPUB or DAISY.
+- **Lists in and out.** Export List saves any list as Excel or CSV; Import
+  Posts from a Spreadsheet makes drafts from rows, previewed one by one.
+- **The REST Console** sends any request to the site, with the routes it
+  offers to choose from, the capability it needs, a preview before a write,
+  and the answer as a tree.
+- **Watches,** turned on in Workbench Options, tell you about new comments,
+  form responses, plugin updates and scheduled posts going live while the
+  editor is open, checked at most every fifteen minutes.
+- **By Name and Across Sites.** Each site's By Name branch lists every
+  term, custom field value, author, file, pattern, link, block and form with
+  where it is used. Across Sites shows tags and categories, plugins, themes,
+  people and settings by name on all your sites, or on a Site Set you name,
+  with how the copies differ and which sites lack them; Make Them the Same
+  previews every site's change first. Fleet reads every site in one list.
+- **Looking after a site.** Content Audit finds pages nobody links to,
+  pages not changed in a year, duplicate titles, very long or short pages
+  and headings that skip a level; Media > Housekeeping finds files used
+  nowhere, very large files, video without captions and audio without a
+  transcript; Privacy Requests says where they are kept. A changed address
+  offers a redirect on sites with the Redirection plugin.
+- **A practice site, coming.** The Workbench can start a WordPress site on
+  your own computer with WordPress Playground, in builds that include its
+  tool; this one does not yet.
 ### The GitHub Workbench is the GitHub window now (2026-11-10)
 
 - **One window for GitHub.** Every door into GitHub, in the GitHub menu and in

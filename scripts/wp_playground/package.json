@@ -1,0 +1,9 @@
+{
+  "name": "quill-wp-playground",
+  "private": true,
+  "description": "WordPress Playground's command-line tool, for the Practice Site (WordPress PRD 15.1). Pinned; staged by scripts/fetch_build_deps.py.",
+  "license": "GPL-2.0-or-later",
+  "dependencies": {
+    "@wp-playground/cli": "1.0.28"
+  }
+}

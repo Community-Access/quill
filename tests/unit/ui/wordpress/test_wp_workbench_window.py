@@ -414,10 +414,10 @@ def test_planned_nodes_say_where_the_feature_lives_today(bench) -> None:
     assert "Check the Whole Site" in bench.provider.unavailable(NodeRef("", "accessibility"), node)
 
 
-def test_the_door_opens_nothing_without_the_flag(monkeypatch) -> None:
+def test_the_door_opens_nothing_with_the_classic_windows(monkeypatch) -> None:
     from quill.ui.wordpress_workbench_window import open_from_door
 
-    monkeypatch.delenv("QUILL_WORDPRESS_WORKBENCH_WINDOW", raising=False)
+    monkeypatch.setenv("QUILL_WORDPRESS_WORKBENCH_WINDOW", "0")
     assert open_from_door(object(), "wordpress.comments") is False
 
 

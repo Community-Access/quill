@@ -17,9 +17,11 @@ and no new way in; every call runs off the UI thread through the frame's
 task runner; nothing is announced on focus or on opening (GATE-13), and what
 is said goes through the editor's announce, which speaks and brailles.
 
-Reached behind the developer flag (:mod:`quill.core.wordpress.workbench_flag`)
-through :func:`open_from_door`, which the Tools > WordPress handlers in
-:mod:`quill.ui.wordpress_commands` call in both editors: QUILL Lite is never
+The default way in from Tools > WordPress (W6): :func:`open_from_door`,
+which the Tools > WordPress handlers in :mod:`quill.ui.wordpress_commands`
+call in both editors, opens it unless Workbench Options says Use the classic
+WordPress windows (:mod:`quill.core.wordpress.workbench_flag`); Tools >
+WordPress > Open WordPress Workbench always opens it. QUILL Lite is never
 ahead.
 """
 
@@ -48,10 +50,14 @@ from quill.core.wordpress.workbench_filter import (
     resolve_terms,
 )
 from quill.core.wordpress.workbench_help import HOW_IT_THINKS, START_HERE, help_rows
+from quill.core.wordpress.workbench_listing import page_limit
 from quill.core.wordpress.workbench_load import SiteContext, load
+from quill.core.wordpress.workbench_node_help import node_help as authored_help
+from quill.core.wordpress.workbench_node_help import row_help
 from quill.core.wordpress.workbench_permissions import AccessStore
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.wordpress.workbench_tree import (
+    DYNAMIC_NAMESPACE,
     DYNAMIC_TYPE,
     PLANNED_WORDS,
     START_NODE,
@@ -62,9 +68,15 @@ from quill.core.workbench.filters import Query, describe
 from quill.core.workbench.history import ChangeHistory
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import NodeSpec
+from quill.ui.wordpress_workbench_across import WorkbenchAcrossCommands
+from quill.ui.wordpress_workbench_bold import WorkbenchBoldCommands
 from quill.ui.wordpress_workbench_commands import WorkbenchRowCommands
+from quill.ui.wordpress_workbench_discovered import WorkbenchDiscoveredCommands
+from quill.ui.wordpress_workbench_lists import WorkbenchListCommands
+from quill.ui.wordpress_workbench_options import WorkbenchOptionsCommands
 from quill.ui.wordpress_workbench_people import WorkbenchPeopleCommands
 from quill.ui.wordpress_workbench_sheets import WorkbenchSheetCommands
+from quill.ui.wordpress_workbench_sweep import WorkbenchSweepCommands
 from quill.ui.workbench_frame import NodeRef, WorkbenchFrame
 from quill.ui.workbench_status_bar import StatusCell
 
@@ -78,7 +90,15 @@ _REMOTE = frozenset({"items", "media", "comments", "users", "terms", "patterns"}
 
 
 class WordPressWorkbenchProvider(
-    WorkbenchRowCommands, WorkbenchSheetCommands, WorkbenchPeopleCommands
+    WorkbenchListCommands,
+    WorkbenchDiscoveredCommands,
+    WorkbenchOptionsCommands,
+    WorkbenchBoldCommands,
+    WorkbenchAcrossCommands,
+    WorkbenchSweepCommands,
+    WorkbenchRowCommands,
+    WorkbenchSheetCommands,
+    WorkbenchPeopleCommands,
 ):
     """WordPress, for :class:`~quill.ui.workbench_frame.WorkbenchFrame`."""
 
@@ -116,6 +136,7 @@ class WordPressWorkbenchProvider(
         self._taxonomies: dict[str, list[tuple[str, str]]] = {}
         self._waiting: dict[str, int] = {}
         self._profiles: dict[str, st.SiteProfile] = {}
+        self._lists_state()
         self.reload_profiles()
 
     # -- sites --------------------------------------------------------------------
@@ -191,11 +212,24 @@ class WordPressWorkbenchProvider(
         return None  # sites are connected from the editor, which keeps the password safe
 
     def dynamic_children(self, node: NodeSpec, ref: NodeRef) -> Sequence[tuple[str, str]]:
+        if node.key.endswith("_group"):
+            return self.group_children(node, ref)
+        if node.key == "calendar_day":
+            return self.day_children()
         site = self.split(ref.instance)[0]
+        if node.key == DYNAMIC_NAMESPACE:
+            return self.namespace_children(site)
         found = self._types if node.key == DYNAMIC_TYPE else self._taxonomies
         return tuple((f"{site}{SEP}{kind}", label) for kind, label in found.get(site, []))
 
     def node_help(self, ref: NodeRef, node: NodeSpec) -> str:
+        said = self._node_words(ref, node)
+        frame = self.frame
+        if frame is not None:  # F1 on the tree answers with this node's own sentence
+            frame.tree.SetHelpText(f"{authored_help(node.key)} {said}".strip())
+        return said
+
+    def _node_words(self, ref: NodeRef, node: NodeSpec) -> str:
         if ref == NodeRef("", START_NODE):
             count = len(self._profiles)
             sites = f"You have {count} site{'s' if count != 1 else ''} connected."
@@ -220,7 +254,7 @@ class WordPressWorkbenchProvider(
     # -- rows ---------------------------------------------------------------------
 
     def columns(self, node: NodeSpec) -> tuple[str, ...]:
-        return node.columns or ("name",)
+        return self.chosen_columns(node)
 
     def remote_words(self, node: NodeSpec) -> bool:
         return node.loader.partition(":")[0] in _REMOTE
@@ -232,6 +266,14 @@ class WordPressWorkbenchProvider(
             return list(help_rows(what))
         if family == "sites":
             return [self._site_row(name) for name in self._profiles]
+        if family in ("calendar", "watches", "practice"):
+            return list(self.fixed_rows(family, what, ref.instance))
+        if family == "across":
+            return [r for r in self.across_list(what) if local_matches(r, query.conditions)]
+        if family == "scan":
+            return list(self.scan_rows(self.split(ref.instance)[0], what))
+        if family == "sweep":
+            return list(self.sweep_rows(self.split(ref.instance)[0], what))
         if family == "attention":
             contexts = []
             for name in self._profiles:
@@ -252,7 +294,10 @@ class WordPressWorkbenchProvider(
         if remote and not query.is_empty:
             bases = [t.rest_base for t in (tx.cached_taxonomies(ctx.api) or {}).values()]
             params = params_for(query, resolve=resolve_terms(ctx.api), taxonomy_bases=bases)
-        rows = load(ctx, node.loader, dict(node.preset), params, dynamic=dynamic)
+        with page_limit(self.pages_for_ref(ref)):
+            rows = load(ctx, node.loader, dict(node.preset), params, dynamic=dynamic)
+        self.note_loaded(ref, len(rows))
+        rows = self.narrow_to_group(dynamic, rows)
         if not remote and query.conditions:
             rows = [row for row in rows if local_matches(row, query.conditions)]
         return list(rows)
@@ -273,9 +318,12 @@ class WordPressWorkbenchProvider(
     def cells(self, row: object, columns: tuple[str, ...]) -> list[str]:
         if not isinstance(row, WbRow):
             return [str(row)]
-        return [row.cell(column) for column in columns]
+        return [self.cell_for(row, column) for column in columns]
 
     def detail(self, row: object) -> str:
+        frame = self.frame
+        if frame is not None and isinstance(row, WbRow):  # F1 on the list: this row's kind
+            frame.list.SetHelpText(row_help(row.kind))
         return row.detail if isinstance(row, WbRow) else str(row)
 
     def row_type(self, node: NodeSpec, row: object) -> str:
@@ -361,6 +409,8 @@ class WordPressWorkbenchProvider(
                 return ""
             chosen = len(frame.selected_indices())
             shown = f"{len(frame.rows)} shown"
+            if self.cut_for(frame.current):
+                shown += ", more on the site"
             return f"{shown}, {chosen} selected" if chosen > 1 else shown
 
         def loading() -> str:
@@ -449,7 +499,7 @@ class WordPressWorkbenchProvider(
         for site in list(self._profiles):
 
             def done(_result: object, site: str = site) -> None:
-                if self.frame is not None and (self._types.get(site) or self._taxonomies.get(site)):
+                if self.frame is not None:
                     self.frame.rebuild_tree()
 
             self.background(f"discovering {site}", lambda s=site: self.discover(s), done)
@@ -505,14 +555,14 @@ def open_workbench(
 
 
 def open_from_door(commands: Any, command_id: str) -> bool:
-    """Open the Workbench for a Tools > WordPress door, when the developer flag is on.
+    """Open the Workbench for a Tools > WordPress door: the default (W6).
 
-    Returns False (and does nothing) without the flag, so the door goes on to
-    its own window exactly as before.
+    Returns False (and does nothing) when Use the classic WordPress windows is
+    chosen in Workbench Options, so the door goes on to its own window.
     """
     from quill.core.wordpress.workbench_flag import workbench_window_enabled
 
-    if not workbench_window_enabled():
+    if not workbench_window_enabled(base=getattr(commands, "_data_dir", None)):
         return False
     import os
 
