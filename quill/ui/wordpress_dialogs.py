@@ -312,6 +312,14 @@ class Action:
 CLOSE = object()
 
 
+@dataclass(frozen=True)
+class Rows:
+    """An action's answer that also moves the selection: a row moved down follows the row."""
+
+    rows: Sequence[str]
+    select: int | None = None
+
+
 class ListWindow(wx.Dialog):
     """A list, a details box, and action buttons: Sites, Media Library, Comments...
 
@@ -404,7 +412,9 @@ class ListWindow(wx.Dialog):
         if result is CLOSE:
             self.EndModal(wx.ID_OK)
             return
-        if isinstance(result, (list, tuple)):
+        if isinstance(result, Rows):
+            self.set_rows([str(r) for r in result.rows], keep=result.select)
+        elif isinstance(result, (list, tuple)):
             self.set_rows([str(r) for r in result], keep=index)
         self.rows.SetFocus()
 
