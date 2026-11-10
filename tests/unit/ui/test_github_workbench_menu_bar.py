@@ -90,7 +90,9 @@ def test_rows_move_into_the_github_menu_and_back(frame) -> None:
     titles = list(workbench)
     assert titles.index("GitHub") == titles.index("Tools") + 1
     github_ids = _command_ids(frame, workbench["GitHub"])
-    assert moved <= github_ids
+    moved_out = set(table.command_ids(table.MOVED_OUT_ROWS))
+    assert moved <= github_ids | moved_out
+    assert not moved_out & github_ids  # they left the menu (GitHub PRD section 6)
     # Moved, never duplicated: none of them is left in File or Tools.
     assert not (moved & _command_ids(frame, workbench["File"] + workbench["Tools"]))
     labels = [path[-1] for path, _item in workbench["GitHub"]]

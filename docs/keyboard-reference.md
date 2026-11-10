@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 584.
+Editor commands with default bindings: 585.
 
 ## The QUILL editor
 
@@ -490,6 +490,7 @@ Editor commands with default bindings: 584.
 | (unbound by default) | Workbench inbox | `github.workbench_inbox` |
 | (unbound by default) | Workbench issues | `github.workbench_issues` |
 | (unbound by default) | Workbench my work | `github.workbench_my_work` |
+| (unbound by default) | Workbench pulls | `github.workbench_pulls` |
 | (unbound by default) | Workbench releases | `github.workbench_releases` |
 | (unbound by default) | Local Git: End Bisect | `localgit.bisect_reset` |
 | (unbound by default) | Local Git: Start Bisect... | `localgit.bisect_start` |

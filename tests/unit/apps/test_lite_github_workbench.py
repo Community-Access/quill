@@ -102,6 +102,7 @@ def test_lite_github_workbench_refuses_safe_mode_before_network(monkeypatch) -> 
         (lambda h: h.cmd_github_notifications(), ("explore", "notifications")),
         (lambda h: h.cmd_github_explore(), ("explore", None)),
         (lambda h: h.cmd_github_issues(), ("items", "owner/repo", "issues")),
+        (lambda h: h.cmd_github_pulls(), ("items", "owner/repo", "issues")),
         (lambda h: h.cmd_github_actions_runs(), ("items", "owner/repo", "runs")),
         (lambda h: h.cmd_github_releases(), ("items", "owner/repo", "releases")),
     ],
@@ -111,6 +112,43 @@ def test_each_github_menu_row_opens_its_view_through_the_one_gate(opened, press,
     press(host)
     assert opened == [("provider", "secret"), expected, "closed"]
     assert host.said == []  # the window's title says it (GATE-13)
+
+
+@pytest.mark.parametrize(
+    ("press", "node"),
+    [
+        (lambda h: h.cmd_github_workbench(), ""),
+        (lambda h: h.cmd_github_inbox(), "inbox"),
+        (lambda h: h.cmd_github_my_work(), "attention"),
+        (lambda h: h.cmd_github_notifications(), "notifications"),
+        (lambda h: h.cmd_github_issues(), "issues"),
+        (lambda h: h.cmd_github_pulls(), "pulls"),
+        (lambda h: h.cmd_github_actions_runs(), "runs"),
+        (lambda h: h.cmd_github_releases(), "releases"),
+        (lambda h: h.cmd_github_explore(), "search"),
+    ],
+)
+def test_with_the_workbench_in_use_each_door_opens_its_node(
+    opened, monkeypatch, press, node
+) -> None:
+    """GitHub PRD section 6: old and new command ids alike open the Workbench there."""
+    from quill.core.github.workbench_flag import ENV_VAR
+    from quill.core.github.workbench_tree import GITHUB_TREE
+
+    monkeypatch.setenv(ENV_VAR, "1")
+    seen: list[dict[str, object]] = []
+    monkeypatch.setattr(
+        "quill.ui.github_workbench_window.open_github_workbench",
+        lambda _editor, _items, **kwargs: seen.append(kwargs),
+    )
+    host = _Host()
+    press(host)
+    assert [entry["node"] for entry in seen] == [node]
+    keys = {spec.key for _template, spec in GITHUB_TREE.all_nodes()}
+    assert node == "" or node in keys
+    assert callable(seen[0]["editor_command"])
+    assert host._github_editor_has("github.clone_repository")
+    assert not host._github_editor_has("github.fork_repository")  # QUILL only
 
 
 def test_the_switch_flips_the_mode_says_one_sentence_and_rebuilds() -> None:

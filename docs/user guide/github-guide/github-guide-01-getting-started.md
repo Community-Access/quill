@@ -65,9 +65,9 @@ QUILL keeps its GitHub commands in two places:
 
 If you do a lot of GitHub work, turn on **View > GitHub Workbench Mode**
 (`Alt+V`, then `K`). A **GitHub** menu joins the menu bar right after Tools,
-with all of those commands in it and a few more that open the views you use
-most in one step, such as **Inbox...** and **Issues and Pull Requests...**.
-`Alt+G` opens it. Chapter 2 walks through it.
+with the doors into the GitHub Workbench, such as **Inbox** and **This
+Repository's Pull Requests**, and the editor's own GitHub commands. `Alt+G`
+opens it. Chapter 2 walks through it.
 
 None of these has a key out of the box, so that they do not take keys a
 writer needs. Press `Ctrl+Shift+P` for the Command Palette and type "GitHub" to

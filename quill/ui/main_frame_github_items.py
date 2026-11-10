@@ -103,11 +103,13 @@ class GitHubItemsMixin:
         else:
             self._set_status("Could not open the GitHub link in your default browser.")
 
-    def open_github_items_viewer(self, initial_view: str = "") -> None:
-        """File > Open Remote > GitHub Items..., and the GitHub menu's three views.
+    def open_github_items_viewer(self, initial_view: str = "", node: str = "") -> None:
+        """File > Open Remote > GitHub Items..., and the GitHub menu's doors.
 
         *initial_view* is the Items view to open on (``"runs"``, ``"releases"``);
-        empty for the issues view, as it always opened.
+        empty for the issues view, as it always opened. *node* is the GitHub
+        Workbench node a door opens (``"inbox"``, ``"pulls"``), when the
+        Workbench is the window in use.
         """
         # items_provider pulls the GitHub request stack (urllib); it is only
         # needed when the viewer is opened, so keep it off the cold-start path.
@@ -154,6 +156,10 @@ class GitHubItemsMixin:
             repository=initial_repo,
             view=initial_view,
             announce=self._announce,
+            node=node,
+            editor_command=self._github_editor_command,
+            editor_command_available=self._github_editor_has,
+            open_file_url=self.open_github_file_url,
         ):
             return
         from quill.ui.github_items_dialog import GitHubItemsDialog

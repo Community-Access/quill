@@ -2,6 +2,26 @@
 
 ## 2.0.0
 
+### The GitHub menu becomes a short list of doors (2026-11-10)
+
+With GitHub Workbench Mode on, the GitHub menu now holds only the ways into the
+GitHub Workbench and the few things that belong to the editor.
+
+- **The doors:** Open GitHub Workbench, Inbox, This Repository's Issues, This
+  Repository's Pull Requests and Actions Runs. Each opens the Workbench at that
+  place.
+- **Then the rest:** Clone Repository, and in QUILL Open GitHub Address,
+  Commit to GitHub, Sync Folder with GitHub and Local Git; then Manage GitHub
+  Accounts and Open GitHub Guide.
+- **Nothing is lost.** My Work, Notifications, Releases, Repository Items and
+  Explore GitHub left the menu but keep their commands, in the Command Palette
+  and on any key you gave them, and each opens the Workbench at the matching
+  place. Repository administration and Codespaces are on the Workbench's own
+  Repository menu, under Repository Actions.
+- **This Repository's Pull Requests** is new: the Workbench's Pull Requests
+  node for the repository you are in.
+- QUILL has the same menu with its own rows added, from the same table.
+
 ### The GitHub Workbench gets its menus, its keys and its own options (2026-11-10)
 
 The GitHub Workbench window is still a preview you turn on with
@@ -37,7 +57,7 @@ needs to be lived in.
   repositories you visited, for each account.
 - **Workbench Options** (**Tools**, **Ctrl+Shift+O**) is where GitHub preferences
   live now: where the window opens, the default list, sort and state, how
-  often notifications are checked, whether a check plays a tick or interrupts
+  often notifications are checked, whether a check plays a sound or interrupts
   speech, pinned repositories and favorites, and privacy. The three GitHub
   check settings moved out of the main Options, and the choices you had made
   come with them.

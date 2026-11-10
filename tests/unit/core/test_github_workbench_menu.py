@@ -106,8 +106,33 @@ def test_every_moved_row_has_a_normal_home_and_every_new_one_is_listed() -> None
         if cid not in normal and cid not in table.NEW_COMMAND_IDS and cid != "help.github_guide"
     ]
     assert homeless == []
-    # Everything the normal homes hold goes into the GitHub menu: nothing is left behind.
-    assert normal <= set(table.command_ids())
+    # Everything the normal homes hold goes into the GitHub menu, or is one of
+    # the rows that left it in Phase 4 and keeps its id: nothing is left behind.
+    moved_out = set(table.command_ids(table.MOVED_OUT_ROWS))
+    assert normal <= set(table.command_ids()) | moved_out
+    assert not moved_out & set(table.command_ids())
+
+
+def test_the_github_menu_is_a_short_list_of_doors() -> None:
+    """GitHub PRD section 6: Workbench, Inbox, the three repository doors, and so on."""
+    top = [entry.command_id for entry in table.WORKBENCH_ROWS if isinstance(entry, table.Row)]
+    assert top[:6] == [
+        table.TOGGLE_COMMAND_ID,
+        "file.open_github_items",
+        "github.workbench_inbox",
+        "github.workbench_issues",
+        "github.workbench_pulls",
+        "github.workbench_actions_runs",
+    ]
+    assert [entry.title for entry in table.WORKBENCH_ROWS if isinstance(entry, table.Submenu)] == [
+        "&Local Git"
+    ]
+    # Inbox is the one door for "what needs me": My Work and Notifications left.
+    assert "github.workbench_my_work" not in top
+    assert "github.view_notifications" not in top
+    # QUILL Lite keeps every command it had, in its table if not on its bar.
+    handlers = {row[3] for row in table.lite_rows()}
+    assert {"cmd_github_my_work", "cmd_github_releases", "cmd_github_pulls"} <= handlers
 
 
 def test_readout_is_omitted_when_there_is_no_repository() -> None:

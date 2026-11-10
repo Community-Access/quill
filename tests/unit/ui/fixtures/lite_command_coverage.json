@@ -122,6 +122,7 @@
   "cmd_github_manage_accounts": "covered",
   "cmd_github_my_work": "covered",
   "cmd_github_notifications": "covered",
+  "cmd_github_pulls": "covered",
   "cmd_github_releases": "covered",
   "cmd_github_workbench": "covered",
   "cmd_go_to_anything": "covered",

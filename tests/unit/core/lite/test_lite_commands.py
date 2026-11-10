@@ -102,6 +102,7 @@ KEYLESS_WITH_REASON: dict[str, str] = {
             "cmd_github_my_work",
             "cmd_github_notifications",
             "cmd_github_issues",
+            "cmd_github_pulls",
             "cmd_github_actions_runs",
             "cmd_github_releases",
             "cmd_github_explore",

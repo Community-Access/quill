@@ -52,7 +52,7 @@ PREF_HELP: dict[str, tuple[str, str, str]] = {
     ),
     "poll_audible_tick": (
         "Notifications and Inbox",
-        "Play a &tick on each check",
+        "Play a soun&d on each check",
         "A short sound every time GitHub is checked, so silence means the check "
         "stopped rather than found nothing. Off by default.",
     ),
