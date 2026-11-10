@@ -19,7 +19,9 @@ from quill.core.workbench.actions import ActionRow, ActionTable, Tier
 __all__ = [
     "CODESPACES_COMMAND",
     "CODESPACES_ROW_TYPES",
+    "DELETE_COMMANDS",
     "GITHUB_ACTIONS",
+    "NEW_HERE",
     "PROPERTIES_COMMAND",
     "RATE_LIMIT_COMMAND",
 ]
@@ -262,6 +264,51 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _OPEN_WEB,
         _PROPERTIES,
     ),
+    "file": (
+        _default("open_entry", "Open in Editor", "Open the file in the editor, to read or edit."),
+        _COPY_LINK,
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
+    "folder": (
+        _default("open_entry", "Open Folder", "List what the folder holds."),
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
+    "milestone": (
+        _default("milestone_issues", "Find Issues in Milestone", "Its issues and pull requests."),
+        _COPY_LINK,
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
+    "project": (
+        _a(
+            "open_on_github", "Open on GitHub", help="Open the board in your browser.", default=True
+        ),
+        _COPY_LINK,
+        _PROPERTIES,
+    ),
+    "organization": (
+        _default("open_organization", "Open", "Select the organization's node in the tree."),
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
+    "favorite": (
+        _default("open", "Open", "Read it in the details pane."),
+        _COPY_LINK,
+        _OPEN_WEB,
+        _FAVORITE,
+        _PROPERTIES,
+    ),
+    "admin_action": (
+        _default("run_admin", "Open", "Open the settings dialog for this; it asks before saving."),
+        _PROPERTIES,
+    ),
+    "help_topic": (
+        _default("open", "Open", "Read the topic in the details pane."),
+        _a("take_me_there", "Take Me There", help="Go to the place the topic is about."),
+        _PROPERTIES,
+    ),
     "node": (
         _default("refresh", "Refresh", "Load this view again. F5 does the same."),
         _OPEN_WEB,
@@ -272,3 +319,31 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
 
 GITHUB_ACTIONS = ActionTable(_ROWS, properties_command=PROPERTIES_COMMAND)
 """Every GitHub row type's menu, checked against the shared rules on import."""
+
+#: What Delete does on each row type (Part C, C3): always a safe removal, an
+#: undoable one or one that asks first, and never on a type that has none.
+DELETE_COMMANDS: dict[str, str] = {
+    "notification": "github.workbench.mark_done",
+    "saved_search": "github.workbench.remove_search",
+    "favorite": "github.workbench.favorite",
+    "issue": "github.workbench.close_reopen",
+    "pull_request": "github.workbench.close_reopen",
+    "branch": "github.workbench.delete_branch",
+    "label": "github.workbench.delete_label",
+    "release_asset": "github.workbench.delete_asset",
+    "gist": "github.workbench.delete_gist",
+    "cache": "github.workbench.delete_cache",
+    "run": "github.workbench.delete_run",
+}
+
+#: What Ctrl+N makes on each node (C3, "New, here"), by the node's key.
+NEW_HERE: dict[str, str] = {
+    "issues": "github.workbench.new_issue",
+    "issues_and_pulls": "github.workbench.new_issue",
+    "pulls": "github.workbench.new_pull",
+    "saved_searches": "github.workbench.save_search",
+    "search_issues": "github.workbench.save_search",
+    "releases": "github.workbench.new_release",
+    "my_gists": "github.workbench.new_gist",
+    "pinned": "github.workbench.pin_repository",
+}

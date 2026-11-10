@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "QUILL GitHub Workbench preferences (github_workbench.json)",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "open_on": {"enum": ["inbox", "start", "last"]},
+    "list_mode": {"enum": ["quick", "full"]},
+    "default_sort": {
+      "enum": [
+        "number_desc",
+        "number_asc",
+        "title_asc",
+        "title_desc",
+        "updated_desc",
+        "updated_asc",
+        "comments_desc"
+      ]
+    },
+    "default_state": {"enum": ["open", "closed", "all"]},
+    "poll_interval_minutes": {"type": "integer", "minimum": 5, "maximum": 1440},
+    "poll_audible_tick": {"type": "boolean"},
+    "poll_interrupt_speech": {"type": "boolean"},
+    "include_read_notifications": {"type": "boolean"},
+    "speak_column_names": {"type": "boolean"},
+    "first_time_help": {"type": "boolean"},
+    "health_snapshot_opt_in": {"type": "boolean"},
+    "use_classic_windows": {"type": "boolean"}
+  }
+}

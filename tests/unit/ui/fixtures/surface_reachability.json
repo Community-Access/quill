@@ -128,6 +128,7 @@
   "quill.ui.github_run_digest_dialog": "reachable",
   "quill.ui.github_sub_issue_order_dialog": "reachable",
   "quill.ui.github_timeline_dialog": "reachable",
+  "quill.ui.github_workbench_options": "reachable",
   "quill.ui.github_workflow_jobs_dialog": "reachable",
   "quill.ui.global_hotkeys_dialog": "reachable",
   "quill.ui.go_to_dialog": "reachable",

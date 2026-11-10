@@ -12,7 +12,6 @@ from quill.core.inline_note_cue import coerce_note_line_cue
 from quill.core.language_server_settings import language_server_fields
 from quill.core.markdown_breaks import normalise_hard_break_style
 from quill.core.monitor_policy import (
-    MONITOR_GITHUB,
     MONITOR_PODCASTS,
     clamp_interval_minutes,
 )
@@ -501,9 +500,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     podcast_check_interval_minutes: int = 60
     podcast_check_audible_tick: bool = False
     podcast_check_interrupt_speech: bool = False
-    github_poll_interval_minutes: int = 15
-    github_poll_audible_tick: bool = False
-    github_poll_interrupt_speech: bool = False
+    # The GitHub check's three moved to quill/core/github/workbench_prefs.py.
     # #262: Pandoc Import / Export batch conversion defaults. The wizard
     # reads these as starting values; the user can override per batch.
     import_export_recursive: bool = True
@@ -1270,11 +1267,6 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         )
         podcast_check_audible_tick = bool(data.get("podcast_check_audible_tick", False))
         podcast_check_interrupt_speech = bool(data.get("podcast_check_interrupt_speech", False))
-        github_poll_interval_minutes = clamp_interval_minutes(
-            MONITOR_GITHUB, data.get("github_poll_interval_minutes", 15)
-        )
-        github_poll_audible_tick = bool(data.get("github_poll_audible_tick", False))
-        github_poll_interrupt_speech = bool(data.get("github_poll_interrupt_speech", False))
         voice_commands_enabled = bool(data.get("voice_commands_enabled", False))
         voice_conversation_enabled = bool(data.get("voice_conversation_enabled", False))
 
@@ -1869,9 +1861,6 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             podcast_check_interval_minutes=podcast_check_interval_minutes,
             podcast_check_audible_tick=podcast_check_audible_tick,
             podcast_check_interrupt_speech=podcast_check_interrupt_speech,
-            github_poll_interval_minutes=github_poll_interval_minutes,
-            github_poll_audible_tick=github_poll_audible_tick,
-            github_poll_interrupt_speech=github_poll_interrupt_speech,
             import_export_recursive=import_export_recursive,
             import_export_overwrite=import_export_overwrite,
             import_export_output_layout=import_export_output_layout,
@@ -2058,6 +2047,7 @@ def load_settings() -> Settings:
     file is backed up and rewritten to the canonical delta exactly once.
     """
     # SET-5: read the nested versioned document, a legacy flat file, or junk.
+    from quill.core.github.workbench_prefs import adopt_legacy_settings_file
     from quill.core.settings_migration import (
         from_versioned,
         is_future_settings_document,
@@ -2066,6 +2056,7 @@ def load_settings() -> Settings:
         to_versioned,
     )
 
+    adopt_legacy_settings_file(settings_path())  # before the load drops the moved keys
     return load_with_migration(
         settings_path(),
         store_name="settings",

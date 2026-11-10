@@ -49,6 +49,11 @@ class _Items:
         self.searched.append(query)
         return self.fetch_pulls(_repo)
 
+    def fetch_milestones(self, _repo: str, **_kw: Any) -> list[Any]:
+        from quill.core.github.milestones import GitHubMilestone
+
+        return [GitHubMilestone(1, "1.0", open_issues=2, closed_issues=3)]
+
     def fetch_workflow_runs(self, _repo: str, **_kw: Any) -> list[GitHubWorkflowRun]:
         return [GitHubWorkflowRun(id=9, name="CI", status="completed", conclusion="success")]
 
@@ -66,7 +71,7 @@ def _inline(_name: str, work: Any, done: Any, failed: Any) -> None:
 
 
 @pytest.fixture
-def bench(wx_session_app):
+def bench(wx_session_app, quill_data_dir):
     said: list[str] = []
     items = _Items()
     provider = GitHubWorkbenchProvider(items, REPO, announce=said.append)
@@ -141,10 +146,10 @@ def test_escape_clears_the_filter_then_goes_back(bench) -> None:
     assert bench.forward == [NodeRef("repository", "pulls", REPO)]
 
 
-def test_a_node_that_is_not_in_the_preview_explains_itself(bench) -> None:
+def test_milestones_load_through_the_existing_fetch(bench) -> None:
     _go(bench, NodeRef("repository", "milestones", REPO))
-    assert "not in this preview yet" in bench.details.GetValue()
-    assert bench.rows == []
+    assert [row.key for row in bench.rows] == ["1.0"]
+    assert bench.provider.row_type(bench.node(bench.current), bench.rows[0]) == "milestone"
 
 
 def test_the_pull_request_menu_starts_with_review_and_ends_with_properties(bench) -> None:
@@ -154,7 +159,10 @@ def test_the_pull_request_menu_starts_with_review_and_ends_with_properties(bench
     assert top[-1].label == "Properties..."
     assert more
     assert bench.can_run("github.workbench.open_on_github")
-    assert not bench.can_run("github.workbench.merge")
+    bench.list.Select(0)
+    # Merge is not rebuilt yet: it opens GitHub Items on this pull request.
+    assert bench.can_run("github.workbench.merge")
+    assert not bench.can_run("github.workbench.filter_builder")
 
 
 def test_alt_enter_opens_a_read_only_sheet_for_the_selected_row(bench, monkeypatch) -> None:

@@ -189,17 +189,16 @@ def test_watch_folder_reads_its_seconds_setting() -> None:
 
 
 def test_podcast_and_github_read_their_minutes_settings() -> None:
-    settings = Settings(
-        podcast_check_interval_minutes=30,
-        podcast_check_audible_tick=True,
-        github_poll_interval_minutes=45,
-        github_poll_interrupt_speech=True,
-    )
+    from quill.core.github.workbench_prefs import WorkbenchPrefs
+
+    settings = Settings(podcast_check_interval_minutes=30, podcast_check_audible_tick=True)
     podcasts = resolve_monitor_policy(settings, MONITOR_PODCASTS)
     assert podcasts.poll_interval_seconds == 1800
     assert podcasts.audible_tick is True
     assert podcasts.interrupt_speech is False
-    github = resolve_monitor_policy(settings, MONITOR_GITHUB)
+    # GitHub's three live in the Workbench's own preferences (GitHub PRD 4.1).
+    prefs = WorkbenchPrefs(poll_interval_minutes=45, poll_interrupt_speech=True)
+    github = resolve_monitor_policy(prefs, MONITOR_GITHUB)
     assert github.poll_interval_seconds == 2700
     assert github.interrupt_speech is True
     assert github.audible_tick is False
@@ -250,9 +249,6 @@ def test_new_monitor_settings_round_trip_through_from_dict() -> None:
         podcast_check_interval_minutes=30,
         podcast_check_audible_tick=True,
         podcast_check_interrupt_speech=True,
-        github_poll_interval_minutes=45,
-        github_poll_audible_tick=True,
-        github_poll_interrupt_speech=True,
     )
     restored = Settings.from_dict(asdict(original))
     for name in (
@@ -265,9 +261,6 @@ def test_new_monitor_settings_round_trip_through_from_dict() -> None:
         "podcast_check_interval_minutes",
         "podcast_check_audible_tick",
         "podcast_check_interrupt_speech",
-        "github_poll_interval_minutes",
-        "github_poll_audible_tick",
-        "github_poll_interrupt_speech",
     ):
         assert getattr(restored, name) == getattr(original, name), name
 
@@ -282,8 +275,6 @@ def test_monitor_defaults_are_all_off_in_a_fresh_settings_object() -> None:
         "weather_monitor_interrupt_speech",
         "podcast_check_audible_tick",
         "podcast_check_interrupt_speech",
-        "github_poll_audible_tick",
-        "github_poll_interrupt_speech",
     ):
         assert getattr(settings, name) is False, name
 
@@ -292,8 +283,6 @@ def test_from_dict_clamps_a_hand_edited_zero_interval() -> None:
     loaded = Settings.from_dict({
         "watch_folder_poll_interval_seconds": 0,
         "podcast_check_interval_minutes": 0,
-        "github_poll_interval_minutes": -5,
     })
     assert loaded.watch_folder_poll_interval_seconds == 2
     assert loaded.podcast_check_interval_minutes == 5
-    assert loaded.github_poll_interval_minutes == 5

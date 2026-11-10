@@ -35,7 +35,11 @@ from quill.core.github.items_provider import (
 from quill.core.github.items_provider_constants import DEFAULT_PAGE_LIMIT
 from quill.core.github.workbench_sheets import sheet_for, sheet_title, values_for
 from quill.core.github.workbench_tree import GITHUB_TREE, START_NODE, node_for_items_view
-from quill.core.github.workbench_window_menu import GO_NODES, WINDOW_MENU
+from quill.core.github.workbench_window_menu import (
+    GO_NODES,
+    WINDOW_MENU,
+    WORKBENCH_KEYMAP_ID,
+)
 from quill.core.workbench.filters import Query, describe, render
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import Need, NodeSpec, Scope
@@ -48,12 +52,15 @@ from quill.ui.github_items_view import (
     row_cells,
     sort_items,
 )
+from quill.ui.github_workbench_actions import GitHubWorkbenchActionsMixin
 from quill.ui.github_workbench_explore import (
     EXPLORE_PREFIX,
     explore_row_type,
     explore_unavailable,
     load_explore,
 )
+from quill.ui.github_workbench_loaders import LOCAL_PREFIXES, load_local
+from quill.ui.github_workbench_place import GitHubWorkbenchPlaceMixin
 from quill.ui.workbench_frame import NodeRef, WorkbenchFrame
 from quill.ui.workbench_status_bar import StatusCell
 
@@ -89,7 +96,7 @@ _NEEDS_WORDS = {
 }
 
 
-class GitHubWorkbenchProvider:
+class GitHubWorkbenchProvider(GitHubWorkbenchPlaceMixin, GitHubWorkbenchActionsMixin):
     """GitHub, for :class:`~quill.ui.workbench_frame.WorkbenchFrame`."""
 
     name = "GitHub Workbench"
@@ -97,14 +104,27 @@ class GitHubWorkbenchProvider:
     actions = GITHUB_ACTIONS
     menu = WINDOW_MENU
     go_nodes = GO_NODES
+    keymap_id = WORKBENCH_KEYMAP_ID
 
     def __init__(
-        self, items: Any, repository: str = "", *, announce: Callable[[str], None]
+        self,
+        items: Any,
+        repository: str = "",
+        *,
+        announce: Callable[[str], None],
+        editor_command: Callable[[str], bool] | None = None,
+        editor_command_available: Callable[[str], bool] | None = None,
+        open_file_url: Callable[[str], None] | None = None,
     ) -> None:
         self.items = items
         self._repositories: list[str] = [repository] if repository else []
         self._people: list[str] = []
+        self._organizations: list[str] = []
         self._announce = announce
+        self._editor_command = editor_command
+        self._editor_command_available = editor_command_available
+        self._open_file_url = open_file_url
+        self._folders: dict[str, str] = {}
         self.frame: WorkbenchFrame | None = None
         self._explore: Any = None
 
@@ -114,18 +134,22 @@ class GitHubWorkbenchProvider:
         return f"{self.name} - {instance}" if instance else self.name
 
     def instances(self, template: str) -> Sequence[str]:
-        found = {"repository": self._repositories, "person": self._people}.get(template, [])
+        found = {
+            "repository": self._repositories,
+            "person": self._people,
+            "organization": self._organizations,
+        }.get(template, [])
         return tuple(found)
 
     def add_instance(self, template: str, address: str) -> NodeRef | None:
         """Put a repository (owner/name or a link) or a person (a login) in the tree."""
-        if template == "person":
+        if template in ("person", "organization"):
             name = address.strip().lstrip("@")
-            store = self._people
+            store = self._people if template == "person" else self._organizations
         else:
             name = parse_repo_reference(address) or ""
             store = self._repositories
-        if template not in ("repository", "person") or not name:
+        if template not in ("repository", "person", "organization") or not name:
             return None
         if name in store:
             store.remove(name)
@@ -141,7 +165,9 @@ class GitHubWorkbenchProvider:
         lines = [what + "."]
         if needs:
             lines.append(f"Needs {needs}.")
-        if not node.loader:
+        if node.key in _PLACEHOLDERS:
+            lines.append(_PLACEHOLDERS[node.key])
+        elif not node.loader:
             lines.append("Open it with Right Arrow to see what it holds.")
         return " ".join(lines)
 
@@ -158,11 +184,15 @@ class GitHubWorkbenchProvider:
                 node, instance=ref.instance, signed_in=self.signed_in, query=query
             )
         if Need.SIGN_IN in node.needs and not self.signed_in:
-            return "Sign in to GitHub to see this: GitHub menu > Manage GitHub Accounts."
-        return (
-            "This view is not in this preview yet. GitHub Items still has it, "
-            "from the editor's GitHub menu."
-        )
+            return "Sign in to GitHub to see this: Account, Manage GitHub Accounts (Ctrl+Shift+K)."
+        if node.scope is Scope.REPOSITORY and not ref.instance:
+            return "Open a repository first: Ctrl+L, or File > Open GitHub Address."
+        if node.loader == "projects:mine":
+            return (
+                "Your own Projects are not listed here yet. Each repository's Projects are "
+                "under it: Ctrl+Shift+7 on a repository."
+            )
+        return ""
 
     @property
     def signed_in(self) -> bool:
@@ -178,6 +208,9 @@ class GitHubWorkbenchProvider:
 
                 self._explore = GitHubExploreClient(self.items)
             return list(load_explore(self._explore, node, instance=ref.instance, query=query))
+        if node.loader.startswith(LOCAL_PREFIXES):
+            folder = self._folders.get(ref.instance, "")
+            return list(load_local(self.items, node, instance=ref.instance, folder=folder))
         view, repo, items = node.loader.removeprefix("items:"), ref.instance, self.items
         limit = DEFAULT_PAGE_LIMIT
         preset = dict(node.preset)
@@ -206,7 +239,7 @@ class GitHubWorkbenchProvider:
         return list(fetch()) if fetch is not None else []
 
     def columns(self, node: NodeSpec) -> tuple[str, ...]:
-        if node.loader.startswith(EXPLORE_PREFIX):
+        if node.loader.startswith((EXPLORE_PREFIX, *LOCAL_PREFIXES)):
             return ("result",)
         return VIEW_COLUMNS.get(node.loader.removeprefix("items:"), ())
 
@@ -246,11 +279,11 @@ class GitHubWorkbenchProvider:
     # -- commands -----------------------------------------------------------------
 
     def supports(self, command_id: str) -> bool:
-        return command_id in _SUPPORTED
+        return command_id in _SUPPORTED or GitHubWorkbenchActionsMixin.supports(self, command_id)
 
     def run(self, command_id: str, ref: NodeRef, row: object) -> bool:
         frame = self.frame
-        if frame is None or not self.supports(command_id):
+        if frame is None:
             return False
         if command_id == "github.workbench.open":
             frame.details.SetFocus()
@@ -265,14 +298,14 @@ class GitHubWorkbenchProvider:
             frame.select(target)
             frame.tree.SetFocus()
             return True
-        if isinstance(row, GitHubItem) and row.is_pr:
+        if command_id == "github.workbench.review" and isinstance(row, GitHubItem) and row.is_pr:
             from quill.ui.github_pr_review_dialog import GitHubPullReviewDialog
 
             GitHubPullReviewDialog(
                 frame.frame, self.items, ref.instance, row.number, announce_cb=self._announce
             ).show()
             return True
-        return False
+        return self.run_action(command_id, ref, row)
 
     # -- the status bar -----------------------------------------------------------
 
@@ -344,6 +377,19 @@ class GitHubWorkbenchProvider:
             pass
 
 
+_PLACEHOLDERS = {
+    "watches": (
+        "Watches will tell you when something happens: a run finishes, a review "
+        "arrives. They are coming in a later release; Inbox and Notifications "
+        "show what needs you now."
+    ),
+    "across": (
+        "Across Repositories will find every kind of thing by name, in every "
+        "repository you can see. It is coming in a later release; Search, Ctrl+3, "
+        "finds issues, pull requests, code and repositories now."
+    ),
+}
+
 _DRILLS = {
     "github.workbench.open_repository": "repository",
     "github.workbench.open_person": "person",
@@ -353,11 +399,32 @@ _SUPPORTED = frozenset({"github.workbench.open", "github.workbench.review", *_DR
 _OPEN: dict[str, WorkbenchFrame] = {}
 
 
-def _start_ref(repository: str, view: str) -> NodeRef:
-    if not repository:
+def start_ref(
+    repository: str, view: str = "", node: str = "", *, signed_in: bool
+) -> NodeRef | None:
+    """Where the window opens: the node or Items view asked for, else the person's choice.
+
+    ``None`` means "where you were last time" (the frame restores it, or Start
+    Here when there is nothing to restore). With no account yet the window opens
+    on Start Here whatever the choice (decision 2).
+    """
+    if node:
+        if node in {spec.key for spec in GITHUB_TREE}:
+            return NodeRef("", node)
+        if repository:
+            return NodeRef("repository", node, repository)
+    if view:
+        return NodeRef("repository", node_for_items_view(view), repository) if repository else None
+    if not signed_in:
         return NodeRef("", START_NODE)
-    key = node_for_items_view(view) if view else node_for_items_view("issues")
-    return NodeRef("repository", key, repository)
+    from quill.core.github.workbench_prefs import load_prefs
+
+    choice = load_prefs().open_on
+    if choice == "start":
+        return NodeRef("", START_NODE)
+    if choice == "inbox":
+        return NodeRef("", "inbox")
+    return None
 
 
 def open_github_workbench(
@@ -366,15 +433,25 @@ def open_github_workbench(
     *,
     repository: str = "",
     view: str = "",
+    node: str = "",
     announce: Callable[[str], None] | None = None,
+    editor_command: Callable[[str], bool] | None = None,
+    editor_command_available: Callable[[str], bool] | None = None,
+    open_file_url: Callable[[str], None] | None = None,
 ) -> WorkbenchFrame:
-    """Open the one GitHub Workbench (or bring it forward), at *view* of *repository*.
+    """Open the one GitHub Workbench (or bring it forward), at *node* or *view*.
 
-    The window owns *items* from here on and closes it with itself. A second
-    open while one is showing closes the new *items* and reuses the window.
+    *node* is a tree key (``"inbox"``, or ``"runs"`` for the current
+    repository's runs); *view* is a GitHub Items view, for the old doors. The
+    window owns *items* from here on and closes it with itself. A second open
+    while one is showing closes the new *items* and reuses the window.
+    *editor_command* runs one of the editor's own commands by id (the
+    repository and account commands both editors have); *open_file_url*
+    opens a GitHub file in the editor.
     """
     say = announce or (lambda _text: None)
     existing = _OPEN.get("github")
+    signed_in = bool(getattr(items, "is_authenticated", False))
     if existing is not None:
         try:
             items.close()
@@ -384,12 +461,20 @@ def open_github_workbench(
         if repository and isinstance(provider, GitHubWorkbenchProvider):
             provider.add_instance("repository", repository)
             existing.rebuild_tree()
-        existing.show(_start_ref(repository, view))
+        existing.show(start_ref(repository, view, node, signed_in=signed_in))
         return existing
-    provider = GitHubWorkbenchProvider(items, repository, announce=say)
+    provider = GitHubWorkbenchProvider(
+        items,
+        repository,
+        announce=say,
+        editor_command=editor_command,
+        editor_command_available=editor_command_available,
+        open_file_url=open_file_url,
+    )
+    provider.adopt_remembered_instances()
     frame = WorkbenchFrame(
         provider, editor=editor, announce=say, on_closed=lambda: _OPEN.pop("github", None)
     )
     _OPEN["github"] = frame
-    frame.show(_start_ref(repository, view))
+    frame.show(start_ref(repository, view, node, signed_in=signed_in))
     return frame

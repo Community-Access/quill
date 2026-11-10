@@ -36,12 +36,10 @@ from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import NodeSpec, TreeSpec
 from quill.ui.dpi import dip_size
 from quill.ui.workbench_frame_actions import WorkbenchActionsMixin
+from quill.ui.workbench_frame_commands import WorkbenchCommandsMixin
 from quill.ui.workbench_status_bar import StatusCell, WorkbenchStatusBar
 
 __all__ = ["NodeRef", "WorkbenchFrame", "WorkbenchProvider"]
-
-#: The verbs the frame does itself, whatever the provider; the rest are the provider's.
-_FRAME_VERBS = frozenset({"open_on_github", "copy_link", "properties", "refresh", "help_view"})
 
 
 @dataclass(frozen=True)
@@ -88,7 +86,7 @@ Background = Callable[
 ]
 
 
-class WorkbenchFrame(WorkbenchActionsMixin):
+class WorkbenchFrame(WorkbenchCommandsMixin, WorkbenchActionsMixin):
     """One Workbench window over one provider."""
 
     def __init__(
@@ -123,6 +121,9 @@ class WorkbenchFrame(WorkbenchActionsMixin):
         instance = next(iter(provider.instances("repository")), "")
         self.frame = wx.Frame(None, title=provider.window_title(instance))
         self.frame.SetSize(dip_size(self.frame, 980, 680))
+        from quill.ui.app_context_help import ensure_help_provider
+
+        ensure_help_provider(wx)  # without one, every SetHelpText below stores nothing
         self._build()
         self.frame.Bind(wx.EVT_CLOSE, self._on_close)
         self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
@@ -190,20 +191,6 @@ class WorkbenchFrame(WorkbenchActionsMixin):
         self.list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, lambda _e: self.default_action())
         self.list.Bind(wx.EVT_CONTEXT_MENU, lambda _e: self.show_row_menu())
         self.filter.Bind(wx.EVT_TEXT_ENTER, lambda _e: self.apply_filter())
-
-    def _build_menu(self) -> None:
-        wx = self._wx
-        bar = wx.MenuBar()
-        for spec in self.provider.menu:
-            menu = wx.Menu()
-            for row in spec.rows:
-                if row is None:
-                    menu.AppendSeparator()
-                    continue
-                item = menu.Append(wx.ID_ANY, f"{row.label}\t{row.key}", row.help)
-                self.frame.Bind(wx.EVT_MENU, lambda _e, c=row.command_id: self.run(c), item)
-            bar.Append(menu, spec.title)
-        self.frame.SetMenuBar(bar)
 
     def rebuild_tree(self) -> None:
         """Build the tree again after an instance was added; the selection is kept."""
@@ -294,6 +281,8 @@ class WorkbenchFrame(WorkbenchActionsMixin):
         return True
 
     def _on_tree_selected(self, event: Any) -> None:
+        if not self.tree or self.frame.IsBeingDeleted():
+            return  # the tree empties itself as the window is destroyed
         item = event.GetItem()
         ref = self.tree.GetItemData(item) if item.IsOk() else None
         if isinstance(ref, NodeRef):
@@ -471,64 +460,7 @@ class WorkbenchFrame(WorkbenchActionsMixin):
         top, _more = self.row_actions(row)
         self.run(top[0].command_id)
 
-    def can_run(self, command_id: str) -> bool:
-        verb = command_id.rsplit(".", 1)[-1]
-        return verb in _FRAME_VERBS or self.provider.supports(command_id)
-
-    def run(self, command_id: str) -> None:
-        """Do *command_id*: a menu row, a context-menu row or a key."""
-        verb = command_id.rsplit(".", 1)[-1]
-        actions: dict[str, Callable[[], None]] = {
-            "next_pane": lambda: self.cycle_pane(1),
-            "previous_pane": lambda: self.cycle_pane(-1),
-            "back": self.back,
-            "forward": self.go_forward,
-            "go_parent": self.go_parent,
-            "refresh": self.reload,
-            "filter": self.filter.SetFocus,
-            "properties": self.show_properties,
-            "copy_link": self.copy_link,
-            "open_on_github": self.open_in_browser,
-            "where_am_i": lambda: self._say(self.where()),
-            "say_selection": self.say_selection,
-            "close": self.frame.Close,
-            "switch_to_editor": self.switch_to_editor,
-            "help_view": self.show_help,
-            "open_address": self.open_address,
-        }
-        if command_id in self.provider.go_nodes:
-            self.go(command_id)
-        elif verb in actions:
-            actions[verb]()
-        elif self.current is not None and self.provider.run(
-            command_id, self.current, self.selected_row()
-        ):
-            return
-        else:
-            self._say("Not in this preview of the Workbench yet. GitHub Items still has it.")
-
     # -- keys and closing ---------------------------------------------------------
-
-    def _on_char_hook(self, event: Any) -> None:
-        wx = self._wx
-        code = event.GetKeyCode()
-        focused = wx.Window.FindFocus()
-        if self.status.has_focus():
-            event.Skip()
-            return
-        if code == wx.WXK_ESCAPE and not event.HasAnyModifiers():
-            if self.filter.GetValue():
-                self.clear_filter()
-            else:
-                self.back()
-            return
-        if code == wx.WXK_BACK and focused in (self.tree, self.list):
-            self.back()
-            return
-        event.Skip()
-
-    def _say(self, text: str) -> None:
-        self._announce(text)
 
     def _task_manager_runner(self) -> Background:
         from quill.stability.task_manager import TaskManager
@@ -554,12 +486,14 @@ class WorkbenchFrame(WorkbenchActionsMixin):
     def show(self, ref: NodeRef | None = None) -> None:
         self.frame.Show()
         self.frame.Raise()
-        start = ref or NodeRef("", self.provider.tree.roots()[0].key)
+        remembered = self.restore_place()
+        start = ref or remembered or NodeRef("", self.provider.tree.roots()[0].key)
         if not self.select(start):
             self.select(NodeRef("", self.provider.tree.roots()[0].key))
         self.tree.SetFocus()
 
     def _on_close(self, event: Any) -> None:
+        self.remember_place()
         manager = getattr(self, "_task_manager", None)
         if manager is not None:
             manager.shutdown(wait=False, cancel_pending=True)

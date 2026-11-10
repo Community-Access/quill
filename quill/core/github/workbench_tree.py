@@ -177,6 +177,10 @@ _FIXED: tuple[NodeSpec, ...] = (
     _n("gists", "Gists"),
     _n("my_gists", "My Gists", "gists", needs=_SIGN_IN, loader="explore:gists", row_type="gist"),
     _n("projects", "Projects", needs=_SIGN_IN, loader="projects:mine", row_type="project"),
+    # Places still to come, shown so Ctrl+7 and Ctrl+0 land somewhere that says
+    # what they will hold (PRD 22.5 Watches, 22.11 Across Repositories).
+    _n("watches", "Watches"),
+    _n("across", "Across Repositories"),
 )
 
 

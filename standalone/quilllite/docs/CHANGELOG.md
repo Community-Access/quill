@@ -2,6 +2,47 @@
 
 ## 2.0.0
 
+### The GitHub Workbench gets its menus, its keys and its own options (2026-11-10)
+
+The GitHub Workbench window is still a preview you turn on with
+`QUILL_GITHUB_WORKBENCH_WINDOW=1`. This step gives it everything a window
+needs to be lived in.
+
+- **A full menu bar.** File, Edit, View, Go, Item, Repository, Account, Tools,
+  Window and Help, each row showing its key. A row that does not apply here is
+  greyed, and its help line says why.
+- **Keys you can guess.** **Ctrl+1** to **Ctrl+9** go to the big places (Inbox,
+  your repository, Search, People, Gists, Projects, Watches, Saved Searches,
+  Start Here), and **Ctrl+Shift+1** to **Ctrl+Shift+0** to the parts of the
+  repository you are in: Issues, Pull Requests, Discussions, Actions, Files,
+  Releases, Projects, Security, Settings and Insights. **Alt+1** to **Alt+9**
+  say something without moving you: where you are, what is selected, the
+  item's state, the counts, your access, the rate limit, the filter, what is
+  loading and your account. **Alt+Enter** is Properties, **Ctrl+L** opens a
+  GitHub address, **Ctrl+G** goes to a number, **Ctrl+E** moves to the filter,
+  **F5** refreshes, and **F9** says the last result again while **Shift+F9**
+  explains it. Plain letters always jump to a name as you type.
+- **Delete and Ctrl+N do the obvious thing here.** Delete marks a notification
+  done, removes a saved search, or closes an issue after asking; Ctrl+N makes
+  something new where you are, such as an issue in Issues.
+- **Every node loads.** Files (folder by folder), Milestones, a repository's
+  Projects, Pinned, Favorites, Saved Searches, Organizations and the settings
+  pages now fill their lists. Watches and Across Repositories say what they
+  will hold.
+- **Actions on the selection.** Comment, close or reopen, re-run, mark read or
+  done, star, favorites and pins work in the window itself. Repository Actions
+  (**Ctrl+Shift+G**) lists everything else for the repository. What is not
+  rebuilt yet, such as merging, opens GitHub Items on that one item.
+- **It remembers where you were**: the last node, the open branches and the
+  repositories you visited, for each account.
+- **Workbench Options** (**Tools**, **Ctrl+Shift+O**) is where GitHub preferences
+  live now: where the window opens, the default list, sort and state, how
+  often notifications are checked, whether a check plays a tick or interrupts
+  speech, pinned repositories and favorites, and privacy. The three GitHub
+  check settings moved out of the main Options, and the choices you had made
+  come with them.
+- QUILL has the same, from the same shared window.
+
 ### GitHub context menus put first things first (2026-11-09)
 
 - **The first row is what Enter does.** In GitHub Items and Explore GitHub, the

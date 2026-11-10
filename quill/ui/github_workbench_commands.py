@@ -19,6 +19,7 @@ Opening a view says nothing: the window's title and its focused list say it
 from __future__ import annotations
 
 from collections.abc import Callable
+from typing import Any
 
 from quill.ui.github_items_view import VIEW_ISSUES, VIEW_RELEASES, VIEW_RUNS
 
@@ -94,6 +95,7 @@ def open_in_workbench_window(
     repository: str = "",
     view: str = "",
     announce: Callable[[str], None] | None = None,
+    **extras: Any,
 ) -> bool:
     """Open the GitHub Workbench window instead of GitHub Items, when asked to.
 
@@ -110,5 +112,7 @@ def open_in_workbench_window(
         return False
     from quill.ui.github_workbench_window import open_github_workbench
 
-    open_github_workbench(editor, provider, repository=repository, view=view, announce=announce)
+    open_github_workbench(
+        editor, provider, repository=repository, view=view, announce=announce, **extras
+    )
     return True

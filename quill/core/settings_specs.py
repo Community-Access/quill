@@ -1633,34 +1633,6 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "spoken. Off means the notice waits its turn.",
         keywords=("podcast", "interrupt", "speech", "announce", "new episodes"),
     ),
-    SettingSpec(
-        "github_poll_interval_minutes",
-        "GitHub check: how often (minutes)",
-        "accessibility",
-        "int",
-        "How often GitHub is checked for notifications and updates (5 to 1440 minutes).",
-        minimum=5,
-        maximum=1440,
-        keywords=("github", "interval", "minutes", "poll", "check", "notifications"),
-    ),
-    SettingSpec(
-        "github_poll_audible_tick",
-        "GitHub check: play a sound on each check",
-        "accessibility",
-        "bool",
-        "Play a short tick every time GitHub is checked, so you can hear that "
-        "the check is still running.",
-        keywords=("github", "tick", "sound", "earcon", "check", "monitor"),
-    ),
-    SettingSpec(
-        "github_poll_interrupt_speech",
-        "GitHub check: let results interrupt speech",
-        "accessibility",
-        "bool",
-        "Announce GitHub results immediately, cutting across whatever is being "
-        "spoken. Off means they wait their turn.",
-        keywords=("github", "interrupt", "speech", "announce", "notifications"),
-    ),
     # --- Read Aloud --------------------------------------------------------
     SettingSpec(
         "read_aloud_engine",

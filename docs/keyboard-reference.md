@@ -472,7 +472,7 @@ Editor commands with default bindings: 584.
 | (unbound by default) | GitHub: Browse Organization Repositories... | `github.browse_organization` |
 | (unbound by default) | GitHub: Change Default Branch... | `github.change_default_branch` |
 | (unbound by default) | GitHub: Change Repository Visibility... | `github.change_repository_visibility` |
-| (unbound by default) | Clone repository | `github.clone_repository` |
+| (unbound by default) | Clone Repository... | `github.clone_repository` |
 | (unbound by default) | GitHub: Commit Multiple Files... | `github.commit_multiple_files` |
 | (unbound by default) | GitHub: Configure Branch Protection... | `github.configure_branch_protection` |
 | (unbound by default) | GitHub: Create Codespace... | `github.create_codespace` |
@@ -975,3 +975,90 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
 | Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+F5 | Describe picture | `beacon.describe_picture` |
+
+## GitHub Workbench (app keys)
+
+App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
+
+| Key | Command | Command id |
+| --- | --- | --- |
+| Alt+1 | Where Am I | `github.workbench.where_am_i` |
+| Alt+2 | Say Selection | `github.workbench.say_selection` |
+| Alt+3 | Say Item State | `github.workbench.say_item` |
+| Alt+4 | Say Counts | `github.workbench.say_counts` |
+| Alt+5 | Say Your Access | `github.workbench.say_access` |
+| Alt+6 | Say Rate Limit | `github.workbench.say_rate` |
+| Alt+7 | Say Filter | `github.workbench.say_filter` |
+| Alt+8 | Say Loading | `github.workbench.say_loading` |
+| Alt+9 | Say Account | `github.workbench.say_account` |
+| Alt+Enter | Properties... | `github.workbench.properties` |
+| Alt+F1 | What Is This? | `github.workbench.glossary` |
+| Alt+F4 | Close Workbench | `github.workbench.close` |
+| Alt+Home | Inbox (second key) | `github.workbench.inbox_home` |
+| Alt+Left | Back | `github.workbench.back` |
+| Alt+PageDown | Load More | `github.workbench.load_more` |
+| Alt+Right | Forward | `github.workbench.forward` |
+| Alt+Shift+F1 | Workbench Keys | `github.workbench.keys` |
+| Alt+Up | Parent Node | `github.workbench.go_parent` |
+| Ctrl+0 | Across Repositories | `github.workbench.go_across` |
+| Ctrl+1 | Inbox | `github.workbench.go_inbox` |
+| Ctrl+2 | Current Repository | `github.workbench.go_repository` |
+| Ctrl+3 | Search | `github.workbench.go_search` |
+| Ctrl+4 | People | `github.workbench.go_people` |
+| Ctrl+5 | Gists | `github.workbench.go_gists` |
+| Ctrl+6 | Projects | `github.workbench.go_projects` |
+| Ctrl+7 | Watches | `github.workbench.go_watches` |
+| Ctrl+8 | Saved Searches | `github.workbench.go_saved_searches` |
+| Ctrl+9 | Start Here | `github.workbench.go_start` |
+| Ctrl+A | Select All | `github.workbench.select_all` |
+| Ctrl+Alt+F | Filter Builder... | `github.workbench.filter_builder` |
+| Ctrl+C | Copy | `github.workbench.copy` |
+| Ctrl+Cancel | Cancel Run... (Ctrl+Break, in the list) | `github.workbench.cancel_run` |
+| Ctrl+D | Add to or Remove from Favorites | `github.workbench.favorite` |
+| Ctrl+E | Filter... | `github.workbench.filter` |
+| Ctrl+Enter | Open in Editor | `github.workbench.open_in_editor` |
+| Ctrl+F1 | GitHub Workbench Guide | `github.workbench.guide_chapter` |
+| Ctrl+F5 | Refresh Ignoring Cache | `github.workbench.refresh_uncached` |
+| Ctrl+G | Go to Number... | `github.workbench.go_to_number` |
+| Ctrl+L | Open GitHub Address... | `github.workbench.open_address` |
+| Ctrl+N | New Here... | `github.workbench.new_here` |
+| Ctrl+Q | Mark Read | `github.workbench.mark_read` |
+| Ctrl+R | Refresh (second key) | `github.workbench.refresh_alias` |
+| Ctrl+Shift+0 | Insights | `github.workbench.go_insights` |
+| Ctrl+Shift+1 | Issues | `github.workbench.go_issues` |
+| Ctrl+Shift+2 | Pull Requests | `github.workbench.go_pulls` |
+| Ctrl+Shift+3 | Discussions | `github.workbench.go_discussions` |
+| Ctrl+Shift+4 | Actions Runs | `github.workbench.go_runs` |
+| Ctrl+Shift+5 | Files | `github.workbench.go_files` |
+| Ctrl+Shift+6 | Releases | `github.workbench.go_releases` |
+| Ctrl+Shift+7 | Repository Projects | `github.workbench.go_repo_projects` |
+| Ctrl+Shift+8 | Security | `github.workbench.go_security` |
+| Ctrl+Shift+9 | Settings | `github.workbench.go_settings` |
+| Ctrl+Shift+A | Assign to Copilot... | `github.workbench.assign_copilot` |
+| Ctrl+Shift+B | Compare Branches... | `github.workbench.compare` |
+| Ctrl+Shift+C | Copy Link | `github.workbench.copy_link` |
+| Ctrl+Shift+D | File Differences... | `github.workbench.diff` |
+| Ctrl+Shift+E | Switch to Editor | `github.workbench.switch_to_editor` |
+| Ctrl+Shift+Enter | Merge... | `github.workbench.merge` |
+| Ctrl+Shift+F | Filter... (second key) | `github.workbench.filter_alias` |
+| Ctrl+Shift+F1 | Search Help... | `github.workbench.search_help` |
+| Ctrl+Shift+F5 | Re-run Failed Jobs | `github.workbench.rerun_failed` |
+| Ctrl+Shift+G | Repository Actions... | `github.workbench.repository_actions` |
+| Ctrl+Shift+K | Manage GitHub Accounts... | `github.workbench.manage_accounts` |
+| Ctrl+Shift+L | GitHub API Rate Limit | `github.workbench.rate_limit` |
+| Ctrl+Shift+M | Comment... | `github.workbench.comment` |
+| Ctrl+Shift+N | New... | `github.workbench.new_any` |
+| Ctrl+Shift+O | Workbench Options... | `github.workbench.options` |
+| Ctrl+Shift+Q | Mark All Read in View | `github.workbench.mark_all_read` |
+| Ctrl+Shift+R | Run Workflow on Branch... | `github.workbench.run_workflow` |
+| Ctrl+Shift+T | Start in Local Worktree... | `github.workbench.start_worktree` |
+| Ctrl+Shift+W | What Failed... | `github.workbench.what_failed` |
+| Delete | Remove, safely (in the list) | `github.workbench.remove` |
+| F1 | Help for This View | `github.workbench.help_view` |
+| F5 | Refresh | `github.workbench.refresh` |
+| F6 | Next Pane | `github.workbench.next_pane` |
+| F9 | Say Last Result Again | `github.workbench.repeat_result` |
+| Shift+Enter | Open on GitHub | `github.workbench.open_on_github` |
+| Shift+F1 | What Can I Do Here?... | `github.workbench.what_can_i_do` |
+| Shift+F6 | Previous Pane | `github.workbench.previous_pane` |
+| Shift+F9 | Explain That | `github.workbench.explain_result` |
