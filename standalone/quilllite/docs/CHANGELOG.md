@@ -2,6 +2,24 @@
 
 ## 2.0.0
 
+### GitHub context menus put first things first (2026-11-09)
+
+- **The first row is what Enter does.** In GitHub Items and Explore GitHub, the
+  context menu (the Applications key or Shift+F10) now starts with the action
+  Enter takes on that row: Open on GitHub for an issue, Commits for a branch,
+  Assets for a release, Use Repository for a repository.
+- **Shorter menus, with More.** A menu keeps about eight rows; the rest sit
+  under **More**, in the same order as before.
+- **Only rows about the row.** Open in GitHub Codespaces is offered on a pull
+  request or a branch, not on issues, releases, tags or runs. Browse Repository
+  Files, Milestones and the GitHub API rate limit left the item menus: they
+  keep their buttons, and **Ctrl+Shift+L** still says the rate limit. In
+  Explore GitHub, rows about the whole view, such as Refresh and Create Label,
+  are under **This View** at the end when a result is selected.
+- **F1 on every control.** Every box, list and button in GitHub Items and
+  Explore GitHub now has its own help line.
+- QUILL has the same, from the same shared windows.
+
 ### Change how requests are understood (2026-11-09)
 
 - **Change how requests are understood.** The first time Say or Type a Command

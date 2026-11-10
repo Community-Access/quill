@@ -5,7 +5,13 @@ from __future__ import annotations
 import webbrowser
 from urllib.parse import quote
 
-from quill.core.github.items_provider import GitHubBranch, GitHubItem
+from quill.core.github.items_provider import (
+    GitHubBranch,
+    GitHubItem,
+    GitHubRelease,
+    GitHubReleaseAsset,
+)
+from quill.ui.github_context_rows import ContextRows
 from quill.ui.github_items_view import (
     VIEW_BRANCHES,
     VIEW_ISSUES,
@@ -90,89 +96,164 @@ class GitHubItemsMenusMixin:
         index = self._list.GetFirstSelected()
         model = self._rows[index] if 0 <= index < len(self._rows) else None
         menu = wx.Menu()
-        menu_ids: list[object] = []
-
-        def add(label: str, action: object, *, enabled: bool = True) -> None:
-            item_id = wx.NewIdRef()
-            menu_ids.append(item_id)
-            menu.Append(item_id, label)
-            menu.Enable(item_id, enabled)
-            menu.Bind(wx.EVT_MENU, lambda _event, callback=action: callback(), id=item_id)
-
+        rows = ContextRows()
         if model is not None:
-            add(
-                "Open in GitHub Codespaces...",
-                lambda selected=model: self._open_in_codespaces(selected),
-            )
-            if isinstance(model, GitHubItem) and model.is_pr:
-                add("Open Review...", self._on_review)
-                add("Open File Differences...", self._on_diff)
-            elif isinstance(model, GitHubBranch):
-                add("Compare Branches...", self._on_compare_branches)
-            elif self._view == VIEW_RUNS:
-                add("View Jobs and Logs...", self._view_jobs_for_selected)
-                add("View Artifacts...", self._view_artifacts_for_selected)
-                self._add_run_actions(add)
-            elif self._view == VIEW_WORKFLOWS:
-                add(
-                    "Run Workflow on Branch...",
-                    lambda: self._run_selected_workflow(model),
-                    enabled=self._provider.is_authenticated,
-                )
-            elif self._view == VIEW_RELEASES:
-                self._add_release_actions(add)
-            self._add_copilot_and_commit_actions(add, model)
-            url = model_url(model)
-            add("Open on GitHub", self._open_selected, enabled=bool(url))
-            add("Copy Link", lambda: self._copy_item_text(url, "item link"), enabled=bool(url))
-            add("Copy Details", lambda: self._copy_item_text(self._details.GetValue(), "details"))
-            add("Add to or Remove from Favorites\tCtrl+D", self._favorite_selected)
-            add("Browse Repository Files...", self._open_repo_files)
-            add("Milestones...", self._open_milestones)
-            if isinstance(model, GitHubItem):
-                add(
-                    "Summarize Discussion", self._on_summarize, enabled=self._ai_acquire is not None
-                )
-                add("View Timeline...", self._view_timeline_for_selected)
-                add(
-                    "React...",
-                    self._react_to_selected_item,
-                    enabled=self._provider.is_authenticated,
-                )
-                if self._current_comment >= 0:
-                    add(
-                        "React to This Comment...",
-                        self._react_to_current_comment,
-                        enabled=self._provider.is_authenticated,
-                    )
-                self._add_issue_housekeeping(menu, model)
-                if self._start_issue_worktree_cb is not None:
-                    kind = "pull request" if model.is_pr else "issue"
-                    add(
-                        f"Start {kind} #{model.number} in Local Worktree...",
-                        lambda item=model: self._start_issue_worktree_cb(
-                            self.dialog, self._repo, item.number, item.title, item.is_pr
-                        ),
-                    )
-            if self._provider.is_authenticated:
-                if isinstance(model, GitHubItem) and model.is_pr and not model.is_merged:
-                    add(f"Merge Pull Request #{model.number}...", self._merge_selected_pr)
-                elif isinstance(model, GitHubBranch):
-                    add(f"Delete Branch {model.name!r}...", self._delete_selected_branch)
-                elif self._view == VIEW_RUNS:
-                    add("Re-run Workflow", self._rerun_selected_workflow)
-                if self._view in (VIEW_ISSUES, VIEW_BRANCHES, VIEW_RUNS, VIEW_WORKFLOWS):
-                    add("More Write Actions...", lambda: self._on_actions_menu(None))
+            self._fill_item_context_rows(rows, model)
         else:
-            add("Refresh\tCtrl+R", self._reload, enabled=bool(self._repo))
-            add("Browse Repository Files...", self._open_repo_files, enabled=bool(self._repo))
-            add("Milestones...", self._open_milestones, enabled=bool(self._repo))
+            # Nothing selected: the view's own rows. The API rate limit is on no
+            # context menu (Ctrl+Shift+L says it; GitHub PRD section 5, rule 5).
+            add = rows.add
+            add("Refresh\tCtrl+R", self._reload, bool(self._repo))
+            add("Browse Repository Files...", self._open_repo_files, bool(self._repo))
+            add("Milestones...", self._open_milestones, bool(self._repo))
             if self._provider.is_authenticated and self._repo and self._view == VIEW_ISSUES:
                 add("New Issue...", self._new_issue)
                 add("New Pull Request...", self._new_pull_request)
-        add("GitHub API Rate Limit\tCtrl+Shift+L", self._show_api_rate_limit)
+        rows.populate(wx, menu, item_selected=model is not None)
         try:
             self._list.PopupMenu(menu)
+        finally:
+            menu.Destroy()
+
+    def _fill_item_context_rows(self, rows: ContextRows, model: object) -> None:
+        """The selected row's own actions, default first (GitHub PRD section 5).
+
+        The first row is what Enter does. Codespaces is offered only on a pull
+        request or a branch, and repository-wide rows (Files, Milestones, the
+        rate limit) stay off an item's menu: each keeps its button or key.
+        """
+        add = rows.add
+        signed_in = self._provider.is_authenticated
+        is_item = isinstance(model, GitHubItem)
+        is_pr = is_item and model.is_pr
+        url = model_url(model)
+
+        def activate() -> None:
+            self._on_activate(None)  # Enter's own handler
+
+        if isinstance(model, GitHubBranch):
+            add("Commits", activate)
+        elif isinstance(model, GitHubRelease) and self._view == VIEW_RELEASES:
+            add("Assets", activate)
+        elif isinstance(model, GitHubReleaseAsset):
+            add("Download", activate, bool(model.browser_download_url))
+        elif self._view == VIEW_WORKFLOWS:
+            add("Run Workflow on Branch...", lambda: self._run_selected_workflow(model), signed_in)
+        else:
+            add("Open on GitHub", self._open_selected, bool(url))
+        if is_pr:
+            add("Open Review...", self._on_review)
+            add("Open File Differences...", self._on_diff)
+            if signed_in and not model.is_merged:
+                add(f"Merge Pull Request #{model.number}...", self._merge_selected_pr)
+        elif isinstance(model, GitHubBranch):
+            add("Compare Branches...", self._on_compare_branches)
+            if signed_in:
+                add(f"Delete Branch {model.name!r}...", self._delete_selected_branch)
+        elif self._view == VIEW_RUNS:
+            add("View Jobs and Logs...", self._view_jobs_for_selected)
+            self._add_run_actions(add)
+            if signed_in:
+                add("Re-run Workflow", self._rerun_selected_workflow)
+            add("View Artifacts...", self._view_artifacts_for_selected)
+        elif self._view == VIEW_RELEASES:
+            self._add_release_actions(add)
+        add("Copy Link", lambda: self._copy_item_text(url, "item link"), bool(url))
+        add("Copy Details", lambda: self._copy_item_text(self._details.GetValue(), "details"))
+        add("Open on GitHub", self._open_selected, bool(url))
+        if is_pr or isinstance(model, GitHubBranch):
+            add("Open in GitHub Codespaces...", lambda: self._open_in_codespaces(model))
+        self._add_copilot_and_commit_actions(add, model)
+        if is_item:
+            add("Summarize Discussion", self._on_summarize, self._ai_acquire is not None)
+            add("View Timeline...", self._view_timeline_for_selected)
+            add("React...", self._react_to_selected_item, signed_in)
+            if self._current_comment >= 0:
+                add("React to This Comment...", self._react_to_current_comment, signed_in)
+            self._add_issue_housekeeping(rows, model)
+            if self._start_issue_worktree_cb is not None:
+                kind = "pull request" if is_pr else "issue"
+                add(
+                    f"Start {kind} #{model.number} in Local Worktree...",
+                    lambda item=model: self._start_issue_worktree_cb(
+                        self.dialog, self._repo, item.number, item.title, item.is_pr
+                    ),
+                )
+        add("Add to or Remove from Favorites\tCtrl+D", self._favorite_selected)
+        if signed_in and self._view in (VIEW_ISSUES, VIEW_BRANCHES, VIEW_RUNS, VIEW_WORKFLOWS):
+            add("More Write Actions...", lambda: self._on_actions_menu(None))
+
+    def _on_actions_menu(self, _event: object) -> None:
+        """The Actions... button: write actions for the current view."""
+        wx = self._wx
+        if not self._repo:
+            self._announce("Load a repository first.")
+            return
+        if not self._provider.is_authenticated:
+            self._announce(
+                "Write actions need a signed-in GitHub account; this session is read-only."
+            )
+            return
+        menu = wx.Menu()
+        entries: list[tuple[object, object]] = []
+
+        def _add(label: str, handler: object) -> None:
+            item_id = wx.NewIdRef()
+            menu.Append(item_id, label)
+            entries.append((item_id, handler))
+
+        if self._view == VIEW_ISSUES:
+            _add("New Issue...", self._new_issue)
+            _add("New Pull Request...", self._new_pull_request)
+            selected = self._selected_indices()
+            if len(selected) == 1:
+                model = self._rows[selected[0]]
+                if isinstance(model, GitHubItem) and model.is_pr and not model.is_merged:
+                    _add(f"Merge Pull Request #{model.number}...", self._merge_selected_pr)
+            if self._current_comment >= 0:
+                _add("Edit This Comment...", self._edit_current_comment)
+                _add("Delete This Comment...", self._delete_current_comment)
+                _add("React to This Comment...", self._react_to_current_comment)
+            if self._comment_target is not None:
+                _add("Reply to Thread...", self._reply_to_thread)
+        elif self._view == VIEW_BRANCHES:
+            selected = self._selected_indices()
+            if len(selected) == 1 and isinstance(self._rows[selected[0]], GitHubBranch):
+                branch = self._rows[selected[0]]
+                _add(f"Delete Branch {branch.name!r}...", self._delete_selected_branch)
+        elif self._view == VIEW_WORKFLOWS:
+            selected = self._selected_indices()
+            if len(selected) == 1:
+                workflow = self._rows[selected[0]]
+                _add(
+                    f"Run {workflow.name!r} on Branch...",
+                    lambda: self._run_selected_workflow(workflow),
+                )
+        elif self._view == VIEW_RUNS:
+            selected = self._selected_indices()
+            if len(selected) == 1:
+                _add("Re-run Workflow", self._rerun_selected_workflow)
+                _add("View Jobs and Logs...", self._view_jobs_for_selected)
+                _add("View Artifacts...", self._view_artifacts_for_selected)
+                self._add_run_actions(_add)
+        elif self._view == VIEW_RELEASES:
+            self._add_release_actions(_add)
+
+        if not entries:
+            menu.Destroy()
+            self._announce("No write actions available here. Select a row first.")
+            return
+
+        def _on_pick(event: object) -> None:
+            picked = event.GetId()
+            for item_id, handler in entries:
+                if int(picked) == int(item_id):
+                    handler()
+                    return
+
+        menu.Bind(wx.EVT_MENU, _on_pick)
+        try:
+            self._actions_btn.PopupMenu(menu)
         finally:
             menu.Destroy()
 

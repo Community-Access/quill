@@ -96,6 +96,9 @@ class GitHubExploreDialog(
             wx.StaticText(panel, label="&View:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 5
         )
         self._view = wx.Choice(panel, choices=[label for _, label in VIEWS])
+        self._view.SetHelpText(
+            "What to explore: your inbox, notifications, searches, people or a repository."
+        )
         self._view.SetName("GitHub exploration view")
         keys = [key for key, _label in VIEWS]
         default_view = "attention" if provider.is_authenticated else "search"
@@ -105,6 +108,9 @@ class GitHubExploreDialog(
             wx.StaticText(panel, label="&Repository:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 5
         )
         self._repo = wx.TextCtrl(panel, value=initial_repo, style=wx.TE_PROCESS_ENTER)
+        self._repo.SetHelpText(
+            "The repository owner/name that repository views such as Labels use."
+        )
         self._repo.SetName("Repository owner slash name for repository views")
         controls.Add(self._repo, 1)
         root.Add(controls, 0, wx.EXPAND | wx.ALL, 8)
@@ -120,6 +126,7 @@ class GitHubExploreDialog(
             wx.StaticText(panel, label="&Person:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 5
         )
         self._person = wx.TextCtrl(panel, style=wx.TE_PROCESS_ENTER)
+        self._person.SetHelpText("A GitHub username, for the person views.")
         self._person.SetName("GitHub username for people views")
         person_row.Add(self._person, 1)
         root.Add(person_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -136,12 +143,20 @@ class GitHubExploreDialog(
         )
         search.Add(self._query, 1, wx.RIGHT, 5)
         self._saved_btn = wx.Button(panel, label="Saved &Searches...")
+        self._saved_btn.SetHelpText("Run or remove a search you saved on this device.")
         self._saved_btn.SetName("Choose or remove a saved global search")
         self._save_btn = wx.Button(panel, label="Save Search")
+        self._save_btn.SetHelpText(
+            "Save the search typed above on this device, to run again later."
+        )
         self._save_btn.SetName("Save the current global search query locally")
         self._load_btn = wx.Button(panel, label="&Load")
+        self._load_btn.SetHelpText("Load the chosen view. Enter in the boxes above does the same.")
         self._load_btn.SetName("Load selected GitHub exploration view")
         self._queue_options_btn = wx.Button(panel, label="Queue &Options...")
+        self._queue_options_btn.SetHelpText(
+            "Choose the inbox's repositories and categories, and save filters."
+        )
         self._queue_options_btn.SetName(
             "Choose attention queue repositories, categories, and saved filters"
         )
@@ -151,12 +166,17 @@ class GitHubExploreDialog(
 
         root.Add(wx.StaticText(panel, label="Results"), 0, wx.LEFT, 8)
         self._list = wx.ListBox(panel, choices=[])
+        self._list.SetHelpText(
+            "Enter opens the result; the Applications key lists what you can do with it. "
+            "Ctrl+Shift+L says how much of the GitHub API rate limit is left."
+        )
         self._list.SetName("GitHub exploration results; arrow to select, Tab to read details")
         set_spoken_name(self._list, "GitHub exploration results")
         root.Add(self._list, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         self._build_notification_controls(panel, root)
         root.Add(wx.StaticText(panel, label="Selected result"), 0, wx.LEFT | wx.TOP, 8)
         self._detail = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP)
+        self._detail.SetHelpText("The selected result in full.")
         self._detail.SetName("Selected GitHub result details")
         root.Add(self._detail, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         self._status = wx.StaticText(panel, label="Choose a view and press Load.")
@@ -164,10 +184,13 @@ class GitHubExploreDialog(
         root.Add(self._status, 0, wx.EXPAND | wx.ALL, 8)
         actions = wx.BoxSizer(wx.HORIZONTAL)
         self._open_btn = wx.Button(panel, label="Open on GitHub")
+        self._open_btn.SetHelpText("Open the selected result on GitHub in your browser.")
         self._open_btn.SetName("Open selected result in browser")
         self._use_btn = wx.Button(panel, label="Use Repository")
+        self._use_btn.SetHelpText("Load the selected result's repository in GitHub Items.")
         self._use_btn.SetName("Load selected repository in the GitHub Items viewer")
         close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
+        close_btn.SetHelpText("Close Explore GitHub. Escape does the same.")
         close_btn.SetName("Close GitHub exploration")
         actions.Add(self._open_btn, 0, wx.RIGHT, 6)
         actions.Add(self._use_btn, 0, wx.RIGHT, 6)
