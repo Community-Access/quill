@@ -62,6 +62,10 @@ class NodeSpec:
     *home* marks the node an old view or door opens: each loader key has
     exactly one home, which is what the "nothing dropped" test counts.
     *template* names the template whose nodes each child instance gets.
+    *dynamic* marks a node that stands for each of a set the provider
+    discovers at run time (a site's own post types): the window shows one
+    copy per discovered thing, labelled by the provider, and none when the
+    provider names none. Such a node has no children of its own.
     """
 
     key: str
@@ -75,6 +79,7 @@ class NodeSpec:
     row_type: str = ""
     home: bool = True
     template: str = ""
+    dynamic: bool = False
 
 
 class TreeSpec:
@@ -110,6 +115,8 @@ class TreeSpec:
     def _check(self) -> None:
         for group in (self._nodes, *self._templates.values()):
             for node in group.values():
+                if node.dynamic and any(other.parent == node.key for other in group.values()):
+                    raise WorkbenchSpecError(f"Dynamic node {node.key!r} cannot have children.")
                 if node.template and node.template not in self._templates:
                     raise WorkbenchSpecError(
                         f"Node {node.key!r} opens template {node.template!r}, which does not exist."

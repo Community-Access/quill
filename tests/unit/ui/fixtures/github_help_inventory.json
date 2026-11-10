@@ -270,5 +270,11 @@
   "quill/ui/workbench_help_dialogs.py::SearchHelpDialog.__init__::wx.TextCtrl": "helped",
   "quill/ui/workbench_properties_dialog.py::WorkbenchPropertiesDialog.__init__::wx.Button": "helped",
   "quill/ui/workbench_properties_dialog.py::WorkbenchPropertiesDialog.__init__::wx.Button#2": "helped",
-  "quill/ui/workbench_properties_dialog.py::WorkbenchPropertiesDialog.__init__::wx.TextCtrl": "helped"
+  "quill/ui/workbench_properties_dialog.py::WorkbenchPropertiesDialog.__init__::wx.TextCtrl": "helped",
+  "quill/ui/workbench_sheet_editor.py::WorkbenchSheetEditor.__init__::wx.Button": "helped",
+  "quill/ui/workbench_sheet_editor.py::WorkbenchSheetEditor.__init__::wx.Button#2": "helped",
+  "quill/ui/workbench_sheet_editor.py::WorkbenchSheetEditor.__init__::wx.Button#3": "helped",
+  "quill/ui/workbench_sheet_editor.py::WorkbenchSheetEditor.__init__::wx.Button#4": "helped",
+  "quill/ui/workbench_sheet_editor.py::WorkbenchSheetEditor._control::wx.Choice": "helped",
+  "quill/ui/workbench_sheet_editor.py::WorkbenchSheetEditor._control::wx.TextCtrl": "helped"
 }

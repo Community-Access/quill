@@ -4142,6 +4142,151 @@ request. Each entry says what is done and how it was checked.
   resolved conversations, no force pushes, no deletion; admins can still merge.
   The feature branches stay local, since `main` contains them.
 
+### 2026-11-09: what the site says about itself, lists and groups, and the one query
+
+The groundwork from the WordPress Workbench PRD that does not wait for the
+shared Workbench engine (WP-R-030 to WP-R-034). Not yet tried against the
+live site.
+
+- **Taxonomies and statuses come from the site (WP-R-031).**
+  `quill/core/wordpress/site_taxonomies.py` reads `wp/v2/taxonomies` and
+  `wp/v2/statuses` with `context=edit` (and the public answer for an account
+  that may not ask for it), and keeps each connection's answer for ten
+  minutes. `taxonomy_route()` now uses a taxonomy's own `rest_base` and
+  `rest_namespace` instead of guessing `wp/v2/{slug}`; categories and tags
+  never cost a request of their own, and a site that will not say keeps the
+  old guess. A hierarchical custom term keeps its parent on update, and Merge
+  moves posts by the taxonomy's field (`genres`, not `genre`).
+- **Writing types, by status (WP-R-032, core).** `site_types.py` returns each
+  type with its names, namespace and taxonomies, and can list one type's
+  items in one status (the plugins' statuses included), count each status
+  from `X-WP-Total`, offer the core six statuses then the site's own, and make
+  a new item of any type with its terms. A type outside `wp/v2` has its whole
+  route as its kind. The browsing and New commands are left for the
+  Workbench, where the PRD puts them (a node per type, File > New per type);
+  Open is unchanged.
+- **Lists and groups in Custom Fields (WP-R-033).** Registered meta of type
+  `array` (with `items`) and `object` (with `properties`) is now edited, not
+  counted: `custom_field_shapes.py` says each one in a sentence, types what
+  was typed into the schema's types, and keeps every key a group came with.
+  In both editors, Custom Fields (and Properties after it) opens **Lists and
+  Groups** after the plain fields; a group is one form, and a list opens with
+  Add, Edit, Remove, Move Up, Move Down and Keep Changes. Changes are kept
+  with the working copy and sent with the next Save Draft to Site or Publish.
+  Only a list with no `items` schema, or a list of lists, is still left
+  alone. Meta on terms, users and comments is read and written by the same
+  functions (`object_route`, `meta_schema_for`, `site_values_for`,
+  `send_meta`); no window offers it yet.
+- **One query builder (WP-R-030 groundwork).** `query.py` is the attribute
+  table the Filter Builder will read, every `wp/v2` collection argument with
+  a label, a kind and its operators, plus taxonomies by rule and each route's
+  own enums. `build()` sends what QUILL never did: `tax_relation`, every
+  `_exclude`, `modified_after` and `modified_before`, `search_columns`,
+  `search_semantics`, `ignore_sticky`, and terms "all of".
+- **The combination test (WP-R-030).** `quill/tools/wordpress_combination_audit.py`
+  (rostered in `platform_report` as `wordpress-combinations`) checks the 150
+  `wp/v2` routes of the recorded index
+  (`tests/unit/core/wordpress/fixtures/rest_index_test_site.json`): every
+  collection argument known, every enum value offered and said in words,
+  every writable property a field kind, every method an action. Seven plugin
+  orderings without a spoken label are its planned gaps; the list may only
+  shrink.
+- **Advanced Custom Fields, read (WP-R-034).** `field_plugins.read_acf()`
+  reads ACF's `acf` field where the schema shows it, into the same form.
+- Tests: `test_wp_discovery.py`, `test_wp_custom_field_shapes.py`,
+  `test_wp_query.py`, `test_wp_field_plugins.py`,
+  `test_wordpress_combination_audit.py`, and five more in
+  `test_wp_api_writing_fields.py`. The live regression
+  (`docs/qa/wordpress-live-run.py`) has not been run on this branch.
+
+### 2026-11-09: the WordPress Workbench, W1 to W4, behind a developer flag
+
+The WordPress provider for the shared Workbench window (Workbench PRD Part
+G: W1, W2, W3, W3a on the Workbench side, W3b for Gravity Forms, W4). It
+answers only with `QUILL_WORDPRESS_WORKBENCH_WINDOW=1`
+(`quill/core/wordpress/workbench_flag.py`); then the Tools > WordPress doors
+(Comments, Media Library, Categories and Tags, Menus, Site Check, Site
+Settings, Site Map, and Manage's Users, Application Passwords, Plugins,
+Themes, Fonts, Synced Patterns, Widgets and AI Abilities) open it at their
+node, through one call (`WordPressCommands.workbench_door`) both editors
+share. Not yet tried against the live site or with a screen reader.
+
+- **The tree (W1, PRD 5).** `workbench_tree.py`: Start Here; Needs My
+  Attention (Inbox, Comments Waiting, Pending Review, Scheduled, Drafts, Site
+  Health, Held as Spam, Form Responses, and Updates, Accessibility, Broken
+  Links, Orders and Watches shown with where each lives today); Sites, with
+  every connected site's Overview, Posts and Pages by status (pages as a tree
+  by parent), More Content Types and More Taxonomies with a node per
+  discovered type and taxonomy (the shared engine's new `NodeSpec.dynamic`),
+  Media by kind, Unattached and Without Alt Text, Comments by status,
+  Categories, Tags, Menus and Navigation, Appearance (Themes, Templates,
+  Template Parts, Patterns, Fonts, Widgets and Sidebars), Forms (Responses,
+  Held as Spam), People (Users, Application Passwords), Plugins, Settings,
+  Site Health, Abilities and More from This Site; Help and Learning (How
+  WordPress Thinks, Words, Keys). Lists come from `workbench_load.py` through
+  each site's own client, Needs My Attention from `workbench_attention.py`
+  (one row for a site that does not answer). Enter on a post or page is the
+  editor's own `open_item`. The status bar has Site, Your Role, Items,
+  Filter, Loading, Waiting and Workbench Access.
+- **Properties (W2, PRD 8, Appendix A).** `workbench_sheets.py` has a sheet
+  for items (General, Organize with a field per taxonomy, Featured Image,
+  Excerpt, Discussion, Template and Parent, Meta from the registered meta),
+  media, comments, terms, users, plugins, themes, application passwords,
+  settings and the site (with a read-only Spam page); anything else gets a
+  sheet built from its route's schema (`OPTIONS`), or from the object
+  itself. Terms and authors read "News (12)" and save by id or name. The
+  sheet is the shared engine's new editable sheet
+  (`quill/ui/workbench_sheet_editor.py`, OK, Cancel, Apply, Mixed values, a
+  locked field's reason as its F1 help).
+- **Editing and batch (W3, PRD 9 and 10).** `workbench_edit.py`: only the
+  changed fields go back, under WordPress's names; the conflict check reads
+  the object again and compares `modified_gmt`; the verify after names any
+  field the site did not keep; the undo body goes to the shared Change
+  History, and Ctrl+Z runs it. Several rows at once get the batch sheet
+  (status, author, comments, pingbacks, sticky, template, parent, categories
+  and tags added and removed; media titles, alt text, captions and
+  descriptions), a preview, `batch/v1` with a result per item, one at a time
+  where the site will not batch, and Try Again for failures. Delete is
+  Trash for posts, pages, custom items and comments; Shift+Delete is Delete
+  Permanently, confirmed by name. Filters (`workbench_filter.py`) turn the
+  shared query string into `query.build()` parameters, with term slugs and
+  names looked up, and filter loaded rows here for lists the API cannot
+  filter; the Filter Builder, Show Only Like This, Hide Like This and Only
+  Mine write the same string.
+- **Spam (W3a, Workbench side, PRD 13a.5).** Held as Spam gathers comments
+  in `spam` and form entries held as spam; Not Spam (Ctrl+Shift+A) puts a
+  comment back in the queue and a QAF entry back to `active`, Spam
+  (Ctrl+Shift+S) the other way, one or many, each undoable. The Spam page on
+  the Site sheet is read only; the PRD's provider states, thresholds and
+  question bank need QAF's spam work first.
+- **Gravity Forms (W3b, PRD 13b).** `workbench_forms.py` finds form plugins
+  by namespace only: QAF on `qaf/v1` (or `baf/v1`) and Gravity Forms on
+  `gf/v2`, whose forms and entries list with their status, and whose Spam
+  and Not Spam send the whole entry back (`PUT`), as its API replaces
+  entries. A new egress sentence covers `gf/v2`.
+- **Permissions (W4, PRD 11).** `workbench_permissions.py`: every action
+  names its capability and tier; a refused one is greyed in the context
+  menu and, reached by key, says why ("Publishing pages needs the Editor
+  role or higher. You are an Author on Community Radio."), and Shift+F1
+  lists all of them. Workbench Access per site (Read Only, Organize, Full,
+  kept in `workbench_access.json` beside the site list); Safe Mode and View
+  As Role are Read Only. `workbench_people.py`: Change Role and Remove with
+  reassignment (the preview counts the posts), refused for your own
+  Administrator role and for the last Administrator; New Here makes an
+  application password and shows its secret once; Delete revokes one. A
+  warning comes before deactivating QAF or the Application Passwords plugin.
+- **Keys (Part C).** The bar is `workbench_actions.WINDOW_MENU`, checked by
+  `menus.problems`. Delete, Shift+Delete and Ctrl+Z act only in the list:
+  the shared frame's new `workbench_frame_keys.py` keeps them away from the
+  filter box, where they edit the text.
+- **Shared engine, additive only.** `NodeSpec.dynamic`; the frame's optional
+  provider hooks (`dynamic_children`, `current_instance`, `filter_help`,
+  `no_instance_text`, `list_keys`), no tree event while the frame is being
+  destroyed; the editable sheet as a new module beside the read-only one.
+- Tests: `tests/unit/core/wordpress/test_wp_workbench_core.py` (25) and
+  `tests/unit/ui/wordpress/test_wp_workbench_window.py` (20, a real frame on
+  a fake site). The live regression has not been run on this branch.
+
 ## 19. Remaining tasks
 
 **wp-admin parity (9.18), Jeff 2026-11-04, "we should have all of this":**
@@ -4166,6 +4311,42 @@ request. Each entry says what is done and how it was checked.
 This list is kept current. A task is removed when it is done and checked, and
 the progress log above says what was done. Everything not listed here is
 built.
+
+### WordPress Workbench (Workbench PRD, after W1 to W4)
+- Run `docs/qa/wordpress-live-run.py` and a screen-reader pass (NVDA and
+  JAWS) on the Workbench before the flag comes off: nothing has met a live
+  site, and Delete and Ctrl+Z being kept from the filter box rests on wx's
+  key hook running before menu accelerators.
+- File > WordPress > Properties is still its own dialog over the working
+  copy; sharing the Workbench's item sheet with it (PRD 8) is left.
+- Load All and paging past the first 300 rows; Columns and Group By.
+- Users: Send Password Reset (no REST route), Sessions, others' application
+  passwords; roles' capabilities listed on the Users node's sheet.
+- New Here for posts, pages, custom types, terms and menus (only users and
+  application passwords so far); Merge Into and tag-to-category on terms.
+- Spam: the provider states, thresholds, blocklist and question bank on the
+  Spam page (needs QAF's spam work, 13a.3 and 13a.6); Empty Spam; allow the
+  sender from now on; the weekly Watch.
+- Form plugins after Gravity Forms: Jetpack Forms, Formidable, Fluent Forms,
+  WPForms, Contact Form 7, each verified against its API first; import into
+  QAF (13b.3).
+- Updates, Accessibility, Broken Links, Orders, Shop, Podcast, Calendar,
+  Search, Watches and Practice Site nodes (W5 to W8).
+- F1 on Workbench nodes and rows from the help catalogue (Part D); the
+  WordPress Workbench in the user guide once the flag comes off.
+
+### Workbench groundwork (Workbench PRD WP-R-030 to WP-R-034)
+- Run `docs/qa/wordpress-live-run.py` on the branch before it merges:
+  taxonomy discovery, Custom Fields lists and groups, and a custom type's
+  terms have only met recorded responses.
+- Custom types: New per type (the Workbench has a node, batch and filters
+  for each; its statuses as child nodes are left too).
+- Custom fields on terms, users and comments: a window or sheet page (the
+  core is in `custom_fields.py`).
+- Advanced Custom Fields: send changes back as `{"acf": ...}` and show the
+  fields in Custom Fields; Meta Box, Pods and CMB2.
+- Spoken labels for the seven plugin orderings the combination test lists
+  as planned (the Workbench's Filter Builder now writes `query.py` queries).
 
 ### Every route, and more value (9.16)
 - **Waiting on Jeff:** the icons list, upload in pieces and Regenerate Sizes,

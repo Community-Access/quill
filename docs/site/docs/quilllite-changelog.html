@@ -360,6 +360,85 @@ check settings moved out of the main Options, and the choices you had
 made come with them.</li>
 <li>QUILL has the same, from the same shared window.</li>
 </ul>
+<h3 id="the-wordpress-workbench-for-trying-out-2026-11-09">The WordPress
+Workbench, for trying out (2026-11-09)</h3>
+<ul>
+<li><strong>One window for your WordPress sites.</strong> The WordPress
+Workbench is the same kind of window as the GitHub Workbench: a tree
+that says where you are, a list of what is there, the details of the
+selected one, and a status bar you reach with F6. It is still being
+built, so it is off unless you start QUILL with the developer setting
+<code>QUILL_WORDPRESS_WORKBENCH_WINDOW=1</code>. Then the Tools &gt;
+WordPress windows for Comments, Media Library, Categories and Tags,
+Menus, Site Check, Site Settings, Site Map, and under Manage, Users,
+Application Passwords, Plugins, Themes, Fonts, Synced Patterns, Widgets
+and AI Abilities open the Workbench at the right place instead. Without
+the setting nothing changes.</li>
+<li><strong>Needs My Attention, from every site at once:</strong>
+comments waiting, posts pending review, scheduled posts, your drafts,
+Site Health problems, form responses, and everything held as spam. A
+site that does not answer is one row saying so, and the rest still
+show.</li>
+<li><strong>Every part of a site has a place:</strong> Overview, Posts
+and Pages by status (pages as a tree under their parents), each of the
+site’s own content types and taxonomies (Events, Products, Genres),
+Media by kind and Without Alt Text, Comments by status, Categories,
+Tags, Menus, Appearance, Forms, People, Plugins, Settings, Site Health,
+Abilities, and every REST namespace the site offers.</li>
+<li><strong>Enter on a post or page opens it in the editor,</strong>
+where writing happens. Ctrl+Enter previews it on the site and
+Shift+Enter opens it there.</li>
+<li><strong>Alt+Enter is Properties on anything:</strong> a post’s
+General, Organize, Featured Image, Excerpt, Discussion and Meta pages; a
+picture’s alt text and caption; a comment, a category, a person, a
+plugin, a setting, the site itself; and, for anything a plugin adds, a
+sheet built from what the site says about it. Before a change is sent,
+QUILL checks nobody changed it on the site since you opened it, and
+afterwards it says if the site did not keep something. Select several
+and Alt+Enter changes them together, with a preview and a result for
+each.</li>
+<li><strong>Delete moves to the Trash,</strong> and Ctrl+Z puts the last
+change back. Shift+Delete deletes permanently, after you confirm by
+name.</li>
+<li><strong>Comments and spam:</strong> Ctrl+Shift+A approves, or on
+held spam says Not Spam; Ctrl+Shift+U unapproves; Ctrl+Shift+S marks as
+spam; Ctrl+Shift+M replies. Spam and Not Spam work on QUILL Accessible
+Forms entries too, and on Gravity Forms entries where the site has
+it.</li>
+<li><strong>Filters reach the whole site:</strong> type words, or
+<code>status:draft</code>, <code>category:news</code>,
+<code>-tag:old</code>, <code>after:2026-01-01</code>; Ctrl+Shift+F opens
+the Filter Builder, and Edit has Show Only Like This, Hide Like This and
+Only Mine.</li>
+<li><strong>Only what you may do is offered,</strong> with the reason:
+“Publishing pages needs the Editor role or higher. You are an Author on
+Community Radio.” Shift+F1 says what you can do here. Change a person’s
+role, remove someone with their posts given to another person, and make
+or revoke application passwords; QUILL never lets you remove your own
+Administrator role or the last Administrator. Site &gt; Workbench Access
+sets Read Only, Organize or Full for each site, and View As Role shows a
+site as another role would see it.</li>
+<li>QUILL has the same window, from the same shared code.</li>
+</ul>
+<h3
+id="wordpress-custom-fields-that-hold-lists-and-groups-2026-11-09">WordPress
+custom fields that hold lists and groups (2026-11-09)</h3>
+<ul>
+<li><strong>Lists and groups in Custom Fields.</strong> A site’s custom
+fields that hold a list (speakers, a schedule’s rows, picture numbers)
+or a group of fields (an address) used to be counted and left alone. Now
+<strong>Lists and Groups</strong> comes after the plain fields in File
+&gt; WordPress &gt; Custom Fields, and after Properties. Each row says
+what the field holds. Enter on a group opens one form; Enter on a list
+opens it with Add, Edit, Remove, Move Up, Move Down and Keep Changes.
+Changes go to the site with your next Save Draft to Site or Publish, and
+anything in a group QUILL does not show is kept as it was.</li>
+<li><strong>Categories of any kind, at their real address.</strong>
+QUILL now asks the site where each kind of category lives, such as
+product categories or event categories, instead of guessing from its
+name, so a plugin’s categories that live somewhere unexpected work.</li>
+<li>QUILL has the same, from the same shared code.</li>
+</ul>
 <h3 id="github-context-menus-put-first-things-first-2026-11-09">GitHub
 context menus put first things first (2026-11-09)</h3>
 <ul>

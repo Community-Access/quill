@@ -51,6 +51,10 @@ _SCAN_GLOBS: tuple[str, ...] = ("quill/ui/github_*.py", "quill/ui/workbench_*.py
 
 #: Surface constructions whose titles the scan cannot resolve, with the reason.
 TITLE_EXEMPT: dict[str, str] = {
+    "quill/ui/workbench_sheet_editor.py::WorkbenchSheetEditor.__init__": (
+        "The shared Workbench's editable Properties sheet, titled after the object "
+        "it edits at run time; WordPress's gate owns its words."
+    ),
     "quill/ui/github_commit_comments_dialog.py::GitHubCommitCommentsDialog.__init__": (
         "The title names the item it shows, built at run time; every such title "
         "names a GitHub thing the classic-word rule in workbench_help recognises."

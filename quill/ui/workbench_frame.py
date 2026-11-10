@@ -35,6 +35,7 @@ from quill.core.workbench.menus import MenuSpec
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import NodeSpec, TreeSpec
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 from quill.ui.workbench_frame_actions import WorkbenchActionsMixin
 from quill.ui.workbench_frame_commands import WorkbenchCommandsMixin
 from quill.ui.workbench_frame_help import WorkbenchHelpMixin
@@ -136,7 +137,7 @@ class WorkbenchFrame(WorkbenchCommandsMixin, WorkbenchHelpMixin, WorkbenchAction
         panel = wx.Panel(self.frame)
         splitter = wx.SplitterWindow(panel, style=wx.SP_LIVE_UPDATE)
         self.tree = wx.TreeCtrl(splitter, style=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT)
-        self.tree.SetName("Navigator")
+        set_spoken_name(self.tree, "Navigator")
         self.tree.SetHelpText(
             "Where you are. Arrows move, Right and Left open and close a branch, "
             "and typing jumps to a name. F6 moves to the filter box."
@@ -150,13 +151,17 @@ class WorkbenchFrame(WorkbenchCommandsMixin, WorkbenchHelpMixin, WorkbenchAction
         self.filter = wx.TextCtrl(right, style=wx.TE_PROCESS_ENTER)
         self.filter.SetName("Filter")
         self.filter.SetHelpText(
-            "Plain words narrow the list on this device; qualifiers such as is:open or "
-            "label:bug ask GitHub. Enter runs it, Escape clears it."
+            getattr(
+                self.provider,
+                "filter_help",
+                "Plain words narrow the list on this device; qualifiers such as is:open or "
+                "label:bug ask GitHub. Enter runs it, Escape clears it.",
+            )
         )
         filter_row.Add(self.filter, 1, wx.EXPAND)
         column.Add(filter_row, 0, wx.EXPAND | wx.ALL, 4)
         self.list = wx.ListCtrl(right, style=wx.LC_REPORT)
-        self.list.SetName("Items")
+        set_spoken_name(self.list, "Items")
         self.list.SetHelpText(
             "What is here. Enter does the default action, the Applications key lists "
             "the rest, and Alt+Enter opens Properties."
@@ -225,7 +230,19 @@ class WorkbenchFrame(WorkbenchCommandsMixin, WorkbenchHelpMixin, WorkbenchAction
                 else spec.children(node.key)
             )
             for child in group:
-                add(item, child, NodeRef(ref.template, child.key, ref.instance))
+                if child.dynamic:
+                    add_dynamic(item, child, ref)
+                else:
+                    add(item, child, NodeRef(ref.template, child.key, ref.instance))
+
+        def add_dynamic(parent: Any, node: NodeSpec, ref: NodeRef) -> None:
+            # One copy per thing the provider discovered (a site's own post types).
+            found = getattr(self.provider, "dynamic_children", None)
+            for instance, label in found(node, ref) if found is not None else ():
+                child_ref = NodeRef(ref.template, node.key, instance)
+                item = tree.AppendItem(parent, label)
+                tree.SetItemData(item, child_ref)
+                self._items[child_ref] = item
 
         def add_template(parent: Any, template: str, instance: str) -> None:
             for top in spec.children(None, template=template):
@@ -285,7 +302,7 @@ class WorkbenchFrame(WorkbenchCommandsMixin, WorkbenchHelpMixin, WorkbenchAction
         if not self.tree or self.frame.IsBeingDeleted():
             return  # the tree empties itself as the window is destroyed
         item = event.GetItem()
-        ref = self.tree.GetItemData(item) if item.IsOk() else None
+        ref = self.tree.GetItemData(item) if self.tree and item.IsOk() else None  # not when closing
         if isinstance(ref, NodeRef):
             self._show_node(ref, remember=not self._navigating)
 
@@ -339,9 +356,18 @@ class WorkbenchFrame(WorkbenchCommandsMixin, WorkbenchHelpMixin, WorkbenchAction
 
     def go(self, command_id: str) -> None:
         template, key = self.provider.go_nodes[command_id]
-        instance = next(iter(self.provider.instances(template)), "") if template else ""
+        chosen = getattr(self.provider, "current_instance", None)
+        instance = (chosen(template) if chosen is not None else "") if template else ""
         if template and not instance:
-            self._say("Open a repository first. Ctrl+L opens one by name or link.")
+            instance = next(iter(self.provider.instances(template)), "")
+        if template and not instance:
+            self._say(
+                getattr(
+                    self.provider,
+                    "no_instance_text",
+                    "Open a repository first. Ctrl+L opens one by name or link.",
+                )
+            )
             return
         if self.select(NodeRef(template, key, instance)):
             self.tree.SetFocus()

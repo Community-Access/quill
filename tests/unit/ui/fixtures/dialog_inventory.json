@@ -1076,5 +1076,6 @@
   "quill/ui/workbench_help_dialogs.py::ActionListDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/workbench_help_dialogs.py::HelpTextDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/workbench_help_dialogs.py::SearchHelpDialog.__init__::wx.Dialog": "hardened_custom",
-  "quill/ui/workbench_properties_dialog.py::WorkbenchPropertiesDialog.__init__::wx.Dialog": "hardened_custom"
+  "quill/ui/workbench_properties_dialog.py::WorkbenchPropertiesDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/workbench_sheet_editor.py::WorkbenchSheetEditor.__init__::wx.Dialog": "hardened_custom"
 }

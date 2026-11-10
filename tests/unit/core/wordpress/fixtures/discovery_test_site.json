@@ -1,0 +1,34 @@
+{
+ "_source": "What the test site's wp/v2/taxonomies, wp/v2/statuses and wp/v2/types answer with context=edit, in WordPress's response shape, cut to the fields QUILL reads. The slugs, routes and statuses are the ones its recorded REST index (rest_index_test_site.json) lists; nothing here was invented except where a test says so.",
+ "taxonomies": {
+  "category": {"name": "Categories", "slug": "category", "hierarchical": true, "types": ["post"], "rest_base": "categories", "rest_namespace": "wp/v2"},
+  "post_tag": {"name": "Tags", "slug": "post_tag", "hierarchical": false, "types": ["post", "tribe_events"], "rest_base": "tags", "rest_namespace": "wp/v2"},
+  "product_brand": {"name": "Brands", "slug": "product_brand", "hierarchical": true, "types": ["product"], "rest_base": "product_brand", "rest_namespace": "wp/v2"},
+  "product_cat": {"name": "Product categories", "slug": "product_cat", "hierarchical": true, "types": ["product"], "rest_base": "product_cat", "rest_namespace": "wp/v2"},
+  "product_tag": {"name": "Product tags", "slug": "product_tag", "hierarchical": false, "types": ["product"], "rest_base": "product_tag", "rest_namespace": "wp/v2"},
+  "tribe_events_cat": {"name": "Event Categories", "slug": "tribe_events_cat", "hierarchical": true, "types": ["tribe_events"], "rest_base": "tribe_events_cat", "rest_namespace": "wp/v2"},
+  "wp_pattern_category": {"name": "Pattern Categories", "slug": "wp_pattern_category", "hierarchical": false, "types": ["wp_block"], "rest_base": "wp_pattern_category", "rest_namespace": "wp/v2"}
+ },
+ "statuses": {
+  "publish": {"name": "Published", "slug": "publish", "public": true, "private": false, "protected": false, "queryable": true, "show_in_list": true, "date_floating": false},
+  "future": {"name": "Scheduled", "slug": "future", "public": false, "private": false, "protected": true, "queryable": false, "show_in_list": true, "date_floating": false},
+  "draft": {"name": "Draft", "slug": "draft", "public": false, "private": false, "protected": true, "queryable": false, "show_in_list": true, "date_floating": true},
+  "pending": {"name": "Pending", "slug": "pending", "public": false, "private": false, "protected": true, "queryable": false, "show_in_list": true, "date_floating": true},
+  "private": {"name": "Private", "slug": "private", "public": false, "private": true, "protected": false, "queryable": false, "show_in_list": true, "date_floating": false},
+  "trash": {"name": "Trash", "slug": "trash", "public": false, "private": false, "protected": false, "queryable": false, "show_in_list": false, "date_floating": false},
+  "wc-pending": {"name": "Pending payment", "slug": "wc-pending", "public": false, "private": false, "protected": true, "queryable": false, "show_in_list": true, "date_floating": false},
+  "wc-processing": {"name": "Processing", "slug": "wc-processing", "public": false, "private": false, "protected": true, "queryable": false, "show_in_list": true, "date_floating": false},
+  "wc-completed": {"name": "Completed", "slug": "wc-completed", "public": false, "private": false, "protected": true, "queryable": false, "show_in_list": true, "date_floating": false},
+  "tribe-ea-success": {"name": "Imported", "slug": "tribe-ea-success", "public": false, "private": false, "protected": true, "queryable": false, "show_in_list": true, "date_floating": false}
+ },
+ "types": {
+  "post": {"name": "Posts", "slug": "post", "hierarchical": false, "viewable": true, "taxonomies": ["category", "post_tag"], "rest_base": "posts", "rest_namespace": "wp/v2", "labels": {"singular_name": "Post"}},
+  "page": {"name": "Pages", "slug": "page", "hierarchical": true, "viewable": true, "taxonomies": [], "rest_base": "pages", "rest_namespace": "wp/v2", "labels": {"singular_name": "Page"}},
+  "attachment": {"name": "Media", "slug": "attachment", "hierarchical": false, "viewable": true, "taxonomies": [], "rest_base": "media", "rest_namespace": "wp/v2", "labels": {"singular_name": "Media"}},
+  "wp_block": {"name": "Patterns", "slug": "wp_block", "hierarchical": false, "viewable": false, "taxonomies": ["wp_pattern_category"], "rest_base": "blocks", "rest_namespace": "wp/v2", "labels": {"singular_name": "Pattern"}},
+  "product": {"name": "Products", "slug": "product", "hierarchical": false, "viewable": true, "taxonomies": ["product_brand", "product_cat", "product_tag"], "rest_base": "product", "rest_namespace": "wp/v2", "labels": {"singular_name": "Product"}},
+  "tribe_events": {"name": "Events", "slug": "tribe_events", "hierarchical": false, "viewable": true, "taxonomies": ["post_tag", "tribe_events_cat"], "rest_base": "tribe_events", "rest_namespace": "wp/v2", "labels": {"singular_name": "Event"}},
+  "tribe_venue": {"name": "Venues", "slug": "tribe_venue", "hierarchical": false, "viewable": true, "taxonomies": [], "rest_base": "tribe_venue", "rest_namespace": "wp/v2", "labels": {"singular_name": "Venue"}},
+  "tribe_organizer": {"name": "Organizers", "slug": "tribe_organizer", "hierarchical": false, "viewable": true, "taxonomies": [], "rest_base": "tribe_organizer", "rest_namespace": "wp/v2", "labels": {"singular_name": "Organizer"}}
+ }
+}

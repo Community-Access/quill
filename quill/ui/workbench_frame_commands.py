@@ -298,7 +298,12 @@ class WorkbenchCommandsMixin:
         if code == wx.WXK_BACK and plain and on_lists:
             self.back()
             return
-        if code == wx.WXK_DELETE and plain and focused is self.list:
+        from quill.ui.workbench_frame_keys import keep_list_key
+
+        if focused is not self.list and keep_list_key(self, event, focused):
+            return  # a provider's list-only key (WordPress's Delete), outside the list
+        removes = callable(getattr(self.provider, "remove_command", None))
+        if code == wx.WXK_DELETE and plain and focused is self.list and removes:
             self._remove_selected()
             return
         if code == wx.WXK_CANCEL and event.ControlDown() and on_lists:

@@ -181,9 +181,17 @@ your default site selected.
 - **Who:** whoever may edit the page.
 - **The window:** one field per custom field your site registers for that
   kind of page, each labelled and explained by the site, and OK.
+- **Lists and Groups:** if the site keeps fields that hold a list (speakers,
+  a schedule's rows) or a group (an address), a second window, **Lists and
+  Groups**, comes next. Each row names one and says what it holds, such as
+  "Speakers, a list of 2 items: Ann; Bo". Enter on a group opens one form of
+  its fields. Enter on a list opens it with **Add**, **Edit**, **Remove**,
+  **Move Up**, **Move Down** and **Keep Changes**; Close leaves the list as
+  it was. Anything in a group that QUILL does not show is kept as it was.
 - **You hear:** "3 custom fields kept with your copy. They go to Community
   Radio when you next send." or "Community Radio has no custom fields for a
-  post."
+  post." After a list: "Speakers kept with your copy. It goes to Community
+  Radio when you next send."
 
 ### Plugin Fields
 
