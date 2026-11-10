@@ -40,6 +40,7 @@ _KINDS = {
     "milestone": "milestone",
     "project": "project",
     "org": "organization",
+    "team": "team",
     "favorite": "favorite",
     "admin_action": "admin_action",
     "help_topic": "help_topic",

@@ -154,9 +154,10 @@ def test_a_go_key_selects_its_node(bench) -> None:
 def test_placeholders_explain_themselves_and_are_greyed(bench) -> None:
     _go(bench, NodeRef("", "across"))
     assert "later release" in bench.details.GetValue()
-    assert not bench.can_run("github.workbench.filter_builder")
-    bench.run("github.workbench.filter_builder")
-    assert bench.said[-1] == "This is coming in a later release of the Workbench."
+    # The Filter Builder came in Phase 9; Watches and Across Repositories are still to come.
+    assert bench.provider.reason("github.workbench.go_watches") == (
+        "This is coming in a later release of the Workbench."
+    )
 
 
 def test_files_list_a_folder_and_enter_opens_a_subfolder(bench) -> None:

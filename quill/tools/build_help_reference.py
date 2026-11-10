@@ -138,6 +138,13 @@ APPS: tuple[AppConfig, ...] = (
         "beacon_help_inventory.json",
     ),
     AppConfig(
+        "GitHub Workbench",
+        "quill.core.github.workbench_help",
+        (),
+        ("quill/ui/github_*.py", "quill/ui/workbench_*.py"),
+        "github_help_inventory.json",
+    ),
+    AppConfig(
         "QUILL Lite",
         "quill.core.lite_surface_help",
         (),
@@ -306,6 +313,15 @@ def generate() -> str:
         for prefix in sorted(prefixes):
             lines.append(f'**Windows titled "{prefix}...".** {prefixes[prefix]}')
             lines.append("")
+        sections = getattr(
+            importlib.import_module(config.catalogue_module), "REFERENCE_SECTIONS", ()
+        )
+        for heading, entries in sections:
+            lines.append(f"### {heading}")
+            lines.append("")
+            for name, text in entries:
+                lines.append(f"**{name}.** {text}")
+                lines.append("")
         authored: list[tuple[str, str, str, str]] = []
         for path in _scan_paths(config):
             rel = path.relative_to(_REPO_ROOT).as_posix()

@@ -59,6 +59,8 @@ from quill.core.net import verified_ssl_context
 __all__ = [
     "DEVICE_PAGE",
     "WORKBENCH_SCOPES",
+    "request_extra_scopes",
+    "requested_scope",
     "WORKBENCH_SCOPE",
     "GitHubSignInCancelled",
     "GitHubSignInFailed",
@@ -120,6 +122,22 @@ WORKBENCH_SCOPES: tuple[tuple[str, str], ...] = (
 #: The space-separated scope string sent to GitHub.
 WORKBENCH_SCOPE = " ".join(name for name, _reason in WORKBENCH_SCOPES)
 
+#: Scopes the person asked to add from Account, GitHub Permissions (GitHub PRD
+#: 18.1): the next sign-in asks for the Workbench scopes plus these, so one
+#: approval on GitHub adds every missing one. Cleared once a sign-in uses them.
+_EXTRA_SCOPES: list[str] = []
+
+
+def request_extra_scopes(scopes: list[str] | tuple[str, ...]) -> None:
+    """Ask the next Sign in with GitHub for *scopes* as well as the Workbench's own."""
+    _EXTRA_SCOPES[:] = [s for s in scopes if s and s not in WORKBENCH_SCOPE.split()]
+
+
+def requested_scope() -> str:
+    """The scope string the next sign-in sends: the Workbench's, plus any added."""
+    return " ".join([WORKBENCH_SCOPE, *_EXTRA_SCOPES]).strip()
+
+
 _ALLOWED_URLS = frozenset({copilot_auth.GITHUB_DEVICE_AUTH_URL, copilot_auth.GITHUB_TOKEN_URL})
 _TIMEOUT_SECONDS = 30.0
 _MAX_RESPONSE_BYTES = 64_000
@@ -174,7 +192,7 @@ def workbench_device_flow_config(
         client_id=cid,
         device_authorization_url=copilot_auth.GITHUB_DEVICE_AUTH_URL,
         token_url=copilot_auth.GITHUB_TOKEN_URL,
-        scope=WORKBENCH_SCOPE,
+        scope=requested_scope(),
     )
 
 

@@ -13,6 +13,13 @@ Two jobs, so context help stays current as features are added or changed:
    reported grouped by feature namespace. This generalises the #294 braille
    regression guard to the whole command surface.
 
+3. **The GitHub Workbench's own commands** (``github.workbench.*``): the
+   Workbench answers F1 from its own catalogue
+   (:mod:`quill.core.github.workbench_help`) rather than ``topics.json``, so
+   every menu row, submenu row, context-menu row, tree node and option there
+   must have authored help. Counted with the rest: a warning by default,
+   fatal with ``--strict``.
+
 To add the missing topics quickly, scaffold stubs straight into
 ``topics.json``::
 
@@ -82,6 +89,13 @@ def missing_command_topics(topic_ids: set[str]) -> list[str]:
     return sorted(cmd for cmd in COMMAND_FEATURE_MAP if cmd not in topic_ids)
 
 
+def missing_workbench_help() -> list[str]:
+    """The GitHub Workbench's commands, nodes and options with no authored help."""
+    from quill.core.github.workbench_help import gaps
+
+    return gaps()
+
+
 def _scaffold(new_ids: list[str]) -> int:
     """Append stub topics for *new_ids* to topics.json (sorted, deduped)."""
     entries = _load_raw()
@@ -126,6 +140,14 @@ def run(strict: bool = False) -> int:
     topic_ids = {str(e.get("id", "")) for e in entries}
     missing = missing_command_topics(topic_ids)
     print(f"check_help_coverage: {len(topic_ids)} topics, integrity OK")
+    workbench = missing_workbench_help()
+    if workbench:
+        label = "ERROR" if strict else "WARNING"
+        print(f"{label}: {len(workbench)} GitHub Workbench gap(s):")
+        for gap in workbench:
+            print(f"  - {gap}")
+        if strict:
+            return 1
 
     if missing:
         by_ns: dict[str, int] = {}

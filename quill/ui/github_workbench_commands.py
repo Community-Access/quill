@@ -29,11 +29,14 @@ from typing import Any
 from quill.ui.github_items_view import VIEW_ISSUES, VIEW_RELEASES, VIEW_RUNS
 
 __all__ = [
+    "ADMIN_DOORS",
     "EXPLORE_VIEWS",
     "ITEMS_VIEWS",
     "WORKBENCH_NODES",
     "GitHubWorkbenchCommands",
+    "editor_call",
     "open_in_workbench_window",
+    "workbench_takes",
 ]
 
 #: Explore's view for each Explore row, by QUILL command id.
@@ -67,6 +70,48 @@ WORKBENCH_NODES: dict[str, str] = {
     "github.workbench_releases": "releases",
     "github.workbench_explore": "search",
 }
+
+
+#: QUILL's Repository Admin and Codespaces commands, with the Workbench in use:
+#: (node to open, what to run there). "sheet:<page>" opens the repository's
+#: Properties at that page; a command id runs the editor's own dialog from the
+#: Workbench; "" only goes to the node.
+ADMIN_DOORS: dict[str, tuple[str, str]] = {
+    "github.rename_repository": ("repository", "sheet:general"),
+    "github.change_repository_visibility": ("repository", "sheet:danger"),
+    "github.change_default_branch": ("repository", "sheet:general"),
+    "github.configure_branch_protection": ("repository", "sheet:rules"),
+    "github.delete_branch": ("branches", ""),
+    "github.create_release": ("releases", "github.create_release"),
+    "github.dispatch_workflow": ("workflows", "github.dispatch_workflow"),
+    "github.view_security_alerts": ("alerts", ""),
+    "github.create_repository": ("repository", "github.create_repository"),
+    "github.fork_repository": ("repository", "github.fork_repository"),
+    "github.commit_multiple_files": ("repository", "github.commit_multiple_files"),
+    "github.browse_organization": ("organizations", ""),
+    "github.list_codespaces": ("repository", "github.list_codespaces"),
+    "github.create_codespace": ("repository", "github.create_codespace"),
+}
+
+_FROM_WORKBENCH: list[str] = []
+
+
+def workbench_takes(command_id: str) -> bool:
+    """Whether *command_id* should open the Workbench and run there, rather than here."""
+    from quill.core.github.workbench_flag import workbench_window_enabled
+
+    if command_id not in ADMIN_DOORS or command_id in _FROM_WORKBENCH:
+        return False
+    return workbench_window_enabled()
+
+
+def editor_call(run: Callable[[str], None], command_id: str) -> None:
+    """Run the editor's own *command_id* for the Workbench, as itself (no door again)."""
+    _FROM_WORKBENCH.append(command_id)
+    try:
+        run(command_id)
+    finally:
+        _FROM_WORKBENCH.remove(command_id)
 
 
 class GitHubWorkbenchCommands:

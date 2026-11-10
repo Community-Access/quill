@@ -193,4 +193,5 @@ You never have to open it: the Workbench works as it comes.
 ---
 
 - Previous: [Chapter 11: Keyboard reference](github-guide-11-keyboard-reference.html)
+- Next: [Chapter 13: Properties, filters and permissions](github-guide-13-properties-filters-permissions.html)
 - [Contents](github-guide.html)

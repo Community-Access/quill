@@ -54,8 +54,20 @@ class WorkbenchActionsMixin:
             self._say("Could not open this in your browser.")
 
     def show_properties(self) -> None:
-        """Alt+Enter: the selected row's sheet (several rows, and nodes, come later)."""
+        """Alt+Enter: the selected rows' sheet, or the tree node's.
+
+        A provider with ``open_properties(ref, rows)`` owns the whole job:
+        one row, several rows (one sheet, Mixed values), or no rows when focus
+        is in the tree (the node's own object, or the view's options). One
+        without it gets the read-only single-row sheet.
+        """
         chosen = self.selected_indices()
+        opener = getattr(self.provider, "open_properties", None)
+        if callable(opener) and self.current is not None:
+            in_tree = self._wx.Window.FindFocus() is self.tree
+            rows = [] if in_tree else [self.rows[i] for i in chosen]
+            opener(self.current, rows)
+            return
         on_list = self._wx.Window.FindFocus() is self.list or bool(chosen)
         if not on_list or self.current is None:
             self._say("Properties of a tree node come in a later preview.")
@@ -89,11 +101,29 @@ class WorkbenchActionsMixin:
             sub = wx.Menu()
             fill(sub, more)
             menu.AppendSubMenu(sub, "More")
+        self._cell_filters(menu, window)
         fill(menu, top[-1:])
         try:
             window.PopupMenu(menu)
         finally:
             menu.Destroy()
+
+    def _cell_filters(self, menu: Any, window: Any) -> None:
+        """Show Only and Hide for each value in the row (section 17.1, way 4)."""
+        wx = self._wx
+        hook = getattr(self.provider, "cell_rows", None)
+        apply = getattr(self.provider, "show_only_cell", None)
+        if window is not self.list or not callable(hook) or not callable(apply):
+            return
+        found = list(hook())[:12]
+        if not found:
+            return
+        for title, hide in (("Show Only", False), ("Hide", True)):
+            sub = wx.Menu()
+            for qualifier, words in found:
+                item = sub.Append(wx.ID_ANY, words, f"{title} {qualifier}")
+                sub.Bind(wx.EVT_MENU, lambda _e, q=qualifier, h=hide: apply(q, hide=h), item)
+            menu.AppendSubMenu(sub, title)
 
     def show_row_menu(self) -> None:
         row = self.selected_row()

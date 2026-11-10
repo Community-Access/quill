@@ -206,6 +206,38 @@ RESULT_EXPLANATIONS: tuple[tuple[str, str], ...] = (
 
 #: Window title (or its start) -> what the window is for, said first by F1.
 SURFACE_PURPOSES: dict[str, str] = {
+    "Filter Builder": (
+        "Build a filter one condition at a time: an attribute, an operator and a value "
+        "from the repository. The query appears as you go, in GitHub's own syntax; OK "
+        "puts it in the filter box, Save as Search also keeps it."
+    ),
+    "GitHub Permissions": (
+        "Every permission the Workbench can use, what it unlocks and whether you have "
+        "it. Add Permissions asks for every missing one in one sign-in; Copy Command, "
+        "the classic token page and the fine-grained steps are the other ways."
+    ),
+    "Change History": (
+        "Every change the Workbench made on GitHub, newest first: what, when, before and "
+        "after, and whether GitHub confirmed it. Undo This Change reverses one where "
+        "GitHub allows it. Kept on this device for 90 days; secret values never appear."
+    ),
+    "Preview": (
+        "What is about to change on GitHub, in words. Enter goes ahead; Escape changes nothing."
+    ),
+    "Changed on GitHub": (
+        "Somebody changed this field on GitHub since you opened the sheet. Keep Theirs "
+        "leaves their value; Use Mine saves yours over it."
+    ),
+    "Type to Confirm": (
+        "This change is hard to reverse, so it waits for the name typed exactly. "
+        "Anything else changes nothing."
+    ),
+    "Columns": "Choose which columns this list shows. Space checks or clears one.",
+    "Properties of": (
+        "One sheet for several objects. A field the same on all shows its value; one "
+        "that differs says Mixed and is left alone unless you change it; a check box on "
+        "some of them is in its third state."
+    ),
     "GitHub Workbench": (
         "One window for GitHub. The tree on the left says where you are, the list "
         "says what is there, and the details say what the selected one is. F6 moves "
@@ -332,6 +364,10 @@ NODE_HELP: dict[str, str] = {
     ),
     ":people": "People: who you follow, who follows you, and anybody you look up.",
     ":following": "People I Follow: accounts you follow. Enter opens a person's node.",
+    ":my_teams": (
+        "My Teams: every team you belong to, across your organizations. Alt+Enter opens "
+        "a team's sheet."
+    ),
     ":followers": "My Followers: accounts that follow you.",
     ":find_person": (
         "Find a Person: type a login with Ctrl+L, and the person gets a node of their own here."
@@ -436,6 +472,11 @@ NODE_HELP: dict[str, str] = {
     "person:person_followers": "Followers: who follows this person.",
     "person:person_following": "Following: who this person follows.",
     "organization:organization": "An organization: its repositories.",
+    "organization:organization_teams": (
+        "Teams: the organization's teams, as GitHub nests them. Alt+Enter opens a "
+        "team's sheet: its members and maintainers, repositories and roles, child teams "
+        "and code review assignment."
+    ),
     "organization:organization_repositories": (
         "Repositories: the organization's repositories you can see."
     ),

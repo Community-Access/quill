@@ -288,6 +288,16 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _COPY_LINK,
         _PROPERTIES,
     ),
+    "team": (
+        _default(
+            "team_members",
+            "Members and Access...",
+            "Open the team's sheet at its members: add people, change a role, remove.",
+        ),
+        _COPY_LINK,
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
     "organization": (
         _default("open_organization", "Open", "Select the organization's node in the tree."),
         _OPEN_WEB,

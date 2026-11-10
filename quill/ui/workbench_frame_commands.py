@@ -102,44 +102,82 @@ class WorkbenchCommandsMixin:
     # -- the bar -------------------------------------------------------------
 
     def _build_menu(self) -> None:
+        from quill.core.workbench.menus import MenuSub, all_rows
+
         wx = self._wx
-        defaults = {
-            row.command_id: row.key for spec in self.provider.menu for row in spec.rows if row
-        }
+        defaults = {row.command_id: row.key for _spec, row in all_rows(self.provider.menu)}
         keys = bound_keys(getattr(self.provider, "keymap_id", ""), defaults)
         self._keys = keys
         self._menu_items: dict[str, Any] = {}
+        self._dynamic_menus: dict[str, Any] = {}
+        self._dynamic_ids: list[int] = []
         bar = wx.MenuBar()
         for spec in self.provider.menu:
             menu = wx.Menu()
             for row in spec.rows:
                 if row is None:
                     menu.AppendSeparator()
-                    continue
-                key = keys.get(row.command_id, "")
-                label = f"{row.label}\t{key}" if key else row.label
-                item = menu.Append(wx.ID_ANY, label, row.help)
-                self._menu_items[row.command_id] = item
-                self.frame.Bind(wx.EVT_MENU, lambda _e, c=row.command_id: self.run(c), item)
+                elif isinstance(row, MenuSub):
+                    sub = wx.Menu()
+                    if row.dynamic:
+                        self._dynamic_menus[row.dynamic] = sub
+                    for inner in row.rows:
+                        if inner is None:
+                            sub.AppendSeparator()
+                        else:
+                            self._append_row(sub, inner, keys)
+                    menu.AppendSubMenu(sub, row.title, row.help)
+                else:
+                    self._append_row(menu, row, keys)
             bar.Append(menu, spec.title)
         self.frame.SetMenuBar(bar)
         self.frame.Bind(wx.EVT_MENU_OPEN, self._on_menu_open)
 
+    def _append_row(self, menu: Any, row: Any, keys: dict[str, str]) -> None:
+        wx = self._wx
+        key = keys.get(row.command_id, "")
+        label = f"{row.label}	{key}" if key else row.label
+        kind = wx.ITEM_CHECK if row.check else wx.ITEM_RADIO if row.radio else wx.ITEM_NORMAL
+        item = menu.Append(wx.ID_ANY, label, row.help, kind)
+        self._menu_items[row.command_id] = item
+        self.frame.Bind(wx.EVT_MENU, lambda _e, c=row.command_id: self.run(c), item)
+
+    def fill_dynamic_menus(self) -> None:
+        """Fill each dynamic submenu (the person's pins, favorites, searches) afresh."""
+        wx = self._wx
+        hook = getattr(self.provider, "dynamic_menu", None)
+        for key, sub in getattr(self, "_dynamic_menus", {}).items():
+            for item in list(sub.GetMenuItems()):
+                sub.Delete(item)
+            entries = list(hook(key)) if callable(hook) else []
+            if not entries:
+                empty = sub.Append(wx.ID_ANY, "(None yet)")
+                empty.Enable(False)
+                continue
+            for index, (label, action) in enumerate(entries[:9], start=1):
+                item = sub.Append(wx.ID_ANY, f"&{index} {label}")
+                self.frame.Bind(wx.EVT_MENU, lambda _e, a=action: a(), item)
+
     def _on_menu_open(self, event: Any) -> None:
         """Grey what does not apply here, with the reason as the row's help."""
+        checked = getattr(self.provider, "is_checked", None)
         for command_id, item in getattr(self, "_menu_items", {}).items():
             able = self.can_run(command_id)
             item.Enable(able)
             row_help = self._row_help(command_id)
             reason = "" if able else self.reason(command_id)
             item.SetHelp(f"{reason} {row_help}".strip() if reason else row_help)
+            if item.IsCheckable() and callable(checked):
+                item.Check(bool(checked(command_id)))
+        self.fill_dynamic_menus()
         event.Skip()
 
     def _row_help(self, command_id: str) -> str:
-        for spec in self.provider.menu:
-            for row in spec.rows:
-                if row is not None and row.command_id == command_id:
-                    return str(row.help)
+        from quill.core.workbench.menus import all_rows
+
+        for _spec, row in all_rows(self.provider.menu):
+            if row.command_id == command_id:
+                return str(row.help)
         return ""
 
     def reason(self, command_id: str) -> str:

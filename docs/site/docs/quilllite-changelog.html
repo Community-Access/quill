@@ -245,6 +245,115 @@
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="200">2.0.0</h2>
 <h3
+id="properties-for-everything-in-the-github-workbench-2026-11-10">Properties
+for everything in the GitHub Workbench (2026-11-10)</h3>
+<ul>
+<li><strong>Alt+Enter shows everything about what is selected, and
+changes it.</strong> On an issue, a pull request, a repository, a label,
+a milestone, and every other kind of row the Workbench lists (branches,
+tags, commits, releases and their files, workflows, runs and jobs,
+environments, secrets and variables, people, organizations, teams,
+gists, Codespaces, security alerts, notifications, discussions,
+rulesets, projects and more), Alt+Enter opens a Properties sheet: pages
+you move through with Ctrl+Tab, every fact a box you can Tab to and
+read. Item, Properties… and the last row of every context menu open the
+same sheet. On a repository in the tree, Alt+Enter opens the
+repository’s own sheet.</li>
+<li><strong>Change it right there.</strong> A field you are allowed to
+change is a normal control; one you are not is read-only, and the line
+under it and F1 say why and who can change that (“changing labels needs
+triage access; you have read”). OK saves and closes, Apply (Ctrl+S)
+saves and stays, F5 loads it again. Labels, assignees, milestones,
+reviewers and your reactions are check boxes, and New Label… and New
+Milestone… make one and use it at once.</li>
+<li><strong>Nothing is claimed that did not happen.</strong> Before
+saving, the sheet checks whether somebody changed the same field on
+GitHub since you opened it, and asks you Keep Theirs or Use Mine. After
+saving, it reads the object again and says one sentence about what
+actually changed, such as “Issue #42: added bug, removed docs.” A change
+GitHub quietly ignored is named.</li>
+<li><strong>Several at once.</strong> Select several issues and press
+Alt+Enter: one sheet for all of them. A field that differs says Mixed
+and is left alone, a label on some of them is a check box in its third
+state (“bug, on 3 of 5”), and only what you touch is changed. You hear a
+preview first, then a result for every item, with Retry Failed. Batches
+pause a second between items so GitHub’s limits are not tripped.
+Removing is as easy as adding now.</li>
+<li><strong>Undo GitHub Change.</strong> Ctrl+Z in the list (not in a
+text box) undoes your last change on GitHub, where GitHub allows it, and
+Ctrl+Y does it again.</li>
+<li><strong>Rulesets and branch protection in plain words.</strong> A
+ruleset’s sheet has every rule as a check box with its settings, and a
+Summary page that reads the whole thing as sentences: “On the default
+branch: changes need a pull request with 2 approvals including a code
+owner; force pushes are blocked.”</li>
+<li><strong>Teams, end to end.</strong> A team’s sheet has its members
+and maintainers, its repositories and its role on each, its child teams
+and its code review assignment (round robin or load balance, how many
+reviewers).</li>
+<li><strong>The menus still name every change.</strong> Item, Labels…,
+Assignees… and Milestone… open the sheet at the right page. There are no
+separate keys for single properties; the sheet remembers the page you
+used last for each kind of thing.</li>
+</ul>
+<h3 id="filtering-on-every-attribute-2026-11-10">Filtering on every
+attribute (2026-11-10)</h3>
+<ul>
+<li><strong>View, Quick Filters:</strong> Assigned to Me, Assigned To…,
+Opened by Me, Mentions Me, Review Requested from Me, No Milestone, No
+Label, Drafts, Checks Failing, Updated This Week and more. Each is a
+checked row, they combine, and the window title says which are on. Clear
+These Filters turns them all off.</li>
+<li><strong>Show Only and Hide</strong> on the context menu of any row:
+“Show only label bug”, “Hide author dependabot”.</li>
+<li><strong>The Filter Builder</strong> (Ctrl+Alt+F): choose an
+attribute, an operator and a value picked from the repository’s own
+labels, milestones, people, teams and branches. The query appears in
+GitHub’s own syntax as you go, so you learn it by watching. Save as
+Search keeps it.</li>
+<li><strong>View, Show; Open or Closed; Sort By; Group By and
+Columns.</strong> Group By puts the groups in the tree as nodes: Issues,
+then one node per label with its count. Columns… chooses the list’s
+columns.</li>
+<li><strong>Honest about what it cannot ask GitHub.</strong> Has
+Conflicts is checked over the rows already loaded, and the Items cell of
+the status bar says so, with Load All (Ctrl+Shift+Page Down) to be
+sure.</li>
+<li><strong>Go, Next Unread</strong> (Ctrl+Period) and Previous Unread
+(Ctrl+Shift+Period), and Go has submenus for your pinned repositories,
+favorites and saved searches.</li>
+</ul>
+<h3 id="permissions-you-can-see-and-control-2026-11-10">Permissions you
+can see, and control (2026-11-10)</h3>
+<ul>
+<li><strong>Account, GitHub Permissions</strong> (Ctrl+Shift+P) lists
+every permission the Workbench can use, what each unlocks, and whether
+you have it. Add Permissions asks for all the missing ones in one
+sign-in; Copy Command gives the gh command, and there are steps for
+classic and fine-grained tokens. Check Again says what changed.</li>
+<li><strong>Account, Change History</strong> (Ctrl+Shift+H) lists every
+change the Workbench made on GitHub: what, when, before and after, and
+whether GitHub confirmed it, with Undo on any row GitHub allows. It
+stays on this computer for 90 days and never holds a secret’s
+value.</li>
+<li><strong>Previews in words.</strong> Changes to access and settings
+are read back to you before they happen; anything hard to reverse also
+asks you to type the name. Removing your own admin access, or the last
+owner, is refused, and the Workbench says who else could do it.</li>
+<li><strong>Read Only, Organize or Full, per account.</strong> Account,
+Roles and Access, Workbench Level sets what the Workbench may change
+with an account, whatever GitHub would allow; Safe Mode makes every
+account Read Only.</li>
+<li><strong>Access pages.</strong> A repository’s sheet lists its
+people, teams and pending invitations, and Add…, Change… and Remove act
+on them, previewed and recorded. Roles and Access also has My Access
+Here, View As Role, Compare Roles, Why Can’t They?, Access Review (every
+person and repository in an organization, copied as CSV) and Bulk Access
+Changes.</li>
+<li>A new chapter of the GitHub Guide, Chapter 13, covers Properties,
+editing, filtering and permissions.</li>
+</ul>
+<h3
 id="the-wordpress-workbench-is-where-tools--wordpress-leads-2026-11-10">The
 WordPress Workbench is where Tools &gt; WordPress leads
 (2026-11-10)</h3>

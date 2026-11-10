@@ -288,8 +288,9 @@ class GitHubRepoAdminProvider:
         return str(new_commit.sha)
 
     # ------------------------------------------------------------------
-    # Organizations (Teams are explicitly out of scope -- see
-    # docs/planning/github.md section 1: "Organizations in, Teams out")
+    # Organizations. Teams are managed in full by the GitHub Workbench's Team
+    # sheet and Access pages (GitHub PRD 18.3.3, GH-R-140):
+    # quill/core/github/sheets_orgs.py and quill/core/github/access.py.
 
     def list_organizations(self) -> list[str]:
         """Organization logins the authenticated account belongs to."""

@@ -24,6 +24,7 @@ from typing import Any
 
 from quill.core.github import workbench_help as catalogue
 from quill.core.github.explore_models import ExploreRow
+from quill.core.workbench.menus import MenuSub, all_rows
 from quill.core.workbench.tree import NodeSpec
 
 __all__ = ["HELP_PREFIX", "GitHubWorkbenchHelpMixin"]
@@ -56,7 +57,9 @@ class GitHubWorkbenchHelpMixin:
         for spec in getattr(self, "menu", ()):
             lines.append(spec.title.replace("&", "") + " menu:")
             for row in spec.rows:
-                if row is not None:
+                if isinstance(row, MenuSub):
+                    lines.append(f"  {row.title.replace('&', '')}: a submenu")
+                elif row is not None:
                     key = keys.get(row.command_id, row.key)
                     lines.append(f"  {row.label.replace('&', '').rstrip('.')}: {key}")
         return "\n".join(lines)
@@ -75,11 +78,9 @@ class GitHubWorkbenchHelpMixin:
         keys: dict[str, tuple[str, str]] = {}
         if view == "keys":
             bound = getattr(self.frame, "_keys", {}) if self.frame is not None else {}
-            for spec in getattr(self, "menu", ()):
-                for row in spec.rows:
-                    if row is not None:
-                        label = row.label.replace("&", "").rstrip(".")
-                        keys[row.command_id] = (label, bound.get(row.command_id, row.key))
+            for _spec, row in all_rows(getattr(self, "menu", ())):
+                label = row.label.replace("&", "").rstrip(".")
+                keys[row.command_id] = (label, bound.get(row.command_id, row.key))
         return [
             ExploreRow(topic.title, topic.body, "", "", "help_topic", topic.target)
             for topic in catalogue.help_rows(view, keys)

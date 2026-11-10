@@ -51,6 +51,19 @@ _SCAN_GLOBS: tuple[str, ...] = ("quill/ui/github_*.py", "quill/ui/workbench_*.py
 
 #: Surface constructions whose titles the scan cannot resolve, with the reason.
 TITLE_EXEMPT: dict[str, str] = {
+    "quill/ui/github_workbench_list_dialog.py::WorkbenchListDialog.__init__": (
+        "One window for GitHub Permissions, Change History and the access tools, titled "
+        "by its caller; each title has its purpose in workbench_help's SURFACE_PURPOSES."
+    ),
+    "quill/ui/workbench_properties_sheet.py::PropertiesSheet.__init__": (
+        "The Workbench's Properties sheet, titled after the object it shows at run "
+        'time ("Issue #42 Properties - owner/name"); its purpose is the Properties '
+        "entry in workbench_help, and every field's help is authored in the sheet model."
+    ),
+    "quill/ui/github_workbench_results.py::show_results": (
+        'A batch\'s results, titled after what was changed ("Changed 14 issues") at '
+        "run time; the list's own help says what each line means."
+    ),
     "quill/ui/workbench_sheet_editor.py::WorkbenchSheetEditor.__init__": (
         "The shared Workbench's editable Properties sheet, titled after the object "
         "it edits at run time; WordPress's gate owns its words."

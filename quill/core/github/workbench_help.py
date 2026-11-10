@@ -57,6 +57,54 @@ __all__ = [
 ]
 
 
+#: The window purposes, under the name every app's help catalogue uses, so the
+#: family F1 reference (``quill/tools/build_help_reference.py``) renders them.
+PURPOSES: dict[str, str] = dict(SURFACE_PURPOSES)
+
+
+def _reference_sections() -> tuple[tuple[str, tuple[tuple[str, str], ...]], ...]:
+    """The Workbench's help beyond windows and controls, for the F1 reference."""
+    from quill.core.github.item_actions import GITHUB_ACTIONS
+    from quill.core.github.workbench_tree import GITHUB_TREE
+    from quill.core.github.workbench_window_menu import WINDOW_MENU
+    from quill.core.workbench.menus import all_rows
+
+    nodes = tuple(
+        (
+            node.label if not template else f"{template}: {node.label}",
+            node_help_for(template, node.key),
+        )
+        for template, node in GITHUB_TREE.all_nodes()
+    )
+    menu = tuple(
+        (f"{spec.title.replace('&', '')} > {row.label.replace('&', '')}", row.help)
+        for spec, row in all_rows(WINDOW_MENU)
+    )
+    seen: set[str] = set()
+    actions: list[tuple[str, str]] = []
+    for kind in GITHUB_ACTIONS.row_types:
+        for action in GITHUB_ACTIONS.rows_for(kind):
+            if action.command_id not in seen:
+                seen.add(action.command_id)
+                actions.append((action.label.rstrip("."), action.help))
+    options = tuple(
+        (f"{page}: {label.replace('&', '').rstrip(':')}", text)
+        for page, label, text in PREF_HELP.values()
+    )
+    return (
+        ("Every place in the tree", nodes),
+        ("Every menu row", menu),
+        ("Every context-menu row", tuple(actions)),
+        ("Every Workbench option", options),
+    )
+
+
+def __getattr__(name: str) -> object:
+    if name == "REFERENCE_SECTIONS":
+        return _reference_sections()
+    raise AttributeError(name)
+
+
 def explain_result(text: str) -> str:
     """What the result *text* means and what you might do next (Shift+F9)."""
     said = (text or "").strip()
@@ -261,7 +309,7 @@ def gaps() -> list[str]:
     from quill.core.github.workbench_prefs import WorkbenchPrefs
     from quill.core.github.workbench_tree import GITHUB_TREE
     from quill.core.github.workbench_window_menu import WINDOW_MENU
-    from quill.core.workbench.menus import rows
+    from quill.core.workbench.menus import all_rows
 
     found: list[str] = []
     for template, node in GITHUB_TREE.all_nodes():
@@ -273,7 +321,7 @@ def gaps() -> list[str]:
                 found.append(f"action {row.command_id} on {kind} has no help")
         if kind not in ROW_TYPE_WORDS:
             found.append(f"row type {kind} has no glossary word in ROW_TYPE_WORDS")
-    for _menu, menu_row in rows(WINDOW_MENU):
+    for _menu, menu_row in all_rows(WINDOW_MENU):
         if not menu_row.help.strip():
             found.append(f"menu row {menu_row.command_id} has no help")
     for spec in fields(WorkbenchPrefs):

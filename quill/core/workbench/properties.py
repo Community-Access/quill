@@ -8,6 +8,12 @@ needs and no window should: the value a field shows across several selected
 objects ("Mixed" when they differ), the list of fields a save would send (only
 the ones changed), the fields somebody else changed meanwhile, and the sheet
 as plain text for Copy as Text.
+
+A check list over several objects is three-state (section 15.2): each choice
+is on all of them, none, or "on 3 of 5". What the person does to it is a
+:class:`ListDelta` (added and removed), never a replacement, so a label that
+was on only some of the items stays on exactly those unless it was touched
+(:func:`list_states`, :func:`apply_delta`).
 """
 
 from __future__ import annotations
@@ -24,17 +30,32 @@ __all__ = [
     "FieldChange",
     "FieldKind",
     "FieldSpec",
+    "ListDelta",
     "PageSpec",
     "SheetSpec",
     "SheetState",
     "Value",
+    "apply_delta",
     "as_text",
     "changes",
     "conflicts",
+    "list_states",
     "merge_values",
 ]
 
-Value = str | int | bool | tuple[str, ...] | None
+
+@dataclass(frozen=True)
+class ListDelta:
+    """What a three-state check list did across several objects: added and removed."""
+
+    added: tuple[str, ...] = ()
+    removed: tuple[str, ...] = ()
+
+    def __bool__(self) -> bool:
+        return bool(self.added or self.removed)
+
+
+Value = str | int | bool | tuple[str, ...] | ListDelta | None
 
 
 class _Mixed:
@@ -66,6 +87,8 @@ class FieldKind(StrEnum):
     LIST = "list"
     DATE = "date"
     LINK = "link"
+    CHECKLIST = "checklist"
+    TABLE = "table"
 
 
 @dataclass(frozen=True)
@@ -85,6 +108,8 @@ class FieldSpec:
     requirement: str = ""
     help: str = ""
     choices: tuple[str, ...] = ()
+    create: str = ""
+    """A picker's New... button ("New Label..."): creates the thing and uses it at once."""
 
 
 @dataclass(frozen=True)
@@ -144,6 +169,24 @@ def merge_values(objects: Sequence[Mapping[str, Value]]) -> dict[str, Value | _M
     return merged
 
 
+def list_states(objects: Sequence[Mapping[str, Value]], key: str) -> dict[str, int]:
+    """For a list field over several objects: how many of them have each value."""
+    counts: dict[str, int] = {}
+    for values in objects:
+        found = values.get(key)
+        for item in found if isinstance(found, tuple) else ():
+            counts[item] = counts.get(item, 0) + 1
+    return counts
+
+
+def apply_delta(current: Sequence[str], delta: ListDelta) -> tuple[str, ...]:
+    """*current* with *delta* applied: removals first, then additions, order kept."""
+    removed = set(delta.removed)
+    kept = [item for item in current if item not in removed]
+    kept.extend(item for item in delta.added if item not in kept)
+    return tuple(kept)
+
+
 def changes(
     sheet: SheetSpec,
     loaded: Mapping[str, Value | _Mixed],
@@ -159,6 +202,8 @@ def changes(
             continue
         after = edited[spec.key]
         if isinstance(after, _Mixed) or after == loaded.get(spec.key):
+            continue
+        if isinstance(after, ListDelta) and not after:
             continue
         found.append(FieldChange(spec.key, spec.label, loaded.get(spec.key), after))
     return tuple(found)
@@ -183,6 +228,10 @@ def conflicts(
 
 
 def _say(value: object) -> str:
+    if isinstance(value, ListDelta):
+        parts = [f"add {', '.join(value.added)}"] if value.added else []
+        parts += [f"remove {', '.join(value.removed)}"] if value.removed else []
+        return "; ".join(parts) or "no change"
     if isinstance(value, tuple):
         return ", ".join(value) if value else "none"
     if isinstance(value, bool):

@@ -173,6 +173,14 @@ _FIXED: tuple[NodeSpec, ...] = (
         loader="explore:followers",
         row_type="person",
     ),
+    _n(
+        "my_teams",
+        "My Teams",
+        "people",
+        needs=_SIGN_IN,
+        loader="teams:mine",
+        row_type="team",
+    ),
     _n("find_person", "Find a Person...", "people", template="person"),
     _n("gists", "Gists"),
     _n("my_gists", "My Gists", "gists", needs=_SIGN_IN, loader="explore:gists", row_type="gist"),
@@ -348,6 +356,15 @@ _ORGANIZATION: tuple[NodeSpec, ...] = (
         loader="admin:org_repositories",
         row_type="repository",
     ),
+    NodeSpec(
+        "organization_teams",
+        "Teams",
+        "organization",
+        scope=Scope.ORGANIZATION,
+        needs=_SIGN_IN,
+        loader="teams:organization",
+        row_type="team",
+    ),
 )
 
 GITHUB_TREE = TreeSpec(
@@ -385,14 +402,10 @@ PLANNED = CoverageTable((
     _planned("Saved replies", "Item > Insert Saved Reply", "GX05, GX12"),
     _planned("Wiki", "Repository > Wiki", "GX12"),
     _planned("Repository invitations", "Needs My Attention > Invitations"),
-    _planned("Edit description, website and features", "Repository > Settings > General"),
-    _planned("Rulesets, read only", "Repository > Settings > Rulesets"),
-    _planned("Enable or disable a workflow", "Workflow context menu"),
     _planned("Revert a merged pull request", "Pull request context menu > More > Revert..."),
     _planned("Security policy and advisories", "Repository > Security > Advisories", "GX11"),
     # 14.2, worth adding later.
     _planned("Packages", "Repository > Packages"),
-    _planned("Teams and organization members", "Organizations > organization > Teams", "GX13"),
     _planned("Insights tables: commit activity, code frequency", "Repository > Insights"),
     _planned("Dependency graph and SBOM export", "Repository > Security > Dependencies"),
     _planned("Create and delete tags", "Repository > Code > Tags"),

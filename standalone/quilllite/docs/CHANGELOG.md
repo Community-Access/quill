@@ -2,6 +2,99 @@
 
 ## 2.0.0
 
+### Properties for everything in the GitHub Workbench (2026-11-10)
+
+- **Alt+Enter shows everything about what is selected, and changes it.** On an
+  issue, a pull request, a repository, a label, a milestone, and every other
+  kind of row the Workbench lists (branches, tags, commits, releases and their
+  files, workflows, runs and jobs, environments, secrets and variables,
+  people, organizations, teams, gists, Codespaces, security alerts,
+  notifications, discussions, rulesets, projects and more), Alt+Enter opens a
+  Properties sheet: pages you move through with Ctrl+Tab, every fact a box
+  you can Tab to and read. Item, Properties... and the last row of every
+  context menu open the same sheet. On a repository in the tree, Alt+Enter
+  opens the repository's own sheet.
+- **Change it right there.** A field you are allowed to change is a normal
+  control; one you are not is read-only, and the line under it and F1 say
+  why and who can change that ("changing labels needs triage access; you
+  have read"). OK saves and closes, Apply (Ctrl+S) saves and stays, F5 loads
+  it again. Labels, assignees, milestones, reviewers and your reactions are
+  check boxes, and New Label... and New Milestone... make one and use it at
+  once.
+- **Nothing is claimed that did not happen.** Before saving, the sheet checks
+  whether somebody changed the same field on GitHub since you opened it, and
+  asks you Keep Theirs or Use Mine. After saving, it reads the object again
+  and says one sentence about what actually changed, such as "Issue #42:
+  added bug, removed docs." A change GitHub quietly ignored is named.
+- **Several at once.** Select several issues and press Alt+Enter: one sheet
+  for all of them. A field that differs says Mixed and is left alone, a label
+  on some of them is a check box in its third state ("bug, on 3 of 5"), and
+  only what you touch is changed. You hear a preview first, then a result for
+  every item, with Retry Failed. Batches pause a second between items so
+  GitHub's limits are not tripped. Removing is as easy as adding now.
+- **Undo GitHub Change.** Ctrl+Z in the list (not in a text box) undoes your
+  last change on GitHub, where GitHub allows it, and Ctrl+Y does it again.
+- **Rulesets and branch protection in plain words.** A ruleset's sheet has
+  every rule as a check box with its settings, and a Summary page that reads
+  the whole thing as sentences: "On the default branch: changes need a pull
+  request with 2 approvals including a code owner; force pushes are blocked."
+- **Teams, end to end.** A team's sheet has its members and maintainers, its
+  repositories and its role on each, its child teams and its code review
+  assignment (round robin or load balance, how many reviewers).
+- **The menus still name every change.** Item, Labels..., Assignees... and
+  Milestone... open the sheet at the right page. There are no separate keys
+  for single properties; the sheet remembers the page you used last for each
+  kind of thing.
+
+### Filtering on every attribute (2026-11-10)
+
+- **View, Quick Filters:** Assigned to Me, Assigned To..., Opened by Me,
+  Mentions Me, Review Requested from Me, No Milestone, No Label, Drafts,
+  Checks Failing, Updated This Week and more. Each is a checked row, they
+  combine, and the window title says which are on. Clear These Filters turns
+  them all off.
+- **Show Only and Hide** on the context menu of any row: "Show only label
+  bug", "Hide author dependabot".
+- **The Filter Builder** (Ctrl+Alt+F): choose an attribute, an operator and a
+  value picked from the repository's own labels, milestones, people, teams
+  and branches. The query appears in GitHub's own syntax as you go, so you
+  learn it by watching. Save as Search keeps it.
+- **View, Show; Open or Closed; Sort By; Group By and Columns.** Group By puts
+  the groups in the tree as nodes: Issues, then one node per label with its
+  count. Columns... chooses the list's columns.
+- **Honest about what it cannot ask GitHub.** Has Conflicts is checked over
+  the rows already loaded, and the Items cell of the status bar says so, with
+  Load All (Ctrl+Shift+Page Down) to be sure.
+- **Go, Next Unread** (Ctrl+Period) and Previous Unread (Ctrl+Shift+Period),
+  and Go has submenus for your pinned repositories, favorites and saved
+  searches.
+
+### Permissions you can see, and control (2026-11-10)
+
+- **Account, GitHub Permissions** (Ctrl+Shift+P) lists every permission the
+  Workbench can use, what each unlocks, and whether you have it. Add
+  Permissions asks for all the missing ones in one sign-in; Copy Command
+  gives the gh command, and there are steps for classic and fine-grained
+  tokens. Check Again says what changed.
+- **Account, Change History** (Ctrl+Shift+H) lists every change the Workbench
+  made on GitHub: what, when, before and after, and whether GitHub confirmed
+  it, with Undo on any row GitHub allows. It stays on this computer for 90
+  days and never holds a secret's value.
+- **Previews in words.** Changes to access and settings are read back to you
+  before they happen; anything hard to reverse also asks you to type the
+  name. Removing your own admin access, or the last owner, is refused, and
+  the Workbench says who else could do it.
+- **Read Only, Organize or Full, per account.** Account, Roles and Access,
+  Workbench Level sets what the Workbench may change with an account,
+  whatever GitHub would allow; Safe Mode makes every account Read Only.
+- **Access pages.** A repository's sheet lists its people, teams and pending
+  invitations, and Add..., Change... and Remove act on them, previewed and
+  recorded. Roles and Access also has My Access Here, View As Role, Compare
+  Roles, Why Can't They?, Access Review (every person and repository in an
+  organization, copied as CSV) and Bulk Access Changes.
+- A new chapter of the GitHub Guide, Chapter 13, covers Properties, editing,
+  filtering and permissions.
+
 ### The WordPress Workbench is where Tools > WordPress leads (2026-11-10)
 
 - **The Workbench is the way in now.** Every row of Tools > WordPress that

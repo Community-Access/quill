@@ -1002,6 +1002,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+Right | Forward | `github.workbench.forward` |
 | Alt+Shift+F1 | Workbench Keys | `github.workbench.keys` |
 | Alt+Up | Parent Node | `github.workbench.go_parent` |
+| Ctrl+. | Next Unread | `github.workbench.next_unread` |
 | Ctrl+0 | Across Repositories | `github.workbench.go_across` |
 | Ctrl+1 | Inbox | `github.workbench.go_inbox` |
 | Ctrl+2 | Current Repository | `github.workbench.go_repository` |
@@ -1026,6 +1027,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+N | New Here... | `github.workbench.new_here` |
 | Ctrl+Q | Mark Read | `github.workbench.mark_read` |
 | Ctrl+R | Refresh (second key) | `github.workbench.refresh_alias` |
+| Ctrl+Shift+. | Previous Unread | `github.workbench.previous_unread` |
 | Ctrl+Shift+0 | Insights | `github.workbench.go_insights` |
 | Ctrl+Shift+1 | Issues | `github.workbench.go_issues` |
 | Ctrl+Shift+2 | Pull Requests | `github.workbench.go_pulls` |
@@ -1046,15 +1048,21 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+F1 | Search Help... | `github.workbench.search_help` |
 | Ctrl+Shift+F5 | Re-run Failed Jobs | `github.workbench.rerun_failed` |
 | Ctrl+Shift+G | Repository Actions... | `github.workbench.repository_actions` |
+| Ctrl+Shift+H | Change History... | `github.workbench.change_history` |
 | Ctrl+Shift+K | Manage GitHub Accounts... | `github.workbench.manage_accounts` |
 | Ctrl+Shift+L | GitHub API Rate Limit | `github.workbench.rate_limit` |
 | Ctrl+Shift+M | Comment... | `github.workbench.comment` |
 | Ctrl+Shift+N | New... | `github.workbench.new_any` |
 | Ctrl+Shift+O | Workbench Options... | `github.workbench.options` |
+| Ctrl+Shift+P | GitHub Permissions... | `github.workbench.permissions` |
+| Ctrl+Shift+PageDown | Load All | `github.workbench.load_all` |
 | Ctrl+Shift+Q | Mark All Read in View | `github.workbench.mark_all_read` |
 | Ctrl+Shift+R | Run Workflow on Branch... | `github.workbench.run_workflow` |
 | Ctrl+Shift+T | Start in Local Worktree... | `github.workbench.start_worktree` |
+| Ctrl+Shift+U | Columns... | `github.workbench.columns` |
 | Ctrl+Shift+W | What Failed... | `github.workbench.what_failed` |
+| Ctrl+Y | Redo GitHub Change | `github.workbench.redo_change` |
+| Ctrl+Z | Undo GitHub Change | `github.workbench.undo_change` |
 | Delete | Remove, safely (in the list) | `github.workbench.remove` |
 | F1 | Help for This View | `github.workbench.help_view` |
 | F5 | Refresh | `github.workbench.refresh` |

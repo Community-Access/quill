@@ -22,7 +22,12 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_modal_dialog
+from quill.ui.dialog_contract import (
+    apply_listbox_activation,
+    apply_modal_ids,
+    bind_close_button,
+    show_modal_dialog,
+)
 from quill.ui.dpi import dip_size
 
 __all__ = ["ActionChoice", "ActionListDialog", "HelpTextDialog", "SearchHelpDialog"]
@@ -62,7 +67,7 @@ class ActionListDialog:
         )
         if self.rows:
             self.list.SetSelection(0)
-        self.list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._run())
+        apply_listbox_activation(self.list, lambda _e: self._run())
         root.Add(self.list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         self.detail = wx.TextCtrl(
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
@@ -187,7 +192,7 @@ class SearchHelpDialog:
             "Each result says what it is: a place, a command with its key, a GitHub "
             "word or a task. Enter goes there, runs it or reads it."
         )
-        self.results.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._run())
+        apply_listbox_activation(self.results, lambda _e: self._run())
         root.Add(self.results, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         go = wx.Button(self.dialog, wx.ID_OK, "&Go")

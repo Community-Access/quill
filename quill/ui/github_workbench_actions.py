@@ -124,6 +124,8 @@ _NATIVE: dict[str, frozenset[str]] = {
     "review": frozenset({"pr_item"}),
     "open_topic": frozenset({"help_topic"}),
     "take_me_there": frozenset({"help_topic"}),
+    "undo_change": frozenset({"view"}),
+    "redo_change": frozenset({"view"}),
 }
 
 

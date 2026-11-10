@@ -26,6 +26,7 @@ from typing import Any
 
 from quill.core.github import workbench_menu as table
 from quill.core.i18n import _
+from quill.ui.main_frame_github_doors import GitHubAdminDoorsMixin
 
 #: The existing GitHub rows' menu ids, by command id (created in
 #: ``main_frame_menu.py`` and bound in ``main_frame_menu_bindings.py`` and
@@ -82,7 +83,7 @@ _NEW_TITLES: dict[str, str] = {
 }
 
 
-class GitHubWorkbenchMenuMixin:
+class GitHubWorkbenchMenuMixin(GitHubAdminDoorsMixin):
     """The mode switch, the GitHub menu, and the rows' normal homes."""
 
     _github_workbench_mode: bool = False
@@ -114,7 +115,9 @@ class GitHubWorkbenchMenuMixin:
         """Run one of QUILL's own commands for the Workbench (its Repository Actions)."""
         if self.commands.get(command_id) is None:
             return False
-        self.commands.run(command_id)
+        from quill.ui.github_workbench_commands import editor_call
+
+        editor_call(self.commands.run, command_id)
         return True
 
     def _github_editor_has(self, command_id: str) -> bool:
