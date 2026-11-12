@@ -24,21 +24,37 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e ".[ui,spellcheck,dev]"
-      - name: Run the existing Windows test suite with branch coverage
+      - name: Run the Windows suite with branch coverage
         run: |
-          pytest -q --timeout=400 `
+          pytest -m "not slow" -q -n 4 --dist=loadfile `
+            --timeout=300 --timeout-method=thread `
             --ignore=tests\unit\core\test_net_tls.py `
             --ignore=tests\unit\core\test_thesaurus.py `
-            --ignore=tests\unit\tools `
+            --ignore=tests\unit\ui\test_dialog_inventory.py `
+            --ignore=tests\unit\ui\test_rich_heading_organizer.py `
+            --ignore=tests\unit\apps\test_cast_peer_windows.py `
+            --ignore=tests\unit\apps\beacon\test_bulk_ops.py `
             --cov=quill --cov-branch `
-            --cov-report=term:skip-covered `
-            --cov-report=json:coverage-Windows.json
+            --cov-report=
+      - name: Run the isolated Windows dialog-inventory tests with coverage
+        run: |
+          pytest tests\unit\ui\test_dialog_inventory.py -q `
+            --timeout=300 --timeout-method=thread `
+            --cov=quill --cov-branch --cov-append --cov-report=
+      - name: Run the isolated native-window tests with coverage
+        run: |
+          pytest tests\unit\ui\test_rich_heading_organizer.py `
+            tests\unit\apps\test_cast_peer_windows.py `
+            tests\unit\apps\beacon\test_bulk_ops.py -q `
+            --timeout=300 --timeout-method=thread `
+            --cov=quill --cov-branch --cov-append --cov-report=
       - name: Record the Windows total
         shell: pwsh
         run: |
           $total = (python -m coverage report --format=total).Trim()
           "## Windows coverage`n`nLine and branch coverage: $total" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
           Set-Content -LiteralPath coverage-total-windows.txt -Value $total
+          python -m coverage json --pretty-print -o coverage-Windows.json
           Copy-Item -LiteralPath .coverage -Destination .coverage.windows
       - uses: actions/upload-artifact@v7
         with:
@@ -67,14 +83,14 @@ jobs:
       - name: Run the existing macOS test suite with branch coverage
         run: >-
           pytest -m "not slow" -q --timeout=400
-          --cov=quill --cov-branch
-          --cov-report=term:skip-covered
-          --cov-report=json:coverage-macOS.json
+          --ignore=tests/unit/platform/windows
+          --cov=quill --cov-branch --cov-report=
       - name: Record the macOS total
         run: |
           total="$(python -m coverage report --format=total)"
           printf '## macOS coverage\n\nLine and branch coverage: %s\n' "$total" >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$total" > coverage-total-macos.txt
+          python -m coverage json --pretty-print -o coverage-macOS.json
           cp .coverage .coverage.macos
       - uses: actions/upload-artifact@v7
         with:
