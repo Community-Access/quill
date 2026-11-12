@@ -1,0 +1,134 @@
+name: Temporary Quill family coverage measurement
+
+# One-off first-stage measurement. This file lives only on the temporary
+# coverage branch and is removed with that branch after the report is reviewed.
+on:
+  push:
+    branches:
+      - codex/coverage-stage1-2026-11-11
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Windows coverage
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[ui,spellcheck,dev]"
+      - name: Run the existing Windows test suite with branch coverage
+        run: |
+          pytest -q --timeout=400 `
+            --ignore=tests\unit\core\test_net_tls.py `
+            --ignore=tests\unit\core\test_thesaurus.py `
+            --ignore=tests\unit\tools `
+            --cov=quill --cov-branch `
+            --cov-report=term:skip-covered `
+            --cov-report=json:coverage-Windows.json
+      - name: Record the Windows total
+        shell: pwsh
+        run: |
+          $total = (python -m coverage report --format=total).Trim()
+          "## Windows coverage`n`nLine and branch coverage: $total" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          Set-Content -LiteralPath coverage-total-windows.txt -Value $total
+          Copy-Item -LiteralPath .coverage -Destination .coverage.windows
+      - uses: actions/upload-artifact@v7
+        with:
+          name: quill-family-coverage-raw-windows
+          path: |
+            .coverage.windows
+            coverage-Windows.json
+            coverage-total-windows.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
+
+  macos:
+    name: macOS coverage
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[ui,spellcheck,macos,dev,github,office-text]"
+      - name: Run the existing macOS test suite with branch coverage
+        run: >-
+          pytest -m "not slow" -q --timeout=400
+          --cov=quill --cov-branch
+          --cov-report=term:skip-covered
+          --cov-report=json:coverage-macOS.json
+      - name: Record the macOS total
+        run: |
+          total="$(python -m coverage report --format=total)"
+          printf '## macOS coverage\n\nLine and branch coverage: %s\n' "$total" >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$total" > coverage-total-macos.txt
+          cp .coverage .coverage.macos
+      - uses: actions/upload-artifact@v7
+        with:
+          name: quill-family-coverage-raw-macos
+          path: |
+            .coverage.macos
+            coverage-macOS.json
+            coverage-total-macos.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
+
+  combine:
+    name: Combined family report
+    needs: [windows, macos]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - name: Install coverage.py
+        run: python -m pip install "coverage==7.16.2"
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: quill-family-coverage-raw-*
+          path: coverage-raw
+          merge-multiple: true
+      - name: Combine platform data and build reports
+        run: |
+          python -m coverage combine --keep coverage-raw
+          python -m coverage report --skip-covered --show-missing
+          python -m coverage json --pretty-print -o coverage-combined.json
+          python -m coverage html -d coverage-html
+          total="$(python -m coverage report --format=total)"
+          {
+            echo '## Quill family coverage'
+            echo
+            echo '| Platform | Line and branch coverage |'
+            echo '| --- | ---: |'
+            echo "| Windows | $(cat coverage-raw/coverage-total-windows.txt) |"
+            echo "| macOS | $(cat coverage-raw/coverage-total-macos.txt) |"
+            echo "| Combined | $total |"
+            echo
+            echo 'The downloadable report artifact contains the combined HTML and JSON reports, plus the per-platform JSON files.'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: quill-family-coverage-report
+          path: |
+            coverage-html/
+            coverage-combined.json
+            coverage-raw/coverage-Windows.json
+            coverage-raw/coverage-macOS.json
+          if-no-files-found: error
+          retention-days: 7
