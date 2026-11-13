@@ -19,6 +19,23 @@ the main window, listening, sound and volume, your library, feeds, dictation
 and AI, help and notifications, Preferences and keys, updates and installing,
 and speed and reliability.
 
+### Checking on a schedule actually checks (2026-11-13)
+
+- **Turning on the automatic check now starts it.** Cast saved Look for new
+  episodes on a schedule and Look at the schedules every in its own settings
+  file, but the check read QUILL's settings instead, where the switch is off.
+  So whatever you chose, Cast kept saying "Podcast feeds are only checked when
+  you ask", and nothing was checked until you pressed F5. Reported on the
+  QUILLVille list.
+- **Changing only how often Cast looks now takes effect** when you save
+  Preferences, instead of after the next launch.
+- **Saving a schedule starts it straight away.** If the automatic check is
+  off, Change Schedule now says so in the same sentence, rather than leaving
+  you to wonder why nothing happens.
+- **Each podcast's own schedule is now what decides** whether it is due: set
+  times, learned and publisher's-hint schedules were saved but the check still
+  went by the older every-so-many-minutes setting.
+
 ### Connecting to Spotify works, and says why when it cannot (2026-11-04)
 
 - **Connect now opens your browser.** The sign-in was being handed to the

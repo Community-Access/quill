@@ -2657,6 +2657,11 @@ To give one podcast its own schedule, press Shift+F10 on it and choose
 This Podcast. When you save, Cast reads the schedule back in one sentence:
 "The Daily now checks: at 06:00 and 18:00, weekdays."
 
+A new schedule starts working the moment you save it; you do not need to
+restart Cast. If **Look for new episodes on a schedule** is off, Cast says so
+in the same sentence, because every schedule waits on that check box. Saving a
+schedule never turns it on for you.
+
 Scheduled checks wait for the end of Quiet Hours unless you check **Check
 during Quiet Hours** in Preferences > Fetching.
 
@@ -3415,7 +3420,8 @@ chapter where you would use them, and F1 on any row tells you more.
   shared schedule.
 - **Look at the schedules every**: how often Cast wakes up to see which
   podcasts are due. It does not check a podcast before its own schedule says
-  so.
+  so. A new choice here takes effect as soon as you save Preferences, and Cast
+  tells you how often it is now checking.
 - **A short sound each time a check runs**: a little tick, so you know the
   checks are happening. It starts off.
 - **Let what a check found interrupt speech**: let news of new episodes cut

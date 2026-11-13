@@ -290,5 +290,26 @@ def change_schedule(host: Any, show: Any) -> bool:
     host._save_podcast_library()
     who = show.title if show is not None else "Every podcast"
     said = schedule_policy.describe_for(library, show)
-    host._announce(f"{who} now checks: {said[0].lower() + said[1:]}")
+    host._announce(f"{who} now checks: {said[0].lower() + said[1:]}{_switch_words(host, schedule)}")
     return True
+
+
+def _switch_words(host: Any, schedule: rs.Schedule) -> str:
+    """Restart the check on the new schedule, or say plainly why it will not run.
+
+    The schedule says *when*; "Look for new episodes on a schedule" says
+    *whether*, and its help is explicit that off means only Refresh. So a saved
+    schedule never turns the switch on by itself -- but somebody who just chose
+    one must not be left to discover that it is waiting on a switch elsewhere.
+    """
+    monitor = getattr(host, "_podcast_check_monitor", None)
+    if schedule.kind == rs.MANUAL or monitor is None:
+        return ""
+    from quill.ui.podcasts.new_feed_check import check_settings
+
+    if monitor.apply() or getattr(check_settings(host), "podcast_check_enabled", False):
+        return ""
+    return (
+        " Automatic checking is off, so this schedule waits until you turn on "
+        "Look for new episodes on a schedule, in Preferences under Fetching."
+    )

@@ -11,6 +11,22 @@ from __future__ import annotations
 from typing import Any
 
 
+def check_settings(host: Any) -> Any:
+    """The store the automatic new-episode check reads its switch and cadence from.
+
+    QUILL's own Preferences write ``Settings.podcast_check_*``; QUILL Cast's
+    write the same field names on ``PodcastHistory``. Cast's frame has a
+    ``settings`` too (``AppShellFrame`` loads one), so "settings, else
+    history" read the editor's default -- off -- in Cast forever, and choosing
+    every 15 minutes there was answered with "only checked when you ask". A
+    host whose Preferences write the history says so with
+    ``_podcast_check_reads_history``.
+    """
+    if getattr(host, "_podcast_check_reads_history", False):
+        return getattr(host, "_podcast_history", None)
+    return getattr(host, "settings", None) or getattr(host, "_podcast_history", None)
+
+
 def start_new_feed_check(
     host: Any,
     show_ids: list[str],
@@ -20,8 +36,7 @@ def start_new_feed_check(
 ) -> None:
     """Refresh just the feeds a completed import has newly subscribed."""
     if only_if_automatic_checks_enabled:
-        settings = getattr(host, "settings", None) or getattr(host, "_podcast_history", None)
-        if not bool(getattr(settings, "podcast_check_enabled", False)):
+        if not bool(getattr(check_settings(host), "podcast_check_enabled", False)):
             return
     monitor = getattr(host, "_podcast_check_monitor", None)
     if monitor is None or not show_ids:

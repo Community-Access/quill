@@ -380,7 +380,10 @@ class CastPreferencesMixin:
             menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)  # type: ignore[attr-defined]
         monitor = getattr(self, "_podcast_check_monitor", None)
         said = ""
-        if monitor is not None and ("podcast_check_enabled" in app_changes or default_changes):
+        # Any of the four check rows: retuning only the cadence used to leave
+        # the old timer running until the next launch.
+        check_changed = any(key.startswith("podcast_check_") for key in app_changes)
+        if monitor is not None and (check_changed or default_changes):
             monitor.apply()
             said = str(monitor.describe())
         count = len(app_changes) + written + int(bool(startup_said))

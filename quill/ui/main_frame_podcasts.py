@@ -33,7 +33,11 @@ from quill.ui.podcasts import record_writes
 from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
 from quill.ui.podcasts.failure_report import report_failure
 from quill.ui.podcasts.folder_watch import FolderWatchMixin
-from quill.ui.podcasts.new_feed_check import check_start_failed, start_new_feed_check
+from quill.ui.podcasts.new_feed_check import (
+    check_settings,
+    check_start_failed,
+    start_new_feed_check,
+)
 from quill.ui.podcasts.player_controller import (
     PodcastPlaybackState,
     PodcastPlayerController,
@@ -127,13 +131,9 @@ class PodcastsMixin(
         # user turned podcast_check_enabled on, so this costs one object.
         self._podcast_check_monitor = PodcastCheckMonitor(
             self.frame,
-            # ``Settings`` inside QUILL; standalone QUILL Cast has none, and
-            # falling back to None meant the check read as permanently off
-            # there -- a whole feature that could not be reached by any route.
-            # PodcastHistory answers with the same field names.
-            settings_provider=lambda: (
-                getattr(self, "settings", None) or getattr(self, "_podcast_history", None)
-            ),
+            # ``Settings`` in QUILL, PodcastHistory in QUILL Cast: whichever
+            # store that app's own Preferences writes (new_feed_check.py).
+            settings_provider=lambda: check_settings(self),
             library_provider=lambda: self._podcast_library,
             refresh_show=self.refresh_podcast_feed,
             safe_mode=self._safe_mode,

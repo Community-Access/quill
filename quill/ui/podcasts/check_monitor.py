@@ -322,14 +322,18 @@ class PodcastCheckMonitor:
         direction every other doubt in this feature resolves.
         """
         try:
-            from quill.core.podcasts.check_state import is_due
-            from quill.core.podcasts.show_policy import cadence_minutes
+            from quill.core.podcasts import refresh_schedule, schedule_policy
+            from quill.core.podcasts.show_policy import cadence_minutes, setting
 
-            if cadence_minutes(library, show) <= 0:
-                # No cadence of its own and none shared: the timer only got
+            chosen = refresh_schedule.decode(setting(library, show, "refresh_schedule"))
+            if chosen is None and cadence_minutes(library, show) <= 0:
+                # No schedule of its own and none shared: the timer only got
                 # here because *something* is due, so this show rides along.
                 return self.interval_minutes() > 0
-            return is_due(library, show)
+            # The schedule Change Schedule saves (interval, set times, learned,
+            # publisher's hint, or manual); with none saved, schedule_for falls
+            # back to the legacy refresh_minutes, so nothing changes on upgrade.
+            return schedule_policy.is_due(library, show)
         except Exception:  # noqa: BLE001 - never let bookkeeping stop a check
             logger.exception(
                 "could not read the check cadence for show %s", getattr(show, "id", "")
