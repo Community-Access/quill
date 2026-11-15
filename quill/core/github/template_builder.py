@@ -575,7 +575,7 @@ def markdown_to_form(text: str, *, filename: str = "") -> FormDraft:
                 new_field(
                     "textarea",
                     heading,
-                    description=" ".join(re.sub(r"<!--|-->", "", content).split())[:300],
+                    description=" ".join(re.sub(r"<!--|--!?>", "", content).split())[:300],
                     taken=draft.ids(),
                 )
             )

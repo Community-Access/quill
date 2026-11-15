@@ -94,6 +94,9 @@ class GitHubCompareBranchesDialog:
             "it is behind by. GitHub gives at most 250; the tab says when there are more."
         )
         self._behind_list.SetName(f"Commits {comparison.base} has that {comparison.head} does not")
+        set_spoken_name(
+            self._behind_list, f"Commits {comparison.base} has that {comparison.head} does not"
+        )
         self._fill_commit_page(
             notebook,
             behind_page,

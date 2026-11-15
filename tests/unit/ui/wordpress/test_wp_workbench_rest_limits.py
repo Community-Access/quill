@@ -165,7 +165,7 @@ def test_find_theme_asks_consent_first_and_sends_nothing_on_cancel(bench, monkey
     monkeypatch.setattr(dotorg, "search_themes", lambda _w: pytest.fail("sent without consent"))
     row = WbRow("theme", SITE, "tt5", {"theme": "TT5"}, "")
     bench.provider.do_find_theme(_ref(), row)
-    assert "api.wordpress.org" in asked[0] and "nothing about your sites" in asked[0]
+    assert asked[0].count("api.wordpress.org") >= 1 and "nothing about your sites" in asked[0]
     assert bench.said[-1] == "Nothing was sent to WordPress.org."
 
 

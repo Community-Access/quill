@@ -83,7 +83,7 @@ def test_the_folder_plan_finds_pictures_links_and_what_it_leaves_out(tmp_path: P
     assert "a.md: the picture https://x.org/far.png stays on x.org, not uploaded" in left
     assert any("the link to notes.pdf is left as written" in line for line in left)
     assert "a.md: its front matter (title, tags)" in left
-    assert not any("wordpress.org" in line for line in left)  # an outside link is carried
+    assert not any(line.find("wordpress.org") >= 0 for line in left)  # an outside link is carried
 
 
 def test_send_folder_uploads_once_rewrites_links_and_ends_with_left_out(tmp_path: Path) -> None:

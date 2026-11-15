@@ -34,3 +34,6 @@ quill/data/axe/** -text
 tests/unit/core/wordpress/fixtures_blocks/** -text
 tests/unit/core/forms/fixtures/** -text
 quill/core/forms/schema/** -text
+
+# The Practice Site lock is checked byte for byte as LF (test_wp_playground_lock).
+scripts/wp_playground/package-lock.json text eol=lf

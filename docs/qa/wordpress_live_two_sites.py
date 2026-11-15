@@ -161,7 +161,7 @@ def attach(ctx: Any, *, alone: bool = False) -> None:
     ctx.second = SecondSite(
         PRACTICE, wp_p.site_url(), api, username, folder, process, alone, process is not None
     )
-    print(f"Second site: {PRACTICE} at {wp_p.site_url()}, signed in as {username}.")
+    print(f"Second site: {PRACTICE} at {wp_p.site_url()}, signed in as an administrator.")
 
 
 def detach(ctx: Any) -> None:

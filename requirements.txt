@@ -10,6 +10,9 @@ regex>=2026.9.10
 # — disables entity expansion to block billion-laughs denial-of-service files.
 defusedxml>=0.7.1
 
+# GitHub issue forms and templates, and Check This File on YAML.
+PyYAML>=6.0.3
+
 # Windows COM — SAPI 5 Read Aloud and self-voicing announcements, the Rich Edit
 # TOM surface, the Narrator bridge, and persona .lnk shortcuts (WScript.Shell).
 # A base dependency, not a UI one: quill/core reaches it through

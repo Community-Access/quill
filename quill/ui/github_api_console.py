@@ -43,6 +43,7 @@ from quill.core.github.api_console import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_modal_dialog
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 __all__ = ["GitHubApiConsole"]
 
@@ -82,6 +83,7 @@ class GitHubApiConsole:
         )
         self.method.Bind(wx.EVT_CHOICE, lambda _e: self.refresh())
         _labelled(dialog, sizer, "&Method:", self.method)
+        set_spoken_name(self.method, "Method")  # its label is built after it
         start = f"/repos/{repository}" if repository else "/user"
         self.path = wx.ComboBox(dialog, value=start, choices=[])
         self.path.SetHelpText(
