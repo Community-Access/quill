@@ -319,6 +319,31 @@ back. QUILL Lite has the same window, from the same shared code.
   for learning with nothing at stake. It answers only on this computer, its
   Reset says exactly what it deletes, and Help > Tutorials has three lessons
   that use it.
+- **Help that knows WordPress** (2026-11-14). The Workbench answers Alt+F1,
+  Ctrl+F1, Ctrl+Shift+F1, F9 and Shift+F9 the way the GitHub Workbench does,
+  its glossary has 73 words with examples from your own site, and Settings
+  explains what Permalinks and the Discussion rules would actually do. Check
+  for Updates reads each plugin's changelog and tells you when it mentions a
+  security fix or a breaking change, turning a plugin off first asks what
+  depends on it, and Site Health findings gained Explain and Fix....
+- **More lessons** (2026-11-14). Seven more Practice Site lessons, Break It
+  on Purpose (a site that starts with a missing alt text, a broken link, a
+  plugin conflict and a wrong permalink, for you to find and fix), and Your
+  First Week, one short lesson a day for a new site owner.
+- **Fields from more plugins** (2026-11-14). Meta Box, Pods and CMB2 fields
+  have their own page in Properties beside Advanced Custom Fields, list and
+  group fields open in a proper editor instead of raw text, and the Content
+  Model shows every field group and who really registered each type.
+- **More Watches and plainer batches** (2026-11-14). Watches for new shop
+  orders, low stock, a certificate about to run out and plugins that may be
+  abandoned, plus a weekly sentence for each site. Plain-Language Batch
+  understands "older than a year", can move things to the Trash with Undo,
+  and answers "how many" questions without changing anything.
+- **Wider reach** (2026-11-14). By Name turns old shortcodes into blocks,
+  Across Sites covers every kind of thing, old Gravity Forms entries copy
+  into QAF, and Blogger, Medium, Substack and Squarespace exports import as
+  drafts. The Workbench can also save a static copy of a site and tell you
+  who has never signed in.
 
 #### Running the site
 
