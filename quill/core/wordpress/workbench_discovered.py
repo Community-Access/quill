@@ -5,12 +5,13 @@
   methods and where the Workbench reaches it
   (:mod:`~quill.core.wordpress.workbench_coverage`), so a plugin's routes are
   listed the day it is installed, with no QUILL release.
-- **The Content Model** (:func:`model_rows`): the site's post types and
-  taxonomies, each with who registered it (WordPress, a plugin it can name,
-  or "a plugin or the theme"), and a ``definition`` column saying each
-  definition is read only and why (:func:`definition_words`); what the QUILL
-  Site Types plugin defines (detected by :data:`SITE_TYPES_NAMESPACE`) is
-  editable, and its field groups are listed too.
+- **The Content Model** (:func:`model_rows`): the site's post types,
+  taxonomies and field groups, each with who registered it and the evidence
+  (:mod:`~quill.core.wordpress.workbench_model_sources`; "unknown" when the
+  site does not say), and a ``definition`` column saying each definition is
+  read only and why (:func:`definition_words`); what the QUILL Site Types
+  plugin defines (detected by :data:`SITE_TYPES_NAMESPACE`) is editable, and
+  the rest can be copied into it (:mod:`~quill.core.wordpress.workbench_model_move`).
 - **Abilities as commands** (:func:`ability_sheet`, :func:`ability_preview`):
   an ability's input schema becomes its sheet, by the same rules as any
   discovered route (12a), and the preview says what it will do before it runs.
@@ -72,50 +73,17 @@ CORE_TYPES = frozenset({
     "wp_template_part_area",
 })
 
-#: Who registered a type, by its slug's prefix. This names the registrant so
-#: the Content Model can say where a type came from; it is attribution, not an
-#: integration -- the plugin-specific integrations are still only QAF, Gravity
-#: Forms and Paid Memberships Pro (workbench-implementation-status.md), and a
-#: slug matching none of these says "a plugin or the theme" rather than guess.
-_OWNERS: tuple[tuple[str, str], ...] = (
-    ("pmpro", "Paid Memberships Pro"),
-    ("gravity", "Gravity Forms"),
-    ("gf_", "Gravity Forms"),
-    ("qaf", "QUILL Accessible Forms"),
-    ("baf", "QUILL Accessible Forms"),
-    ("tribe_", "The Events Calendar"),
-    ("tec_", "The Events Calendar"),
-    ("product", "WooCommerce"),
-    ("shop_", "WooCommerce"),
-    ("pa_", "WooCommerce"),
-    ("elementor", "Elementor"),
-    ("acf", "Advanced Custom Fields"),
-    ("wpcf7", "Contact Form 7"),
-    ("jetpack", "Jetpack"),
-    ("feedback", "Jetpack"),
-    ("wpseo", "Yoast SEO"),
-    ("yoast", "Yoast SEO"),
-    ("sfwd", "LearnDash"),
-    ("course", "a learning plugin"),
-)
 
+def registered_by(
+    slug: str, rest_namespace: str = "wp/v2", *, namespaces: Sequence[str] = ()
+) -> str:
+    """Who registered *slug*, from evidence only; ``"unknown"`` when the site does not say.
 
-def registered_by(slug: str, rest_namespace: str = "wp/v2") -> str:
-    """Who registered *slug*: WordPress, a plugin by name, or a plugin or the theme."""
-    if slug in CORE_TYPES:
-        return "WordPress"
-    lowered = slug.lower()
-    for prefix, owner in _OWNERS:
-        if lowered.startswith(prefix):
-            return owner
-    namespace = (rest_namespace or "wp/v2").strip("/")
-    if namespace != "wp/v2":
-        owner = namespace.split("/", 1)[0].lower()
-        for prefix, name in _OWNERS:
-            if owner.startswith(prefix):
-                return name
-        return f"the plugin behind {namespace}"
-    return "a plugin or the theme"
+    The evidence and its order are :func:`~quill.core.wordpress.workbench_model_sources.provenance`.
+    """
+    from quill.core.wordpress.workbench_model_sources import provenance
+
+    return provenance(slug, rest_namespace, namespaces=namespaces, core=CORE_TYPES).owner
 
 
 def namespace_rows(site: str, namespaces: Sequence[str], routes: Sequence[str]) -> list[WbRow]:
@@ -181,7 +149,13 @@ _SITE_TYPES = "QUILL Site Types"
 
 def definition_words(owner: str, *, site_types: bool, reason: str = "") -> str:
     """Why a definition is read only here, in one sentence (the items stay editable)."""
-    where = "part of WordPress" if owner == "WordPress" else f"defined in {owner}'s code"
+    where = (
+        "part of WordPress"
+        if owner == "WordPress"
+        else "defined in code this site does not name"
+        if owner == "unknown"
+        else f"defined in {owner}'s code"
+    )
     tail = (
         " QUILL Site Types is on this site: what you define with it (Ctrl+N here) is "
         "editable, and this one was not defined there."
@@ -208,12 +182,18 @@ def model_rows(api: WordPressApi, site: str, *, namespaces: Sequence[str] = ()) 
     """The site's post types, taxonomies and field groups, and who registered each (12b).
 
     Every row says, in its ``definition`` cell and its detail, whether its
-    *definition* can change here. Only what QUILL Site Types (detected by its
-    namespace, :data:`SITE_TYPES_NAMESPACE`) defines is editable; anything
-    registered in code is read only, with why.
+    *definition* can change here, and the evidence for who registered it
+    (:func:`~quill.core.wordpress.workbench_model_sources.provenance`). Only what
+    QUILL Site Types (detected by its namespace, :data:`SITE_TYPES_NAMESPACE`)
+    defines is editable; anything registered elsewhere is read only, with why,
+    and carries a ``movable`` record when it can be copied into QUILL Site Types.
+    Field groups come from every route's schema (registered meta, ACF, Meta Box)
+    and from what the field plugins list (WP-R-036, WP-R-038).
     """
+    from quill.core.wordpress import workbench_model_sources as ms
     from quill.core.wordpress.api import WordPressApiError
     from quill.core.wordpress.site_types_plugin import Definitions, read_definitions
+    from quill.core.wordpress.workbench_model_move import move_body
 
     site_types = SITE_TYPES_NAMESPACE in {n.strip("/") for n in namespaces}
     defined = Definitions()
@@ -222,28 +202,42 @@ def model_rows(api: WordPressApi, site: str, *, namespaces: Sequence[str] = ()) 
             defined = read_definitions(api)
         except WordPressApiError:
             defined = Definitions(reason="QUILL Site Types did not answer.")
+    got_types = api.get("wp/v2/types", context="edit")
+    got_taxes = api.get("wp/v2/taxonomies", context="edit")
+    types = dict(got_types) if isinstance(got_types, dict) else {}
+    taxes = dict(got_taxes) if isinstance(got_taxes, dict) else {}
+    plugin_defs, cpt_ui = ms.read_plugin_definitions(api, namespaces, types)
     rows: list[WbRow] = []
-    types = api.get("wp/v2/types", context="edit")
-    taxes = api.get("wp/v2/taxonomies", context="edit")
     for kind, raw_set in (("post type", types), ("taxonomy", taxes)):
         what = "type" if kind == "post type" else "taxonomy"
-        for slug, info in (raw_set or {}).items() if isinstance(raw_set, dict) else ():
+        theirs = {d.key: d for d in plugin_defs if d.what == what}
+        for slug, info in raw_set.items():
             if not isinstance(info, dict):
                 continue
             mine = defined.of(what).get(str(slug))
-            owner = (
-                _SITE_TYPES
-                if mine is not None
-                else registered_by(str(slug), str(info.get("rest_namespace") or "wp/v2"))
-            )
+            if mine is not None:
+                found = ms.Provenance(_SITE_TYPES, "QUILL Site Types keeps its definition.")
+            else:
+                found = ms.provenance(
+                    str(slug),
+                    str(info.get("rest_namespace") or "wp/v2"),
+                    namespaces=namespaces,
+                    defined=theirs,
+                    core=CORE_TYPES,
+                    cpt_ui=cpt_ui,
+                )
+            owner = found.owner
+            movable = None
+            if mine is None and owner != "WordPress":
+                body, skipped = move_body(what, str(slug), info)
+                movable = {"what": what, "owner": owner, "body": body, "skipped": skipped}
             name = str(info.get("name") or slug)
-            in_rest = "yes" if info.get("rest_base") else "no"
             cells = {
                 "name": name,
                 "kind": kind,
                 "registered_by": owner,
                 "definition": EDITABLE if mine is not None else READ_ONLY,
-                "in_rest": in_rest,
+                "in_rest": "yes" if info.get("rest_base") else "no",
             }
             said = (
                 _editable_words(kind)
@@ -256,14 +250,25 @@ def model_rows(api: WordPressApi, site: str, *, namespaces: Sequence[str] = ()) 
                     site,
                     str(slug),
                     cells,
-                    f"{name}, a {kind} ({slug}), registered by {owner}. {said}",
+                    f"{name}, a {kind} ({slug}), registered by {owner}. {found.evidence} {said}",
                     subkind=what,
-                    raw={**info, "editable_definition": mine is not None, "definition": mine},
+                    raw={
+                        **info,
+                        "editable_definition": mine is not None,
+                        "definition": mine,
+                        "movable": movable,
+                    },
                 )
             )
+    ours: dict[str, set[str]] = {}
     for key, group in defined.groups.items():
         name = str(group.get("title") or key)
         fields = [f for f in group.get("fields") or [] if isinstance(f, dict)]
+        attach = group.get("attach") if isinstance(group.get("attach"), dict) else None
+        targets = list((attach or {}).get("post_types") or [])
+        targets += [f"taxonomy:{t}" for t in (attach or {}).get("taxonomies") or []]
+        for target in targets:
+            ours.setdefault(str(target), set()).update(str(f.get("name")) for f in fields)
         kinds = ", ".join(f"{f.get('name')} ({f.get('kind')})" for f in fields)
         rows.append(
             WbRow(
@@ -283,6 +288,7 @@ def model_rows(api: WordPressApi, site: str, *, namespaces: Sequence[str] = ()) 
                 raw={"editable_definition": True, "definition": group},
             )
         )
+    rows += ms.field_group_rows(site, ms.route_schemas(api, types, taxes), plugin_defs, ours)
     return rows
 
 

@@ -12,7 +12,11 @@ recorded in Change History:
 - **Export as Code**: the ``register_*`` calls, opened in the editor;
 - **Fields...**: a field group's fields, one sheet each (kind, label, help,
   required, default, choices), or a new field;
-- **Add a Field Kind...**: a kind of the site's own (``POST /kinds``).
+- **Add a Field Kind...**: a kind of the site's own (``POST /kinds``);
+- **Copy to QUILL Site Types...**: a post type, taxonomy or field group
+  another plugin or the theme defines, copied under the same key after a
+  preview; the original is never deleted (WP-R-038,
+  :mod:`quill.core.wordpress.workbench_model_move`).
 
 The requests are in :mod:`quill.core.wordpress.site_types_plugin`.
 """
@@ -24,9 +28,11 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.wordpress import site_types_plugin as qst
+from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.sites import sites_path
 from quill.core.wordpress.workbench_discovered import SITE_TYPES_NAMESPACE
 from quill.core.wordpress.workbench_edit import EditRefused
+from quill.core.wordpress.workbench_model_move import move_preview
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.workbench.history import Change
 from quill.ui import wordpress_dialogs as dlg
@@ -319,3 +325,59 @@ class WorkbenchSiteTypesCommands:
             self.history.record(Change(body["kind"], said))
 
         self.background("adding a field kind", lambda: qst.add_kind(api, body), done)
+
+    # -- copying another plugin's definition in (WP-R-038) -----------------------------
+
+    def do_move_to_site_types(self, _ref: Any, row: WbRow | None) -> None:
+        """Copy to QUILL Site Types...: the definition copied under its key, the original kept."""
+        if row is None or row.kind != "model":
+            self.say("Choose a row in Content Model.")
+            return
+        movable = row.raw.get("movable")
+        if not isinstance(movable, dict):
+            if row.raw.get("editable_definition"):
+                self.say(f"{row.title} is already defined through QUILL Site Types.")
+            else:
+                self.say(f"{row.title} cannot be copied to QUILL Site Types. Its detail says why.")
+            return
+        missing = self._site_types_missing(row.site)
+        if missing:
+            self.say(missing)
+            return
+        what = str(movable["what"])
+        body = dict(movable["body"])
+        owner = str(movable.get("owner") or "its plugin")
+        summary, lines = move_preview(row.site, what, body, owner, movable.get("skipped") or ())
+        if not wdlg.ask_preview(
+            self.parent, self.show_modal, title="Copy to QUILL Site Types", summary=summary,
+            lines=lines, yes="Copy",
+        ):  # fmt: skip
+            return
+        api = self.ctx(row.site).api
+        key = str(body[qst.WHAT[what][1]])
+
+        def work() -> dict[str, Any] | str:
+            try:
+                return qst.define(api, what, body)
+            except WordPressApiError as exc:
+                if exc.status == 409:
+                    return (
+                        f"QUILL Site Types did not take {row.title}: {owner} still registers "
+                        f"it. Turn it off in {owner} first; its content stays. Nothing changed."
+                    )
+                raise
+
+        def done(result: dict[str, Any] | str) -> None:
+            if isinstance(result, str):
+                self.say(result)
+                return
+            said = f"Copied {row.title} into QUILL Site Types on {row.site}; {owner} keeps its own."
+            self.say(said)
+            undo = lambda: (  # noqa: E731
+                qst.stop_defining(api, what, key),
+                f"QUILL Site Types no longer defines {key}.",
+            )[1]
+            self.history.record(Change(row.title, said, undo=undo))
+            self.refresh()
+
+        self.background("copying a definition", work, done)

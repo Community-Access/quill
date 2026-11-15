@@ -161,6 +161,32 @@ comment, Properties shows them on a **Custom Fields** page. A field that
 holds a list or a group is a labelled box of JSON text, and QUILL checks it
 before it saves. A field the site does not describe is read only.
 
+Beside a list, such as a schedule's speakers, is an **Edit List...** button.
+It opens the list on its own: Add, Edit, Remove, Move Up and Move Down, then
+Keep Changes. Beside a group, such as a venue's address, **Edit Group...**
+opens it as a form with one box for each part. These are the same windows
+the editor's Custom Fields uses. What you keep goes back into the box, and
+OK or Apply sends it. Parts of a group the site does not describe are kept
+as they were. A list inside a list has no button and stays as JSON.
+
+Field plugins get a page of their own, each only when the site has it:
+
+- **Advanced Custom Fields**, for field groups with Show in REST API on.
+- **Meta Box**, through its MB REST API extension. When Meta Box does not
+  say what kind of value a field holds, QUILL goes by the value it holds now,
+  so a number stays a number. A field whose value says nothing, such as an
+  empty list, is read only.
+- **Pods**, with the fields the pod shows in REST. A field the pod does not
+  let you write over REST is read only, and F1 says so. Relationship and
+  file fields are read only too. Pods only tells an administrator which
+  fields are its own, so other roles see no Pods page.
+- **CMB2**, with every box that applies. Each field is saved on its own and
+  read back, so you hear about any the site did not keep. A box the site
+  shows for reading only stays read only.
+
+Every one of them is checked before it is sent and checked again after, and
+Ctrl+Z puts them all back.
+
 **Site > Site Properties...** (`Alt+Shift+Enter`) is the same sheet for the
 whole site.
 

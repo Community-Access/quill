@@ -189,6 +189,15 @@ MODEL_ROWS: tuple[ActionRow, ...] = (
         needs="manage_options",
     ),
     _a(
+        "move_to_site_types",
+        "Copy to QUILL Site Types...",
+        "The way to move a post type, taxonomy or field group a plugin or theme defines into "
+        "QUILL Site Types: a copy under the same key, after a preview. The original is not "
+        "deleted; the preview says what to turn off where, and what does not come across.",
+        tier=Tier.WRITE,
+        needs="manage_options",
+    ),
+    _a(
         "export_as_code",
         "Export as Code",
         "Every QUILL Site Types definition as the PHP register calls, opened in the editor, so "
@@ -227,6 +236,7 @@ KEYLESS: dict[str, str] = {
     command("export_as_code"): "Exported once, when a site leaves the plugin (rule 9).",
     command("edit_site_type_fields"): "Fields change when a content type does, rarely (rule 9).",
     command("add_field_kind"): "A site adds its own kind once in a long while (rule 9).",
+    command("move_to_site_types"): "A definition moves once, when a site changes plugin (rule 9).",
     command("visual_review"): "A page is reviewed after a redesign, now and then (rule 9).",
     command("set_password"): "Set when a person is locked out, rarely; never a bare key (rule 9).",
 }
