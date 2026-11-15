@@ -20,7 +20,6 @@ from quill.core.github.workbench_glossary import (
     WHAT_CHANGED,
 )
 from quill.core.github.workbench_help_text import (
-    _EMPTY,
     CHOICE_WORDS,
     NODE_HELP,
     PREF_HELP,
@@ -28,6 +27,7 @@ from quill.core.github.workbench_help_text import (
     RESULT_EXPLANATIONS,
     SURFACE_PURPOSES,
 )
+from quill.core.github.workbench_node_help import _EMPTY
 
 __all__ = [
     "CHOICE_WORDS",

@@ -1343,8 +1343,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.paste_from_tray_10": "Ctrl+Alt+Shift+0",
     "edit.paste_from_tray_11": "Ctrl+Alt+Shift+-",
     "edit.paste_from_tray_12": "Ctrl+Alt+Shift+=",
-    # The WordPress keys (wordpress.md 19): Ctrl+Alt+Shift+Grave, then one letter,
-    # the same letters in QUILL Lite, both read from wordpress/menu.py LAYER_KEYS.
+    # The WordPress keys (wordpress.md 19): Ctrl+Alt+Shift+Grave, then one letter, the
+    # same in QUILL Lite, from wordpress/menu.py LAYER_KEYS and forms/menu.py's F.
     **wordpress_key_bindings(),
 }
 

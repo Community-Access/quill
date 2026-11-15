@@ -33,6 +33,17 @@ _SANCTIONED_ROOT_MARKDOWN = frozenset({
     # explicit request so it stays in view while its items are worked off;
     # graduate it under docs/ when the list is spent.
     "polish.md",
+    # Jeff's review lists of what is still missing, 2026-11-14: WordPress,
+    # then GitHub. Trimmed as items are built; deleted when spent.
+    "wp_missing.md",
+    # Jeff's UX review walkthrough of every WordPress feature, 2026-11-14.
+    "how.md",
+    "gh_missing.md",
+    # The GitHub and WordPress Workbench delivery checklist and its design
+    # companion (2026-11-10), the plan of record while that work is open;
+    # graduate them under docs/planning when the lists are spent.
+    "complete.md",
+    "complete2.md",
 })
 
 

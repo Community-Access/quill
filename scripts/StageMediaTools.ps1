@@ -74,7 +74,11 @@ function Stage-QuillMediaTools {
         # LANGUAGE-SERVERS-LICENSES.txt); rg.exe with its three licence files.
         [string]$NodeDir = "",
         [string]$LanguageServersDir = "",
-        [string]$RipgrepDir = ""
+        [string]$RipgrepDir = "",
+        # A vetted WordPress Playground bundle (scripts\fetch_build_deps.py
+        # --only wp-playground-cli): pinned CLI, PHP.wasm, WordPress core and
+        # each npm package's licence. The WordPress Workbench runs it locally.
+        [string]$WpPlaygroundDir = ""
     )
 
     if (-not (Test-Path (Join-Path $RuntimeDist "QuillVilleRuntime.exe"))) {
@@ -155,7 +159,13 @@ function Stage-QuillMediaTools {
         @{ Dir = $LanguageServersDir; Name = "language-servers"; Copy = "tree"; Files = @(
             "package.json", "package-lock.json", "LANGUAGE-SERVERS-LICENSES.txt") },
         @{ Dir = $RipgrepDir; Name = "ripgrep"; Copy = "files"; Files = @(
-            "rg.exe", "COPYING", "LICENSE-MIT", "UNLICENSE") }
+            "rg.exe", "COPYING", "LICENSE-MIT", "UNLICENSE") },
+        @{ Dir = $WpPlaygroundDir; Name = "wp-playground-cli"; Copy = "tree"; Files = @(
+            "package.json", "package-lock.json", "PLAYGROUND-LICENSES.txt", ".quill-playground-pruned-v1",
+            "node_modules\@wp-playground\cli\wp-playground.js",
+            "node_modules\@wp-playground\cli\sqlite-database-integration.zip",
+            "node_modules\@php-wasm\node-8-3\package.json",
+            "wordpress-7.1.4.zip") }
     )
     foreach ($engine in $engines) {
         if (-not $engine.Dir) { continue }

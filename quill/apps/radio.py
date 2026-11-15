@@ -1252,9 +1252,9 @@ def main() -> int:
     log_listener = configure_logging(log_dir)
     frame = RadioAppFrame(safe_mode=safe_mode)
     frame._log_listener = log_listener
-    frame.frame.Show()
-    frame.frame.Raise()
-    wx.CallAfter(frame._focus_initial_control)  # #1193: menu bar reachable on launch
+    from quill.ui.startup_launch import present_at_launch
+
+    present_at_launch(frame, "Quill Radio", focus=frame._focus_initial_control)  # #1193; --tray
     try:
         app.MainLoop()
     finally:

@@ -159,15 +159,16 @@ class QuillInkwellFrame(
         prefs_id = wx.NewIdRef()  # Ctrl+, in every app (qc.md X-01); P is pasting
         options_menu.Append(prefs_id, "Pr&eferences...\tCtrl+,")
         self.frame.Bind(wx.EVT_MENU, lambda _e: open_preferences(self), id=prefs_id)
-        self._startup_item_id = wx.NewIdRef()
-        options_menu.AppendCheckItem(
-            self._startup_item_id, "Start Quill Inkwell with &Windows\tCtrl+Alt+W"
-        )
-        options_menu.Check(self._startup_item_id, self._launch_at_startup_enabled())
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda e: self._set_launch_at_startup(e.IsChecked()),
-            id=self._startup_item_id,
+        from quill.platform.windows import inkwell_startup
+        from quill.ui.startup_launch import append_windows_startup_items
+
+        append_windows_startup_items(  # and Start minimized when Windows starts, Ctrl+Alt+L
+            self,
+            options_menu,
+            inkwell_startup,
+            start_label="Start Quill Inkwell with &Windows\tCtrl+Alt+W",
+            start_checked=self._launch_at_startup_enabled(),
+            on_start=self._set_launch_at_startup,
         )
         self._start_tray_item_id = wx.NewIdRef()
         options_menu.AppendCheckItem(
@@ -577,7 +578,6 @@ def main() -> int:
 
     apply_pending_at_launch()  # queued Data Folder move, before any data read
     safe_mode = bool(os.environ.get("QUILL_SAFE_MODE"))
-    start_in_tray = "--tray" in sys.argv
     from quill.core.ipc import (
         enqueue_open_request,
         release_primary_instance,
@@ -598,12 +598,7 @@ def main() -> int:
     app = wx.App()
     frame = QuillInkwellFrame(safe_mode=safe_mode)
     frame._log_listener = log_listener
-    if start_in_tray or frame._settings.start_in_tray:
-        frame.toggle_window_to_tray()
-    else:
-        frame.frame.Show()
-        frame.frame.Raise()
-        wx.CallAfter(frame._focus_initial_control)
+    frame._present_at_launch()  # the window, or the tray (inkwell_preferences.py)
     if "--dictate-anywhere" in sys.argv:
         wx.CallAfter(frame.take_dictation_handoff)
     try:

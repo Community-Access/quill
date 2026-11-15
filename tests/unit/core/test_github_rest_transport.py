@@ -123,3 +123,18 @@ def test_rate_limit_header_survives_the_real_error_path() -> None:
             opener=_Opener(_http_error(403, {"message": "Forbidden"}, X_RateLimit_Remaining="0")),
         )
     assert "rate-limited" in rest_failure_message("load notifications", caught.value)
+
+
+def test_already_exists_is_recognised_only_for_that_422() -> None:
+    from quill.core.github.rest_transport import GitHubRestError, is_already_exists
+
+    taken = GitHubRestError(
+        "Validation Failed",
+        status=422,
+        data={"errors": [{"resource": "Label", "code": "already_exists", "field": "name"}]},
+    )
+    assert is_already_exists(taken)
+    other = GitHubRestError("Validation Failed", status=422, data={"errors": [{"code": "invalid"}]})
+    assert not is_already_exists(other)
+    assert not is_already_exists(GitHubRestError("x", status=404))
+    assert not is_already_exists(ValueError("x"))

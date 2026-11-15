@@ -176,8 +176,9 @@ class WordPressRouteHistory:
     ) -> None:
         if not versions:
             self.host.announce(
-                f"{menu.name} has no earlier versions yet. QUILL keeps one each time the Menus "
-                "window reads a menu, so a change made after this can be undone."
+                f"{menu.name} has no earlier versions yet. WordPress keeps none for a classic "
+                "menu, so QUILL keeps one each time Menu History, the Menus window or the "
+                "Workbench's Earlier Versions reads it; a change made after this can be undone."
                 if menu.source == "classic"
                 else f"{menu.name} has no earlier versions on {profile.name}."
             )

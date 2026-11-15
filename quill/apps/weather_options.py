@@ -60,6 +60,31 @@ def set_launch_at_startup(host: Any, enabled: bool) -> None:
         )
 
 
+def set_start_minimized_at_windows_startup(host: Any, enabled: bool) -> None:
+    """Save the login-window preference and rewrite the Run command if active."""
+    from quill.platform.windows import weather_startup
+
+    if not weather_startup.is_windows():
+        host._announce("Start minimized when Windows starts needs Windows.")
+        return
+    if weather_startup.running_portable():
+        host._announce(weather_startup.PORTABLE_REFUSAL)
+        return
+    saved = weather_startup.set_start_minimized_at_startup(enabled)
+    if not saved:
+        item_id = getattr(host, "_startup_minimized_item_id", None)
+        _check_menu_item(host, item_id, weather_startup.start_minimized_at_startup())
+        host._announce("Windows did not allow the start-minimized setting to change.")
+        return
+    item_id = getattr(host, "_startup_minimized_item_id", None)
+    _check_menu_item(host, item_id, enabled)
+    host._announce(
+        "Quill Weather will start minimized to the tray when Windows starts."
+        if enabled
+        else "Quill Weather will start with its window open when Windows starts."
+    )
+
+
 def set_app_pref(host: Any, field: str, value: bool) -> None:
     """Persist one boolean app preference and say what it now means."""
     from quill.core.weather import settings as settings_mod
@@ -131,6 +156,9 @@ class WeatherOptionsMixin:
 
     def _set_launch_at_startup(self, enabled: bool) -> None:
         set_launch_at_startup(self, enabled)
+
+    def _set_start_minimized_at_windows_startup(self, enabled: bool) -> None:
+        set_start_minimized_at_windows_startup(self, enabled)
 
     def _set_app_pref(self, field: str, value: bool) -> None:
         set_app_pref(self, field, value)

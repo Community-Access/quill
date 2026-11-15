@@ -20,7 +20,8 @@ The routes (QAF ``includes/api/class-qaf-rest-api.php``), shown on ``qaf/v1``:
   one's ``entry_count`` -- a count, never anybody's answers;
 - ``POST /qaf/v1/forms`` and ``POST /qaf/v1/forms/{id}``: create and update;
 - ``GET /qaf/v1/entries?form_id=``: the responses, read only when the person
-  opens Responses;
+  opens Responses; the list carries no answers, so each is read again with
+  ``GET /qaf/v1/entries/{id}`` (:func:`list_responses`);
 - ``DELETE /qaf/v1/entries/{id}``: one response to QAF's Trash (no ``force``).
 
 A form is sent as QAF stores it (``docs/form-model.md``, "How QAF stores the
@@ -220,9 +221,22 @@ def response_from_payload(raw: Any) -> Response:
 
 
 def list_responses(api: Any, form_id: int) -> list[Response]:
-    """Every response to one form, newest first. Personal data: only on request."""
+    """Every response to one form, newest first. Personal data: only on request.
+
+    The plugin's list builds each entry from its row alone and never loads the
+    answers (``fields`` comes back ``[]``, BAF and QAF alike; seen live), so an
+    entry listed without answers is read again by itself, ``GET entries/{id}``,
+    which does load them.
+    """
+    namespace = _ns(api)
     params = {"form_id": int(form_id), "orderby": "created_at", "order": "DESC"}
-    return [response_from_payload(r) for r in api.iter_collection(f"{_ns(api)}/entries", params)]
+    out: list[Response] = []
+    for raw in api.iter_collection(f"{namespace}/entries", params):
+        response = response_from_payload(raw)
+        if not response.answers and response.id:
+            response = response_from_payload(api.get(f"{namespace}/entries/{response.id}"))
+        out.append(response)
+    return out
 
 
 def delete_responses(api: Any, ids: list[int]) -> int:

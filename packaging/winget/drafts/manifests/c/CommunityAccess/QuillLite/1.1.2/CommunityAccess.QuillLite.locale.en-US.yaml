@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.28.0.schema.json
+PackageIdentifier: CommunityAccess.QuillLite
+PackageVersion: 1.1.2
+PackageLocale: en-US
+Publisher: Community Access
+PublisherUrl: https://quillforall.org/
+PublisherSupportUrl: https://github.com/Community-Access/quill/issues
+PrivacyUrl: https://quillforall.org/docs/privacy.html
+PackageName: QUILL Lite
+PackageUrl: https://quillforall.org/quilllite.html
+License: MIT
+LicenseUrl: https://github.com/Community-Access/quill/blob/quill-lite-v1.1.2/standalone/quilllite/LICENSE
+ShortDescription: An accessible text editor for Windows, built for screen-reader and keyboard users.
+Moniker: quill-lite
+Tags:
+  - accessible
+  - screen-reader
+  - text-editor
+  - writing
+ReleaseNotesUrl: https://github.com/Community-Access/quill/releases/tag/quill-lite-v1.1.2
+ManifestType: defaultLocale
+ManifestVersion: 1.28.0

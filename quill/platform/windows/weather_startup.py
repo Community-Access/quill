@@ -40,12 +40,36 @@ LAUNCHER_NAME = "QuillWeather.exe"
 MODULE = "quill.apps.weather"
 
 
-def launch_command() -> str:
+def launch_command(*, start_minimized: bool | None = None) -> str:
     """The command written to the Run key: this app's own executable, quoted,
     with the start-in-tray flag."""
     from quill.core.app_command import app_command
+    from quill.platform.windows.startup_options import start_minimized as saved_choice
 
-    return app_command(MODULE, LAUNCHER_NAME, args=("--tray",))
+    if start_minimized is None:
+        start_minimized = saved_choice("weather", default=True)
+    return app_command(
+        MODULE,
+        LAUNCHER_NAME,
+        args=("--tray",) if start_minimized else ("--window",),
+    )
+
+
+def start_minimized_at_startup() -> bool:
+    from quill.platform.windows.startup_options import start_minimized
+
+    return start_minimized("weather", default=True)
+
+
+def set_start_minimized_at_startup(enabled: bool) -> bool:
+    if not is_windows() or running_portable():
+        return False
+    from quill.platform.windows.startup_options import set_start_minimized
+
+    actual = set_start_minimized("weather", enabled)
+    if is_launch_at_startup_enabled():
+        set_launch_at_startup(True)
+    return actual
 
 
 def is_windows() -> bool:

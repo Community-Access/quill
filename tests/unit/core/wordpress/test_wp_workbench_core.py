@@ -302,7 +302,8 @@ def test_qaf_spam_entries_and_not_spam() -> None:
     held = load_forms(ctx, "spam")
     assert held[0].status == "spam" and held[0].cell("status") == "Held as spam"
     assert set_entry_spam(ctx, held, False) == []
-    assert api.writes[-1] == ("POST", "qaf/v1/entries/11", {"status": "active"})
+    # QAF's own Not Spam route, so its providers learn and a held entry is released (WP-C).
+    assert api.writes[-1] == ("POST", "qaf/v1/entries/11/not-spam", {})
 
 
 def test_gravity_forms_entries_and_spam_send_the_whole_entry() -> None:

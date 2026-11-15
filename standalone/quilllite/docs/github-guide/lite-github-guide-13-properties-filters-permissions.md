@@ -39,7 +39,9 @@ who can change that. `F1` on the field says the same.
 - Labels, assignees, reviewers and your reactions are lists of check boxes.
   Space checks or clears one.
 - New Label... and New Milestone... beside their lists make a new one on
-  GitHub and check it straight away.
+  GitHub and check it straight away. If one by that name is already there,
+  that is not a failure: QUILL Lite says "bug already exists; using it" and
+  checks the one GitHub has.
 - **OK** saves and closes. **Apply**, or `Ctrl+S`, saves and keeps the sheet
   open. `Ctrl+Enter` is OK from anywhere, even in a long text box. Escape is
   Cancel.
@@ -101,7 +103,7 @@ The filter box (`Ctrl+E`) takes plain words, which narrow the loaded list, and
 GitHub's own search terms such as `label:bug` or `no:milestone`, which ask
 GitHub. Three other ways write into the same box.
 
-- **View > Quick Filters:** Assigned to Me, Assigned To..., Opened by Me,
+- **Quick Filters,** on the Workbench's View menu: Assigned to Me, Assigned To..., Opened by Me,
   Opened By..., Mentions Me, Review Requested from Me, Reviewed by Me, No
   Assignee, No Milestone, No Label, No Project, No Type, Drafts, Has
   Conflicts, Checks Failing and Updated This Week. Each one is checked while
@@ -110,23 +112,24 @@ GitHub. Three other ways write into the same box.
 - **Show Only and Hide:** the context menu of a row has both, with every value
   in that row: "label bug", "author dependabot".
 - **The Filter Builder,** `Ctrl+Alt+F`: choose an attribute, an operator and a
-  value, then Add Condition (`Insert`). The values come from the repository,
+  value, then Add Condition (`Insert`). Each box reads its own label as you
+  Tab to it: Attribute, Operator, Value. The values come from the repository,
   and Me is offered for every person. The query appears as you go, so you
   learn GitHub's syntax by watching it. OK puts it in the filter box; Save as
   Search also keeps it under Saved Searches.
 
 Has Conflicts is the one GitHub's search cannot answer, so the Workbench
 checks the pull requests already loaded and the Items cell of the status bar
-says so. **View > Load All** (`Ctrl+Shift+Page Down`) loads every page to be
-sure.
+says so. **Load All** on the Workbench's View menu (`Ctrl+Shift+Page Down`) loads
+every page to be sure.
 
 ### Shaping the list
 
-- **View > Show** chooses issues, pull requests or both, and **View > Open or
-  Closed** which ones.
-- **View > Sort By** orders the list, and **View > Columns...**
+- On the Workbench's View menu, **Show** chooses issues, pull requests or
+  both, and **Open or Closed** which ones.
+- **Sort By** on the same menu orders the list, and **Columns...**
   (`Ctrl+Shift+U`) chooses its columns.
-- **View > Group By** puts the groups in the tree as nodes: by label,
+- **Group By**, also on the View menu, puts the groups in the tree as nodes: by label,
   milestone, assignee, author, type, state, repository or review state. Each
   node reads with its count, and selecting it shows that group.
 - **Go > Next Unread** (`Ctrl+Period`) and **Previous Unread**

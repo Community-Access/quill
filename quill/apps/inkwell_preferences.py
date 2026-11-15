@@ -46,6 +46,41 @@ class InkwellStartupMixin:
             else "Quill Inkwell will not start with Windows."
         )
 
+    def _present_at_launch(self) -> None:
+        """Show the window, or come up in the tray: --window beats the saved
+        Start Minimized to the Tray option, and --tray is a login launch."""
+        from quill.ui.startup_launch import present_at_launch, starts_in_tray
+
+        present_at_launch(
+            self,
+            "Quill Inkwell",
+            in_tray=starts_in_tray(self._settings.start_in_tray),  # type: ignore[attr-defined]
+            to_tray=self.toggle_window_to_tray,  # type: ignore[attr-defined]
+            say=self._announce,  # type: ignore[attr-defined]
+            focus=self._focus_initial_control,  # type: ignore[attr-defined]
+        )
+
+    def _set_start_minimized_at_windows_startup(self, enabled: bool) -> None:
+        from quill.platform.windows import inkwell_startup
+
+        saved = inkwell_startup.set_start_minimized_at_startup(enabled)
+        if not saved:
+            menu_bar = self.frame.GetMenuBar()  # type: ignore[attr-defined]
+            item_id = getattr(self, "_startup_minimized_item_id", None)
+            if menu_bar is not None and item_id is not None:
+                menu_bar.Check(int(item_id), inkwell_startup.start_minimized_at_startup())
+            self._announce("Windows did not allow the start-minimized setting to change.")  # type: ignore[attr-defined]
+            return
+        menu_bar = self.frame.GetMenuBar()  # type: ignore[attr-defined]
+        item_id = getattr(self, "_startup_minimized_item_id", None)
+        if menu_bar is not None and item_id is not None:
+            menu_bar.Check(int(item_id), enabled)
+        self._announce(  # type: ignore[attr-defined]
+            "Quill Inkwell will start minimized to the tray when Windows starts."
+            if enabled
+            else "Quill Inkwell will start with its window open when Windows starts."
+        )
+
 
 def open_preferences(host: Any) -> None:
     """Options > Preferences (Ctrl+,)."""

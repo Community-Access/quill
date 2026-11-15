@@ -95,10 +95,14 @@ start from: **Blank issue**, then each fillable template with its description.
 The template's title and body fill the entry fields, and its labels and
 assignees are carried into the issue.
 
-GitHub's structured YAML issue forms and Markdown templates too large for
-QUILL to load are not fillable in the Workbench yet. QUILL identifies those
-templates and lets you start with a blank issue or a readable Markdown
-template.
+GitHub's issue forms, the YAML ones that show as a form with boxes on the
+website, are on the same list, and QUILL fills them as a real form: one
+labelled control per field, with "(required)" in the name of every field
+that must be answered. Create Issue says what is still missing rather than
+sending an incomplete issue, and the body GitHub receives reads the same as
+one filed from the website. A form or template QUILL cannot fill, such as
+one too large to load, is left off the list, and QUILL says so once; it is
+still there on GitHub. Chapter 12 has the details.
 
 ### Title, body and preview
 

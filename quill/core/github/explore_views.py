@@ -43,6 +43,7 @@ VIEWS: tuple[tuple[str, str], ...] = (
     ("community", "Community profile checklist"),
     ("actions_caches", "Actions caches"),
     ("secrets", "Secret and variable names"),
+    ("billing_usage", "Billing and usage"),
     ("security_closed", "Dismissed and resolved security alerts"),
 )
 
@@ -89,6 +90,7 @@ AUTH_VIEWS = frozenset({
     "insights",
     "actions_caches",
     "secrets",
+    "billing_usage",
 })
 
 VIEW_NOTES: dict[str, str] = {

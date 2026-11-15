@@ -5,8 +5,9 @@ A mixin of :class:`~quill.ui.wordpress_commands.WordPressCommands` (through
 
 - **Edit a Picture on the Site** (``media/{id}/edit``, WordPress 5.5+): turn,
   flip, or crop to a ratio. WordPress keeps the original and makes the edit a
-  new library item; Describe Image then runs on the result when AI is on, so
-  you hear what the crop kept.
+  new library item; Regenerate Sizes is offered on it next (9.17, gap 4),
+  and Describe Image then runs on the result when AI is on, so you hear what
+  the crop kept.
 - **Alt Text for the Whole Library:** every picture in the Media Library with
   no alternative text, one after another, with Suggest, saved in batches.
 """
@@ -17,6 +18,7 @@ from typing import TYPE_CHECKING, Any
 
 from quill.core.wordpress import media_alt as ma
 from quill.core.wordpress import media_edit as me
+from quill.core.wordpress import media_pieces as mp
 from quill.core.wordpress import media_tools as mt
 from quill.core.wordpress import site_media as wpm
 from quill.ui import wordpress_dialogs as dlg
@@ -146,8 +148,35 @@ class WordPressPictureEditCommands(WordPressApiBase):
             yes_label="Use It Here",
         ):
             self._put_source(image, new.source_url, new.width)  # type: ignore[attr-defined]
+        self._offer_regenerate(profile, api, new, name)
         if callable(getattr(self.host, "ai_describe_image", None)):
             self._describe(new, api, name)  # type: ignore[attr-defined]
+
+    def _offer_regenerate(
+        self, profile: st.SiteProfile, api: Any, new: wpm.MediaItem, name: str
+    ) -> None:
+        """Offer Regenerate Sizes on the edited copy, so no theme shows a stale size (gap 4)."""
+        made = f"It has {len(new.sizes)} sizes now." if new.sizes else "It lists no sizes yet."
+        if not dlg.confirm(
+            self.host.parent,
+            self.host.show_modal,
+            title="Regenerate Sizes",
+            message=(
+                f"Remake the thumbnail, medium and large sizes of {name} from the edit, so every "
+                f"page and theme shows the edited picture? {made}"
+            ),
+            yes_label="Regenerate Sizes",
+        ):
+            return
+        self.background(  # type: ignore[attr-defined]
+            f"remaking the sizes of {name}",
+            lambda: mp.regenerate_sizes(api, new.id),
+            lambda done: self.host.announce(
+                f"{profile.name} remade {len(done.sizes)} sizes of {name}."
+                if done.sizes
+                else f"{profile.name} remade the sizes of {name}."
+            ),
+        )
 
     # ------------------------------------------------------------------ #
     # Alt Text for the Whole Library

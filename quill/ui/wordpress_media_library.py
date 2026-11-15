@@ -126,6 +126,8 @@ class WordPressMediaLibrary:
             return
         copy, profile = found
         api = self.api(profile)  # type: ignore[attr-defined]
+        if self.host.parent is not None and self._pick_in_workbench(copy, profile, api):
+            return  # the Workbench's Media, in picking mode (PRD 14); Enter inserts
 
         def choose(items: list[wpm.MediaItem]) -> None:
             if not items:
@@ -150,6 +152,29 @@ class WordPressMediaLibrary:
             lambda: list(wpm.list_media(api)),
             choose,
         )
+
+    def _pick_in_workbench(self, copy: lc.WorkingCopy, profile: st.SiteProfile, api: Any) -> bool:
+        """Open the Workbench on the site's Media in picking mode; Enter on a file inserts it.
+
+        Without an editor window to come back to (a host with no window), the list
+        dialog below is the way instead, as it always was.
+        """
+        from quill.ui.wordpress_workbench_editor_side import open_for_picking
+
+        def insert(row: Any) -> None:
+            fresh = self.local.copy_for_path(self.host.current_path())
+            if fresh is None or fresh.key != copy.key:
+                self.host.announce(
+                    f"{copy.title or 'The document'} is no longer in front, so nothing was "
+                    "inserted. Bring it forward and choose Insert again."
+                )
+                return
+            raise_window = getattr(self.host.parent, "Raise", None)
+            if callable(raise_window):
+                raise_window()
+            self._insert_media(fresh, wpm.media_from_payload(row.raw), api)
+
+        return open_for_picking(self, copy, profile, insert)
 
     def _insert_media(self, copy: lc.WorkingCopy, m: wpm.MediaItem, api: Any) -> bool:
         """Insert one library file at the caret: a picture through the image dialog (6.7)."""

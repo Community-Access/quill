@@ -8,6 +8,7 @@ from urllib.error import HTTPError
 import pytest
 
 from quill.core.wordpress import media_pieces as mp
+from quill.ui import wordpress_block_dialogs as bdlg
 from quill.ui import wordpress_route_dialogs as rdlg
 from quill.ui.wordpress_commands import WordPressCommands
 from quill.ui.wordpress_route_commands import WordPressRouteCommands
@@ -77,6 +78,7 @@ def test_cancelling_the_file_box_sends_nothing(wpr, wp_site, monkeypatch) -> Non
 
 
 def test_a_small_file_goes_in_one_upload(wpr, wp_site, monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(bdlg, "ask_fields", lambda *_a, **_k: None)  # details kept as made
     clip = tmp_path / "clip.mp3"
     clip.write_bytes(b"x" * 100)
     monkeypatch.setattr(rdlg, "pick_file", lambda *_a, **_k: clip)
@@ -87,11 +89,15 @@ def test_a_small_file_goes_in_one_upload(wpr, wp_site, monkeypatch, tmp_path) ->
     assert "is in Community Radio's Media Library" in wpr.host.announced[-1]
 
 
-def test_a_big_file_goes_whole_and_never_to_sideload(wpr, wp_site, monkeypatch, tmp_path) -> None:
+def test_a_big_file_goes_whole_and_never_to_sideload(
+    wpr, wp_site, wp_dialogs, monkeypatch, tmp_path
+) -> None:
     # WordPress 7.1's media/{id}/sideload takes a picture's sub-size, not a piece
     # of a file, so a big upload is one request to wp/v2/media (the live run found
     # the earlier piece upload, which no site could accept).
     monkeypatch.setattr(mp, "LARGE_FROM", 10)
+    monkeypatch.setattr(bdlg, "ask_fields", lambda *_a, **_k: None)
+    wp_dialogs.answer("confirm", True)
     show = tmp_path / "show.mp4"
     show.write_bytes(b"0123456789abcdef")
     monkeypatch.setattr(rdlg, "pick_file", lambda *_a, **_k: show)
@@ -103,6 +109,50 @@ def test_a_big_file_goes_whole_and_never_to_sideload(wpr, wp_site, monkeypatch, 
     assert wp_site.sent("POST", f"{API}/media/9/sideload") == []
     assert "can take a while" in wpr.host.said
     assert "Media Library" in wpr.host.announced[-1]
+
+
+def test_a_big_upload_is_weighed_against_the_space_used_first(
+    wpr, wp_site, wp_dialogs, monkeypatch, tmp_path
+) -> None:
+    # 9.17, gap 3: the site's own directory sizes before a big upload; No sends nothing.
+    monkeypatch.setattr(mp, "LARGE_FROM", 10)
+    show = tmp_path / "show.mp4"
+    show.write_bytes(b"0123456789abcdef")
+    monkeypatch.setattr(rdlg, "pick_file", lambda *_a, **_k: show)
+    site(wp_site).on(
+        "GET",
+        "/wp-json/wp-site-health/v1/directory-sizes",
+        {"uploads_size": {"raw": 48}, "total_size": {"raw": 64}},
+    )
+    wpr.cmd_upload_large_file()
+    message = wp_dialogs.asked("confirm")[0]["message"]
+    assert "already uses 64 bytes altogether, 48 bytes of it uploads" in message
+    assert "with this file, uploads become 64 bytes" in message
+    assert "25 percent of everything the site holds" in message
+    assert "does not say how much room the host allows" in message
+    assert wp_site.sent("POST", f"{API}/media") == []
+    assert wpr.host.announced[-1] == "Nothing was uploaded."
+
+
+def test_details_are_asked_after_a_large_upload(wpr, wp_site, monkeypatch, tmp_path) -> None:
+    # 9.17, gap 7: title, caption and description right after the upload lands.
+    clip = tmp_path / "clip.mp3"
+    clip.write_bytes(b"x" * 100)
+    monkeypatch.setattr(rdlg, "pick_file", lambda *_a, **_k: clip)
+    asked: list[list[str]] = []
+
+    def answer(*_a, **kw):
+        asked.append([f.key for f in kw["fields"]])
+        return {"title": "Spring show", "caption": "Live", "description": ""}
+
+    monkeypatch.setattr(bdlg, "ask_fields", answer)
+    site(wp_site).on("POST", f"{API}/media", media())
+    wp_site.on("POST", f"{API}/media/9", media(title={"raw": "Spring show"}))
+    wpr.cmd_upload_large_file()
+    assert asked == [["title", "caption", "description"]]  # no alt text: not a picture
+    body = wp_site.body(wp_site.sent("POST", f"{API}/media/9")[0])
+    assert body == {"title": "Spring show", "caption": "Live"}
+    assert "Saved the details of" in wpr.host.announced[-1]
 
 
 def test_a_file_too_big_for_the_host_says_so(wpr, wp_site, monkeypatch, tmp_path) -> None:

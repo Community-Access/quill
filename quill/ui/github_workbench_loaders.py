@@ -33,7 +33,7 @@ from quill.core.workbench.tree import NodeSpec
 
 __all__ = ["ADMIN_ACTIONS", "LOCAL_PREFIXES", "load_local", "saved_items_for"]
 
-LOCAL_PREFIXES = ("local:", "files:", "milestones:", "projects:", "admin:")
+LOCAL_PREFIXES = ("local:", "files:", "milestones:", "projects:", "admin:", "templates:")
 
 #: The rows of the two admin pages: (editor command id, label, what it does).
 ADMIN_ACTIONS: dict[str, tuple[tuple[str, str, str], ...]] = {
@@ -126,6 +126,25 @@ def _organizations(items: Any) -> Any:
     return GitHubRepoAdminProvider(getattr(items, "token", "") or "")
 
 
+def _template_rows(items: Any, repository: str) -> list[ExploreRow]:
+    """Repository > Templates (GitHub PRD 21.3): quill.core.github.template_catalog."""
+    from quill.core.github.template_catalog import list_templates
+    from quill.ui.github_workbench_templates import template_row_key
+
+    return [
+        ExploreRow(
+            entry.label(),
+            entry.detail(),
+            entry.url,
+            repository,
+            "template",
+            template_row_key(entry.kind, entry.source, entry.path, missing=entry.missing),
+            title=entry.name,
+        )
+        for entry in list_templates(items.template_repository, repository)
+    ]
+
+
 def load_local(items: Any, node: NodeSpec, *, instance: str, folder: str = "") -> list[ExploreRow]:
     """Fetch the rows of a ``local:``, ``files:``, ``milestones:``, ``projects:`` or
     ``admin:`` node. Runs off the UI thread."""
@@ -134,6 +153,10 @@ def load_local(items: Any, node: NodeSpec, *, instance: str, folder: str = "") -
         return _local_rows(items, view)
     if prefix == "files":
         return _file_rows(items, instance, folder)
+    if prefix == "templates":
+        # An organization's defaults live in its .github repository (PRD 21.3).
+        repository = f"{instance}/.github" if view == "organization" else instance
+        return _template_rows(items, repository)
     if prefix == "milestones":
         return [
             ExploreRow(

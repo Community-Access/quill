@@ -464,7 +464,14 @@ appears in both.
   and back.
 - **Undo:** Undo WordPress Change reverses a change from Change History;
   for content, Previous Versions restores any revision; Trash restores
-  anything trashed.
+  anything trashed. Every write records an entry, including one that cannot be
+  undone; Ctrl+Z names such an entry once and passes over it to the change
+  before (2026-11-14, from the how.md review), so it never blocks earlier
+  undos and never undoes an older, unrelated change in its place.
+- **Previews that cannot be undone start on Cancel:** a destructive or
+  irreversible preview (Delete Permanently, Empty Trash, Merge, Revoke,
+  Promote, Cancel Membership, Resend, Sign Out This Site) makes Cancel the
+  default button; reversible previews keep the action as the default.
 
 ### 10. Filtering on every attribute
 
@@ -493,6 +500,13 @@ loaded rows:
 
 ### 11. Permissions
 
+- **One check for every command (2026-11-14):** Workbench Access (Full,
+  Organize, Read Only), View As Role and Safe Mode apply to every command,
+  whether it is on a row's context menu, the menu bar, a key, New Here, an
+  import, the REST Console or Delete on a person or password. Each command
+  has a tier (`workbench_tiers.py`), and a test fails on a handler with none.
+  The application password the Workbench signs in with is never revoked
+  from the Workbench.
 - **Know before offering:** roles and capabilities from
   `users/me?context=edit` (wordpress.md 9.2), on connect and daily, per site.
   Every action and field declares the capability it needs (`edit_posts`,

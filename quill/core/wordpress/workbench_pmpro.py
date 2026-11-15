@@ -2,7 +2,9 @@
 
 Levels, orders, subscriptions and renewals are requested only when their node
 is opened. The site still checks the caller's PMPro capability for each read;
-the returned order shape omits billing and card details.
+the returned order shape omits billing and card details, and any the site adds
+anyway are stripped before a row is made. These are membership orders, never
+WooCommerce's shop orders (Sites > site > Shop > Shop Orders).
 """
 
 from __future__ import annotations
@@ -14,6 +16,7 @@ from quill.core.wordpress.abilities import list_abilities, run_ability
 from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.site import plain_text
 from quill.core.wordpress.workbench_listing import pages_for
+from quill.core.wordpress.workbench_pmpro_change import without_payment_details
 from quill.core.wordpress.workbench_rows import WbRow
 
 if TYPE_CHECKING:
@@ -72,7 +75,8 @@ def _billing(item: dict[str, Any]) -> str:
 
 def _rows(site: str, kind: str, items: list[dict[str, Any]]) -> list[WbRow]:
     rows: list[WbRow] = []
-    for item in items:
+    # Card and billing fields never reach a row, its Properties or an export.
+    for item in (without_payment_details(i) for i in items):
         ident = str(item.get("id") or item.get("code") or "")
         if kind == "level":
             title = _text(item.get("name")) or f"Level {ident}"
@@ -112,7 +116,7 @@ def _rows(site: str, kind: str, items: list[dict[str, Any]]) -> list[WbRow]:
                 "level": str(item.get("membership_level_id") or ""),
             }
             detail = (
-                f"Order {title}. {cells['status']}, total {total}, gateway "
+                f"Membership order {title}. {cells['status']}, total {total}, gateway "
                 f"{gateway or 'not named'}, "
                 f"member {cells['member'] or 'not named'}, level {cells['level'] or 'not named'}, "
                 f"{when or 'date not given'}."
@@ -156,6 +160,10 @@ def _rows(site: str, kind: str, items: list[dict[str, Any]]) -> list[WbRow]:
 
 def load_pmpro(ctx: SiteContext, view: str) -> list[WbRow]:
     """Load one PMPro list through a read-only documented ability."""
+    if view == "discount_codes":
+        from quill.core.wordpress.workbench_pmpro_rest import load_discount_codes
+
+        return load_discount_codes(ctx)
     ability_name = _ABILITY_FOR.get(view)
     if ability_name is None:
         raise WordPressApiError(f"The Workbench does not know the PMPro view {view}.")

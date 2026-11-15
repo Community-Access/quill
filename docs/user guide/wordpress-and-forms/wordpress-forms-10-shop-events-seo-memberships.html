@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 10: Shop, events, SEO, memberships and
+redirects</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-10-shop-events-seo-memberships-and-redirects">Chapter
+10: Shop, events, SEO, memberships and redirects</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>Many sites do more than publish. They sell things, list events, chase
+search engines, run memberships, or send old addresses to new ones. Each
+of those needs a plugin, and QUILL works with the commonest:
+WooCommerce, The Events Calendar, Yoast SEO, Paid Memberships Pro and
+Redirection.</p>
+<p>This chapter has a section for each. Skip the ones your site does not
+have. You will look after products, orders and customers, events and
+venues, each page’s search appearance, members and their levels, and
+redirects.</p>
+<p>By the end you can run the parts of your site that plugins add, from
+the same Workbench as everything else. Forms plugins have chapters of
+their own, from Chapter 11.</p>
+<h2 id="how-these-work">How these work</h2>
+<p>Each plugin gets its own places in a site’s branch of the Workbench,
+but only when the site has that plugin. A site without it simply has no
+such place, or says so in one sentence.</p>
+<p>Every change shows you a preview first. Before anything is sent,
+QUILL reads the thing again from the site, and if somebody changed it in
+the meantime, nothing is sent and you are told which part changed. Press
+F5 and try again. After the save, QUILL checks what the site kept, and
+tells you if it did not keep something.</p>
+<p>Ctrl+Z undoes a change wherever putting the old values back really
+restores it. When something cannot be undone, such as a shipping zone
+deleted for good, the preview says so. A command your role cannot use is
+dimmed, and F1 on it says which role could.</p>
+<p>In the editor, <strong>File &gt; WordPress &gt; Plugin
+Fields…</strong> changes the fields these plugins add to the page you
+are writing, such as an event’s date or a product’s price, and
+Properties shows them.</p>
+<h2 id="a-shop-woocommerce">A shop: WooCommerce</h2>
+<p>Each site with WooCommerce has a <strong>Shop</strong>. Its list is
+your products, with price, stock and status. Under it are <strong>Draft
+Products</strong>, <strong>On Sale</strong>, <strong>Out of
+Stock</strong>, <strong>Shop Orders</strong>,
+<strong>Customers</strong>, <strong>Coupons</strong>, <strong>Shop
+Reports</strong>, <strong>Store Settings</strong>, <strong>Product
+Reviews</strong>, <strong>Shipping Zones</strong>, <strong>Tax
+Rates</strong>, <strong>Tax Classes</strong>,
+<strong>Attributes</strong>, <strong>Brands</strong> and
+<strong>Webhooks</strong>.</p>
+<h3 id="products">Products</h3>
+<ul>
+<li><strong>File &gt; New Here…</strong> (<code>Ctrl+N</code>) on Shop
+makes a new product, as a draft.</li>
+<li><strong>Edit Product…</strong> changes the regular and sale price,
+the stock, the status and the categories. Only what you changed is
+sent.</li>
+<li><strong>Show Its Variations</strong> lists a product’s variations,
+and <strong>Edit a Variation…</strong> changes one’s price, sale price,
+stock, or whether it is for sale.</li>
+<li><strong>Duplicate…</strong> makes a copy, and <strong>Move to
+Trash…</strong> sends one to WooCommerce’s Trash.</li>
+</ul>
+<h3 id="orders">Orders</h3>
+<p><strong>Shop Orders</strong> lists the newest orders. <strong>Read in
+Full</strong> reads one as a receipt, without the customer’s email,
+telephone or billing address.</p>
+<ul>
+<li><strong>Change Status…</strong> moves an order on, such as to
+Completed. The preview says which email WooCommerce will send the
+customer.</li>
+<li><strong>Notes…</strong> reads the order’s notes and adds one, kept
+private or emailed to the customer.</li>
+<li><strong>Refund…</strong> refunds one order. It checks the amount
+against what is left to refund, warns you whether the payment gateway
+really returns the money or only the record changes, and sends only when
+you type the amount exactly. A refund is never part of a batch, and
+cannot be undone.</li>
+<li><strong>Open in the Shop’s Dashboard</strong> opens the order in
+wp-admin.</li>
+</ul>
+<p>These are shop orders. Membership orders, from Paid Memberships Pro,
+are a different thing, and each shop order says so.</p>
+<h3 id="customers-and-coupons">Customers and coupons</h3>
+<p><strong>Customers</strong> lists the shop’s customers, without their
+contact details. <strong>Customer Details</strong> reads one person’s
+email and addresses from WooCommerce at that moment, and <strong>Edit
+Customer…</strong> changes their name and email, their billing address
+or their shipping address. Both need a role that may see the site’s
+people.</p>
+<p><strong>Coupons</strong>: Ctrl+N makes one, <strong>Edit
+Coupon…</strong> changes it, and <strong>Move to Trash…</strong> removes
+it.</p>
+<h3 id="reports-settings-and-reviews">Reports, settings and reviews</h3>
+<ul>
+<li><strong>Shop Reports</strong> says the sales, the top sellers and
+the main totals, each as a sentence with a small table.</li>
+<li><strong>Store Settings</strong> lists every group of WooCommerce’s
+settings, each in words. <strong>Change Setting…</strong> offers the
+choices WooCommerce gives, and previews the old and new value. Settings
+that are passwords are never read out, shown in a row, or changed
+here.</li>
+<li><strong>Product Reviews</strong> lists every review with its
+product, rating, reviewer and status. The reviewer’s email is never
+shown. <strong>Approve</strong>, <strong>Hold</strong> and <strong>Mark
+as Spam</strong> work on one review or several, with a report of how
+each went. <strong>Reply…</strong> puts your answer under the review,
+<strong>Edit Review…</strong> corrects its words or rating, and Delete
+moves it to WooCommerce’s Trash.</li>
+</ul>
+<h3 id="shipping-and-tax">Shipping and tax</h3>
+<ul>
+<li><strong>Shipping Zones</strong> lists each zone with the places it
+covers and its methods. Ctrl+N makes a zone. <strong>Locations…</strong>
+takes a list such as
+<code>country US, state US:AZ, postcode 85001</code>.
+<strong>Methods…</strong> lists the zone’s methods: choose one to turn
+it on or off, change its cost or remove it, or add flat rate, free
+shipping or local pickup. <strong>Rename…</strong> and
+<strong>Delete…</strong> are there too.</li>
+<li><strong>Tax Rates</strong>: Ctrl+N makes a rate, <strong>Edit Tax
+Rate…</strong> changes its name, percentage and where it applies, and
+<strong>Delete…</strong> removes one. A deleted rate comes back with
+Ctrl+Z.</li>
+<li><strong>Tax Classes</strong>: Ctrl+N makes one, and
+<strong>Delete…</strong> removes it. Deleting a class takes its rates
+with it, and the preview warns you.</li>
+</ul>
+<h3 id="attributes-brands-and-webhooks">Attributes, brands and
+webhooks</h3>
+<ul>
+<li><strong>Attributes</strong> lists product attributes such as Size.
+<strong>Terms…</strong> adds, renames or deletes an attribute’s
+values.</li>
+<li><strong>Brands</strong> is there when the site’s WooCommerce has
+brands, from version 9.6.</li>
+<li><strong>Webhooks</strong> lists what each webhook sends, where to,
+and whether it is paused. Ctrl+N makes one: give it a name, choose what
+triggers it, and type the https address it goes to. WooCommerce makes
+the webhook’s secret itself, and QUILL never reads it or says it.
+<strong>Pause or Activate…</strong> stops or starts one, and
+<strong>Delete…</strong> removes it for good.</li>
+</ul>
+<p>In the editor, <strong>Tools &gt; WordPress &gt; Plugin Extras &gt;
+Shop Orders…</strong> lists the newest orders, to read.</p>
+<h2 id="events-the-events-calendar">Events: The Events Calendar</h2>
+<p>Each site with The Events Calendar has an <strong>Events
+Calendar</strong>, which lists the events coming up. Under it are
+<strong>Past Events</strong>, <strong>Venues</strong>,
+<strong>Organizers</strong>, <strong>Event Categories</strong> and
+<strong>Event Tags</strong>.</p>
+<p>Each event says its time zone, and the time on your own computer
+too.</p>
+<ul>
+<li><strong>File &gt; New Here…</strong> (<code>Ctrl+N</code>), or
+<strong>New Event…</strong>, makes an event as a draft, in the site’s
+time zone unless you type another.</li>
+<li><strong>Edit Event…</strong> changes its details, such as its title
+and times.</li>
+<li><strong>Events Between Dates…</strong> lists the events in a range
+you give.</li>
+<li><strong>Categories and Tags…</strong> lets you type the names the
+event should have, separated by commas.</li>
+<li><strong>Move to Trash…</strong> removes one.</li>
+</ul>
+<p><strong>Venues</strong> and <strong>Organizers</strong> each have
+New, Edit and Move to Trash. <strong>Event Categories</strong> and
+<strong>Event Tags</strong> list each one with how many events use it;
+Ctrl+N makes one, and <strong>Rename…</strong> and
+<strong>Delete…</strong> are on the context menu. Deleting one leaves
+the events alone.</p>
+<p>An event that repeats, from Events Calendar Pro, says so. Its series
+is changed in wp-admin, because the plugin does not share the rule that
+makes it repeat.</p>
+<p>In the editor, <strong>Tools &gt; WordPress &gt; Plugin Extras &gt;
+Events Coming Up…</strong> lists every event from today, and <strong>New
+Event…</strong> makes a draft event and opens it.</p>
+<h2 id="search-engines-yoast-seo">Search engines: Yoast SEO</h2>
+<p>Each site with Yoast SEO has an <strong>SEO</strong> place. It lists
+the newest posts and pages, with what to look at on each.</p>
+<ul>
+<li><strong>Search Appearance</strong> reads how the item shows in a
+search result: its title, its address and its description, and where
+each one gets cut off.</li>
+<li><strong>Edit SEO…</strong> changes the SEO title, the meta
+description, the focus keyphrase, whether it shows in search results,
+and the social title, description and image. Anything the site does not
+share with QUILL, such as the social image on most sites, is named in
+the preview and left for the Yoast panel in wp-admin.</li>
+<li><strong>Bulk SEO Editor…</strong> opens a window that lists every
+post and page with how long its SEO title and description are. Press
+Enter on one to change both, right there in the list. Each is saved on
+its own, after a preview. It needs Yoast’s manage options right, which
+administrators and Yoast’s SEO Manager role have.</li>
+</ul>
+<p><strong>Site SEO</strong>, under SEO, gives the site’s SEO and
+readability scores in words. <strong>Open in Dashboard</strong> goes to
+Yoast’s own screens for everything else.</p>
+<p>Rank Math’s title and description are in Properties and Plugin Fields
+in the editor, with a count that tells you when the text goes over what
+search engines show. The same goes for Yoast’s.</p>
+<h2 id="memberships-paid-memberships-pro">Memberships: Paid Memberships
+Pro</h2>
+<p>Each site with Paid Memberships Pro has <strong>Memberships</strong>,
+with <strong>Membership Levels</strong>, <strong>Orders</strong>,
+<strong>Subscriptions</strong>, <strong>Renewals Due</strong> and
+<strong>Discount Codes</strong>. Card and billing details are never
+shown. <strong>Needs My Attention &gt; Membership Orders</strong> lists
+orders, on every site, that wait on a person: pending, in review,
+waiting on payment, or failed.</p>
+<p><strong>Discount codes.</strong> <strong>Look Up a Discount
+Code…</strong> reads one code, and <strong>New Discount Code…</strong>
+makes one after a preview. Where the site cannot list every code, the
+list says so and opens the wp-admin screen.</p>
+<p><strong>A member.</strong> On a person in <strong>People &gt;
+Users</strong>:</p>
+<ul>
+<li><strong>Show Memberships…</strong> reads their current and past
+levels.</li>
+<li><strong>Check Membership Access…</strong> says whether they may see
+a post or page you choose, as Paid Memberships Pro decides it. Their
+Properties has an <strong>Access</strong> page with <strong>Check a Post
+or Page…</strong> for the same thing.</li>
+<li><strong>Change Membership Level…</strong> gives them another
+level.</li>
+<li><strong>Cancel Membership…</strong> cancels one of their
+levels.</li>
+</ul>
+<p>Change and Cancel read the member and their subscriptions again each
+time. The preview names the subscription, the payment gateway, the
+amount and the next payment that stops, and says that nothing is
+refunded and that it cannot be undone. Paid Memberships Pro’s own checks
+still decide.</p>
+<p>The full set needs WordPress 6.9 or later and Paid Memberships Pro
+3.9 or later. On an older site, QUILL uses the plugin’s older way in,
+which does less, and says so where it matters.</p>
+<h2 id="redirects-redirection">Redirects: Redirection</h2>
+<p>A redirect sends visitors from an old address to a new one, so links
+in old emails and search results still arrive. Each site with the
+Redirection plugin has <strong>Redirects</strong>, listing where each
+one leads from and to, its code, how many times it was used, and whether
+it is on.</p>
+<ul>
+<li><strong>File &gt; New Here…</strong> (<code>Ctrl+N</code>), or
+<strong>Add Redirect…</strong>, makes one after a preview.</li>
+<li><strong>Test an Address…</strong> follows the redirects from an
+address you give, and names any chains and loops. Nothing is sent to the
+site.</li>
+<li><strong>Change Redirect…</strong> changes where it leads, and
+<strong>Turn On or Off</strong> does what it says.</li>
+<li><strong>Delete Redirect…</strong> deletes it for good, because the
+plugin keeps no Trash.</li>
+</ul>
+<p><strong>404 Log</strong>, under Redirects, lists addresses visitors
+asked for that were not found. <strong>Redirect This Address…</strong>
+sends one somewhere, after a preview.</p>
+<p>QUILL also offers a redirect at the moments you need one: when you
+change a page’s slug in Properties, and when Replace File gives a file a
+new address (Chapter 5). Say yes, and the old address keeps working.</p>
+<h2 id="a-podcast">A podcast</h2>
+<p><strong>Podcast</strong>, in a site’s branch, lists the site’s
+podcast episodes: its podcast content type if it has one, or else the
+posts that carry an episode’s player. A site with neither says so. QUILL
+Cast and QUILL Studio can post episodes to your site (Chapter 5).</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a
+href="wordpress-forms-09-moving-and-copying.html">Chapter 9: Moving and
+copying content</a></li>
+<li>Next: <a href="wordpress-forms-11-writing-forms.html">Chapter 11:
+Writing a form</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

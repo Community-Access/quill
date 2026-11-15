@@ -2,16 +2,21 @@
 """Live regression run for QUILL's WordPress and Forms features.
 
 Runs the automatable parts of ``docs/qa/wordpress-regression-testing.md`` (tests
-1 to 68) and every wordpress.md 9.15 and 9.16 feature against the real test
-site, through the same core functions QUILL's commands call
-(``quill/core/wordpress`` and ``quill/core/forms``). Anything that needs a
-screen reader, an ear or eyes is recorded as "needs Jeff", never guessed.
+1 to 69, the Workbench's 70 to 109 in ``wordpress_live_workbench.py``, and
+publishing the four kinds of document, 119 to 122, in ``wordpress_live_publish.py``) and
+every wordpress.md 9.15 and 9.16 feature against the real test site, through
+the same core functions QUILL's commands call (``quill/core/wordpress`` and
+``quill/core/forms``). Anything that needs a screen reader, an ear or eyes is
+recorded as "needs Jeff", never guessed.
 
 Run it from the repository root::
 
     python docs/qa/wordpress-live-run.py --public     # no sign-in at all
     python docs/qa/wordpress-live-run.py --dry-run    # signed in, writes nothing to the site
     python docs/qa/wordpress-live-run.py              # signed in, the full run
+    python docs/qa/wordpress-live-run.py --second-site practice
+        # the full run, plus 110 onward against the local Practice Site
+        # (wordpress_live_two_sites.py; without it those are "not run")
 
 Passwords (signed-in runs only) come, in this order, from:
 
@@ -103,6 +108,9 @@ AREAS = (
     "More from the API (9.15)",
     "Every route (9.16)",
     "Forms (17a)",
+    "Workbench, one site (15)",
+    "Workbench, across sites (15.2, 15.12)",
+    "Workbench, plugins and WordPress.org (10B.3)",
     "Clean-up",
 )
 
@@ -364,14 +372,28 @@ class Check:
     fn: Callable[[Ctx], str]
     who: str = ""  # login it signs in as; "" for no sign-in
     writes: bool = False
+    second_site: bool = False  # needs --second-site (wordpress_live_two_sites.py)
 
 
 CHECKS: list[Check] = []
 
+#: (attach, detach) for --second-site and the "needs Jeff" rows a second site
+#: does instead; both set by wordpress_live_two_sites.py.
+SECOND_SITE_HOOKS: tuple[Callable[..., None], Callable[..., None]] | None = None
+SECOND_SITE_COVERS: frozenset[tuple[str, str]] = frozenset()
 
-def check(area: str, ref: str, name: str, *, who: str = "", writes: bool = False):
+
+def check(
+    area: str,
+    ref: str,
+    name: str,
+    *,
+    who: str = "",
+    writes: bool = False,
+    second_site: bool = False,
+):
     def register(fn: Callable[[Ctx], str]) -> Callable[[Ctx], str]:
-        CHECKS.append(Check(area, ref, name, fn, who, writes))
+        CHECKS.append(Check(area, ref, name, fn, who, writes, second_site))
         return fn
 
     return register
@@ -461,6 +483,8 @@ class Ctx:
         self.anon = WordPressApi(SiteAddress(SITE_URL), SiteAuth("none"), site_name=SITE_NAME)
         self.index_raw: dict[str, Any] = {}
         self.index: Any = None
+        self.second: Any = None  # the second site, with --second-site
+        self.second_why = "no second site"
 
     def mask(self, text: object) -> str:
         return mask(text, self.secrets)
@@ -480,7 +504,10 @@ class Ctx:
 
 def run_check(ctx: Ctx, item: Check) -> Result:
     who = item.who or NO_SIGN_IN
-    if item.who and item.who not in ctx.apis:
+    if item.second_site and ctx.second is None:
+        return ctx.results.add(item.area, item.ref, item.name, NOT_RUN, ctx.second_why, who)
+    alone = item.second_site and ctx.second.alone  # the Practice Site plays both sites
+    if item.who and item.who not in ctx.apis and not alone:
         return ctx.results.add(
             item.area, item.ref, item.name, NOT_RUN, f"no application password for {item.who}", who
         )
@@ -1216,6 +1243,22 @@ def _address_signed(ctx: Ctx) -> str:
 # Saving and publishing
 
 
+def _trash_orphans(ctx: Ctx, login: str, kind: str, title: str) -> None:
+    """Register clean-up for items titled ``title`` that a failed create left."""
+    from quill.core.wordpress import site as wp
+
+    api = ctx.api(ADMIN if ADMIN in ctx.apis else login)
+    try:
+        found = [r.id for r in wp.list_items(api, kind, search=title) if r.title == title]
+    except Exception:  # noqa: BLE001 - the sweep still reports anything left
+        return
+    for item_id in found:
+        ctx.later(
+            f"trash {kind} {item_id}",
+            lambda item_id=item_id: wp.trash_item(api, kind, item_id),
+        )
+
+
 def _new_post(
     ctx: Ctx,
     login: str,
@@ -1233,7 +1276,15 @@ def _new_post(
         or f"<!-- wp:paragraph --><p>{TAG}. Made by the regression harness.</p>"
         "<!-- /wp:paragraph -->"
     )
-    made = wp.create_item(api, wp.Item(0, kind, ctx.title(words), body, status))
+    title = ctx.title(words)
+    try:
+        made = wp.create_item(api, wp.Item(0, kind, title, body, status))
+    except Exception:
+        # A site error after WordPress has saved (a plugin hook failing on
+        # publish) still leaves the item behind; find it by its unique title
+        # so the clean-up trashes it, then report the original error.
+        _trash_orphans(ctx, login, kind, title)
+        raise
 
     def undo() -> None:
         try:
@@ -2431,10 +2482,43 @@ def _responses(ctx: Ctx) -> str:
     rows = rs.list_rows(got, labels, form.title)
     csv = rs.csv_text(got, labels)
     expect("Your name" in csv.splitlines()[0], f"CSV header: {csv.splitlines()[0]}")
-    expect(rs.find(got, "message 1"), "Find did not find 'message 1'")
+    expect(
+        rs.find(got, "message 1"),
+        "Find did not find 'message 1'; newest answers: "
+        + repr({k: cell(rs.answer_text(v), 40) for k, v in got[0].answers.items()}),
+    )
     gone = fs.delete_responses(api, [got[-1].id])
     expect(gone == 1, f"{gone} deleted")
     return f"{len(got)} responses; first row: {cell(rows[0].text, 90)}"
+
+
+# =========================================================================== #
+# The Workbench (tests 70 onward), in wordpress_live_workbench.py beside this file
+
+
+def _load_workbench_checks() -> None:
+    import importlib.util
+
+    # Tests 70 to 109, then 110 to 118 (two real sites, with --second-site), then
+    # 119 to 122 (Markdown, block markup, HTML and plain text, published), then
+    # 123 to 126 (Gravity Forms forms built in QUILL; skipped without gf/v2).
+    for name in (
+        "wordpress_live_workbench",
+        "wordpress_live_two_sites",
+        "wordpress_live_publish",
+        "wordpress_live_gravity_build",
+    ):
+        path = Path(__file__).with_name(f"{name}.py")
+        spec = importlib.util.spec_from_file_location(name, path)
+        if spec is None or spec.loader is None:
+            raise ImportError(f"cannot load {path}")
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[name] = module  # dataclasses look their module up while the class is made
+        spec.loader.exec_module(module)
+        module.register(sys.modules[__name__])
+
+
+_load_workbench_checks()
 
 
 # =========================================================================== #
@@ -2569,13 +2653,25 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--no-doc", action="store_true", help="do not write the Live run section")
     parser.add_argument("--no-render", action="store_true", help="do not run pandoc afterwards")
     parser.add_argument("--verbose", action="store_true", help="masked tracebacks for failures")
+    parser.add_argument(
+        "--second-site",
+        choices=("practice", "practice-alone"),
+        help="practice: run tests 110 onward between the test site and the Practice Site; "
+        "practice-alone: only those, the Practice Site standing in for both (no test site, "
+        "no Live run section written)",
+    )
     args = parser.parse_args(argv)
     if str(ROOT) not in sys.path:
         sys.path.insert(0, str(ROOT))
     ctx = Ctx(args)
+    alone = args.second_site == "practice-alone"
+    if alone:
+        args.no_doc = True
     try:
         mode = "without signing in (`--public`)"
-        if not args.public:
+        if alone:
+            mode = "the Practice Site alone, standing in for both sites"
+        elif not args.public:
             passwords = load_passwords(ROLES)
             for login in passwords.missing:
                 print(
@@ -2595,8 +2691,12 @@ def main(argv: list[str] | None = None) -> int:
             del passwords
             signed = ", ".join(ctx.apis) or "nobody (no passwords found)"
             mode = f"{'dry run, ' if args.dry_run else ''}signed in as {signed}"
+        if args.second_site and not args.public and SECOND_SITE_HOOKS:
+            SECOND_SITE_HOOKS[0](ctx, alone=alone)
+            if ctx.second is not None:
+                mode += f"; second site: {ctx.second.name} ({ctx.second.url})"
         for item in CHECKS:
-            if args.public and item.who:
+            if (args.public and item.who) or (alone and not item.second_site):
                 continue
             row = run_check(ctx, item)
             if row.outcome == FAIL or args.verbose:
@@ -2604,11 +2704,15 @@ def main(argv: list[str] | None = None) -> int:
             if item.fn is _index and row.outcome != PASS:
                 print("The REST index could not be read; nothing else can run.")
                 break
-        if not args.public:
+        if not args.public and not alone:
             for area, ref, name, why in HUMAN:
+                if ctx.second is not None and (area, ref) in SECOND_SITE_COVERS:
+                    continue  # done for real against the second site (110 onward)
                 ctx.results.add(area, ref, name, NEEDS_JEFF, why, "-")
     finally:
         run_cleanups(ctx)
+        if SECOND_SITE_HOOKS:
+            SECOND_SITE_HOOKS[1](ctx)  # sweep the Practice Site, then stop it if the run started it
         try:
             sweep(ctx)
         except Exception as exc:  # noqa: BLE001

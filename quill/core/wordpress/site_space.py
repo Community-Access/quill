@@ -77,6 +77,40 @@ def read_space(api: WordPressApi) -> SpaceUse:
     return SpaceUse(parts, total)
 
 
+def space_or_none(api: WordPressApi) -> SpaceUse | None:
+    """The space the site uses, or None when it will not say (only administrators may ask)."""
+    try:
+        return read_space(api)
+    except WordPressApiError:
+        return None
+
+
+def upload_warning(site: str, name: str, size: int, space: SpaceUse | None) -> str:
+    """What is said before a big upload: its size beside what the site already holds.
+
+    WordPress's REST API says how much room the site *uses* but not how much
+    its host *allows*, so the sentence gives the person the numbers to judge
+    by and says plainly what QUILL cannot see (9.17, gap 3).
+    """
+    head = f"Upload {name}, {size_words(size)}, to {site}?"
+    limit = (
+        " WordPress does not say how much room the host allows, so QUILL cannot tell whether "
+        "it fits; if the host is nearly full, the upload fails and nothing is kept."
+    )
+    if space is None or space.total < 0:
+        return f"{head} {site} would not say how much space it uses.{limit}"
+    uploads = next((b for n, b, _w in space.parts if n == "Uploads" and b >= 0), -1)
+    said = f" {site} already uses {size_words(space.total)} altogether"
+    if uploads >= 0:
+        said += (
+            f", {size_words(uploads)} of it uploads; with this file, uploads become "
+            f"{size_words(uploads + size)}"
+        )
+    share = size * 100 // space.total if space.total else 100
+    big = f" This one file is {share} percent of everything the site holds." if share >= 10 else ""
+    return f"{head}{said}.{big}{limit}"
+
+
 def _bytes(entry: Any) -> int:
     if not isinstance(entry, dict):
         return -1

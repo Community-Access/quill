@@ -96,8 +96,8 @@ class DocumentWordPressMixin:
             raw_key_flags=raw("GetRawKeyFlags"),
         ):
             return False
-        if not self._wordpress_key_bindings():
-            return False  # the WordPress area is switched off: not our key
+        if not any(h.startswith("cmd_wp_") for h in self._wordpress_key_bindings()):
+            return False  # the WordPress area is switched off: not our key, Forms' F or no
         self._announce(layer.start())
         return True
 
@@ -111,7 +111,8 @@ class DocumentWordPressMixin:
             for _menu, _label, key, handler, kind in resolved_commands(
                 app.feature_enabled, getattr(app, "keymap", None)
             )
-            if handler.startswith("cmd_wp_") and kind not in {"sep", "sub"}
+            # The Forms key sits on the same layer (forms/menu.py LAYER_KEYS).
+            if handler.startswith(("cmd_wp_", "cmd_forms_")) and kind not in {"sep", "sub"}
         }
 
     def _wordpress(self) -> Any:
@@ -282,6 +283,10 @@ class DocumentWordPressMixin:
     def cmd_wp_workbench(self) -> None:
         """Tools > WordPress > Open WordPress Workbench."""
         self._wordpress().cmd_workbench()
+
+    def cmd_wp_this_post_in_workbench(self) -> None:
+        """File > WordPress > This Post in the Workbench."""
+        self._wordpress().cmd_this_post_in_workbench()
 
     def cmd_wp_media_library(self) -> None:
         """Tools > WordPress > Media Library."""

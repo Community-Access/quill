@@ -28,6 +28,7 @@ from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.dpi import dip_size
 from quill.ui.main_frame_weather import WeatherMixin
+from quill.ui.startup_launch import append_windows_startup_items, starts_in_tray
 from quill.ui.whats_new import append_whats_new_item
 
 _TITLE = "Quill Weather"
@@ -139,15 +140,13 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, WeatherOptionsMixin, WeatherA
         self._append_weather_menu(menu_bar)
 
         options_menu = wx.Menu()
-        self._startup_item_id = wx.NewIdRef()
-        options_menu.AppendCheckItem(
-            self._startup_item_id, "Start Quill Weather with &Windows\tCtrl+Alt+W"
-        )
-        options_menu.Check(self._startup_item_id, weather_startup.is_launch_at_startup_enabled())
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda e: self._set_launch_at_startup(e.IsChecked()),
-            id=self._startup_item_id,
+        append_windows_startup_items(  # and Start minimized when Windows starts, Ctrl+Alt+L
+            self,
+            options_menu,
+            weather_startup,
+            start_label="Start Quill Weather with &Windows\tCtrl+Alt+W",
+            start_checked=weather_startup.is_launch_at_startup_enabled(),
+            on_start=self._set_launch_at_startup,
         )
         self._start_tray_item_id = wx.NewIdRef()
         options_menu.AppendCheckItem(
@@ -578,7 +577,6 @@ def main() -> int:
     if "--check-once" in sys.argv:
         return _run_headless_check()
     safe_mode = bool(os.environ.get("QUILL_SAFE_MODE"))
-    start_in_tray = "--tray" in sys.argv
     from quill.core.ipc import (
         enqueue_open_request,
         release_primary_instance,
@@ -602,7 +600,7 @@ def main() -> int:
     app = wx.App()
     frame = WeatherAppFrame(safe_mode=safe_mode)
     frame._log_listener = log_listener
-    if start_in_tray or settings_mod.load_settings(app_data_dir()).app_start_in_tray:
+    if starts_in_tray(settings_mod.load_settings(app_data_dir()).app_start_in_tray):
         frame._send_to_tray()  # come up hidden; the watch still runs
     else:
         frame.frame.Show()

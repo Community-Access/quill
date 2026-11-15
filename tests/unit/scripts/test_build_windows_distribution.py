@@ -170,7 +170,18 @@ version = "2.4.6"
     (fake_kokoro_dir / "kokoro-v1.0.int8.onnx").write_text("model", encoding="utf-8")
     (fake_kokoro_dir / "voices-v1.0.bin").write_text("voices", encoding="utf-8")
 
-    bundle = build_windows_distribution(pyproject, tmp_path / "dist", kokoro_dir=fake_kokoro_dir)
+    # The Practice Site runtime is staged in every build since 2026-11-13; stand
+    # its staging in so this offline test never runs the dependency fetcher.
+    from unittest import mock
+
+    import scripts.build_windows_distribution as bwd
+
+    with mock.patch.object(
+        bwd, "_stage_practice_site_tools", lambda *_a, **_k: ["nodejs", "wp-playground-cli"]
+    ):
+        bundle = build_windows_distribution(
+            pyproject, tmp_path / "dist", kokoro_dir=fake_kokoro_dir
+        )
 
     portable_dir = tmp_path / "dist" / "portable"
     installer_script = tmp_path / "dist" / "installer" / "quill.iss"
@@ -215,8 +226,9 @@ version = "2.4.6"
     assert manifest.get("portableLauncher") is None
     # Nothing auto-stages any more (PRD 10.2.x footprint unbundle): Pandoc, Piper,
     # Node.js, the braille pack, whisper.cpp, Kokoro, DECtalk, and eSpeak-NG all
-    # download on demand, so a default build bundles no optional tools.
-    assert sorted(manifest["bundledTools"]) == []
+    # download on demand. The one exception, since 2026-11-13, is the WordPress
+    # Practice Site runtime (Node.js and WordPress Playground), bundled always.
+    assert sorted(manifest["bundledTools"]) == ["nodejs", "wp-playground-cli"]
     # manifest["docs"] is str(path.relative_to(portable_dir)), which uses the
     # BUILD HOST's os.sep -- always backslash in the real shipped product
     # (this script only ever really runs on windows-latest CI), but this test
@@ -339,7 +351,6 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
         "tools\\speech\\espeak-ng\\*",
         "tools\\speech\\piper\\*",
         "tools\\speech\\whispercpp\\*",
-        "tools\\nodejs\\*",
         "vendor\\braille-pack\\*",
         "kokoro-models\\*",
         "_tool-download\\*",
@@ -347,6 +358,9 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
         "*\\__pycache__\\*",
     ):
         assert term in excludes_line, f"{term!r} missing from default (non-offline) Excludes"
+    # Node.js ships in every build since 2026-11-13: the WordPress Practice Site
+    # runs on it, and the family bundles its runtimes rather than downloading them.
+    assert "tools\\nodejs\\*" not in excludes_line
     assert "User Guide" in script
     assert "userguide.html" in script
     assert 'Parameters: "-m quill"' in script
@@ -437,12 +451,13 @@ def test_bundle_offline_lifts_optional_component_excludes() -> None:
     # first answer is always "no chapters could be found".
     assert "speech-models-bundled\\vosk" not in online_excludes
 
-    # Node.js has no --nodejs-dir staging flag on this script (it is not part of
-    # the offline-speech/braille bundle) and the build-artifact/dev-only entries
-    # are meaningless to ship either way, so both stay excluded regardless.
+    # The build-artifact/dev-only entries are meaningless to ship either way, so
+    # they stay excluded regardless. Node.js is no longer among them: since
+    # 2026-11-13 it ships in every build for the WordPress Practice Site.
+    assert "tools\\nodejs\\*" not in online_excludes
+    assert "tools\\nodejs\\*" not in offline_excludes
     for always_excluded in (
         "docs\\QUILL-PRD.md",
-        "tools\\nodejs\\*",
         "_tool-download\\*",
         "_speech-download\\*",
         "*\\__pycache__\\*",

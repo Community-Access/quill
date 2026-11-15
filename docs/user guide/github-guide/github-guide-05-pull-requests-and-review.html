@@ -532,14 +532,15 @@ than telling you a request went in when it did not. Copilot’s review
 arrives as review comments, like anyone else’s, and the outline shows
 them after a refresh.</p>
 <h3 id="merging">Merging</h3>
-<p>Merging is in GitHub Items, not the review window, because it is the
-one thing here that changes the main branch for everyone. Select the
-pull request and choose <strong>Merge Pull Request #42…</strong> from
-<strong>Actions…</strong> or its context menu. QUILL asks you to type
-the pull request’s number to confirm, not just press Yes, and says what
-will happen: that it merges into the base branch and that this changes
-the branch for everyone. You hear “Merged #42” and the new commit. QUILL
-merges by squashing the pull request’s commits into one.</p>
+<p>Merging is in the Workbench, not the review window, because it is the
+one thing here that changes the base branch for everyone. Select the
+pull request and press <code>Ctrl+Shift+Enter</code>, or choose
+<strong>Merge…</strong> from its context menu. QUILL asks how to merge:
+Squash and merge, Merge commit, or Rebase. Then it asks you to type the
+pull request’s number to confirm, not just press Yes, and says what will
+happen: that it merges into the base branch and that this changes the
+branch for everyone. You hear “Merged #42” and the start of the new
+commit.</p>
 <h3 id="auto-merge-and-the-merge-queue">Auto-merge and the merge
 queue</h3>
 <p><strong>Auto-Merge and Queue…</strong> (<code>Alt+A</code>) opens a
@@ -580,11 +581,16 @@ are older-style commit statuses rather than check runs, and those cannot
 be re-run from outside; QUILL says so. Chapter 6 covers checks and
 workflow runs in full.</p>
 <h2 id="writing-a-new-pull-request">Writing a new pull request</h2>
-<p>Signed in, <strong>Actions…</strong> in the Issues &amp; PRs view has
-<strong>New Pull Request…</strong>. QUILL asks four questions in turn:
-the title, the description (you can leave it empty), the branch with
-your changes, and the branch to merge into, which starts as
-<code>main</code>.</p>
+<p>In a repository’s <strong>Pull Requests</strong>, press
+<code>Ctrl+N</code>. To start from a branch, select it in Branches,
+press <code>Ctrl+Shift+N</code> and choose Pull Request. The New Pull
+Request window has Merge into, Merge from, Title, Description and a
+Create as a draft check box. The title and description start from the
+commits you are proposing, a branch that already has an open pull
+request is taken to that one instead of making a second, and Cancel
+keeps your text for the session. <a
+href="github-guide-12-the-workbench.html">Chapter 12</a> walks through
+it.</p>
 <hr />
 <ul>
 <li>Previous: <a href="github-guide-04-issues.html">Chapter 4:

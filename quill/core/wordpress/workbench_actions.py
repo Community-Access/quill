@@ -8,18 +8,52 @@ against ``users/me?context=edit`` before offering it (section 11), and its
 tier, which decides how it is confirmed: Trash is tier 1 (undoable), a
 change on the site tier 2, and Delete Permanently tier 3, never a bare key.
 
-:data:`WINDOW_MENU` is the bar, checked by
-:func:`quill.core.workbench.menus.problems` for the accelerator and
-access-key rules. Keys follow Part C; the ones that must act only in the list
-(Delete, Shift+Delete, Ctrl+Z) are :data:`LIST_KEYS`, which the window keeps
-away from the filter box.
+:data:`WINDOW_MENU`, :data:`GO_NODES`, :data:`LIST_KEYS` and the window's
+keymap live in :mod:`quill.core.wordpress.workbench_window_menu` (GATE-11)
+and are re-exported here, where the window and the tests have always found them.
 """
 
 from __future__ import annotations
 
+from quill.core.wordpress.workbench_admin_actions import (
+    ACROSS_ROWS,
+    DASHBOARD_ROWS,
+    MODEL_ROWS,
+    PLUGIN_ROWS,
+    PMPRO_ROWS,
+    SETTING_ROWS,
+    THEME_ROWS,
+    USER_ROWS,
+)
+from quill.core.wordpress.workbench_dashboard_places import MENU_ROWS, dashboard_rows
+from quill.core.wordpress.workbench_dashboard_places import NODE_ROWS as ADMIN_NODE_ROWS
+from quill.core.wordpress.workbench_gap_actions import ITEM_VERSIONS, UPDATE_CHECK
+from quill.core.wordpress.workbench_gravity_actions import (
+    GRAVITY_BUILD_ROWS,
+    GRAVITY_ENTRY_ROWS,
+    GRAVITY_FEED_ROWS,
+    GRAVITY_FORM_ROWS,
+    GRAVITY_QAF_ROWS,
+)
+from quill.core.wordpress.workbench_parity_actions import ITEM_ROWS as PARITY_ITEM_ROWS
+from quill.core.wordpress.workbench_parity_actions import MEDIA_ROWS as PARITY_MEDIA_ROWS
+from quill.core.wordpress.workbench_parity_actions import NODE_ROWS as PARITY_NODE_ROWS
 from quill.core.wordpress.workbench_places import places_rows
+from quill.core.wordpress.workbench_plugin_actions import PLUGIN_ACTION_ROWS, QAF_FORM_ROWS
+from quill.core.wordpress.workbench_qaf_spam_edit import QAF_SPAM_ROWS
+from quill.core.wordpress.workbench_site_files_actions import MEDIA_ROWS as SITE_FILES_MEDIA_ROWS
+from quill.core.wordpress.workbench_sweep_places import sweep_rows
+from quill.core.wordpress.workbench_window_menu import (
+    GO_NODES,
+    LIST_KEYS,
+    PREFIX,
+    PROPERTIES,
+    WINDOW_MENU,
+    WORDPRESS_KEYMAP_ID,
+    WORDPRESS_KEYS,
+    command,
+)
 from quill.core.workbench.actions import ActionRow, ActionTable, Tier
-from quill.core.workbench.menus import MenuRow, MenuSpec
 
 __all__ = [
     "GO_NODES",
@@ -28,16 +62,10 @@ __all__ = [
     "PROPERTIES",
     "WINDOW_MENU",
     "WORDPRESS_ACTIONS",
+    "WORDPRESS_KEYMAP_ID",
+    "WORDPRESS_KEYS",
     "command",
 ]
-
-PREFIX = "wordpress.workbench."
-PROPERTIES = f"{PREFIX}sheet"
-LIST_KEYS = frozenset({"Delete", "Shift+Delete", "Ctrl+Z"})
-
-
-def command(verb: str) -> str:
-    return f"{PREFIX}{verb}"
 
 
 def _a(
@@ -95,6 +123,12 @@ WORDPRESS_ACTIONS = ActionTable(
             ),
             _a("preview", "Preview on the Site", help="In your browser. Ctrl+Enter."),
             _a(
+                "visual_review",
+                "Visual Review...",
+                help="The editor's Visual Review of this published page: it is captured, and "
+                "described by your AI only after you say yes. Nothing on the site changes.",
+            ),
+            _a(
                 "publish",
                 "Publish or Update...",
                 tier=Tier.WRITE,
@@ -127,11 +161,37 @@ WORDPRESS_ACTIONS = ActionTable(
                 needs="edit",
                 help="A note naming who reviews it. Ctrl+Shift+J.",
             ),
+            _a(
+                "move_day",
+                "Move to Another Day...",
+                tier=Tier.WRITE,
+                needs="edit",
+                help="A new date and time, previewed in the site's time and yours. "
+                "Ctrl+Alt+Shift+D.",
+            ),
+            _a(
+                "show_comments",
+                "Show Its Comments",
+                help="Its comments, and how many it has. Ctrl+Alt+Shift+M.",
+            ),
+            ITEM_VERSIONS,
+            *PARITY_ITEM_ROWS,
             _SHEET,
         ),
         "media": (
             _a("open_on_site", "View or Play", default=True, help="Open the file in your browser."),
+            _a(
+                "insert_picked",
+                "Insert into the Document",
+                help=(
+                    "At the caret of the document Insert > Picture from the Media Library "
+                    "came from; there, Enter does this."
+                ),
+            ),
             _a("copy_link", "Copy Link", help="The file's address. Ctrl+Shift+C."),
+            _COPY_TO_SITE,
+            *SITE_FILES_MEDIA_ROWS,
+            *PARITY_MEDIA_ROWS,
             _DELETE,
             _SHEET,
         ),
@@ -193,9 +253,10 @@ WORDPRESS_ACTIONS = ActionTable(
                 needs="forms",
                 help="Hold it as spam. Ctrl+Shift+S.",
             ),
+            *GRAVITY_ENTRY_ROWS,
             _SHEET,
         ),
-        "pmpro": (_READ, _SHEET),
+        "pmpro": (_READ, *PMPRO_ROWS, _SHEET),
         "term": (
             _a("show_posts", "Show Its Posts", default=True, help="The posts filed under it."),
             _a(
@@ -230,11 +291,19 @@ WORDPRESS_ACTIONS = ActionTable(
                 "Show Memberships...",
                 help="Read this person's current and past Paid Memberships Pro memberships.",
             ),
+            *USER_ROWS,
             _a(
                 "send_password_reset",
                 "Send Password Reset",
                 needs="edit_users",
                 help="Opens their wp-admin screen to send the reset email. Ctrl+Shift+W.",
+            ),
+            _a(
+                "set_password",
+                "Set New Password...",
+                tier=Tier.WRITE,
+                needs="edit_users",
+                help="Give them a new sign-in password: a strong one is offered, then previewed.",
             ),
             _a("roles", "Roles and What They May Do", help="Each role in plain words. Ctrl+Alt+R."),
             _a(
@@ -255,6 +324,8 @@ WORDPRESS_ACTIONS = ActionTable(
                 needs="activate_plugins",
                 help="Turn the plugin on or off, after you confirm.",
             ),
+            *PLUGIN_ROWS,
+            UPDATE_CHECK,
             _SHEET,
         ),
         "theme": (
@@ -262,10 +333,11 @@ WORDPRESS_ACTIONS = ActionTable(
             _a(
                 "activate_theme",
                 "Activate...",
-                tier=Tier.WRITE,
                 needs="switch_themes",
-                help="Make this the site's theme, after you confirm.",
+                help="REST cannot switch themes, so this opens Appearance > Themes in wp-admin.",
             ),
+            *THEME_ROWS,
+            UPDATE_CHECK,
             _SHEET,
         ),
         "app_password": (
@@ -281,6 +353,7 @@ WORDPRESS_ACTIONS = ActionTable(
         "site": (
             _a("open_site", "Open This Site", default=True, help="Select its node in the tree."),
             _OPEN_SITE,
+            *QAF_SPAM_ROWS,  # QUILL Accessible Forms' question bank and weeks (complete.md WP-C)
             _SHEET,
         ),
         "writing_type": (
@@ -307,17 +380,69 @@ WORDPRESS_ACTIONS = ActionTable(
                 default=True,
                 help="Fill in its input, see the preview, then run it. Enter.",
             ),
+            _a(
+                "offer_to_ask",
+                "Offer to Ask the Site",
+                help=(
+                    "Turn on or off whether Ask the Site may suggest this ability. Kept on this "
+                    "computer; QUILL still asks you before every run."
+                ),
+            ),
             _SHEET,
         ),
-        "model": (_READ, _SHEET),
+        "model": (_READ, *MODEL_ROWS, _SHEET),
+        **PLUGIN_ACTION_ROWS,  # shop, events, SEO (workbench_plugin_actions)
+        "update": (
+            _a(
+                "open_on_site",
+                "Open Dashboard Updates in the Browser",
+                default=True,
+                help="Where WordPress shows and runs updates; REST cannot run them. Enter.",
+            ),
+            _a("read", "Read in Full", help="Move to the details pane to read it."),
+            UPDATE_CHECK,
+            _SHEET,
+        ),
         **places_rows(_READ, _SHEET),
+        **dashboard_rows(_READ, _SHEET),  # templates, Additional CSS, wp-admin screens
+        **sweep_rows(_READ, _SHEET),
+        "across": (*places_rows(_READ, _SHEET)["across"][:-1], *ACROSS_ROWS, _SHEET),
+        "dashboard": (
+            *DASHBOARD_ROWS,
+            _a("read", "Read in Full", help="Move to the details pane to read it."),
+            _SHEET,
+        ),
+        "setting": (_READ, *SETTING_ROWS, _SHEET),
         "day": (
             _a("open_day", "Open This Day", default=True, help="List what the day holds."),
             _SHEET,
         ),
+        "search_result": (
+            _a(
+                "open_on_site",
+                "Open Result on the Site",
+                default=True,
+                help="Open this result in your browser. Enter.",
+            ),
+            _SHEET,
+        ),
+        "global_style": (
+            _READ,
+            _a(
+                "edit_global_style",
+                "Change...",
+                tier=Tier.WRITE,
+                needs="edit_theme_options",
+                help="Change this palette colour or font size after a preview.",
+            ),
+            _SHEET,
+        ),
         "pattern": (_READ, _COPY_TO_SITE, _SHEET),
+        "menu": (_READ, *MENU_ROWS, _COPY_TO_SITE, _SHEET),
         "form": (
             _a("show_entries", "Show Its Responses", default=True, help="The form's responses."),
+            *QAF_FORM_ROWS,
+            *GRAVITY_QAF_ROWS,
             _COPY_TO_SITE,
             _SHEET,
         ),
@@ -332,19 +457,20 @@ WORDPRESS_ACTIONS = ActionTable(
                     "Change a supported Gravity Forms control after reviewing a full-form preview."
                 ),
             ),
+            *GRAVITY_FORM_ROWS,
+            *GRAVITY_BUILD_ROWS,
+            _COPY_TO_SITE,
             _SHEET,
         ),
+        "gravity_feed": (_READ, *GRAVITY_FEED_ROWS, _DELETE, _SHEET),
+        "gravity_result": (_READ, _SHEET),
         **{
             kind: (_READ, _SHEET)
             for kind in (
                 "fact",
-                "setting",
                 "problem",
                 "help",
-                "menu",
-                "template",
                 "font",
-                "sidebar",
                 "mixed",
             )
         },
@@ -356,243 +482,11 @@ WORDPRESS_ACTIONS = ActionTable(
             _a("columns", "Columns...", help="Choose the columns this list shows. Ctrl+Alt+C."),
             _a("group_by", "Group By...", help="A child node per value of a column. Ctrl+Alt+G."),
             _a("what_can_i_do", "What Can I Do Here?", help="What your role allows. Shift+F1."),
+            *PARITY_NODE_ROWS,
+            *ADMIN_NODE_ROWS,
             _SHEET,
         ),
     },
     properties_command=PROPERTIES,
 )
 """Section 7's context menus, row type by row type."""
-
-
-def _row(verb: str, label: str, key: str, help: str) -> MenuRow:  # noqa: A002 - field name
-    return MenuRow(command(verb), label, key, help)
-
-
-WINDOW_MENU: tuple[MenuSpec, ...] = (
-    MenuSpec(
-        "&File",
-        (
-            _row("new_here", "&New Here...", "Ctrl+N", "A new user or password, where you are."),
-            _row("open_on_site", "Open on the &Site", "Shift+Enter", "The selection in a browser."),
-            _row("preview", "Pre&view on the Site", "Ctrl+Enter", "Preview the selected item."),
-            None,
-            _row("close", "&Close Workbench", "Alt+F4", "Close this window. The editor stays."),
-        ),
-    ),
-    MenuSpec(
-        "&Edit",
-        (
-            _row("undo", "&Undo WordPress Change", "Ctrl+Z", "Put back the last change."),
-            _row("history", "Change &History...", "Ctrl+Shift+H", "Every change made here."),
-            None,
-            _row("copy_link", "Copy &Link", "Ctrl+Shift+C", "Copy the selected row's address."),
-            _row("filter", "&Filter...", "Ctrl+E", "Move to the filter box above the list."),
-            _row(
-                "filter_builder",
-                "Filter &Builder...",
-                "Ctrl+Shift+F",
-                "Build a filter from this list's own attributes.",
-            ),
-            _row(
-                "show_only",
-                "Show &Only Like This...",
-                "Ctrl+Alt+O",
-                "Keep only rows like the selected one, by a column you choose.",
-            ),
-            _row(
-                "hide_like",
-                "Hi&de Like This...",
-                "Ctrl+Alt+H",
-                "Hide rows like the selected one, by a column you choose.",
-            ),
-            _row("only_mine", "Only &Mine", "Ctrl+Alt+M", "Only what you wrote, or all again."),
-            None,
-            _row("export_list", "E&xport List...", "Ctrl+Shift+X", "This list as Excel or CSV."),
-            _row(
-                "import_posts",
-                "&Import Posts from a Spreadsheet...",
-                "Ctrl+Shift+I",
-                "Posts or pages from an Excel or CSV file, previewed row by row.",
-            ),
-        ),
-    ),
-    MenuSpec(
-        "&View",
-        (
-            _row("refresh", "&Refresh", "F5", "Load this view again from the site."),
-            _row("load_more", "Load &More", "Ctrl+Shift+L", "Read three hundred more rows."),
-            _row("load_all", "Load A&ll", "Ctrl+Alt+L", "Read every row the site has."),
-            _row("columns", "&Columns...", "Ctrl+Alt+C", "Choose the columns this list shows."),
-            _row("group_by", "&Group By...", "Ctrl+Alt+G", "A child node per value of a column."),
-            None,
-            _row("back", "&Back", "Alt+Left", "The view you were on before. Backspace too."),
-            _row("forward", "&Forward", "Alt+Right", "The view you went back from."),
-            None,
-            _row("next_pane", "&Next Pane", "F6", "Tree, filter, list, details, status bar."),
-            _row("previous_pane", "&Previous Pane", "Shift+F6", "The same panes, backwards."),
-            None,
-            _row("where_am_i", "&Where Am I", "Alt+1", "Say the node and the filter in effect."),
-            _row("say_selection", "Say &Selection", "Alt+2", "Say how many rows are selected."),
-        ),
-    ),
-    MenuSpec(
-        "&Go",
-        (
-            _row("go_start", "&Start Here", "Ctrl+9", "What this window is and how it works."),
-            _row("go_inbox", "&Needs My Attention", "Ctrl+1", "What needs you, on every site."),
-            _row("go_site", "Current S&ite", "Ctrl+2", "The current site's overview."),
-            _row("go_posts", "&Posts", "Ctrl+Shift+1", "This site's posts."),
-            _row("go_pages", "P&ages", "Ctrl+Shift+2", "This site's pages."),
-            _row("go_media", "&Media", "Ctrl+Shift+3", "This site's media."),
-            _row("go_comments", "&Comments", "Ctrl+Shift+4", "This site's comments."),
-            _row("go_users", "&Users", "Ctrl+Shift+5", "This site's people."),
-            _row("go_plugins", "P&lugins", "Ctrl+Shift+6", "This site's plugins."),
-            _row("go_appearance", "Appearanc&e", "Ctrl+Shift+7", "Themes, templates, patterns."),
-            _row("go_settings", "Settin&gs", "Ctrl+Shift+8", "This site's settings."),
-            _row("go_health", "Site &Health", "Ctrl+Shift+9", "This site's health checks."),
-            _row("go_across", "Acr&oss Sites", "Ctrl+0", "The same name on every site."),
-            _row("go_calendar", "Calen&dar", "Ctrl+3", "Every site's content, by day."),
-            _row("go_watches", "&Watches", "Ctrl+5", "What the Workbench watches for you."),
-            _row("go_practice", "P&ractice Site", "Ctrl+6", "The WordPress site on this computer."),
-            None,
-            _row("go_parent", "Paren&t Node", "Alt+Up", "The node above this one in the tree."),
-        ),
-    ),
-    MenuSpec(
-        "&Item",
-        (
-            MenuRow(PROPERTIES, "&Properties...", "Alt+Enter", "Everything about it on one sheet."),
-            _row("publish", "P&ublish or Update...", "Ctrl+Shift+P", "Publish the selection."),
-            _row("approve", "&Approve, or Not Spam", "Ctrl+Shift+A", "Approve, or release spam."),
-            _row("unapprove", "U&napprove", "Ctrl+Shift+U", "Back to waiting."),
-            _row("spam", "&Spam", "Ctrl+Shift+S", "Mark the selection as spam."),
-            _row("reply", "&Reply...", "Ctrl+Shift+M", "Reply to the selected comment."),
-            _row(
-                "allow_sender",
-                "Not Spam, and A&llow This Sender",
-                "Ctrl+Alt+W",
-                "Approve the comment and let this person's next ones through.",
-            ),
-            _row("merge_into", "&Merge Into...", "Ctrl+Shift+G", "Fold this term into another."),
-            _row(
-                "convert_term",
-                "Con&vert to Category or Tag...",
-                "Ctrl+Shift+K",
-                "A tag becomes a category, or a category a tag.",
-            ),
-            _row(
-                "approve_schedule",
-                "Approve and S&chedule...",
-                "Ctrl+Shift+D",
-                "Publish what waits for review, now or at a time.",
-            ),
-            _row(
-                "send_back",
-                "Send &Back with a Note...",
-                "Ctrl+Shift+B",
-                "Back to draft, with a note.",
-            ),
-            _row("assign_reviewer", "Assi&gn a Reviewer...", "Ctrl+Shift+J", "Name a reviewer."),
-            _row("copy_to_site", "C&opy to Site...", "Ctrl+Shift+Y", "To another of your sites."),
-            _row(
-                "send_password_reset",
-                "Send Pass&word Reset",
-                "Ctrl+Shift+W",
-                "Open this person's wp-admin screen to send the reset email.",
-            ),
-            None,
-            _row("trash", "Move to &Trash", "Delete", "Into WordPress's Trash; Restore undoes it."),
-            _row("restore", "R&estore from Trash", "Ctrl+Shift+R", "Out of the Trash."),
-            _row(
-                "delete_permanently",
-                "&Delete Permanently...",
-                "Shift+Delete",
-                "Gone for good, after you confirm by name.",
-            ),
-        ),
-    ),
-    MenuSpec(
-        "&Site",
-        (
-            _row(
-                "site_sheet", "Site &Properties...", "Alt+Shift+Enter", "The current site's sheet."
-            ),
-            _row("what_can_i_do", "&What Can I Do Here?", "Shift+F1", "What your role allows."),
-            _row(
-                "view_as", "&View As Role...", "Ctrl+Alt+V", "See the site as another role would."
-            ),
-            _row("access", "Workbench &Access...", "Ctrl+Alt+A", "Read Only, Organize or Full."),
-            _row("roles", "&Roles and What They May Do", "Ctrl+Alt+R", "Each role in plain words."),
-            _row(
-                "empty_spam",
-                "E&mpty Spam...",
-                "Ctrl+Alt+E",
-                "Delete every comment held as spam on this site, after you confirm.",
-            ),
-            None,
-            _row("compare_sites", "Compare S&ites...", "Ctrl+Alt+K", "What differs from another."),
-            _row("site_sets", "Site Se&ts...", "Ctrl+Alt+T", "Name a set of your sites."),
-            _row("scope", "Across Sites Sc&ope...", "Ctrl+Alt+Y", "Every site, or one set."),
-            _row(
-                "snapshot", "Take a S&napshot...", "Ctrl+Alt+S", "Everything but media, saved here."
-            ),
-            _row(
-                "read_site",
-                "Read Site as &Document",
-                "Ctrl+Alt+D",
-                "The pages as one document in the editor.",
-            ),
-        ),
-    ),
-    MenuSpec(
-        "&Tools",
-        (
-            _row(
-                "options",
-                "Workbench &Options...",
-                "Ctrl+Shift+O",
-                "Choose which Watches the Workbench announces.",
-            ),
-            _row("rest_console", "&REST Console...", "Ctrl+Shift+T", "Any route on the site."),
-            _row(
-                "practice", "&Practice Site...", "Ctrl+Alt+P", "Start, stop, connect or reset it."
-            ),
-        ),
-    ),
-    MenuSpec(
-        "&Window",
-        (
-            _row(
-                "switch_to_editor",
-                "Switch to &Editor",
-                "Ctrl+Shift+E",
-                "Bring forward the editor that opened this window.",
-            ),
-        ),
-    ),
-    MenuSpec(
-        "&Help",
-        (_row("help_view", "&Help for This View", "F1", "What this view and control do."),),
-    ),
-)
-"""The bar, in order: File, Edit, View, Go, Item, Site, Tools, Window, Help."""
-
-GO_NODES: dict[str, tuple[str, str]] = {
-    command("go_start"): ("", "start"),
-    command("go_inbox"): ("", "inbox"),
-    command("go_site"): ("site", "overview"),
-    command("go_posts"): ("site", "posts"),
-    command("go_pages"): ("site", "pages"),
-    command("go_media"): ("site", "media"),
-    command("go_comments"): ("site", "comments"),
-    command("go_users"): ("site", "users"),
-    command("go_plugins"): ("site", "plugins"),
-    command("go_appearance"): ("site", "themes"),
-    command("go_settings"): ("site", "settings"),
-    command("go_health"): ("site", "site_health"),
-    command("go_across"): ("", "across"),
-    command("go_calendar"): ("", "calendar"),
-    command("go_watches"): ("", "watches"),
-    command("go_practice"): ("", "practice"),
-}
-"""Where each Go row lands: (template, node key); a template node is the current site's."""

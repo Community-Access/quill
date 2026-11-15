@@ -350,10 +350,16 @@ class WorkbenchCommandsMixin:
         if code == wx.WXK_HOME and event.AltDown() and not event.ControlDown():
             self.run("github.workbench.inbox_home")
             return
-        if event.ControlDown() and event.ShiftDown() and code in (ord("F"), ord("f")):
+        # The second keys, on exactly these modifiers and only when no menu row has
+        # the chord: they used to swallow Ctrl+Alt+Shift+F and Ctrl+Alt+R as well.
+        from quill.ui.workbench_frame_keys import chord_of, menu_claims
+
+        letter = chr(code).upper() if code in (ord("F"), ord("f"), ord("R"), ord("r")) else ""
+        chord = chord_of(self, event, letter) if letter else ""
+        if chord == "Ctrl+Shift+F" and not menu_claims(self, chord):
             self.filter.SetFocus()
             return
-        if event.ControlDown() and not event.ShiftDown() and code in (ord("R"), ord("r")):
+        if chord == "Ctrl+R" and not menu_claims(self, chord):
             self.reload()
             return
         event.Skip()

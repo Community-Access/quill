@@ -29,6 +29,7 @@ import collections
 
 import pytest
 
+from quill.core.forms.menu import LAYER_KEYS as FORMS_LAYER_KEYS
 from quill.core.forms.menu import all_rows as forms_rows
 from quill.core.forms.menu import lite_handler as forms_handler
 from quill.core.lite.commands import COMMANDS, SUBMENU_SEP, menu_titles
@@ -207,13 +208,15 @@ KEYLESS_WITH_REASON: dict[str, str] = {
         if command_id not in LAYER_KEYS.values()
     },
     # The Forms rows (wordpress.md 17a.10): as in QUILL, where the same rows have
-    # none either (rule 2). quill/core/forms/menu.py has the survey.
+    # none either (rule 2), but Responses, which has F on the WordPress layer.
+    # quill/core/forms/menu.py has the survey.
     **{
         forms_handler(command_id): "As in QUILL (rule 2): no chord is free in both editors "
         "and outside every family app's system-wide key that is not a menu letter, a caret "
         "key or an AltGr character. Rule 9: writing a form is occasional, so its menu "
         "letters and the Command Palette are the way in."
         for _submenu, (command_id, _title, _handler) in forms_rows()
+        if command_id not in FORMS_LAYER_KEYS.values()
     },
     "cmd_whats_new": "QUILL's key for What's New is on its leader (Ctrl+Shift+Grave, W, "
     "2026-11-07), which rule 6 keeps away from anything QUILL Lite reaches plainly; no "

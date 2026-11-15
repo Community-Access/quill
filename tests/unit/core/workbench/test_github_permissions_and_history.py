@@ -181,9 +181,11 @@ def test_a_batch_previews_skips_what_is_already_so_and_reports_each_item() -> No
     }
 
     def on_write(method: str, path: str, body: object) -> None:
-        number = int(path.rsplit("/", 1)[-1])
+        # Labels are added, never replaced: POST /repos/o/r/issues/{n}/labels.
+        assert method == "POST" and path.endswith("/labels")
+        number = int(path.rsplit("/", 2)[-2])
         assert isinstance(body, dict)
-        issues[number]["labels"] = [{"name": n} for n in body["labels"]]
+        issues[number]["labels"] += [{"name": n} for n in body["labels"]]
 
     api.on_write = on_write
     for number in issues:

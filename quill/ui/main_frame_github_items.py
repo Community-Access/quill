@@ -163,6 +163,10 @@ class GitHubItemsMixin:
             editor_command=self._github_editor_command,
             editor_command_available=self._github_editor_has,
             open_file_url=self.open_github_file_url,
+            gist_source=self._github_gist_source,
+            ai_summarizer=self._github_ai_summarizer,
+            start_worktree=self.start_github_issue_worktree,
+            open_document=lambda path: self.open_file(path),
         )
 
     def open_github_items_viewer_for(

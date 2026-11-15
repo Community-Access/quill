@@ -97,6 +97,9 @@ class _Host:
     def launch_at_startup_enabled(self) -> bool:
         return False
 
+    def start_minimized_at_startup_enabled(self) -> bool:  # Options, Ctrl+Alt+L
+        return False
+
     def profile_locked(self) -> bool:  # Dictation > Lock Profile's check (D-23)
         return False
 

@@ -7,9 +7,10 @@
   listed the day it is installed, with no QUILL release.
 - **The Content Model** (:func:`model_rows`): the site's post types and
   taxonomies, each with who registered it (WordPress, a plugin it can name,
-  or "a plugin or the theme"), read only; the PRD's QUILL Site Types plugin
-  is what would make them editable, and it is detected by namespace
-  (:data:`SITE_TYPES_NAMESPACE`) so the row can say so.
+  or "a plugin or the theme"), and a ``definition`` column saying each
+  definition is read only and why (:func:`definition_words`); what the QUILL
+  Site Types plugin defines (detected by :data:`SITE_TYPES_NAMESPACE`) is
+  editable, and its field groups are listed too.
 - **Abilities as commands** (:func:`ability_sheet`, :func:`ability_preview`):
   an ability's input schema becomes its sheet, by the same rules as any
   discovered route (12a), and the preview says what it will do before it runs.
@@ -32,11 +33,14 @@ from quill.core.workbench.properties import FieldKind, FieldSpec, PageSpec, Shee
 
 __all__ = [
     "CORE_TYPES",
+    "EDITABLE",
+    "READ_ONLY",
     "SITE_TYPES_NAMESPACE",
     "ability_input",
     "ability_preview",
     "ability_sheet",
     "ability_values",
+    "definition_words",
     "model_rows",
     "namespace_rows",
     "registered_by",
@@ -44,7 +48,7 @@ __all__ = [
 ]
 
 SITE_TYPES_NAMESPACE = "quill-site-types/v1"
-"""The namespace the PRD's QUILL Site Types plugin would register (12b)."""
+"""The namespace the QUILL Site Types plugin registers (12b, quill-site-types 0.1.0)."""
 
 CORE_TYPES = frozenset({
     "post",
@@ -68,12 +72,31 @@ CORE_TYPES = frozenset({
     "wp_template_part_area",
 })
 
+#: Who registered a type, by its slug's prefix. This names the registrant so
+#: the Content Model can say where a type came from; it is attribution, not an
+#: integration -- the plugin-specific integrations are still only QAF, Gravity
+#: Forms and Paid Memberships Pro (workbench-implementation-status.md), and a
+#: slug matching none of these says "a plugin or the theme" rather than guess.
 _OWNERS: tuple[tuple[str, str], ...] = (
     ("pmpro", "Paid Memberships Pro"),
     ("gravity", "Gravity Forms"),
-    ("gf", "Gravity Forms"),
+    ("gf_", "Gravity Forms"),
     ("qaf", "QUILL Accessible Forms"),
     ("baf", "QUILL Accessible Forms"),
+    ("tribe_", "The Events Calendar"),
+    ("tec_", "The Events Calendar"),
+    ("product", "WooCommerce"),
+    ("shop_", "WooCommerce"),
+    ("pa_", "WooCommerce"),
+    ("elementor", "Elementor"),
+    ("acf", "Advanced Custom Fields"),
+    ("wpcf7", "Contact Form 7"),
+    ("jetpack", "Jetpack"),
+    ("feedback", "Jetpack"),
+    ("wpseo", "Yoast SEO"),
+    ("yoast", "Yoast SEO"),
+    ("sfwd", "LearnDash"),
+    ("course", "a learning plugin"),
 )
 
 
@@ -146,35 +169,120 @@ def route_rows(
     return rows
 
 
+READ_ONLY = "Read only"
+"""The Content Model's ``definition`` cell for a type the Workbench cannot redefine."""
+
+
+EDITABLE = "Editable through QUILL Site Types"
+"""The ``definition`` cell for a type, taxonomy or field group QUILL Site Types defines."""
+
+_SITE_TYPES = "QUILL Site Types"
+
+
+def definition_words(owner: str, *, site_types: bool, reason: str = "") -> str:
+    """Why a definition is read only here, in one sentence (the items stay editable)."""
+    where = "part of WordPress" if owner == "WordPress" else f"defined in {owner}'s code"
+    tail = (
+        " QUILL Site Types is on this site: what you define with it (Ctrl+N here) is "
+        "editable, and this one was not defined there."
+        if site_types
+        else ""
+    )
+    if reason:
+        tail += f" {reason}"
+    return (
+        f"Read only definition, {where}; change it there. Its items are edited "
+        f"in their own lists, as your role allows.{tail}"
+    )
+
+
+def _editable_words(noun: str) -> str:
+    return (
+        f"Defined through QUILL Site Types on this site, so the {noun} itself can change here: "
+        "Stop Defining takes the definition away and keeps its content, and Export as Code "
+        "writes it as PHP for a theme or plugin."
+    )
+
+
 def model_rows(api: WordPressApi, site: str, *, namespaces: Sequence[str] = ()) -> list[WbRow]:
-    """The site's post types and taxonomies, who registered each, read only (12b)."""
-    editable = SITE_TYPES_NAMESPACE in {n.strip("/") for n in namespaces}
+    """The site's post types, taxonomies and field groups, and who registered each (12b).
+
+    Every row says, in its ``definition`` cell and its detail, whether its
+    *definition* can change here. Only what QUILL Site Types (detected by its
+    namespace, :data:`SITE_TYPES_NAMESPACE`) defines is editable; anything
+    registered in code is read only, with why.
+    """
+    from quill.core.wordpress.api import WordPressApiError
+    from quill.core.wordpress.site_types_plugin import Definitions, read_definitions
+
+    site_types = SITE_TYPES_NAMESPACE in {n.strip("/") for n in namespaces}
+    defined = Definitions()
+    if site_types:
+        try:
+            defined = read_definitions(api)
+        except WordPressApiError:
+            defined = Definitions(reason="QUILL Site Types did not answer.")
     rows: list[WbRow] = []
     types = api.get("wp/v2/types", context="edit")
     taxes = api.get("wp/v2/taxonomies", context="edit")
     for kind, raw_set in (("post type", types), ("taxonomy", taxes)):
+        what = "type" if kind == "post type" else "taxonomy"
         for slug, info in (raw_set or {}).items() if isinstance(raw_set, dict) else ():
             if not isinstance(info, dict):
                 continue
-            owner = registered_by(str(slug), str(info.get("rest_namespace") or "wp/v2"))
+            mine = defined.of(what).get(str(slug))
+            owner = (
+                _SITE_TYPES
+                if mine is not None
+                else registered_by(str(slug), str(info.get("rest_namespace") or "wp/v2"))
+            )
             name = str(info.get("name") or slug)
             in_rest = "yes" if info.get("rest_base") else "no"
-            lock = (
-                "QUILL Site Types is on this site; defining types from here comes with its routes."
-                if editable
-                else f"Read only: {owner} registered it."
+            cells = {
+                "name": name,
+                "kind": kind,
+                "registered_by": owner,
+                "definition": EDITABLE if mine is not None else READ_ONLY,
+                "in_rest": in_rest,
+            }
+            said = (
+                _editable_words(kind)
+                if mine is not None
+                else definition_words(owner, site_types=site_types, reason=defined.reason)
             )
             rows.append(
                 WbRow(
                     "model",
                     site,
                     str(slug),
-                    {"name": name, "kind": kind, "registered_by": owner, "in_rest": in_rest},
-                    f"{name}, a {kind} ({slug}), registered by {owner}. {lock}",
-                    subkind="type" if kind == "post type" else "taxonomy",
-                    raw=dict(info),
+                    cells,
+                    f"{name}, a {kind} ({slug}), registered by {owner}. {said}",
+                    subkind=what,
+                    raw={**info, "editable_definition": mine is not None, "definition": mine},
                 )
             )
+    for key, group in defined.groups.items():
+        name = str(group.get("title") or key)
+        fields = [f for f in group.get("fields") or [] if isinstance(f, dict)]
+        kinds = ", ".join(f"{f.get('name')} ({f.get('kind')})" for f in fields)
+        rows.append(
+            WbRow(
+                "model",
+                site,
+                key,
+                {
+                    "name": name,
+                    "kind": "field group",
+                    "registered_by": _SITE_TYPES,
+                    "definition": EDITABLE,
+                    "in_rest": "yes",
+                },
+                f"{name}, a field group ({key}), registered by {_SITE_TYPES}, with "
+                f"{len(fields)} fields: {kinds or 'none'}. {_editable_words('field group')}",
+                subkind="field_group",
+                raw={"editable_definition": True, "definition": group},
+            )
+        )
     return rows
 
 

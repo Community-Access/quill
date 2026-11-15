@@ -6,6 +6,8 @@ GATE-11). Plain, short, what to do before why (Part D9); check, never tick.
 
 from __future__ import annotations
 
+from quill.core.github.workbench_node_help import NODE_HELP
+
 __all__ = [
     "CHOICE_WORDS",
     "NODE_HELP",
@@ -227,6 +229,32 @@ SURFACE_PURPOSES: dict[str, str] = {
         "Anything else changes nothing."
     ),
     "Columns": "Choose which columns this list shows. Space checks or clears one.",
+    "GitHub API Console": (
+        "Send any GitHub REST request or GraphQL query. Down Arrow in Path lists the "
+        "operations that match; What it does says the risk and what it needs before you "
+        "send. A read goes at once; a write needs Full access and the method typed to "
+        "confirm. The answer is a tree: Copy Value, Copy Path and Export JSON work on it."
+    ),
+    "Confirm GitHub API Write": (
+        "This request changes something on GitHub. Type the method shown, or MUTATION "
+        "for GraphQL, to send it; anything else sends nothing."
+    ),
+    "Save Command": "A name for this console request, kept for this account on this device.",
+    "Saved Commands": "Console requests you saved. Enter fills the console with one.",
+    "Export JSON": "Where to save GitHub's answer as a JSON file.",
+    "Add Watch": (
+        "What to watch for: a run finishing, a review, a release or a comment. Then "
+        "you name the repository, or the issue or pull request."
+    ),
+    "Watch": (
+        "The repository as owner/name, or the issue or pull request as owner/name#42. "
+        "For runs, a branch after a space watches only that branch."
+    ),
+    "Read as Document": (
+        "The whole thread as one document, a heading per post with its author and "
+        "date: open it in the editor, or save it as Markdown or HTML."
+    ),
+    "Save Thread As": "Where to save the thread document.",
     "Properties of": (
         "One sheet for several objects. A field the same on all shows its value; one "
         "that differs says Mixed and is left alone unless you change it; a check box on "
@@ -259,204 +287,116 @@ SURFACE_PURPOSES: dict[str, str] = {
     "Pending Deployments": "Deployments waiting on you: approve or reject each one.",
     "What Failed": "The failing steps of a run and their log lines, in one place.",
     "Jobs for": "A run's jobs and steps, with each job's log and annotations.",
-}
-
-#: ``"<template>:<key>"`` -> what F1 says about the node (D3, layer 2).
-NODE_HELP: dict[str, str] = {
-    ":start": (
-        "Start Here: what the Workbench is, whether you are signed in, and the five "
-        "keys to learn first."
+    "Clone Repository": (
+        "Copy a GitHub repository to a folder on this computer: which repository, "
+        "which folder, then OK. The copy runs in the background and you hear once "
+        "how it went."
     ),
-    ":attention": (
-        "Needs My Attention: everything waiting on you, across GitHub. Inbox first, "
-        "then notifications, review requests and your own open work."
+    "GitHub Access": (
+        "Asked once, before anything talks to GitHub: what connecting does and how "
+        "to take it back. Continue allows it; Cancel leaves GitHub alone."
     ),
-    ":inbox": (
-        "Inbox: one list of what needs you, from notifications, review requests, "
-        "assignments and mentions. Enter opens a row; Delete marks it done."
+    "Manage GitHub Accounts": (
+        "The GitHub accounts kept on this computer: switch to one, add another, or "
+        "remove one and forget its token."
     ),
-    ":notifications": (
-        "Notifications: what GitHub has told you about, unread first. Ctrl+Q marks "
-        "one read, Delete marks it done, and Ctrl+Shift+Q marks the whole view read."
+    "Add GitHub Token": (
+        "Paste a personal access token you made yourself, such as one limited to a "
+        "few repositories, or go on without signing in. Sign In with GitHub is the "
+        "easier road for most people."
     ),
-    ":review_requests": (
-        "Review Requests: pull requests somebody asked you to review. Enter opens the review."
+    "New Issue from a Form": (
+        "Fill in a repository's issue form, one field at a time, with the required "
+        "ones marked. Nothing reaches GitHub until you press Create Issue."
     ),
-    ":assigned": "Assigned to Me: issues and pull requests assigned to you, anywhere.",
-    ":mentions": "Mentions: issues and pull requests where somebody wrote your name.",
-    ":my_pulls": "My Open Pull Requests: pull requests you opened that are still open.",
-    ":my_issues": "My Open Issues: issues you opened that are still open.",
-    ":my_activity": "My Activity Feed: what you did on GitHub lately, newest first.",
-    ":repositories": (
-        "Repositories: the one you are working in first, then pinned, favorites, "
-        "yours, starred, watched and your organizations'. Enter on a repository "
-        "opens its node."
+    "New Discussion from a Form": (
+        "Fill in a discussion category's form, one field at a time, with the required "
+        "ones marked. Nothing reaches GitHub until you press Start Discussion."
     ),
-    ":pinned": (
-        "Pinned: repositories you keep at hand, on this computer. Delete takes one "
-        "out; Ctrl+N pins the current repository."
+    "Preview Form": (
+        "A template's form as people will meet it. Show Body shows what GitHub would "
+        "write; nothing is sent anywhere."
     ),
-    ":favorites": (
-        "Favorites: issues, pull requests and other items you kept, on this "
-        "computer. Ctrl+D adds or removes the selected row anywhere in the window."
+    "Template:": (
+        "Build or edit a template: its keys, its fields as a list, its source and a "
+        "preview, with the problems GitHub would report listed before Save."
     ),
-    ":my_repositories": "My Repositories: the repositories your account owns or can push to.",
-    ":starred": "Starred: repositories you starred on GitHub.",
-    ":watched": "Watched: repositories whose activity GitHub tells you about.",
-    ":organizations": (
-        "Organizations: the organizations you belong to. Enter on one opens its repositories."
+    "Template Chooser": (
+        "Whether blank issues are allowed, the contact links, and the order the "
+        "templates appear in. Nothing reaches GitHub until you save and confirm."
     ),
-    ":search": (
-        "Search: GitHub's searches. Choose one, type in the filter box with Ctrl+E, "
-        "and press Enter."
+    "Sponsor Platforms (FUNDING.yml)": (
+        "Where people can sponsor the project: one box per platform GitHub knows."
     ),
-    ":search_issues": (
-        "Search Issues and Pull Requests: everything GitHub finds for the words and "
-        "qualifiers in the filter box, such as is:open author:@me. Ctrl+N saves the "
-        "search."
+    "How to Cite (CITATION.cff)": (
+        "How people should cite the project: title, version, DOI and the authors."
     ),
-    ":search_code": "Search Code: files whose text matches the filter box. Needs sign-in.",
-    ":search_commits": "Search Commits: commits whose message matches the filter box.",
-    ":search_repositories": (
-        "Search Repositories: repositories whose name or description matches the filter box."
+    "Code Owners (CODEOWNERS)": (
+        "Who reviews changes to which paths, and a lookup for who owns a path."
     ),
-    ":saved_searches": (
-        "Saved Searches: searches you kept, on this computer. Enter runs one; Delete removes it."
+    "Form Field:": (
+        "One field of a form: its label, id, description and, for its kind, "
+        "placeholder, options, default and whether it is required."
     ),
-    ":people": "People: who you follow, who follows you, and anybody you look up.",
-    ":following": "People I Follow: accounts you follow. Enter opens a person's node.",
-    ":my_teams": (
-        "My Teams: every team you belong to, across your organizations. Alt+Enter opens "
-        "a team's sheet."
+    "New Pull Request": (
+        "Propose merging one branch into another: the two branches, a title, a "
+        "description and whether it is a draft. Nothing reaches GitHub until you "
+        "press Create Pull Request."
     ),
-    ":followers": "My Followers: accounts that follow you.",
-    ":find_person": (
-        "Find a Person: type a login with Ctrl+L, and the person gets a node of their own here."
+    "New Issue": (
+        "Write an issue before it goes anywhere: title, what to say, labels and who "
+        "it is for. Nothing reaches GitHub until you press Create Issue."
     ),
-    ":gists": "Gists: small shared files and snippets.",
-    ":my_gists": "My Gists: gists you made. Enter edits one.",
-    ":projects": (
-        "Projects: your Project boards. Each repository's own Projects are under it, Ctrl+Shift+7."
+    "Milestones": (
+        "A repository's milestones, one line each with how far along it is and when "
+        "it is due. New, Edit, and Close or Reopen change them on GitHub."
     ),
-    ":watches": "Watches: tell me when something happens. Coming in a later release.",
-    ":across": (
-        "Across Repositories: every kind of thing, by name, everywhere. Coming in a later release."
+    "Review pull request": (
+        "Read a pull request the way a reviewer does: its outline and threads, the "
+        "review summary and the checks, with buttons to jump to the next unresolved "
+        "thread, reply, request reviewers or write your review."
     ),
-    ":help": (
-        "Help and Learning: the guide, the GitHub words, the keys, what changed, "
-        "and tasks in plain words that take you to the place."
+    "GitHub Projects and Dependencies": (
+        "Load a repository's Projects, pick one, and walk its items as a list. The "
+        "details say what each item is blocked by and what it blocks; Next Unblocked "
+        "finds something you can start."
     ),
-    ":help_tasks": (
-        "Do Something: tasks in plain words. Enter reads one; Take Me There, on its "
-        "context menu, goes to the place it is about."
+    "Edit Release": (
+        "Change a release's name, notes, and whether it is a draft or a prerelease. "
+        "Nothing is sent until Save; publishing a draft asks first, because watchers "
+        "are told."
     ),
-    ":help_words": (
-        "Words: the GitHub glossary. Type a word to jump to it; the details say "
-        "what it means and where you meet it."
+    "Draft Release Notes": (
+        "Write release notes from the changes between two points, then edit and copy "
+        "them. This only drafts: no release is made on GitHub."
     ),
-    ":help_keys": "Keys: every key in the Workbench, grouped by what it does.",
-    ":help_guide": (
-        "The Guide: the GitHub Workbench Guide's chapters. Ctrl+F1 opens the guide "
-        "at the chapter for where you are."
+    "Configure Branch Protection": (
+        "Pick a branch, then protect it with the rules you choose, or clear the "
+        "protection it already has."
     ),
-    ":help_changes": "What Changed: what is new in the GitHub Workbench in this version.",
-    ":help_ask": (
-        "Ask a Person: write to support@community-access.org. Nothing is sent "
-        "until you send it from your own email."
+    "Create GitHub Repository": (
+        "Make a new repository on GitHub: its name, a description, public or "
+        "private, and optionally the organization it belongs to."
     ),
-    "repository:repository": (
-        "A repository: its issues, pull requests, actions, code, releases and "
-        "settings, each a node below. Ctrl+Shift+1 to Ctrl+Shift+0 jump to them."
+    "Repository Files": (
+        "Walk a repository's folders and files at any branch, tag or commit. Enter "
+        "reads a file here; Open in Editor, README, History and Blame go further."
     ),
-    "repository:overview": "Overview: the repository's README, description and community profile.",
-    "repository:issues": (
-        "Issues: this repository's open issues. Ctrl+N files a new one; Delete "
-        "closes the selected one after asking."
+    "GitHub Repository Browser": (
+        "Choose a repository, a branch or tag, and a file in it to open in the editor."
     ),
-    "repository:pulls": (
-        "Pull Requests: this repository's open pull requests. Enter opens the "
-        "review; Ctrl+Shift+D lists the changed files."
+    "Review Pull Request": (
+        "Write your review of a pull request: approve, ask for changes or just "
+        "comment, with a message. The draft is kept on this computer until you press "
+        "Submit Review."
     ),
-    "repository:issues_and_pulls": (
-        "Issues and Pull Requests: both in one list, newest first, the way an inbox reads."
+    "Reorder Sub-issues": (
+        "A parent issue's sub-issues in the order GitHub holds. Move Up and Move "
+        "Down change that order on GitHub, and you hear where it landed."
     ),
-    "repository:discussions": "Discussions: the repository's conversations that are not issues.",
-    "repository:actions": "Actions: the repository's workflow runs, workflows and caches.",
-    "repository:runs": (
-        "Runs: each time a workflow ran. Enter shows its jobs and logs; Ctrl+Shift+W "
-        "says what failed; Ctrl+Shift+F5 re-runs the failed jobs."
+    "Repositories in": (
+        "Choose the repositories in this Repository Set: one check box per repository, "
+        "by owner and name. Space checks or unchecks one; Add puts in one you type; "
+        "Enter saves."
     ),
-    "repository:workflows": "Workflows: the automations defined in the repository.",
-    "repository:caches": "Caches: files Actions kept between runs. Delete removes one.",
-    "repository:code": "Code: files, branches, commits, tags, and the upstream of a fork.",
-    "repository:files": (
-        "Files: the repository's files on its default branch, a folder at a time. "
-        "Enter opens a folder, or a file in the editor."
-    ),
-    "repository:branches": "Branches: lines of work. Enter lists a branch's commits.",
-    "repository:commits": "Commits: saved changes, newest first.",
-    "repository:tags": "Tags: names for particular commits, usually versions.",
-    "repository:upstream": "Upstream: the repository this one was forked from. Forks only.",
-    "repository:releases": "Releases: published versions and their files. Enter lists the files.",
-    "repository:labels": "Labels: tags for issues and pull requests. Enter finds the issues.",
-    "repository:milestones": (
-        "Milestones: goals with a date. Enter lists the issues and pull requests in one."
-    ),
-    "repository:repo_projects": "Projects: this repository's Project boards.",
-    "repository:activity": "Activity: what happened in the repository lately.",
-    "repository:people": "People: contributors, forks, and who has access.",
-    "repository:contributors": "Contributors and People: who has worked on the repository.",
-    "repository:forks": "Forks: copies of this repository on other accounts.",
-    "repository:access": "Collaborators and Team Access: who may do what here.",
-    "repository:insights": "Insights: traffic, contributors and the community profile.",
-    "repository:traffic": "Traffic and Contributors: views, clones and who contributes.",
-    "repository:health": (
-        "Health Snapshot: extra activity data, loaded only when you turn it on in "
-        "Workbench Options."
-    ),
-    "repository:community": "Community Profile: the README, license and guidelines GitHub checks.",
-    "repository:deployments": "Deployments and Environments: where the code was deployed.",
-    "repository:pages": "GitHub Pages: the website built from this repository.",
-    "repository:security": "Security: alerts about vulnerable code and leaked secrets.",
-    "repository:alerts": "Alerts: open security alerts. Enter reads one.",
-    "repository:alerts_closed": "Dismissed and Resolved Alerts: alerts no longer open.",
-    "repository:settings": "Settings: names of secrets, branch protection and general settings.",
-    "repository:secrets": "Secret and Variable Names: the names only; GitHub never shows values.",
-    "repository:branch_protection": (
-        "Branch Protection: who may change a branch and what a change needs first. "
-        "Enter opens the setting."
-    ),
-    "repository:general": "General: the name, visibility and default branch. Enter opens one.",
-    "person:person": "A person: their repositories, activity, followers and who they follow.",
-    "person:person_repositories": "Repositories: this person's public repositories.",
-    "person:person_activity": "Activity: what this person did lately on GitHub.",
-    "person:person_followers": "Followers: who follows this person.",
-    "person:person_following": "Following: who this person follows.",
-    "organization:organization": "An organization: its repositories.",
-    "organization:organization_teams": (
-        "Teams: the organization's teams, as GitHub nests them. Alt+Enter opens a "
-        "team's sheet: its members and maintainers, repositories and roles, child teams "
-        "and code review assignment."
-    ),
-    "organization:organization_repositories": (
-        "Repositories: the organization's repositories you can see."
-    ),
-}
-
-#: What an empty list says instead (D4): why it is empty and what fills it.
-_EMPTY: dict[str, str] = {
-    ":review_requests": (
-        "No pull requests need your review. When someone requests your review it "
-        "appears here and in Inbox."
-    ),
-    ":inbox": "Nothing needs you right now. New notifications, reviews and mentions land here.",
-    ":notifications": "No notifications. GitHub's new ones arrive here as they come.",
-    ":saved_searches": (
-        "No saved searches yet. Run a search under Search, then press Ctrl+N to keep it."
-    ),
-    ":pinned": "Nothing pinned yet. Ctrl+N here pins the repository you are working in.",
-    ":favorites": "No favorites yet. Ctrl+D on any row keeps it here.",
-    "repository:issues": "No open issues. Ctrl+N files one.",
-    "repository:pulls": "No open pull requests.",
-    "repository:runs": "No workflow runs. Runs appear when a workflow runs on GitHub.",
 }

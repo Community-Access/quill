@@ -94,7 +94,8 @@ Usage::
     python scripts/fetch_build_deps.py --only codex    # the OpenAI Codex app-server
     python scripts/fetch_build_deps.py --only phonon   # Phonon 31m voices for Read Aloud
     python scripts/fetch_build_deps.py --only nodejs --only language-servers --only ripgrep
-    python scripts/fetch_build_deps.py --only wp-playground-cli   # the Practice Site (untested)
+    # Playground CLI, PHP.wasm and WordPress core for the Practice Site:
+    python scripts/fetch_build_deps.py --only wp-playground-cli
 
 The cache lives under ``build/deps/`` (already gitignored) unless
 ``QUILL_BUILD_DEPS_DIR`` overrides it. Re-running is cheap: a component whose
@@ -105,6 +106,7 @@ unconditionally.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import shutil
 import sys
@@ -144,6 +146,11 @@ from quill.core.speech.piper_install import (  # noqa: E402
     PiperInstallError,
     install_piper,
     piper_install_supported,
+)
+from quill.core.wordpress.workbench_practice import (  # noqa: E402
+    PLAYGROUND_CLI_VERSION,
+    PRACTICE_PHP_VERSION,
+    PRACTICE_WORDPRESS_VERSION,
 )
 
 #: Subdirectory names the build scripts expect, and the file that proves the
@@ -344,8 +351,53 @@ def is_complete(component: str) -> bool:
         return ffmpeg_notices_staged(component_dir("ffmpeg"))
     if component == "copilot" and not copilot_bundle_staged(component_dir("copilot")):
         return False
+    if component == "wp-playground-cli" and not _playground_cli_pin_is_staged():
+        return False
     names = _LICENCE_FILES.get(component, ())
     return all((component_dir(component) / name).is_file() for name in names)
+
+
+def _playground_cli_pin_is_staged() -> bool:
+    """The cache is complete only when its CLI, PHP and WordPress pins match."""
+    source_package = _REPO_ROOT / "scripts" / "wp_playground" / "package.json"
+    staged = component_dir("wp-playground-cli")
+    try:
+        source = json.loads(source_package.read_text(encoding="utf-8"))
+        expected = source.get("dependencies", {}).get("@wp-playground/cli")
+        pruned_version = (
+            (staged / ".quill-playground-pruned-v1").read_text(encoding="utf-8").strip()
+        )
+        lock = json.loads((staged / "package-lock.json").read_text(encoding="utf-8"))
+        resolved = lock.get("packages", {}).get("node_modules/@wp-playground/cli", {})
+        package = json.loads(
+            (staged / "node_modules" / "@wp-playground" / "cli" / "package.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        php_root = staged / "node_modules" / "@php-wasm"
+        keep_php = f"node-{PRACTICE_PHP_VERSION.replace('.', '-')}"
+        php_packages = {
+            path.name
+            for path in php_root.iterdir()
+            if path.is_dir()
+            and path.name.startswith("node-")
+            and path.name[5:].replace("-", "").isdigit()
+        }
+    except (OSError, TypeError, ValueError):
+        return False
+    wordpress_archive = staged / f"wordpress-{PRACTICE_WORDPRESS_VERSION}.zip"
+    return (
+        bool(expected)
+        and pruned_version == PLAYGROUND_CLI_VERSION
+        and resolved.get("version") == expected
+        and package.get("version") == expected
+        and php_packages == {keep_php}
+        and (php_root / keep_php / "package.json").is_file()
+        and (
+            staged / "node_modules" / "@wp-playground" / "cli" / "sqlite-database-integration.zip"
+        ).is_file()
+        and wordpress_archive.is_file()
+    )
 
 
 def _progress(fraction: float, message: str) -> None:

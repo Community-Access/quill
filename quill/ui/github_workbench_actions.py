@@ -13,13 +13,17 @@ order:
    commands both editors already have (fork, rename, branch protection,
    Codespaces, accounts): the Workbench asks the editor that opened it, so
    there is one implementation;
-3. **GitHub Items on this one item**, parented to the Workbench, for the item
-   actions not yet rebuilt here (merge, jobs and logs, release editing, the
-   timeline and the rest). It blocks only the Workbench, never the editor
-   (section 3.1), and opens straight on the item.
+3. **The item windows GitHub Items and Explore opened**, now opened by the
+   Workbench itself on the selected row, parented to it so they block only
+   the Workbench, never the editor (section 3.1): merge, jobs and logs,
+   releases, the timeline and the rest, in
+   :mod:`~quill.ui.github_workbench_items`, :mod:`~quill.ui.github_workbench_runs`,
+   :mod:`~quill.ui.github_workbench_releases` and
+   :mod:`~quill.ui.github_workbench_community`.
 
-Anything else is greyed, and :meth:`reason` says why in a sentence: the help
-string of the greyed row and what Shift+F1 reads.
+Nothing falls back to the retired GitHub Items window. Anything that does not
+apply is greyed, and :meth:`reason` says why in a sentence: the help string of
+the greyed row and what Shift+F1 reads.
 
 Nothing here speaks on its own (GATE-13); what is said is the result of a
 write the person asked for, through the frame, so F9 can say it again.
@@ -37,27 +41,64 @@ from quill.core.github.items_provider import (
     GitHubCommit,
     GitHubItem,
     GitHubRelease,
+    GitHubReleaseAsset,
     GitHubTag,
     GitHubWorkflow,
     GitHubWorkflowRun,
 )
 from quill.core.github.workbench_window_menu import PLACEHOLDER_COMMANDS
 from quill.ui.dialog_contract import show_modal_dialog
+from quill.ui.github_workbench_across import ACROSS_REASONS, ACROSS_VERBS
+from quill.ui.github_workbench_community import (
+    COMMUNITY_REASONS,
+    COMMUNITY_VERBS,
+    GitHubWorkbenchCommunityMixin,
+)
+from quill.ui.github_workbench_compare import (
+    COMPARE_REASONS,
+    COMPARE_VERBS,
+    GitHubWorkbenchCompareMixin,
+)
+from quill.ui.github_workbench_gists import GitHubWorkbenchGistsMixin
+from quill.ui.github_workbench_items import ITEM_REASONS, ITEM_VERBS, GitHubWorkbenchItemsMixin
+from quill.ui.github_workbench_pulls import GitHubWorkbenchPullsMixin
+from quill.ui.github_workbench_reading import (
+    READING_REASONS,
+    READING_VERBS,
+    GitHubWorkbenchReadingMixin,
+)
+from quill.ui.github_workbench_releases import (
+    RELEASE_REASONS,
+    RELEASE_VERBS,
+    GitHubWorkbenchReleasesMixin,
+)
+from quill.ui.github_workbench_runs import RUN_REASONS, RUN_VERBS, GitHubWorkbenchRunsMixin
+from quill.ui.github_workbench_templates import (
+    TEMPLATE_REASONS,
+    TEMPLATE_VERBS,
+    GitHubWorkbenchTemplatesMixin,
+)
+from quill.ui.github_workbench_watches import (
+    WATCH_REASONS,
+    WATCH_VERBS,
+    GitHubWorkbenchWatchesMixin,
+)
 from quill.ui.github_workbench_writes import GitHubWorkbenchWritesMixin
 
 __all__ = ["REPOSITORY_ACTIONS", "GitHubWorkbenchActionsMixin"]
 
 _P = "github.workbench."
 
-#: The Item model rows GitHub Items can open on directly.
-_ITEMS_ROWS = (
-    GitHubItem,
-    GitHubBranch,
-    GitHubCommit,
-    GitHubTag,
-    GitHubRelease,
-    GitHubWorkflow,
-    GitHubWorkflowRun,
+#: The Item model rows, and the short kind ``_NATIVE`` names each by.
+_MODEL_KINDS: tuple[tuple[type, str], ...] = (
+    (GitHubItem, "item"),
+    (GitHubWorkflowRun, "run"),
+    (GitHubBranch, "branch"),
+    (GitHubCommit, "commit"),
+    (GitHubTag, "tag"),
+    (GitHubRelease, "release"),
+    (GitHubReleaseAsset, "release_asset"),
+    (GitHubWorkflow, "workflow"),
 )
 
 #: Repository > Repository Actions...: (label, editor command or Workbench verb).
@@ -66,6 +107,9 @@ REPOSITORY_ACTIONS: tuple[tuple[str, str], ...] = (
     ("Clone Repository...", "github.clone_repository"),
     ("Fork Repository...", "github.fork_repository"),
     ("Browse Files", f"{_P}go_files"),
+    ("Files, History and Blame...", f"{_P}files_window"),
+    ("Milestones...", f"{_P}milestones_window"),
+    ("Projects...", f"{_P}projects_window"),
     ("Dispatch Workflow...", "github.dispatch_workflow"),
     ("Create Release...", "github.create_release"),
     ("Security Alerts...", "github.view_security_alerts"),
@@ -120,12 +164,41 @@ _NATIVE: dict[str, frozenset[str]] = {
     "new_here": frozenset({"view"}),
     "new_any": frozenset({"view"}),
     "new_issue": frozenset({"view"}),
+    "new_pull": frozenset({"view", "branch"}),
+    "choose_repositories": frozenset({"view"}),
     "go_to_number": frozenset({"view"}),
     "review": frozenset({"pr_item"}),
     "open_topic": frozenset({"help_topic"}),
     "take_me_there": frozenset({"help_topic"}),
     "undo_change": frozenset({"view"}),
     "redo_change": frozenset({"view"}),
+    # Gists (github_workbench_gists.py); Explore did these before the Workbench.
+    "new_gist": frozenset({"view"}),
+    "edit_gist": frozenset({"gist"}),
+    "star_gist": frozenset({"gist"}),
+    "delete_gist": frozenset({"gist"}),
+    **ITEM_VERBS,
+    **RUN_VERBS,
+    **RELEASE_VERBS,
+    **COMMUNITY_VERBS,
+    **COMPARE_VERBS,
+    **WATCH_VERBS,
+    **READING_VERBS,
+    **TEMPLATE_VERBS,
+    **ACROSS_VERBS,
+}
+
+#: Why a verb is greyed on a row of its own kind (not open, not signed in, and so on).
+_REASONS = {
+    **ITEM_REASONS,
+    **RUN_REASONS,
+    **RELEASE_REASONS,
+    **COMMUNITY_REASONS,
+    **COMPARE_REASONS,
+    **WATCH_REASONS,
+    **READING_REASONS,
+    **TEMPLATE_REASONS,
+    **ACROSS_REASONS,
 }
 
 
@@ -133,16 +206,23 @@ def _kind(row: object) -> str:
     """A short name for what *row* is, for the table above."""
     if isinstance(row, ExploreRow):
         return {"repo": "repo"}.get(row.kind, row.kind or "result")
-    if isinstance(row, GitHubItem):
-        return "item"
-    if isinstance(row, GitHubWorkflowRun):
-        return "run"
-    if isinstance(row, GitHubBranch):
-        return "branch"
-    return "model" if row is not None else ""
+    found = next((kind for cls, kind in _MODEL_KINDS if isinstance(row, cls)), "")
+    return found or ("model" if row is not None else "")
 
 
-class GitHubWorkbenchActionsMixin(GitHubWorkbenchWritesMixin):
+class GitHubWorkbenchActionsMixin(
+    GitHubWorkbenchWritesMixin,
+    GitHubWorkbenchGistsMixin,
+    GitHubWorkbenchItemsMixin,
+    GitHubWorkbenchRunsMixin,
+    GitHubWorkbenchReleasesMixin,
+    GitHubWorkbenchCommunityMixin,
+    GitHubWorkbenchPullsMixin,
+    GitHubWorkbenchCompareMixin,
+    GitHubWorkbenchTemplatesMixin,
+    GitHubWorkbenchWatchesMixin,
+    GitHubWorkbenchReadingMixin,
+):
     """The GitHub provider's commands. Runs on the UI thread."""
 
     items: Any
@@ -167,6 +247,9 @@ class GitHubWorkbenchActionsMixin(GitHubWorkbenchWritesMixin):
         if needs is None or not callable(getattr(self, f"_do_{verb}", None)):
             return False
         kind = _kind(row)
+        fits = getattr(self, f"_fits_{verb}", None)
+        if callable(fits):
+            return ("view" in needs or kind in needs) and bool(fits(row))
         if verb == "review":
             return isinstance(row, GitHubItem) and row.is_pr
         if verb == "save_search":
@@ -185,13 +268,7 @@ class GitHubWorkbenchActionsMixin(GitHubWorkbenchWritesMixin):
             return False
         if verb in _EDITOR_VERBS:
             return self._editor_has(_EDITOR_VERBS[verb])
-        row = self._selected()
-        return self._native_applies(verb, row) or self._classic_can(row)
-
-    def _classic_can(self, row: object) -> bool:
-        return isinstance(row, _ITEMS_ROWS) or (
-            isinstance(row, ExploreRow) and row.kind in ("issue", "pr")
-        )
+        return self._native_applies(verb, self._selected())
 
     def reason(self, command_id: str) -> str:
         verb = command_id.removeprefix(_P)
@@ -203,8 +280,15 @@ class GitHubWorkbenchActionsMixin(GitHubWorkbenchWritesMixin):
             return "Type a search in the filter box first."
         if not self.signed_in and verb in ("comment", "close_reopen", "rerun", "mark_read"):
             return "Sign in to GitHub first: Account, Manage GitHub Accounts."
-        if self._selected() is None:
+        if "view" in _NATIVE.get(verb, ()) and verb in _REASONS:
+            return _REASONS[verb]
+        row = self._selected()
+        if row is None:
             return "Select a row in the list first."
+        if _kind(row) in _NATIVE.get(verb, ()):
+            if not self.signed_in and verb not in ("summarize", "start_worktree"):
+                return "Sign in to GitHub first: Account, Manage GitHub Accounts."
+            return _REASONS.get(verb, "Not for this row.")
         return "Not for this kind of row."
 
     def remove_command(self, row_type: str) -> str:
@@ -224,9 +308,6 @@ class GitHubWorkbenchActionsMixin(GitHubWorkbenchWritesMixin):
             return False
         if self._native_applies(verb, row):
             getattr(self, f"_do_{verb}")(ref, row)
-            return True
-        if self._classic_can(row):
-            self._open_classic(ref, row)
             return True
         return False
 
@@ -425,6 +506,7 @@ class GitHubWorkbenchActionsMixin(GitHubWorkbenchWritesMixin):
     def _do_new_any(self, ref: Any, row: object) -> None:
         choices = [
             ("Issue...", f"{_P}new_issue"),
+            ("Pull Request...", f"{_P}new_pull"),
             ("Saved Search...", f"{_P}save_search"),
             ("Release...", "github.create_release"),
             ("Repository...", "github.create_repository"),
@@ -441,99 +523,15 @@ class GitHubWorkbenchActionsMixin(GitHubWorkbenchWritesMixin):
         else:
             self._run_editor(command)
 
-    def _do_new_issue(self, _ref: Any, _row: object) -> None:
-        repository = self._current_repository()
-        if not repository:
-            self._say("Open a repository first. Ctrl+L opens one by name or link.")
-            return
-        fetch = getattr(self.items, "fetch_issue_templates", None)
-        if not callable(fetch):
-            self._create_issue_from_template(repository, None)
-            return
-
-        def read_templates() -> tuple[tuple[Any, ...], str]:
-            try:
-                return tuple(fetch(repository)), ""
-            except Exception as exc:  # noqa: BLE001 - a template failure need not block a blank issue
-                return (), str(exc)
-
-        def choose(result: tuple[tuple[Any, ...], str]) -> None:
-            templates, problem = result
-            if problem:
-                self._say(
-                    f"Could not load issue templates. A blank issue is still available: {problem}"
-                )
-            usable = [t for t in templates if t.supported and not t.body_truncated]
-            unsupported = [t for t in templates if not t.supported or t.body_truncated]
-            if unsupported:
-                self._say(
-                    "This repository also has structured issue forms or a template too large "
-                    "for QUILL to fill. Choose a fillable Markdown template or a blank issue."
-                )
-            if not usable:
-                self._create_issue_from_template(repository, None)
-                return
-            labels = ["Blank issue", *[f"{t.name}: {t.about}".rstrip(": ") for t in usable]]
-            selected = self._choose(
-                "New Issue",
-                f"Choose a template for {repository}:",
-                labels,
-            )
-            if selected < 0:
-                return
-            self._create_issue_from_template(
-                repository, None if selected == 0 else usable[selected - 1]
-            )
-
-        self._background("read issue templates", read_templates, choose)
-
-    def _create_issue_from_template(self, repository: str, template: Any | None) -> None:
-        from quill.core.github.issue_templates import GitHubIssueTemplate
-
-        selected = template if isinstance(template, GitHubIssueTemplate) else None
-        title = self._ask_text(
-            "New Issue",
-            f"Title of the new issue in {repository}:",
-            value=selected.title if selected else "",
-        )
-        if not title:
-            return
-        body = self._ask_text(
-            "New Issue",
-            "What it is about (you can leave this empty):",
-            multiline=True,
-            value=selected.body if selected else "",
-        )
-        labels = selected.labels if selected else ()
-        assignees = selected.assignees if selected else ()
-        shown_body = body[:2000]
-        if len(body) > len(shown_body):
-            shown_body += "\n\n[The preview is shortened; the full text will be sent.]"
-        preview = (
-            f"Create an issue in {repository}?\n\n"
-            f"Title: {title}\n"
-            f"Template: {selected.name if selected else 'Blank issue'}\n"
-            f"Labels: {', '.join(labels) or 'none'}\n"
-            f"Assignees: {', '.join(assignees) or 'none'}\n\n"
-            f"Body:\n{shown_body or '(empty)'}"
-        )
-        if not self._confirm("Preview New Issue", preview):
-            return
-        self._background(
-            "create the issue",
-            lambda: self.items.create_issue(
-                repository, title, body, labels=labels, assignees=assignees
-            ),
-            lambda item: (self._say(f"Created issue #{item.number}."), self.frame.reload()),
-        )
-
-    # -- GitHub Items, on one item ---------------------------------------------------
+    # -- Go to Number ----------------------------------------------------------------
 
     def _open_classic(self, ref: Any, row: object, *, reference: str = "") -> None:
         """Show an issue or pull request in its Workbench list, not a second window."""
         from quill.core.github.references import GitHubReferenceError, parse_github_reference
 
         url = reference or self._row_url(row)
+        if url and "/compare/" in url and self.open_link(url):
+            return
         try:
             parsed = parse_github_reference(url) if url else None
         except GitHubReferenceError:

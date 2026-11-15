@@ -5,9 +5,9 @@ A mixin of :class:`~quill.ui.wordpress_commands.WordPressCommands` (through
 QUILL and QUILL Lite.
 
 * **Download My Writing:** every page and post of a site to a folder of
-  Markdown files with their pictures and a contents page; runs in the
-  background and resumes where it stopped.
-* **Send a Folder as Drafts:** a folder of Markdown, text or web-page files
+  Markdown files or Word documents, with their pictures and a contents page;
+  runs in the background and resumes where it stopped.
+* **Send a Folder as Drafts:** a folder of Markdown, text, web-page or Word files
   becomes drafts, each checked first, after one confirmation that gives the
   count.
 * **Coming Up** and **What Changed on My Sites:** one list across every
@@ -48,6 +48,22 @@ class WordPressRouteArchive:
         )
         if folder is None:
             return
+        word = False
+        if wa.word_available():
+            picked = dlg.ask_choice(
+                self.host.parent,
+                self.host.show_modal,
+                title="Download My Writing",
+                prompt="&Save each page and post as:",
+                rows=["Markdown files (.md)", "Word documents (.docx)"],
+                help_text=(
+                    "Markdown keeps every block and opens in any editor; Word documents open in "
+                    "Word and QUILL. The pictures and the contents page are the same either way."
+                ),
+            )
+            if picked is None:
+                return
+            word = picked == 1
         resuming = (folder / wa.MANIFEST).exists()
         self.host.announce(
             f"{'Carrying on saving' if resuming else 'Saving'} your writing on {profile.name} to "
@@ -57,7 +73,7 @@ class WordPressRouteArchive:
             profile,
             "writing",
             f"saving your writing on {profile.name}",
-            lambda api: wa.download_writing(api, folder, profile.site_url),
+            lambda api: wa.download_writing(api, folder, profile.site_url, word=word),
             lambda result: self.host.announce(wa.archive_sentence(profile.name, folder, result)),
         )
 
@@ -79,7 +95,8 @@ class WordPressRouteArchive:
         files = wa.read_folder(folder, site_name=profile.name)
         if not files:
             self.host.announce(
-                f"{folder.name} has no Markdown, text or web-page files to send. Nothing was sent."
+                f"{folder.name} has no Markdown, text, web-page or Word files to send. Nothing "
+                "was sent."
             )
             return
         self._confirm_folder(profile, folder, files)

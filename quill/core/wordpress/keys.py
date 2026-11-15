@@ -58,8 +58,15 @@ def unknown_message(key: str) -> str:
 
 
 def default_bindings() -> dict[str, str]:
-    """Command id -> its shipped layer chord, for QUILL's ``DEFAULT_KEYMAP``."""
-    return {command_id: layer_chord(command_id) for command_id in LAYER_KEYS.values()}
+    """Command id -> its shipped layer chord, for QUILL's ``DEFAULT_KEYMAP``.
+
+    The Forms key shares the layer (``forms/menu.py`` LAYER_KEYS says why), so it
+    is shipped from here too.
+    """
+    from quill.core.forms.menu import default_bindings as forms_bindings
+
+    wordpress = {command_id: layer_chord(command_id) for command_id in LAYER_KEYS.values()}
+    return {**wordpress, **forms_bindings()}
 
 
 def is_sequence(binding: str) -> bool:

@@ -26,6 +26,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.github.across import CATEGORIES as ACROSS_CATEGORIES
 from quill.core.workbench.coverage import CoverageRow, CoverageStatus, CoverageTable
 from quill.core.workbench.tree import Need, NodeSpec, Scope, TreeSpec
 
@@ -181,14 +182,57 @@ _FIXED: tuple[NodeSpec, ...] = (
         loader="teams:mine",
         row_type="team",
     ),
+    _n(
+        "billing_usage",
+        "My Billing and Usage",
+        "people",
+        needs=_SIGN_IN,
+        loader="explore:billing_usage",
+        row_type="result",
+    ),
     _n("find_person", "Find a Person...", "people", template="person"),
     _n("gists", "Gists"),
     _n("my_gists", "My Gists", "gists", needs=_SIGN_IN, loader="explore:gists", row_type="gist"),
     _n("projects", "Projects", needs=_SIGN_IN, loader="projects:mine", row_type="project"),
-    # Places still to come, shown so Ctrl+7 and Ctrl+0 land somewhere that says
-    # what they will hold (PRD 22.5 Watches, 22.11 Across Repositories).
-    _n("watches", "Watches"),
-    _n("across", "Across Repositories"),
+    # PRD 22.5: saved rules checked on the notification check's cadence.
+    _n("watches", "Watches", needs=_SIGN_IN, loader="watches:all", row_type="watch"),
+    _n(
+        "across",
+        "Across Repositories",
+        needs=_SIGN_IN,
+        loader="across:chosen",
+        row_type="repository",
+    ),
+    _n(
+        "across_sets",
+        "Repository Sets",
+        "across",
+        needs=_SIGN_IN,
+        loader="across:sets",
+        row_type="repository_set",
+    ),
+    *(
+        _n(
+            f"across_{key}",
+            label,
+            "across",
+            needs=_SIGN_IN,
+            loader=f"across:{key}",
+            row_type="mixed",
+        )
+        for key, label in ACROSS_CATEGORIES
+    ),
+    # By name across the set, and the Fleet (PRD 22.11, 22.12).
+    *(
+        _n(key, label, "across", needs=_SIGN_IN, loader=f"across:{key[7:]}", row_type=kind)
+        for key, label, kind in (
+            ("across_by_labels", "Labels by Name", "by_name"),
+            ("across_by_milestones", "Milestones by Name", "by_name"),
+            ("across_by_topics", "Topics by Name", "by_name"),
+            ("across_by_rules", "Rules and Branch Protection", "by_name"),
+            ("across_fleet", "Fleet", "fleet"),
+        )
+    ),
     # Help is a place, not only a key (Part D11): the same branch in both
     # Workbenches, every node a list you can type through and filter.
     _n("help", "Help and Learning"),
@@ -257,6 +301,9 @@ _REPOSITORY: tuple[NodeSpec, ...] = (
     _r("releases", "Releases", loader="items:releases", row_type="release"),
     _r("labels", "Labels", loader="explore:labels", row_type="label"),
     _r("milestones", "Milestones", loader="milestones:list", row_type="milestone"),
+    # PRD 21.3: issue forms, Markdown templates, the chooser, pull request
+    # templates, discussion forms and community files, own and inherited.
+    _r("templates", "Templates", loader="templates:list", row_type="template"),
     _r("repo_projects", "Projects", needs=_SIGN_IN, loader="projects:repository"),
     _r("activity", "Activity", loader="explore:repo_activity", row_type="event"),
     _r("people", "People"),
@@ -364,6 +411,15 @@ _ORGANIZATION: tuple[NodeSpec, ...] = (
         needs=_SIGN_IN,
         loader="teams:organization",
         row_type="team",
+    ),
+    # PRD 21.3: the defaults in the organization's .github repository.
+    NodeSpec(
+        "organization_templates",
+        "Templates",
+        "organization",
+        scope=Scope.ORGANIZATION,
+        loader="templates:organization",
+        row_type="template",
     ),
 )
 

@@ -43,6 +43,7 @@ from typing import Any
 from quill.core.github.alert_triage import GitHubAlertTriageMixin
 from quill.core.github.auth_diagnostics import github_exception_hint
 from quill.core.github.branch_compare import GitHubBranchComparison, fetch_branch_comparison
+from quill.core.github.branch_divergence import with_divergence
 from quill.core.github.discussion_actions import GitHubDiscussionActionsMixin
 from quill.core.github.github_provider import _get_gh_module, require_pygithub
 from quill.core.github.issue_comments import list_comments as _list_issue_comments
@@ -147,9 +148,11 @@ class GitHubBranch:
     commit_author: str = ""
     commit_date: str = ""
     protected: bool = False
-    ahead: int = 0
-    behind: int = 0
+    #: Against the default branch; None is "not known" (branch_divergence.py).
+    ahead: int | None = None
+    behind: int | None = None
     url: str = ""
+    default_branch: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -588,7 +591,9 @@ class GitHubItemsProvider(
             rows = _take(repo.get_branches(), limit)
         except Exception as exc:  # noqa: BLE001
             raise GitHubItemsError(f"Could not list branches: {exc}") from exc
-        return [self._map_branch(row, repo) for row in rows]
+        branches = [self._map_branch(row, repo) for row in rows]
+        default = _safe_str(getattr(repo, "default_branch", ""))
+        return with_divergence(branches, self._token, full_name, default)
 
     def _map_branch(self, row: Any, repo: Any) -> GitHubBranch:
         name = _safe_str(getattr(row, "name", ""))
@@ -607,9 +612,6 @@ class GitHubItemsProvider(
                     commit_date = _iso(getattr(author_obj, "date", None))
         protected = bool(getattr(row, "protected", False))
         url = f"{repo.html_url}/tree/{name}" if getattr(repo, "html_url", "") else ""
-        # ahead/behind need a compare() call per branch (expensive at scale); v1
-        # leaves them at 0 -- a follow-up can populate them on demand from the
-        # detail pane, where a single branch's divergence is cheap to fetch.
         return GitHubBranch(
             name=name,
             commit_sha=commit_sha,
@@ -617,8 +619,6 @@ class GitHubItemsProvider(
             commit_author=commit_author,
             commit_date=commit_date,
             protected=protected,
-            ahead=0,
-            behind=0,
             url=url,
         )
 
@@ -993,12 +993,13 @@ class GitHubItemsProvider(
         body: str,
         head: str,
         base: str,
+        draft: bool = False,
     ) -> GitHubItem:
-        """Open a new pull request from *head* into *base*."""
+        """Open a new pull request from *head* into *base* (*draft*: not ready for review)."""
         self._require_write_access("open a pull request")
         repo = self._repo(full_name)
         try:
-            row = repo.create_pull(title=title, body=body, head=head, base=base)
+            row = repo.create_pull(title=title, body=body, head=head, base=base, draft=draft)
         except Exception as exc:  # noqa: BLE001
             raise GitHubItemsError(f"Could not open pull request: {exc}") from exc
         return self._map_issue(row, is_pr=True)

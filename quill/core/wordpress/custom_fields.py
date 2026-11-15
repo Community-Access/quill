@@ -177,9 +177,10 @@ class FieldValueError(CodedError):
 
     code = "QUILL-WP-FIELDS-NOT-A-NUMBER"
 
-    def __init__(self, field_label: str) -> None:
+    def __init__(self, field_label: str, reason: str = "") -> None:
         super().__init__(field_label)
         self.field_label = field_label
+        self.reason = reason
 
 
 def changes(form: CustomFields, answers: Mapping[str, Any]) -> dict[str, Any]:

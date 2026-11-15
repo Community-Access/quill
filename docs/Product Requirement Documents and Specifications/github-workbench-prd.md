@@ -603,7 +603,7 @@ QUILL and QUILL Lite stays about writing.
     place), Quick or Full list by default, default sort, and default state
     (open, closed, all).
   - **Notifications and Inbox:** how often to check for new notifications,
-    whether a new one plays a tick, whether that interrupts speech, whether
+    whether each check plays a short sound, whether that interrupts speech, whether
     read notifications are included, and the Inbox categories and
     repositories (today's Queue Options, Choose Categories and
     Choose Repositories).
@@ -2137,6 +2137,58 @@ coverage of combinations is tested like everything else (GATE-GITHUB-COVER
 counts a cross-repository operation as covered only when the single
 repository one is).
 
+#### Category-first browsing across repositories (GX16)
+
+Across Repositories also offers category-first, read-first lists. The person
+chooses repositories once, then opens **Issues & Pull Requests**, **Releases**,
+**Workflow Runs**, **Commits**, **Tags**, **Milestones**, **Discussions**, or
+**Security Alerts** to see that kind across the chosen scope. This complements
+the by-name sheets above: a category list answers "what is happening across
+these repositories?", while a by-name sheet answers "where does this label,
+milestone, or setting exist?".
+
+The QUILL surface stays within the existing Navigator tree, item list, details
+pane, menus, and status cells. It does not introduce a separate navigation
+mode. **Choose Repositories...** is a local, account-scoped checklist; it can
+include repositories the person adds by `owner/name`. Removing a repository
+from an ordinary view does not silently remove it from the saved scope.
+
+Every item row starts with its repository. Details name the repository,
+category, item number or identifier, and URL. Enter opens the exact item in its
+own repository; Back returns to the same row, filter, group, and page. Refresh
+and View More preserve selection by stable item identity. Sorting works within
+the current category; Group by Repository keeps the chosen repository order.
+Releases default to **Latest Release Only**, with an explicit option to show
+every release. Next/Previous Repository are also available from the Actions
+menu, with new keys assigned only after the Workbench and assistive-technology
+key audit.
+
+Reads are bounded per repository (30 items initially, then 30 more per
+repository up to GitHub's 100-item page limit). The status and details say how
+many repositories answered, which had no items, which feature is disabled, and
+which could not be read. A failed or inaccessible repository never disappears
+from the total. The list is read-only by default; an item's normal Properties
+and action contract stays scoped to its named repository. Any explicitly
+selected batch write still requires the existing scope preview, conflict
+check, and per-repository result.
+
+For **Issues & Pull Requests**, rows and details include issue type and every
+organization-defined issue field the signed-in account can see. Preserve the
+field identifier and declared type (text, number, date, single choice,
+multi-choice, or a type GitHub adds later) as well as its value. A hidden,
+unsupported, unavailable, unset, and empty field are distinct states. Type and
+field filters use the same values shown in the details; a missing permission
+never looks like an unset field. The Issue sheet remains the edit surface and
+retains its existing preview, conflict check, permission explanation, and
+verify-after-save rules.
+
+The repository chooser and any multi-value property checklist expose the
+checked state in the accessible row itself. Space changes it and yields one
+state announcement; Enter saves and returns focus to the row that changed.
+Adding an already listed repository checks that row once instead of creating a
+duplicate. On Windows the checklist uses a virtual list where rewriting a
+visible row would make JAWS repeat the row.
+
 ### 22.12 The fourth sweep: smaller things still missing
 
 - **More than github.com.** GitHub Enterprise Cloud with data residency
@@ -2517,7 +2569,7 @@ rules, View As Role, and Why Can't They?.
 - **A human voice:** plain words, short sentences, what to do before why, no
   marketing, none of the AI tells the family's docs rule lists, and no
   engineering rationale in user-facing help.
-- **Check, never tick,** for check boxes; "Community Access"; no emoji.
+- **Check, checked and uncheck** for check boxes, and no other word; "Community Access"; no emoji.
 - **One idea per help string,** an example where it helps, and the key.
 - **Accurate to the account:** help that depends on your permission says
   what you have now, not only what is needed.
@@ -2932,6 +2984,16 @@ phase's PR. Ids are never renumbered; a dropped requirement keeps its id with
   (22.11).
 - GH-R-154 Should: the fourth sweep of 22.12, each as the coverage gate
   schedules it.
+- GH-R-155 Must: category-first lists cover the eight item kinds in 22.11.1,
+  use an explicit per-account repository set, name provenance on each row,
+  retain partial/error/empty distinctions, and preserve exact selection on
+  refresh, paging, drill-in, and return.
+- GH-R-156 Must: issue-type and issue-field values in category lists, filters,
+  and Properties retain their stable IDs, declared value types, visibility
+  permissions, and explicit unset/empty/unavailable states.
+- GH-R-157 Must: repository and item-property checklists announce a Space
+  toggle once, save from Enter, return focus predictably, and pass JAWS/NVDA
+  checks on Windows and VoiceOver checks on macOS.
 
 ## Part F: quality
 
@@ -3247,7 +3309,7 @@ The keyboard adds two more:
 
 | Today | New home |
 |---|---|
-| Notification poll interval, audible tick, interrupt speech (main Settings) | Tools > Workbench Options > Notifications and Inbox |
+| Notification poll interval, sound on each check, interrupt speech (main Settings) | Tools > Workbench Options > Notifications and Inbox |
 | Queue Options..., Choose Categories..., Choose Repositories..., Save Current Filter... | Tools > Workbench Options > Notifications and Inbox; Account > Notification and Inbox Options |
 | Include read notifications | Tools > Workbench Options > Notifications and Inbox |
 | Health snapshot opt-in | Tools > Workbench Options > Privacy and opt-ins |

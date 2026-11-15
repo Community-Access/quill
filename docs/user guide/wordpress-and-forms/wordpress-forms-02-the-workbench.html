@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 2: A tour of the WordPress Workbench</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-2-a-tour-of-the-wordpress-workbench">Chapter 2: A tour
+of the WordPress Workbench</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>You write in the editor. You look after your sites in the WordPress
+Workbench. It is one window for every site you have connected, and most
+of this manual happens in it, so it is worth ten minutes to learn how it
+moves.</p>
+<p>In this chapter you open the Workbench, find your way round its tree,
+read a list, open Properties, use the context menu, and change something
+safely. You also meet Needs My Attention, the filter, the status bar and
+F1.</p>
+<p>By the end you will know where everything lives, how QUILL asks
+before it changes your site, and how to take a change back.</p>
+<h2 id="opening-the-workbench">Opening the Workbench</h2>
+<p>There are three ways in:</p>
+<ul>
+<li>Choose <strong>Tools &gt; WordPress &gt; Open WordPress
+Workbench…</strong>.</li>
+<li>Press the WordPress key, Ctrl+Alt+Shift+Grave, then H.</li>
+<li>Choose any of the site rows of Tools &gt; WordPress, such as
+<strong>Comments…</strong>, <strong>Media Library…</strong>,
+<strong>Categories and Tags…</strong>, <strong>Menus…</strong>,
+<strong>Site Settings…</strong> or <strong>Site Check</strong>. Each
+opens the Workbench at its own place. The same goes for Users,
+Application Passwords, Plugins, Themes, Fonts, Synced Patterns, Widgets,
+Site Map and AI Abilities in Tools &gt; WordPress &gt; Manage.</li>
+</ul>
+<p>Two more start from the page you are writing:</p>
+<ul>
+<li><strong>File &gt; WordPress &gt; This Post in the Workbench</strong>
+(the WordPress key, then Shift+H) opens the list your post is in, with
+your post selected.</li>
+<li><strong>Insert &gt; Picture from the Media Library…</strong> opens
+your site’s Media, ready for you to pick a picture. Chapter 5 shows
+how.</li>
+</ul>
+<p>The Workbench is a window of its own. The editor stays open behind
+it. <strong>Window &gt; Switch to Editor</strong>
+(<code>Ctrl+Shift+E</code>) brings the editor forward, and closing the
+Workbench with Alt+F4 leaves the editor as it was.</p>
+<h2 id="the-five-panes">The five panes</h2>
+<p>The window has five parts, in this order:</p>
+<ol type="1">
+<li><strong>The tree</strong>, on the left, says where you are.</li>
+<li><strong>The filter box</strong> narrows the list.</li>
+<li><strong>The list</strong> shows what is in the place you chose.</li>
+<li><strong>The details</strong> say more about the row you are on.</li>
+<li><strong>The status bar</strong> says which site and role you are
+using.</li>
+</ol>
+<p>F6 moves to the next part, and Shift+F6 to the one before.
+<strong>View &gt; Where Am I</strong> (<code>Alt+1</code>) says the
+place and the filter in effect. <strong>View &gt; Say Selection</strong>
+(<code>Alt+2</code>) says how many rows you have selected.</p>
+<h2 id="finding-your-way-round-the-tree">Finding your way round the
+tree</h2>
+<p>The tree works like any tree view. Up and Down Arrow move, Right
+Arrow opens a branch and Left Arrow closes it. When you arrive on a
+place, its list loads by itself.</p>
+<p>At the top of the tree:</p>
+<ul>
+<li><strong>Start Here</strong> says what the Workbench is and how to
+move round it.</li>
+<li><strong>Needs My Attention</strong> gathers what waits on you, from
+every site at once.</li>
+<li><strong>Sites</strong> has a branch for each site you have
+connected.</li>
+<li><strong>Calendar</strong> lists every site’s content a day at a
+time.</li>
+<li><strong>Across Sites</strong> shows the same tag, plugin, person or
+setting on all your sites together.</li>
+<li><strong>Search</strong> searches every site at once.</li>
+<li><strong>Practice Site</strong> is a WordPress site on your own
+computer, for learning with nothing at stake.</li>
+<li><strong>Help and Learning</strong> has How WordPress Thinks, Words
+and Keys.</li>
+</ul>
+<p>Open a site under Sites and you find its Overview first, then Posts,
+Pages, Media, Comments, Categories, Tags, Menus and Navigation,
+Appearance, Forms, People, Plugins, Settings, Site Health and more. A
+site that runs a plugin QUILL knows, such as WooCommerce, also has that
+plugin’s places. If a site has its own kinds of content, such as Events,
+they are under More Content Types.</p>
+<p><strong>Jumping straight there.</strong> The Go menu takes you to the
+places you use most:</p>
+<ul>
+<li><strong>Go &gt; Needs My Attention</strong> (<code>Ctrl+1</code>)
+and <strong>Go &gt; Current Site</strong> (<code>Ctrl+2</code>);</li>
+<li><strong>Go &gt; Posts</strong> (<code>Ctrl+Shift+1</code>),
+<strong>Go &gt; Pages</strong> (<code>Ctrl+Shift+2</code>), <strong>Go
+&gt; Media</strong> (<code>Ctrl+Shift+3</code>) and <strong>Go &gt;
+Comments</strong> (<code>Ctrl+Shift+4</code>) for the site you are on,
+and so on up to <strong>Go &gt; Site Health</strong>
+(<code>Ctrl+Shift+9</code>);</li>
+<li><strong>Go &gt; Across Sites</strong> (<code>Ctrl+0</code>),
+<strong>Go &gt; Calendar</strong> (<code>Ctrl+3</code>), <strong>Go &gt;
+Watches</strong> (<code>Ctrl+5</code>), <strong>Go &gt; Practice
+Site</strong> (<code>Ctrl+6</code>) and <strong>Go &gt; Start
+Here</strong> (<code>Ctrl+9</code>);</li>
+<li><strong>Go &gt; Parent Node</strong> (<code>Alt+Up</code>) goes up
+one level.</li>
+</ul>
+<p><strong>View &gt; Back</strong> (<code>Alt+Left</code>, or Backspace)
+and <strong>View &gt; Forward</strong> (<code>Alt+Right</code>) work
+like a web browser’s.</p>
+<h2 id="reading-a-list">Reading a list</h2>
+<p>Each row of a list is one thing: a post, a picture, a comment, a
+person. The columns say the most useful facts about it, and the details
+pane says the rest. Arrow to a row and read it, or Tab to the
+details.</p>
+<ul>
+<li><strong>Enter</strong> does the row’s main job. On a post or page it
+opens it in the editor. On a comment it reads it in full. On a file in
+Media it opens the file in your browser.</li>
+<li><strong>Shift+Enter</strong> opens the row on the site, in your
+browser, and <strong>Ctrl+Enter</strong> previews it there.</li>
+<li><strong>Edit &gt; Copy Link</strong> (<code>Ctrl+Shift+C</code>)
+puts its address on the clipboard.</li>
+</ul>
+<p>A long list loads in pages. <strong>View &gt; Load More</strong>
+(<code>Ctrl+Shift+L</code>) reads three hundred more rows, and
+<strong>View &gt; Load All</strong> (<code>Ctrl+Alt+L</code>) reads them
+all. <strong>View &gt; Columns…</strong> (<code>Ctrl+Alt+C</code>)
+chooses the columns. <strong>View &gt; Group By…</strong>
+(<code>Ctrl+Alt+G</code>) makes a small branch for each value of a
+column, such as one for each author. <strong>View &gt; Refresh</strong>
+(<code>F5</code>) reads the list again from the site.</p>
+<p>You can select several rows at once, the way you would in any Windows
+list. Most commands then act on all of them, and tell you how each one
+went.</p>
+<h2 id="the-filter">The filter</h2>
+<p>The filter box sits above the list. <strong>Edit &gt;
+Filter…</strong> (<code>Ctrl+E</code>) takes you there.</p>
+<p>Type words and press Enter to search the whole site, not only the
+rows you can see. You can also type qualifiers, such as
+<code>status:draft</code>, <code>category:news</code>,
+<code>-tag:old</code>, <code>after:2026-01-01</code> or
+<code>modified:&gt;2026-10-01</code>. Escape clears the filter.</p>
+<p>Some help if you would rather not type them:</p>
+<ul>
+<li><strong>Edit &gt; Filter Builder…</strong>
+(<code>Ctrl+Shift+F</code>) builds a filter from the list’s own columns
+and values.</li>
+<li><strong>Edit &gt; Show Only Like This…</strong>
+(<code>Ctrl+Alt+O</code>) keeps rows like the one you are on, by a
+column you choose, and <strong>Edit &gt; Hide Like This…</strong>
+(<code>Ctrl+Alt+H</code>) hides them.</li>
+<li><strong>Edit &gt; Only Mine</strong> (<code>Ctrl+Alt+M</code>) shows
+only what you wrote, and pressing it again shows everything.</li>
+</ul>
+<p><strong>Searching every site.</strong> Choose <strong>Search</strong>
+in the tree, then type words in the filter box and press Enter. Each
+result names its site and its kind of content, and Enter opens it in
+your browser. If one site cannot answer, its error sits beside the other
+results, and a big search says when more matches remain.</p>
+<p>A few lists, such as plugins and settings, cannot be searched on the
+site. They are filtered here, on the rows already loaded, and the status
+bar says so.</p>
+<h2 id="properties">Properties</h2>
+<p><strong>Item &gt; Properties…</strong> (<code>Alt+Enter</code>) shows
+everything about the selected row on one sheet: a post’s title, status,
+author, categories, featured image and the rest, or a picture’s
+alternative text and caption. Change what you like and press OK, or
+Apply to save and keep the sheet open.</p>
+<p>Select several rows and Properties changes them all at once. A field
+where they differ says “Mixed”, and stays as it is unless you change
+it.</p>
+<p>A field you cannot change is still there to read, and F1 on it says
+why.</p>
+<p>When a site’s plugins keep extra fields for a category, a person or a
+comment, Properties shows them on a <strong>Custom Fields</strong> page.
+A field that holds a list or a group is a labelled box of JSON text, and
+QUILL checks it before it saves. A field the site does not describe is
+read only.</p>
+<p><strong>Site &gt; Site Properties…</strong>
+(<code>Alt+Shift+Enter</code>) is the same sheet for the whole site.</p>
+<h2 id="the-context-menu-and-the-item-menu">The context menu and the
+Item menu</h2>
+<p>Every row has a context menu. Press the Applications key, or
+Shift+F10. It lists everything you can do to that kind of row, with the
+main job first and Properties last. The <strong>Item</strong> menu in
+the menu bar holds the same commands that have keys.</p>
+<p>A command your role cannot use is dimmed. Choose it by its key anyway
+and you hear why, for example “Publishing pages needs the Editor role or
+higher. You are an Author on Community Radio.” <strong>Site &gt; What
+Can I Do Here?</strong> (<code>Shift+F1</code>) lists everything on the
+current place, and what each one needs.</p>
+<p>The tree has a context menu too. On any place in a site it has
+<strong>wp-admin for This Place…</strong>, which offers the wp-admin
+screens nearest to that place, for the jobs WordPress only does
+there.</p>
+<h2 id="how-quill-asks-before-it-changes-your-site">How QUILL asks
+before it changes your site</h2>
+<p>Reading never changes anything. Before anything that changes a site,
+QUILL shows you a preview: one line for each thing that will change,
+with the site named at the top. Nothing goes until you press the button
+that names the change, such as <strong>Publish</strong>,
+<strong>Add</strong> or <strong>Import as Drafts</strong>. Escape, or
+Cancel, sends nothing.</p>
+<p>Then:</p>
+<ul>
+<li><strong>QUILL reads it again first.</strong> If somebody changed the
+item on the site since your list loaded, nothing is sent, and you are
+told what changed. Press F5 and try again.</li>
+<li><strong>QUILL checks afterwards.</strong> It reads the item back,
+and tells you if the site did not keep something.</li>
+<li><strong>A permanent change says so.</strong> Deleting for good, a
+refund, or a change WordPress keeps no copy of, says in its preview that
+it cannot be undone, and Delete Permanently asks you to confirm by name.
+These previews start on Cancel, so pressing Enter by habit does nothing.
+Tab to the action button to go ahead.</li>
+</ul>
+<p><strong>New Here.</strong> <strong>File &gt; New Here…</strong>
+(<code>Ctrl+N</code>) makes a new thing of the kind you are looking at:
+a post in Posts, a category in Categories, a person in Users, a coupon
+in Coupons. It asks what it needs, then shows the preview.</p>
+<h2 id="taking-a-change-back">Taking a change back</h2>
+<p><strong>Edit &gt; Undo WordPress Change</strong>
+(<code>Ctrl+Z</code>) puts back the last change you made in the
+Workbench, wherever putting the old values back really restores it.
+Press it again for the change before. Each one says what it put
+back.</p>
+<p>Some changes cannot be taken back, such as a reply that has already
+gone or a trash that was emptied. When Ctrl+Z reaches one, it says so
+and steps past it. Press Ctrl+Z again to undo the change before it.</p>
+<p><strong>Edit &gt; Change History…</strong>
+(<code>Ctrl+Shift+H</code>) lists every change you made in this window,
+newest first, including the ones that cannot be undone. It marks the one
+Ctrl+Z will undo next.</p>
+<p><strong>Item &gt; Move to Trash</strong> (<code>Delete</code>) sends
+posts, pages and comments to WordPress’s own Trash, and <strong>Item
+&gt; Restore from Trash</strong> (<code>Ctrl+Shift+R</code>) brings them
+back. The Media Library has no Trash in WordPress, so a picture or a
+file is deleted for good with <strong>Item &gt; Delete
+Permanently…</strong> (<code>Shift+Delete</code>). If you want a copy
+first, use <strong>Download…</strong> on its context menu.</p>
+<p>Delete, Shift+Delete and Ctrl+Z only act on the list. In the filter
+box, or in any other box you type in, they edit your text as usual.</p>
+<h2 id="needs-my-attention">Needs My Attention</h2>
+<p><strong>Needs My Attention</strong> (<code>Ctrl+1</code>) is the
+place to start the day. It gathers from every site:</p>
+<ul>
+<li><strong>Inbox</strong>: everything below, newest first;</li>
+<li><strong>Comments Waiting</strong>: comments held for you to
+approve;</li>
+<li><strong>Pending Review</strong>: posts from people who cannot
+publish, waiting for an editor;</li>
+<li><strong>Scheduled</strong>: what will publish itself, with its
+date;</li>
+<li><strong>Drafts</strong>: your own drafts on every site;</li>
+<li><strong>Updates</strong>: the version of WordPress, every plugin and
+every theme;</li>
+<li><strong>Site Health</strong>: problems the sites report, worst
+first;</li>
+<li><strong>Accessibility</strong>: pictures with no alternative
+text;</li>
+<li><strong>Broken Links</strong>: dead links in a sample of each site’s
+pages;</li>
+<li><strong>Held as Spam</strong>: comments and form responses a site
+doubted;</li>
+<li><strong>Form Responses</strong>: new responses to your forms;</li>
+<li><strong>Membership Orders</strong>: orders waiting on a person, on
+sites with Paid Memberships Pro;</li>
+<li><strong>Watches</strong>: what you asked the Workbench to keep an
+eye on.</li>
+</ul>
+<p>Each row names its site. Act on it right there, as you would in the
+site’s own list.</p>
+<h2 id="the-status-bar">The status bar</h2>
+<p>The status bar has seven parts: the <strong>Site</strong> and
+<strong>Your role</strong> you are working as, how many
+<strong>Items</strong> are shown, the <strong>Filter</strong> in effect,
+whether a list is <strong>Loading</strong>, what is
+<strong>Waiting</strong>, and your <strong>Workbench access</strong> for
+that site. F6 reaches it. Arrow along it, and press Enter on a part for
+the action that goes with it, such as Clear Filter or Refresh.</p>
+<p><strong>Workbench access</strong> is a choice you make for each site,
+with <strong>Site &gt; Workbench Access…</strong>
+(<code>Ctrl+Alt+A</code>):</p>
+<ul>
+<li><strong>Full</strong>, the default, lets you do everything your role
+allows;</li>
+<li><strong>Organize</strong> allows reading, and the changes that are
+easy to undo, such as moderating comments and moving things to the
+Trash;</li>
+<li><strong>Read Only</strong> allows reading only.</li>
+</ul>
+<p><strong>Site &gt; View As Role…</strong> (<code>Ctrl+Alt+V</code>)
+shows the site as an Author, say, would see it, and is read only while
+it is on. Safe Mode makes every site read only too. The choice covers
+every command in the window: the context menu, the menu bar, New Here,
+the imports, the REST Console, and Delete on people and passwords.
+Commands it does not allow are dimmed, or say why when you try them.
+Whatever you choose, WordPress still checks your own account before it
+accepts anything.</p>
+<p>The application password QUILL signs in with is never revoked from
+the Workbench, at any level. Use Sign Out This Site for that.</p>
+<h2 id="f1-and-help-for-every-place">F1, and help for every place</h2>
+<p><strong>Help &gt; Help for This View</strong> (<code>F1</code>) says
+what the place or row under focus is, and what you can do with it. Press
+it on the tree, the list, or any field of Properties. <strong>Site &gt;
+Roles and What They May Do</strong> (<code>Ctrl+Alt+R</code>) explains
+each role on the site in plain words.</p>
+<h2 id="a-walk-through-your-first-five-minutes">A walk-through: your
+first five minutes</h2>
+<ol type="1">
+<li>Press Ctrl+Alt+Shift+Grave, then H. The Workbench opens.</li>
+<li>Press Ctrl+1 for Needs My Attention, then Down Arrow to Comments
+Waiting.</li>
+<li>Tab to the list and arrow through the comments. Each row names the
+site.</li>
+<li>On one you want to publish, press Ctrl+Shift+A to approve it.</li>
+<li>Changed your mind? Press Ctrl+Z. It is waiting again.</li>
+<li>Press Ctrl+2 for your site’s Overview, then Right Arrow and Down
+Arrow to At a Glance, which says your site’s counts in words.</li>
+<li>Press Alt+F4. The editor is where you left it.</li>
+</ol>
+<h2 id="practising-on-a-site-of-your-own">Practising on a site of your
+own</h2>
+<p>The Practice Site is a real WordPress site that runs on your own
+computer, so you can try anything here with nothing at stake. It comes
+with QUILL, and needs no download.</p>
+<ol type="1">
+<li>Choose <strong>Tools &gt; Practice Site…</strong>
+(<code>Ctrl+Alt+P</code>) in the Workbench, or press Ctrl+6 to go to its
+place in the tree.</li>
+<li>Choose <strong>Start the Practice Site</strong>. The first start
+takes two or three minutes, while it unpacks WordPress and makes a
+welcome page, a sample post and a draft. Later starts take under a
+minute.</li>
+<li>Choose Practice Site again, then <strong>Connect It as Practice
+Site</strong>. It joins your sites under Sites.</li>
+</ol>
+<p>It answers only on this computer, at
+<code>http://127.0.0.1:9400</code>. That is the one address QUILL will
+use without HTTPS. If something else on your computer is using that
+port, QUILL says so before it starts anything.</p>
+<p>When you are done, choose <strong>Stop the Practice Site</strong>.
+Closing the Workbench stops it too.</p>
+<p><strong>Reset the Practice Site</strong>, offered while it is
+stopped, wipes it clean: every post, page, upload, comment, person,
+plugin and setting on it is deleted for good, and its connection is
+forgotten. It asks first. Your real sites are not touched. The next
+start builds a fresh site.</p>
+<p>If a command would change the Practice Site and a real site in one
+step, such as Revoke Everywhere, QUILL asks you by name first, and the
+answer starts on No.</p>
+<p><strong>Help &gt; Tutorials</strong> in QUILL has three lessons that
+use the Practice Site: starting it, changing a post and undoing the
+change, and resetting it. A fourth, Look after a site, walks through the
+Overview, menus, people, Site Health and more.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="wordpress-forms-01-getting-started.html">Chapter
+1: Getting started and adding your sites</a></li>
+<li>Next: <a
+href="wordpress-forms-03-writing-and-publishing.html">Chapter 3: Writing
+and publishing posts and pages</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

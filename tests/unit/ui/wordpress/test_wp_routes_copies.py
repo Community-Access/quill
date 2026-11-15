@@ -275,7 +275,8 @@ POST = {
 }
 
 
-def test_download_my_writing_then_resume(wpr, wp_site, monkeypatch, tmp_path) -> None:
+def test_download_my_writing_then_resume(wpr, wp_site, wp_dialogs, monkeypatch, tmp_path) -> None:
+    wp_dialogs.answer("ask_choice", 0, 0)  # Markdown, both times
     out = tmp_path / "archive"
     monkeypatch.setattr(rdlg, "pick_folder", lambda *_a, **_k: out)
     site(wp_site).on("GET", f"{API}/posts", [POST]).on("GET", f"{API}/pages", [])
@@ -287,14 +288,13 @@ def test_download_my_writing_then_resume(wpr, wp_site, monkeypatch, tmp_path) ->
     assert "pictures/2026-10-a.png" in page
     assert (out / "pictures" / "2026-10-a.png").read_bytes() == b"PNG"
     assert "- [Spring](spring-12.md)" in (out / "index.md").read_text(encoding="utf-8")
-    assert (
-        wpr.host.announced[-1]
-        == "Your writing on Community Radio is in archive: 1 saved, 1 pictures."
+    assert wpr.host.announced[-1].startswith(
+        "Your writing on Community Radio is in archive: 1 saved, 1 pictures. Left out: comments"
     )
     wpr.cmd_download_writing()
     assert "Carrying on saving" in wpr.host.said
-    assert wpr.host.announced[-1] == (
-        "Your writing on Community Radio is in archive: 0 saved, 1 already up to date."
+    assert wpr.host.announced[-1].startswith(
+        "Your writing on Community Radio is in archive: 0 saved, 1 already up to date. Left out:"
     )
     assert len(wp_site.sent("GET", f"{API}/posts/12")) == 1
 
@@ -309,7 +309,8 @@ def test_send_folder_confirms_the_count_then_sends(
     wpr, wp_site, wp_dialogs, monkeypatch, tmp_path
 ) -> None:
     (tmp_path / "one.md").write_text("# First\n\nHello.\n", encoding="utf-8")
-    (tmp_path / "two.txt").write_text(
+    # Markdown, so the link is a link (a .txt file is plain text, never Markdown).
+    (tmp_path / "two.md").write_text(
         "No heading here. [click here](https://x.org)\n", encoding="utf-8"
     )
     (tmp_path / "skip.png").write_bytes(b"x")
@@ -334,7 +335,31 @@ def test_send_folder_cancel_and_empty(wpr, wp_site, monkeypatch, tmp_path) -> No
     empty.mkdir()
     monkeypatch.setattr(rdlg, "pick_folder", lambda *_a, **_k: empty)
     wpr.cmd_send_folder()
-    assert "has no Markdown, text or web-page files" in wpr.host.announced[-1]
+    assert "has no Markdown, text, web-page or Word files" in wpr.host.announced[-1]
+
+
+def test_download_my_writing_as_word_then_send_the_word_files_back(
+    wpr, wp_site, wp_dialogs, monkeypatch, tmp_path
+) -> None:
+    # 9.17, gap 6: Word out of Download My Writing, and Word into Send a Folder as Drafts.
+    out = tmp_path / "word"
+    monkeypatch.setattr(rdlg, "pick_folder", lambda *_a, **_k: out)
+    site(wp_site).on("GET", f"{API}/posts", [POST]).on("GET", f"{API}/pages", [])
+    wp_site.on("GET", f"{API}/posts/12", POST)
+    wp_site.on("GET", "/wp-content/uploads/2026/10/a.png", b"PNG")
+    wp_dialogs.answer("ask_choice", 1)
+    wpr.cmd_download_writing()
+    assert wp_dialogs.asked("ask_choice")[0]["rows"][1] == "Word documents (.docx)"
+    word = out / "spring-12.docx"
+    assert word.read_bytes().startswith(b"PK")
+    assert "- [Spring](spring-12.docx)" in (out / "index.md").read_text(encoding="utf-8")
+    (out / "index.md").unlink()
+    wp_site.on("POST", f"{API}/posts", {**POST, "id": 40, "status": "draft"})
+    wp_dialogs.answer("confirm", True)
+    wpr.cmd_send_folder()
+    assert "spring-12.docx: Spring" in wp_dialogs.asked("confirm")[0]["message"]
+    body = wp_site.body(wp_site.sent("POST", f"{API}/posts")[0])
+    assert body["title"] == "Spring" and body["status"] == "draft"
 
 
 # --------------------------------------------------------------------------- #
@@ -397,6 +422,10 @@ def test_what_changed_then_nothing_new(wpr, wp_site, wp_dialogs) -> None:
     wp_dialogs.press("Open in &Browser", 1)
     assert wpr.host.browsed == ["https://radio.example/gig"]
     first_since = query["after"][0]
+    # Marked as UTC: WordPress reads an unmarked time as the site's own (live run, test 54).
+    assert first_since.endswith("+00:00")
+    comments = parse_qs(urlparse(wp_site.sent("GET", f"{API}/comments")[0].full_url).query)
+    assert comments["after"] == [first_since]
     wpr.cmd_what_changed()
     later = parse_qs(urlparse(wp_site.sent("GET", f"{API}/posts")[-1].full_url).query)
     assert later["after"][0] >= first_since

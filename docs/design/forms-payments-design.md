@@ -116,5 +116,5 @@ provider transports and never reach Stripe or PayPal.
 
 Chapter 18 of the [QUILL user guide](../user%20guide/quill-guide/quill-guide-18-taking-payments.md),
 "Taking payments with your forms", and Chapter 16 of QUILL Lite's teach the
-whole process. The shorter [manual section](../user%20guide/wordpress-and-forms/wordpress-forms-09-forms-on-the-web-and-paper.md)
+whole process. The shorter [manual section](../user%20guide/wordpress-and-forms/wordpress-forms-12-forms-on-the-web-and-paper.md)
 describes authoring, test mode and entry review.

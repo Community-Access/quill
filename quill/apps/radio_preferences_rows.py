@@ -19,6 +19,7 @@ __all__ = [
     "lead_index",
     "resume_index",
     "startup_checkbox",
+    "startup_minimized_checkbox",
     "wake_checkbox",
 ]
 
@@ -48,6 +49,21 @@ def startup_checkbox() -> Any:
         "Start Quill Radio with &Windows",
         help_text,
         radio_startup.is_launch_at_startup_enabled(),
+        enabled=enabled,
+    )
+
+
+def startup_minimized_checkbox() -> Any:
+    """The independent window-presentation choice for a Windows login launch."""
+    from quill.platform.windows import radio_startup
+    from quill.ui.app_preferences_dialog import PreferenceCheckbox
+
+    enabled = radio_startup.is_windows() and not radio_startup.running_portable()
+    return PreferenceCheckbox(
+        "Start Quill Radio &minimized when Windows starts",
+        "When Quill Radio is set to start with Windows, open it in the system tray "
+        "without showing its window. This does not change an ordinary launch.",
+        radio_startup.start_minimized_at_startup(),
         enabled=enabled,
     )
 

@@ -61,6 +61,11 @@ WORDPRESS_ROWS: tuple[Entry, ...] = (
     ("wordpress.schedule", "Sch&edule Publish...", "cmd_schedule"),
     ("wordpress.open_on_site", "Open on S&ite", "cmd_open_on_site"),
     ("wordpress.copy_address", "Cop&y Address", "cmd_copy_address"),
+    (
+        "wordpress.this_post_in_workbench",
+        "This Post in the Wor&kbench",
+        "cmd_this_post_in_workbench",
+    ),
     None,
     ("wordpress.properties", "P&roperties...", "cmd_properties"),
     ("wordpress.custom_fields", "Custom &Fields...", "cmd_custom_fields"),
@@ -317,6 +322,9 @@ LAYER_KEYS: dict[str, str] = {
     # H for the Workbench, the home of every site (W6): no letter of its name
     # is free in Tools > WordPress, and W is Open by Address.
     "H": "wordpress.workbench",
+    # Shift+H for This Post in the Workbench (PRD 14): the Workbench's H, on this
+    # post, as Shift+S is the list beside Switch Site's S.
+    "Shift+H": "wordpress.this_post_in_workbench",
 }
 
 #: Commands about the page in front of you: enabled only in a WordPress
@@ -357,6 +365,7 @@ DOCUMENT_ONLY: frozenset[str] = frozenset({
     "cmd_insert_icon",
     "cmd_publish_elsewhere",
     "cmd_plugin_fields",
+    "cmd_this_post_in_workbench",
 })
 
 

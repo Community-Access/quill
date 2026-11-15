@@ -37,12 +37,22 @@ from quill.core.wordpress.workbench_edit import (
 from quill.core.wordpress.workbench_forms import (
     set_entry_spam,
 )
-from quill.core.wordpress.workbench_permissions import deactivate_warning
+from quill.core.wordpress.workbench_parity import each, outcome
+from quill.core.wordpress.workbench_permissions import (
+    deactivate_refusal,
+    deactivate_warning,
+    revoke_refusal,
+)
+from quill.core.wordpress.workbench_plugin_actions import PLUGIN_TRASH
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.wordpress.workbench_tree import DYNAMIC_TAXONOMY, DYNAMIC_TYPE
 from quill.core.workbench.history import Change
 from quill.ui import wordpress_dialogs as dlg
+from quill.ui.wordpress_workbench_admin_commands import WorkbenchAdminCommands
+from quill.ui.wordpress_workbench_gravity_build import WorkbenchGravityBuildCommands
 from quill.ui.wordpress_workbench_gravity_commands import WorkbenchGravityCommands
+from quill.ui.wordpress_workbench_gravity_entries import WorkbenchGravityEntryCommands
+from quill.ui.wordpress_workbench_gravity_forms import WorkbenchGravityFormCommands
 from quill.ui.wordpress_workbench_membership_commands import WorkbenchMembershipCommands
 
 __all__ = ["WorkbenchRowCommands"]
@@ -54,7 +64,14 @@ def _count(rows: Sequence[object], noun: str) -> str:
     return f"{len(rows)} {noun}{'' if len(rows) == 1 else 's'}"
 
 
-class WorkbenchRowCommands(WorkbenchGravityCommands, WorkbenchMembershipCommands):
+class WorkbenchRowCommands(
+    WorkbenchGravityBuildCommands,
+    WorkbenchGravityCommands,
+    WorkbenchGravityEntryCommands,
+    WorkbenchGravityFormCommands,
+    WorkbenchMembershipCommands,
+    WorkbenchAdminCommands,
+):
     """Open, preview, publish, Trash, delete, moderate and reply."""
 
     frame: Any
@@ -114,6 +131,18 @@ class WorkbenchRowCommands(WorkbenchGravityCommands, WorkbenchMembershipCommands
             link += ("&" if "?" in link else "?") + "preview=true"
         self._browser(link)
 
+    def do_visual_review(self, _ref: Any, row: WbRow | None) -> None:
+        """Appendix B: the editor's Visual Review, on a published post or page's row."""
+        from quill.ui.wordpress_review_commands import NOT_PUBLISHED
+
+        profile = self.profile(row.site) if row is not None and row.kind == "item" else None
+        if row is None or profile is None:
+            self.say("Visual Review works on a post or page.")
+        elif row.status != "publish" or not row.link:
+            self.say(NOT_PUBLISHED.format(site=row.site))
+        else:
+            self.commands.review(profile, row.link)
+
     def do_open_site(self, _ref: Any, row: WbRow | None) -> None:
         from quill.ui.workbench_frame import NodeRef
 
@@ -152,7 +181,8 @@ class WorkbenchRowCommands(WorkbenchGravityCommands, WorkbenchMembershipCommands
 
     def do_show_entries(self, _ref: Any, row: WbRow | None) -> None:
         if row is not None:
-            self._show_filtered("form_entries", row.site, f'form:"{row.title}"')
+            title = row.cell("form") or row.title  # a form row's title is its plugin
+            self._show_filtered("form_entries", row.site, f'form:"{title}"')
 
     # -- publishing ---------------------------------------------------------------
 
@@ -210,6 +240,9 @@ class WorkbenchRowCommands(WorkbenchGravityCommands, WorkbenchMembershipCommands
         if rows[0].kind == "app_password":
             self.do_revoke(ref, rows[0])
             return
+        if rows[0].kind in PLUGIN_TRASH:  # one at a time, through the plugin's own route
+            getattr(self, PLUGIN_TRASH[rows[0].kind])(ref, rows[0])
+            return
         if any(r.kind not in TRASHABLE for r in rows):
             self.say(
                 "WordPress keeps no Trash for this, so it can only be deleted permanently, "
@@ -227,20 +260,24 @@ class WorkbenchRowCommands(WorkbenchGravityCommands, WorkbenchMembershipCommands
         api = self.ctx(site).api
         statuses = {r.key: r.status for r in rows}
 
-        def work() -> list[str]:
-            for r in rows:
-                trash(api, r)
-            return [r.title for r in rows]
+        def work() -> list[Any]:  # one outcome per row (9.18): a refusal never stops the rest
+            return each(rows, lambda r: trash(api, r), "moved to the Trash")
 
-        def done(_titles: list[str]) -> None:
-            said = f"Moved {_count(rows, 'item')} to the Trash on {site}. Ctrl+Z puts them back."
+        def done(results: list[Any]) -> None:
+            moved = [result.row for result in results if result.ok]
+            said = outcome(results, "Moved {n} to the Trash", site)
+            said += " Ctrl+Z puts them back." if moved else ""
             self.say(said)
             self._record(
                 said,
-                lambda: (
-                    [restore(api, r, statuses[r.key]) for r in rows],
-                    f"Restored {_count(rows, 'item')} from the Trash.",
-                )[1],
+                (
+                    lambda: (
+                        [restore(api, r, statuses[r.key]) for r in moved],
+                        f"Restored {_count(moved, 'item')} from the Trash.",
+                    )[1]
+                )
+                if moved
+                else None,
             )
             self.refresh()
 
@@ -253,15 +290,23 @@ class WorkbenchRowCommands(WorkbenchGravityCommands, WorkbenchMembershipCommands
             return
         api = self.ctx(rows[0].site).api
 
-        def done(_result: object) -> None:
-            self.say(f"Restored {_count(rows, 'item')} from the Trash, as drafts or waiting.")
+        def done(results: list[Any]) -> None:
+            back = [result.row for result in results if result.ok]
+            said = outcome(
+                results, "Restored {n} from the Trash, as drafts or waiting", rows[0].site
+            )
+            self.say(said)
             self._record(
-                f"Restored {_count(rows, 'item')}",
-                lambda: ([trash(api, r) for r in rows], "Moved them back to the Trash.")[1],
+                said,
+                (lambda: ([trash(api, r) for r in back], "Moved them back to the Trash.")[1])
+                if back
+                else None,
             )
             self.refresh()
 
-        self.background("restoring", lambda: [restore(api, r) for r in rows], done)
+        self.background(
+            "restoring", lambda: each(rows, lambda r: restore(api, r), "restored"), done
+        )
 
     def do_delete_permanently(self, ref: Any, row: WbRow | None) -> None:
         rows = self._rows(row)
@@ -269,6 +314,12 @@ class WorkbenchRowCommands(WorkbenchGravityCommands, WorkbenchMembershipCommands
             return
         if rows[0].kind == "user":
             self.do_remove_user(ref, rows[0])  # type: ignore[attr-defined]
+            return
+        if rows[0].kind == "app_password":  # Revoke, with its own guard on QUILL's password
+            self.do_revoke(ref, rows[0])
+            return
+        if rows[0].kind == "gravity_feed":
+            self.delete_feeds([r for r in rows if r.kind == "gravity_feed"])
             return
         site = rows[0].site
         names = ", ".join(r.title for r in rows[:5]) + (" and more" if len(rows) > 5 else "")
@@ -281,13 +332,17 @@ class WorkbenchRowCommands(WorkbenchGravityCommands, WorkbenchMembershipCommands
             return
         api = self.ctx(site).api
 
-        def done(_result: object) -> None:
-            said = f"Deleted {_count(rows, 'item')} from {site} permanently."
-            self.say(said)
+        def done(results: list[Any]) -> None:
+            said = outcome(results, "Deleted {n} permanently", site)
+            self.say(said + " This cannot be undone.")
             self._record(said, None)
             self.refresh()
 
-        self.background("deleting", lambda: [delete_permanently(api, r) for r in rows], done)
+        self.background(
+            "deleting",
+            lambda: each(rows, lambda r: delete_permanently(api, r), "deleted"),
+            done,
+        )
 
     # -- moderation and spam (13a.5) ----------------------------------------------
 
@@ -312,28 +367,30 @@ class WorkbenchRowCommands(WorkbenchGravityCommands, WorkbenchMembershipCommands
 
         previous = {r.key: r.status or "hold" for r in comments}
 
-        def work() -> list[str]:
-            for r in comments:
-                set_comment_status(api, r, target(r))
-            failed: list[str] = []
+        def work() -> tuple[list[WbRow], list[str]]:  # one outcome per comment (9.18)
+            results = each(comments, lambda r: set_comment_status(api, r, target(r)), "changed")
+            failed = [result.sentence for result in results if not result.ok]
             if entries:
-                failed = set_entry_spam(self.ctx(site), entries, status_for_entries)
-            return failed
+                failed += set_entry_spam(self.ctx(site), entries, status_for_entries)
+            return [result.row for result in results if result.ok], failed
 
-        def done(failed: list[str]) -> None:
+        def done(answer: tuple[list[WbRow], list[str]]) -> None:
+            changed, failed = answer
+            done_count = len(rows) - len(failed)
+            amount = _count(rows, "item") if not failed else f"{done_count} of {len(rows)} items"
             if status == "approve" and all(r.status == "spam" for r in rows):
-                said = f"Not spam: {_count(rows, 'item')} on {site}, and the site was told."
+                said = f"Not spam: {amount} on {site}, and the site was told."
             else:
-                said = f"{_count(rows, 'item').capitalize()} {_STATUS_WORDS[status]} on {site}."
+                said = f"{amount[:1].upper()}{amount[1:]} {_STATUS_WORDS[status]} on {site}."
             if failed:
                 said += f" Not changed: {'; '.join(failed[:3])}"
             self.say(said)
             self._record(
                 said,
                 lambda: (
-                    [set_comment_status(api, r, previous[r.key]) for r in comments],
+                    [set_comment_status(api, r, previous[r.key]) for r in changed],
                     set_entry_spam(self.ctx(site), entries, not status_for_entries),
-                    f"Put {_count(rows, 'item')} back as they were.",
+                    f"Put {_count(changed + entries, 'item')} back as they were.",
                 )[2],
             )
             self.refresh()
@@ -381,6 +438,10 @@ class WorkbenchRowCommands(WorkbenchGravityCommands, WorkbenchMembershipCommands
             return
         active = row.status in ("active", "network-active")
         verb = "Deactivate" if active else "Activate"
+        refused = deactivate_refusal(row.key, row.site) if active else ""
+        if refused:
+            self.say(refused)
+            return
         warning = deactivate_warning(row.key) if active else ""
         message = f"{verb} {row.title} on {row.site}?" + (f" {warning}" if warning else "")
         if not self._confirm(verb, message, verb):
@@ -393,31 +454,22 @@ class WorkbenchRowCommands(WorkbenchGravityCommands, WorkbenchMembershipCommands
             self.say(said)
             back = {"status": row.status}
             self._record(said, lambda: (api.post(row.route, back), f"{row.title} put back.")[1])
+            self.site_changed(row.site)  # type: ignore[attr-defined]  # types, fields, rights
             self.refresh()
 
         self.background("changing a plugin", lambda: api.post(row.route, body), done)
 
-    def do_activate_theme(self, _ref: Any, row: WbRow | None) -> None:
-        if row is None or row.kind != "theme":
-            return
-        if row.status == "active":
-            self.say(f"{row.title} is already the theme on {row.site}.")
-            return
-        self.say(
-            "WordPress's REST API cannot switch themes. Open the site's Appearance screen in "
-            "wp-admin, from Tools > WordPress > Looks, to activate it."
-        )
-
     def do_revoke(self, _ref: Any, row: WbRow | None) -> None:
         if row is None or row.kind != "app_password":
             return
-        mine = row.status == "current"
-        warning = (
-            " QUILL on this computer signs in with it, so it will stop working." if mine else ""
-        )
+        refused = revoke_refusal(row.status == "current", row.site)
+        if refused:
+            self.say(refused)
+            return
         if not self._confirm(
             "Revoke Application Password",
-            f"Revoke the application password {row.title} on {row.site}?{warning}",
+            f"Revoke the application password {row.title} on {row.site}? Anything signing in "
+            "with it stops working, and a revoked password cannot be restored.",
             "Revoke",
         ):
             return

@@ -56,6 +56,7 @@ ALIASES: dict[str, str] = {
     "mime": "mime_type",
     "role": "roles",
     "words": "search",
+    "comment_type": "type",  # comments: comment, pingback, trackback, review, or all
 }
 """Shorter names a person types, and the REST argument each means."""
 

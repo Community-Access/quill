@@ -152,12 +152,16 @@ def test_a_go_key_selects_its_node(bench) -> None:
 
 
 def test_placeholders_explain_themselves_and_are_greyed(bench) -> None:
-    _go(bench, NodeRef("", "across"))
-    assert "later release" in bench.details.GetValue()
-    # The Filter Builder came in Phase 9; Watches and Across Repositories are still to come.
-    assert bench.provider.reason("github.workbench.go_watches") == (
-        "This is coming in a later release of the Workbench."
-    )
+    # The Filter Builder came in Phase 9, Across Repositories and Watches on
+    # 2026-11-13, so no place is a placeholder now: Ctrl+7 lands on a real list
+    # (tests/unit/ui/test_github_workbench_phase13.py) and nothing is greyed as
+    # "coming in a later release".
+    from quill.core.github.workbench_window_menu import PLACEHOLDER_COMMANDS
+
+    assert PLACEHOLDER_COMMANDS == frozenset()
+    _go(bench, NodeRef("", "watches"))
+    assert "later release" not in bench.details.GetValue()
+    assert "Watches" in bench.details.GetValue()
 
 
 def test_files_list_a_folder_and_enter_opens_a_subfolder(bench) -> None:

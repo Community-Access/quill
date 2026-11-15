@@ -47,6 +47,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}dismiss_alert": ("repo:write+scope:security_events", _V),
     f"{_P}edit_label": ("repo:write", _O),
     f"{_P}edit_release": ("repo:write", _V),
+    f"{_P}edit_title": ("viewer:viewerCanUpdate", _V),
     f"{_P}favorite": ("local", _O),
     f"{_P}follow": ("sign_in+scope:user:follow", _O),
     f"{_P}issue_type": ("repo:triage", _O),
@@ -60,6 +61,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}pending_deployments": ("repo:write", _A),
     f"{_P}pin": ("repo:triage", _V),
     f"{_P}pin_repository": ("local", _O),
+    f"{_P}projects": ("scope:project", _O),
     f"{_P}react": ("sign_in", _O),
     f"{_P}remove_search": ("local", _O),
     f"{_P}rerun": ("repo:write", _V),
@@ -81,6 +83,11 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}mark_all_read": ("sign_in", _O),
     f"{_P}save_search": ("local", _O),
     f"{_P}new_issue": ("sign_in", _V),
+    # Templates (PRD 21.6): Save commits to the repository, or to the owner's
+    # .github repository for an inherited default. Tier 1: visible to others.
+    f"{_P}open_template": ("repo:write", _V),
+    f"{_P}convert_template": ("repo:write", _V),
+    f"{_P}copy_template": ("repo:write", _V),
     f"{_P}account_level": ("local", _O),
     f"{_P}bulk_access": ("repo:admin", _A),
     f"{_P}access_add": ("repo:admin", _A),
@@ -88,6 +95,28 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}access_remove": ("repo:admin", _D),
     f"{_P}delete_team": ("org:owner", _D),
     f"{_P}create_team": ("org:member", _A),
+    # Watches (PRD 22.5): this device's list only, nothing sent to GitHub.
+    f"{_P}pause_watch": ("local", _O),
+    f"{_P}remove_watch": ("local", _O),
+    # The API Console (PRD 22.2) can send any write GitHub has, so it is held
+    # to the top tier: Full access in the Workbench and the method typed first.
+    f"{_P}api_console": ("sign_in", _D),
+    # Across Repositories (PRD 22.11). Sets are this device's lists; the
+    # by-name changes write to every repository in the set, each checked for
+    # write access in its own preview step.
+    f"{_P}across_edit_set": ("local", _O),
+    f"{_P}across_set_filter": ("local", _O),
+    f"{_P}across_new_set": ("local", _O),
+    f"{_P}across_rename_set": ("local", _O),
+    f"{_P}across_delete_set": ("local", _O),
+    f"{_P}across_make_same": ("repo:write", _V),
+    f"{_P}across_add_missing": ("repo:write", _V),
+    f"{_P}across_rename_name": ("repo:write", _V),
+    f"{_P}across_close_milestone": ("repo:write", _V),
+    f"{_P}across_merge_label": ("repo:write", _D),
+    f"{_P}across_delete_name": ("repo:write", _D),
+    f"{_P}across_move_open": ("repo:write", _V),
+    f"{_P}across_promote_org": ("org:owner+repo:admin", _D),
 }
 
 

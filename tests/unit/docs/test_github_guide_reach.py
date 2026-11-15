@@ -1,8 +1,9 @@
 """Every contents page lists all of the GitHub Guide, and every route to it works.
 
-The GitHub Guide is twelve chapters (eleven until Chapter 12, the Workbench,
-2026-11-10). QUILL's contents page listed five until
-2026-11-08, so six chapters were reachable only from inside the guide itself.
+The GitHub Guide is thirteen chapters (eleven until Chapter 12, the Workbench,
+2026-11-10; twelve until Chapter 13, Properties, Filters and Permissions).
+QUILL's contents page listed five until 2026-11-08, so six chapters
+were reachable only from inside the guide itself.
 """
 
 from __future__ import annotations
@@ -27,15 +28,19 @@ _CONTENTS = {
 }
 
 
+#: Raise this with the chapter that adds one; both books keep the same count.
+_CHAPTER_COUNT = 13
+
+
 def _chapters(folder: Path, prefix: str) -> set[str]:
     return {path.stem for path in folder.glob(f"{prefix}*.md") if re.match(r".*-\d\d-", path.stem)}
 
 
 @pytest.mark.parametrize("contents", list(_CONTENTS), ids=lambda p: p.name)
-def test_every_contents_page_lists_all_twelve_chapters(contents: Path) -> None:
+def test_every_contents_page_lists_every_chapter(contents: Path) -> None:
     folder, prefix = _CONTENTS[contents]
     chapters = _chapters(folder, prefix)
-    assert len(chapters) == 12
+    assert len(chapters) == _CHAPTER_COUNT
     text = contents.read_text(encoding="utf-8")
     linked = set(re.findall(rf"({re.escape(prefix)}\d\d-[a-z0-9-]+)\.html", text))
     assert linked == chapters, sorted(chapters - linked)
@@ -51,7 +56,7 @@ def test_the_rendered_guide_links_every_github_chapter_to_its_shipped_page() -> 
     guide = {path.resolve() for path in ugf.guide_files(ugf.QUILL_GUIDE)}
     localised = ugf._localise_links(ugf.QUILL_GUIDE, text, guide)
     uris = set(re.findall(r"\]\((file:[^)#\s]*github-guide-\d\d-[^)#\s]*\.html)", localised))
-    assert len(uris) == 12
+    assert len(uris) == _CHAPTER_COUNT
     assert "](./github-guide/" not in localised
 
 

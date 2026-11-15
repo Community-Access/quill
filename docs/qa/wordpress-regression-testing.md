@@ -467,6 +467,252 @@ The tests build one form, "Ask us anything", as the guided Forms lessons do.
     Safe Mode, while writing, checking, Fill It In Yourself and the four Save
     As commands still work.
 
+### The Workbench (15, 10B.3)
+
+The live run does tests 70 to 109 through the Workbench's own core functions
+(`quill/core/wordpress/workbench_*.py`); they live in
+`docs/qa/wordpress_live_workbench.py`, beside the harness. By hand, do each
+one in the Workbench window with a screen reader and listen to the preview
+before anything is sent.
+
+There is one test site, so the Across Sites tests read it twice, as
+quilladmin and as quill-editor, as two "sites". Where that tells you
+something (what an editor may not read) it is a real test; where a feature
+needs two real sites, the run says "single-site limited" and the rest is
+yours, or tests 110 to 118 do it against the Practice Site (below). A test that needs a plugin the site does not have (Redirection, Paid
+Memberships Pro, Gravity Forms) is recorded as "skipped: <plugin> not
+installed", never as a failure.
+
+**One site.**
+
+70. **By Name, where things are used.** Every Term lists News with Welcome
+    under it; Blocks and Shortcodes lists the gallery shortcode on Every
+    Block; replacing it plans one edit per page and sends nothing; asking to
+    replace a block by name is refused with the reason. As quill-editor.
+71. **By Name, rename everywhere.** On a tag made for the test, Rename
+    changes it, Undo puts it back, and a second send from the old list is
+    left alone as "changed on the site since QUILL read it".
+72. **By Name, split and merge.** Split moves the chosen post to a new tag;
+    merging it back moves the post again and deletes the split tag.
+73. **By Name, a contributor.** quill-contributor's rename of the same tag
+    is refused, and the tag is unchanged.
+
+Reading, the queue, the REST Console, Watches and lists:
+
+85. **Read Site as Document.** Without signing in: every published page in
+    page order, Meet the Team after About Us, and the News category as one
+    document with Welcome in it.
+86. **Read a menu as a document.** As quilladmin, the first menu's pages in
+    the menu's order, with the links that were not read named.
+87. **Times on the site's clock.** 9 AM is read in the site's own time zone.
+    In America/New_York, 2:30 AM on 14 March 2027 "does not happen", 1:30 AM
+    on 7 November 2027 "happens twice" until you add "second", and a past
+    time asks for one in the future.
+88. **The editorial queue.** A post quill-contributor submits for review is
+    "n of m waiting" for quill-editor, the contributor still sees their own,
+    the reviewer assignment is kept on this computer, and its status reads
+    Pending.
+89. **REST Console.** Without signing in: route shapes from the site's
+    index (`wp/v2/posts/{id}`), a filled route, its methods, a POST with a
+    bad status and a made-up argument flagged before sending, route
+    completion, and what the route answers with from OPTIONS.
+90. **REST Console, an editor.** Reading `wp/v2/settings` as quill-editor
+    is refused, and the console names manage_options as the need.
+91. **Watches.** With every Watch on, the first look at a site says
+    nothing, nor does a second round with nothing changed; a comment the
+    last round had not seen is said once, as "1 new comment waiting".
+92. **Lists out and in.** Posts exported as CSV, Excel and Markdown; the
+    CSV read back gives one import row each, with a published row turned
+    into a draft and said so; a folder of a Markdown file and an empty file
+    plans one draft and one "it is empty".
+93. **Import.** Three rows: one is made as a draft, a bad status and an empty
+    row are skipped with the reason. quill-contributor importing a page is
+    refused.
+
+Upkeep, the sweep, Site Health and what REST cannot do:
+
+96. **Search and Upkeep, public.** The sitemap row, search engine
+    visibility (judged from the sitemap, as core does not publish
+    `blog_public`), and the certificate's expiry from QUILL's own
+    connection.
+97. **Overdue schedules and editing locks.** Scheduled for next month is not
+    overdue; the lock rows are listed.
+98. **Sweep.** The content audit and media housekeeping find something on
+    the seeded site, Move to Trash previews where it is used before anything
+    is sent, and Privacy names wp-admin's two screens.
+99. **Site Health Information.** The first row opens Tools > Site Health >
+    Info in wp-admin, the rest are what REST does cover.
+100. **XML-RPC.** Unsigned, `xmlrpc.php` answers (or is blocked), and the
+     row says which and what that means.
+101. **What REST cannot do.** Every wp-admin screen the Workbench sends you
+     to is there (it asks you to sign in rather than giving Not Found).
+
+**Across sites, copy and snapshots.**
+
+74. **Across Sites.** Every term is the same in both views. The settings are
+    "not read" on the editor's view, with a row first saying why, and never
+    "missing from" it; Make Them the Same says it sends nothing there. Make
+    Them the Same on a term plans nothing.
+75. **Make Them the Same.** Single-site limited: a test tag is made to match
+    a winner with another slug, then Undo puts the slug back. A plugin that
+    is not installed is refused with "Install on Sites Missing It". With two
+    real sites, do it by hand.
+76. **Styles and the network.** Compare global styles finds no difference
+    between the two views; Promote to Network says the site is not a
+    multisite network.
+77. **Install on Sites Missing It.** The plugin list is "not read" on the
+    editor's view (not "missing"), and installing one as quill-editor is
+    refused. Installing
+    on a real second site is by hand.
+78. **Revoke application passwords everywhere.** The plan names each route
+    and refuses the editor's view; the run sends nothing, because revoking
+    would end its own sign-in. Revoke a throwaway password by hand.
+79. **Fleet.** Health, backups, security and updates each say their state;
+    for quill-editor Site Health "needs an administrator"; a site that stops
+    answering keeps its last facts, marked stale.
+80. **Copy to Site, the preview.** About Us matches by address and is
+    replaced; the same page at a new address is made; a comment is skipped.
+81. **Copy to Site.** A post copied at a new address arrives as a draft;
+    copying a page to quill-contributor is refused. Pictures and menus to a
+    real second site are by hand.
+82. **Compare Sites.** The two views differ in nothing but what the editor
+    may not read: no titles, text or status differ.
+83. **Take a Snapshot.** Posts, pages, terms, menus, patterns and settings
+    to a folder; Put Back straight afterwards plans nothing.
+84. **Put Back from a Snapshot.** A post changed after the snapshot is put
+    back, and only that post.
+
+**Plugins and WordPress.org.**
+
+94. **Redirects** (Redirection). The redirects and the 404 log are read,
+    and Test an Address says no redirect matches a made-up address.
+95. **A redirect made and traced** (Redirection). It leads to About Us, and
+    is deleted afterwards. quill-contributor cannot read the list.
+
+Memberships, Gravity Forms and WordPress.org:
+
+102. **Paid Memberships Pro.** quilladmin's levels, Has Access on About Us,
+     the discount codes (or the row that opens wp-admin's list), and a new
+     code's preview. Making a code is by hand: `pmpro/v1` cannot delete one.
+103. **Paid Memberships Pro, a contributor.** Has Access is refused.
+104. **Gravity Forms.** Forms, feeds (with a feed change previewed), quiz,
+     poll and survey results, and field filters.
+105. **Gravity Forms entries.** An entry's notes and its notifications, with
+     who each would go to. Resend Notifications is by hand: it emails people.
+106. **Star an entry.** Starred, read back, and put back as it was.
+107. **Test submission.** Sample values for the first form, sent for
+     validation only; a real entry is offered only on a practice site.
+108. **Gravity Forms, a contributor.** The forms list is refused.
+109. **WordPress.org.** Without signing in: theme search (the words
+     "accessibility ready" are all that is sent) and the language pack
+     sentence for the site's WordPress version.
+
+**Across two real sites: the test site and the Practice Site.**
+
+Tests 110 to 118 run between the test site (as quilladmin) and the Practice
+Site, the WordPress Playground site on 127.0.0.1:9400 that the Workbench
+starts from Tools > Practice Site. They live in
+`docs/qa/wordpress_live_two_sites.py` and run only with
+`--second-site practice`, which starts the Practice Site through the same core
+functions the Workbench uses (or reuses one the run started before), signs in
+with the application password it hands over, and stops it at the end unless it
+was already running. Without the option each is "not run: no second site",
+never a failure. With it, tests 75, 77, 78 and 81's "needs Jeff" rows are not
+written: these do them.
+
+The run's Practice Site is its own, in `build/live-run/practice-site`, never
+the one you use in QUILL; its handoff password file stays there (it opens
+nothing but a site on this computer) and is never printed or put in
+Credential Manager. Delete that folder for a brand-new site: the first start
+takes about five minutes. If QUILL's own Practice Site is running, stop it
+first: the run cannot sign in to it.
+
+Content only goes from the test site to the Practice Site. On the test site
+the run writes only "QUILL live test" items and removes them; at the end it
+also checks that nothing titled "QUILL live test" is left on the Practice Site.
+`--second-site practice-alone` checks the tests themselves with no test site:
+the Practice Site plays both sites, what the test site would have is made up
+in memory, and nothing is written to this plan.
+
+110. **Make Them the Same.** A tag on both sites with different slugs: the
+     Practice Site's wins, so the test site's tag changes; a setting (the
+     Practice Site's tagline, first set to the run's own) takes the test
+     site's; a synced pattern with different words on each takes the test
+     site's words. Each is read back, undone, and read back again.
+111. **Missing From and Variants.** A tag only on the test site is "missing
+     from Practice Site", and the plan says the Practice Site "gets" it; a tag
+     on both with two slugs is two variants, missing from neither. Make Them
+     the Same then makes the missing tag on the Practice Site (made, so no
+     Undo), and deleting it there shows it missing again.
+112. **Install on Sites Missing It.** `hello-dolly` from WordPress.org,
+     installed on the Practice Site only, as the command sends it: it
+     arrives inactive and is deleted. The Practice Site needs to reach
+     WordPress.org for this one.
+113. **Copy to Site.** From the test site to the Practice Site: a term, a
+     page, a post with a picture, a link to the page and a link to About Us
+     (and the term), and a menu linking to the page and to the home page.
+     The plan makes all four; afterwards the post is a draft whose picture
+     is the Practice Site's own copy and whose links point at the Practice
+     Site, it has the copied term, and the menu's page link is the copied
+     page. Everything copied is deleted on the Practice Site.
+114. **Compare Sites.** About Us is only on the test site, the Practice
+     Site's welcome page only there, and nothing is "not compared".
+115. **Compare Global Styles.** The Practice Site's block theme is read;
+     the summary says how many styles differ across the sites read; neither
+     site reads as a multisite network.
+116. **Revoke Everywhere.** A throwaway application password made on the
+     Practice Site only signs in; Across Sites lists it there and missing
+     from the test site; the plan revokes it on the Practice Site alone,
+     after which it is refused and no longer listed.
+117. **By Name across both sites.** The same tag on a draft on each site:
+     By Name finds one use on each, renames it on both in one go, and Undo
+     puts both back.
+118. **Fleet.** Both sites read fresh, with Site Health's word; then the
+     Practice Site is stopped mid-test, its row keeps its last facts marked
+     "stale, as read", the test site's does not, and the Practice Site is
+     started again for the clean-up. A Practice Site the run did not start
+     is not stopped, and this is "not run".
+
+### Publishing the four kinds of document (5.3, 9.16)
+
+Send This Document to WordPress, Send a Folder as Drafts, Save Draft to Site
+and Publish take four kinds of document, in QUILL and QUILL Lite alike. Each
+must reach the site as real blocks, never as raw Markdown or a whole web page:
+
+- **Markdown** (`.md` and the like, or a document never saved) becomes blocks
+  when it is sent; its first heading is the title.
+- **Block markup** (any file with `<!-- wp:` block comments) goes exactly as
+  written, bar a heading block that opens it, which is the title.
+- **HTML** (`.html`, `.htm`): only the page's body is sent, as blocks --
+  headings, paragraphs, nested lists, quotes, code, tables, pictures (linked
+  ones too) and separators, with links and emphasis kept inside them. A
+  wrapper such as `div` or `main` is unwrapped. What a block would lose the
+  meaning of (a script, a form, a video, a definition list, a table with
+  merged cells) is kept exactly in a Custom HTML block. A heading that opens
+  the page is the title; otherwise the page's `<title>`, then the file name.
+- **Plain text** (`.txt` and anything else): a paragraph for each run of
+  lines between blank lines, its line breaks kept, and `<`, `>` and `&`
+  shown as themselves. It is never read as Markdown: an asterisk stays an
+  asterisk. Its title is the file name.
+
+A WordPress document opened "as HTML" is the site's own text and goes back
+exactly as written, so a Classic post stays Classic.
+
+Each test below publishes a "QUILL live test" post **and** page from one kind,
+reads the raw content back (it must be exactly what was sent), fetches the
+published page and checks its structure, then opens it again as Markdown,
+sends it back, and checks nothing drifted. All of it is trashed afterwards.
+
+119. **Markdown.** Headings, emphasis, strong, inline code with `<`, a link
+     with `&`, a nested list, a numbered list, a quote, a picture uploaded
+     to the library, a table, a code block and a separator.
+120. **Block markup.** The same, written as blocks; it arrives unchanged.
+121. **HTML.** A whole page with a head and a style sheet: neither reaches
+     the site; the picture's caption does, and a definition list arrives as
+     Custom HTML.
+122. **Plain text.** Two paragraphs, a kept line break, and `5 < 6 & 7 > 3`
+     shown as written, with `*` and `#` left alone.
+
 ### What the site lets you test that QUILL may not have yet
 
 The site already has what the later parts of wordpress.md need. Add a test here
@@ -490,26 +736,26 @@ REST index, not as a namespace. A capability check must look at `routes`.
 Written by `docs/qa/wordpress-live-run.py`; run it again rather than editing this
 section by hand. A result marked "no sign-in" was checked without signing in.
 
-- **Date:** 2026-11-05 04:16 UTC
-- **Build:** 7efdc39da (feat/wordpress)
-- **Mode:** dry run, signed in as quilladmin, quill-editor, quill-author, quill-contributor
+- **Date:** 2026-11-14 20:45 UTC
+- **Build:** b3dddc29b (codex/workbench-combined-2026-11-10)
+- **Mode:** signed in as quilladmin, quill-editor, quill-author, quill-contributor; second site: Practice Site (http://127.0.0.1:9400)
 - **Site:** QUILL WordPress Test Site (https://lp.csedesigns.com/wordpress), WordPress 7.1.4
 - **Plugins:** WooCommerce 11.2.2 (`wc/v3`); Yoast SEO 28.8 (`yoast/v1`); The Events Calendar 6.18.3 (`tribe/events/v1`); BITS Accessible Forms 1.0.0 (`baf/v1`); Abilities (version not shown) (`wp-abilities/v1`)
-- **Results:** 60 pass, 4 fail, 27 needs Jeff, 31 not run
+- **Results:** 136 pass, 14 fail, 31 needs Jeff, 4 not run
 
 ### Site and routes
 
 | Test | Check | Result | As | Detail |
 |---|---|---|---|---|
-| index | REST index answers and names the site | pass | no sign-in | 802 routes in 27 namespaces |
+| index | REST index answers and names the site | pass | no sign-in | 860 routes in 29 namespaces |
 | index | Site version and application passwords (load_site_info) | pass | no sign-in | WordPress 7.1.4; application passwords offered |
 | 9.15 | Plugins QUILL recognises (site_health.recognised) | pass | no sign-in | The Events Calendar, WooCommerce, Yoast SEO, Abilities for AI |
 | 17a | Forms plugin namespace (site_namespace) | pass | no sign-in | baf/v1, 12 routes; QUILL module qaf_site |
 | 17a | Forms route takes the model QUILL sends | needs Jeff | no sign-in | POST /baf/v1/forms lists bfl_source, config, description, settings, status, title but not model; the plugin on the site may predate set_model (BAF 045c682). Test 65 shows whether a published form has its fields |
-| 9.16 | Every 9.16 route QUILL needs (routes.unavailable) | pass | no sign-in | all 11 offered: url_details, icons, pieces, post_process, style_revisions, navigation_revisions, menus, directory_sizes, export, media, writing |
+| 9.16 | Every 9.16 route QUILL needs (routes.unavailable) | pass | no sign-in | all 10 offered: url_details, icons, post_process, style_revisions, navigation_revisions, menus, directory_sizes, export, media, writing |
 | 9.15 | Every 9.15 route QUILL needs (site_features.unavailable) | pass | no sign-in | all offered: notes, edit_picture, which_password, library_alt, bulk_moderation |
 | 9.15 | Picture edits the site takes (edit_modifiers) | pass | no sign-in | crop, flip, rotate |
-| 44 | Upload in pieces matches the site's sideload route | fail | no sign-in | sideload requires image_size: it takes a generated sub-size of a picture, not a piece of a file, and QUILL's PieceUpload sends no image_size; finalize takes id, sub_sizes, not the total and pieces QUILL sends |
+| 44 | Upload a Large File uses the plain media route, not sideload | pass | no sign-in | one upload to wp/v2/media; sideload here requires image_size |
 | 45 | Regenerate Sizes action is the site's (post-process) | pass | no sign-in | action create-image-subsizes |
 | 9.15 | Every Site Health test listed (health_test_names) | pass | no sign-in | 6 tests: background-updates, loopback-requests, https-status, dotorg-communication, authorization-header, page-cache; signed out it says only an administrator can |
 | 9.16 | Batch route found and sized (SiteInfo.supports) | pass | no sign-in | in routes, not namespaces; 25 per batch; methods POST, PUT, PATCH, DELETE |
@@ -520,9 +766,9 @@ section by hand. A result marked "no sign-in" was checked without signing in.
 |---|---|---|---|---|
 | seed | Published posts are public, the rest are not | pass | no sign-in | 6 public posts; Pinned news sticky; no draft, pending, private or trash |
 | seed | Pages and the page parent | pass | no sign-in | 10 public pages; Meet the Team is a child of About Us |
-| 38 | Events type and Open Day are public | pass | no sign-in | Open Day, id 136, https://lp.csedesigns.com/wordpress/event/open-day/ |
-| 9.15 | Properties' custom fields for an ordinary post | needs Jeff | no sign-in | Properties would show 35 fields on every post, 32 of them The Events Calendar's event, venue and organizer fields; Yoast's title and description are among the rest. Decide whether to hide another plugin's fields |
-| 38 | Open Day's own address answers | fail | no sign-in | https://lp.csedesigns.com/wordpress/event/open-day/ answers 404 while ?event=open-day answers 200: the site's rewrite rules were not flushed after the Events type was registered (setup.sh needs 'wp rewrite flush'); a... |
+| 38 | Events type and Open Day are public | pass | no sign-in | Open Day, id 136, https://lp.csedesigns.com/wordpress/quill-event/open-day/ |
+| 9.15 | Properties' custom fields for an ordinary post | needs Jeff | no sign-in | Properties would show 36 fields on every post, 32 of them The Events Calendar's event, venue and organizer fields; Yoast's title and description are among the rest. Decide whether to hide another plugin's fields |
+| 38 | Open Day's own address answers | pass | no sign-in | https://lp.csedesigns.com/wordpress/quill-event/open-day/ 200 |
 | 9.6 | oEmbed for /welcome/, and the proxy needs a sign-in | pass | no sign-in | embed: rich, 'Welcome to the test site - QUILL WordPress Test Site'; proxy 401 signed out |
 
 ### Connecting (4)
@@ -544,7 +790,7 @@ section by hand. A result marked "no sign-in" was checked without signing in.
 |---|---|---|---|---|
 | 11 | Open by Web Address finds each address | pass | no sign-in | welcome/ (page 200) -> ('post', 118); about/ (page 200) -> ('page', 113); about/team/ (page 200) -> ('page', 115); ?p=118 (page 200) -> ('post', 118) |
 | 7 | Categories and tags are listed | pass | quill-editor | 6 categories, 5 tags |
-| 9 | Open lists drafts and the Trash | pass | quill-editor | 1 drafts, 1 in Trash; row: Things to check before publishing, Draft, last changed 4 November 2026, 8:49 AM |
+| 9 | Open lists drafts and the Trash | pass | quill-editor | 1 drafts, 90 in Trash; row: Things to check before publishing, Draft, last changed 4 November 2026, 8:49 AM |
 | 10 | Every Block round trip, Markdown and HTML | pass | quill-editor | 25 blocks; byte for byte apart from blank lines |
 | 11 | Open by Web Address, signed in | pass | quill-editor | welcome/ (page 200) -> ('post', 118); about/ (page 200) -> ('page', 113); about/team/ (page 200) -> ('page', 115); ?p=118 (page 200) -> ('post', 118) |
 | 7, 8, 12 | New Post, New Page, Open Local Draft | needs Jeff | - | local documents in the editor |
@@ -553,12 +799,16 @@ section by hand. A result marked "no sign-in" was checked without signing in.
 
 | Test | Check | Result | As | Detail |
 |---|---|---|---|---|
-| 13 | Save Draft to Site: a draft, not public | not run | quill-editor | dry run: this one writes to the site |
-| 14 | Publish or Update makes it public | not run | quill-editor | dry run: this one writes to the site |
-| 15 | Contributor: Submit for Review, Pending | not run | quill-contributor | dry run: this one writes to the site |
-| 16 | Author cannot publish a page | not run | quill-author | dry run: this one writes to the site |
-| 17 | Private and Scheduled keep their status | not run | quilladmin | dry run: this one writes to the site |
-| 18 | Conflict: a change on the site is found | not run | quilladmin | dry run: this one writes to the site |
+| 13 | Save Draft to Site: a draft, not public | pass | quill-editor | draft 467; signed out: 401 |
+| 14 | Publish or Update makes it public | pass | quill-editor | published 467; https://lp.csedesigns.com/wordpress/quill-live-test-draft-2026-11-14-2045/ 200 |
+| 15 | Contributor: Submit for Review, Pending | pass | quill-contributor | 'Submit for Review'; arrived Pending; publishing says: Your account on QUILL WordPress Test Site cannot publish this. You can save it as a draft, or submit it for review. |
+| 16 | Author cannot publish a page | pass | quill-author | refused: Your account on QUILL WordPress Test Site is not allowed to create this kind of item. |
+| 17 | Private and Scheduled keep their status | pass | quilladmin | A private post: still private, date kept; Scheduled for next month: still future, date kept |
+| 18 | Conflict: a change on the site is found | pass | quilladmin | The copy on QUILL WordPress Test Site was changed on 14 November 2026, 8:48 PM, after you opened it. Nothing was sent. |
+| 119 | Publish Markdown as a post and a page | fail | quill-editor | post page lacks ['<blockquote[^>]*>\\s*<p>Quoted words</p>'] |
+| 120 | Publish block markup as a post and a page | fail | quill-editor | post page lacks ['<blockquote[^>]*>\\s*<p>Quoted words</p>'] |
+| 121 | Publish an HTML document as a post and a page | fail | quill-editor | post page lacks ['<blockquote[^>]*>\\s*<p>Quoted words</p>'] |
+| 122 | Publish plain text as a post and a page | fail | quill-editor | post page lacks ['<p>Opening line<br\\s*/?>\\s*second line of the same paragraph</p>'] |
 | 14 | Publish confirmation and clipboard | needs Jeff | - | hearing the confirmation |
 | 18 | Compare, Open the Site's Copy, Send Mine Anyway | needs Jeff | - | the conflict dialog |
 | 19 | Closing never publishes | needs Jeff | - | closing a window |
@@ -567,9 +817,9 @@ section by hand. A result marked "no sign-in" was checked without signing in.
 
 | Test | Check | Result | As | Detail |
 |---|---|---|---|---|
-| 20 | Properties on Pinned news go to the site | not run | quill-editor | dry run: this one writes to the site |
-| 21 | Welcome has its 3 site revisions | pass | quill-editor | 3 revisions, newest 2026-11-04T08:50:18 |
-| 23 | Move to Trash, listed, restored | not run | quill-editor | dry run: this one writes to the site |
+| 20 | Properties on Pinned news go to the site | pass | quill-editor | excerpt and Keep at the top changed and read back |
+| 21 | Welcome has its 3 site revisions | pass | quill-editor | 18 revisions, newest 2026-11-14T20:48:55 |
+| 23 | Move to Trash, listed, restored | pass | quill-editor | 474: trashed, listed under Trash, restored as a draft |
 | 21, 22 | View, Restore, Compare with Site | needs Jeff | - | the versions window |
 
 ### Checks (7)
@@ -584,9 +834,9 @@ section by hand. A result marked "no sign-in" was checked without signing in.
 | Test | Check | Result | As | Detail |
 |---|---|---|---|---|
 | 25 | Media Library rows and Find: banner | pass | quill-editor | 9 items; banner: wide-banner, image, 2400 by 800, 8 KB, no alt text, uploaded 4 November 2026, 7:42 AM |
-| 25 | Edit Alternative Text on wide-banner | not run | quill-editor | dry run: this one writes to the site |
-| 27 | Upload a picture | not run | quill-editor | dry run: this one writes to the site |
-| 28 | Remove from Library | not run | quilladmin | dry run: this one writes to the site |
+| 25 | Edit Alternative Text on wide-banner | pass | quill-editor | written and read back; put back afterwards |
+| 27 | Upload a picture | pass | quill-editor | media 476, 7 sizes made |
+| 28 | Remove from Library | pass | quilladmin | media 478 removed for good |
 | 26, 27 | Insert Picture from the library or this computer | needs Jeff | - | the image dialog |
 | 28 | Remove from Library keeps a backup | needs Jeff | - | the Documents folder |
 
@@ -594,8 +844,8 @@ section by hand. A result marked "no sign-in" was checked without signing in.
 
 | Test | Check | Result | As | Detail |
 |---|---|---|---|---|
-| 29 | Approve, reply, spam, many at once | not run | quilladmin | dry run: this one writes to the site |
-| 30 | Add, rename and delete a tag; merge | not run | quilladmin | dry run: this one writes to the site |
+| 29 | Approve, reply, spam, many at once | pass | quilladmin | approved 33, replied 70, spam, then held as one of many |
+| 30 | Add, rename and delete a tag; merge | pass | quilladmin | tag added, renamed and deleted; 1 post merged and the empty category deleted |
 
 ### Listen and watch (6.1a)
 
@@ -616,10 +866,10 @@ section by hand. A result marked "no sign-in" was checked without signing in.
 
 | Test | Check | Result | As | Detail |
 |---|---|---|---|---|
-| 38 | An opened Event goes back to its own route | fail | no sign-in | load_item keeps the post type ('event') as the kind, so Save Draft to Site would send to /wp/v2/event, which the site does not have (the route is /wp/v2/events) |
-| 11, 38 | Open by Web Address finds an Event | fail | no sign-in | not found as expected: event/open-day/ (page 404) -> None. find_by_address looks only in posts and pages |
+| 38 | An opened Event goes back to its own route | pass | no sign-in | kind events -> /wp/v2/events |
+| 11, 38 | Open by Web Address finds an Event | pass | no sign-in | quill-event/open-day/ (page 200) -> ('events', 136); ?event=open-day (page 200) -> ('events', 136) |
 | 38 | Open lists Events with Open Day | pass | quilladmin | kinds: Posts, Pages, Products, Events, Events, Calendar Embeds; Open Day listed |
-| 38 | Open Day: change, send, Trash and restore | not run | quilladmin | dry run: this one writes to the site |
+| 38 | Open Day: change, send, Trash and restore | pass | quilladmin | sent, trashed and restored (put back as published) |
 | 39 | Contributor still gets Posts and Pages | pass | quill-contributor | Posts, Pages, Events, Events, Calendar Embeds |
 
 ### More from the API (9.15)
@@ -628,24 +878,24 @@ section by hand. A result marked "no sign-in" was checked without signing in.
 |---|---|---|---|---|
 | TEC | Events Coming Up, signed out (plugin_events.coming_up) | pass | no sign-in | 0 upcoming events listed |
 | sizes | Picture sizes offered by name and width | pass | quill-editor | Thumbnail, 150 wide; Medium, 300 wide; Medium large, 768 wide; Large, 1024 wide; 1536X1536, 1536 wide; Full size, 1600 wide |
-| library alt | Pictures with no alt text, library-wide | pass | quill-editor | 4 pictures: animated-ish.gif, decorative-divider.png, wide-banner.png, woocommerce-placeholder.webp |
-| media edit | Edit a Picture on the Site: rotate | not run | quill-editor | dry run: this one writes to the site |
-| notes | Notes on blocks: add, reply, resolve | not run | quill-editor | dry run: this one writes to the site |
-| introspect | Which application password, quilladmin | pass | quilladmin | On QUILL WordPress Test Site, QUILL is using the application password named QUILL regression tests, made 4 November 2026, 7:40 AM, last used 4 November 2026, 7:52 AM. |
-| introspect | Which application password, quill-editor | pass | quill-editor | On QUILL WordPress Test Site, QUILL is using the application password named QUILL regression tests, made 4 November 2026, 7:40 AM, last used 4 November 2026, 7:52 AM. |
-| introspect | Which application password, quill-author | pass | quill-author | On QUILL WordPress Test Site, QUILL is using the application password named QUILL regression tests, made 4 November 2026, 7:41 AM, last used 4 November 2026, 7:52 AM. |
-| introspect | Which application password, quill-contributor | pass | quill-contributor | On QUILL WordPress Test Site, QUILL is using the application password named QUILL regression tests, made 4 November 2026, 7:41 AM, last used 4 November 2026, 7:52 AM. |
-| custom fields | Custom fields on Welcome | pass | quill-editor | 35 fields, 2 left alone |
+| library alt | Pictures with no alt text, library-wide | pass | quill-editor | 3 pictures: animated-ish.gif, decorative-divider.png, woocommerce-placeholder.webp |
+| media edit | Edit a Picture on the Site: rotate | pass | quill-editor | 'Turn a quarter to the right': new item 477, 600 by 800 |
+| notes | Notes on blocks: add, reply, resolve | pass | quill-editor | note 71: replied and resolved |
+| introspect | Which application password, quilladmin | pass | quilladmin | On QUILL WordPress Test Site, QUILL is using the application password named QUILL regression tests, made 4 November 2026, 7:40 AM, last used 14 November 2026, 12:43 AM. |
+| introspect | Which application password, quill-editor | pass | quill-editor | On QUILL WordPress Test Site, QUILL is using the application password named QUILL regression tests, made 4 November 2026, 7:40 AM, last used 14 November 2026, 12:43 AM. |
+| introspect | Which application password, quill-author | pass | quill-author | On QUILL WordPress Test Site, QUILL is using the application password named QUILL regression tests, made 4 November 2026, 7:41 AM, last used 14 November 2026, 12:43 AM. |
+| introspect | Which application password, quill-contributor | pass | quill-contributor | On QUILL WordPress Test Site, QUILL is using the application password named QUILL regression tests, made 4 November 2026, 7:41 AM, last used 14 November 2026, 12:43 AM. |
+| custom fields | Custom fields on Welcome | pass | quill-editor | 36 fields, 0 left alone |
 | styles | Style variations, each with its Palette Report | pass | quilladmin | Twenty Twenty-Five: 23 variations; first: Evening, 56 pairings, 32 below the minimum for body text |
 | Site Styles | Site Styles: colours and sizes by name | pass | quilladmin | 8 colours, 5 sizes; Colour: Base (white), #FFFFFF, the page background; the text on it is 18.8 to 1, passes |
 | patterns | Pattern Directory search, described in words | pass | quill-editor | 5 patterns; Contact Details, from WordPress.org's Pattern Directory. Contact Section. Blocks, in order: Columns, Column, Group, I... |
 | pattern categories | Pattern categories for synced patterns | pass | quilladmin | 0 categories, 1 synced patterns read |
 | TEC | The Events Calendar: venues and Coming Up | pass | quilladmin | 0 upcoming, 0 venues |
-| TEC | New Event as a draft, then changed | not run | quilladmin | dry run: this one writes to the site |
+| TEC | New Event as a draft, then changed | pass | quilladmin | event 483: Friday 15 January 2027, 12:00 to 13:00 |
 | WooCommerce | Products in Properties, orders read only | not run | quilladmin | no products on the site; 0 orders read |
-| WooCommerce | Light edit: price, then put back | not run | quilladmin | dry run: this one writes to the site |
-| Yoast | SEO title and description with lengths | not run | quilladmin | dry run: this one writes to the site |
-| Abilities | Abilities listed; a read-only one run | pass | quilladmin | 17 abilities; ran core/get-environment-info: {"environment": "staging", "php_version": "8.3.36", "db_server_info": "11.8.9... |
+| WooCommerce | Light edit: price, then put back | not run | quilladmin | no product to edit |
+| Yoast | SEO title and description with lengths | pass | quilladmin | SEO title: QUILL live test SEO title SEO title: 25 characters of about 60 SEO description: (empty) SEO description: 0 characters of about 160 |
+| Abilities | Abilities listed; a read-only one run | pass | quilladmin | 26 abilities; ran core/get-environment-info: {"environment": "staging", "php_version": "8.3.36", "db_server_info": "11.8.9... |
 | Site Health | Every Site Health test, one line each | pass | quilladmin | 7 lines; good: Background updates are working.; good: Your site can perform loopback requests.; good: Your website is using an active HTTPS connection.; good: Can communicate with WordPress.org.; recommended: The auth... |
 | Site Health | An editor hears it is for administrators | pass | quill-editor | Health checks: only an administrator can run them. |
 
@@ -653,24 +903,24 @@ section by hand. A result marked "no sign-in" was checked without signing in.
 
 | Test | Check | Result | As | Detail |
 |---|---|---|---|---|
-| 45 | Regenerate Sizes after the edit | not run | quill-editor | dry run: this one writes to the site |
+| 45 | Regenerate Sizes after the edit | pass | quill-editor | 5 sizes: medium, thumbnail, woocommerce_thumbnail, woocommerce_gallery_thumbnail, full |
 | 40 | Hear Where a Link Goes, and a typo | pass | quill-editor | Goes to 'About Us - QUILL WordPress Test Site'. Typo: https://lp.csedesigns.com/wordpress/abuot-us-typo/ could not be reached: the page is not there. |
 | 41 | Fix Link Text uses the page's title | pass | quill-editor | 'click here' became 'About Us - QUILL WordPress Test Site' |
 | 42 | Dead links named | pass | quill-editor | 1 of 2 link goes nowhere. |
 | 43 | Insert Icon: labelled, decorative, never unnamed | pass | quill-editor | 88 icons, first Arrow Down, WordPress; an empty label inserts nothing |
-| 44 | Upload a Large File in pieces | not run | quill-editor | dry run: this one writes to the site |
-| 46 | Previous Looks: change a colour, go back | not run | quilladmin | dry run: this one writes to the site |
+| 44 | Upload a Large File, whole | pass | quill-editor | 32044 bytes in one upload, whole file on the site |
+| 46 | Previous Looks: change a colour, go back | pass | quilladmin | 15 looks; 14 November 2026, 1:13 AM, 0 colours restored |
 | 47 | Menu History: menus and Navigation revisions read | pass | quilladmin | 1 menus (1 Navigation blocks), 0 revisions |
-| 48 | Space Used in words; an editor cannot | pass | quilladmin | Uploads: 200 KB. Themes: 13.8 MB. Plugins: 122.7 MB. WordPress itself: 90.8 MB. Database: 6.2 MB. Altogether: 233.7 MB. Editor: Your account on QUILL WordPress Test Site is an Editor, which cannot see how much space t... |
+| 48 | Space Used in words; an editor cannot | pass | quilladmin | Uploads: 200 KB. Themes: 13.8 MB. Plugins: 122.7 MB. WordPress itself: 90.8 MB. Database: 7.8 MB. Altogether: 235.2 MB. Editor: Your account on QUILL WordPress Test Site is an Editor, which cannot see how much space t... |
 | 49 | Download a Copy of the Site's Design | pass | quilladmin | twentytwentyfive.zip, 8190968 bytes, 254 files (kept in memory, not saved) |
-| 50 | Send This Document to WordPress | not run | quill-editor | dry run: this one writes to the site |
-| 51 | Duplicate makes a '(copy)' draft | not run | quilladmin | dry run: this one writes to the site |
-| 52 | Download My Writing, then up to date | pass | quill-editor | 22 files, 3 pictures; again: Your writing on QUILL WordPress Test Site is in archive: 0 saved, 22 already up to date. |
-| 53 | Send a Folder as Drafts | not run | quill-editor | dry run: this one writes to the site |
+| 50 | Send This Document to WordPress | needs Jeff | quill-editor | draft 490 titled from the heading; the picture beside the file needs the command |
+| 51 | Duplicate makes a '(copy)' draft | pass | quilladmin | 'Welcome to the test site (copy)' as draft 492 (sent with the live-test tag) |
+| 52 | Download My Writing, then up to date | pass | quill-editor | 30 files, 3 pictures; again: Your writing on QUILL WordPress Test Site is in archive: 0 saved, 30 already up to date. Left out: comments, revisions, categories, tags, excerpts, featured images, custom fields, and pict... |
+| 53 | Send a Folder as Drafts | pass | quill-editor | Send 3 files to QUILL WordPress Test Site as drafts? Check Before Publishing found things to look at in 1 of them. Three drafts arrived. |
 | 54 | Coming Up lists the scheduled post | pass | quilladmin | 1 item is scheduled on your site. The next is Scheduled for next month on QUILL WordPress Test Site, 4 December 2026, 5:00 PM. |
-| 54 | What Changed lists a new comment once | not run | quill-contributor | dry run: this one writes to the site |
+| 54 | What Changed lists a new comment once | pass | quill-contributor | QUILL WordPress Test Site: 1 new comment, 1 waiting for you.; then nothing new |
 | 43 | Icons read by label, decorative skipped | needs Jeff | - | NVDA on the page |
-| 44 | Progress spoken at each quarter | needs Jeff | - | an ear |
+| 44 | The size and 'can take a while' are spoken first | needs Jeff | - | an ear |
 | 45 | The thumbnail shows the edit | needs Jeff | - | eyes |
 | 47 | Bring Back Removed Items, Restore This Version | needs Jeff | - | the Menus window (the run reads the history only) |
 | 55 | QUILL Lite repeats 40, 43, 50, 54 | needs Jeff | - | QUILL Lite |
@@ -679,15 +929,99 @@ section by hand. A result marked "no sign-in" was checked without signing in.
 
 | Test | Check | Result | As | Detail |
 |---|---|---|---|---|
-| 63 | Publish Form as Live, then Update | not run | quilladmin | dry run: this one writes to the site |
-| 64 | A change on the site is seen before publishing | not run | quilladmin | dry run: this one writes to the site |
-| 65 | Insert Form Into Page: the page shows the form | not run | quilladmin | dry run: this one writes to the site |
-| 66 | Responses: two sent, listed newest first, exported, deleted | not run | quilladmin | dry run: this one writes to the site |
+| 63 | Publish Form as Live, then Update | pass | quilladmin | Published QUILL live test: Ask us anything (2026-11-14 20:45), form 8, live; updated in place; 5 questions kept |
+| 64 | A change on the site is seen before publishing | pass | quilladmin | the site's copy changed at 2026-11-14 12:52:15; the title is new |
+| 65 | Insert Form Into Page: the page shows the form | pass | quilladmin | a block placed; https://lp.csedesigns.com/wordpress/quill-live-test-form-page-2026-11-14-2045/ shows the form with its questions |
+| 66 | Responses: two sent, listed newest first, exported, deleted | fail | quilladmin | Find did not find 'message 1'; newest answers: {} |
 | 56-62 | New Form to Not a form | needs Jeff | - | local; the editors and a screen reader |
 | 64 | QUILL asks before publishing over the site's change | needs Jeff | - | the question |
 | 65 | The form filled in with NVDA on the page | needs Jeff | - | NVDA in a browser |
 | 67 | New response count after a restart | needs Jeff | - | restarting QUILL |
 | 68 | QUILL Lite, and Safe Mode | needs Jeff | - | QUILL Lite and Safe Mode |
+
+### Workbench, one site (15)
+
+| Test | Check | Result | As | Detail |
+|---|---|---|---|---|
+| 70 | By Name: where a term, shortcode, author, part is used | pass | quill-editor | 34 items read; News in 3 items, rename planned and not sent; [gallery] in 1 items; 5 authors; 14 template parts |
+| 71 | By Name: rename a tag everywhere, undo, conflict | pass | quill-editor | 1 of 1 changed. A second send from the old scan was left alone as a conflict. Put 1 back as they were. |
+| 72 | By Name: split a tag, then merge it back | pass | quill-editor | split to a new tag and merged back; the split tag is deleted afterwards |
+| 73 | By Name: a contributor's rename is refused | pass | quill-contributor | refused: Your account on QUILL WordPress Test Site cannot see that in editing mode. |
+| 85 | Read Site as Document: pages and a category | pass | no sign-in | 11 pages in page order; News: 2 posts, 548 characters |
+| 86 | Read a menu as a document | not run | quilladmin | no menu on the site |
+| 87 | Times on the site's clock, and the clock-change traps | pass | quilladmin | site zone UTC: Friday 15 January 2027, 9:00 AM at the site (UTC); 2:00 AM here; traps named: does not happen, happens twice, in the future |
+| 88 | Editorial queue: place in line, reviewer, status | pass | quill-contributor | 3 of 3 waiting on QUILL WordPress Test Site; the contributor sees 3 of 3; reviewer kept locally |
+| 89 | REST Console: routes, arguments, schema from the index | pass | no sign-in | 859 route shapes; posts/{id} takes GET, POST, PUT, PATCH, DELETE; 19 POST arguments; 28 schema lines |
+| 90 | REST Console: an editor's settings read refused | pass | quill-editor | needs manage_options; the site said 403: Your account on QUILL WordPress Test Site is not allowed to do that. |
+| 91 | Watches: the first look is silent | pass | quilladmin | first look and second round silent; then: 1 new comment waiting on QUILL WordPress Test Site. |
+| 92 | Lists: export, read back, import preview, a folder | pass | quill-editor | exported csv 26, xlsx 26, md 26; read back 26 rows; Row 16: Pinned news, as draft (its Status says publish; publish it after a look) |
+| 93 | Lists: import as drafts; a contributor's page refused | pass | quill-editor | Made Row 2: QUILL live test: import (2026-11-14 20:45), number 505. Skipped Row 3: nonsense is not a status WordPress knows. Skipped Row 4: it has no title and no content. Contributor, a page: Not made Row 2: Your acc... |
+| 96 | Search and Upkeep: sitemap, visibility, certificate | pass | no sign-in | QUILL WordPress Test Site did not serve https://lp.csedesigns.com/wordpress/wp-sitemap.xml. An SEO plugin (... QUILL WordPress Test Site serves no WordPress sitemap. That happens when it asks search engines not to ind... |
+| 97 | Search and Upkeep: overdue schedules, editing locks | pass | quilladmin | 1 scheduled, 1 overdue; 18 lock rows |
+| 98 | Sweep: content audit, media, Trash preview, privacy | pass | quilladmin | 25 content findings, 10 media findings; preview: Move QUILL live test: draft (2026-11-14 20:45) on QUILL WordPress Test Site to the Tras...; 2 privacy rows |
+| 99 | Site Health Information rows | pass | quilladmin | 8 rows: QUILL WordPress Test Site; QUILL WordPress Test Site; QUILL WordPress Test Site; QUILL WordPress Test Site; QUILL WordPress Test Site; QUILL WordPress Test Site |
+| 100 | XML-RPC probe, unsigned | pass | no sign-in | answers: XML-RPC is on: xmlrpc.php answers and lists 81 methods, including methods that take a password. If nothing you use needs it (the Jetpack app and some old pho... |
+| 101 | What REST cannot do: every wp-admin screen named is there | pass | no sign-in | 7 wp-admin screens named, every one there (sign-in asked) |
+
+### Workbench, across sites (15.2, 15.12)
+
+| Test | Check | Result | As | Detail |
+|---|---|---|---|---|
+| 74 | Across Sites: terms, settings, people in two views | pass | quilladmin | 14 terms the same in both views; 26 settings not read on the editor's view (wp/v2/settings: Your account on QUILL WordPress Test Site is not allowed to d...); 5 people, the editor's list not read; 6 rows |
+| 75 | Make Them the Same, then undo (single-site limited) | pass | quilladmin | single-site limited: slug changed and put 1 back as they were. A missing plugin is refused. |
+| 76 | Compare global styles; Promote to Network detection | pass | quilladmin | 0 of 14 styles differ across 2 sites; 14 are the same. Promote to Network: QUILL WordPress Test Site is not a multisite network: its plugin schema has no network-active status, so the plugin stays per site. |
+| 77 | Install on Sites Missing It: the editor is refused | pass | quilladmin | the plugin list is 'not read' on the editor's view; installing akismet as the editor: 403 Your account on QUILL WordPress Test Site is not allowed to do that. |
+| 78 | Revoke application passwords everywhere: the plan | pass | quilladmin | 4 passwords listed; 3 visible only to the admin; the plan names 1 route(s) and refuses 0 site(s); nothing sent |
+| 79 | Fleet: every aspect, a stale site kept | pass | quilladmin | Test site as quilladmin: WordPress 7.1.4, 2 comments waiting. Health: should be improved. Backups: unavailable: WordPress has no backups API. Security: unavailable: WordPress has no security API. Updates: unavailable:... |
+| 80 | Copy to Site: the preview | pass | quill-editor | Copy from Test site as quill-editor to Test site as quill-editor: 1 made, 1 replaced, 1 skipped. New items are drafts; a replaced item keeps its status on Test site as quill-editor. Links to Test site as quill-editor... |
+| 81 | Copy to Site: a draft copied; a contributor refused | pass | quill-editor | Made item QUILL live test: copied (2026-11-14 20:45). It arrived as a draft. To a contributor: QUILL live test: page (2026-11-14 20:45): Your account on QUILL WordPress Test Site is not allowed to create this kind of... |
+| 82 | Compare Sites (two views of one site) | pass | quilladmin | 0 differences between the two views, none in titles, text or status |
+| 83 | Take a Snapshot; put back plans nothing | pass | quilladmin | 24 posts, 13 pages, 7 categories, 8 tags, 1 patterns, 12 media, 26 settings; put back plans nothing straight after |
+| 84 | Put Back from a Snapshot | pass | quilladmin | Put back: post QUILL live test: snapshot (2026-11-14 20:45). |
+| 76 | Promote to Network | needs Jeff | - | a multisite network; the test site is single |
+
+### Workbench, plugins and WordPress.org (10B.3)
+
+| Test | Check | Result | As | Detail |
+|---|---|---|---|---|
+| 94 | Redirects and the 404 log; Test an Address | pass | quilladmin | 0 redirects, 0 not-found rows read; No redirect read from this site matches /quill-live-test-nowhere/. Tested her... |
+| 95 | Redirects: make one, trace it, delete it | fail | quilladmin | WordPressApiError: [QUILL-WORDPRESS-API-REQUEST] QUILL WordPress Test Site said: Invalid group when creating redirect. |
+| 102 | Paid Memberships Pro: levels, Has Access, codes | pass | quilladmin | 0 levels for quilladmin; quilladmin can see About Us on QUILL WordPress Test Site. 1 code rows; Code QUILLLIVETEST on QUILL WordPress Test Site: unlimited uses, starts today, expires never. |
+| 103 | Paid Memberships Pro: a contributor is refused | pass | quill-contributor | 403: Your account on QUILL WordPress Test Site is not allowed to do that. |
+| 104 | Gravity Forms: feeds, results, field filters | fail | quilladmin | ImportError: cannot import name 'workbench_gravity_search' from 'quill.core.wordpress' (S:\QUILL\quill\core\wordpress\__init__.py) |
+| 105 | Gravity Forms: notes, notifications previewed | fail | quilladmin | ImportError: cannot import name 'workbench_gravity_search' from 'quill.core.wordpress' (S:\QUILL\quill\core\wordpress\__init__.py) |
+| 106 | Gravity Forms: star an entry, put it back | fail | quilladmin | ImportError: cannot import name 'workbench_gravity_search' from 'quill.core.wordpress' (S:\QUILL\quill\core\wordpress\__init__.py) |
+| 107 | Gravity Forms: test submission, validation only | fail | quilladmin | ImportError: cannot import name 'workbench_gravity_search' from 'quill.core.wordpress' (S:\QUILL\quill\core\wordpress\__init__.py) |
+| 108 | Gravity Forms: a contributor is refused | fail | quill-contributor | ImportError: cannot import name 'workbench_gravity_search' from 'quill.core.wordpress' (S:\QUILL\quill\core\wordpress\__init__.py) |
+| 109 | WordPress.org: theme search and language packs | pass | no sign-in | 20 themes, first Yesterday; A made-up French site uses French (France) (Français). WordPress.org has its pack for WordPress 7.1.4, updated 2026-1... |
+| 123 | Gravity Forms: build every field family, read it back | not run | quilladmin | skipped: Gravity Forms not installed |
+| 124 | Gravity Forms: edit, conflict refused, put back | fail | quilladmin | ImportError: cannot import name 'workbench_gravity_search' from 'quill.core.wordpress' (S:\QUILL\quill\core\wordpress\__init__.py) |
+| 125 | Gravity Forms: checks, to QAF and back | fail | quilladmin | ImportError: cannot import name 'workbench_gravity_search' from 'quill.core.wordpress' (S:\QUILL\quill\core\wordpress\__init__.py) |
+| 126 | Gravity Forms: a contributor cannot build a form | fail | quill-contributor | ImportError: cannot import name 'workbench_gravity_search' from 'quill.core.wordpress' (S:\QUILL\quill\core\wordpress\__init__.py) |
+| 102 | New Discount Code | needs Jeff | - | pmpro/v1 has no route to delete a code, so the run only previews one |
+| 105 | Resend Notifications | needs Jeff | - | it sends email to real people |
+
+### Workbench, two sites (15.2, 15.12)
+
+| Test | Check | Result | As | Detail |
+|---|---|---|---|---|
+| 110 | Make Them the Same, two sites: a tag, a setting, a pattern; undo | pass | quilladmin | tag: QUILL WordPress Test Site took Practice Site's slug; put 1 back as they were.; setting: Practice Site's tagline took the test site's; put 1 back as they were.; pattern: Practice Site took the test site's words; p... |
+| 111 | Missing From and Variants, two sites; the gap filled | pass | quilladmin | QUILL live test: missing from (2026-11-14 20:45) (tag): on 1 site, missing from 1. Variants: slug quill-live-test-mis... Made on Practice Site as missing (made, so no undo), then deleted there. QUILL live test: varian... |
+| 112 | Install on Sites Missing It: hello-dolly on the Practice Site | pass | quilladmin | 6 plugins missing from Practice Site; the test site has no hello-dolly, so it is installed by its WordPress.org name as the command does; installed Hello Dolly 1.7.2, inactive, then deleted |
+| 113 | Copy to Site: post, picture, links, page, menu, term | pass | quilladmin | Made term QUILL live test: copy, term (2026-11-14 20:45). Made item QUILL live test: copy, post (2026-11-14 20:45). Made item QUILL live test: copy, page (2026-11-14 20:45). Made menu QUILL live test: copy, menu (2026... |
+| 114 | Compare Sites: the test site and the Practice Site | pass | quilladmin | 59 only on the test site, 7 only on the Practice Site, 2 differ |
+| 115 | Compare Global Styles across two sites | pass | quilladmin | 0 of 14 styles differ across 2 sites; 14 are the same. First line: nothing differs |
+| 116 | Revoke Everywhere: a throwaway Practice Site password | pass | quilladmin | made on Practice Site only, signed in with it, revoked by the plan; then 401 (Practice Site, throwaway password did not accept the sign-in. Check the username and application password, then reconnect.) |
+| 117 | By Name across both sites: rename a tag, undo | pass | quilladmin | used on QUILL WordPress Test Site 1, Practice Site 1; renamed on 2 sites at once; put 2 back as they were. |
+| 118 | Fleet: the Practice Site stopped reads as stale | pass | quilladmin | QUILL WordPress Test Site health should be improved; Practice Site health should be improved. Stopped: Practice Site: stale, as read under a minute ago; not answering now: QUILL could not reach Practice Site. Check yo... |
+
+### Clean-up
+
+| Test | Check | Result | As | Detail |
+|---|---|---|---|---|
+| - | Put back what the run changed | pass | quilladmin | 68 steps |
+| - | Nothing titled 'QUILL live test' left on the Practice Site | pass | admin | none |
+| - | Nothing titled 'QUILL live test' left outside the Trash | pass | quilladmin | none |
 
 ## Looking after the site
 

@@ -52,11 +52,17 @@ class WordPressMenuCommands(WordPressAdminBase):
     # ------------------------------------------------------------------ #
     # Menus and Navigation
 
-    def cmd_menus(self, page_id: int = 0, *, menu_id: int = 0) -> None:
-        """The Menus window. With *page_id*, first add that page to a menu the person picks."""
+    def cmd_menus(
+        self, page_id: int = 0, *, menu_id: int = 0, profile: st.SiteProfile | None = None
+    ) -> None:
+        """The Menus window. With *page_id*, first add that page to a menu the person picks.
+
+        With *menu_id* (and the Workbench's *profile*), it opens that menu straight away:
+        the Workbench's Arrange Items... on a menu row comes here to move items.
+        """
         if not page_id and not menu_id and self.workbench_door("wordpress.menus"):
             return  # the developer flag sends this door to the WordPress Workbench
-        profile = self.admin_site("Menus")
+        profile = profile or self.admin_site("Menus")
         if profile is None:
             return
         self.admin_load(

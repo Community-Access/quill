@@ -54,8 +54,10 @@ from quill.core.wordpress.workbench_listing import (
     parse_group,
 )
 from quill.core.wordpress.workbench_load import MAX_PAGES
+from quill.core.wordpress.workbench_plugin_actions import PLUGIN_NEW_HERE
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.wordpress.workbench_tree import GROUPED
+from quill.core.wordpress.workbench_type_nodes import split_type
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui import wordpress_workbench_dialogs as wdlg
 
@@ -242,13 +244,45 @@ class WorkbenchListCommands:
 
     # -- New Here -----------------------------------------------------------------
 
+    def _item_or_menu(self, row: WbRow) -> int | None:
+        """With a menu selected, Ctrl+N asks: an item in it (0, first), or a new menu (1)."""
+        return dlg.ask_choice(
+            self.parent,
+            self.show_modal,
+            title="New Here",
+            prompt="&Make:",
+            rows=[f"A new item in {row.cell('menu') or row.title}", "A new menu"],
+            help_text="An item in the selected menu, as Add Menu Item does, or another menu.",
+        )
+
     def do_new_here(self, ref: Any, row: WbRow | None) -> None:
         site = self.site_of(ref)
         key = ref.key if ref is not None else ""
         if key in ("users", "app_passwords"):
             super().do_new_here(ref, row)  # type: ignore[misc]
             return
-        dynamic = self.split(ref.instance)[1] if ref is not None else ""
+        if key == "membership_discount_codes":
+            self.do_new_discount_code(ref, row)  # type: ignore[attr-defined]
+            return
+        if key == "redirects":
+            self.do_add_redirect(ref, row)  # type: ignore[attr-defined]
+            return
+        if key in PLUGIN_NEW_HERE:  # shop, coupons, events, venues, organizers
+            getattr(self, PLUGIN_NEW_HERE[key])(ref, row)
+            return
+        if key == "forms":
+            self.do_new_gravity_form(ref, row)  # type: ignore[attr-defined]
+            return
+        if key == "content_model":
+            self.do_define_site_type(ref, row)  # type: ignore[attr-defined]
+            return
+        if key == "menus" and row is not None and row.kind == "menu":
+            picked = self._item_or_menu(row)
+            if picked != 1:  # 0: an item in the menu; None: cancelled
+                if picked == 0:
+                    self.do_add_menu_item(ref, row)  # type: ignore[attr-defined]
+                return
+        dynamic = split_type(self.split(ref.instance)[1])[0] if ref is not None else ""
         known = {
             **dict(getattr(self, "_types", {}).get(site, [])),
             **dict(getattr(self, "_taxonomies", {}).get(site, [])),

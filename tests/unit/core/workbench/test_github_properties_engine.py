@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 from typing import Any
+from urllib.parse import unquote
 
 import pytest
 
 from quill.core.github.permissions import AccessLevel, ViewerContext
 from quill.core.github.sheet_catalog import SHEETS, Target, context_for, target_for
 from quill.core.github.sheet_engine import (
+    SheetSaveError,
+    adopted,
     inverse,
     load,
     load_options,
@@ -58,7 +61,9 @@ def _viewer(**flags: bool) -> dict[str, Any]:
         "viewerCanAssign": True,
         "viewerSubscription": "UNSUBSCRIBED",
         "reactionGroups": [{"content": "HEART", "viewerHasReacted": True}],
-        "projectItems": {"nodes": [{"project": {"title": "Roadmap"}}]},
+        "projectItems": {
+            "nodes": [{"id": "PVTI_1", "project": {"id": "PVT_road", "title": "Roadmap"}}]
+        },
         "subIssues": {"nodes": [{"number": 43, "title": "Part one"}]},
     }
     item.update(flags)
@@ -71,6 +76,15 @@ def api() -> FakeGitHubApi:
     state = {"issue": _issue_json()}
 
     def on_write(method: str, path: str, body: Any) -> None:
+        names = [label["name"] for label in state["issue"]["labels"]]
+        if method == "POST" and path == "/repos/owner/repo/issues/42/labels" and body:
+            names += [n for n in body["labels"] if n not in names]
+            state["issue"] = {**state["issue"], "labels": [{"name": n} for n in names]}
+        prefix = "/repos/owner/repo/issues/42/labels/"
+        if method == "DELETE" and path.startswith(prefix):
+            gone = unquote(path.removeprefix(prefix))
+            kept = [{"name": n} for n in names if n != gone]
+            state["issue"] = {**state["issue"], "labels": kept}
         if method == "PATCH" and path == "/repos/owner/repo/issues/42" and body:
             issue = dict(state["issue"])
             if "labels" in body:
@@ -138,21 +152,95 @@ def test_a_plan_sends_only_changed_fields_one_request_per_endpoint(api: FakeGitH
         FieldChange("state", "State", "open", "closed as not planned"),
     ]
     requests = plan(ISSUE, IDENT, changed, choices)
-    assert len(requests) == 1
-    body = requests[0].body
-    assert body == {
+    assert [(r.method, r.path) for r in requests] == [
+        ("PATCH", "/repos/owner/repo/issues/42"),
+        ("POST", "/repos/owner/repo/issues/42/labels"),
+    ]
+    assert requests[0].body == {
         "title": "Crash at start",
-        "labels": ["docs", "bug"],
         "milestone": 7,
         "state": "closed",
         "state_reason": "not_planned",
     }
+    # Labels are an addition, never the whole set again.
+    assert requests[1].body == {"labels": ["bug"]}
 
 
-def test_a_three_state_delta_becomes_the_item_s_own_new_list() -> None:
+def test_a_three_state_delta_becomes_the_item_s_own_additions_and_removals() -> None:
     change = FieldChange("labels", "Labels", ("docs", "ui"), ListDelta(("bug",), ("ui",)))
-    (request,) = plan(ISSUE, IDENT, [change])
-    assert request.body == {"labels": ["docs", "bug"]}
+    found = plan(ISSUE, IDENT, [change])
+    assert [(r.method, r.path, r.body) for r in found] == [
+        ("POST", "/repos/owner/repo/issues/42/labels", {"labels": ["bug"]}),
+        ("DELETE", "/repos/owner/repo/issues/42/labels/ui", None),
+    ]
+
+
+def test_a_label_name_is_one_path_segment_when_it_comes_off() -> None:
+    change = FieldChange("labels", "Labels", ("area/ui", "good first issue"), ())
+    found = plan(ISSUE, IDENT, [change])
+    assert [r.path for r in found] == [
+        "/repos/owner/repo/issues/42/labels/area%2Fui",
+        "/repos/owner/repo/issues/42/labels/good%20first%20issue",
+    ]
+    with pytest.raises(SheetSaveError):
+        plan(ISSUE, IDENT, [FieldChange("labels", "Labels", ("..",), ())])
+
+
+def test_a_label_somebody_added_meanwhile_is_kept_and_no_conflict(api: FakeGitHubApi) -> None:
+    loaded = load(api, ISSUE, IDENT)
+    # Somebody adds "urgent" on GitHub after the sheet opened.
+    api.state["issue"] = _issue_json(  # type: ignore[attr-defined]
+        labels=[{"name": "docs"}, {"name": "urgent"}]
+    )
+    outcome = save(
+        api,
+        ISSUE,
+        IDENT,
+        [FieldChange("labels", "Labels", ("docs",), ("bug",))],
+        loaded=loaded.values,
+    )
+    assert outcome.conflicts == ()
+    assert api.writes() == [
+        ("POST", "/repos/owner/repo/issues/42/labels", {"labels": ["bug"]}),
+        ("DELETE", "/repos/owner/repo/issues/42/labels/docs", None),
+    ]
+    assert outcome.ok
+    assert sorted(outcome.after["labels"]) == ["bug", "urgent"]
+    assert sentence("#42", outcome) == "#42: added bug, removed docs."
+
+
+def test_projects_are_added_and_removed_with_the_project_mutations(api: FakeGitHubApi) -> None:
+    api.answer_graphql(
+        "projectsV2(first:50)",
+        {
+            "repository": {
+                "projectsV2": {"nodes": [{"id": "PVT_road", "title": "Roadmap"}]},
+                "owner": {
+                    "projectsV2": {
+                        "nodes": [
+                            {"id": "PVT_tri", "title": "Triage"},
+                            {"id": "PVT_old", "title": "Old", "closed": True},
+                        ]
+                    }
+                },
+            },
+            "viewer": {"projectsV2": {"nodes": [{"id": "PVT_road", "title": "Roadmap"}]}},
+        },
+    )
+    choices = load_options(api, ISSUE, IDENT)
+    assert choices["projects"] == {"Roadmap": "PVT_road", "Triage": "PVT_tri"}
+    loaded = load(api, ISSUE, IDENT)
+    assert loaded.values["projects"] == ("Roadmap",)
+    ident = adopted(ISSUE, IDENT, loaded.values)
+    change = FieldChange("projects", "Projects", ("Roadmap",), ("Triage",))
+    added, removed = plan(ISSUE, ident, [change], choices)
+    assert "addProjectV2ItemById" in added.graphql
+    assert added.body == {"project": "PVT_tri", "content": "I_42"}
+    assert "deleteProjectV2Item" in removed.graphql
+    assert removed.body == {"project": "PVT_road", "item": "PVTI_1"}
+    # Taking an item out of a Project deletes its field values: no undo.
+    assert inverse(ISSUE, [change]) == ([], ["Projects"])
+    assert PULL_REQUEST.writes["projects"] is ISSUE.writes["projects"]
 
 
 def test_reactions_and_reviewers_send_one_request_per_addition_and_removal() -> None:
@@ -199,6 +287,7 @@ def test_save_verifies_and_reports_only_what_the_re_read_proves(api: FakeGitHubA
     # The fake ignores assignees, as GitHub does for people without access.
     assert [c.key for c in outcome.done] == ["labels"]
     assert [c.key for c in outcome.not_taken] == ["assignees"]
+    assert api.state["issue"]["labels"] == [{"name": "bug"}]  # type: ignore[attr-defined]
     said = sentence("#42", outcome)
     assert said.startswith("#42: added bug, removed docs.")
     assert "did not change assignees" in said

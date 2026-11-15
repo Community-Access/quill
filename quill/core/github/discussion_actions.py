@@ -61,7 +61,7 @@ _CATEGORIES_QUERY = """
 query($owner:String!, $repo:String!) {
   repository(owner:$owner, name:$repo) {
     id
-    discussionCategories(first:50) { nodes { id name description isAnswerable } }
+    discussionCategories(first:50) { nodes { id name slug description isAnswerable } }
   }
 }
 """
@@ -111,6 +111,8 @@ class DiscussionCategory:
     name: str
     answerable: bool = False
     description: str = ""
+    #: Its form, when it has one, is .github/DISCUSSION_TEMPLATE/<slug>.yml.
+    slug: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -338,6 +340,7 @@ class GitHubDiscussionActionsMixin:
                 name=str(row.get("name") or ""),
                 answerable=bool(row.get("isAnswerable")),
                 description=str(row.get("description") or ""),
+                slug=str(row.get("slug") or ""),
             )
             for row in nodes or ()
             if isinstance(row, dict) and row.get("id")

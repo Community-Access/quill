@@ -1,0 +1,273 @@
+# Chapter 12: Forms on your site, on the web and on paper
+
+## What this chapter covers
+
+You have written and checked a form, and now people need to fill it in. A
+form can go four ways: onto your WordPress site through the QUILL Accessible
+Forms plugin, onto any website as a page of its own, onto paper in ordinary
+or large print, and into braille.
+
+This chapter covers each one, then reading the responses people send,
+bringing forms in from other form builders, the optional AI help, and taking
+payments. It ends with what is kept private and what Safe Mode turns off.
+
+By the end your form will be live where people can reach it, and you will
+know where their answers arrive.
+
+## QUILL Accessible Forms
+
+WordPress has no forms of its own. Something on the site has to show the
+form to visitors, check and store their answers, send the emails and keep
+spam out, and QUILL runs on your computer, so it cannot do that for your
+visitors. That job belongs to a plugin: **QUILL Accessible Forms**, made by
+the same people as QUILL, free and MIT-licensed. It used to be called BITS
+Accessible Forms.
+
+The plugin reads the same form language QUILL writes, so a form you publish
+from QUILL is exactly the form you checked and filled in yourself. It also
+has its own accessible builder screens, if someone on your team prefers to
+work in the dashboard.
+
+To use it, install QUILL Accessible Forms on your site in the usual way, or
+ask your site's administrator to. Site Check (Chapter 8) names it when it is
+there. A site that still runs it under its old name, BITS Accessible Forms,
+works too.
+
+Forms are published only to QUILL Accessible Forms. If your site does not
+have it, Save As Web Page, below, still puts your form on the web.
+
+## Publishing a form
+
+1. Open the form, and check it with **Tools > Forms > Check This Form...**.
+   Publish will not send a form QUILL cannot read properly, such as one with
+   a rule that makes no sense: it says, for example, "Publish Form stopped:
+   this form has 2 problems to fix first." Check This Form lists them.
+2. Choose **Tools > Forms > Publish Form...**.
+3. If you have more than one site, choose the site that has QUILL Accessible
+   Forms.
+4. The first time, QUILL asks **Publish as**: **Live**, so people can fill
+   it in wherever it is placed, or a **draft**, which waits until you make it
+   live, here or in the plugin.
+5. QUILL asks you to confirm, naming the form and the site.
+
+You hear, for example, "Published Ask us anything on Community Radio, form
+12, live. Insert Form Into Page puts it on a page."
+
+**Publishing again** updates the same form on the site; the question then
+says Update. If someone changed the form on the site since you last
+published, QUILL says so before it replaces it, and keeps the site's copy on
+your computer first. It keeps the last ten copies of each form.
+
+If the site does not have the plugin, you hear, for example, "Publish Form
+needs QUILL Accessible Forms on Community Radio, and the site does not offer
+it."
+
+## Putting the form on a page
+
+A published form shows wherever you place it.
+
+1. Open the page from **File > WordPress > Open Page or Post...**.
+2. Put the cursor where the form goes.
+3. Choose **Tools > Forms > Insert Form Into Page...**.
+4. QUILL lists the site's forms, each with how many responses it has had.
+   The one you published last from this computer is selected. Press Enter.
+
+QUILL inserts the plugin's form block in an HTML page, or its shortcode in a
+Markdown page. You hear "Inserted the Ask us anything form", and that it
+shows on the page once the page is sent. Then Save Draft to Site or Publish
+the page as usual.
+
+## Test on Site
+
+**Tools > Forms > Test on Site** opens the page that shows your form, in
+your web browser, so you can fill it in there with your screen reader, the
+way a visitor will. You hear "Opened Contact on Community Radio, where the
+form is." If no page shows the form yet, QUILL opens the form in QUILL
+Accessible Forms on the site instead, and reminds you that Insert Form Into
+Page puts it on a page.
+
+## Reading the responses
+
+**Tools > Forms > Responses...**, or the WordPress key and then F, lists what
+people sent, newest first, such
+as "Response 41, 3 November, 2:10 PM, Jane Smith, Event registration". With
+a published form open, it goes straight to that form's responses. Otherwise
+QUILL asks which site, then which form, each with how many responses it has
+had.
+
+The buttons:
+
+- **Read**, or Enter: one response, a question and its answer on each line,
+  in a window you can read and copy.
+- **View...:** the list; or grouped under a heading for each day; or grouped
+  for each place the responses gave.
+- **Find...:** shows only responses containing some words. Leave it empty to
+  show every response again.
+- **Mark:** marks or unmarks the response you are on, to delete several.
+- **Export to CSV...:** saves the responses shown as a CSV file, where you
+  choose.
+- **Open as Table...:** does the same and opens the file afterwards, as a
+  table you can walk cell by cell.
+- **Export to Word...:** saves the response you are on, or all of those
+  shown, as a Word document.
+- **Summarise...:** asks your AI for a summary (see below).
+- **Delete...:** deletes the marked responses, or the one you are on, after
+  telling you how many. They go to the Trash in QUILL Accessible Forms, not
+  away for good.
+- **Say New Count:** turns on or off the spoken count of new responses.
+
+**The new response count.** The first time you use a site in a session,
+QUILL says how many new responses each form has, for example "Community
+Radio: 4 new responses to Event registration." The plugin has no "unread"
+mark, so "new" means new since you last opened Responses in QUILL.
+
+The Workbench reads the same responses, from every site, under **Needs My
+Attention > Form Responses** and each site's **Forms > Responses**. Chapter 13
+shows what you can do there.
+
+**Responses are people's personal details.** QUILL reads them only while
+the Responses window is open, keeps them in memory, never writes them to a
+log, and saves them only where you choose.
+
+## Save As Web Page
+
+**Tools > Forms > Save As Web Page...** makes a web page of its own with the
+form in it, every question properly labelled, to upload anywhere. QUILL asks
+**Send answers to**: the https web address the form should send its answers
+to, such as a form service your organisation already uses. Leave it empty
+for a form to print or read, which sends nothing.
+
+This is the way to put a form on a site without QUILL Accessible Forms. Such
+a form has no Responses window in QUILL; its answers go wherever you sent
+them.
+
+## Paper, large print and braille
+
+Every form can be saved three more ways, without a site, even in Safe Mode:
+
+- **Save As Word Document...:** a printable form. Each question is a
+  heading, with lines to write on and boxes to check.
+- **Save As Large Print...:** the same Word form at 18 point and up. You
+  hear, for example, "Saved Ask us anything large print.docx, a large-print
+  Word document, 18 point and up, with 5 questions, lines to write on and
+  boxes to check."
+- **Save As Braille-Ready Text...:** one question per block, choices
+  lettered a, b, c, 40 cells to a line. QUILL asks **Save as**: text you can
+  emboss or read on a display as it is, or, with the braille pack installed,
+  a BRF file translated to UEB contracted braille by QUILL's own braille
+  translator.
+
+All of these come from the same form, so the paper version always asks what
+the web version asks. Change the form, save again, and they all agree.
+
+## Bringing forms in from other builders
+
+Forms made in other WordPress form plugins are brought in on the site, by
+QUILL Accessible Forms' own Import and Export screen, which reads forms from
+Gravity Forms, WPForms, Contact Form 7, Ninja Forms and Google Forms, and
+lists anything it could not bring across in an import report, so nothing
+goes missing without a word. The same screen can export a form back to those
+builders.
+
+Publish Form sends only to QUILL Accessible Forms. If your site runs Gravity
+Forms, you can build and change its forms in the Workbench instead, and copy a
+form from one plugin to the other (Chapter 13).
+
+## AI help with forms
+
+If you have chosen an AI in Choose Your AI, four commands can help. Each one
+tells you what it sends before it sends it, and nothing changes until you
+have read the proposal and said yes. Undo takes it all out in one step.
+
+- **Tools > Forms > Draft a Form...:** describe the form in a sentence or
+  two, such as who fills it in and what you need to know. Only that
+  description is sent. The AI writes it as a form, which you read in full,
+  and QUILL then asks whether to use it: in place of the form in front, or
+  saved as a new form.
+- **Tools > Forms > Plain Language...:** sends your questions' labels and
+  help text, never anybody's answers. You get simpler wording, each beside
+  what is there now, to accept or decline as one step.
+- **Tools > Forms > Suggest Autofill Hints...:** for questions such as name,
+  email, phone and address that have no autofill hint, and for questions
+  with a format rule but no help. It sends their labels and kinds only.
+- **Summarise...**, a button in Responses: this sends people's answers, so
+  QUILL asks every time. It says how many responses would go, and that they
+  may include names and email addresses. The summary opens in a window to
+  read; check it against the responses before you rely on it.
+
+## Privacy and Safe Mode
+
+- Payment details and website passwords never pass through QUILL. Payment
+  fields, CAPTCHA keys and the like stay on your website.
+- Nothing is sent until you choose Publish Form, Insert Form Into Page, Test
+  on Site, Responses or an AI command.
+- In Safe Mode, Publish Form, Insert Form Into Page, Test on Site, Responses
+  and the four AI commands each say they are off: "Publish Form is off in
+  Safe Mode, because it would reach your site or an AI." Writing, checking,
+  Fill It In Yourself and the four Save As commands still work.
+
+## A walk-through: from your computer to your site
+
+1. Check the form, then **Tools > Forms > Publish Form...**. Choose Live.
+   Confirm. You hear the form's number on the site.
+2. **File > WordPress > Open Page or Post...**, and open your Contact page.
+3. Put the cursor after the first paragraph, and **Tools > Forms > Insert
+   Form Into Page...**. Choose the form.
+4. **File > WordPress > Publish or Update...**.
+5. Open the form again, and **Tools > Forms > Test on Site**. Fill it in once
+   in your browser.
+6. **Tools > Forms > Responses...**. Your test response is at the top. Read
+   it, then Mark it and Delete it.
+
+## Payments: Stripe and PayPal
+
+Payment collection requires a QAF WordPress plugin implementing payment
+contract version 1. An older plugin can still host ordinary forms; paid-form
+publication will ask you to update it. QUILL configures the form and reads
+entry status. The site handles checkout and keeps provider credentials.
+
+1. Open a form and choose **Tools > Forms > Insert Payment Field...**.
+   Enter a positive amount, `#id` of a total or amount field, or `donation`.
+   Donation minimum and maximum are optional. One payment field is allowed.
+2. Choose **Form Payments Setup...**. Select Stripe, PayPal, or both in your
+   preferred order, currency, payment/donation mode and automatic/manual capture.
+   Keep **Test mode** checked. Saving changes only the document, as one undo step.
+3. In your site's WordPress administration, configure provider sandbox
+   credentials and verified webhooks. QUILL never asks for these secrets.
+4. Choose **Verify Payment Setup...** and confirm the site. This reads the
+   site's readiness; it does not conduct a test charge. Then **Publish Form**.
+   Both form and site must agree on test mode, and every selected provider and
+   webhook must be ready. Publication status "Live" means the form is visible;
+   it is separate from payment test/live mode.
+5. Place the form on a published page, then use **Test on Site**. QUILL checks
+   the published configuration and refuses a live-payment checkout. With Stripe
+   test keys, use `4242 4242 4242 4242`, a future expiry and any three-digit CVC
+   in Stripe's hosted field. Use a sandbox buyer for PayPal. Never use real card
+   details for testing. See [Stripe's testing guide](https://docs.stripe.com/testing)
+   and [PayPal's Orders integration](https://developer.paypal.com/api/rest/integration/orders-api).
+6. Open **Responses**. Payment status, amount, currency and provider are part
+   of each response row. **Read** includes the transaction and receipt text.
+   **Refresh Payment Status** confirms the site and reloads its recorded state.
+   CSV and Word exports include the available payment metadata. An absent
+   status is unknown, not proof of payment; an authorization is not a capture.
+
+Only after successful sandbox and accessibility checks should the site
+administrator configure live credentials, and you clear Test mode and
+republish. QUILL asks you to confirm real-money mode. Refunds and manual
+capture take place in the provider dashboard. Status depends on the site's
+webhook processing. Fill It In Yourself and saved static web pages do not
+process payments. Safe Mode blocks payment network operations while allowing
+local authoring. The same commands and behavior are available in QUILL Lite.
+
+The whole process, including what the person paying hears with a screen
+reader, receipts, reporting and going live, is a chapter of its own in each
+user guide: "Taking payments with your forms", Chapter 18 in QUILL's and
+Chapter 16 in QUILL Lite's. The site owner's side (keys, webhooks, test and
+live mode) is in the plugin's guide, *Taking payments: a guide for site
+owners*.
+
+## Where to next
+
+- Previous: [Chapter 11: Writing a form](wordpress-forms-11-writing-forms.html)
+- Next: [Chapter 13: Forms in the Workbench, and Gravity Forms](wordpress-forms-13-forms-in-the-workbench.html)
+- [Contents](wordpress-forms-guide.html)

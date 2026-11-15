@@ -283,7 +283,9 @@ the same.</p>
 <li>Labels, assignees, reviewers and your reactions are lists of check
 boxes. Space checks or clears one.</li>
 <li>New Label… and New Milestone… beside their lists make a new one on
-GitHub and check it straight away.</li>
+GitHub and check it straight away. If one by that name is already there,
+that is not a failure: QUILL Lite says “bug already exists; using it”
+and checks the one GitHub has.</li>
 <li><strong>OK</strong> saves and closes. <strong>Apply</strong>, or
 <code>Ctrl+S</code>, saves and keeps the sheet open.
 <code>Ctrl+Enter</code> is OK from anywhere, even in a long text box.
@@ -346,37 +348,41 @@ the loaded list, and GitHub’s own search terms such as
 <code>label:bug</code> or <code>no:milestone</code>, which ask GitHub.
 Three other ways write into the same box.</p>
 <ul>
-<li><strong>View &gt; Quick Filters:</strong> Assigned to Me, Assigned
-To…, Opened by Me, Opened By…, Mentions Me, Review Requested from Me,
-Reviewed by Me, No Assignee, No Milestone, No Label, No Project, No
-Type, Drafts, Has Conflicts, Checks Failing and Updated This Week. Each
-one is checked while it is on, they combine, and the window title names
-them. Clear These Filters turns them all off.</li>
+<li><strong>Quick Filters,</strong> on the Workbench’s View menu:
+Assigned to Me, Assigned To…, Opened by Me, Opened By…, Mentions Me,
+Review Requested from Me, Reviewed by Me, No Assignee, No Milestone, No
+Label, No Project, No Type, Drafts, Has Conflicts, Checks Failing and
+Updated This Week. Each one is checked while it is on, they combine, and
+the window title names them. Clear These Filters turns them all
+off.</li>
 <li><strong>Show Only and Hide:</strong> the context menu of a row has
 both, with every value in that row: “label bug”, “author
 dependabot”.</li>
 <li><strong>The Filter Builder,</strong> <code>Ctrl+Alt+F</code>: choose
 an attribute, an operator and a value, then Add Condition
-(<code>Insert</code>). The values come from the repository, and Me is
-offered for every person. The query appears as you go, so you learn
+(<code>Insert</code>). Each box reads its own label as you Tab to it:
+Attribute, Operator, Value. The values come from the repository, and Me
+is offered for every person. The query appears as you go, so you learn
 GitHub’s syntax by watching it. OK puts it in the filter box; Save as
 Search also keeps it under Saved Searches.</li>
 </ul>
 <p>Has Conflicts is the one GitHub’s search cannot answer, so the
 Workbench checks the pull requests already loaded and the Items cell of
-the status bar says so. <strong>View &gt; Load All</strong>
-(<code>Ctrl+Shift+Page Down</code>) loads every page to be sure.</p>
+the status bar says so. <strong>Load All</strong> on the Workbench’s
+View menu (<code>Ctrl+Shift+Page Down</code>) loads every page to be
+sure.</p>
 <h3 id="shaping-the-list">Shaping the list</h3>
 <ul>
-<li><strong>View &gt; Show</strong> chooses issues, pull requests or
-both, and <strong>View &gt; Open or Closed</strong> which ones.</li>
-<li><strong>View &gt; Sort By</strong> orders the list, and <strong>View
-&gt; Columns…</strong> (<code>Ctrl+Shift+U</code>) chooses its
+<li>On the Workbench’s View menu, <strong>Show</strong> chooses issues,
+pull requests or both, and <strong>Open or Closed</strong> which
+ones.</li>
+<li><strong>Sort By</strong> on the same menu orders the list, and
+<strong>Columns…</strong> (<code>Ctrl+Shift+U</code>) chooses its
 columns.</li>
-<li><strong>View &gt; Group By</strong> puts the groups in the tree as
-nodes: by label, milestone, assignee, author, type, state, repository or
-review state. Each node reads with its count, and selecting it shows
-that group.</li>
+<li><strong>Group By</strong>, also on the View menu, puts the groups in
+the tree as nodes: by label, milestone, assignee, author, type, state,
+repository or review state. Each node reads with its count, and
+selecting it shows that group.</li>
 <li><strong>Go &gt; Next Unread</strong> (<code>Ctrl+Period</code>) and
 <strong>Previous Unread</strong> (<code>Ctrl+Shift+Period</code>) move
 between unread notifications. Go also has submenus for your pinned

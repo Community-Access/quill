@@ -162,8 +162,23 @@ def build_choices(
     block_types: Sequence[Mapping[str, Any]] | None,
     patterns: Sequence[Mapping[str, Any]] | None,
     synced: Sequence[Mapping[str, Any]] | None,
+    categories: Mapping[str, str] | None = None,
 ) -> list[InsertChoice]:
-    """The Insert Block list from what the site sent (any part may be missing)."""
+    """The Insert Block list from what the site sent (any part may be missing).
+
+    *categories* names each pattern category by its slug
+    (``block-patterns/categories``), so a pattern says where it belongs.
+    """
+    named = categories or {}
+
+    def placed(p: Mapping[str, Any]) -> str:
+        description = _text(p.get("description"))
+        slugs = p.get("categories")
+        where = [named.get(str(c), str(c)) for c in (slugs if isinstance(slugs, list) else [])]
+        if not where:
+            return description
+        return f"{description} In {', '.join(where)}.".strip()
+
     by_name = {t.get("name"): t for t in block_types or [] if isinstance(t, Mapping)}
     core = [
         InsertChoice(
@@ -198,7 +213,7 @@ def build_choices(
             "pattern",
             str(p.get("name") or ""),
             _text(p.get("title")) or str(p.get("name") or "Pattern"),
-            _text(p.get("description")),
+            placed(p),
             content=_text(p.get("content")),
         )
         for p in patterns or []
@@ -239,7 +254,13 @@ def fetch_choices(api: WordPressApi) -> list[InsertChoice]:
     types = attempt(lambda: api.get("wp/v2/block-types", context="edit"))
     patterns = attempt(lambda: api.get("wp/v2/block-patterns/patterns"))
     synced = attempt(lambda: list(api.iter_collection("wp/v2/blocks", {"context": "edit"})))
-    return build_choices(types, patterns, synced)
+    named = attempt(lambda: api.get("wp/v2/block-patterns/categories")) if patterns else None
+    categories = {
+        str(c["name"]): _text(c.get("label")) or str(c["name"])
+        for c in named or []
+        if isinstance(c, Mapping) and c.get("name")
+    }
+    return build_choices(types, patterns, synced, categories)
 
 
 def filter_choices(choices: Sequence[InsertChoice], words: str) -> list[InsertChoice]:

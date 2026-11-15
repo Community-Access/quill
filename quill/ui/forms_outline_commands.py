@@ -181,14 +181,19 @@ class FormsOutlineCommands:
         )
         if picked is None:
             raise fd.Refused("Nothing changed.")
+        if kinds[picked] == item.get("type"):
+            raise fd.Refused("Nothing changed.")
         plan = fd.type_change_plan(model, item_id, kinds[picked])
-        message = plan.summary + "\n\n" + "\n".join(plan.review_lines())
         if plan.blocked:
             raise fd.Refused(
                 f"This field needs {', '.join(plan.blocked)} before it can become "
                 f"{ft.spoken(kinds[picked])}."
             )
-        if not dlg.confirm(
+        # Ask only when something is adjusted or dropped. A change that keeps
+        # everything (radio buttons to a drop-down list) is one undo away, and a
+        # confirmation that can only say "Kept: ..." is a speed bump.
+        message = plan.summary + "\n\n" + "\n".join(plan.review_lines())
+        if (plan.converted or plan.removed) and not dlg.confirm(
             self.host.parent,
             self.host.show_modal,
             title="Change Type",

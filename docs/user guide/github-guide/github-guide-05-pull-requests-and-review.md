@@ -283,13 +283,14 @@ review comments, like anyone else's, and the outline shows them after a refresh.
 
 ### Merging
 
-Merging is in GitHub Items, not the review window, because it is the one thing
-here that changes the main branch for everyone. Select the pull request and
-choose **Merge Pull Request #42...** from **Actions...** or its context menu.
-QUILL asks you to type the pull request's number to confirm, not just press
-Yes, and says what will happen: that it merges into the base branch and that
-this changes the branch for everyone. You hear "Merged #42" and the new commit.
-QUILL merges by squashing the pull request's commits into one.
+Merging is in the Workbench, not the review window, because it is the one
+thing here that changes the base branch for everyone. Select the pull request
+and press `Ctrl+Shift+Enter`, or choose **Merge...** from its context menu.
+QUILL asks how to merge: Squash and merge, Merge commit, or Rebase. Then it asks
+you to type the pull request's number to confirm, not just press Yes, and
+says what will happen: that it merges into the base branch and that this
+changes the branch for everyone. You hear "Merged #42" and the start of the
+new commit.
 
 ### Auto-merge and the merge queue
 
@@ -330,10 +331,13 @@ QUILL says so. Chapter 6 covers checks and workflow runs in full.
 
 ## Writing a new pull request
 
-Signed in, **Actions...** in the Issues & PRs view has **New Pull Request...**.
-QUILL asks four questions in turn: the title, the description (you can leave
-it empty), the branch with your changes, and the branch to merge into, which
-starts as `main`.
+In a repository's **Pull Requests**, press `Ctrl+N`. To start from a branch,
+select it in Branches, press `Ctrl+Shift+N` and choose Pull Request. The New
+Pull Request window has Merge into, Merge from, Title, Description and a
+Create as a draft check box. The title and description start from the
+commits you are proposing, a branch that already has an open pull request is
+taken to that one instead of making a second, and Cancel keeps your text for
+the session. [Chapter 12](github-guide-12-the-workbench.html) walks through it.
 
 ---
 

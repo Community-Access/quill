@@ -103,6 +103,21 @@ def list_abilities(api: WordPressApi) -> list[Ability]:
     return sorted((a for a in found if a is not None), key=lambda a: a.label.casefold())
 
 
+def category_labels(api: WordPressApi) -> dict[str, str]:
+    """Each ability category's slug and its own name, from ``categories`` ({} when absent)."""
+    from quill.core.wordpress.api import WordPressApiError
+
+    try:
+        found = list(api.iter_collection(f"{NAMESPACE}/categories"))
+    except WordPressApiError:
+        return {}
+    return {
+        str(raw["slug"]): plain_text(str(raw.get("label") or raw["slug"]))
+        for raw in found
+        if isinstance(raw, dict) and raw.get("slug")
+    }
+
+
 def run_ability(api: WordPressApi, ability: Ability, given: dict[str, Any]) -> Any:
     """Run one ability using its annotated method and bracketed query input."""
     route = f"{NAMESPACE}/abilities/{ability.name}/run"

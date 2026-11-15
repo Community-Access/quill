@@ -351,6 +351,34 @@ _REVIEWED: tuple[CommandSpec, ...] = (
         kind=Kind.OPENS_DIALOG,
         group="Tools",
     ),
+    CommandSpec(
+        "wordpress.this_post_in_workbench",
+        "This Post in the Workbench",
+        "Open the WordPress Workbench with this document's post selected",
+        aliases=("this post in the workbench", "show this post in the workbench"),
+        examples=(
+            "show this post in the wordpress workbench",
+            "find this post in the workbench",
+            "where is this post on my site",
+        ),
+        risk=_S,
+        kind=Kind.OPENS_DIALOG,
+        group="File",
+    ),
+    CommandSpec(
+        "forms.responses",
+        "Form Responses",
+        "Read the responses people sent to a form on your WordPress site",
+        aliases=("form responses", "responses", "form entries"),
+        examples=(
+            "show my form responses",
+            "who filled in the contact form",
+            "read the newest form entries",
+        ),
+        risk=_S,
+        kind=Kind.OPENS_DIALOG,
+        group="Tools",
+    ),
 )
 
 #: Every QUILL row: the agents' list first, in its old order, then the rest.

@@ -42,8 +42,10 @@ class WorkbenchOptionsCommands:
             prompt="&Options:",
             rows=rows,
             checked=checked,
-            help_text="Each Watch is said when it happens, "
-            "checked at most every fifteen minutes while the editor is open.",
+            help_text="Every Watch is off until you check it: nothing is asked of your sites "
+            "for Watches before then. A checked Watch asks each connected site over the "
+            "internet at most every fifteen minutes while the editor is open, and says only "
+            "what changed; its first look is silent.",
         )
         if picked is None:
             return

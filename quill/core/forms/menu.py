@@ -23,13 +23,21 @@ Forms has no letter in QUILL Lite's Tools, as Tools > WordPress has none: no
 letter of either name is free there. QUILL seats its own letters
 (``menu_routes.py``).
 
-**Keys: none, each with its reason** (rule 8). No chord is free in both
-editors and outside every family app's system-wide key that is not a menu
-letter (Alt+letter), a caret key, an AltGr character on a European keyboard
-(Ctrl+Alt+digit or punctuation) or a near miss for Alt+F4 -- the 2026-11
-survey behind ``wordpress/menu.py`` found the same. Rule 9: writing a form is
-occasional, so each command gets a way in (its menu letters and the Command
-Palette), not a chord.
+**Keys.** No plain chord is free in both editors and outside every family
+app's system-wide key that is not a menu letter (Alt+letter), a caret key, an
+AltGr character on a European keyboard (Ctrl+Alt+digit or punctuation) or a
+near miss for Alt+F4 -- the 2026-11 survey behind ``wordpress/menu.py`` found
+the same. So the one Forms key is a letter on the WordPress key layer
+(:data:`LAYER_KEYS`, decided 2026-11-13): **Ctrl+Alt+Shift+Grave, then F**
+for Responses. F is free on the layer (``wordpress/menu.py`` LAYER_KEYS), in
+``DEFAULT_KEYMAP`` and ``DEFAULT_ALIASES``, and no system-wide key can claim a
+bare letter (every one holds Ctrl or Alt, ``test_global_hotkeys.py``).
+Responses has it by frequency (rule 3): it is the Forms command used again and
+again after a form is live, it works from any document, and it reads the
+WordPress site the layer is about, so the layer widens by one command, not by
+a second purpose. Every other Forms command keeps no chord, each for rule 9:
+writing a form is occasional, and its menu letters and the Command Palette are
+its way in.
 """
 
 from __future__ import annotations
@@ -37,6 +45,8 @@ from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
+
+from quill.core.wordpress.menu import LAYER_PREFIX
 
 #: One command: (command id, menu title, shared handler on FormsCommands).
 Row = tuple[str, str, str]
@@ -163,6 +173,20 @@ def spoken_path(path: str) -> str:
     return " > ".join(part.replace("&", "") for part in path.split("|"))
 
 
+#: The Forms key on the WordPress key layer: the key after :data:`LAYER_PREFIX` -> command id.
+LAYER_KEYS: dict[str, str] = {"F": "forms.responses"}
+
+
+def layer_chord(command_id: str) -> str:
+    """``forms.responses`` -> ``"Ctrl+Alt+Shift+Grave, F"``, or "" for a row with no key."""
+    return next((f"{LAYER_PREFIX}, {k}" for k, c in LAYER_KEYS.items() if c == command_id), "")
+
+
+def default_bindings() -> dict[str, str]:
+    """Command id -> its shipped layer chord, for QUILL's ``DEFAULT_KEYMAP``."""
+    return {command_id: layer_chord(command_id) for command_id in LAYER_KEYS.values()}
+
+
 def lite_handler(command_id: str) -> str:
     """QUILL Lite's handler for a row: ``forms.check`` -> ``cmd_forms_check``."""
     return "cmd_forms_" + command_id.split(".", 1)[1]
@@ -180,12 +204,12 @@ def _lite(entries: tuple[Entry, ...], path: str) -> list[CommandRow]:
             rows.append((path, entry.title, "", "", "sub"))
             rows.extend(_lite(entry.rows, f"{path}|{entry.title}"))
         else:
-            rows.append((path, entry[1], "", lite_handler(entry[0]), ""))
+            rows.append((path, entry[1], layer_chord(entry[0]), lite_handler(entry[0]), ""))
     return rows
 
 
 def lite_rows(place: str = "file") -> list[CommandRow]:
-    """One place's rows in QUILL Lite's command-table shape (no keys: see above)."""
+    """One place's rows in QUILL Lite's command-table shape (the layer key only: see above)."""
     top, entries = PLACES[place]
     return _lite(entries, top)
 

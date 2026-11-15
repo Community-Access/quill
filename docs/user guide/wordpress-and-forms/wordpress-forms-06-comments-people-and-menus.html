@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 6: Comments, categories, tags, people and menus</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-6-comments-categories-tags-people-and-menus">Chapter 6:
+Comments, categories, tags, people and menus</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>A site grows things around your writing: the comments visitors leave,
+the categories and tags that sort your posts, the people who write with
+you, and the menus that help visitors find your pages. You look after
+all of them in the WordPress Workbench.</p>
+<p>In this chapter you will moderate and answer comments, tidy
+categories and tags, add and change the people on your site, and build a
+menu, adding items and putting them where they belong.</p>
+<p>By the end your comments will be answered, your posts sorted, your
+team set up, and every new page reachable from your menus. Chapter 2
+explains how the Workbench moves, if you have not read it yet.</p>
+<h2 id="comments">Comments</h2>
+<p><strong>Tools &gt; WordPress &gt; Comments…</strong> opens the
+Workbench at the comments waiting for you to approve. Each site’s
+<strong>Comments</strong> has a place for each of WordPress’s four
+lists: <strong>Waiting</strong>, <strong>Approved</strong>,
+<strong>Spam</strong> and <strong>Trash</strong>. <strong>Needs My
+Attention &gt; Comments Waiting</strong> gathers the waiting ones from
+every site, and <strong>Held as Spam</strong> the ones the sites
+doubted.</p>
+<p>Each row gives the comment’s author, the post it is on and when it
+came. Press Enter to read it in full in the details pane.</p>
+<p>On a comment:</p>
+<ul>
+<li><strong>Item &gt; Approve, or Not Spam</strong>
+(<code>Ctrl+Shift+A</code>) publishes a waiting comment, or releases one
+from Spam.</li>
+<li><strong>Item &gt; Unapprove</strong> (<code>Ctrl+Shift+U</code>)
+takes an approved comment off the site, so it waits again.</li>
+<li><strong>Item &gt; Spam</strong> (<code>Ctrl+Shift+S</code>) marks it
+as spam. The site’s spam filter learns from it.</li>
+<li><strong>Item &gt; Reply…</strong> (<code>Ctrl+Shift+M</code>)
+answers the comment, published under your name.</li>
+<li><strong>Item &gt; Not Spam, and Allow This Sender</strong>
+(<code>Ctrl+Alt+W</code>) approves it, and says whether that person’s
+next comments will go straight through.</li>
+<li><strong>Delete</strong> moves it to the Trash, and <strong>Item &gt;
+Restore from Trash</strong> (<code>Ctrl+Shift+R</code>) brings it
+back.</li>
+<li><strong>Alt+Enter</strong> opens its Properties, where you can
+correct its text, such as a phone number somebody posted by mistake, or
+its date. The sheet also shows the IP address it came from.</li>
+</ul>
+<p><strong>Many at once.</strong> Select several comments and approve,
+spam or trash them in one go. You hear how each one went, so one refusal
+does not stop the rest, and Ctrl+Z puts back only the ones that
+changed.</p>
+<p><strong>For the whole site,</strong> the Site menu has:</p>
+<ul>
+<li><strong>Site &gt; Comment Counts</strong>
+(<code>Ctrl+Alt+Shift+C</code>): how many wait, are approved, are spam
+and are in the Trash;</li>
+<li><strong>Site &gt; Empty Spam…</strong> (<code>Ctrl+Alt+E</code>):
+delete every comment held as spam, for good, after you confirm;</li>
+<li><strong>Site &gt; Empty Comment Trash…</strong>
+(<code>Ctrl+Alt+Shift+E</code>): the same for the Trash.</li>
+</ul>
+<p>On a post in the Workbench, <strong>Item &gt; Show Its
+Comments</strong> (<code>Ctrl+Alt+Shift+M</code>) lists just that post’s
+comments. In a comment list, the filter takes <code>comment_type:</code>
+as well as words, and <strong>View &gt; Columns…</strong> can add the
+commenter’s website, IP address, the comment’s type and the comment it
+replies to.</p>
+<p>The first time you use a site in a session, QUILL says how many
+comments are waiting, such as “Community Radio: 3 comments waiting.”</p>
+<h3 id="a-walk-through-answering-a-question-in-the-comments">A
+walk-through: answering a question in the comments</h3>
+<ol type="1">
+<li>Choose <strong>Tools &gt; WordPress &gt; Comments…</strong>. The
+Workbench opens on the comments waiting.</li>
+<li>Tab to the list, arrow to the comment, and press Enter to read
+it.</li>
+<li>Press Ctrl+Shift+A to approve it, so it shows on the site.</li>
+<li>Press Ctrl+Shift+M, type your answer and press OK.</li>
+<li>In the tree, move to <strong>Spam</strong> and check nothing real
+has been caught there. If something has, press Ctrl+Shift+A on it.</li>
+</ol>
+<p>The guided lesson on comments, in <strong>Help &gt;
+Tutorials</strong>, does the same on a test site.</p>
+<h2 id="categories-and-tags">Categories and tags</h2>
+<p>Categories are the broad shelves of a blog, such as News and Events.
+Tags are the small labels, such as “volunteers” or “spring fair”. Only
+posts have them.</p>
+<p><strong>Tools &gt; WordPress &gt; Categories and Tags…</strong> opens
+the Workbench at the site’s <strong>Categories</strong>, shown as a
+tree, each under its parent. <strong>Tags</strong> is just below it.
+Each row gives the name, how many posts use it, and its slug. A plugin’s
+own ways of grouping, such as event categories or genres, are under
+<strong>More Taxonomies</strong>.</p>
+<p>On a category or tag:</p>
+<ul>
+<li><strong>Enter</strong>, or <strong>Show Its Posts</strong>, lists
+the posts filed there.</li>
+<li><strong>Alt+Enter</strong> changes its name, slug, description and
+parent. A new name shows on every post that has it.</li>
+<li><strong>Item &gt; Merge Into…</strong> (<code>Ctrl+Shift+G</code>)
+moves every post across to another and then deletes the empty one, in
+one step.</li>
+<li><strong>Item &gt; Convert to Category or Tag…</strong>
+(<code>Ctrl+Shift+K</code>) turns a tag into a category, or the other
+way round, and keeps its posts.</li>
+<li><strong>File &gt; New Here…</strong> (<code>Ctrl+N</code>) makes a
+new one.</li>
+<li><strong>Delete Permanently…</strong> removes it, after a question
+that says how many posts use it. The posts stay.</li>
+<li><strong>Copy to Site…</strong> copies it to another of your
+sites.</li>
+</ul>
+<p>Choosing categories and tags for one post is in its Properties
+(Chapter 3). To rename, split or merge a term across all your posts and
+pages, see By Name in Chapter 9.</p>
+<h2 id="people">People</h2>
+<p><strong>Tools &gt; WordPress &gt; Manage &gt; Users…</strong> opens
+the Workbench at the site’s <strong>People &gt; Users</strong>. Each row
+gives the person’s name, username, role and email. You need to be an
+Administrator to change anyone but yourself.</p>
+<p><strong>Adding a person.</strong> In Users, press Ctrl+N. <strong>Add
+a Person</strong> is one sheet: username, email, first and last name,
+website, language and role. QUILL makes a strong password and never
+shows it. WordPress sends no welcome email when a person is added this
+way, and the preview says so, so tell them yourself. They choose their
+own password with “Lost your password?” on the sign-in page.</p>
+<p>On a person:</p>
+<ul>
+<li><strong>Show Their Posts</strong> lists what they wrote.</li>
+<li><strong>Change Role…</strong> gives them another role, after a
+preview.</li>
+<li><strong>Alt+Enter</strong> changes their name, email, website,
+biography and language, and shows how many posts they have written.</li>
+<li><strong>Their Application Passwords…</strong> lists the apps and
+computers signed in as them, with Revoke after you confirm.</li>
+<li><strong>Item &gt; Send Password Reset</strong>
+(<code>Ctrl+Shift+W</code>) opens their wp-admin screen, where WordPress
+sends the reset email.</li>
+<li><strong>Set New Password…</strong> gives them a new password you
+type. QUILL never says it or keeps it.</li>
+<li><strong>Sign Out Everywhere…</strong> opens their wp-admin screen,
+where Log Out Everywhere is one button. WordPress keeps sign-ins out of
+its REST API.</li>
+<li><strong>Remove…</strong> takes them off the site. It asks who gets
+their posts first, and the preview counts them, so no writing is
+lost.</li>
+</ul>
+<p>Select several people to change all their roles, or remove them, in
+one go.</p>
+<p>QUILL will never take away your own Administrator role, or remove the
+last Administrator on a site, whatever you select.</p>
+<p><strong>Many people at once.</strong> <strong>Invite from a
+Spreadsheet…</strong>, on a person’s context menu, reads a CSV file with
+columns for email, role and name. The preview lists every row it will
+add and every row it leaves out, and why. Then it adds each person and
+says how each went.</p>
+<p><strong>Your own profile.</strong> <strong>Site &gt; Your
+Profile…</strong> (<code>Ctrl+Alt+Shift+P</code>) changes your own name,
+email, website, biography and language on the site.</p>
+<p><strong>Application passwords.</strong> <strong>People &gt;
+Application Passwords</strong> lists the passwords on your own account,
+with when each was made and last used. Ctrl+N makes a new one and shows
+it once, so copy it then. Delete revokes one. The one QUILL itself signs
+in with is marked, so you do not revoke it by accident.</p>
+<p><strong>Site &gt; Roles and What They May Do</strong>
+(<code>Ctrl+Alt+R</code>) explains each role on the site in plain
+words.</p>
+<h2 id="menus">Menus</h2>
+<p>A menu is the list of links in your site’s header or footer that
+visitors use to find your pages. WordPress does not add a new page to a
+menu by itself, unless you ask it to, which is why QUILL asks “Add it to
+a menu?” the first time you publish a page.</p>
+<p><strong>Tools &gt; WordPress &gt; Menus…</strong> opens the Workbench
+at the site’s <strong>Menus and Navigation</strong>. Each row is a menu,
+with where the theme shows it and how many items it has.</p>
+<h3 id="adding-an-item-to-a-menu">Adding an item to a menu</h3>
+<p>Use this to add a page, a post, a category, a tag, an item of any
+other kind your site shows in menus, or a link to any address.</p>
+<ol type="1">
+<li>Arrow to the menu in <strong>Menus and Navigation</strong>.</li>
+<li>Press Ctrl+N and choose <strong>A new item in</strong> the menu,
+which is first. Or press the Applications key and choose <strong>Add
+Menu Item…</strong>.</li>
+<li>Under <strong>Kind of item</strong>, choose what the item links to,
+such as Pages, Posts, Categories, Tags, one of your site’s own kinds, or
+<strong>Custom Links</strong>.</li>
+<li>For anything but a custom link, type words from its name and press
+Enter, or leave the box empty to list them all, as View All does in
+wp-admin. Only published items are listed. For a kind with an archive
+page, such as Events, the archive is offered first.</li>
+<li>Choose the one you want. Its name becomes the item’s name.</li>
+<li>Under <strong>Under</strong>, choose where it goes: <strong>Top
+level of the menu</strong>, or the item it should sit under, as a
+dropdown.</li>
+<li>Under <strong>Position</strong>, choose <strong>First</strong>, or
+<strong>After</strong> one of the items already there. The end is chosen
+for you.</li>
+<li>Read the preview. It says what is added, where, as a place such as
+“3 of 7”, and how many items move down to make room. Press
+<strong>Add</strong>.</li>
+</ol>
+<p>For a custom link, QUILL asks for the <strong>URL</strong> and then
+the <strong>Link text</strong>, the words the menu shows, and carries on
+from step 6.</p>
+<p>Before it writes, QUILL reads the menu again. If somebody changed it
+in the meantime, nothing is sent, and you are told. Afterwards you hear
+what was added. Ctrl+Z takes the item out and puts the others back where
+they were.</p>
+<h3 id="adding-new-pages-automatically">Adding new pages
+automatically</h3>
+<p>WordPress can add each new top-level page to a menu by itself, the
+moment it is published.</p>
+<ol type="1">
+<li>Arrow to the menu in <strong>Menus and Navigation</strong>.</li>
+<li>Press the Applications key and choose <strong>Add New Pages
+Automatically…</strong>.</li>
+<li>The preview says whether it is on or off now, and what changes.
+Press <strong>Turn On</strong>, or <strong>Turn Off</strong>.</li>
+</ol>
+<p>The same setting is a check box on the menu’s Properties (Alt+Enter),
+labelled “Automatically add new top-level pages to this menu”, beside
+the menu’s name and description. Check it or uncheck it and press
+OK.</p>
+<p>Either way, QUILL checks the setting has not changed on the site
+since you looked, reads it back after saving, and Ctrl+Z turns it back.
+Pages already in the menu stay where they are when you turn it off.</p>
+<h3 id="more-on-a-menu">More on a menu</h3>
+<ul>
+<li><strong>File &gt; New Here…</strong> (<code>Ctrl+N</code>) on a menu
+asks whether you want a new item in it or <strong>A new menu</strong>.
+With no menu selected, it makes a menu.</li>
+<li><strong>Alt+Enter</strong> changes the menu’s name and description,
+and shows where the theme displays it.</li>
+<li><strong>Earlier Versions…</strong> lists the states of the menu
+QUILL has seen. A classic menu keeps no history in WordPress, so QUILL
+keeps its own each time it reads one. Choose one to bring back the items
+removed since, after a preview. Ctrl+Z takes them out again.</li>
+<li><strong>Default Navigation Menu…</strong>, on a block theme, says
+which Navigation menu the theme shows where none is chosen. On a site
+with none, WordPress makes one, so QUILL asks first.</li>
+<li><strong>Copy to Site…</strong> copies the menu to another of your
+sites.</li>
+<li><strong>Delete Permanently…</strong> (<code>Shift+Delete</code>)
+deletes the menu. The pages it linked to are not touched.</li>
+</ul>
+<h3 id="moving-items-around-in-a-menu">Moving items around in a
+menu</h3>
+<p>The Menus window rearranges a menu’s items. To open it, select a menu
+in the Workbench’s <strong>Menus and Navigation</strong>, press the
+Applications key, and choose <strong>Arrange Items…</strong>. It also
+opens when you answer <strong>Yes, open Menus</strong> to the “Add it to
+a menu?” question, with the new page already added at the end of the
+menu you choose. <strong>Other Menu…</strong> in it opens another menu
+on the same site.</p>
+<p>Each row says the item, what kind of thing it links to, its level and
+its place, such as “Sessions, page, level 1, 3 of 7”.</p>
+<ul>
+<li><strong>Move Up</strong> and <strong>Move Down</strong> change its
+place. Each press says the new one.</li>
+<li><strong>Move In</strong> puts it under the item above it, as a
+dropdown. <strong>Move Out</strong> takes it back up a level.</li>
+<li><strong>Rename…</strong> changes what the item says.</li>
+<li><strong>Remove…</strong> takes it out of the menu. The page itself
+is not touched.</li>
+<li><strong>Check Menu</strong> finds items with no name, and links to
+pages that are drafts or gone.</li>
+<li><strong>Locations…</strong> chooses where the theme shows the menu,
+such as the header or the footer.</li>
+</ul>
+<p>Sites with a block theme keep their menus in Navigation blocks. Those
+open in the same window and work the same way. <strong>Tools &gt;
+WordPress &gt; Menu History…</strong> lists earlier versions of a menu,
+and can make a Navigation block’s menu exactly as it was.</p>
+<h3 id="a-walk-through-putting-a-new-page-in-the-menu">A walk-through:
+putting a new page in the menu</h3>
+<ol type="1">
+<li>Publish the new page. QUILL asks “Add it to a menu?”.</li>
+<li>Choose <strong>Yes, open Menus</strong>, and choose the menu. The
+Menus window opens with the page added at the end.</li>
+<li>Press <strong>Move Up</strong> until it sits where you want it.</li>
+<li>If it belongs under another item, such as About, press <strong>Move
+In</strong>.</li>
+<li>Press <strong>Check Menu</strong> to make sure nothing points to a
+draft.</li>
+<li>Close the window. The change is already on the site.</li>
+</ol>
+<p>If you would rather every new top-level page joined the menu by
+itself, turn on Add New Pages Automatically, as above.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a
+href="wordpress-forms-05-pictures-and-media.html">Chapter 5: Pictures
+and the Media Library</a></li>
+<li>Next: <a href="wordpress-forms-07-checking.html">Chapter 7: Checking
+before you publish</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

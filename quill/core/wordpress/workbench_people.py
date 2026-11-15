@@ -30,6 +30,7 @@ from quill.core.wordpress.workbench_permissions import remove_problem, role_chan
 __all__ = [
     "NewPassword",
     "change_role",
+    "check_role_save",
     "create_app_password",
     "people",
     "remove_preview",
@@ -66,6 +67,18 @@ def change_role(
     if problem:
         raise EditRefused(problem)
     return admin.update_user(api, user_id, roles=[role])
+
+
+def check_role_save(
+    api: WordPressApi, account: Account | None, user_id: int, body: Mapping[str, Any]
+) -> None:
+    """Refuse a Properties save whose Role would lock somebody out, as Change Role does."""
+    roles = body.get("roles")
+    if account is None or not isinstance(roles, list) or not roles:
+        return
+    problem = role_change_problem(account, user_id, str(roles[0]), people(api))
+    if problem:
+        raise EditRefused(problem)
 
 
 def remove_preview(api: WordPressApi, name: str, user_id: int, to_name: str) -> str:

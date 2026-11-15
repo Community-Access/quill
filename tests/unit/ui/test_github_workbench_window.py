@@ -160,7 +160,7 @@ def test_the_pull_request_menu_starts_with_review_and_ends_with_properties(bench
     assert more
     assert bench.can_run("github.workbench.open_on_github")
     bench.list.Select(0)
-    # Merge is not rebuilt yet: it opens GitHub Items on this pull request.
+    # Merge is the Workbench's own now (github_workbench_items.py).
     assert bench.can_run("github.workbench.merge")
     assert bench.can_run("github.workbench.filter_builder")
 
@@ -235,12 +235,25 @@ def test_every_github_door_opens_the_workbench(monkeypatch, quill_data_dir) -> N
 
 
 def test_the_retired_dialogs_are_unreachable() -> None:
-    from quill.tools.surface_reachability_audit import PARKED_FALLBACKS, UNREACHABLE, load_snapshot
+    """No app entry point imports the retired GitHub Items or Explore GitHub windows.
+
+    The snapshot calls them ``parked`` -- the audit's reviewed word for "kept on
+    purpose, reached by nothing" -- and this asserts the second half from the
+    import graph itself, so a door that quietly imported one again would fail.
+    """
+    from quill.tools.surface_reachability_audit import (
+        PARKED,
+        PARKED_FALLBACKS,
+        load_snapshot,
+        reachable_modules,
+    )
 
     snapshot = load_snapshot()
+    reached = reachable_modules()
     assert not PARKED_FALLBACKS
     for module in ("quill.ui.github_items_dialog", "quill.ui.github_explore_dialog"):
-        assert snapshot[module] == UNREACHABLE
+        assert snapshot[module] == PARKED
+        assert module not in reached
 
 
 def test_both_editors_reach_the_window_through_the_one_shared_call() -> None:
@@ -251,3 +264,225 @@ def test_both_editors_reach_the_window_through_the_one_shared_call() -> None:
         source = (root / name).read_text(encoding="utf-8")
         assert "open_in_workbench_window(" in source, name
         assert "WorkbenchFrame(" not in source, name
+
+
+def test_the_opener_accepts_every_keyword_the_editors_pass() -> None:
+    """QUILL Lite once passed ``guide_product``, which the opener did not take.
+
+    The door test above replaces the opener with a ``**kwargs`` lambda, so a
+    TypeError there could never show; this reads the real signature instead.
+    """
+    import ast
+    import inspect
+    from pathlib import Path
+
+    from quill.ui.github_workbench_window import open_github_workbench
+
+    accepted = set(inspect.signature(open_github_workbench).parameters)
+    root = Path(__file__).resolve().parents[3]
+    for name in ("quill/ui/main_frame_github_items.py", "quill/apps/lite_github_workbench.py"):
+        tree = ast.parse((root / name).read_text(encoding="utf-8"))
+        calls = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and getattr(node.func, "id", getattr(node.func, "attr", ""))
+            == "open_in_workbench_window"
+        ]
+        assert calls, name
+        for call in calls:
+            passed = {kw.arg for kw in call.keywords if kw.arg}
+            assert passed <= accepted, (name, passed - accepted)
+            assert "gist_source" in passed, name
+
+
+class _GistClient:
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, Any]] = []
+        self.starred = False
+
+    def create_gist(self, draft: Any, *, public: bool) -> Any:
+        self.calls.append(("create", (draft.names(), public)))
+        return object()
+
+    def fetch_gist(self, gist_id: str) -> Any:
+        from quill.core.github.gists import Gist, GistFile
+
+        self.calls.append(("fetch", gist_id))
+        return Gist(
+            id=gist_id,
+            description="notes",
+            public=False,
+            url="https://gist.github.com/x",
+            files=(GistFile("a.md", "hello"),),
+        )
+
+    def update_gist(self, gist_id: str, draft: Any) -> Any:
+        self.calls.append(("update", gist_id))
+        return None
+
+    def is_gist_starred(self, gist_id: str) -> bool:
+        return self.starred
+
+    def set_gist_starred(self, gist_id: str, starred: bool) -> None:
+        self.calls.append(("star", starred))
+        self.starred = starred
+
+    def delete_gist(self, gist_id: str) -> None:
+        self.calls.append(("delete", gist_id))
+
+
+def _gist_row() -> Any:
+    from quill.core.github.explore_models import ExploreRow
+
+    return ExploreRow(label="a.md", detail="", kind="gist", key="abc123", title="notes")
+
+
+def test_gist_commands_answer_in_the_workbench(bench, monkeypatch) -> None:
+    """Explore's New, Edit, Star and Delete Gist, now native rows (github_workbench_gists.py)."""
+    client = _GistClient()
+    provider = bench.provider
+    provider._explore = client
+    provider._gist_source = lambda: ("draft.md", "from the editor")
+    row = _gist_row()
+    for verb in ("edit_gist", "star_gist", "delete_gist", "new_gist"):
+        assert provider._native_applies(verb, row), verb
+
+    shown: list[Any] = []
+
+    class _Editor:
+        def __init__(self, _parent: Any, draft: Any, *, creating: bool, announce_cb: Any) -> None:
+            shown.append((draft.names(), creating))
+            self.draft, self.public = draft, False
+            if not creating:
+                draft.set_content("a.md", "changed")
+
+        def show(self) -> bool:
+            return True
+
+    monkeypatch.setattr("quill.ui.github_gist_editor_dialog.GitHubGistEditorDialog", _Editor)
+    monkeypatch.setattr(provider, "_confirm", lambda _title, _question: True)
+    ref = NodeRef("", "my_gists")
+    provider._do_new_gist(ref, None)
+    assert shown[0] == (["draft.md"], True)
+    assert client.calls[0][0] == "create"
+    provider._do_edit_gist(ref, row)
+    assert ("fetch", "abc123") in client.calls and ("update", "abc123") in client.calls
+    provider._do_star_gist(ref, row)
+    assert ("star", True) in client.calls
+    provider._do_delete_gist(ref, row)
+    assert ("delete", "abc123") in client.calls
+    assert any("Created the secret gist" in s for s in bench.said)
+    assert any("Starred the gist notes" in s for s in bench.said)
+    assert any("Deleted the gist a.md" in s for s in bench.said)
+
+
+def test_ctrl_n_on_pull_requests_opens_new_pull_request(bench, monkeypatch) -> None:
+    """Ctrl+N on Pull Requests used to run new_pull with nothing answering it."""
+    from quill.core.github import pull_compose
+    from quill.core.github.branch_compare import GitHubBranchComparison
+    from quill.core.github.items_provider import GitHubBranch, GitHubCommit
+
+    pull_compose._KEPT.clear()
+    items = bench.items
+    sent: list[tuple[Any, ...]] = []
+    items.fetch_branches = lambda _repo, **_kw: [
+        GitHubBranch("main", "a", default_branch="main"),
+        GitHubBranch("fix/crash", "b", default_branch="main"),
+    ]
+    items.compare_branches = lambda _repo, base, head: GitHubBranchComparison(
+        base, head, ahead_by=1, commits=(GitHubCommit("c", "c", message="Fix the crash\n\nWhy."),)
+    )
+    items.create_pull_request = lambda *a, draft=False: (
+        sent.append((*a, draft)) or GitHubItem(9, a[1], "open", "u", True)
+    )
+    monkeypatch.setattr(pull_compose, "open_pull_item", lambda *_a: None)
+    shown: list[Any] = []
+
+    class _Form:
+        def __init__(self, _parent, start, names, **_kw) -> None:
+            shown.append((start, names))
+            self.draft = pull_compose.PullDraft(
+                start.repository, start.base, start.head, start.title, start.body, draft=True
+            )
+
+        def show(self) -> bool:
+            return True
+
+    monkeypatch.setattr("quill.ui.github_new_pull_dialog.NewPullRequestDialog", _Form)
+    _go(bench, NodeRef("repository", "pulls", REPO))
+    assert bench.provider._native_applies("new_pull", None)
+    bench.provider._do_new_pull(NodeRef("repository", "pulls", REPO), None)
+    start, names = shown[0]
+    assert (start.base, start.head, start.title, start.body) == (
+        "main",
+        "fix/crash",
+        "Fix the crash",
+        "Why.",
+    )
+    assert names == ["main", "fix/crash"]
+    assert sent == [(REPO, "Fix the crash", "Why.", "fix/crash", "main", True)]
+    assert any("Opened draft pull request #9" in s for s in bench.said)
+
+
+def test_across_repositories_lists_one_kind_from_every_chosen_repository(
+    bench, monkeypatch, quill_data_dir
+) -> None:
+    """Ctrl+0: choose repositories with Ctrl+N, then read Issues from all of them."""
+    from types import SimpleNamespace
+
+    from quill.core.github import across
+
+    provider = bench.provider
+    listed = [{"full_name": "o/one"}, {"full_name": "o/two"}, {"full_name": "o/other"}]
+    api = SimpleNamespace(rest=lambda *_a, **_kw: SimpleNamespace(data=listed))
+    monkeypatch.setattr(provider, "github_api", lambda: api)
+    offered: list[list[str]] = []
+    monkeypatch.setattr(
+        provider, "_checklist", lambda _t, names, _c, _n: offered.append(names) or names[:2]
+    )
+    provider._do_choose_repositories(NodeRef("", "across"), None)
+    assert offered == [["o/one", "o/two", "o/other"]]
+    assert "2 repositories in My Repositories." in bench.said
+    chosen = provider.load_across("across:chosen")
+    assert [r.repo for r in chosen] == ["o/one", "o/two"]
+
+    def fake(_provider, kind, repos, **_kw):
+        assert (kind, list(repos)) == ("issues", ["o/one", "o/two"])
+        item = GitHubItem(4, "Crash", "open", "https://github.com/o/one/issues/4", False)
+        return across.AcrossResult(
+            "issues",
+            (("o/one", item),),
+            (across.RepoOutcome("o/one", 1), across.RepoOutcome("o/two", error="no access")),
+        )
+
+    monkeypatch.setattr(across, "fetch_across", fake)
+    row, status = provider.load_across("across:issues")
+    assert row.repo == "o/one" and row.kind == "across_item" and row.label.startswith("o/one: ")
+    # A repository that could not be read keeps a row of its own (GX16).
+    assert status.repo == "o/two" and status.label == "o/two: could not be read, no access"
+    assert "o/two: could not be read, no access" in provider.local_note
+
+
+def _held(code: str, *, alt: bool = False, shift: bool = False) -> Any:
+    event = wx.KeyEvent(wx.wxEVT_CHAR_HOOK)
+    event.SetKeyCode(ord(code))
+    event.SetControlDown(True)
+    event.SetAltDown(alt)
+    event.SetShiftDown(shift)
+    return event
+
+
+def test_the_second_keys_answer_only_on_their_own_modifiers(bench, monkeypatch) -> None:
+    """Ctrl+Shift+F and Ctrl+R keep working here, and no longer swallow the chords
+    with Alt added (the WordPress Workbench's Forget a Saved Request and Roles)."""
+    done: list[str] = []
+    monkeypatch.setattr(bench.filter, "SetFocus", lambda: done.append("filter"))
+    monkeypatch.setattr(bench, "reload", lambda: done.append("reload"))
+    bench._on_char_hook(_held("F", shift=True))
+    bench._on_char_hook(_held("R"))
+    assert done == ["filter", "reload"]
+    for event in (_held("F", alt=True, shift=True), _held("R", alt=True)):
+        bench._on_char_hook(event)
+        assert event.GetSkipped()
+    assert done == ["filter", "reload"]

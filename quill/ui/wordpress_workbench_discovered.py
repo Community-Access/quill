@@ -55,7 +55,8 @@ class WorkbenchDiscoveredCommands:
     ctx: Callable[[str], Any]
     show_modal: Callable[[Any, str], int]
     write_refusal: Callable[[WbRow, Tier], str]
-    say: Callable[[str], None]
+    commands: Any
+    profile: Callable[[str], Any]
 
     def namespace_children(self, site: str) -> list[tuple[str, str]]:
         from quill.ui.wordpress_workbench_window import SEP
@@ -161,6 +162,38 @@ class WorkbenchDiscoveredCommands:
             f"reading {row.title}",
             lambda: api.get(f"wp-abilities/v1/abilities/{row.key}"),
             got,
+        )
+
+    def do_offer_to_ask(self, _ref: Any, row: WbRow | None) -> None:
+        """Ability row > Offer to Ask the Site: the per-site opt-in Ask the Site reads."""
+        if row is None or row.kind != "ability":
+            self.say("Offer to Ask the Site works on one of the site's abilities.")
+            return
+        profile = self.profile(row.site)
+        choices_for = getattr(self.commands, "ability_choices", None)
+        if profile is None or choices_for is None:
+            self.say(f"Ask the Site is not available for {row.site} here.")
+            return
+        choices = choices_for(profile)
+        name = str(row.key)
+        label = str(row.cells.get("ability") or row.title)
+        turning_on = name not in choices.on()
+        if turning_on and not row.raw.get("readonly"):
+            if not dlg.confirm(
+                self.parent,
+                self.show_modal,
+                title="Offer to Ask the Site",
+                message=(
+                    f"Let Ask the Site offer {label} on {row.site}? It can change the site. "
+                    "QUILL still asks you every time before it runs."
+                ),
+                yes_label="Offer It",
+            ):
+                return
+        choices.set(name, turning_on)
+        self.say(
+            f"Ask the Site {'may now offer' if turning_on else 'no longer offers'} {label} "
+            f"on {row.site}."
         )
 
     def _ability_sheet(self, row: WbRow, api: Any, ability: Any) -> None:

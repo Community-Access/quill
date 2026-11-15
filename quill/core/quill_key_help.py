@@ -16,6 +16,8 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 
 from quill.branding import QUILL_KEY_LABEL
+from quill.core.forms.menu import LAYER_KEYS as FORMS_LAYER_KEYS
+from quill.core.forms.menu import all_rows as forms_rows
 from quill.core.wordpress.menu import LAYER_KEYS as WORDPRESS_LAYER_KEYS
 from quill.core.wordpress.menu import all_rows as wordpress_rows
 
@@ -371,6 +373,12 @@ _CHORD_COMMAND_TITLES: dict[str, str] = {
         command_id: title.replace("&", "").removesuffix("...")
         for _path, (command_id, title, _handler) in wordpress_rows()
         if command_id in WORDPRESS_LAYER_KEYS.values()
+    },
+    # The Forms key on the same layer (forms/menu.py LAYER_KEYS).
+    **{
+        command_id: title.replace("&", "").removesuffix("...")
+        for _path, (command_id, title, _handler) in forms_rows()
+        if command_id in FORMS_LAYER_KEYS.values()
     },
 }
 

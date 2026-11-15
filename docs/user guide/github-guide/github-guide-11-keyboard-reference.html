@@ -251,7 +251,9 @@ Alt; they work while that window has focus. Keys that open the windows
 themselves are in Chapter 1. QUILL’s GitHub menu commands have no keys
 out of the box, and you can give them some in the Keymap Editor.</p>
 <p>Throughout, Shift+F10 or the Applications key opens the context menu
-of whatever has focus, and Escape closes the window you are in.</p>
+of whatever has focus, and Escape closes the window you are in. The
+Workbench itself is the exception: Escape never closes it, and
+<code>Alt+F4</code> does.</p>
 <h2 id="the-github-menu-in-workbench-mode">The GitHub menu, in workbench
 mode</h2>
 <p>GitHub Workbench Mode is <strong>View &gt; GitHub Workbench
@@ -354,8 +356,13 @@ box. A key you give one in the Keymap Editor works in both modes.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="github-items">GitHub Items</h2>
-<h3 id="anywhere-in-the-window">Anywhere in the window</h3>
+<h2 id="the-github-workbench-window">The GitHub Workbench window</h2>
+<p>These are the Workbench’s own keys. Chapter 12 explains the places
+they take you to. Every one of them can be changed in the Keymap Editor,
+and the menus always show the key that is really bound. The old GitHub
+Items and Explore GitHub windows are retired; everything they did is
+here.</p>
+<h3 id="going-places">Going places</h3>
 <table>
 <thead>
 <tr>
@@ -365,50 +372,87 @@ box. A key you give one in the Keymap Editor works in both modes.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>Ctrl+R</code></td>
-<td>Reload the current view</td>
+<td><code>F6</code>, <code>Shift+F6</code></td>
+<td>Next or previous pane: tree, filter box, list, details, status
+bar</td>
 </tr>
 <tr>
-<td><code>Ctrl+O</code></td>
-<td>Open the selected row on GitHub, in your browser</td>
+<td><code>Ctrl+1</code></td>
+<td>Inbox, under Needs My Attention (<code>Alt+Home</code> too)</td>
+</tr>
+<tr>
+<td><code>Ctrl+2</code></td>
+<td>The repository the window opened on</td>
+</tr>
+<tr>
+<td><code>Ctrl+3</code></td>
+<td>Search</td>
+</tr>
+<tr>
+<td><code>Ctrl+4</code></td>
+<td>People</td>
+</tr>
+<tr>
+<td><code>Ctrl+5</code></td>
+<td>Gists</td>
+</tr>
+<tr>
+<td><code>Ctrl+6</code></td>
+<td>Projects</td>
+</tr>
+<tr>
+<td><code>Ctrl+7</code></td>
+<td>Watches, not built yet</td>
+</tr>
+<tr>
+<td><code>Ctrl+8</code></td>
+<td>Saved Searches</td>
+</tr>
+<tr>
+<td><code>Ctrl+9</code></td>
+<td>Start Here</td>
+</tr>
+<tr>
+<td><code>Ctrl+0</code></td>
+<td>Across Repositories</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+1</code> to <code>Ctrl+Shift+0</code></td>
+<td>The current repository’s Issues, Pull Requests, Discussions, Actions
+Runs, Files, Releases, Projects, Security, Settings and Insights</td>
+</tr>
+<tr>
+<td><code>Alt+Up</code></td>
+<td>The place above this one</td>
+</tr>
+<tr>
+<td><code>Alt+Left</code>, <code>Alt+Right</code></td>
+<td>Back and Forward</td>
+</tr>
+<tr>
+<td><code>Ctrl+L</code></td>
+<td>Open GitHub Address: <code>owner/name</code>, <code>#42</code>,
+<code>owner/name#42</code> or any GitHub link</td>
 </tr>
 <tr>
 <td><code>Ctrl+G</code></td>
 <td>Go to an issue or pull request by number</td>
 </tr>
 <tr>
-<td><code>Ctrl+D</code></td>
-<td>Add the selected row to your favorites</td>
+<td><code>Ctrl+Period</code>, <code>Ctrl+Shift+Period</code></td>
+<td>Next or previous unread notification</td>
 </tr>
 <tr>
-<td><code>Ctrl+F</code></td>
-<td>Move to the Search box</td>
-</tr>
-<tr>
-<td><code>Ctrl+Shift+F</code></td>
-<td>Move to the Quick filter</td>
-</tr>
-<tr>
-<td><code>Alt+N</code>, <code>Alt+P</code></td>
-<td>Next or previous comment in Details</td>
-</tr>
-<tr>
-<td><code>Ctrl+Shift+B</code></td>
-<td>Compare two branches, in Branches</td>
-</tr>
-<tr>
-<td><code>Ctrl+Shift+W</code></td>
-<td>What Failed, in Workflow Runs</td>
-</tr>
-<tr>
-<td><code>Ctrl+Shift+L</code></td>
-<td>GitHub’s remaining allowance</td>
+<td><code>Ctrl+Shift+E</code></td>
+<td>Back to the editor that opened the Workbench</td>
 </tr>
 </tbody>
 </table>
-<p>Escape in the Quick filter clears it, when it has text. Otherwise
-Escape closes GitHub Items.</p>
-<h3 id="in-the-list">In the list</h3>
+<p><code>Ctrl+3</code>, <code>Ctrl+4</code> and <code>Ctrl+8</code> are
+AI keys in the editors. The Workbench has no AI menu, so here they
+belong to the Go row.</p>
+<h3 id="doing-things-to-the-selected-row">Doing things to the selected
+row</h3>
 <table>
 <thead>
 <tr>
@@ -419,24 +463,222 @@ Escape closes GitHub Items.</p>
 <tbody>
 <tr>
 <td>Enter</td>
-<td>Go in: a branch’s commits, a release’s files, run a workflow;
-otherwise open on GitHub</td>
+<td>The obvious thing: read an issue, review a pull request, a run’s
+jobs, a branch’s commits, a release’s files</td>
 </tr>
 <tr>
-<td>Backspace</td>
-<td>Come back out to Branches or Releases</td>
+<td><code>Alt+Enter</code></td>
+<td>Properties: everything about it, on one sheet</td>
 </tr>
 <tr>
-<td><code>M</code></td>
-<td>Switch between Quick and Full rows</td>
+<td><code>Shift+Enter</code></td>
+<td>Open it on GitHub, in your browser</td>
 </tr>
 <tr>
-<td><code>R</code></td>
-<td>Reload, the same as <code>Ctrl+R</code></td>
+<td><code>Ctrl+Enter</code></td>
+<td>Open a file in the editor</td>
+</tr>
+<tr>
+<td><code>Ctrl+N</code></td>
+<td>New here: issue, pull request, gist, saved search, pin, or the
+repositories for Across Repositories</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+N</code></td>
+<td>New, asking what to make</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+M</code></td>
+<td>Comment</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+D</code></td>
+<td>A pull request’s changed files</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Enter</code></td>
+<td>Merge a pull request</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+B</code></td>
+<td>Compare a branch with another</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+A</code></td>
+<td>Assign an issue to Copilot</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+T</code></td>
+<td>Start an issue or pull request in a local worktree (QUILL only)</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+W</code></td>
+<td>What failed in a run</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+F5</code></td>
+<td>Re-run a run’s failed jobs only</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+R</code></td>
+<td>Run a workflow on a branch</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+G</code></td>
+<td>Repository Actions</td>
+</tr>
+<tr>
+<td><code>Ctrl+Q</code>, <code>Ctrl+Shift+Q</code></td>
+<td>Mark a notification read; mark the whole list read</td>
+</tr>
+<tr>
+<td><code>Ctrl+D</code></td>
+<td>Add to Favorites, or take it out</td>
+</tr>
+<tr>
+<td><code>Ctrl+C</code>, <code>Ctrl+Shift+C</code></td>
+<td>Copy the row; copy its address</td>
+</tr>
+<tr>
+<td>Delete</td>
+<td>The safe removal for the row, asking first when it cannot be
+undone</td>
+</tr>
+<tr>
+<td><code>Ctrl+Z</code>, <code>Ctrl+Y</code></td>
+<td>Undo or redo your last change on GitHub, in the tree and the
+list</td>
 </tr>
 </tbody>
 </table>
-<h3 id="access-keys">Access keys</h3>
+<h3 id="lists">Lists</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+E</code>, <code>Ctrl+Shift+F</code></td>
+<td>Move to the filter box</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+F</code></td>
+<td>Filter Builder</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+U</code></td>
+<td>Choose columns</td>
+</tr>
+<tr>
+<td><code>Ctrl+A</code></td>
+<td>Select every row</td>
+</tr>
+<tr>
+<td><code>F5</code></td>
+<td>Refresh</td>
+</tr>
+<tr>
+<td><code>Ctrl+F5</code></td>
+<td>Refresh, reading everything from GitHub again</td>
+</tr>
+<tr>
+<td><code>Alt+Page Down</code></td>
+<td>Load more</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Page Down</code></td>
+<td>Load all</td>
+</tr>
+<tr>
+<td>Escape</td>
+<td>Clear the filter box, then go back</td>
+</tr>
+</tbody>
+</table>
+<h3 id="account-and-tools">Account and tools</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+Shift+P</code></td>
+<td>GitHub Permissions</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+H</code></td>
+<td>Change History</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+K</code></td>
+<td>Manage GitHub Accounts</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+L</code></td>
+<td>GitHub’s remaining hourly allowance</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+O</code></td>
+<td>Workbench Options</td>
+</tr>
+<tr>
+<td><code>Alt+F4</code></td>
+<td>Close the Workbench</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hearing-where-you-are-and-help">Hearing where you are, and
+help</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+1</code> to <code>Alt+9</code></td>
+<td>Say where you are, the selection, the item, the counts, your access,
+the allowance, the filter, what is loading, the account</td>
+</tr>
+<tr>
+<td><code>F9</code>, <code>Shift+F9</code></td>
+<td>Say the last result again; explain it</td>
+</tr>
+<tr>
+<td><code>F1</code></td>
+<td>What this place and control are for</td>
+</tr>
+<tr>
+<td><code>Shift+F1</code></td>
+<td>What can I do here, with each key</td>
+</tr>
+<tr>
+<td><code>Alt+F1</code></td>
+<td>What the GitHub word for the row means</td>
+</tr>
+<tr>
+<td><code>Ctrl+F1</code></td>
+<td>This guide, at the right chapter</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+F1</code></td>
+<td>Search all of help</td>
+</tr>
+<tr>
+<td><code>Alt+Shift+F1</code></td>
+<td>Every key in the window</td>
+</tr>
+</tbody>
+</table>
+<h3 id="new-pull-request">New Pull Request</h3>
 <table>
 <thead>
 <tr>
@@ -446,105 +688,39 @@ otherwise open on GitHub</td>
 </thead>
 <tbody>
 <tr>
-<td><code>Alt+V</code></td>
-<td>Favorites…</td>
-</tr>
-<tr>
-<td><code>Alt+E</code></td>
-<td>Explore…</td>
-</tr>
-<tr>
-<td><code>Alt+J</code></td>
-<td>Projects…</td>
-</tr>
-<tr>
-<td><code>Alt+U</code></td>
-<td>View Upstream</td>
+<td><code>Alt+I</code></td>
+<td>Merge into</td>
 </tr>
 <tr>
 <td><code>Alt+F</code></td>
-<td>Files…</td>
-</tr>
-<tr>
-<td><code>Alt+H</code></td>
-<td>Search (GitHub syntax)</td>
-</tr>
-<tr>
-<td><code>Alt+Q</code></td>
-<td>Quick filter</td>
-</tr>
-<tr>
-<td><code>Alt+I</code></td>
-<td>View</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th>Key</th>
-<th>Control</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Alt+S</code></td>
-<td>Show</td>
+<td>Merge from</td>
 </tr>
 <tr>
 <td><code>Alt+T</code></td>
-<td>State</td>
-</tr>
-<tr>
-<td><code>Alt+O</code></td>
-<td>Sort</td>
-</tr>
-<tr>
-<td><code>Alt+L</code></td>
-<td>List mode</td>
-</tr>
-<tr>
-<td><code>Alt+M</code></td>
-<td>Columns…</td>
+<td>Title</td>
 </tr>
 <tr>
 <td><code>Alt+D</code></td>
-<td>Diff…</td>
-</tr>
-<tr>
-<td><code>Alt+R</code></td>
-<td>Review…</td>
-</tr>
-<tr>
-<td><code>Alt+Z</code></td>
-<td>Summarize</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th>Key</th>
-<th>Control</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Alt+C</code></td>
-<td>Compare…</td>
-</tr>
-<tr>
-<td><code>Alt+B</code></td>
-<td>Batch…</td>
+<td>Description</td>
 </tr>
 <tr>
 <td><code>Alt+A</code></td>
-<td>Actions…</td>
+<td>Create as a draft</td>
+</tr>
+<tr>
+<td>Enter, outside Description</td>
+<td>Create Pull Request</td>
+</tr>
+<tr>
+<td>Escape</td>
+<td>Cancel, keeping what you typed for this session</td>
 </tr>
 </tbody>
 </table>
-<p>Pinned…, Milestones…, Open Link…, Refresh, View More, Open in Browser
-and Go To #… have no access key; reach them with Tab.</p>
+<h3 id="an-issue-form">An issue form</h3>
+<p>An issue form’s fields are named by the form itself, so they have no
+access keys; Tab moves through them in order. Enter, outside a large
+text box, is Create Issue, and Escape closes without sending.</p>
 <h2 id="review-pull-request">Review pull request</h2>
 <table>
 <thead>
@@ -740,86 +916,6 @@ Tab.</p>
 <tr>
 <td><code>Alt+P</code></td>
 <td>Post Now</td>
-</tr>
-</tbody>
-</table>
-<h2 id="explore-github">Explore GitHub</h2>
-<table>
-<thead>
-<tr>
-<th>Key</th>
-<th>Control or action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Alt+V</code></td>
-<td>View</td>
-</tr>
-<tr>
-<td><code>Alt+R</code></td>
-<td>Repository</td>
-</tr>
-<tr>
-<td><code>Alt+P</code></td>
-<td>Person</td>
-</tr>
-<tr>
-<td><code>Alt+G</code></td>
-<td>Global search</td>
-</tr>
-<tr>
-<td><code>Alt+S</code></td>
-<td>Saved Searches…</td>
-</tr>
-<tr>
-<td><code>Alt+L</code></td>
-<td>Load</td>
-</tr>
-<tr>
-<td><code>Alt+O</code></td>
-<td>Queue Options…</td>
-</tr>
-<tr>
-<td><code>Ctrl+Shift+L</code></td>
-<td>GitHub’s remaining allowance</td>
-</tr>
-</tbody>
-</table>
-<p>Enter on a result opens it in the best place for it. Save Search,
-Open on GitHub and Use Repository have no access key.</p>
-<h3 id="in-the-notifications-view">In the notifications view</h3>
-<table>
-<thead>
-<tr>
-<th>Key</th>
-<th>Control or action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Alt+I</code></td>
-<td>Include read notifications</td>
-</tr>
-<tr>
-<td><code>Alt+D</code></td>
-<td>Mark Done</td>
-</tr>
-<tr>
-<td>Delete</td>
-<td>Mark Done, in the list</td>
-</tr>
-<tr>
-<td><code>Alt+U</code></td>
-<td>Unsubscribe</td>
-</tr>
-<tr>
-<td><code>Alt+A</code></td>
-<td>Mark All Read</td>
-</tr>
-<tr>
-<td>Enter</td>
-<td>Mark read and open</td>
 </tr>
 </tbody>
 </table>

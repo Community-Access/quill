@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.28.0.schema.json
+PackageIdentifier: CommunityAccess.QuillRadio
+PackageVersion: 3.0.4
+PackageLocale: en-US
+Publisher: Community Access
+PublisherUrl: https://quillforall.org/
+PublisherSupportUrl: https://github.com/Community-Access/quill/issues
+PrivacyUrl: https://quillforall.org/docs/privacy.html
+PackageName: Quill Radio
+PackageUrl: https://quillforall.org/radio.html
+License: MIT
+LicenseUrl: https://github.com/Community-Access/quill/blob/quill-radio-v3.0.4/standalone/radio/LICENSE
+ShortDescription: An accessible internet radio player for Windows, with recording and a built-in station catalog.
+Moniker: quill-radio
+Tags:
+  - accessible
+  - internet-radio
+  - screen-reader
+  - audio
+ReleaseNotesUrl: https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.4
+ManifestType: defaultLocale
+ManifestVersion: 1.28.0

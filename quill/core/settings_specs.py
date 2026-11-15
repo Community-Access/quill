@@ -196,6 +196,15 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("startup", "login", "autostart", "boot", "windows"),
     ),
     SettingSpec(
+        "start_minimized_at_windows_startup",
+        "Start QUILL minimized when Windows starts",
+        "general",
+        "bool",
+        "When Start QUILL when Windows starts is on, keep the editor out of the way and "
+        "leave it available from the system tray. Windows only.",
+        keywords=("startup", "login", "autostart", "boot", "tray", "minimized"),
+    ),
+    SettingSpec(
         "show_tab_control",
         "Show tab control",
         "general",

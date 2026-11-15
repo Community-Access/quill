@@ -128,8 +128,17 @@ class GitHubWorkbenchLiteMixin:
             editor_command=self._github_editor_command,
             editor_command_available=self._github_editor_has,
             open_file_url=self._open_github_file_reference,  # type: ignore[attr-defined]
+            gist_source=getattr(self, "_github_gist_source", None),
             guide_product="quilllite",
+            open_document=self._github_open_document,
         )
+
+    def _github_open_document(self, path: Any) -> None:
+        """Open a file the Workbench wrote (Read as Document) in a QUILL Lite window."""
+        from pathlib import Path
+
+        app = getattr(self, "app", None) or self
+        app.open_path(Path(path))
 
     def open_github_explore(self, initial_view: str | None = None) -> None:
         """Explore GitHub on a view; Enter on an issue or pull request opens it in Items."""

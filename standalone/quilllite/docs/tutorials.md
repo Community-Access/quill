@@ -487,7 +487,7 @@ Connect QUILL Lite to a WordPress site with an application password, hear which 
 7. **Learn the WordPress keys.** The WordPress key layer gives the commands one letter each. Press the layer key, let go, then press a letter. The six you will use most are O for Open Page or Post, P for Publish or Update, M for Media Library, S for Switch Site, W for Open by Web Address, or D for Save Draft to Site. Escape leaves the layer without doing anything.
    - Keys: Ctrl+Alt+Shift+Grave, then a letter
    - You should hear: Whatever the letter runs. After Escape, nothing at all.
-   - Worth knowing: The whole layer: G New Page, N New Post, O Open Page or Post, W Open by Web Address, L Open Local Draft, D Save Draft to Site, P Publish or Update, E Schedule Publish, I Open on Site, Y Copy Address, R Properties, V Previous Versions, C Compare with Site, T Move to Trash, S Switch Site, Shift+S Sites, A Connect a Site, M Media Library, B WordPress Blocks, K Check Before Publishing, U Upload Files, X Alt Text Review. Every WordPress command is also in the Command Palette: type WordPress, or part of the command's name.
+   - Worth knowing: The whole layer: G New Page, N New Post, O Open Page or Post, W Open by Web Address, L Open Local Draft, D Save Draft to Site, P Publish or Update, E Schedule Publish, I Open on Site, Y Copy Address, R Properties, V Previous Versions, C Compare with Site, T Move to Trash, S Switch Site, Shift+S Sites, A Connect a Site, M Media Library, B WordPress Blocks, K Check Before Publishing, U Upload Files, X Alt Text Review, H Open WordPress Workbench, Shift+H This Post in the Workbench. Every WordPress command is also in the Command Palette: type WordPress, or part of the command's name.
 
 You are connected, and the site has told you what your account may do. Next, write something and send it.
 
@@ -875,6 +875,7 @@ Publish your form to a WordPress site running QUILL Accessible Forms, put it on 
    - You should hear: "Opened" the page's name "on" your site, "where the form is."
 
 6. **Read what people sent.** Choose Responses, in Tools, Forms. With your published form in front it goes straight to that form's responses, newest first. Press Enter on one to read it, a question and its answer a line.
+   - Keys: Ctrl+Alt+Shift+Grave, F
    - You should hear: Responses to Ask us anything, and each response: its number, when it was sent, and who sent it.
    - Worth knowing: Responses are people's personal details. They are read only while this window is open and saved only where you choose, with Export to CSV or Export to Word.
 

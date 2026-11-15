@@ -95,6 +95,7 @@ def test_send_back_leaves_a_note_and_returns_the_draft(bench, monkeypatch) -> No
 def test_read_site_as_document_opens_it_in_the_editor(bench, monkeypatch) -> None:
     opened: list[Path] = []
     bench.commands.host.open_path = opened.append  # type: ignore[attr-defined]
+    monkeypatch.setattr(dlg, "ask_choice", lambda *a, **k: 0)  # the whole site
     _go(bench, NodeRef("site", "overview", SITE))
     bench.run(command("read_site"))
     assert opened and opened[0].read_text(encoding="utf-8").startswith(f"# {SITE}")

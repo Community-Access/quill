@@ -2997,6 +2997,81 @@
         "runtime"
       ],
       "delivery": "bundled"
+    },
+    {
+      "id": "wp-playground-cli",
+      "name": "WordPress Playground CLI and npm dependencies",
+      "group": "runtime",
+      "version": "3.1.64",
+      "licenses": [
+        "GPL-2.0"
+      ],
+      "license_label": "GPL-2.0-or-later; each npm package's declared licence is listed in PLAYGROUND-LICENSES.txt",
+      "copyright": "Copyright (c) WordPress contributors",
+      "homepage": "https://github.com/WordPress/wordpress-playground",
+      "what": "The local server for the WordPress Workbench Practice Site. It runs only when the person starts the local site; package licences stay beside tools\\wp-playground-cli. PLAYGROUND-LICENSES.txt lists them and notes that source maps, TypeScript declarations and unused PHP versions are omitted from this runtime bundle.",
+      "products": [
+        "quill",
+        "quilllite",
+        "runtime"
+      ],
+      "delivery": "bundled",
+      "review": "On a CLI pin change, inspect the package lock and every package licence recorded in PLAYGROUND-LICENSES.txt."
+    },
+    {
+      "id": "php-wasm",
+      "name": "PHP 8.3 WebAssembly runtime (@php-wasm/node-8-3)",
+      "group": "runtime",
+      "version": "3.1.64",
+      "licenses": [
+        "GPL-2.0"
+      ],
+      "license_label": "GPL-2.0-or-later; package licence ships in node_modules",
+      "copyright": "Copyright (c) WordPress contributors",
+      "homepage": "https://github.com/WordPress/wordpress-playground",
+      "what": "The offline PHP WebAssembly engine WordPress Playground uses for the local Practice Site. Only the pinned PHP 8.3 package is staged in tools\\wp-playground-cli.",
+      "products": [
+        "quill",
+        "quilllite",
+        "runtime"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "wordpress-core-practice-site",
+      "name": "WordPress core for the Practice Site",
+      "group": "runtime",
+      "version": "7.1.4",
+      "licenses": [
+        "GPL-2.0"
+      ],
+      "license_label": "GPL-2.0-or-later",
+      "copyright": "Copyright (c) WordPress contributors",
+      "homepage": "https://wordpress.org/",
+      "what": "A pinned, checksum-verified copy of WordPress core used only by the local Practice Site. The complete core source and license.txt ship in tools\\wp-playground-cli\\wordpress-7.1.4.zip and are extracted into the practice site's data folder on first launch.",
+      "products": [
+        "quill",
+        "quilllite",
+        "runtime"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "github-rest-api-description",
+      "name": "GitHub REST API description",
+      "group": "data",
+      "version": "53fd7d2",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2020 GitHub",
+      "homepage": "https://github.com/github/rest-api-description",
+      "what": "The GitHub API snapshot in quill/data/github_api/, used to measure what the GitHub Workbench covers.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled"
     }
   ]
 }

@@ -5,6 +5,12 @@ changed, on what, and how to put it back. This module keeps the steps in
 order and answers "what would Undo do now?"; the provider supplies the
 inverse change, because only it knows how to remove a label or restore a
 post revision. Nothing here talks to a network.
+
+A step that cannot be undone never walls off the ones before it: the first
+Undo that meets it says so and passes over it, and the next Undo reaches the
+newest change before it that can be undone. The step stays in
+:attr:`ChangeHistory.entries`, marked :meth:`ChangeHistory.passed`, so
+Change History still lists everything that happened.
 """
 
 from __future__ import annotations
@@ -39,33 +45,54 @@ class ChangeHistory:
     limit: int = 200
     _done: list[Change] = field(default_factory=list)
     _undone: list[Change] = field(default_factory=list)
+    _passed: list[Change] = field(default_factory=list)
+    recorded: int = 0
+    """How many changes were ever recorded, so a caller can tell whether one was."""
 
     def record(self, change: Change) -> None:
         """A new change: it can be undone, and nothing undone can be redone any more."""
         self._done.append(change)
-        del self._done[: max(0, len(self._done) - self.limit)]
+        self.recorded += 1
+        dropped = self._done[: max(0, len(self._done) - self.limit)]
+        del self._done[: len(dropped)]
+        self._passed = [c for c in self._passed if not any(c is d for d in dropped)]
         self._undone.clear()
 
     @property
     def entries(self) -> Sequence[Change]:
         return tuple(self._done)
 
+    def passed(self, change: Change) -> bool:
+        """True once Undo has said *change* cannot be undone and gone past it."""
+        return any(change is c for c in self._passed)
+
     def next_undo(self) -> Change | None:
-        return self._done[-1] if self._done else None
+        """What Undo meets next: the newest change it has not yet passed over."""
+        return next((c for c in reversed(self._done) if not self.passed(c)), None)
+
+    def next_undoable(self) -> Change | None:
+        """The newest change Undo can put back, past any that cannot be undone."""
+        return next((c for c in reversed(self._done) if c.undo is not None), None)
 
     def can_undo(self) -> bool:
         change = self.next_undo()
         return change is not None and change.undo is not None
 
     def undo(self) -> str:
-        """Undo the newest change and say what happened."""
+        """Undo the newest change and say what happened.
+
+        A change that cannot be undone is said once and passed over, so the
+        next Undo reaches the change before it.
+        """
         change = self.next_undo()
         if change is None:
             return "Nothing to undo."
         if change.undo is None:
+            self._passed.append(change)
             return f"{change.summary} cannot be undone."
         said = change.undo()
-        self._undone.append(self._done.pop())
+        self._done = [c for c in self._done if c is not change]
+        self._undone.append(change)
         return said
 
     def redo(self) -> str:
@@ -81,3 +108,4 @@ class ChangeHistory:
     def clear(self) -> None:
         self._done.clear()
         self._undone.clear()
+        self._passed.clear()

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>WinGet distribution for QuillVille apps</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="winget-distribution-for-quillville-apps">WinGet distribution for
+QuillVille apps</h1>
+<p><strong>Status:</strong> Local preparation only. No package has been
+submitted to <code>microsoft/winget-pkgs</code> and WinGet install
+commands are not public yet. <strong>Last checked:</strong>
+2026-11-12.</p>
+<p>This is the operating guide for adding every first-party QuillVille
+Windows desktop app to WinGet, keeping its package current, and avoiding
+conflicts with QuillVille’s own updater. It is also the checklist to use
+when a new Windows app joins the family.</p>
+<h2 id="current-package-state">Current package state</h2>
+<p>The repository has a local manifest generator, templates, an app
+catalogue, and complete draft manifests for the latest signed Stable
+Setup assets found on 2026-11-12:</p>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Stable version drafted</th>
+<th>Package ID proposal</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL Lite</td>
+<td>1.1.2</td>
+<td><code>CommunityAccess.QuillLite</code></td>
+<td>Local draft; needs <code>winget validate</code> and disposable-VM
+install check</td>
+</tr>
+<tr>
+<td>Quill Radio</td>
+<td>3.0.4</td>
+<td><code>CommunityAccess.QuillRadio</code></td>
+<td>Local draft; needs <code>winget validate</code> and disposable-VM
+install check</td>
+</tr>
+<tr>
+<td>QUILL</td>
+<td>—</td>
+<td><code>CommunityAccess.Quill</code></td>
+<td>No eligible published Stable Setup asset confirmed</td>
+</tr>
+<tr>
+<td>Quill Weather</td>
+<td>—</td>
+<td><code>CommunityAccess.QuillWeather</code></td>
+<td>Wait for an eligible Stable Setup asset</td>
+</tr>
+<tr>
+<td>Quill Inkwell</td>
+<td>—</td>
+<td><code>CommunityAccess.QuillInkwell</code></td>
+<td>Wait for an eligible Stable Setup asset</td>
+</tr>
+<tr>
+<td>Quill Converter</td>
+<td>—</td>
+<td><code>CommunityAccess.QuillConverter</code></td>
+<td>Wait for an eligible Stable Setup asset</td>
+</tr>
+<tr>
+<td>QUILL Transcribe</td>
+<td>—</td>
+<td><code>CommunityAccess.QuillTranscribe</code></td>
+<td>Wait for an eligible Stable Setup asset</td>
+</tr>
+<tr>
+<td>QUILL Cast</td>
+<td>—</td>
+<td><code>CommunityAccess.QuillCast</code></td>
+<td>Wait for an eligible Stable Setup asset</td>
+</tr>
+<tr>
+<td>QUILL Studio</td>
+<td>—</td>
+<td><code>CommunityAccess.QuillAudioStudio</code></td>
+<td>Wait for an eligible Stable Setup asset</td>
+</tr>
+<tr>
+<td>Quill Beacon</td>
+<td>—</td>
+<td><code>CommunityAccess.QuillBeacon</code></td>
+<td>Wait for an eligible Stable Setup asset</td>
+</tr>
+<tr>
+<td>QUILL Social</td>
+<td>—</td>
+<td><code>CommunityAccess.QuillSocial</code></td>
+<td>Wait for an eligible Stable Setup asset</td>
+</tr>
+</tbody>
+</table>
+<p>Package IDs and monikers are durable public names. Every ID in the
+table is a proposal until the publisher checks the catalog and approves
+it. Do not submit a package or describe it as available before that
+decision and a successful merge into the WinGet community
+repository.</p>
+<h2 id="why-winget-packages-the-setup-edition">Why WinGet packages the
+Setup edition</h2>
+<p>Use each app’s signed, version-specific <code>Setup-Shared</code>
+Inno Setup installer. It gives WinGet a stable installed product, an
+Apps &amp; Features entry, and a versioned download URL. Do not package
+portable ZIPs, Beta or Dev releases, a moving <code>latest</code> URL,
+or the shared runtime by itself.</p>
+<p>Installed QuillVille apps can update themselves. Their installer
+manifests must keep <code>RequireExplicitUpgrade: true</code>; this
+keeps an app from being silently updated a second way by
+<code>winget upgrade --all</code>. A user can still ask WinGet to
+upgrade a named app. Do not invent MSI <code>ProductCode</code> or
+<code>UpgradeCode</code> matching for these Inno installers.</p>
+<h2 id="repository-layout">Repository layout</h2>
+<ul>
+<li><code>packaging/winget/apps.json</code> is the package catalogue:
+app key, permanent ID proposal, moniker, exact Setup asset prefix,
+product URL and description.</li>
+<li><code>packaging/winget/templates/</code> contains the shared
+version, default-locale, and installer manifest templates. The installer
+template owns the self-updater and Apps &amp; Features safeguards.</li>
+<li><code>packaging/winget/drafts/manifests/</code> contains local
+review copies. These are not copied into a public fork
+automatically.</li>
+<li><code>scripts/winget/manifests.py</code> builds and fail-closed
+checks the three-file manifest set;
+<code>scripts/winget/prepare.py</code> reads a public release and writes
+a draft only; <code>scripts/winget/submit.py</code> makes a public PR
+only with its explicit <code>--submit</code> flag and the submission
+gates below.</li>
+<li><code>.github/workflows/winget-submit.yml</code> prepares an
+artifact for final Stable releases and manual dry runs. Its public
+submission job is disabled unless the repository variable and protected
+environment are configured.</li>
+<li><code>tests/unit/scripts/test_winget_manifests.py</code> protects
+the shared templates and generator from losing required safeguards.</li>
+</ul>
+<h2 id="onboard-another-quillville-app">Onboard another QuillVille
+app</h2>
+<p>Run this checklist for each app, and again if its installer identity
+changes.</p>
+<ol type="1">
+<li><p><strong>Wait for a published Stable installer.</strong> Confirm
+the GitHub release is public, final, not a draft or prerelease, and has
+the signed per-user Setup installer. The source-tree version is not
+enough. Do not guess a package version from a branch, tag that has not
+shipped, or a Beta build.</p></li>
+<li><p><strong>Confirm the installer contract.</strong> Install it in
+Windows Sandbox or a disposable VM. Record the executable architecture,
+publisher/signature, Apps &amp; Features display name, version,
+publisher, and uninstall behavior. Check that an in-app update changes
+the same registration cleanly and that a portable build is not being
+mistaken for the installed product.</p></li>
+<li><p><strong>Approve a permanent package ID and moniker.</strong>
+Search the WinGet catalog and open pull requests. Confirm the spelling
+with the package owner before first submission. Do not rename an ID or
+moniker after publication without an explicit migration plan.</p></li>
+<li><p><strong>Add one catalogue entry.</strong> In
+<code>packaging/winget/apps.json</code>, add the exact
+<code>app_key</code> used by <code>quill.core.release_tags</code>, the
+approved <code>package_id</code>, package name, moniker, case-sensitive
+Setup asset prefix, official product page, concise description, and
+tags. Reuse the family publisher, support, and privacy URLs only if they
+apply to that app. The package ID must be unique. Set
+<code>package_url_verified</code> to <code>true</code> only after
+checking the exact official product page; the generator refuses an app
+whose page is still unverified. Keep
+<code>approved_for_submission</code> false until the owner authorizes
+public submission.</p></li>
+<li><p><strong>Check release-tag and version mapping.</strong> The tag
+must parse as the chosen app. The filename must match the configured
+prefix and the installed Apps &amp; Features version. If a release tag
+includes a build suffix, the WinGet version must still match the
+product’s displayed version.</p></li>
+<li><p><strong>Generate a local draft.</strong> Use the exact published
+tag:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m scripts<span class="op">.</span><span class="fu">winget</span><span class="op">.</span><span class="fu">prepare</span> <span class="op">--</span>tag <span class="op">&lt;</span>exact-stable-release-tag<span class="op">&gt;</span> <span class="op">--</span>dry-run</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m scripts<span class="op">.</span><span class="fu">winget</span><span class="op">.</span><span class="fu">prepare</span> <span class="op">--</span>tag <span class="op">&lt;</span>exact-stable-release-tag<span class="op">&gt;</span></span></code></pre></div>
+<p>The first command prints the three manifests without writing files.
+The second writes them under
+<code>packaging/winget/drafts/manifests/</code>.</p></li>
+<li><p><strong>Validate and review.</strong> Confirm the three filenames
+and all identity, version, URL, SHA-256, architecture, installer type,
+Apps &amp; Features entry, product/support/privacy/release-notes URLs,
+and explicit-upgrade field. Run
+<code>winget validate --manifest &lt;version-folder&gt;</code> with the
+WinGet client installed. Review the current upstream schema and PR
+template; if they have moved on, update <code>apps.json</code>, all
+three templates, generated drafts, and tests together. Never leave mixed
+schema versions.</p></li>
+<li><p><strong>Test outside the everyday PC.</strong> In Windows Sandbox
+or a disposable VM, install, launch, check the registered version, run
+the app’s own updater, check <code>winget list</code> and named-upgrade
+behavior, uninstall, and inspect for leftovers. Record SmartScreen,
+quiet-install, ARM64-emulation, and accessibility findings. Do not use
+<code>winget install --manifest</code> on a development computer with
+personal data.</p></li>
+<li><p><strong>Submit only after the owner says to go.</strong> Complete
+Microsoft’s contributor license agreement and other first-contribution
+requirements, then submit one package version per manifest-only pull
+request. Do not add a broad-scope token to this repository. The initial
+public submissions remain a deliberate owner-reviewed action.</p></li>
+</ol>
+<h2 id="prepare-a-new-stable-version">Prepare a new Stable version</h2>
+<p>For an app already in the catalog, repeat steps 1 and 5–9 for its new
+Stable tag. The generator skips no approval decision: a clean local
+draft is not a public release. Before enabling the protected workflow to
+submit PRs, confirm it:</p>
+<ul>
+<li>run only for a published, final Stable release;</li>
+<li>use the exact release asset and its SHA-256, and fail if the asset
+name or version does not match the catalogue;</li>
+<li>validate the complete three-file set against the current
+schema;</li>
+<li>retain <code>RequireExplicitUpgrade: true</code> and exact Apps
+&amp; Features matching;</li>
+<li>detect an already-published version or an existing open PR and do
+nothing;</li>
+<li>create a fresh branch from Microsoft’s current default branch,
+without syncing or force-pushing a fork;</li>
+<li>open a manifest-only PR for one app and one version; and</li>
+<li>use a dedicated protected GitHub Environment with a required
+reviewer for any credential that can write to the public package
+repository.</li>
+</ul>
+<p>The protected workflow is implemented but disabled by default. A
+final Stable release prepares a review artifact. It opens a public PR
+only when the publisher-approved catalog flag is true, the repository
+variable <code>WINGET_SUBMISSION_ENABLED</code> is set to
+<code>true</code>, and a reviewer approves the
+<code>winget-submission</code> environment. A manual run defaults to
+dry-run; <code>submit</code> must be explicitly selected to request the
+same protected job.</p>
+<h2
+id="configure-public-submission-after-the-initial-approval">Configure
+public submission after the initial approval</h2>
+<p>Do these steps only after the package IDs have been approved and the
+initial packages have merged:</p>
+<ol type="1">
+<li>In repository Settings &gt; Environments, create
+<code>winget-submission</code>. Require a maintainer review and restrict
+deployment tags to these release patterns: <code>v*</code>,
+<code>quill-lite-v*</code>, <code>quill-radio-v*</code>,
+<code>quill-weather-v*</code>, <code>quill-inkwell-v*</code>,
+<code>quill-converter-v*</code>, <code>quill-transcribe-v*</code>,
+<code>quill-cast-v*</code>, <code>quill-studio-v*</code>,
+<code>quill-beacon-v*</code>, and <code>quill-social-v*</code>. Do not
+allow branches or pull-request refs to deploy this environment.</li>
+<li>Create a <strong>classic</strong> GitHub personal access token with
+only <code>public_repo</code> and an expiration date. GitHub does not
+accept a fine-grained token for this cross-repository pull request flow.
+<code>public_repo</code> can write to every public repository owned by
+the token’s account, so keep this token out of repository-level secrets
+and personal computers used for routine testing.</li>
+<li>Add the token to the <code>winget-submission</code>
+<strong>environment secret</strong> named
+<code>WINGET_SUBMIT_TOKEN</code>. The workflow passes it only to the
+submission job.</li>
+<li>Set the repository Actions variable
+<code>WINGET_SUBMISSION_ENABLED</code> to <code>true</code> only after
+the package catalog and the <code>approved_for_submission</code> field
+in <code>apps.json</code> have both been reviewed. Leave both disabled
+until then.</li>
+<li>Run the workflow manually with <code>submit</code> off first and
+inspect its manifest artifact. A later public submission requires the
+explicit <code>submit</code> input and approval of the protected
+environment. Future final Stable releases prepare a manifest artifact
+and wait at the same environment review.</li>
+</ol>
+<p>The submitter creates or reuses the token owner’s fork, branches from
+the current WinGet default-branch commit through the GitHub API, checks
+for an existing catalog version and open PR, and adds only the three
+manifest files. It never syncs the fork. An existing branch without an
+open PR is left alone for a maintainer to inspect rather than
+overwritten.</p>
+<h2 id="local-validation-commands">Local validation commands</h2>
+<p>Validate the two current draft sets from the repository root:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>winget validate <span class="op">--</span>manifest <span class="op">.</span>\packaging\winget\drafts\manifests\c\CommunityAccess\QuillLite\<span class="dv">1.1</span><span class="op">.</span><span class="dv">2</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>winget validate <span class="op">--</span>manifest <span class="op">.</span>\packaging\winget\drafts\manifests\c\CommunityAccess\QuillRadio\<span class="dv">3.0</span><span class="op">.</span><span class="dv">4</span></span></code></pre></div>
+<p>The WinGet client was not available on the development computer
+during this drafting pass, so these commands and disposable-VM
+install/update/uninstall checks are still open. No claim of successful
+validation or public availability is made.</p>
+<h2 id="upstream-references">Upstream references</h2>
+<ul>
+<li><a
+href="https://github.com/microsoft/winget-pkgs/blob/master/doc/manifest/README.md">WinGet
+manifest schema index</a></li>
+<li><a
+href="https://github.com/microsoft/winget-pkgs/blob/master/doc/manifest/schema/1.28.0/installer.md">WinGet
+1.28 installer manifest fields</a></li>
+<li><a
+href="https://github.com/microsoft/winget-pkgs/blob/master/doc/manifest/schema/1.28.0/defaultLocale.md">WinGet
+1.28 default-locale manifest fields</a></li>
+<li><a
+href="https://github.com/microsoft/winget-pkgs/blob/master/doc/FirstContribution.md">First-time
+contribution checklist</a></li>
+<li><a
+href="https://learn.microsoft.com/en-us/windows/package-manager/package/winget-validation">Microsoft
+manifest validation guidance</a></li>
+</ul>
+</main>
+</body>
+</html>

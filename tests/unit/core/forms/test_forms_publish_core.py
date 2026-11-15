@@ -127,6 +127,39 @@ def test_a_site_still_running_baf_is_answered_on_baf_v1():
     assert "page=baf-form-builder" in bs.builder_url("https://x.example", 7, "baf")
 
 
+class _ListedBare(_Api):
+    """BAF 5.x and QAF: the entries list never loads answers; one entry read alone does."""
+
+    def __init__(self) -> None:
+        super().__init__("baf/v1")
+        self.stored = {
+            12: {"name": "Ann", "message": "message 2"},
+            11: {"name": "Bo", "message": "message 1"},
+        }
+
+    def get(self, route: str, **params: object) -> object:
+        if route.startswith("baf/v1/entries/"):
+            self.asked.append(route)
+            ident = int(route.rsplit("/", 1)[1])
+            return {"id": ident, "form_id": 4, "fields": self.stored[ident]}
+        return super().get(route, **params)
+
+    def iter_collection(self, route: str, _params: object = None, **_kw: object):
+        self.asked.append(route)
+        return iter([{"id": i, "form_id": 4, "fields": []} for i in self.stored])
+
+
+def test_responses_listed_without_answers_are_read_one_by_one():
+    api = _ListedBare()
+
+    got = bs.list_responses(api, 4)
+
+    assert [r.id for r in got] == [12, 11]
+    assert got[1].answers == {"name": "Bo", "message": "message 1"}
+    assert api.asked == ["index", "baf/v1/entries", "baf/v1/entries/12", "baf/v1/entries/11"]
+    assert rs.find(got, "message 1")
+
+
 def test_a_site_with_neither_is_asked_nothing_else():
     api = _Api()
 

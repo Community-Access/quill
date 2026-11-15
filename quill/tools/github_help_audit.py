@@ -51,9 +51,29 @@ _SCAN_GLOBS: tuple[str, ...] = ("quill/ui/github_*.py", "quill/ui/workbench_*.py
 
 #: Surface constructions whose titles the scan cannot resolve, with the reason.
 TITLE_EXEMPT: dict[str, str] = {
+    "quill/ui/github_issue_form_dialog.py::IssueFormDialog.__init__": (
+        "One form window for issues, discussions and the template preview, titled by "
+        "what it files; each title has its purpose in workbench_help's SURFACE_PURPOSES."
+    ),
+    "quill/ui/github_template_builder_dialog.py::TemplateBuilderDialog.__init__": (
+        'Titled after the file it builds ("Template: bug.yml"); its purpose is the '
+        '"Template:" entry in SURFACE_PURPOSES.'
+    ),
+    "quill/ui/github_template_sheets_dialog.py::_Sheet.__init__": (
+        "One base for the chooser and community-file sheets; each subclass's title "
+        "is a class attribute with its purpose in SURFACE_PURPOSES."
+    ),
+    "quill/ui/github_template_field_dialog.py::FieldDialog.__init__": (
+        'Titled after the field kind ("Form Field: Add drop-down"); its purpose is the '
+        '"Form Field:" entry in SURFACE_PURPOSES.'
+    ),
     "quill/ui/github_workbench_list_dialog.py::WorkbenchListDialog.__init__": (
         "One window for GitHub Permissions, Change History and the access tools, titled "
         "by its caller; each title has its purpose in workbench_help's SURFACE_PURPOSES."
+    ),
+    "quill/ui/github_repository_checklist.py::RepositoryChecklistDialog.__init__": (
+        'Titled after the Repository Set it edits ("Repositories in Work") at run '
+        'time; its purpose is the "Repositories in" entry in SURFACE_PURPOSES.'
     ),
     "quill/ui/workbench_properties_sheet.py::PropertiesSheet.__init__": (
         "The Workbench's Properties sheet, titled after the object it shows at run "
@@ -115,16 +135,42 @@ TITLE_EXEMPT: dict[str, str] = {
 }
 
 
+def _parked_modules() -> frozenset[str]:
+    """The GitHub windows GATE-REACH says nobody can open: ``parked`` or ``unreachable``.
+
+    A purpose is what F1 says when a window opens, so a window nobody can open
+    needs none -- writing one would be help for a surface that does not ship.
+    The reachability snapshot is the review that says so (and an
+    ``unreachable`` entry already fails GATE-REACH itself, so nothing hides
+    here); the moment such a window is wired back up it turns ``reachable``
+    there and its title is checked here again.
+    """
+    from quill.tools.surface_reachability_audit import PARKED, UNREACHABLE
+    from quill.tools.surface_reachability_audit import load_snapshot as load_reach
+
+    return frozenset(
+        module.replace(".", "/") + ".py"
+        for module, status in load_reach().items()
+        if status in (PARKED, UNREACHABLE)
+    )
+
+
 def scan() -> tuple[list[ControlSite], list[TitleViolation]]:
-    """Every helpable-control site in the GitHub windows, and every unknown title."""
+    """Every helpable-control site in the GitHub windows, and every unknown title.
+
+    Titles of windows parked by GATE-REACH are not checked (see
+    :func:`_parked_modules`); their controls stay in the inventory.
+    """
     from quill.core.github import workbench_help
 
-    return scan_paths(
+    sites, violations = scan_paths(
         resolve_paths(_SCAN_DIRS, _SCAN_GLOBS),
         is_known_title=workbench_help.is_known_title,
         title_exempt=TITLE_EXEMPT,
         catalogue="quill/core/github/workbench_help.py",
     )
+    parked = _parked_modules()
+    return sites, [v for v in violations if v.key.split("::", 1)[0] not in parked]
 
 
 def catalogue_gaps() -> list[str]:

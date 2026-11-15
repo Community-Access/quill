@@ -182,5 +182,6 @@ def test_classify_arg() -> None:
 def test_values_are_said_in_words_where_wordpress_uses_code() -> None:
     assert q.value_label("orderby", "modified") == "Date changed"
     assert q.value_label("tax_relation", "OR") == "Any of these"
-    assert q.value_label("orderby", "price") == "price"
+    assert q.value_label("orderby", "price") == "Price"  # a plugin's ordering, labelled (WP-B)
+    assert q.value_label("orderby", "not_a_value") == "not_a_value"  # unknown: said as sent
     assert "status" in q.SITE_LABELLED

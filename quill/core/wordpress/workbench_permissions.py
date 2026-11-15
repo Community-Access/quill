@@ -38,10 +38,15 @@ __all__ = [
     "AccessStore",
     "account_as_role",
     "capability_for",
+    "deactivate_refusal",
     "deactivate_warning",
     "refusal",
     "remove_problem",
+    "revoke_refusal",
+    "role_change_preview",
     "role_change_problem",
+    "setting_preview",
+    "setting_refusal",
     "tier_allowed",
 ]
 
@@ -258,6 +263,13 @@ def role_change_problem(
             "You cannot take away your own Administrator role from here: you would lose the "
             "right to put it back. Ask another administrator to do it."
         )
+    if target_id == account.id:
+        # Any other role you give yourself can drop promote_users, the very
+        # capability that changing it back needs (complete.md WP-A).
+        return (
+            "You cannot change your own role from here: the new role could take away the "
+            "right to change it back. Ask an administrator to do it."
+        )
     if target_id in admins and len(admins) == 1:
         return "This is the site's only Administrator. Make someone else an Administrator first."
     return ""
@@ -278,3 +290,90 @@ def deactivate_warning(plugin: str) -> str:
     slug = plugin.split("/", 1)[0]
     found = _QUILL_RELIES_ON.get(slug)
     return f"QUILL relies on this plugin for {found}. Turning it off stops that." if found else ""
+
+
+#: Plugins the connection itself goes through: deactivating one from the
+#: Workbench would cut the Workbench off mid-change, so it is refused.
+_CONNECTION_PLUGINS = frozenset({"application-passwords"})
+
+
+def deactivate_refusal(plugin: str, site: str) -> str:
+    """Why deactivating *plugin* from the Workbench is refused ("" when it is not).
+
+    The connection plugin is refused, not warned about: once it is off, the
+    password the Workbench signs in with stops working, so the Workbench could
+    not even turn it back on. wp-admin, signed in in the browser, can.
+    """
+    if plugin.split("/", 1)[0] not in _CONNECTION_PLUGINS:
+        return ""
+    return (
+        f"QUILL signs in to {site} through this plugin, so turning it off here would lock the "
+        "Workbench out before it could turn it back on. Turn it off in wp-admin's Plugins "
+        "screen if you mean to."
+    )
+
+
+def revoke_refusal(is_current: bool, site: str) -> str:
+    """Why revoking an application password is refused ("" when it is not).
+
+    The password QUILL signs in with is refused: revoking it ends the
+    connection mid-command, and nothing could be undone or verified after.
+    """
+    if not is_current:
+        return ""
+    return (
+        f"QUILL signs in to {site} with this application password, so revoking it here would "
+        "lock the Workbench out. Make a new password and reconnect the site first, then revoke "
+        "this one."
+    )
+
+
+#: Settings whose change would lock you or QUILL out, or hand the site away.
+_SETTING_LOCKOUTS = {
+    "url": "QUILL signs in at the site's address, and a wrong address locks everyone out of "
+    "wp-admin too. Change it in wp-admin's Settings > General, then reconnect the site.",
+    "home": "QUILL signs in at the site's address, and a wrong address locks everyone out of "
+    "wp-admin too. Change it in wp-admin's Settings > General, then reconnect the site.",
+    "siteurl": "WordPress itself lives at this address; a wrong one locks everyone out of "
+    "wp-admin. Change it in wp-admin's Settings > General.",
+}
+
+
+def setting_refusal(key: str, value: object) -> str:
+    """Why saving *value* for the site setting *key* is refused ("" when it is allowed)."""
+    if key in _SETTING_LOCKOUTS:
+        return f"The site address is not changed from the Workbench. {_SETTING_LOCKOUTS[key]}"
+    if key == "default_role" and str(value) == "administrator":
+        return (
+            "New users are never made Administrators by default: anyone who signs up would "
+            "control the site. Choose Subscriber, or another role without manage_options."
+        )
+    return ""
+
+
+def setting_preview(
+    label: str, key: str, before: object, after: object, site: str
+) -> tuple[str, list[str]]:
+    """(summary, lines) shown before a site setting is saved."""
+
+    def words(value: object) -> str:
+        return "(empty)" if value in (None, "") else str(value)
+
+    return (
+        f"Change {label} on {site}. Ctrl+Z puts it back.",
+        [f"{label} ({key}): {words(before)} becomes {words(after)}"],
+    )
+
+
+def role_change_preview(name: str, old: str, new: str, site: str) -> tuple[str, list[str]]:
+    """(summary, lines) shown before a role changes: what the person gains and loses."""
+    before = ROLE_CAPABILITIES.get(old, frozenset())
+    after = ROLE_CAPABILITIES.get(new, frozenset())
+    lines = [f"{name}: {old.title() or 'no role'} becomes {new.title()}"]
+    gains = sorted(_VERBS[c] for c in after - before if c in _VERBS)
+    losses = sorted(_VERBS[c] for c in before - after if c in _VERBS)
+    if gains:
+        lines.append("Can now: " + "; ".join(gains))
+    if losses:
+        lines.append("Can no longer: " + "; ".join(losses))
+    return f"Change {name}'s role on {site}. Ctrl+Z puts it back.", lines

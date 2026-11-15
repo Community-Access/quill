@@ -25,6 +25,10 @@
         "criterion": "Find the next match of what you last searched for. For example: \"find the next one\".",
         "stepped": false
       },
+      "lite.cmd_forms_responses": {
+        "criterion": "Read the responses people sent to a form on your WordPress site. For example: \"show my form responses\".",
+        "stepped": false
+      },
       "lite.cmd_go_to_anything": {
         "criterion": "Move to a heading, bookmark or line by name. For example: \"go to anything\".",
         "stepped": false
@@ -161,6 +165,14 @@
         "criterion": "The full statistics: words, sentences, paragraphs and more. For example: \"give me the word summary\".",
         "stepped": false
       },
+      "lite.cmd_wp_this_post_in_workbench": {
+        "criterion": "Open the WordPress Workbench with this document's post selected. For example: \"show this post in the wordpress workbench\".",
+        "stepped": false
+      },
+      "lite.cmd_wp_workbench": {
+        "criterion": "Open the window for your WordPress sites. For example: \"open the wordpress workbench\".",
+        "stepped": false
+      },
       "lite.cmd_zoom_in": {
         "criterion": "Magnify the view on screen, without changing the document. For example: \"zoom in\".",
         "stepped": true
@@ -279,6 +291,10 @@
         "criterion": "Change the selection to capital letters. For example: \"make this all capitals\".",
         "stepped": false
       },
+      "forms.responses": {
+        "criterion": "Read the responses people sent to a form on your WordPress site. For example: \"show my form responses\".",
+        "stepped": false
+      },
       "help.what_can_i_do_here": {
         "criterion": "List what you can say or do in this window. For example: \"what can I do in this window\".",
         "stepped": false
@@ -381,6 +397,14 @@
       },
       "view.toggle_spellcheck_as_you_type": {
         "criterion": "Check spelling while you type, or stop. For example: \"check my spelling as I type\".",
+        "stepped": false
+      },
+      "wordpress.this_post_in_workbench": {
+        "criterion": "Open the WordPress Workbench with this document's post selected. For example: \"show this post in the wordpress workbench\".",
+        "stepped": false
+      },
+      "wordpress.workbench": {
+        "criterion": "Open the window for your WordPress sites. For example: \"open the wordpress workbench\".",
         "stepped": false
       }
     },

@@ -16,6 +16,7 @@ Wx-free.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
@@ -152,8 +153,22 @@ def utc_now() -> datetime:
     return datetime.now(UTC).replace(tzinfo=None)
 
 
+def as_utc_param(since: str) -> str:
+    """*since* (UTC, as :class:`LastLooked` keeps it) marked as UTC for an ``after`` query.
+
+    WordPress compares ``after`` with the site-local ``post_date`` and
+    ``comment_date``; a time with no offset is read as site time, so on a site
+    west of UTC a comment made a second ago looked older than the last look and
+    was never listed. With ``+00:00`` WordPress converts it to the site's zone.
+    """
+    if since.endswith("Z") or re.search(r"[+-]\d{2}:?\d{2}$", since):
+        return since
+    return since + "+00:00"
+
+
 def changes_on(api: WordPressApi, site_name: str, since: str) -> list[Change]:
     out: list[Change] = []
+    since = as_utc_param(since)
     me = wp.load_account(api)
     out += _comments(api, site_name, since)
     params: dict[str, object] = {

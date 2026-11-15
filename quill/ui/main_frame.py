@@ -349,6 +349,7 @@ from quill.ui.main_frame_gh_bridge import GhBridgeMixin
 from quill.ui.main_frame_git_sync import GitSyncMixin
 from quill.ui.main_frame_github import GitHubRemoteMixin
 from quill.ui.main_frame_github_admin import GitHubAdminMixin
+from quill.ui.main_frame_github_doors import GitHubAdminDoorsMixin
 from quill.ui.main_frame_github_extras import GitHubExtrasMixin
 from quill.ui.main_frame_github_items import GitHubItemsMixin
 from quill.ui.main_frame_github_menu import GitHubWorkbenchMenuMixin
@@ -456,6 +457,7 @@ from quill.ui.notebook_panel import NotebookEntriesPanel
 from quill.ui.settings_live_switches import at_startup as start_live_settings
 from quill.ui.sound_manager import post_sound
 from quill.ui.spoken_name import set_spoken_name
+from quill.ui.startup_launch import editor_starts_hidden
 from quill.ui.status_bar_role import mark_as_status_bar
 from quill.ui.suggestion_list import SuggestionPopup as _IntellisensePopup
 from quill.ui.word_view import WordDocumentSurface
@@ -696,6 +698,7 @@ class MainFrame(
     GitHubRemoteMixin,
     GitHubItemsMixin,
     GitHubWorkbenchMenuMixin,
+    GitHubAdminDoorsMixin,
     GitHubAdminMixin,
     GitHubExtrasMixin,
     GhBridgeMixin,
@@ -1335,7 +1338,9 @@ class MainFrame(
     def _help_frame(self) -> object:
         return self.frame
 
-    def show(self) -> None:
+    def show(self, *, start_minimized: bool = False) -> None:
+        if editor_starts_hidden(self, start_minimized):  # --tray: a login launch
+            return
         self.frame.Show(True)
         # The longest silence in the product is a launch: a window appears, the
         # reader announces a title, and nothing before that says the
@@ -14206,6 +14211,7 @@ def run_app(
     cold_import_seconds: float = 0.0,
     persona_name: str | None = None,
     document_kind: str | None = None,
+    start_minimized: bool = False,
 ) -> None:
     # MacOpenFileApp is a plain wx.App subclass on every platform; the
     # MacOpenFile/MacOpenFiles overrides it adds are only ever invoked by
@@ -14276,7 +14282,7 @@ def run_app(
         ("MainFrame.__init__", _construct_seconds),
     ]
     _t_show = time.perf_counter()
-    frame.show()
+    frame.show(start_minimized=start_minimized)
     frame._cold_start_times.append((
         "frame.show() (synchronous part)",
         time.perf_counter() - _t_show,

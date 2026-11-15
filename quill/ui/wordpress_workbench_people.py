@@ -37,12 +37,18 @@ from quill.core.wordpress.workbench_permissions import (
     account_as_role,
     capability_for,
     refusal,
+    remove_problem,
+    revoke_refusal,
+    role_change_preview,
+    role_change_problem,
     tier_allowed,
 )
 from quill.core.wordpress.workbench_rows import WbRow
+from quill.core.wordpress.workbench_tiers import effective_command
 from quill.core.workbench.actions import Tier
 from quill.core.workbench.filters import Condition, Operator, Query, render
 from quill.ui import wordpress_dialogs as dlg
+from quill.ui import wordpress_workbench_dialogs as wdlg
 
 __all__ = ["WorkbenchPeopleCommands"]
 
@@ -93,6 +99,8 @@ _BUILDER: dict[str, tuple[tuple[str, str], ...]] = {
         ("status", "Status: approve, hold, spam or trash"),
         ("post", "On the post number"),
         ("author_email", "Commenter's email"),
+        ("comment_type", "Type: comment, pingback, trackback, review or all"),
+        ("author", "Written by user number"),
         ("after", "Written"),
     ),
     "users": (("role", "Role"),),
@@ -162,17 +170,29 @@ class WorkbenchPeopleCommands:
             needed = _EDIT_NEEDS.get(row.kind, "")
         return refusal(needed, account, row.site) if account is not None else ""
 
-    def refusal_for(self, command_id: str, row: WbRow | None) -> str:
-        """Why *command_id* may not run on *row* now ("" when it may)."""
+    def refusal_for(self, command_id: str, row: WbRow | None, ref: Any = None) -> str:
+        """Why *command_id* may not run on *row* now ("" when it may).
+
+        A command not on *row*'s own menu (the menu bar's, a node's, Delete on
+        a person) is checked by its tier all the same (``unlisted_refusal``).
+        """
+        if row is not None:
+            command_id = effective_command(command_id, row.kind)  # Delete on a person: Remove
+            if command_id == workbench_command("revoke") and row.status == "current":
+                return revoke_refusal(True, row.site)  # whatever the access, never this one
         if row is None or not row.site:
-            return ""
+            return self.unlisted_refusal(command_id, row, ref)  # type: ignore[attr-defined]
         if command_id == workbench_command("change_gravity_field_type"):
-            if row.kind != "gravity_form" or row.subkind != "gravity":
-                return "This is not a Gravity Forms form. QAF fields are changed in Form Outline."
+            return self.gravity_conversion_refusal(row)  # type: ignore[attr-defined]
+        gravity = self.gravity_refusal(command_id, row)  # type: ignore[attr-defined]
+        if gravity:
+            return gravity
         kind = row.kind if row.kind in self.actions.row_types else "fact"
         action = next((a for a in self.actions.rows_for(kind) if a.command_id == command_id), None)
         if action is None:
-            return ""
+            return self.unlisted_refusal(command_id, row, ref)  # type: ignore[attr-defined]
+        if command_id.endswith("edit_global_style") and not row.raw.get("styles_id"):
+            return "This theme has no site-specific style record to change."
         tier = action.tier
         if row.kind == "ability" and command_id == workbench_command("run_ability"):
             if not row.raw.get("readonly", False):
@@ -261,8 +281,18 @@ class WorkbenchPeopleCommands:
 
     # -- people -------------------------------------------------------------------
 
+    def _self_lockout(self, row: WbRow, problem: Callable[[Any], str]) -> bool:
+        """Say why a change to your own account is refused, before any dialog (WP-R-011)."""
+        account = self.ctx(row.site).account
+        said = problem(account) if account is not None and account.id == row.object_id else ""
+        if said:
+            self.say(said)
+        return bool(said)
+
     def do_change_role(self, _ref: Any, row: WbRow | None) -> None:
         if row is None or row.kind != "user":
+            return
+        if self._self_lockout(row, lambda a: role_change_problem(a, a.id, "subscriber", [])):
             return
         rows = [_ROLE_WORDS[r] for r in ROLE_ORDER]
         initial = ROLE_ORDER.index(row.status) if row.status in ROLE_ORDER else 0
@@ -279,6 +309,12 @@ class WorkbenchPeopleCommands:
             return
         role, ctx = ROLE_ORDER[index], self.ctx(row.site)
         old = row.status
+        summary, lines = role_change_preview(row.title, old, role, row.site)
+        if not wdlg.ask_preview(
+            self.parent, self.show_modal, title="Change Role", summary=summary, lines=lines,
+            yes="Change Role",
+        ):  # fmt: skip
+            return
 
         def work() -> object:
             account = self.ensure(ctx).account
@@ -302,6 +338,8 @@ class WorkbenchPeopleCommands:
 
     def do_remove_user(self, _ref: Any, row: WbRow | None) -> None:
         if row is None or row.kind != "user":
+            return
+        if self._self_lockout(row, lambda a: remove_problem(a, a.id, [])):
             return
         ctx = self.ctx(row.site)
 
@@ -361,7 +399,7 @@ class WorkbenchPeopleCommands:
         if key == "app_passwords" and site:
             self._new_password(site)
         elif key == "users" and site:
-            self._new_user(site)
+            self.add_person(site)  # type: ignore[attr-defined]  # wordpress_workbench_people_bulk
         else:
             self.say("New Here works in Users and Application Passwords in this preview.")
 
@@ -390,51 +428,6 @@ class WorkbenchPeopleCommands:
 
         self.background("making a password", lambda: create_app_password(ctx.api, name), done)
 
-    def _new_user(self, site: str) -> None:
-        answers = []
-        for prompt, help_text in (
-            ("&Username:", "The name they sign in with. It cannot be changed later."),
-            ("&Email:", "Where WordPress can reach them."),
-            ("&Display name:", "The name shown on what they write."),
-        ):
-            text = dlg.ask_text(
-                self.parent,
-                self.show_modal,
-                title="Add a Person",
-                prompt=prompt,
-                help_text=help_text,
-            )
-            if not text or not text.strip():
-                return
-            answers.append(text.strip())
-        index = dlg.ask_choice(
-            self.parent,
-            self.show_modal,
-            title="Add a Person",
-            prompt="&Role:",
-            rows=[_ROLE_WORDS[r] for r in ROLE_ORDER],
-            help_text="What they may do on the site.",
-        )
-        if index is None:
-            return
-        username, email, name = answers
-        role = ROLE_ORDER[index]
-        if not dlg.confirm(
-            self.parent,
-            self.show_modal,
-            title="Add a Person",
-            message=f"Add {name} ({username}) to {site} as {_ROLE_WORDS[role]}? They set "
-            "their own password with Lost Your Password on the sign-in page.",
-            yes_label="Add",
-        ):
-            return
-        api = self.ctx(site).api
-        self.background(
-            "adding a person",
-            lambda: admin.add_user(api, username=username, email=email, name=name, role=role),
-            lambda user: (self.say(f"Added {user.name} to {site}."), self.refresh()),
-        )
-
     # -- filters ------------------------------------------------------------------
 
     def _family(self) -> str:
@@ -454,6 +447,8 @@ class WorkbenchPeopleCommands:
         if frame is None or frame.current is None:
             return
         family = self._family()
+        if family == "forms" and self.gravity_filter_builder():  # type: ignore[attr-defined]
+            return
         attributes = _BUILDER.get(family) or tuple(
             (c, c.replace("_", " ").capitalize()) for c in frame.node(frame.current).columns
         )

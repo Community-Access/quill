@@ -437,6 +437,7 @@
   "quill:spelling_alert_speech": "shared",
   "quill:spoken_echo_on_double_press": "one_side",
   "quill:ssh_trust_first_use": "one_side",
+  "quill:start_minimized_at_windows_startup": "one_side",
   "quill:start_with_no_document_open": "one_side",
   "quill:startup_folder": "shared",
   "quill:status_bar_hidden": "one_side",

@@ -412,9 +412,13 @@ def test_an_editor_is_told_why_users_are_out_of_reach(bench) -> None:
     assert "Administrator role or higher" in reason and "Editor" in reason
 
 
-def test_planned_nodes_say_where_the_feature_lives_today(bench) -> None:
-    node = bench.node(NodeRef("", "accessibility"))
-    assert "Check the Whole Site" in bench.provider.unavailable(NodeRef("", "accessibility"), node)
+def test_shop_reads_the_site_and_says_when_it_has_no_shop(bench) -> None:
+    # No node is a placeholder now: Shop asks the site, which has no wc/v3 (WP-A).
+    ref = NodeRef("site", "shop", SITE)
+    assert bench.provider.unavailable(ref, bench.node(ref)) == ""
+    _go(bench, ref)
+    said = bench.details.GetValue()
+    assert "WooCommerce" in said and "Membership Orders" in said
 
 
 def test_the_door_always_opens_the_workbench(monkeypatch) -> None:
@@ -427,7 +431,15 @@ def test_the_door_always_opens_the_workbench(monkeypatch) -> None:
     monkeypatch.setattr(window, "open_workbench", lambda _commands, **kw: opened.append(kw))
     commands = SimpleNamespace(host=SimpleNamespace(announce=lambda _text: None), _data_dir=None)
     assert _real_open_from_door(commands, "wordpress.comments") is True
-    assert opened and opened[0]["node"] == "comments"
+    # Comments opens on the moderation queue, the reason anybody goes there.
+    assert opened and opened[0]["node"] == "comments_waiting"
+
+
+def test_every_door_names_a_node_the_site_tree_has() -> None:
+    from quill.core.wordpress.workbench_tree import _DOORS, WORDPRESS_TREE
+
+    keys = {node.key for node in WORDPRESS_TREE.template("site")}
+    assert {door: node for door, node in _DOORS.items() if node not in keys} == {}
 
 
 @pytest.fixture

@@ -36,4 +36,34 @@ WORDPRESS_ENTRIES: dict[str, str] = {
     # Forms: which site copy of each form was published, and the last ten
     # previous copies kept before an update.
     "core/forms/published.py::_write": "content",
+    # --- the WordPress Workbench (W6 to W8, 2026-11-10). All go through
+    # write_json_atomic, beside the site list; none holds a password (those
+    # stay in Credential Manager).
+    # Take a Snapshot: a copy of one site's posts, pages, terms, menus,
+    # patterns and settings, in a dated folder under that site's own
+    # wordpress_snapshots/<site id> directory. Made only when the person asks,
+    # kept until they delete it; the settings are what WordPress's settings
+    # route returns, which carries no credential.
+    # Media records always; the media files themselves only when asked.
+    "core/wordpress/workbench_snapshot.py::take_snapshot": "content",
+    # Reviewers assigned in the editorial queue (site name, item id, route,
+    # title, reviewer's name, the note): WordPress has no reviewer field, so
+    # this is the only record the Review Watch can follow. No secret; an
+    # unreadable entry is skipped.
+    "core/wordpress/workbench_editorial.py::save_reviews": "content",
+    # REST Console requests the person saved by name (site, method, route and
+    # the parameters as typed), shown as Tools > Saved Requests. The console
+    # says not to type a password into one that is kept.
+    "core/wordpress/workbench_rest_saved.py::save_all": "content",
+    # Workbench Options: watch interval, which Watches are on, and Site Sets
+    # by site name. Read field by field with defaults; no secret.
+    "core/wordpress/workbench_options.py::save_options": "needs-versioning",
+    # The access chosen for each site (Read Only, Organize, Full), keyed by
+    # site id so one site's choice never applies to another. A level, never a
+    # password; an unknown or unreadable entry reads as the default.
+    "core/wordpress/workbench_permissions.py::set": "marker",
+    # What the last Watches round saw on each site (comment and entry ids,
+    # plugin names, scheduled ids), keyed by site so sites never mix. Losing
+    # it costs one round reporting everything as new; no content or secret.
+    "core/wordpress/workbench_watches.py::save_state": "cache",
 }

@@ -64,7 +64,7 @@ def test_lite_gives_the_workbench_an_open_file_callback() -> None:
     # The row goes through the one opener every GitHub row shares (lite_github_workbench.py).
     assert "self.open_github_items()" in inspect.getsource(DocumentToolsMixin.cmd_github_workbench)
     source = inspect.getsource(DocumentToolsMixin.open_github_items)
-    assert "open_file_reference_cb=self._open_github_file_reference" in source
+    assert "open_file_url=self._open_github_file_reference" in source
 
 
 class _Frame(lite_github_open.GitHubFileOpenMixin):

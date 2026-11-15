@@ -2,20 +2,43 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import Any
 
 from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.workbench_forms import (
     GRAVITY_FIELD_TYPES,
+    gravity_replacement_problems,
     plan_gravity_field_type_change,
 )
+from quill.core.wordpress.workbench_gravity import gravity_can
+from quill.core.wordpress.workbench_permissions import tier_allowed
 from quill.core.wordpress.workbench_rows import WbRow
+from quill.core.workbench.actions import Tier
 from quill.core.workbench.history import Change
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui import wordpress_workbench_dialogs as wdlg
 
 
 class WorkbenchGravityCommands:
+    def gravity_conversion_refusal(self, row: WbRow) -> str:
+        """Why Change a Field Type may not run on *row* ("" when it may).
+
+        Full Workbench access, and Gravity Forms' own gravityforms_create_form, which
+        it grants to anyone with gform_full_access; the site still checks again.
+        """
+        if row.kind != "gravity_form" or row.subkind != "gravity":
+            return "This is not a Gravity Forms form. QAF fields are changed in Form Outline."
+        if not tier_allowed(Tier.WRITE, self.access_for(row.site)):
+            return self._access_sentence(row.site)
+        account = self.account_for(row.site)
+        if gravity_can(account, "gravityforms_create_form"):
+            return ""
+        return (
+            "Changing a form's fields needs the Gravity Forms permission gravityforms create "
+            f"form. You are {account.role_name} on {row.site}."
+        )
+
     def do_change_gravity_field_type(self, _ref: Any, row: WbRow | None) -> None:
         """Read, preview and update one supported Gravity Forms field."""
         if row is None or row.kind != "gravity_form" or row.subkind != "gravity":
@@ -24,6 +47,8 @@ class WorkbenchGravityCommands:
         if refusal:
             self.say(refusal)
             return
+        # A form row's own title is its plugin's name; the form's is in its "form" cell.
+        row = replace(row, cells={**row.cells, "title": row.cell("form") or row.title})
         api = self.ctx(row.site).api
 
         def choose_field(form: Any) -> None:
@@ -103,11 +128,22 @@ class WorkbenchGravityCommands:
                         f"{row.title} on {row.site} changed while you reviewed the conversion. "
                         "Reopen the form and review the current fields."
                     )
-                answer = api.request("PUT", row.route, json_body=updated).payload
-                return answer if isinstance(answer, dict) else updated
+                api.request("PUT", row.route, json_body=updated)
+                # Gravity Forms replaces the whole form: read it back and check it.
+                stored = api.get(row.route)
+                return stored, gravity_replacement_problems(plan, stored)
 
-            def saved(stored: Any) -> None:
+            def saved(answer: tuple[Any, list[str]]) -> None:
+                stored, problems = answer
+                if not isinstance(stored, dict):
+                    stored = updated
                 said = f"Changed {plan.field_label} in {row.title} on {row.site}."
+                if problems:
+                    said = (
+                        f"{row.title} on {row.site} was saved, but it reads back differently: "
+                        + " ".join(problems)
+                        + " Ctrl+Z puts the form back as it was."
+                    )
                 expected = {"form": stored}
 
                 def put_back(body: Any, message: str) -> str:

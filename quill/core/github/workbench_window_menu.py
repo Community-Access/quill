@@ -199,6 +199,10 @@ _VIEW = MenuSpec(
     ),
 )
 
+#: Ctrl+1 to Ctrl+0 are this window's Go row (PRD). Ctrl+3, Ctrl+4 and Ctrl+8
+#: are the family's AI chords elsewhere (codex.md 10A.9); this window has no AI
+#: menu, so they do nothing here and the row keeps all ten digits. Decided
+#: 2026-11-13; tests/unit/ui/test_main_frame_hosted_ai.py names the exemption.
 _GO = MenuSpec(
     "&Go",
     (
@@ -213,14 +217,19 @@ _GO = MenuSpec(
         _row("go_people", "Peop&le", "Ctrl+4", "People you follow and who follow you."),
         _row("go_gists", "Gis&ts", "Ctrl+5", "Your gists."),
         _row("go_projects", "Pro&jects", "Ctrl+6", "Projects."),
-        _row("go_watches", "&Watches", "Ctrl+7", "Watches: tell me when it happens. Coming later."),
+        _row(
+            "go_watches",
+            "&Watches",
+            "Ctrl+7",
+            "Watches: tell me when a run finishes, a review arrives, a release or a comment.",
+        ),
         _row("go_saved_searches", "Saved Searches", "Ctrl+8", "Searches you saved."),
         _row("go_start", "Start Her&e", "Ctrl+9", "What this window is and how it works."),
         _row(
             "go_across",
             "Across Repositories",
             "Ctrl+0",
-            "Every kind of thing, by name, everywhere. Coming later.",
+            "One kind of thing from the repositories you chose, in one list.",
         ),
         None,
         _row("go_issues", "Iss&ues", "Ctrl+Shift+1", "This repository's issues."),
@@ -270,6 +279,13 @@ _ITEM = MenuSpec(
             "Ctrl+Shift+T",
             "A branch and a folder on this computer for the selected item.",
         ),
+        _row(
+            "read_as_document",
+            "Read as Doc&ument...",
+            "Ctrl+Shift+I",
+            "The selected issue, pull request or discussion as one document, a heading per "
+            "post: open it in the editor or save it as Markdown or HTML.",
+        ),
         None,
         _row(
             "what_failed",
@@ -309,6 +325,19 @@ _REPOSITORY = MenuSpec(
             "&Compare Branches...",
             "Ctrl+Shift+B",
             "Commits ahead and behind between two branches, and the changed files.",
+        ),
+        _row(
+            "compare_default",
+            "Compare With &Default",
+            "Ctrl+B",
+            "The selected branch, tag, release or commit against the default branch.",
+        ),
+        _row(
+            "compare_previous",
+            "Compare With &Previous",
+            "Alt+Shift+B",
+            "The selected tag or release against the one before it, or a commit against its "
+            "parent.",
         ),
         _row(
             "run_workflow",
@@ -353,6 +382,13 @@ _TOOLS = MenuSpec(
             "Workbench &Options...",
             "Ctrl+Shift+O",
             "Where the Workbench opens, how notifications check, lists and privacy.",
+        ),
+        _row(
+            "api_console",
+            "GitHub &API Console...",
+            "Ctrl+Shift+J",
+            "Send any GitHub REST request or GraphQL query: completion from GitHub's API "
+            "description, what it does and needs said first, the answer as a tree.",
         ),
     ),
 )
@@ -464,7 +500,8 @@ CONTROL_KEYS: dict[str, str] = {
 }
 
 #: Rows that name a place or tool still to come: they explain and do nothing else.
-PLACEHOLDER_COMMANDS = frozenset({f"{_P}go_watches", f"{_P}go_across"})
+#: Empty since Watches arrived (2026-11-13); kept for the next one.
+PLACEHOLDER_COMMANDS: frozenset[str] = frozenset()
 
 WORKBENCH_KEYS: dict[str, str] = {
     **{row.command_id: row.key for _menu, row in rows(WINDOW_MENU) if row.key},

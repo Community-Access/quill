@@ -27,11 +27,31 @@ def running_portable() -> bool:
     return portable_bundle_root() is not None
 
 
-def launch_command() -> str:
+def launch_command(*, start_minimized: bool | None = None) -> str:
     """Return the command that starts Cast through its app launcher."""
     from quill.core.app_command import app_command
+    from quill.platform.windows.startup_options import start_minimized as saved_choice
 
-    return app_command(MODULE, LAUNCHER_NAME)
+    if start_minimized is None:
+        start_minimized = saved_choice("cast", default=False)
+    return app_command(MODULE, LAUNCHER_NAME, args=("--tray",) if start_minimized else ())
+
+
+def start_minimized_at_startup() -> bool:
+    from quill.platform.windows.startup_options import start_minimized
+
+    return start_minimized("cast", default=False)
+
+
+def set_start_minimized_at_startup(enabled: bool) -> bool:
+    if not is_windows() or running_portable():
+        return False
+    from quill.platform.windows.startup_options import set_start_minimized
+
+    actual = set_start_minimized("cast", enabled)
+    if is_launch_at_startup_enabled():
+        set_launch_at_startup(True)
+    return actual
 
 
 def is_windows() -> bool:

@@ -221,12 +221,30 @@ def move_out(model: Model, item_id: str) -> str:
     return f"Moved out of {name_of(where.parent)}."
 
 
+def _ref(item_id: str) -> re.Pattern[str]:
+    return re.compile(r"#" + re.escape(item_id) + r"(?![A-Za-z0-9_])")
+
+
 def duplicate(model: Model, item_id: str) -> str:
     where = _need(model, item_id)
     copy_of = copy.deepcopy(where.siblings[where.index])
-    copy_of["id"] = new_id(model, str(copy_of.get("id", "copy")) + "_copy")
-    for child in _descendants(copy_of):
-        child["id"] = new_id(model, str(child.get("id", "copy")) + "_copy")
+    renamed: dict[str, str] = {}
+    for entry in [copy_of, *_descendants(copy_of)]:
+        old = str(entry.get("id", "copy"))
+        entry["id"] = new_id(model, old + "_copy")
+        while entry["id"] in renamed.values():  # new_id cannot see the copy's own ids yet
+            entry["id"] = new_id(model, entry["id"] + "_copy")
+        renamed[old] = entry["id"]
+    # A condition inside the copy that names a question inside the copy follows the copy,
+    # so a duplicated repeater or section behaves like the original rather than its twin.
+    for entry in [copy_of, *_descendants(copy_of)]:
+        for key in ("when", "calculation", "smart_default"):
+            if isinstance(entry.get(key), str):
+                for old, new in renamed.items():
+                    entry[key] = _ref(old).sub("#" + new, entry[key])
+        cascade = entry.get("cascade")
+        if isinstance(cascade, dict) and cascade.get("from") in renamed:
+            cascade["from"] = renamed[cascade["from"]]
     where.siblings.insert(where.index + 1, copy_of)
     return "Duplicated. The copy is straight after it."
 
@@ -240,7 +258,20 @@ def remove(model: Model, item_id: str) -> str:
         rule["targets"] = [t for t in rule["targets"] if t not in ids]
     if "rules" in model:
         model["rules"] = rules
-    return f"{name_of(gone)} removed."
+    said = f"{name_of(gone)} removed."
+    # A condition that still asks about it is left for the person to decide, and said.
+    refs = [_ref(i) for i in ids]
+    texts = [
+        str(other.get(key))
+        for other in M.iter_items(model)
+        for key in ("when", "calculation", "smart_default")
+        if isinstance(other.get(key), str)
+    ] + [str(r.get(key)) for r in rules for key in ("when", "value") if isinstance(r.get(key), str)]
+    naming = sum(1 for text in texts if any(ref.search(text) for ref in refs))
+    if naming:
+        what = "condition still names" if naming == 1 else "conditions still name"
+        said += f" {naming} {what} it; Check This Form goes to each."
+    return said
 
 
 def change_type(model: Model, item_id: str, kind: str) -> str:

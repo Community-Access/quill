@@ -273,10 +273,10 @@ quill/tools/build_third_party_notices.py. Do not edit it by hand.</p>
 </ul>
 <h2 id="summary-by-licence">Summary by licence</h2>
 <ul>
-<li>MIT License: 73 components</li>
+<li>MIT License: 74 components</li>
 <li>BSD 3-Clause License: 23 components</li>
 <li>Apache License, version 2.0: 18 components</li>
-<li>GNU General Public License, version 2: 7 components</li>
+<li>GNU General Public License, version 2: 10 components</li>
 <li>GNU General Public License, version 3: 7 components</li>
 <li>Python Software Foundation License, version 2: 6 components</li>
 <li>GNU Lesser General Public License, version 2.1: 5 components</li>
@@ -318,6 +318,7 @@ its own heading.</p>
 <li>pywin32</li>
 <li>OptiLab Core</li>
 <li>Inno Setup</li>
+<li>WordPress Playground CLI and npm dependencies</li>
 </ul>
 <h2 id="family-components">Family components</h2>
 <p>Libraries written by Community Access and Blind Information
@@ -2296,6 +2297,82 @@ installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice and the permission notice with every copy.</li>
 </ul>
+<h3 id="wordpress-playground-cli-and-npm-dependencies">WordPress
+Playground CLI and npm dependencies</h3>
+<ul>
+<li><strong>What it is:</strong> The local server for the WordPress
+Workbench Practice Site. It runs only when the person starts the local
+site; package licences stay beside tools\wp-playground-cli.
+PLAYGROUND-LICENSES.txt lists them and notes that source maps,
+TypeScript declarations and unused PHP versions are omitted from this
+runtime bundle.</li>
+<li><strong>Included in:</strong> QUILL for All, QUILL Lite, QuillVille
+Runtime.</li>
+<li><strong>Version:</strong> 3.1.64</li>
+<li><strong>Licence:</strong> GPL-2.0-or-later; each npm package’s
+declared licence is listed in PLAYGROUND-LICENSES.txt</li>
+<li><strong>Copyright:</strong> Copyright (c) WordPress
+contributors</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/WordPress/wordpress-playground">https://github.com/WordPress/wordpress-playground</a></li>
+<li><strong>How it reaches you:</strong> Bundled: it is inside the
+installer or the portable zip.</li>
+<li><strong>What the licence asks of us:</strong> Ship the licence text.
+Provide the complete corresponding source of the component, either
+alongside it or by a written offer valid for at least three years. Any
+program that is a derivative work must also be offered under
+GPL-2.0-compatible terms.</li>
+<li><strong>Maintainer note:</strong> On a CLI pin change, inspect the
+package lock and every package licence recorded in
+PLAYGROUND-LICENSES.txt.</li>
+</ul>
+<h3 id="php-83-webassembly-runtime-php-wasmnode-8-3">PHP 8.3 WebAssembly
+runtime (@php-wasm/node-8-3)</h3>
+<ul>
+<li><strong>What it is:</strong> The offline PHP WebAssembly engine
+WordPress Playground uses for the local Practice Site. Only the pinned
+PHP 8.3 package is staged in tools\wp-playground-cli.</li>
+<li><strong>Included in:</strong> QUILL for All, QUILL Lite, QuillVille
+Runtime.</li>
+<li><strong>Version:</strong> 3.1.64</li>
+<li><strong>Licence:</strong> GPL-2.0-or-later; package licence ships in
+node_modules</li>
+<li><strong>Copyright:</strong> Copyright (c) WordPress
+contributors</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/WordPress/wordpress-playground">https://github.com/WordPress/wordpress-playground</a></li>
+<li><strong>How it reaches you:</strong> Bundled: it is inside the
+installer or the portable zip.</li>
+<li><strong>What the licence asks of us:</strong> Ship the licence text.
+Provide the complete corresponding source of the component, either
+alongside it or by a written offer valid for at least three years. Any
+program that is a derivative work must also be offered under
+GPL-2.0-compatible terms.</li>
+</ul>
+<h3 id="wordpress-core-for-the-practice-site">WordPress core for the
+Practice Site</h3>
+<ul>
+<li><strong>What it is:</strong> A pinned, checksum-verified copy of
+WordPress core used only by the local Practice Site. The complete core
+source and license.txt ship in
+tools\wp-playground-cli\wordpress-7.1.4.zip and are extracted into the
+practice site’s data folder on first launch.</li>
+<li><strong>Included in:</strong> QUILL for All, QUILL Lite, QuillVille
+Runtime.</li>
+<li><strong>Version:</strong> 7.1.4</li>
+<li><strong>Licence:</strong> GPL-2.0-or-later</li>
+<li><strong>Copyright:</strong> Copyright (c) WordPress
+contributors</li>
+<li><strong>Upstream:</strong> <a
+href="https://wordpress.org/">https://wordpress.org/</a></li>
+<li><strong>How it reaches you:</strong> Bundled: it is inside the
+installer or the portable zip.</li>
+<li><strong>What the licence asks of us:</strong> Ship the licence text.
+Provide the complete corresponding source of the component, either
+alongside it or by a written offer valid for at least three years. Any
+program that is a derivative work must also be offered under
+GPL-2.0-compatible terms.</li>
+</ul>
 <h2 id="audio-and-video">Audio and video</h2>
 <p>Separate programs and engines for playing, recording and converting
 media.</p>
@@ -2934,6 +3011,22 @@ and its choice of metadata fields. No code is copied.</li>
 <li><strong>Copyright:</strong> Copyright (c) 2025 kellylford</li>
 <li><strong>Upstream:</strong> <a
 href="https://github.com/kellylford/Image-Description-Toolkit">https://github.com/kellylford/Image-Description-Toolkit</a></li>
+<li><strong>How it reaches you:</strong> Bundled: it is inside the
+installer or the portable zip.</li>
+<li><strong>What the licence asks of us:</strong> Keep the copyright
+notice and the permission notice with every copy.</li>
+</ul>
+<h3 id="github-rest-api-description">GitHub REST API description</h3>
+<ul>
+<li><strong>What it is:</strong> The GitHub API snapshot in
+quill/data/github_api/, used to measure what the GitHub Workbench
+covers.</li>
+<li><strong>Included in:</strong> Every product in the family.</li>
+<li><strong>Version:</strong> 53fd7d2</li>
+<li><strong>Licence:</strong> MIT</li>
+<li><strong>Copyright:</strong> Copyright (c) 2020 GitHub</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/github/rest-api-description">https://github.com/github/rest-api-description</a></li>
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
@@ -4571,7 +4664,9 @@ copyright, trademark and attribution notices kept.</p>
 License, version 2</h3>
 <p>Used by: Git for Windows (MinGit) and GitHub CLI, mutagen, Pandoc,
 pillow-heif, English thesaurus (th_en_US_v2, MyThes format), Pandoc
-(documentation build), PyInstaller.</p>
+(documentation build), PyInstaller, WordPress Playground CLI and npm
+dependencies, PHP 8.3 WebAssembly runtime (@php-wasm/node-8-3),
+WordPress core for the Practice Site.</p>
 <p>What it asks of us: Ship the licence text. Provide the complete
 corresponding source of the component, either alongside it or by a
 written offer valid for at least three years. Any program that is a
@@ -6392,7 +6487,7 @@ signal sounds (the VS Code Signals sound pack), Weather alert sound
 (quill/assets/audio/weather_alert.wav), Test and lint tools (pytest,
 ruff, mypy and their plugins), Node.js (node.exe), VS Code HTML, CSS,
 JSON and Markdown language servers (vscode-langservers-extracted),
-Pyright, Prettier.</p>
+Pyright, Prettier, GitHub REST API description.</p>
 <p>What it asks of us: Keep the copyright notice and the permission
 notice with every copy.</p>
 <pre class="text"><code>MIT License

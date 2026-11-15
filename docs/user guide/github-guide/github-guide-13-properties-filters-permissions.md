@@ -36,23 +36,31 @@ allowed to change is read-only, and the line under it says why, for example
 "changing this needs triage access to owner/name; you have read access", and
 who can change that. `F1` on the field says the same.
 
-- Labels, assignees, reviewers and your reactions are lists of check boxes.
-  Space checks or clears one.
-- New Label... and New Milestone... beside their lists make a new one on
-  GitHub and check it straight away.
+- Labels, assignees, reviewers, Projects and your reactions are lists of
+  check boxes. Space checks or clears one. Unchecking a Project takes the
+  item out of it, along with whatever the project's own fields said about
+  it, so that one cannot be undone.
+- New Label..., New Milestone... and New Project... beside their lists make
+  a new one on GitHub and check it straight away. If one by that name is
+  already there, that is not a failure: QUILL says "bug already exists;
+  using it" and checks the one GitHub has.
 - **OK** saves and closes. **Apply**, or `Ctrl+S`, saves and keeps the sheet
   open. `Ctrl+Enter` is OK from anywhere, even in a long text box. Escape is
   Cancel.
 
-The menus still name the common changes. **Item > Labels...**,
-**Assignees...** and **Milestone...** open the sheet at the right page.
-There are no separate keys for single properties: `Alt+Enter`, then the page.
+The context menu of an issue or pull request still names the common
+changes: **Edit Title...**, **Labels...**, **Assignees...**, **Milestone...**
+and **Projects...** open the sheet with focus already on that field. There
+are no separate keys for single properties: `Alt+Enter`, then the page.
 
 ### Saving safely
 
 - **If somebody else changed it meanwhile,** the sheet says so before
   anything is sent: "Changed on GitHub since you opened this: milestone is now
-  2027.2." For each such field you choose Keep Theirs or Use Mine.
+  2027.2." For each such field you choose Keep Theirs or Use Mine. Lists
+  you add to and take from (labels, reviewers, Projects) never ask: only
+  your own additions and removals are sent, so a label somebody else added
+  while you had the sheet open stays on.
 - **Only what really changed is reported.** After saving, the Workbench reads
   the object again and says one sentence about what changed: "Issue #42:
   added bug, removed docs." GitHub sometimes accepts a change it then ignores,
@@ -110,7 +118,8 @@ GitHub. Three other ways write into the same box.
 - **Show Only and Hide:** the context menu of a row has both, with every value
   in that row: "label bug", "author dependabot".
 - **The Filter Builder,** `Ctrl+Alt+F`: choose an attribute, an operator and a
-  value, then Add Condition (`Insert`). The values come from the repository,
+  value, then Add Condition (`Insert`). Each box reads its own label as you
+  Tab to it: Attribute, Operator, Value. The values come from the repository,
   and Me is offered for every person. The query appears as you go, so you
   learn GitHub's syntax by watching it. OK puts it in the filter box; Save as
   Search also keeps it under Saved Searches.

@@ -220,6 +220,8 @@ class GitHubWorkbenchViewMixin:
         frame.frame.SetTitle(title)
         if self.view_choice("group") != "none":
             self.apply_grouping()
+        if current is not None and current.key.startswith("across"):
+            self.across_after_fill(frame)  # type: ignore[attr-defined]  # ] [ and Back's place
 
     # -- grouping ----------------------------------------------------------------
 
@@ -241,6 +243,10 @@ class GitHubWorkbenchViewMixin:
             return [str(value)] if value else []
 
         groups = group_rows(list(frame.rows), field, values)
+        if field == "repository" and frame.current is not None:
+            # Across Repositories keeps the set's order, not the alphabet (GX16).
+            rank = {str(getattr(r, "repo", "")): i for i, r in enumerate(frame.rows)}
+            groups.sort(key=lambda pair: rank.get(pair[0], len(rank)))
         frame.show_groups([(f"{name} ({len(rows)})", rows) for name, rows in groups])
 
     # -- columns, Load All, unread ------------------------------------------------
@@ -306,11 +312,7 @@ class GitHubWorkbenchViewMixin:
         index = start + step
         while 0 <= index < len(rows):
             if str(getattr(rows[index], "label", "")).startswith("Unread"):
-                for other in chosen:
-                    frame.list.Select(other, False)
-                frame.list.Select(index)
-                frame.list.Focus(index)
-                frame.list.EnsureVisible(index)
+                frame.focus_row(index)  # one change, so the row is read once
                 frame.list.SetFocus()
                 return
             index += step

@@ -83,6 +83,7 @@ class PropertiesSheet:
         open_web: Callable[[], None] | None = None,
         copy_link: Callable[[], None] | None = None,
         start_page: str = "",
+        start_field: str = "",
         loaded_at: str = "",
     ) -> None:
         import wx
@@ -145,6 +146,8 @@ class PropertiesSheet:
         self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_key)
         if start_page in self._page_keys:
             self.notebook.SetSelection(self._page_keys.index(start_page))
+        #: The field a one-field row (Labels..., Edit Title...) opens on, if any.
+        self.start_field = start_field if start_field in self.controls else ""
 
     # -- building -----------------------------------------------------------------
 
@@ -166,7 +169,6 @@ class PropertiesSheet:
         column = wx.BoxSizer(wx.VERTICAL)
         control = self._control(panel, spec, value)
         window = control.panel if isinstance(control, CheckGroup) else control
-        set_spoken_name(window, spec.label)
         control.SetHelpText(self._help(spec))
         self.controls[spec.key] = control
         if self.editable(spec) and spec.create and self._on_create is not None:
@@ -200,11 +202,17 @@ class PropertiesSheet:
         return column
 
     def _control(self, panel: Any, spec: FieldSpec, value: object) -> Any:
+        """The field's control, named where it is built (a CheckGroup names itself).
+
+        The caller builds the field's label just before this, so z-order is
+        right too; the spoken name is what makes it hold for every branch.
+        """
         wx = self._wx
         mixed = value is MIXED
         if self.editable(spec) and spec.kind is FieldKind.CHECK:
             style = wx.CHK_3STATE | wx.CHK_ALLOW_3RD_STATE_FOR_USER if mixed else 0
             control = wx.CheckBox(panel, label=spec.label, style=style)
+            set_spoken_name(control, spec.label)
             control.SetHelpText(self._help(spec))
             if mixed:
                 control.Set3StateValue(wx.CHK_UNDETERMINED)
@@ -220,6 +228,7 @@ class PropertiesSheet:
             if mixed:
                 items.insert(0, MIXED_CHOICE)
             control = wx.Choice(panel, choices=[item or "(none)" for item in items])
+            set_spoken_name(control, spec.label)
             control.SetHelpText(self._help(spec))
             self._items[spec.key] = items
             current = MIXED_CHOICE if mixed else str(value or "")
@@ -243,6 +252,7 @@ class PropertiesSheet:
         if spec.kind is FieldKind.TABLE:
             rows = list(value) if isinstance(value, tuple) else []
             control = wx.ListBox(panel, choices=[str(r) for r in rows] or ["(none)"])
+            set_spoken_name(control, spec.label)
             control.SetHelpText(self._help(spec))
             control.SetMinSize(dip_size(panel, 300, 110))
             return control
@@ -258,6 +268,7 @@ class PropertiesSheet:
         else:
             text = field_text(value)
         control = wx.TextCtrl(panel, value=text, style=style)
+        set_spoken_name(control, spec.label)
         control.SetHelpText(self._help(spec))
         if spec.kind is FieldKind.MULTILINE:
             control.SetMinSize(dip_size(panel, 400, 150))
@@ -488,7 +499,24 @@ class PropertiesSheet:
         if self.dialog.IsModal():
             self.dialog.EndModal(code)
 
+    def focus_start_field(self) -> bool:
+        """Put focus on :attr:`start_field`, selecting its text; False when there is none.
+
+        Opening says nothing: the reader says the title, then the field it lands
+        on (GATE-13). A text box has its text selected so typing replaces it.
+        """
+        control = self.controls.get(self.start_field) if self.start_field else None
+        if control is None or not self.dialog:
+            return False  # none named, or the sheet already closed
+        control.SetFocus()
+        if isinstance(control, self._wx.TextCtrl):
+            control.SelectAll()
+        return True
+
     def show(self) -> int:
+        if self.start_field:
+            # After the modal loop starts, or the dialog's own first focus wins.
+            self._wx.CallAfter(self.focus_start_field)
         try:
             return int(show_modal_dialog(self.dialog, self.title))
         finally:

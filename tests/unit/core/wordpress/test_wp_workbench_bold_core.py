@@ -193,12 +193,25 @@ def test_watches_learn_first_then_say_only_what_is_new() -> None:
 
 def test_the_practice_site_says_what_is_missing_and_builds_its_command(tmp_path) -> None:
     assert "Playground" in missing_words(PracticeTools(None, None))
-    tools = PracticeTools(tmp_path / "node.exe", tmp_path / "cli.js")
+    no_core = PracticeTools(tmp_path / "node.exe", tmp_path / "cli.js")
+    assert "WordPress core" in missing_words(no_core)
+    core = tmp_path / "core"
+    core.mkdir()
+    (core / "wp-load.php").write_text("<?php", encoding="utf-8")
+    tools = PracticeTools(tmp_path / "node.exe", tmp_path / "cli.js", wordpress=core)
     argv = start_command(tools, tmp_path / "site")
-    assert argv[2] == "server" and "--port=9400" in argv and "--login" in argv
-    plan = json.loads((tmp_path / "site" / "blueprint.json").read_text(encoding="utf-8"))
-    assert plan["steps"][0]["step"] == "login"
-    assert "runPHP" == blueprint()["steps"][1]["step"]  # type: ignore[index]
+    assert (tmp_path / "site" / "wordpress" / "wp-load.php").is_file()
+    assert argv[argv.index(str(tools.cli)) + 1] == "server"
+    assert "--port=9400" in argv
+    assert "--login" not in argv, "auto-login 302s every cookie-less REST request"
+    from quill.core.wordpress.workbench_practice import _HANDOFF_DIR
+
+    # The blueprint and the password hand-off share one mounted folder.
+    plan_path = tmp_path / "site" / _HANDOFF_DIR / "blueprint.json"
+    assert f"--blueprint={plan_path}" in argv
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    assert [step["step"] for step in plan["steps"]] == ["runPHP"]
+    assert "runPHP" == blueprint()["steps"][0]["step"]  # type: ignore[index]
     assert read_password(tmp_path / "site") is None
     (tmp_path / "site" / "quill-practice-password.json").write_text(
         '{"username": "admin", "password": "abcd"}', encoding="utf-8"

@@ -27,12 +27,43 @@ LAUNCHER_NAME = "QuillInkwell.exe"
 MODULE = "quill.apps.inkwell"
 
 
-def launch_command() -> str:
-    """The command written to the Run key: this app's own executable, quoted,
-    with the start-in-tray flag."""
-    from quill.core.app_command import app_command
+def running_portable() -> bool:
+    """A portable copy must not leave a login entry on the computer it visits."""
+    from quill.core.paths import portable_bundle_root
 
-    return app_command(MODULE, LAUNCHER_NAME, args=("--tray",))
+    return portable_bundle_root() is not None
+
+
+def launch_command(*, start_minimized: bool | None = None) -> str:
+    """The command written to the Run key: this app's own executable, quoted,
+    with its start-window preference."""
+    from quill.core.app_command import app_command
+    from quill.platform.windows.startup_options import start_minimized as saved_choice
+
+    if start_minimized is None:
+        start_minimized = saved_choice("inkwell", default=True)
+    return app_command(
+        MODULE,
+        LAUNCHER_NAME,
+        args=("--tray",) if start_minimized else ("--window",),
+    )
+
+
+def start_minimized_at_startup() -> bool:
+    from quill.platform.windows.startup_options import start_minimized
+
+    return start_minimized("inkwell", default=True)
+
+
+def set_start_minimized_at_startup(enabled: bool) -> bool:
+    if not is_windows() or running_portable():
+        return False
+    from quill.platform.windows.startup_options import set_start_minimized
+
+    actual = set_start_minimized("inkwell", enabled)
+    if is_launch_at_startup_enabled():
+        set_launch_at_startup(True)
+    return actual
 
 
 def is_windows() -> bool:
@@ -41,7 +72,7 @@ def is_windows() -> bool:
 
 def is_launch_at_startup_enabled() -> bool:
     """True if Quill Inkwell currently has its per-user Run-key entry."""
-    if not is_windows():
+    if not is_windows() or running_portable():
         return False
     try:
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER, _RUN_KEY_PATH) as key:
@@ -59,7 +90,7 @@ def heal_launch_at_startup(*, frozen: bool | None = None) -> bool:
     """
     from quill.platform.windows import launch_heal
 
-    if not is_windows() or not launch_heal.heal_allowed(frozen=frozen):
+    if not is_windows() or running_portable() or not launch_heal.heal_allowed(frozen=frozen):
         return False
     return launch_heal.heal_run_value(winreg, _VALUE_NAME, launch_command())
 
@@ -70,7 +101,7 @@ def set_launch_at_startup(enabled: bool) -> None:
     A no-op off Windows; never raises -- a locked-down registry (corporate
     policy) must not crash the app or block saving other settings.
     """
-    if not is_windows():
+    if not is_windows() or running_portable():
         return
     try:
         with winreg.OpenKey(

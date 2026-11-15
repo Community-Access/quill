@@ -30,7 +30,8 @@ def test_lite_passes_its_document_to_new_gist() -> None:
     # The row goes through the one opener every GitHub row shares (lite_github_workbench.py).
     assert "self.open_github_items()" in inspect.getsource(DocumentToolsMixin.cmd_github_workbench)
     source = inspect.getsource(DocumentToolsMixin.open_github_items)
-    assert 'gist_source_cb=getattr(self, "_github_gist_source", None)' in source
+    # The Workbench's New Gist (github_workbench_gists.py) starts from it.
+    assert 'gist_source=getattr(self, "_github_gist_source", None)' in source
     assert issubclass(ShellMenuMixin, GitHubFileOpenMixin)
 
 

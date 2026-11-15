@@ -125,7 +125,23 @@ def test_edit_a_library_picture_without_a_document(wpx: Any, wp_site: Any, wp_di
     assert not any(r.startswith("Flip") for r in rows)
     body = wp_site.body(wp_site.sent("POST", f"{API}/media/5/edit")[0])
     assert body["modifiers"] == [{"type": "rotate", "args": {"angle": 90}}]
-    assert len(wp_dialogs.asked("confirm")) == 1  # nothing to use it in
+    titles = [c["title"] for c in wp_dialogs.asked("confirm")]
+    assert titles == ["Edit a Picture on the Site", "Regenerate Sizes"]  # nothing to use it in
+    assert wp_site.sent("POST", f"{API}/media/9/post-process") == []  # Regenerate declined
+
+
+def test_regenerate_sizes_is_offered_after_an_edit(wpx: Any, wp_site: Any, wp_dialogs: Any) -> None:
+    # 9.17, gap 4: the edited copy's sizes remade from the edit, when the person says yes.
+    site(wp_site, edit_routes())
+    wp_site.on("GET", f"{API}/media", [picture(5, "fair")])
+    wp_site.on("POST", f"{API}/media/5/edit", picture(9, "fair-rotated"))
+    wp_site.on("POST", f"{API}/media/9/post-process", {})
+    wp_site.on("GET", f"{API}/media/9", picture(9, "fair-rotated"))
+    wp_dialogs.answer("ask_choice", 0, 0).answer("confirm", True, True)
+    wpx.cmd_edit_picture_on_site()
+    body = wp_site.body(wp_site.sent("POST", f"{API}/media/9/post-process")[0])
+    assert body == {"action": "create-image-subsizes"}
+    assert any("remade" in said for said in wpx.host.announced)
 
 
 def test_edit_cancelled_at_each_step_sends_nothing(wpx: Any, wp_site: Any, wp_dialogs: Any) -> None:

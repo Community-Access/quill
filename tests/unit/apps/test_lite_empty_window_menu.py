@@ -270,7 +270,8 @@ def test_the_empty_window_in_workbench_mode_is_a_github_launcher(shell) -> None:
     assert list(bar) == ["&File", "&View", "&Tools", "&GitHub", "&Help"]
     github = [row.split("\t")[0] for row in bar["&GitHub"]]
     assert github[0] == "Lea&ve Workbench Mode"
-    assert "&Inbox..." in github and "Repository I&tems..." in github
+    # The rows open the Workbench at a node, so no ellipsis (GitHub PRD Phase 4).
+    assert "Open GitHub &Workbench" in github and "&Inbox" in github
     assert "&Clone Repository..." in github and "Mana&ge GitHub Accounts..." in github
     file_rows = " ".join(bar["&File"])
     assert "GitHub Workbench" not in file_rows and "Clone" not in file_rows

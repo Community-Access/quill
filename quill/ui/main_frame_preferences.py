@@ -300,9 +300,9 @@ class PreferencesMixin:
         if self.settings.launch_at_windows_startup and not self.settings.tray_enabled:
             self.settings.tray_enabled = True
         try:
-            from quill.platform.windows.startup import set_launch_at_startup
+            from quill.ui.startup_launch import apply_editor_startup
 
-            set_launch_at_startup(self.settings.launch_at_windows_startup)
+            apply_editor_startup(self.settings)  # the Run key and its start-minimized choice
         except Exception:  # noqa: BLE001 - a settings-apply side effect must never raise
             pass
         save_settings(self.settings)

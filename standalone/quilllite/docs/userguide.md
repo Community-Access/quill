@@ -340,3 +340,8 @@ Every key the workbench answers to, one window at a time.
 ### [Chapter 12: The GitHub Workbench, place by place](github-guide/lite-github-guide-12-the-workbench.html)
 
 The one window for GitHub, a place at a time, with its keys and its help.
+
+### [Chapter 13: Properties, filters and permissions](github-guide/lite-github-guide-13-properties-filters-permissions.html)
+
+Alt+Enter on anything for its Properties, changing many things at once,
+undoing a change, filtering a list on anything, and who has access.

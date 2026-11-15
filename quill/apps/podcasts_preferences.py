@@ -70,6 +70,16 @@ def app_rows(host: Any) -> list[AppRow]:
             enabled=startup_enabled,
         ),
         AppRow(
+            "start_minimized_at_windows_startup",
+            "Start QUILL Cast minimized when Windows starts",
+            "When Start QUILL Cast with Windows is on, open it in the system tray "
+            "without showing its window. This does not change an ordinary launch.",
+            "opens",
+            kind="machine_bool",
+            value=cast_startup.start_minimized_at_startup(),
+            enabled=startup_enabled,
+        ),
+        AppRow(
             "check_updates_on_startup",
             "&Check for updates on launch",
             "Compares your version with the newest release once a day, quietly. "
@@ -336,6 +346,9 @@ class CastPreferencesMixin:
 
         history = self._podcast_history  # type: ignore[attr-defined]
         library = self._podcast_library  # type: ignore[attr-defined]
+        from quill.platform.windows import cast_startup
+
+        minimized_at_startup_before = cast_startup.start_minimized_at_startup()
         window = CastPreferencesWindow(
             self.frame,  # type: ignore[attr-defined]
             library=library,
@@ -351,17 +364,41 @@ class CastPreferencesMixin:
             return
         app_changes, default_changes = result
         startup_said = ""
-        if "launch_at_startup" in app_changes:
-            from quill.platform.windows import cast_startup
-
-            requested = bool(app_changes.pop("launch_at_startup"))
+        startup_change_count = 0
+        minimized_at_startup = bool(
+            app_changes.pop("start_minimized_at_windows_startup", minimized_at_startup_before)
+        )
+        minimized_changed = minimized_at_startup != minimized_at_startup_before
+        if minimized_changed:
+            saved_minimized = cast_startup.set_start_minimized_at_startup(minimized_at_startup)
+            startup_change_count += 1
+            if saved_minimized:
+                startup_said = (
+                    "QUILL Cast will start minimized to the system tray when Windows starts."
+                    if minimized_at_startup
+                    else "QUILL Cast will start with its window open when Windows starts."
+                )
+            else:
+                startup_said = "Windows did not allow the start-minimized setting to change."
+        startup_enabled_before = cast_startup.is_launch_at_startup_enabled()
+        requested = bool(app_changes.pop("launch_at_startup", startup_enabled_before))
+        startup_changed = requested != startup_enabled_before
+        if startup_changed:
             cast_startup.set_launch_at_startup(requested)
+            startup_change_count += 1
             actual = cast_startup.is_launch_at_startup_enabled()
             if actual == requested:
-                startup_said = (
-                    "QUILL Cast will start with Windows."
-                    if actual
-                    else "QUILL Cast will not start with Windows."
+                startup_said = " ".join(
+                    part
+                    for part in (
+                        startup_said,
+                        (
+                            "QUILL Cast will start with Windows."
+                            if actual
+                            else "QUILL Cast will not start with Windows."
+                        ),
+                    )
+                    if part
                 )
             else:
                 startup_said = "Windows did not allow the startup setting to change."
@@ -383,7 +420,7 @@ class CastPreferencesMixin:
         if monitor is not None and ("podcast_check_enabled" in app_changes or default_changes):
             monitor.apply()
             said = str(monitor.describe())
-        count = len(app_changes) + written + int(bool(startup_said))
+        count = len(app_changes) + written + startup_change_count
         if count:
             pending = bool(app_changes or written)
             self._announce(
