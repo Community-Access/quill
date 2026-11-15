@@ -245,12 +245,18 @@ class _ModelApi:
             }
         return {"genre": {"name": "Genres", "rest_base": "genres"}}
 
+    def request(self, method: str, route: str, **_kw: Any) -> Any:
+        class _R:
+            payload: Any = {}
+
+        return _R()
+
 
 def test_the_content_model_says_every_definition_is_read_only_and_why() -> None:
     from quill.core.wordpress.workbench_discovered import READ_ONLY, model_rows
     from quill.core.wordpress.workbench_tree import WORDPRESS_TREE
 
-    rows = model_rows(_ModelApi(), "S")  # type: ignore[arg-type]
+    rows = model_rows(_ModelApi(), "S", namespaces=("wp/v2", "tribe/events/v1"))  # type: ignore[arg-type]
     assert {row.cell("definition") for row in rows} == {READ_ONLY}
     post, events, genre = rows
     assert "Read only definition, part of WordPress" in post.detail

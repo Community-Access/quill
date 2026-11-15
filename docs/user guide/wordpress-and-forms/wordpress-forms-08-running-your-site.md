@@ -275,10 +275,30 @@ block theme:
 - **Tools > WordPress > Manage > Space Used** says how much room your uploads,
   themes, plugins, WordPress itself and the database take, in plain words.
 
-**Content Model**, in each site's branch, lists every kind of content and
-every way of grouping the site has, with who added it, such as Gravity Forms
-or The Events Calendar. These are defined in a plugin's or theme's code, so
-they are read only here. Their items are still edited in their own lists.
+**Content Model**, in each site's branch, lists every kind of content,
+every way of grouping it, and every group of fields the site has, with who
+added each one. Field groups include the registered fields on each kind of
+content, Advanced Custom Fields and Meta Box fields, every pod Pods keeps and
+every CMB2 box.
+
+WordPress does not say which plugin added a type, so QUILL names one only
+when the site shows it: QUILL Site Types keeps it, a field plugin lists it,
+or it lives under a plugin's own part of the site's REST API. Otherwise it
+says **unknown**, and the row's detail says why. When Custom Post Type UI is
+active, the detail says that plugin may be the one, because it keeps its
+types in wp-admin where QUILL cannot see them.
+
+These are defined in a plugin's or theme's code, so they are read only here.
+Their items are still edited in their own lists.
+
+When the site has QUILL Site Types, **Copy to QUILL Site Types...** on the
+context menu copies a post type, taxonomy or field group into it under the
+same name, after a preview. This is how you move a definition away from
+another plugin. Nothing is deleted from the original. QUILL Site Types will
+not take a post type or taxonomy that something else still registers, so
+turn it off in its plugin first; its posts stay. A field group can be copied
+straight away, and values already saved under its field names show up as
+custom fields. The preview names anything that will not come across.
 
 ## Jobs only wp-admin does
 

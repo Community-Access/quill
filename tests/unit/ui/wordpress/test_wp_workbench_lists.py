@@ -216,7 +216,7 @@ def test_the_content_model_lists_types_with_who_registered_them(bench) -> None:
     _go(bench, NodeRef("site", "content_model", SITE))
     owners = {r.key: r.cell("registered_by") for r in bench.rows}
     assert owners["post"] == "WordPress"
-    assert owners["event"] == "a plugin or the theme"
+    assert owners["event"] == "unknown"  # nothing on the site says who
 
 
 def test_an_ability_runs_after_its_sheet_and_preview(bench, monkeypatch) -> None:

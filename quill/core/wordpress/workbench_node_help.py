@@ -164,8 +164,9 @@ NODE_HELP: Mapping[str, str] = {
     "more": "Every family of routes on this site, by namespace, and how many are reached.",
     "more_namespace": "One namespace's routes, with their methods and where each is reached.",
     "content_model": (
-        "The site's post types, taxonomies and field groups, and who registered each. Only "
-        "what QUILL Site Types defines can change here: Ctrl+N defines a new one."
+        "The site's post types, taxonomies and field groups, and who registered each, or "
+        "unknown. Only what QUILL Site Types defines can change here: Ctrl+N defines a new "
+        "one, and Copy to QUILL Site Types brings another plugin's in."
     ),
     "across": "The same name on every site, or a Site Set: where copies differ, what is missing.",
     "across_terms": "Each tag and category by name, on every site: differing slugs, sites without.",
@@ -271,7 +272,10 @@ ROW_HELP: Mapping[str, str] = {
     "global_style": (
         "A palette colour or font size in the active block theme. Change... previews the new value."
     ),
-    "model": "A post type or taxonomy. Alt+Enter shows its fields; who registered it says why.",
+    "model": (
+        "A post type, taxonomy or field group, with who registered it and how QUILL knows. "
+        "Alt+Enter shows its fields."
+    ),
     "ability": "An ability the site offers. Enter runs it, after a preview.",
     "menu": (
         "A menu. Enter reads where it is shown; Ctrl+N or Add Menu Item adds to it, and "

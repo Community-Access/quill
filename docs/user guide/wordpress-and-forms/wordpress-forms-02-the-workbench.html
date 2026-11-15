@@ -416,6 +416,34 @@ comment, Properties shows them on a <strong>Custom Fields</strong> page.
 A field that holds a list or a group is a labelled box of JSON text, and
 QUILL checks it before it saves. A field the site does not describe is
 read only.</p>
+<p>Beside a list, such as a schedule’s speakers, is an <strong>Edit
+List…</strong> button. It opens the list on its own: Add, Edit, Remove,
+Move Up and Move Down, then Keep Changes. Beside a group, such as a
+venue’s address, <strong>Edit Group…</strong> opens it as a form with
+one box for each part. These are the same windows the editor’s Custom
+Fields uses. What you keep goes back into the box, and OK or Apply sends
+it. Parts of a group the site does not describe are kept as they were. A
+list inside a list has no button and stays as JSON.</p>
+<p>Field plugins get a page of their own, each only when the site has
+it:</p>
+<ul>
+<li><strong>Advanced Custom Fields</strong>, for field groups with Show
+in REST API on.</li>
+<li><strong>Meta Box</strong>, through its MB REST API extension. When
+Meta Box does not say what kind of value a field holds, QUILL goes by
+the value it holds now, so a number stays a number. A field whose value
+says nothing, such as an empty list, is read only.</li>
+<li><strong>Pods</strong>, with the fields the pod shows in REST. A
+field the pod does not let you write over REST is read only, and F1 says
+so. Relationship and file fields are read only too. Pods only tells an
+administrator which fields are its own, so other roles see no Pods
+page.</li>
+<li><strong>CMB2</strong>, with every box that applies. Each field is
+saved on its own and read back, so you hear about any the site did not
+keep. A box the site shows for reading only stays read only.</li>
+</ul>
+<p>Every one of them is checked before it is sent and checked again
+after, and Ctrl+Z puts them all back.</p>
 <p><strong>Site &gt; Site Properties…</strong>
 (<code>Alt+Shift+Enter</code>) is the same sheet for the whole site.</p>
 <h2 id="the-context-menu-and-the-item-menu">The context menu and the

@@ -18,6 +18,14 @@ COVERED: tuple[tuple[str, str], ...] = (
         r"quill-site-types/v1(/.*)?$",
         "Sites > site > Content Model: Define with QUILL Site Types, Stop Defining, Export as Code",
     ),
+    (
+        r"pods/v1/(pods|groups|fields)(/.*)?$",
+        "Properties, Pods page; Sites > site > Content Model lists each pod and its fields",
+    ),
+    (
+        r"cmb2/v1/boxes(/.*)?$",
+        "Properties, CMB2 page; Sites > site > Content Model lists each box",
+    ),
     (r"wp/v2/(posts|pages)(/.*)?$", "Sites > site > Posts and Pages"),
     (r"wp/v2/media(/.*)?$", "Sites > site > Media"),
     (r"wp/v2/comments(/.*)?$", "Sites > site > Comments"),

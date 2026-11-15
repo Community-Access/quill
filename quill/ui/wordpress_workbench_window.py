@@ -78,6 +78,7 @@ from quill.ui.wordpress_workbench_bold import WorkbenchBoldCommands
 from quill.ui.wordpress_workbench_commands import WorkbenchRowCommands
 from quill.ui.wordpress_workbench_discovered import WorkbenchDiscoveredCommands
 from quill.ui.wordpress_workbench_editor_side import WorkbenchEditorSide
+from quill.ui.wordpress_workbench_field_lists import WorkbenchFieldLists
 from quill.ui.wordpress_workbench_forms_site import WorkbenchPluginCommands
 from quill.ui.wordpress_workbench_gaps import WorkbenchGapCommands
 from quill.ui.wordpress_workbench_guard import WorkbenchGuard, watch_writes
@@ -124,6 +125,7 @@ class WordPressWorkbenchProvider(
     WorkbenchEditorSide,
     WorkbenchPeopleAdminCommands,
     WorkbenchSiteTypesCommands,
+    WorkbenchFieldLists,  # Edit List... and Edit Group... on Properties
     WorkbenchSiteCheck,
     WorkbenchStatusCells,
     WorkbenchSearchCommands,

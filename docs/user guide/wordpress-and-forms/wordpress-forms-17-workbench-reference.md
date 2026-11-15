@@ -71,7 +71,7 @@ Spam, Form Responses, Membership Orders and Watches.
 | Redirects | The Redirection plugin's redirects, and the 404 Log | 10 |
 | Search and Upkeep | Search visibility, sitemap, missed schedules, certificate, who is editing | 8 |
 | Administration Areas | Every part of running a site, and where QUILL handles it | 8 |
-| Content Model | Every content type and taxonomy, and who added it | 8 |
+| Content Model | Every content type, taxonomy and field group, and who added it | 8 |
 | More from This Site | The routes the site's plugins offer, by plugin | 8 |
 
 The Shop's places are Shop Orders, Draft Products, On Sale, Out of Stock,
