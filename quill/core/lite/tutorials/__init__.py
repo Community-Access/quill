@@ -32,8 +32,11 @@ A third track, WordPress (2026-11-04), is for somebody who looks after a
 site, and only them. It is the same seven lessons QUILL has, written once in
 :mod:`quill.core.tutorials.wordpress_lessons`, because QUILL Lite reaches the
 same WordPress commands from the same table and may never be ahead of QUILL or
-behind it. A fourth, Forms (2026-11-04), is the same seven Forms lessons QUILL
-has, from :mod:`quill.core.tutorials.forms_lessons`, for the same reason.
+behind it. For the same reason it has QUILL's first-week path for a new site
+owner, its Workbench lessons on the Practice Site and Break It on Purpose
+(WP-R-049): QUILL Lite opens the same WordPress Workbench, so it teaches it. A
+fourth, Forms (2026-11-04), is the same seven Forms lessons QUILL has, from
+:mod:`quill.core.tutorials.forms_lessons`, for the same reason.
 
 What is deliberately not here: a tour of everything. The menus, the command
 palette and the user guide cover the rest, and a lesson that duplicates the
@@ -48,7 +51,17 @@ from quill.core.tutorials.coding_lessons import CODING_TRACK, coding_lessons
 from quill.core.tutorials.dictation_lessons import dictation_lessons
 from quill.core.tutorials.forms_lessons import forms_lessons
 from quill.core.tutorials.model import Track, TutorialSet, build
+from quill.core.tutorials.wordpress_break_it_lessons import BREAK_TRACK, break_it_lessons
+from quill.core.tutorials.wordpress_first_week import FIRST_WEEK_TRACK, first_week_lessons
 from quill.core.tutorials.wordpress_lessons import wordpress_lessons
+from quill.core.tutorials.wordpress_practice_lessons import (
+    PRACTICE_TRACK,
+    for_lite,
+    practice_lessons,
+)
+from quill.core.tutorials.wordpress_practice_more import more_practice_lessons
+from quill.core.tutorials.wordpress_practice_sites import site_practice_lessons
+from quill.core.tutorials.wordpress_site_care_lessons import site_care_lessons
 from quill.core.wordpress.menu import lite_handler
 
 #: QUILL Lite's tracks, in teaching order.
@@ -75,6 +88,10 @@ TRACKS: tuple[Track, ...] = (
         "post, fix a page you found by its address, pictures with alternative "
         "text, the check before you publish, earlier versions, and comments.",
     ),
+    # The same first week, Practice Site and Break It tracks as QUILL's (WP-R-049).
+    FIRST_WEEK_TRACK,
+    PRACTICE_TRACK,
+    BREAK_TRACK,
     Track(
         "forms",
         "Forms",
@@ -111,6 +128,19 @@ CATALOGUE: TutorialSet = build(
         track="wordpress",
         surfaces=("QUILL Lite",),
         app="QUILL Lite",
+    ),
+    # QUILL's first week, Practice Site and Break It lessons (WP-R-049).
+    first_week_lessons(
+        lambda name: lite_handler(f"wordpress.{name}"),
+        surfaces=("QUILL Lite",),
+        app="QUILL Lite",
+    ),
+    for_lite(
+        practice_lessons()
+        + site_care_lessons()
+        + more_practice_lessons()
+        + site_practice_lessons()
+        + break_it_lessons()
     ),
     # The seven 2026-11-04 Forms lessons, the same as QUILL's.
     forms_lessons(

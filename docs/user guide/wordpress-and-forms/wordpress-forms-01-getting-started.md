@@ -297,6 +297,14 @@ that use a real test site. The first, Connect your WordPress site, walks
 through everything in this chapter step by step and tells you what you
 should hear at each step.
 
+If the site is new to you, try **Your first week with a site**, also in Help >
+Tutorials in both editors: one short lesson a day for seven days, on your own
+site. Day 1 connects it, then you save a draft, describe a picture, fix one
+thing a check finds, answer a comment, look after your menu, and on day 7
+publish the draft if you are ready. Each day ends with something real on your
+site, and nothing happens that you did not choose: the draft stays a draft
+until you say otherwise.
+
 ## Where to next
 
 - Next: [Chapter 2: A tour of the WordPress Workbench](wordpress-forms-02-the-workbench.html)
