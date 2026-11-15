@@ -25,6 +25,10 @@ with what the last round saw (:class:`WatchState`, kept in
 - ``form_spam``: once a week, QUILL Accessible Forms' question numbers for
   the week that ended, against the week before (``qaf/v1/spam/weeks``); a
   QAF older than that route stays quiet.
+- ``order``, ``low_stock``, ``certificate``, ``abandoned``, ``statement`` and
+  ``weekly``: the shop, the site's security certificate, plugins that may be
+  abandoned, the accessibility statement and a weekly sentence, in
+  :mod:`quill.core.wordpress.workbench_watches_more`.
 
 The first sample of each Watch on each site is silent -- turning a Watch on,
 or connecting a site, only learns what is there -- and a change is said once,
@@ -46,6 +50,7 @@ from typing import Any
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.sites import sites_path
+from quill.core.wordpress.workbench_watches_more import MORE_KINDS, WatchContext, more_round
 
 __all__ = [
     "KINDS",
@@ -53,9 +58,12 @@ __all__ = [
     "WatchState",
     "check",
     "due",
+    "first_sample",
     "load_state",
+    "plugin_updates",
     "save_state",
     "status_facts",
+    "waiting_comments",
 ]
 
 MIN_MINUTES = 15
@@ -68,6 +76,7 @@ KINDS: Mapping[str, str] = {
     "review": "Items with a reviewer leaving the queue",
     "health": "Site Health status changes",
     "form_spam": "Form spam questions, once a week",
+    **MORE_KINDS,
 }
 _KIND_STATE = {
     "comment": "waiting",
@@ -98,6 +107,8 @@ class WatchState:
     health: dict[str, dict[str, str]] = field(default_factory=dict)
     #: Site -> the QAF spam week (2026-W46) that was current last round.
     spam_weeks: dict[str, str] = field(default_factory=dict)
+    #: The later Watches' memory (workbench_watches_more): kind -> site -> what was seen.
+    extra: dict[str, dict[str, Any]] = field(default_factory=dict)
 
 
 def _path(base: Path | None) -> Path:
@@ -149,6 +160,9 @@ def load_state(base: Path | None = None) -> WatchState:
         spam_weeks={str(k): str(v) for k, v in raw["spam_weeks"].items()}
         if isinstance(raw.get("spam_weeks"), dict)
         else {},
+        extra={str(k): dict(v) for k, v in raw["extra"].items() if isinstance(v, dict)}
+        if isinstance(raw.get("extra"), dict)
+        else {},
     )
 
 
@@ -177,6 +191,7 @@ def save_state(state: WatchState, base: Path | None = None) -> None:
             "reviews": state.reviews,
             "health": state.health,
             "spam_weeks": state.spam_weeks,
+            "extra": state.extra,
         },
     )
 
@@ -199,7 +214,7 @@ def _plural(count: int, one: str, many: str) -> str:
     return f"{count} {one if count == 1 else many}"
 
 
-def _first(state: WatchState, site: str, kind: str) -> bool:
+def first_sample(state: WatchState, site: str, kind: str) -> bool:
     """True the first time a Watch samples a site; marks it sampled."""
     key = f"{site}:{kind}"
     if key in state.seen:
@@ -207,6 +222,14 @@ def _first(state: WatchState, site: str, kind: str) -> bool:
     older = site in state.seen and site in getattr(state, _KIND_STATE.get(kind, "down"), {})
     state.seen.append(key)
     return not older
+
+
+_first = first_sample
+
+
+def waiting_comments(api: WordPressApi) -> list[int]:
+    """The ids of the comments waiting for approval (the first hundred)."""
+    return _ids(api, "wp/v2/comments", {"status": "hold"})
 
 
 def check(
@@ -217,16 +240,20 @@ def check(
     unreachable: Iterable[str] = (),
     reviews: Sequence[Any] = (),
     now: Callable[[], float] = time.time,
+    context: WatchContext | None = None,
 ) -> list[str]:
     """One round over *sites* ((name, client, namespaces)); the sentences worth saying.
 
     *unreachable* names the sites that did not answer this round; *reviews*
     are the assignments (:class:`~quill.core.wordpress.workbench_editorial.Review`)
-    the ``review`` Watch follows.
+    the ``review`` Watch follows; *context* carries the local check history
+    and the certificate and WordPress.org readers the later Watches use.
     """
     wanted = set(kinds)
     said: list[str] = []
     moment = now()
+    ctx = context or WatchContext()
+    ctx.now = moment
     for site in unreachable:
         if site not in state.down:
             state.down[site] = moment
@@ -242,6 +269,7 @@ def check(
         state.answered[site] = moment
         try:
             said += _site_round(site, api, namespaces, state, wanted, reviews)
+            said += more_round(site, api, namespaces, state, wanted, ctx)
         except WordPressApiError:
             continue
     state.last_round = moment
@@ -258,7 +286,7 @@ def _site_round(
 ) -> list[str]:
     said: list[str] = []
     if "comment" in wanted:
-        waiting = _ids(api, "wp/v2/comments", {"status": "hold"})
+        waiting = waiting_comments(api)
         new = set(waiting) - set(state.waiting.get(site, []))
         first = _first(state, site, "comment")
         state.waiting[site] = waiting
@@ -283,7 +311,7 @@ def _site_round(
         if newest > before and not first:
             said.append(f"A new form response on {site}.")
     if "update" in wanted:
-        updates = _updates(api)
+        updates = plugin_updates(api)
         new_updates = sorted(set(updates) - set(state.updates.get(site, [])))
         first = _first(state, site, "update")
         state.updates[site] = updates
@@ -424,7 +452,7 @@ def _newest_entry(api: WordPressApi, namespaces: Sequence[str]) -> int:
     return 0
 
 
-def _updates(api: WordPressApi) -> list[str]:
+def plugin_updates(api: WordPressApi) -> list[str]:
     """Plugins whose answer says a newer version waits (sites that report it)."""
     names: list[str] = []
     for raw in api.iter_collection("wp/v2/plugins", {}, per_page=100, max_pages=1):

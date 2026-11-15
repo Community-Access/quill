@@ -269,6 +269,15 @@ when it came. The Fleet only reads.
   items. Uncheck anything that should not change, then send. It does not use
   AI.
 
+  Any of these can say how old: `older than a year`, `older than six months`,
+  `newer than two weeks`, `before March 2024` or `after 2023`, all by the
+  date of the post or page. To clear things out, say `move every draft older
+  than a year to Trash` or `trash all drafts before March 2024`. You get the
+  same checklist first, and `Ctrl+Z` puts everything back with the status it
+  had. To ask instead of change, start with "how many": `how many drafts are
+  older than six months?` or `how many pages are pending on every site?`
+  QUILL says the count for each site and changes nothing.
+
 In the editor, **File > WordPress > Send and Copy > Download My Writing...**
 saves every page and post to a folder as Markdown or Word, and **Send a
 Folder as Drafts...** does the reverse (Chapter 3).

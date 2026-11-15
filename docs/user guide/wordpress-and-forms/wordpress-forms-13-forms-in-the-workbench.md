@@ -103,6 +103,28 @@ newest first: the questions asked, answered, answered wrongly, and let
 through with Send Anyway. The Watch for form spam questions says each new
 week's numbers without being asked (Chapter 8).
 
+### What your visitors read
+
+**Visitor Words for Forms...**, on the site's context menu, lists what the
+plugin says to the people filling in your forms: the thank-you after a form
+is sent, what it says when an answer needs another look or a question was
+left empty, the words around a text challenge (before it, after a wrong or
+empty answer, when it is replaced, and the Send Anyway offer), and the
+confirmation someone sees when their form is held for a person to read.
+
+1. If the site offers more than one language, choose the language first.
+   Each one has its own words.
+2. Choose the words to change, and type new ones. Keep them plain: no
+   markup, up to 300 characters. The help for the box has a suggestion. To
+   go back to the plugin's own words, leave the box empty.
+3. Check the preview, which shows what it was and what it becomes, and
+   choose **Save Words**. QUILL reads the words again first, so a change made
+   in wp-admin meanwhile is never overwritten, then reads them back.
+
+You need the site's Manage Options capability, or the plugin's own Manage
+Settings. A copy of QUILL Accessible Forms that does not offer this yet says
+so, and its words stay as the plugin wrote them until it is updated.
+
 ## Gravity Forms
 
 Gravity Forms is a paid plugin many sites already use. On a site that has it,
