@@ -287,6 +287,33 @@ is, and what you can do with it. Press it on the tree, the list, or any field
 of Properties. **Site > Roles and What They May Do** (`Ctrl+Alt+R`) explains
 each role on the site in plain words.
 
+The Help menu has the rest of the help, each on its own key:
+
+- **What Is This?** (`Alt+F1`) explains the WordPress word for the selected
+  row, such as slug, sticky or synced pattern, with an example from your own
+  site once the Workbench has read one.
+- **WordPress Guide** (`Ctrl+F1`) opens this guide in your browser at the
+  chapter for where you are.
+- **Search Help...** (`Ctrl+Shift+F1`) finds places, commands, WordPress
+  words and jobs from a few words you type. Enter goes there, runs it or
+  reads it.
+- **Workbench Keys** (`Alt+Shift+F1`) lists every key in the window.
+- **Say Last Result Again** (`F9`) repeats what the Workbench last said, and
+  **Explain That** (`Shift+F9`) says what it means and what you might do
+  next.
+
+**Help and Learning**, at the bottom of the tree, holds How WordPress Thinks,
+Words (every WordPress word, each explained), Keys, and four more:
+
+- **Do Something** lists common jobs in plain words, such as updating plugins
+  safely or fixing a broken link. Enter reads the steps, and **Take Me There**
+  goes to the place where the job is done.
+- **The Guide** lists this guide's chapters. Enter opens one.
+- **What Changed** says what is new in the Workbench.
+- **Ask a Person** starts a message to support in your own email. The
+  Workbench sends nothing and puts nothing of yours in it, so leave your
+  passwords out of what you write too.
+
 ## A walk-through: your first five minutes
 
 1. Press Ctrl+Alt+Shift+Grave, then H. The Workbench opens.

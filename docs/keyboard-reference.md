@@ -1088,10 +1088,12 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+1 | Where Am I | `wordpress.workbench.where_am_i` |
 | Alt+2 | Say Selection | `wordpress.workbench.say_selection` |
 | Alt+Enter | Properties... | `wordpress.workbench.sheet` |
+| Alt+F1 | What Is This? | `wordpress.workbench.glossary` |
 | Alt+F4 | Close Workbench | `wordpress.workbench.close` |
 | Alt+Left | Back | `wordpress.workbench.back` |
 | Alt+Right | Forward | `wordpress.workbench.forward` |
 | Alt+Shift+Enter | Site Properties... | `wordpress.workbench.site_sheet` |
+| Alt+Shift+F1 | Workbench Keys | `wordpress.workbench.keys` |
 | Alt+Up | Parent Node | `wordpress.workbench.go_parent` |
 | Ctrl+0 | Across Sites | `wordpress.workbench.go_across` |
 | Ctrl+1 | Needs My Attention | `wordpress.workbench.go_inbox` |
@@ -1133,6 +1135,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Y | Across Sites Scope... | `wordpress.workbench.scope` |
 | Ctrl+E | Filter... | `wordpress.workbench.filter` |
 | Ctrl+Enter | Preview on the Site | `wordpress.workbench.preview` |
+| Ctrl+F1 | WordPress Guide | `wordpress.workbench.guide_chapter` |
 | Ctrl+N | New Here... | `wordpress.workbench.new_here` |
 | Ctrl+Shift+1 | Posts | `wordpress.workbench.go_posts` |
 | Ctrl+Shift+2 | Pages | `wordpress.workbench.go_pages` |
@@ -1149,6 +1152,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+D | Approve and Schedule... | `wordpress.workbench.approve_schedule` |
 | Ctrl+Shift+E | Switch to Editor | `wordpress.workbench.switch_to_editor` |
 | Ctrl+Shift+F | Filter Builder... | `wordpress.workbench.filter_builder` |
+| Ctrl+Shift+F1 | Search Help... | `wordpress.workbench.search_help` |
 | Ctrl+Shift+G | Merge Into... | `wordpress.workbench.merge_into` |
 | Ctrl+Shift+H | Change History... | `wordpress.workbench.history` |
 | Ctrl+Shift+I | Import Posts from a Spreadsheet... | `wordpress.workbench.import_posts` |
@@ -1170,7 +1174,9 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | F1 | Help for This View | `wordpress.workbench.help_view` |
 | F5 | Refresh | `wordpress.workbench.refresh` |
 | F6 | Next Pane | `wordpress.workbench.next_pane` |
+| F9 | Say Last Result Again | `wordpress.workbench.repeat_result` |
 | Shift+Delete | Delete Permanently... | `wordpress.workbench.delete_permanently` |
 | Shift+Enter | Open on the Site | `wordpress.workbench.open_on_site` |
 | Shift+F1 | What Can I Do Here? | `wordpress.workbench.what_can_i_do` |
 | Shift+F6 | Previous Pane | `wordpress.workbench.previous_pane` |
+| Shift+F9 | Explain That | `wordpress.workbench.explain_result` |

@@ -317,7 +317,36 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
     ),
     MenuSpec(
         "&Help",
-        (_row("help_view", "&Help for This View", "F1", "What this view and control do."),),
+        (
+            _row("help_view", "&Help for This View", "F1", "What this view and control do."),
+            _row(
+                "glossary",
+                "What &Is This?",
+                "Alt+F1",
+                "The WordPress word for this row, explained.",
+            ),
+            _row(
+                "guide_chapter",
+                "WordPress &Guide",
+                "Ctrl+F1",
+                "The WordPress and Forms guide, at the chapter for where you are.",
+            ),
+            _row(
+                "search_help",
+                "&Search Help...",
+                "Ctrl+Shift+F1",
+                "Type a few words to find a place, a command, a WordPress word or a task.",
+            ),
+            _row("keys", "Workbench &Keys", "Alt+Shift+F1", "Every key in this window."),
+            None,
+            _row("repeat_result", "Say &Last Result Again", "F9", "Say the last result again."),
+            _row(
+                "explain_result",
+                "E&xplain That",
+                "Shift+F9",
+                "What the last result means and what you might do next.",
+            ),
+        ),
     ),
 )
 """The bar, in order: File, Edit, View, Go, Item, Site, Tools, Window, Help."""

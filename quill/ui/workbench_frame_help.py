@@ -9,7 +9,8 @@ Split out of :mod:`quill.ui.workbench_frame` (GATE-11), provider-neutral:
 - **Shift+F1, What Can I Do Here?** (D5) lists every action for the selection
   from the same action table the menus use, in context-menu order, each with
   its key, and greyed ones with why. Enter runs it.
-- **Alt+F1, What Is This?** (D6) explains the GitHub word for the selected row.
+- **Alt+F1, What Is This?** (D6) explains the provider's word for the selected row
+  (GitHub's or WordPress's).
 - **Ctrl+F1** opens the guide at the chapter for this node.
 - **Ctrl+Shift+F1, Search Help** (D7) finds places, commands, words and tasks.
 - **Alt+Shift+F1** lists the keys.
@@ -131,7 +132,7 @@ class WorkbenchHelpMixin:
         hook = self._hook("glossary_for")
         term, text = hook(self._row_kind()) if hook else ("", "")
         if not term:
-            self._say("No GitHub word for this.")
+            self._say("There is no glossary word for this.")
             return
         HelpTextDialog(self.frame, "What Is This", f"{term}\n\n{text}").show()
 
@@ -181,7 +182,8 @@ class WorkbenchHelpMixin:
 
     def show_keys(self) -> None:
         hook = self._hook("key_text")
-        HelpTextDialog(self.frame, "GitHub Workbench Keys", hook() if hook else "").show()
+        name = str(getattr(self.provider, "name", "") or "Workbench")
+        HelpTextDialog(self.frame, f"{name} Keys", hook() if hook else "").show()
 
     def empty_words(self) -> str:
         hook = self._hook("empty_text")

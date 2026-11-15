@@ -299,11 +299,23 @@ Export Site as WXR... and Import WXR as Drafts..., reached with Alt+T, W,
 then E or I.
 
 **Window:** Switch to Editor (`Ctrl+Shift+E`). **Help:** Help for This View
-(`F1`).
+(`F1`), What Is This? (`Alt+F1`), WordPress Guide (`Ctrl+F1`), Search
+Help... (`Ctrl+Shift+F1`), Workbench Keys (`Alt+Shift+F1`), Say Last Result
+Again (`F9`) and Explain That (`Shift+F9`).
 
 The commands on a row's context menu that are not listed here have no key of
 their own, because they are used now and then. Reach them with the
 Applications key or Shift+F10.
+
+Some of those, by row:
+
+- **A Site Health or broken link row:** Explain (Enter), Fix..., Take Me
+  There and Open in Editor.
+- **A plugin:** What Depends on It, beside Activate or Deactivate.
+- **An explained setting** (Permalinks, the Discussion rules, Search engine
+  visibility and plugin settings): Open Its Documentation and Open in
+  Dashboard.
+- **A Help and Learning topic:** Open (Enter) and Take Me There.
 
 ## Where to next
 

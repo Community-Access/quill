@@ -165,6 +165,11 @@ the Keyboard Manager like any others. The ones you will use most:
 | Alt+1 | Where Am I |
 | Shift+F1 | What Can I Do Here? |
 | F1 | Help for the place or row under focus |
+| Alt+F1 | What Is This? The WordPress word for the selected row |
+| Ctrl+F1 | This guide, at the chapter for where you are |
+| Ctrl+Shift+F1 | Search Help |
+| Alt+Shift+F1 | Every key in the window |
+| F9, Shift+F9 | Say the last result again, and explain it |
 | Ctrl+Shift+E | Back to the editor |
 
 Inside the Workbench, Ctrl+Shift+P is Publish or Update, not the Command

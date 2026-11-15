@@ -192,7 +192,7 @@ class SearchHelpDialog:
         self.results = wx.ListBox(self.dialog)
         self.results.SetName("Results")
         self.results.SetHelpText(
-            "Each result says what it is: a place, a command with its key, a GitHub "
+            "Each result says what it is: a place, a command with its key, a glossary "
             "word or a task. Enter goes there, runs it or reads it."
         )
         apply_listbox_activation(self.results, lambda _e: self._run())

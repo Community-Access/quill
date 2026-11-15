@@ -26,6 +26,7 @@ from collections.abc import Callable, Sequence
 from typing import Any
 
 from quill.core.wordpress import comments as wc
+from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.workbench_edit import (
     TRASHABLE,
     delete_permanently,
@@ -442,8 +443,26 @@ class WorkbenchRowCommands(
         if refused:
             self.say(refused)
             return
+        if not active:
+            self._toggle_plugin(row, active, verb, "")
+            return
+
+        def depends() -> str:  # what would notice, asked of the site first (D3)
+            try:
+                return str(self.plugin_dependents(row).sentence())  # type: ignore[attr-defined]
+            except WordPressApiError:
+                return "The site would not say what depends on it."
+
+        self.background(
+            f"asking what depends on {row.title}",
+            depends,
+            lambda said: self._toggle_plugin(row, active, verb, said),
+        )
+
+    def _toggle_plugin(self, row: WbRow, active: bool, verb: str, depends: str) -> None:
         warning = deactivate_warning(row.key) if active else ""
         message = f"{verb} {row.title} on {row.site}?" + (f" {warning}" if warning else "")
+        message += f" {depends}" if depends else ""
         if not self._confirm(verb, message, verb):
             return
         api = self.ctx(row.site).api
