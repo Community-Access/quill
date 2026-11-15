@@ -134,17 +134,19 @@ if ($LASTEXITCODE -ne 0) { throw "enchant payload prune failed (see above)." }
 # signed binaries, copied unmodified (scripts\code_signing.py skips them).
 & $Python (Join-Path $quillRepo "scripts\fetch_build_deps.py") --only copilot --only codex
 if ($LASTEXITCODE -ne 0) { throw "Could not stage the AI engines (see scripts/fetch_build_deps.py)." }
-# IntelliSense layer 4: Node, the language servers and ripgrep, in every shared
-# runtime so no app downloads a server on first use (docs\design\intellisense.md).
-& $Python (Join-Path $quillRepo "scripts\fetch_build_deps.py") --only nodejs --only language-servers --only ripgrep
-if ($LASTEXITCODE -ne 0) { throw "Could not stage the language servers (see scripts/fetch_language_servers.py)." }
+# IntelliSense and the WordPress Workbench's Practice Site are bundled in the
+# shared runtime. Playground's CLI, PHP.wasm and WordPress core are pinned and
+# staged together so the local site never downloads a runtime on first use.
+& $Python (Join-Path $quillRepo "scripts\fetch_build_deps.py") --only nodejs --only language-servers --only ripgrep --only wp-playground-cli
+if ($LASTEXITCODE -ne 0) { throw "Could not stage the language servers and WordPress Playground (see scripts/fetch_language_servers.py)." }
 . (Join-Path $quillRepo "scripts\StageMediaTools.ps1")
 Stage-QuillMediaTools -RuntimeDist $dist `
     -CopilotDir (Join-Path $quillRepo "build\deps\copilot") `
     -CodexDir (Join-Path $quillRepo "build\deps\codex") `
     -NodeDir (Join-Path $quillRepo "build\deps\nodejs") `
     -LanguageServersDir (Join-Path $quillRepo "build\deps\language-servers") `
-    -RipgrepDir (Join-Path $quillRepo "build\deps\ripgrep")
+    -RipgrepDir (Join-Path $quillRepo "build\deps\ripgrep") `
+    -WpPlaygroundDir (Join-Path $quillRepo "build\deps\wp-playground-cli")
 
 
 # -- stamp the version marker (installer's skip-if-present check reads this) ---

@@ -140,7 +140,8 @@ def test_branch_row_cells() -> None:
         url="https://github.com/owner/repo/tree/main",
     )
     cells = row_cells(branch, VIEW_COLUMNS[VIEW_BRANCHES], full=False)
-    assert cells == ["main", "protected", "Alice", "2026-01-03", "abc1234"]
+    # Against default is empty: nobody asked GitHub, so it is not known (never "0").
+    assert cells == ["main", "", "protected", "Alice", "2026-01-03", "abc1234"]
 
 
 def test_workflow_row_cells() -> None:

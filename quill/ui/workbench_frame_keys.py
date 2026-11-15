@@ -12,7 +12,29 @@ from __future__ import annotations
 
 from typing import Any
 
-__all__ = ["keep_list_key"]
+__all__ = ["chord_of", "keep_list_key", "menu_claims"]
+
+
+def chord_of(frame: Any, event: Any, letter: str) -> str:
+    """*letter* with exactly the modifiers held, as a menu writes it ("Ctrl+Alt+R")."""
+    mods = (
+        ("Ctrl+" if event.ControlDown() else "")
+        + ("Alt+" if event.AltDown() else "")
+        + ("Shift+" if event.ShiftDown() else "")
+    )
+    return f"{mods}{letter.upper()}"
+
+
+def menu_claims(frame: Any, chord: str) -> bool:
+    """True when a row of the window's own menu bar answers *chord*.
+
+    The window's second keys (GitHub's Ctrl+Shift+F and Ctrl+R) give way to
+    a menu row on the same chord, so WordPress's Filter Builder (Ctrl+Shift+F)
+    reaches its menu (how.md review 12).
+    """
+    wanted = chord.replace(" ", "").lower()
+    keys = getattr(frame, "_keys", {}) or {}
+    return any(str(key).replace(" ", "").lower() == wanted for key in keys.values())
 
 
 def keep_list_key(frame: Any, event: Any, focused: Any) -> bool:

@@ -57,15 +57,21 @@ _APP_DISPLAY = {
     "inkwell": "Quill Inkwell",
     "beacon": "QuillBeacon",
     "github_workbench": "GitHub Workbench",
+    "wordpress_workbench": "WordPress Workbench",
 }
 
 
 def _workbench_titles() -> dict[str, str]:
-    """The GitHub Workbench window's rows, titled as its menu bar shows them."""
+    """Both Workbench windows' rows, titled as their menu bars show them."""
     from quill.core.github.workbench_window_menu import WINDOW_MENU
+    from quill.core.wordpress.workbench_window_menu import WINDOW_MENU as WORDPRESS_MENU
     from quill.core.workbench.menus import rows
 
-    titles = {row.command_id: _clean_menu_label(row.label) for _menu, row in rows(WINDOW_MENU)}
+    titles = {
+        row.command_id: _clean_menu_label(row.label)
+        for menu in (WINDOW_MENU, WORDPRESS_MENU)
+        for _menu, row in rows(menu)
+    }
     titles.update({
         "github.workbench.filter_alias": "Filter... (second key)",
         "github.workbench.inbox_home": "Inbox (second key)",

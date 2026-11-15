@@ -130,6 +130,11 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
     bar.Append(model, "&Model")
 
     options = wx.Menu()
+    from quill.platform.windows import transcribe_startup
+
+    startup_available = (
+        transcribe_startup.is_windows() and not transcribe_startup.running_portable()
+    )
     host._startup_item_id = _check(
         host,
         options,
@@ -137,6 +142,7 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
         host.launch_at_startup_enabled(),
         host.set_launch_at_startup,
     )
+    options.Enable(int(host._startup_item_id), startup_available)
     _check(
         host,
         options,
@@ -144,6 +150,14 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
         host._settings.start_in_tray,
         lambda on: host.set_option("start_in_tray", on),
     )
+    host._startup_minimized_item_id = _check(
+        host,
+        options,
+        "S&tart minimized when Windows starts\tCtrl+Alt+L",  # startup_launch.py's label
+        host.start_minimized_at_startup_enabled(),
+        host.set_start_minimized_at_startup,
+    )
+    options.Enable(int(host._startup_minimized_item_id), startup_available)
     _check(
         host,
         options,

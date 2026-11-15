@@ -1,0 +1,120 @@
+{
+  "manifest_version": "1.28.0",
+  "publisher": "Community Access",
+  "publisher_url": "https://quillforall.org/",
+  "support_url": "https://github.com/Community-Access/quill/issues",
+  "privacy_url": "https://quillforall.org/docs/privacy.html",
+  "approved_for_submission": false,
+  "apps": {
+    "quill": {
+      "package_id": "CommunityAccess.Quill",
+      "package_name": "QUILL",
+      "moniker": "quill",
+      "setup_prefix": "Quill-for-All-Setup-",
+      "package_url": "https://quillforall.org/",
+      "package_url_verified": false,
+      "short_description": "An accessible writing and document editor for Windows and macOS.",
+      "tag": "writing"
+    },
+    "quilllite": {
+      "package_id": "CommunityAccess.QuillLite",
+      "package_name": "QUILL Lite",
+      "moniker": "quill-lite",
+      "setup_prefix": "QuillLite-Setup-Shared-",
+      "package_url": "https://quillforall.org/quilllite.html",
+      "package_url_verified": true,
+      "short_description": "An accessible text editor for Windows, built for screen-reader and keyboard users.",
+      "tag": "text-editor"
+    },
+    "radio": {
+      "package_id": "CommunityAccess.QuillRadio",
+      "package_name": "Quill Radio",
+      "moniker": "quill-radio",
+      "setup_prefix": "Quill-Radio-Setup-Shared-",
+      "package_url": "https://quillforall.org/radio.html",
+      "package_url_verified": true,
+      "short_description": "An accessible internet radio player for Windows, with recording and a built-in station catalog.",
+      "tag": "internet-radio"
+    },
+    "weather": {
+      "package_id": "CommunityAccess.QuillWeather",
+      "package_name": "Quill Weather",
+      "moniker": "quill-weather",
+      "setup_prefix": "Quill-Weather-Setup-Shared-",
+      "package_url": "https://github.com/Community-Access/quill",
+      "package_url_verified": false,
+      "short_description": "An accessible weather forecast and alert app for Windows.",
+      "tag": "weather"
+    },
+    "inkwell": {
+      "package_id": "CommunityAccess.QuillInkwell",
+      "package_name": "Quill Inkwell",
+      "moniker": "quill-inkwell",
+      "setup_prefix": "Quill-Inkwell-Setup-Shared-",
+      "package_url": "https://github.com/Community-Access/quill",
+      "package_url_verified": false,
+      "short_description": "An accessible text expander for Windows.",
+      "tag": "text-expander"
+    },
+    "converter": {
+      "package_id": "CommunityAccess.QuillConverter",
+      "package_name": "Quill Converter",
+      "moniker": "quill-converter",
+      "setup_prefix": "Quill-Converter-Setup-Shared-",
+      "package_url": "https://github.com/Community-Access/quill",
+      "package_url_verified": false,
+      "short_description": "An accessible audio and video converter for Windows.",
+      "tag": "media-converter"
+    },
+    "transcribe": {
+      "package_id": "CommunityAccess.QuillTranscribe",
+      "package_name": "QUILL Transcribe",
+      "moniker": "quill-transcribe",
+      "setup_prefix": "QUILL-Transcribe-Setup-Shared-",
+      "package_url": "https://github.com/Community-Access/quill",
+      "package_url_verified": false,
+      "short_description": "Accessible offline dictation into any Windows program.",
+      "tag": "speech-to-text"
+    },
+    "cast": {
+      "package_id": "CommunityAccess.QuillCast",
+      "package_name": "QUILL Cast",
+      "moniker": "quill-cast",
+      "setup_prefix": "QUILL-Cast-Setup-Shared-",
+      "package_url": "https://github.com/Community-Access/quill",
+      "package_url_verified": false,
+      "short_description": "An accessible podcast player for Windows with downloads, queue, and notes.",
+      "tag": "podcast-player"
+    },
+    "studio": {
+      "package_id": "CommunityAccess.QuillAudioStudio",
+      "package_name": "QUILL Studio",
+      "moniker": "quill-audio-studio",
+      "setup_prefix": "QUILL-Audio-Studio-Setup-Shared-",
+      "package_url": "https://github.com/Community-Access/quill",
+      "package_url_verified": false,
+      "short_description": "An accessible audiobook and audio production studio for Windows.",
+      "tag": "audio-production"
+    },
+    "beacon": {
+      "package_id": "CommunityAccess.QuillBeacon",
+      "package_name": "Quill Beacon",
+      "moniker": "quill-beacon",
+      "setup_prefix": "Quill-Beacon-Setup-Shared-",
+      "package_url": "https://github.com/Community-Access/quill",
+      "package_url_verified": false,
+      "short_description": "An encrypted sync beacon for QuillVille apps.",
+      "tag": "sync"
+    },
+    "social": {
+      "package_id": "CommunityAccess.QuillSocial",
+      "package_name": "QUILL Social",
+      "moniker": "quill-social",
+      "setup_prefix": "QUILL-Social-Setup-Shared-",
+      "package_url": "https://github.com/Community-Access/quill",
+      "package_url_verified": false,
+      "short_description": "An accessible social reading app for Windows.",
+      "tag": "social-reading"
+    }
+  }
+}

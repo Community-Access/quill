@@ -709,7 +709,9 @@ def main() -> int:
     enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
     app = wx.App()
     frame = PodcastsAppFrame(safe_mode=safe_mode)
-    frame.frame.Show()
+    from quill.ui.startup_launch import present_at_launch
+
+    present_at_launch(frame, "QUILL Cast", raise_window=False)  # --tray: a login launch
     # A subscription list opened from Explorer (the .opml association the
     # installer offers). Deferred with CallAfter rather than run here: the
     # window has to exist and be showing before a modal import appears over it,

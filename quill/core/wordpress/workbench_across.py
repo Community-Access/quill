@@ -21,6 +21,14 @@ and **Missing From** (the sites without it). :func:`fleet_rows` is the Fleet
 view, every site in one list read row by row. :func:`same_everywhere_plan`
 is "make them the same": the chosen variant, previewed site by site.
 
+**A list a site will not give is never an empty list** (complete.md 8: partial
+failures never appear as zero results). :func:`scan_site` keeps each refused
+list in :attr:`SiteScan.unread` (its route and the site's own sentence), and
+:func:`kind_rows` puts a row first that says so; :func:`gather_across` collects
+the same per site, and :func:`across_rows` says "not read on" a site rather
+than counting it as missing, so Make Them the Same never makes on a site
+something it only failed to read there.
+
 Wx-free; requests go through each site's own client.
 """
 
@@ -34,6 +42,7 @@ from typing import Any
 
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.site import raw_text, rendered
+from quill.core.wordpress.workbench_no_rest import across_note
 from quill.core.wordpress.workbench_rows import WbRow
 
 __all__ = [
@@ -47,6 +56,9 @@ __all__ = [
     "kind_rows",
     "same_everywhere_plan",
     "scan_site",
+    "scan_unread",
+    "unread_note",
+    "unread_row",
 ]
 
 SITE_KINDS: Mapping[str, str] = {
@@ -58,6 +70,7 @@ SITE_KINDS: Mapping[str, str] = {
     "links": "Links",
     "blocks": "Blocks and Shortcodes",
     "forms": "Forms Used",
+    "template_parts": "Template Parts",
 }
 
 ACROSS_KINDS: Mapping[str, str] = {
@@ -66,6 +79,9 @@ ACROSS_KINDS: Mapping[str, str] = {
     "themes": "Themes",
     "users": "People",
     "settings": "Settings",
+    "menus": "Menus",
+    "patterns": "Synced Patterns",
+    "app_passwords": "Application Passwords",
 }
 
 _HREF = re.compile(r"""href=["']([^"'#]+)["']""", re.IGNORECASE)
@@ -85,18 +101,74 @@ class SiteScan:
     media: list[Mapping[str, Any]] = field(default_factory=list)
     users: dict[int, str] = field(default_factory=dict)
     patterns: dict[int, str] = field(default_factory=dict)
+    term_bases: dict[str, str] = field(default_factory=dict)  # taxonomy -> REST base
+    template_parts: list[Mapping[str, Any]] = field(default_factory=list)  # block themes
+    templates: list[Mapping[str, Any]] = field(default_factory=list)
+    #: Each list the site would not give: "<route>: <the site's sentence>".
+    unread: list[str] = field(default_factory=list)
 
 
-def _all(api: WordPressApi, route: str, params: Mapping[str, object], pages: int) -> list[Any]:
+def _taxonomies(api: WordPressApi) -> dict[str, str]:
+    """Every taxonomy on posts or pages, by name, with its REST base under wp/v2."""
+    bases = {"category": "categories", "post_tag": "tags"}
+    try:
+        found = api.get("wp/v2/taxonomies")
+    except WordPressApiError:
+        return bases
+    for name, raw in found.items() if isinstance(found, dict) else ():
+        if not isinstance(raw, dict) or name in bases:
+            continue
+        types = raw.get("types") or []
+        namespace = str(raw.get("rest_namespace") or "wp/v2")
+        if raw.get("rest_base") and namespace == "wp/v2" and {"post", "page"} & set(types):
+            bases[str(name)] = str(raw["rest_base"])
+    return bases
+
+
+def _all(
+    api: WordPressApi,
+    route: str,
+    params: Mapping[str, object],
+    pages: int,
+    unread: list[str] | None = None,
+) -> list[Any]:
+    """Every page of *route*; a refusal is kept in *unread*, never passed off as empty."""
     try:
         return list(api.iter_collection(route, params, per_page=100, max_pages=pages))
-    except WordPressApiError:
+    except WordPressApiError as exc:
+        if unread is not None:
+            unread.append(f"{route}: {exc.plain or exc}")
         return []
+
+
+def unread_note(site: str, unread: Sequence[str]) -> str:
+    """The sentence a preview or result carries when *site* would not give some lists."""
+    if not unread:
+        return ""
+    return (
+        f"On {site}, QUILL could not read {'; '.join(unread)}. What is listed from {site} "
+        "may be incomplete, and nothing there is counted as unused or missing."
+    )
+
+
+def unread_row(site: str, unread: Sequence[str], *, column: str = "value") -> WbRow:
+    """A row, first in its list, saying which lists *site* would not give."""
+    routes = ", ".join(u.partition(": ")[0] for u in unread)
+    return WbRow(
+        "unread",
+        site,
+        f"unread:{site}",
+        {column: f"Not read on {site}", "used": routes, "count": ""},
+        unread_note(site, unread),
+        raw={"unread": list(unread)},
+    )
 
 
 def scan_site(api: WordPressApi, site: str, *, pages: int = 10) -> SiteScan:
     """Read what the within-site kinds need, a page of a hundred at a time."""
     scan = SiteScan(site)
+    scan.term_bases = _taxonomies(api)
+    term_fields = ",".join(sorted(set(scan.term_bases.values())))
     for kind in ("posts", "pages"):
         for raw in _all(
             api,
@@ -105,28 +177,36 @@ def scan_site(api: WordPressApi, site: str, *, pages: int = 10) -> SiteScan:
                 "context": "edit",
                 "status": "any",
                 "_fields": "id,title,type,status,content,"
-                "link,author,meta,featured_media,modified_gmt,slug",
+                "link,author,meta,featured_media,modified_gmt,slug," + term_fields,
             },
             pages,
+            scan.unread,
         ):
             scan.items.append(raw)
-    for taxonomy, route in (("category", "wp/v2/categories"), ("post_tag", "wp/v2/tags")):
-        for raw in _all(api, route, {"hide_empty": False}, pages):
+    for taxonomy, base in scan.term_bases.items():
+        for raw in _all(api, f"wp/v2/{base}", {"hide_empty": False}, pages, scan.unread):
             scan.terms.append((taxonomy, raw))
     scan.media = _all(
         api,
         "wp/v2/media",
         {"_fields": "id,title,source_url,media_details,mime_type,post,alt_text,description"},
         pages,
+        scan.unread,
     )
     scan.users = {
         int(u.get("id", 0)): str(u.get("name", ""))
-        for u in _all(api, "wp/v2/users", {"_fields": "id,name"}, pages)
+        for u in _all(api, "wp/v2/users", {"_fields": "id,name"}, pages, scan.unread)
     }
     scan.patterns = {
         int(p.get("id", 0)): raw_text(p.get("title")) or rendered(p.get("title"))
-        for p in _all(api, "wp/v2/blocks", {"context": "edit", "_fields": "id,title"}, pages)
+        for p in _all(
+            api, "wp/v2/blocks", {"context": "edit", "_fields": "id,title"}, pages, scan.unread
+        )
     }
+    parts = {"context": "edit", "_fields": "id,slug,title,area,content,modified,source"}
+    scan.template_parts = _all(api, "wp/v2/template-parts", parts, pages, scan.unread)
+    if scan.template_parts:
+        scan.templates = _all(api, "wp/v2/templates", parts, pages, scan.unread)
     return scan
 
 
@@ -163,8 +243,13 @@ def kind_rows(scan: SiteScan, kind: str) -> list[WbRow]:
     if kind == "terms":
         for taxonomy, raw in scan.terms:
             count = int(raw.get("count", 0) or 0)
-            word = "category" if taxonomy == "category" else "tag"
+            word = {"category": "category", "post_tag": "tag"}.get(taxonomy, taxonomy)
             name = str(raw.get("name", ""))
+            base = scan.term_bases.get(taxonomy) or (
+                "categories" if taxonomy == "category" else "tags"
+            )
+            ident = int(raw.get("id", 0) or 0)
+            used = [_title(i) for i in scan.items if ident in (i.get(base) or [])]
             rows.append(
                 _row(
                     site,
@@ -173,9 +258,20 @@ def kind_rows(scan: SiteScan, kind: str) -> list[WbRow]:
                     f"{name} ({word})",
                     count,
                     f"{count} posts",
-                    [],
+                    used,
                 )
             )
+    elif kind == "template_parts":
+        from quill.core.wordpress.workbench_by_name import part_uses
+
+        for part in scan.template_parts:
+            places = part_uses(scan, str(part.get("slug", "")))
+            name = _title(part)
+            area = str(part.get("area", "") or "")
+            where = f"used by {len(places)} templates and pages" if places else "not placed"
+            if area and area != "uncategorized":
+                where += f", {area} area"
+            rows.append(_row(site, kind, str(part.get("id", "")), name, len(places), where, places))
     elif kind == "authors":
         written: dict[int, Counter[str]] = defaultdict(Counter)
         for raw in scan.items:
@@ -223,7 +319,27 @@ def kind_rows(scan: SiteScan, kind: str) -> list[WbRow]:
             where = f"used on {count} pages" if count else "not used anywhere"
             rows.append(_row(site, kind, value, value, count, where, places))
     rows.sort(key=lambda r: -int(r.cell("count") or 0))
+    missed = scan_unread(scan, kind)
+    if missed:
+        rows.insert(0, unread_row(site, missed))
     return rows
+
+
+#: Beyond posts and pages (which every kind reads), the lists each kind depends on.
+_KIND_ROUTES: Mapping[str, tuple[str, ...]] = {
+    "authors": ("wp/v2/users",),
+    "media_usage": ("wp/v2/media",),
+    "patterns": ("wp/v2/blocks",),
+    "template_parts": ("wp/v2/template-parts", "wp/v2/templates"),
+}
+
+
+def scan_unread(scan: SiteScan, kind: str) -> list[str]:
+    """The lists the scan could not read that *kind*'s rows depend on."""
+    wanted = {"wp/v2/posts", "wp/v2/pages", *_KIND_ROUTES.get(kind, ())}
+    if kind == "terms":
+        wanted |= {f"wp/v2/{base}" for base in scan.term_bases.values()}
+    return [u for u in scan.unread if u.partition(": ")[0] in wanted]
 
 
 # -- across sites -------------------------------------------------------------------
@@ -262,33 +378,48 @@ def _plugin_name(raw: Mapping[str, Any]) -> str:
 
 
 def gather_across(
-    kind: str, sites: Sequence[tuple[str, WordPressApi]]
+    kind: str,
+    sites: Sequence[tuple[str, WordPressApi]],
+    unread: dict[str, list[str]] | None = None,
 ) -> dict[str, dict[str, Mapping[str, Any]]]:
-    """For *kind*, each name and, by site, the object that site has under it."""
+    """For *kind*, each name and, by site, the object that site has under it.
+
+    A list a site will not give goes in *unread* (site -> "<route>: <why>"),
+    which :func:`across_rows` takes so that site is "not read", never "missing".
+    """
     found: dict[str, dict[str, Mapping[str, Any]]] = defaultdict(dict)
     for site, api in sites:
+        missed: list[str] = []
         if kind == "terms":
             for word, route in (("category", "wp/v2/categories"), ("tag", "wp/v2/tags")):
-                for raw in _all(api, route, {"hide_empty": False}, 5):
+                for raw in _all(api, route, {"hide_empty": False}, 5, missed):
                     found[f"{raw.get('name', '')} ({word})"][site] = raw
         elif kind == "plugins":
-            for raw in _all(api, "wp/v2/plugins", {}, 2):
+            for raw in _all(api, "wp/v2/plugins", {}, 2, missed):
                 found[_plugin_name(raw)][site] = raw
         elif kind == "themes":
-            for raw in _all(api, "wp/v2/themes", {}, 2):
+            for raw in _all(api, "wp/v2/themes", {}, 2, missed):
                 name = raw.get("name")
                 found[str(name.get("rendered", "") if isinstance(name, dict) else name)][site] = raw
         elif kind == "users":
-            for raw in _all(api, "wp/v2/users", {"context": "edit"}, 5):
+            for raw in _all(api, "wp/v2/users", {"context": "edit"}, 5, missed):
                 key = str(raw.get("email") or raw.get("username") or raw.get("name", ""))
                 found[key][site] = raw
         elif kind == "settings":
             try:
                 settings = api.get("wp/v2/settings")
-            except WordPressApiError:
+            except WordPressApiError as exc:
                 settings = {}
+                missed.append(f"wp/v2/settings: {exc.plain or exc}")
             for key, value in settings.items() if isinstance(settings, dict) else ():
                 found[str(key)][site] = {"value": value}
+        elif kind in ("menus", "patterns", "app_passwords"):
+            from quill.core.wordpress.workbench_across_ops import gather_more
+
+            for name, raw in gather_more(kind, site, api, missed).items():
+                found[name][site] = raw
+        if missed and unread is not None:
+            unread.setdefault(site, []).extend(missed)
     return dict(found)
 
 
@@ -306,20 +437,34 @@ def _variant(kind: str, raw: Mapping[str, Any]) -> str:
 
 
 def across_rows(
-    kind: str, found: Mapping[str, Mapping[str, Mapping[str, Any]]], every_site: Sequence[str]
+    kind: str,
+    found: Mapping[str, Mapping[str, Mapping[str, Any]]],
+    every_site: Sequence[str],
+    unread: Mapping[str, Sequence[str]] | None = None,
 ) -> list[WbRow]:
-    """One row per name: where it is, how the copies differ, and where it is missing."""
-    rows: list[WbRow] = []
+    """One row per name: where it is, how the copies differ, and where it is missing.
+
+    A site in *unread* (from :func:`gather_across`) is never "missing": its row
+    says the list was not read there, and a row first in the list says why.
+    """
+    refused = {s: list(unread[s]) for s in every_site if unread and unread.get(s)}
+    rows: list[WbRow] = [
+        unread_row(site, reasons, column="name") for site, reasons in refused.items()
+    ]
     for name, by_site in sorted(found.items(), key=lambda kv: (-len(kv[1]), kv[0].casefold())):
         variants: dict[str, list[str]] = defaultdict(list)
         for site, raw in by_site.items():
             variants[_variant(kind, raw)].append(site)
-        missing = [s for s in every_site if s not in by_site]
+        missing = [s for s in every_site if s not in by_site and s not in refused]
+        not_read = {s: refused[s] for s in every_site if s not in by_site and s in refused}
         item = Across(kind, name, dict(variants), missing, dict(by_site))
         lines = [f"{words}: {', '.join(sorted(sites))}" for words, sites in item.variants.items()]
         detail = item.sentence + ". Variants: " + "; ".join(lines)
         if missing:
             detail += ". Missing from: " + ", ".join(missing)
+        if not_read:
+            detail += ". Not read on: " + ", ".join(not_read)
+        detail += "." + across_note(kind) if kind in ("plugins", "themes") else ""
         rows.append(
             WbRow(
                 "across",
@@ -331,9 +476,14 @@ def across_rows(
                     "versions": str(len(item.variants)),
                     "missing": ", ".join(missing),
                 },
-                detail + ".",
+                detail if detail.endswith(".") else detail + ".",
                 subkind=kind,
-                raw={"variants": item.variants, "missing": missing, "objects": item.raw},
+                raw={
+                    "variants": item.variants,
+                    "missing": missing,
+                    "objects": item.raw,
+                    "unread": not_read,
+                },
             )
         )
     return rows
@@ -352,6 +502,9 @@ def same_everywhere_plan(row: WbRow, variant: str) -> list[tuple[str, str]]:
                 plan.append((site, f"changes from {words} to {variant}"))
     for site in missing:
         plan.append((site, f"gets {row.key}, as {variant}"))
+    for site, reasons in (row.raw.get("unread") or {}).items():
+        why = "; ".join(r.partition(": ")[2] or r for r in reasons)
+        plan.append((site, f"not read: {why}; nothing is sent there"))
     return plan
 
 

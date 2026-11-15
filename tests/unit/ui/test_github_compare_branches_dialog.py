@@ -79,8 +79,9 @@ def test_summary_line_reports_ahead_behind_and_counts(wx_app) -> None:
     frame = wx.Frame(None)
     provider = _FakeProvider()
     dlg = GitHubCompareBranchesDialog(frame, provider, "owner/repo", _comparison())
-    assert "2 commit(s) ahead" in dlg._summary_line()
-    assert "1 behind main" in dlg._summary_line()
+    assert dlg._summary_line().startswith(
+        "feature and main have diverged: feature is 2 commits ahead and 1 behind."
+    )
     dlg.dialog.Destroy()
 
 
@@ -89,7 +90,7 @@ def test_summary_line_identical(wx_app) -> None:
     provider = _FakeProvider()
     comparison = _comparison(status="identical", ahead_by=0, behind_by=0, total_commits=0, files=())
     dlg = GitHubCompareBranchesDialog(frame, provider, "owner/repo", comparison)
-    assert dlg._summary_line() == "feature is identical to main."
+    assert dlg._summary_line() == "feature and main are identical."
     dlg.dialog.Destroy()
 
 
@@ -141,4 +142,39 @@ def test_open_browser_button_disabled_without_permalink(wx_app) -> None:
     comparison = _comparison(permalink_url="")
     dlg = GitHubCompareBranchesDialog(frame, provider, "owner/repo", comparison)
     assert dlg._browser_btn.IsEnabled() is False
+    dlg.dialog.Destroy()
+
+
+def test_behind_page_lists_what_the_base_has_and_the_pull_line_shows(
+    wx_app, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    frame = wx.Frame(None)
+    said: list[str] = []
+    opened: list[str] = []
+    monkeypatch.setattr("quill.ui.github_compare_branches_dialog.webbrowser.open", opened.append)
+    comparison = _comparison(
+        behind_commits=(
+            GitHubCommit(sha="b" * 40, short_sha="bbbbbbb", message="On main only\nbody"),
+        ),
+        pull_number=9,
+        pull_title="Feature",
+        pull_url="https://github.com/owner/repo/pull/9",
+    )
+    dlg = GitHubCompareBranchesDialog(
+        frame, _FakeProvider(), "owner/repo", comparison, announce_cb=said.append
+    )
+    assert dlg._behind_list.GetItemCount() == 1
+    assert dlg._behind_list.GetItemText(0, 3) == "On main only"
+    assert "Pull request #9 is open: Feature." in dlg._summary_line()
+    assert dlg._pull_btn.IsEnabled()
+    dlg._on_open_pull(None)
+    assert opened == ["https://github.com/owner/repo/pull/9"]
+    assert said == ["Opened pull request #9 in browser"]
+    dlg.dialog.Destroy()
+
+
+def test_pull_button_greyed_without_a_pull_request(wx_app) -> None:
+    dlg = GitHubCompareBranchesDialog(wx.Frame(None), _FakeProvider(), "owner/repo", _comparison())
+    assert not dlg._pull_btn.IsEnabled()
+    assert dlg._behind_list.GetItemCount() == 0
     dlg.dialog.Destroy()

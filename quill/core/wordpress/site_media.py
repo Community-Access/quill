@@ -1,8 +1,9 @@
-"""Media and comments on a WordPress site (wordpress.md 6, 9.8).
+"""Media on a WordPress site (wordpress.md 6).
 
 Split from :mod:`quill.core.wordpress.site`, which holds pages, posts, terms
-and the account; the same rules apply: one function per action, plain
-dataclasses back, every request through :class:`WordPressApi`.
+and the account (comments are :mod:`quill.core.wordpress.comments`); the
+same rules apply: one function per action, plain dataclasses back, every
+request through :class:`WordPressApi`.
 """
 
 from __future__ import annotations
@@ -12,7 +13,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core.wordpress.api import WordPressApi
-from quill.core.wordpress.site import friendly_date, human_size, plain_text, raw_text
+from quill.core.wordpress.site import friendly_date, human_size, raw_text
 
 # --------------------------------------------------------------------------- #
 # Media (wordpress.md 6)
@@ -154,73 +155,3 @@ def find_duplicate_media(api: WordPressApi, filename: str, size: int) -> MediaIt
         if same_name and (not size or not item.filesize or item.filesize == size):
             return item
     return None
-
-
-# --------------------------------------------------------------------------- #
-# Comments (wordpress.md 9.8)
-
-
-@dataclass(frozen=True)
-class Comment:
-    id: int
-    post: int
-    parent: int
-    author_name: str
-    date_gmt: str
-    status: str
-    content: str
-
-    def spoken(self) -> str:
-        words = plain_text(self.content)
-        first = " ".join(words.split()[:12])
-        return f"{self.author_name}, {friendly_date(self.date_gmt)}: {first}"
-
-
-COMMENT_STATUSES = (
-    ("hold", "Waiting"),
-    ("approve", "Approved"),
-    ("spam", "Spam"),
-    ("trash", "Trash"),
-)
-
-
-def list_comments(api: WordPressApi, *, status: str = "hold", post: int = 0) -> list[Comment]:
-    params: dict[str, object] = {"context": "edit", "status": status}
-    if post:
-        params["post"] = post
-    return [_comment(raw) for raw in api.iter_collection("wp/v2/comments", params)]
-
-
-def count_waiting_comments(api: WordPressApi) -> int:
-    response = api.request(
-        "GET",
-        "wp/v2/comments",
-        params={"status": "hold", "per_page": 1, "_fields": "id", "context": "edit"},
-    )
-    return response.total or (len(response.payload) if isinstance(response.payload, list) else 0)
-
-
-def set_comment_status(api: WordPressApi, comment_id: int, status: str) -> Comment:
-    return _comment(api.post(f"wp/v2/comments/{comment_id}", {"status": status}, context="edit"))
-
-
-def reply_to_comment(api: WordPressApi, parent: Comment, content: str) -> Comment:
-    return _comment(
-        api.post(
-            "wp/v2/comments",
-            {"post": parent.post, "parent": parent.id, "content": content},
-            context="edit",
-        )
-    )
-
-
-def _comment(raw: Any) -> Comment:
-    return Comment(
-        id=int(raw.get("id", 0)),
-        post=int(raw.get("post", 0) or 0),
-        parent=int(raw.get("parent", 0) or 0),
-        author_name=str(raw.get("author_name", "") or "Anonymous"),
-        date_gmt=str(raw.get("date_gmt", "") or ""),
-        status=str(raw.get("status", "")),
-        content=raw_text(raw.get("content")),
-    )

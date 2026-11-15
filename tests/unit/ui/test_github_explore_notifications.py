@@ -142,6 +142,10 @@ def test_enter_on_a_pull_request_marks_it_read_and_opens_review(explore, monkeyp
     explore._activate(None)
     assert explore.provider.read == ["1"]
     assert reviewed == [("o/r", 1)]
+    # Still on the row: rewriting it now would make a screen reader read it again.
+    assert explore._list.GetString(0).startswith("Unread, review requested")
+    explore._list.SetSelection(1)
+    explore._select(None)
     assert explore._list.GetString(0).startswith("Read, review requested")
 
 

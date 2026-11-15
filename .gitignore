@@ -41,6 +41,8 @@ installer-smoke*/
 # Local working files (scratch notes, profiling output, one-off logs)
 /local/
 /dev.md
+# Local copy of the active GitHub workbench plan; keep it out of commits.
+/github.md
 
 # User-local working ledger and Leasey comparison notes; never commit.
 /do.md

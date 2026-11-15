@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>GHManage + Quill Developer Experience Plan</title>
+  <title>github-workbench</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -180,92 +180,37 @@
       vertical-align: middle;
     }
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* The skip link above targets main, and a focusable main needs a ring for
-       the sighted keyboard user. These pages load no external stylesheet, so it
-       has to be inline; the colour is the site theme's --focus, hardcoded
-       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
-       makes main the click-focus target for every paragraph inside it, so
-       :focus would box the whole page on any ordinary click. The offset is inset
-       because main is full-bleed and an outset ring gets clipped into two
-       vertical lines. */
-    main[tabindex="-1"]:focus-visible {
-      outline: 3px solid #b8540a;
-      outline-offset: -3px;
-    }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-    /* Pandoc's own styles.html partial, injected near the top of this template,
-       ships `table { display: block; overflow-x: auto; }`. display: block takes
-       the table role out of the accessibility tree in Blink and Gecko, and the
-       row and cell roles go with it, so every rendered table reads as a flat run
-       of words -- 62 of them in QUILL Lite's user guide alone, all of them
-       keyboard reference tables, on a site whose readers are overwhelmingly
-       screen-reader users. Restoring display: table is not a preference.
-
-       The scroll affordance it was there for is given up rather than moved,
-       because Pandoc emits a bare table with no wrapper element to hang overflow
-       on -- the wrapper pattern compare.html uses is not available here. So the
-       exchange is a certain and total loss of table semantics against a possible
-       sideways page scroll on the widest tables, and the cells are taught to
-       break so that stays possible rather than likely.
-
-       This override also covers the governance pages built by
-       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
-       version nobody pins -- whatever styles.html that ships, this wins. */
-    table {
-      display: table;
-      overflow-x: visible;
-    }
-    table th,
-    table td {
-      overflow-wrap: break-word;
-      word-break: break-word;
-    }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content" tabindex="-1">
 <h1 id="ghmanage--quill-developer-experience-plan">GHManage + Quill
 Developer Experience Plan</h1>
 <blockquote>
-<p><strong>Implementation status (2026-11-06):</strong> QUILL and QUILL
-Lite share the GitHub Items viewer. Its PR review reader uses an
-expandable native outline: PR, changed files with review threads,
-general conversations, and checks. The selected node drives a readable
-detail field, and context menus expose relevant actions. Ctrl+R replies;
-Ctrl+Shift+R resolves or reopens a thread when GitHub permits. Exact
-patch-line targeting, Explore views, global saved searches, My Work, the
-account-scoped attention queue, Pages, labels, activity, workflow job
-logs, and issue-to-worktree handoff are now implemented in this
-worktree. Open GitHub Reference… routes repository, issue, pull-request,
-branch, and file links; direct pull requests open the review reader.
-QUILL Lite has the shared Open Link… entry, with an explicit browser
-fallback for file links until its editor can open remote files directly.
-Workflow job details include steps, the selected attempt, head SHA,
-bounded annotations, and bounded log output. Review adds next-unresolved
-and local next-unvisited navigation. Items restores the last repository,
-view, filters, and selected row per local account key. The user accepted
-the complete GX01–GX15 expansion; its durable scope and acceptance live
-in <a href="./github-roadmap.md">the GitHub Workbench Roadmap</a>.
-Manual Windows assistive-technology acceptance is user-owned and
-separate from engineering completion and merge.</p>
+<p><strong>Implementation status (2026-11-10):</strong> The accepted
+product scope is the <a
+href="../Product%20Requirement%20Documents%20and%20Specifications/github-workbench-prd.md">GitHub
+Workbench PRD</a>. QUILL and QUILL Lite share the GitHub Items viewer.
+Its PR review reader uses an expandable native outline: PR, changed
+files with review threads, general conversations, and checks. The
+selected node drives a readable detail field, and context menus expose
+relevant actions. Ctrl+R replies; Ctrl+Shift+R resolves or reopens a
+thread when GitHub permits. Exact patch-line targeting, Explore views,
+global saved searches, My Work, the account-scoped attention queue,
+Pages, labels, activity, workflow job logs, and issue-to-worktree
+handoff are now implemented in this worktree. Open GitHub Reference...
+routes repository, issue, pull-request, branch, and file links; direct
+pull requests open the review reader. QUILL Lite has the shared Open
+Link... entry, with an explicit browser fallback for file links until
+its editor can open remote files directly. Workflow job details include
+steps, the selected attempt, head SHA, bounded annotations, and bounded
+log output. Review adds next-unresolved and local next-unvisited
+navigation. Items restores the last repository, view, filters, and
+selected row per local account key. The user accepted the complete
+GX01–GX15 expansion; its durable scope and acceptance live in <a
+href="./github-roadmap.md">the GitHub Workbench Roadmap</a>. Manual
+Windows assistive-technology acceptance is user-owned and separate from
+engineering completion. Current delivery gaps are tracked in the <a
+href="./workbench-implementation-status.md">Workbench implementation
+status</a>.</p>
 </blockquote>
 <p>This document is the pre-implementation design plan for making GitHub
 a native, first-class part of the QUILL developer experience. It is
@@ -274,7 +219,7 @@ as writing code, reviewing diffs, navigating branches, and shipping
 changes — not bolted on as a separate tool.</p>
 <p>The north star is simple:</p>
 <ul>
-<li>GitHub should feel like an extension of the editor’s mental
+<li>GitHub should feel like an extension of the editor's mental
 model</li>
 <li>PRs, issues, diffs, threads, and commits should become readable in
 context</li>
@@ -282,7 +227,7 @@ context</li>
 comprehension and execution</li>
 <li>Developer profile gating should be explicit, safe, and respectful of
 consent</li>
-<li>We should build something that is more than “GHManage in QUILL” — we
+<li>We should build something that is more than "GHManage in QUILL" — we
 should generalize the real patterns that make repository work feel
 magical and trustworthy</li>
 </ul>
@@ -320,8 +265,8 @@ and open issues</li>
 language</li>
 <li>review a diff beside the file currently open in the editor</li>
 <li>follow a review thread without losing the code context</li>
-<li>ask: “What changed since the last review, and what do I need to know
-before I ship?”</li>
+<li>ask: "What changed since the last review, and what do I need to know
+before I ship?"</li>
 <li>ask AI to summarize, explain, or compare threads and commits</li>
 <li>prepare a patch or branch update from local work with a single,
 guided flow</li>
@@ -981,8 +926,8 @@ exception must be explicit in the product requirements and user
 documentation</li>
 </ul>
 <p>The first shared entry point is <strong>File &gt; GitHub
-Workbench…</strong> in Lite. Other GitHub commands still need their own
-Lite entry points and parity verification.</p>
+Workbench...</strong> in Lite. Other GitHub commands still need their
+own Lite entry points and parity verification.</p>
 <h3 id="134-attribution-and-design-integrity">13.4 Attribution and
 design integrity</h3>
 <p>This work should be explicitly credited as inspired by the GHManage
@@ -1059,7 +1004,7 @@ release-facing markdown files</li>
 <code>S:\code\ghmanage</code>. The earlier sections describe a product
 plan; they must not be read as a claim that every item has shipped.
 QUILL uses PyGithub and its own consent, token, and safe-mode gates;
-GHManage’s <code>gh</code> transport and standalone app shell are not
+GHManage's <code>gh</code> transport and standalone app shell are not
 directly copied.</p>
 <table>
 <thead>
@@ -1186,6 +1131,5 @@ separately.</p>
 <p>This plan is intentionally written to be reviewed before
 implementation, so that the feature is shaped as a coherent QUILL
 product story rather than a collection of API wrappers.</p>
-</main>
 </body>
 </html>

@@ -53,12 +53,15 @@ from quill.ui.github_workbench_history import GitHubWorkbenchHistoryMixin
 
 __all__ = ["PAGE_FOR_VERB", "GitHubWorkbenchPropertiesMixin"]
 
-#: Menu rows that open the sheet at a page rather than a dialog of their own
-#: (decision 11: no per-property keys; the menus still name every change).
+#: Menu rows that open the sheet at a page, with focus on the field when it
+#: names one, rather than a dialog of their own (decision 11: no per-property
+#: keys, so these rows are keyless; the menus still name every change).
 PAGE_FOR_VERB: dict[str, tuple[str, str]] = {
+    "edit_title": ("general", "title"),
     "labels": ("organize", "labels"),
     "assignees": ("organize", "assignees"),
     "milestone": ("organize", "milestone"),
+    "projects": ("projects", "projects"),
     "react": ("you", "reactions"),
     "subscribe": ("you", "subscribed"),
     "watch": ("you", "watch"),
@@ -112,14 +115,20 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
 
     # -- opening -------------------------------------------------------------------
 
-    def open_properties(self, ref: Any, rows: Sequence[object], page: str = "") -> None:
-        """Alt+Enter: the rows' sheet, or the tree node's own object."""
+    def open_properties(
+        self, ref: Any, rows: Sequence[object], page: str = "", field: str = ""
+    ) -> None:
+        """Alt+Enter: the rows' sheet, or the tree node's own object.
+
+        *page* opens it at that page, and *field* puts focus on that field
+        (Labels..., Edit Title... and the other one-field rows).
+        """
         if not rows:
             target = target_for_node(ref.template, ref.key, ref.instance)
             if target is None:
                 self._view_options(ref)
                 return
-            self._open_one(self._with_me(target), page)
+            self._open_one(self._with_me(target), page, field)
             return
         targets = [target_for(row, ref.instance) for row in rows]
         if any(target is None for target in targets):
@@ -130,9 +139,9 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
             self._say("Select rows of one kind for one sheet: these are of different kinds.")
             return
         if len(found) == 1:
-            self._open_one(found[0], page)
+            self._open_one(found[0], page, field)
         else:
-            self._open_many(found)
+            self._open_many(found, page, field)
 
     def _with_me(self, target: Target) -> Target:
         """*target* with the signed-in login as ``me``, for reads such as "follows you"."""
@@ -146,8 +155,16 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
             return False
         chosen = self.frame.selected_indices() if self.frame is not None else []
         rows = [self.frame.rows[i] for i in chosen] if chosen else ([row] if row else [])
-        self.open_properties(ref, rows, where[0])
+        self.open_properties(ref, rows, where[0], where[1])
         return True
+
+    def sheet_has_page(self, verb: str, row: object, instance: str = "") -> bool:
+        """Whether *row*'s sheet has the page *verb* opens (Projects... on an issue, not a run)."""
+        where = PAGE_FOR_VERB.get(verb)
+        target = target_for(row, instance) if row is not None else None
+        if where is None or target is None:
+            return False
+        return any(page.key == where[0] for page in target.sheet.sheet.pages)
 
     def _view_options(self, ref: Any) -> None:
         frame = self.frame
@@ -173,7 +190,7 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
             where=target.ident.get("repo", "") or target.ident.get("org", ""),
         )
 
-    def _open_one(self, target: Target, page: str = "") -> None:
+    def _open_one(self, target: Target, page: str = "", field: str = "") -> None:
         api = self.github_api()
         sheet = target.sheet
 
@@ -181,11 +198,18 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
             return load(api, sheet, target.ident), load_options(api, sheet, target.ident)
 
         self._background(
-            f"load {target.title()}", work, lambda got: self._show_one(target, got[0], got[1], page)
+            f"load {target.title()}",
+            work,
+            lambda got: self._show_one(target, got[0], got[1], page, field),
         )
 
     def _show_one(
-        self, target: Target, loaded: Loaded, choices: dict[str, dict[str, object]], page: str
+        self,
+        target: Target,
+        loaded: Loaded,
+        choices: dict[str, dict[str, object]],
+        page: str,
+        field: str = "",
     ) -> None:
         from quill.ui.workbench_properties_sheet import PropertiesSheet
 
@@ -219,6 +243,7 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
             open_web=(lambda: self._browse(url)) if url else None,
             copy_link=(lambda: self.frame.copy_text(url)) if url else None,
             start_page=page or LAST_PAGE.get(target.kind, ""),
+            start_field=field,
             loaded_at=f"Loaded at {time.strftime('%H:%M')}"
             + (". Some pages need more access and are empty." if loaded.missing else ""),
         )
@@ -360,6 +385,8 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
         if not name:
             return None
         repo = target.ident.get("repo", "")
+        if spec.key == "projects":
+            return self._create_project(repo, name, choices)
         path, body = {
             "labels": (f"/repos/{repo}/labels", {"name": name, "color": "ededed"}),
             "milestone": (f"/repos/{repo}/milestones", {"title": name}),
@@ -367,19 +394,79 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
         if not path:
             choices.setdefault(spec.key, {})[name] = name
             return name
+        api = self.github_api()
         try:
-            answer = self.github_api().rest("POST", path, body=body)
+            answer = api.rest("POST", path, body=body)
         except Exception as exc:  # noqa: BLE001
-            self._say(f"Could not create {name}: {exc}")
-            return None
+            from quill.core.github.rest_transport import is_already_exists
+
+            if not is_already_exists(exc):
+                self._say(f"Could not create {name}: {exc}")
+                return None
+            # It is there already: use it, which is what the person wanted.
+            value = self._existing_choice(api, spec.key, repo, name)
+            if value is None:
+                self._say(f"{name} already exists, but GitHub did not say where to find it.")
+                return None
+            choices.setdefault(spec.key, {})[name] = value
+            self._say(f"{name} already exists; using it.")
+            return name
         data = answer.data if isinstance(answer.data, dict) else {}
         choices.setdefault(spec.key, {})[name] = data.get("number", name)
         self._say(f"Created {name}.")
         return name
 
+    def _create_project(
+        self, repo: str, name: str, choices: dict[str, dict[str, object]]
+    ) -> str | None:
+        """New Project...: a Project (version 2) owned by the repository's owner, linked to it.
+
+        Checked at once on the sheet, so OK adds the item to it. A title already
+        in the list is used rather than made twice (GitHub allows duplicates,
+        which nobody can tell apart by ear).
+        """
+        from quill.core.github.sheets_items import CREATE_PROJECT, PROJECT_OWNER_QUERY
+
+        known = choices.setdefault("projects", {})
+        if name in known:
+            self._say(f"{name} already exists; using it.")
+            return name
+        owner, _, short = repo.partition("/")
+        api = self.github_api()
+        try:
+            found = api.graphql(PROJECT_OWNER_QUERY, {"owner": owner, "name": short})
+            repository = found.get("repository") or {}
+            owner_id = str((repository.get("owner") or {}).get("id") or "")
+            made = api.graphql(
+                CREATE_PROJECT,
+                {"owner": owner_id, "title": name, "repository": repository.get("id")},
+            )
+        except Exception as exc:  # noqa: BLE001 - said, never raised into the sheet
+            self._say(f"Could not create {name}: {exc}")
+            return None
+        project = (made.get("createProjectV2") or {}).get("projectV2") or {}
+        if not project.get("id"):
+            self._say(f"Could not create {name}: GitHub did not say it was made.")
+            return None
+        known[name] = project["id"]
+        self._say(f"Created {name}.")
+        return name
+
+    @staticmethod
+    def _existing_choice(api: Any, key: str, repo: str, name: str) -> object | None:
+        """The value an existing label (its name) or milestone (its number) is chosen by."""
+        if key == "labels":
+            return name
+        answer = api.rest(
+            "GET", f"/repos/{repo}/milestones", query={"state": "all", "per_page": "100"}
+        )
+        rows = answer.data if isinstance(answer.data, list) else []
+        found = next((r for r in rows if isinstance(r, dict) and r.get("title") == name), None)
+        return found.get("number") if found else None
+
     # -- several at once -----------------------------------------------------------
 
-    def _open_many(self, targets: list[Target]) -> None:
+    def _open_many(self, targets: list[Target], page: str = "", field: str = "") -> None:
         api = self.github_api()
         sheet = targets[0].sheet
 
@@ -391,11 +478,16 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
         self._background(
             f"load {len(targets)} objects",
             work,
-            lambda got: self._show_many(targets, got[0], got[1]),
+            lambda got: self._show_many(targets, got[0], got[1], page, field),
         )
 
     def _show_many(
-        self, targets: list[Target], loads: list[Loaded], choices: dict[str, dict[str, object]]
+        self,
+        targets: list[Target],
+        loads: list[Loaded],
+        choices: dict[str, dict[str, object]],
+        page: str = "",
+        field: str = "",
     ) -> None:
         from quill.ui.workbench_properties_sheet import PropertiesSheet
 
@@ -431,6 +523,8 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
             choices={k: list(v) for k, v in choices.items()},
             counts=counts,
             total=len(targets),
+            start_page=page,
+            start_field=field,
         )
         holder["sheet"] = view
         view.show()

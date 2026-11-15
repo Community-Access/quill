@@ -5,9 +5,11 @@ guessed (section 12): QUILL Accessible Forms on ``qaf/v1`` (or ``baf/v1``,
 its older name), Gravity Forms on ``gf/v2``. A site with neither has a Forms
 node that says so. What each reaches is what its API allows (13b.2):
 
-- **QAF:** forms, entries (``qaf/v1/entries?form_id=``) with their status,
-  and Spam and Not Spam, which set an entry's ``status`` to ``spam`` or back
-  to ``active`` (``POST qaf/v1/entries/{id}``, QAF's own route).
+- **QAF:** forms, entries (``qaf/v1/entries?form_id=``) with their status and,
+  for a held one, QAF's reason; and Spam and Not Spam through QAF's own
+  ``POST qaf/v1/entries/{id}/spam`` and ``.../not-spam``, which tell its spam
+  providers and release a held entry's notifications
+  (:mod:`quill.core.wordpress.workbench_qaf_spam`).
 - **Gravity Forms:** forms (``gf/v2/forms``), entries
   (``gf/v2/entries?form_ids[]=``) with their status (``active``, ``spam``,
   ``trash``), and Spam and Not Spam, sent as the whole entry with the status
@@ -23,11 +25,16 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping, Sequence
+from copy import deepcopy
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from quill.core.forms import qaf_site
+from quill.core.wordpress import workbench_gravity_search as gravity_search
 from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.site import friendly_date
+from quill.core.wordpress.workbench_listing import pages_for
+from quill.core.wordpress.workbench_qaf_spam import held_reason, mark_entry
 from quill.core.wordpress.workbench_rows import WbRow
 
 if TYPE_CHECKING:
@@ -35,15 +42,235 @@ if TYPE_CHECKING:
 
 __all__ = [
     "GRAVITY_NAMESPACE",
+    "GRAVITY_FIELD_TYPES",
+    "GravityFieldTypeChange",
     "PLUGIN_NAMES",
     "form_plugins",
+    "gravity_replacement_problems",
+    "plan_gravity_field_type_change",
     "load_forms",
     "set_entry_spam",
 ]
 
 GRAVITY_NAMESPACE = "gf/v2"
 PLUGIN_NAMES = {"qaf": "QUILL Accessible Forms", "gravity": "Gravity Forms"}
+#: The Gravity Forms controls Change a Field Type converts between. Every other family
+#: (name, address, list, product, upload, poll, quiz and the rest) is never offered and is
+#: sent back untouched. A family joins only with a gf/v2 form recorded from a real site
+#: that shows its inputs and settings, and a test converting it (complete.md WP-C).
+GRAVITY_FIELD_TYPES = {
+    "text": "Single line text",
+    "textarea": "Paragraph text",
+    "email": "Email address",
+    "number": "Number",
+    "select": "Drop-down list",
+    "radio": "Radio buttons",
+    "checkbox": "Checkboxes",
+}
+_GRAVITY_CHOICE_TYPES = frozenset({"select", "radio", "checkbox"})
+_GRAVITY_SINGLE_CHOICE_TYPES = frozenset({"select", "radio"})
+_GRAVITY_CHOICE_ONLY = (
+    "choices",
+    "inputs",
+    "enableChoiceValue",
+    "enableOtherChoice",
+    "enableSelectAll",
+    "enablePrice",
+    "randomize",
+)
 _MAX_ENTRIES = 300
+
+
+@dataclass(frozen=True, slots=True)
+class GravityFieldTypeChange:
+    """An immutable preview of a type change inside a complete Gravity form."""
+
+    form: dict[str, Any]
+    field_id: str
+    field_label: str
+    old_type: str
+    new_type: str
+    kept: tuple[str, ...]
+    adjusted: tuple[str, ...]
+    removed: tuple[str, ...]
+
+    @property
+    def summary(self) -> str:
+        old = GRAVITY_FIELD_TYPES.get(self.old_type, self.old_type)
+        new = GRAVITY_FIELD_TYPES.get(self.new_type, self.new_type)
+        return f"Change {self.field_label} (field {self.field_id}) from {old} to {new}."
+
+    def review_lines(self) -> list[str]:
+        lines = ["Kept: " + (", ".join(self.kept) if self.kept else "the field id") + "."]
+        if self.adjusted:
+            lines.append("Adjusted: " + "; ".join(self.adjusted) + ".")
+        if self.removed:
+            lines.append("Cannot carry over: " + ", ".join(self.removed) + ".")
+        lines.append("QUILL will send the complete form, preserving its other fields and settings.")
+        return lines
+
+
+def plan_gravity_field_type_change(
+    form: Mapping[str, Any], field_id: str, new_type: str
+) -> GravityFieldTypeChange:
+    """Prepare a common Gravity Forms field conversion without mutating *form*."""
+    if new_type not in GRAVITY_FIELD_TYPES:
+        raise ValueError(f"{new_type!r} is not a supported Gravity Forms field type.")
+    source_fields = form.get("fields")
+    if not isinstance(source_fields, list):
+        raise ValueError("Gravity Forms did not return a fields list for this form.")
+    index = next(
+        (
+            number
+            for number, field in enumerate(source_fields)
+            if isinstance(field, dict) and str(field.get("id", "")) == str(field_id)
+        ),
+        None,
+    )
+    if index is None:
+        raise ValueError(f"Gravity Forms field {field_id} is no longer in this form.")
+
+    original = source_fields[index]
+    old_type = str(original.get("type", "text"))
+    if old_type not in GRAVITY_FIELD_TYPES:
+        raise ValueError(
+            f"{original.get('label') or field_id} uses {old_type}, which QUILL does not convert."
+        )
+    converted_form = deepcopy(dict(form))
+    field = converted_form["fields"][index]
+    adjusted: list[str] = []
+    removed: list[str] = []
+    if old_type != new_type:
+        field["type"] = new_type
+        if new_type in _GRAVITY_CHOICE_TYPES:
+            existing_choices = field.get("choices")
+            choices = (
+                [deepcopy(choice) for choice in existing_choices if isinstance(choice, dict)]
+                if isinstance(existing_choices, list)
+                else []
+            )
+            if not choices:
+                default = field.get("defaultValue")
+                label = str(default).strip() if default not in (None, "") else "Choice 1"
+                choices = [
+                    {"text": label, "value": str(default or "choice-1"), "isSelected": False}
+                ]
+                adjusted.append("added a starter choice so the new control can be filled in")
+            field["choices"] = choices
+            if new_type == "checkbox":
+                old_inputs = field.get("inputs")
+                old_inputs = old_inputs if isinstance(old_inputs, list) else []
+                inputs: list[dict[str, Any]] = []
+                for number, choice in enumerate(choices, start=1):
+                    old_input = old_inputs[number - 1] if number <= len(old_inputs) else {}
+                    item = deepcopy(old_input) if isinstance(old_input, dict) else {}
+                    item["id"] = f"{field_id}.{number}"
+                    item["label"] = str(
+                        choice.get("text") or choice.get("value") or f"Choice {number}"
+                    )
+                    inputs.append(item)
+                field["inputs"] = inputs
+            else:
+                if "inputs" in field:
+                    field.pop("inputs")
+                    removed.append("checkbox input records")
+            if new_type in _GRAVITY_SINGLE_CHOICE_TYPES:
+                selected = [choice for choice in choices if choice.get("isSelected")]
+                if len(selected) > 1:
+                    keep = selected[0]
+                    for choice in choices:
+                        choice["isSelected"] = choice is keep
+                    adjusted.append(
+                        "kept only the first selected default for a single-choice control"
+                    )
+        else:
+            for key in _GRAVITY_CHOICE_ONLY:
+                if key in field:
+                    field.pop(key)
+                    removed.append(key.replace("_", " "))
+
+        default = field.get("defaultValue")
+        if isinstance(default, list) and new_type in _GRAVITY_SINGLE_CHOICE_TYPES and default:
+            field["defaultValue"] = default[0]
+            adjusted.append("kept the first selected default for a single-choice control")
+        elif isinstance(default, list) and new_type not in _GRAVITY_CHOICE_TYPES:
+            field["defaultValue"] = ", ".join(str(value) for value in default)
+            adjusted.append("kept selected values as comma-separated text")
+        if (
+            old_type == "checkbox"
+            and new_type in _GRAVITY_SINGLE_CHOICE_TYPES
+            and isinstance(default, str)
+        ):
+            values = [part.strip() for part in default.split(",") if part.strip()]
+            if len(values) > 1:
+                field["defaultValue"] = values[0]
+                adjusted.append("kept the first selected default for a single-choice control")
+
+    shared = (
+        "id",
+        "label",
+        "description",
+        "adminLabel",
+        "isRequired",
+        "size",
+        "cssClass",
+        "placeholder",
+        "defaultValue",
+        "visibility",
+        "conditionalLogic",
+        "noDuplicates",
+        "allowsPrepopulate",
+        "inputName",
+    )
+    kept_fields = [key for key in shared if key in field]
+    if new_type in _GRAVITY_CHOICE_TYPES and field.get("choices"):
+        kept_fields.append(f"{len(field['choices'])} choices")
+    if new_type == "checkbox" and field.get("inputs"):
+        kept_fields.append(f"{len(field['inputs'])} checkbox option settings")
+    kept = tuple(kept_fields)
+    return GravityFieldTypeChange(
+        converted_form,
+        str(field_id),
+        str(original.get("label") or f"Field {field_id}"),
+        old_type,
+        new_type,
+        kept,
+        tuple(adjusted),
+        tuple(removed),
+    )
+
+
+def gravity_replacement_problems(
+    plan: GravityFieldTypeChange, stored: Mapping[str, Any] | None
+) -> list[str]:
+    """What the form read back after a conversion lacks, as sentences ([] when it matches).
+
+    Gravity Forms replaces the whole form on ``PUT``, so the check reads it again and
+    compares field by field: the changed field must have its new type, and every
+    other field must come back as it went.
+    """
+    if not isinstance(stored, Mapping) or not isinstance(stored.get("fields"), list):
+        return ["Gravity Forms did not return the form's fields after the change."]
+    sent = {str(f.get("id", "")): f for f in plan.form["fields"] if isinstance(f, dict)}
+    back = {str(f.get("id", "")): f for f in stored["fields"] if isinstance(f, dict)}
+    problems: list[str] = []
+    changed = back.get(plan.field_id)
+    if changed is None:
+        problems.append(f"Field {plan.field_id} is missing from the saved form.")
+    elif str(changed.get("type", "")) != plan.new_type:
+        problems.append(
+            f"Field {plan.field_id} reads back as {changed.get('type') or 'no type'}, "
+            f"not {plan.new_type}."
+        )
+    missing = [key for key in sent if key not in back]
+    if missing:
+        problems.append("Fields missing after the change: " + ", ".join(missing) + ".")
+    for key, field in sent.items():
+        if key == plan.field_id or key not in back:
+            continue
+        if str(back[key].get("type", "")) != str(field.get("type", "")):
+            problems.append(f"Field {key} changed type, which QUILL did not ask for.")
+    return problems
 
 
 def form_plugins(ctx: SiteContext) -> tuple[str, ...]:
@@ -89,6 +316,8 @@ def _entry_row(
     word = {"active": "Received", "spam": "Held as spam", "trash": "Trash"}.get(status, status)
     held = " held as spam" if status == "spam" else ""
     detail = f"{form_title}, {PLUGIN_NAMES[plugin]}, {ctx.name},{held} {friendly_date(when)}."
+    if status == "spam" and plugin == "qaf" and held_reason(raw):
+        detail += " " + held_reason(raw)
     summary = _answers_sentence(answers)
     return WbRow(
         kind="form_entry",
@@ -166,7 +395,7 @@ def _gravity_rows(ctx: SiteContext, which: str) -> list[WbRow]:
     if which == "all":
         return [
             WbRow(
-                kind="form",
+                kind="gravity_form",
                 site=ctx.name,
                 key=form_id,
                 cells={
@@ -183,19 +412,23 @@ def _gravity_rows(ctx: SiteContext, which: str) -> list[WbRow]:
             for form_id, title in titles.items()
         ]
     status = "spam" if which == "spam" else "active"
+    # The Filter Builder's conditions go to the site (workbench_gravity_search).
+    scope = gravity_search.current_scope()
+    if scope is not None and scope.form:
+        titles = {i: t for i, t in titles.items() if scope.form.casefold() in t.casefold()}
     if not titles:
         return []
-    params: dict[str, object] = {
-        **{f"form_ids[{i}]": form_id for i, form_id in enumerate(sorted(titles))},
-        "search": json.dumps({"status": status}),
-        "paging[page_size]": 100,
-    }
-    answer = ctx.api.get(f"{GRAVITY_NAMESPACE}/entries", **params)
-    entries = answer.get("entries", []) if isinstance(answer, dict) else []
+    searching = scope is not None and scope.active
+    entries = gravity_search.read_entries(
+        ctx.api,
+        f"{GRAVITY_NAMESPACE}/entries",
+        list(titles),
+        status,
+        scope,
+        pages_for(3) if searching else 1,
+    )
     rows = []
-    for entry in entries if isinstance(entries, list) else []:
-        if not isinstance(entry, dict):
-            continue
+    for entry in entries:
         answers = {k: v for k, v in entry.items() if k[:1].isdigit() and v not in ("", None)}
         rows.append(
             _entry_row(
@@ -210,7 +443,7 @@ def _gravity_rows(ctx: SiteContext, which: str) -> list[WbRow]:
                 entry,
             )
         )
-    return rows[:_MAX_ENTRIES]
+    return rows if searching else rows[:_MAX_ENTRIES]
 
 
 def load_forms(ctx: SiteContext, which: str) -> list[WbRow]:
@@ -240,7 +473,7 @@ def set_entry_spam(ctx: SiteContext, rows: Sequence[WbRow], spam: bool) -> list[
                 body = {**row.raw, "status": "spam" if spam else "active"}
                 ctx.api.request("PUT", row.route, json_body=body)
             else:
-                ctx.api.post(row.route, {"status": "spam" if spam else "active"})
+                mark_entry(ctx.api, row, spam)
         except WordPressApiError as exc:
             failed.append(f"{row.title}: {exc.plain}")
     return failed

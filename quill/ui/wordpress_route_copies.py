@@ -76,9 +76,10 @@ class WordPressRouteCopies:
         if choice is None:
             return
         kind = "post" if choice == 0 else "page"
-        text_format = xs.document_format(path)
         fallback = path.stem.replace("-", " ").replace("_", " ") if path else "Untitled"
-        title, body = xs.title_and_body(text, text_format, fallback)
+        # Markdown, block markup, HTML or plain text: each arrives as itself (9.16).
+        prepared = xs.prepare_document(text, path, fallback)
+        title, body, text_format = prepared.title, prepared.text, prepared.text_format
         pictures = xs.local_pictures(body, path.parent if path else None)
         body = xs.with_file_addresses(body, pictures)
         copy = lc.WorkingCopy(
@@ -100,7 +101,9 @@ class WordPressRouteCopies:
             if pictures:
                 said += f"; its {len(pictures)} pictures go to the Media Library"
             self.host.announce(said + ".")
-            self.cmd_save_draft()  # type: ignore[attr-defined]
+            # The copy itself, not "the document in front": QUILL Lite opened it
+            # in a new window, so this window's host still holds the original.
+            self.send_copy(copy, profile, False)  # type: ignore[attr-defined]
 
         self.with_route(  # type: ignore[attr-defined]
             profile, features, f"checking {profile.name} takes drafts", lambda _api: None, send

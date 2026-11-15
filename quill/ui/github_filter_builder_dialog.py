@@ -56,37 +56,42 @@ class FilterBuilderDialog:
         grid = wx.FlexGridSizer(cols=2, vgap=6, hgap=8)
         grid.AddGrowableCol(1, 1)
 
-        def labelled(text: str, control: Any) -> None:
-            grid.Add(wx.StaticText(self.dialog, label=text), 0, wx.ALIGN_CENTER_VERTICAL)
-            grid.Add(control, 1, wx.EXPAND)
-
+        # Each label is built before its control: on Windows a control's spoken
+        # name is the static text created just before it, so building the
+        # control first gave every field the previous field's name.
+        centred = wx.ALIGN_CENTER_VERTICAL
+        grid.Add(wx.StaticText(self.dialog, label="A&ttribute:"), 0, centred)
         self.attribute = wx.Choice(self.dialog, choices=[a.label for a in ATTRIBUTES])
         self.attribute.SetHelpText(
             "What to filter on: every attribute GitHub search knows for issues and pull "
             "requests. Has conflicts is checked over the loaded rows."
         )
-        labelled("A&ttribute:", self.attribute)
+        grid.Add(self.attribute, 1, wx.EXPAND)
+        grid.Add(wx.StaticText(self.dialog, label="O&perator:"), 0, centred)
         self.operator = wx.Choice(self.dialog, choices=[])
         self.operator.SetHelpText(
             "How to compare: is, is not, any of, none of, has none, has any; dates before, "
             "after, between or in the last n days; numbers more than, less than, between."
         )
-        labelled("O&perator:", self.operator)
+        grid.Add(self.operator, 1, wx.EXPAND)
+        grid.Add(wx.StaticText(self.dialog, label="&Value:"), 0, centred)
         self.value = wx.ComboBox(self.dialog, choices=[], style=wx.CB_DROPDOWN)
         self.value.SetHelpText(
             "The value: choose one from the repository, or type it. Me means you. For any "
             "of and none of, separate several with commas; a date is year-month-day."
         )
-        labelled("&Value:", self.value)
+        grid.Add(self.value, 1, wx.EXPAND)
+        grid.Add(wx.StaticText(self.dialog, label="Up to (for &between):"), 0, centred)
         self.second = wx.TextCtrl(self.dialog)
         self.second.SetHelpText("For between: the second value, the end of the range.")
-        labelled("Up to (for &between):", self.second)
+        grid.Add(self.second, 1, wx.EXPAND)
+        grid.Add(wx.StaticText(self.dialog, label="Or &group:"), 0, centred)
         self.group = wx.SpinCtrl(self.dialog, min=1, max=5, initial=1)
         self.group.SetHelpText(
             "Or groups: conditions in the same group must all match; a different group is "
             "joined with Or, which GitHub's issue search allows."
         )
-        labelled("Or &group:", self.group)
+        grid.Add(self.group, 1, wx.EXPAND)
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 8)
         add_row = wx.BoxSizer(wx.HORIZONTAL)
         add = wx.Button(self.dialog, label="A&dd Condition")

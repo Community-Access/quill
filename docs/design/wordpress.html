@@ -244,14 +244,17 @@
 <main id="main-content" tabindex="-1">
 <h1 id="wordpress-in-quill-and-quill-lite">WordPress in QUILL and QUILL
 Lite</h1>
-<p>Payment integration is specified by the current <a
+<p>The accepted product scope is now the <a
+href="../Product%20Requirement%20Documents%20and%20Specifications/wordpress-workbench-prd.md">WordPress
+Workbench PRD</a>. This document preserves the earlier publishing plan
+and implementation log; the current code status, plugin scope, and
+remaining work are recorded in the <a
+href="../planning/workbench-implementation-status.md">Workbench
+implementation status</a>.</p>
+<p>Payment integration remains governed by the current <a
 href="forms-payments-design.html">implementation notes</a> and <a
-href="forms-payments-plugin-contract.html">QAF plugin contract</a>.
-These supersede the initial payment proposal: desktop authoring and
-reporting share the WordPress transport; provider credentials and
-checkout remain plugin-owned.</p>
-<p>Product requirements, draft 0.1, 2026-11-03. Status: proposed,
-nothing built beyond what section 2 says already exists.</p>
+href="forms-payments-plugin-contract.html">QAF plugin contract</a>:
+provider credentials and checkout stay plugin-owned.</p>
 <h2 id="1-what-this-is">1. What this is</h2>
 <p>Write, open, edit and publish WordPress pages and posts, and manage
 the site’s Media Library, from inside QUILL and QUILL Lite, with every
@@ -2422,8 +2425,9 @@ back to an earlier look</td>
 </tr>
 <tr>
 <td><code>menus</code>, <code>menu-items</code>,
-<code>menu-locations</code>, <code>navigation</code> (and their
-revisions and autosaves),
+<code>menu-locations</code>, <code>navigation</code> (and its revisions
+and autosaves; core keeps no revisions of classic menus or their items,
+so QUILL keeps its own snapshots),
 <code>wp-block-editor/v1/navigation-fallback</code></td>
 <td>the Menus window, and undoing a menu change</td>
 <td>9.9</td>
@@ -3873,6 +3877,255 @@ that names the page it leaves.</li>
 <code>source_url</code>. Role: Author. Accessibility: a Download… button
 with a Save As box.</li>
 </ul>
+<h5
+id="posts-pages-and-media-in-the-workbench-the-audit-2026-11-13">Posts,
+Pages and Media in the Workbench: the audit (2026-11-13)</h5>
+<p>The three tables above were written against the editor’s windows in
+2026-11-04. This audit checks the same screens against the WordPress
+Workbench (<code>quill/core/wordpress/workbench_*.py</code>,
+<code>quill/ui/wordpress_workbench_*.py</code>), end to end, by reading
+the code and its tests, and it supersedes those tables’ status words for
+these screens. Commands marked <em>context menu</em> are on the row’s
+context menu (Applications key or Shift+F10) with no chord;
+<code>workbench_parity_actions.KEYLESS</code> gives the reason for each
+(family rule 8). <strong>Built</strong> means built in this pass
+(packages 1 to 3, <code>workbench_parity.py</code> and
+<code>wordpress_workbench_parity.py</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>wp-admin</th>
+<th>Workbench</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Columns (title, author, categories, tags, date, and so on)</td>
+<td>Columns, Screen Options</td>
+<td>View &gt; Columns, Ctrl+Alt+C (any field the site sends)</td>
+</tr>
+<tr>
+<td>Status views: All, Published, Drafts, Pending, Scheduled, Private,
+Trash</td>
+<td>Links above the list</td>
+<td>Tree nodes under Posts and Pages (Go &gt; Posts, Ctrl+Shift+1;
+Pages, Ctrl+Shift+2) and each content type</td>
+</tr>
+<tr>
+<td>Mine</td>
+<td>Link above the list</td>
+<td>Edit &gt; Only Mine, Ctrl+Alt+M</td>
+</tr>
+<tr>
+<td>Counts on each view</td>
+<td>Numbers beside the links</td>
+<td><strong>Built:</strong> Counts by Status, context menu (one
+<code>per_page=1</code> request a view, from
+<code>X-WP-Total</code>)</td>
+</tr>
+<tr>
+<td>Filter by date, category, tag, author, format</td>
+<td>Dropdowns</td>
+<td>Filter box, Ctrl+E (<code>after:</code>, <code>before:</code>,
+<code>category:</code>, <code>tag:</code>, <code>author:</code>,
+<code>format:</code>), sent to the site; Filter Builder,
+Ctrl+Shift+F</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>Search box</td>
+<td>Filter box words, sent as <code>search</code></td>
+</tr>
+<tr>
+<td>Sorting</td>
+<td>Column headings</td>
+<td>Filter Builder’s Sort By and Order
+(<code>orderby:title order:asc</code>). Sorting by comment count is
+wp-admin only: REST has no such <code>orderby</code></td>
+</tr>
+<tr>
+<td>Comment count column</td>
+<td>Bubble</td>
+<td>Comments node with <code>post:&lt;number&gt;</code> in the filter;
+the status bar counts them. REST sends no count with an item</td>
+</tr>
+<tr>
+<td>Bulk Edit</td>
+<td>Bulk actions</td>
+<td>Alt+Enter on several rows: one sheet, Mixed where they differ, a
+preview, a result each, Try Again</td>
+</tr>
+<tr>
+<td>Bulk Move to Trash, Restore, Delete Permanently</td>
+<td>Bulk actions</td>
+<td>Delete, Ctrl+Shift+R, Shift+Delete on several rows.
+<strong>Built:</strong> an outcome per item, so one refusal no longer
+stops the rest; Ctrl+Z restores only what moved</td>
+</tr>
+<tr>
+<td>Empty Trash</td>
+<td>Button on the Trash view</td>
+<td><strong>Built:</strong> Empty Trash…, context menu: lists every name
+first, permanent, said to be beyond Ctrl+Z</td>
+</tr>
+<tr>
+<td>Quick Edit: title, slug, date, password, private, status,
+categories, tags, comments, pings, sticky, parent, order</td>
+<td>Quick Edit</td>
+<td>Properties, Alt+Enter (conflict check, verify, Ctrl+Z)</td>
+</tr>
+<tr>
+<td>Quick Edit and sidebar: author as a choice</td>
+<td>Dropdown</td>
+<td><strong>Built:</strong> Properties’ Author lists
+<code>wp/v2/users?who=authors</code> by name and number</td>
+</tr>
+<tr>
+<td>Template as a choice</td>
+<td>Dropdown</td>
+<td><strong>Built:</strong> Properties’ Template lists the route’s
+<code>template</code> choices or <code>wp/v2/templates</code>; Default
+template is said in words</td>
+</tr>
+<tr>
+<td>Edit, Preview, View</td>
+<td>Row actions</td>
+<td>Open in Editor, Enter; Preview on the Site, Ctrl+Enter; Open on the
+Site, Shift+Enter</td>
+</tr>
+<tr>
+<td>Trash, Restore, Delete Permanently</td>
+<td>Row actions</td>
+<td>Delete; Ctrl+Shift+R; Shift+Delete, confirmed by name</td>
+</tr>
+<tr>
+<td>Duplicate</td>
+<td>Common plugin</td>
+<td><strong>Built:</strong> Duplicate as Draft, context menu; Ctrl+Z
+moves the copy to the Trash</td>
+</tr>
+<tr>
+<td>Sidebar: format, parent, discussion, pingbacks, excerpt, slug,
+sticky, password, private</td>
+<td>Editor sidebar</td>
+<td>Properties pages General, Organize, Discussion, Excerpt, Template
+and Parent</td>
+</tr>
+<tr>
+<td>Sidebar: date and schedule</td>
+<td>Publish panel</td>
+<td>Properties’ Published date; Move to Another Day, Ctrl+Alt+Shift+D;
+Approve and Schedule, Ctrl+Shift+D</td>
+</tr>
+<tr>
+<td>Sidebar: featured image, set and remove</td>
+<td>Featured image panel</td>
+<td>Properties’ Featured image, named by title (“Sky (9)”).
+<strong>Built:</strong> Choose from Library… lists the site’s pictures
+with their alt text; Remove Featured Image clears it; on several items
+too, where the preview names the picture</td>
+</tr>
+<tr>
+<td>Who is editing it now (the post lock)</td>
+<td>Editor notice</td>
+<td><strong>wp-admin only:</strong> REST has no lock route.
+<strong>Built:</strong> Open in wp-admin, context menu, opens
+<code>post.php?post=&lt;id&gt;&amp;action=edit</code> and says why</td>
+</tr>
+<tr>
+<td>Screen Options (items per page)</td>
+<td>Screen Options</td>
+<td><strong>wp-admin only</strong> as a setting; Load More,
+Ctrl+Shift+L, and Load All, Ctrl+Alt+L, do the job</td>
+</tr>
+<tr>
+<td>Media: grid or list</td>
+<td>View switch</td>
+<td>One list (the grid is visual only)</td>
+</tr>
+<tr>
+<td>Media: filter by type, unattached, month</td>
+<td>Dropdowns</td>
+<td>Media nodes Pictures, Audio, Video, Documents, Unattached, Without
+Alt Text; <code>after:</code> and <code>before:</code> in the
+filter</td>
+</tr>
+<tr>
+<td>Media: Mine and counts</td>
+<td>Dropdown</td>
+<td>Only Mine; <strong>Built:</strong> Counts by Status on media (each
+type and Unattached)</td>
+</tr>
+<tr>
+<td>Media: title, caption, alt text, description</td>
+<td>Attachment details</td>
+<td>Properties on a file, or on several at once</td>
+</tr>
+<tr>
+<td>Media: attached to</td>
+<td>Column and details</td>
+<td>Properties’ Attached To; the <code>attached</code> column</td>
+</tr>
+<tr>
+<td>Media: attach</td>
+<td>Attach link</td>
+<td><strong>Built:</strong> Attach to a Post or Page…, context menu
+(finds by words or number, conflict-checked, Ctrl+Z)</td>
+</tr>
+<tr>
+<td>Media: detach</td>
+<td>Detach link</td>
+<td><strong>Built:</strong> Detach, context menu (conflict-checked,
+Ctrl+Z)</td>
+</tr>
+<tr>
+<td>Media: download</td>
+<td>Download file</td>
+<td><strong>Built:</strong> Download…, context menu (Save As; up to 512
+MB, larger opens in the browser)</td>
+</tr>
+<tr>
+<td>Media: view, copy URL</td>
+<td>Row actions</td>
+<td>View or Play, Enter; Copy Link, Ctrl+Shift+C</td>
+</tr>
+<tr>
+<td>Media: rotate, flip, crop to a shape</td>
+<td>Edit Image</td>
+<td><strong>Built:</strong> Edit Picture…, context menu (the site’s own
+modifiers, after a preview; a new picture, the original kept)</td>
+</tr>
+<tr>
+<td>Media: crop by numbers</td>
+<td>Edit Image crop fields</td>
+<td><strong>Built:</strong> Edit Picture &gt; Crop by numbers, in
+percent, read back in words before it is sent</td>
+</tr>
+<tr>
+<td>Media: scale the original</td>
+<td>Edit Image &gt; Scale</td>
+<td><strong>wp-admin only:</strong> the REST edit route has no scale.
+Edit Picture &gt; Scale opens Edit Media in wp-admin and says so</td>
+</tr>
+<tr>
+<td>Media: regenerate sizes</td>
+<td>Plugin or after an edit</td>
+<td><strong>Built:</strong> Regenerate Sizes, context menu
+(<code>media/{id}/post-process</code>)</td>
+</tr>
+<tr>
+<td>Media: delete permanently</td>
+<td>Delete Permanently</td>
+<td>Shift+Delete, confirmed by name (media has no Trash)</td>
+</tr>
+</tbody>
+</table>
+<p>Totals: 36 capabilities. 21 were already in the Workbench, 12 were
+built in this pass (counts on posts, pages and media count as one; the
+three bulk outcomes as one), and 3 are wp-admin only (the post lock,
+Screen Options’ per-page setting, and Scale), each with the wp-admin
+screen or the Workbench job that stands in for it.</p>
 <h5 id="comments">Comments</h5>
 <table>
 <thead>
@@ -3980,6 +4233,161 @@ Media Library; the window title says the filter.</li>
 Role: Editor. Accessibility: one dialog with labelled fields; email
 field help says it is private.</li>
 </ul>
+<h5 id="comments-in-the-workbench-the-audit-2026-11-13">Comments in the
+Workbench: the audit (2026-11-13)</h5>
+<p>Every capability of wp-admin’s Comments screen, checked against the
+Workbench’s code and tests. Keys are the Workbench window’s own.</p>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>wp-admin</th>
+<th>Workbench</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Views: All, Pending, Approved, Spam, Trash</td>
+<td>Links above the list</td>
+<td>Tree nodes Comments, Waiting, Approved, Spam, Trash (Go &gt;
+Comments, Ctrl+Shift+4)</td>
+</tr>
+<tr>
+<td>Mine</td>
+<td>Link above the list</td>
+<td>Edit &gt; Only Mine, Ctrl+Alt+M (sends <code>author=</code> your
+number)</td>
+</tr>
+<tr>
+<td>Counts on each view</td>
+<td>Numbers beside the links</td>
+<td><strong>Built:</strong> Site &gt; Comment Counts, Ctrl+Alt+Shift+C:
+one sentence, waiting, approved, spam, Trash, All and yours, from
+<code>X-WP-Total</code></td>
+</tr>
+<tr>
+<td>Filter by type (comments, pings, reviews)</td>
+<td>Dropdown</td>
+<td><strong>Built:</strong> <code>comment_type:pingback</code> in the
+filter box and the Filter Builder; <code>type:</code> had meant media
+type and was refused here</td>
+</tr>
+<tr>
+<td>Filter by post</td>
+<td>Link in the post column</td>
+<td>Filter box <code>post:&lt;number&gt;</code>; Filter Builder,
+Ctrl+Shift+F</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>Search box</td>
+<td>Filter box words, sent as <code>search</code></td>
+</tr>
+<tr>
+<td>Columns: author, email</td>
+<td>Author column</td>
+<td>Author column; Columns, Ctrl+Alt+C, adds Email</td>
+</tr>
+<tr>
+<td>Columns: URL, IP address, type, reply to</td>
+<td>Author column</td>
+<td><strong>Built:</strong> Columns offers Website, IP address, Type and
+Parent. Email and IP come only with <code>context=edit</code>, which
+WordPress answers only for someone who can moderate comments</td>
+</tr>
+<tr>
+<td>Comment, In response to, Submitted on</td>
+<td>Columns</td>
+<td>Details pane, the On and When columns</td>
+</tr>
+<tr>
+<td>Sort by date, post, type</td>
+<td>Column headings</td>
+<td>Filter Builder’s Sort By (<code>orderby:post</code>)</td>
+</tr>
+<tr>
+<td>Sort by commenter name</td>
+<td>Column heading</td>
+<td><strong>wp-admin only:</strong> the comments route has no
+<code>orderby</code> for it</td>
+</tr>
+<tr>
+<td>Bulk Approve, Unapprove, Spam, Not Spam</td>
+<td>Bulk actions</td>
+<td>Ctrl+Shift+A, Ctrl+Shift+U, Ctrl+Shift+S on several rows.
+<strong>Built:</strong> an outcome per comment, so one refusal no longer
+stops the rest; Ctrl+Z puts back only the ones that changed</td>
+</tr>
+<tr>
+<td>Bulk Move to Trash, Restore, Delete Permanently</td>
+<td>Bulk actions</td>
+<td>Delete, Ctrl+Shift+R, Shift+Delete on several rows, an outcome per
+comment (packages 1 to 3)</td>
+</tr>
+<tr>
+<td>Empty Spam</td>
+<td>Button on the Spam view</td>
+<td>Site &gt; Empty Spam, Ctrl+Alt+E</td>
+</tr>
+<tr>
+<td>Empty Trash</td>
+<td>Button on the Trash view</td>
+<td><strong>Built:</strong> Site &gt; Empty Comment Trash,
+Ctrl+Alt+Shift+E: the count first, permanent, said to be beyond
+Ctrl+Z</td>
+</tr>
+<tr>
+<td>Approve, Unapprove (row)</td>
+<td>Row actions</td>
+<td>Ctrl+Shift+A, Ctrl+Shift+U; Ctrl+Z puts it back</td>
+</tr>
+<tr>
+<td>Reply, threaded</td>
+<td>Row action</td>
+<td>Reply…, Ctrl+Shift+M: posted as you with <code>parent</code>, so it
+sits under the comment. Approve and Reply is Approve, then Reply</td>
+</tr>
+<tr>
+<td>Quick Edit: name, email, URL, text</td>
+<td>Row action</td>
+<td>Properties, Alt+Enter (verify after, Ctrl+Z)</td>
+</tr>
+<tr>
+<td>Edit: status and date</td>
+<td>Edit Comment screen</td>
+<td>Status in Properties. <strong>Built:</strong> Written (the date) is
+now editable, in the site’s own time</td>
+</tr>
+<tr>
+<td>Conflict check on an edit</td>
+<td>(none)</td>
+<td><strong>Built:</strong> a comment has no <code>modified_gmt</code>,
+so its status, text and author fields stand in; a change made elsewhere
+since Alt+Enter sends nothing and asks Use Mine</td>
+</tr>
+<tr>
+<td>Spam, Trash (row)</td>
+<td>Row actions</td>
+<td>Ctrl+Shift+S; Delete, which Ctrl+Z restores</td>
+</tr>
+<tr>
+<td>A post’s comment count</td>
+<td>Bubble in the Posts list</td>
+<td><strong>Built:</strong> Item &gt; Show Its Comments,
+Ctrl+Alt+Shift+M: the count said, the Comments list filtered to the
+post</td>
+</tr>
+<tr>
+<td>Delete Permanently</td>
+<td>Row action on Spam and Trash</td>
+<td>Shift+Delete, confirmed by name; cannot be undone, and the
+confirmation says so</td>
+</tr>
+</tbody>
+</table>
+<p>Totals: 23 capabilities. 14 were already in the Workbench, 8 were
+built in this pass, and 1 is wp-admin only (sorting by the commenter’s
+name).</p>
 <h5
 id="appearance-part-1-themes-site-editor-customize-widgets">Appearance,
 part 1: Themes, Site Editor, Customize, Widgets</h5>
@@ -4324,6 +4732,152 @@ confirmation.</li>
 Accessibility: show the new password once in a read-only field with
 Copy, say “shown only now”, and never write it to settings or logs.</li>
 </ul>
+<h5 id="users-in-the-workbench-the-audit-2026-11-13">Users in the
+Workbench: the audit (2026-11-13)</h5>
+<p>Every capability of wp-admin’s Users, Add New and profile screens,
+checked against the Workbench’s code and tests.</p>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>wp-admin</th>
+<th>Workbench</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>List with name, username, email, role</td>
+<td>Users list</td>
+<td>People &gt; Users (Go &gt; Users, Ctrl+Shift+5); refused with the
+reason for anyone without <code>list_users</code>, as WordPress
+refuses</td>
+</tr>
+<tr>
+<td>Posts each person wrote</td>
+<td>Posts column</td>
+<td><strong>Built:</strong> Properties, Alt+Enter, says Posts written
+(one counted request); Enter, Show Their Posts, lists them. A list
+column would cost a request per person</td>
+</tr>
+<tr>
+<td>Views by role, with counts</td>
+<td>Links above the list</td>
+<td>Filter <code>role:editor</code>; Group By Role, Ctrl+Alt+G, a node
+per role with its count</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>Search box</td>
+<td>Filter box words, sent as <code>search</code></td>
+</tr>
+<tr>
+<td>Change role, one person</td>
+<td>Row and Change role to</td>
+<td>Change Role…, context menu, guarded</td>
+</tr>
+<tr>
+<td>Bulk Change role to</td>
+<td>Bulk control</td>
+<td><strong>Built:</strong> Change Role… on several: each checked in
+turn against the list as it will be, so neither you nor the last
+Administrator is changed; the preview names who is left out and why;
+Ctrl+Z puts each back</td>
+</tr>
+<tr>
+<td>Bulk Delete, with content given to someone</td>
+<td>Bulk action and Delete Users screen</td>
+<td><strong>Built:</strong> Remove… (Delete) on several: one person
+receives the posts, the preview counts them, you and the last
+Administrator are kept, a result each; cannot be undone, which the
+confirmation says</td>
+</tr>
+<tr>
+<td>Add New: username, email, first and last name, website, language,
+role</td>
+<td>Add New User</td>
+<td><strong>Built:</strong> New Here, Ctrl+N, in Users opens one Add a
+Person sheet, previewed before <code>POST wp/v2/users</code></td>
+</tr>
+<tr>
+<td>Add New: password</td>
+<td>Generated, editable</td>
+<td>A long random one nobody sees; Set New Password changes it</td>
+</tr>
+<tr>
+<td>Add New: Send the new user an email</td>
+<td>Check box</td>
+<td><strong>wp-admin only:</strong> REST sends no email. The preview
+says so; Send Password Reset, Ctrl+Shift+W, opens wp-admin where one
+button emails the link</td>
+</tr>
+<tr>
+<td>Edit: display name, nickname, first and last name, email, website,
+biography, role</td>
+<td>Edit User</td>
+<td>Properties, Alt+Enter; the role guarded by
+<code>promote_users</code></td>
+</tr>
+<tr>
+<td>Edit: language</td>
+<td>Edit User</td>
+<td><strong>Built:</strong> Language on the sheet
+(<code>locale</code>)</td>
+</tr>
+<tr>
+<td>Conflict check on an edit</td>
+<td>(none)</td>
+<td><strong>Built:</strong> a user has no <code>modified_gmt</code>, so
+the edited fields stand in</td>
+</tr>
+<tr>
+<td>Send password reset</td>
+<td>Row action and Edit User</td>
+<td><strong>wp-admin only:</strong> no REST route. Send Password Reset,
+Ctrl+Shift+W, opens their screen and says so</td>
+</tr>
+<tr>
+<td>Set New Password</td>
+<td>Edit User</td>
+<td><strong>Built:</strong> Set New Password…, context menu: a strong
+one offered as text as wp-admin shows it, previewed, sent once, never
+said, logged or kept</td>
+</tr>
+<tr>
+<td>Application passwords: list, revoke, create</td>
+<td>Edit User</td>
+<td>People &gt; Application Passwords (New Here makes one, shown once);
+Their Application Passwords on a person</td>
+</tr>
+<tr>
+<td>Your Profile</td>
+<td>Profile screen</td>
+<td><strong>Built:</strong> Site &gt; Your Profile, Ctrl+Alt+Shift+P:
+your sheet on <code>wp/v2/users/me</code>, without the Role page</td>
+</tr>
+<tr>
+<td>Log Out Everywhere</td>
+<td>Edit User</td>
+<td><strong>wp-admin only:</strong> sessions are not in REST. Sign Out
+Everywhere opens the screen and says so</td>
+</tr>
+<tr>
+<td>Admin colour scheme, toolbar, keyboard shortcuts</td>
+<td>Profile screen</td>
+<td><strong>wp-admin only:</strong> browser preferences with no meaning
+outside wp-admin</td>
+</tr>
+<tr>
+<td>Remove one person</td>
+<td>Row action</td>
+<td>Remove…, Delete, guarded, with who gets the posts and how many</td>
+</tr>
+</tbody>
+</table>
+<p>Totals: 20 capabilities. 8 were already in the Workbench, 8 were
+built in this pass, and 4 are wp-admin only (the welcome email, the
+reset email, Log Out Everywhere and the browser preferences), each
+opening the wp-admin screen that does it or saying why it has no meaning
+here.</p>
 <h5 id="tools">Tools</h5>
 <table>
 <thead>
@@ -4551,18 +5105,19 @@ price, sale price and stock only</td>
 </tr>
 <tr>
 <td>Variations: list, edit, generate</td>
-<td>missing</td>
+<td>partial (list, edit one; generate in wp-admin)</td>
 <td><code>products/{id}/variations</code>, <code>/batch</code>,
 <code>/generate</code></td>
 </tr>
 <tr>
 <td>Attributes and their terms</td>
-<td>missing</td>
+<td>full (2026-11-14)</td>
 <td><code>products/attributes</code>, <code>/{id}/terms</code></td>
 </tr>
 <tr>
 <td>Categories, tags, brands</td>
-<td>missing</td>
+<td>partial (brands full 2026-11-14; categories chosen in Edit
+Product)</td>
 <td><code>products/categories</code>, <code>products/tags</code>,
 <code>products/brands</code> (also <code>wp/v2/product_cat</code>;
 custom taxonomies are in progress)</td>
@@ -4574,7 +5129,7 @@ custom taxonomies are in progress)</td>
 </tr>
 <tr>
 <td>Reviews: list, approve, reply, spam, delete</td>
-<td>missing</td>
+<td>full (2026-11-14; reply through <code>wp/v2/comments</code>)</td>
 <td><code>products/reviews</code>, <code>/batch</code></td>
 </tr>
 <tr>
@@ -4622,7 +5177,7 @@ custom taxonomies are in progress)</td>
 </tr>
 <tr>
 <td>Customers: list, edit, downloads</td>
-<td>missing</td>
+<td>partial (list, details, edit; downloads not yet)</td>
 <td><code>customers</code>, <code>customers/{id}/downloads</code></td>
 </tr>
 <tr>
@@ -4644,13 +5199,14 @@ custom taxonomies are in progress)</td>
 </tr>
 <tr>
 <td>Shipping zones, locations, methods</td>
-<td>missing</td>
+<td>full (2026-11-14; a method’s settings beyond its cost in
+wp-admin)</td>
 <td><code>shipping/zones</code>, <code>/{id}/locations</code>,
 <code>/{zone}/methods</code></td>
 </tr>
 <tr>
 <td>Tax rates and classes</td>
-<td>missing</td>
+<td>full (2026-11-14)</td>
 <td><code>taxes</code>, <code>taxes/classes</code></td>
 </tr>
 <tr>
@@ -4660,7 +5216,7 @@ custom taxonomies are in progress)</td>
 </tr>
 <tr>
 <td>Webhooks</td>
-<td>missing</td>
+<td>full (2026-11-14; the secret is WooCommerce’s, never read)</td>
 <td><code>webhooks</code></td>
 </tr>
 <tr>
@@ -4771,7 +5327,7 @@ website)</td>
 </tr>
 <tr>
 <td>Event categories and tags</td>
-<td>missing</td>
+<td>full (2026-11-14)</td>
 <td><code>tribe/events/v1/categories</code>, <code>tags</code> (and
 <code>wp/v2/tribe_events_cat</code>; custom taxonomies in progress)</td>
 </tr>
@@ -4834,13 +5390,14 @@ each item</td>
 </tr>
 <tr>
 <td>Bulk editor (titles and descriptions for many posts)</td>
-<td>missing</td>
+<td>full (2026-11-14, SEO &gt; Bulk SEO Editor)</td>
 <td><code>yoast/v1/bulk_editor/posts</code>, <code>update_search</code>,
 <code>update_social</code></td>
 </tr>
 <tr>
 <td>Social title, description, image</td>
-<td>missing</td>
+<td>partial (title and description through <code>update_social</code>;
+the image only where its meta is registered)</td>
 <td><code>bulk_editor/update_social</code> (no registered meta for
 these)</td>
 </tr>
@@ -7981,15 +8538,10 @@ reached, and a node per namespace lists its routes
 types and taxonomies with who registered them, read only (QUILL Site
 Types detected by namespace); Abilities run with their input schema as a
 sheet and a preview.</li>
-<li><strong>W6, the default.</strong> The Tools &gt; WordPress doors
-open the Workbench unless Workbench Options &gt; Use the classic
-WordPress windows is checked (<code>workbench_options.py</code>,
-<code>workbench_flag.py</code>); the environment variable still
-overrides for developers. Tools &gt; WordPress &gt; Open WordPress
-Workbench is the first row in both editors, on the layer’s H, with a
-command catalogue row. The classic windows have no surface module of
-their own (they are the shared list window), so the reachability
-snapshot has nothing to mark parked.</li>
+<li><strong>W6, complete.</strong> The Tools &gt; WordPress doors always
+open the Workbench. The classic-window preference and environment
+override are removed. Open WordPress Workbench remains the first row in
+both editors, on the layer’s H, with a command catalogue row.</li>
 <li><strong>W7.</strong> <code>workbench_bold.py</code>: Copy to Site
 (plan as preview, terms by name, links rewritten, pictures read from the
 source host and uploaded), Compare Sites, Take a Snapshot, the Calendar
@@ -8008,10 +8560,11 @@ first round silent. The Practice Site
 the bundled Node with a blueprint that leaves QUILL an application
 password, and connects it;
 <code>scripts/fetch_build_deps.py --only wp-playground-cli</code> stages
-<code>@wp-playground/cli</code> 1.0.28 (GPL-2.0-or-later) from
-<code>scripts/wp_playground/package.json</code>. That entry has never
-been run: no download was made, there is no lockfile yet, and the pin is
-to verify.</li>
+<code>@wp-playground/cli</code> 3.1.64 (GPL-2.0-or-later), its PHP 8.3
+WebAssembly runtime, and WordPress 7.1.4. The package lock pins the npm
+graph; the core archive is checked against WordPress.org’s SHA-256 and
+SHA-1. Source runs find the same staged cache as the release builder;
+installed builds use the copy beside the shared runtime.</li>
 <li><strong>W8.</strong> <code>workbench_across.py</code>: By Name under
 each site (terms, field values, authors, media usage, patterns, links,
 blocks and shortcodes, forms, from one scan kept five minutes), Across
@@ -8034,44 +8587,810 @@ is from the plugin’s documentation, to verify).</li>
 <code>test_wp_workbench_bold.py</code> and
 <code>test_wp_workbench_across.py</code>.</li>
 </ul>
+<h3 id="2026-11-13-by-name-and-across-sites-operations-1512">2026-11-13:
+By Name and Across Sites operations (15.12)</h3>
+<ul>
+<li>By Name rows now change a value everywhere it is used
+(<code>workbench_by_name.py</code>,
+<code>wordpress_workbench_by_name.py</code>): Rename Everywhere, Split,
+Merge Into, Reassign, Replace Everywhere and Find Items Missing This
+Field, over terms of every taxonomy on posts and pages (the scan now
+reads custom taxonomies), field values, authors, media, synced patterns,
+links, shortcodes and forms. Each is previewed item by item, re-reads
+every item before sending and leaves one changed since the scan alone,
+reports each item, and goes in Change History with an undo where it
+truly restores (a merge deletes the old term, so it says it is
+final).</li>
+<li>Across Sites (<code>workbench_across_ops.py</code>): Menus and
+Synced Patterns are new kinds; Make Them the Same covers terms, plugins,
+settings, people (their role), patterns, menus (copied as links
+rewritten to each site, final) and themes (each site’s wp-admin Themes
+screen, because REST cannot activate a theme), with per-site permission
+reasons and per-site outcomes; Compare Global Styles reads each site’s
+palette and font sizes. Install on Sites Missing It was already built by
+the REST-limits work and is reused.</li>
+<li>Promote to Network asks only where the site’s plugin schema offers
+<code>network-active</code> (a multisite), says the consequence, and
+reports WordPress’s super-admin refusal per site.</li>
+<li>The Fleet (<code>workbench_fleet.py</code>) has health, backups,
+security and updates columns, each known, unknown, unavailable or stale
+(last answer kept, with when, if a site stops answering).</li>
+<li><code>workbench_scope_matrix.py</code> classifies every kind x scope
+(site, Site Set, every site, network) x operation, supported with its
+command or not with its reason; tests check every cell and every named
+handler.</li>
+<li>Later the same day: By Name &gt; Template Parts (block themes,
+wp/v2/template-parts) lists each part with the templates, posts and
+pages that place it, and renames its title (the slug stays, because
+templates place a part by slug), previewed and undoable. Across Sites
+&gt; Application Passwords lists each password by name and person, yours
+and, where you may edit that person, others’; Revoke Everywhere revokes
+it on every site after a per-site preview, with per-site outcomes and no
+undo. Blocking a spam sender (no REST route for disallowed_keys) and
+redirects (no core API) stay classified as not supported.</li>
+<li>Tests: <code>test_wp_workbench_by_name_core.py</code>,
+<code>test_wp_workbench_by_name.py</code>.</li>
+</ul>
+<h3
+id="2026-11-13-the-editors-doors-shop-podcast-and-people-wp-a-wp-b-wp-g">2026-11-13:
+The editor’s doors, Shop, Podcast and People (WP-A, WP-B, WP-G)</h3>
+<ul>
+<li><strong>This Post in the Workbench</strong> (File &gt; WordPress in
+both editors, Ctrl+Alt+Shift+Grave then Shift+H): the Workbench opens on
+the list the document’s post lives in (Posts, Pages or its content type,
+once discovery has added it) and selects it; a post past the rows loaded
+is searched for by title once, then said. A document not yet on the site
+says Save Draft to Site first.
+<code>quill/ui/wordpress_workbench_editor_side.py</code>.</li>
+<li><strong>Picking mode</strong>: Insert &gt; Picture from the Media
+Library opens the Workbench on the document site’s Media; Enter on a
+file inserts it at the caret through the same picture dialog and brings
+the editor forward. A file from another site is refused with why. The
+list dialog stays the way for a host with no editor window.</li>
+<li><strong>Shop, Shop Orders and Podcast</strong>
+(<code>workbench_shop.py</code>): WooCommerce’s <code>wc/v3</code>
+products and orders, read only, where the index lists
+<code>wc/v3</code>; a shop order is read as a receipt (no email,
+telephone or billing address) and every shop row and help sentence says
+it is not a membership order. Podcast lists the site’s podcast content
+type, or else the posts carrying an episode’s player
+(<code>episode.is_episode_post</code>). A site with neither is told so.
+No <code>planned:</code> node is left.</li>
+<li><strong>The seven plugin orderings</strong> (favorite_count,
+popularity, post__in, price, random, rating, sales) have spoken labels;
+the combination test’s planned list is empty.</li>
+<li><strong>People &gt; Users</strong>
+(<code>workbench_people_admin.py</code>): Their Application Passwords
+(<code>wp/v2/users/{id}/application-passwords</code>, edit_users for
+anyone else’s, with Revoke after a confirmation); Sign Out Everywhere
+says core REST has no sessions route and opens the person’s wp-admin
+screen; Invite from a Spreadsheet reads a CSV of email, role and name,
+previews every row and every row left out, then sends one
+<code>POST wp/v2/users</code> each and says the outcome. REST sends no
+email, which the preview says.</li>
+<li>The Workbench’s own APP_KEYMAPS entry and custom types’ status
+nodes, New, filters and batch were already built; checked and their
+lines removed.</li>
+<li>Tests: <code>test_wp_workbench_shop_people_core.py</code>,
+<code>test_wp_workbench_editor_side.py</code>.</li>
+</ul>
+<h3
+id="2026-11-13-gravity-forms-pmpro-the-sweep-and-the-bold-workflows-completemd-7-10b3">2026-11-13:
+Gravity Forms, PMPro, the sweep and the bold workflows (complete.md 7,
+10B.3)</h3>
+<ul>
+<li><strong>What REST cannot do</strong>
+(<code>workbench_no_rest.py</code>): plugin, theme and Across Sites rows
+say core REST cannot update, turn on auto-updates, or switch or install
+a theme; Open in Dashboard goes to the screen that can; Install on Sites
+Missing It installs a plugin by slug after a preview and opens Add New
+for a theme. WordPress.org theme search and language pack status
+(<code>dotorg.py</code>) ask consent first and have their own egress
+row.</li>
+<li><strong>Gravity Forms</strong> (<code>workbench_gravity*.py</code>):
+Forms &gt; Feeds and Results; Entry Notes (Ctrl+Alt+N), Star or Unstar
+Entry (Ctrl+Alt+F), Mark Entry Read or Unread (Ctrl+Alt+U), Resend
+Notifications (Ctrl+Alt+I); field filters in the Filter Builder; Test
+This Form; whole-form Copy to Site. Conversion now accepts
+gform_full_access and reads the form back.</li>
+<li><strong>Paid Memberships Pro</strong>
+(<code>workbench_pmpro_rest.py</code>,
+<code>workbench_pmpro_change.py</code>): <code>pmpro/v1</code> as the
+fallback, Discount Codes, Check Membership Access, Change Membership
+Level and Cancel Membership, each previewed per run; card and billing
+fields stripped everywhere.</li>
+<li><strong>QAF spam</strong> (<code>workbench_qaf_spam.py</code>): Spam
+and Not Spam through QAF’s spam routes; a held entry’s reason; a
+read-only Spam page.</li>
+<li><strong>Site administration sweep</strong>: Site Health &gt;
+Information and Security (XML-RPC), Redirects and 404 Log
+(<code>workbench_redirects.py</code>), Content Audit and Media
+Housekeeping, Privacy Requests as wp-admin pointers, Search and Upkeep,
+Administration Areas (<code>THIRD_SWEEP</code>).</li>
+<li><strong>Bold workflows</strong>: Copy to Site
+(<code>workbench_site_copy.py</code>), Compare Sites, snapshots and Put
+Back (Ctrl+Alt+Shift+S), Calendar and Move to Another Day
+(Ctrl+Alt+Shift+D), the editorial queue, Read Site as Document, Watches
+for site down, review and health, the REST Console’s Accepts, What It
+Returns and saved requests (Ctrl+Alt+Q, Ctrl+Alt+Shift+F), Import a
+Folder of Documents (Ctrl+Alt+Shift+I) and the Plain-Language Batch
+(Ctrl+Alt+B).</li>
+<li><strong>Practice Site</strong>: loopback only, the full reset
+warning, and three practice-only tutorials in QUILL.</li>
+<li>Docs: the WordPress and Forms manual’s Chapter 13 now covers every
+node, command and key; Chapter 12, both editors’ WordPress chapters, the
+release notes and the status page are current.</li>
+</ul>
+<h3
+id="2026-11-13-wp-admin-parity-for-posts-pages-and-media-918-packages-1-to-3">2026-11-13:
+wp-admin parity for Posts, Pages and Media (9.18, packages 1 to 3)</h3>
+<ul>
+<li><strong>Audit first:</strong> 36 capabilities of wp-admin’s Posts,
+Pages and Media Library screens and the editor’s sidebar, checked
+against the Workbench’s code and tests (the table at the end of 9.18’s
+Media). 21 were already there, 12 are built here, and 3 are wp-admin
+only (the post lock, Screen Options’ per-page setting, and scaling the
+original), each opening the exact wp-admin screen or naming the
+Workbench job that stands in.</li>
+<li><strong>Built</strong>
+(<code>quill/core/wordpress/workbench_parity.py</code>, its context-menu
+rows in <code>workbench_parity_actions.py</code>, the mixin
+<code>quill/ui/wordpress_workbench_parity.py</code>): Counts by Status
+for posts, pages, content types and media; Duplicate as Draft (Ctrl+Z
+trashes the copy); Empty Trash (names first, permanent, said so); Edit
+Picture with the site’s own turns, flips and crops plus crop by numbers
+in percent, read back in words in the preview; Regenerate Sizes; Attach
+and Detach (conflict-checked, Ctrl+Z); Download; Open in wp-admin for
+the post lock and Scale. Properties’ Author and Template are now choices
+from the site, and the featured image is named by title, with Choose
+from Library… (the site’s pictures with their alt text, read off the UI
+thread) and Remove Featured Image beside it, on one item or several. The
+buttons are a new, provider-neutral <code>FieldButton</code> on the
+shared sheet editor.</li>
+<li><strong>Bulk outcomes:</strong> Trash, Restore and Delete
+Permanently on several rows now give each item its own outcome, so one
+refusal no longer stops the rest, and Ctrl+Z restores only what
+moved.</li>
+<li>No chords: the Workbench’s keys are dense and these are now-and-then
+jobs, so each is on its row’s context menu with a written reason (family
+rule 8). QUILL Lite reaches the same Workbench, so it is not ahead or
+behind.</li>
+<li>Tests:
+<code>tests/unit/core/wordpress/test_wp_workbench_parity_core.py</code>
+and <code>tests/unit/ui/wordpress/test_wp_workbench_parity.py</code>,
+every new handler called against a fake site. Not yet tried on the live
+test site.</li>
+</ul>
+<h3
+id="2026-11-13-wp-admin-parity-for-comments-and-people-918-packages-4-and-5">2026-11-13:
+wp-admin parity for Comments and People (9.18, packages 4 and 5)</h3>
+<ul>
+<li><strong>Audit first:</strong> 43 capabilities of wp-admin’s
+Comments, Users, Add New and profile screens, checked against the
+Workbench’s code and tests (the two tables after 9.18’s Comments and
+Users). 22 were already there, 16 are built here, and 5 are wp-admin
+only: sorting comments by the commenter’s name, the new-user email, the
+password reset email, Log Out Everywhere and the profile’s browser
+preferences. Each says why, and the three that do something open the
+wp-admin screen that does it.</li>
+<li><strong>Comments</strong>
+(<code>quill/core/wordpress/workbench_moderation.py</code>, the mixin
+<code>quill/ui/wordpress_workbench_moderation.py</code>): Comment Counts
+(Ctrl+Alt+Shift+C), Show Its Comments on a post (Ctrl+Alt+Shift+M),
+Empty Comment Trash (Ctrl+Alt+Shift+E); <code>comment_type:</code> in
+the filter and the Filter Builder; Website, IP address, Type and Parent
+columns; the sheet’s date editable and its IP shown; a conflict check
+for comments, which have no <code>modified_gmt</code>; and an outcome
+per comment for bulk moderation, Ctrl+Z putting back only what
+changed.</li>
+<li><strong>People</strong>
+(<code>quill/core/wordpress/workbench_people_bulk.py</code>, the mixin
+<code>quill/ui/wordpress_workbench_people_bulk.py</code>): Change Role
+and Remove on several people, each checked by the existing self-lockout
+guards in turn against the list as it will be; Add a Person as one sheet
+with first and last name, website, language and role, saying REST sends
+no email; Set New Password (context menu, a written reason for no
+chord), never said or kept; Your Profile (Ctrl+Alt+Shift+P) without the
+Role page; Language and Posts written on the user sheet; the same
+conflict check for users.</li>
+<li>Undo where it truly restores: moderation and role changes, yes;
+permanent deletes, user removals and a new password, no, and each
+confirmation says so.</li>
+<li>Tests:
+<code>tests/unit/core/wordpress/test_wp_workbench_comments_people_core.py</code>
+and
+<code>tests/unit/ui/wordpress/test_wp_workbench_comments_people.py</code>,
+every new handler called against a fake site. Not yet tried on the live
+test site.</li>
+</ul>
+<h3
+id="2026-11-13-the-dashboard-site-editor-writing-and-wp-admin-by-place-918-packages-6-7-and-14-route-gaps">2026-11-13:
+the Dashboard, Site Editor writing and wp-admin by place (9.18, packages
+6, 7 and 14; route gaps)</h3>
+<ul>
+<li><strong>Audit first.</strong> Package 6: Overview already counted
+posts and pages; At a Glance’s comments, people and theme, single-site
+Activity and the plugin sentences were missing. Package 7: Templates and
+Template Parts were read only, and Additional CSS was not read at all.
+Package 14: Open in Dashboard existed only on plugin, theme, Across
+Sites, Site Health Info, privacy and discount-code rows, with no
+complete map. Route gaps (9.17): 2 (taxonomies, statuses) and 9
+(<code>search</code>, in the Workbench’s Search and Attach) were built
+on 2026-11-09 and 2026-11-10; 3 is half built (the directory sizes are
+in Site Health &gt; Information); 13’s template lookup and revisions,
+ability categories and the dead comment functions are built or removed
+here; the rest remain, listed in section 19. No
+<code>feat/wordpress-followup</code> branch exists in this
+repository.</li>
+<li><strong>Package 6</strong>
+(<code>quill/core/wordpress/workbench_dashboard.py</code>): Overview now
+has At a Glance (posts and pages by status, comments waiting, approved
+and held as spam, people, WordPress’s version and the theme, in
+sentences; a refused count is left out, never said as none; then one
+sentence each for WooCommerce, The Events Calendar, Yoast SEO and Paid
+Memberships Pro where the site offers their namespace) and Activity
+(publishing soon, recently published, recent comments, five each, an
+empty group still said).</li>
+<li><strong>Package 7</strong>
+(<code>quill/core/wordpress/workbench_site_editor.py</code>, the mixin
+<code>quill/ui/wordpress_workbench_site_editor.py</code>): on a template
+or part, Edit Block Markup, Earlier Versions
+(<code>.../revisions</code>), Reset to the Theme’s Version (DELETE with
+<code>force</code>, which deletes outright a template the theme never
+had, said in the preview), New Template (starting from
+<code>templates/lookup</code>) and Open in the Site Editor; a new
+Appearance &gt; Additional CSS node edits a block theme’s
+<code>styles.css</code> through <code>wp/v2/global-styles/{id}</code>,
+sending every other style back unchanged, and a classic theme’s row
+opens the Customizer’s Additional CSS, which REST does not reach (there
+is no <code>customize_changeset</code> route in core). Every write
+re-reads first and stops on a conflict, is previewed line by line, and
+Ctrl+Z undoes it; CSS with markup or unpaired braces is refused before
+the preview. Administrator only (<code>edit_theme_options</code>),
+refused with the reason before any dialog.</li>
+<li><strong>Package 14</strong>
+(<code>quill/core/wordpress/workbench_admin_map.py</code>): 47 wp-admin
+screens, each with its exact address, its nearest Workbench node and
+whether the Workbench does all, part or none of it (WooCommerce, Events,
+Yoast and PMPro screens only where the site has them). Overview &gt;
+wp-admin Screens lists them (Enter says why, then opens; Go to Its Place
+selects the node), and wp-admin for This Place, on every node’s context
+menu, opens the screens nearest that node.</li>
+<li><strong>Route gap 13:</strong> Abilities shows each category’s own
+name from <code>wp-abilities/v1/categories</code>; the unused comment
+functions in <code>site_media.py</code> are deleted.</li>
+<li>Nodes, help and rows live in
+<code>workbench_dashboard_places.py</code>, spliced into the tree, the
+action table and F1 help (GATE-11: the tree got smaller). No chords:
+each command has a written reason (family rule 8). QUILL Lite reaches
+the same Workbench. Manual: chapter 13, the Overview section and
+Templates and Additional CSS.</li>
+<li>Tests:
+<code>tests/unit/core/wordpress/test_wp_workbench_admin_parity_core.py</code>
+and
+<code>tests/unit/ui/wordpress/test_wp_workbench_site_editor.py</code>,
+every new handler called against a fake site. Not yet tried on the live
+test site.</li>
+</ul>
+<h3
+id="2026-11-13-woocommerce-the-events-calendar-yoast-seo-and-forms-on-the-site-918-packages-8-to-13">2026-11-13:
+WooCommerce, The Events Calendar, Yoast SEO and forms on the site (9.18,
+packages 8 to 13)</h3>
+<p>Built from the routes and argument schemas the test site’s public
+REST index publishes; every new command previews before it sends, has F1
+help, a key or a written reason (<code>KEYLESS</code> in
+<code>workbench_plugin_actions.py</code>), and a test that calls it
+against a fake site in those shapes.</p>
+<ul>
+<li><strong>Package 8, the catalogue</strong>
+(<code>workbench_shop_catalog.py</code>): Shop’s own filter nodes (Draft
+Products, On Sale, Out of Stock), passed to <code>wc/v3/products</code>
+as its arguments; a product row carries type, SKU, prices and sale
+dates, stock, categories, tags, visibility, tax, weight and shipping for
+Properties. Edit Product (regular and sale price, stock, status,
+categories by name) sends only what changed; New Product (a draft,
+Ctrl+N on Shop), Duplicate (<code>products/{id}/duplicate</code>), Move
+to Trash (Delete) and Show Its Variations.</li>
+<li><strong>Package 9, orders and the rest</strong>
+(<code>workbench_shop_orders.py</code>,
+<code>workbench_shop_reports.py</code>): Change Status, its preview
+saying which email WooCommerce sends; Notes, read and added, private or
+emailed to the customer; <strong>Refund</strong>, tier 3: one order
+only, checked against what is left, a money warning that says whether
+the gateway returns the money or only the record changes, and sent only
+when the amount is typed exactly; never part of a batch. Customers, read
+only and with no email, telephone or address; Coupons with New (Ctrl+N),
+Edit and Move to Trash; Shop Reports as a sentence and a small table
+each (sales, top sellers, five totals).</li>
+<li><strong>Package 10, store settings</strong>
+(<code>workbench_shop_settings.py</code>): every settings group, each
+setting in words; Change Setting chooses where WooCommerce gives choices
+and previews old and new. Password-style settings are never read aloud,
+kept in a row or changed here.</li>
+<li><strong>Package 11, The Events Calendar</strong>
+(<code>workbench_events.py</code>): Events Calendar (coming up), Past
+Events, Venues and Organizers through <code>tribe/events/v1</code>; each
+event says its time zone and, from the site’s UTC time, your computer’s
+time; New Event (a draft, the site’s zone unless one is typed), Edit
+Event, Events Between Dates, and New, Edit and Move to Trash for venues
+and organizers. A recurring occurrence (Events Calendar Pro) says so and
+is changed in wp-admin, because REST gives no series rule.</li>
+<li><strong>Package 12, Yoast SEO</strong>
+(<code>workbench_seo.py</code>): SEO lists the newest posts and pages
+from <code>yoast_head_json</code> with what to look at; Search
+Appearance reads title, address and description with where each is cut
+off; Edit SEO writes the meta Yoast registers and names any it has not;
+Site SEO gives SEO and readability scores in words and lists, with Open
+in Dashboard, every job only Yoast’s screens do.</li>
+<li><strong>Package 13, forms on the site</strong>
+(<code>workbench_forms_site.py</code>), audited against 9.18’s QAF table
+and the plugin’s controller: Change Form Status, Form Settings (one
+value at a time, the whole object sent back), Saved Views, Search
+Responses on the Site, and Delete Form after its response count and its
+name typed; Star and Mark Read (Ctrl+Alt+F, Ctrl+Alt+U) now answer on
+QAF responses, sending only that flag. Form import from other plugins
+stays with the importers.</li>
+<li><strong>The Forms key:</strong> Ctrl+Alt+Shift+Grave, then F, for
+Responses, in both editors (<code>forms/menu.py</code> LAYER_KEYS, which
+records why: rule 3, and F was free on the layer, in DEFAULT_KEYMAP and
+DEFAULT_ALIASES, and no system-wide key can claim a bare letter).</li>
+<li>Tests:
+<code>tests/unit/core/wordpress/test_wp_workbench_plugins_core.py</code>
+and
+<code>tests/unit/ui/wordpress/test_wp_workbench_plugins_ui.py</code>.
+Not yet tried on the live test site.</li>
+</ul>
+<h3
+id="2026-11-14-the-packages-8-to-13-leftovers-out-of-wp-admin">2026-11-14:
+The Packages 8 to 13 leftovers, out of wp-admin</h3>
+<p>Built from the test site’s public REST index and, for Yoast SEO’s
+bulk editor, Yoast’s own source
+(<code>src/bulk-editor/user-interface</code>), whose item shape the
+index does not give. Every write is previewed, read again before it is
+sent (the conflict check compares the fields being changed, since these
+objects have no <code>modified_gmt</code>), checked after, and undoable
+where putting the old values back truly restores them
+(<code>workbench_plugin_write.py</code>). Each command has F1 help, a
+key or a written reason (<code>workbench_plugin_actions_more.py</code>),
+the capability it needs, and a test that calls it
+(<code>test_wp_workbench_plugin_leftovers_ui.py</code>,
+<code>test_wp_workbench_plugin_leftovers_core.py</code>).</p>
+<ul>
+<li><strong>WooCommerce</strong> (<code>workbench_shop_care.py</code>,
+<code>workbench_shop_setup.py</code>): Product Reviews (Approve, Hold,
+Mark as Spam on a selection with an outcome each, Reply through
+<code>wp/v2/comments</code>, Edit Review, Delete to the Trash); Shipping
+Zones with Locations and Methods; Tax Rates and Tax Classes; Attributes
+and their Terms; Brands where the index has them; Webhooks (New, Pause
+or Activate, Delete; WooCommerce makes the secret and QUILL never reads
+it); Customer Details and Edit Customer, only for a role with
+<code>list_users</code> and never in a list; Edit a Variation.</li>
+<li><strong>The Events Calendar</strong>
+(<code>workbench_event_terms.py</code>): Event Categories and Event Tags
+(New, Rename, Delete) and Categories and Tags on an event.</li>
+<li><strong>Yoast SEO</strong> (<code>workbench_seo_bulk.py</code>):
+Edit SEO asks for the social title, description and image too, and
+writes through Yoast’s registered meta where there is some and its bulk
+editor routes otherwise; the Bulk SEO Editor lists every post and page
+and changes one where it stands.</li>
+<li>28 routes moved from planned to covered; the coverage snapshot is
+regenerated. Still in wp-admin, and why: variation generation and a
+method’s settings beyond its cost (WooCommerce’s settings forms differ
+per method), customers’ downloads, a typed webhook secret (no
+password-style question in the Workbench yet), the social image on a
+site that does not register Yoast’s meta, and the batch routes (each
+item is sent on its own so it can be checked and undone).</li>
+</ul>
+<h3
+id="2026-11-13-build-gravity-forms-forms-in-quill-completemd-10b3">2026-11-13:
+Build Gravity Forms forms in QUILL (complete.md 10B.3)</h3>
+<p>Asked: “can we also build gravity forms with quill’s wordpress
+features?”</p>
+<ul>
+<li><strong>New Gravity Form…</strong> (New Here, Ctrl+N, on a site’s
+Forms node; the form context menu; Item &gt; Gravity Forms) and
+<strong>Edit Form…</strong> on a Gravity Forms form row open QUILL’s
+form editor (<code>wordpress_gravity_editor.py</code>): title,
+description, button text, label placement, the default confirmation
+message and the Admin Notification’s To and subject, then the fields in
+order. Insert adds, Enter edits, Ctrl+Up and Ctrl+Down move, Delete
+removes, Condition sets “show or hide when an earlier field is, or is
+not, a value”. The QAF forms editor is BFL text in the editor window;
+Gravity Forms has no text form, so this is a separate model with
+converters rather than an adapter onto BFL.</li>
+<li><strong>The model</strong> (<code>gravity_build.py</code>) is
+Gravity Forms’ own form object, edited on a copy: eighteen field types
+(text, textarea, email, phone, number, select, radio, checkbox,
+multiselect, date, time, website, name, address, consent, html, section,
+page) with label, description, required, placeholder, default, choices
+(one a line, “text = value”, “*” for chosen), admin label and CSS class;
+complex fields get Gravity Forms’ documented sub-inputs; check box
+inputs skip multiples of ten. Ids are never reused. Any other field, and
+logic with more than one rule, is kept untouched.</li>
+<li><strong>Checks before saving</strong>
+(<code>gravity_build_checks.py</code>, plus QUILL’s QAF Check This Form
+over the converted form): unlabelled or placeholder-only questions,
+asterisk-only required, empty choices, page breaks and sections that
+leave something empty, two questions that sound alike, logic naming a
+missing or later field. Cancel goes back to the editor on the first
+one.</li>
+<li><strong>Saving</strong> (<code>gravity_build_save.py</code>): POST
+for new; for an edit the form is re-read and compared with the copy
+opened, and nothing is sent if it changed; the whole form is PUT; a
+preview lists every change first; it is read back and any difference
+said; Ctrl+Z puts the previous form back (a new form goes to Gravity
+Forms’ Trash). Every preview says entries are never read or changed, and
+no call goes to <code>gf/v2/entries</code>.</li>
+<li><strong>Copy as a Gravity Form / Copy as a QUILL Accessible
+Form</strong> (<code>gravity_qaf.py</code>) make a new form in the other
+plugin, previewing each thing that cannot carry over (CSS classes, admin
+labels, rich logic, families one side lacks).</li>
+<li>Tests: <code>test_wp_gravity_build_core.py</code>,
+<code>test_wp_gravity_build_ui.py</code>,
+<code>test_wp_gravity_editor_dialogs.py</code>. Live checks 123 to 126
+(<code>docs/qa/wordpress_live_gravity_build.py</code>) skip with
+“Gravity Forms not installed” until a licensed Gravity Forms site is
+available; needs Jeff.</li>
+</ul>
+<h3 id="2026-11-13-the-rest-of-the-route-gaps-917">2026-11-13: the rest
+of the route gaps (9.17)</h3>
+<ul>
+<li><strong>Gap 1, install a missing block:</strong> Insert Block has
+<strong>Install a Missing Block…</strong> where the site offers
+<code>block-directory/search</code>: search WordPress.org’s Block
+Directory through the site, hear the block, its plugin, author, rating
+and installs, then install and activate it after a confirmation that
+states the no-rollback limit
+(<code>quill/core/wordpress/block_directory.py</code>,
+<code>wordpress_pattern_commands.py</code>). The way back is
+deactivating and deleting the plugin in the Workbench.</li>
+<li><strong>Gaps 3 and 7, big uploads:</strong> a file from 16 MB is
+first weighed against the site’s own directory sizes, said with what
+QUILL cannot see (the host’s limit is not on REST), and every upload
+ends with a details step (title, alt text for pictures, caption,
+description; only changes are sent). Resuming is not possible: WordPress
+has no upload in pieces, so an interrupted upload starts again, and the
+docstrings say so.</li>
+<li><strong>Gap 4:</strong> Edit a Picture on the Site offers Regenerate
+Sizes on the edited copy.</li>
+<li><strong>Gap 6, Word:</strong> Download My Writing asks Markdown or
+Word and writes <code>.docx</code> through QUILL’s own Word writer; Send
+a Folder as Drafts reads <code>.docx</code> through QUILL’s own Word
+reader.</li>
+<li><strong>Gap 8, every widget:</strong> on a Workbench widget area,
+Add, Change, Move and Remove a Widget, and Preview Widgets. A legacy
+widget is edited on the form WordPress itself draws
+(<code>widget-types/{id}/encode</code>), read into labelled fields and
+sent back under its own names; the preview is <code>render</code>, in
+words. Conflict-checked, previewed, Ctrl+Z for each
+(<code>quill/core/wordpress/widget_types.py</code>,
+<code>quill/ui/wordpress_workbench_widgets.py</code>).</li>
+<li><strong>Gap 10, menus:</strong> Menu History reads Navigation
+autosaves beside revisions; on a Workbench menu, Earlier Versions brings
+back removed items from QUILL’s snapshots, which now start whenever the
+Workbench reads the menu, and Ctrl+Z takes them out again. Core keeps no
+history of classic menus or their items, which the 9.16 row now
+says.</li>
+<li><strong>Gap 11:</strong> behaviour tests for
+<code>cmd_versions</code>, <code>cmd_trash</code>,
+<code>cmd_compare</code>, <code>cmd_open_by_address</code>,
+<code>cmd_open_local_draft</code>, <code>cmd_open_on_site</code>,
+<code>cmd_switch_site</code>, <code>cmd_sites</code> and
+<code>cmd_connect</code>
+(<code>tests/unit/ui/wordpress/test_wp_editor_commands_behaviour.py</code>).</li>
+<li><strong>Gap 12:</strong> both editors’ WordPress chapters have
+“Looking after a site”; the manual’s chapter 13 covers widgets and menu
+history; a new Practice Site lesson, Look after a site, walks Overview,
+wp-admin Screens, menus, people, Site Health, fonts, widgets, big
+uploads and Word.</li>
+<li><strong>Gap 13:</strong> Insert Block names each pattern’s category
+from <code>block-patterns/categories</code>; a Workbench menu’s Default
+Navigation Menu reads <code>navigation-fallback</code>, asking first
+because WordPress makes a menu when the site has none.</li>
+<li>No new chords and no change to <code>keymap.py</code>: the new
+Workbench commands are on their rows’ context menus with written
+reasons, and the editor’s are steps or buttons inside existing
+commands.</li>
+</ul>
+<h3 id="2026-11-14-six-wordpress-leftovers">2026-11-14: six WordPress
+leftovers</h3>
+<ul>
+<li><strong>Masked fields.</strong> The shared sheet editor has a secret
+field kind (<code>FieldKind.SECRET</code>): a password box that always
+opens empty, whose accessible name ends “hidden as you type”, which Copy
+as Text writes as “hidden”, and whose value leaves the sheet’s values
+once a save has it (the box empties after a save that went). The OOPSpam
+key on the site’s Spam page and a post’s or page’s Password use it; the
+GitHub Workbench shares the editor unchanged.</li>
+<li><strong>Gravity Forms filters on the site.</strong> The Filter
+Builder’s conditions on Responses are sent as
+<code>gf/v2/entries</code>’ <code>search</code>
+(<code>field_filters</code> with key, value and operator; “is” is
+Gravity Forms’ <code>contains</code>, “is not” is <code>isnot</code>),
+with All or Any asked when there is a second condition, read a hundred
+at a time up to the list’s page limit, and the status bar says the
+site’s own count (“12 of the 40 responses that match … are shown”)
+(<code>quill/core/wordpress/workbench_gravity_search.py</code>).</li>
+<li><strong>PMPro Access page.</strong> A person’s Properties on a site
+with <code>pmpro/v1</code> has an Access page; Check a Post or Page asks
+for one and the page shows Paid Memberships Pro’s answer. The button is
+on read-only sheets too, because it only reads. The context-menu command
+stays.</li>
+<li><strong>Across Sites and WordPress.org.</strong> Across Sites &gt;
+Plugins rows carry the directory’s words (rating, last updated, the
+abandoned or closed warning) the way a site’s plugin rows do, once the
+person has agreed to ask WordPress.org in this window; until then
+nothing is sent.</li>
+<li><strong>Practice crossing.</strong> Promote to Network and Revoke
+Everywhere ask, by name and defaulting to No, before changing the
+practice site and real sites in one step; Install on Sites Missing It
+asks when only the practice site has the plugin; Put Back from a
+Snapshot asks when the snapshot was taken on the practice site (new
+snapshots record it) and the target is real. The Fleet itself only
+reads.</li>
+<li><strong>Save Draft on a published item.</strong> Both editors now
+ask “This post is published. Save as a draft and take it off the site,
+or update the published post?”, with Update first, instead of quietly
+unpublishing it.</li>
+</ul>
+<h3
+id="2026-11-14-add-menu-item-and-adding-new-pages-automatically-99">2026-11-14:
+Add Menu Item and adding new pages automatically (9.9)</h3>
+<ul>
+<li><strong>Add Menu Item…</strong> on a classic menu’s context menu,
+and Ctrl+N (New Here) with a menu selected, which asks “a new item in
+this menu” (first) or “a new menu”. Audited against wp-admin’s Add menu
+items panel: the kinds come from <code>wp/v2/types</code> and
+<code>wp/v2/taxonomies</code> (show in nav menus, so pages, posts, every
+custom type, categories, tags, every custom taxonomy) plus Custom Links;
+Search sends <code>search</code>, an empty box is View All (published
+only, a type’s archive page first as <code>post_type_archive</code>);
+the item goes under any item and first or after any sibling, and the
+items after it are renumbered. The preview names what and where; the
+menu is read again before the write and a changed menu is left alone;
+the item is read back; Ctrl+Z deletes it and puts the renumbered items
+back (<code>quill/core/wordpress/menu_item_add.py</code>,
+<code>quill/ui/wordpress_workbench_menu_items.py</code>).</li>
+<li><strong><code>auto_add</code></strong>, “Automatically add new
+top-level pages to this menu”: a labelled check box on a menu’s
+Properties (a written Menu sheet, whose conflict check compares name,
+description, the setting and locations), and <strong>Add New Pages
+Automatically…</strong> on the menu’s context menu, which previews the
+state now, re-reads before and after, and undoes with Ctrl+Z.</li>
+</ul>
+<h3
+id="2026-11-14-replace-file-and-wxr-export-and-import-wp_missingmd-media-and-tools">2026-11-14:
+Replace File, and WXR export and import (wp_missing.md, Media and
+Tools)</h3>
+<ul>
+<li><strong>Replace File…</strong> on a Media Library row
+(<code>quill/core/wordpress/media_replace.py</code>,
+<code>quill/ui/wordpress_workbench_media_replace.py</code>). The file is
+checked first (64 MB, a type the Media Library takes). Where the site’s
+REST index lists a plugin’s replace route, the file is replaced in place
+after a preview of both files and read back, and the outcome says
+whether the address really stayed the same; QUILL cannot put the old
+file back, and the preview says so. Otherwise the person chooses: upload
+it as a new file and point every use at it (posts, pages, patterns and
+featured images, found by attachment id, by address and by the address’s
+size variants, each previewed; Ctrl+Z puts every item back and the new
+file stays), or, where Enable Media Replace is active, open its box in
+wp-admin, which keeps the address. The old file is kept, or deleted for
+good only once every use moved (the Media Library has no Trash). Where
+Redirection is active, a redirect from the old address is offered and
+made in the plugin’s first group. Core REST has no replace route, which
+is why the repoint path exists.</li>
+<li><strong>Tools &gt; WXR Files &gt; Export Site as WXR…</strong>
+(<code>wxr_export.py</code>): a WXR 1.2 file written on this computer
+from what QUILL reads over REST: everything (posts, pages, patterns,
+other types, files, menus, comments), posts only, pages only, a date
+range, or one category. A part takes only the authors, terms and files
+its items use, as WordPress’s exporter does. The file is read back by
+<code>validate_wxr</code> before the report, which ends with what was
+left out and why (anything REST does not give, such as passwords and
+settings outside <code>wp/v2/settings</code>).</li>
+<li><strong>Tools &gt; WXR Files &gt; Import WXR as Drafts…</strong>
+(<code>wxr_read.py</code>, <code>wxr_import.py</code>): the file is
+parsed through <code>quill.core.safe_xml</code>, so a DTD or entity
+declaration is refused; over 64 MB is refused; past 2,000 items the rest
+are counted and named. Authors are matched by login or email, and
+unmatched authors’ items go to a person chosen once. Terms are matched
+or made, every item is made as a draft (whatever its status in the
+file), and the preview lists each line before anything is sent. Files
+named in the export are downloaded only when the person chooses to, with
+the hosts named in the question, over HTTPS, up to 64 MB each and with
+no password; then links in the text are rewritten to the uploaded files.
+Ctrl+Z moves the drafts to the Trash.</li>
+<li>Neither WXR command has a chord (rule 9); both are reached by Alt+T,
+W and their access letters. Replace File is on the Media row’s context
+menu.</li>
+<li>Tests: <code>test_wp_wxr_core.py</code>,
+<code>test_wp_media_replace_core.py</code>,
+<code>test_wp_workbench_wxr.py</code>,
+<code>test_wp_workbench_media_replace.py</code> (58). They found two
+bugs, both fixed: an import that skipped files (or whose download
+failed) still rewrote those files’ addresses to the new site, where
+nothing was uploaded; and <code>WxrError</code> had no
+<code>plain</code>, so a bad file was spoken with its support code in
+front.</li>
+</ul>
+<h3
+id="2026-11-14-five-more-gaps-from-wp_missingmd-and-two-doors-the-workbench-closed">2026-11-14:
+five more gaps from wp_missing.md, and two doors the Workbench
+closed</h3>
+<ul>
+<li><strong>Earlier Versions…</strong> on post, page and custom-type
+rows (<code>workbench_item_versions.py</code>): the item’s revisions and
+autosaves through the editor’s <code>site.list_revisions</code>, a
+line-by-line comparison with the item now, a re-read before the restore,
+and Ctrl+Z, which refuses if the item changed after the restore.</li>
+<li><strong>Check for Updates on WordPress.org…</strong> on plugin,
+theme and Updates rows (<code>workbench_update_check.py</code>): asks
+<code>plugins/info/1.2</code>, <code>themes/info/1.2</code> and
+<code>core/version-check/1.7</code> behind the existing WordPress.org
+agreement, sending only slugs; versions are compared here. Rows say
+“Update waiting: version X”, “Up to date” or unknown (premium plugins,
+sites that do not report a version) for the rest of the window’s life.
+The existing <code>ask_wordpress_org</code> egress row covers it.</li>
+<li><strong>Check Every Link…</strong> on By Name &gt; Links
+(<code>workbench_link_check.py</code>): every published post, page and
+custom item, all pages, through the same
+<code>link_targets.read_target</code> as Broken Links; a Link check
+status-bar cell counts as it goes, and Enter on it (or the command
+again) stops it, keeping what was found.</li>
+<li><strong>A Gravity Forms response’s answers</strong> are editable on
+its Properties (<code>workbench_gravity_answers.py</code>): fields built
+per entry with the form’s labels, a preview of old and new answers, a
+check of <code>date_updated</code> and of each changed answer, then the
+whole entry is PUT. Ctrl+Z restores the old answers.</li>
+<li><strong>wp-admin map</strong>
+(<code>workbench_admin_map_plugins.py</code>): Gravity Forms forms,
+entries and settings; QUILL Accessible Forms; Redirection and its 404s;
+WooCommerce products, orders and Analytics; The Events Calendar’s lists;
+and PMPro’s levels, members, orders, discount codes, reports and
+settings. WooCommerce Settings now says Store Settings &gt; Change
+Setting writes them. The QAF slug (<code>admin.php?page=qaf</code>) and
+the others are the plugins’ standard admin addresses, not checked
+against plugin source.</li>
+<li><strong>Offer to Ask the Site</strong> on an ability row. Since
+Tools &gt; WordPress &gt; Manage &gt; AI Abilities became a Workbench
+door, nothing could turn an ability on, so Ask the Site had nothing to
+offer. The command keeps the same per-site choice the old window kept
+(<code>AbilityChoices</code>), and an ability that can change the site
+asks first.</li>
+<li><strong>Arrange Items…</strong> on a classic menu row opens the
+editor’s Menus window on that menu and site
+(<code>cmd_menus(menu_id=..., profile=...)</code>). Moving items up,
+down, in and out had been reachable only by publishing a new page and
+answering Yes, open Menus.</li>
+<li><code>workbench_coverage.py</code>’s covered-route table moved to
+<code>workbench_coverage_routes.py</code> (GATE-11).</li>
+</ul>
+<h3
+id="2026-11-14-the-manual-the-release-story-and-a-ux-review">2026-11-14:
+the manual, the release story, and a UX review</h3>
+<ul>
+<li>The WordPress and Forms manual is now seventeen chapters in the
+order a person meets the features: getting started, a tour of the
+Workbench, writing and publishing, blocks, pictures and media, comments,
+people and menus, checking, running the site, moving and copying (WXR,
+Copy to Site, snapshots, Across Sites), the shop, events, SEO and
+memberships, three Forms chapters (the last in the Workbench), QUILL
+Lite, troubleshooting, keys and the Workbench reference. The QUILL and
+QUILL Lite guides’ WordPress chapters are short guided overviews that
+point into it.</li>
+<li>CHANGELOG, the release notes, the announcement, both What’s New
+files and the family update draft keep WordPress under one heading with
+Forms inside it, told as a story from a blogger’s first post up to
+payments.</li>
+<li><code>how.md</code> at the root walks through every WordPress
+command as a person meets it (menus, keys, dialogs, what is spoken,
+Ctrl+Z, F1, refusals) for Jeff’s review, and ends with the review notes,
+ranked.</li>
+</ul>
+<h3 id="2026-11-14-fixes-from-the-howmd-review">2026-11-14: fixes from
+the how.md review</h3>
+<ul>
+<li><strong>One access check for every command</strong>
+(<code>quill/core/wordpress/workbench_tiers.py</code>,
+<code>quill/ui/wordpress_workbench_guard.py</code>): each command has a
+tier (the highest its context-menu rows give it, or
+<code>MENU_TIERS</code> for menu-bar-only writes, or
+<code>READ_ONLY_VERBS</code>), and <code>refusal_for</code> checks
+commands that are not on the row’s own menu, so Read Only, Organize,
+View As Role and Safe Mode reach Empty Spam, Empty Comment Trash, New
+Here, the imports, Import WXR, Put Back from a Snapshot, Plain-Language
+Batch, Your Profile, REST Console sends and Delete on people and
+passwords. A test fails on any unclassified <code>do_</code> handler.
+Revoking the signed-in password is refused at every level.</li>
+<li><strong>History</strong>
+(<code>quill/core/workbench/history.py</code>): an entry with no undo is
+named once and passed over; a write of Organize tier or higher that
+recorded nothing gets a “cannot be undone” entry from the guard, which
+watches the site client for non-GET requests. Undo itself is not refused
+under Read Only yet, because a change is not stored with its site.</li>
+<li><strong>Previews</strong>
+(<code>wordpress_workbench_dialogs.py</code>): destructive-tier commands
+and irreversible buttons default to Cancel; Sign Out This Site starts on
+Keep and confirms with Cancel as the default.</li>
+<li><strong>Keys</strong> (<code>workbench_frame_commands.py</code>,
+<code>workbench_frame_keys.py</code>): the frame’s own Ctrl+Shift+F and
+Ctrl+R need their exact modifiers and give way to a menu row’s chord, so
+Filter Builder, Forget a Saved Request and Roles fire. The review’s
+access-letter claim for QUILL was wrong (the menu pass already assigns
+letters; <code>test_quill_menu_accelerators.py</code> now checks with
+WordPress on); QUILL Lite’s three submenus gained letters (Q, V,
+Q).</li>
+<li>Tests: <code>test_wp_workbench_guard.py</code> (60),
+<code>test_wp_workbench_tiers.py</code>,
+<code>test_lite_submenu_letters.py</code>, and history, GitHub key and
+Sign Out tests.</li>
+</ul>
 <h2 id="19-remaining-tasks">19. Remaining tasks</h2>
 <p><strong>wp-admin parity (9.18), Jeff 2026-11-04, “we should have all
 of this”:</strong></p>
 <ul class="task-list">
-<li><label><input type="checkbox" />Route gaps 1-15 (9.17 and menus):
-feat/wordpress-followup.</label></li>
-<li><label><input type="checkbox" />Package 1: lists and filters for
-posts, pages and media; bulk trash, permanent delete, Quick
-Edit.</label></li>
-<li><label><input type="checkbox" />Package 2: Properties, the rest of
-the sidebar (author, format, parent, template, pingbacks, date, featured
-image).</label></li>
-<li><label><input type="checkbox" />Package 3: media details (title,
-caption, description, detach, download, crop by numbers).</label></li>
-<li><label><input type="checkbox" />Package 4: comments,
-complete.</label></li>
-<li><label><input type="checkbox" />Package 5: people,
-complete.</label></li>
-<li><label><input type="checkbox" />Package 6: Dashboard (At a Glance,
-activity, plugin summaries).</label></li>
-<li><label><input type="checkbox" />Package 7: Site Editor writing
-(templates, parts, Additional CSS).</label></li>
-<li><label><input type="checkbox" />Package 8: WooCommerce
-catalog.</label></li>
-<li><label><input type="checkbox" />Package 9: WooCommerce orders,
-customers, coupons, reports.</label></li>
-<li><label><input type="checkbox" />Package 10: WooCommerce store
-settings.</label></li>
-<li><label><input type="checkbox" />Package 11: The Events Calendar,
-complete.</label></li>
-<li><label><input type="checkbox" />Package 12: Yoast SEO,
-complete.</label></li>
-<li><label><input type="checkbox" />Package 13: forms on the site,
-complete.</label></li>
-<li><label><input type="checkbox" />Package 14: Open in Dashboard for
-every screen REST cannot reach.</label></li>
-<li><label><input type="checkbox" />Manual: every new window and control
-in docs/user guide/wordpress-and-forms/.</label></li>
+<li><label><input type="checkbox" />Route gaps (9.17), what remains:
+everything built on 2026-11-13 (gaps 1, 3, 4, 6, 7, 8, 10, 11, 12 and
+13) tried on the live test site and with NVDA and JAWS; and the QUILL
+tutorial book regenerated
+(<code>python -m quill.tools.build_tutorials_reference --write</code>),
+which was already out of date before the new lesson.</label></li>
+<li><label><input type="checkbox" />Packages 1 to 3, what remains: the
+Workbench’s new commands (Counts by Status, Duplicate as Draft, Empty
+Trash, Edit Picture, Regenerate Sizes, Attach, Detach, Download, Open in
+wp-admin, and Properties’ Choose from Library and Remove Featured Image)
+tried on the live test site and with NVDA and JAWS.</label></li>
+<li><label><input type="checkbox" />Packages 4 and 5, what remains: the
+new comment and people commands (Comment Counts, Show Its Comments,
+Empty Comment Trash, Change Role and Remove on several people, Add a
+Person, Set New Password, Your Profile) tried on the live test site and
+with NVDA and JAWS.</label></li>
+<li><label><input type="checkbox" />Packages 6, 7 and 14, what remains:
+At a Glance, Activity, wp-admin Screens, wp-admin for This Place, the
+template commands and Additional CSS tried on the live test site (the
+plugin sentences on a site that has the plugins) and with NVDA and
+JAWS.</label></li>
+<li><label><input type="checkbox" />Packages 8 to 13, what remains: the
+WooCommerce, Events Calendar, Yoast SEO and QAF commands (with the
+2026-11-14 additions) tried signed in on the live test site and with
+NVDA and JAWS, Yoast’s bulk editor routes especially; a refund tried
+only against a payment gateway’s test mode.</label></li>
+<li><label><input type="checkbox" />Add Menu Item (every kind, Search
+and View All, under and after an item, Ctrl+N’s choice) and Add New
+Pages Automatically (command and the Properties check box) tried on the
+live test site and with NVDA and JAWS.</label></li>
+<li><label><input type="checkbox" />Replace File (in place where a
+plugin route exists, repoint with Ctrl+Z, Enable Media Replace, the
+redirect offer), Export Site as WXR (each scope, and the file imported
+into a real WordPress) and Import WXR as Drafts (author matching, files
+downloaded and skipped, Ctrl+Z) tried on the live test site and with
+NVDA and JAWS.</label></li>
+<li><label><input type="checkbox" />Earlier Versions on post rows, Check
+for Updates on WordPress.org, Check Every Link, editing a Gravity Forms
+response’s answers, the plugin rows of wp-admin for This Place (each
+admin address opened), Offer to Ask the Site and Arrange Items tried on
+the live test site and with NVDA and JAWS.</label></li>
+<li><label><input type="checkbox" /><strong>Waiting on Jeff:</strong>
+finish the Redirection plugin’s setup on the test site (Tools &gt;
+Redirection in wp-admin). Its database was never set up, so it has no
+groups and refuses to make one (“Invalid group or parameters”), and live
+check 95 now reports this as needing Jeff. New Redirect in the Workbench
+offers to make the Redirections group on a site with none, and says to
+finish the setup when the plugin refuses. Gravity Forms is also not
+installed there, so checks 104 to 108 and 124 to 126 are
+skipped.</label></li>
+<li><label><input type="checkbox" />Jeff’s review of <code>how.md</code>
+and its ranked review notes; what he accepts becomes work here, and
+<code>how.md</code> is retired once its content lives in the manual and
+this record.</label></li>
+<li><label><input type="checkbox" />The 2026-11-14 leftovers tried on
+the live test site and with NVDA and JAWS: the masked OOPSpam key and
+post password, the Gravity Forms filter sent to the site with All and
+Any, a member’s Access page on a PMPro site, Across Sites plugins with
+WordPress.org’s words, the practice questions on Promote to Network,
+Revoke Everywhere, Install on Sites Missing It and Put Back, and Save
+Draft on a published post.</label></li>
 </ul>
 <p>This list is kept current. A task is removed when it is done and
 checked, and the progress log above says what was done. Everything not
@@ -8084,46 +9403,27 @@ pass (NVDA and JAWS) on the Workbench: nothing from W1 to W8 has met a
 live site, and Delete and Ctrl+Z being kept from the filter box rests on
 wx’s key hook running before menu accelerators. The Workbench is now the
 default, so this comes before the next release.</li>
-<li>The Practice Site: run
-<code>python scripts/fetch_build_deps.py --only wp-playground-cli</code>
-once (it has never run), commit the lockfile it writes, confirm the
-<code>@wp-playground/cli</code> pin and its entry point
-(<code>wp-playground.js</code>), add it to the shared runtime’s build
-and to <code>quill/data/third_party/components.json</code>, and check on
-a live run that the blueprint leaves the application password and that
-Playground accepts it over plain HTTP on 127.0.0.1. Playground fetches
-WordPress itself on first start unless that is staged too; decide before
-shipping (15.1 says bundled).</li>
-<li>The WordPress Workbench’s own APP_KEYMAPS entry (Part C): its keys
-are the window’s menu table today, so they are not rebindable.</li>
-<li>Users: Sessions and others’ application passwords; the PRD’s Users,
-the rest (invite from a spreadsheet, sign out everywhere).</li>
-<li>Spam: the provider states, thresholds, blocklist and question bank
-on the Spam page (needs QAF’s spam work, 13a.3 and 13a.6); the weekly
-Watch.</li>
-<li>Form plugins after Gravity Forms: Jetpack Forms, Formidable, Fluent
-Forms, WPForms, Contact Form 7, each verified against its API first;
-import into QAF (13b.3).</li>
-<li>Updates, Accessibility, Broken Links, Orders, Shop, Podcast and
-Search nodes; Global Styles as a node.</li>
-<li>15.12 operations beyond listing: rename, split and reassign a value
-everywhere from By Name; Make Them the Same for themes, people and
-menus; install a plugin on the sites missing it; compare global
-styles.</li>
-<li>15.11 plugin rows (Redirection beyond the slug offer, backups,
-security, caching, multilingual, memberships, courses, stats and the
-rest): each behind its namespace, after its API is checked against a
-live install. The redirect body is from the plugin’s documentation and
-is unverified.</li>
-<li>This Post in the Workbench (File &gt; WordPress) and the Media
-Library’s picking mode for Insert Picture (PRD 14).</li>
+<li>The Practice Site’s remaining release acceptance: run start,
+connect, reset and restart from an installed build, not only from source
+(the source run of 2026-11-13 passed every step).</li>
+<li>QAF and Gravity Forms are the supported form integrations. Paid
+Memberships Pro is the supported membership integration through the
+site’s documented Abilities API. Since 2026-11-13 WooCommerce, The
+Events Calendar and Yoast SEO are supported integrations too (Packages 8
+to 12). Other plugin-specific integrations are outside the current
+implementation scope; see the <a
+href="../planning/workbench-implementation-status.md">current scope
+record</a>.</li>
+<li>15.12: By Name and Across Sites operations tried on a live site
+(menu copy and Promote to Network detection especially; the latter on a
+multisite).</li>
+<li>15.11: Redirects and 404 Log are built from the Redirection plugin’s
+documentation and need a live install to verify. Backups, security,
+caching, multilingual, courses, stats and the rest each have a
+disposition in Administration Areas; which become first-class is Jeff’s
+call.</li>
 <li>QUILL Site Types (12b, decision 12): the plugin, then making types
 and fields from the Content Model.</li>
-<li>The classic windows: remove them, Workbench Options’ choice and the
-conftest setting one release after this one (decision 7).</li>
-<li>The Workbench in the WordPress and Forms manual
-(<code>docs/user guide/wordpress-and-forms/</code>); the editors’ user
-guides have their section.</li>
 </ul>
 <h3
 id="workbench-groundwork-workbench-prd-wp-r-030-to-wp-r-034">Workbench
@@ -8132,16 +9432,9 @@ groundwork (Workbench PRD WP-R-030 to WP-R-034)</h3>
 <li>Run <code>docs/qa/wordpress-live-run.py</code> on the branch before
 it merges: taxonomy discovery, Custom Fields lists and groups, and a
 custom type’s terms have only met recorded responses.</li>
-<li>Custom types: New per type (the Workbench has a node, batch and
-filters for each; its statuses as child nodes are left too).</li>
-<li>Custom fields on terms, users and comments: a window or sheet page
-(the core is in <code>custom_fields.py</code>).</li>
 <li>Advanced Custom Fields: send changes back as
 <code>{"acf": ...}</code> and show the fields in Custom Fields; Meta
 Box, Pods and CMB2.</li>
-<li>Spoken labels for the seven plugin orderings the combination test
-lists as planned (the Workbench’s Filter Builder now writes
-<code>query.py</code> queries).</li>
 </ul>
 <h3 id="every-route-and-more-value-916">Every route, and more value
 (9.16)</h3>
@@ -8161,8 +9454,6 @@ them on the test site is a write on the test host).</li>
 </ul>
 <h3 id="forms-17a">Forms (17a)</h3>
 <ul>
-<li><p><strong>Waiting on Jeff:</strong> a key for the Forms commands
-(the only free option is a letter on the WordPress key layer).</p></li>
 <li><p>Run the Forms regression tests 63 to 68 with BAF on the test site
 (<strong>waiting on Jeff</strong>, 17a.13 question 3).</p></li>
 <li><p>The plugin’s own next pass (Preview, the Accessibility Coach,

@@ -13,7 +13,8 @@ wx-free and strict-typed.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+import base64
+from collections.abc import Mapping, Sequence
 from typing import Any
 
 from quill.core.github.permissions import WriteTier, repo_role
@@ -34,10 +35,17 @@ from quill.core.github.sheet_fields import (
 from quill.core.workbench.properties import FieldKind, SheetSpec, Value
 
 __all__ = [
+    "ADD_TO_PROJECT",
+    "CREATE_PROJECT",
     "ISSUE",
     "ISSUE_STATES",
+    "PROJECTS_OPTIONS_QUERY",
+    "PROJECT_OWNER_QUERY",
+    "REMOVE_FROM_PROJECT",
     "VIEWER_ITEM_QUERY",
     "item_variables",
+    "project_links",
+    "project_links_text",
 ]
 
 _O, _V, _A = WriteTier.ORGANIZING, WriteTier.VISIBLE, WriteTier.ACCESS
@@ -63,14 +71,15 @@ VIEWER_ITEM_QUERY = (
     "... on Issue{id isPinned viewerCanUpdate viewerCanClose viewerCanReopen viewerCanLabel "
     "viewerCanAssign viewerCanSetMilestone viewerCanSubscribe viewerSubscription viewerCanReact "
     "viewerCanDelete viewerCanType reactionGroups{content viewerHasReacted} "
-    "projectItems(first:20){nodes{project{title}}} "
+    "projectItems(first:20){nodes{id project{id title}}} "
     "parent{number title} subIssues(first:50){nodes{number title}} "
     "closedByPullRequestsReferences(first:10){nodes{number title}}} "
     "... on PullRequest{id viewerCanUpdate viewerCanClose viewerCanReopen viewerCanLabel "
     "viewerCanAssign viewerCanSubscribe viewerSubscription viewerCanReact "
     "viewerCanEnableAutoMerge viewerCanDisableAutoMerge viewerCanUpdateBranch "
     "viewerCanDeleteHeadRef viewerCanMergeAsAdmin autoMergeRequest{mergeMethod} "
-    "reactionGroups{content viewerHasReacted} projectItems(first:20){nodes{project{title}}} "
+    "reactionGroups{content viewerHasReacted} "
+    "projectItems(first:20){nodes{id project{id title}}} "
     "closingIssuesReferences(first:10){nodes{number title}}}}}}"
 )
 
@@ -117,10 +126,17 @@ def _viewer(data: Mapping[str, Any]) -> dict[str, Value]:
         for group in item.get("reactionGroups") or ()
         if isinstance(group, Mapping) and group.get("viewerHasReacted")
     )
-    found["projects"] = tuple(
-        str(dig(node, "project", "title") or "")
+    links = [
+        (
+            str(dig(node, "project", "title") or ""),
+            str(dig(node, "project", "id") or ""),
+            str(node.get("id") or ""),
+        )
         for node in dig(item, "projectItems", "nodes") or ()
-    )
+        if isinstance(node, Mapping)
+    ]
+    found["projects"] = tuple(title for title, _project, _item in links)
+    found["project_items"] = project_links_text(links)
     parent = _numbers([item["parent"]] if item.get("parent") else [])
     found["parent"] = parent[0] if parent else ""
     found["sub_issues"] = _numbers(dig(item, "subIssues", "nodes"))
@@ -129,6 +145,33 @@ def _viewer(data: Mapping[str, Any]) -> dict[str, Value]:
     )
     found["linked"] = _numbers(linked)
     found["auto_merge"] = bool(item.get("autoMergeRequest"))
+    return found
+
+
+def _token(title: str) -> str:
+    """*title* as path-safe text: ident values may hold no ``/``, ``..`` or backslash."""
+    return base64.urlsafe_b64encode(title.encode("utf-8")).decode("ascii").rstrip("=")
+
+
+def project_links_text(links: Sequence[tuple[str, str, str]]) -> str:
+    """(project title, project id, item id) rows as one ident-safe string."""
+    return ";".join(f"{_token(title)}={project}={item}" for title, project, item in links)
+
+
+def project_links(text: str) -> dict[str, tuple[str, str]]:
+    """:func:`project_links_text` read back: project title to (project id, item id)."""
+    found: dict[str, tuple[str, str]] = {}
+    for part in (text or "").split(";"):
+        token, _, rest = part.partition("=")
+        project, _, item = rest.partition("=")
+        if not token or not project:
+            continue
+        try:
+            padded = token + "=" * (-len(token) % 4)
+            title = base64.urlsafe_b64decode(padded.encode("ascii")).decode("utf-8")
+        except (ValueError, UnicodeDecodeError):
+            continue
+        found[title] = (project, item)
     return found
 
 
@@ -212,6 +255,94 @@ _FIXED_REACTIONS = {
 }
 
 _ISSUE_PATH = "/repos/{repo}/issues/{number}"
+
+#: Labels go on and come off one by one (POST .../labels, DELETE .../labels/{name}),
+#: never as a replaced set, so a label somebody added meanwhile is not lost.
+_LABELS_WRITE = Write(
+    _ISSUE_PATH + "/labels",
+    "repo:triage+viewer:viewerCanLabel",
+    _O,
+    "POST",
+    "set",
+    "labels",
+    off_path=_ISSUE_PATH + "/labels/{item}",
+)
+
+# Projects (version 2) are GraphQL only. Adding links the issue or pull request
+# as a new item; removing deletes that item, and with it the values of the
+# project's own fields, which is why GitHub cannot put it back as it was.
+ADD_TO_PROJECT = (
+    "mutation($project:ID!,$content:ID!){addProjectV2ItemById(input:"
+    "{projectId:$project,contentId:$content}){item{id}}}"
+)
+REMOVE_FROM_PROJECT = (
+    "mutation($project:ID!,$item:ID!){deleteProjectV2Item(input:"
+    "{projectId:$project,itemId:$item}){deletedItemId}}"
+)
+CREATE_PROJECT = (
+    "mutation($owner:ID!,$title:String!,$repository:ID){createProjectV2(input:"
+    "{ownerId:$owner,title:$title,repositoryId:$repository}){projectV2{id title}}}"
+)
+#: The repository's and its owner's node ids, which a new project needs.
+PROJECT_OWNER_QUERY = (
+    "query($owner:String!,$name:String!){repository(owner:$owner,name:$name){id owner{id}}}"
+)
+_PROJECT_NODES = "projectsV2(first:50){nodes{id title closed}}"
+#: The open Projects an item can join: the repository's, its owner's and yours.
+PROJECTS_OPTIONS_QUERY = (
+    "query($owner:String!,$name:String!){repository(owner:$owner,name:$name){"
+    f"{_PROJECT_NODES} owner{{... on Organization{{{_PROJECT_NODES}}} "
+    f"... on User{{{_PROJECT_NODES}}}}}}} viewer{{{_PROJECT_NODES}}}}}"
+)
+
+
+def _project_vars(
+    item: str, on: bool, choices: Mapping[str, object], ident: Ident
+) -> dict[str, object]:
+    if on:
+        return {"project": str(choices.get(item, "")), "content": ident.get("node_id", "")}
+    project, link = project_links(ident.get("project_items", "")).get(
+        item, (str(choices.get(item, "")), "")
+    )
+    return {"project": project, "item": link}
+
+
+_PROJECTS_WRITE = Write(
+    ADD_TO_PROJECT,
+    "scope:project",
+    _O,
+    "POST",
+    "set_graphql",
+    off_path=REMOVE_FROM_PROJECT,
+    undo=False,
+    encode_item=_project_vars,
+)
+
+
+def _project_rows(data: Mapping[str, Any]) -> list[Mapping[str, Any]]:
+    repo = dig(data, "repository") or {}
+    groups = (
+        dig(repo, "projectsV2", "nodes"),
+        dig(repo, "owner", "projectsV2", "nodes"),
+        dig(data, "viewer", "projectsV2", "nodes"),
+    )
+    seen: set[str] = set()
+    rows: list[Mapping[str, Any]] = []
+    for group in groups:
+        for node in group or ():
+            if not isinstance(node, Mapping) or node.get("closed") or not node.get("id"):
+                continue
+            if str(node["id"]) not in seen:
+                seen.add(str(node["id"]))
+                rows.append(node)
+    return rows
+
+
+def _owner_and_name(ident: Ident) -> dict[str, object]:
+    owner, _, name = ident["repo"].partition("/")
+    return {"owner": owner, "name": name}
+
+
 _OPTIONS = {
     "labels": Options("/repos/{repo}/labels", lambda row: str(row.get("name", ""))),
     "assignees": Options("/repos/{repo}/assignees", lambda row: str(row.get("login", ""))),
@@ -221,7 +352,28 @@ _OPTIONS = {
         lambda row: row.get("number"),
         query={"state": "all"},
     ),
+    "projects": Options(
+        "",
+        lambda row: str(row.get("title", "")),
+        lambda row: row.get("id"),
+        graphql=PROJECTS_OPTIONS_QUERY,
+        variables=_owner_and_name,
+        rows=_project_rows,
+    ),
 }
+
+_PROJECTS_PAGE = page(
+    "projects",
+    "Projects",
+    ed(
+        "projects",
+        "Projects",
+        _K.CHECKLIST,
+        "Each open Project it could be in, checked when it is. Unchecking one removes it "
+        "from that Project with its field values. A project item's own sheet edits its fields.",
+        create="New Project...",
+    ),
+)
 
 _YOU = page(
     "you",
@@ -324,16 +476,7 @@ ISSUE = SheetDef(
             ),
             _YOU,
             _ORGANIZE,
-            page(
-                "projects",
-                "Projects",
-                ro(
-                    "projects",
-                    "Projects",
-                    _K.LIST,
-                    "The Projects it is in. A project item's own sheet edits its fields.",
-                ),
-            ),
+            _PROJECTS_PAGE,
             _RELATIONSHIPS,
             page(
                 "description",
@@ -363,9 +506,10 @@ ISSUE = SheetDef(
         "body": patch(_ISSUE_PATH, "viewer:viewerCanUpdate", _V),
         "state": patch(_ISSUE_PATH, "viewer:viewerCanUpdate", _V, encode=_state_encode),
         "issue_type": patch(_ISSUE_PATH, "repo:triage", _O, "type"),
-        "labels": patch(_ISSUE_PATH, "repo:triage+viewer:viewerCanLabel", _O),
+        "labels": _LABELS_WRITE,
         "assignees": patch(_ISSUE_PATH, "repo:triage+viewer:viewerCanAssign", _O),
         "milestone": patch(_ISSUE_PATH, "repo:triage", _O, encode=_milestone_encode),
+        "projects": _PROJECTS_WRITE,
         "locked": toggle(_ISSUE_PATH + "/lock", "repo:write", _V),
         "pinned": gql_toggle(
             "mutation($id:ID!){pinIssue(input:{issueId:$id}){issue{id}}}",
@@ -380,4 +524,5 @@ ISSUE = SheetDef(
     title=lambda ident: f"Issue #{ident['number']}",
     url=lambda ident: f"https://github.com/{ident['repo']}/issues/{ident['number']}",
     fixed=_FIXED_REACTIONS,
+    adopt=("node_id", "project_items"),
 )

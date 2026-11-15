@@ -31,6 +31,7 @@ from typing import Any, Protocol
 
 from quill.core.workbench.actions import ActionRow, ActionTable
 from quill.core.workbench.filters import Query, describe, matches_words, parse
+from quill.core.workbench.list_place import landing_index, same_cells
 from quill.core.workbench.menus import MenuSpec
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import NodeSpec, TreeSpec
@@ -113,6 +114,7 @@ class WorkbenchFrame(
         self._on_closed = on_closed
         self.rows: list[object] = []
         self._loaded: list[object] = []
+        self._shown_cells: list[list[str]] = []  # what the list shows, to skip a no-op refill
         self.query = Query()
         self.loading = False
         self.loaded_at = ""
@@ -205,11 +207,11 @@ class WorkbenchFrame(
     def rebuild_tree(self) -> None:
         """Build the tree again after an instance was added; the selection is kept."""
         current = self.current
-        self._navigating = True
+        self._navigating = self._rebuilding = True
         try:
             self._build_tree()
         finally:
-            self._navigating = False
+            self._navigating = self._rebuilding = False
         if current is not None and current in self._items:
             self.select(current, remember=False)
 
@@ -305,6 +307,8 @@ class WorkbenchFrame(
     def _on_tree_selected(self, event: Any) -> None:
         if not self.tree or self.frame.IsBeingDeleted():
             return  # the tree empties itself as the window is destroyed
+        if getattr(self, "_rebuilding", False):
+            return  # items come and go while the tree is rebuilt; the node shown stays
         item = event.GetItem()
         ref = self.tree.GetItemData(item) if self.tree and item.IsOk() else None  # not when closing
         if isinstance(ref, GroupRef):
@@ -322,14 +326,19 @@ class WorkbenchFrame(
             # A filter belongs to the list it was typed for; a new node starts clean.
             self.query = Query()
             self.filter.ChangeValue("")
+        # The same node shown again (the tree was rebuilt, or the window came back
+        # from the editor): keep its rows, selected row, filter and scroll, and let
+        # the reload below keep the place. Only a different node starts clean.
+        same = self.current == ref and bool(self.rows)
         self.current = ref
         node = self.node(ref)
-        self.details.ChangeValue(self.provider.node_help(ref, node))
-        self._set_columns(node)
-        self.rows, self._loaded = [], []
-        self.list.DeleteAllItems()
-        self.refresh_control_help()
         reason = self.provider.unavailable(ref, node)
+        if not same or reason:
+            self.details.ChangeValue(self.provider.node_help(ref, node))
+            self._set_columns(node)
+            self.rows, self._loaded, self._shown_cells = [], [], []
+            self.list.DeleteAllItems()
+        self.refresh_control_help()
         if reason or not node.loader:
             if reason:
                 self.details.ChangeValue(f"{self.provider.node_help(ref, node)}\n\n{reason}")
@@ -446,21 +455,30 @@ class WorkbenchFrame(
         remote = self.current is not None and self.provider.remote_words(self.node(self.current))
         words = () if remote else self.query.words
         columns = self._columns or ("name",)
-        self.rows = [
+        rows = [
             row
             for row in self._loaded
             if not words or matches_words(" ".join(self.provider.cells(row, columns)), words)
         ]
-        self.list.DeleteAllItems()
-        for index, row in enumerate(self.rows):
-            cells = self.provider.cells(row, columns)
-            self.list.InsertItem(index, cells[0] if cells else "")
-            for column, text in enumerate(cells[1:], start=1):
-                self.list.SetItem(index, column, text)
-        if self.rows:
-            self.list.Select(0)
-            self.list.Focus(0)
-        elif not self.loading and self.current is not None:
+        cells = [self.provider.cells(row, columns) for row in rows]
+        if same_cells(self._shown_cells, cells) and self.list.GetItemCount() == len(cells):
+            # Nothing a reader could see changed: leave the list, and its place, alone.
+            self.rows = rows
+            if self.selected_row() is not None:
+                self.details.ChangeValue(self.provider.detail(self.selected_row()))
+        else:
+            # Keep the place: the same item, selected and focused in ONE change.
+            # Select then Focus was two, and a screen reader read the row twice.
+            landing = landing_index(self.rows, self.list.GetFocusedItem(), rows)
+            self.rows, self._shown_cells = rows, cells
+            self.list.DeleteAllItems()
+            for index, row_cells in enumerate(cells):
+                self.list.InsertItem(index, row_cells[0] if row_cells else "")
+                for column, text in enumerate(row_cells[1:], start=1):
+                    self.list.SetItem(index, column, text)
+            if landing >= 0:
+                self.focus_row(landing)
+        if not self.rows and not self.loading and self.current is not None:
             # An empty list is help too (D4): why it is empty and what fills it.
             empty = self.empty_words()
             if empty:
@@ -509,9 +527,11 @@ class WorkbenchFrame(
 
     def _task_manager_runner(self) -> Background:
         from quill.stability.task_manager import TaskManager
+        from quill.ui.surface_lifetime import surface_tasks
 
-        manager = TaskManager(max_workers=2)
-        self._task_manager = manager
+        # Wrapped so a result that comes back after the Workbench closed is
+        # dropped (and logged to Activity) instead of reaching freed controls.
+        self._task_manager = manager = surface_tasks(TaskManager(max_workers=2), lambda: self)
 
         def run(
             name: str,

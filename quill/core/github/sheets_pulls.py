@@ -31,9 +31,12 @@ from quill.core.github.sheets_items import (
     _FIXED_REACTIONS,
     _ISSUE_PATH,
     _K,
+    _LABELS_WRITE,
     _O,
     _OPTIONS,
     _ORGANIZE,
+    _PROJECTS_PAGE,
+    _PROJECTS_WRITE,
     _REACTIONS_WRITE,
     _SUBSCRIBE_WRITE,
     _V,
@@ -108,7 +111,7 @@ PULL_REQUEST = SheetDef(
             ),
             _YOU,
             _ORGANIZE,
-            page("projects", "Projects", ro("projects", "Projects", _K.LIST)),
+            _PROJECTS_PAGE,
             page(
                 "branches",
                 "Branches",
@@ -193,9 +196,10 @@ PULL_REQUEST = SheetDef(
         "state": patch(_PULL_PATH, "viewer:viewerCanUpdate", _V),
         "base": patch(_PULL_PATH, "repo:write", _V),
         "maintainer_can_modify": patch(_PULL_PATH, "viewer:viewerCanUpdate", _O),
-        "labels": patch(_ISSUE_PATH, "repo:triage+viewer:viewerCanLabel", _O),
+        "labels": _LABELS_WRITE,
         "assignees": patch(_ISSUE_PATH, "repo:triage+viewer:viewerCanAssign", _O),
         "milestone": patch(_ISSUE_PATH, "repo:triage", _O, encode=_milestone_encode),
+        "projects": _PROJECTS_WRITE,
         "draft": gql_toggle(
             "mutation($id:ID!){convertPullRequestToDraft(input:{pullRequestId:$id})"
             "{pullRequest{id}}}",
@@ -233,4 +237,5 @@ PULL_REQUEST = SheetDef(
     title=lambda ident: f"Pull Request #{ident['number']}",
     url=lambda ident: f"https://github.com/{ident['repo']}/pull/{ident['number']}",
     fixed=_FIXED_REACTIONS,
+    adopt=("node_id", "project_items"),
 )

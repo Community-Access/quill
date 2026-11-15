@@ -90,8 +90,7 @@ class WorkbenchPrefs:
 
     *open_on* is where the window opens: ``"inbox"`` (Start Here until you are
     signed in, then Inbox: decision 2), ``"start"`` or ``"last"`` (the place you
-    left). *use_classic_windows* brings back GitHub Items and Explore GitHub for
-    one release (decision 4).
+    left).
     """
 
     open_on: str = "inbox"
@@ -105,7 +104,6 @@ class WorkbenchPrefs:
     speak_column_names: bool = False
     first_time_help: bool = True
     health_snapshot_opt_in: bool = False
-    use_classic_windows: bool = False
 
     def with_changes(self, **changes: Any) -> WorkbenchPrefs:
         """A copy with *changes* applied and validated."""

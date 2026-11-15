@@ -48,7 +48,7 @@ VIEWS: tuple[tuple[str, str], ...] = (
 )
 
 _ISSUE_COLUMNS = ("number", "type", "state", "title", "author", "updated", "labels", "comments")
-_BRANCH_COLUMNS = ("name", "protected", "author", "date", "commit")
+_BRANCH_COLUMNS = ("name", "against_default", "protected", "author", "date", "commit")
 _COMMIT_COLUMNS = ("short_sha", "author", "date", "message")
 _TAG_COLUMNS = ("name", "commit_sha")
 _RELEASE_COLUMNS = ("tag", "name", "downloads", "assets", "created", "draft", "prerelease")
@@ -59,6 +59,19 @@ _RUN_COLUMNS = ("name", "status", "conclusion", "branch", "event", "run_number")
 #: switchable top-level view -- assets belong to a specific release -- so this
 #: is kept out of ``VIEW_COLUMNS`` and applied only while drilled in.
 RELEASE_ASSET_COLUMNS = ("name", "downloads", "size", "updated")
+
+
+def _against_default(branch: GitHubBranch) -> str:
+    """ "3 ahead, 1 behind main", "even with main", or "" when GitHub did not say."""
+    from quill.core.github.branch_divergence import describe_divergence
+
+    return describe_divergence(
+        branch.ahead,
+        branch.behind,
+        default_branch=branch.default_branch,
+        is_default=bool(branch.default_branch) and branch.name == branch.default_branch,
+    )
+
 
 VIEW_COLUMNS: dict[str, tuple[str, ...]] = {
     VIEW_ISSUES: _ISSUE_COLUMNS,
@@ -171,6 +184,8 @@ def _cell(model: object, col: str) -> str:
             return model.commit_date[:10]
         if col == "commit":
             return model.commit_sha[:7]
+        if col == "against_default":
+            return _against_default(model)
     if isinstance(model, GitHubCommit):
         if col == "short_sha":
             return model.short_sha
@@ -299,6 +314,7 @@ def model_detail(model: object) -> str:
         return "\n".join([
             f"Branch: {model.name}",
             f"Protected: {'Yes' if model.protected else 'No'}",
+            f"Against the default branch: {_against_default(model) or 'not known'}",
             f"Commit: {model.commit_sha}",
             f"Author: {model.commit_author}",
             f"Date: {model.commit_date}",

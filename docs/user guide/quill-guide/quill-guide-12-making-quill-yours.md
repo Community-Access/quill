@@ -342,6 +342,11 @@ starts quietly at sign-in needs a tray icon for you to bring the window back
 from. Unchecking **Start QUILL when Windows starts** removes the startup entry
 cleanly, and leaves **Enable background mode** as you set it.
 
+To keep the editor out of the way at sign-in, also check **Start QUILL
+minimized when Windows starts** (`start_minimized_at_windows_startup`). QUILL
+stays available from its tray icon. This choice only changes the Windows sign-in
+launch; opening QUILL normally still opens its window.
+
 ### Task recipes and working modes
 
 Some jobs mean changing several settings at once: getting ready to dictate,

@@ -114,7 +114,7 @@ def cut_words(count: int, pages: int, *, per_page: int = 100) -> str:
 EXTRA_COLUMNS: Mapping[str, tuple[str, ...]] = {
     "item": ("date", "slug", "id", "type", "comments", "sticky", "format", "parent", "site"),
     "media": ("mime_type", "size", "attached", "author", "id", "slug", "site"),
-    "comment": ("author_email", "post", "id", "site"),
+    "comment": ("author_email", "author_url", "author_ip", "type", "parent", "post", "id", "site"),
     "term": ("id", "description", "parent", "site"),
     "user": ("id", "slug", "registered", "site"),
     "plugin": ("description", "auto_update", "site"),
@@ -126,6 +126,8 @@ _TITLES = {
     "id": "Number",
     "mime_type": "File type",
     "author_email": "Email",
+    "author_url": "Website",
+    "author_ip": "IP address",
     "auto_update": "Updates itself",
     "comments": "Comments",
 }

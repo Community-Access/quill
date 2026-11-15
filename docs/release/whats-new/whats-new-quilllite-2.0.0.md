@@ -9,23 +9,17 @@ QUILL Lite 2.0 is about words, websites and never missing what happened. Your se
 
 ## WordPress
 
-### Stripe and PayPal form setup
+- **Write and publish from QUILL Lite.** File > WordPress > Connect a Site: approve QUILL in your browser. Then New Post, or Open by Web Address.
+- **Ctrl+S only saves on this computer.** Publish checks the page first, and nothing someone else changed is overwritten. Pictures ask for alternative text, and scheduling and earlier versions are there too.
+- **Blocks read as plain text.** Check This Page checks a page the way a visitor meets it.
+- **Looking after the site:** comments, categories and tags, people, menus and the Media Library, with Replace File.
+- **The WordPress Workbench** runs the whole site, with a preview before every change and Ctrl+Z, and says when only wp-admin can do something. It moves content with WXR files and Copy to Site, and knows six plugins, WooCommerce and Gravity Forms among them.
+- **Ctrl+Alt+Shift+Grave, then a letter:** O Open, P Publish, D Save Draft, M Media Library, H the Workbench.
 
-- The same Forms commands as QUILL insert payment fields, configure Stripe
-  and/or PayPal, and read site readiness. New settings start in test mode.
-- Paid-form publication checks provider/webhook readiness and mode. Test on
-  Site refuses a published live-payment checkout. Responses include payment
-  status and exports, with Refresh Payment Status after confirming the site.
-- Checkout needs the QAF plugin's payment support; chapter 16 walks you
-  through it.
+### Forms
 
-- **File > WordPress** writes, opens and publishes your sites' pages and posts. Connect by approving QUILL in your browser, or paste an application password. Ctrl+S only saves on this computer; Publish checks the page first. Scheduling, earlier versions and working offline are there too.
-- **Blocks read as plain text**, and Next Block and Where Am I say where you are. **Tools > WordPress** checks a page the way a visitor meets it and looks after media, comments, menus and users.
-- **Ctrl+Alt+Shift+Grave, then a letter:** O Open, P Publish, D Save Draft, M Media Library.
-
-## Forms
-
-- **File > New Form** writes an accessible form as plain text. Form Rules reads each rule as a sentence, and **Tools > Forms** checks it, lets you fill it in yourself in each of its languages, publishes it with the QUILL Accessible Forms plugin, reads the responses, or saves it in large print or braille.
+- **File > New Form** writes an accessible form as plain text. Form Rules reads each rule as a sentence, and **Tools > Forms** checks it, lets you fill it in yourself, publishes it with the QUILL Accessible Forms plugin, reads the responses, or saves it in large print or braille.
+- **Payments:** the same commands as QUILL prepare Stripe and PayPal fields, in test mode first. Publishing checks the site is ready, and Responses show each payment. Checkout needs the QAF plugin's payment support; chapter 16 walks you through it.
 
 ## Say it, or find it
 

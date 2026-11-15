@@ -242,6 +242,30 @@ def native_sources(item: Component, build_dir: Path | None) -> list[Source]:
         "th-en-us": [
             _note("English thesaurus data", "Carried in the QUILL source archive (quill/data).")
         ],
+        # The Practice Site. The npm packages ship as readable JavaScript, but
+        # @php-wasm/node-8-3 carries a compiled .wasm: its source is the
+        # Playground monorepo at the same tag, which builds every package.
+        "wp-playground-cli": [
+            _url(
+                "WordPress Playground v3.1.64 (the CLI and every @wp-playground package)",
+                "3.1.64",
+                "https://github.com/WordPress/wordpress-playground/archive/refs/tags/v3.1.64.tar.gz",
+            )
+        ],
+        "php-wasm": [
+            _url(
+                "WordPress Playground v3.1.64 (@php-wasm/node-8-3 and its PHP build scripts)",
+                "3.1.64",
+                "https://github.com/WordPress/wordpress-playground/archive/refs/tags/v3.1.64.tar.gz",
+            )
+        ],
+        "wordpress-core-practice-site": [
+            _url(
+                "WordPress 7.1.4",
+                "7.1.4",
+                "https://wordpress.org/wordpress-7.1.4.zip",
+            )
+        ],
     }
     return table.get(item.id, [_note(item.name, "No source archive is known; add one here.")])
 

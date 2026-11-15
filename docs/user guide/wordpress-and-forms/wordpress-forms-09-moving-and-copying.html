@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 9: Moving and copying content</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-9-moving-and-copying-content">Chapter 9: Moving and
+copying content</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>Sooner or later you need your content somewhere else: on a new host,
+on a second site, in a spreadsheet, or safe on your own computer before
+a big change. Or you need the same change on many pages, or on all your
+sites. This chapter is about all of that.</p>
+<p>You will export a site as a WordPress export file and import one as
+drafts, copy posts and more to another of your sites, compare two sites,
+and take a snapshot and put it back. Then you will change a name
+everywhere it is used, make your sites agree with each other, and move
+lists in and out of spreadsheets.</p>
+<p>By the end you can move content between sites with a preview at every
+step, and nothing published by surprise.</p>
+<p>Everything here is in the WordPress Workbench. Chapter 2 explains how
+it moves.</p>
+<h2 id="exporting-a-site-as-a-wxr-file">Exporting a site as a WXR
+file</h2>
+<p>A WXR file is WordPress’s own export format, the file wp-admin makes
+under Tools &gt; Export. Any WordPress site can import it. Use it when
+you move to a new host, or want a copy of your writing that is not tied
+to QUILL.</p>
+<ol type="1">
+<li>In the Workbench, select the site you want, or anything on it.</li>
+<li>Choose <strong>Tools &gt; WXR Files &gt; Export Site as
+WXR…</strong>. The keys are Alt+T, then W, then E.</li>
+<li>Under <strong>Export</strong>, choose what goes in the file:
+<ul>
+<li><strong>Everything: posts, pages, patterns, other types, files,
+menus, comments</strong>;</li>
+<li><strong>Posts only</strong>;</li>
+<li><strong>Pages only</strong>;</li>
+<li><strong>Posts and pages in a date range…</strong>, which asks for a
+<strong>From</strong> and a <strong>To</strong> day, written as
+year-month-day such as <code>2026-01-31</code>. Leave From empty to
+start at the first post, or To empty to end today. Both days are
+included;</li>
+<li><strong>Posts in one category…</strong>, which lists the site’s
+categories, each with how many posts it has.</li>
+</ul></li>
+<li>Choose where to save the file. QUILL adds <code>.xml</code> if you
+leave it off.</li>
+</ol>
+<p>QUILL reads the site and writes the file on this computer. A part of
+the site takes only the people, categories, tags and files its posts
+use, the same as WordPress’s own exporter. Comments and menus go only
+with Everything.</p>
+<p>When it is done you hear how many of each kind went in, such as
+posts, pages, authors, terms and attachments, and whether the finished
+file passed its check. QUILL reads the file back to make sure it is a
+proper WXR file, such as “community-radio.xml is a well-formed WXR 1.2
+file with 181 items.” If it does not pass, the file is kept so you can
+look at it.</p>
+<p>A report then opens. It names the site and what you chose, what went
+in, the result of the check, and then what was left out and why. Some
+things only WordPress’s own exporter can carry, such as custom fields
+the site keeps private, comment, term and user details, post passwords,
+and plugin settings. Lists and groups in custom fields are written as
+text.</p>
+<p>The file holds the address of each picture and file, not the files
+themselves, the same as a WXR from wp-admin. Keep the old site running
+until the new one has imported them.</p>
+<h2 id="importing-a-wxr-file-as-drafts">Importing a WXR file as
+drafts</h2>
+<p>This brings content from any WordPress site into one of yours.
+Everything arrives as a draft, so nothing is published until you say
+so.</p>
+<ol type="1">
+<li>In the Workbench, select the site you are importing into, or
+anything on it.</li>
+<li>Choose <strong>Tools &gt; WXR Files &gt; Import WXR as
+Drafts…</strong> (Alt+T, then W, then I).</li>
+<li>Choose the WXR file.</li>
+</ol>
+<p>QUILL reads the file on this computer and matches it against your
+site:</p>
+<ul>
+<li><strong>People.</strong> Each author in the file is matched to a
+person on your site by their username, then by their email. If some have
+no match, QUILL asks <strong>Give unmatched authors’ items to:</strong>
+and lists your site’s people, with you chosen. The question names who
+did not match.</li>
+<li><strong>Categories, tags and other groupings</strong> are matched by
+their slug, and made where missing. Groupings your site does not have
+are left out, and named.</li>
+<li><strong>Posts, pages, synced patterns and your site’s own
+kinds</strong> come in, if your site has that kind. Menu items, and
+kinds your site lacks, are left out and counted.</li>
+</ul>
+<p>The preview opens. It names the file and the site it came from, says
+that everything is made as a draft and keeps its original date, and
+lists every author match, every new category or tag, and every item, one
+line each. Then what is left out. Press <strong>Import as
+Drafts</strong>.</p>
+<p><strong>Pictures and files.</strong> If the export names files, QUILL
+asks about them next, under <strong>Files</strong>:</p>
+<ul>
+<li><strong>Download the files from</strong> the old site’s address
+<strong>and upload them</strong> to yours;</li>
+<li><strong>Skip the files; the text keeps pointing at the old
+site</strong>, which is chosen for you.</li>
+</ul>
+<p>Downloading asks the named site for each file by the address in the
+export, over HTTPS, up to 64 MB each, sending no password. It names
+every host it will ask. Choose it only if you trust those addresses.</p>
+<p>QUILL then makes each item as a draft. It points pictures and files
+at the uploaded copies, links between the imported items at their new
+drafts, and the old site’s address at yours. You hear, for example,
+“Imported 40 of 42 items from export.xml into Community Radio as drafts,
+with 18 files.” A report says what happened to each category, file and
+item.</p>
+<p>Changed your mind? Ctrl+Z moves the drafts it made to the Trash.
+Uploaded files and new categories and tags stay, and the report says
+so.</p>
+<p>Then open the drafts, read them over, and publish the ones you
+want.</p>
+<h2 id="copying-to-another-of-your-sites">Copying to another of your
+sites</h2>
+<p><strong>Item &gt; Copy to Site…</strong> (<code>Ctrl+Shift+Y</code>)
+copies what you have selected to another of your sites: posts, pages,
+media, menus, categories and tags, synced patterns and forms.</p>
+<ol type="1">
+<li>Select what to copy in any list.</li>
+<li>Press Ctrl+Shift+Y and choose the site to copy to.</li>
+<li>Read the preview. It says what will be made and what replaced, each
+picture to upload, and anything left out.</li>
+<li>Press <strong>Copy</strong>.</li>
+</ol>
+<p>QUILL matches authors, categories, tags and menus by name, uploads
+the pictures a post needs or reuses ones already there, and rewrites
+links that point at the first site. New items are drafts on the other
+site. If anything did not copy, a report says what and why.</p>
+<p>In the editor, <strong>File &gt; WordPress &gt; Send and Copy &gt;
+Publish to Another Site…</strong> does the same for the page you are
+writing (Chapter 3).</p>
+<h2 id="comparing-two-sites">Comparing two sites</h2>
+<p><strong>Site &gt; Compare Sites…</strong> (<code>Ctrl+Alt+K</code>)
+asks for another of your sites, then reports what differs between the
+two: posts, pages, synced patterns, categories, tags and menus, each by
+its slug. It also says what it does not compare. Nothing is changed.</p>
+<h2 id="snapshots">Snapshots</h2>
+<p>A snapshot is a copy of a site’s content on this computer. Take one
+before a big change, and you can set things back if it goes wrong.</p>
+<p><strong>Taking a snapshot.</strong></p>
+<ol type="1">
+<li>Select the site, or anything on it.</li>
+<li>Choose <strong>Site &gt; Take a Snapshot…</strong>
+(<code>Ctrl+Alt+S</code>).</li>
+<li>Under <strong>Save</strong>, choose <strong>Everything but the media
+files</strong>, or <strong>Everything, with the media files
+too</strong>.</li>
+</ol>
+<p>It saves every post, page, synced pattern, category, tag, menu,
+setting and media record. People, passwords, plugins, themes, revisions
+and comments are never saved. You hear what was saved, where, and what
+was left out.</p>
+<p><strong>Putting a site back.</strong></p>
+<ol type="1">
+<li>Choose <strong>Site &gt; Put Back from a Snapshot…</strong>
+(<code>Ctrl+Alt+Shift+S</code>).</li>
+<li>Under <strong>Snapshot</strong>, choose one. The newest is
+first.</li>
+<li>The preview lists every change. Press <strong>Put
+Back</strong>.</li>
+</ol>
+<p>Posts, pages, synced patterns, categories and tags changed since the
+snapshot are set back to it. WordPress keeps a revision of each post and
+page it changes, so even this can be undone from Previous Versions. Ones
+deleted since are made again as drafts, at new addresses. Menus,
+settings, people, plugins and media files are not put back.</p>
+<p>If the snapshot came from the Practice Site and you are putting it on
+a real site, QUILL asks you by name first.</p>
+<p>A snapshot is QUILL’s own format. For a copy any WordPress can read,
+export a WXR file instead.</p>
+<h2 id="changing-a-name-everywhere-it-is-used-by-name">Changing a name
+everywhere it is used: By Name</h2>
+<p>Each site’s <strong>By Name</strong> branch lists the values your
+content uses, a place for each kind:</p>
+<ul>
+<li><strong>Every Term</strong>: every category, tag and other
+grouping;</li>
+<li><strong>Field Values</strong>: the values in custom fields;</li>
+<li><strong>Authors</strong>;</li>
+<li><strong>Media Usage</strong>: every file, and where it is used;</li>
+<li><strong>Patterns Used</strong>;</li>
+<li><strong>Links</strong>: every address your pages link to;</li>
+<li><strong>Blocks and Shortcodes</strong>;</li>
+<li><strong>Forms Used</strong>;</li>
+<li><strong>Template Parts</strong>.</li>
+</ul>
+<p>Enter on a row says <strong>Where It Is Used</strong>. The context
+menu also has:</p>
+<ul>
+<li><strong>Rename Everywhere…</strong>: a new name or value, wherever
+it is used;</li>
+<li><strong>Split…</strong>: move the items you choose to a new term,
+value or person, and leave the rest;</li>
+<li><strong>Merge Into…</strong>: move every item to another term or
+value, and delete the merged term;</li>
+<li><strong>Reassign…</strong>: move every item to another term or
+person, and keep this one;</li>
+<li><strong>Replace Everywhere…</strong>: another file, pattern, link,
+shortcode or form, in every page that uses this one;</li>
+<li><strong>Find Items Missing This Field</strong>, on a custom field:
+the posts and pages with no value.</li>
+</ul>
+<p>Each is previewed item by item. Every item is read again before it is
+sent, and one that changed since the list was made is left alone. You
+hear how each item went, and each goes in Change History. Ctrl+Z undoes
+it where putting the old value back truly restores it. A merge deletes a
+term, so it says it is final.</p>
+<p>A template part’s title can be renamed here, but not its slug,
+because templates find a part by its slug.</p>
+<h2 id="across-sites">Across Sites</h2>
+<p><strong>Go &gt; Across Sites</strong> (<code>Ctrl+0</code>) shows
+things your sites share, side by side: <strong>Tags and
+Categories</strong>, <strong>Plugins</strong>, <strong>Themes</strong>,
+<strong>People</strong>, <strong>Settings</strong>,
+<strong>Menus</strong>, <strong>Synced Patterns</strong> and
+<strong>Application Passwords</strong>. Each row says the versions in
+use and which sites are missing it.</p>
+<p><strong>Site &gt; Across Sites Scope…</strong>
+(<code>Ctrl+Alt+Y</code>) chooses every site, or one Site Set.
+<strong>Site &gt; Site Sets…</strong> (<code>Ctrl+Alt+T</code>) names a
+set of your sites, such as “Branch sites”.</p>
+<p>On a row:</p>
+<ul>
+<li><strong>Make Them the Same…</strong> asks which version wins,
+previews every site’s change, and says how each went. It covers
+categories and tags, plugins (on or off), settings, people’s roles,
+synced patterns, menus and themes. WordPress cannot switch a theme from
+outside, so for a theme it opens each site’s Themes screen in your
+browser. A copied menu is final.</li>
+<li><strong>Install on Sites Missing It…</strong> installs a plugin from
+WordPress.org on every site that lacks it, after a preview. For a theme,
+it opens each of those sites’ Add New screen.</li>
+<li><strong>Promote to Network…</strong> activates a plugin for every
+site of a multisite network. It is only offered where the site says the
+plugin can be, and WordPress refuses it unless you are a super
+admin.</li>
+<li><strong>Revoke Everywhere…</strong>, on an application password,
+revokes it on every site that has it, after a preview. It cannot be
+undone.</li>
+<li><strong>Compare Global Styles</strong> shows each site’s colours and
+font sizes, and which differ.</li>
+</ul>
+<p>On Plugins, the rows also carry what WordPress.org says of each
+plugin, such as its rating and a warning for one that is closed or
+abandoned, once you have agreed to ask WordPress.org in that window.</p>
+<p><strong>Fleet</strong>, under Across Sites, has a row for each site,
+with columns for its health, backups, security and updates. Each one
+says known, unknown, unavailable or stale. If a site stops answering,
+its last answer stays, with when it came. The Fleet only reads.</p>
+<h2 id="lists-in-and-out">Lists in and out</h2>
+<ul>
+<li><strong>Edit &gt; Export List…</strong> (<code>Ctrl+Shift+X</code>)
+saves the list you are in as an Excel file, a CSV file or a Markdown
+table.</li>
+<li><strong>Edit &gt; Import Posts from a Spreadsheet…</strong>
+(<code>Ctrl+Shift+I</code>) makes posts or pages from an Excel or CSV
+file. It matches the columns to WordPress’s fields and shows you the
+match first. Rows marked published or scheduled come in as drafts, and
+you hear how each row went.</li>
+<li><strong>Edit &gt; Import a Folder of Documents…</strong>
+(<code>Ctrl+Alt+Shift+I</code>) makes a draft from each Markdown, text
+or Word file in a folder, previewed file by file.</li>
+<li><strong>Tools &gt; Plain-Language Batch…</strong>
+(<code>Ctrl+Alt+B</code>) lets you write a change in words, such as
+<code>move all drafts by Sam to pending on Radio</code>,
+<code>add tag 2026 to posts in category Events on every site</code>, or
+<code>remove tag Old from all published posts by Ann</code>. QUILL finds
+the exact items you meant. A name that matches nothing is said, never
+guessed. Then it gives you a checklist of the items. Uncheck anything
+that should not change, then send. It does not use AI.</li>
+</ul>
+<p>In the editor, <strong>File &gt; WordPress &gt; Send and Copy &gt;
+Download My Writing…</strong> saves every page and post to a folder as
+Markdown or Word, and <strong>Send a Folder as Drafts…</strong> does the
+reverse (Chapter 3).</p>
+<h2 id="reading-a-whole-site-as-one-document">Reading a whole site as
+one document</h2>
+<p><strong>Site &gt; Read Site as Document</strong>
+(<code>Ctrl+Alt+D</code>) opens the site’s published pages in the editor
+as one document: the whole site, one menu or one category. It starts
+with the site’s address, what was read and when. It keeps headings,
+lists, links and alternative text, leaves out password-protected pages
+and counts them, and stops at 500 items, saying so. From there you can
+read it, search it, or save it in any format the editor writes.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a
+href="wordpress-forms-08-running-your-site.html">Chapter 8: Running your
+site</a></li>
+<li>Next: <a
+href="wordpress-forms-10-shop-events-seo-memberships.html">Chapter 10:
+Shop, events, SEO, memberships and redirects</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

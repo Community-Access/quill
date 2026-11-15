@@ -33,6 +33,7 @@ from typing import Any
 from quill.core.error_codes import CodedError
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.site import raw_text, rendered
+from quill.core.wordpress.workbench_moderation import version_of
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.wordpress.workbench_sheets import term_ids
 from quill.core.workbench.properties import FieldChange, FieldKind, SheetSpec
@@ -103,12 +104,17 @@ def _int_of(value: object) -> int:
         raise EditRefused(f"{value} is not a number.") from exc
 
 
+#: Body keys that hold fields by name: registered meta, and Advanced Custom Fields.
+_FIELD_GROUPS = ("meta", "acf")
+
+
 def body_for(
     sheet: SheetSpec,
     row: WbRow,
     pending: Sequence[FieldChange],
     *,
     term_names: Mapping[str, Mapping[str, int]] | None = None,
+    meta_schema: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """The request body for *pending*, under the names WordPress reads.
 
@@ -121,8 +127,24 @@ def body_for(
     for change in pending:
         spec = sheet.field(change.key)
         value: Any = change.after
-        if change.key.startswith("meta."):
-            body.setdefault("meta", {})[change.key.removeprefix("meta.")] = value
+        group = next((g for g in _FIELD_GROUPS if change.key.startswith(f"{g}.")), "")
+        if group:
+            key = change.key.removeprefix(f"{group}.")
+            # Registered meta is looked up by its key; ACF's by "acf.<name>"
+            # (field_plugins.acf_lookup), so the two never collide.
+            schema = (meta_schema or {}).get(key if group == "meta" else change.key)
+            if isinstance(schema, Mapping):
+                from quill.core.wordpress.custom_field_shapes import coerce
+                from quill.core.wordpress.custom_fields import FieldValueError
+
+                try:
+                    value = coerce(schema, value, spec.label)
+                except FieldValueError as exc:
+                    said = str(exc)
+                    if exc.reason:
+                        said = f"{said}: {exc.reason}"
+                    raise EditRefused(said) from exc
+            body.setdefault(group, {})[key] = value
             continue
         if row.kind == "setting" and change.key == "value":
             body[str(row.raw.get("key", ""))] = value
@@ -166,10 +188,10 @@ def verify(body: Mapping[str, Any], answer: Mapping[str, Any]) -> tuple[str, ...
     for key, sent in body.items():
         if key == "password":
             continue
-        if key == "meta" and isinstance(sent, dict):
-            kept = answer.get("meta") if isinstance(answer.get("meta"), dict) else {}
+        if key in _FIELD_GROUPS and isinstance(sent, dict):
+            kept = answer.get(key) if isinstance(answer.get(key), dict) else {}
             missed += [
-                f"meta.{k}"
+                f"{key}.{k}"
                 for k, v in sent.items()
                 if _comparable((kept or {}).get(k)) != _comparable(v)
             ]
@@ -187,9 +209,9 @@ def undo_body(body: Mapping[str, Any], before: Mapping[str, Any]) -> dict[str, A
     for key in body:
         if key == "password":
             continue
-        if key == "meta" and isinstance(body[key], dict):
-            old = before.get("meta") if isinstance(before.get("meta"), dict) else {}
-            out["meta"] = {k: (old or {}).get(k) for k in body[key]}
+        if key in _FIELD_GROUPS and isinstance(body[key], dict):
+            old = before.get(key) if isinstance(before.get(key), dict) else {}
+            out[key] = {k: (old or {}).get(k) for k in body[key]}
             continue
         value = before.get(key)
         if isinstance(value, dict) and ("raw" in value or "rendered" in value):
@@ -202,7 +224,7 @@ def check_conflict(api: WordPressApi, row: WbRow, loaded_modified: str) -> Mappi
     """Read *row* again; raise :class:`EditConflict` if it changed since *loaded_modified*."""
     current = api.get(row.route, context="edit")
     current = current if isinstance(current, dict) else {}
-    now = str(current.get("modified_gmt", "") or "")
+    now = version_of(row.kind, current)  # a comment or user has no modified_gmt
     if loaded_modified and now and now != loaded_modified:
         raise EditConflict(
             f"{row.title} was changed on {row.site} after you opened it. Nothing was sent."
@@ -236,7 +258,10 @@ def save(
         answer = api.post(_route(row), dict(body), context="edit")
     answer = answer if isinstance(answer, dict) else {}
     missed = verify(body, answer)
-    count = len(body) if "meta" not in body else len(body) - 1 + len(body["meta"])
+    count = sum(
+        len(value) if key in _FIELD_GROUPS and isinstance(value, dict) else 1
+        for key, value in body.items()
+    )
     noun = "change" if count == 1 else "changes"
     sentence = f"Saved {count} {noun} to {row.title} on {row.site}."
     if missed:

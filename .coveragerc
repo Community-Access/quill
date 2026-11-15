@@ -1,0 +1,9 @@
+[run]
+branch = True
+relative_files = True
+source = quill
+omit =
+    quill/_vendor/*
+
+[report]
+show_missing = True

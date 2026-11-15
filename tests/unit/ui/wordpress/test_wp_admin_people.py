@@ -205,6 +205,7 @@ def test_sign_out_revokes_forgets_and_removes(wp, wp_site, wp_dialogs, monkeypat
     wp_site.on("GET", f"{API}/users/me/application-passwords/introspect", {"uuid": "q1"})
     wp_site.on("DELETE", f"{API}/users/me/application-passwords/q1", {"deleted": True})
     wp_dialogs.answer("ask_choice", 0)
+    wp_dialogs.answer("confirm", True)
     wp.cmd_sign_out()
     assert len(wp_site.sent("DELETE", f"{API}/users/me/application-passwords/q1")) == 1
     assert forgot == ["radio"]
@@ -221,11 +222,27 @@ def test_sign_out_can_keep_the_site_and_explains_an_unknown_password(
     forgot = []
     monkeypatch.setattr(st, "forget_secret", forgot.append)
     wp_dialogs.answer("ask_choice", 1)
+    wp_dialogs.answer("confirm", True)
     wp.cmd_sign_out()  # no introspect route: an old WordPress
     assert forgot == ["radio"]
     assert wp.sites().get("radio") is not None
     assert "kept in your list" in wp.host.announced[-1]
     assert "did not say which password" in wp.host.announced[-1]
+
+
+def test_sign_out_starts_on_keep_and_asks_before_anything_irreversible(
+    wp, wp_site, wp_dialogs, monkeypatch
+):
+    """Enter, Enter must not sign out and forget a site (how.md review 7)."""
+    forgot = []
+    monkeypatch.setattr(st, "forget_secret", forgot.append)
+    wp_dialogs.answer("ask_choice", lambda **kw: kw["initial"])  # Enter on what is selected
+    wp.cmd_sign_out()  # ...and Enter on the confirmation, which is Cancel
+    assert wp_dialogs.asked("ask_choice")[0]["initial"] == 1
+    assert "Keep" in wp_dialogs.asked("ask_choice")[0]["rows"][1]
+    assert "cannot be undone" in wp_dialogs.asked("confirm")[0]["message"]
+    assert forgot == [] and wp_site.requests == []
+    assert wp.sites().get("radio") is not None
 
 
 def test_sign_out_cancelled_does_nothing(wp, wp_site, wp_dialogs, monkeypatch):

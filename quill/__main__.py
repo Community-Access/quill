@@ -4,7 +4,7 @@ import os
 import sys
 import time
 import types
-from argparse import ArgumentParser, Namespace
+from argparse import SUPPRESS, ArgumentParser, Namespace
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -517,6 +517,7 @@ def main() -> int:
                 cold_import_seconds=_import_main_frame_seconds,
                 persona_name=parsed.persona,
                 document_kind=parsed.document_kind,
+                start_minimized=parsed.tray,
             )
         finally:
             release_primary_instance()
@@ -533,6 +534,7 @@ def _parse_cli_arguments(arguments: list[str]) -> Namespace:
     parser.add_argument("paths", nargs="*", help="Optional files to open on startup.")
     parser.add_argument("--version", action="store_true", help="Show QUILL version and exit.")
     parser.add_argument("--safe-mode", action="store_true", help="Start QUILL in safe mode.")
+    parser.add_argument("--tray", action="store_true", help=SUPPRESS)
     parser.add_argument(
         "--reset-profile",
         action="store_true",

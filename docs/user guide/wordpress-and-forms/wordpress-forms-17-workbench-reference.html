@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 17: WordPress Workbench reference</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-17-wordpress-workbench-reference">Chapter 17: WordPress
+Workbench reference</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>This chapter is for looking things up. It lists every place in the
+WordPress Workbench’s tree, what you can do to each kind of row, what
+WordPress’s REST API cannot do, how access and confirmations work, the
+plugins QUILL supports, and every menu of the window with its keys.</p>
+<p>It does not teach. For that, start with Chapter 2, the tour, and each
+place below names the chapter that shows how to use it.</p>
+<h2 id="opening-the-workbench">Opening the Workbench</h2>
+<ul>
+<li><strong>Tools &gt; WordPress &gt; Open WordPress
+Workbench…</strong>, or the WordPress key and then H.</li>
+<li>The site rows of Tools &gt; WordPress and Tools &gt; WordPress &gt;
+Manage open it at their own place: Comments, Media Library, Categories
+and Tags, Menus, Site Check, Site Settings, Users, Application
+Passwords, Plugins, Themes, Fonts, Synced Patterns, Widgets, Site Map
+and AI Abilities.</li>
+<li><strong>File &gt; WordPress &gt; This Post in the Workbench</strong>
+(the WordPress key, then Shift+H) opens the list the post is in, with it
+selected (Chapter 3).</li>
+<li><strong>Insert &gt; Picture from the Media Library…</strong> opens
+Media to pick a picture (Chapter 5).</li>
+</ul>
+<h2 id="the-tree-place-by-place">The tree, place by place</h2>
+<h3 id="at-the-top">At the top</h3>
+<table>
+<thead>
+<tr>
+<th>Place</th>
+<th>What it holds</th>
+<th>Chapter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Start Here</td>
+<td>What the Workbench is and how to move round it</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Needs My Attention</td>
+<td>What waits on you, from every site</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Sites</td>
+<td>A branch for each connected site</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Calendar</td>
+<td>Every site’s content, a day to a place</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Across Sites</td>
+<td>Terms, plugins, themes, people, settings, menus, synced patterns and
+application passwords on every site, and the Fleet</td>
+<td>9</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>WordPress search results from every site</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Practice Site</td>
+<td>A WordPress site on this computer</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Help and Learning</td>
+<td>How WordPress Thinks, Words and Keys</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Needs My Attention</strong> holds Inbox, Comments Waiting,
+Pending Review, Scheduled, Drafts, Updates, Site Health, Accessibility,
+Broken Links, Held as Spam, Form Responses, Membership Orders and
+Watches.</p>
+<h3 id="in-each-sites-branch">In each site’s branch</h3>
+<table>
+<thead>
+<tr>
+<th>Place</th>
+<th>What it holds</th>
+<th>Chapter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Overview</td>
+<td>At a Glance, Activity and wp-admin Screens</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Posts, Pages</td>
+<td>Each status: Published, Drafts, Pending, Scheduled, Private,
+Trash</td>
+<td>3</td>
+</tr>
+<tr>
+<td>More Content Types</td>
+<td>The site’s own kinds, each with its statuses</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Media</td>
+<td>Pictures, Audio, Video, Documents, Unattached, Without Alt Text,
+Housekeeping</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Comments</td>
+<td>Waiting, Approved, Spam, Trash</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Categories, Tags, More Taxonomies</td>
+<td>The site’s terms</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Menus and Navigation</td>
+<td>The site’s menus</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Appearance</td>
+<td>Themes, Global Styles, Templates, Template Parts, Additional CSS,
+Patterns, Fonts, Widgets and Sidebars</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Forms</td>
+<td>Responses, Held as Spam, Feeds, Results</td>
+<td>13</td>
+</tr>
+<tr>
+<td>Memberships</td>
+<td>Membership Levels, Orders, Subscriptions, Renewals Due, Discount
+Codes</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Shop</td>
+<td>Products and the shop’s places</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Podcast</td>
+<td>The site’s episodes</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Events Calendar</td>
+<td>Past Events, Venues, Organizers, Event Categories, Event Tags</td>
+<td>10</td>
+</tr>
+<tr>
+<td>SEO</td>
+<td>Each item’s search appearance, and Site SEO</td>
+<td>10</td>
+</tr>
+<tr>
+<td>People</td>
+<td>Users and Application Passwords</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Plugins</td>
+<td>Installed plugins</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Settings</td>
+<td>The site’s settings</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Site Health</td>
+<td>The tests, Information and Security</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Abilities</td>
+<td>The abilities the site offers</td>
+<td>8</td>
+</tr>
+<tr>
+<td>By Name</td>
+<td>Every Term, Field Values, Authors, Media Usage, Patterns Used,
+Links, Blocks and Shortcodes, Forms Used, Template Parts</td>
+<td>9</td>
+</tr>
+<tr>
+<td>Content Audit</td>
+<td>Orphaned, stale and duplicated content, reading level and
+headings</td>
+<td>7</td>
+</tr>
+<tr>
+<td>Privacy Requests</td>
+<td>WordPress’s export and erase screens</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Redirects</td>
+<td>The Redirection plugin’s redirects, and the 404 Log</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Search and Upkeep</td>
+<td>Search visibility, sitemap, missed schedules, certificate, who is
+editing</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Administration Areas</td>
+<td>Every part of running a site, and where QUILL handles it</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Content Model</td>
+<td>Every content type and taxonomy, and who added it</td>
+<td>8</td>
+</tr>
+<tr>
+<td>More from This Site</td>
+<td>The routes the site’s plugins offer, by plugin</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+<p>The Shop’s places are Shop Orders, Draft Products, On Sale, Out of
+Stock, Customers, Coupons, Shop Reports, Store Settings, Product
+Reviews, Shipping Zones, Tax Rates, Tax Classes, Attributes, Brands and
+Webhooks.</p>
+<p>A place for a plugin the site does not have is left out, or says so
+in one sentence.</p>
+<h2 id="the-context-menu-by-kind-of-row">The context menu, by kind of
+row</h2>
+<p>The first command is what Enter does. Properties
+(<code>Alt+Enter</code>) is always last, and is left out below.</p>
+<ul>
+<li><strong>Post, page or other item:</strong> Open in Editor, Preview
+on the Site, Visual Review…, Publish or Update…, Move to Trash, Restore
+from Trash, Delete Permanently…, Copy Link, Copy to Site…, Approve and
+Schedule…, Send Back with a Note…, Assign a Reviewer…, Move to Another
+Day…, Show Its Comments, Duplicate as Draft, Counts by Status, Empty
+Trash…, Open in wp-admin.</li>
+<li><strong>Media file:</strong> View or Play, Insert into the Document,
+Copy Link, Copy to Site…, Replace File…, Edit Picture…, Regenerate
+Sizes, Attach to a Post or Page…, Detach, Download…, Counts by Status,
+Open in wp-admin, Delete Permanently….</li>
+<li><strong>Comment:</strong> Read in Full, Approve, or Not Spam, Not
+Spam, and Allow This Sender, Unapprove, Spam, Reply…, Move to Trash,
+Restore from Trash, Delete Permanently….</li>
+<li><strong>Form response:</strong> Read in Full, Not Spam, Spam,
+Notes…, Star or Unstar, Mark Read or Unread, Resend Notifications….</li>
+<li><strong>QUILL Accessible Forms form:</strong> Show Its Responses,
+Change Form Status…, Form Settings…, Saved Views, Search Responses on
+the Site…, Delete Form…, Copy as a Gravity Form…, Copy to Site….</li>
+<li><strong>Gravity Forms form:</strong> Show Its Responses, Change a
+Field Type…, Show Its Feeds, Show Its Results, Test This Form…, Edit
+Form…, New Gravity Form…, Copy as a QUILL Accessible Form…, Copy to
+Site….</li>
+<li><strong>Gravity Forms feed:</strong> Read in Full, Activate or
+Deactivate…, Rename…, Delete Permanently….</li>
+<li><strong>Category, tag or term:</strong> Show Its Posts, Merge Into…,
+Convert to Category or Tag…, Copy to Site…, Delete Permanently….</li>
+<li><strong>Person:</strong> Show Their Posts, Change Role…, Show
+Memberships…, Check Membership Access…, Change Membership Level…, Cancel
+Membership…, Their Application Passwords…, Sign Out Everywhere…, Invite
+from a Spreadsheet…, Send Password Reset, Set New Password…, Roles and
+What They May Do, Remove….</li>
+<li><strong>Application password:</strong> Read in Full, Revoke….</li>
+<li><strong>Menu:</strong> Read in Full, Add Menu Item…, Add New Pages
+Automatically…, Arrange Items…, Earlier Versions…, Default Navigation
+Menu…, Copy to Site….</li>
+<li><strong>Plugin:</strong> Read in Full, Activate or Deactivate, Check
+on WordPress.org…, Find a Plugin on WordPress.org…, Open in
+Dashboard.</li>
+<li><strong>Theme:</strong> Read in Full, Activate…, Find a Theme on
+WordPress.org…, Open in Dashboard.</li>
+<li><strong>Template or template part:</strong> Read in Full, Edit Block
+Markup…, Earlier Versions…, Reset to the Theme’s Version…, New
+Template…, Open in the Site Editor.</li>
+<li><strong>Additional CSS:</strong> Read in Full, Edit Additional
+CSS….</li>
+<li><strong>Global style:</strong> Read in Full, Change….</li>
+<li><strong>Widget area:</strong> Read in Full, Add a Widget…, Change a
+Widget…, Move a Widget…, Remove a Widget…, Preview Widgets.</li>
+<li><strong>Synced pattern:</strong> Read in Full, Copy to Site….</li>
+<li><strong>Setting:</strong> Read in Full, Language Pack Status….</li>
+<li><strong>Site:</strong> Open This Site, Open on the Site, Form Spam
+Questions…, Form Spam by Week.</li>
+<li><strong>By Name value:</strong> Where It Is Used, Rename
+Everywhere…, Split…, Merge Into…, Reassign…, Replace Everywhere…, Find
+Items Missing This Field.</li>
+<li><strong>Across Sites row:</strong> Read in Full, Make Them the
+Same…, Promote to Network…, Revoke Everywhere…, Compare Global Styles,
+Install on Sites Missing It…, Open in Dashboard.</li>
+<li><strong>Content Audit or Housekeeping finding:</strong> Read in
+Full, Show Where It Is Used, Move to Trash…, Open on the Site.</li>
+<li><strong>Redirect:</strong> Read in Full, Test an Address…, Add
+Redirect…, Change Redirect…, Turn On or Off, Delete Redirect…, Open on
+the Site.</li>
+<li><strong>404 Log entry:</strong> Read in Full, Redirect This
+Address…, Test an Address….</li>
+<li><strong>Update:</strong> Open Dashboard Updates in the Browser, Read
+in Full.</li>
+<li><strong>wp-admin screen:</strong> Open in Dashboard, Go to Its Place
+in the Workbench, Read in Full.</li>
+<li><strong>Shop product:</strong> Open on the Site, Read in Full, Edit
+Product…, Show Its Variations, Duplicate…, New Product…, Copy Link, Move
+to Trash…, Edit a Variation….</li>
+<li><strong>Shop order:</strong> Open in the Shop’s Dashboard, Read in
+Full, Change Status…, Notes…, Refund….</li>
+<li><strong>Shop customer:</strong> Read in Full, Customer Details, Edit
+Customer….</li>
+<li><strong>Coupon:</strong> Read in Full, Edit Coupon…, New Coupon…,
+Move to Trash….</li>
+<li><strong>Product review:</strong> Read in Full, Approve, Hold, Mark
+as Spam, Reply…, Edit Review…, Move to Trash….</li>
+<li><strong>Shipping zone:</strong> Read in Full, Locations…, Methods…,
+New Shipping Zone…, Rename…, Delete….</li>
+<li><strong>Tax rate, tax class, attribute, brand, webhook:</strong>
+Read in Full, then their own New, Edit or Rename, Delete, and for a
+webhook Pause or Activate…, for an attribute Terms….</li>
+<li><strong>Store setting:</strong> Read in Full, Change Setting….</li>
+<li><strong>Event:</strong> Open on the Site, Read in Full, Edit Event…,
+New Event…, Events Between Dates…, Copy Link, Move to Trash…, Categories
+and Tags….</li>
+<li><strong>Venue or organizer:</strong> Read in Full, Edit, New, Move
+to Trash.</li>
+<li><strong>SEO item:</strong> Search Appearance, Edit SEO…, Open on the
+Site, Bulk SEO Editor….</li>
+<li><strong>Discount code:</strong> Read in Full, Look Up a Discount
+Code…, New Discount Code….</li>
+<li><strong>Ability:</strong> Run…, Offer to Ask the Site.</li>
+<li><strong>Content type or taxonomy:</strong> Open Its List.</li>
+<li><strong>Calendar day:</strong> Open This Day.</li>
+</ul>
+<p><strong>On a place in the tree:</strong> Refresh, New Here…, Load
+More, Load All, Columns…, Group By…, What Can I Do Here?, Counts by
+Status, Empty Trash…, wp-admin for This Place….</p>
+<h2 id="what-wordpresss-rest-api-cannot-do">What WordPress’s REST API
+cannot do</h2>
+<p>QUILL reaches your site through WordPress’s REST API. It can install,
+activate, deactivate and delete plugins, but cannot update them or roll
+them back. It can read themes but not switch or install them. It has no
+way in to WordPress or translation updates, sign-in sessions, privacy
+requests, the Customizer, or most of Site Health’s Info tab. The
+Workbench says so on each row where it matters, before you act, and
+gives you the way that does work:</p>
+<ul>
+<li><strong>Open in Dashboard</strong>, on plugin, theme, update and
+Across Sites rows, opens the wp-admin screen that does it.</li>
+<li><strong>wp-admin for This Place…</strong>, on any place in a site,
+offers the nearest wp-admin screens.</li>
+<li><strong>Overview &gt; wp-admin Screens</strong> lists every wp-admin
+screen, with how much of it the Workbench does.</li>
+<li>Anything that asks WordPress.org, such as <strong>Check on
+WordPress.org…</strong> or <strong>Language Pack Status…</strong>, asks
+you first, naming api.wordpress.org and what is sent.</li>
+</ul>
+<h2 id="access-and-confirmations">Access and confirmations</h2>
+<ul>
+<li><strong>Workbench access</strong>, for each site (<strong>Site &gt;
+Workbench Access…</strong>): <strong>Full</strong>, the default, allows
+everything your role does; <strong>Organize</strong> allows reading and
+the changes that are easy to undo, such as moderation and the Trash;
+<strong>Read Only</strong> allows reading. Safe Mode and <strong>View As
+Role…</strong> make every site read only.</li>
+<li><strong>Your role</strong> on the site still decides. A command it
+does not allow is dimmed, and says which role would.</li>
+<li><strong>Guards</strong> no role lifts: QUILL never removes your own
+Administrator role or the last Administrator, and warns before you
+deactivate a plugin QUILL relies on.</li>
+<li><strong>Every change</strong> is previewed, naming the site. QUILL
+reads the item again first and sends nothing if it changed, then checks
+what the site kept.</li>
+<li><strong>A permanent change</strong> says it cannot be undone, and
+Delete Permanently asks you to confirm by name.</li>
+<li><strong>Change History</strong> and <strong>Undo WordPress
+Change</strong> are in the Edit menu. Undo is offered wherever putting
+the old values back truly restores them.</li>
+</ul>
+<p>WordPress’s default roles are Subscriber, Contributor, Author, Editor
+and Administrator. A site can add more. <strong>Site &gt; Roles and What
+They May Do</strong> explains the roles the site reports.</p>
+<h2 id="supported-plugins">Supported plugins</h2>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>What the Workbench does</th>
+<th>Chapter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL Accessible Forms</td>
+<td>Forms, their status and settings, responses, spam and spam settings,
+saved views</td>
+<td>13</td>
+</tr>
+<tr>
+<td>Gravity Forms</td>
+<td>Building and editing forms, responses, notes, starred and read,
+resending emails, feeds, results, test entries, copying forms</td>
+<td>13</td>
+</tr>
+<tr>
+<td>Paid Memberships Pro</td>
+<td>Levels, orders, subscriptions, renewals due, discount codes, a
+person’s memberships and access, changing and cancelling a
+membership</td>
+<td>10</td>
+</tr>
+<tr>
+<td>WooCommerce</td>
+<td>Products and variations, orders, notes and refunds, customers,
+coupons, reports, store settings, reviews, shipping zones, taxes,
+attributes, brands, webhooks</td>
+<td>10</td>
+</tr>
+<tr>
+<td>The Events Calendar</td>
+<td>Events, venues, organizers, event categories and tags</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Yoast SEO</td>
+<td>Each item’s SEO and social fields, the Bulk SEO Editor, the site’s
+scores</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Redirection</td>
+<td>Redirects and the 404 Log</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<p>Other plugins are named as such in Administration Areas. Their routes
+are listed under More from This Site, or their own wp-admin screen
+opens.</p>
+<h2 id="every-menu-and-its-keys">Every menu and its keys</h2>
+<p>These are the keys the Workbench comes with. If you change one in the
+Keyboard Manager, the menu shows your key instead.</p>
+<p><strong>File:</strong> New Here… (<code>Ctrl+N</code>), Open on the
+Site (<code>Shift+Enter</code>), Preview on the Site
+(<code>Ctrl+Enter</code>), Close Workbench (<code>Alt+F4</code>).</p>
+<p><strong>Edit:</strong> Undo WordPress Change (<code>Ctrl+Z</code>),
+Change History… (<code>Ctrl+Shift+H</code>), Copy Link
+(<code>Ctrl+Shift+C</code>), Filter… (<code>Ctrl+E</code>), Filter
+Builder… (<code>Ctrl+Shift+F</code>), Show Only Like This…
+(<code>Ctrl+Alt+O</code>), Hide Like This… (<code>Ctrl+Alt+H</code>),
+Only Mine (<code>Ctrl+Alt+M</code>), Export List…
+(<code>Ctrl+Shift+X</code>), Import Posts from a Spreadsheet…
+(<code>Ctrl+Shift+I</code>), Import a Folder of Documents…
+(<code>Ctrl+Alt+Shift+I</code>).</p>
+<p><strong>View:</strong> Refresh (<code>F5</code>), Load More
+(<code>Ctrl+Shift+L</code>), Load All (<code>Ctrl+Alt+L</code>),
+Columns… (<code>Ctrl+Alt+C</code>), Group By… (<code>Ctrl+Alt+G</code>),
+Back (<code>Alt+Left</code>), Forward (<code>Alt+Right</code>), Next
+Pane (<code>F6</code>), Previous Pane (<code>Shift+F6</code>), Where Am
+I (<code>Alt+1</code>), Say Selection (<code>Alt+2</code>).</p>
+<p><strong>Go:</strong> Start Here (<code>Ctrl+9</code>), Needs My
+Attention (<code>Ctrl+1</code>), Current Site (<code>Ctrl+2</code>),
+Posts to Site Health (<code>Ctrl+Shift+1</code> to
+<code>Ctrl+Shift+9</code>), Across Sites (<code>Ctrl+0</code>), Calendar
+(<code>Ctrl+3</code>), Watches (<code>Ctrl+5</code>), Practice Site
+(<code>Ctrl+6</code>), Parent Node (<code>Alt+Up</code>). The nine site
+places, in order, are Posts, Pages, Media, Comments, Users, Plugins,
+Appearance, Settings and Site Health.</p>
+<p><strong>Item:</strong> Properties… (<code>Alt+Enter</code>), Publish
+or Update… (<code>Ctrl+Shift+P</code>), Approve, or Not Spam
+(<code>Ctrl+Shift+A</code>), Unapprove (<code>Ctrl+Shift+U</code>), Spam
+(<code>Ctrl+Shift+S</code>), Reply… (<code>Ctrl+Shift+M</code>), Not
+Spam, and Allow This Sender (<code>Ctrl+Alt+W</code>), Merge Into…
+(<code>Ctrl+Shift+G</code>), Convert to Category or Tag…
+(<code>Ctrl+Shift+K</code>), Approve and Schedule…
+(<code>Ctrl+Shift+D</code>), Send Back with a Note…
+(<code>Ctrl+Shift+B</code>), Assign a Reviewer…
+(<code>Ctrl+Shift+J</code>), Move to Another Day…
+(<code>Ctrl+Alt+Shift+D</code>), Copy to Site…
+(<code>Ctrl+Shift+Y</code>), Send Password Reset
+(<code>Ctrl+Shift+W</code>), Show Its Comments
+(<code>Ctrl+Alt+Shift+M</code>), Entry Notes… (<code>Ctrl+Alt+N</code>),
+Star or Unstar Entry (<code>Ctrl+Alt+F</code>), Mark Entry Read or
+Unread (<code>Ctrl+Alt+U</code>), Resend Notifications…
+(<code>Ctrl+Alt+I</code>), the Gravity Forms submenu, Move to Trash
+(<code>Delete</code>), Restore from Trash (<code>Ctrl+Shift+R</code>),
+Delete Permanently… (<code>Shift+Delete</code>).</p>
+<p><strong>Item &gt; Gravity Forms</strong>, with no keys of their own:
+Show Its Feeds, Show Its Results, Test This Form…, Change a Field Type…,
+Edit Form…, New Gravity Form…, Copy as a QUILL Accessible Form…, Copy
+QAF Form as a Gravity Form…, Activate or Deactivate Feed…, Rename
+Feed….</p>
+<p><strong>Site:</strong> Site Properties…
+(<code>Alt+Shift+Enter</code>), What Can I Do Here?
+(<code>Shift+F1</code>), View As Role… (<code>Ctrl+Alt+V</code>),
+Workbench Access… (<code>Ctrl+Alt+A</code>), Roles and What They May Do
+(<code>Ctrl+Alt+R</code>), Empty Spam… (<code>Ctrl+Alt+E</code>), Empty
+Comment Trash… (<code>Ctrl+Alt+Shift+E</code>), Comment Counts
+(<code>Ctrl+Alt+Shift+C</code>), Your Profile…
+(<code>Ctrl+Alt+Shift+P</code>), Compare Sites…
+(<code>Ctrl+Alt+K</code>), Site Sets… (<code>Ctrl+Alt+T</code>), Across
+Sites Scope… (<code>Ctrl+Alt+Y</code>), Take a Snapshot…
+(<code>Ctrl+Alt+S</code>), Put Back from a Snapshot…
+(<code>Ctrl+Alt+Shift+S</code>), Read Site as Document
+(<code>Ctrl+Alt+D</code>).</p>
+<p><strong>Tools:</strong> Workbench Options…
+(<code>Ctrl+Shift+O</code>), REST Console… (<code>Ctrl+Shift+T</code>),
+Run a Saved Request… (<code>Ctrl+Alt+Q</code>), Saved Requests, Forget a
+Saved Request… (<code>Ctrl+Alt+Shift+F</code>), Plain-Language Batch…
+(<code>Ctrl+Alt+B</code>), Practice Site… (<code>Ctrl+Alt+P</code>), and
+the WXR Files submenu: Export Site as WXR… and Import WXR as Drafts…,
+reached with Alt+T, W, then E or I.</p>
+<p><strong>Window:</strong> Switch to Editor
+(<code>Ctrl+Shift+E</code>). <strong>Help:</strong> Help for This View
+(<code>F1</code>).</p>
+<p>The commands on a row’s context menu that are not listed here have no
+key of their own, because they are used now and then. Reach them with
+the Applications key or Shift+F10.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="wordpress-forms-16-keys.html">Chapter 16: Every
+WordPress and Forms key</a></li>
+<li>Next: <a href="wordpress-forms-appendix-a-features.html">Appendix A:
+Every WordPress feature QUILL uses</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

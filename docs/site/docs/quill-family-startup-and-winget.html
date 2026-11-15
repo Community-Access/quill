@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Starting QuillVille apps with Windows and WinGet</title>
+  <meta name="description" content="How to start supported QuillVille apps minimized at Windows sign-in, and the current status of WinGet packages.">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="/"><span class="quill">QUILL</span><span class="tag">documentation</span></a>
+      <nav class="site" aria-label="Primary">
+        <ul>
+          <li><a href="/docs.html">Documentation</a></li>
+          <li><a href="/faq.html">FAQ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main id="main" tabindex="-1" class="prose">
+    <div class="wrap">
+      <h1>Starting QuillVille apps with Windows and WinGet</h1>
+      <p class="lede">Choose which supported apps open at sign-in, and whether their windows stay out of the way.</p>
+
+      <div class="qv-callout qv-callout--bee">
+        <p class="qv-callout__label">For Windows</p>
+        <p>These options use the current Windows account. They need no administrator rights. A portable copy does not add a startup entry to the computer it visits.</p>
+      </div>
+
+      <h2 id="start-minimized">Start minimized when Windows starts</h2>
+      <p>For an installed app, turn on both its <strong>Start with Windows</strong> option and its <strong>Start minimized when Windows starts</strong> option. The app opens without its main window and remains available from the system tray. Starting it normally from the Start menu, a file or another app still opens its window.</p>
+      <ul>
+        <li><strong>QUILL:</strong> Settings &gt; General. Turn on <strong>Start QUILL when Windows starts</strong> and <strong>Start QUILL minimized when Windows starts</strong>. QUILL also enables background mode so the tray icon can reopen the editor.</li>
+        <li><strong>Quill Radio:</strong> Preferences (Ctrl+,). Turn on <strong>Start Quill Radio with Windows</strong> and <strong>Start Quill Radio minimized when Windows starts</strong>.</li>
+        <li><strong>QUILL Cast:</strong> Preferences (Ctrl+,). Turn on <strong>Start QUILL Cast with Windows</strong> and <strong>Start QUILL Cast minimized when Windows starts</strong>.</li>
+        <li><strong>Quill Weather:</strong> Options. Turn on <strong>Start Quill Weather with Windows</strong> and <strong>Start minimized when Windows starts</strong>.</li>
+        <li><strong>Quill Inkwell:</strong> Options. Turn on <strong>Start Quill Inkwell with Windows</strong> and <strong>Start minimized when Windows starts</strong>.</li>
+        <li><strong>QUILL Transcribe:</strong> Options. Turn on <strong>Start QUILL Transcribe with Windows</strong> and <strong>Start minimized when Windows starts</strong>.</li>
+      </ul>
+      <p>To show the window at sign-in, leave <strong>Start with Windows</strong> on and turn off <strong>Start minimized when Windows starts</strong>. To stop automatic launch, turn off <strong>Start with Windows</strong>. If Windows hides the app's tray icon, change the notification-area settings so you can bring the app back.</p>
+      <p>QUILL Transcribe still shows required first-run setup before it can stay minimized. This setting does not start dictation.</p>
+
+      <h2 id="winget">WinGet packages</h2>
+      <p>WinGet packages are being prepared for the signed, installed editions. No QuillVille app is currently listed in the WinGet community catalog. Package IDs are still proposals, so there are no install commands to run yet.</p>
+      <p>After package IDs are approved and their submissions merge, this page will list the exact install and update commands. Packages will use version-specific Stable installers. Portable ZIPs, Beta or Dev builds and the shared runtime will not be separate WinGet packages.</p>
+
+      <p><a href="/docs.html">Return to all QUILL documentation</a></p>
+    </div>
+  </main>
+  <footer class="site">
+    <div class="wrap"><p>Community Access · <a href="/docs/privacy.html">Privacy</a></p></div>
+  </footer>
+</body>
+</html>

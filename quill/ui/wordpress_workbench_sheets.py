@@ -27,8 +27,15 @@ from dataclasses import replace
 from typing import Any
 
 from quill.core.wordpress import site_taxonomies as tx
-from quill.core.wordpress.custom_fields import meta_schema_for
-from quill.core.wordpress.field_plugins import route_properties
+from quill.core.wordpress.api import WordPressApiError
+from quill.core.wordpress.field_plugins import (
+    acf_lookup,
+    acf_schema,
+    acf_values,
+    meta_from_properties,
+    route_properties,
+    with_acf_page,
+)
 from quill.core.wordpress.site import kind_route
 from quill.core.wordpress.workbench_edit import (
     EditConflict,
@@ -38,9 +45,10 @@ from quill.core.wordpress.workbench_edit import (
     save,
 )
 from quill.core.wordpress.workbench_forms import form_plugins
+from quill.core.wordpress.workbench_moderation import version_of
+from quill.core.wordpress.workbench_people_bulk import user_post_count
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.wordpress.workbench_sheets import (
-    ITEM_STATUSES,
     SITE_SHEET,
     sheet_for,
     sheet_title,
@@ -51,80 +59,15 @@ from quill.core.workbench.actions import Tier
 from quill.core.workbench.history import Change
 from quill.core.workbench.properties import (
     MIXED,
-    FieldKind,
-    FieldSpec,
-    PageSpec,
     SheetSpec,
     SheetState,
     merge_values,
 )
 from quill.ui import wordpress_dialogs as dlg
+from quill.ui.wordpress_workbench_batch_sheets import _GRAVITY_SHEETS, _NO_EDIT, BATCH_SHEETS
+from quill.ui.wordpress_workbench_sheet_guards import setting_cleared
 
 __all__ = ["BATCH_SHEETS", "WorkbenchSheetCommands"]
-
-_OPEN = ("open", "closed")
-
-BATCH_SHEETS: dict[str, SheetSpec] = {
-    "item": SheetSpec(
-        "item",
-        "Items",
-        (
-            PageSpec(
-                "general",
-                "General",
-                (
-                    FieldSpec("status", "Status", FieldKind.CHOICE, choices=ITEM_STATUSES),
-                    FieldSpec("author", "Author number", FieldKind.TEXT),
-                    FieldSpec("comment_status", "Comments", FieldKind.CHOICE, choices=_OPEN),
-                    FieldSpec("ping_status", "Pingbacks", FieldKind.CHOICE, choices=_OPEN),
-                    FieldSpec("sticky", "Sticky", FieldKind.CHECK),
-                    FieldSpec("template", "Template", FieldKind.TEXT),
-                    FieldSpec("parent", "Parent number", FieldKind.NUMBER),
-                ),
-            ),
-            PageSpec(
-                "organize",
-                "Categories and Tags",
-                (
-                    FieldSpec("add_categories", "Add categories", FieldKind.LIST),
-                    FieldSpec("remove_categories", "Remove categories", FieldKind.LIST),
-                    FieldSpec("add_tags", "Add tags", FieldKind.LIST),
-                    FieldSpec("remove_tags", "Remove tags", FieldKind.LIST),
-                ),
-            ),
-        ),
-    ),
-    "media": SheetSpec(
-        "media",
-        "Media",
-        (
-            PageSpec(
-                "general",
-                "General",
-                (
-                    FieldSpec("title", "Title"),
-                    FieldSpec("alt_text", "Alt text"),
-                    FieldSpec("caption", "Caption", FieldKind.MULTILINE),
-                    FieldSpec("description", "Description", FieldKind.MULTILINE),
-                ),
-            ),
-        ),
-    ),
-}
-"""The batch sheets: fields many objects share (section 9)."""
-
-_NO_EDIT = {
-    "fact",
-    "help",
-    "namespace",
-    "ability",
-    "problem",
-    "site",
-    "writing_type",
-    "taxonomy",
-    "app_password",
-    "theme",
-}
 
 
 class WorkbenchSheetCommands:
@@ -186,20 +129,27 @@ class WorkbenchSheetCommands:
             return
         self._one_sheet(rows[0])
 
-    def _load_sheet(self, row: WbRow) -> tuple[SheetSpec, dict[str, Any], dict[str, Any], Any]:
+    def _load_sheet(
+        self, row: WbRow
+    ) -> tuple[SheetSpec, dict[str, Any], dict[str, Any], Any, dict[str, Any]]:
         """Off the UI thread: the fresh object, its sheet, its values and term names."""
+        if row.subkind == "gravity" and row.kind in _GRAVITY_SHEETS:
+            return self.gravity_sheet(row)  # type: ignore[attr-defined]
         ctx = self.ensure(self.ctx(row.site))
         api = ctx.api
         fresh: dict[str, Any] = dict(row.raw)
         if row.route and row.kind not in ("setting", "fact", "help", "problem"):
             got = api.get(row.route, context="edit")
             fresh = dict(got) if isinstance(got, dict) else fresh
+        if row.kind == "user":  # wp-admin's Posts column, on the sheet (9.18)
+            fresh["post_count"] = user_post_count(api, row.object_id)
         names: dict[str, dict[str, int]] = {}
         term_names: dict[int, str] = {}
         author_names: dict[int, str] = {}
         taxonomies: dict[str, str] = {}
         meta: dict[str, Any] = {}
         schema: dict[str, Any] = {}
+        acf: dict[str, Any] | None = None  # Advanced Custom Fields, where the site shows it
         if row.kind == "item":
             post_type = str(fresh.get("type", "") or row.subkind)
             for info in tx.taxonomies_for_type(api, post_type):
@@ -217,7 +167,16 @@ class WorkbenchSheetCommands:
                 person = api.get(f"wp/v2/users/{author}", _fields="id,name")
                 if isinstance(person, dict):
                     author_names[author] = str(person.get("name", ""))
-            meta = meta_schema_for(api, kind_route(row.subkind))
+            props = route_properties(api, kind_route(row.subkind))
+            meta, acf = meta_from_properties(props), acf_schema(props)
+        elif row.kind in ("term", "user", "comment") and row.route:
+            try:
+                props = route_properties(api, row.route.rsplit("/", 1)[0])
+                meta, acf = meta_from_properties(props), acf_schema(props)
+            except WordPressApiError as exc:
+                if exc.status not in (401, 403, 404):
+                    raise
+                meta = {}
         elif (
             row.kind not in ("media", "comment", "term", "user", "plugin", "setting") and row.route
         ):
@@ -227,16 +186,37 @@ class WorkbenchSheetCommands:
                 schema = {}
         sheet = sheet_for(replace(row, raw=fresh), taxonomies=taxonomies, meta=meta, schema=schema)
         values = values_for(row, fresh, term_names=term_names, author_names=author_names)
-        return sheet, values, fresh, names
+        if row.kind == "user" and hasattr(self, "with_access_page"):  # PMPro's Has Access
+            sheet = self.with_access_page(ctx, sheet, values)
+        if row.kind == "item":  # Author and Template as choices, as wp-admin offers (9.18)
+            from quill.core.wordpress import workbench_parity as wpp
+
+            kind = str(fresh.get("type", "") or row.subkind)
+            sheet = wpp.with_choices(
+                sheet,
+                values,
+                authors=wpp.author_choices(api),
+                templates=wpp.template_choices(api, kind) if "template" in fresh else (),
+            )
+            if "featured_media" in fresh:  # the picture by title, chosen from the library
+                sheet = wpp.with_featured(sheet)
+                values["featured_media"] = wpp.featured_value(api, fresh.get("featured_media"))
+        if acf:  # its own page; saved as {"acf": ...} and checked like meta
+            sheet = with_acf_page(sheet, acf)
+            values.update(acf_values(fresh))
+            meta = {**meta, **acf_lookup(acf)}
+        return sheet, values, fresh, names, meta
 
     def _one_sheet(self, row: WbRow) -> None:
-        def shown(loaded: tuple[SheetSpec, dict[str, Any], dict[str, Any], Any]) -> None:
-            sheet, values, fresh, names = loaded
+        def shown(
+            loaded: tuple[SheetSpec, dict[str, Any], dict[str, Any], Any, dict[str, Any]],
+        ) -> None:
+            sheet, values, fresh, names, meta = loaded
             locked, can_save = self._locked(sheet, row)
-            loaded_modified = str(fresh.get("modified_gmt", "") or "")
+            loaded_modified = version_of(row.kind, fresh)  # comments and users: their fields
 
-            def on_save(state: SheetState) -> None:
-                self._save_one(sheet, row, state, fresh, names, loaded_modified)
+            def on_save(state: SheetState) -> bool:
+                return self._save_one(sheet, row, state, fresh, names, meta, loaded_modified)
 
             self._editor(
                 sheet,
@@ -244,9 +224,18 @@ class WorkbenchSheetCommands:
                 title=sheet_title(row),
                 on_save=on_save if can_save else None,
                 locked=locked,
+                field_buttons=self._featured(row),
             ).show()
 
         self.background(f"reading {row.title}", lambda: self._load_sheet(row), shown)
+
+    def _featured(self, row: WbRow) -> dict[str, Any]:
+        """Choose from Library and Remove Featured Image, on an item's featured image (9.18)."""
+        if row.kind == "user" and hasattr(self, "access_buttons"):
+            return self.access_buttons(row)  # the Access page's Check a Post or Page
+        if row.kind != "item" or not hasattr(self, "featured_buttons"):
+            return {}
+        return {"featured_media": self.featured_buttons(row.site)}
 
     def _save_one(
         self,
@@ -255,13 +244,31 @@ class WorkbenchSheetCommands:
         state: SheetState,
         fresh: Mapping[str, Any],
         names: Mapping[str, Mapping[str, int]],
+        meta_schema: Mapping[str, Any],
         loaded_modified: str,
-    ) -> None:
+    ) -> bool:
+        if row.kind == "form_entry" and row.subkind == "gravity":
+            return bool(self.gravity_entry_save(row, state))  # type: ignore[attr-defined]
         try:
-            body = body_for(sheet, row, state.pending(), term_names=names)
+            body = body_for(
+                sheet,
+                row,
+                state.pending(),
+                term_names=names,
+                meta_schema=meta_schema,
+            )
+            if row.kind == "item":
+                from quill.core.wordpress.workbench_parity import clean_body
+
+                body = clean_body(body)
         except EditRefused as exc:
             self.say(str(exc.args[0]))
-            return
+            return False
+        if not body:
+            self.say("Nothing changed on this row.")
+            return True
+        if row.kind == "setting" and not setting_cleared(self, row, body):
+            return False
         api = self.ctx(row.site).api
 
         def done(result: Any) -> None:
@@ -283,6 +290,11 @@ class WorkbenchSheetCommands:
             self.refresh()
 
         def work(check: str) -> Any:
+            if row.kind == "user" and "roles" in body:  # the same guard as Change Role
+                from quill.core.wordpress.workbench_people import check_role_save
+
+                account = self.ensure(self.ctx(row.site)).account
+                check_role_save(api, account, row.object_id, body)
             return save(api, row, body, loaded_modified=check, before=fresh)
 
         def failed(error: BaseException) -> None:
@@ -301,6 +313,7 @@ class WorkbenchSheetCommands:
         self.frame._run_background(
             f"WordPress Workbench: saving {row.title}", lambda: work(loaded_modified), done, failed
         )
+        return True
 
     # -- several rows (section 9) -------------------------------------------------
 
@@ -333,6 +346,7 @@ class WorkbenchSheetCommands:
             title=title,
             on_save=None if reason else on_save,
             locked={spec.key: reason for spec in sheet.fields()} if reason else {},
+            field_buttons=self._featured(rows[0]),
         ).show()
 
     def _bodies(self, rows: Sequence[WbRow], edits: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -347,8 +361,9 @@ class WorkbenchSheetCommands:
                     body[field_name] = sorted((set(have) | set(add)) - set(remove))
             if "parent" in body:
                 body["parent"] = int(body["parent"] or 0)
-            if "author" in body:
-                body["author"] = int(str(body["author"]).rsplit("(", 1)[-1].rstrip(")") or 0)
+            for number in ("author", "featured_media"):  # "Sky (9)" sends 9
+                if number in body:
+                    body[number] = int(str(body[number]).rsplit("(", 1)[-1].rstrip(")") or 0)
             bodies.append(body)
         return bodies
 
@@ -454,6 +469,8 @@ class WorkbenchSheetCommands:
                 "comment_moderation": str(settings.get("default_comment_status", "not shown")),
                 "spam_plugins": ", ".join(spam) or "none found",
                 "form_plugins": ", ".join(forms) or "none found",
+                # QAF's part of the Spam page, editable where the site allows it.
+                **self.spam_page_values(ctx),  # type: ignore[attr-defined]
                 "spam_note": (
                     "Held as Spam under Needs My Attention gathers the comments and form "
                     "entries this site doubted. WordPress's REST API does not show the "
@@ -465,7 +482,17 @@ class WorkbenchSheetCommands:
         self.background(
             f"reading {site}",
             work,
-            lambda values: self._editor(SITE_SHEET, values, title=f"{site} Properties").show(),
+            lambda values: self._site_editor(site, values).show(),
+        )
+
+    def _site_editor(self, site: str, values: dict[str, Any]) -> Any:
+        parts = self.site_sheet_with_spam(site, SITE_SHEET, values)  # type: ignore[attr-defined]
+        return self._editor(
+            parts["sheet"],
+            parts["values"],
+            title=f"{site} Properties",
+            on_save=parts.get("on_save"),
+            locked=parts.get("locked", {}),
         )
 
     # -- Change History and Undo --------------------------------------------------
@@ -475,8 +502,10 @@ class WorkbenchSheetCommands:
         if change is None:
             self.say("Nothing to undo.")
             return
-        if change.undo is None:
-            self.say(f"{change.summary} This cannot be undone.")
+        if change.undo is None:  # said once, then passed over: Ctrl+Z reaches the one before
+            self.history.undo()
+            more = " Ctrl+Z again undoes the change before it." if self.history.next_undo() else ""
+            self.say(f"{change.summary} This cannot be undone.{more}")
             return
         self.background("undoing", self.history.undo, lambda said: (self.say(said), self.refresh()))
 
@@ -485,8 +514,11 @@ class WorkbenchSheetCommands:
         if not entries:
             self.say("No changes made in the Workbench yet.")
             return
+        upcoming = self.history.next_undoable()
         lines = [
-            f"{i}. {c.summary}" + ("" if c.undo else " (cannot be undone)")
+            f"{i}. {c.summary}"
+            + ("" if c.undo else " (cannot be undone)")
+            + (" (Ctrl+Z undoes this next)" if c is upcoming else "")
             for i, c in enumerate(reversed(entries), 1)
         ]
         dlg.show_report(
@@ -495,5 +527,6 @@ class WorkbenchSheetCommands:
             title="Change History",
             text="\n".join(lines),
             help_text="Every change made in the Workbench this session, newest first. "
-            "Ctrl+Z undoes the newest.",
+            "Ctrl+Z undoes the newest one that can be undone; a newer one that cannot is "
+            "named once and passed over.",
         )

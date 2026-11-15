@@ -18,6 +18,7 @@ both editors call: QUILL Lite is never ahead.
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
+from pathlib import Path
 from typing import Any
 
 from quill.core.github.explore_models import ExploreRow
@@ -40,7 +41,7 @@ from quill.core.github.workbench_window_menu import (
     WINDOW_MENU,
     WORKBENCH_KEYMAP_ID,
 )
-from quill.core.workbench.filters import Query, describe, render
+from quill.core.workbench.filters import Query, render
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import Need, NodeSpec, Scope
 from quill.ui.github_items_view import (
@@ -52,6 +53,7 @@ from quill.ui.github_items_view import (
     row_cells,
     sort_items,
 )
+from quill.ui.github_workbench_across import ACROSS_PREFIX, GitHubWorkbenchAcrossMixin
 from quill.ui.github_workbench_actions import GitHubWorkbenchActionsMixin
 from quill.ui.github_workbench_explore import (
     EXPLORE_PREFIX,
@@ -65,6 +67,7 @@ from quill.ui.github_workbench_place import GitHubWorkbenchPlaceMixin
 from quill.ui.github_workbench_properties import PAGE_FOR_VERB, GitHubWorkbenchPropertiesMixin
 from quill.ui.github_workbench_tools import GitHubWorkbenchToolsMixin
 from quill.ui.github_workbench_view import GitHubWorkbenchViewMixin
+from quill.ui.github_workbench_watches import WATCH_PREFIX
 from quill.ui.workbench_frame import NodeRef, WorkbenchFrame
 from quill.ui.workbench_status_bar import StatusCell
 
@@ -112,6 +115,7 @@ class GitHubWorkbenchProvider(
     GitHubWorkbenchPlaceMixin,
     GitHubWorkbenchActionsMixin,
     GitHubWorkbenchHelpMixin,
+    GitHubWorkbenchAcrossMixin,
 ):
     """GitHub, for :class:`~quill.ui.workbench_frame.WorkbenchFrame`."""
 
@@ -132,9 +136,17 @@ class GitHubWorkbenchProvider(
         editor_command_available: Callable[[str], bool] | None = None,
         open_file_url: Callable[[str], None] | None = None,
         guide_product: str = "quill",
+        gist_source: Callable[[], tuple[str, str]] | None = None,
+        ai_summarizer: Callable[[], Callable[[str], str] | None] | None = None,
+        start_worktree: Callable[[object, str, int, str, bool], None] | None = None,
+        open_document: Callable[[Path], None] | None = None,
     ) -> None:
         self.items = items
+        self._open_document = open_document
+        self.ai_summarizer = ai_summarizer
+        self.start_worktree = start_worktree
         self._guide_product = guide_product
+        self._gist_source = gist_source
         self._repositories: list[str] = [repository] if repository else []
         self._people: list[str] = []
         self._organizations: list[str] = []
@@ -197,6 +209,10 @@ class GitHubWorkbenchProvider(
             return ""
         if node.loader.startswith(HELP_PREFIX):
             return ""
+        if node.loader.startswith(ACROSS_PREFIX):
+            if not self.signed_in:
+                return "Sign in to GitHub to see this: Account, Manage GitHub Accounts."
+            return self.across_unavailable(node.loader)
         if node.loader.startswith("items:"):
             if not ref.instance:
                 return "Open a repository first: Ctrl+L, or File > Open GitHub Address."
@@ -234,6 +250,10 @@ class GitHubWorkbenchProvider(
             return list(load_explore(self._explore, node, instance=ref.instance, query=query))
         if node.loader.startswith(HELP_PREFIX):
             return list(self.load_help(node))
+        if node.loader.startswith(ACROSS_PREFIX):
+            return self.load_across(node.loader, query)
+        if node.loader.startswith(WATCH_PREFIX):
+            return self.load_watches()
         if node.loader.startswith("teams:"):
             return list(self.load_teams(node.loader, ref.instance))
         if node.loader.startswith(LOCAL_PREFIXES):
@@ -285,7 +305,8 @@ class GitHubWorkbenchProvider(
         return list(sort_items([r for r in kept if isinstance(r, GitHubItem)], order))
 
     def all_columns(self, node: NodeSpec) -> tuple[str, ...]:
-        if node.loader.startswith((EXPLORE_PREFIX, HELP_PREFIX, *LOCAL_PREFIXES)):
+        one_column = (EXPLORE_PREFIX, HELP_PREFIX, ACROSS_PREFIX, WATCH_PREFIX, *LOCAL_PREFIXES)
+        if node.loader.startswith(one_column):
             return ("result",)
         return VIEW_COLUMNS.get(node.loader.removeprefix("items:"), ())
 
@@ -332,6 +353,13 @@ class GitHubWorkbenchProvider(
             return True
         if self.supports_tool(command_id):
             return True
+        verb = command_id.removeprefix("github.workbench.")
+        if verb in PAGE_FOR_VERB and self.frame is not None:
+            # Labels..., Edit Title... and their kin open the row's sheet at a page.
+            current = self.frame.current
+            row = self.frame.selected_row()
+            if self.sheet_has_page(verb, row, current.instance if current is not None else ""):
+                return True
         return GitHubWorkbenchActionsMixin.supports(self, command_id)
 
     def run(self, command_id: str, ref: NodeRef, row: object) -> bool:
@@ -368,66 +396,10 @@ class GitHubWorkbenchProvider(
     # -- the status bar -----------------------------------------------------------
 
     def status_cells(self, frame: WorkbenchFrame) -> Sequence[StatusCell]:
+        from quill.ui.github_workbench_status import github_status_cells
+
         self.frame = frame
-
-        def repository() -> str:
-            current = frame.current
-            if current is None or current.template != "repository":
-                return ""
-            return current.instance
-
-        def items_text() -> str:
-            if frame.current is None or not frame.node(frame.current).loader:
-                return ""
-            chosen = len(frame.selected_indices())
-            shown = f"{len(frame.rows)} shown"
-            said = f"{shown}, {chosen} selected" if chosen > 1 else shown
-            return f"{said}. {self.local_note}" if self.local_note else said
-
-        def loading() -> str:
-            if frame.loading:
-                return "Loading"
-            return f"Up to date, {frame.loaded_at}" if frame.loaded_at else ""
-
-        return (
-            StatusCell(
-                "account",
-                "Account",
-                lambda: "Signed in" if self.signed_in else "Not signed in",
-                "Whether GitHub knows who you are. The editor's GitHub menu manages accounts.",
-            ),
-            StatusCell(
-                "repository",
-                "Repository",
-                repository,
-                "The repository the selected node belongs to. Enter selects its node.",
-                activate=lambda: frame.go("github.workbench.go_repository"),
-                menu=lambda: (("Open on GitHub", frame.open_in_browser),),
-            ),
-            StatusCell(
-                "items",
-                "Items",
-                items_text,
-                "How many rows the list shows and how many are selected.",
-                activate=frame.list.SetFocus,
-            ),
-            StatusCell(
-                "filter",
-                "Filter",
-                lambda: describe(frame.query) if frame.current is not None else "",
-                "The filter in effect. Enter moves to the filter box.",
-                activate=frame.filter.SetFocus,
-                menu=lambda: (("Clear Filter", frame.clear_filter),),
-            ),
-            StatusCell(
-                "loading",
-                "Loading",
-                loading,
-                "Whether the list is still loading, or when it last loaded. Enter refreshes.",
-                activate=frame.reload,
-                menu=lambda: (("Refresh", frame.reload),),
-            ),
-        )
+        return github_status_cells(self, frame)
 
     def after_open(self, then: str) -> None:
         """What a door asked for once the window is open: a sheet's page, or a command."""
@@ -451,24 +423,16 @@ class GitHubWorkbenchProvider(
         return next(iter(self._repositories), "")
 
     def close(self) -> None:
+        self.stop_watch_timer()
         try:
             self.items.close()
         except Exception:  # noqa: BLE001 - closing is best-effort cleanup
             pass
 
 
-_PLACEHOLDERS = {
-    "watches": (
-        "Watches will tell you when something happens: a run finishes, a review "
-        "arrives. They are coming in a later release; Inbox and Notifications "
-        "show what needs you now."
-    ),
-    "across": (
-        "Across Repositories will find every kind of thing by name, in every "
-        "repository you can see. It is coming in a later release; Search, Ctrl+3, "
-        "finds issues, pull requests, code and repositories now."
-    ),
-}
+#: Nodes that name a place still to come, and what they will hold. Empty since
+#: Watches arrived (2026-11-13).
+_PLACEHOLDERS: dict[str, str] = {}
 
 _DRILLS = {
     "github.workbench.open_repository": "repository",
@@ -519,6 +483,11 @@ def open_github_workbench(
     editor_command: Callable[[str], bool] | None = None,
     editor_command_available: Callable[[str], bool] | None = None,
     open_file_url: Callable[[str], None] | None = None,
+    gist_source: Callable[[], tuple[str, str]] | None = None,
+    guide_product: str = "quill",
+    ai_summarizer: Callable[[], Callable[[str], str] | None] | None = None,
+    start_worktree: Callable[[object, str, int, str, bool], None] | None = None,
+    open_document: Callable[[Path], None] | None = None,
 ) -> WorkbenchFrame:
     """Open the one GitHub Workbench (or bring it forward), at *node* or *view*.
 
@@ -528,7 +497,14 @@ def open_github_workbench(
     while one is showing closes the new *items* and reuses the window.
     *editor_command* runs one of the editor's own commands by id (the
     repository and account commands both editors have); *open_file_url*
-    opens a GitHub file in the editor.
+    opens a GitHub file in the editor; *gist_source* gives New Gist the
+    editor's selection or document; *guide_product* picks which editor's
+    guide F1 opens ("quill" or "quilllite"). *ai_summarizer* gives Summarize
+    Discussion and the diff window the editor's AI connection, and
+    *start_worktree* starts work on an issue in a local worktree; without them
+    those rows are greyed and say why. *open_document* opens a local file in
+    the editor (Read as Document's Open in Editor); without it, the thread can
+    only be saved.
     """
     say = announce or (lambda _text: None)
     existing = _OPEN.get("github")
@@ -553,6 +529,11 @@ def open_github_workbench(
         editor_command=editor_command,
         editor_command_available=editor_command_available,
         open_file_url=open_file_url,
+        guide_product=guide_product,
+        gist_source=gist_source,
+        ai_summarizer=ai_summarizer,
+        start_worktree=start_worktree,
+        open_document=open_document,
     )
     provider.adopt_remembered_instances()
     frame = WorkbenchFrame(
@@ -560,6 +541,7 @@ def open_github_workbench(
     )
     _OPEN["github"] = frame
     frame.show(start_ref(repository, view, node, signed_in=signed_in))
+    provider.start_watch_timer()
     if then:
         provider.after_open(then)
     return frame

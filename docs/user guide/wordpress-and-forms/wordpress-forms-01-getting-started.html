@@ -245,13 +245,16 @@
 <h1 id="chapter-1-getting-started-and-adding-your-sites">Chapter 1:
 Getting started and adding your sites</h1>
 <h2 id="what-this-chapter-covers">What this chapter covers</h2>
-<p>This chapter gets you from nothing to a connected WordPress site. It
-explains what QUILL and QUILL Lite do with WordPress and what they leave
-alone, how to turn the feature on, where the commands live, and how to
+<p>You are here because you look after a WordPress site and want to do
+it from QUILL. This chapter gets you from nothing to a connected
+site.</p>
+<p>You will turn the feature on, find where the commands live, and
 connect a site: with your browser, by pasting an application password,
-on WordPress.com, and when you look after more than one site. It ends
-with what your role on a site means, and how to sign out of a site for
+on WordPress.com, and when you look after more than one. It ends with
+what your role on a site means, and how to sign out of a site for
 good.</p>
+<p>At the end you will have a site connected, and QUILL will greet you
+by your role on it.</p>
 <h2 id="what-wordpress-in-quill-is">What WordPress in QUILL is</h2>
 <p>If you look after a WordPress website, QUILL can write its pages and
 posts, open the ones already there, and publish your changes. You do it
@@ -266,15 +269,15 @@ separate command, and publishing always asks first.</li>
 <li><strong>Your site keeps its look.</strong> QUILL works on the words
 and pictures inside your pages. Your theme, its layout and its design
 stay in WordPress.</li>
-<li><strong>Nothing is deleted for good without a copy first.</strong>
-Pages go to WordPress’s own Trash. The one thing WordPress cannot put in
-a Trash, a file in the Media Library, is copied to your computer before
-it goes.</li>
+<li><strong>Nothing is deleted for good without asking.</strong> Posts,
+pages and comments go to WordPress’s own Trash. The Media Library has no
+Trash, so deleting a file asks you to confirm it by name, and says it
+cannot be undone.</li>
 </ul>
 <p>QUILL talks to your site through WordPress’s own REST API, the same
 doorway the block editor uses. You do not need to install a plugin for
 anything in this manual except forms, which need the QUILL Accessible
-Forms plugin on the site (Chapter 9 explains why).</p>
+Forms plugin on the site (Chapter 12 explains why).</p>
 <h2 id="turning-it-on">Turning it on</h2>
 <p>WordPress and Forms are two separate features, and each can be
 switched on or off on its own.</p>
@@ -295,11 +298,14 @@ normally to use it.” Forms is partly different: writing, checking,
 trying out and saving a form to paper still work in Safe Mode, because
 they never leave your computer.</p>
 <h2 id="where-everything-is">Where everything is</h2>
-<p>The commands sit where a Word user would look for them. Anything
-about a whole page or post, or about your sites, is in <strong>File &gt;
-WordPress</strong>. What you do inside a page joins the ordinary menus.
-Looking after the site itself is in <strong>Tools &gt;
-WordPress</strong>.</p>
+<p>QUILL splits the work in two. You write in the editor, and you look
+after your sites in the <strong>WordPress Workbench</strong>, a window
+of its own with every site you have connected.</p>
+<p>In the editor, the commands sit where a Word user would look for
+them. Anything about a whole page or post, or about your sites, is in
+<strong>File &gt; WordPress</strong>. What you do inside a page joins
+the ordinary menus. Looking after the site itself is in <strong>Tools
+&gt; WordPress</strong>, and most of its rows open the Workbench.</p>
 <table>
 <thead>
 <tr>
@@ -332,13 +338,18 @@ Picture</td>
 </tr>
 <tr>
 <td>Tools &gt; WordPress</td>
-<td>Checking, the Media Library, comments, menus, settings, and five
-submenus</td>
+<td>Open WordPress Workbench, checking, the Media Library, comments,
+menus, settings, and five submenus</td>
 </tr>
 </tbody>
 </table>
 <p>The five submenus of Tools &gt; WordPress are More Media, Design,
 Plugin Extras, Manage and Your Sites.</p>
+<p><strong>The WordPress Workbench</strong> opens with <strong>Tools
+&gt; WordPress &gt; Open WordPress Workbench…</strong>, or the WordPress
+key and then H. Comments, the Media Library, categories, menus,
+settings, people, plugins and themes all live there. Chapter 2 is a tour
+of it.</p>
 <p><strong>Dimmed rows.</strong> The commands about the page in front of
 you are dimmed unless a WordPress page or post is open. If you reach one
 another way, such as from the Command Palette, QUILL tells you why it
@@ -351,7 +362,7 @@ WordPress command. Type “WordPress”, or part of a command’s name, and
 press Enter. It is in the Tools menu in both editors.</p>
 <p><strong>The WordPress keys.</strong> The everyday commands also have
 a key each: press Ctrl+Alt+Shift+Grave, let go, and press one letter.
-Chapter 12 has the whole table. You do not need them to get started.</p>
+Chapter 16 has the whole table. You do not need them to get started.</p>
 <h2 id="what-you-need-before-you-connect">What you need before you
 connect</h2>
 <p>You need three things:</p>
@@ -446,7 +457,7 @@ https://.”</li>
 administrator to allow the WordPress REST API and application
 passwords.”</li>
 </ul>
-<p>Chapter 11 has the rest, with what to do about each one.</p>
+<p>Chapter 15 has the rest, with what to do about each one.</p>
 <h2 id="wordpresscom-sites">WordPress.com sites</h2>
 <p>The Connect window offers a second kind of site, <strong>A
 WordPress.com site</strong>. Choosing it greys out the username and
@@ -525,8 +536,10 @@ application password still exists on the site.</p>
 Site…</strong> goes further. It revokes the exact application password
 QUILL is using on that site, so it stops working everywhere, and forgets
 it on this computer. It asks whether to remove the site from QUILL as
-well, or keep it so you can connect again later. Your local drafts stay
-either way.</p>
+well, or keep it so you can connect again later; Keep is chosen to start
+with. Then it asks you to confirm, and Cancel is the default, so
+pressing Enter twice changes nothing. Your local drafts stay either
+way.</p>
 <p>Use it when you give away a computer, or when you stop looking after
 a site.</p>
 <h2 id="if-you-used-publish-in-quill-before">If you used Publish in
@@ -544,9 +557,8 @@ your WordPress site, walks through everything in this chapter step by
 step and tells you what you should hear at each step.</p>
 <h2 id="where-to-next">Where to next</h2>
 <ul>
-<li>Next: <a
-href="wordpress-forms-02-writing-and-publishing.html">Chapter 2: Writing
-and publishing posts and pages</a></li>
+<li>Next: <a href="wordpress-forms-02-the-workbench.html">Chapter 2: A
+tour of the WordPress Workbench</a></li>
 <li><a href="wordpress-forms-guide.html">Contents</a></li>
 </ul>
 </main>

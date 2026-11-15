@@ -245,20 +245,23 @@
 <h1 id="appendix-a-every-wordpress-feature-quill-uses">Appendix A: Every
 WordPress feature QUILL uses</h1>
 <h2 id="what-this-appendix-covers">What this appendix covers</h2>
+<p>You are a site administrator deciding what a security plugin may
+safely hide, or you are curious what QUILL asks your site for. This
+appendix is for you.</p>
 <p>QUILL talks to your site through WordPress’s own REST API, which a
 site offers as a set of routes: one for posts, one for the Media
 Library, and so on. This appendix lists every group of routes QUILL
 uses, what it uses it for, where you reach that in QUILL and QUILL Lite,
 its WordPress key if it has one, and what happens on a site that does
-not offer it. It is for the curious, and for site administrators
-deciding what a security plugin may safely hide.</p>
+not offer it. Most rows of Tools &gt; WordPress open the WordPress
+Workbench, so “the Workbench” below means its place for that job.</p>
 <h2 id="how-to-read-it">How to read it</h2>
 <ul>
 <li><strong>Where</strong> is the same in QUILL and QUILL Lite: both
 editors build their menus from one table. The Command Palette
 (Ctrl+Shift+P) reaches every row in both.</li>
 <li><strong>Key</strong> is the letter after Ctrl+Alt+Shift+Grave
-(Chapter 12). A dash means the command is reached from its menu or the
+(Chapter 16). A dash means the command is reached from its menu or the
 Command Palette.</li>
 <li><strong>When the site lacks it.</strong> QUILL reads each site’s
 list of routes once a session, before it offers anything. A command
@@ -340,8 +343,8 @@ offer notes.</td>
 </tr>
 <tr>
 <td>Many changes at once: <code>batch/v1</code></td>
-<td>Fix in Bulk, Undo Site Fix, Merge Into, Bulk Edit, Do with Marked,
-Site-wide Find and Replace</td>
+<td>Fix in Bulk, Undo Site Fix, Merge Into, Bulk Edit, Site-wide Find
+and Replace; several rows at once in the Workbench</td>
 <td>-</td>
 <td>“Community Radio does not offer this. It may be turned off, or the
 site may need a newer WordPress.” Nothing is changed. Batches arrived in
@@ -447,12 +450,24 @@ Site</td>
 picture.</td>
 </tr>
 <tr>
-<td>Uploads in pieces: <code>media/{id}/sideload</code>,
-<code>finalize</code></td>
+<td>Big uploads: <code>media</code>, and
+<code>wp-site-health/v1/directory-sizes</code> for the room already
+used</td>
 <td>Tools &gt; WordPress &gt; More Media &gt; Upload a Large File</td>
 <td>-</td>
-<td>“Community Radio cannot take an upload in pieces. Upload Files sends
-it in one go instead.”</td>
+<td>The file goes in one request, as WordPress takes no upload in
+pieces. A host that refuses the size gives its own reason.</td>
+</tr>
+<tr>
+<td>Replacing a file: a plugin’s replace route where the site lists one;
+otherwise <code>media</code>, <code>posts</code>, <code>pages</code> and
+<code>blocks</code>, and <code>redirection/v1</code> for the
+redirect</td>
+<td>The Workbench’s Media: Replace File</td>
+<td>-</td>
+<td>Without a replace route, the new file is uploaded and every use
+pointed at it. Where Enable Media Replace is active, its wp-admin screen
+is offered too.</td>
 </tr>
 <tr>
 <td>Remaking sizes: <code>media/{id}/post-process</code></td>
@@ -547,10 +562,19 @@ WordPress 5.9 or later can.”</td>
 <tr>
 <td>Menus: <code>menus</code>, <code>menu-items</code>,
 <code>menu-locations</code>, <code>navigation</code></td>
-<td>Tools &gt; WordPress &gt; Menus; the “Add it to a menu?” question;
-Site Map</td>
+<td>Tools &gt; WordPress &gt; Menus; the Workbench’s Add Menu Item and
+Add New Pages Automatically; the “Add it to a menu?” question; Site
+Map</td>
 <td>-</td>
 <td>“Community Radio does not offer its menus to QUILL.”</td>
+</tr>
+<tr>
+<td>What a menu can hold: <code>types</code>, <code>taxonomies</code>,
+<code>search</code></td>
+<td>The Workbench’s Add Menu Item</td>
+<td>-</td>
+<td>Only the kinds the site lists are offered, with Custom Links always
+there.</td>
 </tr>
 <tr>
 <td>Menu history: <code>navigation</code> revisions</td>
@@ -653,25 +677,59 @@ plugin’s own routes are on the site, and Site Check names it.</p>
 <td>QUILL Accessible Forms: <code>qaf/v1</code> (or the older
 <code>baf/v1</code>)</td>
 <td>Tools &gt; Forms: Publish Form, Insert Form Into Page, Test on Site,
-Responses</td>
-<td>-</td>
+Responses (F); the Workbench’s Forms, Responses and the site’s Spam
+page</td>
+<td>F</td>
 <td>“Publish Form needs QUILL Accessible Forms on Community Radio, and
-the site does not offer it.”</td>
+the site does not offer it.” With only <code>baf/v1</code>, the spam
+settings are read only.</td>
 </tr>
 <tr>
 <td>The Events Calendar: <code>tribe/events/v1</code></td>
-<td>Plugin Extras &gt; Events Coming Up, New Event; Plugin Fields</td>
+<td>Plugin Extras &gt; Events Coming Up, New Event; Plugin Fields; the
+Workbench’s Events Calendar</td>
 <td>-</td>
-<td>Plugin Fields says the plugins add no fields.</td>
+<td>Plugin Fields says the plugins add no fields; the Workbench has no
+Events Calendar.</td>
 </tr>
 <tr>
 <td>WooCommerce: <code>wc/v3</code></td>
-<td>Plugin Extras &gt; Shop Orders; Plugin Fields</td>
+<td>Plugin Extras &gt; Shop Orders; Plugin Fields; the Workbench’s Shop
+and its places</td>
 <td>-</td>
-<td>As above.</td>
+<td>As above; the Workbench’s Shop says the site has no shop.</td>
 </tr>
 <tr>
-<td>Yoast SEO and Rank Math (their registered fields)</td>
+<td>Gravity Forms: <code>gf/v2</code></td>
+<td>The Workbench’s Forms, Responses, Feeds and Results; New Gravity
+Form, Edit Form; Test This Form; Copy to Site</td>
+<td>-</td>
+<td>The Workbench shows no Gravity Forms forms.</td>
+</tr>
+<tr>
+<td>Paid Memberships Pro: its Abilities, or the older
+<code>pmpro/v1</code></td>
+<td>The Workbench’s Memberships and a person’s membership commands</td>
+<td>-</td>
+<td>The Workbench adds no membership rows.</td>
+</tr>
+<tr>
+<td>Redirection: <code>redirection/v1</code></td>
+<td>The Workbench’s Redirects and 404 Log</td>
+<td>-</td>
+<td>Redirects names the plugins that keep redirects in their own
+screens.</td>
+</tr>
+<tr>
+<td>Yoast SEO: its registered fields, and its bulk editor routes</td>
+<td>Plugin Fields; Properties; the Workbench’s SEO and Bulk SEO
+Editor</td>
+<td>-</td>
+<td>Anything neither way reaches is named in the preview and left for
+wp-admin.</td>
+</tr>
+<tr>
+<td>Rank Math (its registered fields)</td>
 <td>Plugin Fields; Properties</td>
 <td>-</td>
 <td>As above.</td>
@@ -685,6 +743,16 @@ capability and mode. An older plugin is refused with an update-required
 message. The optional <code>payment</code> object on entries supplies
 status and export metadata. Provider credentials and checkout are
 managed by WordPress, not the desktop.</p>
+<h2 id="files-on-your-own-computer">Files on your own computer</h2>
+<p>WXR export and import (the Workbench’s Tools &gt; WXR Files) have no
+route of their own. Export reads <code>posts</code>, <code>pages</code>,
+<code>blocks</code>, each content type, <code>users</code>,
+<code>categories</code>, <code>tags</code>, every taxonomy,
+<code>media</code>, <code>comments</code>, <code>menus</code> and
+<code>menu-items</code>, and writes the file on your computer. Import
+reads the file on your computer and makes drafts through the same
+routes, matching people through <code>users</code>. What the account may
+not read is left out and named.</p>
 <h2 id="across-all-your-sites">Across all your sites</h2>
 <p>Coming Up and What Changed on My Sites (Tools &gt; WordPress &gt;
 Your Sites) read the routes above from every connected site. A site that
@@ -692,8 +760,9 @@ does not answer is listed as “Did not answer:” and its name, and the
 rest carry on.</p>
 <h2 id="where-to-next">Where to next</h2>
 <ul>
-<li>Previous: <a href="wordpress-forms-13-window-reference.html">Chapter
-13: Every window, field and button</a></li>
+<li>Previous: <a
+href="wordpress-forms-17-workbench-reference.html">Chapter 17: WordPress
+Workbench reference</a></li>
 <li><a href="wordpress-forms-guide.html">Contents</a></li>
 </ul>
 </main>

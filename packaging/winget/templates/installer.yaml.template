@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.28.0.schema.json
+# All current app setup files use Inno Setup. These apps self-update by running
+# the next signed Setup installer, so keep the explicit-upgrade guard.
+# Do not add MSI ProductCode or UpgradeCode fields to this Inno manifest.
+PackageIdentifier: ${PackageIdentifier}
+PackageVersion: ${PackageVersion}
+Platform:
+  - Windows.Desktop
+InstallModes:
+  - interactive
+  - silent
+  - silentWithProgress
+Installers:
+  - Architecture: x64
+    InstallerType: inno
+    Scope: user
+    InstallerUrl: ${InstallerUrl}
+    InstallerSha256: ${InstallerSha256}
+    InstallerSwitches:
+      Silent: /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+      SilentWithProgress: /SILENT /SUPPRESSMSGBOXES /NORESTART
+    RequireExplicitUpgrade: true
+    AppsAndFeaturesEntries:
+      - DisplayName: ${AppsAndFeaturesDisplayName}
+        Publisher: Community Access
+ManifestType: installer
+ManifestVersion: 1.28.0

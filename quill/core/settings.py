@@ -151,6 +151,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     # A per-user Run-key entry (platform/windows/startup.py); also forces the tray
     # on, since a silent login launch with no tray icon leaves no way back.
     launch_at_windows_startup: bool = False
+    # Leave the editor available from the tray without opening a window at login.
+    start_minimized_at_windows_startup: bool = False
     persistent_undo: bool = False
     spellcheck_as_you_type: bool = False
     # Live check stays quiet in code; see quill/core/spellcheck_filetypes.py.

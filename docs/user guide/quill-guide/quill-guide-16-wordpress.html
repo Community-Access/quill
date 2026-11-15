@@ -243,28 +243,22 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="chapter-16-wordpress">Chapter 16: WordPress</h1>
-<p>Payment forms use this same WordPress connection. Tools &gt; Forms
-configures Stripe/PayPal payments and reads provider/webhook readiness;
-the QAF plugin must implement payment contract version 1. Provider
-credentials and checkout stay on the site. See <a
-href="quill-guide-17-forms.html">Forms</a> for setup and testing.</p>
 <p>If you look after a WordPress website, QUILL can write its pages and
 posts, open the ones already there, and publish your changes. You work
 in the same editor you use for everything else, with Find, spelling,
 dictation and all your usual keys. Your site keeps its theme and its
-look; QUILL works on the words and pictures inside it, and can help you
-look after the site itself. Nothing reaches your site until you choose
-to send it. Saving with <code>Ctrl+S</code> only ever saves on your
-computer.</p>
+look. QUILL works on the words and pictures inside it, and looks after
+the site itself in a window of its own, the WordPress Workbench.</p>
+<p>Nothing reaches your site until you choose to send it. Saving with
+<code>Ctrl+S</code> only ever saves on your computer.</p>
+<p>This chapter is the short version: a guided first run, and where to
+find the rest. Everything else is in the <a
+href="../wordpress-and-forms/wordpress-forms-guide.html">WordPress and
+Forms manual</a>, which QUILL and QUILL Lite share.</p>
 <p><strong>Turning it on.</strong> WordPress is on in every feature
 profile except Essential. If you do not see <strong>File &gt;
 WordPress</strong>, choose another profile, or switch on WordPress by
 itself, in <strong>Profiles and Features…</strong>.</p>
-<p>This chapter is the short version. Connecting a site, blocks,
-pictures and the Media Library, scheduling, checking a page before you
-publish, comments, menus and running the site are all in the <a
-href="../wordpress-and-forms/wordpress-forms-guide.html">WordPress and
-Forms manual</a>, which QUILL and QUILL Lite share.</p>
 <h2 id="where-everything-is">Where everything is</h2>
 <table>
 <thead>
@@ -297,59 +291,120 @@ sites</td>
 </tr>
 <tr>
 <td><strong>Tools &gt; WordPress</strong></td>
-<td>The WordPress Workbench, checking, the Media Library, comments,
+<td>Open WordPress Workbench, checking, the Media Library, comments,
 menus, settings, and the More Media and Manage submenus</td>
 </tr>
 </tbody>
 </table>
-<p>To get started, choose <strong>File &gt; WordPress &gt; Connect a
-Site…</strong>, type your site’s address, and press <strong>Get Password
-with My Browser</strong>. Every command is also in the Command Palette
+<p>Every command is also in the Command Palette
 (<code>Ctrl+Shift+P</code>): type “WordPress”, or part of a command’s
 name.</p>
+<h2 id="your-first-ten-minutes">Your first ten minutes</h2>
+<ol type="1">
+<li>Choose <strong>File &gt; WordPress &gt; Connect a Site…</strong>,
+type your site’s address, and press <strong>Get Password with My
+Browser</strong>. Approve QUILL in your browser. You hear, for example,
+“Connected to Community Radio as Editor.”</li>
+<li>Choose <strong>File &gt; WordPress &gt; New Post…</strong>, type a
+title, and press <strong>Create</strong>. Write a paragraph.</li>
+<li>Choose <strong>File &gt; WordPress &gt; Save Draft to Site</strong>.
+Only you and your site’s editors can see it.</li>
+<li>Choose <strong>File &gt; WordPress &gt; Publish or Update…</strong>.
+QUILL checks the page and asks first. Choose <strong>Publish</strong>,
+and the address is on the clipboard.</li>
+<li>Press the WordPress key, <code>Ctrl+Alt+Shift+Grave</code>, then H.
+The WordPress Workbench opens.</li>
+<li>Press <code>Ctrl+1</code> for Needs My Attention, then arrow through
+what waits on your sites.</li>
+<li>Press <code>Ctrl+Shift+E</code> to go back to the editor.</li>
+</ol>
+<p>Chapters 1 to 3 of the manual walk through each step in full.</p>
 <h2 id="the-wordpress-workbench">The WordPress Workbench</h2>
-<p>Writing happens in the editor; looking after your sites happens in
-the WordPress Workbench, one window for every site you have connected.
-Open it with <strong>Tools &gt; WordPress &gt; Open WordPress
-Workbench</strong>, or with the WordPress key and then H. The other rows
-of Tools &gt; WordPress open it too, each at its own place: Comments
-opens it at the comments waiting, Media Library at your media, Site
-Settings at the settings.</p>
-<p>The window has a tree on the left that says where you are, a list of
-what is there, and the details of the one you have selected, with a
-status bar after them; F6 moves from one to the next. The tree starts
-with <strong>Needs My Attention</strong>, which gathers what waits on
-every site at once: comments waiting, posts waiting for review,
-scheduled posts, your drafts, Site Health problems, form responses and
-anything held as spam. Under <strong>Sites</strong>, each site has its
-posts and pages, its media, comments, people, plugins, settings and the
-rest. <strong>Calendar</strong> lists every site’s scheduled and
-published posts a day at a time, and <strong>Across Sites</strong> shows
-the same tag, plugin, person or setting on all your sites at once, with
-where they differ and which sites are missing it.</p>
-<p>Enter on a post or page opens it here in the editor. Alt+Enter shows
-the Properties of anything, the same sheet File &gt; WordPress &gt;
-Properties shows for the post you are writing. Delete moves to the
-Trash, and the Edit menu’s Undo WordPress Change puts the last change
-back. Every command says what it needs: if your role on a site does not
-allow something, the menu says which role would, rather than leaving you
-to find out.</p>
-<p>Nothing that changes a site is sent without your say. Changing many
-items at once, copying to another site, importing from a spreadsheet and
-making settings the same across sites all show a preview first, one line
-for each thing that will change, and nothing goes until you press the
-button that names the change.</p>
-<p>The Workbench’s own Tools menu has the <strong>REST Console</strong>,
-for anything the site’s API offers, the <strong>Practice Site</strong>,
-a WordPress site on your own computer for learning with nothing at stake
-(in builds that include it), and <strong>Workbench Options</strong>.
-There you can turn on <strong>Watches</strong>, which tell you about new
-comments, form responses, updates and scheduled posts going live while
-QUILL is open, checked at most every fifteen minutes. For this release,
-Workbench Options also has <strong>Use the classic WordPress
-windows</strong>: check it and the rows of Tools &gt; WordPress open
-their old windows again. Open WordPress Workbench always opens the
-Workbench.</p>
+<p>You write in the editor, and you look after your sites in the
+Workbench, one window for every site you have connected. Open it with
+<strong>Tools &gt; WordPress &gt; Open WordPress Workbench</strong>, or
+with the WordPress key and then H. The site rows of Tools &gt; WordPress
+open it too, each at its own place: Comments at the comments waiting,
+Media Library at your media, Menus at your menus, Site Settings at the
+settings.</p>
+<p>The window has a tree that says where you are, a list of what is
+there, the details of the row you are on, and a status bar. F6 moves
+from one to the next. Enter does a row’s main job, such as opening a
+post in the editor. Alt+Enter shows its Properties. The Applications key
+opens its context menu, with everything else you can do to it.</p>
+<p>Nothing that changes a site is sent without your say. A preview names
+the site and lists each thing that will change, and nothing goes until
+you press the button that names the change. Ctrl+Z puts the last change
+back.</p>
+<p>The tree starts with <strong>Needs My Attention</strong>, which
+gathers what waits on every site at once: comments, posts waiting for
+review, scheduled posts, drafts, Site Health problems, pictures without
+alternative text, broken links, form responses and anything held as
+spam. Under <strong>Sites</strong>, each site has its posts and pages,
+media, comments, people, menus, plugins, settings and the rest.</p>
+<p>The Workbench’s own Tools menu has the <strong>Practice
+Site</strong>, a WordPress site on your own computer for learning with
+nothing at stake. <strong>Help &gt; Tutorials</strong> has lessons that
+use it.</p>
+<p>The manual’s <a
+href="../wordpress-and-forms/wordpress-forms-02-the-workbench.html">Chapter
+2</a> is a full tour of the Workbench, and <a
+href="../wordpress-and-forms/wordpress-forms-17-workbench-reference.html">Chapter
+17</a> lists every place, menu and key.</p>
+<h2 id="what-you-can-do-there">What you can do there</h2>
+<p>A taste of what the Workbench does, with the manual chapter that
+shows how:</p>
+<ul>
+<li><strong>Replace a file</strong> that pages already use, such as a
+new menu PDF. On a file in Media, choose <strong>Replace File…</strong>
+from the context menu. QUILL keeps the address where the site can, and
+otherwise points every page at the new file, with an offer of a
+redirect. (<a
+href="../wordpress-and-forms/wordpress-forms-05-pictures-and-media.html">Chapter
+5</a>)</li>
+<li><strong>Add a menu item.</strong> On a menu in Menus and Navigation,
+press Ctrl+N and choose a new item, then the page, post, category or
+link, and where it goes. <strong>Add New Pages Automatically…</strong>
+makes WordPress add each new top-level page by itself. (<a
+href="../wordpress-and-forms/wordpress-forms-06-comments-people-and-menus.html">Chapter
+6</a>)</li>
+<li><strong>Moderate comments and look after people</strong>, from
+approving a comment to inviting a team from a spreadsheet. (<a
+href="../wordpress-and-forms/wordpress-forms-06-comments-people-and-menus.html">Chapter
+6</a>)</li>
+<li><strong>Move a site.</strong> The Workbench’s Tools menu has WXR
+Files, which exports a site as a WordPress export file any WordPress can
+import, and imports one as drafts. Copy to Site, snapshots and Across
+Sites work between your own sites. (<a
+href="../wordpress-and-forms/wordpress-forms-09-moving-and-copying.html">Chapter
+9</a>)</li>
+<li><strong>Run the site</strong>: its health, settings, plugins,
+themes, templates and updates. Where WordPress cannot do something from
+outside, such as update a plugin, the row says so and <strong>Open in
+Dashboard</strong> takes you to the right wp-admin screen. (<a
+href="../wordpress-and-forms/wordpress-forms-08-running-your-site.html">Chapter
+8</a>)</li>
+<li><strong>A shop, events, SEO, memberships and redirects</strong>, on
+sites with WooCommerce, The Events Calendar, Yoast SEO, Paid Memberships
+Pro or Redirection. (<a
+href="../wordpress-and-forms/wordpress-forms-10-shop-events-seo-memberships.html">Chapter
+10</a>)</li>
+</ul>
+<h2 id="from-the-page-you-are-writing">From the page you are
+writing</h2>
+<ul>
+<li><strong>File &gt; WordPress &gt; This Post in the Workbench</strong>
+(the WordPress key, then Shift+H) opens the Workbench on the list your
+post is in, with your post selected.</li>
+<li><strong>Insert &gt; Picture from the Media Library…</strong> opens
+the Workbench on the site’s media. Move to a picture and press Enter,
+and you are back in your page with the picture window open.</li>
+<li><strong>Insert Block</strong> has <strong>Install a Missing
+Block…</strong> when the site lets you add block plugins.</li>
+<li><strong>Download My Writing</strong> saves your writing as Markdown
+or Word, and <strong>Send a Folder as Drafts</strong> takes Word
+documents too.</li>
+</ul>
 <h2 id="the-keys-you-will-use-every-day">The keys you will use every
 day</h2>
 <p>The WordPress commands share one key,
@@ -404,6 +459,10 @@ keys”. Then press one letter:</p>
 <td>H</td>
 <td>Open WordPress Workbench</td>
 </tr>
+<tr>
+<td>Shift+H</td>
+<td>This Post in the Workbench</td>
+</tr>
 </tbody>
 </table>
 <p><strong>Escape</strong> after the WordPress key leaves it again. The
@@ -413,8 +472,14 @@ them costs you nothing.</p>
 <p>QUILL finds the grave key by where it sits, the key above Tab, not by
 what it types. So the WordPress key works on a German, French, Nordic or
 any other layout, where that key types <code>^</code>, <code>²</code> or
-<code>§</code> rather than a backtick. The QUILL key works the same way;
+<code>§</code> instead of a backtick. The QUILL key works the same way.
 Chapter 2 has the details.</p>
+<h2 id="forms-and-payments">Forms and payments</h2>
+<p>Payment forms use this same WordPress connection. Tools &gt; Forms
+sets up Stripe and PayPal payments and checks the site is ready. The
+QUILL Accessible Forms plugin on your site must support payments, and
+the payment keys and checkout stay on the site. See <a
+href="quill-guide-17-forms.html">Forms</a> for setup and testing.</p>
 <hr />
 <ul>
 <li>Previous: <a

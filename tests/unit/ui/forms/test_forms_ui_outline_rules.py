@@ -111,6 +111,17 @@ def test_change_type_duplicate_and_remove(forms, forms_host, forms_dialogs) -> N
     assert forms_host.announced[-1] == "Your name removed."
 
 
+def test_change_type_that_drops_choices_asks_first(forms, forms_host, forms_dialogs) -> None:
+    kinds = [k for k in ft.kinds() if k not in (ft.SECTION, ft.PAGE_BREAK)]
+    forms_dialogs.answer("ask_choice", kinds.index("text"))
+    forms.cmd_outline()
+    forms_dialogs.press("Change Type...", 3)  # confirm answers cancel by default
+    assert "Cannot carry over: choices." in forms_dialogs.asked("confirm")[0]["message"]
+    heard = M.find(_model(forms_host), "heard")
+    assert heard["type"] == "radio" and len(heard["choices"]) == 2
+    assert forms_host.announced[-1] == "Nothing changed."
+
+
 def test_remove_cancelled_keeps_it(forms, forms_host, forms_dialogs) -> None:
     forms.cmd_outline()
     forms_dialogs.press("Remove...", 1)

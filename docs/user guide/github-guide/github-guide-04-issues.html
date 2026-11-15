@@ -289,27 +289,15 @@ text that every AI feature asks. If no AI is set up, it offers to set
 one up.</p>
 <p><strong>In QUILL Lite</strong>, Summarize says “AI summaries are
 unavailable here.”</p>
-<h2 id="replying-editing-and-deleting">Replying, editing and
-deleting</h2>
-<p>You need to be signed in for these.</p>
-<ul>
-<li><strong>Reply.</strong> Choose <strong>Actions…</strong>
-(<code>Alt+A</code>), then <strong>Reply to Thread…</strong>. Type your
-comment in <strong>Reply:</strong> and press <strong>OK</strong>. You
-hear “Reply posted”. GitHub’s issue comments are not threaded, so a
-reply is the next comment in the conversation.</li>
-<li><strong>Edit.</strong> Move to your comment with <code>Alt+N</code>
-first. Then <strong>Actions…</strong> has <strong>Edit This
-Comment…</strong>. Change the text and press <strong>OK</strong>; you
-hear “Comment updated”.</li>
-<li><strong>Delete.</strong> On your comment, <strong>Actions…</strong>
-has <strong>Delete This Comment…</strong>. To confirm, you type the word
-“delete”. You hear “Comment deleted”.</li>
-</ul>
-<p>GitHub lets you edit and delete only your own comments, unless you
-look after the repository. Trying it on someone else’s brings back
-GitHub’s refusal. If you have not moved to a comment yet, QUILL says
-“Navigate to a comment first (Alt+N).”</p>
+<h2 id="commenting">Commenting</h2>
+<p>You need to be signed in to comment. Select an issue and choose
+<strong>Comment…</strong> from its context menu or the
+<strong>Item</strong> menu. Type the comment and press OK to post it.
+Nothing is sent until you accept the comment window. GitHub’s permission
+response is shown in words if your account cannot comment.</p>
+<p>The current Workbench posts new issue comments. Editing or deleting
+an existing comment is not in its current issue actions; use GitHub.com
+for those changes. For pull-request review comments, see Chapter 5.</p>
 <h2 id="reactions">Reactions</h2>
 <p>Shift+F10 on the issue has <strong>React…</strong>, which reacts to
 the issue itself. After <code>Alt+N</code>, it also has <strong>React to
@@ -329,65 +317,54 @@ All</strong> (<code>Alt+A</code>) copies it. When it loads, you hear
 up to five hundred events, and QUILL says when it stopped early: “Only
 part of the history was read.”</p>
 <h2 id="writing-a-new-issue">Writing a new issue</h2>
-<p>Signed in, choose <strong>Actions…</strong>, then <strong>New
-Issue…</strong>. With no row selected, Shift+F10 in the list has it
-too.</p>
+<p>Open a repository’s <strong>Issues</strong> or <strong>Issues and
+Pull Requests</strong> node. Choose <strong>Item &gt; New Here…</strong>
+(Ctrl+N). The Workbench reads the repository’s issue templates before it
+opens the entry fields.</p>
 <h3 id="templates">Templates</h3>
-<p>If the repository has issue templates, QUILL asks which to start
-from: <strong>Blank issue</strong>, then each template with its
-description. The template’s text fills the form, ready to edit.</p>
-<p>Some repositories use GitHub’s structured issue forms instead of
-plain templates. Those are filled in on GitHub, so QUILL offers to open
-the form in your browser: “This structured issue form is completed on
-GitHub.” It does the same for a template too large to load.</p>
-<h3 id="the-form">The form</h3>
-<p>The <strong>New Issue</strong> window has four fields:</p>
-<ul>
-<li><strong>Title:</strong> (<code>Alt+T</code>), required, up to 256
-characters.</li>
-<li><strong>Body:</strong> (<code>Alt+B</code>), the description, in
-Markdown.</li>
-<li><strong>Labels (comma-separated):</strong>
-(<code>Alt+L</code>).</li>
-<li><strong>Assignees (GitHub usernames):</strong>
-(<code>Alt+A</code>).</li>
-</ul>
-<p><strong>Create Issue</strong> sends it, and <strong>Cancel</strong>
-closes the window.</p>
-<h3 id="drafts-that-keep-themselves">Drafts that keep themselves</h3>
-<p>Everything you type is saved on this computer as you go, a moment
-after you stop typing. Nothing is sent. If QUILL closes, or you press
-Cancel, the next <strong>New Issue…</strong> in that repository brings
-it back and says “Recovered a local draft for” the repository, “It has
-not been submitted.” If you do not want it, <strong>Discard Saved
-Draft</strong> throws it away. A draft is deleted when the issue is
-created.</p>
-<p>Drafts are kept for each account and repository, in your own QUILL
-data folder.</p>
-<h3 id="checking-for-duplicates">Checking for duplicates</h3>
-<p>When you press <strong>Create Issue</strong>, QUILL first searches
-the repository’s open issues for similar titles. If it finds some, a
-window titled <strong>Possible Duplicate Issues</strong> lists them and
-asks whether to create yours anyway. It is worth reading: the issue you
-were about to write is often already there, and a comment on it helps
-more than a second copy. When the issue is created, you hear “Created
-issue” with its number and title.</p>
+<p>If the repository has readable Markdown issue templates, QUILL asks
+which to start from: <strong>Blank issue</strong>, then each fillable
+template with its description. The template’s title and body fill the
+entry fields, and its labels and assignees are carried into the
+issue.</p>
+<p>GitHub’s issue forms, the YAML ones that show as a form with boxes on
+the website, are on the same list, and QUILL fills them as a real form:
+one labelled control per field, with “(required)” in the name of every
+field that must be answered. Create Issue says what is still missing
+rather than sending an incomplete issue, and the body GitHub receives
+reads the same as one filed from the website. A form or template QUILL
+cannot fill, such as one too large to load, is left off the list, and
+QUILL says so once; it is still there on GitHub. Chapter 12 has the
+details.</p>
+<h3 id="title-body-and-preview">Title, body and preview</h3>
+<p>QUILL asks for the title and body in turn. A template can supply
+either as a starting value, which you can edit. A blank issue starts
+with neither.</p>
+<p>Before it sends anything, QUILL shows a preview with the repository,
+title, template, labels, assignees and body. For a long body the preview
+shortens what it displays and says so; the full body is sent if you
+confirm.</p>
+<p>Choose <strong>Create Issue</strong> to send it or cancel to leave
+the repository unchanged. When GitHub confirms it, the Workbench says
+the new issue number and refreshes the list.</p>
 <h2 id="labels-milestones-and-assignees">Labels, milestones and
 assignees</h2>
 <h3 id="labels">Labels</h3>
-<p>You can add labels as you write an issue, in the form’s
-<strong>Labels</strong> field. To add one to issues that already exist,
-use the Batch menu, below.</p>
-<p>To make a new label, open Explore, choose <strong>Repository
-labels</strong> in <strong>View:</strong>, and choose <strong>Create
-Label…</strong> from the context menu. QUILL asks for its name, a
-six-digit colour without the <code>#</code> sign, and an optional
-description.</p>
+<p>Labels from a Markdown template are included when the issue is
+created. A blank issue starts without labels. After creation, select the
+issue and use <strong>Labels…</strong> or <strong>Assignees…</strong>
+from its context menu to change them.</p>
+<p>To manage labels, open the repository’s <strong>Labels</strong> node.
+Select a label to edit or delete it. To create a label while editing an
+issue, open the issue’s <strong>Properties</strong>, go to
+<strong>Labels</strong>, and choose <strong>New Label…</strong>.</p>
 <h3 id="milestones">Milestones</h3>
-<p><strong>Milestones…</strong> in GitHub Items (it has no access key;
-Tab to it, or use any row’s context menu) opens the repository’s
-milestones. Each one reads in words: “Release 2.0: 62 percent done, 5
-open, 8 closed, due 12 December”.</p>
+<p>Open the repository’s <strong>Milestones</strong> node. Each one
+reads in words: “Release 2.0: 62 percent done, 5 open, 8 closed, due 12
+December”.</p>
+<p>To create a milestone while editing an issue, open its
+<strong>Properties</strong>, go to <strong>Milestone</strong>, and
+choose <strong>New Milestone…</strong>.</p>
 <ul>
 <li><strong>Show:</strong> (<code>Alt+S</code>) chooses Open, Closed or
 All.</li>
@@ -407,11 +384,11 @@ Milestone…</strong>.</li>
 </ul>
 <p>Every change is reported from what GitHub sends back.</p>
 <h3 id="assignees">Assignees</h3>
-<p>Add assignees when you write an issue, in the form’s
-<strong>Assignees</strong> field, or to several at once with the Batch
-menu.</p>
+<p>Markdown templates may provide assignees for a new issue. To change
+them, select an issue and choose <strong>Assignees…</strong> from its
+context menu.</p>
 <h3 id="handing-an-issue-to-copilot">Handing an issue to Copilot</h3>
-<p>Signed in, an issue’s context menu in GitHub Items
+<p>Signed in, an issue’s context menu in the Workbench
 (<code>Shift+F10</code> or the Applications key) has <strong>Assign #3
 to Copilot…</strong>, with the issue’s number. It hands the issue to
 Copilot’s coding agent, which works on it in the background and opens a
@@ -477,33 +454,12 @@ the others are for issues.</p>
 <h2 id="projects-and-dependencies">Projects and dependencies</h2>
 <p>GitHub Projects are boards that track issues and pull requests across
 one or more repositories, with fields of their own such as Status,
-Priority or Iteration. <strong>Projects…</strong> (<code>Alt+J</code>)
-in GitHub Items opens the window <strong>GitHub Projects and
-Dependencies</strong> for the loaded repository. You need to be signed
-in.</p>
-<ul>
-<li><strong>Load Projects</strong> (<code>Alt+L</code>), then choose a
-board in <strong>Project:</strong> (<code>Alt+P</code>).</li>
-<li><strong>Project items</strong> lists everything on the board. Each
-row reads the kind, the repository and number, the title, its state, and
-whether it is <strong>Ready</strong> or <strong>Blocked</strong>.</li>
-<li><strong>Selected item and dependencies</strong> shows the selected
-item’s fields, what blocks it, and its sub-issues and parent, with the
-parent’s progress.</li>
-<li><strong>Next Unblocked</strong> (<code>Alt+N</code>) moves to the
-next open item with nothing open blocking it. It is the answer to “what
-can I start now?” You hear “Selected unblocked work:” and its title, or
-“No open issue or pull request is currently unblocked.”</li>
-<li><strong>Actions…</strong> (<code>Alt+A</code>), and the list’s
-context menu, hold <strong>Edit Project Field…</strong>, <strong>Add
-Blocker…</strong>, <strong>Remove Blocker…</strong>, <strong>Add
-Sub-issue…</strong>, <strong>Remove Sub-issue…</strong>, <strong>Open on
-GitHub</strong> and <strong>Refresh Board</strong>.</li>
-</ul>
-<p>Edit Project Field changes text, number, date, single-select,
-multi-select and iteration fields. Add Blocker and Add Sub-issue ask for
-the other issue, as a GitHub link or as <code>owner/repo#number</code>.
-Every change names its target and what it will do, and asks first.</p>
+Priority or Iteration. Open the Workbench’s <strong>Projects</strong>
+place or <strong>Repository &gt; Projects</strong> node to see the
+projects available to your account. Select a project and choose
+<strong>Open on GitHub</strong> to visit its board. Editing project
+fields, blockers and sub-issues from the Workbench remains on the
+implementation backlog.</p>
 <h2 id="starting-an-issue-in-its-own-folder">Starting an issue in its
 own folder</h2>
 <p>This one is QUILL’s alone. When you start work on an issue, you

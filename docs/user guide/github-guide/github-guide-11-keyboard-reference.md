@@ -9,7 +9,8 @@ Chapter 1. QUILL's GitHub menu commands have no keys out of the box, and you
 can give them some in the Keymap Editor.
 
 Throughout, Shift+F10 or the Applications key opens the context menu of
-whatever has focus, and Escape closes the window you are in.
+whatever has focus, and Escape closes the window you are in. The Workbench
+itself is the exception: Escape never closes it, and `Alt+F4` does.
 
 ## The GitHub menu, in workbench mode
 
@@ -47,67 +48,120 @@ you give one in the Keymap Editor works in both modes.
 | Enter | Clone |
 | Escape | Close without cloning |
 
-## GitHub Items
+## The GitHub Workbench window
 
-### Anywhere in the window
+These are the Workbench's own keys. Chapter 12 explains the places they take
+you to. Every one of them can be changed in the Keymap Editor, and the menus
+always show the key that is really bound. The old GitHub Items and Explore
+GitHub windows are retired; everything they did is here.
+
+### Going places
 
 | Key | What it does |
 | --- | --- |
-| `Ctrl+R` | Reload the current view |
-| `Ctrl+O` | Open the selected row on GitHub, in your browser |
+| `F6`, `Shift+F6` | Next or previous pane: tree, filter box, list, details, status bar |
+| `Ctrl+1` | Inbox, under Needs My Attention (`Alt+Home` too) |
+| `Ctrl+2` | The repository the window opened on |
+| `Ctrl+3` | Search |
+| `Ctrl+4` | People |
+| `Ctrl+5` | Gists |
+| `Ctrl+6` | Projects |
+| `Ctrl+7` | Watches, not built yet |
+| `Ctrl+8` | Saved Searches |
+| `Ctrl+9` | Start Here |
+| `Ctrl+0` | Across Repositories |
+| `Ctrl+Shift+1` to `Ctrl+Shift+0` | The current repository's Issues, Pull Requests, Discussions, Actions Runs, Files, Releases, Projects, Security, Settings and Insights |
+| `Alt+Up` | The place above this one |
+| `Alt+Left`, `Alt+Right` | Back and Forward |
+| `Ctrl+L` | Open GitHub Address: `owner/name`, `#42`, `owner/name#42` or any GitHub link |
 | `Ctrl+G` | Go to an issue or pull request by number |
-| `Ctrl+D` | Add the selected row to your favorites |
-| `Ctrl+F` | Move to the Search box |
-| `Ctrl+Shift+F` | Move to the Quick filter |
-| `Alt+N`, `Alt+P` | Next or previous comment in Details |
-| `Ctrl+Shift+B` | Compare two branches, in Branches |
-| `Ctrl+Shift+W` | What Failed, in Workflow Runs |
-| `Ctrl+Shift+L` | GitHub's remaining allowance |
+| `Ctrl+Period`, `Ctrl+Shift+Period` | Next or previous unread notification |
+| `Ctrl+Shift+E` | Back to the editor that opened the Workbench |
 
-Escape in the Quick filter clears it, when it has text. Otherwise Escape
-closes GitHub Items.
+`Ctrl+3`, `Ctrl+4` and `Ctrl+8` are AI keys in the editors. The Workbench has
+no AI menu, so here they belong to the Go row.
 
-### In the list
+### Doing things to the selected row
 
 | Key | What it does |
 | --- | --- |
-| Enter | Go in: a branch's commits, a release's files, run a workflow; otherwise open on GitHub |
-| Backspace | Come back out to Branches or Releases |
-| `M` | Switch between Quick and Full rows |
-| `R` | Reload, the same as `Ctrl+R` |
+| Enter | The obvious thing: read an issue, review a pull request, a run's jobs, a branch's commits, a release's files |
+| `Alt+Enter` | Properties: everything about it, on one sheet |
+| `Shift+Enter` | Open it on GitHub, in your browser |
+| `Ctrl+Enter` | Open a file in the editor |
+| `Ctrl+N` | New here: issue, pull request, gist, saved search, pin, or the repositories for Across Repositories |
+| `Ctrl+Shift+N` | New, asking what to make |
+| `Ctrl+Shift+M` | Comment |
+| `Ctrl+Shift+D` | A pull request's changed files |
+| `Ctrl+Shift+Enter` | Merge a pull request |
+| `Ctrl+Shift+B` | Compare a branch with another |
+| `Ctrl+Shift+A` | Assign an issue to Copilot |
+| `Ctrl+Shift+T` | Start an issue or pull request in a local worktree (QUILL only) |
+| `Ctrl+Shift+W` | What failed in a run |
+| `Ctrl+Shift+F5` | Re-run a run's failed jobs only |
+| `Ctrl+Shift+R` | Run a workflow on a branch |
+| `Ctrl+Shift+G` | Repository Actions |
+| `Ctrl+Q`, `Ctrl+Shift+Q` | Mark a notification read; mark the whole list read |
+| `Ctrl+D` | Add to Favorites, or take it out |
+| `Ctrl+C`, `Ctrl+Shift+C` | Copy the row; copy its address |
+| Delete | The safe removal for the row, asking first when it cannot be undone |
+| `Ctrl+Z`, `Ctrl+Y` | Undo or redo your last change on GitHub, in the tree and the list |
 
-### Access keys
+### Lists
+
+| Key | What it does |
+| --- | --- |
+| `Ctrl+E`, `Ctrl+Shift+F` | Move to the filter box |
+| `Ctrl+Alt+F` | Filter Builder |
+| `Ctrl+Shift+U` | Choose columns |
+| `Ctrl+A` | Select every row |
+| `F5` | Refresh |
+| `Ctrl+F5` | Refresh, reading everything from GitHub again |
+| `Alt+Page Down` | Load more |
+| `Ctrl+Shift+Page Down` | Load all |
+| Escape | Clear the filter box, then go back |
+
+### Account and tools
+
+| Key | What it does |
+| --- | --- |
+| `Ctrl+Shift+P` | GitHub Permissions |
+| `Ctrl+Shift+H` | Change History |
+| `Ctrl+Shift+K` | Manage GitHub Accounts |
+| `Ctrl+Shift+L` | GitHub's remaining hourly allowance |
+| `Ctrl+Shift+O` | Workbench Options |
+| `Alt+F4` | Close the Workbench |
+
+### Hearing where you are, and help
+
+| Key | What it does |
+| --- | --- |
+| `Alt+1` to `Alt+9` | Say where you are, the selection, the item, the counts, your access, the allowance, the filter, what is loading, the account |
+| `F9`, `Shift+F9` | Say the last result again; explain it |
+| `F1` | What this place and control are for |
+| `Shift+F1` | What can I do here, with each key |
+| `Alt+F1` | What the GitHub word for the row means |
+| `Ctrl+F1` | This guide, at the right chapter |
+| `Ctrl+Shift+F1` | Search all of help |
+| `Alt+Shift+F1` | Every key in the window |
+
+### New Pull Request
 
 | Key | Control |
 | --- | --- |
-| `Alt+V` | Favorites... |
-| `Alt+E` | Explore... |
-| `Alt+J` | Projects... |
-| `Alt+U` | View Upstream |
-| `Alt+F` | Files... |
-| `Alt+H` | Search (GitHub syntax) |
-| `Alt+Q` | Quick filter |
-| `Alt+I` | View |
+| `Alt+I` | Merge into |
+| `Alt+F` | Merge from |
+| `Alt+T` | Title |
+| `Alt+D` | Description |
+| `Alt+A` | Create as a draft |
+| Enter, outside Description | Create Pull Request |
+| Escape | Cancel, keeping what you typed for this session |
 
-| Key | Control |
-| --- | --- |
-| `Alt+S` | Show |
-| `Alt+T` | State |
-| `Alt+O` | Sort |
-| `Alt+L` | List mode |
-| `Alt+M` | Columns... |
-| `Alt+D` | Diff... |
-| `Alt+R` | Review... |
-| `Alt+Z` | Summarize |
+### An issue form
 
-| Key | Control |
-| --- | --- |
-| `Alt+C` | Compare... |
-| `Alt+B` | Batch... |
-| `Alt+A` | Actions... |
-
-Pinned..., Milestones..., Open Link..., Refresh, View More, Open in Browser and
-Go To #... have no access key; reach them with Tab.
+An issue form's fields are named by the form itself, so they have no access
+keys; Tab moves through them in order. Enter, outside a large text box, is
+Create Issue, and Escape closes without sending.
 
 ## Review pull request
 
@@ -171,33 +225,6 @@ Review action and Submit Review have no access key; reach them with Tab.
 | `Alt+C` | Comment |
 | `Alt+A` | Add to Review, the default |
 | `Alt+P` | Post Now |
-
-## Explore GitHub
-
-| Key | Control or action |
-| --- | --- |
-| `Alt+V` | View |
-| `Alt+R` | Repository |
-| `Alt+P` | Person |
-| `Alt+G` | Global search |
-| `Alt+S` | Saved Searches... |
-| `Alt+L` | Load |
-| `Alt+O` | Queue Options... |
-| `Ctrl+Shift+L` | GitHub's remaining allowance |
-
-Enter on a result opens it in the best place for it. Save Search, Open on
-GitHub and Use Repository have no access key.
-
-### In the notifications view
-
-| Key | Control or action |
-| --- | --- |
-| `Alt+I` | Include read notifications |
-| `Alt+D` | Mark Done |
-| Delete | Mark Done, in the list |
-| `Alt+U` | Unsubscribe |
-| `Alt+A` | Mark All Read |
-| Enter | Mark read and open |
 
 ## Repository Files
 

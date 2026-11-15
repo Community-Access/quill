@@ -29,6 +29,7 @@ __all__ = [
     "MIXED",
     "FieldChange",
     "FieldKind",
+    "HIDDEN_WORD",
     "FieldSpec",
     "ListDelta",
     "PageSpec",
@@ -89,6 +90,12 @@ class FieldKind(StrEnum):
     LINK = "link"
     CHECKLIST = "checklist"
     TABLE = "table"
+    SECRET = "secret"
+    """A write-only secret (an API key): typed into a masked box, never shown,
+    spoken, copied or kept in the sheet's values after a save."""
+
+
+HIDDEN_WORD = "hidden"
 
 
 @dataclass(frozen=True)
@@ -248,7 +255,8 @@ def as_text(sheet: SheetSpec, values: Mapping[str, object], *, title: str = "") 
         lines.append("")
         lines.append(page.title)
         for spec in page.fields:
-            lines.append(f"{spec.label}: {_say(values.get(spec.key))}")
+            shown = HIDDEN_WORD if spec.kind is FieldKind.SECRET else _say(values.get(spec.key))
+            lines.append(f"{spec.label}: {shown}")
     return "\n".join(lines)
 
 

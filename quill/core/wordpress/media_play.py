@@ -10,7 +10,7 @@ The wx-free half of Play, Play Media Here and the captions reader:
   or ``<video>`` tag at the caret is found as well, because that is what
   Insert from Media Library writes.
 * **Streamed, not saved**: :func:`stream_problem` refuses anything but HTTPS
-  (or a loopback test site, the same rule the connection itself keeps), and
+  (or the local Practice Site, the same rule the connection itself keeps), and
   nothing here writes a file.
 * **Captions on request**: a WebVTT file is read (:func:`fetch_captions`, only
   from the site's own host) and :func:`caption_at` gives the words being
@@ -33,6 +33,7 @@ from quill.core.wordpress import block_spans as bs
 from quill.core.wordpress.blocks import Block
 from quill.core.wordpress.listening import Cue, language_label, parse_time
 from quill.core.wordpress.site_media import MediaItem
+from quill.core.wordpress.workbench_practice import is_practice_address
 
 PLAYABLE_KINDS: frozenset[str] = frozenset({"audio", "video"})
 
@@ -68,14 +69,6 @@ class Playable:
 # addresses
 
 
-def _is_loopback(host: str) -> bool:
-    return (
-        host in {"127.0.0.1", "::1", "[::1]", "localhost"}
-        or host.endswith(".localhost")
-        or host.endswith(".test")
-    )
-
-
 def stream_problem(url: str) -> str:
     """Why *url* will not be streamed, or "" when it can be."""
     parsed = urlparse((url or "").strip())
@@ -83,7 +76,7 @@ def stream_problem(url: str) -> str:
     host = (parsed.hostname or "").lower()
     if scheme == "https" and host:
         return ""
-    if scheme == "http" and _is_loopback(host):
+    if is_practice_address(url):
         return ""
     if not scheme or not host:
         return "This file has no web address to play from."
@@ -278,8 +271,8 @@ def caption_at(cues: Sequence[Cue], position_ms: int) -> str:
 def fetch_captions(api: Any, track: CaptionTrack, site_url: str) -> list[Cue]:
     """Read one captions track from the site (run in the background).
 
-    Only from the site's own host and only over HTTPS (or a loopback test
-    site): a captions address in a page can point anywhere, and QUILL reads
+    Only from the site's own host and only over HTTPS (or the local Practice
+    Site): a captions address in a page can point anywhere, and QUILL reads
     nothing from a host the person did not connect.
     """
     problem = stream_problem(track.src)

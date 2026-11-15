@@ -410,6 +410,7 @@ class WordPressPeopleCommands(WordPressAdminBase):
                 f"Remove {profile.name} from QUILL",
                 f"Keep {profile.name} in the list, to connect again later",
             ],
+            initial=1,  # Keep: forgetting the site as well is the choice made on purpose
             help_text=(
                 f"Signing out revokes QUILL's application password on {profile.name} itself and "
                 "forgets it on this computer. Your local drafts are kept either way."
@@ -418,6 +419,18 @@ class WordPressPeopleCommands(WordPressAdminBase):
         if choice is None:
             return
         remove = choice == 0
+        also = f" and remove {profile.name} from QUILL" if remove else ""
+        if not dlg.confirm(  # Cancel is the default (NO_DEFAULT): Enter, Enter signs nothing out
+            self.host.parent,
+            self.host.show_modal,
+            title="Sign Out This Site",
+            message=(
+                f"Sign out of {profile.name}{also}? QUILL's application password on the site "
+                "is revoked, and that cannot be undone: connecting again makes a new one."
+            ),
+            yes_label="Sign Out",
+        ):
+            return
         api = self.api(profile)  # type: ignore[attr-defined]
 
         def work() -> str | None:

@@ -94,6 +94,17 @@ def test_without_a_build_folder_versions_are_marked_catalogue(no_network: None) 
     assert all(s.version_from == "catalogue" for s in entries["mutagen"].sources)
 
 
+def test_the_practice_site_components_name_their_source(no_network: None) -> None:
+    """Playground, PHP.wasm and WordPress core each name the source at their pin."""
+    catalogue = collector.load_catalogue()
+    entries = _by_id(collector.collect(catalogue, "quill"))
+    pinned = {item.id: item.version for item in catalogue.components}
+    for component in ("wp-playground-cli", "php-wasm", "wordpress-core-practice-site"):
+        sources = entries[component].sources
+        assert sources and all(s.kind == "url" for s in sources), component
+        assert all(pinned[component] in s.url for s in sources), component
+
+
 def test_pymupdf_keeps_its_pinned_sdist_and_checksum(no_network: None) -> None:
     catalogue = collector.load_catalogue()
     entry = _by_id(collector.collect(catalogue, "quill"))["pymupdf"]

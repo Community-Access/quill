@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.28.0.schema.json
+PackageIdentifier: CommunityAccess.QuillLite
+PackageVersion: 1.1.2
+Platform:
+  - Windows.Desktop
+InstallModes:
+  - interactive
+  - silent
+  - silentWithProgress
+Installers:
+  - Architecture: x64
+    InstallerType: inno
+    Scope: user
+    InstallerUrl: https://github.com/Community-Access/quill/releases/download/quill-lite-v1.1.2/QuillLite-Setup-Shared-1.1.2.exe
+    InstallerSha256: E8C2BB0FD117B6D3FE7455EC9F611225B44F0845AE019D50C0A2C5E2EF05B61B
+    InstallerSwitches:
+      Silent: /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+      SilentWithProgress: /SILENT /SUPPRESSMSGBOXES /NORESTART
+    RequireExplicitUpgrade: true
+    AppsAndFeaturesEntries:
+      - DisplayName: QUILL Lite 1.1.2
+        Publisher: Community Access
+ManifestType: installer
+ManifestVersion: 1.28.0

@@ -243,19 +243,6 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="quill-100-is-here">QUILL 1.0.0 is here</h1>
-<h2 id="payment-forms-prepared-in-the-editor">Payment forms, prepared in
-the editor</h2>
-<p>The Forms tools in QUILL and QUILL Lite now prepare Stripe and PayPal
-payment fields, including donations, from the same keyboard-friendly
-commands. New settings start in test mode. Before publishing, QUILL
-checks that the site’s providers, webhooks and payment mode are ready.
-Entry review and CSV/Word exports include payment status, amount and
-provider.</p>
-<p>Actual checkout requires the separately installed QAF WordPress
-plugin to implement payment contract version 1. Credentials and payment
-processing stay on the site. This announcement describes the desktop
-integration; it does not claim the plugin has been deployed or live
-checkout acceptance has passed.</p>
 <h2 id="a-writing-suite-for-people-who-work-by-ear-and-by-touch">A
 writing suite for people who work by ear and by touch</h2>
 <p><em>From Community Access. Free. AI only if you want it. Your
@@ -486,35 +473,47 @@ href="../tutorials/08-github-inside-quill.md">GitHub tutorial</a> walks
 through every control and its screen reader behavior.</p>
 <h2 id="your-website-from-your-editor">Your website, from your
 editor</h2>
-<p>If you look after a WordPress website, you know the block editor:
-floating toolbars, a canvas built for a mouse, and a lot of guessing
-about where you are. QUILL gives you another way in. Connect your site
-once, with File, WordPress, Connect a Site. Your browser fetches the
-password for you, and Windows keeps it safe. Then open a page or post,
-or paste the address of one you were reading, and edit it as an ordinary
-document.</p>
+<p>Perhaps you write a blog, or post the news to your organization’s
+website. If you have tried the WordPress block editor with a screen
+reader, you know it: floating toolbars, a canvas built for a mouse, and
+a lot of guessing about where you are. QUILL gives you another way in,
+in the editor you already use.</p>
+<p>Connect your site once, with File, WordPress, Connect a Site. Your
+browser fetches the password for you, and Windows keeps it safe. Then
+write a new post, open one that is there already, or paste the address
+of a page you were reading. <strong>Ctrl+S</strong> only ever saves on
+your computer. Save Draft to Site and Publish or Update are separate
+commands, and Publish checks the page for missing alternative text,
+vague links and skipped headings before it asks you to confirm. Pictures
+ask for their alternative text as you put them in. You can schedule a
+post, go back to an earlier version, and if somebody else changed the
+page while you worked, QUILL will not overwrite them.</p>
 <p>Ordinary writing stays ordinary: a heading is a heading and a list is
 a list. A button or a set of columns is one short line you can read, and
 anything QUILL does not understand is kept exactly as it was, so opening
-a page in QUILL never breaks it. Next Block and Previous Block tell you
-what each block is and where you are. <strong>Ctrl+S</strong> only ever
-saves on your computer. Save Draft to Site and Publish or Update are
-separate, Publish checks the page for missing alternative text, vague
-links and skipped headings first, and if somebody else changed the page
-while you worked, QUILL will not overwrite them.</p>
-<p>It looks after the site as well. The Media Library plays a sound or
-video file right where it is, and asks for alternative text on every
-picture. Check This Page checks your published page the way a visitor
-meets it, using axe-core, which comes with QUILL, and Check the Whole
-Site finds the problems across every page and fixes the safe ones in
-bulk, with an undo. Comments, menus, categories, users, plugins and
-settings are all lists you can arrow through, and every window knows
-what your account is allowed to do before it offers you a button. The
-commands sit where Word users would look for them, and
+a page in QUILL never breaks it. Check This Page checks your published
+page the way a visitor meets it, using axe-core, which comes with
+QUILL.</p>
+<p>As a site grows, so does what you can do. Comments, categories and
+tags, people, menus and the Media Library are lists you can arrow
+through. A new page can join a menu as soon as it is published, and
+Replace File swaps a file that pages already use. When you want the
+whole site in front of you, the WordPress Workbench has every site you
+look after in one tree, with what needs your attention at the top.
+Before anything changes, it shows you what will change and asks.
+<strong>Ctrl+Z</strong> takes a change back, F1 says what any place is
+for, and where WordPress cannot do something from outside, the Workbench
+says so and opens the right dashboard screen in your browser. From there
+you can copy content to another of your sites, export a site to a
+WordPress export file, and look after a shop, events, search results,
+memberships and redirects on sites that have those plugins. The Practice
+Site, a WordPress site that runs only on your own computer, lets you try
+all of it with nothing at stake.</p>
+<p>The commands sit where Word users would look for them, and
 <strong>Ctrl+Alt+Shift+Grave</strong>, then one letter, reaches the
-everyday ones: O to open, P to publish, M for the Media Library.</p>
-<h2 id="forms-you-can-hear-before-anyone-fills-them-in">Forms you can
-hear before anyone fills them in</h2>
+everyday ones: N for a new post, P to publish, H for the Workbench.</p>
+<h3 id="forms-you-can-hear-before-anyone-fills-them-in">Forms you can
+hear before anyone fills them in</h3>
 <p>Building a form usually means dragging boxes around a canvas. In
 QUILL a form is a short text document: a question per line, its settings
 underneath, and rules that read back to you as sentences, such as “Show
@@ -523,17 +522,28 @@ New Form, add questions from a list, and let Check This Form point out a
 missing label or a field that says it is required only with an
 asterisk.</p>
 <p>Then choose <strong>Fill It In Yourself</strong>, and QUILL builds
-your form as a real window and lets you tab through it exactly as a
-visitor would, with your own screen reader, in each of its languages.
-When it is right, publish it to a WordPress site running the QUILL
-Accessible Forms plugin and read the responses in a list, or save it as
-a web page, a Word document, large print or braille-ready text from the
-same source, so the paper form and the web form never disagree.</p>
+your form as a real window and lets you tab through it as a visitor
+would, with your own screen reader, in each of its languages. When it is
+right, publish it to a WordPress site running the QUILL Accessible Forms
+plugin and read the responses in a list, or save it as a web page, a
+Word document, large print or braille-ready text from the same source,
+so the paper form and the web form never disagree.</p>
+<h3 id="payment-forms">Payment forms</h3>
+<p>A form can also take a payment or a donation. The Forms tools prepare
+Stripe and PayPal payment fields from the same keyboard commands, and
+every new form starts in test mode. Before publishing, QUILL checks that
+the site’s providers, webhooks and payment mode are ready, and responses
+and exports include each payment’s status, amount and provider. Checkout
+itself needs the separately installed QAF WordPress plugin to support
+payment contract version 1, and the provider keys and the money stay on
+the site. This announcement describes the desktop side; it does not
+claim the plugin is deployed or that live checkout has been
+accepted.</p>
 <p>QUILL Lite has WordPress and Forms too, in the same places. The guide
 <a
 href="https://www.quillforall.org/docs/wordpress-forms-guide.html">WordPress
-and Forms in QUILL</a>, and fourteen guided lessons in Help, Tutorials,
-take you through both.</p>
+and Forms in QUILL</a>, and the guided lessons in Help, Tutorials, take
+you through both.</p>
 <h2 id="your-work-is-safe">Your work is safe</h2>
 <p>A writing tool that loses your work, or does something other than
 what it said, is worse than none, and more so when you cannot glance at

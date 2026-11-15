@@ -99,11 +99,23 @@ def test_list_values_and_booleans_are_query_friendly() -> None:
     assert parse_qs(urlparse(url).query) == {"status": ["draft,publish"], "x": ["true"]}
 
 
-def test_only_https_or_loopback_gets_a_password() -> None:
-    with pytest.raises(WordPressPolicyError):
-        WordPressApi(SiteAddress("http://radio.example"), SiteAuth("app_password", "a", "b"))
-    WordPressApi(SiteAddress("http://127.0.0.1:8080"), SiteAuth("app_password", "a", "b"))
-    WordPressApi(SiteAddress("http://mysite.test"), SiteAuth("app_password", "a", "b"))
+def test_only_https_or_the_practice_site_gets_a_password() -> None:
+    auth = SiteAuth("app_password", "a", "b")
+    WordPressApi(SiteAddress("https://radio.example"), auth)
+    # Plain HTTP only to this computer, on the Practice Site's own port.
+    for local in ("http://127.0.0.1:9400", "http://localhost:9400/", "http://[::1]:9400"):
+        WordPressApi(SiteAddress(local), auth)
+    for refused in (
+        "http://radio.example",
+        "http://127.0.0.1:8080",  # loopback, but not the Practice Site's port
+        "http://127.0.0.1",
+        "http://mysite.test",
+        "http://wp.localhost:9400",
+        "http://192.168.1.20:9400",  # a LAN address is not this computer
+        "http://127.0.0.1.example.com:9400",
+    ):
+        with pytest.raises(WordPressPolicyError):
+            WordPressApi(SiteAddress(refused), auth)
 
 
 def test_signing_and_the_secret_never_shows() -> None:

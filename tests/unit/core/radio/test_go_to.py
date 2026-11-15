@@ -146,5 +146,9 @@ def test_the_startup_window_opens_over_the_main_window_not_instead_of_it() -> No
     tasks = (root / "radio_launch_tasks.py").read_text(encoding="utf-8")
     assert "wx.CallAfter(open_startup_window, app)" in tasks
     # The main window is shown and focused unconditionally, before any of this.
+    # Since 2026-11-13 the show goes through the family's shared launch helper,
+    # which shows the window unless the launch is a tray start (--tray).
     radio = (root / "radio.py").read_text(encoding="utf-8")
-    assert "frame.frame.Show()" in radio
+    assert "present_at_launch(frame," in radio
+    helper = (root.parent / "ui" / "startup_launch.py").read_text(encoding="utf-8")
+    assert "host.frame.Show()" in helper

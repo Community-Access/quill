@@ -7,6 +7,10 @@ every field is a focusable, labelled control:
 
 - text, numbers, dates and lists are text boxes (a list is comma-separated);
 - a choice is a choice box and a flag a check box;
+- a secret (an API key) is a masked box that always opens empty, whose
+  accessible name says it is hidden; what was typed is cleared from the box
+  and from the sheet's values once the save has it, and Copy as Text says
+  "hidden" for it;
 - a read-only field, or one the person's role cannot change (*locked*, with
   the reason as the field's F1 help), is a read-only text box, never bare
   static text, so Tab reaches it and a braille display can pan through it.
@@ -23,7 +27,8 @@ opening says nothing: the reader says the title and the first field (GATE-13).
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass
 from typing import Any
 
 from quill.core.workbench.properties import (
@@ -40,9 +45,26 @@ from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 from quill.ui.workbench_properties_dialog import field_text
 
-__all__ = ["MIXED_WORD", "WorkbenchSheetEditor"]
+__all__ = ["MIXED_WORD", "FieldButton", "WorkbenchSheetEditor"]
 
 MIXED_WORD = "Mixed"
+
+
+@dataclass(frozen=True)
+class FieldButton:
+    """A button beside one field's text box: *run* gets a setter and the box's text.
+
+    *run* may finish later (after a background read); it calls the setter with
+    the new text, or not at all when the person cancels.
+    """
+
+    label: str
+    help: str
+    run: Callable[[Callable[[str], None], str], None]
+    on_read_only: bool = False
+    """Also beside a read-only field: a button that only reads (Check a Post or Page)."""
+
+
 _UNCHANGED = "(Mixed: leave as it is)"
 
 
@@ -57,12 +79,15 @@ class WorkbenchSheetEditor:
         *,
         title: str,
         copy_text: Callable[[str], None],
-        on_save: Callable[[SheetState], None] | None = None,
+        on_save: Callable[[SheetState], bool | None] | None = None,
         locked: Mapping[str, str] | None = None,
+        field_buttons: Mapping[str, Sequence[FieldButton]] | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
+        self._field_buttons = dict(field_buttons or {})
+        self.buttons: dict[str, list[Any]] = {}
         self.sheet = sheet
         self.title = title
         self._copy_text = copy_text
@@ -90,7 +115,7 @@ class WorkbenchSheetEditor:
                 label = wx.StaticText(panel, label=f"{spec.label}:")
                 control = self._control(panel, spec, self.state.loaded.get(spec.key))
                 grid.Add(label, 0, wx.ALIGN_TOP | wx.TOP, 3)
-                grid.Add(control, 1, wx.EXPAND)
+                grid.Add(self._with_buttons(panel, spec, control), 1, wx.EXPAND)
                 self.controls[spec.key] = control
                 if self.editable(spec):
                     self._shown[spec.key] = self.value_of(spec)
@@ -160,13 +185,43 @@ class WorkbenchSheetEditor:
             style = 0 if self.editable(spec) else wx.TE_READONLY
             if spec.kind is FieldKind.MULTILINE:
                 style |= wx.TE_MULTILINE | wx.TE_WORDWRAP
-            text = MIXED_WORD if mixed else self._text(spec, value)
+            secret = spec.kind is FieldKind.SECRET
+            if secret:
+                style |= wx.TE_PASSWORD
+            text = "" if secret else MIXED_WORD if mixed else self._text(spec, value)
             control = wx.TextCtrl(panel, value=text, style=style)
             if spec.kind is FieldKind.MULTILINE:
                 control.SetMinSize(dip_size(panel, 380, 150))
-        set_spoken_name(control, spec.label)
+        set_spoken_name(control, self.spoken_name(spec))
         control.SetHelpText(self._help(spec))
         return control
+
+    @staticmethod
+    def spoken_name(spec: FieldSpec) -> str:
+        if spec.kind is FieldKind.SECRET:
+            return f"{spec.label}, hidden as you type"
+        return spec.label
+
+    def _with_buttons(self, panel: Any, spec: FieldSpec, control: Any) -> Any:
+        """*control*, followed by the field's own buttons (a picker, a Remove), if it has any."""
+        editable = self.editable(spec)
+        wanted = [b for b in self._field_buttons.get(spec.key, ()) if editable or b.on_read_only]
+        if not wanted or not hasattr(control, "ChangeValue"):
+            return control
+        wx = self._wx
+        row = wx.BoxSizer(wx.HORIZONTAL)
+        row.Add(control, 1, wx.EXPAND | wx.RIGHT, 6)
+        for button_spec in wanted:
+            button = wx.Button(panel, label=button_spec.label)
+            button.SetHelpText(button_spec.help)
+
+            def pressed(_event: Any, run: FieldButton = button_spec) -> None:
+                run.run(control.ChangeValue, control.GetValue())
+
+            button.Bind(wx.EVT_BUTTON, pressed)
+            row.Add(button, 0, wx.RIGHT, 6)
+            self.buttons.setdefault(spec.key, []).append(button)
+        return row
 
     def _text(self, spec: FieldSpec, value: object) -> str:
         if self.editable(spec):
@@ -217,13 +272,26 @@ class WorkbenchSheetEditor:
             if close:
                 self.dialog.EndModal(self._wx.ID_OK)
             return
-        self._on_save(state)
+        saved = self._on_save(state) is not False
+        self._forget_secrets(clear_boxes=saved)
+        if not saved:
+            return
         if close:
             self.dialog.EndModal(self._wx.ID_OK)
             return
         state.loaded.update(state.edited)
         state.edited.clear()
         self._shown = {s.key: self.value_of(s) for s in self.sheet.fields() if self.editable(s)}
+
+    def _forget_secrets(self, *, clear_boxes: bool) -> None:
+        """Drop every secret from the sheet's values; empty its box once it was sent."""
+        for spec in self.sheet.fields():
+            if spec.kind is not FieldKind.SECRET:
+                continue
+            self.state.edited.pop(spec.key, None)
+            self.state.loaded.pop(spec.key, None)
+            if clear_boxes:
+                self.controls[spec.key].ChangeValue("")
 
     def text(self) -> str:
         values = {spec.key: self.state.loaded.get(spec.key) for spec in self.sheet.fields()}

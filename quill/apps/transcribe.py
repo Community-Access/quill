@@ -526,7 +526,9 @@ def main() -> int:
     frame = QuillTranscribeFrame(safe_mode=safe_mode)
     frame._log_listener = log_listener
     tray = frame._tray_available and frame._settings.setup_done
-    if tray and ("--tray" in sys.argv or frame._settings.start_in_tray):
+    force_tray = "--tray" in sys.argv and "--window" not in sys.argv
+    force_window = "--window" in sys.argv
+    if tray and (force_tray or (not force_window and frame._settings.start_in_tray)):
         frame.frame.Hide()
     else:
         frame.frame.Show()

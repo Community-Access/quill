@@ -16,8 +16,10 @@ Shared by QUILL and QUILL Lite through ``WordPressCommands``.
 from __future__ import annotations
 
 import logging
+import time
 from typing import Any
 
+from quill.core.wordpress.workbench_editorial import load_reviews, save_reviews
 from quill.core.wordpress.workbench_options import load_options
 from quill.core.wordpress.workbench_watches import check, due, load_state, save_state
 
@@ -27,7 +29,11 @@ _log = logging.getLogger(__name__)
 
 
 def watch_round(commands: Any) -> None:
-    """One Watches round if one is due; quiet when nothing changed or nothing is on."""
+    """One Watches round if one is due; quiet when nothing changed or nothing is on.
+
+    The round is claimed (its time saved) before any site is asked, so QUILL
+    and QUILL Lite open side by side do not both run it and say it twice.
+    """
     base = getattr(commands, "_data_dir", None)
     options = load_options(base)
     if not options.watches or getattr(commands, "_watching", False):
@@ -39,19 +45,33 @@ def watch_round(commands: Any) -> None:
     if not store.sites:
         return
     commands._watching = True
+    state.last_round = time.time()
+    save_state(state, base)
+    reviews = load_reviews(base) if "review" in options.watches else []
 
     def work() -> list[str]:
         targets = []
+        unreachable: list[str] = []
         for profile in store.sites:
+            name = profile.name or profile.host
             try:
                 api = commands.api(profile)
                 info = api.get("")
                 spaces = info.get("namespaces", []) if isinstance(info, dict) else []
-                targets.append((profile.name or profile.host, api, [str(n) for n in spaces]))
+                targets.append((name, api, [str(n) for n in spaces]))
             except Exception:  # noqa: BLE001 - a site that does not answer waits for next round
                 _log.info("Watches: %s did not answer", profile.host)
-        said = check(targets, state, options.watches)
+                unreachable.append(name)
+        said = check(targets, state, options.watches, unreachable=unreachable, reviews=reviews)
         save_state(state, base)
+        if reviews:
+            waiting = [
+                r
+                for r in reviews
+                if state.reviews.get(f"{r.site}:{r.item_id}") in (None, "pending")
+            ]
+            if len(waiting) != len(reviews):
+                save_reviews(waiting, base)
         return said
 
     def done(said: list[str]) -> None:

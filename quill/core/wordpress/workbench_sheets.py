@@ -27,7 +27,9 @@ import re
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from quill.core.wordpress.menu_item_add import MENU_SHEET
 from quill.core.wordpress.site import friendly_date, human_size, raw_text, rendered
+from quill.core.wordpress.workbench_moderation import SHEET_HELP as HELP
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.workbench.properties import FieldKind, FieldSpec, PageSpec, SheetSpec, Value
 
@@ -113,6 +115,7 @@ def _item_sheet(row: WbRow, taxonomies: Mapping[str, str], meta: Mapping[str, An
         _f(
             "password",
             "Password",
+            FieldKind.SECRET,
             help="Visitors type this to read it. Write only: what you type replaces it.",
         ),
         _f("author", "Author", _T, help="The person by name and number, such as Jeff (3)."),
@@ -181,9 +184,40 @@ def _schema_field(key: str, name: str, spec: Mapping[str, Any]) -> FieldSpec:
         return FieldSpec(key, label, _D, readonly, help=help_text)
     if "array" in kinds:
         items = spec.get("items") if isinstance(spec.get("items"), dict) else {}
-        scalar = (items or {}).get("type") in ("string", "integer", "number")
-        return FieldSpec(key, label, _L, readonly or not scalar, help=help_text)
+        scalar = (items or {}).get("type") in ("string", "integer", "number", "boolean")
+        if scalar:
+            return FieldSpec(key, label, _L, readonly, help=help_text)
+        from quill.core.wordpress.custom_field_shapes import json_editable
+
+        structured = isinstance(spec.get("items"), dict) and json_editable(spec["items"])
+        if structured:
+            return FieldSpec(
+                key,
+                label,
+                _M,
+                readonly,
+                help=(
+                    f"{help_text} Edit the complete JSON list; QUILL checks the schema "
+                    "and keeps other keys."
+                ),
+            )
+        return FieldSpec(
+            key, label, _M, True, help=f"{help_text} This list shape is read only here."
+        )
     if "object" in kinds:
+        from quill.core.wordpress.custom_field_shapes import json_editable
+
+        if json_editable(spec):
+            return FieldSpec(
+                key,
+                label,
+                _M,
+                readonly,
+                help=(
+                    f"{help_text} Edit the complete JSON object; QUILL checks the schema "
+                    "and keeps other keys."
+                ),
+            )
         return FieldSpec(key, label, _M, True, help=f"{help_text} Read only here, as JSON.")
     return FieldSpec(key, label, _T, readonly, help=help_text)
 
@@ -216,6 +250,7 @@ def _raw_sheet(kind: str, raw: Mapping[str, Any]) -> SheetSpec:
 
 
 _STATIC: dict[str, SheetSpec] = {
+    "menu": MENU_SHEET,  # wp-admin's Menu Settings, auto_add as a check box
     "media": SheetSpec(
         "media",
         "Media",
@@ -260,7 +295,8 @@ _STATIC: dict[str, SheetSpec] = {
                     help="Shown only to people who can moderate comments.",
                 ),
                 _f("author_url", "Website"),
-                _ro("date", "Written"),
+                FieldSpec("author_ip", "IP address", _T, True, help=HELP["author_ip"]),
+                _f("date", "Written", _D, help=HELP["date"]),
                 _f("status", "Status", _CH, choices=_COMMENT),
                 _ro("type", "Type"),
             ),
@@ -299,6 +335,8 @@ _STATIC: dict[str, SheetSpec] = {
                 _f("last_name", "Last name"),
                 _f("url", "Website"),
                 _f("description", "Biography", _M),
+                _f("locale", "Language", help=HELP["locale"]),
+                _ro("post_count", "Posts written"),
             ),
             _page(
                 "role",
@@ -379,6 +417,20 @@ _STATIC: dict[str, SheetSpec] = {
             ),
         ),
     ),
+    "global_style": SheetSpec(
+        "global_style",
+        "Global Style",
+        (
+            _page(
+                "general",
+                "General",
+                _ro("name", "Name"),
+                _ro("kind", "Kind"),
+                _ro("value", "Value"),
+                _ro("contrast", "Contrast"),
+            ),
+        ),
+    ),
 }
 
 
@@ -414,6 +466,7 @@ SITE_SHEET = SheetSpec(
             _ro("comment_moderation", "Comments wait for approval"),
             _ro("spam_plugins", "Spam plugins found"),
             _ro("form_plugins", "Form plugins found"),
+            _ro("form_spam", "Form spam checks (QUILL Accessible Forms)", _M),
             _ro("spam_note", "About spam here", _M),
         ),
     ),
@@ -435,7 +488,19 @@ def sheet_for(
             found = {k: v for k, v in _CORE_TAXONOMY_FIELDS.items() if k in row.raw}
         return _item_sheet(row, found, meta or {})
     if row.kind in _STATIC:
-        return _STATIC[row.kind]
+        base = _STATIC[row.kind]
+        if row.kind in ("comment", "term", "user") and meta:
+            from quill.core.wordpress.custom_fields import label_for
+
+            fields = tuple(
+                _schema_field(f"meta.{key}", label_for(key, spec), spec)
+                for key, spec in sorted(meta.items())
+                if key not in ("footnotes", "_wp_note_status") and isinstance(spec, dict)
+            )
+            if fields:
+                pages = (*base.pages, PageSpec("meta", "Custom Fields", fields))
+                return SheetSpec(base.kind, base.title, pages)
+        return base
     if schema:
         return schema_sheet(row.kind, row.kind.replace("_", " ").title(), schema)
     return _raw_sheet(row.kind, row.raw or dict(row.cells))
@@ -471,6 +536,10 @@ def values_for(
     data = dict(raw if raw is not None else row.raw)
     names = term_names or {}
     values: dict[str, Value] = {key: _scalar(value) for key, value in data.items()}
+    meta_values = data.get("meta")
+    if isinstance(meta_values, dict):
+        for key, value in meta_values.items():
+            values[f"meta.{key}"] = _scalar(value)
     if row.kind == "item":
         values["title"] = raw_text(data.get("title")) or rendered(data.get("title"))
         values["excerpt"] = raw_text(data.get("excerpt"))
@@ -483,10 +552,6 @@ def values_for(
         for field_name, value in data.items():
             if isinstance(value, list) and all(isinstance(v, int) for v in value):
                 values[field_name] = tuple(labelled(names.get(v, ""), v) for v in value)
-        meta = data.get("meta")
-        if isinstance(meta, dict):
-            for key, value in meta.items():
-                values[f"meta.{key}"] = _scalar(value)
     elif row.kind == "media":
         details = data.get("media_details") if isinstance(data.get("media_details"), dict) else {}
         details = details or {}
@@ -505,7 +570,7 @@ def values_for(
         )
     elif row.kind == "comment":
         values["content"] = raw_text(data.get("content"))
-        values["date"] = friendly_date(str(data.get("date_gmt", "") or ""))
+        values["date"] = str(data.get("date", "") or "")  # editable: the site's own form
         values["post_title"] = row.cell("on")
     elif row.kind == "user":
         roles = data.get("roles") or []

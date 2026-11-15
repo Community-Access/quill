@@ -166,3 +166,7 @@ class WorkbenchActionsMixin:
         self.frame.SetTitle(self.provider.window_title(ref.instance))
         self.select(ref)
         self.tree.SetFocus()
+        # A link the provider opens itself (a compare link) opens over its repository.
+        open_link = getattr(self.provider, "open_link", None)
+        if callable(open_link):
+            open_link(text)

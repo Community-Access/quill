@@ -80,6 +80,18 @@ def episode_post(episode: Episode, *, media_id: int, src: str) -> tuple[str, dic
     return "\n\n".join(parts) + "\n", islands
 
 
+def is_episode_post(content: str) -> bool:
+    """Whether a post's saved content carries an episode's player, as Post This Episode sends it.
+
+    The Workbench's Podcast node uses this on a site with no podcast content
+    type: an episode there is a post with a ``core/audio`` block (or the
+    ``[audio]`` shortcode an older post used), which is what Post This Episode
+    sends. Nothing else is guessed.
+    """
+    text = content or ""
+    return "<!-- wp:audio" in text or "[audio " in text or "[audio]" in text
+
+
 def document_page(text: str, *, file_name: str, src: str, size: int) -> str:
     """A converted document's Markdown, with a plain link to the original first."""
     kind = Path(file_name).suffix.lstrip(".").upper() or "file"

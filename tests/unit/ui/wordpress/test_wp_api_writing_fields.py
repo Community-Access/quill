@@ -245,6 +245,7 @@ def test_sign_out_names_the_password_it_revoked(
     )
     wp_site.on("DELETE", f"{API}/users/me/application-passwords/q1", {"deleted": True})
     wp_dialogs.answer("ask_choice", 1)
+    wp_dialogs.answer("confirm", True)
     wpx.cmd_sign_out()
     assert len(wp_site.sent("DELETE", f"{API}/users/me/application-passwords/q1")) == 1
     assert wpx.host.announced[-1] == (

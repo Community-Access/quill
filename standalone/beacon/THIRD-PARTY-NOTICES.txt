@@ -14,7 +14,7 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 Summary by licence
 ------------------
 
-  MIT License: 57 components
+  MIT License: 58 components
   BSD 3-Clause License: 23 components
   Apache License, version 2.0: 12 components
   Python Software Foundation License, version 2: 6 components
@@ -1274,6 +1274,17 @@ Version: 4.8.0
 Licence: MIT
 Copyright: Copyright (c) 2025 kellylford
 Upstream: https://github.com/kellylford/Image-Description-Toolkit
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
+
+GitHub REST API description
+---------------------------
+
+What it is: The GitHub API snapshot in quill/data/github_api/, used to measure what the GitHub Workbench covers.
+Version: 53fd7d2
+Licence: MIT
+Copyright: Copyright (c) 2020 GitHub
+Upstream: https://github.com/github/rest-api-description
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
 
@@ -4328,7 +4339,7 @@ Library.
 MIT License
 -----------
 
-Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, ripgrep (rg.exe), ptts (Phonon text-to-speech runtime), Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), BlindRadio network table, Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), Dial tuning hiss (quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav).
+Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, ripgrep (rg.exe), ptts (Phonon text-to-speech runtime), Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), BlindRadio network table, Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), Dial tuning hiss (quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav), GitHub REST API description.
 
 What it asks of us: Keep the copyright notice and the permission notice with every copy.
 

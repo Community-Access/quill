@@ -444,6 +444,28 @@ class TranscribeCommandsMixin:
                 else "QUILL Transcribe will not start with Windows."
             )
 
+    def start_minimized_at_startup_enabled(self) -> bool:
+        from quill.platform.windows import transcribe_startup
+
+        return transcribe_startup.start_minimized_at_startup()
+
+    def set_start_minimized_at_startup(self, enabled: bool) -> None:
+        from quill.platform.windows import transcribe_startup
+
+        saved = transcribe_startup.set_start_minimized_at_startup(enabled)
+        if not saved:
+            menu_bar = self.frame.GetMenuBar()  # type: ignore[attr-defined]
+            item_id = getattr(self, "_startup_minimized_item_id", None)
+            if menu_bar is not None and item_id is not None:
+                menu_bar.Check(int(item_id), transcribe_startup.start_minimized_at_startup())
+            self._announce("Windows did not allow the start-minimized setting to change.")  # type: ignore[attr-defined]
+            return
+        self._announce(  # type: ignore[attr-defined]
+            "QUILL Transcribe will start minimized to the tray when Windows starts."
+            if enabled
+            else "QUILL Transcribe will start with its window open when Windows starts."
+        )
+
     # -- documents, updates, the editors ----------------------------------------------- #
 
     def open_user_guide(self) -> None:

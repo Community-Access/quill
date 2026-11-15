@@ -44,6 +44,14 @@ _KINDS = {
     "favorite": "favorite",
     "admin_action": "admin_action",
     "help_topic": "help_topic",
+    "template": "template",
+    "watch": "watch",  # Watches (quill/ui/github_workbench_watches.py)
+    # Across Repositories (quill/ui/github_workbench_across*.py).
+    "across_item": "across_item",
+    "across_status": "across_status",
+    "repository_set": "repository_set",
+    "by_name": "by_name",
+    "fleet": "fleet",
 }
 
 #: My Work's sources, as Explore labels them, for each reason preset.

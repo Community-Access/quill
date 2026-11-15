@@ -52,6 +52,10 @@ GLOSSARY: dict[str, str] = {
     "Draft": "A pull request that is not ready for review yet.",
     "Label": "A coloured tag on issues and pull requests, such as bug. Under Labels.",
     "Milestone": "A goal with a due date that issues and pull requests belong to.",
+    "Template": (
+        "A file that shapes new issues, pull requests or discussions, such as a bug "
+        "report form. Under Templates."
+    ),
     "Assignee": "The person an issue or pull request is given to.",
     "Mention": "Your login written with an at sign, such as @you, which notifies you.",
     "Notification": (
@@ -95,6 +99,20 @@ GLOSSARY: dict[str, str] = {
     "Saved search": "A search kept on this computer, to run again. Under Saved Searches.",
     "Favorite": "An item kept on this computer under Repositories, Favorites.",
     "Pin": "A repository kept on this computer under Repositories, Pinned.",
+    "Repository Set": (
+        "A named list of repositories kept on this computer, made by hand or by a filter "
+        "such as org:name. Across Repositories reads one kind of thing from all of them. "
+        "Under Across Repositories, Repository Sets."
+    ),
+    "Fleet": (
+        "Every repository in a Repository Set on one line each: its revision, checks, pull "
+        "requests, latest release and alerts. Under Across Repositories, Fleet."
+    ),
+    "Watch rule": (
+        "A rule kept on this computer that tells you when something happens on GitHub: "
+        "a run finishes, a review arrives, a release or a comment. Under Watches. Not "
+        "the same as watching a repository on GitHub, which sends notifications."
+    ),
 }
 
 #: Each row type -> the glossary word Alt+F1 explains for it.
@@ -122,6 +140,7 @@ ROW_TYPE_WORDS: dict[str, str] = {
     "file": "Repository",
     "folder": "Repository",
     "milestone": "Milestone",
+    "template": "Template",
     "project": "Project",
     "organization": "Organization",
     "favorite": "Favorite",
@@ -132,6 +151,12 @@ ROW_TYPE_WORDS: dict[str, str] = {
     "deployment": "Deployment",
     "code": "Repository",
     "node": "Repository",
+    "watch": "Watch rule",
+    "across_item": "Repository Set",
+    "across_status": "Repository Set",
+    "repository_set": "Repository Set",
+    "by_name": "Repository Set",
+    "fleet": "Fleet",
 }
 
 #: (id, title, steps, the node it takes you to as (template, key)).
@@ -284,9 +309,8 @@ _CHAPTER_FOR: dict[str, str] = {
 WHAT_CHANGED: tuple[tuple[str, str], ...] = (
     (
         "One window for GitHub",
-        "GitHub Items and Explore GitHub are now one window, the GitHub Workbench, with "
-        "a tree of places. The classic windows are still there for one release: "
-        "Workbench Options, Use the classic GitHub windows.",
+        "GitHub Items and Explore GitHub are one window, the GitHub Workbench, with "
+        "a tree of places. The old dialogs are retired; every editor door opens here.",
     ),
     (
         "Menus with their keys",

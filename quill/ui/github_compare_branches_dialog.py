@@ -10,7 +10,9 @@ fetch-then-open pattern already used for the PR diff viewer's
 QUILL's own compare engine, the same rendering
 :class:`~quill.ui.github_pr_diff_dialog.GitHubPullDiffDialog` uses for a pull
 request -- fetched here at the two branch names as refs rather than a PR's
-base/head shas).
+base/head shas). A Commits Behind page lists what the base has that the head
+lacks, and the summary names an open pull request between the two; the
+sentences are :mod:`quill.core.github.compare_words`.
 """
 
 from __future__ import annotations
@@ -19,6 +21,7 @@ import threading
 import webbrowser
 from typing import TYPE_CHECKING
 
+from quill.core.github import compare_words
 from quill.core.github.items_provider import GitHubBranchComparison, GitHubItemsError
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
@@ -70,24 +73,37 @@ class GitHubCompareBranchesDialog:
         notebook = wx.Notebook(panel)
         notebook.SetName("Comparison detail")
 
-        commits_panel = wx.Panel(notebook)
-        commits_sizer = wx.BoxSizer(wx.VERTICAL)
-        self._commits_list = wx.ListCtrl(commits_panel, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
+        ahead_page = wx.Panel(notebook)
+        self._commits_list = wx.ListCtrl(ahead_page, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._commits_list.SetHelpText(
-            "The commits one branch has that the other does not, newest first."
+            "The commits the second branch has that the first does not, newest first. "
+            "GitHub gives at most 250; the tab says when there are more."
         )
-        self._commits_list.SetName(f"Commits between {comparison.base} and {comparison.head}")
-        for i, col in enumerate(("SHA", "Author", "Date", "Message")):
-            self._commits_list.InsertColumn(i, col, width=170 if col == "Message" else 110)
-        for commit in comparison.commits:
-            idx = self._commits_list.InsertItem(self._commits_list.GetItemCount(), commit.short_sha)
-            self._commits_list.SetItem(idx, 1, commit.author)
-            self._commits_list.SetItem(idx, 2, commit.date[:10])
-            message = commit.message.splitlines()[0] if commit.message else ""
-            self._commits_list.SetItem(idx, 3, message)
-        commits_sizer.Add(self._commits_list, 1, wx.EXPAND | wx.ALL, 6)
-        commits_panel.SetSizer(commits_sizer)
-        notebook.AddPage(commits_panel, f"Commits ({len(comparison.commits)})")
+        self._commits_list.SetName(f"Commits {comparison.head} has that {comparison.base} does not")
+        self._fill_commit_page(
+            notebook,
+            ahead_page,
+            self._commits_list,
+            comparison.commits,
+            compare_words.ahead_tab_title(comparison),
+        )
+        behind_page = wx.Panel(notebook)
+        self._behind_list = wx.ListCtrl(behind_page, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
+        self._behind_list.SetHelpText(
+            "The commits the first branch has that the second lacks, newest first: what "
+            "it is behind by. GitHub gives at most 250; the tab says when there are more."
+        )
+        self._behind_list.SetName(f"Commits {comparison.base} has that {comparison.head} does not")
+        set_spoken_name(
+            self._behind_list, f"Commits {comparison.base} has that {comparison.head} does not"
+        )
+        self._fill_commit_page(
+            notebook,
+            behind_page,
+            self._behind_list,
+            comparison.behind_commits,
+            compare_words.behind_tab_title(comparison),
+        )
 
         files_panel = wx.Panel(notebook)
         files_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -121,10 +137,17 @@ class GitHubCompareBranchesDialog:
         self._browser_btn.SetHelpText("Open this on GitHub in your browser.")
         self._browser_btn.SetName("Open this comparison on GitHub in your browser")
         self._browser_btn.Enable(bool(comparison.permalink_url))
+        self._pull_btn = wx.Button(panel, label="Open &Pull Request")
+        self._pull_btn.SetHelpText(
+            "Open the pull request already open between these two, in your browser. "
+            "Greyed when there is none."
+        )
+        self._pull_btn.Enable(bool(comparison.pull_url))
         close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
         close_btn.SetHelpText("Close this window. Escape does the same.")
         close_btn.SetName("Close comparison")
         btn_row.Add(self._browser_btn, 0, wx.RIGHT, 6)
+        btn_row.Add(self._pull_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
         btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 8)
@@ -136,15 +159,27 @@ class GitHubCompareBranchesDialog:
 
         self._files.Bind(wx.EVT_LISTBOX, self._on_select_file)
         self._browser_btn.Bind(wx.EVT_BUTTON, self._on_open_browser)
+        self._pull_btn.Bind(wx.EVT_BUTTON, self._on_open_pull)
+
+    def _fill_commit_page(
+        self, notebook: object, page: object, listing: object, commits: tuple, title: str
+    ) -> None:
+        """Fill one page of commits, newest first: SHA, author, date, first line."""
+        wx = self._wx
+        for i, col in enumerate(("SHA", "Author", "Date", "Message")):
+            listing.InsertColumn(i, col, width=170 if col == "Message" else 110)
+        for commit in commits:
+            idx = listing.InsertItem(listing.GetItemCount(), commit.short_sha)
+            listing.SetItem(idx, 1, commit.author)
+            listing.SetItem(idx, 2, commit.date[:10])
+            listing.SetItem(idx, 3, commit.message.splitlines()[0] if commit.message else "")
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(listing, 1, wx.EXPAND | wx.ALL, 6)
+        page.SetSizer(sizer)
+        notebook.AddPage(page, title)
 
     def _summary_line(self) -> str:
-        c = self._comparison
-        if c.status == "identical":
-            return f"{c.head} is identical to {c.base}."
-        return (
-            f"{c.head} is {c.ahead_by} commit(s) ahead and {c.behind_by} behind {c.base}. "
-            f"{c.total_commits} total commit(s), {len(c.files)} changed file(s)."
-        )
+        return compare_words.summary(self._comparison)
 
     def show(self) -> None:
         wx = self._wx
@@ -171,6 +206,11 @@ class GitHubCompareBranchesDialog:
         if self._comparison.permalink_url:
             webbrowser.open(self._comparison.permalink_url)
             self._announce("Opened comparison in browser")
+
+    def _on_open_pull(self, _event: object) -> None:
+        if self._comparison.pull_url:
+            webbrowser.open(self._comparison.pull_url)
+            self._announce(f"Opened pull request #{self._comparison.pull_number} in browser")
 
     def _on_select_file(self, _event: object) -> None:
         index = self._files.GetSelection()

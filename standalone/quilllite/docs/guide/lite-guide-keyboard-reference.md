@@ -49,6 +49,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+Shift+Grave, E** | Schedule Publish... |
 | **Ctrl+Alt+Shift+Grave, I** | Open on Site |
 | **Ctrl+Alt+Shift+Grave, Y** | Copy Address |
+| **Ctrl+Alt+Shift+Grave, Shift+H** | This Post in the Workbench |
 | **Ctrl+Alt+Shift+Grave, R** | Properties... |
 | **Ctrl+Alt+Shift+Grave, V** | Previous Versions... |
 | **Ctrl+Alt+Shift+Grave, C** | Compare with Site |
@@ -444,6 +445,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 
 | Key | Command |
 |---|---|
+| **Ctrl+Alt+Shift+Grave, H** | Open WordPress Workbench... |
 | **Ctrl+Alt+Shift+Grave, K** | Check Before Publishing... |
 | **Ctrl+Alt+Shift+Grave, M** | Media Library... |
 | **Ctrl+Alt+Shift+Grave, X** | Alt Text Review... |
@@ -453,6 +455,12 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | Key | Command |
 |---|---|
 | **Ctrl+Alt+Shift+Grave, U** | Upload Files... |
+
+### Forms (in Tools)
+
+| Key | Command |
+|---|---|
+| **Ctrl+Alt+Shift+Grave, F** | Responses... |
 
 ## Window
 

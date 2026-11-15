@@ -14,16 +14,16 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 Summary by licence
 ------------------
 
-  MIT License: 64 components
+  MIT License: 65 components
   BSD 3-Clause License: 23 components
   Apache License, version 2.0: 14 components
+  GNU General Public License, version 2: 6 components
   Python Software Foundation License, version 2: 6 components
   GNU General Public License, version 3: 4 components
   GNU Lesser General Public License, version 2.1: 4 components
   Mozilla Public License, version 2.0: 4 components
   The Unlicense (public domain dedication): 4 components
   BSD 2-Clause License: 3 components
-  GNU General Public License, version 2: 3 components
   Public domain: 3 components
   ISC License: 2 components
   GNU Lesser General Public License, version 3: 2 components
@@ -1210,6 +1210,39 @@ Upstream: https://prettier.io/
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
 
+WordPress Playground CLI and npm dependencies
+---------------------------------------------
+
+What it is: The local server for the WordPress Workbench Practice Site. It runs only when the person starts the local site; package licences stay beside tools\wp-playground-cli. PLAYGROUND-LICENSES.txt lists them and notes that source maps, TypeScript declarations and unused PHP versions are omitted from this runtime bundle.
+Version: 3.1.64
+Licence: GPL-2.0-or-later; each npm package's declared licence is listed in PLAYGROUND-LICENSES.txt
+Copyright: Copyright (c) WordPress contributors
+Upstream: https://github.com/WordPress/wordpress-playground
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Ship the licence text. Provide the complete corresponding source of the component, either alongside it or by a written offer valid for at least three years. Any program that is a derivative work must also be offered under GPL-2.0-compatible terms.
+
+PHP 8.3 WebAssembly runtime (@php-wasm/node-8-3)
+------------------------------------------------
+
+What it is: The offline PHP WebAssembly engine WordPress Playground uses for the local Practice Site. Only the pinned PHP 8.3 package is staged in tools\wp-playground-cli.
+Version: 3.1.64
+Licence: GPL-2.0-or-later; package licence ships in node_modules
+Copyright: Copyright (c) WordPress contributors
+Upstream: https://github.com/WordPress/wordpress-playground
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Ship the licence text. Provide the complete corresponding source of the component, either alongside it or by a written offer valid for at least three years. Any program that is a derivative work must also be offered under GPL-2.0-compatible terms.
+
+WordPress core for the Practice Site
+------------------------------------
+
+What it is: A pinned, checksum-verified copy of WordPress core used only by the local Practice Site. The complete core source and license.txt ship in tools\wp-playground-cli\wordpress-7.1.4.zip and are extracted into the practice site's data folder on first launch.
+Version: 7.1.4
+Licence: GPL-2.0-or-later
+Copyright: Copyright (c) WordPress contributors
+Upstream: https://wordpress.org/
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Ship the licence text. Provide the complete corresponding source of the component, either alongside it or by a written offer valid for at least three years. Any program that is a derivative work must also be offered under GPL-2.0-compatible terms.
+
 AUDIO AND VIDEO
 ===============
 
@@ -1408,6 +1441,17 @@ Version: 4.8.0
 Licence: MIT
 Copyright: Copyright (c) 2025 kellylford
 Upstream: https://github.com/kellylford/Image-Description-Toolkit
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
+
+GitHub REST API description
+---------------------------
+
+What it is: The GitHub API snapshot in quill/data/github_api/, used to measure what the GitHub Workbench covers.
+Version: 53fd7d2
+Licence: MIT
+Copyright: Copyright (c) 2020 GitHub
+Upstream: https://github.com/github/rest-api-description
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
 
@@ -2921,7 +2965,7 @@ GitHub Copilot CLI License
 GNU General Public License, version 2
 -------------------------------------
 
-Used by: mutagen, pillow-heif, English thesaurus (th_en_US_v2, MyThes format).
+Used by: mutagen, pillow-heif, English thesaurus (th_en_US_v2, MyThes format), WordPress Playground CLI and npm dependencies, PHP 8.3 WebAssembly runtime (@php-wasm/node-8-3), WordPress core for the Practice Site.
 
 What it asks of us: Ship the licence text. Provide the complete corresponding source of the component, either alongside it or by a written offer valid for at least three years. Any program that is a derivative work must also be offered under GPL-2.0-compatible terms.
 
@@ -4686,7 +4730,7 @@ Library.
 MIT License
 -----------
 
-Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Deno (deno.exe), ripgrep (rg.exe), ptts (Phonon text-to-speech runtime), Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), BlindRadio network table, Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), Dial tuning hiss (quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav), Node.js (node.exe), VS Code HTML, CSS, JSON and Markdown language servers (vscode-langservers-extracted), Pyright, Prettier.
+Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Deno (deno.exe), ripgrep (rg.exe), ptts (Phonon text-to-speech runtime), Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), BlindRadio network table, Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), Dial tuning hiss (quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav), Node.js (node.exe), VS Code HTML, CSS, JSON and Markdown language servers (vscode-langservers-extracted), Pyright, Prettier, GitHub REST API description.
 
 What it asks of us: Keep the copyright notice and the permission notice with every copy.
 

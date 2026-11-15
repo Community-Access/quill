@@ -6,7 +6,7 @@ Each command has a name, its key when it has one, what it does, and some of the 
 
 ## QUILL
 
-53 commands can be asked for in a sentence here.
+55 commands can be asked for in a sentence here.
 
 ### QUILL: Edit
 
@@ -41,6 +41,8 @@ Each command has a name, its key when it has one, what it does, and some of the 
   Say: "save all my documents"; "save every file"; "save everything that is open".
 - **Save As (Ctrl+Shift+S).** Save a copy of this document under a new name or in another place.
   Say: "save this under a new name"; "save a copy"; "save it somewhere else".
+- **This Post in the Workbench (Ctrl+Alt+Shift+Grave, Shift+H).** Open the WordPress Workbench with this document's post selected.
+  Say: "show this post in the wordpress workbench"; "find this post in the workbench"; "where is this post on my site".
 
 ### QUILL: Format
 
@@ -99,6 +101,8 @@ Each command has a name, its key when it has one, what it does, and some of the 
 
 ### QUILL: Tools
 
+- **Form Responses (Ctrl+Alt+Shift+Grave, F).** Read the responses people sent to a form on your WordPress site.
+  Say: "show my form responses"; "who filled in the contact form"; "read the newest form entries".
 - **Next Misspelling (Ctrl+F7).** Move to the next misspelled word.
   Say: "go to the next spelling mistake"; "find the next typo"; "next misspelled word".
 - **Open WordPress Workbench (Ctrl+Alt+Shift+Grave, H).** Open the window for your WordPress sites.
@@ -161,7 +165,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 ## QUILL Lite
 
-44 commands can be asked for in a sentence here.
+46 commands can be asked for in a sentence here.
 
 ### QUILL Lite: Edit
 
@@ -192,6 +196,8 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "save this"; "save my document"; "keep my changes".
 - **Save As (Ctrl+Shift+S).** Save a copy of this document under a new name or in another place.
   Say: "save this under a new name"; "save a copy"; "save it somewhere else".
+- **This Post in the Workbench (Ctrl+Alt+Shift+Grave, Shift+H).** Open the WordPress Workbench with this document's post selected.
+  Say: "show this post in the wordpress workbench"; "find this post in the workbench"; "where is this post on my site".
 
 ### QUILL Lite: Format
 
@@ -244,6 +250,8 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 ### QUILL Lite: Tools
 
+- **Form Responses (Ctrl+Alt+Shift+Grave, F).** Read the responses people sent to a form on your WordPress site.
+  Say: "show my form responses"; "who filled in the contact form"; "read the newest form entries".
 - **Next Misspelling (Ctrl+F7).** Move to the next misspelled word.
   Say: "go to the next spelling mistake"; "find the next typo"; "next misspelled word".
 - **Open WordPress Workbench (Ctrl+Alt+Shift+Grave, H).** Open the window for your WordPress sites.

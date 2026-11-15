@@ -27,6 +27,8 @@ you below, or go straight to one of its topics.
   place.
 - If you would rather read the whole guide as one book, `userguide.epub`, in
   the docs folder beside QUILL, has every chapter in it, in order.
+- The [QuillVille family guide](quill-family-startup-and-winget-guide.md) explains
+  startup options across the Windows apps and the current WinGet package status.
 
 ## The chapters
 
@@ -379,6 +381,7 @@ reference for every window. Chapter 3's GitHub section is a short map of it.
 - [Chapter 10: Troubleshooting, privacy and help](./github-guide/github-guide-10-troubleshooting.html)
 - [Chapter 11: Keyboard reference](./github-guide/github-guide-11-keyboard-reference.html)
 - [Chapter 12: The GitHub Workbench, place by place](./github-guide/github-guide-12-the-workbench.html)
+- [Chapter 13: Properties, filters and permissions](./github-guide/github-guide-13-properties-filters-permissions.html)
 
 Help > Open GitHub Guide opens it from inside QUILL.
 

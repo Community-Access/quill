@@ -6,13 +6,18 @@ A mixin on :class:`quill.ui.wordpress_workbench_window.WordPressWorkbenchProvide
   with the plan as the preview (every create, replace and skip), pictures
   uploaded and links pointed at the target.
 - **Compare Sites** (Ctrl+Alt+K), **Take a Snapshot** (Ctrl+Alt+S) and
-  **Read Site as Document** (Ctrl+Alt+D), which opens the pages as one
-  document in the editor, ready for its Word, EPUB and DAISY exports.
-- **The editorial queue**: Approve and Schedule, Send Back with a Note and
-  Assign a Reviewer on posts and pages waiting for review.
-- **Lists in and out**: Export List (CSV or Excel) and Import Posts from a
-  Spreadsheet, previewed row by row.
-- **The REST Console** and the **Practice Site** (Tools menu).
+  **Read Site as Document** (Ctrl+Alt+D), which opens the whole site, a menu
+  or a category as one document in the editor, ready for its Word, EPUB and
+  DAISY exports.
+- **Put Back from a Snapshot** (Ctrl+Alt+Shift+S): a snapshot set back on
+  the site, after a preview that states what is and is not put back.
+- **The editorial queue and Move to Another Day**, in
+  :mod:`quill.ui.wordpress_workbench_bold_queue`.
+- **Lists in and out**: Export List, Import Posts from a Spreadsheet and
+  Import a Folder of Documents, in :mod:`quill.ui.wordpress_workbench_bold_lists`.
+- **The REST Console** and the **Practice Site** (Tools menu; the Practice Site
+  in :mod:`quill.ui.wordpress_workbench_bold_practice`).
+- **Changing a global style**, in :mod:`quill.ui.wordpress_workbench_bold_styles`.
 
 Every request runs through ``self.background``; every change is previewed
 or confirmed by name first; outcomes are one sentence.
@@ -21,47 +26,53 @@ or confirmed by name first; outcomes are one sentence.
 from __future__ import annotations
 
 import time
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from quill.core.wordpress import block_notes as notes
 from quill.core.wordpress import sites as st
 from quill.core.wordpress.workbench_bold import (
     calendar_days,
-    compare_sites,
     fetch_site_file,
     plan_copy,
     run_copy,
-    site_document,
+)
+from quill.core.wordpress.workbench_carry import copy_left_out, left_out_section
+from quill.core.wordpress.workbench_practice import find_cli, missing_words, site_url
+from quill.core.wordpress.workbench_read_site import ReadScope, document_pages, site_document
+from quill.core.wordpress.workbench_rows import WbRow
+from quill.core.wordpress.workbench_snapshot import (
+    COMPARE_OMITS,
+    RESTORE_TERMS,
+    compare_sites,
+    restore_plan,
+    run_restore,
     snapshot_counts_words,
+    snapshot_folders,
+    snapshot_left_out,
+    snapshot_source,
     take_snapshot,
 )
-from quill.core.wordpress.workbench_io import (
-    export_rows,
-    import_plan,
-    read_spreadsheet,
-    send_import,
-)
-from quill.core.wordpress.workbench_practice import (
-    PRACTICE_NAME,
-    find_cli,
-    missing_words,
-    practice_dir,
-    read_password,
-    reset,
-    site_url,
-    start_command,
-)
-from quill.core.wordpress.workbench_rows import WbRow, tree_order
 from quill.core.workbench.actions import Tier
+from quill.core.workbench.history import Change
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui import wordpress_workbench_dialogs as wdlg
+from quill.ui.wordpress_workbench_bold_lists import WorkbenchListCommands
+from quill.ui.wordpress_workbench_bold_more import WorkbenchMoreCommands
+from quill.ui.wordpress_workbench_bold_practice import WorkbenchPracticeCommands
+from quill.ui.wordpress_workbench_bold_queue import WorkbenchQueueCommands
+from quill.ui.wordpress_workbench_bold_styles import WorkbenchGlobalStyleCommands
 
 __all__ = ["WorkbenchBoldCommands"]
 
 
-class WorkbenchBoldCommands:
+class WorkbenchBoldCommands(
+    WorkbenchQueueCommands,
+    WorkbenchListCommands,
+    WorkbenchMoreCommands,
+    WorkbenchPracticeCommands,
+    WorkbenchGlobalStyleCommands,
+):
     """Copy, compare, snapshot, read, the queue, lists in and out, console, practice."""
 
     frame: Any
@@ -123,7 +134,9 @@ class WorkbenchBoldCommands:
         target = self._other_site(source, "Copy to Site")
         if not target:
             return
-        probe = WbRow("item", target, "0", {}, "")
+        if not self.practice_crossing_ok("Copy to Site", [source], [target]):  # type: ignore[attr-defined]
+            return
+        probe = WbRow(rows[0].kind, target, "0", {}, "")
         reason = self.write_refusal(probe, Tier.WRITE)
         if reason:
             self.say(reason)
@@ -132,22 +145,38 @@ class WorkbenchBoldCommands:
         source_url = self.profile(source).site_url
         target_url = self.profile(target).site_url
         picked = [(r.kind, r.subkind, dict(r.raw)) for r in rows]
+        left_out = copy_left_out(raw for _k, _s, raw in picked)
 
         def planned(plan: Any) -> None:
             if not wdlg.ask_preview(
                 self.parent,
                 self.show_modal,
-                title=f"Copy to {target}",
+                title=f"Copy from {source} to {target}",
                 summary=plan.summary,
                 lines=[line.sentence for line in plan.lines]
-                + [f"Upload the picture {url}" for url in plan.pictures],
+                + [f"Upload the picture {url}" for url in plan.pictures]
+                + [f"Left out: {line}" for line in left_out],
                 yes="Copy",
             ):
                 return
 
             def done(failed: list[str]) -> None:
-                more = f" Not copied: {'; '.join(failed[:3])}" if failed else ""
-                self.say(f"Copied to {target}; new items are drafts there.{more}")
+                self.history.record(
+                    Change(target, f"Copied {len(plan.lines)} from {source} to {target}.")
+                )
+                if failed:
+                    self.say(f"Copied to {target}, except {len(failed)}; the report says which.")
+                    self._report(
+                        f"Copy to {target}",
+                        "\n".join([
+                            *plan.outcomes,
+                            *(f"Not copied: {f}" for f in failed if f.startswith("the picture")),
+                            *left_out_section(left_out),
+                        ]),
+                        "What happened to each thing copied.",
+                    )
+                else:
+                    self.say(f"Copied to {target}; new items are drafts there.")
 
             self.background(
                 f"copying to {target}",
@@ -170,6 +199,7 @@ class WorkbenchBoldCommands:
                 source_site=source,
                 target_site=target,
                 source_url=source_url,
+                source=source_api,
             ),
             planned,
         )
@@ -181,11 +211,13 @@ class WorkbenchBoldCommands:
             return
 
         def shown(found: list[Any]) -> None:
-            lines = [f"{d.kind} {d.slug}: {d.words}" for d in found]
+            lines = [f"{d.kind} {d.slug}: {d.words}".replace(" : ", ": ") for d in found]
+            same = "Their posts, pages, patterns, categories, tags and menus are the same."
             self._report(
                 f"{site} and {other}",
-                "\n".join(lines) or "Their posts and pages are the same.",
-                "What differs between the two sites, by post or page and its slug.",
+                "\n".join([*(lines or [same]), "", COMPARE_OMITS]),
+                "What differs between the two sites, by kind and address (slug), and what "
+                "is not compared.",
             )
 
         self.background(
@@ -198,50 +230,167 @@ class WorkbenchBoldCommands:
 
     def do_snapshot(self, ref: Any, _row: WbRow | None) -> None:
         site = self._site_now(ref)
-        if not site or not dlg.confirm(
+        if not site:
+            return
+        choices = ["Everything but the media files", "Everything, with the media files too"]
+        index = dlg.ask_choice(
             self.parent,
             self.show_modal,
             title="Take a Snapshot",
-            message=f"Save every post, page, term, menu, pattern and setting of {site} to this "
-            "computer? Media files stay on the site.",
-            yes_label="Take Snapshot",
-        ):
+            prompt="&Save:",
+            rows=choices,
+            help_text=f"Every post, page, pattern, term, menu, setting and media record of "
+            f"{site}, to this computer. The media files themselves only if you choose; people, "
+            "passwords, plugins, themes, revisions and comments are never saved.",
+        )
+        if index is None:
             return
-        folder = self._base() / "wordpress_snapshots" / self.profile(site).id
+        media = index == 1
+        api = self.ctx(site).api
+        folder = self._snapshots(site)
 
         def done(result: tuple[Path, dict[str, int]]) -> None:
             where, counts = result
-            self.say(f"Snapshot of {site} saved: {snapshot_counts_words(counts)}. In {where}.")
+            left_out = "; ".join(snapshot_left_out(where))
+            self.say(
+                f"Snapshot of {site} saved: {snapshot_counts_words(counts)}. In {where}. "
+                f"Left out: {left_out}."
+            )
 
         self.background(
             "taking a snapshot",
-            lambda: take_snapshot(self.ctx(site).api, folder, site=site),
+            lambda: take_snapshot(
+                api,
+                folder,
+                site=site,
+                media=media,
+                fetch=(lambda url: fetch_site_file(api, url)) if media else None,
+                practice=self.is_practice(site),  # type: ignore[attr-defined]
+            ),
             done,
         )
+
+    def _snapshots(self, site: str) -> Path:
+        profile = self.profile(site)
+        return self._base() / "wordpress_snapshots" / (profile.id if profile else site)
+
+    def do_restore_snapshot(self, ref: Any, _row: WbRow | None) -> None:
+        site = self._site_now(ref)
+        if not site:
+            return
+        found = snapshot_folders(self._snapshots(site))
+        if not found:
+            self.say(f"There is no snapshot of {site} yet: Site > Take a Snapshot makes one.")
+            return
+        index = dlg.ask_choice(
+            self.parent,
+            self.show_modal,
+            title="Put Back from a Snapshot",
+            prompt="&Snapshot:",
+            rows=[p.name for p in found],
+            help_text="The snapshots of this site, newest first. The next step previews "
+            "exactly what would be put back.",
+        )
+        if index is None:
+            return
+        chosen = found[index]
+        taken_on, practice = snapshot_source(chosen)
+        is_practice = self.is_practice  # type: ignore[attr-defined]
+        practice = practice or bool(taken_on and is_practice(taken_on))
+        if practice and not self.practice_crossing_ok(  # type: ignore[attr-defined]
+            "Put Back from a Snapshot", [taken_on or site], [site], from_practice=True
+        ):
+            return
+        api = self.ctx(site).api
+
+        def planned(lines: list[Any]) -> None:
+            if not lines:
+                self.say(f"{site} already matches the snapshot of {chosen.name}.")
+                return
+            if not wdlg.ask_preview(
+                self.parent,
+                self.show_modal,
+                title=f"Put Back {chosen.name}",
+                summary=f"{len(lines)} changes on {site}. {RESTORE_TERMS}",
+                lines=[line.sentence for line in lines],
+                yes="Put Back",
+            ):
+                return
+
+            def done(said: list[str]) -> None:
+                self.history.record(Change(site, f"Put back the snapshot {chosen.name}."))
+                missed = sum(1 for line in said if line.startswith("Not"))
+                self.say(f"Put back {len(said) - missed} of {len(said)} on {site}.")
+                if missed:
+                    self._report("Put Back from a Snapshot", "\n".join(said), RESTORE_TERMS)
+                self.refresh()
+
+            self.background("putting back", lambda: run_restore(api, lines), done)
+
+        self.background("comparing with the snapshot", lambda: restore_plan(api, chosen), planned)
 
     def do_read_site(self, ref: Any, _row: WbRow | None) -> None:
         site = self._site_now(ref)
         if not site:
             return
+        index = dlg.ask_choice(
+            self.parent,
+            self.show_modal,
+            title="Read Site as Document",
+            prompt="&Read:",
+            rows=["The whole site", "The pages in one menu", "The posts in one category"],
+            help_text="Every published page in page order, a menu's pages in its order, or a "
+            "category's posts oldest first, as one document in the editor.",
+        )
+        if index is None:
+            return
+        if index == 0:
+            self._read_scope(site, ReadScope())
+            return
+        kind, route = ("menu", "wp/v2/menus") if index == 1 else ("category", "wp/v2/categories")
         api = self.ctx(site).api
 
-        def work() -> Path:
-            raw = list(
-                api.iter_collection(
-                    "wp/v2/pages",
-                    {"status": "publish", "orderby": "menu_order", "order": "asc"},
-                    per_page=100,
-                    max_pages=20,
-                )
-            )
-            from quill.core.wordpress.workbench_rows import item_row
+        def listed() -> list[tuple[int, str]]:
+            found = api.iter_collection(route, {"_fields": "id,name"}, per_page=100, max_pages=5)
+            return [(int(r.get("id", 0) or 0), str(r.get("name", ""))) for r in found]
 
-            ordered = tree_order([item_row(r, "page", site) for r in raw])
-            text = site_document(site, [r.raw for r in ordered])
+        def chosen(options: list[tuple[int, str]]) -> None:
+            if not options:
+                self.say(f"{site} has no {kind}s to read.")
+                return
+            picked = dlg.ask_choice(
+                self.parent,
+                self.show_modal,
+                title="Read Site as Document",
+                prompt=f"&{kind.capitalize()}:",
+                rows=[name for _ident, name in options],
+                help_text=f"Which {kind} to read as one document.",
+            )
+            if picked is not None:
+                ident, name = options[picked]
+                self._read_scope(site, ReadScope(kind, ident, name))
+
+        self.background(f"listing {kind}s", listed, chosen)
+
+    def _read_scope(self, site: str, scope: ReadScope) -> None:
+        api = self.ctx(site).api
+        address = self.profile(site).site_url if self.profile(site) else ""
+
+        def work() -> Path:
+            pages, notes = document_pages(api, scope, site=site)
+            text = site_document(
+                site,
+                pages,
+                address=address,
+                scope=scope.words,
+                made=time.strftime("%Y-%m-%d %H:%M"),
+                notes=notes,
+            )
             folder = self._base() / "wordpress_read_site"
             folder.mkdir(parents=True, exist_ok=True)
             safe = "".join(c if c.isalnum() or c in " -_" else "_" for c in site).strip()
-            path = folder / f"{safe or 'site'} as a document.md"
+            extra = f" {scope.name}" if scope.name else ""
+            path = folder / f"{safe or 'site'}{extra} as a document.md"
             path.write_text(text, encoding="utf-8", newline="\n")
             return path
 
@@ -254,136 +403,6 @@ class WorkbenchBoldCommands:
 
         self.background("reading the site", work, done)
 
-    # -- the editorial queue (15.4) -----------------------------------------------
-
-    def _queue_rows(self, row: WbRow | None) -> list[WbRow]:
-        rows = [r for r in (self.selected_rows() or ([row] if row else [])) if r.kind == "item"]
-        if not rows:
-            self.say("Select a post or page waiting for review.")
-        return rows
-
-    def do_approve_schedule(self, _ref: Any, row: WbRow | None) -> None:
-        rows = self._queue_rows(row)
-        if not rows:
-            return
-        when = dlg.ask_text(
-            self.parent,
-            self.show_modal,
-            title="Approve and Schedule",
-            prompt="&Publish on (2026-11-12 09:00), or empty for now:",
-            help_text="The site's own time. Empty publishes them now.",
-        )
-        if when is None:
-            return
-        text = when.strip().replace(" ", "T")
-        body: dict[str, Any] = {"status": "future", "date": text} if text else {"status": "publish"}
-        api = self.ctx(rows[0].site).api
-
-        def work() -> None:
-            for r in rows:
-                api.post(r.route, body)
-
-        said = f"scheduled for {when.strip()}" if text else "published"
-        self.background(
-            "approving", work, lambda _n: (self.say(f"{len(rows)} {said}."), self.refresh())
-        )
-
-    def _note_then(self, rows: Sequence[WbRow], title: str, prompt: str, status: str) -> None:
-        text = dlg.ask_text(
-            self.parent,
-            self.show_modal,
-            title=title,
-            prompt=prompt,
-            help_text="A note on the draft, which its writer reads in the editor.",
-            multiline=True,
-        )
-        if not text or not text.strip():
-            return
-        api = self.ctx(rows[0].site).api
-
-        def work() -> None:
-            for r in rows:
-                notes.add_note(api, r.object_id, text.strip())
-                if status:
-                    api.post(r.route, {"status": status})
-
-        self.background(
-            "leaving a note", work, lambda _n: (self.say(f"{title}: done."), self.refresh())
-        )
-
-    def do_send_back(self, _ref: Any, row: WbRow | None) -> None:
-        rows = self._queue_rows(row)
-        if rows:
-            self._note_then(rows, "Send Back with a Note", "&What needs changing:", "draft")
-
-    def do_assign_reviewer(self, _ref: Any, row: WbRow | None) -> None:
-        rows = self._queue_rows(row)
-        if rows:
-            self._note_then(rows, "Assign a Reviewer", "&Reviewer, and a note for them:", "")
-
-    # -- lists in and out (15.10) -------------------------------------------------
-
-    def _file(self, title: str, wildcard: str, *, save: bool) -> Path | None:
-        wx = self.frame._wx
-        style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT if save else wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
-        dialog = wx.FileDialog(self.parent, title, wildcard=wildcard, style=style)
-        try:
-            if self.show_modal(dialog, title) != wx.ID_OK:
-                return None
-            return Path(dialog.GetPath())
-        finally:
-            dialog.Destroy()
-
-    def do_export_list(self, _ref: Any, _row: WbRow | None) -> None:
-        frame = self.frame
-        if frame is None or not frame.rows:
-            self.say("There is nothing in the list to export.")
-            return
-        path = self._file(
-            "Export List", "Excel workbook (*.xlsx)|*.xlsx|CSV (*.csv)|*.csv", save=True
-        )
-        if path is None:
-            return
-        columns = frame.provider.columns(frame.node(frame.current))
-        from quill.core.wordpress.workbench_listing import column_title
-
-        rows = [frame.provider.cells(r, columns) for r in frame.rows]
-        count = export_rows(path, [column_title(c) for c in columns], rows)
-        self.say(f"Exported {count} rows to {path.name}.")
-
-    def do_import_posts(self, ref: Any, _row: WbRow | None) -> None:
-        site = self._site_now(ref)
-        if not site:
-            return
-        kind = "page" if ref is not None and ref.key.startswith("pages") else "post"
-        path = self._file(
-            "Import Posts from a Spreadsheet",
-            "Spreadsheets (*.xlsx;*.csv)|*.xlsx;*.csv",
-            save=False,
-        )
-        if path is None:
-            return
-        plan = import_plan(read_spreadsheet(path))
-        ready = [r for r in plan if not r.problem]
-        if not wdlg.ask_preview(
-            self.parent,
-            self.show_modal,
-            title=f"Import into {site}",
-            summary=f"{len(ready)} {kind}s will be made on {site}, as drafts unless their "
-            f"Status column says otherwise; {len(plan) - len(ready)} rows are skipped.",
-            lines=[r.sentence for r in plan],
-            yes="Import",
-        ):
-            return
-        api = self.ctx(site).api
-
-        def done(failed: list[str]) -> None:
-            more = f" Not made: {'; '.join(failed[:3])}" if failed else ""
-            self.say(f"Imported {len(ready) - len(failed)} {kind}s into {site}.{more}")
-            self.refresh()
-
-        self.background("importing", lambda: send_import(api, kind, plan), done)
-
     # -- the REST Console (15.9) --------------------------------------------------
 
     def do_rest_console(self, ref: Any, _row: WbRow | None) -> None:
@@ -395,72 +414,6 @@ class WorkbenchBoldCommands:
         ctx = self.ensure(self.ctx(site))
         RestConsole(self, site, ctx).show()
 
-    # -- the practice site (15.1) -------------------------------------------------
-
-    def do_practice(self, _ref: Any, _row: WbRow | None) -> None:
-        tools = find_cli()
-        missing = missing_words(tools)
-        if missing:
-            self.say(missing)
-            return
-        running = getattr(self, "_practice", None)
-        choices = (
-            ["Connect It as Practice Site", "Stop the Practice Site"]
-            if running is not None
-            else ["Start the Practice Site", "Reset the Practice Site"]
-        )
-        index = dlg.ask_choice(
-            self.parent,
-            self.show_modal,
-            title=PRACTICE_NAME,
-            prompt="&Do:",
-            rows=choices,
-            help_text="A WordPress site on this computer only, for learning with nothing at "
-            "stake. Reset puts it back as new.",
-        )
-        if index is None:
-            return
-        choice = choices[index]
-        folder = practice_dir(self._base())
-        if choice.startswith("Start"):
-            from quill.stability.safe_subprocess import spawn_subprocess_safely
-
-            self._practice = spawn_subprocess_safely(start_command(tools, folder))
-            self.say(f"Starting the practice site at {site_url()}. Connect it in a moment.")
-        elif choice.startswith("Stop"):
-            running.kill()
-            self._practice = None
-            self.say("The practice site has stopped.")
-        elif choice.startswith("Reset"):
-            if dlg.confirm(
-                self.parent,
-                self.show_modal,
-                title="Reset the Practice Site",
-                message="Put the practice site back as new? Everything made on it is removed.",
-                yes_label="Reset",
-            ):
-                reset(folder)
-                self.say("The practice site is new again. Start it to use it.")
-        else:
-            self._connect_practice(folder)
-
-    def _connect_practice(self, folder: Path) -> None:
-        found = read_password(folder)
-        if found is None:
-            self.say("The practice site is still starting. Try Connect again in a moment.")
-            return
-        username, secret = found
-        store = self.commands.sites()
-        profile = next((p for p in store.sites if p.name == PRACTICE_NAME), None)
-        if profile is None:
-            profile = st.SiteProfile(st.new_site_id(), PRACTICE_NAME, site_url(), username)
-        st.save_secret(profile.id, secret)
-        store.upsert(profile)
-        st.save_sites(store, self._data_dir)
-        self.reload_profiles()  # type: ignore[attr-defined]
-        self.frame.rebuild_tree()
-        self.say(f"{PRACTICE_NAME} is connected. It is under Sites.")
-
     # -- the calendar (15.3) ------------------------------------------------------
 
     def calendar_rows(self) -> list[WbRow]:
@@ -469,9 +422,22 @@ class WorkbenchBoldCommands:
 
         since = time.strftime("%Y-%m-%d", time.localtime(time.time() - 14 * 86400))
         sites = [(name, self.ctx(name).api) for name in self._profiles]
-        days = calendar_days(sites, since=since)
+        found = getattr(self, "_types", {})
+        kinds = {
+            name: [
+                "post",
+                "page",
+                *(k for k, _n in found.get(name, []) if k not in ("post", "page")),
+            ]
+            for name in self._profiles
+        }
+        failures: list[str] = []
+        days = calendar_days(sites, since=since, kinds_by_site=kinds, failures=failures)
         self.days = days
-        rows: list[WbRow] = []
+        rows: list[WbRow] = [
+            WbRow("fact", "", f"failed:{i}", {"day": f"Could not ask {said}"}, said)
+            for i, said in enumerate(failures)
+        ]
         for day, items in days.items():
             scheduled = sum(1 for i in items if i["status"] == "future")
             published = len(items) - scheduled
@@ -533,14 +499,21 @@ class WorkbenchBoldCommands:
                 f"at most every {max(15, options.watch_minutes)} minutes, while QUILL is open; "
                 "Tools > Workbench Options turns each on or off",
             ))
+            if options.watches:
+                from quill.core.wordpress.workbench_watches import load_state, status_facts
+
+                state = load_state(self._data_dir)
+                facts += status_facts(state, list(self._profiles), options.watch_minutes)
             return fact_rows("", facts)
         tools = find_cli()
-        running = getattr(self, "_practice", None) is not None
+        process = getattr(self, "_practice", None)
+        running = process is not None and process.poll() is None
         return fact_rows(
             "",
             [
                 ("Playground's tool", str(tools.cli) if tools.cli else "not in this build"),
                 ("Node.js", str(tools.node) if tools.node else "not found"),
+                ("WordPress core", str(tools.wordpress) if tools.wordpress else "not bundled"),
                 ("Running", f"yes, at {site_url()}" if running else "no"),
                 ("What to do", missing_words(tools) or "Tools > Practice Site starts it."),
             ],

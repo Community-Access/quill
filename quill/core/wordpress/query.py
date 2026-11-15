@@ -253,6 +253,15 @@ VALUE_LABELS: Mapping[str, Mapping[str, str]] = {
         "registered_date": "Date registered",
         "post": "Post",
         "type": "Type",
+        # The seven orderings plugins add (WooCommerce, the plugin and theme
+        # directories), said in words like the rest (WP-B; the combination test).
+        "favorite_count": "How many people marked it a favourite",
+        "popularity": "Most popular",
+        "post__in": "The order of the items asked for",
+        "price": "Price",
+        "random": "Random order",
+        "rating": "Average rating",
+        "sales": "How many have sold",
     },
     "search_columns": {
         "post_title": "Title",

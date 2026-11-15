@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 586.
+Editor commands with default bindings: 588.
 
 ## The QUILL editor
 
@@ -594,6 +594,7 @@ Editor commands with default bindings: 586.
 | Ctrl+Alt+Shift+Grave, C | Compare with Site | `wordpress.compare` |
 | Ctrl+Alt+Shift+Grave, D | Save Draft to Site | `wordpress.save_draft` |
 | Ctrl+Alt+Shift+Grave, E | Schedule Publish... | `wordpress.schedule` |
+| Ctrl+Alt+Shift+Grave, F | Responses | `forms.responses` |
 | Ctrl+Alt+Shift+Grave, G | New Page... | `wordpress.new_page` |
 | Ctrl+Alt+Shift+Grave, H | Open WordPress Workbench... | `wordpress.workbench` |
 | Ctrl+Alt+Shift+Grave, I | Open on Site | `wordpress.open_on_site` |
@@ -605,6 +606,7 @@ Editor commands with default bindings: 586.
 | Ctrl+Alt+Shift+Grave, P | Publish or Update... | `wordpress.publish` |
 | Ctrl+Alt+Shift+Grave, R | Properties... | `wordpress.properties` |
 | Ctrl+Alt+Shift+Grave, S | Switch Site... | `wordpress.switch_site` |
+| Ctrl+Alt+Shift+Grave, Shift+H | This Post in the Workbench | `wordpress.this_post_in_workbench` |
 | Ctrl+Alt+Shift+Grave, Shift+S | Sites... | `wordpress.sites` |
 | Ctrl+Alt+Shift+Grave, T | Move to Trash... | `wordpress.trash` |
 | Ctrl+Alt+Shift+Grave, U | Upload Files... | `wordpress.upload_files` |
@@ -1000,6 +1002,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+Left | Back | `github.workbench.back` |
 | Alt+PageDown | Load More | `github.workbench.load_more` |
 | Alt+Right | Forward | `github.workbench.forward` |
+| Alt+Shift+B | Compare With Previous | `github.workbench.compare_previous` |
 | Alt+Shift+F1 | Workbench Keys | `github.workbench.keys` |
 | Alt+Up | Parent Node | `github.workbench.go_parent` |
 | Ctrl+. | Next Unread | `github.workbench.next_unread` |
@@ -1015,6 +1018,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+9 | Start Here | `github.workbench.go_start` |
 | Ctrl+A | Select All | `github.workbench.select_all` |
 | Ctrl+Alt+F | Filter Builder... | `github.workbench.filter_builder` |
+| Ctrl+B | Compare With Default | `github.workbench.compare_default` |
 | Ctrl+C | Copy | `github.workbench.copy` |
 | Ctrl+Cancel | Cancel Run... (Ctrl+Break, in the list) | `github.workbench.cancel_run` |
 | Ctrl+D | Add to or Remove from Favorites | `github.workbench.favorite` |
@@ -1049,6 +1053,8 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+F5 | Re-run Failed Jobs | `github.workbench.rerun_failed` |
 | Ctrl+Shift+G | Repository Actions... | `github.workbench.repository_actions` |
 | Ctrl+Shift+H | Change History... | `github.workbench.change_history` |
+| Ctrl+Shift+I | Read as Document... | `github.workbench.read_as_document` |
+| Ctrl+Shift+J | GitHub API Console... | `github.workbench.api_console` |
 | Ctrl+Shift+K | Manage GitHub Accounts... | `github.workbench.manage_accounts` |
 | Ctrl+Shift+L | GitHub API Rate Limit | `github.workbench.rate_limit` |
 | Ctrl+Shift+M | Comment... | `github.workbench.comment` |
@@ -1072,3 +1078,99 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Shift+F1 | What Can I Do Here?... | `github.workbench.what_can_i_do` |
 | Shift+F6 | Previous Pane | `github.workbench.previous_pane` |
 | Shift+F9 | Explain That | `github.workbench.explain_result` |
+
+## WordPress Workbench (app keys)
+
+App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
+
+| Key | Command | Command id |
+| --- | --- | --- |
+| Alt+1 | Where Am I | `wordpress.workbench.where_am_i` |
+| Alt+2 | Say Selection | `wordpress.workbench.say_selection` |
+| Alt+Enter | Properties... | `wordpress.workbench.sheet` |
+| Alt+F4 | Close Workbench | `wordpress.workbench.close` |
+| Alt+Left | Back | `wordpress.workbench.back` |
+| Alt+Right | Forward | `wordpress.workbench.forward` |
+| Alt+Shift+Enter | Site Properties... | `wordpress.workbench.site_sheet` |
+| Alt+Up | Parent Node | `wordpress.workbench.go_parent` |
+| Ctrl+0 | Across Sites | `wordpress.workbench.go_across` |
+| Ctrl+1 | Needs My Attention | `wordpress.workbench.go_inbox` |
+| Ctrl+2 | Current Site | `wordpress.workbench.go_site` |
+| Ctrl+3 | Calendar | `wordpress.workbench.go_calendar` |
+| Ctrl+5 | Watches | `wordpress.workbench.go_watches` |
+| Ctrl+6 | Practice Site | `wordpress.workbench.go_practice` |
+| Ctrl+9 | Start Here | `wordpress.workbench.go_start` |
+| Ctrl+Alt+A | Workbench Access... | `wordpress.workbench.access` |
+| Ctrl+Alt+B | Plain-Language Batch... | `wordpress.workbench.plain_batch` |
+| Ctrl+Alt+C | Columns... | `wordpress.workbench.columns` |
+| Ctrl+Alt+D | Read Site as Document | `wordpress.workbench.read_site` |
+| Ctrl+Alt+E | Empty Spam... | `wordpress.workbench.empty_spam` |
+| Ctrl+Alt+F | Star or Unstar Entry | `wordpress.workbench.toggle_starred` |
+| Ctrl+Alt+G | Group By... | `wordpress.workbench.group_by` |
+| Ctrl+Alt+H | Hide Like This... | `wordpress.workbench.hide_like` |
+| Ctrl+Alt+I | Resend Notifications... | `wordpress.workbench.resend_notifications` |
+| Ctrl+Alt+K | Compare Sites... | `wordpress.workbench.compare_sites` |
+| Ctrl+Alt+L | Load All | `wordpress.workbench.load_all` |
+| Ctrl+Alt+M | Only Mine | `wordpress.workbench.only_mine` |
+| Ctrl+Alt+N | Entry Notes... | `wordpress.workbench.entry_notes` |
+| Ctrl+Alt+O | Show Only Like This... | `wordpress.workbench.show_only` |
+| Ctrl+Alt+P | Practice Site... | `wordpress.workbench.practice` |
+| Ctrl+Alt+Q | Run a Saved Request... | `wordpress.workbench.run_saved` |
+| Ctrl+Alt+R | Roles and What They May Do | `wordpress.workbench.roles` |
+| Ctrl+Alt+S | Take a Snapshot... | `wordpress.workbench.snapshot` |
+| Ctrl+Alt+Shift+C | Comment Counts | `wordpress.workbench.comment_counts` |
+| Ctrl+Alt+Shift+D | Move to Another Day... | `wordpress.workbench.move_day` |
+| Ctrl+Alt+Shift+E | Empty Comment Trash... | `wordpress.workbench.empty_comment_trash` |
+| Ctrl+Alt+Shift+F | Forget a Saved Request... | `wordpress.workbench.forget_saved` |
+| Ctrl+Alt+Shift+I | Import a Folder of Documents... | `wordpress.workbench.import_folder` |
+| Ctrl+Alt+Shift+M | Show Its Comments | `wordpress.workbench.show_comments` |
+| Ctrl+Alt+Shift+P | Your Profile... | `wordpress.workbench.your_profile` |
+| Ctrl+Alt+Shift+S | Put Back from a Snapshot... | `wordpress.workbench.restore_snapshot` |
+| Ctrl+Alt+T | Site Sets... | `wordpress.workbench.site_sets` |
+| Ctrl+Alt+U | Mark Entry Read or Unread | `wordpress.workbench.toggle_read` |
+| Ctrl+Alt+V | View As Role... | `wordpress.workbench.view_as` |
+| Ctrl+Alt+W | Not Spam, and Allow This Sender | `wordpress.workbench.allow_sender` |
+| Ctrl+Alt+Y | Across Sites Scope... | `wordpress.workbench.scope` |
+| Ctrl+E | Filter... | `wordpress.workbench.filter` |
+| Ctrl+Enter | Preview on the Site | `wordpress.workbench.preview` |
+| Ctrl+N | New Here... | `wordpress.workbench.new_here` |
+| Ctrl+Shift+1 | Posts | `wordpress.workbench.go_posts` |
+| Ctrl+Shift+2 | Pages | `wordpress.workbench.go_pages` |
+| Ctrl+Shift+3 | Media | `wordpress.workbench.go_media` |
+| Ctrl+Shift+4 | Comments | `wordpress.workbench.go_comments` |
+| Ctrl+Shift+5 | Users | `wordpress.workbench.go_users` |
+| Ctrl+Shift+6 | Plugins | `wordpress.workbench.go_plugins` |
+| Ctrl+Shift+7 | Appearance | `wordpress.workbench.go_appearance` |
+| Ctrl+Shift+8 | Settings | `wordpress.workbench.go_settings` |
+| Ctrl+Shift+9 | Site Health | `wordpress.workbench.go_health` |
+| Ctrl+Shift+A | Approve, or Not Spam | `wordpress.workbench.approve` |
+| Ctrl+Shift+B | Send Back with a Note... | `wordpress.workbench.send_back` |
+| Ctrl+Shift+C | Copy Link | `wordpress.workbench.copy_link` |
+| Ctrl+Shift+D | Approve and Schedule... | `wordpress.workbench.approve_schedule` |
+| Ctrl+Shift+E | Switch to Editor | `wordpress.workbench.switch_to_editor` |
+| Ctrl+Shift+F | Filter Builder... | `wordpress.workbench.filter_builder` |
+| Ctrl+Shift+G | Merge Into... | `wordpress.workbench.merge_into` |
+| Ctrl+Shift+H | Change History... | `wordpress.workbench.history` |
+| Ctrl+Shift+I | Import Posts from a Spreadsheet... | `wordpress.workbench.import_posts` |
+| Ctrl+Shift+J | Assign a Reviewer... | `wordpress.workbench.assign_reviewer` |
+| Ctrl+Shift+K | Convert to Category or Tag... | `wordpress.workbench.convert_term` |
+| Ctrl+Shift+L | Load More | `wordpress.workbench.load_more` |
+| Ctrl+Shift+M | Reply... | `wordpress.workbench.reply` |
+| Ctrl+Shift+O | Workbench Options... | `wordpress.workbench.options` |
+| Ctrl+Shift+P | Publish or Update... | `wordpress.workbench.publish` |
+| Ctrl+Shift+R | Restore from Trash | `wordpress.workbench.restore` |
+| Ctrl+Shift+S | Spam | `wordpress.workbench.spam` |
+| Ctrl+Shift+T | REST Console... | `wordpress.workbench.rest_console` |
+| Ctrl+Shift+U | Unapprove | `wordpress.workbench.unapprove` |
+| Ctrl+Shift+W | Send Password Reset | `wordpress.workbench.send_password_reset` |
+| Ctrl+Shift+X | Export List... | `wordpress.workbench.export_list` |
+| Ctrl+Shift+Y | Copy to Site... | `wordpress.workbench.copy_to_site` |
+| Ctrl+Z | Undo WordPress Change | `wordpress.workbench.undo` |
+| Delete | Move to Trash | `wordpress.workbench.trash` |
+| F1 | Help for This View | `wordpress.workbench.help_view` |
+| F5 | Refresh | `wordpress.workbench.refresh` |
+| F6 | Next Pane | `wordpress.workbench.next_pane` |
+| Shift+Delete | Delete Permanently... | `wordpress.workbench.delete_permanently` |
+| Shift+Enter | Open on the Site | `wordpress.workbench.open_on_site` |
+| Shift+F1 | What Can I Do Here? | `wordpress.workbench.what_can_i_do` |
+| Shift+F6 | Previous Pane | `wordpress.workbench.previous_pane` |

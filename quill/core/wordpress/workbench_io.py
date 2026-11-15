@@ -2,13 +2,22 @@
 
 - **Export any list** (:func:`export_rows`): the rows a Workbench list shows,
   with the columns it shows, as CSV (UTF-8 with its byte-order mark, so Excel
-  opens it the right way) or as an Excel workbook through openpyxl, with a
-  header row and the first row frozen.
+  opens it the right way), as an Excel workbook through openpyxl (a header
+  row, the first row frozen), or as a Markdown table -- the QUILL table, which
+  the editor's table commands read and its Word, EPUB and DAISY exports keep.
 - **Import posts or pages from a spreadsheet** (:func:`read_spreadsheet`,
-  :func:`import_plan`, :func:`send_import`): the columns are named by their
-  header (Title, Content, Status, Slug, Excerpt, Categories, Tags; any case),
-  every row is previewed, and each becomes a draft unless its Status says
-  otherwise. Categories and tags are names, separated by commas, found or made.
+  :func:`import_mapping`, :func:`import_plan`, :func:`send_import_results`):
+  columns are matched by their header, with the usual other names (Body for
+  Content, Category for Categories, Publish Date for Date), and the preview
+  starts with that mapping and the columns it leaves out. Each row becomes a
+  draft, a pending item or a private one; a row whose Status says publish or
+  future is made a draft, for publishing after a look. Categories and tags are
+  names, separated by commas, found or made. The result is a sentence a row.
+- **Import a folder of documents** (:func:`folder_plan`): each Markdown, text
+  or Word file a draft, its first heading the title, its Markdown made blocks;
+  its pictures and its links to the other files are found here and carried by
+  :func:`quill.core.wordpress.workbench_carry.send_folder`, and anything not
+  carried is listed (WP-G).
 - **The REST Console** (:func:`parse_params`, :func:`needed_capability`,
   :func:`answer_tree`, :func:`complete_route`): completion from the site's own
   index, the capability a request needs, and the answer as a tree.
@@ -21,8 +30,8 @@ from __future__ import annotations
 import csv
 import io
 import json
-from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
+from collections.abc import Callable, Iterable, Mapping, Sequence
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -36,8 +45,14 @@ __all__ = [
     "answer_tree",
     "complete_route",
     "export_rows",
+    "folder_plan",
+    "import_mapping",
     "import_plan",
+    "make_row",
+    "mapping_lines",
+    "markdown_table",
     "needed_capability",
+    "send_import_results",
     "parse_params",
     "read_spreadsheet",
     "send_import",
@@ -45,14 +60,36 @@ __all__ = [
 
 IMPORT_COLUMNS = ("title", "content", "status", "slug", "excerpt", "categories", "tags", "date")
 _STATUSES = frozenset({"draft", "pending", "publish", "private", "future"})
+_KEPT_STATUSES = frozenset({"draft", "pending", "private"})
+IMPORT_SYNONYMS: dict[str, str] = {
+    "name": "title",
+    "headline": "title",
+    "body": "content",
+    "text": "content",
+    "summary": "excerpt",
+    "category": "categories",
+    "tag": "tags",
+    "address": "slug",
+    "publish date": "date",
+    "date published": "date",
+    "post status": "status",
+}
+DOC_SUFFIXES = (".md", ".markdown", ".txt", ".docx")
+
+
+def _header(text: str) -> str:
+    return " ".join(str(text).strip().lower().replace("_", " ").split())
 
 
 def export_rows(
     path: Path, headings: Sequence[str], rows: Iterable[Sequence[str]], *, kind: str = ""
 ) -> int:
-    """Write *rows* under *headings* to *path* (``.csv`` or ``.xlsx``); the row count."""
+    """Write *rows* under *headings* to *path* (``.csv``, ``.xlsx`` or ``.md``); the count."""
     data = [list(map(str, row)) for row in rows]
     suffix = kind or path.suffix.lower().lstrip(".")
+    if suffix in ("md", "markdown"):
+        path.write_text(markdown_table(headings, data), encoding="utf-8", newline="\n")
+        return len(data)
     if suffix == "xlsx":
         from openpyxl import Workbook
 
@@ -73,19 +110,68 @@ def export_rows(
     return len(data)
 
 
+def markdown_table(headings: Sequence[str], rows: Iterable[Sequence[str]]) -> str:
+    """A Markdown (pipe) table; a pipe or line break inside a cell stays text."""
+
+    def cell(text: object) -> str:
+        said = str(text).replace("\\", "\\\\").replace("|", "\\|").replace("\r", "")
+        return said.replace("\n", "<br>")
+
+    lines = ["| " + " | ".join(cell(h) for h in headings) + " |"]
+    lines.append("|" + "|".join(" --- " for _ in headings) + "|")
+    lines += ["| " + " | ".join(cell(c) for c in row) + " |" for row in rows]
+    return "\n".join(lines) + "\n"
+
+
 @dataclass(frozen=True)
 class ImportRow:
     number: int
     fields: Mapping[str, str]
     problem: str = ""
+    note: str = ""
+    name: str = ""
+    #: A document's pictures, links and left-out lines (:mod:`workbench_carry`).
+    carry: Mapping[str, Any] = field(default_factory=dict)
+
+    @property
+    def where(self) -> str:
+        return self.name or f"Row {self.number}"
 
     @property
     def sentence(self) -> str:
         title = self.fields.get("title", "") or "(no title)"
         status = self.fields.get("status", "") or "draft"
         if self.problem:
-            return f"Row {self.number}, {title}: skipped, {self.problem}"
-        return f"Row {self.number}: {title}, as {status}"
+            return f"{self.where}, {title}: skipped, {self.problem}"
+        said = f"{self.where}: {title}, as {status}" + (f" ({self.note})" if self.note else "")
+        pictures, links = len(self.carry.get("pictures", {})), len(self.carry.get("links", {}))
+        if pictures:
+            said += f", {pictures} pictures to upload"
+        if links:
+            said += f", {links} links to the other drafts"
+        return said
+
+
+def import_mapping(headers: Iterable[str]) -> tuple[dict[str, str], list[str]]:
+    """Each column the import uses and the field it fills; the columns left out."""
+    mapping: dict[str, str] = {}
+    ignored: list[str] = []
+    for header in headers:
+        clean = _header(header)
+        name = clean if clean in IMPORT_COLUMNS else IMPORT_SYNONYMS.get(clean, "")
+        if name and name not in mapping.values():
+            mapping[clean] = name
+        elif clean:
+            ignored.append(clean)
+    return mapping, ignored
+
+
+def mapping_lines(mapping: Mapping[str, str], ignored: Sequence[str]) -> list[str]:
+    """The mapping as the preview's first lines."""
+    lines = [f"Column {column} fills {name}." for column, name in mapping.items()]
+    if ignored:
+        lines.append(f"Left out, matching no field: {', '.join(ignored)}.")
+    return lines
 
 
 def read_spreadsheet(path: Path) -> list[dict[str, str]]:
@@ -105,7 +191,7 @@ def read_spreadsheet(path: Path) -> list[dict[str, str]]:
         values = [list(row) for row in csv.reader(io.StringIO(text))]
     if not values:
         return []
-    header = [h.strip().lower() for h in values[0]]
+    header = [_header(h) for h in values[0]]
     return [
         {header[i]: cell.strip() for i, cell in enumerate(row) if i < len(header) and header[i]}
         for row in values[1:]
@@ -117,16 +203,18 @@ def import_plan(rows: Sequence[Mapping[str, str]]) -> list[ImportRow]:
     """The preview: one line per spreadsheet row, with why any row is left out."""
     plan: list[ImportRow] = []
     for number, row in enumerate(rows, start=2):
-        fields = {k: v for k, v in row.items() if k in IMPORT_COLUMNS}
+        mapping, _left_out = import_mapping(row)
+        fields = {mapping[_header(k)]: v for k, v in row.items() if _header(k) in mapping}
         status = fields.get("status", "").lower()
-        problem = ""
+        problem = note = ""
         if not fields.get("title") and not fields.get("content"):
             problem = "it has no title and no content"
         elif status and status not in _STATUSES:
             problem = f"{status} is not a status WordPress knows"
-        elif status == "future" and not fields.get("date"):
-            problem = "a scheduled post needs a date"
-        plan.append(ImportRow(number, fields, problem))
+        elif status and status not in _KEPT_STATUSES:
+            note = f"its Status says {status}; publish it after a look"
+            fields["status"] = "draft"
+        plan.append(ImportRow(number, fields, problem, note))
     return plan
 
 
@@ -148,28 +236,85 @@ def _term_ids(api: WordPressApi, route: str, names: str) -> list[int]:
 
 def send_import(api: WordPressApi, kind: str, plan: Sequence[ImportRow]) -> list[str]:
     """Make each previewed row; the sentences for rows the site would not take."""
-    failed: list[str] = []
+    return [s for s in send_import_results(api, kind, plan) if s.startswith("Not made")]
+
+
+def make_row(
+    api: WordPressApi, kind: str, row: ImportRow, *, content: str | None = None
+) -> dict[str, Any]:
+    """Make one previewed row on the site; what the site answered (raises on refusal)."""
+    fields = row.fields
+    body: dict[str, Any] = {
+        "title": fields.get("title", ""),
+        "content": fields.get("content", "") if content is None else content,
+        "status": (fields.get("status") or "draft").lower(),
+    }
+    for key in ("slug", "excerpt", "date"):
+        if fields.get(key):
+            body[key] = fields[key]
+    if kind == "post":
+        for column in ("categories", "tags"):
+            if fields.get(column):
+                body[column] = _term_ids(api, f"wp/v2/{column}", fields[column])
+    made = api.post(kind_route(kind), body)
+    return made if isinstance(made, dict) else {}
+
+
+def send_import_results(api: WordPressApi, kind: str, plan: Sequence[ImportRow]) -> list[str]:
+    """Make each previewed row; one sentence a row: made, skipped or not made."""
+    said: list[str] = []
     for row in plan:
         if row.problem:
+            said.append(f"Skipped {row.where}: {row.problem}.")
             continue
-        fields = row.fields
-        body: dict[str, Any] = {
-            "title": fields.get("title", ""),
-            "content": fields.get("content", ""),
-            "status": (fields.get("status") or "draft").lower(),
-        }
-        for key in ("slug", "excerpt", "date"):
-            if fields.get(key):
-                body[key] = fields[key]
         try:
-            if kind == "post":
-                for column in ("categories", "tags"):
-                    if fields.get(column):
-                        body[column] = _term_ids(api, f"wp/v2/{column}", fields[column])
-            api.post(kind_route(kind), body)
+            made = make_row(api, kind, row)
+            ident = made.get("id", "")
+            number = f", number {ident}" if ident else ""
+            title = row.fields.get("title", "") or "(no title)"
+            said.append(f"Made {row.where}: {title}{number}.")
         except WordPressApiError as exc:
-            failed.append(f"Row {row.number}: {exc.plain or exc}")
-    return failed
+            said.append(f"Not made {row.where}: {exc.plain or exc}")
+    return said
+
+
+def folder_plan(folder: Path, read: Callable[[Path], str]) -> list[ImportRow]:
+    """Each document in *folder* as a draft to make, its first heading the title.
+
+    *read* turns a file into Markdown (the editor's own Word reader for
+    ``.docx``); the content goes to the site as blocks.
+    """
+    from quill.core.wordpress.cross_site import title_and_body
+    from quill.core.wordpress.fences import markdown_to_blocks
+    from quill.core.wordpress.workbench_carry import (
+        document_refs,
+        strip_front_matter,
+        word_pictures,
+    )
+
+    plan: list[ImportRow] = []
+    files = sorted(p for p in folder.iterdir() if p.is_file() and p.suffix.lower() in DOC_SUFFIXES)
+    names = [p.name for p in files]
+    for number, path in enumerate(files, start=1):
+        stem = {"title": path.stem}
+        try:
+            text = read(path)
+        except Exception as exc:  # noqa: BLE001 - one file must not stop the rest
+            plan.append(ImportRow(number, stem, f"it could not be read: {exc}", name=path.name))
+            continue
+        if not text.strip():
+            plan.append(ImportRow(number, stem, "it is empty", name=path.name))
+            continue
+        text, front = strip_front_matter(text)
+        title, body = title_and_body(text, "markdown", path.stem)
+        in_word = word_pictures(path) if path.suffix.lower() == ".docx" else 0
+        refs = document_refs(body, path, names, word_pictures_count=in_word)
+        if front:
+            refs.left_out.append(f"{path.name}: its front matter ({', '.join(front)})")
+        fields = {"title": title, "content": markdown_to_blocks(body), "status": "draft"}
+        carry = {"pictures": refs.pictures, "links": refs.links, "left_out": refs.left_out}
+        plan.append(ImportRow(number, fields, name=path.name, carry=carry))
+    return plan
 
 
 # -- the REST Console ------------------------------------------------------------

@@ -32,6 +32,8 @@ are right.
 
 from __future__ import annotations
 
+from quill.core.forms.menu import LAYER_KEYS as FORMS_LAYER_KEYS
+from quill.core.forms.menu import lite_handler as forms_lite_handler
 from quill.core.wordpress.menu import LAYER_KEYS, lite_handler
 
 __all__ = [
@@ -542,6 +544,8 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     # The WordPress keys (wordpress.md 19): one table, wordpress/menu.py
     # LAYER_KEYS, gives both editors the same Ctrl+Alt+Shift+Grave letters.
     **{lite_handler(command_id): command_id for command_id in LAYER_KEYS.values()},
+    # The Forms key on the same layer (forms/menu.py LAYER_KEYS).
+    **{forms_lite_handler(command_id): command_id for command_id in FORMS_LAYER_KEYS.values()},
 }
 
 #: Handlers with no QUILL command id because the *control* answers the key.

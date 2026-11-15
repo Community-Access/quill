@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 13: Forms in the Workbench, and Gravity Forms</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-13-forms-in-the-workbench-and-gravity-forms">Chapter 13:
+Forms in the Workbench, and Gravity Forms</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>Once a form is live, the work moves to the site: reading responses,
+keeping spam out, changing a form’s settings, and sometimes building
+forms in a plugin other than QUILL Accessible Forms. The Workbench does
+all of that, for QUILL Accessible Forms and for Gravity Forms.</p>
+<p>In this chapter you will look after your forms and their responses in
+the Workbench, tune QUILL Accessible Forms’ spam checks, and build and
+change a Gravity Forms form in QUILL. Then you will work with Gravity
+Forms’ feeds, results, notes and test entries, and copy a form from one
+plugin to the other.</p>
+<p>By the end you can run every form on your site without opening
+wp-admin.</p>
+<h2 id="where-forms-live-in-the-workbench">Where forms live in the
+Workbench</h2>
+<p>Each site’s <strong>Forms</strong> lists its forms, from every form
+plugin QUILL reads. Under it:</p>
+<ul>
+<li><strong>Responses</strong>: what people sent;</li>
+<li><strong>Held as Spam</strong>: responses the site doubted;</li>
+<li><strong>Feeds</strong> and <strong>Results</strong>, on a site with
+Gravity Forms.</li>
+</ul>
+<p><strong>Needs My Attention &gt; Form Responses</strong> gathers new
+responses from every site, and <strong>Needs My Attention &gt; Held as
+Spam</strong> the doubtful ones, beside the doubtful comments.</p>
+<p>On a form, Enter, or <strong>Show Its Responses</strong>, lists its
+responses.</p>
+<h2 id="quill-accessible-forms">QUILL Accessible Forms</h2>
+<h3 id="looking-after-a-form">Looking after a form</h3>
+<p>On a QUILL Accessible Forms form:</p>
+<ul>
+<li><strong>Change Form Status…</strong> makes it open and taking
+responses, closed (shown but not taking responses), or a draft that
+visitors do not see.</li>
+<li><strong>Form Settings…</strong> reads the form’s settings, such as
+its button text, checks, scheduling and entry limits, and changes one at
+a time, after a preview.</li>
+<li><strong>Saved Views</strong> lists the views saved for its
+responses.</li>
+<li><strong>Search Responses on the Site…</strong> finds responses by
+words, searched on the site.</li>
+<li><strong>Copy as a Gravity Form…</strong> makes the same form in
+Gravity Forms, if the site has it. The preview names anything that
+cannot carry over.</li>
+<li><strong>Copy to Site…</strong> copies it to another of your
+sites.</li>
+<li><strong>Delete Form…</strong> first says how many responses it has,
+then asks you to type the form’s name.</li>
+</ul>
+<h3 id="responses">Responses</h3>
+<p>On a response:</p>
+<ul>
+<li><strong>Read in Full</strong>, or Enter, reads every answer in the
+details pane.</li>
+<li><strong>Item &gt; Star or Unstar Entry</strong>
+(<code>Ctrl+Alt+F</code>) stars it to come back to.</li>
+<li><strong>Item &gt; Mark Entry Read or Unread</strong>
+(<code>Ctrl+Alt+U</code>) marks it.</li>
+<li><strong>Spam</strong> (<code>Ctrl+Shift+S</code>) and <strong>Not
+Spam</strong> (<code>Ctrl+Shift+A</code>) move it out of or into the
+responses. They go through QUILL Accessible Forms’ own spam checks, so
+the site learns from them, and a held response’s emails are sent once
+you release it. A held response’s row gives the plugin’s reason for
+holding it.</li>
+</ul>
+<p>Several at once works too, with how each one went.</p>
+<h3 id="keeping-spam-out">Keeping spam out</h3>
+<p>QUILL Accessible Forms has spam checks of its own. You change them in
+the Workbench.</p>
+<ol type="1">
+<li>Select the site, or anything on it.</li>
+<li>Choose <strong>Site &gt; Site Properties…</strong>
+(<code>Alt+Shift+Enter</code>) and go to the <strong>Spam</strong>
+page.</li>
+<li>Change what you need:
+<ul>
+<li>each spam check, checked or unchecked;</li>
+<li>the limits and thresholds, as whole numbers;</li>
+<li><strong>Use WordPress’s disallowed words</strong> and <strong>Use
+WordPress’s moderation words</strong>, which hold a form whose answers
+contain a word from those lists in Settings, Discussion;</li>
+<li><strong>Ask a question</strong>: when a visitor is asked a question
+before the form is sent, and which kinds of question;</li>
+<li>the Send Anyway setting. Whoever takes Send Anyway is never turned
+away: their form is held for you to look at;</li>
+<li><strong>New OOPSpam key</strong>: type a new key to replace the
+saved one, or leave it empty to keep it. The box is hidden as you type.
+QUILL never shows, speaks or keeps the saved key, and only says whether
+one is saved. <strong>Remove the saved OOPSpam key</strong> takes it
+away when you save.</li>
+</ul></li>
+<li>Press OK. QUILL reads the settings again first, sends only what you
+changed, then reads them back and says what the site now holds.</li>
+</ol>
+<p>The page also shows this week’s numbers. You need the site’s Manage
+Options capability, or the plugin’s own Manage Settings. A site still
+running the plugin under its old name, BITS Accessible Forms, shows its
+settings here to read, and they are changed in wp-admin until the plugin
+is updated.</p>
+<p><strong>Your own questions.</strong> <strong>Form Spam
+Questions…</strong>, on the site’s context menu, lists the questions of
+the site’s own that the plugin asks. Add one, or change or remove one,
+after a preview.</p>
+<p><strong>Week by week.</strong> <strong>Form Spam by Week</strong>, on
+the same menu, lists each week, newest first: the questions asked,
+answered, answered wrongly, and let through with Send Anyway. The Watch
+for form spam questions says each new week’s numbers without being asked
+(Chapter 8).</p>
+<h2 id="gravity-forms">Gravity Forms</h2>
+<p>Gravity Forms is a paid plugin many sites already use. On a site that
+has it, with its REST API turned on, the Workbench lists its forms and
+responses beside everything else, and you can build its forms in
+QUILL.</p>
+<p>The Gravity Forms commands without a key of their own are also in
+<strong>Item &gt; Gravity Forms</strong>.</p>
+<h3 id="building-a-form">Building a form</h3>
+<ol type="1">
+<li>In the Workbench, go to the site’s <strong>Forms</strong>.</li>
+<li>Press Ctrl+N, or choose <strong>New Gravity Form…</strong> on the
+context menu. To change a form that is there already, choose
+<strong>Edit Form…</strong> on it.</li>
+<li>The form window opens. Fill in the <strong>Title</strong>,
+<strong>Description</strong>, <strong>Button text</strong> and
+<strong>Label placement</strong>. Top aligned reads best on a phone and
+zoomed in.</li>
+<li><strong>Confirmation message</strong> is what people read after
+sending the form. <strong>Notification to</strong> and
+<strong>Notification subject</strong> are for the email the site’s
+administrator gets. If the form sends people to a page instead, or
+routes its email by an answer, those boxes are dimmed, and Gravity Forms
+keeps them as they are.</li>
+<li>Tab to <strong>Fields</strong>, the questions in order. Insert, or
+<strong>Add Field…</strong>, adds one after the one you are on. Enter,
+or <strong>Edit Field…</strong>, changes one. <strong>Move Up</strong>
+and <strong>Move Down</strong> move it. Delete, or <strong>Remove
+Field</strong>, takes it out.</li>
+<li>Press <strong>Review and Save…</strong>.</li>
+</ol>
+<p><strong>A field</strong> has a <strong>Type</strong>, such as text,
+paragraph, email, phone, number, drop-down, radio buttons, check boxes,
+date, time, website, name, address, consent, HTML, section or page
+break. Then its <strong>Label</strong>, <strong>Description</strong>,
+whether it is <strong>Required</strong>, a <strong>Placeholder</strong>,
+a <strong>Default value</strong>, an <strong>Admin label</strong> for
+the entries list, and a <strong>CSS class</strong>. For a question with
+choices, <strong>Choices</strong> takes one choice a line. To store a
+different value, write the text, a space, an equals sign, a space, then
+the value. Start a line with an asterisk to have that choice chosen at
+first.</p>
+<p><strong>Condition…</strong> sets when the field shows: show or hide
+it <strong>When</strong> an earlier <strong>Field</strong> is, or is
+not, a <strong>Value</strong>.</p>
+<p><strong>Checks before saving.</strong> Before anything is sent, QUILL
+checks the form, the same way it checks its own forms. It finds
+questions with no label, or only a placeholder, a required mark that is
+only an asterisk, empty choices, page breaks and sections that leave a
+page empty, two questions that sound alike, and conditions that name a
+missing or later field. Cancel takes you back to the form window, at the
+first one.</p>
+<p><strong>Saving.</strong> The preview lists every change. When you
+change a form, QUILL reads it again first, and if somebody changed it on
+the site meanwhile, nothing is sent. After saving it reads the form back
+and tells you of any difference. Ctrl+Z puts the previous form back. A
+new form goes to Gravity Forms’ Trash instead.</p>
+<p>Responses are never read or changed by any of this, and every preview
+says so.</p>
+<p>Fields QUILL does not edit, and conditions with more than one rule,
+are kept exactly as they were.</p>
+<h3 id="changing-one-fields-type">Changing one field’s type</h3>
+<p><strong>Change a Field Type…</strong>, on a Gravity Forms form, turns
+one common field into another: text, paragraph, email, number,
+drop-down, radio buttons and check boxes. QUILL reads the whole form,
+previews the change, checks nobody changed the form meanwhile, sends it,
+and reads it back to make sure only that field changed. Address and list
+fields are never offered. It needs Full Workbench access, and Gravity
+Forms’ permission to make forms, which an administrator has.</p>
+<h3 id="responses-1">Responses</h3>
+<p>On a Gravity Forms response:</p>
+<ul>
+<li><strong>Item &gt; Entry Notes…</strong> (<code>Ctrl+Alt+N</code>)
+reads the entry’s notes, and adds one.</li>
+<li><strong>Item &gt; Star or Unstar Entry</strong>
+(<code>Ctrl+Alt+F</code>) and <strong>Item &gt; Mark Entry Read or
+Unread</strong> (<code>Ctrl+Alt+U</code>) do what they say, and Ctrl+Z
+undoes them.</li>
+<li><strong>Item &gt; Resend Notifications…</strong>
+(<code>Ctrl+Alt+I</code>) works out who each of the entry’s emails goes
+to, lets you choose which to send, previews the recipients, then
+sends.</li>
+<li><strong>Spam</strong> and <strong>Not Spam</strong> work as for any
+response.</li>
+</ul>
+<p>The response’s Properties has <strong>Answers</strong> and
+<strong>Notes</strong> pages to read, and saves Starred and Read.</p>
+<p><strong>Filtering responses.</strong> On Responses, the
+<strong>Filter Builder</strong> (<code>Ctrl+Shift+F</code>) offers the
+chosen form’s own fields, and the values each allows. The filter is sent
+to the site, so it searches every response, not only the ones loaded.
+With a second condition, it asks whether a response must match all of
+them, or any. The status bar says the site’s own count, such as “12 of
+the 40 responses that match are shown”.</p>
+<h3 id="feeds-and-results">Feeds and results</h3>
+<ul>
+<li><strong>Feeds</strong> lists every form’s add-on feeds, such as
+Mailchimp, Stripe or Zapier, with the form, the add-on and whether each
+is on. <strong>Activate or Deactivate…</strong> and
+<strong>Rename…</strong> preview first. <strong>Delete
+Permanently…</strong> previews too, and Ctrl+Z makes the feed again. On
+a form, <strong>Show Its Feeds</strong> lists only that form’s.</li>
+<li><strong>Results</strong> shows quiz, poll and survey results: a row
+for each answer with its count and share, and each question as one
+sentence. On a form, <strong>Show Its Results</strong> opens it.</li>
+</ul>
+<h3 id="trying-a-form">Trying a form</h3>
+<p><strong>Test This Form…</strong>, on a form, lets you fill in test
+values. The site checks them first, and names any field it refuses. If
+the site is live, the preview says so, and that a practice site would be
+better. Ctrl+Z moves the test entry to the Trash.</p>
+<h3 id="moving-forms">Moving forms</h3>
+<ul>
+<li><strong>Copy to Site…</strong> (<code>Ctrl+Shift+Y</code>) copies
+the whole form to another of your sites, as a new form, or replacing one
+with the same title. Responses are never read or sent.</li>
+<li><strong>Copy as a QUILL Accessible Form…</strong> makes the same
+form in QUILL Accessible Forms. <strong>Copy as a Gravity
+Form…</strong>, on a QUILL Accessible Forms form, does the reverse. Each
+preview names what cannot carry over, such as CSS classes, admin labels,
+conditions with several rules, and kinds of field the other plugin
+lacks.</li>
+</ul>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a
+href="wordpress-forms-12-forms-on-the-web-and-paper.html">Chapter 12:
+Forms on your site, on the web and on paper</a></li>
+<li>Next: <a href="wordpress-forms-14-quill-lite.html">Chapter 14: QUILL
+Lite</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

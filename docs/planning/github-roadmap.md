@@ -1,6 +1,6 @@
 # GitHub Workbench Roadmap
 
-**Accepted scope:** 2026-11-06. This is the implementation record for the full GitHub expansion (GX01–GX15), in addition to the bounded G1–G4 engineering finish. The user owns the Windows assistive-technology acceptance in G5; that work is outside the engineering completion percentage and will be handled by the user.
+**Accepted scope:** 2026-11-06, amended 2026-11-12 with GX16 and the reference-derived interaction requirements below. This is the implementation record for the full GitHub expansion (GX01–GX16), in addition to the bounded G1–G4 engineering finish. The user owns the Windows assistive-technology acceptance in G5; that work is outside the engineering completion percentage and will be handled by the user.
 
 ## Product direction
 
@@ -33,19 +33,42 @@ The waves show implementation order. Existing foundations are listed so work reu
 | **GX13 / W3 — Account and repository administration** | Repository administration exists in QUILL; Lite shares Items, Explore, review, and diff. | Add account-aware repository switching, team/collaborator permissions, SSO/auth-expiry diagnostics, and Lite entry points. Cache and tokens are isolated by host/account; consequential changes retain explicit confirmation. |
 | **GX14 / W3 — Workspace and service handoffs** | Codespaces commands and browser handoffs exist. | Preserve exact context when opening Codespaces or integrations; show health and opt-in workspace/repository metrics. Disclose cost-bearing launches, never provision automatically, and report team bottlenecks without ranking people. |
 | **GX15 / W2 — Optional grounded assistance** | QUILL already has configured AI providers and local consent boundaries. | Explain selected diffs, draft PR descriptions/reviewer briefs, decompose issues, and prepare release notes from user-selected evidence. Cite file/line/thread/SHA, show omitted or truncated context, keep drafts editable, and retain deterministic non-AI workflows. Remote text is untrusted input; no model upload outside configured consent. |
+| **GX16 / W1 — Category-first cross-repository browsing** | Needs My Attention already scopes a queue to selected repositories; the Across Repositories tree branch is still a placeholder. | Add read-first lists for Issues & PRs, Releases, Workflow Runs, Commits, Tags, Milestones, Discussions, and Security Alerts across a locally chosen repository set. Keep the QUILL Navigator tree/list/details layout. Each row names its repository; Enter opens the exact item in that repository and Back returns to the same row. Preserve selection through refresh and paging, support grouping/sorting and latest-release-only, and show each repository's error or feature-unavailable note. Issue type and typed organization-defined issue fields remain visible and filterable where the account can see them. The repository checklist changes speak once on Space. |
 
 ## Shared acceptance contract
 
 - No silent partial results, stale readiness, missing pages represented as empty, or remote state changes caused by reading.
 - Every action is keyboard reachable, named for assistive technology, usable without color or hover, and returns focus predictably.
 - Large logs and result sets load on demand with selection preserved, bounded memory use, explicit truncation, and a readable fallback.
+- Cross-repository lists name the source repository on every row; page limits, failed repositories, empty categories, and unavailable fields are explicit rather than implied empty results.
+- Issue types and organization-defined issue fields keep their GitHub value types and permissions through list, details, filtering, editing, preview, and verification.
 - Local drafts and navigation state are private, recoverable, account-isolated, and never auto-submitted after reconnect.
 - Writes state the target and effect before execution. Non-idempotent actions are not blindly retried after timeouts; batch outcomes identify each item.
 - AI is optional, grounded in selected evidence, and subject to existing consent. It never invents checks, merge readiness, or completion claims.
 
+## Reference review and adoption boundaries
+
+The GHManage v1.2.0 release adds category-first lists across chosen repositories
+and corrects a checklist announcement that JAWS repeated. QUILL adopts the
+capability and accessibility lesson inside its existing Navigator, rather than
+adding GHManage's separate navigation mode: categories are children of the
+already planned **Across Repositories** branch. The release's bounded per-repo
+pages, repository provenance, failure notes, latest-release view, grouping, and
+return-to-row behavior are acceptance requirements for GX16.
+
+The Chat Place v0.5.0 review supports three provider-neutral lessons: read a
+long GitHub thread as one structured document, preserve the exact selected row
+when returning, and report one clear outcome through QUILL's existing feedback
+settings. Its release code for Ask Aside, Retry/Branch from Here, agent
+conversations, file restoration, and connected-tool controls depends on
+Claude/Codex/Copilot clients and their transcript/protocol formats. Those
+client-specific integrations are outside this scope. If a later feature uses
+AI, it must go through QUILL's existing provider and consent boundary and must
+remain useful when no AI connection is configured.
+
 ## Delivery order
 
 1. Finish G1–G4 engineering contracts, documentation, gates, and integration preparation for the current workbench.
-2. Complete W1 (GX01–GX04), then W2 (GX05–GX10, GX12, GX15), then W3 (GX11, GX13, GX14).
+2. Complete W1 (GX01–GX04, GX16), then W2 (GX05–GX10, GX12, GX15), then W3 (GX11, GX13, GX14).
 3. For each delivery, add focused failure cases, run relevant repository gates, review on the final candidate, and retain fresh CI evidence. Rebase/conflict resolution invalidates affected test evidence.
 4. The user owns the manual Windows keyboard, screen-reader, scaling, and braille acceptance. Engineering changes and merge readiness must not claim that acceptance has occurred.

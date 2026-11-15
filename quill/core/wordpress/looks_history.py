@@ -123,17 +123,29 @@ def flatten(nodes: list[nav.MenuNode]) -> tuple[tuple[str, str, int, str], ...]:
     return tuple(_flat(r.node) for r in nav.rows(nodes) if r.node.kind != "other")
 
 
-def navigation_versions(api: WordPressApi, menu: nav.Menu) -> list[MenuVersion]:
+def _navigation_rows(api: WordPressApi, route: str) -> list[Any]:
     try:
-        rows = api.get(f"wp/v2/navigation/{menu.id}/revisions", context="edit")
+        rows = api.get(route, context="edit")
     except WordPressApiError as exc:
         if exc.status in (401, 403, 404):
             return []
         raise
+    return rows if isinstance(rows, list) else []
+
+
+def navigation_versions(api: WordPressApi, menu: nav.Menu) -> list[MenuVersion]:
+    """A Navigation menu's saved revisions and its autosaves (9.17, gap 10), newest first."""
+    base = f"wp/v2/navigation/{menu.id}"
+    rows = _navigation_rows(api, f"{base}/revisions") + _navigation_rows(api, f"{base}/autosaves")
     out: list[MenuVersion] = []
-    for raw in rows if isinstance(rows, list) else []:
+    seen: set[int] = set()
+    for raw in rows:
         if not isinstance(raw, dict):
             continue
+        revision = int(raw.get("id", 0) or 0)
+        if revision in seen:
+            continue
+        seen.add(revision)
         content = raw_text(raw.get("content"))
         out.append(
             MenuVersion(
@@ -144,6 +156,23 @@ def navigation_versions(api: WordPressApi, menu: nav.Menu) -> list[MenuVersion]:
             )
         )
     return sorted(out, key=lambda v: v.stamp, reverse=True)
+
+
+FALLBACK = "wp-block-editor/v1/navigation-fallback"
+
+
+def navigation_fallback(api: WordPressApi) -> tuple[int, str]:
+    """The Navigation menu a block theme shows where none is chosen: (id, title).
+
+    WordPress answers with its newest Navigation menu, or, when the site has
+    none, **makes one** from its classic menu or its pages and answers with
+    that. So this is a write on a site with no Navigation menu, and the
+    caller says so before asking.
+    """
+    raw = api.get(FALLBACK, context="edit")
+    if not isinstance(raw, dict) or not raw.get("id"):
+        raise WordPressApiError("The site did not name a default Navigation menu.")
+    return int(raw["id"]), raw_text(raw.get("title")) or "Navigation"
 
 
 def restore_navigation(api: WordPressApi, menu: nav.Menu, version: MenuVersion) -> None:

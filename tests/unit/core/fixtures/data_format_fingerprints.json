@@ -592,6 +592,7 @@
             "warm_kokoro_model": "bool",
             "tray_enabled": "bool",
             "launch_at_windows_startup": "bool",
+            "start_minimized_at_windows_startup": "bool",
             "persistent_undo": "bool",
             "spellcheck_as_you_type": "bool",
             "spellcheck_skip_code_files": "bool",
@@ -1009,6 +1010,7 @@
           "warm_kokoro_model": "_ungrouped",
           "tray_enabled": "general",
           "launch_at_windows_startup": "general",
+          "start_minimized_at_windows_startup": "general",
           "persistent_undo": "editing",
           "spellcheck_as_you_type": "editing",
           "spellcheck_skip_code_files": "_ungrouped",
@@ -1345,7 +1347,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": "GitHub PRD 4.1: the GitHub check's three settings moved to github_workbench.json; older builds read the file without them and use their defaults."
+      "note": ""
     },
     "radio.favorites": {
       "current": 1,

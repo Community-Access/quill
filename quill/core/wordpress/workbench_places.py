@@ -18,10 +18,12 @@ from collections.abc import Mapping
 from typing import Any
 
 from quill.core.wordpress.workbench_across import ACROSS_KINDS, SITE_KINDS
+from quill.core.wordpress.workbench_gap_actions import CHECK_LINKS
+from quill.core.wordpress.workbench_sweep_places import SWEEP_MORE_NODES
 from quill.core.workbench.actions import ActionRow, Tier
 from quill.core.workbench.tree import NodeSpec, Scope
 
-__all__ = ["ACROSS_NODES", "BY_NAME_NODES", "PLACES_ROWS", "SWEEP_NODES"]
+__all__ = ["ACROSS_NODES", "BY_NAME_NODES", "KEYLESS", "PLACES_ROWS", "SWEEP_NODES"]
 
 _PREFIX = "wordpress.workbench."
 
@@ -48,7 +50,7 @@ ACROSS_NODES: tuple[NodeSpec, ...] = (
         "Fleet",
         "across",
         loader="across:fleet",
-        columns=("site", "state"),
+        columns=("site", "state", "health", "backups", "security", "updates"),
         row_type="fleet",
     ),
 )
@@ -75,7 +77,7 @@ SWEEP_NODES: tuple[NodeSpec, ...] = (
         "site",
         loader="sweep:audit",
         columns=("problem", "status"),
-        row_type="problem",
+        row_type="finding",
     ),
     _n(
         "privacy_requests",
@@ -83,8 +85,9 @@ SWEEP_NODES: tuple[NodeSpec, ...] = (
         "site",
         loader="sweep:privacy",
         columns=("problem", "status"),
-        row_type="problem",
+        row_type="privacy",
     ),
+    *SWEEP_MORE_NODES,
 )
 
 HOUSEKEEPING = _n(
@@ -93,7 +96,7 @@ HOUSEKEEPING = _n(
     "media",
     loader="sweep:housekeeping",
     columns=("problem", "status"),
-    row_type="problem",
+    row_type="finding",
     home=False,
 )
 
@@ -111,6 +114,42 @@ def places_rows(read: ActionRow, sheet: ActionRow) -> Mapping[str, tuple[ActionR
     return {
         "value": (
             _a("where_used", "Where It Is Used", default=True, help="Each page that uses it."),
+            _a(
+                "rename_value",
+                "Rename Everywhere...",
+                tier=Tier.WRITE,
+                help="A new name or value wherever it is used, previewed item by item first.",
+            ),
+            _a(
+                "split_value",
+                "Split...",
+                tier=Tier.WRITE,
+                help="Chosen items move to a new term, value or person; the rest stay.",
+            ),
+            _a(
+                "merge_value",
+                "Merge Into...",
+                tier=Tier.WRITE,
+                help="Every item moves to another term or value; a merged term is deleted.",
+            ),
+            _a(
+                "reassign_value",
+                "Reassign...",
+                tier=Tier.WRITE,
+                help="Every item moves to another term or person; this one stays.",
+            ),
+            _a(
+                "replace_value",
+                "Replace Everywhere...",
+                tier=Tier.WRITE,
+                help="Another file, pattern, link, shortcode or form in every page using this.",
+            ),
+            _a(
+                "find_missing",
+                "Find Items Missing This Field",
+                help="The posts and pages with no value for this custom field.",
+            ),
+            CHECK_LINKS,
             sheet,
         ),
         "across": (
@@ -128,6 +167,18 @@ def places_rows(read: ActionRow, sheet: ActionRow) -> Mapping[str, tuple[ActionR
                 needs="activate_plugins",
                 help="On a multisite network, activate the plugin for every site of it.",
             ),
+            _a(
+                "revoke_everywhere",
+                "Revoke Everywhere...",
+                tier=Tier.WRITE,
+                help="An application password, revoked on every site that has it, after a "
+                "preview. It cannot be undone.",
+            ),
+            _a(
+                "compare_styles",
+                "Compare Global Styles",
+                help="Each site's palette and font sizes in effect, and which differ.",
+            ),
             sheet,
         ),
         "fleet": (
@@ -138,3 +189,18 @@ def places_rows(read: ActionRow, sheet: ActionRow) -> Mapping[str, tuple[ActionR
 
 
 PLACES_ROWS = places_rows
+
+KEYLESS: dict[str, str] = {
+    f"{_PREFIX}where_used": "The rows' Enter, so it needs no chord of its own.",
+    f"{_PREFIX}rename_value": "Renaming everywhere is occasional and previewed (rule 9).",
+    f"{_PREFIX}split_value": "Splitting a term or value is occasional and previewed (rule 9).",
+    f"{_PREFIX}merge_value": "Merging is occasional and previewed (rule 9).",
+    f"{_PREFIX}reassign_value": "Reassigning is occasional and previewed (rule 9).",
+    f"{_PREFIX}replace_value": "Replacing everywhere is occasional and previewed (rule 9).",
+    f"{_PREFIX}find_missing": "A check made now and then, on field rows only (rule 9).",
+    f"{_PREFIX}make_same": "Aligning sites is occasional and previewed site by site (rule 9).",
+    f"{_PREFIX}promote_network": "Done once per plugin on a network, rarely (rule 9).",
+    f"{_PREFIX}compare_styles": "Comparing styles across sites is occasional (rule 9).",
+    f"{_PREFIX}revoke_everywhere": "Revoking a leaked password everywhere is rare (rule 9).",
+}
+"""Why each By Name and Across Sites row command has no chord (family rule 8)."""

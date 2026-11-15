@@ -29,6 +29,7 @@ from quill.ui.dialog_contract import (
     show_modal_dialog,
 )
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 __all__ = ["ActionChoice", "ActionListDialog", "HelpTextDialog", "SearchHelpDialog"]
 
@@ -69,13 +70,14 @@ class ActionListDialog:
             self.list.SetSelection(0)
         apply_listbox_activation(self.list, lambda _e: self._run())
         root.Add(self.list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+        root.Add(wx.StaticText(self.dialog, label="About this action:"), 0, wx.LEFT | wx.TOP, 8)
         self.detail = wx.TextCtrl(
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         self.detail.SetName("About this action")
         self.detail.SetHelpText("What the selected action does, and why it is greyed if it is.")
         self.list.Bind(wx.EVT_LISTBOX, lambda _e: self._show_detail())
-        root.Add(self.detail, 0, wx.EXPAND | wx.ALL, 8)
+        root.Add(self.detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         run = wx.Button(self.dialog, wx.ID_OK, "&Run")
         run.SetHelpText("Do the selected action. Enter does the same.")
@@ -134,6 +136,7 @@ class HelpTextDialog:
             self.dialog, value=text, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         self.text.SetName(title)
+        set_spoken_name(self.text, title)
         self.text.SetHelpText("Read with the arrow keys. Escape closes it.")
         root.Add(self.text, 1, wx.EXPAND | wx.ALL, 8)
         close = wx.Button(self.dialog, wx.ID_CANCEL, "Close")

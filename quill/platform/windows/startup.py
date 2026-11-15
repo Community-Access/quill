@@ -23,7 +23,7 @@ _RUN_KEY_PATH = r"Software\Microsoft\Windows\CurrentVersion\Run"
 _VALUE_NAME = "Quill"
 
 
-def launch_command() -> str:
+def launch_command(*, start_minimized: bool | None = None) -> str:
     """The command written to the Run key: QUILL's own executable, quoted.
 
     An installed ``quill.exe`` starts QUILL bare (its sitecustomize); a source
@@ -32,7 +32,14 @@ def launch_command() -> str:
     """
     from quill.core.app_command import app_command
 
-    return app_command("quill")
+    if start_minimized is None:
+        from quill.core.settings import load_settings
+        from quill.platform.windows.startup_options import start_minimized as stored_choice
+
+        start_minimized = stored_choice(
+            "quill", default=load_settings().start_minimized_at_windows_startup
+        )
+    return app_command("quill", args=("--tray",) if start_minimized else ())
 
 
 def is_windows() -> bool:
@@ -41,7 +48,9 @@ def is_windows() -> bool:
 
 def is_launch_at_startup_enabled() -> bool:
     """True if QUILL currently has a Run-key entry pointing at this executable."""
-    if not is_windows():
+    from quill.core.paths import portable_bundle_root
+
+    if not is_windows() or portable_bundle_root() is not None:
         return False
     try:
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER, _RUN_KEY_PATH) as key:
@@ -51,21 +60,29 @@ def is_launch_at_startup_enabled() -> bool:
     return bool(value)
 
 
-def set_launch_at_startup(enabled: bool) -> None:
+def set_launch_at_startup(enabled: bool, *, start_minimized: bool | None = None) -> None:
     """Add or remove QUILL's per-user Run-key autostart entry.
 
     A no-op on non-Windows platforms. Never raises -- a failure to write the
     registry (e.g. a locked-down corporate policy) should not block saving
     the rest of the user's settings.
     """
-    if not is_windows():
+    from quill.core.paths import portable_bundle_root
+
+    if not is_windows() or portable_bundle_root() is not None:
         return
     try:
         with winreg.OpenKey(
             winreg.HKEY_CURRENT_USER, _RUN_KEY_PATH, 0, winreg.KEY_SET_VALUE
         ) as key:
             if enabled:
-                winreg.SetValueEx(key, _VALUE_NAME, 0, winreg.REG_SZ, launch_command())
+                winreg.SetValueEx(
+                    key,
+                    _VALUE_NAME,
+                    0,
+                    winreg.REG_SZ,
+                    launch_command(start_minimized=start_minimized),
+                )
             else:
                 try:
                     winreg.DeleteValue(key, _VALUE_NAME)

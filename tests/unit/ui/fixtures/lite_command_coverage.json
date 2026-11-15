@@ -441,6 +441,7 @@
   "cmd_wp_synced_patterns": "covered",
   "cmd_wp_template_outline": "covered",
   "cmd_wp_themes": "covered",
+  "cmd_wp_this_post_in_workbench": "covered",
   "cmd_wp_transcript": "covered",
   "cmd_wp_trash": "covered",
   "cmd_wp_undo_site_fix": "covered",

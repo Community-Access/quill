@@ -67,7 +67,12 @@ def test_make_them_the_same_previews_every_site_first(bench, monkeypatch) -> Non
         raw={"variants": {"slug shows": [SITE]}, "missing": [], "objects": {SITE: {}}},
     )
     bench.provider.do_make_same(None, row)
-    assert previews and previews[0]["lines"] == [f"{SITE}: already matches; nothing to do"]
+    assert previews == [] and bench.said[-1] == "Every site already matches."
+    assert not [w for w in bench.api.writes if "categories" in w[1]]
+    row.raw["variants"] = {"slug shows": ["Other"], "slug shows-2": [SITE]}
+    row.raw["objects"] = {"Other": {"name": "Shows", "slug": "shows"}, SITE: {"id": 5}}
+    bench.provider.do_make_same(None, row)
+    assert previews[0]["lines"] == [f"{SITE}: Shows (category): slug None becomes shows"]
     assert not [w for w in bench.api.writes if "categories" in w[1]]
 
 

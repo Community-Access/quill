@@ -20,6 +20,8 @@ class GitHubIssueTemplate:
     url: str = ""
     supported: bool = True
     body_truncated: bool = False
+    #: The parsed YAML issue form (quill.core.github.issue_forms.IssueForm), if any.
+    form: Any = None
 
 
 def _value(text: str) -> str:
@@ -97,16 +99,7 @@ def list_issue_templates(repo: Any, *, limit: int = 20) -> tuple[GitHubIssueTemp
             continue
         url = _safe(entry, "html_url")
         if lowered.endswith((".yml", ".yaml")):
-            name = filename.rsplit(".", 1)[0].replace("_", " ").replace("-", " ").title()
-            templates.append(
-                GitHubIssueTemplate(
-                    name=name or "GitHub issue form",
-                    filename=filename,
-                    about="GitHub issue form; open in GitHub to fill its structured fields.",
-                    url=url,
-                    supported=False,
-                )
-            )
+            templates.append(_issue_form_template(entry, filename, url))
         elif lowered.endswith((".md", ".markdown")):
             try:
                 declared_size = int(getattr(entry, "size", 0) or 0)
@@ -143,6 +136,40 @@ def list_issue_templates(repo: Any, *, limit: int = 20) -> tuple[GitHubIssueTemp
         if len(templates) >= limit:
             break
     return tuple(templates)
+
+
+def _issue_form_template(entry: Any, filename: str, url: str) -> GitHubIssueTemplate:
+    """A YAML issue form, read so QUILL can fill it (quill.core.github.issue_forms)."""
+    from quill.core.github.issue_forms import parse_issue_form
+
+    try:
+        declared_size = int(getattr(entry, "size", 0) or 0)
+    except (TypeError, ValueError):
+        declared_size = 0
+    fallback = filename.rsplit(".", 1)[0].replace("_", " ").replace("-", " ").title()
+    if declared_size > 50_000:
+        return GitHubIssueTemplate(
+            name=fallback or "GitHub issue form",
+            filename=filename,
+            about="An issue form too large for QUILL to fill; open it on GitHub.",
+            url=url,
+            supported=False,
+            body_truncated=True,
+        )
+    raw = getattr(entry, "decoded_content", b"")
+    text = raw.decode("utf-8", errors="replace") if isinstance(raw, bytes) else str(raw)
+    form = parse_issue_form(text, filename)
+    return GitHubIssueTemplate(
+        name=form.name[:128],
+        filename=filename,
+        about=form.unsupported or form.description or "An issue form.",
+        title=form.title,
+        labels=form.labels,
+        assignees=form.assignees,
+        url=url,
+        supported=not form.unsupported,
+        form=form,
+    )
 
 
 def _safe(row: Any, name: str) -> str:

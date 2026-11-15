@@ -50,6 +50,7 @@ from quill.core.lite.keymap import default_aliases, resolved_commands
 from quill.core.wordpress.keys import is_sequence
 from quill.ui.dimmed_row_keys import DimmedRowKeys
 from quill.ui.markdown_tag_row import HideableMenuRow, markdown_tag_row_shown
+from quill.ui.menu_routes import mnemonic_of, with_mnemonic
 from quill.ui.richedit_editing import RICH
 
 __all__ = ["DocumentMenuMixin"]
@@ -171,6 +172,7 @@ class DocumentMenuMixin:
 
     def _fill_menu(self, menu: wx.Menu, path: str, rows: dict[str, list[CommandRow]]) -> wx.Menu:
         """Put *path*'s rows into *menu*, building its submenus as they arrive."""
+        titles = submenu_letters(rows.get(path, []))
         for _menu_path, label, key, handler, kind in rows.get(path, []):
             if kind == "sep":
                 menu.AppendSeparator()
@@ -187,7 +189,8 @@ class DocumentMenuMixin:
                 # switched-off area. Skipped rather than raised: a mistyped
                 # title must not take the whole menu bar down with it.
                 if child_path in rows:
-                    menu.AppendSubMenu(self._fill_menu(wx.Menu(), child_path, rows), label)
+                    child = self._fill_menu(wx.Menu(), child_path, rows)
+                    menu.AppendSubMenu(child, titles.get(label, label))
                 continue
             # The tab only when there is a key after it. Every row in the
             # table ships one, but the Keyboard Manager can leave a command
@@ -467,3 +470,30 @@ def _listing_all_files(frame: Any) -> bool:
     """Whether this window's Problems pane lists every open file (stand-ins may lack it)."""
     listing = getattr(frame, "problems_listing_all_files", None)
     return bool(listing()) if callable(listing) else False
+
+
+def submenu_letters(rows: list[CommandRow]) -> dict[str, str]:
+    """A submenu title with no access letter, given one no row beside it holds.
+
+    Tools > WordPress, Tools > Forms and Edit > WordPress have no letter of
+    their own name free in QUILL Lite, so a free letter goes in parentheses at
+    the end ("WordPress (&Q)"), the Windows convention QUILL's menu pass
+    (:func:`quill.ui.menu_routes.with_mnemonic`) uses for the same case. A
+    submenu with no free letter at all keeps none rather than a duplicate
+    (GATE-14).
+    """
+    taken = {mnemonic_of(row[1]) for row in rows if row[4] != "sep"} - {""}
+    titles: dict[str, str] = {}
+    for row in rows:
+        label = row[1]
+        if row[4] != "sub" or mnemonic_of(label):
+            continue
+        words = [c.upper() for c in label if c.isalpha()]
+        free = next(
+            (c for c in [*words, *"ABCDEFGHIJKLMNOPQRSTUVWXYZ"] if c not in taken),
+            "",
+        )
+        if free:
+            taken.add(free)
+            titles[label] = with_mnemonic(label, free)
+    return titles

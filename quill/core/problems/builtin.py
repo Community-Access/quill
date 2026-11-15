@@ -229,7 +229,23 @@ def check_yaml(text: str, _path: Path | None = None) -> list[Problem]:
         return [Problem(line, column, "error", message or "Not valid YAML", "YAML")]
     except yaml.YAMLError as error:
         return [Problem(1, 1, "error", str(error), "YAML")]
-    return []
+    return _github_form_problems(text, _path)
+
+
+def _github_form_problems(text: str, path: Path | None) -> list[Problem]:
+    """A GitHub issue or discussion form (.github/ISSUE_TEMPLATE/*.yml) also gets
+    the template builder's checks, each on its line (GitHub PRD 21.4)."""
+    if path is None:
+        return []
+    from quill.core.github.template_convert import check_form_text, form_template_kind
+
+    kind = form_template_kind(str(path))
+    if not kind:
+        return []
+    return [
+        Problem(line, 1, severity, message, "GitHub form")
+        for line, severity, message in check_form_text(text, kind)
+    ]
 
 
 # -- Python ------------------------------------------------------------------- #

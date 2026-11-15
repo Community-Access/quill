@@ -27,12 +27,17 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.wordpress.workbench_dashboard_places import DASHBOARD_NODES, SITE_EDITOR_NODES
+from quill.core.wordpress.workbench_gravity_actions import GRAVITY_NODES
+from quill.core.wordpress.workbench_node_help import PLANNED_WORDS
 from quill.core.wordpress.workbench_places import (
     ACROSS_NODES,
     BY_NAME_NODES,
     HOUSEKEEPING,
     SWEEP_NODES,
 )
+from quill.core.wordpress.workbench_pmpro_tree import HEALTH_NODES, MEMBERSHIP_NODES
+from quill.core.wordpress.workbench_shop import SHOP_NODES
 from quill.core.workbench.tree import NodeSpec, Scope, TreeSpec
 
 __all__ = [
@@ -128,7 +133,7 @@ _FIXED: tuple[NodeSpec, ...] = (
         "Pending Review",
         "attention",
         loader="attention:pending",
-        columns=("title", "site", "author", "modified"),
+        columns=("title", "site", "author", "queue", "modified"),
         row_type="item",
     ),
     _n(
@@ -147,7 +152,14 @@ _FIXED: tuple[NodeSpec, ...] = (
         columns=("title", "site", "modified"),
         row_type="item",
     ),
-    _n("updates", "Updates", "attention", loader="planned:updates"),
+    _n(
+        "updates",
+        "Updates",
+        "attention",
+        loader="attention:updates",
+        columns=("what", "site", "installed", "update"),
+        row_type="update",
+    ),
     _n(
         "health_problems",
         "Site Health",
@@ -156,8 +168,22 @@ _FIXED: tuple[NodeSpec, ...] = (
         columns=("problem", "site", "status"),
         row_type="problem",
     ),
-    _n("accessibility", "Accessibility", "attention", loader="planned:accessibility"),
-    _n("broken_links", "Broken Links", "attention", loader="planned:broken_links"),
+    _n(
+        "accessibility",
+        "Accessibility",
+        "attention",
+        loader="attention:accessibility",
+        columns=("title", "site", "alt_text", "uploaded"),
+        row_type="media",
+    ),
+    _n(
+        "broken_links",
+        "Broken Links",
+        "attention",
+        loader="attention:broken_links",
+        columns=("problem", "test", "site", "target", "status"),
+        row_type="problem",
+    ),
     _n(
         "held_as_spam",
         "Held as Spam",
@@ -174,7 +200,14 @@ _FIXED: tuple[NodeSpec, ...] = (
         columns=("form", "site", "status", "when"),
         row_type="form_entry",
     ),
-    _n("orders", "Orders", "attention", loader="planned:orders"),
+    _n(
+        "orders",
+        "Membership Orders",
+        "attention",
+        loader="attention:orders",
+        columns=("what", "site", "status", "total", "date"),
+        row_type="pmpro",
+    ),
     _n(
         "watches",
         "Watches",
@@ -208,7 +241,13 @@ _FIXED: tuple[NodeSpec, ...] = (
         dynamic=True,
     ),
     *ACROSS_NODES,
-    _n("search", "Search", loader="planned:search"),
+    _n(
+        "search",
+        "Search",
+        loader="search:all",
+        columns=("title", "type", "site", "address"),
+        row_type="search_result",
+    ),
     _n(
         "practice",
         "Practice Site",
@@ -224,14 +263,7 @@ _FIXED: tuple[NodeSpec, ...] = (
 
 _SITE: tuple[NodeSpec, ...] = (
     _n("site", "Site", scope=Scope.ORGANIZATION),
-    _n(
-        "overview",
-        "Overview",
-        "site",
-        loader="site:overview",
-        columns=("fact", "value"),
-        row_type="fact",
-    ),
+    *DASHBOARD_NODES,  # Overview, At a Glance, Activity, wp-admin Screens
     _n(
         "posts",
         "Posts",
@@ -377,23 +409,15 @@ _SITE: tuple[NodeSpec, ...] = (
         columns=("theme", "version", "status"),
         row_type="theme",
     ),
-    _n("global_styles", "Global Styles", "appearance", loader="planned:global_styles"),
     _n(
-        "templates",
-        "Templates",
+        "global_styles",
+        "Global Styles",
         "appearance",
-        loader="templates:wp_template",
-        columns=("title", "source", "slug"),
-        row_type="template",
+        loader="global_styles:all",
+        columns=("setting", "kind", "value", "contrast"),
+        row_type="global_style",
     ),
-    _n(
-        "template_parts",
-        "Template Parts",
-        "appearance",
-        loader="templates:wp_template_part",
-        columns=("title", "source", "slug"),
-        row_type="template",
-    ),
+    *SITE_EDITOR_NODES,  # Templates, Template Parts, Additional CSS
     _n(
         "patterns",
         "Patterns",
@@ -426,6 +450,7 @@ _SITE: tuple[NodeSpec, ...] = (
         columns=("form", "plugin", "entries", "status"),
         row_type="form",
     ),
+    *MEMBERSHIP_NODES,
     _n(
         "form_entries",
         "Responses",
@@ -443,8 +468,8 @@ _SITE: tuple[NodeSpec, ...] = (
         row_type="form_entry",
         home=False,
     ),
-    _n("shop", "Shop", "site", loader="planned:shop"),
-    _n("podcast", "Podcast", "site", loader="planned:podcast"),
+    *GRAVITY_NODES,
+    *SHOP_NODES,  # Shop, Shop Orders (WooCommerce) and Podcast
     _n("people", "People", "site"),
     _n(
         "users",
@@ -487,12 +512,13 @@ _SITE: tuple[NodeSpec, ...] = (
         columns=("test", "status", "says"),
         row_type="problem",
     ),
+    *HEALTH_NODES,
     _n(
         "abilities",
         "Abilities",
         "site",
         loader="abilities:all",
-        columns=("ability", "category", "says"),
+        columns=("ability", "plugin", "category", "says"),
         row_type="ability",
     ),
     *BY_NAME_NODES,
@@ -502,7 +528,7 @@ _SITE: tuple[NodeSpec, ...] = (
         "Content Model",
         "site",
         loader="model:all",
-        columns=("name", "kind", "registered_by", "in_rest"),
+        columns=("name", "kind", "registered_by", "definition", "in_rest"),
         row_type="model",
     ),
     _n(
@@ -526,26 +552,6 @@ _SITE: tuple[NodeSpec, ...] = (
 
 WORDPRESS_TREE = TreeSpec(_FIXED, {"site": _SITE})
 """The whole tree: the fixed nodes and the ``site`` template every site gets."""
-
-PLANNED_WORDS: dict[str, str] = {
-    "updates": (
-        "Updates waiting for WordPress, plugins, themes and translations. WordPress's REST "
-        "API does not say which updates wait, so this comes with the update phase; until "
-        "then, Site Check says when WordPress itself is behind."
-    ),
-    "accessibility": (
-        "Check the Whole Site's findings and pictures without alt text, from every site. "
-        "Until this list is built, Tools > WordPress > Check the Whole Site and Alt Text "
-        "Review have them, and each site's Media > Without Alt Text lists the pictures."
-    ),
-    "broken_links": "Links that lead nowhere, from Check the Whole Site, in a later phase.",
-    "orders": "New shop orders on sites with a shop. Tools > WordPress > Shop Orders has them.",
-    "search": "One search across every site, in a later phase.",
-    "global_styles": "The site's global styles. Tools > WordPress > Looks > Site Styles has them.",
-    "shop": "Products, orders and customers. Tools > WordPress > Shop Orders has the orders.",
-    "podcast": "Podcast episodes and the feed. File > WordPress > Post This Episode sends one.",
-}
-"""What each ``planned:`` node will hold, and where that lives today."""
 
 #: The node each Tools > WordPress door opens, by QUILL command id (PRD 14).
 _DOORS: dict[str, str] = {

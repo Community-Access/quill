@@ -166,10 +166,12 @@ class _FakeRepo:
             draft=False,
         )
 
-    def create_pull(self, *, title: str, body: str, head: str, base: str) -> Any:
+    def create_pull(
+        self, *, title: str, body: str, head: str, base: str, draft: bool = False
+    ) -> Any:
         self.calls.append((
             "create_pull",
-            {"title": title, "body": body, "head": head, "base": base},
+            {"title": title, "body": body, "head": head, "base": base, "draft": draft},
         ))
         return SimpleNamespace(
             number=2,
@@ -721,7 +723,8 @@ def test_compare_branches_maps_counts_commits_and_files(
     repo.compare = _compare  # type: ignore[attr-defined]
     result = provider.compare_branches("owner/repo", "main", "feature")
 
-    assert captured == [("main", "feature")]
+    # One behind, so GitHub is asked again the other way round for that commit.
+    assert captured == [("main", "feature"), ("feature", "main")]
     assert result.base == "main" and result.head == "feature"
     assert result.ahead_by == 3 and result.behind_by == 1
     assert result.status == "diverged" and result.total_commits == 3
@@ -1343,7 +1346,7 @@ def test_create_pull_request(provider: GitHubItemsProvider, repo: _FakeRepo) -> 
     assert item.head_branch == "feature"
     assert repo.calls[0] == (
         "create_pull",
-        {"title": "Fix it", "body": "body", "head": "feature", "base": "main"},
+        {"title": "Fix it", "body": "body", "head": "feature", "base": "main", "draft": False},
     )
 
 

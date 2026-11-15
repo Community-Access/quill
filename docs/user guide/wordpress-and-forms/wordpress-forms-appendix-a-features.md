@@ -2,20 +2,24 @@
 
 ## What this appendix covers
 
+You are a site administrator deciding what a security plugin may safely
+hide, or you are curious what QUILL asks your site for. This appendix is for
+you.
+
 QUILL talks to your site through WordPress's own REST API, which a site
 offers as a set of routes: one for posts, one for the Media Library, and so
 on. This appendix lists every group of routes QUILL uses, what it uses it
 for, where you reach that in QUILL and QUILL Lite, its WordPress key if it
-has one, and what happens on a site that does not offer it. It is for the
-curious, and for site administrators deciding what a security plugin may
-safely hide.
+has one, and what happens on a site that does not offer it. Most rows of
+Tools > WordPress open the WordPress Workbench, so "the Workbench" below
+means its place for that job.
 
 ## How to read it
 
 - **Where** is the same in QUILL and QUILL Lite: both editors build their
   menus from one table. The Command Palette (Ctrl+Shift+P) reaches every row
   in both.
-- **Key** is the letter after Ctrl+Alt+Shift+Grave (Chapter 12). A dash
+- **Key** is the letter after Ctrl+Alt+Shift+Grave (Chapter 16). A dash
   means the command is reached from its menu or the Command Palette.
 - **When the site lacks it.** QUILL reads each site's list of routes once a
   session, before it offers anything. A command whose route is missing stays
@@ -36,7 +40,7 @@ safely hide.
 | Custom fields (the registered fields of `posts` and `pages`) | File > WordPress > Custom Fields; Properties | - | "Community Radio has no custom fields for a post." |
 | Comments and block notes: `comments` | Tools > WordPress > Comments; View > Block Notes; Insert > Note on This Block | - | Block Notes needs WordPress 6.9 or later, and says the site does not offer notes. |
 | Find and replace across the site (part of `posts` and `pages`) | Tools > WordPress > Site-wide Find and Replace | - | As for pages and posts. |
-| Many changes at once: `batch/v1` | Fix in Bulk, Undo Site Fix, Merge Into, Bulk Edit, Do with Marked, Site-wide Find and Replace | - | "Community Radio does not offer this. It may be turned off, or the site may need a newer WordPress." Nothing is changed. Batches arrived in WordPress 5.6. |
+| Many changes at once: `batch/v1` | Fix in Bulk, Undo Site Fix, Merge Into, Bulk Edit, Site-wide Find and Replace; several rows at once in the Workbench | - | "Community Radio does not offer this. It may be turned off, or the site may need a newer WordPress." Nothing is changed. Batches arrived in WordPress 5.6. |
 
 ## Blocks and patterns
 
@@ -57,7 +61,8 @@ safely hide.
 |---|---|---|---|
 | The Media Library: `media` | Tools > WordPress > Media Library; Insert > Picture from the Media Library; More Media uploads; Alt Text for the Whole Library; Captions, Transcript, Listening Version, Publish a Document as a Page | M, U | "Community Radio does not offer its Media Library to QUILL." |
 | Editing a picture: `media/{id}/edit` | Tools > WordPress > More Media > Edit a Picture on the Site | - | "Community Radio offers no edits QUILL can make to" the picture. |
-| Uploads in pieces: `media/{id}/sideload`, `finalize` | Tools > WordPress > More Media > Upload a Large File | - | "Community Radio cannot take an upload in pieces. Upload Files sends it in one go instead." |
+| Big uploads: `media`, and `wp-site-health/v1/directory-sizes` for the room already used | Tools > WordPress > More Media > Upload a Large File | - | The file goes in one request, as WordPress takes no upload in pieces. A host that refuses the size gives its own reason. |
+| Replacing a file: a plugin's replace route where the site lists one; otherwise `media`, `posts`, `pages` and `blocks`, and `redirection/v1` for the redirect | The Workbench's Media: Replace File | - | Without a replace route, the new file is uploaded and every use pointed at it. Where Enable Media Replace is active, its wp-admin screen is offered too. |
 | Remaking sizes: `media/{id}/post-process` | Tools > WordPress > More Media > Regenerate Sizes | - | "Community Radio cannot remake a picture's sizes. That needs WordPress 6.9 or later." |
 | Logo and icon: `settings` | Tools > WordPress > More Media > Site Logo | - | Says the theme does not use the standard site logo. |
 
@@ -77,7 +82,8 @@ safely hide.
 
 | Feature and routes | Where | Key | When the site lacks it |
 |---|---|---|---|
-| Menus: `menus`, `menu-items`, `menu-locations`, `navigation` | Tools > WordPress > Menus; the "Add it to a menu?" question; Site Map | - | "Community Radio does not offer its menus to QUILL." |
+| Menus: `menus`, `menu-items`, `menu-locations`, `navigation` | Tools > WordPress > Menus; the Workbench's Add Menu Item and Add New Pages Automatically; the "Add it to a menu?" question; Site Map | - | "Community Radio does not offer its menus to QUILL." |
+| What a menu can hold: `types`, `taxonomies`, `search` | The Workbench's Add Menu Item | - | Only the kinds the site lists are offered, with Custom Links always there. |
 | Menu history: `navigation` revisions | Tools > WordPress > Menu History | - | "Community Radio keeps no history of its Navigation blocks." Classic menus use the versions QUILL keeps on your computer. |
 | Widgets: `sidebars`, `widgets` | Tools > WordPress > Manage > Widgets | - | Says the site has no widget areas, and points to Template Outline. |
 
@@ -100,10 +106,14 @@ plugin's own routes are on the site, and Site Check names it.
 
 | Feature and routes | Where | Key | When the site lacks it |
 |---|---|---|---|
-| QUILL Accessible Forms: `qaf/v1` (or the older `baf/v1`) | Tools > Forms: Publish Form, Insert Form Into Page, Test on Site, Responses | - | "Publish Form needs QUILL Accessible Forms on Community Radio, and the site does not offer it." |
-| The Events Calendar: `tribe/events/v1` | Plugin Extras > Events Coming Up, New Event; Plugin Fields | - | Plugin Fields says the plugins add no fields. |
-| WooCommerce: `wc/v3` | Plugin Extras > Shop Orders; Plugin Fields | - | As above. |
-| Yoast SEO and Rank Math (their registered fields) | Plugin Fields; Properties | - | As above. |
+| QUILL Accessible Forms: `qaf/v1` (or the older `baf/v1`) | Tools > Forms: Publish Form, Insert Form Into Page, Test on Site, Responses (F); the Workbench's Forms, Responses and the site's Spam page | F | "Publish Form needs QUILL Accessible Forms on Community Radio, and the site does not offer it." With only `baf/v1`, the spam settings are read only. |
+| The Events Calendar: `tribe/events/v1` | Plugin Extras > Events Coming Up, New Event; Plugin Fields; the Workbench's Events Calendar | - | Plugin Fields says the plugins add no fields; the Workbench has no Events Calendar. |
+| WooCommerce: `wc/v3` | Plugin Extras > Shop Orders; Plugin Fields; the Workbench's Shop and its places | - | As above; the Workbench's Shop says the site has no shop. |
+| Gravity Forms: `gf/v2` | The Workbench's Forms, Responses, Feeds and Results; New Gravity Form, Edit Form; Test This Form; Copy to Site | - | The Workbench shows no Gravity Forms forms. |
+| Paid Memberships Pro: its Abilities, or the older `pmpro/v1` | The Workbench's Memberships and a person's membership commands | - | The Workbench adds no membership rows. |
+| Redirection: `redirection/v1` | The Workbench's Redirects and 404 Log | - | Redirects names the plugins that keep redirects in their own screens. |
+| Yoast SEO: its registered fields, and its bulk editor routes | Plugin Fields; Properties; the Workbench's SEO and Bulk SEO Editor | - | Anything neither way reaches is named in the preview and left for wp-admin. |
+| Rank Math (its registered fields) | Plugin Fields; Properties | - | As above. |
 
 Payments additionally require `qaf/v1/payments/settings` with
 `contract_version: 1`. Verify Payment Setup reads provider and webhook
@@ -111,6 +121,16 @@ readiness; paid-form publication checks the same capability and mode.
 An older plugin is refused with an update-required message. The optional
 `payment` object on entries supplies status and export metadata. Provider
 credentials and checkout are managed by WordPress, not the desktop.
+
+## Files on your own computer
+
+WXR export and import (the Workbench's Tools > WXR Files) have no route of
+their own. Export reads `posts`, `pages`, `blocks`, each content type,
+`users`, `categories`, `tags`, every taxonomy, `media`, `comments`, `menus`
+and `menu-items`, and writes the file on your computer. Import reads the
+file on your computer and makes drafts through the same routes, matching
+people through `users`. What the account may not read is left out and
+named.
 
 ## Across all your sites
 
@@ -120,5 +140,5 @@ listed as "Did not answer:" and its name, and the rest carry on.
 
 ## Where to next
 
-- Previous: [Chapter 13: Every window, field and button](wordpress-forms-13-window-reference.html)
+- Previous: [Chapter 17: WordPress Workbench reference](wordpress-forms-17-workbench-reference.html)
 - [Contents](wordpress-forms-guide.html)

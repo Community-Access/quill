@@ -5677,9 +5677,16 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="github-workbench">GitHub Workbench</h2>
-<p>Control coverage: 309 audited sites (309 helped).</p>
+<p>Control coverage: 354 audited sites (354 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
+<p><strong>Add GitHub Token.</strong> Paste a personal access token you
+made yourself, such as one limited to a few repositories, or go on
+without signing in. Sign In with GitHub is the easier road for most
+people.</p>
+<p><strong>Add Watch.</strong> What to watch for: a run finishing, a
+review, a release or a comment. Then you name the repository, or the
+issue or pull request.</p>
 <p><strong>Artifacts.</strong> The files a workflow run kept: download
 one or all of them.</p>
 <p><strong>Change History.</strong> Every change the Workbench made on
@@ -5689,23 +5696,57 @@ on this device for 90 days; secret values never appear.</p>
 <p><strong>Changed on GitHub.</strong> Somebody changed this field on
 GitHub since you opened the sheet. Keep Theirs leaves their value; Use
 Mine saves yours over it.</p>
+<p><strong>Clone Repository.</strong> Copy a GitHub repository to a
+folder on this computer: which repository, which folder, then OK. The
+copy runs in the background and you hear once how it went.</p>
+<p><strong>Code Owners (CODEOWNERS).</strong> Who reviews changes to
+which paths, and a lookup for who owns a path.</p>
 <p><strong>Columns.</strong> Choose which columns this list shows. Space
 checks or clears one.</p>
+<p><strong>Configure Branch Protection.</strong> Pick a branch, then
+protect it with the rules you choose, or clear the protection it already
+has.</p>
+<p><strong>Confirm GitHub API Write.</strong> This request changes
+something on GitHub. Type the method shown, or MUTATION for GraphQL, to
+send it; anything else sends nothing.</p>
+<p><strong>Create GitHub Repository.</strong> Make a new repository on
+GitHub: its name, a description, public or private, and optionally the
+organization it belongs to.</p>
 <p><strong>Discussion #.</strong> One discussion thread: read it, and
 reply if you are signed in.</p>
-<p><strong>Explore GitHub.</strong> Explore GitHub, the classic window:
-searches, your own work, people and repository administration.</p>
+<p><strong>Draft Release Notes.</strong> Write release notes from the
+changes between two points, then edit and copy them. This only drafts:
+no release is made on GitHub.</p>
+<p><strong>Edit Release.</strong> Change a release’s name, notes, and
+whether it is a draft or a prerelease. Nothing is sent until Save;
+publishing a draft asks first, because watchers are told.</p>
+<p><strong>Export JSON.</strong> Where to save GitHub’s answer as a JSON
+file.</p>
 <p><strong>Filter Builder.</strong> Build a filter one condition at a
 time: an attribute, an operator and a value from the repository. The
 query appears as you go, in GitHub’s own syntax; OK puts it in the
 filter box, Save as Search also keeps it.</p>
-<p><strong>GitHub Items.</strong> GitHub Items, the classic window: one
-repository’s issues, pull requests, branches, commits, tags, releases
-and workflow runs.</p>
+<p><strong>Form Field:.</strong> One field of a form: its label, id,
+description and, for its kind, placeholder, options, default and whether
+it is required.</p>
+<p><strong>GitHub API Console.</strong> Send any GitHub REST request or
+GraphQL query. Down Arrow in Path lists the operations that match; What
+it does says the risk and what it needs before you send. A read goes at
+once; a write needs Full access and the method typed to confirm. The
+answer is a tree: Copy Value, Copy Path and Export JSON work on it.</p>
+<p><strong>GitHub Access.</strong> Asked once, before anything talks to
+GitHub: what connecting does and how to take it back. Continue allows
+it; Cancel leaves GitHub alone.</p>
 <p><strong>GitHub Permissions.</strong> Every permission the Workbench
 can use, what it unlocks and whether you have it. Add Permissions asks
 for every missing one in one sign-in; Copy Command, the classic token
 page and the fine-grained steps are the other ways.</p>
+<p><strong>GitHub Projects and Dependencies.</strong> Load a
+repository’s Projects, pick one, and walk its items as a list. The
+details say what each item is blocked by and what it blocks; Next
+Unblocked finds something you can start.</p>
+<p><strong>GitHub Repository Browser.</strong> Choose a repository, a
+branch or tag, and a file in it to open in the editor.</p>
 <p><strong>GitHub Workbench.</strong> One window for GitHub. The tree on
 the left says where you are, the list says what is there, and the
 details say what the selected one is. F6 moves between them, Enter does
@@ -5713,23 +5754,82 @@ the obvious thing, Shift+F1 lists everything you can do, and Alt+Enter
 shows everything about the selection.</p>
 <p><strong>GitHub Workbench Keys.</strong> Every key in the GitHub
 Workbench, grouped by what it does.</p>
+<p><strong>How to Cite (CITATION.cff).</strong> How people should cite
+the project: title, version, DOI and the authors.</p>
 <p><strong>Jobs for.</strong> A run’s jobs and steps, with each job’s
 log and annotations.</p>
+<p><strong>Manage GitHub Accounts.</strong> The GitHub accounts kept on
+this computer: switch to one, add another, or remove one and forget its
+token.</p>
+<p><strong>Milestones.</strong> A repository’s milestones, one line each
+with how far along it is and when it is due. New, Edit, and Close or
+Reopen change them on GitHub.</p>
 <p><strong>New Discussion.</strong> Start a discussion in the
 repository: a category, a title and what to say.</p>
+<p><strong>New Discussion from a Form.</strong> Fill in a discussion
+category’s form, one field at a time, with the required ones marked.
+Nothing reaches GitHub until you press Start Discussion.</p>
+<p><strong>New Issue.</strong> Write an issue before it goes anywhere:
+title, what to say, labels and who it is for. Nothing reaches GitHub
+until you press Create Issue.</p>
+<p><strong>New Issue from a Form.</strong> Fill in a repository’s issue
+form, one field at a time, with the required ones marked. Nothing
+reaches GitHub until you press Create Issue.</p>
+<p><strong>New Pull Request.</strong> Propose merging one branch into
+another: the two branches, a title, a description and whether it is a
+draft. Nothing reaches GitHub until you press Create Pull Request.</p>
 <p><strong>Pending Deployments.</strong> Deployments waiting on you:
 approve or reject each one.</p>
 <p><strong>Preview.</strong> What is about to change on GitHub, in
 words. Enter goes ahead; Escape changes nothing.</p>
+<p><strong>Preview Form.</strong> A template’s form as people will meet
+it. Show Body shows what GitHub would write; nothing is sent
+anywhere.</p>
 <p><strong>Properties of.</strong> One sheet for several objects. A
 field the same on all shows its value; one that differs says Mixed and
 is left alone unless you change it; a check box on some of them is in
 its third state.</p>
+<p><strong>Read as Document.</strong> The whole thread as one document,
+a heading per post with its author and date: open it in the editor, or
+save it as Markdown or HTML.</p>
+<p><strong>Reorder Sub-issues.</strong> A parent issue’s sub-issues in
+the order GitHub holds. Move Up and Move Down change that order on
+GitHub, and you hear where it landed.</p>
+<p><strong>Repositories in.</strong> Choose the repositories in this
+Repository Set: one check box per repository, by owner and name. Space
+checks or unchecks one; Add puts in one you type; Enter saves.</p>
+<p><strong>Repository Files.</strong> Walk a repository’s folders and
+files at any branch, tag or commit. Enter reads a file here; Open in
+Editor, README, History and Blame go further.</p>
+<p><strong>Review Pull Request.</strong> Write your review of a pull
+request: approve, ask for changes or just comment, with a message. The
+draft is kept on this computer until you press Submit Review.</p>
+<p><strong>Review pull request.</strong> Read a pull request the way a
+reviewer does: its outline and threads, the review summary and the
+checks, with buttons to jump to the next unresolved thread, reply,
+request reviewers or write your review.</p>
+<p><strong>Save Command.</strong> A name for this console request, kept
+for this account on this device.</p>
+<p><strong>Save Thread As.</strong> Where to save the thread
+document.</p>
+<p><strong>Saved Commands.</strong> Console requests you saved. Enter
+fills the console with one.</p>
 <p><strong>Search Help.</strong> Type a few words to find a help topic,
 a place, a command or a GitHub word. Enter goes there, runs it or reads
 it.</p>
+<p><strong>Sponsor Platforms (FUNDING.yml).</strong> Where people can
+sponsor the project: one box per platform GitHub knows.</p>
+<p><strong>Template Chooser.</strong> Whether blank issues are allowed,
+the contact links, and the order the templates appear in. Nothing
+reaches GitHub until you save and confirm.</p>
+<p><strong>Template:.</strong> Build or edit a template: its keys, its
+fields as a list, its source and a preview, with the problems GitHub
+would report listed before Save.</p>
 <p><strong>Type to Confirm.</strong> This change is hard to reverse, so
 it waits for the name typed exactly. Anything else changes nothing.</p>
+<p><strong>Watch.</strong> The repository as owner/name, or the issue or
+pull request as owner/name#42. For runs, a branch after a space watches
+only that branch.</p>
 <p><strong>What Can I Do Here.</strong> Every action for what is
 selected, in the order of its context menu, with its key. Enter runs the
 action; a greyed one says why it is greyed.</p>
@@ -5803,6 +5903,9 @@ follow. Enter opens a person’s node.</p>
 you.</p>
 <p><strong>My Teams.</strong> My Teams: every team you belong to, across
 your organizations. Alt+Enter opens a team’s sheet.</p>
+<p><strong>My Billing and Usage.</strong> Billing and Usage: this
+month’s metered use of your account, by product, from GitHub’s billing
+report. Read only; Enter opens your billing page.</p>
 <p><strong>Find a Person….</strong> Find a Person: type a login with
 Ctrl+L, and the person gets a node of their own here.</p>
 <p><strong>Gists.</strong> Gists: small shared files and snippets.</p>
@@ -5811,9 +5914,61 @@ one.</p>
 <p><strong>Projects.</strong> Projects: your Project boards. Each
 repository’s own Projects are under it, Ctrl+Shift+7.</p>
 <p><strong>Watches.</strong> Watches: tell me when something happens.
-Coming in a later release.</p>
-<p><strong>Across Repositories.</strong> Across Repositories: every kind
-of thing, by name, everywhere. Coming in a later release.</p>
+Each row is a rule: a run finishes on a repository or branch, a review
+arrives on a pull request, a new release, a new comment. They are
+checked on the notification check’s interval in Workbench Options while
+this window is open, and each row says when it was last checked. Ctrl+N
+adds one, Enter edits, Delete removes. Watches never mark notifications
+read.</p>
+<p><strong>Across Repositories.</strong> Across Repositories: the
+Repository Set in use, and under it its named sets, one kind of thing
+from every repository in the set, each name across the set, and the
+Fleet. Ctrl+N here edits the set’s repositories.</p>
+<p><strong>Repository Sets.</strong> Repository Sets: your named lists
+of repositories, each chosen from a checklist, made by a filter such as
+org:name topic:x, or every repository you can reach. Enter uses one;
+Ctrl+N makes one; Delete forgets one after asking. They stay on this
+computer.</p>
+<p><strong>Issues and Pull Requests.</strong> Issues and Pull Requests,
+open, from every repository in the set, each row starting with its
+repository. Enter opens one in its repository; ] and [ move between
+repositories; type: and field: filters use issue types and fields.</p>
+<p><strong>Releases.</strong> Releases from every repository in the set:
+the latest release of each, or every release from the row’s menu.</p>
+<p><strong>Workflow Runs.</strong> Workflow Runs from every repository
+in the set, newest first.</p>
+<p><strong>Commits.</strong> Commits on the default branch of every
+repository in the set.</p>
+<p><strong>Tags.</strong> Tags from every repository in the set.</p>
+<p><strong>Milestones.</strong> Milestones from every repository in the
+set.</p>
+<p><strong>Discussions.</strong> Discussions from every repository in
+the set that has them on.</p>
+<p><strong>Security Alerts.</strong> Security alerts from every
+repository in the set you may read them in.</p>
+<p><strong>Labels by Name.</strong> Labels by Name: each label name
+across the set, where its colour and description differ and where it is
+missing. Make the copies the same, add it where missing, rename, merge
+or delete it everywhere, each with a preview and a result per
+repository.</p>
+<p><strong>Milestones by Name.</strong> Milestones by Name: each
+milestone title across the set, its due dates, descriptions and
+progress. Make them the same, close them everywhere, move their open
+work to another milestone or add the missing ones, each with a preview
+and a result per repository.</p>
+<p><strong>Topics by Name.</strong> Topics by Name: each topic across
+the set and the repositories that lack it. Add it to the missing or
+remove it everywhere, with a preview and a result per repository; each
+repository’s other topics are kept.</p>
+<p><strong>Rules and Branch Protection.</strong> Rules and Branch
+Protection: each ruleset by name, and each default branch’s protection,
+compared across the set. Make them the same as the winner, add a ruleset
+where it is missing, or promote one to an organization ruleset; each
+needs admin access and shows a preview first.</p>
+<p><strong>Fleet.</strong> Fleet: one line per repository in the set:
+the exact revision of its default branch, checks, open pull requests,
+latest release and alerts, and when it was read. A repository that could
+not be read keeps its line, with the reason.</p>
 <p><strong>Help and Learning.</strong> Help and Learning: the guide, the
 GitHub words, the keys, what changed, and tasks in plain words that take
 you to the place.</p>
@@ -5875,6 +6030,11 @@ and their files. Enter lists the files.</p>
 requests. Enter finds the issues.</p>
 <p><strong>repository: Milestones.</strong> Milestones: goals with a
 date. Enter lists the issues and pull requests in one.</p>
+<p><strong>repository: Templates.</strong> Templates: issue forms,
+Markdown templates, the chooser, pull request templates, discussion
+forms and community files, including those inherited from the owner’s
+.github repository. Enter builds or edits one; Ctrl+N starts a new
+one.</p>
 <p><strong>repository: Projects.</strong> Projects: this repository’s
 Project boards.</p>
 <p><strong>repository: Activity.</strong> Activity: what happened in the
@@ -5932,6 +6092,9 @@ organization’s repositories you can see.</p>
 teams, as GitHub nests them. Alt+Enter opens a team’s sheet: its members
 and maintainers, repositories and roles, child teams and code review
 assignment.</p>
+<p><strong>organization: Templates.</strong> Templates: the defaults in
+the organization’s .github repository, which every repository without
+its own uses. Enter builds or edits one.</p>
 <h3 id="every-menu-row">Every menu row</h3>
 <p><strong>File &gt; New Here….</strong> Something new where you are: an
 issue in Issues, a saved search in Saved Searches.</p>
@@ -6094,13 +6257,13 @@ window opened on.</p>
 you.</p>
 <p><strong>Go &gt; Gists.</strong> Your gists.</p>
 <p><strong>Go &gt; Projects.</strong> Projects.</p>
-<p><strong>Go &gt; Watches.</strong> Watches: tell me when it happens.
-Coming later.</p>
+<p><strong>Go &gt; Watches.</strong> Watches: tell me when a run
+finishes, a review arrives, a release or a comment.</p>
 <p><strong>Go &gt; Saved Searches.</strong> Searches you saved.</p>
 <p><strong>Go &gt; Start Here.</strong> What this window is and how it
 works.</p>
-<p><strong>Go &gt; Across Repositories.</strong> Every kind of thing, by
-name, everywhere. Coming later.</p>
+<p><strong>Go &gt; Across Repositories.</strong> One kind of thing from
+the repositories you chose, in one list.</p>
 <p><strong>Go &gt; Issues.</strong> This repository’s issues.</p>
 <p><strong>Go &gt; Pull Requests.</strong> This repository’s pull
 requests.</p>
@@ -6133,6 +6296,9 @@ request.</p>
 the selected issue.</p>
 <p><strong>Item &gt; Start in Local Worktree….</strong> A branch and a
 folder on this computer for the selected item.</p>
+<p><strong>Item &gt; Read as Document….</strong> The selected issue,
+pull request or discussion as one document, a heading per post: open it
+in the editor or save it as Markdown or HTML.</p>
 <p><strong>Item &gt; What Failed….</strong> The failing steps of the
 selected run, and their log lines.</p>
 <p><strong>Item &gt; Re-run Failed Jobs.</strong> Run only what failed
@@ -6145,6 +6311,11 @@ notification in this view read. Asks first when there are many.</p>
 selected row under Repositories, Favorites.</p>
 <p><strong>Repository &gt; Compare Branches….</strong> Commits ahead and
 behind between two branches, and the changed files.</p>
+<p><strong>Repository &gt; Compare With Default.</strong> The selected
+branch, tag, release or commit against the default branch.</p>
+<p><strong>Repository &gt; Compare With Previous.</strong> The selected
+tag or release against the one before it, or a commit against its
+parent.</p>
 <p><strong>Repository &gt; Run Workflow on Branch….</strong> Start a
 workflow that can be started by hand, on a branch.</p>
 <p><strong>Repository &gt; Repository Actions….</strong> Everything else
@@ -6178,6 +6349,9 @@ Only, Organize or Full: what the Workbench may change with this account,
 whatever GitHub would allow.</p>
 <p><strong>Tools &gt; Workbench Options….</strong> Where the Workbench
 opens, how notifications check, lists and privacy.</p>
+<p><strong>Tools &gt; GitHub API Console….</strong> Send any GitHub REST
+request or GraphQL query: completion from GitHub’s API description, what
+it does and needs said first, the answer as a tree.</p>
 <p><strong>Window &gt; Switch to Editor.</strong> Bring forward the
 editor that opened this window.</p>
 <p><strong>Help &gt; Help for This View.</strong> What this view and
@@ -6207,9 +6381,15 @@ it.</p>
 <p><strong>Copy Link.</strong> Copy the item’s GitHub address.</p>
 <p><strong>Open on GitHub.</strong> Open the item in your browser.</p>
 <p><strong>Milestone.</strong> Set or clear its milestone.</p>
+<p><strong>Projects.</strong> Add it to Projects, take it out, or make
+one.</p>
+<p><strong>Edit Title.</strong> Open its sheet at the title.</p>
 <p><strong>React.</strong> Add or remove a reaction.</p>
 <p><strong>View Timeline.</strong> Everything that happened to it, in
 order.</p>
+<p><strong>Read as Document.</strong> The whole thread as one document,
+a heading per post with its author and date: open it in the editor, or
+save it as Markdown or HTML. Ctrl+Shift+I.</p>
 <p><strong>Summarize Discussion.</strong> An AI summary of the
 thread.</p>
 <p><strong>Start in Local Worktree.</strong> Make a branch and a local
@@ -6260,6 +6440,10 @@ counts.</p>
 <p><strong>Draft Release Notes.</strong> Notes drafted from the
 changes.</p>
 <p><strong>Upload Asset.</strong> Add a file to the release.</p>
+<p><strong>Compare With Previous.</strong> Compare it with the one
+before: the previous tag or release, or a commit’s parent.</p>
+<p><strong>Compare With Default.</strong> Compare it with the default
+branch: commits each way, files, any open pull request.</p>
 <p><strong>Download.</strong> Download the file in your browser.</p>
 <p><strong>Delete Asset.</strong> Remove the file from the release.</p>
 <p><strong>Commits.</strong> The branch’s commits.</p>
@@ -6302,12 +6486,25 @@ use.</p>
 or edit.</p>
 <p><strong>Find Issues in Milestone.</strong> Its issues and pull
 requests.</p>
+<p><strong>Open Template.</strong> Build or edit it, preview it and save
+it; a missing file starts from a starter.</p>
+<p><strong>Convert Form or Template.</strong> A Markdown template to an
+issue form, or a form to Markdown (it asks first).</p>
+<p><strong>Copy to Repositories.</strong> Copy it to other repositories,
+after a preview of each.</p>
 <p><strong>Members and Access.</strong> Open the team’s sheet at its
 members: add people, change a role, remove.</p>
 <p><strong>Open.</strong> Select the organization’s node in the
 tree.</p>
 <p><strong>Open.</strong> Open the settings dialog for this; it asks
 before saving.</p>
+<p><strong>Edit Watch.</strong> Change what the watch looks at.</p>
+<p><strong>Pause or Resume Watch.</strong> Stop checking it for now, or
+start again.</p>
+<p><strong>Check Watches Now.</strong> Check every active watch now,
+without waiting for the next round.</p>
+<p><strong>Remove Watch.</strong> Stop watching. Delete does the
+same.</p>
 <p><strong>Open.</strong> Read the topic, or open the chapter it
 names.</p>
 <p><strong>Take Me There.</strong> Go to the place the topic is
@@ -6315,6 +6512,54 @@ about.</p>
 <p><strong>Refresh.</strong> Load this view again. F5 does the same.</p>
 <p><strong>Help for This View.</strong> What this view shows. F1 does
 the same.</p>
+<p><strong>Open in Its Repository.</strong> Go to the item in its own
+repository, where every action for it is. Back returns to this row,
+filter and page.</p>
+<p><strong>Next Repository.</strong> The first row of the next
+repository in the list. ] in the list does the same.</p>
+<p><strong>Previous Repository.</strong> The first row of the repository
+before this one. [ in the list does the same.</p>
+<p><strong>View More from This Repository.</strong> Read 30 more from
+this repository, up to GitHub’s 100; the rest keep their place.</p>
+<p><strong>Read Issue Type and Fields.</strong> Read each issue’s type
+and its organization’s fields, with the field’s type and whether it is
+unset, empty, hidden or unreadable.</p>
+<p><strong>Every Release or Latest Only.</strong> Releases shows each
+repository’s latest release; this shows every release, or the latest
+only again.</p>
+<p><strong>Use This Set.</strong> Every Across Repositories list and
+by-name sheet reads this set from now on.</p>
+<p><strong>Edit Repositories.</strong> The set’s repositories, one per
+line. Adding one already listed keeps one copy.</p>
+<p><strong>Set Filter.</strong> Make the set by GitHub’s repository
+search, such as org:name topic:x, each time it is used.</p>
+<p><strong>New Set.</strong> Make another set, by hand or by filter.</p>
+<p><strong>Rename Set.</strong> Give the set another name.</p>
+<p><strong>Delete Set.</strong> Forget the set on this computer, after
+asking. Nothing on GitHub changes.</p>
+<p><strong>Variants and Missing From.</strong> Each variant with the
+repositories that have it, and those that lack it.</p>
+<p><strong>Make Them the Same.</strong> Choose the winning variant; the
+preview shows each repository, then each result.</p>
+<p><strong>Add to Missing.</strong> Create it in the repositories you
+choose that lack it, after the preview.</p>
+<p><strong>Find Uses.</strong> Search every issue and pull request with
+it, across the set.</p>
+<p><strong>Rename Everywhere.</strong> Rename the label in every
+repository; a clash is shown, not merged.</p>
+<p><strong>Merge Into.</strong> Move every item to another label, then
+delete this one, after the preview.</p>
+<p><strong>Close Everywhere.</strong> Close every open copy of the
+milestone, after the preview.</p>
+<p><strong>Move Open Work To.</strong> Move each repository’s open items
+to another milestone of its own, after the preview.</p>
+<p><strong>Promote to Organization.</strong> One organization ruleset
+for the set’s repositories in that organization, then their own copies
+deleted, after the preview.</p>
+<p><strong>Delete Everywhere.</strong> Delete the label, or remove the
+topic, in every repository, after the preview.</p>
+<p><strong>Open Repository.</strong> Select the repository’s node in the
+tree.</p>
 <h3 id="every-workbench-option">Every Workbench option</h3>
 <p><strong>General: Open the Workbench on.</strong> Where the window
 opens when no menu row asks for a place: Inbox (Start Here until you
@@ -6350,11 +6595,34 @@ repository’s activity. It loads only when this is checked.</p>
 <p><strong>Privacy: Show First time here? help.</strong> The first few
 times you visit a place, its details start with a short paragraph on
 what it is for.</p>
-<p><strong>Privacy: Use the classic GitHub windows.</strong> Open GitHub
-Items and Explore GitHub, as before the Workbench, from the editor’s
-GitHub doors. Kept for one release, then retired.</p>
 <h3 id="every-authored-control-help-sentence-9">Every authored control
 help sentence</h3>
+<h4 id="githubapiconsole-quilluigithub_api_consolepy">GitHubApiConsole
+(<code>quill/ui/github_api_console.py</code>)</h4>
+<ul>
+<li><code>dialog</code>: Send any GitHub REST request or GraphQL query.
+What it does and what it needs is said before you send; a read goes at
+once, a write needs Full access and the method typed to confirm. The
+answer is a tree below.</li>
+<li><code>self.method</code>: GET reads; POST, PUT and PATCH change;
+DELETE removes. GRAPHQL sends the Body box as a GraphQL document, with
+the Variables box as its variables.</li>
+<li><code>self.path</code>: The request path, such as
+/repos/owner/name/issues. Type part of it and press Down Arrow for the
+matching operations from GitHub’s API description; a name in braces is a
+value you type in its place. Add ?name=value for a query.</li>
+<li><code>self.body</code>: For a write, the body: a JSON object or one
+name=value a line. For GRAPHQL, the query or mutation itself.</li>
+<li><code>self.variables</code>: GraphQL variables as a JSON object. Not
+used for REST.</li>
+<li><code>self.explanation</code>: What the request does, how risky it
+is, the token scope it needs and how it is confirmed, from GitHub’s API
+description.</li>
+<li><code>self.tree</code>: GitHub’s answer as a tree: Right Arrow opens
+a field or list, Left Arrow closes it. Copy Value and Copy Path work on
+the selected node.</li>
+<li><code>close</code>: Close the console. Escape does the same.</li>
+</ul>
 <h4
 id="artifactsdialog-quilluigithub_artifacts_dialogpy">ArtifactsDialog
 (<code>quill/ui/github_artifacts_dialog.py</code>)</h4>
@@ -6409,14 +6677,20 @@ GitHub again.</li>
 id="githubcomparebranchesdialog-quilluigithub_compare_branches_dialogpy">GitHubCompareBranchesDialog
 (<code>quill/ui/github_compare_branches_dialog.py</code>)</h4>
 <ul>
-<li><code>self._commits_list</code>: The commits one branch has that the
-other does not, newest first.</li>
+<li><code>self._commits_list</code>: The commits the second branch has
+that the first does not, newest first. GitHub gives at most 250; the tab
+says when there are more.</li>
+<li><code>self._behind_list</code>: The commits the first branch has
+that the second lacks, newest first: what it is behind by. GitHub gives
+at most 250; the tab says when there are more.</li>
 <li><code>self._files</code>: The changed files, one per row. Arrow to a
 file to read its changes below.</li>
 <li><code>self._detail</code>: The selected item in full, read-only.
 Arrow through it line by line.</li>
 <li><code>self._browser_btn</code>: Open this on GitHub in your
 browser.</li>
+<li><code>self._pull_btn</code>: Open the pull request already open
+between these two, in your browser. Greyed when there is none.</li>
 <li><code>close_btn</code>: Close this window. Escape does the
 same.</li>
 </ul>
@@ -6642,6 +6916,15 @@ and text.</li>
 <li><code>cancel_btn</code>: Close without creating the issue.</li>
 </ul>
 <h4
+id="issueformdialog-quilluigithub_issue_form_dialogpy">IssueFormDialog
+(<code>quill/ui/github_issue_form_dialog.py</code>)</h4>
+<ul>
+<li><code>self._issue_title</code>: What it is about, in a line.</li>
+<li><code>cancel</code>: Close without sending anything.</li>
+<li><code>text</code>: Text from the form’s authors; read it, nothing to
+fill in.</li>
+</ul>
+<h4
 id="githubitemsdialog-quilluigithub_items_dialogpy">GitHubItemsDialog
 (<code>quill/ui/github_items_dialog.py</code>)</h4>
 <ul>
@@ -6781,6 +7064,23 @@ GitHub.</li>
 <li><code>self._refresh_btn</code>: Asks GitHub for the milestones
 again.</li>
 <li><code>close_btn</code>: Close this window.</li>
+</ul>
+<h4
+id="newpullrequestdialog-quilluigithub_new_pull_dialogpy">NewPullRequestDialog
+(<code>quill/ui/github_new_pull_dialog.py</code>)</h4>
+<ul>
+<li><code>self._head</code>: The branch with the changes you are
+proposing.</li>
+<li><code>self._title</code>: Required. What the pull request does, in a
+line.</li>
+<li><code>self._body</code>: Optional. Why, and what a reviewer should
+look at. Kept if you cancel.</li>
+<li><code>self._draft</code>: A draft cannot be merged and asks nobody
+to review it until you mark it ready.</li>
+<li><code>create</code>: Open the pull request on GitHub with these
+branches and text.</li>
+<li><code>cancel</code>: Close without sending. What you typed is kept
+for this session.</li>
 </ul>
 <h4
 id="pendingdeploymentsdialog-quilluigithub_pending_deployments_dialogpy">PendingDeploymentsDialog
@@ -7056,6 +7356,28 @@ address.</li>
 <li><code>cancel_btn</code>: Close without opening a file.</li>
 </ul>
 <h4
+id="repositorychecklistdialog-quilluigithub_repository_checklistpy">RepositoryChecklistDialog
+(<code>quill/ui/github_repository_checklist.py</code>)</h4>
+<ul>
+<li><code>self</code>: Choose the repositories in this Repository Set.
+Space checks or unchecks the repository you are on; Enter saves; Escape
+keeps the set as it was.</li>
+<li><code>self.scroller</code>: Each repository by owner and name,
+checked when it is in the set. Space checks or unchecks it; Enter
+saves.</li>
+<li><code>self.add_box</code>: Type owner/name or a GitHub link and
+press Enter or Add: it joins the list checked. One already listed is
+checked, not added twice.</li>
+<li><code>self.add_button</code>: Add the repository typed in the box,
+checked.</li>
+<li><code>ok</code>: Save the checked repositories as the set. Enter
+does the same.</li>
+<li><code>cancel</code>: Close without changing the set. Escape does the
+same.</li>
+<li><code>said</code>: Why the list may not hold every repository you
+can reach.</li>
+</ul>
+<h4
 id="githubreviewdraftdialog-quilluigithub_review_draft_dialogpy">GitHubReviewDraftDialog
 (<code>quill/ui/github_review_draft_dialog.py</code>)</h4>
 <ul>
@@ -7107,6 +7429,53 @@ earlier, on GitHub.</li>
 later, on GitHub.</li>
 <li><code>close</code>: Closes this window. Every move has already been
 sent.</li>
+</ul>
+<h4
+id="templatebuilderdialog-quilluigithub_template_builder_dialogpy">TemplateBuilderDialog
+(<code>quill/ui/github_template_builder_dialog.py</code>)</h4>
+<ul>
+<li><code>self.checks</code>: Every problem GitHub would report after
+saving, found before it. Errors stop Save; warnings do not.</li>
+<li><code>self.pull</code>: Save to a new branch and open a pull request
+into the default branch. Checked already when the default branch is
+protected.</li>
+<li><code>save</code>: Check the template, then ask before committing it
+to GitHub.</li>
+<li><code>cancel</code>: Close without saving anything.</li>
+<li><code>self.fields</code>: The form’s fields in order. Enter edits
+one; the buttons beside add, move and remove.</li>
+<li><code>self.source</code>: The file as GitHub holds it. Edit it here
+and Save.</li>
+</ul>
+<h4 id="fielddialog-quilluigithub_template_field_dialogpy">FieldDialog
+(<code>quill/ui/github_template_field_dialog.py</code>)</h4>
+<ul>
+<li><code>self.multiple</code>: For a drop-down: let people choose more
+than one.</li>
+<li><code>self.required</code>: The form cannot be sent until this is
+answered.</li>
+<li><code>ok</code>: Keep these settings for the field.</li>
+<li><code>cancel</code>: Close without changing the field.</li>
+</ul>
+<h4 id="_sheet-quilluigithub_template_sheets_dialogpy">_Sheet
+(<code>quill/ui/github_template_sheets_dialog.py</code>)</h4>
+<ul>
+<li><code>save</code>: Ask, then commit this file to GitHub.</li>
+<li><code>cancel</code>: Close without saving anything.</li>
+</ul>
+<h4
+id="chooserdialog-quilluigithub_template_sheets_dialogpy">ChooserDialog
+(<code>quill/ui/github_template_sheets_dialog.py</code>)</h4>
+<ul>
+<li><code>self.blank</code>: Whether people may open an issue without
+choosing a template.</li>
+</ul>
+<h4
+id="codeownersdialog-quilluigithub_template_sheets_dialogpy">CodeownersDialog
+(<code>quill/ui/github_template_sheets_dialog.py</code>)</h4>
+<ul>
+<li><code>look</code>: Say which rule owns the path above, and its
+owners.</li>
 </ul>
 <h4
 id="githubtimelinedialog-quilluigithub_timeline_dialogpy">GitHubTimelineDialog

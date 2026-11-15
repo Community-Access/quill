@@ -243,8 +243,9 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="github-workbench-roadmap">GitHub Workbench Roadmap</h1>
-<p><strong>Accepted scope:</strong> 2026-11-06. This is the
-implementation record for the full GitHub expansion (GX01–GX15), in
+<p><strong>Accepted scope:</strong> 2026-11-06, amended 2026-11-12 with
+GX16 and the reference-derived interaction requirements below. This is
+the implementation record for the full GitHub expansion (GX01–GX16), in
 addition to the bounded G1–G4 engineering finish. The user owns the
 Windows assistive-technology acceptance in G5; that work is outside the
 engineering completion percentage and will be handled by the user.</p>
@@ -417,6 +418,22 @@ Cite file/line/thread/SHA, show omitted or truncated context, keep
 drafts editable, and retain deterministic non-AI workflows. Remote text
 is untrusted input; no model upload outside configured consent.</td>
 </tr>
+<tr>
+<td><strong>GX16 / W1 — Category-first cross-repository
+browsing</strong></td>
+<td>Needs My Attention already scopes a queue to selected repositories;
+the Across Repositories tree branch is still a placeholder.</td>
+<td>Add read-first lists for Issues &amp; PRs, Releases, Workflow Runs,
+Commits, Tags, Milestones, Discussions, and Security Alerts across a
+locally chosen repository set. Keep the QUILL Navigator
+tree/list/details layout. Each row names its repository; Enter opens the
+exact item in that repository and Back returns to the same row. Preserve
+selection through refresh and paging, support grouping/sorting and
+latest-release-only, and show each repository’s error or
+feature-unavailable note. Issue type and typed organization-defined
+issue fields remain visible and filterable where the account can see
+them. The repository checklist changes speak once on Space.</td>
+</tr>
 </tbody>
 </table>
 <h2 id="shared-acceptance-contract">Shared acceptance contract</h2>
@@ -427,6 +444,12 @@ represented as empty, or remote state changes caused by reading.</li>
 usable without color or hover, and returns focus predictably.</li>
 <li>Large logs and result sets load on demand with selection preserved,
 bounded memory use, explicit truncation, and a readable fallback.</li>
+<li>Cross-repository lists name the source repository on every row; page
+limits, failed repositories, empty categories, and unavailable fields
+are explicit rather than implied empty results.</li>
+<li>Issue types and organization-defined issue fields keep their GitHub
+value types and permissions through list, details, filtering, editing,
+preview, and verification.</li>
 <li>Local drafts and navigation state are private, recoverable,
 account-isolated, and never auto-submitted after reconnect.</li>
 <li>Writes state the target and effect before execution. Non-idempotent
@@ -436,12 +459,32 @@ each item.</li>
 existing consent. It never invents checks, merge readiness, or
 completion claims.</li>
 </ul>
+<h2 id="reference-review-and-adoption-boundaries">Reference review and
+adoption boundaries</h2>
+<p>The GHManage v1.2.0 release adds category-first lists across chosen
+repositories and corrects a checklist announcement that JAWS repeated.
+QUILL adopts the capability and accessibility lesson inside its existing
+Navigator, rather than adding GHManage’s separate navigation mode:
+categories are children of the already planned <strong>Across
+Repositories</strong> branch. The release’s bounded per-repo pages,
+repository provenance, failure notes, latest-release view, grouping, and
+return-to-row behavior are acceptance requirements for GX16.</p>
+<p>The Chat Place v0.5.0 review supports three provider-neutral lessons:
+read a long GitHub thread as one structured document, preserve the exact
+selected row when returning, and report one clear outcome through
+QUILL’s existing feedback settings. Its release code for Ask Aside,
+Retry/Branch from Here, agent conversations, file restoration, and
+connected-tool controls depends on Claude/Codex/Copilot clients and
+their transcript/protocol formats. Those client-specific integrations
+are outside this scope. If a later feature uses AI, it must go through
+QUILL’s existing provider and consent boundary and must remain useful
+when no AI connection is configured.</p>
 <h2 id="delivery-order">Delivery order</h2>
 <ol type="1">
 <li>Finish G1–G4 engineering contracts, documentation, gates, and
 integration preparation for the current workbench.</li>
-<li>Complete W1 (GX01–GX04), then W2 (GX05–GX10, GX12, GX15), then W3
-(GX11, GX13, GX14).</li>
+<li>Complete W1 (GX01–GX04, GX16), then W2 (GX05–GX10, GX12, GX15), then
+W3 (GX11, GX13, GX14).</li>
 <li>For each delivery, add focused failure cases, run relevant
 repository gates, review on the final candidate, and retain fresh CI
 evidence. Rebase/conflict resolution invalidates affected test

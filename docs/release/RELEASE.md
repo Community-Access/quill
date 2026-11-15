@@ -4,6 +4,11 @@ This file documents the operational steps for cutting a QUILL release.
 It is the canonical checklist referenced from `MAINTAINERS.md` and the
 release notes.
 
+WinGet distribution for the Windows app family has its own staged plan in
+[`docs/planning/winget.md`](../planning/winget.md).
+Keep its public package submissions separate from this repository's release
+PRs: WinGet accepts one package version per manifest-only pull request.
+
 ## Pre-tag checklist
 
 1. **Wave sign-off.** All issues in the active waves for this release are

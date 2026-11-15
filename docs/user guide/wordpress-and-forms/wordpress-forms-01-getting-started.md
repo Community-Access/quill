@@ -2,12 +2,16 @@
 
 ## What this chapter covers
 
-This chapter gets you from nothing to a connected WordPress site. It explains
-what QUILL and QUILL Lite do with WordPress and what they leave alone, how to
-turn the feature on, where the commands live, and how to connect a site: with
-your browser, by pasting an application password, on WordPress.com, and when
-you look after more than one site. It ends with what your role on a site
-means, and how to sign out of a site for good.
+You are here because you look after a WordPress site and want to do it from
+QUILL. This chapter gets you from nothing to a connected site.
+
+You will turn the feature on, find where the commands live, and connect a
+site: with your browser, by pasting an application password, on
+WordPress.com, and when you look after more than one. It ends with what your
+role on a site means, and how to sign out of a site for good.
+
+At the end you will have a site connected, and QUILL will greet you by your
+role on it.
 
 ## What WordPress in QUILL is
 
@@ -24,14 +28,14 @@ Three promises run through the whole feature:
   publishing always asks first.
 - **Your site keeps its look.** QUILL works on the words and pictures inside
   your pages. Your theme, its layout and its design stay in WordPress.
-- **Nothing is deleted for good without a copy first.** Pages go to
-  WordPress's own Trash. The one thing WordPress cannot put in a Trash, a file
-  in the Media Library, is copied to your computer before it goes.
+- **Nothing is deleted for good without asking.** Posts, pages and comments
+  go to WordPress's own Trash. The Media Library has no Trash, so deleting a
+  file asks you to confirm it by name, and says it cannot be undone.
 
 QUILL talks to your site through WordPress's own REST API, the same doorway
 the block editor uses. You do not need to install a plugin for anything in
 this manual except forms, which need the QUILL Accessible Forms plugin on
-the site (Chapter 9 explains why).
+the site (Chapter 12 explains why).
 
 ## Turning it on
 
@@ -57,10 +61,15 @@ still work in Safe Mode, because they never leave your computer.
 
 ## Where everything is
 
-The commands sit where a Word user would look for them. Anything about a
-whole page or post, or about your sites, is in **File > WordPress**. What you
-do inside a page joins the ordinary menus. Looking after the site itself is
-in **Tools > WordPress**.
+QUILL splits the work in two. You write in the editor, and you look after
+your sites in the **WordPress Workbench**, a window of its own with every
+site you have connected.
+
+In the editor, the commands sit where a Word user would look for them.
+Anything about a whole page or post, or about your sites, is in **File >
+WordPress**. What you do inside a page joins the ordinary menus. Looking
+after the site itself is in **Tools > WordPress**, and most of its rows open
+the Workbench.
 
 | Menu | What is there |
 |---|---|
@@ -69,10 +78,15 @@ in **Tools > WordPress**.
 | View | WordPress Blocks, Preview Blocks, Block Notes, Play Media Here |
 | Insert | Blocks, pictures, links to your own pages, notes, icons, Make a Picture |
 | Format > WordPress | Block Settings, Image Size, Mark Language |
-| Tools > WordPress | Checking, the Media Library, comments, menus, settings, and five submenus |
+| Tools > WordPress | Open WordPress Workbench, checking, the Media Library, comments, menus, settings, and five submenus |
 
 The five submenus of Tools > WordPress are More Media, Design, Plugin
 Extras, Manage and Your Sites.
+
+**The WordPress Workbench** opens with **Tools > WordPress > Open WordPress
+Workbench...**, or the WordPress key and then H. Comments, the Media Library,
+categories, menus, settings, people, plugins and themes all live there.
+Chapter 2 is a tour of it.
 
 **Dimmed rows.** The commands about the page in front of you are dimmed
 unless a WordPress page or post is open. If you reach one another way, such
@@ -87,7 +101,7 @@ than one.
 Tools menu in both editors.
 
 **The WordPress keys.** The everyday commands also have a key each: press
-Ctrl+Alt+Shift+Grave, let go, and press one letter. Chapter 12 has the whole
+Ctrl+Alt+Shift+Grave, let go, and press one letter. Chapter 16 has the whole
 table. You do not need them to get started.
 
 ## What you need before you connect
@@ -177,7 +191,7 @@ The commonest sentences are:
 - "A security setting on Community Radio blocked QUILL. Ask the site's
   administrator to allow the WordPress REST API and application passwords."
 
-Chapter 11 has the rest, with what to do about each one.
+Chapter 15 has the rest, with what to do about each one.
 
 ## WordPress.com sites
 
@@ -263,7 +277,9 @@ password still exists on the site.
 revokes the exact application password QUILL is using on that site, so it
 stops working everywhere, and forgets it on this computer. It asks whether
 to remove the site from QUILL as well, or keep it so you can connect again
-later. Your local drafts stay either way.
+later; Keep is chosen to start with. Then it asks you to confirm, and Cancel
+is the default, so pressing Enter twice changes nothing. Your local drafts
+stay either way.
 
 Use it when you give away a computer, or when you stop looking after a site.
 
@@ -283,5 +299,5 @@ should hear at each step.
 
 ## Where to next
 
-- Next: [Chapter 2: Writing and publishing posts and pages](wordpress-forms-02-writing-and-publishing.html)
+- Next: [Chapter 2: A tour of the WordPress Workbench](wordpress-forms-02-the-workbench.html)
 - [Contents](wordpress-forms-guide.html)

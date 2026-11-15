@@ -34,7 +34,8 @@ def test_the_rules_put_routes_where_a_person_finds_them() -> None:
     assert classify("/wp/v2/posts").status == "covered"
     assert classify("/wp/v2/tribe_events").status == "schema_built"
     assert classify("/wc/store/v1/cart").status == "out_of_scope"
-    assert classify("/wc/v3/orders").status == "planned"
+    assert classify("/wc/v3/webhooks").status == "covered"  # Shop > Webhooks, 2026-11-14
+    assert classify("/wc/v3/payment_gateways").status == "planned"
     assert classify("/jetpack/v4/connection").status == "wp_admin_only"
     assert classify("/acme/v1/widgets", ["GET"]).status == "schema_built"
     assert classify("/acme/v1/sync", ["POST"]).status == "wp_admin_only"

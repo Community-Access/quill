@@ -113,7 +113,11 @@
   ],
   "tools": [
     "codex",
-    "copilot"
+    "copilot",
+    "language-servers",
+    "nodejs",
+    "ripgrep",
+    "wp-playground-cli"
   ],
   "optional": [
     "deno",

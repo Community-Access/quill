@@ -61,6 +61,76 @@ def document_format(path: Path | None) -> str:
     return "markdown"
 
 
+#: What a document is, for Send This Document: the four sources it accepts.
+SOURCE_MARKDOWN, SOURCE_BLOCKS, SOURCE_HTML, SOURCE_TEXT = "markdown", "blocks", "html", "text"
+_MARKDOWN_SUFFIXES = frozenset({".md", ".markdown", ".mdown", ".mkd", ".mkdn", ".mdx"})
+_HTML_SUFFIXES = frozenset({".html", ".htm", ".xhtml"})
+_BLOCK_COMMENT = re.compile(r"<!--\s+wp:[a-z]")
+
+
+def source_kind(path: Path | None, text: str) -> str:
+    """Which of the four sources *text* is.
+
+    Block markup (``<!-- wp:`` comments) is recognised whatever the file is
+    called, because it must go to the site unchanged. Otherwise the name
+    decides: a web page is HTML, a Markdown file (or a document never saved)
+    is Markdown, and anything else is plain text -- which is never read as
+    Markdown, so an asterisk or a ``#`` in it stays what it is.
+    """
+    if _BLOCK_COMMENT.search(text):
+        return SOURCE_BLOCKS
+    suffix = path.suffix.lower() if path is not None else ""
+    if suffix in _HTML_SUFFIXES:
+        return SOURCE_HTML
+    if path is None or suffix in _MARKDOWN_SUFFIXES:
+        return SOURCE_MARKDOWN
+    return SOURCE_TEXT
+
+
+@dataclass(frozen=True)
+class PreparedDocument:
+    """A document made ready to be a WordPress working copy."""
+
+    title: str
+    text: str
+    text_format: str  # the working copy's: "markdown" or "html" (block markup)
+    source: str  # one of the four SOURCE_* values
+
+
+def prepare_document(text: str, path: Path | None, fallback: str) -> PreparedDocument:
+    """Title and content for Send This Document, from any of the four sources.
+
+    Markdown stays Markdown (Save Draft to Site turns it into blocks, as for
+    any Markdown WordPress document). The other three become block markup:
+    block markup is kept exactly, bar a heading block that opens it, which is
+    the title; HTML is converted (:func:`~quill.core.wordpress.html_blocks.html_to_blocks`);
+    plain text becomes paragraphs with its line breaks kept. Plain text has no
+    headings, so its title is *fallback* (the file's name).
+    """
+    from quill.core.wordpress import html_blocks
+    from quill.core.wordpress.blocks import parse
+
+    kind = source_kind(path, text)
+    if kind == SOURCE_MARKDOWN:
+        title, body = title_and_body(text, "markdown", fallback)
+        return PreparedDocument(title, body, "markdown", kind)
+    if kind == SOURCE_HTML:
+        title, body = html_blocks.html_title_and_blocks(text, fallback)
+        return PreparedDocument(title, body, "html", kind)
+    if kind == SOURCE_TEXT:
+        return PreparedDocument(fallback, html_blocks.text_to_blocks(text), "html", kind)
+    blocks = [b for b in parse(text) if b.name is not None or b.inner_html.strip()]
+    if blocks and blocks[0].name == "core/heading":
+        title = html.unescape(re.sub(r"<[^>]+>", "", blocks[0].inner_html)).strip()
+        if title:
+            start = text.index(blocks[0].raw_opener) if blocks[0].raw_opener else -1
+            end = text.find(blocks[0].raw_closer, start) if start >= 0 else -1
+            if start >= 0 and end >= 0:
+                rest = text[:start] + text[end + len(blocks[0].raw_closer) :]
+                return PreparedDocument(title, rest.lstrip("\r\n"), "html", kind)
+    return PreparedDocument(fallback, text, "html", kind)
+
+
 @dataclass(frozen=True)
 class LocalPicture:
     reference: str  # the address as the document writes it

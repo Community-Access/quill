@@ -26,6 +26,9 @@ the reasons live here so that module stays a dispatcher.
   at ``tools/ripgrep`` with ``COPYING``, ``LICENSE-MIT`` and ``UNLICENSE``:
   dual Unlicense or MIT. IntelliSense layer 2 uses it to list a project's
   files when it is present.
+* ``wp-playground-cli``: the pinned CLI, one PHP 8.3 WebAssembly runtime, and
+  WordPress 7.1.4. The practice site uses these local files without first-run
+  downloads.
 
 All three are local at run time: nothing they do reaches the network (the
 servers' network features are switched off in quill/core/lsp/servers.py).
@@ -33,7 +36,9 @@ servers' network features are switched off in quill/core/lsp/servers.py).
 
 from __future__ import annotations
 
+import hashlib
 import json
+import re
 import shutil
 import subprocess
 import tempfile
@@ -42,6 +47,13 @@ from collections.abc import Callable
 from pathlib import Path
 
 from quill.core.release_assets import ReleaseAssetError, download_verified
+from quill.core.wordpress.workbench_practice import (
+    PLAYGROUND_CLI_VERSION,
+    PRACTICE_PHP_VERSION,
+    PRACTICE_WORDPRESS_SHA1,
+    PRACTICE_WORDPRESS_SHA256,
+    PRACTICE_WORDPRESS_VERSION,
+)
 
 __all__ = [
     "LANGUAGE_SERVERS_PACKAGES",
@@ -80,15 +92,12 @@ LANGUAGE_SERVERS_PACKAGES = {
 }
 LICENSES_SUMMARY = "LANGUAGE-SERVERS-LICENSES.txt"
 
-#: WordPress Playground's command-line tool, for the Practice Site (WordPress
-#: PRD 15.1). GPL-2.0-or-later, like WordPress; each package's licence stays in
-#: its folder and PLAYGROUND-LICENSES.txt lists them. The pin is the version
-#: named in scripts/wp_playground/package.json. Not yet fetched or run: the
-#: first fetch writes package-lock.json beside it, which is then committed so
-#: later fetches are `npm ci`, as the language servers are.
+#: WordPress Playground's command-line tool and local practice payload (PRD 15.1).
 PLAYGROUND_DIR = Path(__file__).with_name("wp_playground")
-PLAYGROUND_PACKAGES = {"@wp-playground/cli": "1.0.28"}
+PLAYGROUND_PACKAGES = {"@wp-playground/cli": PLAYGROUND_CLI_VERSION}
 PLAYGROUND_LICENSES = "PLAYGROUND-LICENSES.txt"
+PLAYGROUND_PRUNED_MARKER = ".quill-playground-pruned-v1"
+PLAYGROUND_WORDPRESS_URL = f"https://wordpress.org/wordpress-{PRACTICE_WORDPRESS_VERSION}.zip"
 
 
 def _node_zip(tmp: Path, progress: Callable[[float, str], None] | None) -> zipfile.ZipFile:
@@ -158,7 +167,7 @@ def fetch_language_servers(dest: Path, node: Path, npm: Path) -> Path:
 
 
 def fetch_wp_playground(dest: Path, node: Path, npm: Path) -> Path:
-    """Install the pinned Playground tool into *dest* (``npm ci`` once a lockfile exists)."""
+    """Install the pinned Playground tool into *dest*, refreshing a stale lockfile."""
     package = json.loads((PLAYGROUND_DIR / "package.json").read_text(encoding="utf-8"))
     if package.get("dependencies") != PLAYGROUND_PACKAGES:
         raise ReleaseAssetError("scripts/wp_playground/package.json drifted from its pin")
@@ -166,10 +175,13 @@ def fetch_wp_playground(dest: Path, node: Path, npm: Path) -> Path:
         shutil.rmtree(dest)
     dest.mkdir(parents=True)
     lock = PLAYGROUND_DIR / "package-lock.json"
-    for source in (PLAYGROUND_DIR / "package.json", lock):
-        if source.is_file():
-            shutil.copy2(source, dest / source.name)
-    verb = "ci" if lock.is_file() else "install"
+    lock_is_current = _lock_matches_packages(lock, PLAYGROUND_PACKAGES)
+    package_files = [PLAYGROUND_DIR / "package.json"]
+    if lock_is_current:
+        package_files.append(lock)
+    for source in package_files:
+        shutil.copy2(source, dest / source.name)
+    verb = "ci" if lock_is_current else "install"
     command = [
         str(node),
         str(npm / "bin" / "npm-cli.js"),
@@ -185,17 +197,98 @@ def fetch_wp_playground(dest: Path, node: Path, npm: Path) -> Path:
     )
     if result.returncode != 0:
         raise ReleaseAssetError(f"npm {verb} failed: {result.stderr.strip()[-2000:]}")
-    if not lock.is_file() and (dest / "package-lock.json").is_file():
+    if not lock_is_current and (dest / "package-lock.json").is_file():
         shutil.copy2(dest / "package-lock.json", lock)  # commit it: later fetches are npm ci
-    _prune(dest / "node_modules")
+    _prune_playground(dest / "node_modules")
+    _prune_playground_php_versions(dest / "node_modules", PRACTICE_PHP_VERSION)
+    _stage_wordpress_core(dest)
     _write_licence_summary(dest, PLAYGROUND_LICENSES, "WordPress Playground's tool")
+    licenses = dest / PLAYGROUND_LICENSES
+    licenses.write_text(
+        "The runtime bundle omits TypeScript declaration files, source maps and unused PHP "
+        "versions. Every package's own licence file remains beside its files.\n\n"
+        + licenses.read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    (dest / PLAYGROUND_PRUNED_MARKER).write_text(PLAYGROUND_CLI_VERSION + "\n", encoding="utf-8")
     return dest
+
+
+def _lock_matches_packages(lock: Path, packages: dict[str, str]) -> bool:
+    """Only use ``npm ci`` when the committed lock resolves every direct pin."""
+    try:
+        document = json.loads(lock.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    resolved = document.get("packages") if isinstance(document, dict) else None
+    if not isinstance(resolved, dict):
+        return False
+    return all(
+        isinstance(resolved.get(f"node_modules/{name}"), dict)
+        and resolved[f"node_modules/{name}"].get("version") == version
+        for name, version in packages.items()
+    )
 
 
 def _prune(modules: Path) -> None:
     """Drop source maps: debugging aids, a large share of the bytes, never read."""
     for path in modules.rglob("*.map"):
         path.unlink()
+
+
+def _prune_playground(modules: Path) -> None:
+    """Drop source maps and type declarations unused by the Node-based server."""
+    _prune(modules)
+    for path in modules.rglob("*.d.ts"):
+        path.unlink()
+
+
+def _prune_playground_php_versions(modules: Path, version: str) -> None:
+    """Keep only the PHP.wasm release the practice site launches."""
+    root = modules / "@php-wasm"
+    keep = f"node-{version.replace('.', '-')}"
+    if not root.is_dir() or not (root / keep / "package.json").is_file():
+        raise ReleaseAssetError(f"Playground CLI did not install the pinned PHP {version} runtime")
+    for candidate in root.iterdir():
+        if candidate.is_dir() and re.fullmatch(r"node-\d+-\d+", candidate.name):
+            if candidate.name != keep:
+                shutil.rmtree(candidate)
+
+
+def _file_digest(path: Path, algorithm: str) -> str:
+    digest = hashlib.new(algorithm)
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _stage_wordpress_core(dest: Path) -> Path:
+    """Pin the official core archive; QUILL extracts it into app data on first launch."""
+    cached = dest.parent / f"wordpress-{PRACTICE_WORDPRESS_VERSION}.zip"
+    archive = dest / f"wordpress-{PRACTICE_WORDPRESS_VERSION}.zip"
+    if cached.is_file() and _file_digest(cached, "sha256") == PRACTICE_WORDPRESS_SHA256:
+        shutil.copy2(cached, archive)
+    elif not archive.is_file() or _file_digest(archive, "sha256") != PRACTICE_WORDPRESS_SHA256:
+        download_verified(
+            PLAYGROUND_WORDPRESS_URL,
+            archive,
+            sha256=PRACTICE_WORDPRESS_SHA256,
+        )
+    if _file_digest(archive, "sha1") != PRACTICE_WORDPRESS_SHA1:
+        raise ReleaseAssetError(
+            "The WordPress archive does not match WordPress.org's published SHA-1"
+        )
+    try:
+        with zipfile.ZipFile(archive) as bundle:
+            names = set(bundle.namelist())
+    except zipfile.BadZipFile as exc:
+        raise ReleaseAssetError("The pinned WordPress archive is not a valid ZIP file") from exc
+    if "wordpress/wp-load.php" not in names or "wordpress/license.txt" not in names:
+        raise ReleaseAssetError(
+            "The pinned WordPress archive is missing wp-load.php or license.txt"
+        )
+    return archive
 
 
 def _write_licence_summary(

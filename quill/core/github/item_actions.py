@@ -14,6 +14,7 @@ deletes, because Enter must never destroy anything.
 
 from __future__ import annotations
 
+from quill.core.github.across_actions import ACROSS_ROWS
 from quill.core.workbench.actions import ActionRow, ActionTable, Tier
 
 __all__ = [
@@ -69,8 +70,21 @@ _COMMENT = _a("comment", "Comment...", _W, "sign_in", "Write a comment and post 
 _LABELS = _a("labels", "Labels...", _W, "triage", "Add or remove labels.")
 _ASSIGNEES = _a("assignees", "Assignees...", _W, "triage", "Choose who it is assigned to.")
 _REACT = _a("react", "React...", _O, "sign_in", "Add or remove a reaction.")
+# One row per field (decision 11: no key of its own; each opens the sheet with
+# focus on its field, and Alt+Enter remembers the page for next time).
+_EDIT_TITLE = _a("edit_title", "Edit Title...", _W, "sign_in", "Open its sheet at the title.")
+_MILESTONE = _a("milestone", "Milestone...", _W, "triage", "Set or clear its milestone.")
+_PROJECTS = _a(
+    "projects", "Projects...", _W, "sign_in", "Add it to Projects, take it out, or make one."
+)
 _TIMELINE = _a("timeline", "View Timeline...", help="Everything that happened to it, in order.")
 _SUMMARIZE = _a("summarize", "Summarize Discussion", _R, "ai", "An AI summary of the thread.")
+_READ_DOC = _a(
+    "read_as_document",
+    "Read as Document...",
+    help="The whole thread as one document, a heading per post with its author and date: "
+    "open it in the editor, or save it as Markdown or HTML. Ctrl+Shift+I.",
+)
 _WORKTREE = _a(
     "start_worktree",
     "Start in Local Worktree...",
@@ -81,6 +95,16 @@ _WORKTREE = _a(
 _FAVORITE = _a("favorite", "Add to or Remove from Favorites", _O, "", "Keep it in Favorites.")
 _COMMIT_COMMENTS = _a(
     "commit_comments", "Commit Comments...", help="Comments on the commit and its lines."
+)
+_COMPARE_DEFAULT = _a(
+    "compare_default",
+    "Compare With Default",
+    help="Compare it with the default branch: commits each way, files, any open pull request.",
+)
+_COMPARE_PREVIOUS = _a(
+    "compare_previous",
+    "Compare With Previous",
+    help="Compare it with the one before: the previous tag or release, or a commit's parent.",
 )
 
 _ROWS: dict[str, tuple[ActionRow, ...]] = {
@@ -98,9 +122,12 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _ASSIGNEES,
         _COPY_LINK,
         _OPEN_WEB,
-        _a("milestone", "Milestone...", _W, "triage", "Set or clear its milestone."),
+        _MILESTONE,
+        _PROJECTS,
+        _EDIT_TITLE,
         _REACT,
         _TIMELINE,
+        _READ_DOC,
         _SUMMARIZE,
         _WORKTREE,
         _a("assign_copilot", "Assign to Copilot...", _W, "push", "Ask Copilot to work on it."),
@@ -123,10 +150,14 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _CODESPACES,
         _COMMIT_COMMENTS,
         _TIMELINE,
+        _READ_DOC,
         _SUMMARIZE,
         _REACT,
         _LABELS,
         _ASSIGNEES,
+        _MILESTONE,
+        _PROJECTS,
+        _EDIT_TITLE,
         _FAVORITE,
         _PROPERTIES,
     ),
@@ -163,6 +194,8 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a("edit_release", "Edit Release...", _W, "push", "Change its notes, name and flags."),
         _a("release_notes", "Draft Release Notes...", help="Notes drafted from the changes."),
         _a("upload_asset", "Upload Asset...", _W, "push", "Add a file to the release."),
+        _COMPARE_PREVIOUS,
+        _COMPARE_DEFAULT,
         _COPY_LINK,
         _OPEN_WEB,
         _PROPERTIES,
@@ -175,7 +208,9 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     ),
     "branch": (
         _default("branch_commits", "Commits", "The branch's commits."),
+        _COMPARE_DEFAULT,
         _a("compare", "Compare Branches...", help="Commits ahead and behind, and changed files."),
+        _COMPARE_PREVIOUS,
         _CODESPACES,
         _a("copy_name", "Copy Name", help="Copy the branch name."),
         _a("delete_branch", "Delete Branch...", _D, "push", "Delete the branch on GitHub."),
@@ -184,6 +219,8 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     "commit": (
         _default("open", "Open", "The commit's message and changed files."),
         _COMMIT_COMMENTS,
+        _COMPARE_PREVIOUS,
+        _COMPARE_DEFAULT,
         _COPY_LINK,
         _OPEN_WEB,
         _PROPERTIES,
@@ -191,6 +228,8 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     "tag": (
         _default("open", "Open", "The tagged commit."),
         _COMMIT_COMMENTS,
+        _COMPARE_PREVIOUS,
+        _COMPARE_DEFAULT,
         _COPY_LINK,
         _OPEN_WEB,
         _PROPERTIES,
@@ -238,6 +277,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     ),
     "discussion": (
         _default("discussion_thread", "Open Discussion Thread", "Read the whole thread."),
+        _READ_DOC,
         _COPY_LINK,
         _OPEN_WEB,
         _PROPERTIES,
@@ -281,6 +321,32 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _OPEN_WEB,
         _PROPERTIES,
     ),
+    # Repository > Templates (PRD 21.3). Open reads and shows; Save inside it
+    # asks before committing, and is the write the requirement below names.
+    "template": (
+        _default(
+            "open_template",
+            "Open Template...",
+            "Build or edit it, preview it and save it; a missing file starts from a starter.",
+        ),
+        _a(
+            "convert_template",
+            "Convert Form or Template...",
+            _W,
+            "push",
+            "A Markdown template to an issue form, or a form to Markdown (it asks first).",
+        ),
+        _a(
+            "copy_template",
+            "Copy to Repositories...",
+            _W,
+            "push",
+            "Copy it to other repositories, after a preview of each.",
+        ),
+        _COPY_LINK,
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
     "project": (
         _a(
             "open_on_github", "Open on GitHub", help="Open the board in your browser.", default=True
@@ -314,6 +380,26 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _default("run_admin", "Open", "Open the settings dialog for this; it asks before saving."),
         _PROPERTIES,
     ),
+    # Watches (PRD 22.5): rules kept on this device. Pause and Check Now have no
+    # key of their own (rule 9: rare); Ctrl+N adds, Enter edits, Delete removes.
+    "watch": (
+        _default("edit_watch", "Edit Watch...", "Change what the watch looks at."),
+        _a(
+            "pause_watch",
+            "Pause or Resume Watch",
+            _O,
+            "local",
+            "Stop checking it for now, or start again.",
+        ),
+        _a(
+            "check_watches",
+            "Check Watches Now",
+            help="Check every active watch now, without waiting for the next round.",
+        ),
+        _a("remove_watch", "Remove Watch", _O, "local", "Stop watching. Delete does the same."),
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
     "help_topic": (
         _default("open_topic", "Open", "Read the topic, or open the chapter it names."),
         _a("take_me_there", "Take Me There", help="Go to the place the topic is about."),
@@ -325,6 +411,8 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a("help_view", "Help for This View", help="What this view shows. F1 does the same."),
         _PROPERTIES,
     ),
+    # Across Repositories (PRD 22.11, GX16): quill/core/github/across_actions.py.
+    **ACROSS_ROWS,
 }
 
 GITHUB_ACTIONS = ActionTable(_ROWS, properties_command=PROPERTIES_COMMAND)
@@ -344,6 +432,8 @@ DELETE_COMMANDS: dict[str, str] = {
     "gist": "github.workbench.delete_gist",
     "cache": "github.workbench.delete_cache",
     "run": "github.workbench.delete_run",
+    "watch": "github.workbench.remove_watch",
+    "repository_set": "github.workbench.across_delete_set",
 }
 
 #: What Ctrl+N makes on each node (C3, "New, here"), by the node's key.
@@ -355,5 +445,10 @@ NEW_HERE: dict[str, str] = {
     "search_issues": "github.workbench.save_search",
     "releases": "github.workbench.new_release",
     "my_gists": "github.workbench.new_gist",
+    "across": "github.workbench.choose_repositories",
+    "across_sets": "github.workbench.across_new_set",
     "pinned": "github.workbench.pin_repository",
+    "watches": "github.workbench.add_watch",
+    "templates": "github.workbench.new_template",
+    "discussions": "github.workbench.new_discussion",
 }

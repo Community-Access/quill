@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.28.0.schema.json
+PackageIdentifier: CommunityAccess.QuillRadio
+PackageVersion: 3.0.4
+Platform:
+  - Windows.Desktop
+InstallModes:
+  - interactive
+  - silent
+  - silentWithProgress
+Installers:
+  - Architecture: x64
+    InstallerType: inno
+    Scope: user
+    InstallerUrl: https://github.com/Community-Access/quill/releases/download/quill-radio-v3.0.4/Quill-Radio-Setup-Shared-3.0.4.exe
+    InstallerSha256: 9E76182B7577DD6C0DC44D8CA2C34BB2DA082D8BB36BAAC351BCBC4ACEF1263A
+    InstallerSwitches:
+      Silent: /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+      SilentWithProgress: /SILENT /SUPPRESSMSGBOXES /NORESTART
+    RequireExplicitUpgrade: true
+    AppsAndFeaturesEntries:
+      - DisplayName: Quill Radio 3.0.4
+        Publisher: Community Access
+ManifestType: installer
+ManifestVersion: 1.28.0

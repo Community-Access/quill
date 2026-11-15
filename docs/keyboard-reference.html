@@ -255,7 +255,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 586.</p>
+<p>Editor commands with default bindings: 588.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -3026,6 +3026,11 @@ your own customised keymap.</p>
 <td><code>wordpress.schedule</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Shift+Grave, F</td>
+<td>Responses</td>
+<td><code>forms.responses</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Shift+Grave, G</td>
 <td>New Page…</td>
 <td><code>wordpress.new_page</code></td>
@@ -3079,6 +3084,11 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+Shift+Grave, S</td>
 <td>Switch Site…</td>
 <td><code>wordpress.switch_site</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+Grave, Shift+H</td>
+<td>This Post in the Workbench</td>
+<td><code>wordpress.this_post_in_workbench</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+Grave, Shift+S</td>
@@ -4846,6 +4856,11 @@ never inside the QUILL editor.</p>
 <td><code>github.workbench.forward</code></td>
 </tr>
 <tr>
+<td>Alt+Shift+B</td>
+<td>Compare With Previous</td>
+<td><code>github.workbench.compare_previous</code></td>
+</tr>
+<tr>
 <td>Alt+Shift+F1</td>
 <td>Workbench Keys</td>
 <td><code>github.workbench.keys</code></td>
@@ -4919,6 +4934,11 @@ never inside the QUILL editor.</p>
 <td>Ctrl+Alt+F</td>
 <td>Filter Builder…</td>
 <td><code>github.workbench.filter_builder</code></td>
+</tr>
+<tr>
+<td>Ctrl+B</td>
+<td>Compare With Default</td>
+<td><code>github.workbench.compare_default</code></td>
 </tr>
 <tr>
 <td>Ctrl+C</td>
@@ -5091,6 +5111,16 @@ never inside the QUILL editor.</p>
 <td><code>github.workbench.change_history</code></td>
 </tr>
 <tr>
+<td>Ctrl+Shift+I</td>
+<td>Read as Document…</td>
+<td><code>github.workbench.read_as_document</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+J</td>
+<td>GitHub API Console…</td>
+<td><code>github.workbench.api_console</code></td>
+</tr>
+<tr>
 <td>Ctrl+Shift+K</td>
 <td>Manage GitHub Accounts…</td>
 <td><code>github.workbench.manage_accounts</code></td>
@@ -5204,6 +5234,466 @@ never inside the QUILL editor.</p>
 <td>Shift+F9</td>
 <td>Explain That</td>
 <td><code>github.workbench.explain_result</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="wordpress-workbench-app-keys">WordPress Workbench (app
+keys)</h2>
+<p>App keys, not editor keys: these apply inside the app named above and
+never inside the QUILL editor.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+<th>Command id</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alt+1</td>
+<td>Where Am I</td>
+<td><code>wordpress.workbench.where_am_i</code></td>
+</tr>
+<tr>
+<td>Alt+2</td>
+<td>Say Selection</td>
+<td><code>wordpress.workbench.say_selection</code></td>
+</tr>
+<tr>
+<td>Alt+Enter</td>
+<td>Properties…</td>
+<td><code>wordpress.workbench.sheet</code></td>
+</tr>
+<tr>
+<td>Alt+F4</td>
+<td>Close Workbench</td>
+<td><code>wordpress.workbench.close</code></td>
+</tr>
+<tr>
+<td>Alt+Left</td>
+<td>Back</td>
+<td><code>wordpress.workbench.back</code></td>
+</tr>
+<tr>
+<td>Alt+Right</td>
+<td>Forward</td>
+<td><code>wordpress.workbench.forward</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+Enter</td>
+<td>Site Properties…</td>
+<td><code>wordpress.workbench.site_sheet</code></td>
+</tr>
+<tr>
+<td>Alt+Up</td>
+<td>Parent Node</td>
+<td><code>wordpress.workbench.go_parent</code></td>
+</tr>
+<tr>
+<td>Ctrl+0</td>
+<td>Across Sites</td>
+<td><code>wordpress.workbench.go_across</code></td>
+</tr>
+<tr>
+<td>Ctrl+1</td>
+<td>Needs My Attention</td>
+<td><code>wordpress.workbench.go_inbox</code></td>
+</tr>
+<tr>
+<td>Ctrl+2</td>
+<td>Current Site</td>
+<td><code>wordpress.workbench.go_site</code></td>
+</tr>
+<tr>
+<td>Ctrl+3</td>
+<td>Calendar</td>
+<td><code>wordpress.workbench.go_calendar</code></td>
+</tr>
+<tr>
+<td>Ctrl+5</td>
+<td>Watches</td>
+<td><code>wordpress.workbench.go_watches</code></td>
+</tr>
+<tr>
+<td>Ctrl+6</td>
+<td>Practice Site</td>
+<td><code>wordpress.workbench.go_practice</code></td>
+</tr>
+<tr>
+<td>Ctrl+9</td>
+<td>Start Here</td>
+<td><code>wordpress.workbench.go_start</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+A</td>
+<td>Workbench Access…</td>
+<td><code>wordpress.workbench.access</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+B</td>
+<td>Plain-Language Batch…</td>
+<td><code>wordpress.workbench.plain_batch</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+C</td>
+<td>Columns…</td>
+<td><code>wordpress.workbench.columns</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+D</td>
+<td>Read Site as Document</td>
+<td><code>wordpress.workbench.read_site</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+E</td>
+<td>Empty Spam…</td>
+<td><code>wordpress.workbench.empty_spam</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+F</td>
+<td>Star or Unstar Entry</td>
+<td><code>wordpress.workbench.toggle_starred</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+G</td>
+<td>Group By…</td>
+<td><code>wordpress.workbench.group_by</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+H</td>
+<td>Hide Like This…</td>
+<td><code>wordpress.workbench.hide_like</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+I</td>
+<td>Resend Notifications…</td>
+<td><code>wordpress.workbench.resend_notifications</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+K</td>
+<td>Compare Sites…</td>
+<td><code>wordpress.workbench.compare_sites</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+L</td>
+<td>Load All</td>
+<td><code>wordpress.workbench.load_all</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+M</td>
+<td>Only Mine</td>
+<td><code>wordpress.workbench.only_mine</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+N</td>
+<td>Entry Notes…</td>
+<td><code>wordpress.workbench.entry_notes</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+O</td>
+<td>Show Only Like This…</td>
+<td><code>wordpress.workbench.show_only</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+P</td>
+<td>Practice Site…</td>
+<td><code>wordpress.workbench.practice</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Q</td>
+<td>Run a Saved Request…</td>
+<td><code>wordpress.workbench.run_saved</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+R</td>
+<td>Roles and What They May Do</td>
+<td><code>wordpress.workbench.roles</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+S</td>
+<td>Take a Snapshot…</td>
+<td><code>wordpress.workbench.snapshot</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+C</td>
+<td>Comment Counts</td>
+<td><code>wordpress.workbench.comment_counts</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+D</td>
+<td>Move to Another Day…</td>
+<td><code>wordpress.workbench.move_day</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+E</td>
+<td>Empty Comment Trash…</td>
+<td><code>wordpress.workbench.empty_comment_trash</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+F</td>
+<td>Forget a Saved Request…</td>
+<td><code>wordpress.workbench.forget_saved</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+I</td>
+<td>Import a Folder of Documents…</td>
+<td><code>wordpress.workbench.import_folder</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+M</td>
+<td>Show Its Comments</td>
+<td><code>wordpress.workbench.show_comments</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+P</td>
+<td>Your Profile…</td>
+<td><code>wordpress.workbench.your_profile</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+S</td>
+<td>Put Back from a Snapshot…</td>
+<td><code>wordpress.workbench.restore_snapshot</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+T</td>
+<td>Site Sets…</td>
+<td><code>wordpress.workbench.site_sets</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+U</td>
+<td>Mark Entry Read or Unread</td>
+<td><code>wordpress.workbench.toggle_read</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+V</td>
+<td>View As Role…</td>
+<td><code>wordpress.workbench.view_as</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+W</td>
+<td>Not Spam, and Allow This Sender</td>
+<td><code>wordpress.workbench.allow_sender</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Y</td>
+<td>Across Sites Scope…</td>
+<td><code>wordpress.workbench.scope</code></td>
+</tr>
+<tr>
+<td>Ctrl+E</td>
+<td>Filter…</td>
+<td><code>wordpress.workbench.filter</code></td>
+</tr>
+<tr>
+<td>Ctrl+Enter</td>
+<td>Preview on the Site</td>
+<td><code>wordpress.workbench.preview</code></td>
+</tr>
+<tr>
+<td>Ctrl+N</td>
+<td>New Here…</td>
+<td><code>wordpress.workbench.new_here</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+1</td>
+<td>Posts</td>
+<td><code>wordpress.workbench.go_posts</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+2</td>
+<td>Pages</td>
+<td><code>wordpress.workbench.go_pages</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+3</td>
+<td>Media</td>
+<td><code>wordpress.workbench.go_media</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+4</td>
+<td>Comments</td>
+<td><code>wordpress.workbench.go_comments</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+5</td>
+<td>Users</td>
+<td><code>wordpress.workbench.go_users</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+6</td>
+<td>Plugins</td>
+<td><code>wordpress.workbench.go_plugins</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+7</td>
+<td>Appearance</td>
+<td><code>wordpress.workbench.go_appearance</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+8</td>
+<td>Settings</td>
+<td><code>wordpress.workbench.go_settings</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+9</td>
+<td>Site Health</td>
+<td><code>wordpress.workbench.go_health</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+A</td>
+<td>Approve, or Not Spam</td>
+<td><code>wordpress.workbench.approve</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+B</td>
+<td>Send Back with a Note…</td>
+<td><code>wordpress.workbench.send_back</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+C</td>
+<td>Copy Link</td>
+<td><code>wordpress.workbench.copy_link</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+D</td>
+<td>Approve and Schedule…</td>
+<td><code>wordpress.workbench.approve_schedule</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+E</td>
+<td>Switch to Editor</td>
+<td><code>wordpress.workbench.switch_to_editor</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F</td>
+<td>Filter Builder…</td>
+<td><code>wordpress.workbench.filter_builder</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+G</td>
+<td>Merge Into…</td>
+<td><code>wordpress.workbench.merge_into</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+H</td>
+<td>Change History…</td>
+<td><code>wordpress.workbench.history</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+I</td>
+<td>Import Posts from a Spreadsheet…</td>
+<td><code>wordpress.workbench.import_posts</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+J</td>
+<td>Assign a Reviewer…</td>
+<td><code>wordpress.workbench.assign_reviewer</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+K</td>
+<td>Convert to Category or Tag…</td>
+<td><code>wordpress.workbench.convert_term</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+L</td>
+<td>Load More</td>
+<td><code>wordpress.workbench.load_more</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+M</td>
+<td>Reply…</td>
+<td><code>wordpress.workbench.reply</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+O</td>
+<td>Workbench Options…</td>
+<td><code>wordpress.workbench.options</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+P</td>
+<td>Publish or Update…</td>
+<td><code>wordpress.workbench.publish</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+R</td>
+<td>Restore from Trash</td>
+<td><code>wordpress.workbench.restore</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+S</td>
+<td>Spam</td>
+<td><code>wordpress.workbench.spam</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+T</td>
+<td>REST Console…</td>
+<td><code>wordpress.workbench.rest_console</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+U</td>
+<td>Unapprove</td>
+<td><code>wordpress.workbench.unapprove</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+W</td>
+<td>Send Password Reset</td>
+<td><code>wordpress.workbench.send_password_reset</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+X</td>
+<td>Export List…</td>
+<td><code>wordpress.workbench.export_list</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Y</td>
+<td>Copy to Site…</td>
+<td><code>wordpress.workbench.copy_to_site</code></td>
+</tr>
+<tr>
+<td>Ctrl+Z</td>
+<td>Undo WordPress Change</td>
+<td><code>wordpress.workbench.undo</code></td>
+</tr>
+<tr>
+<td>Delete</td>
+<td>Move to Trash</td>
+<td><code>wordpress.workbench.trash</code></td>
+</tr>
+<tr>
+<td>F1</td>
+<td>Help for This View</td>
+<td><code>wordpress.workbench.help_view</code></td>
+</tr>
+<tr>
+<td>F5</td>
+<td>Refresh</td>
+<td><code>wordpress.workbench.refresh</code></td>
+</tr>
+<tr>
+<td>F6</td>
+<td>Next Pane</td>
+<td><code>wordpress.workbench.next_pane</code></td>
+</tr>
+<tr>
+<td>Shift+Delete</td>
+<td>Delete Permanently…</td>
+<td><code>wordpress.workbench.delete_permanently</code></td>
+</tr>
+<tr>
+<td>Shift+Enter</td>
+<td>Open on the Site</td>
+<td><code>wordpress.workbench.open_on_site</code></td>
+</tr>
+<tr>
+<td>Shift+F1</td>
+<td>What Can I Do Here?</td>
+<td><code>wordpress.workbench.what_can_i_do</code></td>
+</tr>
+<tr>
+<td>Shift+F6</td>
+<td>Previous Pane</td>
+<td><code>wordpress.workbench.previous_pane</code></td>
 </tr>
 </tbody>
 </table>

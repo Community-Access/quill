@@ -99,10 +99,72 @@ A few things worth knowing:
   and that dialog asks before anything changes.
 - **Repository Actions**, `Ctrl+Shift+G`, lists everything else you can do
   with the repository: star it, fork it, clone it, Codespaces, and its
-  administration.
+  administration. It also opens three windows of their own: **Files, History
+  and Blame...**, which reads any file at any branch, tag or commit with the
+  commits that changed it and who last touched each line; **Milestones...**;
+  and **Projects...**.
+- **Branches** has an **Against default** column: "3 ahead, 1 behind main",
+  "even with main", or "the default branch". The details pane says the same
+  on its own line. When GitHub did not say, the cell is blank rather than
+  guessed.
 
-`Ctrl+N` makes something new where you are: an issue in Issues, a saved search
-under Saved Searches, a pin under Pinned. `Ctrl+Shift+N` asks what to make.
+`Ctrl+N` makes something new where you are: an issue in Issues, a pull request
+in Pull Requests, a gist in My Gists, a saved search under Saved Searches, a
+pin under Pinned, and the repositories to read in Across Repositories.
+`Ctrl+Shift+N` asks what to make.
+
+### A new issue, and issue forms
+
+`Ctrl+N` in Issues reads the repository's issue templates first, then asks
+which to start from: Blank issue, or one of the templates, each with its own
+description. That list now includes GitHub's issue forms, the ones written in
+YAML that show as a form with boxes on the website. Choose one and QUILL Lite fills
+it as a real form:
+
+- Each field is its own labelled control: a text box, a larger text box for
+  longer answers, a drop-down list, or a group of check boxes. A required one
+  says "(required)" in its name, so you hear it before you type.
+- Text from the form's authors, such as "Please search before filing", is in
+  a read-only box you can read but not change.
+- If something required is empty, Create Issue does not send; the line above
+  the buttons says what is still missing.
+- Then you get the same preview every new issue gets, and nothing is sent
+  until you say yes. The issue GitHub receives reads exactly like one filed
+  from the form on the website, with each answer under its own heading.
+
+If a repository has a form QUILL Lite cannot fill, it says so once and leaves that
+one off the list; it is still there on GitHub, and Blank issue and the other
+templates are still offered.
+
+### A new pull request
+
+`Ctrl+N` in Pull Requests opens **New Pull Request**. To start from a
+particular branch, select it in Branches and press `Ctrl+Shift+N`, then choose
+Pull Request.
+
+- **Merge into** is the branch that receives the changes, usually the default
+  branch. **Merge from** is the branch with your changes.
+- **Title** and **Description** start from the commits. One commit gives its
+  own subject and body; several give a title made from the branch name, so
+  `fix/login-crash` becomes "Fix login crash".
+- **Create as a draft** opens it as a draft, which cannot be merged and asks
+  nobody to review it until you mark it ready.
+- **Create Pull Request** is the only button that sends anything.
+
+If the two branches are the same, or Merge from has nothing that Merge into
+does not already have, QUILL Lite says so instead of opening the window. If the
+branch already has an open pull request into the same branch, you are taken
+to that one rather than making a second, and your text is kept. **Cancel**
+keeps what you typed too, for the rest of the session: open New Pull Request
+on the same two branches and it is waiting for you.
+
+### Comparing branches
+
+On a branch, **Compare Branches...** (`Ctrl+Shift+B`) shows what one branch has
+that the other does not, on two tabs: Commits and Changed Files. Commits are
+newest first. GitHub gives at most 250 commits for one comparison, so when
+there are more the tab says so, for example "Commits (250 of 1,204, newest)",
+and you know you are reading the most recent ones, not all of them.
 
 ## Search
 
@@ -114,13 +176,86 @@ Searches, and `Ctrl+N` in a search keeps it there.
 ## People, Gists and Projects
 
 `Ctrl+4` goes to People: who you follow and who follows you. Enter on a person
-gives them a place in the tree, with their repositories and activity. `Ctrl+5`
-goes to your gists and `Ctrl+6` to Projects; each repository's own Projects
-are under it.
+gives them a place in the tree, with their repositories and activity. Follow
+or Unfollow is on a person's context menu. `Ctrl+6` goes to Projects; each
+repository's own Projects are under it.
 
-Two places are shown but not built yet, so their keys already land somewhere
-that says what they will hold: Watches (`Ctrl+7`) and Across Repositories
-(`Ctrl+0`).
+### My Billing and Usage
+
+**People > My Billing and Usage** reads this month's metered use of your
+account from GitHub's billing report: one row per product, such as Actions
+minutes or Codespaces storage, each with its amount and what it costs after
+discounts, and a last row with the month's total. It is read only; Enter
+opens your billing page on GitHub.
+
+GitHub shares these figures only with a token that is allowed to read your
+plan: a classic token with the `user` scope, or a fine-grained token with
+Plan read permission. Without that, the list does not pretend you used
+nothing. Its one row says which permission is missing and that the same
+figures are on GitHub's billing page.
+
+### Gists
+
+`Ctrl+5` goes to My Gists.
+
+- **New Gist** (`Ctrl+N` on My Gists) starts from the editor that opened the
+  Workbench: the text you have selected there, or the whole document when
+  nothing is selected, named after the document's file, or notes.md for one
+  you have not saved. You can add more files,
+  write a description, and choose public or secret before it is sent.
+- **Edit Gist** (`Enter` on a gist) reads the gist and opens it in the same
+  window. If you change nothing, nothing is sent.
+- **Star or Unstar** is on the context menu.
+- **Delete Gist...** (`Delete` on a gist) asks first, because a deleted gist,
+  its files and its history cannot be brought back.
+
+## Across Repositories
+
+`Ctrl+0` goes to Across Repositories: one kind of thing from several
+repositories, in one list. It is for questions such as "what has been
+released across all my projects this month?" or "which runs failed
+anywhere?".
+
+The first time, press `Ctrl+N` there to choose the repositories. Type them one
+per line, as `owner/name` or as a link; anything that is not a repository is
+left out, and QUILL Lite tells you which. Cancel keeps the list you had. The place
+itself then lists the repositories you chose, and `Ctrl+N` changes them
+whenever you like. The list belongs to the account you are signed in with.
+
+Under it are eight lists, each drawn from every chosen repository at once:
+
+- Issues and Pull Requests
+- Releases
+- Workflow Runs
+- Commits
+- Tags
+- Milestones
+- Discussions
+- Security Alerts
+
+Every row starts with its repository, "owner/name: #42 Fix the crash", and
+the details pane names the repository too, so Enter, Shift+Enter, Comment and
+the other commands act on the right one. Rows are newest first. Each
+repository gives at most 100 rows to a list, so one busy repository cannot
+crowd out the rest.
+
+The status bar says how many rows came from how many repositories, and names
+every repository that could not be read and why, such as "not found, or no
+access" or "Discussions are off". A repository never just goes missing from
+the list. A fork whose upstream you also chose adds no issues of its own,
+because on GitHub a fork's issues are its upstream's; the status bar says so,
+and you read them once, under the upstream.
+
+## Watches, and why Ctrl+3, Ctrl+4 and Ctrl+8 go places here
+
+Watches (`Ctrl+7`) is shown but not built yet, so its key already lands on a
+place that says what it will hold.
+
+Elsewhere in the family, `Ctrl+3`, `Ctrl+4` and `Ctrl+8` are AI keys: a
+document task, Choose Your AI, and Which AI Am I Using. The Workbench has no
+AI menu, so here they keep their place in the Go row with the other digits:
+`Ctrl+3` is Search, `Ctrl+4` is People and `Ctrl+8` is Saved Searches. Switch
+back to the editor (`Ctrl+Shift+E`) and they are AI keys again.
 
 ## Doing things to what is selected
 
@@ -137,14 +272,62 @@ The keys you will use most:
 | `Ctrl+Shift+Enter` | Merge the selected pull request |
 | `Ctrl+Shift+W` | Say what failed in the selected run |
 | `Ctrl+Shift+F5` | Run the failed jobs again |
+| `Ctrl+Shift+B` | Compare the selected branch with another |
+| `Ctrl+Shift+A` | Assign the selected issue to Copilot |
 | `Ctrl+D` | Keep the selected row under Favorites, or take it out |
 | `Ctrl+Shift+C` | Copy the selected row's address |
 | `Shift+Enter` | Open it on GitHub, in your browser |
 | `Delete` | Remove it safely: mark a notification done, close an issue after asking |
 
-Anything the Workbench does not do itself yet opens GitHub Items on that one
-item, in front of the Workbench, so nothing you could do before is out of
-reach.
+`Delete` always does the safe thing for the kind of row, and asks first
+whenever it cannot be undone: on a branch, a label, a release's file, a gist,
+an Actions cache or a workflow run it deletes that one thing, after asking. It
+never deletes the repository's default branch. Enter never deletes anything.
+
+### Everything is done here now
+
+The old GitHub Items window is retired, and nothing hands you over to it. What
+it did, the Workbench does itself, on the selected row; where a job needs a
+window, such as a run's logs, that window opens in front of the Workbench and
+blocks only the Workbench, never the editor. Each row's context menu has its
+own list, and `Shift+F1` reads it with the keys:
+
+- **An issue:** Comment, Close or Reopen, Labels, Assignees, Milestone, View
+  Timeline, Assign to Copilot, Lock or Unlock
+  Conversation, Pin or Unpin, Transfer Issue to another repository with the
+  same owner, Set Issue Type, and Reorder Sub-issues.
+- **A pull request:** Review (Enter), File Differences, Merge, View Timeline
+  and the rest. Merge asks how (Squash and merge, Merge commit or Rebase),
+  then asks you to type the pull request's number before anything happens,
+  because a merge changes the branch for everyone.
+- **A workflow run:** Jobs and Logs (Enter), What Failed, Re-run Failed Jobs
+  Only, Re-run Workflow, Cancel Run, View Artifacts, Combined Check Status,
+  Review Pending Deployments, Approve Run from a Fork, and Delete Run.
+- **A workflow:** its Runs (Enter), and Run Workflow on Branch.
+- **A release:** its Assets (Enter), each with Download, Copy Link and Delete
+  Asset; Edit Release; Draft Release Notes; and Upload Asset.
+- **A branch:** its Commits (Enter), Compare Branches, Copy Name, and Delete
+  Branch, which asks you to type the branch name.
+- **A commit or a tag:** Open, and Commit Comments, to read and write comments
+  on the commit and its lines.
+- **A label:** Find Issues with Label (Enter), Edit Label and Delete Label.
+- **A security alert:** Open, and Dismiss or Reopen Alert, with a reason.
+- **A discussion:** Open Discussion Thread, to read and reply.
+- **An Actions cache:** Show Details and Delete Cache.
+- **A notification:** Open, Mark Read, Mark Done, Unsubscribe from Thread, and
+  Snooze for One Day. Snoozing hides it in the Workbench on this computer
+  until tomorrow and changes nothing on GitHub; Unsnooze Locally brings it
+  back.
+- **A repository:** Open, Star or Unstar, Watch or Unwatch, Clone, and Pin.
+- **A person:** Open, and Follow or Unfollow.
+
+Summarize Discussion and Start in Local Worktree are QUILL's: they use its AI
+connection and its local Git. In QUILL Lite those two rows are greyed, and
+`Shift+F1` says why.
+
+Every change asks first when it cannot be undone, runs without freezing the
+window, and says one sentence about what GitHub confirmed. `F9` says it
+again.
 
 ## Hearing where you are
 

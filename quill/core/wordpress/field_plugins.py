@@ -7,14 +7,18 @@ name) and to each item (``"acf": {"venue_name": "The Hall", ...}``). So the
 fields are found the same way custom fields are: one ``OPTIONS`` request on
 the route, then ``_fields=acf`` on the item.
 
-This is read support, behind detection: a site with no ``acf`` property in
-the schema costs one request (the schema, which Custom Fields reads anyway)
-and nothing more, and a site that has it gets the same
-:class:`~quill.core.wordpress.custom_fields.CustomFields` form as its meta,
-lists and groups included. Writing goes back as ``{"acf": {...}}``, which
-ACF accepts on the same route; QUILL does not send it yet.
+Read and write, behind detection: a site with no ``acf`` property in the
+schema costs one request (the schema, which Properties reads anyway) and
+nothing more. A site that has it gets an **Advanced Custom Fields** page on
+an item's, term's, user's or comment's Properties (:func:`with_acf_page`),
+built by the same schema rules as registered meta, and a save goes back as
+``{"acf": {...}}`` on the same route, checked and coerced first and verified
+after (:mod:`~quill.core.wordpress.workbench_edit`). Only fields in a group
+with "Show in REST API" on reach REST; the rest stay in wp-admin.
 
-Meta Box, Pods and CMB2 expose fields their own ways and are not read here.
+The other field plugins are classified in :data:`FIELD_PLUGIN_SCOPE`, honestly:
+none has an adapter, and what of theirs QUILL reaches, it reaches as
+registered meta or by namespace.
 
 Wx-free.
 """
@@ -27,12 +31,19 @@ from typing import Any
 
 from quill.core.wordpress import custom_fields as cf
 from quill.core.wordpress.api import WordPressApi
+from quill.core.workbench.properties import PageSpec, SheetSpec
 
 __all__ = [
+    "FIELD_PLUGIN_SCOPE",
+    "FieldPluginScope",
     "PluginFields",
+    "acf_lookup",
     "acf_schema",
+    "acf_values",
+    "meta_from_properties",
     "read_acf",
     "route_properties",
+    "with_acf_page",
 ]
 
 #: The property ACF adds to a route's schema and to each item.
@@ -98,3 +109,103 @@ def read_acf(
         # ACF answers an item with no saved fields as an empty list, not {}.
         values = dict(found) if isinstance(found, dict) else {}
     return PluginFields("Advanced Custom Fields", cf.build_form(schema, values, {}), values)
+
+
+# -- Properties sheets ------------------------------------------------------------------
+
+
+def meta_from_properties(properties: Mapping[str, Any]) -> dict[str, Any]:
+    """``meta.properties`` from a route's schema properties (one ``OPTIONS`` for meta and ACF)."""
+    meta = properties.get("meta")
+    found = meta.get("properties") if isinstance(meta, dict) else None
+    return dict(found) if isinstance(found, dict) else {}
+
+
+def with_acf_page(sheet: SheetSpec, schema: Mapping[str, Any] | None) -> SheetSpec:
+    """*sheet* with an Advanced Custom Fields page, when the site shows any ACF fields."""
+    if not schema:
+        return sheet
+    from quill.core.wordpress.workbench_sheets import _schema_field
+
+    fields = tuple(
+        _schema_field(f"{ACF_PROPERTY}.{name}", cf.label_for(name, spec), spec)
+        for name, spec in sorted(schema.items())
+        if isinstance(spec, dict)
+    )
+    if not fields:
+        return sheet
+    page = PageSpec(ACF_PROPERTY, "Advanced Custom Fields", fields)
+    return SheetSpec(sheet.kind, sheet.title, (*sheet.pages, page))
+
+
+def acf_values(raw: Mapping[str, Any]) -> dict[str, Any]:
+    """What each ACF field shows, keyed as the page's fields are (``acf.venue``)."""
+    from quill.core.wordpress.workbench_sheets import _scalar
+
+    found = raw.get(ACF_PROPERTY)
+    if not isinstance(found, dict):  # ACF sends [] for an item with nothing saved
+        return {}
+    return {f"{ACF_PROPERTY}.{key}": _scalar(value) for key, value in found.items()}
+
+
+def acf_lookup(schema: Mapping[str, Any] | None) -> dict[str, Any]:
+    """ACF's field schemas under the page's keys, for the save's checks."""
+    return {f"{ACF_PROPERTY}.{k}": v for k, v in (schema or {}).items() if isinstance(v, dict)}
+
+
+# -- what each field plugin gets ---------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class FieldPluginScope:
+    """One field plugin: how its fields reach REST, and what the Workbench does with them."""
+
+    plugin: str
+    exposure: str
+    status: str  #: "read and write", "as registered meta" or "not integrated"
+    workbench: str
+
+
+FIELD_PLUGIN_SCOPE: tuple[FieldPluginScope, ...] = (
+    FieldPluginScope(
+        "Advanced Custom Fields",
+        "an acf property on the route's schema and on each object, for groups with Show in "
+        "REST API on",
+        "read and write",
+        "Properties has an Advanced Custom Fields page on items, terms, users and comments; a "
+        'save goes back as {"acf": {...}}, checked against the schema and verified. Field '
+        "groups themselves are defined in wp-admin, and are read only here.",
+    ),
+    FieldPluginScope(
+        "Meta Box",
+        "fields registered as post meta with show_in_rest, or a meta_box property from its "
+        "MB REST API extension",
+        "as registered meta",
+        "Fields it registers as REST meta appear on the Meta page like any registered meta. Its "
+        "meta_box property and its field-group definitions have no adapter; edit them in "
+        "wp-admin.",
+    ),
+    FieldPluginScope(
+        "Pods",
+        "fields registered as REST meta or REST fields per pod, and its own pods/v1 routes",
+        "as registered meta",
+        "Pod fields registered as meta appear on the Meta page; pods/v1 is listed under More "
+        "from This Site and written only through the REST Console's previews. No adapter.",
+    ),
+    FieldPluginScope(
+        "CMB2",
+        "boxes with show_in_rest, served under cmb2/v1",
+        "not integrated",
+        "cmb2/v1 is read under More from This Site; fields CMB2 also registers as meta appear "
+        "on the Meta page. No adapter.",
+    ),
+    FieldPluginScope(
+        "Registered meta (any plugin or theme)",
+        "register_meta or register_post_meta with show_in_rest",
+        "read and write",
+        "Every registered field, scalar or schema-backed list and object, on the Meta or "
+        "Custom Fields page of items, terms, users and comments; unsupported schemas stay "
+        "read only.",
+    ),
+)
+"""Every field plugin the PRD names (WP-R-034, WP-R-038), with what QUILL really does."""

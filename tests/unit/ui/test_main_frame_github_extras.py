@@ -209,32 +209,13 @@ def test_dispatch_workflow_declined(monkeypatch: pytest.MonkeyPatch) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_notifications_open_the_shared_explore_triage_view(monkeypatch) -> None:
-    _fake_token_store(monkeypatch, "tok")
+def test_notifications_open_the_workbench_notifications_node(monkeypatch) -> None:
+    """Explore GitHub is retired: the door opens the Workbench's Notifications node."""
     host = _Host()
-    host._gh_admin_ready = lambda: "tok"
-    calls: list[object] = []
-    reference = SimpleNamespace(repository="owner/repo", kind="issue", number=3)
-
-    class _Explore:
-        def __init__(self, _parent, _provider, **kwargs) -> None:
-            calls.append(kwargs["initial_view"])
-            self._open = kwargs["on_open_reference"]
-
-        def show(self) -> None:
-            self._open(reference)
-
-    monkeypatch.setattr("quill.ui.github_explore_dialog.GitHubExploreDialog", _Explore)
-    monkeypatch.setattr(
-        "quill.core.github.items_provider.GitHubItemsProvider",
-        lambda token: SimpleNamespace(close=lambda: calls.append("closed")),
-    )
-    host.open_github_items_viewer_for = lambda repo, *, initial_reference: calls.append((
-        repo,
-        initial_reference,
-    ))
+    opened: list[dict[str, object]] = []
+    host.open_github_items_viewer = lambda **kw: opened.append(kw)
     host.github_view_notifications()
-    assert calls == ["notifications", "closed", ("owner/repo", reference)]
+    assert opened == [{"node": "notifications"}]
 
 
 # ---------------------------------------------------------------------------

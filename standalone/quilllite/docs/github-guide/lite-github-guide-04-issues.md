@@ -92,19 +92,24 @@ history was read."
 
 ## Writing a new issue
 
-Signed in, choose **Actions...**, then **New Issue...**. With no row selected,
-Shift+F10 in the list has it too.
+In the GitHub Workbench, open a repository's **Issues** or **Issues and Pull
+Requests** and press `Ctrl+N`. The Workbench reads the repository's issue
+templates before it opens anything.
 
 ### Templates
 
-If the repository has issue templates, QUILL asks which to start from:
+If the repository has issue templates, QUILL Lite asks which to start from:
 **Blank issue**, then each template with its description. The template's text
 fills the form, ready to edit.
 
-Some repositories use GitHub's structured issue forms instead of plain
-templates. Those are filled in on GitHub, so QUILL offers to open the form in
-your browser: "This structured issue form is completed on GitHub." It does the
-same for a template too large to load.
+GitHub's issue forms, the YAML ones that show as a form with boxes on the
+website, are on the same list, and QUILL Lite fills them as a real form: one
+labelled control per field, with "(required)" in the name of every field
+that must be answered. Create Issue says what is still missing rather than
+sending an incomplete issue, and the body GitHub receives reads the same as
+one filed from the website. A form or template QUILL Lite cannot fill, such
+as one too large to load, is left off the list, and QUILL Lite says so once;
+it is still there on GitHub. Chapter 12 has the details.
 
 ### The form
 

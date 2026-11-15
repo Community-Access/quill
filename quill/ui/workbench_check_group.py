@@ -49,11 +49,12 @@ class CheckGroup:
         self.panel.SetSizer(self._sizer)
         self.boxes: dict[str, Any] = {}
         self._start: dict[str, str] = {}
+        self._empty: Any = None
         for item in items:
             self.add(item, on=self._initially_on(item, have))
         if not items:
-            empty = wx.StaticText(self.panel, label="(None to choose from yet.)")
-            self._sizer.Add(empty)
+            self._empty = wx.StaticText(self.panel, label="(None to choose from yet.)")
+            self._sizer.Add(self._empty)
 
     def _initially_on(self, item: str, have: tuple[str, ...]) -> bool | None:
         if self.total <= 1:
@@ -69,6 +70,9 @@ class CheckGroup:
         if item in self.boxes:
             self.set(item, bool(on))
             return
+        if self._empty is not None:  # the first real choice replaces "(None ...)"
+            self._empty.Destroy()
+            self._empty = None
         count = self._counts.get(item, 0)
         label = item
         if self.total > 1 and 0 < count < self.total:

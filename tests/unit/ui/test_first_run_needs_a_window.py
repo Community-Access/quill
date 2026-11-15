@@ -83,4 +83,9 @@ def test_a_shown_frame_is_allowed_past_the_guard() -> None:
 def test_the_launch_path_shows_the_window_before_it_runs_the_loop() -> None:
     """The guard is only safe because a real launch is always shown first."""
     source = (REPO / "quill" / "apps" / "radio.py").read_text(encoding="utf-8")
-    assert source.index("frame.frame.Show()") < source.index("app.MainLoop()")
+    # Since --tray, the launch goes through present_at_launch, which shows the
+    # window unless this launch belongs in the tray; a tray launch leaves the
+    # window hidden and the guard defers the welcome until it is shown.
+    assert source.index("present_at_launch(frame") < source.index("app.MainLoop()")
+    helper = (REPO / "quill" / "ui" / "startup_launch.py").read_text(encoding="utf-8")
+    assert "host.frame.Show()" in helper

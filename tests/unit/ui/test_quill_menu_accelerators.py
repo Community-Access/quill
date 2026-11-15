@@ -94,11 +94,14 @@ def _mnemonic(title: str) -> str:
         return title[index + 1].upper()
 
 
-@pytest.fixture(scope="module", params=["normal", "workbench"])
+@pytest.fixture(scope="module", params=["normal", "workbench", "wordpress"])
 def quill_menu_bar(tmp_path_factory, request):
-    """QUILL's bar, in both arrangements: GitHub Workbench Mode moves rows between
-    menus and adds one (quill/core/github/workbench_menu.py), so every rule here
-    has to hold in each."""
+    """QUILL's bar, in every arrangement: GitHub Workbench Mode moves rows between
+    menus and adds one (quill/core/github/workbench_menu.py), and the WordPress
+    and Forms switches add rows to File, Edit, View, Insert, Format and Tools
+    (quill/core/wordpress/menu.py), so every rule here has to hold in each. The
+    WordPress rows were never in this bar before: the test profile has the
+    switch off, so a letter they took twice went unseen (how.md review 13)."""
     app = shared_wx_app()
     from unittest.mock import patch
 
@@ -118,7 +121,18 @@ def quill_menu_bar(tmp_path_factory, request):
     data = str(tmp_path_factory.mktemp("menu-bar-data"))
     with pytest.MonkeyPatch.context() as mp:
         mp.setenv("QUILL_DATA_DIR", data)
-        with patch.object(MainFrame, "check_for_updates", lambda self, **_kwargs: None):
+        enabled = MainFrame._feature_enabled
+        wordpress = request.param == "wordpress"
+
+        def feature_enabled(self, feature_id: str) -> bool:
+            if wordpress and feature_id in ("core.wordpress", "core.forms"):
+                return True
+            return enabled(self, feature_id)
+
+        with (
+            patch.object(MainFrame, "check_for_updates", lambda self, **_kwargs: None),
+            patch.object(MainFrame, "_feature_enabled", feature_enabled),
+        ):
             frame = MainFrame()
             if request.param == "workbench":
                 frame.toggle_github_workbench_mode()
@@ -126,6 +140,10 @@ def quill_menu_bar(tmp_path_factory, request):
     bar = frame.frame.GetMenuBar()
     if request.param == "workbench":
         assert bar.FindMenu("GitHub") != -1
+    if wordpress:
+        insert = bar.GetMenu(bar.FindMenu("Insert"))
+        rows = [item.GetItemLabelText() for item in insert.GetMenuItems()]
+        assert any(row.startswith("WordPress Block") for row in rows), rows
     bar._quill_main_frame = frame
     yield bar
     with pytest.MonkeyPatch.context() as mp:

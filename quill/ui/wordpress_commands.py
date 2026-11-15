@@ -154,6 +154,16 @@ class WordPressCommands(
             data_dir=getattr(self, "_data_dir", None),
         )
 
+    def cmd_this_post_in_workbench(self) -> None:
+        """File > WordPress > This Post in the Workbench: its list, with it selected (PRD 14)."""
+        found = self.current("This Post in the Workbench")
+        if found is None:
+            return
+        from quill.ui.wordpress_workbench_editor_side import open_on_document
+
+        copy, profile = found
+        open_on_document(self, copy, profile)
+
     def need_site(self) -> st.SiteStore | None:
         store = self.sites()
         if store.sites:

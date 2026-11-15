@@ -37,6 +37,9 @@ class WorkbenchGroupsMixin:
     _items: dict[Any, Any]
     _columns: tuple[str, ...]
     _groups: dict[GroupRef, tuple[Any, list[object]]]
+    _shown_cells: list[list[str]]
+    _wx: Any
+    selected_indices: Any
 
     def show_groups(self, groups: Sequence[tuple[str, list[object]]]) -> None:
         """Put the list's groups in the tree under the current node; [] removes them."""
@@ -65,7 +68,21 @@ class WorkbenchGroupsMixin:
             self.list.InsertItem(index, cells[0] if cells else "")
             for column, text in enumerate(cells[1:], start=1):
                 self.list.SetItem(index, column, text)
+        self._shown_cells = []  # the next fill of the node's own list is a real one
         if self.rows:
-            self.list.Select(0)
-            self.list.Focus(0)
+            self.focus_row(0)
         self.status.refresh()
+
+    def focus_row(self, index: int) -> None:
+        """Select *index* alone and focus it in ONE state change, and show it.
+
+        ``Select`` then ``Focus`` is two changes, and JAWS read the row once for
+        each; one ``SetItemState`` with both states is read once.
+        """
+        wx = self._wx
+        for other in self.selected_indices():
+            if other != index:
+                self.list.Select(other, False)
+        both = wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED
+        self.list.SetItemState(index, both, both)
+        self.list.EnsureVisible(index)

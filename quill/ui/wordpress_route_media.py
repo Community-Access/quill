@@ -6,7 +6,12 @@ QUILL and QUILL Lite.
 
 * **Upload a Large File:** a long video or big audio file goes up in one
   request on a background task, with a word first that it can take a while.
-  WordPress has no upload in pieces (see :mod:`quill.core.wordpress.media_pieces`).
+  A file from :data:`~quill.core.wordpress.media_pieces.LARGE_FROM` up is
+  previewed first beside the space the site already uses (``directory-sizes``),
+  and once it lands its title, alt text, caption and description are asked
+  (9.17, gaps 3 and 7). WordPress has no upload in pieces, so an interrupted
+  upload starts again rather than resuming (see
+  :mod:`quill.core.wordpress.media_pieces`).
 * **Regenerate Sizes:** remake a picture's thumbnail and medium copies.
 * **Space Used:** uploads, themes, plugins, WordPress and the database, in words.
 * **Download a Copy of the Site's Design:** a block theme's zip, with the
@@ -48,6 +53,34 @@ class WordPressRouteMedia:
         )
         if path is None:
             return
+        size = path.stat().st_size
+        if size < mp.LARGE_FROM:
+            self._send_large(profile, path)
+            return
+        # A big file: the site's own measure of its space first (9.17, gap 3).
+        self.with_route(  # type: ignore[attr-defined]
+            profile,
+            "media",
+            f"measuring the space {profile.name} uses",
+            ss.space_or_none,
+            lambda space: self._confirm_large(profile, path, size, space),
+        )
+
+    def _confirm_large(
+        self, profile: st.SiteProfile, path: Path, size: int, space: ss.SpaceUse | None
+    ) -> None:
+        if not dlg.confirm(
+            self.host.parent,
+            self.host.show_modal,
+            title="Upload a Large File",
+            message=ss.upload_warning(profile.name, path.name, size, space),
+            yes_label="Upload",
+        ):
+            self.host.announce("Nothing was uploaded.")
+            return
+        self._send_large(profile, path)
+
+    def _send_large(self, profile: st.SiteProfile, path: Path) -> None:
         content = path.read_bytes()
         kind = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
         if len(content) >= mp.LARGE_FROM:
@@ -59,11 +92,13 @@ class WordPressRouteMedia:
             profile,
             "media",
             f"uploading {path.name} to {profile.name}",
-            lambda api: wpm.upload_media(api, path.name, content, kind),
-            lambda media: self._uploaded(profile, path, media),
+            lambda api: (api, wpm.upload_media(api, path.name, content, kind)),
+            lambda got: self._uploaded(profile, path, got[1], got[0]),
         )
 
-    def _uploaded(self, profile: st.SiteProfile, path: Path, media: wpm.MediaItem) -> None:
+    def _uploaded(
+        self, profile: st.SiteProfile, path: Path, media: wpm.MediaItem, api: Any = None
+    ) -> None:
         if media.source_url:
             self.host.set_clipboard_text(media.source_url)
             self.host.announce(
@@ -72,6 +107,35 @@ class WordPressRouteMedia:
             )
         else:
             self.host.announce(f"{path.name} is in {profile.name}'s Media Library.")
+        if api is not None:
+            self._large_details(profile, api, media)
+
+    def _large_details(self, profile: st.SiteProfile, api: Any, media: wpm.MediaItem) -> None:
+        """The file's title, alt text, caption and description, right after it lands (gap 7)."""
+        from quill.ui import wordpress_block_dialogs as bdlg
+
+        fields = mp.detail_fields(media)
+        answers = bdlg.ask_fields(
+            self.host.parent,
+            self.host.show_modal,
+            title=f"Details of {media.title or media.filename}",
+            purpose=(
+                f"What {profile.name} says about the file. Cancel keeps what WordPress made "
+                "from the file's name."
+            ),
+            fields=fields,
+            ok_label="Save Details",
+        )
+        changes = mp.detail_changes(media, answers or {})
+        if not changes:
+            return
+        self.background(  # type: ignore[attr-defined]
+            f"saving the details of {media.filename}",
+            lambda: wpm.update_media(api, media.id, **changes),
+            lambda saved: self.host.announce(
+                f"Saved the details of {saved.title or saved.filename} on {profile.name}."
+            ),
+        )
 
     # ------------------------------------------------------------------ #
     # Regenerate Sizes

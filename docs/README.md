@@ -12,6 +12,11 @@ quick index for the docs tree itself.
 - [QUILL-PRD](Product%20Requirement%20Documents%20and%20Specifications/QUILL-PRD.md)
   — the product requirements document, the canonical description of what
   QUILL is and does. Feature specifications live beside it.
+- [GitHub Workbench PRD](Product%20Requirement%20Documents%20and%20Specifications/github-workbench-prd.md)
+  and [WordPress Workbench PRD](Product%20Requirement%20Documents%20and%20Specifications/wordpress-workbench-prd.md)
+  — the complete accepted specs for both Workbenches.
+- [Workbench implementation status](planning/workbench-implementation-status.md)
+  — current scope decisions, delivered work, and remaining phases.
 - [Control reference](CONTROL_REFERENCE.md) — every help topic and
   keystroke. Generated from `quill/core/help/topics.json`; do not hand-edit.
 

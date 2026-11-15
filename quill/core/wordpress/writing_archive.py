@@ -7,8 +7,9 @@ a way to move house. A ``.quill-archive.json`` in the folder records what is
 already saved and when it last changed on the site, so running it again
 resumes: only new and changed items are fetched.
 
-**Send a Folder as Drafts** turns a folder of Markdown, text or web-page files
-into drafts. Each file's first heading is its title (:mod:`cross_site`), and
+**Download My Writing** can write Word documents instead of Markdown, and
+**Send a Folder as Drafts** turns a folder of Markdown, text, web-page or Word
+files into drafts (9.17, gap 6). Each file's first heading is its title (:mod:`cross_site`), and
 each is checked with Check Before Publishing first, so the one confirmation
 can say what was found.
 
@@ -22,6 +23,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import unquote, urlparse
+from zipfile import BadZipFile
 
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.wordpress import checks as chk
@@ -33,7 +35,7 @@ from quill.core.wordpress.api import WordPressApi, WordPressApiError
 MANIFEST = ".quill-archive.json"
 KINDS = (("page", "Pages"), ("post", "Posts"))
 ALL_STATUSES = ("publish", "draft", "pending", "future", "private")
-FOLDER_SUFFIXES = (".md", ".markdown", ".txt", ".html", ".htm")
+FOLDER_SUFFIXES = (".md", ".markdown", ".txt", ".html", ".htm", ".docx")
 
 
 def file_stem(title: str, item_id: int) -> str:
@@ -73,8 +75,13 @@ def download_writing(
     site_url: str,
     *,
     progress: Callable[[int, int], None] | None = None,
+    word: bool = False,
 ) -> ArchiveResult:
-    """Save every page and post to *folder*; resumable through :data:`MANIFEST`."""
+    """Save every page and post to *folder*; resumable through :data:`MANIFEST`.
+
+    With *word*, each item is a Word document (``.docx``) made from the same
+    Markdown; the contents page stays ``index.md``, linking to them.
+    """
     folder.mkdir(parents=True, exist_ok=True)
     manifest_path = folder / MANIFEST
     raw = read_json(manifest_path, default={})
@@ -87,7 +94,7 @@ def download_writing(
     for number, (kind, summary) in enumerate(summaries, 1):
         key = f"{kind}-{summary.id}"
         known = done.get(key, {})
-        name = file_stem(summary.title, summary.id) + ".md"
+        name = file_stem(summary.title, summary.id) + (".docx" if word else ".md")
         if (
             known.get("modified_gmt") == summary.modified_gmt
             and (folder / known.get("file", name)).exists()
@@ -104,7 +111,7 @@ def download_writing(
                         local.write_bytes(xs.fetch_picture(api, url))
                         result.pictures += 1
                     text = text.replace(url, f"pictures/{local.name}")
-                (folder / name).write_bytes(text.encode("utf-8"))
+                _write_item(folder / name, text, word=word)
                 done[key] = {
                     "modified_gmt": summary.modified_gmt,
                     "file": name,
@@ -121,6 +128,23 @@ def download_writing(
             progress(number, len(summaries))
     (folder / "index.md").write_bytes(contents_page(done).encode("utf-8"))
     return result
+
+
+def _write_item(path: Path, text: str, *, word: bool) -> None:
+    if not word:
+        path.write_bytes(text.encode("utf-8"))
+        return
+    from quill.core.document import Document
+    from quill.io.docx_writer import write_docx
+
+    write_docx(Document(text=text, line_ending="\n"), path)
+
+
+def word_available() -> bool:
+    """Whether this build can write Word documents (python-docx is bundled in every build)."""
+    from quill.io.docx_writer import python_docx_available
+
+    return bool(python_docx_available())
 
 
 def _picture_name(url: str) -> str:
@@ -153,7 +177,9 @@ def archive_sentence(site_name: str, folder: Path, result: ArchiveResult) -> str
     said = f"Your writing on {site_name} is in {folder.name}: " + ", ".join(parts) + "."
     if result.failed:
         said += f" {len(result.failed)} could not be saved; run it again to try those."
-    return said
+    from quill.core.wordpress.workbench_carry import ARCHIVE_LEFT_OUT
+
+    return f"{said} {ARCHIVE_LEFT_OUT}"
 
 
 # --------------------------------------------------------------------------- #
@@ -175,12 +201,20 @@ def read_folder(folder: Path, *, site_name: str) -> list[FolderFile]:
     for path in sorted(folder.iterdir(), key=lambda p: p.name.casefold()):
         if not path.is_file() or path.suffix.lower() not in FOLDER_SUFFIXES:
             continue
+        source = path
         try:
-            raw = path.read_bytes().decode("utf-8-sig")
-        except (OSError, UnicodeDecodeError):
+            if path.suffix.lower() == ".docx":
+                from quill.io.office_word import read_docx_xml
+
+                raw = read_docx_xml(path)  # Word becomes Markdown, headings and lists kept
+                source = path.with_suffix(".md")
+            else:
+                raw = path.read_bytes().decode("utf-8-sig")
+        except (OSError, UnicodeDecodeError, KeyError, ValueError, SyntaxError, BadZipFile):
             continue
-        text_format = xs.document_format(path)
-        title, body = xs.title_and_body(raw, text_format, path.stem.replace("-", " ").strip())
+        # Markdown, block markup, HTML or plain text, as Send This Document reads it.
+        prepared = xs.prepare_document(raw, source, path.stem.replace("-", " ").strip())
+        title, body, text_format = prepared.title, prepared.text, prepared.text_format
         markup = body if text_format == "html" else fences.convert_markdown(body).html
         findings = chk.check_content(markup, title=title, site_name=site_name)
         out.append(FolderFile(path, title, body, text_format, tuple(f.message for f in findings)))

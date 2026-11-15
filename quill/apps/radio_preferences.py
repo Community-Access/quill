@@ -93,6 +93,9 @@ def open_preferences(app: Any) -> None:
     )
 
     history = app._radio_history
+    from quill.platform.windows import radio_startup
+
+    minimized_at_startup_before = radio_startup.start_minimized_at_startup()
     from quill.apps import radio_youtube_signin_prefs as yt_signin
     from quill.ui.radio import media_player_registration as media_player
 
@@ -154,6 +157,7 @@ def open_preferences(app: Any) -> None:
                 history.resume_on_launch,
             ),
             _startup_checkbox(),
+            rows.startup_minimized_checkbox(),
             PreferenceCheckbox(
                 "&Check for updates automatically on launch",
                 "Check for updates automatically on launch",
@@ -433,6 +437,7 @@ def open_preferences(app: Any) -> None:
     (
         history.resume_on_launch,
         launch_at_startup,
+        start_minimized_at_windows_startup,
         history.check_updates_on_startup,
         history.announce_dialog_transitions,
         history.share_family_prefs,
@@ -452,23 +457,41 @@ def open_preferences(app: Any) -> None:
         *extra_checks,
     ) = checkbox_values
     scrobble_checks, dial_checks = extra_checks[:3], extra_checks[3:]
-    from quill.platform.windows import radio_startup
 
     startup_said = ""
+    if start_minimized_at_windows_startup != minimized_at_startup_before:
+        saved_minimized = radio_startup.set_start_minimized_at_startup(
+            start_minimized_at_windows_startup
+        )
+        if not saved_minimized:
+            startup_said = "Windows did not allow the start-minimized setting to change."
+        else:
+            startup_said = (
+                "Quill Radio will start minimized to the tray when Windows starts."
+                if start_minimized_at_windows_startup
+                else "Quill Radio will start with its window open when Windows starts."
+            )
     if launch_at_startup != radio_startup.is_launch_at_startup_enabled():
         radio_startup.set_launch_at_startup(launch_at_startup)
         actual_startup = radio_startup.is_launch_at_startup_enabled()
         menu_bar = app.frame.GetMenuBar()
         if menu_bar is not None:
             menu_bar.Check(int(app._startup_menu_item_id), actual_startup)
-        startup_said = (
-            "Quill Radio will start with Windows."
-            if actual_startup
-            else (
-                "Quill Radio will not start with Windows."
-                if not launch_at_startup
-                else "Windows did not allow the startup setting to change."
+        startup_said = " ".join(
+            part
+            for part in (
+                startup_said,
+                (
+                    "Quill Radio will start with Windows."
+                    if actual_startup
+                    else (
+                        "Quill Radio will not start with Windows."
+                        if not launch_at_startup
+                        else "Windows did not allow the startup setting to change."
+                    )
+                ),
             )
+            if part
         )
     youtube_said = yt_signin.apply(youtube_signin_on, choice_indices[10], app=app)
     listening_said = radio_preferences_listening.apply(app, choice_indices[11], text_values[2])

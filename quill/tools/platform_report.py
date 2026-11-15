@@ -322,6 +322,12 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.wordpress_coverage_audit"),
     ),
     Gate(
+        "github-api-coverage",
+        "GATE-GITHUB-COVER: every GitHub API operation has a home or a reason; "
+        "planned only shrinks",
+        (sys.executable, "-m", "quill.tools.github_api_coverage_audit"),
+    ),
+    Gate(
         "release-feeds",
         "GATE-FEED: signed v2 update feeds; warns 14 days before one expires",
         (sys.executable, "-m", "quill.tools.release_feed_audit"),

@@ -25,7 +25,6 @@
     "include_read_notifications": {"type": "boolean"},
     "speak_column_names": {"type": "boolean"},
     "first_time_help": {"type": "boolean"},
-    "health_snapshot_opt_in": {"type": "boolean"},
-    "use_classic_windows": {"type": "boolean"}
+    "health_snapshot_opt_in": {"type": "boolean"}
   }
 }

@@ -26,9 +26,11 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
+from urllib.parse import quote
 
 from quill.core.error_codes import CodedError
 from quill.core.github.permissions import ViewerContext, WriteTier, check
+from quill.core.github.sheet_outcome import SaveOutcome, sentence
 from quill.core.github.workbench_api import GitHubApi, fill_path
 from quill.core.workbench.properties import (
     MIXED,
@@ -49,6 +51,7 @@ __all__ = [
     "SheetDef",
     "SheetSaveError",
     "adopted",
+    "is_set",
     "Write",
     "inverse",
     "load",
@@ -99,9 +102,12 @@ class Write:
     ``"graphql"`` (*path* is the mutation, *encode* builds its variables; a
     false value runs *off_path* instead when there is one), ``"set"`` (a list
     whose additions are POSTed to *path* and removals DELETEd at *off_path*
-    or *path*, under *body_key*: reviewers) or ``"set_graphql"`` (one mutation
-    per added item and one per removed, with ``$id`` and ``$content``:
-    reactions).
+    or *path*, under *body_key*: reviewers; an *off_path* holding ``{item}``
+    is one bodiless DELETE per removed item: an issue's labels) or
+    ``"set_graphql"`` (one mutation per added item and one per removed, with
+    ``$id`` and ``$content``, or the variables *encode_item* builds:
+    reactions, Projects). A set is saved as additions and removals, never
+    as a replaced list, so somebody else's concurrent addition is kept.
     *encode* turns the field's value into the body fragment; the default sends
     ``{body_key or the field key: value}``. *requirement* and *tier* are what
     GATE-GITHUB-PERM checks; *undo* is False for a change GitHub cannot
@@ -120,6 +126,13 @@ class Write:
     """For a toggle whose off request goes elsewhere (unlock is DELETE .../lock)."""
     off_method: str = "DELETE"
     """For a toggle whose off request is not a DELETE (a workflow's PUT .../disable)."""
+    encode_item: Callable[[str, bool, Mapping[str, object], Ident], dict[str, object]] | None = None
+    """For ``set_graphql``: (item, added?, choices, ident) to the mutation's variables."""
+
+
+def is_set(write: Write) -> bool:
+    """Whether *write* saves a list as additions and removals rather than a replaced whole."""
+    return write.kind in ("set", "set_graphql")
 
 
 @dataclass(frozen=True)
@@ -127,13 +140,18 @@ class Options:
     """Where a picker's choices come from: a list endpoint and how to name each entry.
 
     *value* gives what the API wants for an entry (a milestone's number for
-    its title); without it the name itself is sent.
+    its title); without it the name itself is sent. A picker GitHub answers
+    only in GraphQL (Projects) gives *graphql*, its *variables*, and *rows*,
+    which picks the entries out of the answer.
     """
 
     path: str
     name: Callable[[Mapping[str, Any]], str]
     value: Callable[[Mapping[str, Any]], object] | None = None
     query: Mapping[str, str] = field(default_factory=dict)
+    graphql: str = ""
+    variables: Callable[[Ident], dict[str, object]] | None = None
+    rows: Callable[[Mapping[str, Any]], list[Mapping[str, Any]]] | None = None
 
 
 @dataclass(frozen=True)
@@ -232,13 +250,21 @@ def load_options(api: GitHubApi, sheet: SheetDef, ident: Ident) -> dict[str, dic
     """Each picker's choices: display name to the value the API wants."""
     found: dict[str, dict[str, object]] = {}
     for key, source in sheet.options.items():
+        rows: list[Any]
         try:
-            answer = api.rest(
-                "GET", fill_path(source.path, ident), query={"per_page": "100", **source.query}
-            )
+            if source.graphql:
+                variables = source.variables(ident) if source.variables else dict(ident)
+                data = api.graphql(source.graphql, variables)
+                rows = list(source.rows(data)) if source.rows else []
+            else:
+                answer = api.rest(
+                    "GET",
+                    fill_path(source.path, ident),
+                    query={"per_page": "100", **source.query},
+                )
+                rows = answer.data if isinstance(answer.data, list) else []
         except Exception:  # noqa: BLE001 - a picker that cannot load keeps the typed value
             continue
-        rows = answer.data if isinstance(answer.data, list) else []
         choices: dict[str, object] = {}
         for row in rows:
             if isinstance(row, Mapping):
@@ -364,15 +390,15 @@ def _set_requests(
     key = (change.key,)
     if write.kind == "set_graphql":
         node = ident.get("node_id", "")
-        found = [
-            Request("POST", "/graphql", {"id": node, "content": choices.get(i, i)}, key, write.path)
-            for i in added
-        ]
+
+        def variables(item: str, on: bool) -> dict[str, object]:
+            if write.encode_item is not None:
+                return write.encode_item(item, on, choices, ident)
+            return {"id": node, "content": choices.get(item, item)}
+
+        found = [Request("POST", "/graphql", variables(i, True), key, write.path) for i in added]
         found += [
-            Request(
-                "POST", "/graphql", {"id": node, "content": choices.get(i, i)}, key, write.off_path
-            )
-            for i in removed
+            Request("POST", "/graphql", variables(i, False), key, write.off_path) for i in removed
         ]
         return found
     list_key = write.body_key or change.key
@@ -382,10 +408,23 @@ def _set_requests(
         found.append(
             Request(write.method, path, {list_key: [choices.get(i, i) for i in added]}, key)
         )
-    if removed:
+    if removed and "{item}" in write.off_path:
+        # One DELETE per item, the name its own path segment ("area/ui" travels
+        # as area%2Fui), so removing one never touches the others.
+        base = fill_path(write.off_path.replace("{item}", _ITEM_MARK), ident)
+        for item in removed:
+            name = str(choices.get(item, item))
+            if name in (".", "..") or not name:
+                raise SheetSaveError(f"{change.label} cannot remove an item named {name!r}.")
+            item_path = base.replace(_ITEM_MARK, quote(name, safe=""))
+            found.append(Request("DELETE", item_path, None, key))
+    elif removed:
         off = fill_path(write.off_path, ident) if write.off_path else path
         found.append(Request("DELETE", off, {list_key: [choices.get(i, i) for i in removed]}, key))
     return found
+
+
+_ITEM_MARK = "__quill_item__"
 
 
 def _send(api: GitHubApi, request: Request) -> None:
@@ -395,27 +434,22 @@ def _send(api: GitHubApi, request: Request) -> None:
     api.rest(request.method, request.path, body=request.body)
 
 
-@dataclass
-class SaveOutcome:
-    """What a save did, field by field, as the re-read proved it."""
-
-    done: list[FieldChange] = field(default_factory=list)
-    not_taken: list[FieldChange] = field(default_factory=list)
-    failed: list[tuple[FieldChange, str]] = field(default_factory=list)
-    conflicts: tuple[FieldChange, ...] = ()
-    after: dict[str, Value] = field(default_factory=dict)
-
-    @property
-    def ok(self) -> bool:
-        return not self.not_taken and not self.failed and not self.conflicts
-
-
 def _same(intended: Value, found: Value) -> bool:
     if isinstance(intended, tuple) and isinstance(found, tuple):
         return sorted(intended) == sorted(found)
     if intended in (None, "") and found in (None, ""):
         return True
     return intended == found
+
+
+def _set_took(before: object, intended: object, found: object) -> bool:
+    """Whether each addition is there and each removal gone, whatever else changed."""
+    old = before if isinstance(before, tuple) else ()
+    new = intended if isinstance(intended, tuple) else ()
+    now = found if isinstance(found, tuple) else ()
+    added = [item for item in new if item not in old]
+    removed = [item for item in old if item not in new]
+    return all(item in now for item in added) and not any(item in now for item in removed)
 
 
 def adopted(sheet: SheetDef, ident: Ident, loaded: Mapping[str, Value]) -> dict[str, str]:
@@ -449,9 +483,12 @@ def save(
     outcome = SaveOutcome()
     ident = adopted(sheet, ident, loaded)
     pending = [change for change in changed if change.key not in keep_theirs]
-    if check_conflicts and pending:
+    # A set (labels, reviewers, projects) is sent as additions and removals, so
+    # somebody else's change to the same list is no conflict: it is kept.
+    whole = [c for c in pending if not (c.key in sheet.writes and is_set(sheet.writes[c.key]))]
+    if check_conflicts and whole:
         current = load(api, sheet, ident).values
-        found = conflicts(pending, dict(loaded), current)
+        found = conflicts(whole, dict(loaded), current)
         if found:
             outcome.conflicts = found
             return outcome
@@ -472,64 +509,19 @@ def save(
         if isinstance(intended, ListDelta):
             before = change.before if isinstance(change.before, tuple) else ()
             intended = apply_delta(before, intended)
+        write = sheet.writes.get(change.key)
         if change.key in sheet.secret_fields:
             outcome.done.append(FieldChange(change.key, change.label, None, "(set)"))
+        elif write is not None and is_set(write):
+            if _set_took(change.before, intended, after.get(change.key)):
+                outcome.done.append(FieldChange(change.key, change.label, change.before, intended))
+            else:
+                outcome.not_taken.append(change)
         elif _same(intended, after.get(change.key)):
             outcome.done.append(FieldChange(change.key, change.label, change.before, intended))
         else:
             outcome.not_taken.append(change)
     return outcome
-
-
-def _value_words(value: object) -> str:
-    if isinstance(value, tuple):
-        return ", ".join(value) if value else "none"
-    if isinstance(value, bool):
-        return "on" if value else "off"
-    if value is None or value == "" or value is MIXED:
-        return "none"
-    return str(value)
-
-
-def _change_words(change: FieldChange) -> str:
-    label = change.label.lower()
-    before, after = change.before, change.after
-    if isinstance(after, tuple):
-        old = before if isinstance(before, tuple) else ()
-        added = [item for item in after if item not in old]
-        removed = [item for item in old if item not in after]
-        if label.startswith("assignee"):
-            parts = [f"assigned to {', '.join(added)}"] if added else []
-            parts += [f"unassigned {', '.join(removed)}"] if removed else []
-        else:
-            parts = [f"added {', '.join(added)}"] if added else []
-            parts += [f"removed {', '.join(removed)}"] if removed else []
-        return ", ".join(parts) or f"{label} unchanged"
-    if label in {"body", "description"} and isinstance(after, str) and len(after) > 40:
-        return f"{label} changed"
-    return f"{label} {_value_words(after)}"
-
-
-def sentence(name: str, outcome: SaveOutcome) -> str:
-    """The one sentence after a save: "#42: added bug, removed docs; milestone 2027.1."
-
-    Only what the re-read proved is claimed; a field that did not take, or
-    failed, is named after it.
-    """
-    parts: list[str] = []
-    if outcome.done:
-        parts.append(f"{name}: " + "; ".join(_change_words(c) for c in outcome.done) + ".")
-    if outcome.not_taken:
-        names = ", ".join(c.label.lower() for c in outcome.not_taken)
-        parts.append(
-            f"GitHub accepted but did not change {names}; you may not have access to set it."
-        )
-    for change, reason in outcome.failed:
-        parts.append(f"Could not change {change.label.lower()}: {reason}")
-    if outcome.conflicts:
-        names = ", ".join(c.label.lower() for c in outcome.conflicts)
-        parts.append(f"Changed on GitHub since you opened this: {names}. Nothing was saved.")
-    return " ".join(parts) or f"{name}: nothing changed."
 
 
 def inverse(sheet: SheetDef, done: Sequence[FieldChange]) -> tuple[list[FieldChange], list[str]]:

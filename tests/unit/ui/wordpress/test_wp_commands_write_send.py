@@ -111,3 +111,41 @@ def test_a_refused_send_is_spoken_and_the_local_draft_stands(wp, wp_dialogs, wp_
     assert "Community Radio" in wp.host.announced[-1]
     assert wp.host.current_path().exists()
     assert wp.local.copy_for_path(wp.host.current_path()).remote_id == 0
+
+
+def _published_page(wp, wp_dialogs, wp_site) -> None:
+    """A page already published on the site, open in the editor."""
+    _new_page(wp, wp_dialogs)
+    wp_dialogs.answer("confirm", True)
+    wp_site.on("GET", f"{API}/users/me", EDITOR).on("POST", f"{API}/pages", _saved("publish"))
+    wp_site.on("GET", f"{API}/pages/41", _saved("publish")).on(
+        "POST", f"{API}/pages/41", _saved("publish")
+    )
+    wp.cmd_publish()
+
+
+def test_save_draft_on_a_published_page_asks_with_update_first(wp, wp_dialogs, wp_site) -> None:
+    _published_page(wp, wp_dialogs, wp_site)
+    confirms = len(wp_dialogs.asked("confirm"))
+    wp_dialogs.answer("ask_choice", 0)  # the default: update the published page
+    wp.cmd_save_draft()
+    (asked,) = [a for a in wp_dialogs.asked("ask_choice") if a["title"] == "Save Draft to Site"]
+    assert asked["title"] == "Save Draft to Site" and asked["initial"] == 0
+    assert "This page is published. Save as a draft and take it off the site" in asked["prompt"]
+    assert asked["rows"][0] == "Update the published page"
+    assert len(wp_dialogs.asked("confirm")) == confirms  # the choice was the question
+    (sent,) = wp_site.sent("POST", f"{API}/pages/41")
+    assert wp_site.body(sent)["status"] == "publish"
+
+
+def test_save_draft_on_a_published_page_unpublishes_only_when_chosen(
+    wp, wp_dialogs, wp_site
+) -> None:
+    _published_page(wp, wp_dialogs, wp_site)
+    wp.cmd_save_draft()  # Cancel: nothing sent
+    assert wp_site.sent("POST", f"{API}/pages/41") == []
+    wp_site.on("POST", f"{API}/pages/41", _saved("draft"))
+    wp_dialogs.answer("ask_choice", 1)
+    wp.cmd_save_draft()
+    (sent,) = wp_site.sent("POST", f"{API}/pages/41")
+    assert wp_site.body(sent)["status"] == "draft"

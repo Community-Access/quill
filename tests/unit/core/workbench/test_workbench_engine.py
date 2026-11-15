@@ -236,6 +236,30 @@ def test_a_change_that_cannot_be_undone_says_so() -> None:
     assert len(history.entries) == 1
 
 
+def test_a_change_that_cannot_be_undone_is_said_once_then_passed_over() -> None:
+    """It never walls off the older changes (how.md review 3)."""
+    done: list[str] = []
+    history = ChangeHistory()
+    history.record(Change("#1", "#1: added bug", undo=lambda: done.append("#1") or "#1 back"))  # type: ignore[func-returns-value]
+    history.record(Change("main", "Deleted branch old"))
+    assert history.next_undoable() is history.entries[0]
+    assert history.undo() == "Deleted branch old cannot be undone."
+    assert history.passed(history.entries[1])
+    assert history.next_undo() is history.entries[0]
+    assert history.undo() == "#1 back"
+    assert done == ["#1"]
+    assert [c.summary for c in history.entries] == ["Deleted branch old"]
+    assert history.undo() == "Nothing to undo."
+    assert history.redo() == "#1: added bug cannot be made again."
+
+
+def test_the_history_counts_what_it_records() -> None:
+    history = ChangeHistory(limit=2)
+    for n in range(3):
+        history.record(Change(str(n), str(n)))
+    assert history.recorded == 3 and len(history.entries) == 2
+
+
 # -- coverage -------------------------------------------------------------------
 
 

@@ -4,32 +4,23 @@ QUILL 1.0 is the first general release. These are the newest parts; the full rel
 
 ## WordPress
 
-### Stripe and PayPal form setup
+- **Write and publish from QUILL.** File > WordPress > Connect a Site fetches the password with your browser. Then New Post, or Open by Web Address.
+- **Ctrl+S saves on this computer only.** Save Draft to Site and Publish or Update are separate, Publish checks the page first, and nothing someone else changed is overwritten. Save Draft on a published post asks first.
+- **Pictures** ask for alternative text. Scheduling and earlier versions are there too.
+- **Blocks, made plain:** Next Block and Where Am I in Edit > WordPress. A block QUILL does not know goes back untouched.
+- **Checking:** Check This Page with axe-core, and Check the Whole Site with safe fixes in bulk.
+- **Looking after the site:** comments, categories and tags, people, menus (Add Menu Item, Add New Pages Automatically, Arrange Items) and the Media Library (Replace File).
+- **The WordPress Workbench** (Ctrl+Alt+Shift+Grave, then H) runs the whole site, with a preview before every change, Ctrl+Z, Needs My Attention and F1. Where WordPress cannot do something, it says so and opens wp-admin.
+- **Moving and copying:** export a site as WXR and import one as drafts, Copy to Site, snapshots and Across Sites. The Practice Site lets you try it all on your own computer.
+- **Plugins:** WooCommerce, The Events Calendar, Yoast SEO, Paid Memberships Pro, Redirection, Gravity Forms.
+- **Keys:** Ctrl+Alt+Shift+Grave, then O to open, P to publish, D for a draft, M for the Media Library. File > Publish is gone; your saved connections come across by themselves.
 
-- Tools > Forms adds Insert Payment Field, Form Payments Setup and Verify
-  Payment Setup. Stripe is the default; PayPal is also available. New settings
-  use test mode, with confirmation before saving live mode.
-- Paid-form publication checks plugin readiness and matching mode. Test on
-  Site refuses published live-payment forms. Responses show and export payment
-  metadata, with a confirmed Refresh Payment Status action.
-- Checkout requires QAF payment contract version 1 on WordPress. Provider
-  credentials and money movement stay on the site; no plugin deployment or
-  live acceptance is implied by this desktop update.
-- Chapter 18 of the guide, "Taking payments with your forms", walks through
-  it from start to finish, including what the person paying hears.
-
-- **File > WordPress** writes, opens and publishes your sites' pages and posts. Connect a Site fetches the password with your browser and keeps it in Windows Credential Manager.
-- **Ctrl+S saves on this computer only.** Save Draft to Site and Publish or Update are separate, Publish checks the page first, and nothing someone else changed is overwritten.
-- **Blocks, made plain:** Insert > WordPress Block, and Next Block, Previous Block and Where Am I in Edit > WordPress. A block QUILL does not know goes back untouched.
-- **Tools > WordPress** has the Media Library, Check This Page with axe-core, Check the Whole Site with safe fixes in bulk, comments, menus, users and settings.
-- **Keys:** Ctrl+Alt+Shift+Grave, then O to open, P to publish, D for a draft, M for the Media Library. The menus show every letter.
-- File > Publish is gone; your saved connections come across by themselves.
-
-## Forms
+### Forms
 
 - **File > New Form** writes an accessible form as a short `.qaf` text document, in the language of the QUILL Accessible Forms plugin (formerly BITS Accessible Forms).
 - **Tools > Forms > Fill It In Yourself** lets you tab through your own form as a visitor would, before anyone else sees it.
 - Check This Form, rules read as sentences in Format > Form Rules, and saving as a web page, Word, large print or braille-ready text. Publish and Responses work with sites running the plugin.
+- **Payments:** Insert Payment Field, Form Payments Setup and Verify Payment Setup prepare Stripe and PayPal fields, in test mode first. Publishing checks the site is ready, Test on Site refuses a live-payment form, and Responses show and export each payment. Checkout needs QAF payment contract version 1 on the site. Chapter 18 of the guide walks through it.
 
 ## Say or Type a Command
 

@@ -149,31 +149,23 @@ def test_a_token_github_does_not_confirm_is_never_saved(
 
 @pytest.fixture
 def workbench(monkeypatch):
-    """The Workbench's gates passed and its viewer recorded."""
-    # These pin the classic windows (Workbench Options, Use the classic GitHub
-    # windows); the Workbench, the default since Phase 6, is tested elsewhere.
-    monkeypatch.setenv("QUILL_GITHUB_WORKBENCH_WINDOW", "0")
+    """The Workbench's gates passed and its shared window was opened."""
     opened: list[object] = []
 
     class _Provider:
         def __init__(self, *, token=None) -> None:
+            self.token = token
             opened.append(("provider", token))
-
-        def close(self) -> None:
-            pass
-
-    class _Viewer:
-        def __init__(self, *_args, **_kwargs) -> None:
-            pass
-
-        def show(self) -> None:
-            opened.append("viewer")
 
     monkeypatch.setattr("quill.core.github.github_provider.require_pygithub", lambda: None)
     monkeypatch.setattr("quill.core.github.consent.load_github_consent_complete", lambda: True)
     monkeypatch.setattr("quill.core.github.local_repo.detect_github_repo", lambda _path: "")
     monkeypatch.setattr("quill.core.github.items_provider.GitHubItemsProvider", _Provider)
-    monkeypatch.setattr("quill.ui.github_items_dialog.GitHubItemsDialog", _Viewer)
+
+    def open_workbench(_editor, _provider, **_kwargs):
+        opened.append("viewer")
+
+    monkeypatch.setattr("quill.ui.github_workbench_window.open_github_workbench", open_workbench)
     return opened
 
 

@@ -78,6 +78,7 @@ class GitHubExploreNotificationsMixin:
         return bool(box is not None and box.GetValue())
 
     def _update_notification_controls(self) -> None:
+        self._write_waiting_labels()
         bar = getattr(self, "_notification_bar", None)
         if bar is None:
             return
@@ -178,7 +179,29 @@ class GitHubExploreNotificationsMixin:
         if index < 0 or note is None:
             return
         self._rows[index] = notification_row(note)
+        if index == self._list.GetSelection():
+            # Rewriting the selected row's text makes a screen reader read it
+            # again (JAWS twice), when you are still on it and asked for nothing.
+            # Its new words wait until you move off it; the details show them now.
+            waiting: set[str] = self.__dict__.setdefault("_labels_waiting", set())
+            waiting.add(key)
+            self._detail.SetValue(self._rows[index].detail)
+            return
         self._list.SetString(index, self._rows[index].label)
+
+    def _write_waiting_labels(self) -> None:
+        """Write the read rows' new words once the list has moved off them."""
+        waiting: set[str] = self.__dict__.get("_labels_waiting", set())
+        if not waiting or not dialog_alive(self.dialog):
+            return
+        selected = self._list.GetSelection()
+        for key in list(waiting):
+            index = self._row_index(key)
+            if index == selected:
+                continue
+            waiting.discard(key)
+            if 0 <= index < self._list.GetCount():
+                self._list.SetString(index, self._rows[index].label)
 
     def _seen_failed(self, message: str) -> None:
         if dialog_alive(self.dialog):

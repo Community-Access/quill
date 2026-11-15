@@ -45,13 +45,20 @@ class WordPressMoreCommands:
             return
         copy, profile = found
         copy = self.local.copy_for_path(self.host.current_path()) or copy
+        updating = False
+        if not publish and copy.remote_id and copy.status == "publish":
+            # Save Draft on a published item would take it off the site: ask, Update first.
+            kept = self._draft_of_published(copy)
+            if kept is None:
+                return
+            publish = updating = kept
         html, problems = self.to_html(copy)  # type: ignore[attr-defined]
         if problems:
             self.host.announce(
                 f"{len(problems)} lines could not be turned into blocks; Check Before "
                 f"Publishing lists them."
             )
-        if publish and not self._confirm_publish(copy, profile, html):
+        if publish and not updating and not self._confirm_publish(copy, profile, html):
             return
         api = self.api(profile)  # type: ignore[attr-defined]
 
@@ -90,6 +97,25 @@ class WordPressMoreCommands:
         )  # type: ignore[attr-defined]
         saved = wp.update_item(api, item) if copy.remote_id else wp.create_item(api, item)
         return "saved", saved
+
+    def _draft_of_published(self, copy: lc.WorkingCopy) -> bool | None:
+        """Save Draft on a published item: True updates it, False unpublishes, None cancels."""
+        kind = "page" if copy.kind == "page" else "post"
+        question = (
+            f"This {kind} is published. Save as a draft and take it off the site, or update "
+            f"the published {kind}?"
+        )
+        index = dlg.ask_choice(
+            self.host.parent,
+            self.host.show_modal,
+            title="Save Draft to Site",
+            prompt=f"{question} &Choose:",
+            rows=[f"Update the published {kind}", "Save as a draft and take it off the site"],
+            initial=0,
+            help_text=f"{question} Update keeps it on the site with your changes; a draft "
+            "is only seen by people who can edit it.",
+        )
+        return None if index is None else index == 0
 
     def _confirm_publish(self, copy: lc.WorkingCopy, profile: st.SiteProfile, html: str) -> bool:
         findings = chk.check_content(

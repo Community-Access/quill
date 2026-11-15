@@ -407,9 +407,9 @@ def main() -> int:
             "package wheelhouse for every on-demand engine (Kokoro, Faster "
             "Whisper, Vosk, MP3 support) -- installing any of them, and "
             "transcribing with whisper.cpp itself, needs zero network access "
-            "under a genuine Offline Edition build. Piper and Node.js have no "
-            "bundling mechanism yet and still require network on first use "
-            "even here (tracked gap). Also writes the quill/_offline_edition.py "
+            "under a genuine Offline Edition build. Node.js and the WordPress "
+            "Practice Site runtime are always bundled. Piper still needs its "
+            "separate offline staging path. Also writes the quill/_offline_edition.py "
             "marker (read by quill.build_info.is_offline_edition()) so the running "
             "app knows it IS the Offline Edition -- it suppresses the redundant "
             "Download action in Download Optional Components and shows each bundled "
@@ -519,6 +519,7 @@ def build_windows_distribution(
     effective_bundled_tools = dict(bundled_tool_dirs or {})
     # Optional tools may be staged explicitly when their IDs are supported.
     bundled_tools = _stage_bundled_tools(portable_dir, effective_bundled_tools)
+    bundled_tools.extend(_stage_practice_site_tools(portable_dir, resolved_source_root))
     # Kokoro is NO LONGER bundled by default (PRD 10.2.4 unbundle): fresh installs
     # download it on demand from QUILL's pinned, SHA-256-verified release asset, and
     # the runtime prefers the %APPDATA% copy. A build may still opt to stage a local
@@ -1327,10 +1328,8 @@ def build_inno_setup_script(
         "",
         "[Files]",
     ]
-    # Optional-component excludes. Node.js has no --nodejs-dir staging flag on this
-    # build script (it is not part of the offline-speech/braille bundle) and is
-    # excluded regardless of --bundle-offline (a Node-based Quillin still needs a
-    # separately installed Node.js either way; see quill/core/node_install.py).
+    # Node.js and WordPress Playground are bundled for the Workbench's fully
+    # local Practice Site.
     # The build-artifact/dev-only entries are excluded
     # either way, including DECtalk, whose redistribution rights are unconfirmed.
     # The remaining four (Pandoc, eSpeak-NG, whisper.cpp's binary and the braille
@@ -1350,7 +1349,7 @@ def build_inno_setup_script(
     # Edition. (tools\speech\piper\* stays excluded: that path is only ever a
     # legacy locally-staged binary; the offline bundle lives under
     # speech-models-bundled\piper and installs to user data on demand.)
-    _always_excluded = "docs\\QUILL-PRD.md,tools\\nodejs\\*,tools\\speech\\piper\\*,tools\\speech\\dectalk\\*,_tool-download\\*,_speech-download\\*,*\\__pycache__\\*"
+    _always_excluded = "docs\\QUILL-PRD.md,tools\\speech\\piper\\*,tools\\speech\\dectalk\\*,_tool-download\\*,_speech-download\\*,*\\__pycache__\\*"
     _optional_component_excludes = (
         "tools\\pandoc\\*,tools\\speech\\espeak-ng\\*,"
         "tools\\speech\\whispercpp\\*,vendor\\braille-pack\\*,kokoro-models\\*,"
@@ -2663,7 +2662,14 @@ def _stage_braille_pack(
 def _stage_bundled_tools(portable_dir: Path, bundled_tool_dirs: dict[str, Path]) -> list[str]:
     if not bundled_tool_dirs:
         return []
-    supported_tools = frozenset({"pandoc", "speech/espeak-ng", "speech/piper", "speech/whispercpp"})
+    supported_tools = frozenset({
+        "nodejs",
+        "wp-playground-cli",
+        "pandoc",
+        "speech/espeak-ng",
+        "speech/piper",
+        "speech/whispercpp",
+    })
     unsupported = sorted(set(bundled_tool_dirs) - supported_tools)
     if unsupported:
         raise RuntimeError(f"Unsupported bundled tool IDs: {', '.join(unsupported)}")
@@ -2677,6 +2683,43 @@ def _stage_bundled_tools(portable_dir: Path, bundled_tool_dirs: dict[str, Path])
         shutil.copytree(source, target, dirs_exist_ok=True)
         bundled.append(tool_id)
     return sorted(bundled)
+
+
+def _stage_practice_site_tools(portable_dir: Path, source_root: Path) -> list[str]:
+    """Bundle the pinned Node and WordPress Playground payload into QUILL."""
+    fetcher = source_root / "scripts" / "fetch_build_deps.py"
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(fetcher),
+            "--only",
+            "nodejs",
+            "--only",
+            "wp-playground-cli",
+        ],
+        cwd=source_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            "Could not stage the local WordPress Practice Site runtime:\n"
+            + (result.stderr or result.stdout)
+        )
+    deps_override = os.environ.get("QUILL_BUILD_DEPS_DIR", "").strip()
+    deps = Path(deps_override) if deps_override else source_root / "build" / "deps"
+    _stage_bundled_tools(
+        portable_dir,
+        {
+            "nodejs": deps / "nodejs",
+            "wp-playground-cli": deps / "wp-playground-cli",
+        },
+    )
+    print(
+        "Bundled Node.js, WordPress Playground, PHP.wasm and WordPress core for the Practice Site."
+    )
+    return ["nodejs", "wp-playground-cli"]
 
 
 def _stage_offline_extras(

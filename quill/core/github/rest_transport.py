@@ -220,6 +220,24 @@ __all__ = [
     "API_ROOT",
     "GitHubRestError",
     "RestResponse",
+    "is_already_exists",
     "request_json",
     "rest_failure_message",
 ]
+
+
+def is_already_exists(error: BaseException) -> bool:
+    """Whether *error* is GitHub's 422 for creating something that already exists.
+
+    GitHub answers New Label "bug" on a repository that has "bug" with a bare
+    422 whose ``errors`` say ``already_exists`` -- the person wanted the label,
+    and it is there, so callers use it rather than report a failure (GHManage
+    1.1.0 learned this first).
+    """
+    if not isinstance(error, GitHubRestError) or error.status != 422:
+        return False
+    data = error.data if isinstance(error.data, dict) else {}
+    rows = data.get("errors")
+    return isinstance(rows, list) and any(
+        isinstance(row, dict) and row.get("code") == "already_exists" for row in rows
+    )

@@ -1,0 +1,289 @@
+# Chapter 9: Moving and copying content
+
+## What this chapter covers
+
+Sooner or later you need your content somewhere else: on a new host, on a
+second site, in a spreadsheet, or safe on your own computer before a big
+change. Or you need the same change on many pages, or on all your sites.
+This chapter is about all of that.
+
+You will export a site as a WordPress export file and import one as drafts,
+copy posts and more to another of your sites, compare two sites, and take a
+snapshot and put it back. Then you will change a name everywhere it is used,
+make your sites agree with each other, and move lists in and out of
+spreadsheets.
+
+By the end you can move content between sites with a preview at every step,
+and nothing published by surprise.
+
+Everything here is in the WordPress Workbench. Chapter 2 explains how it
+moves.
+
+## Exporting a site as a WXR file
+
+A WXR file is WordPress's own export format, the file wp-admin makes under
+Tools > Export. Any WordPress site can import it. Use it when you move to a
+new host, or want a copy of your writing that is not tied to QUILL.
+
+1. In the Workbench, select the site you want, or anything on it.
+2. Choose **Tools > WXR Files > Export Site as WXR...**. The keys are Alt+T,
+   then W, then E.
+3. Under **Export**, choose what goes in the file:
+   - **Everything: posts, pages, patterns, other types, files, menus,
+     comments**;
+   - **Posts only**;
+   - **Pages only**;
+   - **Posts and pages in a date range...**, which asks for a **From** and a
+     **To** day, written as year-month-day such as `2026-01-31`. Leave From
+     empty to start at the first post, or To empty to end today. Both days
+     are included;
+   - **Posts in one category...**, which lists the site's categories, each
+     with how many posts it has.
+4. Choose where to save the file. QUILL adds `.xml` if you leave it off.
+
+QUILL reads the site and writes the file on this computer. A part of the site
+takes only the people, categories, tags and files its posts use, the same as
+WordPress's own exporter. Comments and menus go only with Everything.
+
+When it is done you hear how many of each kind went in, such as posts,
+pages, authors, terms and attachments, and whether the finished file passed
+its check. QUILL reads the file back to make sure it is a proper WXR file,
+such as "community-radio.xml is a well-formed WXR 1.2 file with 181 items."
+If it does not pass, the file is kept so you can look at it.
+
+A report then opens. It names the site and what you chose, what went in, the
+result of the check, and then what was left out and why. Some things only
+WordPress's own exporter can carry, such as custom fields the site keeps
+private, comment, term and user details, post passwords, and plugin
+settings. Lists and groups in custom fields are written as text.
+
+The file holds the address of each picture and file, not the files
+themselves, the same as a WXR from wp-admin. Keep the old site running until
+the new one has imported them.
+
+## Importing a WXR file as drafts
+
+This brings content from any WordPress site into one of yours. Everything
+arrives as a draft, so nothing is published until you say so.
+
+1. In the Workbench, select the site you are importing into, or anything on
+   it.
+2. Choose **Tools > WXR Files > Import WXR as Drafts...** (Alt+T, then W, then
+   I).
+3. Choose the WXR file.
+
+QUILL reads the file on this computer and matches it against your site:
+
+- **People.** Each author in the file is matched to a person on your site by
+  their username, then by their email. If some have no match, QUILL asks
+  **Give unmatched authors' items to:** and lists your site's people, with
+  you chosen. The question names who did not match.
+- **Categories, tags and other groupings** are matched by their slug, and
+  made where missing. Groupings your site does not have are left out, and
+  named.
+- **Posts, pages, synced patterns and your site's own kinds** come in, if
+  your site has that kind. Menu items, and kinds your site lacks, are left
+  out and counted.
+
+The preview opens. It names the file and the site it came from, says that
+everything is made as a draft and keeps its original date, and lists every
+author match, every new category or tag, and every item, one line each. Then
+what is left out. Press **Import as Drafts**.
+
+**Pictures and files.** If the export names files, QUILL asks about them
+next, under **Files**:
+
+- **Download the files from** the old site's address **and upload them** to
+  yours;
+- **Skip the files; the text keeps pointing at the old site**, which is
+  chosen for you.
+
+Downloading asks the named site for each file by the address in the export,
+over HTTPS, up to 64 MB each, sending no password. It names every host it
+will ask. Choose it only if you trust those addresses.
+
+QUILL then makes each item as a draft. It points pictures and files at the
+uploaded copies, links between the imported items at their new drafts, and
+the old site's address at yours. You hear, for example, "Imported 40 of 42
+items from export.xml into Community Radio as drafts, with 18 files." A
+report says what happened to each category, file and item.
+
+Changed your mind? Ctrl+Z moves the drafts it made to the Trash. Uploaded
+files and new categories and tags stay, and the report says so.
+
+Then open the drafts, read them over, and publish the ones you want.
+
+## Copying to another of your sites
+
+**Item > Copy to Site...** (`Ctrl+Shift+Y`) copies what you have selected to
+another of your sites: posts, pages, media, menus, categories and tags,
+synced patterns and forms.
+
+1. Select what to copy in any list.
+2. Press Ctrl+Shift+Y and choose the site to copy to.
+3. Read the preview. It says what will be made and what replaced, each
+   picture to upload, and anything left out.
+4. Press **Copy**.
+
+QUILL matches authors, categories, tags and menus by name, uploads the
+pictures a post needs or reuses ones already there, and rewrites links that
+point at the first site. New items are drafts on the other site. If anything
+did not copy, a report says what and why.
+
+In the editor, **File > WordPress > Send and Copy > Publish to Another
+Site...** does the same for the page you are writing (Chapter 3).
+
+## Comparing two sites
+
+**Site > Compare Sites...** (`Ctrl+Alt+K`) asks for another of your sites,
+then reports what differs between the two: posts, pages, synced patterns,
+categories, tags and menus, each by its slug. It also says what it does not
+compare. Nothing is changed.
+
+## Snapshots
+
+A snapshot is a copy of a site's content on this computer. Take one before
+a big change, and you can set things back if it goes wrong.
+
+**Taking a snapshot.**
+
+1. Select the site, or anything on it.
+2. Choose **Site > Take a Snapshot...** (`Ctrl+Alt+S`).
+3. Under **Save**, choose **Everything but the media files**, or
+   **Everything, with the media files too**.
+
+It saves every post, page, synced pattern, category, tag, menu, setting and
+media record. People, passwords, plugins, themes, revisions and comments are
+never saved. You hear what was saved, where, and what was left out.
+
+**Putting a site back.**
+
+1. Choose **Site > Put Back from a Snapshot...** (`Ctrl+Alt+Shift+S`).
+2. Under **Snapshot**, choose one. The newest is first.
+3. The preview lists every change. Press **Put Back**.
+
+Posts, pages, synced patterns, categories and tags changed since the snapshot
+are set back to it. WordPress keeps a revision of each post and page it
+changes, so even this can be undone from Previous Versions. Ones deleted
+since are made again as drafts, at new addresses. Menus, settings, people,
+plugins and media files are not put back.
+
+If the snapshot came from the Practice Site and you are putting it on a real
+site, QUILL asks you by name first.
+
+A snapshot is QUILL's own format. For a copy any WordPress can read, export a
+WXR file instead.
+
+## Changing a name everywhere it is used: By Name
+
+Each site's **By Name** branch lists the values your content uses, a place
+for each kind:
+
+- **Every Term**: every category, tag and other grouping;
+- **Field Values**: the values in custom fields;
+- **Authors**;
+- **Media Usage**: every file, and where it is used;
+- **Patterns Used**;
+- **Links**: every address your pages link to;
+- **Blocks and Shortcodes**;
+- **Forms Used**;
+- **Template Parts**.
+
+Enter on a row says **Where It Is Used**. The context menu also has:
+
+- **Rename Everywhere...**: a new name or value, wherever it is used;
+- **Split...**: move the items you choose to a new term, value or person,
+  and leave the rest;
+- **Merge Into...**: move every item to another term or value, and delete the
+  merged term;
+- **Reassign...**: move every item to another term or person, and keep this
+  one;
+- **Replace Everywhere...**: another file, pattern, link, shortcode or form,
+  in every page that uses this one;
+- **Find Items Missing This Field**, on a custom field: the posts and pages
+  with no value.
+
+Each is previewed item by item. Every item is read again before it is sent,
+and one that changed since the list was made is left alone. You hear how each
+item went, and each goes in Change History. Ctrl+Z undoes it where putting
+the old value back truly restores it. A merge deletes a term, so it says it
+is final.
+
+A template part's title can be renamed here, but not its slug, because
+templates find a part by its slug.
+
+## Across Sites
+
+**Go > Across Sites** (`Ctrl+0`) shows things your sites share, side by side:
+**Tags and Categories**, **Plugins**, **Themes**, **People**, **Settings**,
+**Menus**, **Synced Patterns** and **Application Passwords**. Each row says
+the versions in use and which sites are missing it.
+
+**Site > Across Sites Scope...** (`Ctrl+Alt+Y`) chooses every site, or one
+Site Set. **Site > Site Sets...** (`Ctrl+Alt+T`) names a set of your sites,
+such as "Branch sites".
+
+On a row:
+
+- **Make Them the Same...** asks which version wins, previews every site's
+  change, and says how each went. It covers categories and tags, plugins
+  (on or off), settings, people's roles, synced patterns, menus and themes.
+  WordPress cannot switch a theme from outside, so for a theme it opens each
+  site's Themes screen in your browser. A copied menu is final.
+- **Install on Sites Missing It...** installs a plugin from WordPress.org on
+  every site that lacks it, after a preview. For a theme, it opens each of
+  those sites' Add New screen.
+- **Promote to Network...** activates a plugin for every site of a multisite
+  network. It is only offered where the site says the plugin can be, and
+  WordPress refuses it unless you are a super admin.
+- **Revoke Everywhere...**, on an application password, revokes it on every
+  site that has it, after a preview. It cannot be undone.
+- **Compare Global Styles** shows each site's colours and font sizes, and
+  which differ.
+
+On Plugins, the rows also carry what WordPress.org says of each plugin, such
+as its rating and a warning for one that is closed or abandoned, once you
+have agreed to ask WordPress.org in that window.
+
+**Fleet**, under Across Sites, has a row for each site, with columns for its
+health, backups, security and updates. Each one says known, unknown,
+unavailable or stale. If a site stops answering, its last answer stays, with
+when it came. The Fleet only reads.
+
+## Lists in and out
+
+- **Edit > Export List...** (`Ctrl+Shift+X`) saves the list you are in as an
+  Excel file, a CSV file or a Markdown table.
+- **Edit > Import Posts from a Spreadsheet...** (`Ctrl+Shift+I`) makes posts
+  or pages from an Excel or CSV file. It matches the columns to WordPress's
+  fields and shows you the match first. Rows marked published or scheduled
+  come in as drafts, and you hear how each row went.
+- **Edit > Import a Folder of Documents...** (`Ctrl+Alt+Shift+I`) makes a
+  draft from each Markdown, text or Word file in a folder, previewed file by
+  file.
+- **Tools > Plain-Language Batch...** (`Ctrl+Alt+B`) lets you write a change in
+  words, such as `move all drafts by Sam to pending on Radio`, `add tag 2026
+  to posts in category Events on every site`, or `remove tag Old from all
+  published posts by Ann`. QUILL finds the exact items you meant. A name that
+  matches nothing is said, never guessed. Then it gives you a checklist of the
+  items. Uncheck anything that should not change, then send. It does not use
+  AI.
+
+In the editor, **File > WordPress > Send and Copy > Download My Writing...**
+saves every page and post to a folder as Markdown or Word, and **Send a
+Folder as Drafts...** does the reverse (Chapter 3).
+
+## Reading a whole site as one document
+
+**Site > Read Site as Document** (`Ctrl+Alt+D`) opens the site's published
+pages in the editor as one document: the whole site, one menu or one
+category. It starts with the site's address, what was read and when. It keeps
+headings, lists, links and alternative text, leaves out password-protected
+pages and counts them, and stops at 500 items, saying so. From there you can
+read it, search it, or save it in any format the editor writes.
+
+## Where to next
+
+- Previous: [Chapter 8: Running your site](wordpress-forms-08-running-your-site.html)
+- Next: [Chapter 10: Shop, events, SEO, memberships and redirects](wordpress-forms-10-shop-events-seo-memberships.html)
+- [Contents](wordpress-forms-guide.html)

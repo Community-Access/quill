@@ -169,7 +169,8 @@ def test_change_history_lists_changes_and_undoes_one(bench, monkeypatch) -> None
 
     _list_script(monkeypatch, steps)
     bench.run(f"{_P}change_history")
-    assert api.writes()[-1] == ("PATCH", "/repos/owner/repo/issues/1", {"labels": []})
+    # Undo takes off only the label it added, never replacing the whole set.
+    assert api.writes()[-1] == ("DELETE", "/repos/owner/repo/issues/1/labels/bug", None)
     assert ChangeLog.load().entries[-1].undone
 
 

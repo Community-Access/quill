@@ -603,5 +603,25 @@ def test_ctrl_3_ctrl_4_and_ctrl_8_are_free_everywhere_else() -> None:
         # An app may carry the chord only for the same family command (decision 14:
         # Ctrl+4 is Choose Your AI in Beacon too), never for something else.
         for app, table in APP_KEYMAPS.items():
+            if app in _GO_ROW_WINDOWS:
+                continue
             claimed = [c for c, k in table.items() if k == chord]
             assert claimed in ([], owners), (app, chord, claimed)
+
+
+#: Windows whose Ctrl+1 to Ctrl+0 are a Go row (GitHub Workbench PRD, the Go
+#: menu table), decided 2026-11-13: the Workbench has no AI menu, so the AI
+#: chords do nothing there, and a Go row with three holes in it would teach the
+#: digits wrongly. Comment at ``_GO`` in quill/core/github/workbench_window_menu.py.
+#: The WordPress Workbench's Go row (WordPress PRD Part C) is the same case: no
+#: AI menu, Calendar on Ctrl+3; comment at its Go menu in
+#: quill/core/wordpress/workbench_window_menu.py.
+_GO_ROW_WINDOWS = frozenset({"github_workbench", "wordpress_workbench"})
+
+
+def test_a_go_row_window_has_no_ai_commands_for_those_chords_to_lose() -> None:
+    """The exemption above holds only while the Workbench offers no AI command."""
+    from quill.core.app_keymaps import APP_KEYMAPS
+
+    for app in _GO_ROW_WINDOWS:
+        assert not [c for c in APP_KEYMAPS[app] if c.startswith("tools.hosted_ai")], app

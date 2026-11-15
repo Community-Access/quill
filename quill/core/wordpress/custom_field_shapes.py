@@ -3,7 +3,9 @@
 A registered meta key whose schema ``type`` is ``array`` is a list (speakers,
 a gallery's picture ids, a repeater's rows); ``object`` is a group of named
 fields (an address, a venue). WordPress stores and returns them as JSON, and
-takes them back the same way, replacing the whole value.
+takes them back the same way, replacing the whole value. The Workbench edits
+structured values in a labelled JSON field when the schema describes the
+shape, then validates and types nested values before saving.
 
 Three promises, which the tests hold:
 
@@ -26,6 +28,8 @@ Wx-free.
 
 from __future__ import annotations
 
+import json
+import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
@@ -42,6 +46,7 @@ __all__ = [
     "describe",
     "editable",
     "group_fields",
+    "json_editable",
     "item_sentence",
     "json_type",
     "move_item",
@@ -107,6 +112,24 @@ def editable(spec: Mapping[str, Any]) -> bool:
     return False
 
 
+def json_editable(spec: Mapping[str, Any]) -> bool:
+    """Whether the schema describes every nested value for JSON editing."""
+    shape = shape_of(spec)
+    if shape == "scalar":
+        return True
+    if shape == "list":
+        return json_editable(spec["items"])
+    if shape == "group":
+        properties = _props(spec)
+        additional = spec.get("additionalProperties")
+        return (
+            bool(properties)
+            and all(json_editable(value) for value in properties.values())
+            and (not isinstance(additional, dict) or json_editable(additional))
+        )
+    return False
+
+
 def _props(spec: Mapping[str, Any]) -> dict[str, Any]:
     props = spec.get("properties")
     return (
@@ -139,38 +162,148 @@ def coerce(spec: Mapping[str, Any], value: Any, label: str = "") -> Any:
 
     shape = shape_of(spec)
     kind = json_type(spec)
+    if shape in ("list", "group") and not isinstance(value, str):
+        expected = (list, tuple) if shape == "list" else Mapping
+        if not isinstance(value, expected):
+            # Not typed by the person: a value of a shape the schema does not
+            # describe is handed back unchanged, never invented or refused, so
+            # saving another field cannot be blocked by what the site holds.
+            return value
+    if shape in ("list", "group") and isinstance(value, str):
+        if not value.strip():
+            value = "[]" if shape == "list" else "{}"
+        try:
+            value = json.loads(value)
+        except ValueError as exc:
+            word = "JSON list" if shape == "list" else "JSON object"
+            raise FieldValueError(label or "This field", f"Enter a valid {word}.") from exc
     if shape == "list":
         if not isinstance(value, (list, tuple)):
-            return [] if value in (None, "") else value
+            raise FieldValueError(label or "This field", "Enter a list of values.")
+        minimum, maximum = spec.get("minItems"), spec.get("maxItems")
+        if isinstance(minimum, int) and len(value) < minimum:
+            raise FieldValueError(label or "This field", f"Enter at least {minimum} items.")
+        if isinstance(maximum, int) and len(value) > maximum:
+            raise FieldValueError(label or "This field", f"Enter no more than {maximum} items.")
+        if spec.get("uniqueItems") is True:
+            normalized = [json.dumps(item, sort_keys=True, ensure_ascii=False) for item in value]
+            if len(normalized) != len(set(normalized)):
+                raise FieldValueError(label or "This field", "Remove duplicate items.")
         return [coerce(spec["items"], item, label) for item in value]
     if shape == "group":
         if not isinstance(value, Mapping):
-            return value
+            raise FieldValueError(label or "This field", "Enter a JSON object.")
         props = _props(spec)
+        additional = spec.get("additionalProperties")
+        required = spec.get("required")
+        missing = (
+            [key for key in required if key not in value] if isinstance(required, list) else []
+        )
+        if missing:
+            raise FieldValueError(
+                label or "This field",
+                f"Include the required {', '.join(str(key) for key in missing)} field(s).",
+            )
+        minimum, maximum = spec.get("minProperties"), spec.get("maxProperties")
+        if isinstance(minimum, int) and len(value) < minimum:
+            raise FieldValueError(label or "This field", f"Include at least {minimum} fields.")
+        if isinstance(maximum, int) and len(value) > maximum:
+            raise FieldValueError(label or "This field", f"Include no more than {maximum} fields.")
         # Keys the schema does not name are carried through untouched.
         return {
-            key: coerce(props[key], item, label) if key in props else item
+            key: coerce(props[key], item, label)
+            if key in props
+            else coerce(additional, item, label)
+            if isinstance(additional, dict)
+            else item
             for key, item in value.items()
         }
     if kind == "boolean":
         if isinstance(value, str):
-            return value.strip().lower() in ("1", "true", "yes", "on", "checked")
-        return bool(value)
+            text = value.strip().lower()
+            if text not in (
+                "1",
+                "true",
+                "yes",
+                "on",
+                "checked",
+                "0",
+                "false",
+                "no",
+                "off",
+                "",
+            ):
+                raise FieldValueError(label or "This field", "Enter yes or no.")
+            value = text in ("1", "true", "yes", "on", "checked")
+        else:
+            value = bool(value)
+        _check_enum(spec, value, label)
+        return value
     if kind in ("integer", "number"):
         if isinstance(value, bool):
-            return int(value)
+            value = int(value)
         if isinstance(value, (int, float)):
-            return int(value) if kind == "integer" and float(value).is_integer() else value
-        text = "" if value is None else str(value).strip()
-        if not text:
-            return None
-        try:
-            return int(text) if kind == "integer" else float(text)
-        except ValueError as exc:
-            raise FieldValueError(label or "This field") from exc
+            if kind == "integer" and not float(value).is_integer():
+                raise FieldValueError(label or "This field", "Enter a whole number.")
+            value = int(value) if kind == "integer" else value
+        else:
+            text = "" if value is None else str(value).strip()
+            if not text:
+                return None
+            try:
+                value = int(text) if kind == "integer" else float(text)
+            except ValueError as exc:
+                word = "whole number" if kind == "integer" else "number"
+                raise FieldValueError(label or "This field", f"Enter a {word}.") from exc
+        if kind == "number" and not math.isfinite(float(value)):
+            raise FieldValueError(label or "This field", "Enter a finite number.")
+        minimum, maximum = spec.get("minimum"), spec.get("maximum")
+        exclusive_min = spec.get("exclusiveMinimum")
+        exclusive_max = spec.get("exclusiveMaximum")
+        if isinstance(minimum, (int, float)) and not isinstance(minimum, bool) and value < minimum:
+            raise FieldValueError(label or "This field", f"Enter a value of at least {minimum}.")
+        if isinstance(maximum, (int, float)) and not isinstance(maximum, bool) and value > maximum:
+            raise FieldValueError(
+                label or "This field", f"Enter a value no greater than {maximum}."
+            )
+        if (
+            isinstance(exclusive_min, (int, float))
+            and not isinstance(exclusive_min, bool)
+            and value <= exclusive_min
+        ):
+            raise FieldValueError(
+                label or "This field", f"Enter a value greater than {exclusive_min}."
+            )
+        if (
+            isinstance(exclusive_max, (int, float))
+            and not isinstance(exclusive_max, bool)
+            and value >= exclusive_max
+        ):
+            raise FieldValueError(
+                label or "This field", f"Enter a value less than {exclusive_max}."
+            )
+        _check_enum(spec, value, label)
+        return value
     if kind == "string":
-        return "" if value is None else str(value)
+        value = "" if value is None else str(value)
+        _check_enum(spec, value, label)
+        minimum, maximum = spec.get("minLength"), spec.get("maxLength")
+        if isinstance(minimum, int) and len(value) < minimum:
+            raise FieldValueError(label or "This field", f"Enter at least {minimum} characters.")
+        if isinstance(maximum, int) and len(value) > maximum:
+            raise FieldValueError(
+                label or "This field", f"Enter no more than {maximum} characters."
+            )
+        return value
     return value
+
+
+def _check_enum(spec: Mapping[str, Any], value: Any, label: str) -> None:
+    from quill.core.wordpress.custom_fields import FieldValueError
+
+    choices = spec.get("enum")
+    if isinstance(choices, list) and value not in choices:
+        raise FieldValueError(label or "This field", "Choose a value the site allows.")
 
 
 def _scalar_text(value: Any) -> str:

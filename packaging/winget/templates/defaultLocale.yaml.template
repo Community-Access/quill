@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.28.0.schema.json
+# Metadata is sourced from the product's official release and website.
+# Verify the URLs load before submitting any generated set.
+PackageIdentifier: ${PackageIdentifier}
+PackageVersion: ${PackageVersion}
+PackageLocale: en-US
+Publisher: Community Access
+PublisherUrl: https://quillforall.org/
+PublisherSupportUrl: https://github.com/Community-Access/quill/issues
+PrivacyUrl: https://quillforall.org/docs/privacy.html
+PackageName: ${PackageName}
+PackageUrl: ${PackageUrl}
+License: MIT
+LicenseUrl: ${LicenseUrl}
+ShortDescription: ${ShortDescription}
+Moniker: ${Moniker}
+Tags:
+  - accessible
+  - screen-reader
+  - ${Tag}
+ReleaseNotesUrl: ${ReleaseNotesUrl}
+ManifestType: defaultLocale
+ManifestVersion: 1.28.0

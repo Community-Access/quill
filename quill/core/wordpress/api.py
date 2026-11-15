@@ -33,6 +33,7 @@ from urllib.parse import quote, urlencode, urlparse
 from urllib.request import Request, urlopen
 
 from quill.core.error_codes import CodedError
+from quill.core.wordpress.workbench_practice import is_practice_address
 
 AuthKind = Literal["app_password", "bearer", "none"]
 
@@ -52,10 +53,14 @@ class WordPressApiError(CodedError):
 
     code = "QUILL-WORDPRESS-API-REQUEST"
 
-    def __init__(self, message: str, *, status: int = 0, wp_code: str = "") -> None:
+    def __init__(
+        self, message: str, *, status: int = 0, wp_code: str = "", body: Any = None
+    ) -> None:
         super().__init__(message)
         self.status = status
         self.wp_code = wp_code
+        self.body = body
+        """The refusal's decoded JSON, when it sent one (Gravity Forms' validation)."""
 
     @property
     def plain(self) -> str:
@@ -150,13 +155,18 @@ def route_url(address: SiteAddress, route: str, params: Mapping[str, object] | N
 
 
 def check_address(site_url: str) -> None:
-    """Refuse to send a password anywhere but HTTPS (or a loopback test site)."""
+    """Refuse to send a password anywhere but HTTPS (or the local Practice Site).
+
+    The one plain-HTTP exception is :func:`is_practice_address`: this
+    computer's loopback address on the Practice Site's own port. Any other
+    port, ``.localhost``/``.test`` name or LAN address still needs HTTPS.
+    """
     parsed = urlparse(site_url.strip())
     scheme = parsed.scheme.lower()
     host = (parsed.hostname or "").lower()
     if scheme == "https" and host:
         return
-    if scheme == "http" and _is_loopback(host):
+    if is_practice_address(site_url):
         return
     raise WordPressPolicyError(
         "QUILL only connects to WordPress sites over HTTPS, so your password is "
@@ -414,6 +424,7 @@ def plain_error(
 def _error_from_http(exc: HTTPError, *, method: str, site_name: str) -> WordPressApiError:
     wp_code = ""
     wp_message = ""
+    body: Any = None
     try:
         body = json.loads(exc.read().decode("utf-8", errors="replace") or "{}")
         if isinstance(body, dict):
@@ -424,7 +435,7 @@ def _error_from_http(exc: HTTPError, *, method: str, site_name: str) -> WordPres
     sentence = plain_error(
         status=exc.code, wp_code=wp_code, wp_message=wp_message, site_name=site_name, method=method
     )
-    return WordPressApiError(sentence, status=exc.code, wp_code=wp_code)
+    return WordPressApiError(sentence, status=exc.code, wp_code=wp_code, body=body)
 
 
 def _network_sentence(exc: BaseException, site_name: str) -> str:
@@ -504,14 +515,6 @@ def _context(url: str) -> ssl.SSLContext | None:
 
         return verified_ssl_context()
     return None
-
-
-def _is_loopback(host: str) -> bool:
-    return (
-        host in {"127.0.0.1", "::1", "[::1]", "localhost"}
-        or host.endswith(".localhost")
-        or host.endswith(".test")
-    )
 
 
 def _host(site_url: str) -> str:

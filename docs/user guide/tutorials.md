@@ -1,6 +1,6 @@
 # QUILL Tutorials
 
-Welcome. There are 45 short lessons here, about 236 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 49 short lessons here, about 262 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials...** in QUILL. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -52,6 +52,11 @@ The keys here are the ones QUILL comes with. If you have changed a key, the less
   - Check Before Publishing (5 minutes)
   - Go back to a previous version (5 minutes)
   - Answer comments (5 minutes)
+- **The WordPress Workbench, on the Practice Site**: Start a WordPress site on this computer, change a post there, read Change History, undo, and reset the site -- all with nothing real at stake.
+  - Start the Practice Site (6 minutes)
+  - Change a practice post, then undo it (6 minutes)
+  - Reset the Practice Site (4 minutes)
+  - Look after a site (10 minutes)
 - **Forms**: Start a form from a template, add questions and a rule, check it, fill it in yourself, save it in large print or braille, and publish it to your site and read the responses.
   - Start a form from a template (5 minutes)
   - Add questions (5 minutes)
@@ -1003,7 +1008,7 @@ Connect QUILL to a WordPress site with an application password, hear which role 
 7. **Learn the WordPress keys.** The WordPress key layer gives the commands one letter each. Press the layer key, let go, then press a letter. The six you will use most are O for Open Page or Post, P for Publish or Update, M for Media Library, S for Switch Site, W for Open by Web Address, or D for Save Draft to Site. Escape leaves the layer without doing anything.
    - Keys: Ctrl+Alt+Shift+Grave, then a letter
    - You should hear: Whatever the letter runs. After Escape, nothing at all.
-   - Worth knowing: The whole layer: G New Page, N New Post, O Open Page or Post, W Open by Web Address, L Open Local Draft, D Save Draft to Site, P Publish or Update, E Schedule Publish, I Open on Site, Y Copy Address, R Properties, V Previous Versions, C Compare with Site, T Move to Trash, S Switch Site, Shift+S Sites, A Connect a Site, M Media Library, B WordPress Blocks, K Check Before Publishing, U Upload Files, X Alt Text Review. Every WordPress command is also in the Command Palette: type WordPress, or part of the command's name.
+   - Worth knowing: The whole layer: G New Page, N New Post, O Open Page or Post, W Open by Web Address, L Open Local Draft, D Save Draft to Site, P Publish or Update, E Schedule Publish, I Open on Site, Y Copy Address, R Properties, V Previous Versions, C Compare with Site, T Move to Trash, S Switch Site, Shift+S Sites, A Connect a Site, M Media Library, B WordPress Blocks, K Check Before Publishing, U Upload Files, X Alt Text Review, H Open WordPress Workbench, Shift+H This Post in the Workbench. Every WordPress command is also in the Command Palette: type WordPress, or part of the command's name.
 
 You are connected, and the site has told you what your account may do. Next, write something and send it.
 
@@ -1188,6 +1193,134 @@ Hear the comments waiting for you, reply to one, approve it, and deal with the s
    - You should hear: Comments: Spam, and the comments in it.
 
 Waiting Count on First Use, in the same window, has the number of waiting comments said to you the first time you use the site in a session, so they never pile up unnoticed.
+
+## The WordPress Workbench, on the Practice Site
+
+Start a WordPress site on this computer, change a post there, read Change History, undo, and reset the site -- all with nothing real at stake.
+
+### Start the Practice Site
+
+Start a WordPress site on this computer and connect the Workbench to it, so the next lessons have somewhere safe to work.
+
+*5 steps, about 6 minutes.*
+
+1. **Know where you will be working.** The Practice Site is a whole WordPress that runs on this computer only, at http://127.0.0.1:9400. Nobody else can see it, and nothing you do there reaches any of your real sites. Every lesson in this track works there and nowhere else.
+   - Worth knowing: The Workbench labels it as practice wherever its name appears, and asks you by name before anything from it could go to a real site.
+
+2. **Open the WordPress Workbench.** The Workbench is the window for everything on your WordPress sites. Open it from the editor's WordPress menu.
+   - Keys: Ctrl+Alt+Shift+Grave, H
+   - You should hear: WordPress Workbench, and the tree of your sites.
+
+3. **Open Practice Site.** In the Workbench's Tools menu, choose Practice Site. It is one short list of what you can do with the site right now.
+   - Keys: Ctrl+Alt+P
+   - You should hear: Practice Site, and Start the Practice Site.
+
+4. **Start it.** Choose Start the Practice Site and press Enter. The first start builds a fresh WordPress with a welcome page, a first post and a draft, so give it two or three minutes. Later starts take under a minute.
+   - Keys: Enter
+   - You should hear: The Practice Site is running at http://127.0.0.1:9400. Connect it in a moment.
+   - Worth knowing: If something else on this computer is using its port, it says so and does not start. Stop the other copy first.
+
+5. **Connect it.** Open Practice Site again and choose Connect It as Practice Site. The site made a one-time password for QUILL when it started; the Workbench keeps it in Windows Credential Manager, so you type nothing.
+   - Keys: Ctrl+Alt+P
+   - You should hear: Practice Site is connected. It is under Sites.
+
+The Practice Site is now one of your sites in the tree. It stays there, with everything you do to it, until you reset it.
+
+Next: Change a practice post, then undo it.
+
+### Change a practice post, then undo it
+
+Open a post on the Practice Site, change its title, find the change in Change History, and put it back.
+
+*6 steps, about 6 minutes.*
+
+1. **Move to the Practice Site.** In the tree, arrow to Sites and then to Practice Site. Doing this first makes the Practice Site the current site, so every later step works there.
+   - Keys: Up, Down
+   - You should hear: Practice Site, and the tree level it is on.
+
+2. **Go to its posts.** Go to Posts lists the current site's posts in the list beside the tree. Because you moved to the Practice Site, these are its posts.
+   - Keys: Ctrl+Shift+1
+   - You should hear: A First Practice Post, Hello world, and My Next Practice Story.
+
+3. **Open A First Practice Post's Properties.** Arrow to A First Practice Post and open Properties. Everything about the post is on one sheet, one field at a time.
+   - Keys: Alt+Enter
+   - You should hear: A First Practice Post Properties, on its title.
+
+4. **Change the title.** Add the word Practised to the end of the title and choose OK. The Workbench shows you what it is about to send, and sends it only when you say yes.
+   - Keys: End, Enter
+   - You should hear: What will change, then the list again with the new title.
+
+5. **Read Change History.** Change History lists every change made in the Workbench this session, newest first, and says which ones can be undone.
+   - Keys: Ctrl+Shift+H
+   - You should hear: Change History, with your title change first.
+
+6. **Undo it.** Close Change History and, from the list, undo the last WordPress change. The Workbench puts the old title back on the site.
+   - Keys: Ctrl+Z
+   - You should hear: The undo said in words, and the list with the old title.
+   - Worth knowing: Undo works in the list, not in the filter box, where it edits the text.
+
+That is the whole loop the Workbench uses everywhere: look, change with a preview, find it in Change History, and undo it if you need to.
+
+Next: Reset the Practice Site.
+
+### Reset the Practice Site
+
+Stop the Practice Site and put it back as new, knowing exactly what a reset removes and what it leaves alone.
+
+*3 steps, about 4 minutes.*
+
+1. **Stop it.** Open Practice Site and choose Stop the Practice Site. Stopping keeps everything on it for next time; it only ends the server.
+   - Keys: Ctrl+Alt+P
+   - You should hear: The practice site has stopped.
+
+2. **Choose Reset.** Open Practice Site again and choose Reset the Practice Site. Read the question to the end before answering: it lists what is removed.
+   - Keys: Ctrl+Alt+P
+   - You should hear: Reset the Practice Site, and that it permanently deletes everything on it and cannot be undone.
+   - Worth knowing: Reset removes the posts, pages, uploads and settings on the Practice Site, its connection, and its stored password. Your real sites are not touched.
+
+3. **Answer Reset.** Choose Reset. The default answer is Cancel, so pressing Enter by habit does nothing.
+   - You should hear: The practice site is new again. Start it to use it.
+
+Start it again whenever you want a clean site to practise on; the first lesson in this track walks you through it.
+
+### Look after a site
+
+Read how the site is doing, bring back a lost menu item, check its people, its health, its fonts and its widgets, and move big files and Word documents in and out, all on the Practice Site.
+
+*8 steps, about 10 minutes.*
+
+1. **Open the WordPress Workbench.** Open the Workbench and move to the Practice Site under Sites. Everything in this lesson happens there.
+   - Keys: Ctrl+Alt+Shift+Grave, H
+   - You should hear: WordPress Workbench, and the tree of your sites.
+
+2. **Read At a Glance.** Open Overview with Right Arrow, then At a Glance. Each row is one sentence: posts and pages by status, comments waiting, the people, WordPress's version and the theme.
+   - Keys: Right
+   - You should hear: Posts, then how many are published, drafts and scheduled.
+   - Worth knowing: A count your role may not see is left out rather than said as zero.
+
+3. **Find what is only in wp-admin.** Open wp-admin Screens, under Overview. Each row is a wp-admin screen, the place in the Workbench nearest to it, and how much of it the Workbench does. Enter says why and opens it in your browser.
+   - Keys: Enter
+   - You should hear: Settings > Permalinks, Only in wp-admin.
+
+4. **Bring back a menu item.** Open Menus and Navigation and choose a menu. Its context menu, Shift+F10, has Earlier Versions, which brings back items removed since QUILL first read the menu, after a preview. Ctrl+Z takes them out again.
+   - Keys: Shift+F10
+   - You should hear: Earlier Versions of the menu, newest first.
+
+5. **Check the people and the site's health.** Open People, then Users, to hear each person and their role; then Site Health, where WordPress's own checks are listed worst first.
+   - You should hear: Each person's name, username and role.
+
+6. **Hear the fonts and the widgets.** Under Appearance, Fonts lists the fonts the site has installed, and Widgets and Sidebars lists each widget area. On an area, Shift+F10 has Add a Widget, which offers every kind of widget the site has, and Preview Widgets, the area as a visitor sees it.
+   - Keys: Shift+F10
+   - You should hear: Each widget, then what a visitor sees of it.
+   - Worth knowing: A block theme has no widget areas; its header and footer are templates.
+
+7. **Upload a big file.** Back in the editor, Upload a Large File first says how much space the site already uses beside the file's size, then asks for its title, caption and description once it is there.
+   - You should hear: Upload, the file's size, and what the site already uses.
+
+8. **Download your writing as Word.** Download My Writing asks whether each page and post should be a Markdown file or a Word document. Send a Folder as Drafts reads Word documents too, so a folder can go back as drafts.
+   - You should hear: Save each page and post as: Markdown files, or Word documents.
+
+You can now look after a site the way wp-admin does, and know where wp-admin is still the place. Reset the Practice Site whenever you want to start fresh.
 
 ## Forms
 
@@ -1391,6 +1524,7 @@ Publish your form to a WordPress site running QUILL Accessible Forms, put it on 
    - You should hear: "Opened" the page's name "on" your site, "where the form is."
 
 6. **Read what people sent.** Choose Responses, in Tools, Forms. With your published form in front it goes straight to that form's responses, newest first. Press Enter on one to read it, a question and its answer a line.
+   - Keys: Ctrl+Alt+Shift+Grave, F
    - You should hear: Responses to Ask us anything, and each response: its number, when it was sent, and who sent it.
    - Worth knowing: Responses are people's personal details. They are read only while this window is open and saved only where you choose, with Export to CSV or Export to Word.
 

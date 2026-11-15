@@ -25,4 +25,33 @@ GITHUB_ENTRIES: dict[str, str] = {
     "core/github/conditional_requests.py::save": "cache",
     # A one-time marker written while moving saved items to per-account files.
     "core/github/saved_items.py::load": "marker",
+    # --- the GitHub Workbench (2026-11-10). All four go through write_json_atomic.
+    # Change History: every write the Workbench made, schema-stamped. Each entry
+    # names its account and is kept 90 days (pruned on load and on save, and
+    # clearable at once); before and after values pass the known-secret and
+    # token redaction, and secret fields are never logged at all.
+    "core/github/change_log.py::save": "versioned",
+    # Where the Workbench window was (last node, expanded nodes, open
+    # repositories and people), under each account's key in the same resume
+    # file as navigation_state.save; capped per account and in accounts kept.
+    # No token or content, only node paths; losing it costs a re-navigation.
+    "core/github/navigation_state.py::save_workbench_place": "cache",
+    # Each account's chosen Workbench access (Read Only, Organize, Full),
+    # schema-stamped and keyed by account login. A level, never a token; kept
+    # until the person changes it, and an unreadable file reads as the default.
+    "core/github/permissions.py::set": "versioned",
+    # Workbench Options (github_workbench.json): schema-stamped, coerced field
+    # by field on read. Preferences only, the same for every account; no secret.
+    "core/github/workbench_prefs.py::save_prefs": "versioned",
+    # Watches (PRD 22.5): each account's watch rules and what each last saw
+    # (ids of runs, reviews, releases and comments, capped), schema-stamped,
+    # keyed by account; no token, no content. Losing it loses the rules.
+    "core/github/watches.py::save": "versioned",
+    # The API Console's saved requests (PRD 22.2), per account, schema-stamped:
+    # a name, a method, a path and a body the person typed. No token.
+    "core/github/api_console.py::save": "versioned",
+    # Repository Sets (Across Repositories, PRD 22.11): per account, version
+    # stamped; names, owner/name lists and filter text only, never a token or
+    # fetched content. Losing it costs choosing the repositories again.
+    "core/github/repository_sets.py::save": "versioned",
 }

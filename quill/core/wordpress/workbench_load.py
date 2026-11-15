@@ -35,6 +35,7 @@ from quill.core.wordpress.workbench_rows import (
     tree_order,
     user_row,
 )
+from quill.core.wordpress.workbench_type_nodes import split_type
 
 __all__ = ["MAX_PAGES", "PER_PAGE", "SiteContext", "load", "page_params"]
 
@@ -159,6 +160,11 @@ def _simple(
     )
 
 
+#: Said in each plugin and theme row, before anyone acts (workbench_no_rest).
+_PLUGIN_NOTE = " Updates and automatic updates are in wp-admin: Open in Dashboard."
+_THEME_NOTE = " REST only reads themes: Activate and Open in Dashboard go to wp-admin."
+
+
 def load_plugins(ctx: SiteContext) -> list[WbRow]:
     raw = ctx.api.get("wp/v2/plugins", context="edit")
     rows: list[WbRow] = []
@@ -178,7 +184,7 @@ def load_plugins(ctx: SiteContext) -> list[WbRow]:
                     "status": state.replace("-", " "),
                     "author": plugin.author,
                 },
-                plugin.spoken() + ".",
+                plugin.spoken() + "." + _PLUGIN_NOTE,
                 route=f"wp/v2/plugins/{plugin.plugin}",
                 status=state,
                 raw=r,
@@ -202,7 +208,7 @@ def load_themes(ctx: SiteContext) -> list[WbRow]:
                 "theme",
                 str(r.get("stylesheet", "")),
                 {"theme": name, "version": version, "status": state},
-                f"{name}, version {version}, {state}.",
+                f"{name}, version {version}, {state}.{_THEME_NOTE}",
                 route=f"wp/v2/themes/{r.get('stylesheet', '')}",
                 status=state,
                 raw=r,
@@ -241,16 +247,21 @@ def load_app_passwords(ctx: SiteContext) -> list[WbRow]:
 
 
 def load_settings(ctx: SiteContext) -> list[WbRow]:
+    from quill.core.wordpress.workbench_settings_help import explain, page_names
+
     settings = admin.load_settings(ctx.api)
+    pages = page_names(ctx.api, settings)  # the front and posts pages, by title (D2)
+    titles = {number: title for number, (title, _link) in pages.items()}
     rows = []
-    for index, (key, label, text) in enumerate(admin.settings_rows(settings, {})):
+    for index, (key, label, text) in enumerate(admin.settings_rows(settings, titles)):
+        said = explain(key, settings, pages=pages, site_url=ctx.url)
         rows.append(
             _simple(
                 ctx,
                 "setting",
                 key,
                 {"setting": label, "value": text},
-                f"{label}: {text}.",
+                f"{label}: {text}." + (f" {said}" if said else ""),
                 route="wp/v2/settings",
                 subkind=str(index),
                 raw={"key": key, "value": settings.get(key)},
@@ -281,201 +292,6 @@ def load_health(ctx: SiteContext) -> list[WbRow]:
         )
         for index, line in enumerate(lines)
     ]
-
-
-def load_types(ctx: SiteContext) -> list[WbRow]:
-    return [
-        _simple(
-            ctx,
-            "writing_type",
-            t.kind,
-            {"type": t.name, "route": kind_route(t.kind), "taxonomies": ", ".join(t.taxonomies)},
-            f"{t.name}: the site's own content type, at {kind_route(t.kind)}.",
-            subkind=t.slug,
-        )
-        for t in stypes.discover_writing_types(ctx.api)
-    ]
-
-
-def load_taxonomies(ctx: SiteContext) -> list[WbRow]:
-    return [
-        _simple(
-            ctx,
-            "taxonomy",
-            t.slug,
-            {"taxonomy": t.name, "route": t.route, "types": ", ".join(t.types)},
-            f"{t.name}, for {', '.join(t.types) or 'no type'}, at {t.route}.",
-            subkind=t.slug,
-        )
-        for t in tx.discover_taxonomies(ctx.api).values()
-        if t.slug not in ("category", "post_tag", "nav_menu", "wp_pattern_category")
-    ]
-
-
-def _titled(raw: Mapping[str, Any]) -> str:
-    return rendered(raw.get("title")) or str(raw.get("slug", "") or raw.get("id", ""))
-
-
-def load_templates(ctx: SiteContext, which: str) -> list[WbRow]:
-    route = "wp/v2/templates" if which == "wp_template" else "wp/v2/template-parts"
-    rows = []
-    for r in _collect(ctx.api, route, page_params()):
-        title = _titled(r)
-        source = "customized" if r.get("source") == "custom" else "from the theme"
-        rows.append(
-            _simple(
-                ctx,
-                "template",
-                str(r.get("id", "")),
-                {"title": title, "source": source, "slug": str(r.get("slug", ""))},
-                f"{title}, {source}.",
-                route=f"{route}/{r.get('id', '')}",
-                subkind=which,
-                raw=r,
-            )
-        )
-    return rows
-
-
-def load_patterns(ctx: SiteContext, query: Mapping[str, object]) -> list[WbRow]:
-    rows = []
-    for r in _collect(ctx.api, "wp/v2/blocks", page_params(query)):
-        title = _titled(r)
-        status = str(r.get("status", ""))
-        rows.append(
-            _simple(
-                ctx,
-                "pattern",
-                str(r.get("id", "")),
-                {
-                    "title": title,
-                    "status": status,
-                    "modified": friendly_date(str(r.get("modified_gmt", "") or "")),
-                },
-                f"{title}, a synced pattern, {status}.",
-                route=f"wp/v2/blocks/{r.get('id', '')}",
-                status=status,
-                raw=r,
-            )
-        )
-    return rows
-
-
-def load_fonts(ctx: SiteContext) -> list[WbRow]:
-    rows = []
-    for r in _collect(ctx.api, "wp/v2/font-families", page_params()):
-        settings = r.get("font_family_settings") if isinstance(r, dict) else {}
-        settings = settings if isinstance(settings, dict) else {}
-        name = str(settings.get("name", "") or r.get("id", ""))
-        rows.append(
-            _simple(
-                ctx,
-                "font",
-                str(r.get("id", "")),
-                {"family": name, "slug": str(settings.get("slug", ""))},
-                f"{name}, a font family installed on the site.",
-                route=f"wp/v2/font-families/{r.get('id', '')}",
-                raw=r,
-            )
-        )
-    return rows
-
-
-def load_sidebars(ctx: SiteContext) -> list[WbRow]:
-    raw = ctx.api.get("wp/v2/sidebars", context="edit")
-    rows = []
-    for r in raw if isinstance(raw, list) else []:
-        if not isinstance(r, dict):
-            continue
-        name = str(r.get("name", "") or r.get("id", ""))
-        count = len(r.get("widgets", []) or [])
-        rows.append(
-            _simple(
-                ctx,
-                "sidebar",
-                str(r.get("id", "")),
-                {"sidebar": name, "widgets": str(count), "status": str(r.get("status", ""))},
-                f"{name}, {count} widgets.",
-                route=f"wp/v2/sidebars/{r.get('id', '')}",
-                raw=r,
-            )
-        )
-    return rows
-
-
-def load_menus(ctx: SiteContext) -> list[WbRow]:
-    rows = []
-    for r in _collect(ctx.api, "wp/v2/menus", page_params()):
-        name = rendered(r.get("name")) or str(r.get("name", ""))
-        places = ", ".join(str(p) for p in r.get("locations", []) or []) or "none"
-        rows.append(
-            _simple(
-                ctx,
-                "menu",
-                str(r.get("id", "")),
-                {"menu": name, "locations": places, "items": ""},
-                f"{name}, shown in: {places}.",
-                route=f"wp/v2/menus/{r.get('id', '')}",
-                raw=r,
-            )
-        )
-    return rows
-
-
-def load_abilities(ctx: SiteContext) -> list[WbRow]:
-    from quill.core.wordpress.abilities import list_abilities
-
-    return [
-        _simple(
-            ctx,
-            "ability",
-            a.name,
-            {"ability": a.label, "category": a.category, "says": a.description},
-            f"{a.label}: {a.description}",
-            raw={"name": a.name, "readonly": a.readonly, "destructive": a.destructive},
-        )
-        for a in list_abilities(ctx.api)
-    ]
-
-
-def load_namespaces(ctx: SiteContext) -> list[WbRow]:
-    from quill.core.wordpress.workbench_discovered import namespace_rows
-
-    info = ctx.info
-    if info is None:
-        return []
-    return namespace_rows(ctx.name, info.namespaces, info.routes)
-
-
-def index_routes(ctx: SiteContext) -> dict[str, list[str]]:
-    """Every route of the site's index with its methods (one request for the index)."""
-    raw = ctx.api.get("")
-    routes = raw.get("routes") if isinstance(raw, dict) else None
-    found: dict[str, list[str]] = {}
-    for route, info in (routes or {}).items() if isinstance(routes, dict) else ():
-        methods: list[str] = []
-        if isinstance(info, dict):
-            if isinstance(info.get("methods"), list):
-                methods = [str(m) for m in info["methods"]]
-            for endpoint in info.get("endpoints") or []:
-                if isinstance(endpoint, dict):
-                    methods += [str(m) for m in endpoint.get("methods") or [] if m not in methods]
-        found[str(route)] = sorted(set(methods), key=methods.index)
-    return found
-
-
-def load_routes(ctx: SiteContext, namespace: str) -> list[WbRow]:
-    from quill.core.wordpress.workbench_discovered import route_rows
-
-    namespaces = ctx.info.namespaces if ctx.info is not None else (namespace,)
-    return route_rows(ctx.name, namespace, namespaces, index_routes(ctx))
-
-
-def load_model(ctx: SiteContext) -> list[WbRow]:
-    from quill.core.wordpress.workbench_discovered import model_rows
-
-    namespaces = ctx.info.namespaces if ctx.info is not None else ()
-    return model_rows(ctx.api, ctx.name, namespaces=namespaces)
 
 
 def overview(ctx: SiteContext) -> list[WbRow]:
@@ -510,20 +326,41 @@ def load(
 ) -> list[WbRow]:
     """The rows for one site node. *dynamic* is a dynamic node's kind or taxonomy."""
     family, _sep, what = loader.partition(":")
-    if family == "items":
-        return load_items(ctx, dynamic if what == "custom" else what, preset, query)
+    if family == "items":  # a custom type's status node narrows by its status
+        kind, status = split_type(dynamic) if what == "custom" else (what, "")
+        return load_items(ctx, kind, {**preset, "status": status} if status else preset, query)
     if family == "terms":
         return load_terms(ctx, dynamic if what == "custom" else what, query)
     if family == "media":
         return load_media(ctx, what, query)
     if family == "comments":
         return load_comments(ctx, what, query)
+    if family in ("shop", "podcast", "events", "seo"):  # plugins' own routes, and episodes
+        from quill.core.wordpress.workbench_shop import load_shop
+
+        return load_shop(ctx, family, what, {**preset, **query})
+    from quill.core.wordpress.workbench_load_structure import (
+        load_abilities,
+        load_fonts,
+        load_global_styles,
+        load_menus,
+        load_model,
+        load_namespaces,
+        load_patterns,
+        load_routes,
+        load_sidebars,
+        load_taxonomies,
+        load_templates,
+        load_types,
+    )
+
     simple: dict[str, Any] = {
         "users": lambda: load_users(ctx, query),
         "plugins": lambda: load_plugins(ctx),
         "themes": lambda: load_themes(ctx),
         "app_passwords": lambda: load_app_passwords(ctx),
         "settings": lambda: load_settings(ctx),
+        "global_styles": lambda: load_global_styles(ctx),
         "health": lambda: load_health(ctx),
         "types": lambda: load_types(ctx),
         "taxonomies": lambda: load_taxonomies(ctx),
@@ -539,10 +376,36 @@ def load(
         "model": lambda: load_model(ctx),
         "site": lambda: overview(ctx),
     }
+    if family == "forms" and what in ("feeds", "results"):
+        from quill.core.wordpress import workbench_gravity as gravity
+        from quill.core.wordpress.workbench_forms import form_plugins
+
+        if "gravity" not in form_plugins(ctx):
+            raise WordPressApiError(
+                f"{ctx.name} does not list Gravity Forms in its REST index, so it has no "
+                "add-on feeds or results QUILL can read."
+            )
+        return gravity.load_feeds(ctx) if what == "feeds" else gravity.load_results(ctx)
     if family == "forms":
         from quill.core.wordpress.workbench_forms import load_forms
 
         return load_forms(ctx, what)
+    if family == "health" and what in ("info", "security"):
+        from quill.core.wordpress.workbench_health_info import info_rows, security_rows
+
+        return info_rows(ctx) if what == "info" else security_rows(ctx)
+    if family == "dashboard":  # At a Glance, Activity, wp-admin Screens (9.18, 6 and 14)
+        from quill.core.wordpress.workbench_dashboard import load_dashboard
+
+        return load_dashboard(ctx, what)
+    if family == "site_editor":  # Additional CSS (9.18, 7)
+        from quill.core.wordpress.workbench_site_editor import css_rows
+
+        return css_rows(ctx.name, ctx.url, ctx.api)
+    if family == "pmpro":
+        from quill.core.wordpress.workbench_pmpro import load_pmpro
+
+        return load_pmpro(ctx, what)
     found = simple.get(family)
     if found is None:
         raise WordPressApiError(f"The Workbench does not know how to load {loader}.")

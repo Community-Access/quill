@@ -35,7 +35,8 @@ def item(item_id: int, filename: str, mime: str, title: str = "") -> MediaItem:
 
 def test_https_streams_and_plain_http_does_not() -> None:
     assert mp.stream_problem(f"{UPLOADS}/tone.wav") == ""
-    assert mp.stream_problem("http://wp.test/tone.wav") == ""  # a loopback test site
+    assert mp.stream_problem("http://127.0.0.1:9400/tone.wav") == ""  # the Practice Site
+    assert mp.stream_problem("http://wp.test/tone.wav") != ""  # plain HTTP elsewhere
     assert "not HTTPS" in mp.stream_problem("http://radio.example/tone.wav")
     assert "no web address" in mp.stream_problem("")
 

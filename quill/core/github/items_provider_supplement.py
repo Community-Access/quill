@@ -188,6 +188,11 @@ class GitHubItemsSupplementMixin:
         except Exception as exc:  # noqa: BLE001 - template errors stay visible
             raise GitHubItemsError(f"Could not load issue templates: {exc}") from exc
 
+    def template_repository(self: _RepositoryAccess, full_name: str) -> Any:
+        """The repository object Repository > Templates reads and saves through
+        (quill.core.github.template_catalog and template_save)."""
+        return self._repo(full_name)
+
     def fetch_security_alerts(
         self: _RepositoryAccess,
         full_name: str,

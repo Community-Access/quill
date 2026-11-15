@@ -77,7 +77,7 @@ def test_every_kind_has_its_own_rows_with_where_it_is_used() -> None:
     assert values["media_usage"]["logo.png"].cell("used") == "used on 1 pages"
     assert values["media_usage"]["big.mp3"].cell("used") == "not used anywhere"
     assert "Footer" in values["patterns"]
-    assert "https://old.example.org" in values["links"]
+    assert list(values["links"]).count("https://old.example.org") == 1
     assert "paragraph block" in values["blocks"] and "[gallery] shortcode" in values["blocks"]
 
 
@@ -125,7 +125,93 @@ def test_privacy_points_to_wp_admin_and_redirects_wait_for_their_plugin() -> Non
         "https://r.example/wp-admin/erase-personal-data.php",
     ]
     assert not redirect_offered(["wp/v2"]) and redirect_offered(["redirection/v1"])
-    body = redirect_body("https://r.example/old-name/", "https://r.example/new-name/")
+    body = redirect_body("https://r.example/old-name/", "https://r.example/new-name/", 7)
+    assert body["group_id"] == 7
     assert body["url"] == "/old-name/" and body["action_data"] == {
         "url": "https://r.example/new-name/"
     }
+
+
+# -- a list the site will not give is never an empty list (complete.md 8) ------------
+
+
+class _Refusing:
+    """A site that answers every list but those in *refuse*, which it refuses."""
+
+    def __init__(self, refuse: set[str], answers: dict[str, list] | None = None) -> None:
+        self.refuse = refuse
+        self.answers = answers or {}
+
+    def _check(self, route: str) -> None:
+        from quill.core.wordpress.api import WordPressApiError
+
+        if route in self.refuse:
+            raise WordPressApiError("The site had a critical error.", status=500)
+
+    def iter_collection(self, route, params=None, **_kw):
+        self._check(route)
+        return iter(self.answers.get(route, []))
+
+    def get(self, route, **_params):
+        self._check(route)
+        return self.answers.get(route, [] if route != "wp/v2/taxonomies" else {})
+
+
+def test_a_refused_list_in_the_scan_surfaces_in_the_by_name_rows_and_preview() -> None:
+    from quill.core.wordpress.workbench_across import scan_site
+    from quill.core.wordpress.workbench_by_name import unread_preview
+
+    posts = [
+        {
+            "id": 1,
+            "type": "post",
+            "status": "publish",
+            "title": {"raw": "Hi"},
+            "content": {"raw": "[gallery]"},
+        }
+    ]
+    api = _Refusing({"wp/v2/pages"}, {"wp/v2/posts": posts})
+    scan = scan_site(api, "Radio", pages=1)  # type: ignore[arg-type]
+    assert scan.unread == ["wp/v2/pages: The site had a critical error."]
+    rows = kind_rows(scan, "blocks")
+    assert rows[0].kind == "unread"
+    assert "could not read wp/v2/pages" in rows[0].detail
+    assert any(r.key == "[gallery] shortcode" for r in rows[1:])
+    note, lines = unread_preview(scan, "blocks")
+    assert "On Radio, QUILL could not read wp/v2/pages" in note
+    assert lines == ["Not read on Radio: wp/v2/pages: The site had a critical error."]
+
+
+def test_a_refused_list_only_shows_where_the_kind_depends_on_it() -> None:
+    scan = _scan()
+    scan.unread = ["wp/v2/users: Sorry, you are not allowed to list users."]
+    assert kind_rows(scan, "authors")[0].kind == "unread"
+    assert all(r.kind != "unread" for r in kind_rows(scan, "links"))
+
+
+def test_a_site_that_refused_the_list_is_not_read_never_missing_from() -> None:
+    from quill.core.wordpress.workbench_across import gather_across
+    from quill.core.wordpress.workbench_across_ops import make_same_edits
+
+    tag = {"id": 4, "name": "Events", "slug": "events"}
+    sites = [
+        ("A", _Refusing(set(), {"wp/v2/tags": [tag]})),
+        ("B", _Refusing({"wp/v2/tags"})),
+        ("C", _Refusing(set())),
+    ]
+    unread: dict[str, list[str]] = {}
+    found = gather_across("terms", sites, unread)  # type: ignore[arg-type]
+    assert unread == {"B": ["wp/v2/tags: The site had a critical error."]}
+    rows = across_rows("terms", found, ["A", "B", "C"], unread)
+    assert rows[0].kind == "unread" and rows[0].site == "B"
+    events = next(r for r in rows if r.key == "Events (tag)")
+    assert events.raw["missing"] == ["C"]
+    assert events.cell("missing") == "C"
+    assert "Not read on: B" in events.detail
+    plan = same_everywhere_plan(events, "slug events")
+    said = dict(plan)
+    assert said["B"].startswith("not read: The site had a critical error.")
+    assert said["C"].startswith("gets Events (tag)")
+    edits, refused = make_same_edits("terms", "Events (tag)", plan, events.raw["objects"], tag)
+    assert [e.site for e in edits] == ["C"]
+    assert [(o.site, o.ok) for o in refused] == [("B", False)]
