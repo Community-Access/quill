@@ -223,6 +223,19 @@ test entry to the Trash.
   form, does the reverse. Each preview names what cannot carry over, such as
   CSS classes, admin labels, conditions with several rules, and kinds of field
   the other plugin lacks.
+- **Copy Old Entries into QAF...**, on a Gravity Forms form, brings that
+  form's entries across too, once you have made its QUILL Accessible Forms
+  copy. Choose the QUILL Accessible Forms form they go into, usually the one
+  with the same title. The preview lists each entry with its date and how
+  many answers it carries, and names what stays behind: uploaded files,
+  payment details, and any field the new form has no question for. Only
+  active entries are copied; spam and trashed ones stay in Gravity Forms, and
+  the Gravity Forms entries themselves are never changed. Ctrl+Z moves the
+  copies to QUILL Accessible Forms' Trash.
+
+  The plugin on your site has to be able to take entries for this to work.
+  If yours cannot yet, QUILL tells you so in one sentence and nothing is
+  made; update QUILL Accessible Forms and try again.
 
 ## Where to next
 

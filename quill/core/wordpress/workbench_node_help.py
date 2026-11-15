@@ -163,6 +163,12 @@ NODE_HELP: Mapping[str, str] = {
     "across_app_passwords": "Each application password by name and person, on every site.",
     "across_menus": "Each menu by name, on every site: its items, and the sites without it.",
     "across_patterns": "Each synced pattern by title, on every site: its content, where missing.",
+    "across_starter_pages": "Each starter page by title, on every site: compared, not copied.",
+    "across_forms": "Each QUILL Accessible Forms form by title, on every site: its questions.",
+    "across_content_types": "Each post type by name, on every site: compared, not copied.",
+    "across_role_pages": "The front page and privacy page of every site, and when each changed.",
+    "across_redirects": "Each Redirection redirect by its address, on every site: where it leads.",
+    "across_spam_senders": "Each sender blocked by QUILL Accessible Forms, on every site.",
     "fleet": "Every site in one list: health, backups, security and updates, each known, "
     "unknown, unavailable or stale.",
     "by_name": "Everything on this site by name: terms, fields, authors, media, links, blocks.",

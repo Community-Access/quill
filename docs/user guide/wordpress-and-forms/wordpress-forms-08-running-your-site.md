@@ -256,6 +256,23 @@ WordPress 6.9 lets a site offer actions to AI, called abilities, such as
   the AI wants to use one, QUILL asks you first, every time, and says exactly
   what it will be given. The answer ends by saying what ran on your site.
 
+**Asking about what the site says.** Any site can be asked, abilities or
+not. When no ability is turned on, or the site offers none, Ask the Site
+answers from the site's own writing instead: "Which pages mention our old
+address?" or "What did we post about the fundraiser?"
+
+1. Type your question.
+2. Choose what it may read: published posts and pages only, or drafts,
+   pending, scheduled and private items as well. Those are not public, so
+   include them only if the AI you chose may see them.
+3. QUILL reads the most recently changed posts and pages, then tells you how
+   many it will send, whether any are not public, and which AI gets them.
+   Nothing is sent until you choose Send.
+
+The answer names the pages it came from, and ends by saying how many posts
+and pages it read. A very large site is cut to its newest writing, and the
+AI is told the answer may be incomplete.
+
 ## Watches
 
 Watches tell you when something happens on your sites while QUILL is open.

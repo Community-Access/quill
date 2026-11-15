@@ -90,6 +90,8 @@ from quill.ui.wordpress_workbench_parity import WorkbenchParityCommands
 from quill.ui.wordpress_workbench_people import WorkbenchPeopleCommands
 from quill.ui.wordpress_workbench_people_admin import WorkbenchPeopleAdminCommands
 from quill.ui.wordpress_workbench_people_bulk import WorkbenchPeopleBulkCommands
+from quill.ui.wordpress_workbench_roles import WorkbenchRolesCommands
+from quill.ui.wordpress_workbench_scope_more import WorkbenchScopeMoreCommands
 from quill.ui.wordpress_workbench_sheets import WorkbenchSheetCommands
 from quill.ui.wordpress_workbench_site_check import WorkbenchSiteCheck
 from quill.ui.wordpress_workbench_site_editor import WorkbenchSiteEditorCommands
@@ -126,10 +128,12 @@ class WordPressWorkbenchProvider(
     WorkbenchMediaReplace,  # Media row > Replace File (media_replace)
     WorkbenchGapCommands,  # Earlier Versions, Check for Updates, Check Every Link
     WorkbenchWxrCommands,  # Tools > WXR Files
+    WorkbenchRolesCommands,  # ahead of WorkbenchListCommands: Roles through a role plugin
     WorkbenchListCommands,
     WorkbenchDiscoveredCommands,
     WorkbenchOptionsCommands,
     WorkbenchBoldCommands,
+    WorkbenchScopeMoreCommands,  # ahead of WorkbenchAcrossCommands: convert, merge, remove
     WorkbenchAcrossCommands,
     WorkbenchSweepCommands,
     WorkbenchRowCommands,

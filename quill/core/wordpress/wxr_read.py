@@ -202,11 +202,15 @@ def _item(el: Any) -> WxrItem:
     return item
 
 
-def read_wxr(data: bytes, name: str = "the file") -> WxrFile:
-    """Parse WXR *data*; raises :class:`WxrError` with a sentence when it is not WXR."""
+def read_wxr(data: bytes, name: str = "the file", *, need_version: bool = True) -> WxrFile:
+    """Parse WXR *data*; raises :class:`WxrError` with a sentence when it is not WXR.
+
+    *need_version* False reads a file that leaves out ``wp:wxr_version``, as
+    Squarespace's export does (:mod:`quill.core.wordpress.platform_import`).
+    """
     channel = _parse(data, name)
     version = _text(channel, "wp:wxr_version")
-    if not version:
+    if not version and need_version:
         raise WxrError(f"{name} does not say which WXR version it is, so it is not one.")
     found = WxrFile(
         version,

@@ -133,10 +133,60 @@ def _ready(site: Any, wp_site: Any, *on: str) -> None:
         choices.set(name, True)
 
 
-def test_ask_the_site_needs_an_ability_turned_on(site, wp_site, wp_dialogs):
+POSTS = [
+    {
+        "id": 1,
+        "type": "post",
+        "title": {"rendered": "Schedule"},
+        "status": "publish",
+        "link": "https://radio.example/schedule",
+        "modified": "2026-11-02T00:00:00",
+        "content": {"rendered": "<p>Jazz is on Fridays.</p>"},
+    }
+]
+
+
+def test_with_no_ability_on_the_site_is_asked_about_its_content(site, wp_site, wp_dialogs):
     _ready(site, wp_site)
+    wp_site.on("GET", f"{API}/posts", POSTS).on("GET", f"{API}/pages", [])
+    service = _ai(site, "Jazz is on Fridays, says Schedule.")
+    wp_dialogs.answer("ask_text", "When is jazz?").answer("ask_choice", 0).answer("confirm", True)
     site.cmd_ask_site()
-    assert "No ability of Community Radio is turned on" in site.host.said
+    assert (
+        "No ability of Community Radio is turned on"
+        in (wp_dialogs.asked("ask_text")[0]["help_text"])
+    )
+    consent = wp_dialogs.asked("confirm")[0]["message"]
+    assert consent.startswith("Send the text of 1 posts and pages from Community Radio")
+    assert "Only published content is included." in consent
+    assert "Question: When is jazz?" in service.prompts[0]
+    assert "Jazz is on Fridays." in service.prompts[0] and "<p>" not in service.prompts[0]
+    assert wp_dialogs.reports[-1]["text"] == (
+        "Jazz is on Fridays, says Schedule.\n\nAnswered from 1 posts and pages of Community Radio."
+    )
+    query = wp_site.sent("GET", f"{API}/posts")[0].full_url
+    assert "status=publish&" in query and "context=edit" not in query
+
+
+def test_a_site_without_abilities_is_asked_about_its_content_too(site, wp_site, wp_dialogs):
+    _index(wp_site, [])
+    wp_site.on("GET", f"{API}/posts", POSTS).on("GET", f"{API}/pages", [])
+    _ai(site, "Fridays.")
+    wp_dialogs.answer("ask_text", "When?").answer("ask_choice", 1).answer("confirm", True)
+    site.cmd_ask_site()
+    assert "offers no abilities for AI" in wp_dialogs.asked("ask_text")[0]["help_text"]
+    query = wp_site.sent("GET", f"{API}/posts")[0].full_url
+    assert "private" in query and "context=edit" in query
+
+
+def test_declining_the_consent_sends_nothing_to_the_ai(site, wp_site, wp_dialogs):
+    _index(wp_site, [])
+    wp_site.on("GET", f"{API}/posts", POSTS).on("GET", f"{API}/pages", [])
+    service = _ai(site, "never")
+    wp_dialogs.answer("ask_text", "When?").answer("ask_choice", 0)
+    site.cmd_ask_site()
+    assert service.prompts == []
+    assert "Nothing from Community Radio was sent." in site.host.said
 
 
 def test_ask_the_site_without_ai_here_says_so(site, wp_site, wp_dialogs):

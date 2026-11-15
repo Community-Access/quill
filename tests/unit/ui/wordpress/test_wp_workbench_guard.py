@@ -100,6 +100,7 @@ GUARDED = [
     ("import_posts", None, "do_import_posts"),
     ("import_folder", None, "do_import_folder"),
     ("import_wxr", None, "do_import_wxr"),
+    ("import_platform", None, "do_import_platform"),
     ("restore_snapshot", None, "do_restore_snapshot"),
     ("plain_batch", None, "do_plain_batch"),
     ("your_profile", None, "do_your_profile"),

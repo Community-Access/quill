@@ -138,6 +138,11 @@ On a person:
   Everywhere is one button. WordPress keeps sign-ins out of its REST API.
 - **Remove...** takes them off the site. It asks who gets their posts first,
   and the preview counts them, so no writing is lost.
+- **Who Has Never Signed In** lists the people with no sign-in on record.
+  WordPress itself does not keep sign-in times where QUILL can read them, so
+  this works only when a plugin on the site records the last sign-in and
+  shares it (as `last_login`). On any other site it says it cannot tell,
+  rather than calling everyone new.
 
 Select several people to change all their roles, or remove them, in one go.
 
@@ -160,6 +165,21 @@ by accident.
 
 **Site > Roles and What They May Do** (`Ctrl+Alt+R`) explains each role on the
 site in plain words.
+
+WordPress cannot change what a role may do by itself; that takes a role
+plugin. When the site's role plugin shares its roles with QUILL (QUILL looks
+for the Members plugin's `members/v1` routes), the same command lists the
+site's own roles instead, each with how many capabilities it has:
+
+- Choose a role to change what it may do. Its capabilities are listed one a
+  line; delete a line to take one away, or add a line to give one. The
+  preview says what the role gains and loses, and Ctrl+Z puts it back.
+- Choose **New Role...** to make one. Give it a name, then its capabilities,
+  one a line. Ctrl+Z takes the new role away again.
+
+A change to a role reaches everyone who has it at once, so read the preview
+carefully. On a site without such a plugin, change roles in wp-admin, with
+Members or User Role Editor.
 
 ## Menus
 
