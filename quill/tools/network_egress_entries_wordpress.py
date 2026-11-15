@@ -108,7 +108,20 @@ WORDPRESS_EGRESS: dict[str, str] = {
         "what is sent, asked once per Workbench window; no site address, credential or "
         "cookie is sent. HTTPS with a verified TLS context, 20 s timeout, answer capped at "
         "4 MB, and a URL on any other host is refused before sending. Off in Safe Mode, "
-        "with the rest of the WordPress feature."
+        "with the rest of the WordPress feature. The abandoned plugins Watch "
+        "(workbench_watches_more, PRD 15.7) sends the same plugin_information request, one "
+        "installed plugin's short name a request, at most once a week per site; checking "
+        "that Watch in Workbench Options, whose help names WordPress.org and what is sent, "
+        "is its consent, and it is off until then."
+    ),
+    "core/wordpress/site_certificate.py::certificate_expiry": (
+        "The certificate Watch (WordPress Workbench, PRD 15.7): a TLS handshake with the "
+        "connected site's own host and port, to read when its security certificate runs "
+        "out. Nothing is sent but the handshake: no request, path, credential or cookie. "
+        "At most once a day per site, and only after the person checks that Watch in "
+        "Workbench Options (the consent, which names what it reads); off until then. "
+        "WordPress.com sites and the local Practice Site are skipped. Verified TLS "
+        "context, 10 s timeout. Off in Safe Mode, with the rest of the WordPress feature."
     ),
     "core/wordpress/cdp.py::__init__": (
         "Check This Page and Visual Review: QUILL starts Edge or Chrome hidden, from "

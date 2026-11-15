@@ -271,6 +271,30 @@ again, items with a reviewer leaving the queue, Site Health status changes,
 and form spam questions, once a week. Site Health stays silent for an
 account that is not an administrator.
 
+A few more are there for the things that are easy to miss:
+
+- **New shop orders** and **products running low on stock**, on a site with
+  WooCommerce. Low means at or under the product's own low-stock amount, or
+  the shop's if the product has none.
+- **A security certificate running out within 30 days.** Once a day, QUILL
+  reads the certificate your site's own address presents, and nothing else.
+  You hear once when it is 30 days away or less, once if browsers stop
+  trusting it, and once more when it is renewed. Sites on WordPress.com are
+  left out, because WordPress.com renews theirs.
+- **Plugins that may be abandoned.** Once a week, QUILL asks WordPress.org
+  about each plugin on the site, by its short name only. You hear about one
+  that WordPress.org has closed, or that has not been updated there for over
+  two years.
+- **An accessibility statement whose facts have changed.** When Check the
+  Whole Site finds something different from the last time, and your
+  published Accessibility page was saved before that check, you hear that
+  the statement is out of date. **Write an Accessibility Statement** drafts
+  it again with the new facts (Chapter 7).
+- **A weekly sentence about each whole site**: comments waiting, plugin
+  updates, Site Health tests that are critical, plugins that may be
+  abandoned, low stock and when the certificate runs out, said together once
+  a week.
+
 Each site is checked no more often than every fifteen minutes. The first
 check is silent, so you only hear about what changes after it. **Go >
 Watches** (`Ctrl+5`) says when the last round ran and whether each site is

@@ -7,9 +7,16 @@ same batch and nothing is guessed:
   posts (or ``pages``) that have one status, optionally by one author and in
   one category, to another status;
 - ``add tag 2026 to posts in category Events on every site``;
-- ``remove tag Old from all published posts by Ann``.
+- ``remove tag Old from all published posts by Ann``;
+- ``move every draft older than a year to Trash`` (or ``trash all drafts
+  before March 2024``): into WordPress's Trash, after the same checklist, and
+  Undo puts them back with the status each had;
+- ``how many drafts are older than six months?``: a question, answered with a
+  count from each site, and nothing changed.
 
-Where it runs is ``on <site>``, ``on <site> and <site>``, ``on every site``
+Any of them may say how old (``older than a year``, ``newer than two weeks``,
+``before March 2024``, ``after 2023``: :mod:`quill.core.wordpress.workbench_plain_age`),
+by the item's date. Where it runs is ``on <site>``, ``on <site> and <site>``, ``on every site``
 or ``on all sites``; without one, the current site. A site name, author,
 category or tag that matches nothing exactly is a sentence, never a guess.
 :func:`parse_request` reads the words (:class:`BatchRequest`, or
@@ -28,13 +35,21 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
+from datetime import date
 from typing import Any
 
 from quill.core.error_codes import CodedError
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.site import kind_route
-from quill.core.wordpress.workbench_edit import EditConflict, check_conflict, run_batch
+from quill.core.wordpress.workbench_edit import (
+    EditConflict,
+    check_conflict,
+    restore,
+    run_batch,
+    trash,
+)
+from quill.core.wordpress.workbench_plain_age import Age, AgeError, find_age
 from quill.core.wordpress.workbench_rows import WbRow, item_row
 
 __all__ = [
@@ -43,9 +58,11 @@ __all__ = [
     "BatchRequest",
     "PhraseError",
     "SitePlan",
+    "answer",
     "parse_request",
     "resolve",
     "run_site",
+    "undo_trash",
 ]
 
 LIMIT = 500
@@ -53,6 +70,8 @@ EXAMPLES = (
     "move all drafts by Sam to pending on Radio",
     "add tag 2026 to posts in category Events on every site",
     "remove tag Old from all published pages",
+    "move every draft older than a year to Trash",
+    "how many drafts are older than six months?",
 )
 _STATUS_WORDS = {
     "draft": "draft",
@@ -65,9 +84,24 @@ _STATUS_WORDS = {
 }
 _STATUS = "|".join(sorted(_STATUS_WORDS, key=len, reverse=True))
 _KIND = r"(?:(?P<kind>posts|pages)\b)?"
+_TO = rf"(?P<to>{_STATUS}|(?:the\s+)?trash)"
 _MOVE = re.compile(
-    rf"^(?:move|set|change)\s+(?:all\s+|every\s+)?(?:the\s+)?(?P<status>{_STATUS})?\s*{_KIND}"
-    rf"(?P<filters>.*?)\s+to\s+(?P<to>{_STATUS})\b(?P<where>.*)$",
+    rf"^(?:move|set|change|put)\s+(?:all\s+|every\s+)?(?:the\s+)?(?P<status>{_STATUS})?\s*{_KIND}"
+    rf"(?P<filters>.*?)\s+(?:to|in|into)\s+{_TO}\b(?P<where>.*)$",
+    re.IGNORECASE,
+)
+_TRASH = re.compile(
+    rf"^trash\s+(?:all\s+|every\s+)?(?:the\s+)?(?P<status>{_STATUS})?\s*{_KIND}(?P<rest>.*)$",
+    re.IGNORECASE,
+)
+_COUNT = re.compile(
+    rf"^how\s+many\s+(?:of\s+)?(?:the\s+|my\s+)?(?P<status>{_STATUS})?\s*{_KIND}(?P<rest>.*)$",
+    re.IGNORECASE,
+)
+#: "are", "is" or "are there" before a filter or at the end, in a question.
+_BE = re.compile(
+    rf"(?:^\s*|\s+)(?:are|is|were)(?:\s+there)?(?=\s+(?:by|in|on|older|newer|younger|before|after|since|"
+    rf"{_STATUS})\b|\s*$)",
     re.IGNORECASE,
 )
 _TAG = re.compile(
@@ -89,16 +123,18 @@ class PhraseError(CodedError):
 
 @dataclass(frozen=True)
 class BatchRequest:
-    action: str  # "status", "add_tag" or "remove_tag"
-    value: str  # the new status, or the tag's name
+    action: str  # "status", "add_tag", "remove_tag", "trash" or "count"
+    value: str  # the new status, or the tag's name ("" for trash and count)
     kind: str = "post"
     status: str = ""
     author: str = ""
     category: str = ""
     sites: tuple[str, ...] = ()
+    age: Age = field(default_factory=Age)
 
     @property
-    def words(self) -> str:
+    def what(self) -> str:
+        """The items in words: "draft posts by Sam older than a year"."""
         what = f"{self.kind}s"
         if self.status:
             what = f"{_said(self.status)} {what}"
@@ -106,7 +142,22 @@ class BatchRequest:
             what += f" by {self.author}"
         if self.category:
             what += f" in the category {self.category}"
+        if self.age.words:
+            what += f" {self.age.words}"
+        return what
+
+    @property
+    def changes(self) -> bool:
+        return self.action != "count"
+
+    @property
+    def words(self) -> str:
+        what = self.what
         where = ", ".join(self.sites)
+        if self.action == "count":
+            return f"How many {what}, on {where}."
+        if self.action == "trash":
+            return f"Move {what} to the Trash, on {where}."
         if self.action == "status":
             return f"Set {what} to {_said(self.value)}, on {where}."
         verb = "Add the tag" if self.action == "add_tag" else "Remove the tag"
@@ -118,12 +169,24 @@ def _said(status: str) -> str:
     return {"publish": "published", "future": "scheduled"}.get(status, status)
 
 
-def _split_filters(text: str) -> tuple[str, str, str]:
-    """``by Sam in category News on Radio`` -> (author, category, where)."""
+@dataclass(frozen=True)
+class _Filters:
+    author: str = ""
+    category: str = ""
+    where: str = ""
+    age: Age = field(default_factory=Age)
+
+
+def _split_filters(text: str, today: date) -> _Filters:
+    """``by Sam in category News older than a year on Radio``, taken apart."""
     where = ""
     match = re.search(r"\bon\s+(every site|all sites|.+)$", text, re.IGNORECASE)
     if match:
         where, text = match.group(1).strip(), text[: match.start()]
+    try:
+        age, text = find_age(text, today)
+    except AgeError as exc:
+        raise PhraseError(exc.plain) from None
     author = category = ""
     found = re.search(r"\bby\s+(.+?)(?=\s+in\s+(?:the\s+)?category\b|$)", text, re.IGNORECASE)
     if found:
@@ -136,7 +199,7 @@ def _split_filters(text: str) -> tuple[str, str, str]:
     )
     if left.strip():
         raise PhraseError(f"QUILL does not read {left.strip()!r} here. {_help()}")
-    return author, category, where
+    return _Filters(author, category, where, age)
 
 
 def _sites(where: str, known: Sequence[str], current: str) -> tuple[str, ...]:
@@ -160,40 +223,63 @@ def _help() -> str:
     return "It reads phrases like: " + "; ".join(EXAMPLES) + "."
 
 
-def parse_request(text: str, known: Sequence[str], current: str = "") -> BatchRequest:
-    """*text* as a :class:`BatchRequest`, or :class:`PhraseError` saying what it reads."""
-    clean = " ".join(text.strip().rstrip(".").split())
+def _status(word: str | None) -> str:
+    return _STATUS_WORDS[word.lower()] if word else ""
+
+
+def _request(
+    action: str, value: str, found: re.Match[str], rest: str, known: Sequence[str],
+    current: str, today: date,
+) -> BatchRequest:  # fmt: skip
+    kind = (found.group("kind") or "posts").lower().rstrip("s")
+    filters = _split_filters(rest, today)
+    return BatchRequest(
+        action,
+        value,
+        kind,
+        _status(found.group("status")),
+        filters.author,
+        filters.category,
+        _sites(filters.where, known, current),
+        filters.age,
+    )
+
+
+def parse_request(
+    text: str, known: Sequence[str], current: str = "", today: date | None = None
+) -> BatchRequest:
+    """*text* as a :class:`BatchRequest`, or :class:`PhraseError` saying what it reads.
+
+    *today* is the day an age such as "older than a year" counts back from.
+    """
+    day = today or date.today()
+    clean = " ".join(text.strip().rstrip(".?").split())
     move = _MOVE.match(clean)
     if move:
-        author, category, where = _split_filters(f"{move.group('filters')}{move.group('where')}")
-        status = _STATUS_WORDS[move.group("status").lower()] if move.group("status") else ""
-        kind = (move.group("kind") or "posts").lower().rstrip("s")
-        return BatchRequest(
-            "status",
-            _STATUS_WORDS[move.group("to").lower()],
-            kind,
-            status,
-            author,
-            category,
-            _sites(where, known, current),
-        )
+        rest = f"{move.group('filters')}{move.group('where')}"
+        to = move.group("to").lower()
+        if to.endswith("trash"):
+            return _request("trash", "", move, rest, known, current, day)
+        return _request("status", _STATUS_WORDS[to], move, rest, known, current, day)
+    found = _TRASH.match(clean)
+    if found:
+        return _request("trash", "", found, found.group("rest"), known, current, day)
+    found = _COUNT.match(clean)
+    if found:
+        rest = _BE.sub("", found.group("rest"))
+        said = re.match(rf"^\s*(?P<status>{_STATUS})\b", rest, re.IGNORECASE)
+        request = _request("count", "", found, rest[said.end() :] if said else rest, known,
+                           current, day)  # fmt: skip
+        if said and not request.status:
+            return replace(request, status=_status(said.group("status")))
+        return request
     tag = _TAG.match(clean)
     if tag:
-        kind = (tag.group("kind") or "posts").lower().rstrip("s")
-        if kind != "post":
+        if (tag.group("kind") or "posts").lower() != "posts":
             raise PhraseError("Pages have no tags in WordPress; tags are for posts.")
-        author, category, where = _split_filters(tag.group("rest"))
-        status = _STATUS_WORDS[tag.group("status").lower()] if tag.group("status") else ""
         action = "add_tag" if tag.group("verb").lower() == "add" else "remove_tag"
-        return BatchRequest(
-            action,
-            tag.group("tag").strip(),
-            kind,
-            status,
-            author,
-            category,
-            _sites(where, known, current),
-        )
+        return _request(action, tag.group("tag").strip(), tag, tag.group("rest"), known,
+                        current, day)  # fmt: skip
     raise PhraseError(_help())
 
 
@@ -207,11 +293,16 @@ class SitePlan:
     problem: str = ""
     make_tag: str = ""  # a tag to make on the site first (add_tag, when it is missing)
     more: bool = False
+    count: int = -1  # a question's answer
+    #: What a Trash batch moved, with the status each had, for Undo.
+    moved: list[tuple[WbRow, str]] = field(default_factory=list)
 
     @property
     def sentence(self) -> str:
         if self.problem:
             return f"{self.site}: nothing, because {self.problem}"
+        if self.count >= 0:
+            return f"{self.count} on {self.site}"
         said = f"{self.site}: {len(self.rows)} items"
         if self.make_tag:
             said += f", and the tag {self.make_tag} made first"
@@ -232,6 +323,10 @@ def resolve(request: BatchRequest, site: str, api: WordPressApi) -> SitePlan:
     """The exact items *request* means on *site*, and what each one is sent."""
     plan = SitePlan(site)
     query: dict[str, object] = {"context": "edit", "status": request.status or "any"}
+    if request.age.before:
+        query["before"] = request.age.before
+    if request.age.after:
+        query["after"] = request.age.after
     try:
         if request.author:
             ident = _exact(api, "wp/v2/users", request.author)
@@ -252,6 +347,9 @@ def resolve(request: BatchRequest, site: str, api: WordPressApi) -> SitePlan:
                 plan.problem = f"it has no tag called {request.value}."
                 return plan
             plan.make_tag = "" if tag_id else request.value
+        if request.action == "count":
+            plan.count = _count(api, kind_route(request.kind), query)
+            return plan
         items = api.iter_collection(kind_route(request.kind), query, per_page=100, max_pages=6)
         for raw in items:
             if len(plan.rows) >= LIMIT:
@@ -266,7 +364,30 @@ def resolve(request: BatchRequest, site: str, api: WordPressApi) -> SitePlan:
     return plan
 
 
+def _count(api: WordPressApi, route: str, query: Mapping[str, object]) -> int:
+    """How many items *query* finds: WordPress's own total, else counted (to 1,000)."""
+    ask = {**query, "_fields": "id"}
+    request = getattr(api, "request", None)
+    if callable(request):
+        total = request("GET", route, params={**ask, "per_page": 1}).total
+        if total is not None:
+            return int(total)
+    return sum(1 for _ in api.iter_collection(route, ask, per_page=100, max_pages=10))
+
+
+def answer(request: BatchRequest, plans: Sequence[SitePlan]) -> str:
+    """A question's answer: "Draft posts older than six months: 12 on Radio, 3 on Shop."."""
+    counted = [p for p in plans if p.count >= 0]
+    said = f"{request.what[0].upper()}{request.what[1:]}: "
+    said += "; ".join(p.sentence.rstrip(".") for p in plans)
+    if len(counted) > 1:
+        said += f"; {sum(p.count for p in counted)} in all"
+    return said + "."
+
+
 def _body(request: BatchRequest, raw: Mapping[str, Any], tag_id: int) -> dict[str, Any] | None:
+    if request.action == "trash":
+        return None if raw.get("status") == "trash" else {"status": "trash"}
     if request.action == "status":
         return None if raw.get("status") == request.value else {"status": request.value}
     tags = [int(t) for t in raw.get("tags", []) or []]
@@ -296,7 +417,28 @@ def run_site(api: WordPressApi, plan: SitePlan, keep: Sequence[int]) -> list[str
             said.append(f"{plan.site}, {exc}")
         except WordPressApiError as exc:
             said.append(f"{plan.site}, {row.title}: {exc.plain or exc}")
+    if sendable and bodies[0].get("status") == "trash":
+        for row, _body in sendable:
+            try:
+                trash(api, row)
+            except (WordPressApiError, CodedError) as exc:
+                said.append(f"{plan.site}, {row.title}: {getattr(exc, 'plain', '') or exc}")
+                continue
+            plan.moved.append((row, row.status))
+            said.append(f"{plan.site}, {row.title}: moved to the Trash")
+        return said
     if sendable:
         results = run_batch(api, [r for r, _b in sendable], [b for _r, b in sendable])
         said += [f"{plan.site}, {result.sentence}" for result in results]
     return said
+
+
+def undo_trash(api_for: Any, plans: Sequence[SitePlan]) -> str:
+    """Out of the Trash again, each with the status it had; the sentence to say."""
+    back = 0
+    for plan in plans:
+        api = api_for(plan.site)
+        for row, status in plan.moved:
+            restore(api, row, status)
+            back += 1
+    return f"Restored {back} item{'' if back == 1 else 's'} from the Trash."

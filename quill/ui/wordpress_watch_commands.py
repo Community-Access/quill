@@ -22,6 +22,7 @@ from typing import Any
 from quill.core.wordpress.workbench_editorial import load_reviews, save_reviews
 from quill.core.wordpress.workbench_options import load_options
 from quill.core.wordpress.workbench_watches import check, due, load_state, save_state
+from quill.core.wordpress.workbench_watches_more import WatchContext
 
 __all__ = ["watch_round"]
 
@@ -62,7 +63,15 @@ def watch_round(commands: Any) -> None:
             except Exception:  # noqa: BLE001 - a site that does not answer waits for next round
                 _log.info("Watches: %s did not answer", profile.host)
                 unreachable.append(name)
-        said = check(targets, state, options.watches, unreachable=unreachable, reviews=reviews)
+        context = WatchContext(history=_histories(commands, store.sites, options.watches))
+        said = check(
+            targets,
+            state,
+            options.watches,
+            unreachable=unreachable,
+            reviews=reviews,
+            context=context,
+        )
         save_state(state, base)
         if reviews:
             waiting = [
@@ -83,3 +92,15 @@ def watch_round(commands: Any) -> None:
         commands._watching = False
 
     commands.host.run_task("WordPress: Watches", work, done, failed)
+
+
+def _histories(commands: Any, profiles: Any, kinds: Any) -> dict[str, Any]:
+    """Each site's newest Check the Whole Site, for the accessibility statement Watch."""
+    history = getattr(commands, "_check_history", None)
+    if "statement" not in kinds or history is None:
+        return {}
+    try:
+        kept = history()
+    except Exception:  # noqa: BLE001 - no local check history is the same as none yet
+        return {}
+    return {(p.name or p.host): kept.latest(p.id) for p in profiles}

@@ -41,6 +41,7 @@ from quill.core.wordpress.workbench_parity_actions import NODE_ROWS as PARITY_NO
 from quill.core.wordpress.workbench_places import places_rows
 from quill.core.wordpress.workbench_plugin_actions import PLUGIN_ACTION_ROWS, QAF_FORM_ROWS
 from quill.core.wordpress.workbench_qaf_spam_edit import QAF_SPAM_ROWS
+from quill.core.wordpress.workbench_qaf_visitor_words import QAF_WORDS_ROWS
 from quill.core.wordpress.workbench_site_files_actions import MEDIA_ROWS as SITE_FILES_MEDIA_ROWS
 from quill.core.wordpress.workbench_sweep_places import sweep_rows
 from quill.core.wordpress.workbench_window_menu import (
@@ -354,6 +355,7 @@ WORDPRESS_ACTIONS = ActionTable(
             _a("open_site", "Open This Site", default=True, help="Select its node in the tree."),
             _OPEN_SITE,
             *QAF_SPAM_ROWS,  # QUILL Accessible Forms' question bank and weeks (complete.md WP-C)
+            *QAF_WORDS_ROWS,  # what QAF's forms say to visitors (WP-R-050)
             _SHEET,
         ),
         "writing_type": (
