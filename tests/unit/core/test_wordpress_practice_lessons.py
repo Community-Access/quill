@@ -55,8 +55,8 @@ def test_the_check_catches_a_lesson_that_would_leave_the_practice_site() -> None
     assert len(found) == 2
 
 
-def test_quill_teaches_them_and_quill_lite_has_no_workbench_to_teach() -> None:
+def test_both_editors_teach_them_because_both_open_the_workbench() -> None:
     quill = [t.slug for t in catalogue_for("quill").tutorials if t.track == PRACTICE_TRACK_ID]
-    assert quill == [*SLUGS, "workbench-practice-site-care"]  # 9.17 gap 12, same track
-    lite = catalogue_for("quilllite")
-    assert not [t for t in lite.tutorials if t.track == PRACTICE_TRACK_ID]
+    assert quill[:4] == [*SLUGS, "workbench-practice-site-care"]  # 9.17 gap 12, same track
+    lite = [t.slug for t in catalogue_for("quilllite").tutorials if t.track == PRACTICE_TRACK_ID]
+    assert lite == quill

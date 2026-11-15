@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.wordpress import sites as st
+from quill.core.wordpress import workbench_practice_material as material
 from quill.core.wordpress.workbench_practice import (
     PRACTICE_NAME,
     clear_password,
@@ -31,9 +32,14 @@ from quill.core.wordpress.workbench_practice import (
     wait_for_site,
 )
 from quill.core.wordpress.workbench_rows import WbRow
+from quill.core.workbench.history import Change
 from quill.ui import wordpress_dialogs as dlg
 
-__all__ = ["RESET_WARNING", "WorkbenchPracticeCommands"]
+__all__ = ["RESET_WARNING", "SET_UP", "TAKE_AWAY", "WorkbenchPracticeCommands"]
+
+#: The two Practice Site rows for the lesson material, as the lessons name them.
+SET_UP = "Set Up the Lesson Material"
+TAKE_AWAY = "Take Away the Lesson Material"
 
 #: What Reset costs, said before it happens: every consequence, and what it spares.
 RESET_WARNING = (
@@ -110,11 +116,14 @@ class WorkbenchPracticeCommands:
             if missing:
                 self.say(missing)
                 return
+        folder = practice_dir(self._base())
         choices = (
             ["Connect It as Practice Site", "Stop the Practice Site"]
             if running is not None
             else ["Start the Practice Site", "Reset the Practice Site"]
         )
+        if not material.missing_site_words(folder):  # started once, so it has a WordPress
+            choices.append(TAKE_AWAY if material.is_set_up(folder) else SET_UP)
         index = dlg.ask_choice(
             self.parent,
             self.show_modal,
@@ -122,13 +131,15 @@ class WorkbenchPracticeCommands:
             prompt="&Do:",
             rows=choices,
             help_text="A WordPress site on this computer only, for learning with nothing at "
-            "stake. Reset puts it back as new.",
+            "stake. Reset puts it back as new; the lesson material is what the practice "
+            "tutorials find and fix.",
         )
         if index is None:
             return
         choice = choices[index]
-        folder = practice_dir(self._base())
-        if choice.startswith("Start"):
+        if choice in (SET_UP, TAKE_AWAY):
+            self._lesson_material(folder, set_up=choice == SET_UP)
+        elif choice.startswith("Start"):
 
             def start() -> Any:
                 # Refuses an occupied port; binds loopback only; job-tied to QUILL.
@@ -204,6 +215,43 @@ class WorkbenchPracticeCommands:
                 )
         else:
             self._connect_practice(folder)
+
+    def _lesson_material(self, folder: Path, *, set_up: bool) -> None:
+        """Set up or take away the practice lessons' material, after a preview (WP-R-049).
+
+        Files written into the Practice Site's own WordPress folder only; a set-up
+        goes into Change History with Take Away as its undo, so Ctrl+Z works.
+        """
+        if not dlg.confirm(
+            self.parent,
+            self.show_modal,
+            title=SET_UP if set_up else TAKE_AWAY,
+            message=material.PREVIEW if set_up else material.TAKE_AWAY_PREVIEW,
+            yes_label="Set Up" if set_up else "Take Away",
+        ):
+            return
+
+        def work() -> str:
+            return material.set_up(folder) if set_up else material.take_away(folder)
+
+        def done(said: str) -> None:
+            history = getattr(self, "history", None)
+            if history is not None:
+                history.record(
+                    Change(
+                        PRACTICE_NAME,
+                        f"{'Set up' if set_up else 'Took away'} the lesson material on the "
+                        f"{PRACTICE_NAME}.",
+                        undo=(lambda: material.take_away(folder))
+                        if set_up
+                        else (lambda: material.set_up(folder)),
+                    )
+                )
+            self.say(said)
+
+        self.background(
+            f"{'setting up' if set_up else 'taking away'} the lesson material", work, done
+        )
 
     def _connect_practice(self, folder: Path) -> None:
         store = self.commands.sites()

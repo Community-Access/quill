@@ -24,7 +24,11 @@ START_HERE = (
     "F6 moves from pane to pane and then to the status bar. Enter does the obvious thing: "
     "on a post or page it opens it in the editor, where writing happens. The Applications "
     "key lists everything else; Alt+Enter opens Properties; Delete moves to the Trash, and "
-    "Ctrl+Z puts the last change back. F1 says what any control does.\n\nThis is an early "
+    "Ctrl+Z puts the last change back. F1 says what any control does.\n\nNew to looking "
+    "after a site? Your First Week, in the editor's Help > Tutorials, is one short lesson a "
+    "day for seven days, each ending with something real on your own site and nothing done "
+    "that you did not choose. The Practice Site lessons and Break It on Purpose are there "
+    "too, for trying things with nothing at stake.\n\nThis is an early "
     "preview, behind a developer setting. Your Tools > WordPress windows still work."
 )
 

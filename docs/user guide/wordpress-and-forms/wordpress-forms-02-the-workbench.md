@@ -328,10 +328,52 @@ If a command would change the Practice Site and a real site in one step,
 such as Revoke Everywhere, QUILL asks you by name first, and the answer
 starts on No.
 
-**Help > Tutorials** in QUILL has three lessons that use the Practice Site:
-starting it, changing a post and undoing the change, and resetting it. A
-fourth, Look after a site, walks through the Overview, menus, people, Site
-Health and more.
+### Lesson material, and Break It on Purpose
+
+Once the Practice Site has been started, Practice Site also offers **Set Up
+the Lesson Material**. It shows you everything it will add before it adds any
+of it, and adds it to the Practice Site only: a picture with no alt text, a
+post with a link to a page that is not there, two plugins that fight over the
+same shortcode, a Contact Us page with a misspelt address, a spam comment and
+a real one waiting, a menu, and a Practice Events content type with an Event
+date field. **Take Away the Lesson Material** removes exactly those again,
+even if you changed them, and leaves everything else. Setting it up goes into
+Change History, so undoing it there takes it away too.
+
+### The Practice Site lessons
+
+**Help > Tutorials** has these lessons in both QUILL and QUILL Lite, because
+both open the same Workbench. They all work on the Practice Site and never send
+anything to a real site.
+
+The WordPress Workbench, on the Practice Site:
+
+- Start the Practice Site
+- Change a practice post, then undo it
+- Reset the Practice Site
+- Look after a site
+- Change a menu, then put it back
+- Add a person and choose their role
+- Update plugins safely
+- Spam, real comments, and challenges
+- Custom types and their fields
+- From staging to live, without surprises
+- Across sites with a Site Set
+
+Break It on Purpose, on the Practice Site:
+
+- Set up the broken Practice Site
+- Fix a picture with no alt text
+- Fix a broken link
+- Fix a plugin conflict
+- Fix a wrong address
+
+In QUILL, a lesson notices when you have made the fix, because it watches the
+Workbench for a change on the Practice Site, and moves you on. In QUILL Lite
+you move on yourself.
+
+Start Here, at the top of the Workbench's tree, points to these and to Your
+first week with a site, the seven short lessons for a new site owner.
 
 ## Where to next
 
