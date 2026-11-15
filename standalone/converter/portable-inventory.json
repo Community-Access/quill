@@ -48,6 +48,7 @@
   "site-packages": [
     "_cffi_backend",
     "_pillow_heif",
+    "_yaml",
     "accessible-output2",
     "accessible_output2",
     "adodbapi",
@@ -106,6 +107,7 @@
     "pywin32.pth",
     "pywin32.version.txt",
     "pywin32_system32",
+    "pyyaml",
     "quill",
     "regex",
     "requests",
@@ -123,6 +125,7 @@
     "wx-accessible-webview",
     "wx_accessible_webview",
     "wxpython",
+    "yaml",
     "yt-dlp",
     "yt-dlp-ejs",
     "yt_dlp",
