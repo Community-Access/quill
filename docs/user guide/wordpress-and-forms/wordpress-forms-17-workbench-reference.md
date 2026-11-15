@@ -33,7 +33,7 @@ below names the chapter that shows how to use it.
 | Needs My Attention | What waits on you, from every site | 2 |
 | Sites | A branch for each connected site | 2 |
 | Calendar | Every site's content, a day to a place | 3 |
-| Across Sites | Terms, plugins, themes, people, settings, menus, synced patterns and application passwords on every site, and the Fleet | 9 |
+| Across Sites | Terms, plugins, themes, people, settings, menus, synced patterns, application passwords, starter pages, forms, content types, pages with a role, redirects and spam senders on every site, and the Fleet | 9 |
 | Search | WordPress search results from every site | 2 |
 | Practice Site | A WordPress site on this computer | 2 |
 | Help and Learning | How WordPress Thinks, Words and Keys | 2 |
@@ -121,7 +121,8 @@ last, and is left out below.
   Arrange Items...,
   Earlier Versions..., Default Navigation Menu..., Copy to Site....
 - **Plugin:** Read in Full, Activate or Deactivate, Check on WordPress.org...,
-  Find a Plugin on WordPress.org..., Open in Dashboard.
+  Find a Plugin on WordPress.org..., Pages Using Its Blocks, Open in
+  Dashboard.
 - **Theme:** Read in Full, Activate..., Find a Theme on WordPress.org..., Open
   in Dashboard.
 - **Template or template part:** Read in Full, Edit Block Markup..., Earlier
@@ -136,8 +137,11 @@ last, and is left out below.
 - **Site:** Open This Site, Open on the Site, Form Spam Questions..., Form Spam
   by Week, Visitor Words for Forms....
 - **By Name value:** Where It Is Used, Rename Everywhere..., Split..., Merge
-  Into..., Reassign..., Replace Everywhere..., Find Items Missing This Field.
-- **Across Sites row:** Read in Full, Make Them the Same..., Promote to
+  Into..., Reassign..., Replace Everywhere..., Find Items Missing This Field,
+  Convert to Block..., Update Pattern Everywhere..., Detach Copies..., Pages
+  Using Its Blocks.
+- **Across Sites row:** Read in Full, Make Them the Same..., Merge
+  Everywhere..., Remove Everywhere..., Promote to
   Network..., Revoke Everywhere..., Compare Global Styles, Install on Sites
   Missing It..., Open in Dashboard.
 - **Content Audit or Housekeeping finding:** Read in Full, Show Where It Is
@@ -295,8 +299,9 @@ Snapshot... (`Ctrl+Alt+Shift+S`), Read Site as Document (`Ctrl+Alt+D`).
 (`Ctrl+Shift+T`), Run a Saved Request... (`Ctrl+Alt+Q`), Saved Requests,
 Forget a Saved Request... (`Ctrl+Alt+Shift+F`), Plain-Language Batch...
 (`Ctrl+Alt+B`), Practice Site... (`Ctrl+Alt+P`), and the WXR Files submenu:
-Export Site as WXR... and Import WXR as Drafts..., reached with Alt+T, W,
-then E or I.
+Export Site as WXR..., Archive a Static Copy..., Import WXR as Drafts... and
+Import from Blogger, Medium, Substack or Squarespace..., reached with Alt+T,
+W, then E, S, I or B.
 
 **Window:** Switch to Editor (`Ctrl+Shift+E`). **Help:** Help for This View
 (`F1`), What Is This? (`Alt+F1`), WordPress Guide (`Ctrl+F1`), Search

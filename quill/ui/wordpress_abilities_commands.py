@@ -9,6 +9,12 @@ only when the site lists abilities (``wp-abilities/v1``, WordPress 6.9+).
   AI) with the abilities that are on. When the AI asks to run one, QUILL asks
   the person first, every time, naming the ability and exactly what it will
   be given; the answer then says what ran. Nothing runs without that yes.
+* **Ask About This Site** is what Ask the Site does on any site with no
+  ability turned on (or none offered): the question is answered from the
+  site's recent posts and pages (:mod:`quill.core.wordpress.site_ask`). Only
+  published content is read unless the person chooses to include drafts and
+  private items, and nothing is sent before a confirm that names the site, how
+  many items, and the AI it goes to.
 """
 
 from __future__ import annotations
@@ -17,6 +23,7 @@ from typing import TYPE_CHECKING, Any
 
 from quill.core.wordpress import abilities as ab
 from quill.core.wordpress import site as wp
+from quill.core.wordpress import site_ask as sa
 from quill.core.wordpress import site_features as sf
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui import wordpress_picture_ai as pai
@@ -119,22 +126,28 @@ class WordPressAbilitiesCommands(WordPressApiSiteBase):
         profile = self.chosen_site("Ask the Site")
         if profile is None:
             return
+
+        def offered(api: Any, index: sf.SiteIndex, _account: wp.Account) -> Any:
+            return ab.list_abilities(api) if index.supports(ab.NAMESPACE) else None
+
         self.when_offered(
             profile,
             f"reading {profile.name}'s abilities",
-            _why_not(profile.name),
-            lambda api, _index, _account: ab.list_abilities(api),
+            lambda _index, _account: "",
+            offered,
             lambda found: self._ask_site(profile, found),
         )
 
-    def _ask_site(self, profile: st.SiteProfile, abilities: list[ab.Ability]) -> None:
+    def _ask_site(self, profile: st.SiteProfile, abilities: list[ab.Ability] | None) -> None:
         on = self.ability_choices(profile).on()
-        enabled = [a for a in abilities if a.name in on]
+        enabled = [a for a in abilities or [] if a.name in on]
         if not enabled:
-            self.host.announce(
-                f"No ability of {profile.name} is turned on. Turn them on one by one in "
-                "Abilities, then ask again."
+            why = (
+                f"{profile.name} offers no abilities for AI"
+                if abilities is None
+                else f"No ability of {profile.name} is turned on"
             )
+            self._ask_content(profile, why)
             return
         ai = pai.editor_of(self.host)
         if not pai.switched_on(ai, self.host.announce):
@@ -199,3 +212,96 @@ class WordPressAbilitiesCommands(WordPressApiSiteBase):
             text=text,
             help_text="The AI's answer, then which of the site's abilities ran to get it.",
         )
+
+    # ------------------------------------------------------------------ #
+    # Ask About This Site: answered from the site's own content
+
+    def _ask_content(self, profile: st.SiteProfile, why: str) -> None:
+        ai = pai.editor_of(self.host)
+        if not pai.switched_on(ai, self.host.announce):
+            return
+        title = f"Ask About This Site, {profile.name}"
+        question = dlg.ask_text(
+            self.host.parent,
+            self.host.show_modal,
+            title=title,
+            prompt="&Question:",
+            multiline=True,
+            help_text=(
+                f"{why}, so the answer comes from the site's recent posts and pages. QUILL "
+                "shows you what will be sent, and to which AI, before it sends anything."
+            ),
+        )
+        if question is None or not question.strip():
+            return
+        scope = dlg.ask_choice(
+            self.host.parent,
+            self.host.show_modal,
+            title=title,
+            prompt="&Content to answer from:",
+            rows=[
+                "Published posts and pages only",
+                "Also drafts, pending, scheduled and private items",
+            ],
+            help_text=(
+                "Drafts and private items are not public. Include them only if the AI you "
+                "chose may see them."
+            ),
+        )
+        if scope is None:
+            return
+        api = self.api(profile)  # type: ignore[attr-defined]
+
+        def read() -> sa.Digest:
+            items, unread = sa.read_content(api, include_private=scope == 1)
+            return sa.content_digest(items, unread=unread)
+
+        def digested(digest: sa.Digest) -> None:
+            if not digest.included:
+                unread = f" Not read: {'; '.join(digest.unread)}." if digest.unread else ""
+                self.host.announce(f"{profile.name} has no posts or pages to answer from.{unread}")
+                return
+            if not dlg.confirm(
+                self.host.parent,
+                self.host.show_modal,
+                title="Send Site Content to AI",
+                message=sa.consent_message(profile.name, _ai_name(ai), digest),
+                yes_label="Send",
+            ):
+                self.host.announce(f"Nothing from {profile.name} was sent.")
+                return
+            source = f"Answered from {digest.included} posts and pages of {profile.name}."
+            pai.ask_text(
+                ai,
+                sa.ask_prompt(profile.name, question, digest),
+                lambda answer: self._show_content_answer(profile, f"{answer}\n\n{source}"),
+                self.host.announce,
+            )
+
+        self.background(  # type: ignore[attr-defined]
+            f"reading {profile.name}'s posts and pages", read, digested
+        )
+
+    def _show_content_answer(self, profile: st.SiteProfile, text: str) -> None:
+        dlg.show_report(
+            self.host.parent,
+            self.host.show_modal,
+            title=f"Ask About This Site, {profile.name}",
+            text=text,
+            help_text="The AI's answer, then how many of the site's posts and pages it read.",
+        )
+
+
+def _ai_name(ai: Any) -> str:
+    """The connection in use, as Which AI Am I Using says it; else a plain stand-in."""
+    service_of = getattr(ai, "_ai_service", None)
+    service = service_of() if callable(service_of) else None
+    which = getattr(service, "which_ai", None)
+    if callable(which):
+        try:
+            said = str(which() or "").strip()
+        except Exception:  # noqa: BLE001 - only words for a confirm
+            said = ""
+        if said:
+            return f"the AI you chose ({said.rstrip('.')})"
+    return "the AI you chose in Choose Your AI"

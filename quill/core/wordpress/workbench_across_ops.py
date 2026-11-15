@@ -54,7 +54,19 @@ __all__ = [
     "theme_screens",
 ]
 
-MAKE_SAME_KINDS = ("terms", "plugins", "settings", "users", "patterns", "themes", "menus")
+MAKE_SAME_KINDS = (
+    "terms",
+    "plugins",
+    "settings",
+    "users",
+    "patterns",
+    "themes",
+    "menus",
+    "forms",
+    "role_pages",
+    "redirects",
+    "spam_senders",
+)
 """The Across Sites kinds Make Them the Same works on."""
 
 
@@ -283,7 +295,9 @@ def _edit_for(
             {"content": mine.get("content", "")},
             words="content becomes the winner's",
         )
-    return f"{kind} are not changed by an edit here"
+    from quill.core.wordpress.workbench_across_more import edit_for_more
+
+    return edit_for_more(kind, site, name, winner, mine)
 
 
 def make_same_edits(
@@ -472,6 +486,7 @@ def run_edits_by_site(
     api_for: Callable[[str], WordPressApi], edits: Sequence[Edit]
 ) -> tuple[list[Outcome], list[Edit]]:
     """:func:`apply_edits` site by site; a site that fails does not stop the rest."""
+    from quill.core.wordpress.workbench_across_more import resolve_group
     from quill.core.wordpress.workbench_by_name import apply_edits
 
     outcomes: list[Outcome] = []
@@ -479,7 +494,9 @@ def run_edits_by_site(
     for site in dict.fromkeys(e.site for e in edits):
         mine = [e for e in edits if e.site == site]
         try:
-            got, done = apply_edits(api_for(site), mine)
+            api = api_for(site)
+            mine = [resolve_group(api, e) for e in mine]  # a new redirect's group, per site
+            got, done = apply_edits(api, mine)
         except Exception as exc:  # noqa: BLE001 - one site's failure is that site's outcome
             got = [
                 Outcome(site, e.title, False, getattr(exc, "plain", "") or str(exc)) for e in mine

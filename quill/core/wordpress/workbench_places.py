@@ -109,6 +109,14 @@ def _a(verb: str, label: str, **kwargs: Any) -> ActionRow:
     return ActionRow(f"{_PREFIX}{verb}", label, tier, needs, help_text, default)
 
 
+PLUGIN_BLOCK_USES = _a(
+    "plugin_block_uses",
+    "Pages Using Its Blocks",
+    help="Before a plugin is removed: every page using a block from its namespace.",
+)
+"""On a block row of By Name and on a plugin's row (PRD 15.12)."""
+
+
 def places_rows(read: ActionRow, sheet: ActionRow) -> Mapping[str, tuple[ActionRow, ...]]:
     """The rows' menus, given the table's own Read in Full and Properties rows."""
     return {
@@ -149,6 +157,26 @@ def places_rows(read: ActionRow, sheet: ActionRow) -> Mapping[str, tuple[ActionR
                 "Find Items Missing This Field",
                 help="The posts and pages with no value for this custom field.",
             ),
+            _a(
+                "convert_shortcode",
+                "Convert to Block...",
+                tier=Tier.WRITE,
+                help="A core shortcode, such as gallery or caption, made its core block on the "
+                "items you check, previewed item by item first.",
+            ),
+            _a(
+                "update_pattern",
+                "Update Pattern Everywhere...",
+                tier=Tier.WRITE,
+                help="Change a synced pattern's content once; every page placing it shows it.",
+            ),
+            _a(
+                "detach_pattern",
+                "Detach Copies...",
+                tier=Tier.WRITE,
+                help="The pages you check get the pattern's own blocks, no longer synced.",
+            ),
+            PLUGIN_BLOCK_USES,
             CHECK_LINKS,
             sheet,
         ),
@@ -159,6 +187,20 @@ def places_rows(read: ActionRow, sheet: ActionRow) -> Mapping[str, tuple[ActionR
                 "Make Them the Same...",
                 tier=Tier.WRITE,
                 help="Choose the version that wins; every site's change is previewed first.",
+            ),
+            _a(
+                "merge_everywhere",
+                "Merge Everywhere...",
+                tier=Tier.WRITE,
+                help="A tag or category: on each site, every post moves to another term you "
+                "name, and this one is deleted, previewed site by site.",
+            ),
+            _a(
+                "remove_everywhere",
+                "Remove Everywhere...",
+                tier=Tier.DESTRUCTIVE,
+                help="A term, redirect or blocked sender, deleted on every site that has it, "
+                "after a preview.",
             ),
             _a(
                 "promote_network",
@@ -202,5 +244,11 @@ KEYLESS: dict[str, str] = {
     f"{_PREFIX}promote_network": "Done once per plugin on a network, rarely (rule 9).",
     f"{_PREFIX}compare_styles": "Comparing styles across sites is occasional (rule 9).",
     f"{_PREFIX}revoke_everywhere": "Revoking a leaked password everywhere is rare (rule 9).",
+    f"{_PREFIX}convert_shortcode": "Converting shortcodes is done once per site (rule 9).",
+    f"{_PREFIX}update_pattern": "Changing a pattern for every page is occasional (rule 9).",
+    f"{_PREFIX}detach_pattern": "Detaching copies is occasional and previewed (rule 9).",
+    f"{_PREFIX}plugin_block_uses": "A check before removing a plugin, now and then (rule 9).",
+    f"{_PREFIX}merge_everywhere": "Merging terms on every site is rare and previewed (rule 9).",
+    f"{_PREFIX}remove_everywhere": "Removing on every site is rare and previewed (rule 9).",
 }
 """Why each By Name and Across Sites row command has no chord (family rule 8)."""

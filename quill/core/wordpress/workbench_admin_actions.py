@@ -132,6 +132,12 @@ USER_ROWS: tuple[ActionRow, ...] = (
         "wp-admin screen, where Log Out Everywhere is one button.",
     ),
     _a(
+        "never_signed_in",
+        "Who Has Never Signed In",
+        "The people on this site with no sign-in recorded, where the site gives sign-in times "
+        "over REST (a plugin that registers last_login); otherwise it says it cannot tell.",
+    ),
+    _a(
         "invite_spreadsheet",
         "Invite from a Spreadsheet...",
         "Add people from a CSV file of email, role and name, after a preview of every row.",
@@ -227,6 +233,7 @@ KEYLESS: dict[str, str] = {
     command("cancel_membership"): "A cancellation is rare and stops payments: never a bare key.",
     command("user_app_passwords"): "Checked when a device is lost or a person leaves (rule 9).",
     command("sign_out_everywhere"): "Leaves QUILL for wp-admin, after a lost device (rule 9).",
+    command("never_signed_in"): "Checked when tidying accounts, a few times a year (rule 9).",
     command("invite_spreadsheet"): "People arrive in a batch a few times a year (rule 9).",
     command("insert_picked"): "Enter does it in picking mode, the only time it applies.",
     command("look_up_discount"): "A code is looked up when a member asks about it (rule 9).",

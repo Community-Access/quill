@@ -44,7 +44,7 @@ from quill.core.wordpress.workbench_help_actions import (
 from quill.core.wordpress.workbench_parity_actions import ITEM_ROWS as PARITY_ITEM_ROWS
 from quill.core.wordpress.workbench_parity_actions import MEDIA_ROWS as PARITY_MEDIA_ROWS
 from quill.core.wordpress.workbench_parity_actions import NODE_ROWS as PARITY_NODE_ROWS
-from quill.core.wordpress.workbench_places import places_rows
+from quill.core.wordpress.workbench_places import PLUGIN_BLOCK_USES, places_rows
 from quill.core.wordpress.workbench_plugin_actions import PLUGIN_ACTION_ROWS, QAF_FORM_ROWS
 from quill.core.wordpress.workbench_qaf_spam_edit import QAF_SPAM_ROWS
 from quill.core.wordpress.workbench_qaf_visitor_words import QAF_WORDS_ROWS
@@ -334,6 +334,7 @@ WORDPRESS_ACTIONS = ActionTable(
             ),
             WHAT_DEPENDS,  # before turning it off, or deleting it in wp-admin (D3)
             *PLUGIN_ROWS,
+            PLUGIN_BLOCK_USES,
             UPDATE_CHECK,
             _SHEET,
         ),
