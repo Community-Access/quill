@@ -377,7 +377,9 @@ def test_import_from_substack_previews_its_notes_and_makes_drafts(
     summary, lines = previews[0]
     assert summary.startswith("Make 3 items from substack.zip on Community Radio")
     assert lines[0].startswith("From a Substack export: 3 posts")
-    assert any("substackcdn.com" in line and "nothing is downloaded" in line for line in lines)
+    assert any(
+        line.count("substackcdn.com") >= 1 and "nothing is downloaded" in line for line in lines
+    )
     assert not any("WXR" in line for line in lines)
     drafts = _drafts(bench.api)
     assert [d["title"] for d in drafts] == ["Hello world", "Paid notes", "Episode one"]

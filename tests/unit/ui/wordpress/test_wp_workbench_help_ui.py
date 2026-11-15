@@ -219,7 +219,7 @@ def test_fix_changes_a_broken_link_after_a_preview_and_ctrl_z_puts_it_back(
     assert bench.api.posts[1]["content"] == 'Listen <a href="https://found.example">here</a>.'
     assert bench.said[-1] == f"Changed the link in News on {SITE}."
     bench.provider.do_undo(None, None)
-    assert "https://gone.example" in str(bench.api.posts[1]["content"])
+    assert str(bench.api.posts[1]["content"]).count("https://gone.example") >= 1
 
 
 def test_fix_sends_nothing_when_the_preview_is_cancelled(bench, monkeypatch) -> None:
