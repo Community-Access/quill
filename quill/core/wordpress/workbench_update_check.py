@@ -27,6 +27,7 @@ from typing import Any
 from urllib.parse import urlencode
 
 from quill.core.wordpress import dotorg
+from quill.core.wordpress import workbench_changelog as changelog
 from quill.core.wordpress.workbench_rows import WbRow
 
 __all__ = [
@@ -88,10 +89,21 @@ def latest_core(*, opener: dotorg.Opener | None = None) -> str:
 
 
 def latest_plugins(
-    slugs: Iterable[str], *, opener: dotorg.Opener | None = None
+    slugs: Iterable[str],
+    *,
+    opener: dotorg.Opener | None = None,
+    changelogs: dict[str, str] | None = None,
 ) -> dict[str, str | None]:
-    """Each slug's current version on WordPress.org; None when it is not listed or closed."""
-    found = dotorg.plugin_details(slugs, opener=opener)
+    """Each slug's current version on WordPress.org; None when it is not listed or closed.
+
+    Given *changelogs*, it is filled with each listed plugin's changelog as plain text,
+    read in the same request (D3: What Changed before an update).
+    """
+    found = dotorg.plugin_details(slugs, opener=opener, changelog=changelogs is not None)
+    if changelogs is not None:
+        changelogs.update({
+            slug: plugin.changelog for slug, plugin in found.items() if plugin and plugin.changelog
+        })
     return {
         slug: (plugin.version or None) if plugin is not None and not plugin.closed else None
         for slug, plugin in found.items()
@@ -120,12 +132,14 @@ class Latest:
     core: str = ""
     plugins: Mapping[str, str | None] = field(default_factory=dict)
     themes: Mapping[str, str | None] = field(default_factory=dict)
+    changelogs: Mapping[str, str] = field(default_factory=dict)  # plugin slug -> plain text
 
     def merged(self, other: Latest) -> Latest:
         return Latest(
             other.core or self.core,
             {**self.plugins, **other.plugins},
             {**self.themes, **other.themes},
+            {**self.changelogs, **other.changelogs},
         )
 
 
@@ -197,6 +211,10 @@ def mark_rows(rows: Sequence[Any], latest: Latest) -> list[Any]:
         if row.kind != "update" and word.startswith(_WAITING):
             cells["version"] = f"{installed}, update waiting: {version}"
         said = _sentence(word, installed, version)
+        log = latest.changelogs.get(slug, "") if what == "plugin" else ""
+        if log and word.startswith(_WAITING) and version:
+            said += " " + changelog.summary(row.title, log, installed, version)
+            said += "\n\n" + changelog.skipped_text(log, installed, version)
         marked.append(replace(row, cells=cells, detail=f"{row.detail} {said}"))
     return marked
 

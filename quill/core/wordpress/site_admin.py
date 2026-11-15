@@ -166,6 +166,8 @@ def save_setting(api: WordPressApi, key: str, value: Any) -> dict[str, Any]:
 class CheckLine:
     status: str  # critical, recommended, good, info
     text: str
+    test: str = ""  # Site Health's test name, or QUILL's own check's (workbench_problem_help)
+    detail: str = ""  # WordPress's own description, as plain text
 
 
 _ORDER = {"critical": 0, "recommended": 1, "info": 2, "good": 3}
@@ -177,30 +179,32 @@ def site_check(api: WordPressApi, *, site_url: str, wp_version: str) -> list[Che
     index = api.get("")
     index = index if isinstance(index, dict) else {}
     lines.append(
-        CheckLine("info", f"WordPress version: {wp_version}.")
+        CheckLine("info", f"WordPress version: {wp_version}.", "wordpress-version")
         if wp_version
-        else CheckLine("info", "WordPress version: the site does not say.")
+        else CheckLine("info", "WordPress version: the site does not say.", "wordpress-version")
     )
     home = str(index.get("home") or index.get("url") or site_url)
     if urlparse(home).scheme == "https":
-        lines.append(CheckLine("good", "HTTPS: the site's address uses HTTPS."))
+        lines.append(CheckLine("good", "HTTPS: the site's address uses HTTPS.", "https-status"))
     else:
         lines.append(
             CheckLine(
                 "critical",
                 "HTTPS: the site's address does not use HTTPS. Visitors' "
                 "browsers will call it not secure.",
+                "https-status",
             )
         )
     timezone = str(index.get("timezone_string") or "")
     offset = index.get("gmt_offset")
     if timezone:
-        lines.append(CheckLine("info", f"Time zone: {timezone}."))
+        lines.append(CheckLine("info", f"Time zone: {timezone}.", "timezone"))
     elif offset is not None:
         lines.append(
             CheckLine(
                 "recommended",
                 f"Time zone: a fixed offset of {offset} hours. A city keeps daylight saving right.",
+                "timezone",
             )
         )
     lines.extend(_permalinks(api))
@@ -215,6 +219,7 @@ def site_check(api: WordPressApi, *, site_url: str, wp_version: str) -> list[Che
             "info",
             "Search engine visibility: WordPress does not share this over its API; "
             "it is under Settings, Reading in the dashboard.",
+            "search-visibility",
         )
     )
     return sorted(lines, key=lambda line: _ORDER.get(line.status, 2))
@@ -234,9 +239,10 @@ def _permalinks(api: WordPressApi) -> list[CheckLine]:
                 "recommended",
                 "Permalinks: plain (?p=123). Readable addresses help "
                 "visitors and search engines; change them under Settings, Permalinks.",
+                "permalinks",
             )
         ]
-    return [CheckLine("good", "Permalinks: readable addresses are on.")]
+    return [CheckLine("good", "Permalinks: readable addresses are on.", "permalinks")]
 
 
 def _settings_lines(api: WordPressApi) -> list[CheckLine]:

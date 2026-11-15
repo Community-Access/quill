@@ -61,7 +61,8 @@ _CONSENT = {
         "Ask WordPress.org",
         "Ask WordPress.org which versions are current? QUILL sends the short names (slugs) of "
         "this site's plugins and themes to api.wordpress.org, and asks for the current "
-        "WordPress. No site address, installed version, account or password is sent.",
+        "WordPress and each plugin's changelog. No site address, installed version, account "
+        "or password is sent.",
     ),
     "languages": (
         "Ask WordPress.org",

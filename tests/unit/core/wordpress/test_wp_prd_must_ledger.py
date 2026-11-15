@@ -281,11 +281,24 @@ MUSTS: dict[str, tuple[str, str, tuple[tuple[str, str], ...], str]] = {
     ),
     "WP-R-046": (
         "met",
-        "the shared help module (quill/ui/workbench_help_dialogs.py)",
+        "the shared help module (quill/ui/workbench_help_dialogs.py) with WordPress's hooks "
+        "(quill/ui/wordpress_workbench_help.py) and Help and Learning's topics",
         (
             (
                 CORE + "test_wp_workbench_core.py",
                 "test_every_key_the_help_teaches_is_on_the_menu_or_the_frame",
+            ),
+            (
+                CORE + "test_wp_workbench_help_core.py",
+                "test_help_and_learning_has_what_githubs_has",
+            ),
+            (
+                UI + "test_wp_workbench_help_ui.py",
+                "test_alt_f1_explains_the_wordpress_word_with_this_sites_example",
+            ),
+            (
+                UI + "test_wp_workbench_help_ui.py",
+                "test_f9_repeats_and_shift_f9_explains_what_the_workbench_said",
             ),
         ),
         "",
@@ -306,6 +319,14 @@ MUSTS: dict[str, tuple[str, str, tuple[tuple[str, str], ...], str]] = {
                 UI + "test_wp_workbench_lockout_ui.py",
                 "test_each_setting_is_explained_with_the_sites_own_example",
             ),
+            (
+                CORE + "test_wp_workbench_help_core.py",
+                "test_the_glossary_has_every_word_d1_names_each_explained",
+            ),
+            (
+                CORE + "test_wp_workbench_help_core.py",
+                "test_settings_rows_explain_permalinks_discussion_visibility_and_plugins",
+            ),
         ),
         "",
     ),
@@ -317,6 +338,18 @@ MUSTS: dict[str, tuple[str, str, tuple[tuple[str, str], ...], str]] = {
             (
                 CORE + "test_wp_workbench_rest_limits_core.py",
                 "test_plugin_theme_and_across_rows_say_the_limit_before_anyone_acts",
+            ),
+            (
+                CORE + "test_wp_workbench_help_core.py",
+                "test_wordpress_org_is_asked_for_the_changelog_with_only_the_slug",
+            ),
+            (
+                UI + "test_wp_workbench_help_ui.py",
+                "test_turning_a_plugin_off_first_says_what_depends_on_it",
+            ),
+            (
+                UI + "test_wp_workbench_help_ui.py",
+                "test_fix_changes_a_broken_link_after_a_preview_and_ctrl_z_puts_it_back",
             ),
         ),
         "",

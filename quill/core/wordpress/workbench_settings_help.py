@@ -8,6 +8,12 @@ two pages a site names as its front and posts pages (their titles and
 addresses), made by :func:`page_names` when either is set; a site that will
 not say leaves the page by number.
 
+The settings REST does not share (Permalinks, the Discussion rules, search
+engine visibility, and plugins' own settings) are explained beside these by
+:mod:`quill.core.wordpress.workbench_settings_more`, with the newest post's
+address under each Permalinks choice and how many recent comments each
+Discussion rule would have held.
+
 Wx-free and network-free apart from :func:`page_names`.
 """
 

@@ -232,8 +232,11 @@ def plugin_search_url(words: str, per_page: int = 20) -> str:
     return f"https://{DOTORG_HOST}/plugins/info/1.2/?{urlencode(query)}"
 
 
-def plugin_info_url(slug: str) -> str:
+def plugin_info_url(slug: str, *, changelog: bool = False) -> str:
+    """``plugin_information`` for *slug*; with *changelog*, its readme sections too (D3)."""
     query = {"action": "plugin_information", "request[slug]": slug.strip(), **_PLUGIN_FIELDS}
+    if changelog:
+        query["request[fields][sections]"] = "1"
     return f"https://{DOTORG_HOST}/plugins/info/1.2/?{urlencode(query)}"
 
 
@@ -274,6 +277,7 @@ class DotorgPlugin:
     closed_date: str = ""
     closed_reason: str = ""
     description: str = ""
+    changelog: str = ""  # the readme's changelog section, as plain lines (workbench_changelog)
 
     def warning(self, today: date) -> str:
         """Why this plugin may be abandoned or unsafe to keep ("" when nothing says so)."""
@@ -350,7 +354,17 @@ def parse_plugin(raw: Any, slug: str = "") -> DotorgPlugin | None:
         requires=_text(raw.get("requires")),
         requires_php=_text(raw.get("requires_php")),
         description=_plain(raw.get("short_description"))[:400],
+        changelog=_changelog(raw.get("sections")),
     )
+
+
+def _changelog(sections: Any) -> str:
+    """The changelog section, sanitised to plain text (no markup, scripts or link targets)."""
+    if not isinstance(sections, Mapping):
+        return ""
+    from quill.core.wordpress.workbench_changelog import plain_text
+
+    return plain_text(_text(sections.get("changelog")))[:60_000]
 
 
 def search_plugins(words: str, *, opener: Opener | None = None) -> list[DotorgPlugin]:
@@ -363,15 +377,23 @@ def search_plugins(words: str, *, opener: Opener | None = None) -> list[DotorgPl
 
 
 def plugin_details(
-    slugs: Iterable[str], *, opener: Opener | None = None, limit: int = 100
+    slugs: Iterable[str],
+    *,
+    opener: Opener | None = None,
+    limit: int = 100,
+    changelog: bool = False,
 ) -> dict[str, DotorgPlugin | None]:
-    """Each slug's directory entry (None: not in the directory); one request a slug."""
+    """Each slug's directory entry (None: not in the directory); one request a slug.
+
+    With *changelog*, each entry carries its changelog too; still only the slug is sent.
+    """
     found: dict[str, DotorgPlugin | None] = {}
     for slug in slugs:
         slug = slug.strip()
         if not slug or slug in found or len(found) >= limit:
             continue
-        found[slug] = parse_plugin(_get(plugin_info_url(slug), opener, answer_404=True), slug)
+        url = plugin_info_url(slug, changelog=changelog)
+        found[slug] = parse_plugin(_get(url, opener, answer_404=True), slug)
     return found
 
 

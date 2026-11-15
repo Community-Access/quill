@@ -56,6 +56,7 @@ DYNAMIC_TYPE = "custom_type"
 DYNAMIC_TAXONOMY = "custom_taxonomy"
 DYNAMIC_NAMESPACE = "more_namespace"
 
+_TOPIC = ("title", "says")
 _ITEM_COLUMNS = ("title", "status", "author", "modified")
 _POST_STATUSES = (
     ("published", "Published", "publish"),
@@ -259,6 +260,16 @@ _FIXED: tuple[NodeSpec, ...] = (
     _n("how_it_thinks", "How WordPress Thinks", "help"),
     _n("words", "Words", "help", loader="help:words", columns=("word", "meaning"), row_type="help"),
     _n("keys", "Keys", "help", loader="help:keys", columns=("key", "does"), row_type="help"),
+    # Do Something, The Guide, What Changed and Ask a Person, as GitHub's has (WP-R-046).
+    *(
+        _n(key, label, "help", loader=f"help:{view}", columns=_TOPIC, row_type="help_topic")
+        for key, label, view in (
+            ("help_tasks", "Do Something", "tasks"),
+            ("help_guide", "The Guide", "guide"),
+            ("help_changes", "What Changed", "changes"),
+            ("help_ask", "Ask a Person", "ask"),
+        )
+    ),
 )
 
 _SITE: tuple[NodeSpec, ...] = (

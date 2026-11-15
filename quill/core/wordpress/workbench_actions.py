@@ -35,6 +35,12 @@ from quill.core.wordpress.workbench_gravity_actions import (
     GRAVITY_FORM_ROWS,
     GRAVITY_QAF_ROWS,
 )
+from quill.core.wordpress.workbench_help_actions import (
+    HELP_TOPIC_ROWS,
+    PROBLEM_ROWS,
+    SETTING_HELP_ROWS,
+    WHAT_DEPENDS,
+)
 from quill.core.wordpress.workbench_parity_actions import ITEM_ROWS as PARITY_ITEM_ROWS
 from quill.core.wordpress.workbench_parity_actions import MEDIA_ROWS as PARITY_MEDIA_ROWS
 from quill.core.wordpress.workbench_parity_actions import NODE_ROWS as PARITY_NODE_ROWS
@@ -82,6 +88,7 @@ def _a(
 
 _SHEET = _a("sheet", "Properties...", help="Everything about it on one sheet. Alt+Enter.")
 _READ = _a("read", "Read in Full", default=True, help="Move to the details pane to read it.")
+_READ_TOO = _a("read", "Read in Full", help="Move to the details pane to read it.")
 _TRASH = _a(
     "trash",
     "Move to Trash",
@@ -324,6 +331,7 @@ WORDPRESS_ACTIONS = ActionTable(
                 needs="activate_plugins",
                 help="Turn the plugin on or off, after you confirm.",
             ),
+            WHAT_DEPENDS,  # before turning it off, or deleting it in wp-admin (D3)
             *PLUGIN_ROWS,
             UPDATE_CHECK,
             _SHEET,
@@ -464,11 +472,13 @@ WORDPRESS_ACTIONS = ActionTable(
         ),
         "gravity_feed": (_READ, *GRAVITY_FEED_ROWS, _DELETE, _SHEET),
         "gravity_result": (_READ, _SHEET),
+        "problem": (*PROBLEM_ROWS, _READ_TOO, _SHEET),  # Explain, Fix..., Take Me There (D3)
+        "help_topic": (*HELP_TOPIC_ROWS, _READ_TOO, _SHEET),
+        "setting_help": (_READ, *SETTING_HELP_ROWS, _SHEET),
         **{
             kind: (_READ, _SHEET)
             for kind in (
                 "fact",
-                "problem",
                 "help",
                 "font",
                 "mixed",

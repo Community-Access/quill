@@ -295,6 +295,28 @@ test the site runs, each in one line. **Needs My Attention</p>
 <p>If the authorization header test fails, the row explains that
 application passwords cannot work on that site until the host fixes it.
 That one line has saved many people an afternoon.</p>
+<p>WordPress gives each problem a label and not much else. In the
+Workbench, Enter on a Site Health row is <strong>Explain</strong>: what
+the problem means for the people who visit your site, what usually
+causes it, and the steps to fix it, followed by WordPress’s own
+description. The row’s context menu has three more:</p>
+<ul>
+<li><strong>Fix…</strong> does the fix from here when that is possible.
+A fixed time offset becomes a city time zone, such as Europe/London,
+after a preview, and Ctrl+Z puts it back. When only wp-admin can fix it,
+such as the address style under Permalinks, Fix… says why and opens that
+wp-admin screen. When nothing outside the server can fix it, the command
+is greyed and says what to ask your host.</li>
+<li><strong>Take Me There</strong> goes to the place in the tree where
+it is fixed, such as Settings or Plugins.</li>
+<li><strong>Open in Editor</strong> works on a broken link, below.</li>
+</ul>
+<p>The same commands work on <strong>Needs My Attention &gt; Broken
+Links</strong>. There, <strong>Fix…</strong> asks for the right address,
+shows how many times the post holds the old one, and changes it after
+you say yes; Ctrl+Z puts the old link back. <strong>Open in
+Editor</strong> opens the post that holds the link, when you would
+rather change the words around it too.</p>
 <p>Under Site Health:</p>
 <ul>
 <li><strong>Information</strong> shows the tests and how much room the
@@ -316,6 +338,29 @@ more, each on its own row.</p>
 <p>To change one, arrow to it and press Alt+Enter. Change the value and
 press OK. QUILL reads the setting again first, and checks afterwards
 that the site kept it.</p>
+<p>Each row says what the setting does on your site, with your own
+example: your posts page by name, what a date looks like in your date
+format. Below the settings you can change are the ones WordPress keeps
+to wp-admin, still explained with your own site:</p>
+<ul>
+<li><strong>Permalinks</strong> says what your newest post’s address
+would become under each choice (Plain, Day and name, Month and name,
+Numeric and Post name), and which one your site uses now.</li>
+<li><strong>The Discussion rules</strong> say how many of your last
+hundred comments each rule would have held: manual approval, a
+previously approved comment, two or more links, and signed-in visitors
+only.</li>
+<li><strong>Search engine visibility</strong> says what that check box
+really does: it asks search engines to leave the site out, and hides
+nothing from anyone with the address.</li>
+<li><strong>Plugin settings</strong> rows, for WooCommerce, The Events
+Calendar, Yoast SEO, Gravity Forms, Paid Memberships Pro and the others
+QUILL recognises, say which of the plugin’s settings the Workbench
+reaches. <strong>Open Its Documentation</strong> opens the plugin’s own
+help.</li>
+</ul>
+<p><strong>Open in Dashboard</strong>, on any of these, opens the
+wp-admin screen that changes it.</p>
 <p>The site language matters more than it looks. It decides which voice
 a visitor’s screen reader uses for the whole site. <strong>Language Pack
 Status…</strong>, on a setting’s context menu, says each site’s language
@@ -328,8 +373,15 @@ the Workbench at the site’s <strong>Plugins</strong>: every plugin,
 whether it is active, and its version.</p>
 <ul>
 <li><strong>Activate or Deactivate</strong> turns the selected plugin on
-or off, after a preview. Before you turn off a plugin QUILL relies on,
-such as QUILL Accessible Forms, you are warned what stops working.</li>
+or off, after a preview. Before you turn one off, QUILL asks the site
+what depends on it and puts the answer in the question: other plugins
+that need it, pages and posts that use its blocks or shortcodes, and the
+QUILL features that use it. A plugin QUILL itself relies on, such as
+QUILL Accessible Forms, also says what stops working. Ctrl+Z turns it
+back on.</li>
+<li><strong>What Depends on It</strong> asks the same question without
+changing anything. Use it before you delete a plugin in wp-admin,
+too.</li>
 <li><strong>Find a Plugin on WordPress.org…</strong> searches the plugin
 directory and installs the one you choose, switched off, after a
 preview.</li>
@@ -368,6 +420,15 @@ the Update column says “Not reported over REST” unless the site itself
 says otherwise. QUILL never guesses. Enter on any row opens that site’s
 <strong>Dashboard &gt; Updates</strong> in your browser, where updates
 are run. The Workbench never updates anything itself.</p>
+<p><strong>Check for Updates on WordPress.org…</strong>, on a plugin,
+theme or Updates row, asks WordPress.org which versions are current,
+after you agree. For a plugin with an update waiting, it also reads the
+plugin’s changelog for the versions you would skip. The row then says
+how many versions those are, and says plainly when the changelog
+mentions security fixes, breaking changes or a database update. A
+database update is the one to back up for, because turning the plugin
+off afterwards does not undo it. <strong>Read in Full</strong> shows
+what the changelog says for each of those versions, as plain text.</p>
 <p>To hear about updates as they come, turn on the Watch for them,
 below.</p>
 <h2 id="the-sites-look">The site’s look</h2>
@@ -408,7 +469,8 @@ that in your browser.</p>
 reuse and change in one place. <strong>Tools &gt; WordPress &gt; Manage
 &gt; Synced Patterns…</strong> opens it.</p>
 <p><strong>Widgets and Sidebars</strong> lists a classic theme’s widget
-areas, such as the sidebar or the footer. On an area:</p>
+areas, such as the sidebar or the footer. <strong>Tools &gt; WordPress
+&gt; Manage &gt; Widgets…</strong> opens it. On an area:</p>
 <ul>
 <li><strong>Add a Widget…</strong> offers every kind of widget the site
 has. A Block widget asks for its words. Any other kind, such as Search

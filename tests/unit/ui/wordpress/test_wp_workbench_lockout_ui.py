@@ -473,7 +473,8 @@ def test_each_setting_is_explained_with_the_sites_own_example(bench) -> None:
         "News, so visitors see your latest posts at https://radio.example/news/."
     )
     assert "show 10 posts" in rows["posts_per_page"].detail
-    assert all(len(r.detail.split(". ")) > 1 for r in bench.rows)  # value, then the why
+    settings = [r for r in bench.rows if r.kind == "setting"]
+    assert all(len(r.detail.split(". ")) > 1 for r in settings)  # value, then the why
 
 
 def test_visual_review_runs_the_editors_review_on_a_published_row(bench) -> None:

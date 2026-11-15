@@ -187,6 +187,9 @@ class WorkbenchPeopleCommands:
         gravity = self.gravity_refusal(command_id, row)  # type: ignore[attr-defined]
         if gravity:
             return gravity
+        problem = self.problem_refusal(command_id, row)  # type: ignore[attr-defined]
+        if problem:
+            return problem
         kind = row.kind if row.kind in self.actions.row_types else "fact"
         action = next((a for a in self.actions.rows_for(kind) if a.command_id == command_id), None)
         if action is None:
