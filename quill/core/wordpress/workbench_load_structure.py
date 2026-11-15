@@ -261,15 +261,13 @@ def load_menus(ctx: SiteContext) -> list[WbRow]:
 
 def load_abilities(ctx: SiteContext) -> list[WbRow]:
     from quill.core.wordpress.abilities import category_labels, list_abilities
-    from quill.core.wordpress.workbench_discovered import registered_by
+    from quill.core.wordpress.workbench_model_sources import plugin_for_namespace
 
     rows: list[WbRow] = []
     abilities = list_abilities(ctx.api)
     labels = category_labels(ctx.api) if abilities else {}  # wp-abilities/v1/categories
     for ability in abilities:
-        namespace = ability.name.split("/", 1)[0]
-        owner = registered_by(namespace)
-        plugin = "" if owner == "a plugin or the theme" else owner
+        plugin = plugin_for_namespace(ability.name.split("/", 1)[0])  # "" when not known
         detail = f"{plugin}: " if plugin else ""
         rows.append(
             _simple(

@@ -66,6 +66,9 @@ _MAKE_SAME_NEEDS = {
     "patterns": "edit_posts",
     "menus": "edit_theme_options",
     "themes": "switch_themes",
+    "role_pages": "edit_others_pages",
+    "redirects": "manage_options",
+    "spam_senders": "manage_options",
 }
 
 

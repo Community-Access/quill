@@ -54,6 +54,28 @@ If the authorization header test fails, the row explains that application
 passwords cannot work on that site until the host fixes it. That one line has
 saved many people an afternoon.
 
+WordPress gives each problem a label and not much else. In the Workbench,
+Enter on a Site Health row is **Explain**: what the problem means for the
+people who visit your site, what usually causes it, and the steps to fix it,
+followed by WordPress's own description. The row's context menu has three
+more:
+
+- **Fix...** does the fix from here when that is possible. A fixed time
+  offset becomes a city time zone, such as Europe/London, after a preview,
+  and Ctrl+Z puts it back. When only wp-admin can fix it, such as the address
+  style under Permalinks, Fix... says why and opens that wp-admin screen.
+  When nothing outside the server can fix it, the command is greyed and says
+  what to ask your host.
+- **Take Me There** goes to the place in the tree where it is fixed, such as
+  Settings or Plugins.
+- **Open in Editor** works on a broken link, below.
+
+The same commands work on **Needs My Attention > Broken Links**. There,
+**Fix...** asks for the right address, shows how many times the post holds
+the old one, and changes it after you say yes; Ctrl+Z puts the old link back.
+**Open in Editor** opens the post that holds the link, when you would rather
+change the words around it too.
+
 Under Site Health:
 
 - **Information** shows the tests and how much room the site's folders take.
@@ -77,6 +99,28 @@ To change one, arrow to it and press Alt+Enter. Change the value and press
 OK. QUILL reads the setting again first, and checks afterwards that the site
 kept it.
 
+Each row says what the setting does on your site, with your own example:
+your posts page by name, what a date looks like in your date format. Below
+the settings you can change are the ones WordPress keeps to wp-admin, still
+explained with your own site:
+
+- **Permalinks** says what your newest post's address would become under
+  each choice (Plain, Day and name, Month and name, Numeric and Post name),
+  and which one your site uses now.
+- **The Discussion rules** say how many of your last hundred comments each
+  rule would have held: manual approval, a previously approved comment, two
+  or more links, and signed-in visitors only.
+- **Search engine visibility** says what that check box really does: it asks
+  search engines to leave the site out, and hides nothing from anyone with
+  the address.
+- **Plugin settings** rows, for WooCommerce, The Events Calendar, Yoast SEO,
+  Gravity Forms, Paid Memberships Pro and the others QUILL recognises, say
+  which of the plugin's settings the Workbench reaches. **Open Its
+  Documentation** opens the plugin's own help.
+
+**Open in Dashboard**, on any of these, opens the wp-admin screen that
+changes it.
+
 The site language matters more than it looks. It decides which voice a
 visitor's screen reader uses for the whole site. **Language Pack Status...**,
 on a setting's context menu, says each site's language and whether
@@ -89,8 +133,13 @@ WordPress.org, so QUILL asks you first, naming the address and what is sent.
 **Plugins**: every plugin, whether it is active, and its version.
 
 - **Activate or Deactivate** turns the selected plugin on or off, after a
-  preview. Before you turn off a plugin QUILL relies on, such as QUILL
-  Accessible Forms, you are warned what stops working.
+  preview. Before you turn one off, QUILL asks the site what depends on it
+  and puts the answer in the question: other plugins that need it, pages and
+  posts that use its blocks or shortcodes, and the QUILL features that use
+  it. A plugin QUILL itself relies on, such as QUILL Accessible Forms, also
+  says what stops working. Ctrl+Z turns it back on.
+- **What Depends on It** asks the same question without changing anything.
+  Use it before you delete a plugin in wp-admin, too.
 - **Find a Plugin on WordPress.org...** searches the plugin directory and
   installs the one you choose, switched off, after a preview.
 - **Check on WordPress.org...** reads every plugin on the site from the
@@ -128,6 +177,15 @@ Update column says "Not reported over REST" unless the site itself says
 otherwise. QUILL never guesses. Enter on any row opens that site's
 **Dashboard > Updates** in your browser, where updates are run. The
 Workbench never updates anything itself.
+
+**Check for Updates on WordPress.org...**, on a plugin, theme or Updates
+row, asks WordPress.org which versions are current, after you agree. For a
+plugin with an update waiting, it also reads the plugin's changelog for the
+versions you would skip. The row then says how many versions those are, and
+says plainly when the changelog mentions security fixes, breaking changes or
+a database update. A database update is the one to back up for, because
+turning the plugin off afterwards does not undo it. **Read in Full** shows
+what the changelog says for each of those versions, as plain text.
 
 To hear about updates as they come, turn on the Watch for them, below.
 
@@ -217,10 +275,30 @@ block theme:
 - **Tools > WordPress > Manage > Space Used** says how much room your uploads,
   themes, plugins, WordPress itself and the database take, in plain words.
 
-**Content Model**, in each site's branch, lists every kind of content and
-every way of grouping the site has, with who added it, such as Gravity Forms
-or The Events Calendar. These are defined in a plugin's or theme's code, so
-they are read only here. Their items are still edited in their own lists.
+**Content Model**, in each site's branch, lists every kind of content,
+every way of grouping it, and every group of fields the site has, with who
+added each one. Field groups include the registered fields on each kind of
+content, Advanced Custom Fields and Meta Box fields, every pod Pods keeps and
+every CMB2 box.
+
+WordPress does not say which plugin added a type, so QUILL names one only
+when the site shows it: QUILL Site Types keeps it, a field plugin lists it,
+or it lives under a plugin's own part of the site's REST API. Otherwise it
+says **unknown**, and the row's detail says why. When Custom Post Type UI is
+active, the detail says that plugin may be the one, because it keeps its
+types in wp-admin where QUILL cannot see them.
+
+These are defined in a plugin's or theme's code, so they are read only here.
+Their items are still edited in their own lists.
+
+When the site has QUILL Site Types, **Copy to QUILL Site Types...** on the
+context menu copies a post type, taxonomy or field group into it under the
+same name, after a preview. This is how you move a definition away from
+another plugin. Nothing is deleted from the original. QUILL Site Types will
+not take a post type or taxonomy that something else still registers, so
+turn it off in its plugin first; its posts stay. A field group can be copied
+straight away, and values already saved under its field names show up as
+custom fields. The preview names anything that will not come across.
 
 ## Jobs only wp-admin does
 
@@ -256,6 +334,23 @@ WordPress 6.9 lets a site offer actions to AI, called abilities, such as
   the AI wants to use one, QUILL asks you first, every time, and says exactly
   what it will be given. The answer ends by saying what ran on your site.
 
+**Asking about what the site says.** Any site can be asked, abilities or
+not. When no ability is turned on, or the site offers none, Ask the Site
+answers from the site's own writing instead: "Which pages mention our old
+address?" or "What did we post about the fundraiser?"
+
+1. Type your question.
+2. Choose what it may read: published posts and pages only, or drafts,
+   pending, scheduled and private items as well. Those are not public, so
+   include them only if the AI you chose may see them.
+3. QUILL reads the most recently changed posts and pages, then tells you how
+   many it will send, whether any are not public, and which AI gets them.
+   Nothing is sent until you choose Send.
+
+The answer names the pages it came from, and ends by saying how many posts
+and pages it read. A very large site is cut to its newest writing, and the
+AI is told the answer may be incomplete.
+
 ## Watches
 
 Watches tell you when something happens on your sites while QUILL is open.
@@ -270,6 +365,30 @@ available, scheduled posts going live, a site not answering and answering
 again, items with a reviewer leaving the queue, Site Health status changes,
 and form spam questions, once a week. Site Health stays silent for an
 account that is not an administrator.
+
+A few more are there for the things that are easy to miss:
+
+- **New shop orders** and **products running low on stock**, on a site with
+  WooCommerce. Low means at or under the product's own low-stock amount, or
+  the shop's if the product has none.
+- **A security certificate running out within 30 days.** Once a day, QUILL
+  reads the certificate your site's own address presents, and nothing else.
+  You hear once when it is 30 days away or less, once if browsers stop
+  trusting it, and once more when it is renewed. Sites on WordPress.com are
+  left out, because WordPress.com renews theirs.
+- **Plugins that may be abandoned.** Once a week, QUILL asks WordPress.org
+  about each plugin on the site, by its short name only. You hear about one
+  that WordPress.org has closed, or that has not been updated there for over
+  two years.
+- **An accessibility statement whose facts have changed.** When Check the
+  Whole Site finds something different from the last time, and your
+  published Accessibility page was saved before that check, you hear that
+  the statement is out of date. **Write an Accessibility Statement** drafts
+  it again with the new facts (Chapter 7).
+- **A weekly sentence about each whole site**: comments waiting, plugin
+  updates, Site Health tests that are critical, plugins that may be
+  abandoned, low stock and when the certificate runs out, said together once
+  a week.
 
 Each site is checked no more often than every fifteen minutes. The first
 check is silent, so you only hear about what changes after it. **Go >

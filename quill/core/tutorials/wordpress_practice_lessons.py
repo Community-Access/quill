@@ -9,13 +9,19 @@ site or a command that sends anything to one (Copy to Site, Make Them the
 Same, Publish). :func:`practice_only_problems` states that rule as a check,
 and the catalogue test calls it.
 
-The Workbench is QUILL's own window -- QUILL Lite does not have it -- so the
-track is QUILL's alone. Each step names the Workbench command and carries the
-key from the Workbench's own menu table (:data:`WORDPRESS_KEYS`), so the key
-a lesson teaches is the key the window binds.
+Both editors open the one Workbench (Tools > WordPress > Open WordPress
+Workbench), so both teach the track: :func:`for_lite` turns QUILL's lessons
+into QUILL Lite's, naming Lite's own handler for the editor rows and keeping
+every Workbench key as a literal, since those keys belong to the Workbench
+window rather than to either editor's command table. Each step names the
+Workbench command and carries the key from the Workbench's own menu table
+(:data:`WORDPRESS_KEYS`), so the key a lesson teaches is the key the window
+binds.
 """
 
 from __future__ import annotations
+
+from dataclasses import replace
 
 from quill.core.tutorials.model import Step, Track, Tutorial
 from quill.core.wordpress.workbench_practice import PRACTICE_NAME, site_url
@@ -25,8 +31,10 @@ __all__ = [
     "FORBIDDEN_COMMANDS",
     "PRACTICE_TRACK",
     "PRACTICE_TRACK_ID",
+    "for_lite",
     "practice_lessons",
     "practice_only_problems",
+    "workbench_step",
 ]
 
 PRACTICE_TRACK_ID = "wordpress-practice"
@@ -56,9 +64,14 @@ def _wb(verb: str) -> tuple[str, tuple[str, ...]]:
     return command_id, ((key,) if key else ())
 
 
-def _step(verb: str, **fields: str) -> Step:
-    command_id, keys = _wb(verb)
-    return Step(command=command_id, keys=keys, **fields)
+def _step(verb: str, *, keys: tuple[str, ...] = (), **fields: str) -> Step:
+    """The window's key first, then any literal keys the step also needs (F5, Down)."""
+    command_id, bound = _wb(verb)
+    return Step(command=command_id, keys=bound + keys, **fields)
+
+
+#: A step about one Workbench menu command, with the key the window binds.
+workbench_step = _step
 
 
 def practice_lessons(
@@ -282,3 +295,26 @@ def practice_only_problems(tutorials: tuple[Tutorial, ...]) -> list[str]:
             if "https://" in text or ("http://" in text and ADDRESS not in text):
                 problems.append(f"{where}: names a site address other than the Practice Site.")
     return problems
+
+
+def for_lite(tutorials: tuple[Tutorial, ...]) -> tuple[Tutorial, ...]:
+    """QUILL's practice lessons as QUILL Lite teaches them.
+
+    An editor row (``wordpress.workbench``) becomes Lite's own handler, so its
+    key renders from Lite's table. A Workbench command (``wordpress.workbench.*``)
+    is no command of Lite's, so the step keeps its key as a literal and names
+    no command. QUILL Lite's lessons watch for nothing, so checks are dropped
+    and every step is moved on by hand.
+    """
+    from quill.core.wordpress.menu import lite_handler
+    from quill.core.wordpress.workbench_window_menu import PREFIX
+
+    def lite_step(step: Step) -> Step:
+        command_id = step.command
+        if command_id.startswith(PREFIX):
+            command_id = ""
+        elif command_id.startswith("wordpress."):
+            command_id = lite_handler(command_id)
+        return replace(step, command=command_id, check="")
+
+    return tuple(replace(t, steps=tuple(lite_step(s) for s in t.steps)) for t in tutorials)

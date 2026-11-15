@@ -3656,7 +3656,7 @@ Control coverage: 354 audited sites (354 helped).
 #### SearchHelpDialog (`quill/ui/workbench_help_dialogs.py`)
 
 - `self.box`: Type a few words, such as who can merge or re-run. The results below narrow as you type; Enter moves to them.
-- `self.results`: Each result says what it is: a place, a command with its key, a GitHub word or a task. Enter goes there, runs it or reads it.
+- `self.results`: Each result says what it is: a place, a command with its key, a glossary word or a task. Enter goes there, runs it or reads it.
 - `go`: Do the selected result. Enter does the same.
 - `close`: Close Search Help. Escape does the same.
 #### WorkbenchPropertiesDialog (`quill/ui/workbench_properties_dialog.py`)

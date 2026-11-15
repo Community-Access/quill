@@ -267,7 +267,11 @@ def load_settings(ctx: SiteContext) -> list[WbRow]:
                 raw={"key": key, "value": settings.get(key)},
             )
         )
-    return rows
+    from quill.core.wordpress.workbench_settings_more import more_rows
+
+    # Permalinks, Discussion, search visibility and plugin settings, which REST keeps (D2).
+    namespaces = ctx.info.namespaces if ctx.info is not None else ()
+    return rows + more_rows(ctx.api, ctx.name, ctx.url, namespaces)
 
 
 def load_health(ctx: SiteContext) -> list[WbRow]:
@@ -289,6 +293,7 @@ def load_health(ctx: SiteContext) -> list[WbRow]:
             },
             line.text,
             status=line.status,
+            raw={"test": line.test, "description": line.detail},
         )
         for index, line in enumerate(lines)
     ]

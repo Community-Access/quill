@@ -33,6 +33,7 @@ MENU_TIERS: dict[str, Tier] = {
     command("import_posts"): Tier.WRITE,
     command("import_folder"): Tier.WRITE,
     command("import_wxr"): Tier.WRITE,
+    command("import_platform"): Tier.WRITE,
     command("plain_batch"): Tier.WRITE,
     command("restore_snapshot"): Tier.WRITE,
     command("your_profile"): Tier.WRITE,
@@ -43,6 +44,7 @@ MENU_TIERS: dict[str, Tier] = {
 #: checked when it is sent. Undo is the history's, checked by the change itself.
 READ_ONLY_VERBS: frozenset[str] = frozenset({
     "access",
+    "archive_static",
     "comment_counts",
     "compare_sites",
     "export_list",

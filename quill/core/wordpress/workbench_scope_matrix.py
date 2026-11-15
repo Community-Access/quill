@@ -42,7 +42,18 @@ BY_NAME_KINDS = (
     "forms",
     "template_parts",
 )
-BY_NAME_OPS = ("find_uses", "rename", "split", "merge", "reassign", "replace")
+BY_NAME_OPS = (
+    "find_uses",
+    "rename",
+    "split",
+    "merge",
+    "reassign",
+    "replace",
+    "convert",
+    "update_all",
+    "detach",
+    "plugin_uses",
+)
 
 ACROSS_MATRIX_KINDS = (
     "terms",
@@ -165,6 +176,40 @@ _BY_NAME: Mapping[str, Mapping[str, Support]] = {
     },
 }
 
+#: The four operations only one or two kinds have, and why every other kind has not.
+_ONLY: Mapping[str, Support] = {
+    "convert": _no("Only a shortcode has a block to become."),
+    "update_all": _no("Only a synced pattern is one record shown everywhere it is placed."),
+    "detach": _no("Only a synced pattern is placed by reference, so only it can be detached."),
+    "plugin_uses": _no(
+        "Blocks and Shortcodes, or a plugin's row, finds the pages using a plugin's blocks."
+    ),
+}
+
+#: The cells of those four that are supported (PRD 15.12: shortcodes and blocks, patterns).
+_MORE: Mapping[tuple[str, str], Support] = {
+    ("blocks", "convert"): _yes(
+        "convert_shortcode",
+        "A core shortcode becomes its core block (gallery, caption, audio, video, embed), "
+        "previewed item by item; playlist has no core block, so it stays a shortcode.",
+    ),
+    ("blocks", "plugin_uses"): _yes(
+        "plugin_block_uses",
+        "Every page using a block from the same namespace, so nothing breaks unseen when its "
+        "plugin is removed.",
+    ),
+    ("patterns", "update_all"): _yes(
+        "update_pattern",
+        "The synced pattern's content, changed once; every page placing it shows the change, "
+        "and undo puts it back.",
+    ),
+    ("patterns", "detach"): _yes(
+        "detach_pattern",
+        "Chosen pages get the pattern's own blocks in place of the reference, as the editor's "
+        "Detach does; undo puts the reference back.",
+    ),
+}
+
 _TEMPLATE_PARTS: Mapping[str, Support] = {
     "find_uses": _yes("where_used", "Each template, post and page that places the part."),
     "rename": _yes(
@@ -186,13 +231,30 @@ _NO_NETWORK = (
     "changed as its own site."
 )
 
+_STARTER = (
+    "A starter page is registered by each site's theme or plugins in code, and REST reads "
+    "it (wp/v2/block-patterns/patterns) but cannot register one, so it is compared, not copied."
+)
+_TYPES = (
+    "Post types are registered by code or a plugin on each site; REST reads them "
+    "(wp/v2/types) and cannot make or change one, so they are compared, not copied."
+)
+
 _ACROSS: Mapping[str, Mapping[str, Support]] = {
     "terms": {
         "variants": _yes("read", "Slugs that differ, and the sites missing the term."),
         "make_same": _yes("make_same", "Name, slug and description; made where missing."),
         "fill_missing": _yes("make_same", "Make Them the Same makes it on the sites missing it."),
-        "merge": _no("Merging moves a site's own posts; By Name > Merge does it on each site."),
-        "remove": _no("Deleting a term everywhere is not offered: its posts differ on each site."),
+        "merge": _yes(
+            "merge_everywhere",
+            "On each site with both terms, every post moves to the other term and this one is "
+            "deleted, previewed site by site; it is final.",
+        ),
+        "remove": _yes(
+            "remove_everywhere",
+            "Deleted on every site that has it, after a preview giving each site's post count; "
+            "it is final.",
+        ),
         "update": _no("Terms have no versions to update."),
         "compare_styles": _no("Only themes have global styles."),
         "promote_network": _no("WordPress has no network-wide terms."),
@@ -295,38 +357,118 @@ _ACROSS: Mapping[str, Mapping[str, Support]] = {
         "compare_styles": _no("Only themes have global styles."),
         "promote_network": _no("Application passwords are per site, even on a network."),
     },
+    "starter_pages": {
+        "variants": _yes(
+            "read",
+            "Each starter page pattern by title, its version on each site, and the sites "
+            "without it.",
+        ),
+        "make_same": _no(_STARTER),
+        "fill_missing": _no(_STARTER),
+        "merge": _no("Starter pages are not merged."),
+        "remove": _no(_STARTER),
+        "update": _no(_STARTER),
+        "compare_styles": _no("Only themes have global styles."),
+        "promote_network": _no("WordPress has no network-wide starter pages."),
+    },
+    "forms": {
+        "variants": _yes(
+            "read",
+            "Each QUILL Accessible Forms form by title, its questions, and the sites without it.",
+        ),
+        "make_same": _yes(
+            "make_same",
+            "The winner's questions; made as a draft where missing. Each site keeps its own "
+            "entries and notification addresses, which a copy would get wrong.",
+        ),
+        "fill_missing": _yes("make_same", "Make Them the Same makes a draft where it is missing."),
+        "merge": _no("Forms are not merged; their entries stay with each form."),
+        "remove": _no("A form holds that site's entries; delete it in Forms on each site."),
+        "update": _no("Make Them the Same sets the questions."),
+        "compare_styles": _no("Only themes have global styles."),
+        "promote_network": _no("QUILL Accessible Forms has no network-wide forms."),
+    },
+    "content_types": {
+        "variants": _yes(
+            "read", "Each post type by name, how it is set up, and the sites without it."
+        ),
+        "make_same": _no(_TYPES),
+        "fill_missing": _no(_TYPES),
+        "merge": _no("Post types are not merged."),
+        "remove": _no(_TYPES),
+        "update": _no(_TYPES),
+        "compare_styles": _no("Only themes have global styles."),
+        "promote_network": _no("WordPress has no network-wide post types."),
+    },
+    "role_pages": {
+        "variants": _yes(
+            "read",
+            "The front page and the privacy policy page, and when each was last updated, site "
+            "by site.",
+        ),
+        "make_same": _yes(
+            "make_same",
+            "The text of the one you choose, on each site's page in the same role; undo puts "
+            "each back.",
+        ),
+        "fill_missing": _no(
+            "Which page has a role is set in Settings > Reading or Privacy on each site; make "
+            "the page there first."
+        ),
+        "merge": _no("Pages are not merged."),
+        "remove": _no("A page with a role is not deleted everywhere; the site would lose it."),
+        "update": _no("Make Them the Same updates the stale ones from the one you choose."),
+        "compare_styles": _no("Only themes have global styles."),
+        "promote_network": _no("WordPress has no network-wide pages."),
+    },
+    "redirects": {
+        "variants": _yes(
+            "read",
+            "Each redirect by the address it starts from, where it leads on each site, and the "
+            "sites without it (Redirection, redirection/v1).",
+        ),
+        "make_same": _yes(
+            "make_same",
+            "The winner's target and code; made where missing, in each site's default group.",
+        ),
+        "fill_missing": _yes("make_same", "Make Them the Same makes it where it is missing."),
+        "merge": _no("Redirects are not merged."),
+        "remove": _yes(
+            "remove_everywhere",
+            "Deleted on every site that has it, after a preview; Redirection has no Trash, so "
+            "it is final.",
+        ),
+        "update": _no("Make Them the Same sets the target."),
+        "compare_styles": _no("Only themes have global styles."),
+        "promote_network": _no("Redirection keeps redirects per site, even on a network."),
+    },
+    "spam_senders": {
+        "variants": _yes(
+            "read",
+            "Each blocked sender on QUILL Accessible Forms' blocklist (qaf/v1/spam/blocklist), "
+            "and the sites without it.",
+        ),
+        "make_same": _yes("make_same", "Blocked on every site missing it, after a preview."),
+        "fill_missing": _yes("make_same", "Make Them the Same blocks it where it is missing."),
+        "merge": _no("Blocked senders are not merged."),
+        "remove": _yes(
+            "remove_everywhere", "Unblocked on every site that blocks it, after a preview."
+        ),
+        "update": _no("A blocked sender has nothing to update."),
+        "compare_styles": _no("Only themes have global styles."),
+        "promote_network": _no("QUILL Accessible Forms keeps its blocklist per site."),
+    },
 }
 
-_NOT_ACROSS: Mapping[str, str] = {
-    "starter_pages": (
-        "Starter page patterns come from each site's theme and plugins and are read-only over "
-        "REST (wp/v2/block-patterns/patterns), so there is nothing to make the same."
-    ),
-    "forms": (
-        "A form carries per-site entries and notification addresses that a copy would get "
-        "wrong, so forms are not compared across sites."
-    ),
-    "content_types": (
-        "Post types are registered by code or a plugin on each site; REST reads them and "
-        "cannot make one."
-    ),
-    "role_pages": (
-        "WordPress's REST API does not say which page is the privacy policy page; that is "
-        "Settings > Privacy in wp-admin, on each site."
-    ),
-    "redirects": (
-        "Core has no redirects API; the Redirection plugin's is per site and not yet checked "
-        "against a live install (15.11)."
-    ),
-    "spam_senders": (
-        "Core's comment blocklist (disallowed_keys) is not in wp/v2/settings, so it cannot be "
-        "changed over REST."
-    ),
-}
+#: Kinds Across Sites declines whole, with the reason. Empty since WP-R-044: each kind
+#: above is decided cell by cell instead.
+_NOT_ACROSS: Mapping[str, str] = {}
 
 
 def by_name_support(kind: str, op: str) -> Support:
     """One By Name cell on one site."""
+    if op in _ONLY:
+        return _MORE.get((kind, op), _ONLY[op])
     if kind == "template_parts":
         return _TEMPLATE_PARTS[op]
     return _BY_NAME[kind][op]

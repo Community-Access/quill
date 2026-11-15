@@ -140,7 +140,7 @@ def test_check_for_updates_asks_first_then_marks_the_rows(bench, monkeypatch) ->
     sent: list[Any] = []
     monkeypatch.setattr(uc, "latest_core", lambda: sent.append("core") or "")
     monkeypatch.setattr(
-        uc, "latest_plugins", lambda slugs: sent.append(list(slugs)) or {"akismet": "5.4"}
+        uc, "latest_plugins", lambda slugs, **_k: sent.append(list(slugs)) or {"akismet": "5.4"}
     )
     monkeypatch.setattr(
         uc, "latest_themes", lambda slugs: sent.append(list(slugs)) or {"twentytwentyfive": "1.3"}

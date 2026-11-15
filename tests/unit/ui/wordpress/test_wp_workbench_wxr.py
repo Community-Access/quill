@@ -346,6 +346,67 @@ def test_import_with_nothing_to_take_says_so(bench, site, monkeypatch, tmp_path)
 
 def test_both_commands_are_in_tools_wxr_files_with_help_and_a_reason() -> None:
     labels = [row.label for row in WXR_SUB.rows]
-    assert labels == ["&Export Site as WXR...", "&Import WXR as Drafts..."]
+    for label in (
+        "&Export Site as WXR...",
+        "&Import WXR as Drafts...",
+        "Import from &Blogger, Medium, Substack or Squarespace...",
+    ):
+        assert label in labels
+    letters = [label.partition("&")[2][:1].casefold() for label in labels]
+    assert len(set(letters)) == len(letters)  # each row its own access letter
     for row in WXR_SUB.rows:
         assert row.help and KEYLESS[row.command_id]
+
+
+# -- other platforms ----------------------------------------------------------------------
+
+
+def test_import_from_substack_previews_its_notes_and_makes_drafts(
+    bench, site, monkeypatch, tmp_path
+) -> None:
+    from tests.unit.core.wordpress.test_wp_platform_import_core import SUBSTACK
+
+    path = tmp_path / "substack.zip"
+    path.write_bytes(SUBSTACK)
+    reports = _reports(monkeypatch)
+    previews = _previews(monkeypatch)
+    _answers(monkeypatch, [], [])
+    files = _pick(monkeypatch, bench, path)
+    bench.provider.do_import_platform(None, None)
+    assert files == [("Import from Another Platform", False)]
+    summary, lines = previews[0]
+    assert summary.startswith("Make 3 items from substack.zip on Community Radio")
+    assert lines[0].startswith("From a Substack export: 3 posts")
+    assert any(
+        line.count("substackcdn.com") >= 1 and "nothing is downloaded" in line for line in lines
+    )
+    assert not any("WXR" in line for line in lines)
+    drafts = _drafts(bench.api)
+    assert [d["title"] for d in drafts] == ["Hello world", "Paid notes", "Episode one"]
+    assert {d["status"] for d in drafts} == {"draft"}
+    assert bench.said[-1].startswith("Imported 3 of 3 items from substack.zip")
+    assert reports and bench.provider.history.can_undo()
+
+
+def test_import_from_a_platform_cancelled_at_the_preview_makes_nothing(
+    bench, site, monkeypatch, tmp_path
+) -> None:
+    from tests.unit.core.wordpress.test_wp_platform_import_core import BLOGGER
+
+    path = tmp_path / "blog.xml"
+    path.write_bytes(BLOGGER)
+    _previews(monkeypatch, answer=False)
+    _answers(monkeypatch, [0], [])  # Ann is unmatched: her posts go to the first person
+    _pick(monkeypatch, bench, path)
+    bench.provider.do_import_platform(None, None)
+    assert not _drafts(bench.api) and not bench.provider.history.entries
+
+
+def test_import_from_a_platform_of_an_unknown_file_says_so(
+    bench, site, monkeypatch, tmp_path
+) -> None:
+    path = tmp_path / "notes.txt"
+    path.write_bytes(b"hello")
+    _pick(monkeypatch, bench, path)
+    bench.provider.do_import_platform(None, None)
+    assert bench.said[-1].startswith("notes.txt is not an export QUILL knows")

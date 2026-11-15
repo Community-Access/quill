@@ -9,8 +9,12 @@ A mixin on :class:`quill.ui.wordpress_workbench_window.WordPressWorkbenchProvide
   access and the role's capability first; the exact items are then listed as
   an editable checklist (uncheck what should not change), and what stays
   checked goes through the conflict check and ``batch/v1``, with a report line
-  per item and an entry in Change History. The AI command catalogue is not
-  used here; the grammar is the whole path.
+  per item and an entry in Change History. A phrase may say how old ("older
+  than a year", "before March 2024"); "move ... to Trash" moves the checked
+  items to WordPress's Trash, and Ctrl+Z puts them back with the status each
+  had; a question ("how many drafts are older than six months?") is answered
+  with a count from each site and changes nothing. The AI command catalogue is
+  not used here; the grammar is the whole path.
 - **Saved requests**: Tools > Run a Saved Request (Ctrl+Alt+Q) and the Saved
   Requests submenu (its rows numbered 1 to 9) open the REST Console filled in
   -- a read is sent at once, a write still shows its preview; Forget a Saved
@@ -27,9 +31,11 @@ from quill.core.wordpress.workbench_plain_batch import (
     EXAMPLES,
     PhraseError,
     SitePlan,
+    answer,
     parse_request,
     resolve,
     run_site,
+    undo_trash,
 )
 from quill.core.wordpress.workbench_rest_saved import SavedRequest, forget, load_saved
 from quill.core.wordpress.workbench_rows import WbRow
@@ -67,7 +73,9 @@ class WorkbenchMoreCommands:
             title="Plain-Language Batch",
             prompt="&What to do:",
             help_text="Say a change in words, for example: " + "; or ".join(EXAMPLES) + ". "
-            "Nothing is sent until you check the list that follows and press Change.",
+            "A phrase may say how old, such as older than a year or before March 2024. "
+            "Nothing is sent until you check the list that follows and press OK; a question "
+            "that starts How many changes nothing.",
         )
         if not text or not text.strip():
             return
@@ -81,7 +89,7 @@ class WorkbenchMoreCommands:
         allowed: list[str] = []
         for site in request.sites:
             probe = WbRow("item", site, "0", {}, "", subkind=request.kind)
-            reason = self.write_refusal(probe, Tier.WRITE)
+            reason = self.write_refusal(probe, Tier.WRITE) if request.changes else ""
             if reason:
                 refused.append(SitePlan(site, problem=reason))
             else:
@@ -90,9 +98,13 @@ class WorkbenchMoreCommands:
         def work() -> list[SitePlan]:
             return refused + [resolve(request, s, self.ctx(s).api) for s in allowed]
 
-        self.background(
-            "finding what the batch changes", work, lambda plans: self._batch_checks(request, plans)
-        )
+        def found(plans: list[SitePlan]) -> None:
+            if request.changes:
+                self._batch_checks(request, plans)
+            else:
+                self.say(answer(request, plans))
+
+        self.background("finding what the batch changes", work, found)
 
     def _batch_checks(self, request: Any, plans: list[SitePlan]) -> None:
         labels: list[str] = []
@@ -102,6 +114,7 @@ class WorkbenchMoreCommands:
                 labels.append(f"{plan.site}: {row.title}")
                 where.append((p, i))
         summary = " ".join(plan.sentence for plan in plans)
+        trashing = request.action == "trash"
         if not labels:
             self.say(f"Nothing to change. {summary}")
             return
@@ -113,7 +126,8 @@ class WorkbenchMoreCommands:
             rows=labels,
             checked=list(range(len(labels))),
             help_text=f"{request.words} {summary} Uncheck anything that should not change; "
-            "OK sends the rest, each checked for a change made since it was read.",
+            "OK sends the rest, each checked for a change made since it was read."
+            + (" They go to the site's Trash, and Ctrl+Z puts them back." if trashing else ""),
         )
         if not picked:
             return
@@ -129,9 +143,23 @@ class WorkbenchMoreCommands:
             return said
 
         def done(said: list[str]) -> None:
-            self.history.record(Change("batch", request.words))
-            ok = sum(1 for s in said if s.endswith(": saved"))
-            self.say(f"Batch done: {ok} of {len(picked)} changed.")
+            ok = sum(1 for s in said if s.endswith((": saved", ": moved to the Trash")))
+            if trashing:
+                moved = [plans[p] for p in keep]
+                self.history.record(
+                    Change(
+                        "batch",
+                        f"Moved {ok} to the Trash: {request.words}",
+                        undo=(lambda: undo_trash(lambda site: self.ctx(site).api, moved))
+                        if ok
+                        else None,
+                    )
+                )
+                self.say(f"Batch done: {ok} of {len(picked)} moved to the Trash."
+                         + (" Ctrl+Z puts them back." if ok else ""))  # fmt: skip
+            else:
+                self.history.record(Change("batch", request.words))
+                self.say(f"Batch done: {ok} of {len(picked)} changed.")
             dlg.show_report(
                 self.parent,
                 self.show_modal,

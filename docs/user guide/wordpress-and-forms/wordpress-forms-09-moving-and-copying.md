@@ -113,6 +113,84 @@ files and new categories and tags stay, and the report says so.
 
 Then open the drafts, read them over, and publish the ones you want.
 
+## Moving in from Blogger, Medium, Substack or Squarespace
+
+If your writing lives on another platform, ask it for its export first:
+
+- **Blogger:** Settings, then Back up content, or Google Takeout. You get an
+  `.xml` or `.atom` file.
+- **Medium:** Settings, then Download your information. You get a `.zip`.
+- **Substack:** Settings, then Export. You get a `.zip`.
+- **Squarespace:** Settings, then Export, then WordPress. You get an `.xml`
+  file.
+
+Then, in the Workbench:
+
+1. Select the site you are moving into, or anything on it.
+2. Choose **Tools > WXR Files > Import from Blogger, Medium, Substack or
+   Squarespace...** (Alt+T, then W, then B).
+3. Choose the export file. You do not have to say which platform it came
+   from; QUILL can tell.
+
+QUILL reads the file on this computer and nothing else. From there it works
+just like importing a WXR file: the same question about authors who have no
+match, the same preview, everything made as a draft, and Ctrl+Z to move the
+drafts to the Trash.
+
+The preview starts with what QUILL found in the export:
+
+- **Blogger:** posts and pages come in, and labels become tags. Posts that
+  were drafts on Blogger are said to be drafts. Comments, settings and the
+  template are left out and counted.
+- **Medium:** each story comes in with its subtitle as the excerpt, and its
+  author and date. Stories that were drafts on Medium are said to be.
+  Responses and claps are not in Medium's export.
+- **Substack:** each post comes in with its subtitle as the excerpt. A
+  podcast episode gets a player for its audio at the top. Posts for paying
+  subscribers come in as drafts like the rest, and the preview says how many
+  there were. Threads are left out, and so is your subscriber list.
+- **Squarespace:** its export is nearly a WordPress export, but it leaves
+  out a few things WordPress expects, and writes many links starting from the
+  site's root, such as "/menu". QUILL fills those in with your Squarespace
+  address, and the import then points links between the imported pages at
+  your new site. Squarespace's own layout markup is kept as it is.
+
+**Pictures.** Blogger, Medium and Substack do not put pictures in their
+exports, so the drafts keep showing each picture from where it is now. The
+preview names those places, such as `substackcdn.com`, and nothing is
+downloaded. If you plan to close the old account, move the pictures into
+your Media Library first. A Squarespace export may name its files; if it
+does, you get the same Files question as a WXR import.
+
+If QUILL cannot tell what the file is, it says so, and nothing is sent.
+
+## Keeping a static copy for an archive
+
+A WXR file is for moving a site to another WordPress. When you want a copy
+anyone can open in a browser years from now, with no WordPress at all, use
+**Tools > WXR Files > Archive a Static Copy...** (Alt+T, then W, then S).
+
+1. Select the site in the tree.
+2. Choose **Archive a Static Copy...**.
+3. Choose an empty folder. If the folder you pick already has files in it,
+   QUILL makes a new folder inside it, named after the site, and uses that.
+
+QUILL reads every published page and post and writes each one as its own
+plain web page, with its title as the heading and, for a post, the day it
+was published. A file called index.html lists them all, pages first, then
+posts, newest first. Open that file in your browser to start.
+
+Pictures, sounds, videos and documents the pages use are copied into a
+folder called media, and the pages point at those copies, so the archive
+works with no internet connection. Links from one page to another point at
+the copied pages too. QUILL only fetches files from your own site. A picture
+shown from somewhere else, such as a video service or another website, is
+left pointing where it was, and the report at the end names each one.
+
+Drafts and private posts are never part of the archive. Nothing on the site
+changes. The report says how many pages, posts and files went in, then lists
+anything left out and why.
+
 ## Copying to another of your sites
 
 **Item > Copy to Site...** (`Ctrl+Shift+Y`) copies what you have selected to
@@ -201,7 +279,23 @@ Enter on a row says **Where It Is Used**. The context menu also has:
 - **Replace Everywhere...**: another file, pattern, link, shortcode or form,
   in every page that uses this one;
 - **Find Items Missing This Field**, on a custom field: the posts and pages
-  with no value.
+  with no value;
+- **Convert to Block...**, on a shortcode in Blocks and Shortcodes: turns
+  gallery, caption, audio, video and embed shortcodes into the blocks
+  WordPress's own editor would make of them, on the items you check. A
+  gallery needs its pictures in the Media Library, and an audio or video
+  shortcode needs a file address; any one that cannot be converted cleanly
+  stays as it was, and the preview says which and why. Playlist has no
+  WordPress block, so it stays a shortcode;
+- **Update Pattern Everywhere...**, on a synced pattern in Patterns Used:
+  change its blocks once, and every page that places it shows the change;
+- **Detach Copies...**, on a synced pattern: the pages you check get the
+  pattern's own blocks in its place, as Detach does in the block editor.
+  Editing the pattern afterwards no longer changes those pages;
+- **Pages Using Its Blocks**, on a block from a plugin (or on the plugin's
+  own row under Plugins): every page using any block from that plugin. Look
+  here before you remove a plugin, because its blocks stop showing once it
+  is gone.
 
 Each is previewed item by item. Every item is read again before it is sent,
 and one that changed since the list was made is left alone. You hear how each
@@ -216,8 +310,21 @@ templates find a part by its slug.
 
 **Go > Across Sites** (`Ctrl+0`) shows things your sites share, side by side:
 **Tags and Categories**, **Plugins**, **Themes**, **People**, **Settings**,
-**Menus**, **Synced Patterns** and **Application Passwords**. Each row says
-the versions in use and which sites are missing it.
+**Menus**, **Synced Patterns**, **Application Passwords**, **Starter
+Pages**, **Forms**, **Content Types**, **Pages with a Role**, **Redirects**
+and **Spam Senders**. Each row says the versions in use and which sites are
+missing it. A site that does not run the plugin a list needs, such as
+Redirection for Redirects or QUILL Accessible Forms for Forms, is named as
+not read rather than missing, so nothing is ever made there by mistake.
+
+A few of these are for comparing only. Starter pages and content types are
+set up by each site's theme and plugins, and WordPress cannot copy them from
+outside, so their rows show where they differ and stop there.
+
+Pages with a Role means the front page and the privacy policy page.
+WordPress does not say from outside which page is the privacy policy, so
+QUILL uses the page at its usual address, privacy-policy, and says so on the
+row.
 
 **Site > Across Sites Scope...** (`Ctrl+Alt+Y`) chooses every site, or one
 Site Set. **Site > Site Sets...** (`Ctrl+Alt+T`) names a set of your sites,
@@ -229,7 +336,21 @@ On a row:
   change, and says how each went. It covers categories and tags, plugins
   (on or off), settings, people's roles, synced patterns, menus and themes.
   WordPress cannot switch a theme from outside, so for a theme it opens each
-  site's Themes screen in your browser. A copied menu is final.
+  site's Themes screen in your browser. A copied menu is final. It also
+  covers forms (a site without the form gets a draft, so you can check who
+  its notifications go to there; a site with it keeps its own settings and
+  responses), pages with a role (the text of the one you choose goes to the
+  others, which is how you bring stale privacy pages up to date), redirects
+  (made where missing, in that site's usual group) and spam senders (blocked
+  on the sites that do not block them yet).
+- **Merge Everywhere...**, on a tag or category: name the term to merge it
+  into, and on every site that has both, each post moves across and the old
+  term is deleted. A site without a term of that name is left alone and
+  named in the preview. It is final.
+- **Remove Everywhere...**, on a tag or category, a redirect or a spam
+  sender: deleted on every site that has it, after a preview that starts on
+  Cancel. The preview gives each site's post count for a term. It cannot be
+  undone.
 - **Install on Sites Missing It...** installs a plugin from WordPress.org on
   every site that lacks it, after a preview. For a theme, it opens each of
   those sites' Add New screen.
@@ -268,6 +389,15 @@ when it came. The Fleet only reads.
   matches nothing is said, never guessed. Then it gives you a checklist of the
   items. Uncheck anything that should not change, then send. It does not use
   AI.
+
+  Any of these can say how old: `older than a year`, `older than six months`,
+  `newer than two weeks`, `before March 2024` or `after 2023`, all by the
+  date of the post or page. To clear things out, say `move every draft older
+  than a year to Trash` or `trash all drafts before March 2024`. You get the
+  same checklist first, and `Ctrl+Z` puts everything back with the status it
+  had. To ask instead of change, start with "how many": `how many drafts are
+  older than six months?` or `how many pages are pending on every site?`
+  QUILL says the count for each site and changes nothing.
 
 In the editor, **File > WordPress > Send and Copy > Download My Writing...**
 saves every page and post to a folder as Markdown or Word, and **Send a

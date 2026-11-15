@@ -9326,6 +9326,73 @@ Q).</li>
 <code>test_lite_submenu_letters.py</code>, and history, GitHub key and
 Sign Out tests.</li>
 </ul>
+<h3
+id="2026-11-14-overnight-the-last-wordpress-workbench-requirements-in-code">2026-11-14
+overnight: the last WordPress Workbench requirements in code</h3>
+<p>An audit of every WP-R requirement against the code found 31 built
+and 14 partly built or not built. All 14 are now built; what is left is
+live and screen-reader checking (section 19).</p>
+<ul>
+<li><strong>Help (WP-R-046 to 048).</strong> The WordPress Workbench now
+answers every help key GitHub’s does: Alt+F1, Ctrl+F1, Ctrl+Shift+F1,
+Alt+Shift+F1, F9 and Shift+F9
+(<code>quill/ui/wordpress_workbench_help.py</code>,
+<code>workbench_help_topics.py</code>). Help and Learning gained Do
+Something, The Guide, What Changed and Ask a Person, which only opens a
+blank message. The glossary has all 73 words D1 names, with examples
+from the person’s own site, and Settings explains Permalinks, the
+Discussion rules, search engine visibility and plugin settings. Check
+for Updates reads each plugin’s changelog and says plainly when it
+mentions security fixes, breaking changes or a database update; turning
+a plugin off first asks the site what depends on it; Site Health and
+Broken Links rows gained Explain, Fix…, Take Me There and Open in
+Editor.</li>
+<li><strong>Tutorials (WP-R-049).</strong> Seven more Practice Site
+lessons: menus, adding a person and choosing a role, updating plugins
+safely, spam and challenges, custom types and fields, staging to live,
+and Site Sets. Break It on Purpose has five lessons: one sets up the
+problems, the others fix a missing alt text, a broken link, a plugin
+conflict and a wrong permalink, each with a check that notices the fix.
+Tools &gt; Practice Site offers Set Up and Take Away the Lesson
+Material, which writes only into the Practice Site’s own folder and
+undoes from Change History. Your First Week gives a new site owner seven
+short daily lessons, nothing destructive by default, and Start Here
+points to them. Both editors teach all of it.</li>
+<li><strong>Fields and the Content Model (WP-R-033, 034, 036,
+038).</strong> Properties has Edit List and Edit Group beside list and
+group custom fields, through the editor’s own windows, keeping parts the
+site does not describe. Meta Box, Pods and CMB2 each have a Properties
+page (<code>field_plugins_more.py</code>,
+<code>field_plugins_cmb2.py</code>), every save checked against the
+schema and verified after. The Content Model lists field groups from
+every route’s schema and from the field plugins’ own definitions, names
+who registered a type only from evidence the site gives, and otherwise
+says unknown. Copy to QUILL Site Types copies a definition after a
+preview and never deletes the original. Custom Post Type UI has no REST
+API, so its types show as unknown with a note.</li>
+<li><strong>Watches, batch and visitor words (WP-R-020, 021,
+050).</strong> New Watches for shop orders, low stock, a certificate
+running out within 30 days (the site’s own certificate, once a day, with
+its own egress entry), plugins that may be abandoned, an out-of-date
+accessibility statement, and a weekly sentence for each site; each off
+until checked and silent on its first look. Plain-Language Batch reads
+ages, moves items to the Trash with Undo, and answers “how many”
+questions without changing anything. Visitor Words for Forms edits what
+QAF shows visitors, per site and language.</li>
+<li><strong>Scope (WP-R-029, 040, 043, 044).</strong> By Name converts
+core shortcodes to their blocks, updates or detaches synced patterns,
+and lists the pages using a plugin’s blocks before it is removed. Across
+Sites covers every kind in the PRD; starter pages and content types are
+compared but not copied, for written reasons; terms merge or go on every
+site. Old Gravity Forms entries copy into QAF. Blogger, Medium, Substack
+and Squarespace exports import as drafts. The Workbench writes a static
+archive copy, lists who has never signed in, edits roles through a role
+plugin, and answers questions from the site’s own content after
+consent.</li>
+<li><strong>CI.</strong> PyYAML is now a declared base dependency (it
+shipped only through other packages, so CI lacked it), the Practice Site
+lock is pinned LF, and five CodeQL findings are fixed in code.</li>
+</ul>
 <h2 id="19-remaining-tasks">19. Remaining tasks</h2>
 <p><strong>wp-admin parity (9.18), Jeff 2026-11-04, “we should have all
 of this”:</strong></p>
@@ -9392,6 +9459,26 @@ WordPress.org’s words, the practice questions on Promote to Network,
 Revoke Everywhere, Install on Sites Missing It and Put Back, and Save
 Draft on a published post.</label></li>
 </ul>
+<ul>
+<li>The 2026-11-14 overnight work tried on the live test site and the
+Practice Site and with NVDA and JAWS: the WordPress help keys and Help
+and Learning, changelogs in Check for Updates, What Depends on It,
+Explain and Fix… on Site Health and Broken Links; the new Practice Site
+lessons, Break It on Purpose (that Playground picks up the lesson
+material while running) and Your First Week; the new Watches;
+Plain-Language Batch’s ages, Trash and questions; By Name’s shortcode
+conversion and pattern commands; the new Across Sites kinds; the four
+platform importers; the static archive.</li>
+<li><strong>Waiting on QAF:</strong> three routes QUILL now calls that
+QAF does not offer yet: <code>qaf/v1/visitor-words</code> (Visitor Words
+for Forms), <code>POST qaf/v1/entries</code> (Copy Old Entries into QAF)
+and <code>qaf/v1/spam/blocklist</code> (blocked senders across sites).
+Each says plainly when the site lacks it and sends nothing.</li>
+<li><strong>Waiting on a plugin:</strong> role editing is built against
+<code>members/v1/roles</code>; neither Members nor User Role Editor
+documents a REST API, so this needs a role plugin that offers one, or
+the route changed to match one that does.</li>
+</ul>
 <p>This list is kept current. A task is removed when it is done and
 checked, and the progress log above says what was done. Everything not
 listed here is built.</p>
@@ -9422,8 +9509,6 @@ documentation and need a live install to verify. Backups, security,
 caching, multilingual, courses, stats and the rest each have a
 disposition in Administration Areas; which become first-class is Jeff’s
 call.</li>
-<li>QUILL Site Types (12b, decision 12): the plugin, then making types
-and fields from the Content Model.</li>
 </ul>
 <h3
 id="workbench-groundwork-workbench-prd-wp-r-030-to-wp-r-034">Workbench
@@ -9432,9 +9517,10 @@ groundwork (Workbench PRD WP-R-030 to WP-R-034)</h3>
 <li>Run <code>docs/qa/wordpress-live-run.py</code> on the branch before
 it merges: taxonomy discovery, Custom Fields lists and groups, and a
 custom type’s terms have only met recorded responses.</li>
-<li>Advanced Custom Fields: send changes back as
-<code>{"acf": ...}</code> and show the fields in Custom Fields; Meta
-Box, Pods and CMB2.</li>
+<li>Advanced Custom Fields, Meta Box, Pods and CMB2 pages, and the
+Content Model’s field groups and Copy to QUILL Site Types, tried on a
+site that has each plugin (built from each plugin’s documented REST
+shape).</li>
 </ul>
 <h3 id="every-route-and-more-value-916">Every route, and more value
 (9.16)</h3>
@@ -9479,12 +9565,6 @@ refuses publishing a branch here), and pushing BAF’s
 <code>feat/json-form-model</code>.</p></li>
 </ul>
 <h3 id="docs-and-gates">Docs and gates</h3>
-<ul>
-<li>CI green on the pull request, Community-Access/quill#1762 (opened as
-a draft on 2026-11-05; CI’s sharded suite is the gate, the local full
-suite outruns an hour on this machine). platform_report was 53 of 53
-locally.</li>
-</ul>
 <h3 id="connecting">Connecting</h3>
 <ul>
 <li><strong>Waiting on Jeff:</strong> WordPress.com sign-in, once the

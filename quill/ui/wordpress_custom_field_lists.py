@@ -16,10 +16,17 @@ Nothing goes to the site from here: a changed list is kept with the working
 copy, like every other custom field, and sent with the next Save Draft to
 Site or Publish. All of the logic is in
 :mod:`quill.core.wordpress.custom_field_shapes`; this file only asks.
+
+The windows themselves are :class:`StructuredEditor`, which needs only a
+parent, a way to show a modal and a way to speak, so the WordPress Workbench's
+Properties opens the same ones beside a list or group field
+(:mod:`quill.ui.wordpress_workbench_field_lists`): one implementation, both
+places.
 """
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
 from quill.core.wordpress import custom_field_shapes as shapes
@@ -34,6 +41,9 @@ if TYPE_CHECKING:
 
 def _name(sf: shapes.StructuredField) -> str:
     return sf.label.replace("&", "").rstrip(":")
+
+
+__all__ = ["StructuredEditor", "WordPressCustomFieldLists"]
 
 
 class WordPressCustomFieldLists:
@@ -83,149 +93,14 @@ class WordPressCustomFieldLists:
         copy: lc.WorkingCopy,
         profile: st.SiteProfile,
     ) -> None:
-        if sf.shape == "group":
-            value = self._ask_group(sf.schema, sf.value, _name(sf), sf.help)
-            if value is not None:
-                self._keep_structured(form, sf, value, copy, profile)
-            return
-        self._edit_list(form, sf, copy, profile)
-
-    def _edit_list(
-        self,
-        form: cf.CustomFields,
-        sf: shapes.StructuredField,
-        copy: lc.WorkingCopy,
-        profile: st.SiteProfile,
-    ) -> None:
-        items_schema: dict[str, Any] = dict(sf.schema.get("items") or {})
-        working: list[Any] = list(sf.value) if isinstance(sf.value, (list, tuple)) else []
-        name = _name(sf)
-
-        def rows() -> list[str]:
-            return [shapes.item_sentence(items_schema, item) for item in working]
-
-        def add(index: int | None) -> object:
-            value = self._ask_item(items_schema, shapes.blank(items_schema), f"Add to {name}")
-            if value is None:
-                return None
-            working[:], where = shapes.add_item(working, value, index)
-            return dlg.Rows(rows(), where)
-
-        def edit(index: int | None) -> object:
-            if index is None:
-                return None
-            value = self._ask_item(items_schema, working[index], f"Edit in {name}")
-            if value is None:
-                return None
-            working[index] = value
-            return dlg.Rows(rows(), index)
-
-        def remove(index: int | None) -> object:
-            if index is None:
-                return None
-            working[:], where = shapes.remove_item(working, index)
-            self.host.announce("Removed. Keep Changes keeps the list without it.")
-            return dlg.Rows(rows(), where)
-
-        def mover(step: int) -> Any:
-            def move(index: int | None) -> object:
-                if index is None:
-                    return None
-                moved, where = shapes.move_item(working, index, step)
-                if where == index:
-                    self.host.announce("Already at the top." if step < 0 else "Already last.")
-                    return None
-                working[:] = moved
-                return dlg.Rows(rows(), where)
-
-            return move
-
-        def keep(_index: int | None) -> object:
-            self._keep_structured(form, sf, list(working), copy, profile)
-            return dlg.CLOSE
-
-        window = dlg.show_list_window(
-            self.host.parent,
-            self.host.show_modal,
-            title=name,
-            purpose=(
-                f"{sf.help} Add, change, remove and reorder the items, then Keep Changes. "
-                "Close leaves the list as it was."
-            ),
-            list_label="&Items:",
-            list_help="The list's items in order. Enter edits the selected one.",
-            rows=rows(),
-            on_enter=edit,
-            actions=[
-                dlg.Action("&Add...", "Add an item after the selected one.", add, needs_row=False),
-                dlg.Action("&Edit...", "Change the selected item.", edit),
-                dlg.Action("Re&move", "Take the selected item out of the list.", remove),
-                dlg.Action("Move &Up", "Move the selected item one place earlier.", mover(-1)),
-                dlg.Action("Move &Down", "Move the selected item one place later.", mover(1)),
-                dlg.Action(
-                    "&Keep Changes",
-                    "Keep the list as it is now with your copy, and close.",
-                    keep,
-                    needs_row=False,
-                ),
-            ],
+        editor = StructuredEditor(self.host.parent, self.host.show_modal, self.host.announce)
+        editor.edit(
+            sf.schema,
+            sf.value,
+            _name(sf),
+            sf.help,
+            on_keep=lambda value: self._keep_structured(form, sf, value, copy, profile),
         )
-        window.Destroy()
-
-    def _ask_group(self, schema: dict[str, Any], value: Any, title: str, purpose: str) -> Any:
-        fields = shapes.group_fields(schema, value)
-        if not fields:
-            self.host.announce(f"{title} has nothing QUILL can edit.")
-            return None
-        answers = bdlg.ask_fields(
-            self.host.parent, self.host.show_modal, title=title, purpose=purpose, fields=fields
-        )
-        if answers is None:
-            return None
-        try:
-            return shapes.apply_group(schema, value, answers, title)
-        except cf.FieldValueError as exc:
-            self.host.announce(f"{exc.field_label} needs a number. Nothing was changed.")
-            return None
-
-    def _ask_item(self, schema: dict[str, Any], current: Any, title: str) -> Any:
-        """One item: a form for a group, a choice for listed values, else a text box."""
-        if shapes.shape_of(schema) == "group":
-            return self._ask_group(schema, current, title, "One item of the list.")
-        enum = schema.get("enum")
-        kind = shapes.json_type(schema)
-        if kind == "boolean" or (isinstance(enum, list) and enum):
-            values: list[Any] = list(enum) if isinstance(enum, list) and enum else [True, False]
-            labels = [shapes.item_sentence(schema, v) for v in values]
-            picked = dlg.ask_choice(
-                self.host.parent,
-                self.host.show_modal,
-                title=title,
-                prompt="&Value:",
-                rows=labels,
-                initial=values.index(current) if current in values else 0,
-                help_text="Choose the item's value from the ones the site allows.",
-            )
-            return None if picked is None else values[picked]
-        text = dlg.ask_text(
-            self.host.parent,
-            self.host.show_modal,
-            title=title,
-            prompt="&Value:",
-            value="" if current is None else str(current),
-            help_text=(
-                "The item's value. It must be a number."
-                if kind in ("integer", "number")
-                else "The item's value, as it should read on the site."
-            ),
-        )
-        if text is None:
-            return None
-        try:
-            return shapes.coerce(schema, text, title)
-        except cf.FieldValueError:
-            self.host.announce("That needs a number. Nothing was added or changed.")
-            return None
 
     def _keep_structured(
         self,
@@ -255,3 +130,176 @@ class WordPressCustomFieldLists:
             )
         else:
             self.host.announce(f"{name} is the same as on {profile.name}.")
+
+
+class StructuredEditor:
+    """The list and group windows, for anything with a parent, a modal and a voice."""
+
+    def __init__(
+        self, parent: Any, show_modal: Callable[..., int], announce: Callable[[str], None]
+    ) -> None:
+        self.parent = parent
+        self.show_modal = show_modal
+        self.announce = announce
+
+    def edit(
+        self,
+        schema: dict[str, Any],
+        value: Any,
+        name: str,
+        purpose: str,
+        *,
+        on_keep: Callable[[Any], None] | None = None,
+    ) -> Any:
+        """A list or group edited in its window: the new value, or ``None`` when left alone.
+
+        *on_keep* is called with the value the moment it is kept (Keep Changes,
+        or OK on a group's form), before the window closes.
+        """
+        if shapes.shape_of(schema) == "group":
+            kept = self._ask_group(schema, value, name, purpose)
+            if kept is not None and on_keep is not None:
+                on_keep(kept)
+            return kept
+        return self._edit_list(schema, value, name, purpose, on_keep)
+
+    def _edit_list(
+        self,
+        schema: dict[str, Any],
+        value: Any,
+        name: str,
+        purpose: str,
+        on_keep: Callable[[Any], None] | None = None,
+    ) -> Any:
+        items_schema: dict[str, Any] = dict(schema.get("items") or {})
+        working: list[Any] = list(value) if isinstance(value, (list, tuple)) else []
+        kept: list[list[Any]] = []
+
+        def rows() -> list[str]:
+            return [shapes.item_sentence(items_schema, item) for item in working]
+
+        def add(index: int | None) -> object:
+            value = self._ask_item(items_schema, shapes.blank(items_schema), f"Add to {name}")
+            if value is None:
+                return None
+            working[:], where = shapes.add_item(working, value, index)
+            return dlg.Rows(rows(), where)
+
+        def edit(index: int | None) -> object:
+            if index is None:
+                return None
+            value = self._ask_item(items_schema, working[index], f"Edit in {name}")
+            if value is None:
+                return None
+            working[index] = value
+            return dlg.Rows(rows(), index)
+
+        def remove(index: int | None) -> object:
+            if index is None:
+                return None
+            working[:], where = shapes.remove_item(working, index)
+            self.announce("Removed. Keep Changes keeps the list without it.")
+            return dlg.Rows(rows(), where)
+
+        def mover(step: int) -> Any:
+            def move(index: int | None) -> object:
+                if index is None:
+                    return None
+                moved, where = shapes.move_item(working, index, step)
+                if where == index:
+                    self.announce("Already at the top." if step < 0 else "Already last.")
+                    return None
+                working[:] = moved
+                return dlg.Rows(rows(), where)
+
+            return move
+
+        def keep(_index: int | None) -> object:
+            kept.append(list(working))
+            if on_keep is not None:
+                on_keep(kept[-1])
+            return dlg.CLOSE
+
+        window = dlg.show_list_window(
+            self.parent,
+            self.show_modal,
+            title=name,
+            purpose=(
+                f"{purpose} Add, change, remove and reorder the items, then Keep Changes. "
+                "Close leaves the list as it was."
+            ),
+            list_label="&Items:",
+            list_help="The list's items in order. Enter edits the selected one.",
+            rows=rows(),
+            on_enter=edit,
+            actions=[
+                dlg.Action("&Add...", "Add an item after the selected one.", add, needs_row=False),
+                dlg.Action("&Edit...", "Change the selected item.", edit),
+                dlg.Action("Re&move", "Take the selected item out of the list.", remove),
+                dlg.Action("Move &Up", "Move the selected item one place earlier.", mover(-1)),
+                dlg.Action("Move &Down", "Move the selected item one place later.", mover(1)),
+                dlg.Action(
+                    "&Keep Changes",
+                    "Keep the list as it is now and close. It goes to the site when you next save.",
+                    keep,
+                    needs_row=False,
+                ),
+            ],
+        )
+        window.Destroy()
+        return kept[-1] if kept else None
+
+    def _ask_group(self, schema: dict[str, Any], value: Any, title: str, purpose: str) -> Any:
+        fields = shapes.group_fields(schema, value)
+        if not fields:
+            self.announce(f"{title} has nothing QUILL can edit.")
+            return None
+        answers = bdlg.ask_fields(
+            self.parent, self.show_modal, title=title, purpose=purpose, fields=fields
+        )
+        if answers is None:
+            return None
+        try:
+            return shapes.apply_group(schema, value, answers, title)
+        except cf.FieldValueError as exc:
+            self.announce(f"{exc.field_label} needs a number. Nothing was changed.")
+            return None
+
+    def _ask_item(self, schema: dict[str, Any], current: Any, title: str) -> Any:
+        """One item: a form for a group, a choice for listed values, else a text box."""
+        if shapes.shape_of(schema) == "group":
+            return self._ask_group(schema, current, title, "One item of the list.")
+        enum = schema.get("enum")
+        kind = shapes.json_type(schema)
+        if kind == "boolean" or (isinstance(enum, list) and enum):
+            values: list[Any] = list(enum) if isinstance(enum, list) and enum else [True, False]
+            labels = [shapes.item_sentence(schema, v) for v in values]
+            picked = dlg.ask_choice(
+                self.parent,
+                self.show_modal,
+                title=title,
+                prompt="&Value:",
+                rows=labels,
+                initial=values.index(current) if current in values else 0,
+                help_text="Choose the item's value from the ones the site allows.",
+            )
+            return None if picked is None else values[picked]
+        text = dlg.ask_text(
+            self.parent,
+            self.show_modal,
+            title=title,
+            prompt="&Value:",
+            value="" if current is None else str(current),
+            help_text=(
+                "The item's value. It must be a number."
+                if kind in ("integer", "number")
+                else "The item's value, as it should read on the site."
+            ),
+        )
+        if text is None:
+            return None
+        try:
+            return shapes.coerce(schema, text, title)
+        except cf.FieldValueError:
+            self.announce("That needs a number. Nothing was added or changed.")
+            return None

@@ -17,10 +17,14 @@ from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.ui.wordpress_workbench_event_commands import WorkbenchEventCommands
 from quill.ui.wordpress_workbench_qaf_spam import WorkbenchQafSpamCommands
+from quill.ui.wordpress_workbench_qaf_words import WorkbenchQafWordsCommands
 
 
-# QAF's spam settings, question bank and weeks ride with its form commands (complete.md WP-C).
-class WorkbenchPluginCommands(WorkbenchQafSpamCommands, WorkbenchEventCommands):
+# QAF's spam settings, question bank, weeks and visitor words ride with its form commands
+# (complete.md WP-C; WP-R-050).
+class WorkbenchPluginCommands(
+    WorkbenchQafSpamCommands, WorkbenchQafWordsCommands, WorkbenchEventCommands
+):
     """Shop, events, SEO and the QAF form commands, as one mixin for the provider."""
 
     def _qaf_form(self, row: WbRow | None) -> bool:

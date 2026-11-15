@@ -219,10 +219,14 @@ def test_the_content_model_says_who_registered_each_type() -> None:
     from quill.core.wordpress.workbench_discovered import model_rows, registered_by
 
     assert registered_by("post") == "WordPress"
-    assert registered_by("tribe_events") == "The Events Calendar"
-    assert registered_by("product") == "WooCommerce"
-    assert registered_by("event") == "a plugin or the theme"
+    # A known plugin's slug counts only when that plugin's namespace is on the site.
+    assert registered_by("tribe_events") == "unknown"
+    assert registered_by("tribe_events", namespaces=("tribe/events/v1",)) == "The Events Calendar"
+    assert registered_by("product", namespaces=("wc/v3",)) == "WooCommerce"
+    assert registered_by("event") == "unknown"
     assert registered_by("book", "acme/v1") == "the plugin behind acme/v1"
+    assert registered_by("ticket", "tribe/tickets/v1") == "Event Tickets"
+    assert registered_by("venue", "tribe/events/v1") == "The Events Calendar"
 
     class _Types:
         def get(self, route: str, **_p: Any) -> Any:
@@ -230,12 +234,19 @@ def test_the_content_model_says_who_registered_each_type() -> None:
                 return {"post": {"name": "Posts", "rest_base": "posts"}, "event": {"name": "E"}}
             return {"genre": {"name": "Genres", "rest_base": "genres"}}
 
+        def request(self, method: str, route: str, **_kw: Any) -> Any:
+            class _R:
+                payload: Any = {}
+
+            return _R()
+
     rows = model_rows(_Types(), "S")  # type: ignore[arg-type]
     assert [(r.key, r.cell("registered_by")) for r in rows] == [
         ("post", "WordPress"),
-        ("event", "a plugin or the theme"),
-        ("genre", "a plugin or the theme"),
+        ("event", "unknown"),
+        ("genre", "unknown"),
     ]
+    assert "does not say who registered it" in rows[1].detail
     assert "Read only" in rows[0].detail
 
 

@@ -93,6 +93,14 @@ GRAVITY_BUILD_ROWS: tuple[ActionRow, ...] = (
         Tier.WRITE,
         "A new QUILL Accessible Forms draft from this form, after a preview of what cannot carry.",
     ),
+    _a(
+        "copy_entries_to_qaf",
+        "Copy Old Entries into QAF...",
+        Tier.WRITE,
+        "This form's active entries, copied into a QUILL Accessible Forms form after a preview "
+        "of each one and of what cannot carry over. The site's QAF must offer a route that "
+        "makes entries (POST qaf/v1/entries); QUILL says so if it does not.",
+    ),
 )
 """Building forms in QUILL (complete.md WP-C): on a Gravity Forms form row."""
 
@@ -166,6 +174,11 @@ GRAVITY_SUB = MenuSub(
             help="A QAF draft from this form.",
         ),
         MenuRow(
+            command("copy_entries_to_qaf"),
+            "Copy &Old Entries into QAF...",
+            help="The form's entries, into a QAF form.",
+        ),
+        MenuRow(
             command("copy_as_gravity_form"),
             "Copy QAF Form as a &Gravity Form...",
             help="A Gravity Forms form from the selected QAF form.",
@@ -189,6 +202,7 @@ KEYLESS: dict[str, str] = {
     command("new_gravity_form"): "New Here (Ctrl+N) on a site's Forms node reaches it.",
     command("copy_as_qaf_form"): "Moving a form between plugins is a once-off (rule 9).",
     command("copy_as_gravity_form"): "Moving a form between plugins is a once-off (rule 9).",
+    command("copy_entries_to_qaf"): "Moving old entries between plugins is a once-off (rule 9).",
 }
 """Why each Gravity Forms command without a chord has none (family rule 8)."""
 

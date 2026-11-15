@@ -161,6 +161,32 @@ comment, Properties shows them on a **Custom Fields** page. A field that
 holds a list or a group is a labelled box of JSON text, and QUILL checks it
 before it saves. A field the site does not describe is read only.
 
+Beside a list, such as a schedule's speakers, is an **Edit List...** button.
+It opens the list on its own: Add, Edit, Remove, Move Up and Move Down, then
+Keep Changes. Beside a group, such as a venue's address, **Edit Group...**
+opens it as a form with one box for each part. These are the same windows
+the editor's Custom Fields uses. What you keep goes back into the box, and
+OK or Apply sends it. Parts of a group the site does not describe are kept
+as they were. A list inside a list has no button and stays as JSON.
+
+Field plugins get a page of their own, each only when the site has it:
+
+- **Advanced Custom Fields**, for field groups with Show in REST API on.
+- **Meta Box**, through its MB REST API extension. When Meta Box does not
+  say what kind of value a field holds, QUILL goes by the value it holds now,
+  so a number stays a number. A field whose value says nothing, such as an
+  empty list, is read only.
+- **Pods**, with the fields the pod shows in REST. A field the pod does not
+  let you write over REST is read only, and F1 says so. Relationship and
+  file fields are read only too. Pods only tells an administrator which
+  fields are its own, so other roles see no Pods page.
+- **CMB2**, with every box that applies. Each field is saved on its own and
+  read back, so you hear about any the site did not keep. A box the site
+  shows for reading only stays read only.
+
+Every one of them is checked before it is sent and checked again after, and
+Ctrl+Z puts them all back.
+
 **Site > Site Properties...** (`Alt+Shift+Enter`) is the same sheet for the
 whole site.
 
@@ -287,6 +313,33 @@ is, and what you can do with it. Press it on the tree, the list, or any field
 of Properties. **Site > Roles and What They May Do** (`Ctrl+Alt+R`) explains
 each role on the site in plain words.
 
+The Help menu has the rest of the help, each on its own key:
+
+- **What Is This?** (`Alt+F1`) explains the WordPress word for the selected
+  row, such as slug, sticky or synced pattern, with an example from your own
+  site once the Workbench has read one.
+- **WordPress Guide** (`Ctrl+F1`) opens this guide in your browser at the
+  chapter for where you are.
+- **Search Help...** (`Ctrl+Shift+F1`) finds places, commands, WordPress
+  words and jobs from a few words you type. Enter goes there, runs it or
+  reads it.
+- **Workbench Keys** (`Alt+Shift+F1`) lists every key in the window.
+- **Say Last Result Again** (`F9`) repeats what the Workbench last said, and
+  **Explain That** (`Shift+F9`) says what it means and what you might do
+  next.
+
+**Help and Learning**, at the bottom of the tree, holds How WordPress Thinks,
+Words (every WordPress word, each explained), Keys, and four more:
+
+- **Do Something** lists common jobs in plain words, such as updating plugins
+  safely or fixing a broken link. Enter reads the steps, and **Take Me There**
+  goes to the place where the job is done.
+- **The Guide** lists this guide's chapters. Enter opens one.
+- **What Changed** says what is new in the Workbench.
+- **Ask a Person** starts a message to support in your own email. The
+  Workbench sends nothing and puts nothing of yours in it, so leave your
+  passwords out of what you write too.
+
 ## A walk-through: your first five minutes
 
 1. Press Ctrl+Alt+Shift+Grave, then H. The Workbench opens.
@@ -328,10 +381,52 @@ If a command would change the Practice Site and a real site in one step,
 such as Revoke Everywhere, QUILL asks you by name first, and the answer
 starts on No.
 
-**Help > Tutorials** in QUILL has three lessons that use the Practice Site:
-starting it, changing a post and undoing the change, and resetting it. A
-fourth, Look after a site, walks through the Overview, menus, people, Site
-Health and more.
+### Lesson material, and Break It on Purpose
+
+Once the Practice Site has been started, Practice Site also offers **Set Up
+the Lesson Material**. It shows you everything it will add before it adds any
+of it, and adds it to the Practice Site only: a picture with no alt text, a
+post with a link to a page that is not there, two plugins that fight over the
+same shortcode, a Contact Us page with a misspelt address, a spam comment and
+a real one waiting, a menu, and a Practice Events content type with an Event
+date field. **Take Away the Lesson Material** removes exactly those again,
+even if you changed them, and leaves everything else. Setting it up goes into
+Change History, so undoing it there takes it away too.
+
+### The Practice Site lessons
+
+**Help > Tutorials** has these lessons in both QUILL and QUILL Lite, because
+both open the same Workbench. They all work on the Practice Site and never send
+anything to a real site.
+
+The WordPress Workbench, on the Practice Site:
+
+- Start the Practice Site
+- Change a practice post, then undo it
+- Reset the Practice Site
+- Look after a site
+- Change a menu, then put it back
+- Add a person and choose their role
+- Update plugins safely
+- Spam, real comments, and challenges
+- Custom types and their fields
+- From staging to live, without surprises
+- Across sites with a Site Set
+
+Break It on Purpose, on the Practice Site:
+
+- Set up the broken Practice Site
+- Fix a picture with no alt text
+- Fix a broken link
+- Fix a plugin conflict
+- Fix a wrong address
+
+In QUILL, a lesson notices when you have made the fix, because it watches the
+Workbench for a change on the Practice Site, and moves you on. In QUILL Lite
+you move on yourself.
+
+Start Here, at the top of the Workbench's tree, points to these and to Your
+first week with a site, the seven short lessons for a new site owner.
 
 ## Where to next
 

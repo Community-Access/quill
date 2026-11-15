@@ -15,8 +15,11 @@ A mixin on :class:`quill.ui.wordpress_workbench_window.WordPressWorkbenchProvide
 Every save runs the accessibility checks first (Cancel goes back to the editor
 on the first finding), then shows a preview of each change, then sends, reads
 the form back and says any difference. Ctrl+Z puts the previous form back (a
-new form goes to Gravity Forms' Trash). Entries are never read or sent: every
-preview says so. Network work runs through ``self.background``.
+new form goes to Gravity Forms' Trash). Those commands never read or send
+entries, and every preview says so; **Copy Old Entries into QAF...** is the
+one that does, after its own preview
+(:mod:`quill.core.wordpress.gravity_qaf_entries`), and Ctrl+Z moves the copies
+to QAF's Trash. Network work runs through ``self.background``.
 """
 
 from __future__ import annotations
@@ -393,3 +396,110 @@ class WorkbenchGravityBuildCommands:
 
         api = ctx.api
         self.background(f"reading {row.title}", lambda: api.get(row.route), read)
+
+    # -- old entries into QAF (WP-R-029) --------------------------------------------
+
+    def do_copy_entries_to_qaf(self, _ref: Any, row: WbRow | None) -> None:
+        if row is None or row.kind != "gravity_form" or row.subkind != "gravity":
+            self.say("Choose a Gravity Forms form first.")
+            return
+        refusal = self.gravity_build_refusal(row.site, "", plugin="qaf")
+        if refusal:
+            self.say(refusal)
+            return
+        site, api = row.site, self.ctx(row.site).api
+        title = row.cell("form") or row.title
+
+        def read() -> tuple[Any, list[Any]]:
+            return api.get(row.route), qaf_site.list_forms(api)
+
+        def chosen(found: tuple[Any, list[Any]]) -> None:
+            form, targets = found
+            if not isinstance(form, dict):
+                self.say(f"Gravity Forms did not send {title} on {site}.")
+                return
+            if not targets:
+                self.say(
+                    f"{site} has no QUILL Accessible Forms form to copy into. Copy as a QUILL "
+                    "Accessible Form makes one from this form first."
+                )
+                return
+            names = [t.title or f"Form {t.id}" for t in targets]
+            same = next((i for i, t in enumerate(targets) if t.title == form.get("title")), 0)
+            index = dlg.ask_choice(
+                self.parent,
+                self.show_modal,
+                title="Copy Old Entries into QUILL Accessible Forms",
+                prompt="&Copy the entries into:",
+                rows=[t.spoken() for t in targets],
+                initial=same,
+                help_text=(
+                    "The QUILL Accessible Forms form that takes the entries. Answers go to the "
+                    "questions Copy as a QUILL Accessible Form made, matched by field."
+                ),
+            )
+            if index is not None:
+                self._plan_entry_copy(site, api, form, targets[index].id, names[index])
+
+        self.background(f"reading {title} and the QAF forms", read, chosen)
+
+    def _plan_entry_copy(
+        self, site: str, api: Any, form: dict[str, Any], target_id: int, target: str
+    ) -> None:
+        from quill.core.wordpress import gravity_qaf_entries as ge
+
+        def work() -> Any:
+            model = qaf_site.get_form(api, target_id).model()
+            entries = ge.read_gravity_entries(api, str(form.get("id", "")))
+            namespace = qaf_site.site_namespace(api) or qaf_site.NAMESPACE
+            return ge.plan_copy(form, entries, target_id, target, model, namespace=namespace)
+
+        def planned(plan: Any) -> None:
+            if not plan.copies:
+                self.say(f"{plan.source_title} on {site} has no active entries to copy.")
+                return
+            if not wdlg.ask_preview(
+                self.parent,
+                self.show_modal,
+                title="Copy Old Entries into QUILL Accessible Forms",
+                summary=(
+                    f"Copy {len(plan.copies)} entries from {plan.source_title} into {target} on "
+                    f"{site}? The Gravity Forms entries stay as they are. Ctrl+Z moves the copies "
+                    "to QUILL Accessible Forms' Trash."
+                ),
+                lines=plan.lines(),
+                yes="Copy Entries",
+            ):
+                return
+
+            def sent(answer: tuple[list[Any], list[int]]) -> None:
+                outcomes, made = answer
+                good = sum(1 for o in outcomes if o.ok)
+                said = (
+                    outcomes[0].words
+                    if outcomes and not made and len(outcomes) == 1 and not outcomes[0].ok
+                    else f"Copied {good} of {len(plan.copies)} entries into {target} on {site}."
+                )
+                self.say(said)
+                if made:
+
+                    def undo() -> str:
+                        gone = qaf_site.delete_responses(api, made)
+                        return f"Moved {gone} copied entries to QUILL Accessible Forms' Trash."
+
+                    self.history.record(Change(f"{site}: {target}", said, undo=undo))
+                dlg.show_report(
+                    self.parent,
+                    self.show_modal,
+                    title="Copy Old Entries: Each Entry",
+                    text="\n".join(
+                        [said, ""]
+                        + [("Done. " if o.ok else "Not done. ") + o.line for o in outcomes]
+                    ),
+                    help_text="What happened to each entry, one a line; Not done says why.",
+                )
+                self.refresh()
+
+            self.background("copying entries", lambda: ge.send_copies(api, site, plan), sent)
+
+        self.background(f"reading {form.get('title', 'the form')}'s entries", work, planned)

@@ -154,10 +154,10 @@ def test_acf_changes_go_back_as_acf_coerced_verified_and_undoable() -> None:
 def test_every_field_plugin_the_prd_names_is_classified_honestly() -> None:
     scope = {s.plugin: s for s in fp.FIELD_PLUGIN_SCOPE}
     assert {"Advanced Custom Fields", "Meta Box", "Pods", "CMB2"} <= set(scope)
-    assert scope["Advanced Custom Fields"].status == "read and write"
-    assert scope["CMB2"].status == "not integrated"
-    assert all("No adapter" in scope[p].workbench or "no adapter" in scope[p].workbench
-               for p in ("Meta Box", "Pods", "CMB2"))  # fmt: skip
+    # Each now has an adapter (field_plugins_more, field_plugins_cmb2), so each says so.
+    assert all(scope[p].status == "read and write"
+               for p in ("Advanced Custom Fields", "Meta Box", "Pods", "CMB2"))  # fmt: skip
+    assert all("Properties has a" in scope[p].workbench for p in ("Meta Box", "Pods", "CMB2"))
     assert any(s.plugin.startswith("Registered meta") for s in fp.FIELD_PLUGIN_SCOPE)
 
 
@@ -260,6 +260,12 @@ class _QstApi:
         self.calls.append(("POST", route, body))
         return dict(body or {})
 
+    def request(self, method: str, route: str, **_kw: Any) -> Any:
+        class _R:
+            payload: Any = {}
+
+        return _R()
+
     def delete(self, route: str, **_p: Any) -> Any:
         self.calls.append(("DELETE", route, None))
         return {"deleted": True, "previous": {"slug": "book", "name": "Books"}}
@@ -339,8 +345,11 @@ def test_coverage_names_site_types_as_covered_and_field_plugins_honestly() -> No
 
     found = classify("/quill-site-types/v1/field-groups", ["GET", "POST"])
     assert found.status == "covered" and "Content Model" in found.home
-    for route, name in (("/pods/v1/pods", "Pods"), ("/cmb2/v1/boxes", "CMB2")):
-        assert classify(route, ["GET"]).home.startswith(f"{name}: deferred"), route
+    for route, name in (("/pods/v1/pods", "Pods"), ("/cmb2/v1/boxes/book/fields", "CMB2")):
+        found = classify(route, ["GET"])
+        assert found.status == "covered" and f"{name} page" in found.home, route
+    # The rest of their namespaces are read only, and say so.
+    assert classify("/pods/v1/book", ["GET"]).home.startswith("Pods: deferred")
 
 
 # -- settings explained with the site's own example (WP-R-047) ----------------------------
