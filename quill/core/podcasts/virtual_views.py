@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
+from quill.core.podcasts.finish_window import within_finish_window
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
@@ -103,9 +104,21 @@ def iter_virtual_view_pairs(
 
     for show in library.shows:
         hidden = hide_predicate(library, show, SCOPE_VIEWS)
+        # A place already inside the finish window is finished in every way
+        # that matters; listing it is a row for the closing credits.
+        window = (
+            library.effective_settings(show).finished_within_seconds
+            if view_id == "continue_listening"
+            else 0
+        )
         for episode in show.episodes:
             included = (view_id == "new_episodes" and not episode.played) or (
-                view_id == "continue_listening" and episode.position_ms > 0 and not episode.played
+                view_id == "continue_listening"
+                and episode.position_ms > 0
+                and not episode.played
+                and not within_finish_window(
+                    episode.position_ms, episode.duration_seconds * 1000, window
+                )
             )
             if included and (hidden is None or not hidden(episode)):
                 yield show, episode

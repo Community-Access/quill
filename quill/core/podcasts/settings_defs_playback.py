@@ -234,6 +234,23 @@ SETTINGS: tuple[SettingDef, ...] = (
         describe=_seconds("Stopping before the end"),
     ),
     define(
+        "finished_within_seconds",
+        "Count as finished when stopped within the last:",
+        "Stop, switch episodes or close Cast this close to the end and the "
+        "episode is marked played, so it leaves Continue Listening instead of "
+        "waiting there at 99 percent. Pausing still keeps your place. Zero "
+        "means only playing to the very end counts.",
+        kind=KIND_INT,
+        category=CATEGORY_PLAYBACK,
+        levels=(LEVEL_GLOBAL, LEVEL_SHOW),
+        default=60,
+        minimum=0,
+        maximum=3600,
+        settings_field="finished_within_seconds",
+        aliases=("finished", "played", "continue listening", "credits", "end"),
+        describe=_seconds("Counting as finished"),
+    ),
+    define(
         "continue_after_queue",
         "&Play the next episode in the Play Queue",
         settings_help.HELP["continue_queue"],

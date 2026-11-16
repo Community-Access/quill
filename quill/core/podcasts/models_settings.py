@@ -159,6 +159,12 @@ class PodcastSettings:
     #: delete-after-play, etc. all still fire).
     auto_skip_intro_seconds: int = 0
     auto_skip_outro_seconds: int = 0
+    #: Stopping this close to the end counts as finishing (0 = only a true
+    #: end does). Without it, an episode left during its closing credits kept
+    #: a place at 99% and sat in Continue Listening for ever. Applied when you
+    #: *leave* an episode (stop, switch, close) -- never on pause, which keeps
+    #: your place -- and Continue Listening hides a place already inside it.
+    finished_within_seconds: int = 60
     #: Auto-download (1.1.0) -- an *acquisition* policy, the counterpart to
     #: the retention policy above. How many of the newest episodes to fetch
     #: without being asked, on subscribe and on every refresh: 0 = off
@@ -388,6 +394,7 @@ class PodcastSettings:
             "skip_back_seconds": self.skip_back_seconds,
             "auto_skip_intro_seconds": self.auto_skip_intro_seconds,
             "auto_skip_outro_seconds": self.auto_skip_outro_seconds,
+            "finished_within_seconds": self.finished_within_seconds,
             "auto_download_count": self.auto_download_count,
             "auto_download_queued": self.auto_download_queued,
             "auto_download_inbox": self.auto_download_inbox,
@@ -479,6 +486,9 @@ class PodcastSettings:
             skip_back_seconds=max(1, _coerce_int(data.get("skip_back_seconds"), 15)),
             auto_skip_intro_seconds=max(0, _coerce_int(data.get("auto_skip_intro_seconds"), 0)),
             auto_skip_outro_seconds=max(0, _coerce_int(data.get("auto_skip_outro_seconds"), 0)),
+            finished_within_seconds=min(
+                3600, max(0, _coerce_int(data.get("finished_within_seconds"), 60))
+            ),
             auto_download_count=max(-1, _coerce_int(data.get("auto_download_count"), 0)),
             auto_download_queued=bool(data.get("auto_download_queued", True)),
             auto_download_inbox=bool(data.get("auto_download_inbox", False)),

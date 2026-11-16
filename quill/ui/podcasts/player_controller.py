@@ -102,6 +102,7 @@ class PodcastPlayerController(
         on_state_changed: Callable[[PodcastPlaybackState], None] | None = None,
         on_episode_finished: Callable[[str, str], None] | None = None,
         on_position_checkpoint: Callable[[str, str, int], None] | None = None,
+        on_left_finished: Callable[[str, str], None] | None = None,
         before_play: Callable[[], None] | None = None,
         on_enhance_error: Callable[[str], None] | None = None,
         spotify_token_provider: Callable[[], str] | None = None,
@@ -133,6 +134,10 @@ class PodcastPlayerController(
         #: finish; that is on_episode_finished's job). The fix for a real gap:
         #: episode.position_ms was read to resume but never written.
         self._on_position_checkpoint = on_position_checkpoint
+        #: Instead of the checkpoint on leaving inside the finish window
+        #: (core/podcasts/finish_window); never auto-advances.
+        self._on_left_finished = on_left_finished
+        self._finished_within_s = 0
         #: Told about a Sound Enhancements failure (ffmpeg missing, relay
         #: could not start) so the host can announce it; playback still
         #: proceeds unenhanced rather than failing outright.
@@ -232,6 +237,7 @@ class PodcastPlayerController(
         channel_mode: str | None = None,
         auto_skip_intro_ms: int = 0,
         auto_skip_outro_ms: int = 0,
+        finished_within_s: int = 0,
     ) -> None:
         """Start (or switch to) playing one episode; replaces whatever this
         controller was already playing, so only one thing ever plays. The
@@ -248,7 +254,7 @@ class PodcastPlayerController(
                 self._before_play()
             except Exception:  # noqa: BLE001 - a sibling-stop must never block play
                 pass
-        self._checkpoint_current()
+        self._checkpoint_current(leaving=True)
         if bass_db is not None:
             self._eq_bass_db = bass_db
         if mid_db is not None:
@@ -270,6 +276,7 @@ class PodcastPlayerController(
         self._enhanced_source = source
         self._enhanced_duration_ms = probe_source_duration_ms(source) if self._is_enhanced() else 0
         self._auto_skip_outro_ms = max(0, int(auto_skip_outro_ms))
+        self._finished_within_s = max(0, int(finished_within_s))
         self._outro_fired = False
         self._recovered_from = ""
         start_ms = max(0, int(resume_ms))
@@ -400,7 +407,7 @@ class PodcastPlayerController(
         return self._stream_engine
 
     def stop(self) -> None:
-        self._checkpoint_current()
+        self._checkpoint_current(leaving=True)
         if self._engine is not None:
             self._engine.close()
         self._enhance_relay.stop()
@@ -459,7 +466,7 @@ class PodcastPlayerController(
             return
         self._closed = True
         try:
-            self._checkpoint_current()
+            self._checkpoint_current(leaving=True)
         except Exception:  # noqa: BLE001 - never block app close
             _log.exception("podcast position checkpoint failed during shutdown")
         released: list[AudioEngine] = []
@@ -501,15 +508,23 @@ class PodcastPlayerController(
         self._last_checkpoint_ms = position
         self._checkpoint_current()
 
-    def _checkpoint_current(self) -> None:
-        """Report the current episode's position to the checkpoint callback
-        (no-op when nothing is loaded or nothing listens)."""
-        if self._on_position_checkpoint is None:
-            return
+    def _checkpoint_current(self, *, leaving: bool = False) -> None:
+        """Report the current episode's position to the checkpoint callback.
+        ``leaving`` (stop/switch/shutdown, never pause) inside the finish
+        window reports it finished instead (core/podcasts/finish_window)."""
         show_id, episode_guid = self._state.show_id, self._state.episode_guid
         if not show_id or not episode_guid or self._engine is None:
             return
-        self._on_position_checkpoint(show_id, episode_guid, self.position_ms())
+        position = self.position_ms()
+        if leaving and self._on_left_finished is not None:
+            from quill.core.podcasts.finish_window import within_finish_window
+
+            if within_finish_window(position, self.length_ms(), self._finished_within_s):
+                self._on_left_finished(show_id, episode_guid)
+                return
+        if self._on_position_checkpoint is None:
+            return
+        self._on_position_checkpoint(show_id, episode_guid, position)
 
     def _on_outro_poll(self, _event: object) -> None:
         """Auto-skip outro: ends the episode auto_skip_outro_ms early, exactly

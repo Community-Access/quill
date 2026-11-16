@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 
 from quill.core.paths import app_data_dir
 from quill.core.podcasts import history as podcast_history
-from quill.core.podcasts import position_sync, retention
+from quill.core.podcasts import position_sync
 from quill.core.podcasts.download_queue import DownloadItem
 from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
 from quill.core.podcasts.subscriptions import (
@@ -32,6 +32,7 @@ from quill.ui.main_frame_podcast_transfers import PodcastTransfersMixin
 from quill.ui.podcasts import record_writes
 from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
 from quill.ui.podcasts.failure_report import report_failure
+from quill.ui.podcasts.finish_bookkeeping import on_left_finished, record_finish
 from quill.ui.podcasts.folder_watch import FolderWatchMixin
 from quill.ui.podcasts.new_feed_check import check_start_failed, start_new_feed_check
 from quill.ui.podcasts.player_controller import (
@@ -103,6 +104,7 @@ class PodcastsMixin(
             on_state_changed=self._on_podcast_state_changed,
             on_episode_finished=self._on_podcast_episode_finished,
             on_position_checkpoint=self._on_podcast_position_checkpoint,
+            on_left_finished=lambda show_id, guid: on_left_finished(self, show_id, guid),
             before_play=self._stop_radio_before_podcast,
             on_enhance_error=self._on_podcast_enhance_error,
             spotify_token_provider=self._spotify_session.access_token,
@@ -300,18 +302,12 @@ class PodcastsMixin(
         episode = show.find_episode(episode_guid)
         if episode is None:
             return
-        position_sync.mark_played(episode)
-        # A finish is sticky across apps (11.11): Radio must not offer to
-        # resume an episode Cast has just finished.
-        self._podcast_share_place(show, episode, 0, finished=True)
-        self._podcast_flush_stats(completed=True)
+        record_finish(self, show, episode)
         # The end of an episode is a state QUILL Cast changed through in
         # silence: the next episode simply started, or nothing did (#1302).
         # Fired from the player's own once-per-episode finish callback, so it
         # cannot repeat for an episode already marked played.
         post_cue(SoundEvent.CAST_EPISODE_FINISHED)
-        settings = self._podcast_library.effective_settings(show)
-        retention.apply_delete_after_play(episode, settings)
         self._save_podcast_library()
         if self._podcast_manager_dialog is not None:
             self._podcast_manager_dialog.refresh_tree()
