@@ -217,6 +217,7 @@
             "skip_back_seconds": "int",
             "auto_skip_intro_seconds": "int",
             "auto_skip_outro_seconds": "int",
+            "finished_within_seconds": "int",
             "auto_download_count": "int",
             "auto_download_queued": "bool",
             "auto_download_inbox": "bool",

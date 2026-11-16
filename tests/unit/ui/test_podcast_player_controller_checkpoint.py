@@ -117,3 +117,68 @@ def test_shutdown_checkpoints_the_active_episode() -> None:
     fake._position = 5_000
     controller.shutdown()
     assert checkpoints == [("show-1", "ep-1", 5_000)]
+
+
+# -- the finish window (PodcastSettings.finished_within_seconds) ----------------
+
+
+def _make_windowed() -> tuple[
+    PodcastPlayerController, list[tuple[str, str, int]], list[tuple[str, str]], _FakeEngine
+]:
+    checkpoints: list[tuple[str, str, int]] = []
+    finished: list[tuple[str, str]] = []
+    controller = PodcastPlayerController(
+        wx.Frame(None),
+        on_position_checkpoint=lambda show_id, guid, ms: checkpoints.append((show_id, guid, ms)),
+        on_left_finished=lambda show_id, guid: finished.append((show_id, guid)),
+    )
+    fake = _FakeEngine()
+    controller._engine = fake
+    return controller, checkpoints, finished, fake
+
+
+def _start_windowed(controller: PodcastPlayerController, guid: str = "ep-1") -> None:
+    controller.play_episode(
+        show_id="show-1",
+        episode_guid=guid,
+        title="Title",
+        source="https://example.com/ep.mp3",
+        finished_within_s=10,
+    )
+    controller._on_loaded(100_000)
+
+
+def test_stopping_inside_the_window_reports_finished_not_a_place() -> None:
+    controller, checkpoints, finished, fake = _make_windowed()
+    _start_windowed(controller)
+    fake._position = 95_000  # 5 s from the end of a 100 s episode
+    controller.stop()
+    assert finished == [("show-1", "ep-1")]
+    assert checkpoints == []
+
+
+def test_switching_inside_the_window_finishes_the_outgoing_episode() -> None:
+    controller, checkpoints, finished, fake = _make_windowed()
+    _start_windowed(controller, "ep-1")
+    fake._position = 95_000
+    _start_windowed(controller, "ep-2")
+    assert finished == [("show-1", "ep-1")]
+    assert checkpoints == []
+
+
+def test_pausing_inside_the_window_keeps_your_place() -> None:
+    controller, checkpoints, finished, fake = _make_windowed()
+    _start_windowed(controller)
+    fake._position = 95_000
+    controller.toggle_play_pause()
+    assert finished == []
+    assert checkpoints == [("show-1", "ep-1", 95_000)]
+
+
+def test_stopping_outside_the_window_saves_a_place_as_before() -> None:
+    controller, checkpoints, finished, fake = _make_windowed()
+    _start_windowed(controller)
+    fake._position = 60_000
+    controller.stop()
+    assert finished == []
+    assert checkpoints == [("show-1", "ep-1", 60_000)]

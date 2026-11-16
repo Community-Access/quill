@@ -1537,6 +1537,14 @@ beginning if you ever play it again.
 4. Press **Delete** on an episode you are not going back to. Cast forgets your
    place and takes it off the list, and the episode stays unheard.
 
+An episode you stop in its last minute counts as finished, so it is marked
+played and leaves this list rather than waiting here at 99 percent. That
+covers stopping, switching to another episode, or closing Cast during the
+closing credits. Pausing never does: a pause keeps your place. To change how
+close to the end counts, set **Count as finished when stopped within the
+last** in Preferences, or for one podcast in Settings for This Podcast. Zero
+means only playing to the very end counts.
+
 If your place in an episode came from another device, the row says so at the
 end: "last played on Kitchen laptop", or "last played on Earshot" when it came
 from the Earshot app on your phone. Once you listen to it here, that goes away,
@@ -3401,6 +3409,8 @@ chapter where you would use them, and F1 on any row tells you more.
   jump.
 - **Skip the first** and **Stop this far before the end**: skip intros and
   outros.
+- **Count as finished when stopped within the last**: how close to the end
+  stopping marks an episode played. One minute unless you change it.
 - **Play the next episode in the Play Queue** and **When the queue is empty,
   keep going with the same podcast**: what happens when an episode ends.
 - **Start loading the next episode before this one ends**: no pause between
