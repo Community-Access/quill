@@ -137,7 +137,7 @@ def _append_selection_items(host: Any, menu: Any, selected_count: int) -> None:
     if selected_count < total:
         everything = menu.Append(wx.ID_ANY, "Select &All\tCtrl+A")
         menu.Bind(wx.EVT_MENU, lambda _e: select_all(host), everything)
-    invert = menu.Append(wx.ID_ANY, "In&vert Selection\tCtrl+Shift+I")
+    invert = menu.Append(wx.ID_ANY, "In&vert Selection\tAlt+Shift+I")
     menu.Bind(wx.EVT_MENU, lambda _e: invert_selection(host), invert)
     menu.AppendSeparator()
 

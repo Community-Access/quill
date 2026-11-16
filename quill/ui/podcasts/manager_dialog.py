@@ -960,8 +960,11 @@ class PodcastManagerDialog(
 
     def _on_episode_key_down(self, event: object) -> None:
         """Ctrl+1..Ctrl+9 and Enter, over this episode's Quick Actions."""
+        from quill.ui.podcasts.episode_selection import selection_key
         from quill.ui.podcasts.manager_keys import handle_episode_key
 
+        if selection_key(self, event):
+            return  # Ctrl+A, Alt+Shift+I, as in QUILL Cast (earshot.md E5)
         handle_episode_key(self, event)
 
     # -- sharing and export (x.md item 9) ------------------------------

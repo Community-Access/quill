@@ -7,10 +7,11 @@ but there was no way to select *everything* from the keyboard, so clearing a
 (1.2.5) is the one people reach for: select all, deselect the few to keep,
 invert, and act on what is left.
 
-**Keys that belong to the list.** Ctrl+A and Ctrl+Shift+I are answered only
+**Keys that belong to the list.** Ctrl+A and Alt+Shift+I are answered only
 while the episode list has focus. As menu accelerators they would fire from
 Cast's search box too, where Ctrl+A has to mean "select this text". The
 context menu shows them, so they are discoverable where the selection is.
+Invert is Alt+Shift+I because Ctrl+Shift+I is already the Inbox in Cast.
 
 The count is spoken because a screen reader announces only the focused row's
 state; "All 412 episodes selected" is the one fact it cannot know (GATE-13).
@@ -71,17 +72,16 @@ def invert_selection(host: Any) -> None:
 
 
 def selection_key(host: Any, event: Any) -> bool:
-    """Ctrl+A and Ctrl+Shift+I on the focused episode list. True when handled."""
+    """Ctrl+A and Alt+Shift+I on the focused episode list. True when handled."""
     episodes = _list(host)
     if episodes is None or wx.Window.FindFocus() is not episodes:
         return False
-    if not event.ControlDown() or event.AltDown():
-        return False
     code = event.GetKeyCode()
-    if code == ord("A") and not event.ShiftDown():
+    ctrl, alt, shift = event.ControlDown(), event.AltDown(), event.ShiftDown()
+    if code == ord("A") and ctrl and not alt and not shift:
         select_all(host)
         return True
-    if code == ord("I") and event.ShiftDown():
+    if code == ord("I") and alt and shift and not ctrl:
         invert_selection(host)
         return True
     return False

@@ -19,6 +19,58 @@ the main window, listening, sound and volume, your library, feeds, dictation
 and AI, help and notifications, Preferences and keys, updates and installing,
 and speed and reliability.
 
+### Finishing an episode means finishing it, and Earshot's latest ideas (2026-11-15)
+
+You get to the closing credits, press Stop, and go and make tea. Until now
+QUILL Cast thought you were 99 percent through and kept the episode waiting in
+Continue Listening for ever. Not any more: **stopping in an episode's last
+minute counts as finishing it**. It is marked played, it leaves Continue
+Listening, and episodes left there before today tidy themselves away too. A
+pause still keeps your place, because a pause means you are coming back. How
+close to the end counts is yours to choose: **Count as finished when stopped
+within the last**, in Preferences > Playing or Settings for This Podcast.
+
+The rest of this release keeps Cast in step with Earshot, the iPhone podcast
+app made for the same listeners:
+
+- **The Play Queue can keep what you finished.** Turn on **Keep finished
+  episodes in the Play Queue** and a finished episode stays where it was, its
+  row ending ", played", so the bit you missed while carrying the shopping in
+  is one Enter away. **At the end of the queue, start again from the first
+  unplayed episode** carries on from the top when the last one finishes, and
+  never plays a finished episode twice.
+- **Clear a backlog in four keys.** Ctrl+A selects every episode in a list and
+  says how many; Ctrl+Space on the three you want to keep; Alt+Shift+I inverts
+  the selection; then mark the rest played. **Mark Episodes as Unplayed** joins
+  Mark as Played on the menu, for when you change your mind.
+- **Even out the volume, as much as you like.** Light, Balanced or Strong,
+  with Earshot's own settings, so a whispering guest and a laughing host meet
+  in the middle, or nearly shout in a noisy car.
+- **Groups move as groups.** In a grouped Play Queue, Move to Top on a group
+  heading moves the whole podcast or folder, and Mark for Move on a heading
+  picks the group up to put it wherever you like.
+- **Look before you follow.** Preview now shows each recent episode's
+  description, not just its title.
+- **Statistics by folder.** Listening Statistics narrows to one folder and
+  everything inside it, or to podcasts in no folder.
+- **Played and unplayed.** Cast now says what Earshot says: an episode is
+  played or unplayed, everywhere from the library counts to the Command
+  Palette's **Play an Unplayed Episode**.
+
+And some fixes you will be glad you never meet:
+
+- **The outro skip lets you hear the end** when you go back into it yourself,
+  or pick up an episode you left there, and it no longer ends a short episode
+  the moment it starts.
+- **One bad chapter time no longer loses all the chapters**, and a feed with an
+  impossible soundbite time no longer stops refreshing.
+- **Listening Places will not write over a file it did not write,** and says
+  when it could not write at all, so your place never quietly stops
+  travelling between computers.
+- **Mark as Played and Next** now does everything finishing does: it travels
+  to your other computers and to Quill Radio, counts in your statistics, and
+  tidies the download if you asked for that.
+
 ### Connecting to Spotify works, and says why when it cannot (2026-11-04)
 
 - **Connect now opens your browser.** The sign-in was being handed to the

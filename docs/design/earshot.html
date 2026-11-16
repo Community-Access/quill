@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Earshot parity in QUILL Cast, round two</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="earshot-parity-in-quill-cast-round-two">Earshot parity in QUILL
+Cast, round two</h1>
+<p>QUILL Cast and Earshot, the iPhone podcast app by Michael Babcock
+(Payown Media), are built for the same listeners, and Cast keeps in step
+with it. This document is the plan of record for the second round of
+that work: what Earshot added after the first round, what Cast now does
+about each item, and what is left. Code cites it by item, for example
+<code>earshot.md E1</code>, and those citations resolve here.</p>
+<p>The first round (2026-09 to 2026-10-03) had its own working file,
+<code>ear.md</code>, which was never committed; it is summarised in the
+Cast product requirements document (PRD),
+<code>standalone/cast/docs/prd.md</code>, section 23.25. Its citations
+(<code>ear.md R4</code>, <code>ear.md B3</code> and so on) still resolve
+there and in git history. This round’s review file was also called
+<code>ear.md</code> and lived only on Jeff’s machine; everything in it
+is carried into this document.</p>
+<h2 id="1-the-rule">1. The rule</h2>
+<p>Parity means the listener gets the <strong>same outcome</strong>, not
+the same screen: keys where iOS has gestures, the Command Palette where
+iOS has Siri, a menu where iOS has a swipe action. Nothing is copied
+where Earshot made a choice only iOS needs, and nothing is invented
+where Earshot has not defined something: Cast then follows the shared
+Listening Places format or waits.</p>
+<h2 id="2-what-was-compared">2. What was compared</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Round one</th>
+<th>Round two</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Earshot</td>
+<td><code>63dc641</code>, 2026-09-29, version 1.2.3, TestFlight build
+273</td>
+<td><code>c11dda93</code>, 2026-11-15, version 1.2.6, TestFlight build
+317</td>
+</tr>
+<tr>
+<td>QUILL Cast</td>
+<td>2.0.0</td>
+<td><code>Community-Access/quill</code> main at
+<code>7738f92</code></td>
+</tr>
+</tbody>
+</table>
+<p>The 62 Earshot commits between the two were read one by one, together
+with Earshot’s tester notes (<code>docs/kashe.md</code>, chapters 96 to
+122), its settings store
+(<code>Earshot/Data/Persistence/AppSettingsStore.swift</code>) and the
+code behind each feature. Earshot’s whole settings list was matched
+against Cast’s settings catalogue, and its older features were
+spot-checked, which found one gap the first round did not record
+(E9).</p>
+<h2 id="3-decisions">3. Decisions</h2>
+<ul>
+<li><strong>2026-11-15, Jeff: everything.</strong> Build every item in
+the review, the “consider” items included, not only the recommended
+ones.</li>
+<li><strong>2026-11-15, Jeff: Played and Unplayed</strong> (D1). Cast
+moves from “unheard” to Earshot’s wording.</li>
+<li><strong>2026-11-15, Jeff: stopping near the end counts as finished,
+and the listener chooses how near</strong> (FW). This came from a
+listener’s report, not from Earshot, and shipped first, in pull request
+#1844.</li>
+</ul>
+<h2 id="4-the-items">4. The items</h2>
+<p>Each item gives Earshot’s behaviour, what Cast did before, and what
+it does now, with the code that carries it.</p>
+<h3 id="fw-stopping-near-the-end-counts-as-finished">FW. Stopping near
+the end counts as finished</h3>
+<ul>
+<li><strong>Report:</strong> a listener (2026-11-15) asked why finished
+episodes stayed in Continue Listening. They had stopped during the
+closing credits, so Cast kept a place at 99 percent and never marked
+them played.</li>
+<li><strong>Now:</strong> <strong>Count as finished when stopped within
+the last</strong> (Preferences &gt; Playing, and Settings for This
+Podcast; <code>finished_within_seconds</code>, one minute by default,
+zero for only a true end). Leaving an episode inside the window (stop,
+switch, close) marks it played; a pause never does. Continue Listening
+hides a place already inside it. The window only applies past an
+episode’s halfway point, so a short clip is never finished on
+starting.</li>
+<li><strong>Code:</strong>
+<code>quill/core/podcasts/finish_window.py</code>,
+<code>quill/ui/podcasts/finish_bookkeeping.py</code>, the
+<code>leaving</code> checkpoint in
+<code>quill/ui/podcasts/player_controller.py</code>.</li>
+</ul>
+<h3 id="e1-the-outro-skip-fires-only-on-a-natural-crossing">E1. The
+outro skip fires only on a natural crossing</h3>
+<ul>
+<li><strong>Earshot</strong> (<code>b8bdf852</code>,
+<code>PlaybackLogic.crossedOutroSkipBoundary</code>): only when playback
+moves forward by 10 seconds or less from before the boundary to after
+it, and only when the episode is more than 2 seconds longer than the
+skip.</li>
+<li><strong>Cast before:</strong> fired whenever the position was inside
+the window. Resuming an episode saved there ended it at once, seeking in
+to hear a last sentence ended it, and an episode shorter than the skip
+ended the moment it started.</li>
+<li><strong>Now:</strong> Earshot’s rule exactly. The controller
+remembers the last polled position and forgets it on every start, resume
+and seek.</li>
+<li><strong>Code:</strong>
+<code>quill/core/podcasts/outro_skip.py</code>,
+<code>_on_outro_poll</code> in <code>player_controller.py</code>.</li>
+</ul>
+<h3 id="e2-publisher-times-are-validated">E2. Publisher times are
+validated</h3>
+<ul>
+<li><strong>Earshot</strong> (<code>77a21a17</code>): a chapter time
+must be finite, at least zero, representable, and not a boolean; a bad
+entry drops only itself.</li>
+<li><strong>Cast before:</strong> Python’s JSON (JavaScript Object
+Notation) reader accepts <code>NaN</code> and <code>Infinity</code>. One
+<code>NaN</code> chapter raised <code>ValueError</code> and lost the
+whole list; <code>Infinity</code> raised <code>OverflowError</code>
+there, in transcripts, and in a feed’s soundbite tags (so in feed
+parsing itself); <code>true</code> became a chapter at one second;
+<code>1e300</code> became a chapter no episode has.</li>
+<li><strong>Now:</strong> one rule for every source: a finite
+non-boolean number from zero to under a week. A chapter with a bad time
+is dropped; a transcript cue keeps its text at zero.</li>
+<li><strong>Code:</strong>
+<code>quill/core/podcasts/time_values.py</code>, used by
+<code>chapters.py</code>, <code>transcripts.py</code> and
+<code>namespace_tags.py</code>.</li>
+</ul>
+<h3
+id="e3-listening-places-never-over-somebody-elses-file-never-fail-in-silence">E3.
+Listening Places: never over somebody else’s file, never fail in
+silence</h3>
+<ul>
+<li><strong>Earshot</strong> (<code>b6d37e8e</code>,
+<code>7d702f9b</code>): its device file is replaced only when it still
+holds what Earshot last wrote; anything else is left untouched with a
+sentence saying why, and a failed write is announced.</li>
+<li><strong>Cast before:</strong> wrote over whatever was at its path,
+and returned the same <code>False</code> for “write failed” as for
+“nothing changed”, so a failure was never reported.</li>
+<li><strong>Now:</strong> this device’s file is replaced only while it
+is still ours (the fingerprint beside it matches, or, with no
+fingerprint yet, it is a <code>listening-places/1</code> file naming
+this device). Otherwise, and when the write fails,
+<code>ListeningPlacesWriteError</code>
+(<code>QUILL-SYNC-PLACES-NOT-WRITTEN</code>) carries one sentence into
+the sync report.</li>
+<li><strong>Code:</strong>
+<code>quill/core/sync/listening_places_guard.py</code>,
+<code>write_device_file</code> in <code>listening_places.py</code>,
+<code>places_interchange.py</code>.</li>
+</ul>
+<h3 id="f1-mark-as-played-and-next-does-the-whole-finish">F1. Mark as
+Played and Next does the whole finish</h3>
+<ul>
+<li><strong>Found during the review</strong>, not an Earshot item. The
+command set <code>played</code> by hand, so the finish had no sync
+timestamp, was not shared with Quill Radio, recorded no statistics and
+skipped delete-after-play; then the next episode’s start checkpointed
+the old one and wrote a position back onto it.</li>
+<li><strong>Now:</strong> it calls the same <code>record_finish</code>
+as a natural end and tells the player to forget the finished episode
+before the next one starts.</li>
+<li><strong>Also:</strong> delete-after-play on a file the player still
+has open now waits a turn of the event loop, because Windows refuses to
+delete an open file.</li>
+<li><strong>Code:</strong>
+<code>quill/ui/podcasts/finish_bookkeeping.py</code>,
+<code>queue_commands.mark_played_and_next</code>,
+<code>forget_current_episode</code> in
+<code>player_transport.py</code>.</li>
+</ul>
+<h3 id="e4-keep-finished-episodes-in-the-play-queue">E4. Keep finished
+episodes in the Play Queue</h3>
+<ul>
+<li><strong>Earshot</strong> (<code>85df19c8</code>, chapter 96): an
+option, off by default; a finished queued episode stays, marked played,
+and automatic playback skips it.</li>
+<li><strong>Now:</strong> <strong>Keep finished episodes in the Play
+Queue</strong> (Preferences &gt; Playing,
+<code>keep_finished_in_queue</code>, off). The slot stays, its row ends
+“, played”, and the run steps over finished slots. Delete in the queue
+still removes one.</li>
+<li><strong>Code:</strong> <code>finish_slot(keep=...)</code> and
+<code>step_after_finishing</code> in
+<code>quill/core/podcasts/queue_steps.py</code>; the row in
+<code>play_queue_dialog.py</code>.</li>
+</ul>
+<h3 id="e5-select-all-invert-selection-mark-selected-as-unplayed">E5.
+Select All, Invert Selection, Mark Selected as Unplayed</h3>
+<ul>
+<li><strong>Earshot</strong> (<code>de3422f1</code>, chapter 98): select
+all matching, invert, and bulk mark played or unplayed.</li>
+<li><strong>Now:</strong> <strong>Ctrl+A</strong> and
+<strong>Alt+Shift+I</strong> on the episode list, answered only while
+the list has focus (as menu accelerators they would take Ctrl+A from
+Cast’s search box); both on the list’s context menu with their keys
+shown; <strong>Mark N Episodes as Unplayed</strong> beside Mark as
+Played when the selection has a played episode. The count is spoken,
+because a screen reader announces only the focused row.</li>
+<li><strong>Code:</strong>
+<code>quill/ui/podcasts/episode_selection.py</code>,
+<code>context_menus.py</code>, <code>_on_bulk_mark_unplayed</code> in
+<code>manager_actions.py</code>. QUILL’s Podcast Manager answers the
+same two keys and has the same bulk menu.</li>
+</ul>
+<h3 id="e6-compression-strength">E6. Compression strength</h3>
+<ul>
+<li><p><strong>Earshot</strong> (<code>b28ce177</code>): Off, Light,
+Balanced, Strong.</p></li>
+<li><p><strong>Cast before:</strong> one fixed compressor, on or
+off.</p></li>
+<li><p><strong>Now:</strong> <strong>How much to even out the
+volume</strong> (<code>compression_level</code>), used while Even out
+volume is on, with Earshot’s values. ffmpeg’s <code>acompressor</code>
+takes make-up gain as a factor, not decibels, so +2, +4 and +6 dB become
+1.26, 1.58 and 2.</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Threshold</th>
+<th>Ratio</th>
+<th>Make-up gain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Light</td>
+<td>-24 dB</td>
+<td>2:1</td>
+<td>+2 dB</td>
+</tr>
+<tr>
+<td>Balanced</td>
+<td>-30 dB</td>
+<td>3:1</td>
+<td>+4 dB</td>
+</tr>
+<tr>
+<td>Strong</td>
+<td>-36 dB</td>
+<td>4:1</td>
+<td>+6 dB</td>
+</tr>
+</tbody>
+</table>
+<p>Quill Radio’s compressor is unchanged: the builders take
+<code>True</code> for it and a level name from Cast, so no second
+argument had to be threaded through the six functions that build an
+ffmpeg graph.</p></li>
+<li><p><strong>Code:</strong>
+<code>quill/core/audio/compressor_levels.py</code>,
+<code>PodcastSettings.compressor()</code>.</p></li>
+</ul>
+<h3 id="e7-start-the-queue-again">E7. Start the queue again</h3>
+<ul>
+<li><strong>Earshot</strong> (#950, before round one but not recorded
+then): optional queue wrap.</li>
+<li><strong>Cast before:</strong> “there is no wrap”, with no recorded
+reason.</li>
+<li><strong>Now:</strong> <strong>At the end of the queue, start again
+from the first unplayed episode</strong> (<code>wrap_queue</code>, off).
+It never plays a finished episode again, so a run cannot loop on
+itself.</li>
+<li><strong>Code:</strong> <code>step_after_finishing</code> in
+<code>queue_steps.py</code>.</li>
+</ul>
+<h3 id="e8-preview-reads-episode-descriptions">E8. Preview reads episode
+descriptions</h3>
+<ul>
+<li><strong>Earshot</strong> (<code>a35a703b</code>): previewing a
+podcast you do not follow reads each episode’s description.</li>
+<li><strong>Now:</strong> the Preview window has <strong>Episode
+description</strong> (Alt+D), showing the episode selected in Recent
+episodes.</li>
+<li><strong>Code:</strong>
+<code>quill/ui/podcasts/feed_preview_dialog.py</code>.</li>
+</ul>
+<h3 id="e9-listening-statistics-by-folder">E9. Listening statistics by
+folder</h3>
+<ul>
+<li><strong>Earshot</strong> (1.1.1): All folders, any folder and its
+subfolders, or Unfiled.</li>
+<li><strong>Now:</strong> <strong>Folder</strong> (Alt+F) in Listening
+Statistics when the library has folders. A folder means its subtree; a
+podcast filed twice counts once; history follows today’s filing.</li>
+<li><strong>Code:</strong>
+<code>quill/core/podcasts/stats_scope.py</code>,
+<code>summarize(show_ids=...)</code> in <code>stats.py</code>,
+<code>stats_dialog.py</code>.</li>
+</ul>
+<h3 id="e10-whole-groups-in-the-play-queue">E10. Whole groups in the
+Play Queue</h3>
+<ul>
+<li><strong>Earshot</strong> (<code>85df19c8</code>): group moves and
+pick up and drop for groups.</li>
+<li><strong>Now:</strong> in a grouped Play Queue a heading stands for
+its group: <strong>Move to Top</strong> and <strong>Move to
+Bottom</strong> move it, and <strong>Mark for Move</strong> picks it up
+to drop above or below another group or episode.</li>
+<li><strong>Code:</strong> <code>move_block_next_to</code> in
+<code>quill/core/podcasts/queue_selection.py</code>,
+<code>_heading_group</code> and <code>_move_marked_group</code> in
+<code>play_queue_dialog.py</code>.</li>
+</ul>
+<h3 id="d1-played-and-unplayed">D1. Played and Unplayed</h3>
+<ul>
+<li><strong>Earshot</strong> (<code>64b56ac9</code>, 2026-11-12) moved
+every listener-facing word to Played and Unplayed.</li>
+<li><strong>Now:</strong> GATE-CAST-WORDS
+(<code>quill/tools/cast_words_audit.py</code>, with the word list in
+<code>quill/core/podcasts/words.py</code>) forbids “unheard” and
+suggests “unplayed”. 58 strings in Cast, QUILL’s Podcasts menu and Quill
+Radio’s podcast browsing changed, and the guide and tutorials with them.
+Saved values are unchanged (the <code>unheard</code> count mode and
+column, <code>unheard_first</code>, <code>most_unheard</code>), and
+“unheard” stays a Find a Setting alias.</li>
+</ul>
+<h2 id="5-settings-added">5. Settings added</h2>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Label</th>
+<th>Levels</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>finished_within_seconds</code></td>
+<td>Count as finished when stopped within the last</td>
+<td>all, per podcast</td>
+<td>60 seconds</td>
+</tr>
+<tr>
+<td><code>compression_level</code></td>
+<td>How much to even out the volume</td>
+<td>all, per podcast</td>
+<td>Light</td>
+</tr>
+<tr>
+<td><code>keep_finished_in_queue</code></td>
+<td>Keep finished episodes in the Play Queue</td>
+<td>all</td>
+<td>off</td>
+</tr>
+<tr>
+<td><code>wrap_queue</code></td>
+<td>At the end of the queue, start again from the first unplayed
+episode</td>
+<td>all</td>
+<td>off</td>
+</tr>
+</tbody>
+</table>
+<p>All four come from the settings catalogue, so they appear in
+Preferences, in Settings for This Podcast where the level allows, and in
+Find a Setting.</p>
+<h2 id="6-checked-and-not-carried-over">6. Checked and not carried
+over</h2>
+<table>
+<thead>
+<tr>
+<th>Earshot feature</th>
+<th>Why not for Cast</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apple Watch app, handoff, Watch queue sync, complications</td>
+<td>No desktop counterpart</td>
+</tr>
+<tr>
+<td>iPad navigation, iPhone Duo layouts, multiple windows</td>
+<td>Platform layout</td>
+</tr>
+<tr>
+<td>Magic Tap play and pause</td>
+<td>Cast’s Play/Pause can be a global hotkey (Tools, Global
+Hotkeys)</td>
+</tr>
+<tr>
+<td>Siri, Shortcuts, system search, listening suggestions</td>
+<td>The Command Palette covers it; Windows has no matching system</td>
+</tr>
+<tr>
+<td>BBC HTTPS media selector, HTTPS-first playback with an HTTP
+warning</td>
+<td>Exist because iOS blocks plain HTTP audio; Windows does not</td>
+</tr>
+<tr>
+<td>Player transport button customization</td>
+<td>A touchscreen layout preference; Cast has keys and Quick
+Actions</td>
+</tr>
+<tr>
+<td>Keep place when loading older episodes</td>
+<td>Cast does not page its episode list</td>
+</tr>
+<tr>
+<td>Position slider step, haptics, theme, accent colour</td>
+<td>iOS controls</td>
+</tr>
+<tr>
+<td>Earshot Plus, tips, podcast cap</td>
+<td>Business model</td>
+</tr>
+<tr>
+<td>Download journal, backup exclusion, library-reset recovery</td>
+<td>iOS storage and iCloud plumbing</td>
+</tr>
+<tr>
+<td>Episode names kept out of logs</td>
+<td>Already true in Cast</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-progress-log">7. Progress log</h2>
+<ul>
+<li><strong>2026-11-15.</strong> Review against Earshot
+<code>c11dda93</code>. FW shipped (#1844), with its guide EPUB in #1845.
+E1, E2, E3 and F1 built and tested; E4 to E7, then E8 to E10, then D1.
+This document, the Cast PRD section 23.26, both changelogs, the user
+guide, the tutorials, and the generated F1 help reference updated.</li>
+</ul>
+<h2 id="8-remaining-tasks">8. Remaining tasks</h2>
+<ul>
+<li><strong>Screen-reader acceptance</strong> with NVDA and JAWS on
+Windows: the spoken counts for Ctrl+A and Alt+Shift+I, the “, played”
+row in the Play Queue, the Folder choice in Listening Statistics, and
+the Episode description field in Preview. Add them to
+<code>docs/qa/screen-reader-checks-2026-10.md</code> when run.</li>
+<li><strong>Listen to the three compression levels</strong> on quiet and
+loud speech, and decide whether turning compression on should keep
+starting at Light. A listener who had it on before now hears Earshot’s
+Light, which is a little gentler than the old fixed setting (-18 dB,
+3:1).</li>
+<li><strong>Sound Enhancements window.</strong> It still offers Even Out
+Volume as on or off; the strength is chosen in Preferences or Settings
+for This Podcast. A strength choice in the window itself means changing
+the editor Quill Radio shares, so it waits for a reason.</li>
+<li><strong>Round three</strong> starts from Earshot
+<code>c11dda93</code>. Earshot’s Listening Places still writes only;
+when it starts reading other devices’ files, check the records Cast
+writes against what it expects.</li>
+</ul>
+</main>
+</body>
+</html>

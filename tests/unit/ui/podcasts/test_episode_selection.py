@@ -39,8 +39,10 @@ class _Host:
 
 
 class _Key:
-    def __init__(self, code: int, *, ctrl: bool = True, shift: bool = False) -> None:
-        self.code, self.ctrl, self.shift = code, ctrl, shift
+    def __init__(
+        self, code: int, *, ctrl: bool = True, shift: bool = False, alt: bool = False
+    ) -> None:
+        self.code, self.ctrl, self.shift, self.alt = code, ctrl, shift, alt
 
     def GetKeyCode(self) -> int:  # noqa: N802
         return self.code
@@ -52,7 +54,7 @@ class _Key:
         return self.shift
 
     def AltDown(self) -> bool:  # noqa: N802
-        return False
+        return self.alt
 
 
 def test_select_all_selects_every_row_and_says_how_many() -> None:
@@ -80,7 +82,8 @@ def test_the_keys_only_belong_to_the_focused_list(monkeypatch: Any) -> None:
     monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: host._episodes))
     assert selection_key(host, _Key(ord("A"))) is True
     assert host._episodes.selected == {0, 1, 2}
-    assert selection_key(host, _Key(ord("I"), shift=True)) is True
+    assert selection_key(host, _Key(ord("I"), shift=True)) is False  # Ctrl+Shift+I is the Inbox
+    assert selection_key(host, _Key(ord("I"), ctrl=False, shift=True, alt=True)) is True
     assert host._episodes.selected == set()
     assert selection_key(host, _Key(ord("A"), ctrl=False)) is False
     monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: object()))  # the search box
