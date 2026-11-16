@@ -29,6 +29,7 @@ from quill.core.github.template_builder import (
 __all__ = [
     "check_form_text",
     "form_template_kind",
+    "form_file_to_draft",
     "form_to_markdown",
     "markdown_losses",
     "qaf_to_draft",
@@ -174,6 +175,38 @@ def qaf_to_draft(model: Mapping[str, Any]) -> tuple[FormDraft, list[str]]:
     if not any(raw.get("type") != "markdown" for raw in draft.fields):
         draft.fields.append(new_field("textarea", "Details", taken=taken))
     return draft, report
+
+
+#: Files New Template can start an issue form from (PRD 21.4), by extension.
+FORM_FILE_KINDS: dict[str, str] = {".json": "SurveyJS", ".xlsx": "XLSForm", ".xls": "XLSForm"}
+
+
+def form_file_to_draft(path: str) -> tuple[FormDraft, list[str]]:
+    """A SurveyJS (``.json``) or XLSForm (``.xlsx``) file as an issue form.
+
+    Both go through the QUILL Forms model their importers already build
+    (``interop_surveyjs`` and ``interop_xlsform``), then :func:`qaf_to_draft`.
+    The report is the importer's sentences followed by what the issue form left
+    out, so nothing is lost without being said. Raises ``ValueError`` for any
+    other kind of file.
+    """
+    from pathlib import Path
+
+    suffix = Path(path).suffix.lower()
+    kind = FORM_FILE_KINDS.get(suffix)
+    if kind == "SurveyJS":
+        from quill.core.forms.interop_surveyjs import import_surveyjs
+
+        imported = import_surveyjs(Path(path).read_text(encoding="utf-8"))
+    elif kind == "XLSForm":
+        from quill.core.forms.interop_xlsform import import_xlsform
+
+        imported = import_xlsform(path)
+    else:
+        raise ValueError("Choose a SurveyJS form (.json) or an XLSForm (.xlsx).")
+    draft, left_out = qaf_to_draft(imported.model)
+    draft.top["description"] = f"Converted from a {kind} form."
+    return draft, [*imported.report, *left_out]
 
 
 def form_template_kind(path: str) -> str:

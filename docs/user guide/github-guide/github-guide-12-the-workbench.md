@@ -166,6 +166,46 @@ newest first. GitHub gives at most 250 commits for one comparison, so when
 there are more the tab says so, for example "Commits (250 of 1,204, newest)",
 and you know you are reading the most recent ones, not all of them.
 
+### Templates and community files
+
+A repository's **Templates** node lists everything GitHub reads to shape new
+issues, pull requests and discussions: issue forms, Markdown issue templates,
+the template chooser, pull request templates, discussion forms, and the
+community files (code of conduct, contributing guide, security policy,
+support, governance, funding, citation and code owners). Each row says
+whether the file is the repository's own, inherited from the organization's
+`.github` repository, or missing.
+
+- **Open Template...** (Enter) opens an issue or discussion form in the
+  builder, with every option labelled, and anything else as text. A missing
+  community file starts from a short starter. Before **Save**, QUILL checks
+  the form the way GitHub will, and each problem is named on its line. Save
+  says where the file will go, the default branch or a new branch with a pull
+  request when the branch is protected, and asks before it commits. Templates
+  only take effect once they are on the default branch.
+- **New Template...** (Ctrl+N on Templates) makes an issue form, a discussion
+  form, a pull request template or the chooser. An issue form can start from
+  a starter (bug report, feature request, accessibility bug report, or a
+  blank form) or **From a SurveyJS or XLSForm file...**: choose a SurveyJS form (`.json`) or an XLSForm (`.xlsx`), name
+  the form, and it opens in the builder converted, with a sentence for every
+  question type GitHub forms cannot hold, such as a signature.
+- **Convert Form or Template...** turns a Markdown issue template into an
+  issue form (each heading becomes a long text field), or an issue form into
+  Markdown, after saying what the Markdown version loses.
+- **Copy to Repositories...** copies a template, or the whole set with its
+  chooser, to other repositories, after a preview of each one.
+
+Three community files have a window of their own fields: **FUNDING.yml**
+(sponsor platforms and names), **CITATION.cff** (title, authors, version and
+DOI), and **CODEOWNERS**. In Code Owners, type a path in **Who owns this
+path** and press **Look Up** to hear which rule owns it and its owners. Press
+**Check Owners** to ask GitHub whether every owner exists and can write to the
+repository. GitHub quietly skips an owner who cannot, so a rule meant to
+protect a folder can protect nothing. Each owner gets one line in **What the
+check found**, problems first: no such account, no such team, or access
+below write. An email address cannot be checked from here and is listed as
+unchecked rather than passed, and so is any owner GitHub did not answer for.
+
 ## Search
 
 Choose a search, press `Ctrl+E` to move to the filter box, type, and press

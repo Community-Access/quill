@@ -412,8 +412,18 @@ class GitHubWorkbenchTemplatesMixin:
             path, text = f"{folder}/pull_request_template.md", _PR_TEMPLATE
         else:
             names = list(STARTERS)
-            chosen = self._choose("New Template", "Start from:", [STARTERS[n] for n in names])
+            labels = [STARTERS[n] for n in names]
+            if kind == "issue_form":  # the SurveyJS and XLSForm door (PRD 21.4)
+                from quill.ui.github_workbench_form_file import FROM_FILE_LABEL
+
+                labels.append(FROM_FILE_LABEL)
+            chosen = self._choose("New Template", "Start from:", labels)
             if chosen < 0:
+                return
+            if chosen == len(names):
+                from quill.ui.github_workbench_form_file import start_from_form_file
+
+                start_from_form_file(self, repository, folder)
                 return
             prompt = (
                 "The discussion category's slug (its form is named after it):"
