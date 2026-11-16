@@ -96,9 +96,12 @@ def test_auto_skip_outro_ends_the_episode_early() -> None:
         show_id="show-1", episode_guid="ep-1", title="T", source="src", auto_skip_outro_ms=5_000
     )
     controller._on_loaded(0)
-    engine._position = 116_000  # within 5s of the 120s fake length
     finished: list[tuple[str, str]] = []
     controller._on_episode_finished = lambda sid, gid: finished.append((sid, gid))
+    engine._position = 114_000  # just before the window of the 120s fake length
+    controller._on_outro_poll(None)
+    assert finished == []
+    engine._position = 116_000  # listened across the boundary
     controller._on_outro_poll(None)
     assert finished == [("show-1", "ep-1")]
     assert controller.state.state is PodcastPlayerState.STOPPED
@@ -135,10 +138,61 @@ def test_auto_skip_outro_only_fires_once_per_episode() -> None:
         show_id="show-1", episode_guid="ep-1", title="T", source="src", auto_skip_outro_ms=5_000
     )
     controller._on_loaded(0)
-    engine._position = 116_000
     finished: list[tuple[str, str]] = []
     controller._on_episode_finished = lambda sid, gid: finished.append((sid, gid))
+    engine._position = 114_000
+    controller._on_outro_poll(None)
+    engine._position = 116_000
     controller._on_outro_poll(None)
     controller._on_outro_poll(None)
     controller._on_outro_poll(None)
     assert finished == [("show-1", "ep-1")]
+
+
+# -- only a natural crossing counts (earshot.md E1) -----------------------------
+
+
+def _outro_controller(**kwargs: object) -> tuple[PodcastPlayerController, object, list]:
+    controller, engine = _make_controller()
+    controller.play_episode(
+        show_id="show-1",
+        episode_guid="ep-1",
+        title="T",
+        source="src",
+        auto_skip_outro_ms=5_000,
+        **kwargs,  # type: ignore[arg-type]
+    )
+    controller._on_loaded(0)
+    finished: list[tuple[str, str]] = []
+    controller._on_episode_finished = lambda sid, gid: finished.append((sid, gid))
+    return controller, engine, finished
+
+
+def test_resuming_inside_the_outro_window_plays_on_to_the_end() -> None:
+    controller, engine, finished = _outro_controller(resume_ms=117_000)
+    engine._position = 117_000
+    controller._on_outro_poll(None)
+    engine._position = 118_000
+    controller._on_outro_poll(None)
+    assert finished == []
+
+
+def test_seeking_into_the_outro_window_does_not_end_the_episode() -> None:
+    controller, engine, finished = _outro_controller()
+    engine._position = 60_000
+    controller._on_outro_poll(None)
+    controller.seek(117_000)
+    controller._on_outro_poll(None)
+    engine._position = 118_000
+    controller._on_outro_poll(None)
+    assert finished == []
+
+
+def test_an_episode_shorter_than_the_skip_is_not_ended_at_once() -> None:
+    controller, engine, finished = _outro_controller()
+    engine._length = 4_000  # shorter than the 5s skip
+    engine._position = 0
+    controller._on_outro_poll(None)
+    engine._position = 1_000
+    controller._on_outro_poll(None)
+    assert finished == []
