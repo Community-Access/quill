@@ -2336,7 +2336,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## GitHub Workbench
 
-Control coverage: 354 audited sites (354 helped).
+Control coverage: 356 audited sites (356 helped).
 
 ### Every window, and what it is for
 
