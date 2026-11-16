@@ -380,11 +380,78 @@ and Branch Protection. Enter on one opens the same dialog the editor has
 always used, and that dialog asks before anything changes.</li>
 <li><strong>Repository Actions</strong>, <code>Ctrl+Shift+G</code>,
 lists everything else you can do with the repository: star it, fork it,
-clone it, Codespaces, and its administration.</li>
+clone it, Codespaces, and its administration. It also opens three
+windows of their own: <strong>Files, History and Blame…</strong>, which
+reads any file at any branch, tag or commit with the commits that
+changed it and who last touched each line; <strong>Milestones…</strong>;
+and <strong>Projects…</strong>.</li>
+<li><strong>Branches</strong> has an <strong>Against default</strong>
+column: “3 ahead, 1 behind main”, “even with main”, or “the default
+branch”. The details pane says the same on its own line. When GitHub did
+not say, the cell is blank rather than guessed.</li>
 </ul>
 <p><code>Ctrl+N</code> makes something new where you are: an issue in
-Issues, a saved search under Saved Searches, a pin under Pinned.
-<code>Ctrl+Shift+N</code> asks what to make.</p>
+Issues, a pull request in Pull Requests, a gist in My Gists, a saved
+search under Saved Searches, a pin under Pinned, and the repositories to
+read in Across Repositories. <code>Ctrl+Shift+N</code> asks what to
+make.</p>
+<h3 id="a-new-issue-and-issue-forms">A new issue, and issue forms</h3>
+<p><code>Ctrl+N</code> in Issues reads the repository’s issue templates
+first, then asks which to start from: Blank issue, or one of the
+templates, each with its own description. That list now includes
+GitHub’s issue forms, the ones written in YAML that show as a form with
+boxes on the website. Choose one and QUILL Lite fills it as a real
+form:</p>
+<ul>
+<li>Each field is its own labelled control: a text box, a larger text
+box for longer answers, a drop-down list, or a group of check boxes. A
+required one says “(required)” in its name, so you hear it before you
+type.</li>
+<li>Text from the form’s authors, such as “Please search before filing”,
+is in a read-only box you can read but not change.</li>
+<li>If something required is empty, Create Issue does not send; the line
+above the buttons says what is still missing.</li>
+<li>Then you get the same preview every new issue gets, and nothing is
+sent until you say yes. The issue GitHub receives reads exactly like one
+filed from the form on the website, with each answer under its own
+heading.</li>
+</ul>
+<p>If a repository has a form QUILL Lite cannot fill, it says so once
+and leaves that one off the list; it is still there on GitHub, and Blank
+issue and the other templates are still offered.</p>
+<h3 id="a-new-pull-request">A new pull request</h3>
+<p><code>Ctrl+N</code> in Pull Requests opens <strong>New Pull
+Request</strong>. To start from a particular branch, select it in
+Branches and press <code>Ctrl+Shift+N</code>, then choose Pull
+Request.</p>
+<ul>
+<li><strong>Merge into</strong> is the branch that receives the changes,
+usually the default branch. <strong>Merge from</strong> is the branch
+with your changes.</li>
+<li><strong>Title</strong> and <strong>Description</strong> start from
+the commits. One commit gives its own subject and body; several give a
+title made from the branch name, so <code>fix/login-crash</code> becomes
+“Fix login crash”.</li>
+<li><strong>Create as a draft</strong> opens it as a draft, which cannot
+be merged and asks nobody to review it until you mark it ready.</li>
+<li><strong>Create Pull Request</strong> is the only button that sends
+anything.</li>
+</ul>
+<p>If the two branches are the same, or Merge from has nothing that
+Merge into does not already have, QUILL Lite says so instead of opening
+the window. If the branch already has an open pull request into the same
+branch, you are taken to that one rather than making a second, and your
+text is kept. <strong>Cancel</strong> keeps what you typed too, for the
+rest of the session: open New Pull Request on the same two branches and
+it is waiting for you.</p>
+<h3 id="comparing-branches">Comparing branches</h3>
+<p>On a branch, <strong>Compare Branches…</strong>
+(<code>Ctrl+Shift+B</code>) shows what one branch has that the other
+does not, on two tabs: Commits and Changed Files. Commits are newest
+first. GitHub gives at most 250 commits for one comparison, so when
+there are more the tab says so, for example “Commits (250 of 1,204,
+newest)”, and you know you are reading the most recent ones, not all of
+them.</p>
 <h2 id="search">Search</h2>
 <p>Choose a search, press <code>Ctrl+E</code> to move to the filter box,
 type, and press Enter. Plain words narrow the list you are looking at;
@@ -394,12 +461,84 @@ ask GitHub. <code>Ctrl+8</code> goes to Saved Searches, and
 <h2 id="people-gists-and-projects">People, Gists and Projects</h2>
 <p><code>Ctrl+4</code> goes to People: who you follow and who follows
 you. Enter on a person gives them a place in the tree, with their
-repositories and activity. <code>Ctrl+5</code> goes to your gists and
-<code>Ctrl+6</code> to Projects; each repository’s own Projects are
-under it.</p>
-<p>Two places are shown but not built yet, so their keys already land
-somewhere that says what they will hold: Watches (<code>Ctrl+7</code>)
-and Across Repositories (<code>Ctrl+0</code>).</p>
+repositories and activity. Follow or Unfollow is on a person’s context
+menu. <code>Ctrl+6</code> goes to Projects; each repository’s own
+Projects are under it.</p>
+<h3 id="my-billing-and-usage">My Billing and Usage</h3>
+<p><strong>People &gt; My Billing and Usage</strong> reads this month’s
+metered use of your account from GitHub’s billing report: one row per
+product, such as Actions minutes or Codespaces storage, each with its
+amount and what it costs after discounts, and a last row with the
+month’s total. It is read only; Enter opens your billing page on
+GitHub.</p>
+<p>GitHub shares these figures only with a token that is allowed to read
+your plan: a classic token with the <code>user</code> scope, or a
+fine-grained token with Plan read permission. Without that, the list
+does not pretend you used nothing. Its one row says which permission is
+missing and that the same figures are on GitHub’s billing page.</p>
+<h3 id="gists">Gists</h3>
+<p><code>Ctrl+5</code> goes to My Gists.</p>
+<ul>
+<li><strong>New Gist</strong> (<code>Ctrl+N</code> on My Gists) starts
+from the editor that opened the Workbench: the text you have selected
+there, or the whole document when nothing is selected, named after the
+document’s file, or notes.md for one you have not saved. You can add
+more files, write a description, and choose public or secret before it
+is sent.</li>
+<li><strong>Edit Gist</strong> (<code>Enter</code> on a gist) reads the
+gist and opens it in the same window. If you change nothing, nothing is
+sent.</li>
+<li><strong>Star or Unstar</strong> is on the context menu.</li>
+<li><strong>Delete Gist…</strong> (<code>Delete</code> on a gist) asks
+first, because a deleted gist, its files and its history cannot be
+brought back.</li>
+</ul>
+<h2 id="across-repositories">Across Repositories</h2>
+<p><code>Ctrl+0</code> goes to Across Repositories: one kind of thing
+from several repositories, in one list. It is for questions such as
+“what has been released across all my projects this month?” or “which
+runs failed anywhere?”.</p>
+<p>The first time, press <code>Ctrl+N</code> there to choose the
+repositories. Type them one per line, as <code>owner/name</code> or as a
+link; anything that is not a repository is left out, and QUILL Lite
+tells you which. Cancel keeps the list you had. The place itself then
+lists the repositories you chose, and <code>Ctrl+N</code> changes them
+whenever you like. The list belongs to the account you are signed in
+with.</p>
+<p>Under it are eight lists, each drawn from every chosen repository at
+once:</p>
+<ul>
+<li>Issues and Pull Requests</li>
+<li>Releases</li>
+<li>Workflow Runs</li>
+<li>Commits</li>
+<li>Tags</li>
+<li>Milestones</li>
+<li>Discussions</li>
+<li>Security Alerts</li>
+</ul>
+<p>Every row starts with its repository, “owner/name: #42 Fix the
+crash”, and the details pane names the repository too, so Enter,
+Shift+Enter, Comment and the other commands act on the right one. Rows
+are newest first. Each repository gives at most 100 rows to a list, so
+one busy repository cannot crowd out the rest.</p>
+<p>The status bar says how many rows came from how many repositories,
+and names every repository that could not be read and why, such as “not
+found, or no access” or “Discussions are off”. A repository never just
+goes missing from the list. A fork whose upstream you also chose adds no
+issues of its own, because on GitHub a fork’s issues are its upstream’s;
+the status bar says so, and you read them once, under the upstream.</p>
+<h2 id="watches-and-why-ctrl3-ctrl4-and-ctrl8-go-places-here">Watches,
+and why Ctrl+3, Ctrl+4 and Ctrl+8 go places here</h2>
+<p>Watches (<code>Ctrl+7</code>) is shown but not built yet, so its key
+already lands on a place that says what it will hold.</p>
+<p>Elsewhere in the family, <code>Ctrl+3</code>, <code>Ctrl+4</code> and
+<code>Ctrl+8</code> are AI keys: a document task, Choose Your AI, and
+Which AI Am I Using. The Workbench has no AI menu, so here they keep
+their place in the Go row with the other digits: <code>Ctrl+3</code> is
+Search, <code>Ctrl+4</code> is People and <code>Ctrl+8</code> is Saved
+Searches. Switch back to the editor (<code>Ctrl+Shift+E</code>) and they
+are AI keys again.</p>
 <h2 id="doing-things-to-what-is-selected">Doing things to what is
 selected</h2>
 <p>Enter does the obvious thing; the Applications key, or
@@ -436,6 +575,14 @@ about the selected row on one sheet.</p>
 <td>Run the failed jobs again</td>
 </tr>
 <tr>
+<td><code>Ctrl+Shift+B</code></td>
+<td>Compare the selected branch with another</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+A</code></td>
+<td>Assign the selected issue to Copilot</td>
+</tr>
+<tr>
 <td><code>Ctrl+D</code></td>
 <td>Keep the selected row under Favorites, or take it out</td>
 </tr>
@@ -454,9 +601,64 @@ asking</td>
 </tr>
 </tbody>
 </table>
-<p>Anything the Workbench does not do itself yet opens GitHub Items on
-that one item, in front of the Workbench, so nothing you could do before
-is out of reach.</p>
+<p><code>Delete</code> always does the safe thing for the kind of row,
+and asks first whenever it cannot be undone: on a branch, a label, a
+release’s file, a gist, an Actions cache or a workflow run it deletes
+that one thing, after asking. It never deletes the repository’s default
+branch. Enter never deletes anything.</p>
+<h3 id="everything-is-done-here-now">Everything is done here now</h3>
+<p>The old GitHub Items window is retired, and nothing hands you over to
+it. What it did, the Workbench does itself, on the selected row; where a
+job needs a window, such as a run’s logs, that window opens in front of
+the Workbench and blocks only the Workbench, never the editor. Each
+row’s context menu has its own list, and <code>Shift+F1</code> reads it
+with the keys:</p>
+<ul>
+<li><strong>An issue:</strong> Comment, Close or Reopen, Labels,
+Assignees, Milestone, View Timeline, Assign to Copilot, Lock or Unlock
+Conversation, Pin or Unpin, Transfer Issue to another repository with
+the same owner, Set Issue Type, and Reorder Sub-issues.</li>
+<li><strong>A pull request:</strong> Review (Enter), File Differences,
+Merge, View Timeline and the rest. Merge asks how (Squash and merge,
+Merge commit or Rebase), then asks you to type the pull request’s number
+before anything happens, because a merge changes the branch for
+everyone.</li>
+<li><strong>A workflow run:</strong> Jobs and Logs (Enter), What Failed,
+Re-run Failed Jobs Only, Re-run Workflow, Cancel Run, View Artifacts,
+Combined Check Status, Review Pending Deployments, Approve Run from a
+Fork, and Delete Run.</li>
+<li><strong>A workflow:</strong> its Runs (Enter), and Run Workflow on
+Branch.</li>
+<li><strong>A release:</strong> its Assets (Enter), each with Download,
+Copy Link and Delete Asset; Edit Release; Draft Release Notes; and
+Upload Asset.</li>
+<li><strong>A branch:</strong> its Commits (Enter), Compare Branches,
+Copy Name, and Delete Branch, which asks you to type the branch
+name.</li>
+<li><strong>A commit or a tag:</strong> Open, and Commit Comments, to
+read and write comments on the commit and its lines.</li>
+<li><strong>A label:</strong> Find Issues with Label (Enter), Edit Label
+and Delete Label.</li>
+<li><strong>A security alert:</strong> Open, and Dismiss or Reopen
+Alert, with a reason.</li>
+<li><strong>A discussion:</strong> Open Discussion Thread, to read and
+reply.</li>
+<li><strong>An Actions cache:</strong> Show Details and Delete
+Cache.</li>
+<li><strong>A notification:</strong> Open, Mark Read, Mark Done,
+Unsubscribe from Thread, and Snooze for One Day. Snoozing hides it in
+the Workbench on this computer until tomorrow and changes nothing on
+GitHub; Unsnooze Locally brings it back.</li>
+<li><strong>A repository:</strong> Open, Star or Unstar, Watch or
+Unwatch, Clone, and Pin.</li>
+<li><strong>A person:</strong> Open, and Follow or Unfollow.</li>
+</ul>
+<p>Summarize Discussion and Start in Local Worktree are QUILL’s: they
+use its AI connection and its local Git. In QUILL Lite those two rows
+are greyed, and <code>Shift+F1</code> says why.</p>
+<p>Every change asks first when it cannot be undone, runs without
+freezing the window, and says one sentence about what GitHub confirmed.
+<code>F9</code> says it again.</p>
 <h2 id="hearing-where-you-are">Hearing where you are</h2>
 <p><code>Alt+1</code> to <code>Alt+9</code> say something and move
 nothing: where you are, what is selected, the selected item’s state, the

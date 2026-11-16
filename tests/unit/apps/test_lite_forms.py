@@ -63,6 +63,8 @@ class _Window(DocumentFormsMixin):
         (lambda w: w.cmd_forms_save_word(), "cmd_save_word"),
         (lambda w: w.cmd_forms_save_large_print(), "cmd_save_large_print"),
         (lambda w: w.cmd_forms_save_braille(), "cmd_save_braille"),
+        (lambda w: w.cmd_forms_save_github(), "cmd_save_github_issue_form"),
+        (lambda w: w.cmd_forms_open_github(), "cmd_open_github_issue_form"),
         (lambda w: w.cmd_forms_draft(), "cmd_draft_form"),
         (lambda w: w.cmd_forms_plain_language(), "cmd_plain_language"),
         (lambda w: w.cmd_forms_suggest_autofill(), "cmd_suggest_autofill"),

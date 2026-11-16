@@ -189,6 +189,12 @@ whether the file is the repository's own, inherited from the organization's
   blank form) or **From a SurveyJS or XLSForm file...**: choose a SurveyJS form (`.json`) or an XLSForm (`.xlsx`), name
   the form, and it opens in the builder converted, with a sentence for every
   question type GitHub forms cannot hold, such as a signature.
+- **Write it as plain text.** In a form document, Tools > Forms > **Save As
+  GitHub Issue Form...** saves the form, written in QUILL's form language, as
+  an issue form, after listing anything GitHub's forms cannot hold. **Open
+  GitHub Issue Form...** reads an issue form back into the form language, and
+  keeps the labels, title prefix and ids so a later save gives them back.
+  Chapter 12 of the WordPress and Forms guide has the details.
 - **Convert Form or Template...** turns a Markdown issue template into an
   issue form (each heading becomes a long text field), or an issue form into
   Markdown, after saying what the Markdown version loses.

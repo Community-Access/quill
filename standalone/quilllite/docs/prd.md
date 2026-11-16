@@ -2376,7 +2376,7 @@ the same place in both, and every row names one shared handler on
 | Insert | Form Field... |
 | View | Form Outline... |
 | Format | Form Rules... |
-| Tools > Forms | Check This Form..., Fill It In Yourself..., Form Properties..., Form Payments Setup..., Insert Payment Field..., Verify Payment Setup...; Publish Form..., Insert Form Into Page..., Test on Site, Responses...; Save As Web Page..., Save As Word Document..., Save As Large Print..., Save As Braille-Ready Text...; Draft a Form..., Plain Language..., Suggest Autofill Hints... |
+| Tools > Forms | Check This Form..., Fill It In Yourself..., Form Properties..., Form Payments Setup..., Insert Payment Field..., Verify Payment Setup...; Publish Form..., Insert Form Into Page..., Test on Site, Responses...; Save As Web Page..., Save As Word Document..., Save As Large Print..., Save As Braille-Ready Text..., Save As GitHub Issue Form..., Open GitHub Issue Form...; Draft a Form..., Plain Language..., Suggest Autofill Hints... |
 
 Every row but New Form, Insert Form Into Page, Responses and Draft a Form is
 in `DOCUMENT_ONLY`: dimmed unless a form document is in front, and the

@@ -2,6 +2,20 @@
 
 ## 2.0.0
 
+### GitHub issue forms, written as plain text (2026-11-16)
+
+A GitHub issue form is the form people fill in when they open an issue. In
+both QUILL and QUILL Lite, Tools > Forms now has **Save As GitHub Issue
+Form...**, which saves the form you are writing as one, and **Open GitHub
+Issue Form...**, which reads one back so you can edit it as plain text in the
+form language. Before saving, a window lists what GitHub's forms cannot hold,
+one line each, such as a signature question or a condition, and says if
+GitHub would refuse the result. Going the other way, what only GitHub has
+(labels, the issue title prefix, ids, an answer shown as code) is kept with
+the form and given back on the next save, so QUILL's own five issue forms go
+to the form language and back unchanged. Nothing is sent anywhere, and both
+work in Safe Mode.
+
 ### Properties for everything in the GitHub Workbench (2026-11-10)
 
 - **Alt+Enter shows everything about what is selected, and changes it.** On an

@@ -55,9 +55,20 @@ sheet asks GitHub whether every owner exists and can write
 SurveyJS or XLSForm file... is the conversion's door
 (`quill/ui/github_workbench_form_file.py`, `template_convert.form_file_to_draft`);
 and the GitHub guide's chapter 12 gains Templates and community files, which it
-never had. Next: BFL interop (`quill/core/forms/interop_github.py`, Save as
-GitHub Issue Form in both editors' Forms commands, and an issue form opened as
-BFL), then Phase 13.
+never had.
+
+**2026-11-16, the rest of Phase 12, second PR: BFL interop.** Forms written in
+BFL (BITS Accessible Forms' language, the plain-text form language QUILL's
+Forms read and write) now go to and from GitHub issue forms through
+`quill/core/forms/interop_github.py`, which maps the QAF (QUILL Accessible
+Forms) model to GitHub's schema and back. GitHub-only keys (labels, title
+prefix, ids, `render`, per-option required check boxes) ride in the form's
+`@extensions`, so QUILL's own five issue forms round-trip unchanged (tested);
+everything a GitHub form cannot hold is one sentence in the report.
+`template_convert.qaf_to_draft` is now this module's export, so the SurveyJS
+and XLSForm door and the Forms commands convert the same way. Tools > Forms in
+both editors gains Save As GitHub Issue Form and Open GitHub Issue Form
+(`quill/ui/forms_github_commands.py`). Phase 12 is complete. Next: Phase 13.
 
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
@@ -80,9 +91,8 @@ it (302 covered, 1103 planned, 15 no_api_needed, 206 out_of_scope),
 GitHub can do, and where" chapter. The GHManage port (complete.md 10B.1) is
 done.
 
-What remains when work resumes: the real GHEC and GHES descriptions, the
-rest of Phase 12 (BFL text interop for forms; the SurveyJS and XLSForm door and
-the CODEOWNERS owner check are done, 2026-11-15), Phase 13 (API Console, Read as
+What remains: the real descriptions for GHEC (GitHub Enterprise Cloud) and
+GHES (GitHub Enterprise Server), Phase 13 (API Console, Read as
 Document, Watches and the rest of PRD section 22), the remaining PRD section
 14 features, Repository Sets in the UI, and manual NVDA, JAWS, Narrator,
 braille, scaling and live-account acceptance. The engineering checklist is
