@@ -7488,6 +7488,12 @@ id="codeownersdialog-quilluigithub_template_sheets_dialogpy">CodeownersDialog
 <ul>
 <li><code>look</code>: Say which rule owns the path above, and its
 owners.</li>
+<li><code>check</code>: Ask GitHub whether every owner exists and can
+write to this repository. GitHub skips one that cannot, without saying
+so.</li>
+<li><code>self.findings</code>: One line for each owner: whether it
+exists and can write, what to fix if not, and any that could not be
+checked.</li>
 </ul>
 <h4
 id="githubtimelinedialog-quilluigithub_timeline_dialogpy">GitHubTimelineDialog

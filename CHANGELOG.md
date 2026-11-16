@@ -620,6 +620,22 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### GitHub Workbench: code owners you can trust, and forms from SurveyJS and XLSForm (2026-11-15)
+
+A CODEOWNERS file can look perfect and protect nothing: GitHub quietly skips an
+owner who does not exist or cannot write, and only tells you after the file is
+on the default branch. The Code Owners window now has **Check Owners**, which
+asks GitHub about every person and team before you save, once each, and lists
+what to fix first: no such account, no such team, or access below write. An
+email address, or an owner GitHub did not answer for, is listed as unchecked,
+never as fine.
+
+Have a survey already built in SurveyJS or XLSForm? **New Template > Issue form
+> From a SurveyJS or XLSForm file...** turns it into a GitHub issue form and
+opens it in the builder, ready to check and save, with a sentence for every
+question GitHub forms cannot hold. And the GitHub guide's chapter 12 now covers
+Templates and community files from top to bottom.
+
 ### QUILL Cast: finishing means finished, and Earshot's latest (2026-11-15)
 
 Stop an episode in its last minute and it counts as finished, so Continue
