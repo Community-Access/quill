@@ -302,9 +302,23 @@ Template &gt; Issue form &gt; From a SurveyJS or XLSForm file… is the
 conversion’s door (<code>quill/ui/github_workbench_form_file.py</code>,
 <code>template_convert.form_file_to_draft</code>); and the GitHub
 guide’s chapter 12 gains Templates and community files, which it never
-had. Next: BFL interop (<code>quill/core/forms/interop_github.py</code>,
-Save as GitHub Issue Form in both editors’ Forms commands, and an issue
-form opened as BFL), then Phase 13.</p>
+had.</p>
+<p><strong>2026-11-16, the rest of Phase 12, second PR: BFL
+interop.</strong> Forms written in BFL (BITS Accessible Forms’ language,
+the plain-text form language QUILL’s Forms read and write) now go to and
+from GitHub issue forms through
+<code>quill/core/forms/interop_github.py</code>, which maps the QAF
+(QUILL Accessible Forms) model to GitHub’s schema and back. GitHub-only
+keys (labels, title prefix, ids, <code>render</code>, per-option
+required check boxes) ride in the form’s <code>@extensions</code>, so
+QUILL’s own five issue forms round-trip unchanged (tested); everything a
+GitHub form cannot hold is one sentence in the report.
+<code>template_convert.qaf_to_draft</code> is now this module’s export,
+so the SurveyJS and XLSForm door and the Forms commands convert the same
+way. Tools &gt; Forms in both editors gains Save As GitHub Issue Form
+and Open GitHub Issue Form
+(<code>quill/ui/forms_github_commands.py</code>). Phase 12 is complete.
+Next: Phase 13.</p>
 <p>What is built: the editor menu and QUILL Lite route GitHub browsing
 doors to the shared Workbench. Native Items, Explore, review,
 permissions, and repository administration features are reached through
@@ -329,14 +343,13 @@ covered, 1103 planned, 15 no_api_needed, 206 out_of_scope),
 <code>docs/github/workbench-reference.md</code> carries the generated
 “Everything GitHub can do, and where” chapter. The GHManage port
 (complete.md 10B.1) is done.</p>
-<p>What remains when work resumes: the real GHEC and GHES descriptions,
-the rest of Phase 12 (BFL text interop for forms; the SurveyJS and
-XLSForm door and the CODEOWNERS owner check are done, 2026-11-15), Phase
-13 (API Console, Read as Document, Watches and the rest of PRD section
-22), the remaining PRD section 14 features, Repository Sets in the UI,
-and manual NVDA, JAWS, Narrator, braille, scaling and live-account
-acceptance. The engineering checklist is in the <a
-href="./github-roadmap.md">GitHub Workbench roadmap</a>.</p>
+<p>What remains: the real descriptions for GHEC (GitHub Enterprise
+Cloud) and GHES (GitHub Enterprise Server), Phase 13 (API Console, Read
+as Document, Watches and the rest of PRD section 22), the remaining PRD
+section 14 features, Repository Sets in the UI, and manual NVDA, JAWS,
+Narrator, braille, scaling and live-account acceptance. The engineering
+checklist is in the <a href="./github-roadmap.md">GitHub Workbench
+roadmap</a>.</p>
 <h2 id="wordpress">WordPress</h2>
 <h3 id="done">Done</h3>
 <p>Everything below is in <code>S:\QUILL</code>, uncommitted on

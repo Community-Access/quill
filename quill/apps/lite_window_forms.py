@@ -112,6 +112,14 @@ class DocumentFormsMixin:
         """Tools > Forms > Save As Braille-Ready Text."""
         self._forms().cmd_save_braille()
 
+    def cmd_forms_save_github(self) -> None:
+        """Tools > Forms > Save As GitHub Issue Form."""
+        self._forms().cmd_save_github_issue_form()
+
+    def cmd_forms_open_github(self) -> None:
+        """Tools > Forms > Open GitHub Issue Form."""
+        self._forms().cmd_open_github_issue_form()
+
     def cmd_forms_draft(self) -> None:
         """Tools > Forms > Draft a Form."""
         self._forms().cmd_draft_form()

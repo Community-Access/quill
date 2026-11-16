@@ -113,6 +113,8 @@ TOOLS_ROWS: tuple[Entry, ...] = (
             ("forms.save_word", "Save As Wor&d Document...", "cmd_save_word"),
             ("forms.save_large_print", "Save As &Large Print...", "cmd_save_large_print"),
             ("forms.save_braille", "Save As &Braille-Ready Text...", "cmd_save_braille"),
+            ("forms.save_github", "Save As GitHub Issue For&m...", "cmd_save_github_issue_form"),
+            ("forms.open_github", "&Open GitHub Issue Form...", "cmd_open_github_issue_form"),
             None,
             ("forms.draft", "Dr&aft a Form...", "cmd_draft_form"),
             ("forms.plain_language", "Plain Lan&guage...", "cmd_plain_language"),
@@ -132,7 +134,8 @@ PLACES: dict[str, tuple[str, tuple[Entry, ...]]] = {
 }
 
 #: Commands about the form in front of you: enabled only in a form document.
-#: New Form starts one; Responses will list a site's forms (17a.8).
+#: New Form and Open GitHub Issue Form start one; Responses will list a site's
+#: forms (17a.8).
 DOCUMENT_ONLY: frozenset[str] = frozenset({
     "cmd_insert_field",
     "cmd_outline",
@@ -149,6 +152,7 @@ DOCUMENT_ONLY: frozenset[str] = frozenset({
     "cmd_save_word",
     "cmd_save_large_print",
     "cmd_save_braille",
+    "cmd_save_github_issue_form",
     "cmd_plain_language",
     "cmd_suggest_autofill",
 })
