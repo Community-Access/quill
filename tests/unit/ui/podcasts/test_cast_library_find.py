@@ -42,7 +42,7 @@ def library() -> PodcastLibrary:
 def test_podcasts_first_then_episodes_newest_first_each_saying_what_it_is(library) -> None:
     rows = library_find.find_rows(library, "bristol")
     labels = [label for label, _ in rows]
-    assert labels[0] == "Bristol Stories -- a podcast (1 unheard)"
+    assert labels[0] == "Bristol Stories -- a podcast (1 unplayed)"
     assert labels[1:] == [
         "Bristol, again -- an episode of The Daily",
         "The Bristol bus boycott -- an episode of The Daily",
@@ -153,7 +153,7 @@ def test_a_pause_flattens_the_tree_and_says_the_count_once(library) -> None:
     host._run_library_find()
     assert [label for label, _ in host._shows_tree.rows][
         0
-    ] == "Bristol Stories -- a podcast (1 unheard)"
+    ] == "Bristol Stories -- a podcast (1 unplayed)"
     assert host._shows_tree.selected == 1
     assert host.spoken == ["3 matches for bristol"]
     assert host._find_status.text == "3 matches for bristol"

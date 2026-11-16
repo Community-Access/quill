@@ -128,13 +128,13 @@ def _folder_label(name: str, podcasts: int, unheard: int, counts: str) -> str:
     if counts in ("podcasts", "both") and podcasts:
         parts.append(f"{podcasts} podcast{'' if podcasts == 1 else 's'}")
     if counts in ("unheard", "both") and unheard:
-        parts.append(f"{unheard} unheard")
+        parts.append(f"{unheard} unplayed")
     return f"{name} ({', '.join(parts)})" if parts else name
 
 
 def _show_label(show: Any, unheard: int, counts: str) -> str:
     if counts in ("unheard", "both"):
-        return f"{show.title} ({unheard} unheard)"
+        return f"{show.title} ({unheard} unplayed)"
     return str(show.title)
 
 

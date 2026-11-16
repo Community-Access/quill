@@ -78,12 +78,12 @@ _EPISODE_SORT_LABELS = (
     "Title A-Z",
     "Longest first",
     "Shortest first",
-    "Unheard first",
+    "Unplayed first",
 )
 _SHOW_SORT_LABELS = (
     "Title A-Z",
     "Title Z-A",
-    "Most unheard first",
+    "Most unplayed first",
     "Recently updated first",
     "Your custom order",
 )
@@ -533,7 +533,7 @@ class PodcastManagerDialog(
         def add_folder_children(parent_item: object, folder_id: str | None) -> None:
             for folder in folders_by_parent.get(folder_id, []):
                 unheard = folder_unheard.get(folder.id, 0)
-                label = f"{folder.name} ({unheard} unheard)" if unheard else folder.name
+                label = f"{folder.name} ({unheard} unplayed)" if unheard else folder.name
                 item = self._tree.AppendItem(parent_item, label)
                 self._tree_item_folder[_item_key(item)] = folder.id
                 add_folder_children(item, folder.id)
@@ -549,7 +549,7 @@ class PodcastManagerDialog(
                 ordered = sort_shows(matching, show_sort_mode)
             for show in ordered:
                 unheard = show_unheard[show.id]
-                label = f"{show.title} ({unheard} unheard)"
+                label = f"{show.title} ({unheard} unplayed)"
                 item = self._tree.AppendItem(parent_item, label)
                 self._tree_item_show[_item_key(item)] = show.id
 

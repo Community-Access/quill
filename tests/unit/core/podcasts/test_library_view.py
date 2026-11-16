@@ -48,7 +48,7 @@ def test_folders_first_is_the_default_and_keeps_what_was_there() -> None:
     library = _library()
     nodes = lv.library_nodes(library, library.shows)
     assert _ids(nodes) == ["news", "art", "empty", "d"]
-    assert nodes[0].label == "News (2 podcasts, 3 unheard)"
+    assert nodes[0].label == "News (2 podcasts, 3 unplayed)"
     assert _ids(nodes[0].children) == ["local", "a"]
     assert nodes[0].open
 

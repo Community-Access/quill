@@ -54,7 +54,7 @@ def test_subscriptions_level_shows_folders_first_with_recursive_badges(tmp_path:
     kinds = [split_id(n.node_id)[0] for n in nodes]
     assert kinds == ["mypodcastfolder", "mypodcastshow"]
     # The folder badge counts its whole subtree: m1 + e1 unheard.
-    assert nodes[0].label == "News (2 unheard)"
+    assert nodes[0].label == "News (2 unplayed)"
     # The loose show is fully played, so it is simply unbadged.
     assert nodes[1].label == "Loose Show"
 
@@ -64,7 +64,7 @@ def test_a_folder_level_lists_its_own_shows_with_their_badges(tmp_path: Path) ->
     folder_id = library.folders[0].id
     nodes = _my_podcast_level(library, folder_id)
 
-    assert [n.label for n in nodes] == ["Evening Wrap (1 unheard)", "Morning Brief (1 unheard)"]
+    assert [n.label for n in nodes] == ["Evening Wrap (1 unplayed)", "Morning Brief (1 unplayed)"]
 
 
 def test_unheard_count_for_folder_recurses_subfolders(tmp_path: Path) -> None:

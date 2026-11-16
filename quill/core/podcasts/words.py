@@ -1,9 +1,11 @@
 """The words QUILL Cast uses, and the ones it does not (qc.md section 12).
 
 Follow, unfollow, following. Podcast, never show or feed or subscription
-(except "OPML subscription list", the format's own name). Episode. Unheard,
-never unplayed. Place. Now Playing. Find, never search. Personal Audio. Inbox.
-Queue. Downloaded, never cached. Settings for This Podcast; Preferences.
+(except "OPML subscription list", the format's own name). Episode. Played and
+unplayed, never heard and unheard -- moved 2026-11-15 to match Earshot, which
+moved first (earshot.md D1), and to pair with Mark as Played. Place. Now
+Playing. Find, never search. Personal Audio. Inbox. Queue. Downloaded, never
+cached. Settings for This Podcast; Preferences.
 
 Pure. :func:`offences` is what the gate (``quill/tools/cast_words_audit.py``)
 asks of every user-facing string literal in the Cast UI, and what a test can
@@ -31,7 +33,7 @@ FORBIDDEN: dict[str, str] = {
     "subscribing": "following",
     "subscription": "podcast (or 'the podcasts you follow')",
     "subscriptions": "podcasts (or 'the podcasts you follow')",
-    "unplayed": "unheard",
+    "unheard": "unplayed",
     "cached": "downloaded",
     "search": "find",
     "searches": "finds",

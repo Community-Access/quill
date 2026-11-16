@@ -184,7 +184,7 @@ class ManagerVerbsMixin:
         if episode.played:
             say_outcome(self, "Marked as played", sound=SoundEvent.CAST_MARKED_PLAYED)
         else:
-            self._announce("Marked as unheard")
+            self._announce("Marked as unplayed")
 
     def _on_copy_episode_link(self, episode: PodcastEpisode) -> None:
         wx = self._wx

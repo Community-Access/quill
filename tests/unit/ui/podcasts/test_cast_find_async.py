@@ -213,4 +213,4 @@ def test_every_kind_of_row_says_what_it_is() -> None:
     note = SearchHit("note", "d", "The Daily", "d1", "Monday", "", "remember this")
     assert hit_label(note) == "Note on Monday: remember this"
     show = SearchHit("show", "d", "The Daily")
-    assert hit_label(show, 3) == "The Daily -- a podcast (3 unheard)"
+    assert hit_label(show, 3) == "The Daily -- a podcast (3 unplayed)"

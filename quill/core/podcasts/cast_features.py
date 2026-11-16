@@ -201,7 +201,7 @@ _GROUPED: tuple[tuple[str, AppArea], ...] = (
         "library",
         "caught_up",
         "Hide caught-up podcasts",
-        "The View switch that hides podcasts with nothing unheard.",
+        "The View switch that hides podcasts with nothing unplayed.",
     ),
     _area(
         "library",

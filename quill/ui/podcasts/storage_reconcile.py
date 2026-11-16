@@ -63,7 +63,7 @@ class StorageOutcome:
         if self.inbox_trimmed:
             parts.append(
                 f"{self.inbox_trimmed} episode(s) left the Inbox at its limit "
-                "(still unheard in their podcasts)"
+                "(still unplayed in their podcasts)"
             )
         if self.removed - self.swept:
             parts.append(f"{self.removed - self.swept} old download(s) removed")

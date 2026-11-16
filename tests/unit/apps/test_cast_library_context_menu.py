@@ -289,7 +289,7 @@ def test_a_folder_row_offers_the_folder_verbs_the_guide_teaches() -> None:
     folder = library.add_folder("News")
     labels = _labels(_Host(library, ("folder", folder.id)))
     assert labels[:5] == [
-        "&Play All Unheard",
+        "&Play All Unplayed",
         "Add All to &Queue",
         "Move &Up",
         "Move Dow&n",

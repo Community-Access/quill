@@ -52,7 +52,7 @@ _EPISODE_FILTER_MODES = (
     "not_downloaded",
     "filtered_out",
 )
-_SHOW_FILTER_LABELS = ("All shows", "Favorites only", "Has unheard")
+_SHOW_FILTER_LABELS = ("All shows", "Favorites only", "Has unplayed")
 _SHOW_FILTER_MODES = ("all", "favorites_only", "has_unplayed")
 #: Volume Boost, from the shared table (list.md 2.8).
 _BOOST_LABELS = tuple(label for _value, label, _factor in volume_boost.LEVELS)
@@ -97,7 +97,7 @@ class ManagerPhase4Mixin(ManagerExpiredMixin, EpisodeSearchMixin, SearchEverywhe
         episodes_label = wx.StaticText(self.dialog, label="Ep&isodes:")
         self._episode_filter_choice = wx.Choice(self.dialog, choices=list(_EPISODE_FILTER_LABELS))
         self._episode_filter_choice.SetHelpText(
-            "Which episodes the list shows: all of them, only the unheard ones, "
+            "Which episodes the list shows: all of them, only the unplayed ones, "
             "only what is downloaded, and so on. It narrows the list you are "
             "looking at and changes nothing about the episodes themselves."
         )

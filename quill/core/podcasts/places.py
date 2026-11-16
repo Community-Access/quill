@@ -81,7 +81,7 @@ PLACES: tuple[Place, ...] = (
         "New Episodes",
         KIND_EPISODES,
         "",
-        "No unheard episodes. Refresh All Now in the Podcasts menu looks for new ones.",
+        "No unplayed episodes. Refresh All Now in the Podcasts menu looks for new ones.",
     ),
     Place(
         "continue_listening",
