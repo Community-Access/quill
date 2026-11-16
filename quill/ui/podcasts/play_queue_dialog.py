@@ -11,6 +11,7 @@ play time; they never crash anything.
 from __future__ import annotations
 
 from collections.abc import Callable
+from typing import Any
 
 from quill.core.podcasts import queue as queue_ops
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
@@ -39,6 +40,8 @@ class PlayQueueDialog:
         self._on_library_changed = on_library_changed or (lambda: None)
         self._on_play = on_play
         self._marked_index: int | None = None
+        #: A whole group picked up by its heading (earshot.md E10): its slots.
+        self._marked_group: list[Any] | None = None
 
         self.dialog = wx.Dialog(
             parent, title="Play Queue", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
@@ -323,6 +326,27 @@ class PlayQueueDialog:
         index = rows[row][0]
         return -1 if index is None else int(index)
 
+    def _heading_group(self) -> tuple[str, list[int]] | None:
+        """``(label, queue indexes)`` when the one selected row is a group heading.
+
+        A heading stands for its whole group in Move to Top, Move to Bottom and
+        Mark for Move (earshot.md E10), never for the row beneath it.
+        """
+        rows = getattr(self, "_rows", [])
+        selections = list(self._list.GetSelections())
+        if len(selections) != 1 or not (0 <= selections[0] < len(rows)):
+            return None
+        row = selections[0]
+        index, label = rows[row]
+        if index is not None:
+            return None
+        members: list[int] = []
+        for member, member_label in rows[row + 1 :]:
+            if member is None or member_label != label:
+                break
+            members.append(int(member))
+        return (label, members) if members else None
+
     def _selected_indexes(self) -> list[int]:
         """Every selected episode's queue index, in queue order.
 
@@ -372,9 +396,20 @@ class PlayQueueDialog:
             self._announce(f"Moved to position {new_index + 1} of {len(self._library.queue)}")
 
     def _on_mark(self) -> None:
+        heading = self._heading_group()
+        if heading is not None:
+            label, members = heading
+            self._marked_group = [self._library.queue[i] for i in members]
+            self._marked_index = None
+            self._announce(
+                f"Marked the {label} group, {len(members)} episodes. Select where it "
+                "should go, then Move Marked Above or Below."
+            )
+            return
         index = self._selected()
         if index < 0:
             return
+        self._marked_group = None
         self._marked_index = index
         self._reload(select=index)
         self._announce(
@@ -383,6 +418,9 @@ class PlayQueueDialog:
         )
 
     def _move_marked(self, *, above: bool) -> None:
+        if self._marked_group:
+            self._move_marked_group(above=above)
+            return
         anchor = self._selected()
         marked = self._marked_index
         if marked is None:
@@ -395,6 +433,24 @@ class PlayQueueDialog:
         self._on_library_changed()
         self._reload(select=new_index)
         self._announce(f"Moved to position {new_index + 1} of {len(self._library.queue)}")
+
+    def _move_marked_group(self, *, above: bool) -> None:
+        from quill.core.podcasts.queue_selection import move_block_next_to
+
+        heading = self._heading_group()
+        anchor = heading[1] if heading is not None else [self._selected()]
+        queue = self._library.queue
+        block = [
+            i for i, item in enumerate(queue) if any(item is m for m in self._marked_group or [])
+        ]
+        moved = move_block_next_to(self._library, block, anchor, above=above)
+        if not moved:
+            self._announce("Select a different group or episode to move it next to.")
+            return
+        self._marked_group = None
+        self._on_library_changed()
+        self._reload(select_many=moved)
+        self._announce(f"Moved {len(moved)} episodes.")
 
     def _on_remove(self) -> None:
         """Remove everything selected -- one row or twenty (list.md 2.4)."""

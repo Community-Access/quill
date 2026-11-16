@@ -84,6 +84,26 @@ class FeedPreviewDialog:
         self._episodes.SetName("The ten most recent episodes")
         root.Add(self._episodes, 1, wx.EXPAND | wx.ALL, 10)
 
+        # What each episode is about, before you follow (earshot.md E8): a
+        # title is often not enough to tell whether a show is for you.
+        root.Add(
+            wx.StaticText(self.dialog, label="Episode &description:"), 0, wx.LEFT | wx.RIGHT, 10
+        )
+        self._episode_rows = episodes[:PREVIEW_EPISODES]
+        self._episode_description = wx.TextCtrl(
+            self.dialog, value="", style=wx.TE_MULTILINE | wx.TE_READONLY
+        )
+        self._episode_description.SetName("The selected episode's description")
+        self._episode_description.SetHelpText(
+            "What the episode selected in Recent episodes is about, in the "
+            "publisher's own words. Choose another episode to read its description."
+        )
+        root.Add(self._episode_description, 1, wx.EXPAND | wx.ALL, 10)
+        self._episodes.Bind(wx.EVT_LISTBOX, lambda _e: self._show_episode_description())
+        if self._episode_rows:
+            self._episodes.SetSelection(0)
+            self._show_episode_description()
+
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.AddStretchSpacer()
         subscribe_btn = wx.Button(self.dialog, wx.ID_OK, "&Follow")
@@ -99,6 +119,14 @@ class FeedPreviewDialog:
         # the failure test_close_button_contract exists to catch.
         bind_close_button(self.dialog, close_btn, wx.ID_CANCEL)
         self._headline = headline
+
+    def _show_episode_description(self) -> None:
+        index = self._episodes.GetSelection()
+        row = self._episode_rows[index] if 0 <= index < len(self._episode_rows) else None
+        text = _plain_text(str(getattr(row, "description", "") or "")) if row else ""
+        self._episode_description.SetValue(
+            text if text != "No description." else "This episode has no description."
+        )
 
     def _on_subscribe(self, event: Any) -> None:
         self._subscribe = True

@@ -32,6 +32,7 @@ from typing import Any
 from quill.core.podcasts.queue import resolve
 
 __all__ = [
+    "move_block_next_to",
     "move_selection",
     "shuffle_selection",
     "sort_selection_by_date",
@@ -68,6 +69,30 @@ def move_selection(library: Any, indexes: list[int], *, where: str) -> list[int]
     library.queue.extend(moving)
     start = len(library.queue) - len(moving)
     return list(range(start, len(library.queue)))
+
+
+def move_block_next_to(
+    library: Any, indexes: list[int], anchor: list[int], *, above: bool
+) -> list[int]:
+    """Pick up a block of slots and drop it just above or below another block.
+
+    A group picked up by its heading lands before or after the group (or the
+    episode) it is dropped on, keeping its own order (earshot.md E10). Returns
+    the block's new indexes; ``[]`` when there is nothing to move or the anchor
+    is inside the block itself.
+    """
+    valid = _valid(library, indexes)
+    targets = [index for index in _valid(library, anchor) if index not in valid]
+    if not valid or not targets:
+        return []
+    moving = [library.queue[index] for index in valid]
+    pivot = library.queue[targets[0] if above else targets[-1]]
+    for index in reversed(valid):
+        del library.queue[index]
+    at = next(i for i, item in enumerate(library.queue) if item is pivot)
+    at = at if above else at + 1
+    library.queue[at:at] = moving
+    return list(range(at, at + len(moving)))
 
 
 def _published(library: Any, item: Any) -> str:
