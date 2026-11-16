@@ -93,7 +93,7 @@ class CastStartupLoadMixin:
                 bass_db=settings.eq_bass_db,
                 mid_db=settings.eq_mid_db,
                 treble_db=settings.eq_treble_db,
-                compressor_enabled=settings.compressor_enabled,
+                compressor_enabled=settings.compressor(),
                 smart_speed_enabled=settings.smart_speed_enabled,
                 channel_mode=settings.channel_mode,
             )

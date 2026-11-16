@@ -126,7 +126,7 @@ def start_episode_playback(
         bass_db=settings.eq_bass_db,
         mid_db=settings.eq_mid_db,
         treble_db=settings.eq_treble_db,
-        compressor_enabled=settings.compressor_enabled,
+        compressor_enabled=settings.compressor(),
         smart_speed_enabled=settings.smart_speed_enabled,
         auto_skip_intro_ms=intro_ms,
         auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,

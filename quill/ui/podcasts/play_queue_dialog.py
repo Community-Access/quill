@@ -191,7 +191,9 @@ class PlayQueueDialog:
         if resolved is None:
             return f"{index + 1}. (no longer available){marker}"
         show, episode = resolved
-        return f"{index + 1}. {episode.title} — {show.title}{marker}"
+        # A finished episode kept in the queue says so (earshot.md E4).
+        played = ", played" if getattr(episode, "played", False) else ""
+        return f"{index + 1}. {episode.title} — {show.title}{played}{marker}"
 
     def _group_index(self) -> int:
         settings = getattr(self._library, "settings", None)

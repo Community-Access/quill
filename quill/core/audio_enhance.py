@@ -42,6 +42,7 @@ from pathlib import Path
 from typing import IO
 
 from quill.core import optilab_adapter
+from quill.core.audio.compressor_levels import LEGACY_COMPRESSOR_FILTER, compressor_filters
 from quill.core.audio.exact_optilab import ExactOptilab, build_pcm_input_args
 from quill.core.error_codes import CodedError
 from quill.core.optilab import (
@@ -105,7 +106,7 @@ def clamp_eq_gain(value: float) -> float:
 
 # threshold/ratio/attack/release/makeup tuned to even out a typical low-bitrate
 # internet radio stream without audibly pumping.
-_COMPRESSOR_FILTER = "acompressor=threshold=-18dB:ratio=3:attack=20:release=250:makeup=2"
+_COMPRESSOR_FILTER = LEGACY_COMPRESSOR_FILTER  # Radio's; levels in core/audio/compressor_levels
 
 # Smart Speed (podcasts only -- see build_filter_graph): trims silence longer
 # than stop_duration below stop_threshold anywhere in the audio
@@ -149,7 +150,7 @@ def is_enhancement_active(
     mid_db: float,
     treble_db: float,
     *,
-    compressor_enabled: bool,
+    compressor_enabled: bool | str,
     smart_speed_enabled: bool = False,
     channel_mode: str = "stereo",
     night_mode_enabled: bool = False,
@@ -159,7 +160,7 @@ def is_enhancement_active(
     """True when these settings would change the audio at all."""
     return (
         bool(bass_db or mid_db or treble_db)
-        or compressor_enabled
+        or bool(compressor_enabled)
         or smart_speed_enabled
         or channel_mode in _CHANNEL_FILTERS
         or night_mode_enabled
@@ -172,7 +173,7 @@ def build_filter_graph(
     mid_db: float,
     treble_db: float,
     *,
-    compressor_enabled: bool,
+    compressor_enabled: bool | str,
     smart_speed_enabled: bool = False,
     channel_mode: str = "stereo",
     night_mode_enabled: bool = False,
@@ -210,8 +211,7 @@ def build_filter_graph(
         for freq, gain in zip(_EQ_BAND_FREQUENCIES, gains, strict=True)
         if gain
     ]
-    if compressor_enabled:
-        filters.append(_COMPRESSOR_FILTER)
+    filters += compressor_filters(compressor_enabled)  # True, or a level (E6)
     if smart_speed_enabled:
         filters.append(_SMART_SPEED_FILTER)
     if night_mode_enabled:
@@ -241,7 +241,7 @@ def build_relay_pcm_commands(
     bass_db: float = 0.0,
     mid_db: float = 0.0,
     treble_db: float = 0.0,
-    compressor_enabled: bool = False,
+    compressor_enabled: bool | str = False,
     smart_speed_enabled: bool = False,
     channel_mode: str = "stereo",
     night_mode_enabled: bool = False,
@@ -323,7 +323,7 @@ def build_relay_command(
     bass_db: float,
     mid_db: float,
     treble_db: float,
-    compressor_enabled: bool,
+    compressor_enabled: bool | str,
     smart_speed_enabled: bool = False,
     channel_mode: str = "stereo",
     night_mode_enabled: bool = False,
@@ -475,7 +475,7 @@ class EnhanceRelay:
         bass_db: float = 0.0,
         mid_db: float = 0.0,
         treble_db: float = 0.0,
-        compressor_enabled: bool,
+        compressor_enabled: bool | str,
         smart_speed_enabled: bool = False,
         channel_mode: str = "stereo",
         night_mode_enabled: bool = False,
@@ -581,7 +581,7 @@ class EnhanceRelay:
         bass_db: float,
         mid_db: float,
         treble_db: float,
-        compressor_enabled: bool,
+        compressor_enabled: bool | str,
         smart_speed_enabled: bool,
         channel_mode: str,
         night_mode_enabled: bool,

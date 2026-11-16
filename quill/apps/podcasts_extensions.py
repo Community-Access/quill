@@ -61,6 +61,10 @@ class CastExtensionsMixin(CastDomainAiMixin):  # with Cast's AI verbs (ear.md A2
         """True when the key was one of these and has been handled."""
         import wx
 
+        from quill.ui.podcasts.episode_selection import selection_key
+
+        if selection_key(self, event):
+            return True  # Ctrl+A, Ctrl+Shift+I on the episode list (earshot.md E5)
         code = event.GetKeyCode()
         if code not in (wx.WXK_HOME, wx.WXK_SPACE):
             return False  # asked only about the two keys, so every other key is free

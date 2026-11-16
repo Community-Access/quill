@@ -160,7 +160,7 @@ class PodcastPlayerController(
         self._eq_bass_db = 0.0
         self._eq_mid_db = 0.0
         self._eq_treble_db = 0.0
-        self._compressor_enabled = False
+        self._compressor_enabled: bool | str = False  # or a level (compressor_levels)
         self._smart_speed_enabled = False
         #: Where the audio comes out (stereo / mono / left / right). Shared
         #: vocabulary with Quill Radio -- see quill.core.audio.channel_mode.
@@ -231,7 +231,7 @@ class PodcastPlayerController(
         bass_db: float | None = None,
         mid_db: float | None = None,
         treble_db: float | None = None,
-        compressor_enabled: bool | None = None,
+        compressor_enabled: bool | str | None = None,
         smart_speed_enabled: bool | None = None,
         channel_mode: str | None = None,
         auto_skip_intro_ms: int = 0,
@@ -347,7 +347,7 @@ class PodcastPlayerController(
         bass_db: float,
         mid_db: float,
         treble_db: float,
-        compressor_enabled: bool,
+        compressor_enabled: bool | str,
         smart_speed_enabled: bool = False,
         channel_mode: str | None = None,
     ) -> None:
