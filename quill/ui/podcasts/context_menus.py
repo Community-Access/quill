@@ -126,6 +126,22 @@ def resolved_episode_actions(host: Any) -> list[Any]:
     return ordered_actions(host, "episode", episode_actions(host, show, episode))
 
 
+def _append_selection_items(host: Any, menu: Any, selected_count: int) -> None:
+    """Select All and Invert Selection, with the list's own keys (earshot.md E5)."""
+    from quill.ui.podcasts.episode_selection import invert_selection, select_all
+
+    wx = host._wx
+    total = host._episodes.GetItemCount()
+    if total < 2:
+        return
+    if selected_count < total:
+        everything = menu.Append(wx.ID_ANY, "Select &All\tCtrl+A")
+        menu.Bind(wx.EVT_MENU, lambda _e: select_all(host), everything)
+    invert = menu.Append(wx.ID_ANY, "In&vert Selection\tAlt+Shift+I")
+    menu.Bind(wx.EVT_MENU, lambda _e: invert_selection(host), invert)
+    menu.AppendSeparator()
+
+
 def episode_row_menu(host: Any) -> None:
     from quill.ui.podcasts.manager_menus import build_menu
 
@@ -138,6 +154,7 @@ def episode_row_menu(host: Any) -> None:
     selected_count = host._episodes.GetSelectedItemCount()
     if selected_count > 1:
         host._append_bulk_episode_items(menu, selected_count)
+    _append_selection_items(host, menu, selected_count)
     # The transport pair and the download-state items act on the player and
     # the transfer, not on the episode, so they stay pinned above the
     # listener's order rather than inside it (as the Manager had them).

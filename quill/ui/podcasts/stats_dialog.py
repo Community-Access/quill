@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.podcasts import stats
+from quill.core.podcasts.stats_scope import ALL, scope_choices, show_ids_in
 from quill.ui.dpi import dip_size
 
 
@@ -138,6 +139,26 @@ class PodcastStatsWindow:
         )
         self._period_choice.SetSelection(len(stats.PERIODS) - 1)
         period_row.Add(self._period_choice, 1, wx.EXPAND)
+        # One folder and its subfolders, or Unfiled (earshot.md E9). Offered
+        # only when there are folders: an empty choice is a control to tab past.
+        library = getattr(host, "_podcast_library", None)
+        self._scopes = scope_choices(library) if library is not None else [(ALL, "")]
+        self._scope_choice = None
+        if len(self._scopes) > 1:
+            period_row.Add(
+                wx.StaticText(panel, label="&Folder:"),
+                0,
+                wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT,
+                6,
+            )
+            self._scope_choice = wx.Choice(panel, choices=[label for _s, label in self._scopes])
+            self._scope_choice.SetName("Which folder the statistics cover")
+            self._scope_choice.SetHelpText(
+                "All folders, one folder with every folder inside it, or podcasts "
+                "in no folder. A podcast filed in two places is counted once."
+            )
+            self._scope_choice.SetSelection(0)
+            period_row.Add(self._scope_choice, 1, wx.EXPAND)
         root.Add(period_row, 0, wx.EXPAND | wx.ALL, 10)
 
         # Created immediately before the field, because that adjacency in
@@ -191,6 +212,8 @@ class PodcastStatsWindow:
 
         panel.SetSizer(root)
         self._period_choice.Bind(wx.EVT_CHOICE, lambda _e: self._refresh(announce=True))
+        if self._scope_choice is not None:
+            self._scope_choice.Bind(wx.EVT_CHOICE, lambda _e: self._refresh(announce=True))
         copy_btn.Bind(wx.EVT_BUTTON, self._on_copy)
         export_btn.Bind(wx.EVT_BUTTON, self._on_export)
         year_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_year_in_review())
@@ -227,8 +250,18 @@ class PodcastStatsWindow:
 
         return streaks(self._sessions).describe()
 
+    def _scope(self) -> tuple[str, str]:
+        if self._scope_choice is None:
+            return ALL, ""
+        return self._scopes[max(0, self._scope_choice.GetSelection())]
+
     def _refresh(self, *, announce: bool = False) -> None:
-        summary = stats.summarize(self._sessions, period=self._period_id())
+        scope, scope_label = self._scope()
+        library = getattr(self._host, "_podcast_library", None)
+        shows = show_ids_in(library, scope) if library is not None else None
+        summary = stats.summarize(self._sessions, period=self._period_id(), show_ids=shows)
+        if scope != ALL:
+            summary.period_label = f"{summary.period_label}, {scope_label}"
         text = format_report(
             summary, show_titles=self._show_titles, streak_line=self._streak_line()
         )

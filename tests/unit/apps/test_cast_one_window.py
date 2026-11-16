@@ -485,7 +485,7 @@ def test_large_downloads_place_uses_the_real_cast_route_with_bounded_ui_turns(
             f"Native Cast Downloads All: {len(turns[phase])} UI callbacks; "
             f"maximum {max(turns[phase]) * 1000:.2f} ms; {monotonic() - started:.2f} s total"
         )
-        phase = "downloads-unheard"
+        phase = "downloads-unplayed"
         frame._podcast_history.episode_filter = "unplayed"
         started = monotonic()
         later(1, frame._refresh_place)
@@ -503,7 +503,7 @@ def test_large_downloads_place_uses_the_real_cast_route_with_bounded_ui_turns(
             for show, episode in zip(frame._pair_shows, frame._current_episodes, strict=True)
         )
         print(
-            f"Native Cast Downloads Unheard: {len(turns[phase])} UI callbacks; "
+            f"Native Cast Downloads Unplayed: {len(turns[phase])} UI callbacks; "
             f"maximum {max(turns[phase]) * 1000:.2f} ms; {monotonic() - started:.2f} s total"
         )
         phase = "partial-capture-cancel"
@@ -599,7 +599,7 @@ def test_large_downloads_place_uses_the_real_cast_route_with_bounded_ui_turns(
             for reply_phase in (
                 "showing-window",
                 "downloads-all",
-                "downloads-unheard",
+                "downloads-unplayed",
                 "partial-capture-cancel",
             ):
                 durations = [duration for name, duration in replies if name == reply_phase]

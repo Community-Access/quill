@@ -33,7 +33,7 @@ def folder_items(
     from quill.ui.podcasts import folder_commands
 
     items: list[tuple[str, Callable[[], None]]] = [
-        ("&Play All Unheard", lambda: folder_commands.play_folder(dialog, folder_id)),
+        ("&Play All Unplayed", lambda: folder_commands.play_folder(dialog, folder_id)),
         ("Add All to &Queue", lambda: folder_commands.add_folder_to_queue(dialog, folder_id)),
         ("Move &Up", lambda: folder_commands.reorder(dialog, folder_id, -1)),
         ("Move Dow&n", lambda: folder_commands.reorder(dialog, folder_id, 1)),

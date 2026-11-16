@@ -244,11 +244,16 @@ class PodcastDialogsMixin:
             self._podcast_library.settings.smart_speed_enabled = smart_speed_enabled
             self._save_podcast_library()
             target = "the shared default"
+        resolved = (
+            self._podcast_library.effective_settings(show)
+            if show is not None
+            else self._podcast_library.settings
+        )
         self._podcast_controller.set_enhancement(
             bass_db=bass_db,
             mid_db=mid_db,
             treble_db=treble_db,
-            compressor_enabled=compressor_enabled,
+            compressor_enabled=resolved.compressor(),  # on/off plus its level (E6)
             smart_speed_enabled=smart_speed_enabled,
         )
         self._announce(

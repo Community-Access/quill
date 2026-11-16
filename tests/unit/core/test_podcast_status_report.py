@@ -39,7 +39,7 @@ def test_podcast_status_rows_sums_unheard_across_shows() -> None:
     rows = podcast_status_rows(library, now_playing="", downloads_active=0)
 
     values = {(section, setting): value for section, setting, value in rows}
-    assert values[("Podcasts", "Unheard episodes")] == "2"
+    assert values[("Podcasts", "Unplayed episodes")] == "2"
 
 
 def test_podcast_status_rows_reports_now_playing_and_defaults() -> None:

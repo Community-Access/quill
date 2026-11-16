@@ -162,6 +162,19 @@ SETTINGS: tuple[SettingDef, ...] = (
         aliases=("compressor", "dynamic range", "loudness"),
     ),
     define(
+        "compression_level",
+        "How much to even out the &volume:",
+        "Light keeps most of the speaker's own dynamics; Strong brings a whisper "
+        "almost up to a shout, which helps in a car or a noisy room. It only "
+        "applies while Even out volume is on.",
+        kind=KIND_CHOICE,
+        category=CATEGORY_PLAYBACK,
+        default="light",
+        choices=choices(("light", "Light"), ("balanced", "Balanced"), ("strong", "Strong")),
+        settings_field="compression_level",
+        aliases=("compressor", "compression", "dynamic range", "strength"),
+    ),
+    define(
         "smart_speed_enabled",
         "&Shorten silences",
         "Trims the pauses between words as it plays, which shortens an episode "
@@ -267,6 +280,30 @@ SETTINGS: tuple[SettingDef, ...] = (
         default=False,
         settings_field="continue_after_group",
         aliases=("binge", "auto advance", "keep playing"),
+    ),
+    define(
+        "keep_finished_in_queue",
+        "&Keep finished episodes in the Play Queue",
+        "A finished episode stays where it was in the queue, marked played, "
+        "instead of leaving it, so the part you missed is one Enter away. Playing "
+        "on skips finished episodes, and Delete in the queue still removes one.",
+        category=CATEGORY_PLAYBACK,
+        levels=(LEVEL_GLOBAL,),
+        default=False,
+        settings_field="keep_finished_in_queue",
+        aliases=("queue", "finished", "played", "retain"),
+    ),
+    define(
+        "wrap_queue",
+        "At the end of the queue, start again from the first &unplayed episode",
+        "When the last episode in the Play Queue finishes, playing carries on "
+        "from the first one in the queue you have not finished. Episodes you "
+        "finished are never played again by this, so the run cannot loop.",
+        category=CATEGORY_PLAYBACK,
+        levels=(LEVEL_GLOBAL,),
+        default=False,
+        settings_field="wrap_queue",
+        aliases=("queue", "wrap", "repeat", "loop", "start over"),
     ),
     define(
         "prebuffer_next",

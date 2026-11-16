@@ -186,8 +186,13 @@ def summarize(
     *,
     period: str = "all",
     now: datetime | None = None,
+    show_ids: set[str] | None = None,
 ) -> StatsSummary:
-    """Total the sessions falling inside *period* (one of :data:`PERIODS`)."""
+    """Total the sessions falling inside *period* (one of :data:`PERIODS`).
+
+    *show_ids* narrows it to those shows -- a folder's, from
+    :mod:`quill.core.podcasts.stats_scope` (earshot.md E9); ``None`` is all.
+    """
     moment = now or datetime.now(UTC)
     label, days = "All time", 0
     for period_id, period_label, period_days in PERIODS:
@@ -200,6 +205,8 @@ def summarize(
     for session in sessions:
         stamped = _parse(session.date)
         if cutoff is not None and (stamped is None or stamped < cutoff):
+            continue
+        if show_ids is not None and session.show_id not in show_ids:
             continue
         summary.sessions += 1
         summary.total_seconds += session.seconds

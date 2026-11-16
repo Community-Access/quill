@@ -139,8 +139,8 @@ def test_favorites_opens_to_podcasts_each_with_its_own_expander(library: Podcast
     library_tree.fill_view_children(host, view, "favorites")
     rows = tree.rows(view)
     labels = [label for label, _ in rows]
-    assert "The Daily (1 unheard)" in labels
-    assert "Empty Show (0 unheard)" in labels
+    assert "The Daily (1 unplayed)" in labels
+    assert "Empty Show (0 unplayed)" in labels
     assert all(data[0] == "show" for _, data in rows)
     daily_item = next(c for c in tree.children[view] if tree.data[c] == ("show", "daily"))
     empty_item = next(c for c in tree.children[view] if tree.data[c] == ("show", "empty"))

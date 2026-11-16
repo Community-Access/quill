@@ -78,12 +78,12 @@ _EPISODE_SORT_LABELS = (
     "Title A-Z",
     "Longest first",
     "Shortest first",
-    "Unheard first",
+    "Unplayed first",
 )
 _SHOW_SORT_LABELS = (
     "Title A-Z",
     "Title Z-A",
-    "Most unheard first",
+    "Most unplayed first",
     "Recently updated first",
     "Your custom order",
 )
@@ -533,7 +533,7 @@ class PodcastManagerDialog(
         def add_folder_children(parent_item: object, folder_id: str | None) -> None:
             for folder in folders_by_parent.get(folder_id, []):
                 unheard = folder_unheard.get(folder.id, 0)
-                label = f"{folder.name} ({unheard} unheard)" if unheard else folder.name
+                label = f"{folder.name} ({unheard} unplayed)" if unheard else folder.name
                 item = self._tree.AppendItem(parent_item, label)
                 self._tree_item_folder[_item_key(item)] = folder.id
                 add_folder_children(item, folder.id)
@@ -549,7 +549,7 @@ class PodcastManagerDialog(
                 ordered = sort_shows(matching, show_sort_mode)
             for show in ordered:
                 unheard = show_unheard[show.id]
-                label = f"{show.title} ({unheard} unheard)"
+                label = f"{show.title} ({unheard} unplayed)"
                 item = self._tree.AppendItem(parent_item, label)
                 self._tree_item_show[_item_key(item)] = show.id
 
@@ -960,8 +960,11 @@ class PodcastManagerDialog(
 
     def _on_episode_key_down(self, event: object) -> None:
         """Ctrl+1..Ctrl+9 and Enter, over this episode's Quick Actions."""
+        from quill.ui.podcasts.episode_selection import selection_key
         from quill.ui.podcasts.manager_keys import handle_episode_key
 
+        if selection_key(self, event):
+            return  # Ctrl+A, Alt+Shift+I, as in QUILL Cast (earshot.md E5)
         handle_episode_key(self, event)
 
     # -- sharing and export (x.md item 9) ------------------------------

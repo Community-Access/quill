@@ -105,20 +105,29 @@ def queue_position(library: Any, show_id: str, episode_guid: str) -> str:
     return f"{index + 1} of {len(library.queue)}"
 
 
-def _first_resolvable_from(library: Any, start: int) -> Step:
+def _first_resolvable_from(library: Any, start: int, *, skip_played: bool = False) -> Step:
     """The first slot at or after *start* that still resolves.
 
     Stale slots are deleted as they are met, which is what keeps the queue
     self-healing; *start* stays put because a deletion shifts the rest down onto
-    it.
+    it. *skip_played* steps over finished episodes kept in the queue (E4)
+    without removing them.
     """
     while start < len(library.queue):
         resolved = resolve(library, library.queue[start])
-        if resolved is not None:
-            show, episode = resolved
-            return Step(kind="play", show=show, episode=episode)
-        del library.queue[start]
+        if resolved is None:
+            del library.queue[start]
+            continue
+        show, episode = resolved
+        if skip_played and getattr(episode, "played", False):
+            start += 1
+            continue
+        return Step(kind="play", show=show, episode=episode)
     return Step(kind="edge", message="End of queue")
+
+
+def _setting(library: Any, name: str) -> bool:
+    return bool(getattr(getattr(library, "settings", None), name, False))
 
 
 def _last_resolvable_before(library: Any, before: int) -> Step:
@@ -164,18 +173,23 @@ def step_previous(library: Any, show_id: str, episode_guid: str, position_ms: in
     return _last_resolvable_before(library, index)
 
 
-def finish_slot(library: Any, show_id: str, episode_guid: str) -> int:
+def finish_slot(library: Any, show_id: str, episode_guid: str, *, keep: bool = False) -> int:
     """Remove this episode's slot, returning the index it occupied, or ``-1``.
 
     The index is the return value because it is what the caller needs next: the
     slot that took its place is the next thing to play, and the row to land
     focus on is the one now at that index. Looking it up again afterwards would
     find a different episode.
+
+    *keep* is "Keep finished episodes in the Play Queue" (earshot.md E4): the
+    slot stays where it is, its episode marked played, so "the end I missed"
+    is one Enter away. The index is returned all the same.
     """
     index = index_of(library, show_id, episode_guid)
     if index == -1:
         return -1
-    del library.queue[index]
+    if not keep:
+        del library.queue[index]
     return index
 
 
@@ -187,7 +201,14 @@ def step_after_finishing(library: Any, show_id: str, episode_guid: str) -> tuple
     disagree about what "next" meant. *freed_index* is ``-1`` when the episode
     was not queued, in which case the step is an ordinary advance.
     """
-    freed = finish_slot(library, show_id, episode_guid)
-    if freed == -1:
-        return step_next(library, show_id, episode_guid), -1
-    return _first_resolvable_from(library, freed), freed
+    keep = _setting(library, "keep_finished_in_queue")
+    freed = finish_slot(library, show_id, episode_guid, keep=keep)
+    # With finished episodes kept, the run steps over them (E4); the slot just
+    # finished is one of them, so a kept slot is never played again by itself.
+    start = 0 if freed == -1 else freed + (1 if keep else 0)
+    step = _first_resolvable_from(library, start, skip_played=keep)
+    if step.is_edge and _setting(library, "wrap_queue"):
+        # "Start the queue again": the first episode not yet finished, from the
+        # top (E7). Finished ones are skipped, so a run never loops on itself.
+        step = _first_resolvable_from(library, 0, skip_played=True)
+    return step, freed

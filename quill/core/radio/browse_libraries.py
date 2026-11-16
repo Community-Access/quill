@@ -215,7 +215,7 @@ def _my_podcast_level(library: PodcastLibrary, folder_id: str | None) -> list[Br
         # appears without ever opening Cast.
         name = show.title or show.feed_url
         unheard = unheard_count(show, exclude_audio=heard_here)
-        return f"{name} ({unheard} unheard)" if unheard else name
+        return f"{name} ({unheard} unplayed)" if unheard else name
 
     nodes: list[BrowseNode] = []
     subfolders = sorted(
@@ -227,7 +227,7 @@ def _my_podcast_level(library: PodcastLibrary, folder_id: str | None) -> list[Br
         nodes.append(
             folder(
                 make_id("mypodcastfolder", child.id),
-                f"{child.name} ({unheard} unheard)" if unheard else child.name,
+                f"{child.name} ({unheard} unplayed)" if unheard else child.name,
             )
         )
     shows = sorted(

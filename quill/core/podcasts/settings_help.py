@@ -55,7 +55,7 @@ HELP: dict[str, str] = {
     ),
     "inbox_max": (
         "At most this many episodes in the Inbox per podcast; 0 means no limit. "
-        "Trimming never deletes -- episodes stay unheard in their podcast's own "
+        "Trimming never deletes -- episodes stay unplayed in their podcast's own "
         "list, and anything played, started or queued is never trimmed."
     ),
     "history_days": (
@@ -161,7 +161,7 @@ HELP: dict[str, str] = {
         "not a download and keeps nothing."
     ),
     "continue_group": (
-        "Carry on with the podcast's next unheard episode once the queue runs "
+        "Carry on with the podcast's next unplayed episode once the queue runs "
         "out. It never starts a podcast you were not already listening to, and "
         "with this and auto-advance both off, playback stops at the end of the "
         "episode you started."
@@ -232,13 +232,13 @@ SHOW_HELP: dict[str, str] = {
     ),
     "inbox_max": (
         "At most this many of this show's episodes in the Inbox; 0 means no "
-        "limit. Trimming never deletes: episodes stay unheard in the podcast's "
+        "limit. Trimming never deletes: episodes stay unplayed in the podcast's "
         "own list."
     ),
     "inbox_age": (
         "Drop this show's episodes out of the Inbox once they are older than "
         "this. Out of the Inbox, not out of the library -- they stay in the "
-        "podcast's own list, unheard."
+        "podcast's own list, unplayed."
     ),
     "delete_after_days": (
         "Delete this show's downloaded files once they are this many days old; "

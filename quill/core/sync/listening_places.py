@@ -65,6 +65,12 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
+from quill.core.sync.listening_places_guard import (
+    ListeningPlacesWriteError,
+    problem_with_own_file,
+    rows_fingerprint,
+)
+
 __all__ = [
     "FOLDER_NAME",
     "FORMAT_ID",
@@ -328,6 +334,10 @@ def write_device_file(
 ) -> bool:
     """Write this device's file. Returns whether anything was actually written.
 
+    Raises :class:`ListeningPlacesWriteError`, with a sentence for the listener,
+    when the write fails or the file at this device's path is no longer the one
+    written here (:mod:`listening_places_guard`).
+
     **Skips the write when the content has not changed** (6.4). Without that
     check, a machine left open all day re-uploads an identical file to
     somebody's cloud folder over and over, which costs bandwidth, drains a
@@ -341,13 +351,18 @@ def write_device_file(
     rows = [row.to_dict(include_label=include_labels) for row in kept]
     # Subscription and folder rows (B3), only when that switch is on.
     rows += list(extra_rows or [])
-    fingerprint = hashlib.sha256(
-        json.dumps(rows, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    ).hexdigest()
+    fingerprint = rows_fingerprint(rows)
 
     target = device_file_path(remote_dir, device_id)
-    if _previous_fingerprint(target) == fingerprint:
+    previous = _previous_fingerprint(target)
+    if previous == fingerprint:
         return False
+    # Never over somebody else's file, and never fail in silence (earshot.md E3).
+    problem = problem_with_own_file(
+        target, device_id=device_id, format_id=FORMAT_ID, previous_fingerprint=previous
+    )
+    if problem:
+        raise ListeningPlacesWriteError(problem)
 
     payload = {
         "format": FORMAT_ID,
@@ -364,8 +379,10 @@ def write_device_file(
 
         write_json_atomic(target, payload)
         _remember_fingerprint(target, fingerprint)
-    except OSError:
-        return False
+    except OSError as error:
+        raise ListeningPlacesWriteError(
+            f"This computer's Listening Places file could not be written: {error}"
+        ) from error
     return True
 
 

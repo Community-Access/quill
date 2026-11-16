@@ -54,6 +54,16 @@ class PodcastTransportMixin:
         if state is PodcastPlayerState.PLAYING:
             self._checkpoint_current()
 
+    def forget_current_episode(self) -> None:
+        """Stop answering for the loaded episode without saving a place for it.
+
+        For Mark as Played and Next: the episode is already finished, so the
+        checkpoint that the next start or a stop would write must not put a
+        position back on it (earshot.md F1). Playback itself is untouched.
+        """
+        self._state.show_id = None
+        self._state.episode_guid = None
+
     def _on_loaded(self, _length_ms: int) -> None:
         from quill.ui.podcasts.player_controller import PodcastPlayerState
 

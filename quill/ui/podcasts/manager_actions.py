@@ -59,6 +59,11 @@ class ManagerActionsMixin:
         played_item = menu.Append(wx.ID_ANY, f"Mark {count} Episodes as &Played")
         menu.Bind(wx.EVT_MENU, lambda _e: self._on_bulk_mark_played(), played_item)
         rows = self._selected_rows()
+        if any(episode.played for _index, _show, episode in rows):
+            # The undo for a bulk Mark as Played, and the "keep these" half of
+            # select all, deselect, invert (earshot.md E5).
+            unplayed = menu.Append(wx.ID_ANY, f"Mark {count} Episodes as &Unplayed")
+            menu.Bind(wx.EVT_MENU, lambda _e: self._on_bulk_mark_unplayed(), unplayed)
         # Filing is the Inbox's whole job, and triage happens a handful of
         # episodes at a time -- so this is the one bulk action the Inbox
         # actually needed, and the one it did not have. Offered only when
@@ -128,6 +133,26 @@ class ManagerActionsMixin:
         self._on_library_changed()
         self._refresh_episode_list()
         self._announce(f"Marked {changed} episode(s) as played")
+
+    def _on_bulk_mark_unplayed(self) -> None:
+        """Mark every selected played episode unplayed, stamped so it travels.
+
+        It does not put anything back into the Inbox: clearing the Inbox was a
+        decision of its own, and marking unplayed is not a request to undo it.
+        """
+        from quill.core.podcasts.position_sync import mark_played
+
+        changed = 0
+        for _index, _show, episode in self._selected_rows():
+            if episode.played:
+                mark_played(episode, False)
+                changed += 1
+        if not changed:
+            self._announce("Those episodes were already unplayed.")
+            return
+        self._on_library_changed()
+        self._refresh_episode_list()
+        self._announce(f"Marked {changed} episode(s) as unplayed")
 
     def _on_bulk_file_to_inbox(self) -> None:
         """File the whole selection into one Inbox folder, chosen once.
@@ -282,7 +307,7 @@ class ManagerActionsMixin:
             self._announce(f"Every episode of {show.title} is already played.")
             return
         answer = show_message_box(
-            f"Mark all {len(unplayed)} unheard episode(s) of {show.title} as played? "
+            f"Mark all {len(unplayed)} unplayed episode(s) of {show.title} as played? "
             "They stay in your library; downloaded files are not deleted.",
             "Mark All as Played",
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
@@ -319,7 +344,7 @@ class ManagerActionsMixin:
         undo_last_ui.remember(
             "Mark All as Played",
             show.title,
-            f"{len(unplayed)} unheard episode(s)"
+            f"{len(unplayed)} unplayed episode(s)"
             + (f" and {len(held)} downloaded file(s)" if held else ""),
             _undo,
             dispose=lambda: undo_last_ui.discard(held),

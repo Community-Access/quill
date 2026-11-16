@@ -620,6 +620,23 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### QUILL Cast: finishing means finished, and Earshot's latest (2026-11-15)
+
+Stop an episode in its last minute and it counts as finished, so Continue
+Listening no longer keeps episodes waiting at 99 percent; how close to the end
+counts is a setting. The rest of the release keeps QUILL Cast in step with
+Earshot on the iPhone: the Play Queue can keep finished episodes and start
+again from the first unplayed one, Ctrl+A and Alt+Shift+I select and invert a
+list of episodes (in QUILL's Podcast Manager too) with bulk Mark as Unplayed,
+compression comes in Light, Balanced and Strong, group headings in the Play
+Queue move their whole group, Preview shows episode descriptions, and Listening
+Statistics narrows to a folder. Episodes are played or unplayed now, never
+heard or unheard. Fixes: the outro skip lets you hear an ending you go back to,
+one bad chapter time no longer loses every chapter, Listening Places never
+writes over a file it did not write and says when a write fails, and Mark as
+Played and Next does the whole finish. The plan of record is
+`docs/design/earshot.md`.
+
 ### Properties for everything in the GitHub Workbench (2026-11-10)
 
 - **Alt+Enter shows everything about what is selected, and changes it.** On an

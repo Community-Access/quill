@@ -49,6 +49,7 @@ from quill.core.sync.listening_places import (
     remote_view,
     write_device_file,
 )
+from quill.core.sync.listening_places_guard import ListeningPlacesWriteError
 
 __all__ = ["InterchangeReport", "sync_interchange"]
 
@@ -205,6 +206,9 @@ def sync_interchange(
             include_labels=include_labels,
             extra_rows=extra_rows,
         )
+    except ListeningPlacesWriteError as error:
+        # Already one sentence for the listener, said without its code (E3).
+        report.problems.append(str(error.args[0]) if error.args else str(error))
     except Exception as error:  # noqa: BLE001
         report.problems.append(f"Could not write to the sync folder: {error}")
     return report

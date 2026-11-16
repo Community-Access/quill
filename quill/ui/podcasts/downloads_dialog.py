@@ -37,7 +37,7 @@ from quill.ui.podcasts.storage_tasks import Prepared, ReadJob, StorageJobs
 from quill.ui.surface_lifetime import destroy_event_matches, lifetime_for, window_is_going
 from quill.ui.virtual_list import virtual_report_list
 
-_FILTER_LABELS = ("All downloads", "Unheard only")
+_FILTER_LABELS = ("All downloads", "Unplayed only")
 logger = logging.getLogger(__name__)
 
 

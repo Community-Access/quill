@@ -140,7 +140,7 @@ def nothing_unheard(order: str = NEWEST) -> str:
     """
     which = "newest" if order == NEWEST else "oldest"
     return (
-        f"Nothing unheard to play. Anything you have already started is in "
+        f"Nothing unplayed to play. Anything you have already started is in "
         f"Continue Listening, and anything you have finished is still in its "
         f"podcast. ({which.capitalize()} first was the order asked for.)"
     )

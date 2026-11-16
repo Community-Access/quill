@@ -104,12 +104,12 @@ def register_podcast_commands(host: Any) -> None:
         # is where somebody looks for a command by name.
         (
             "podcasts.play_unheard",
-            "Podcasts: Play an Unheard Episode (newest)",
+            "Podcasts: Play an Unplayed Episode (newest)",
             host.podcast_play_unheard,
         ),
         (
             "podcasts.play_unheard_oldest",
-            "Podcasts: Play an Unheard Episode (oldest)",
+            "Podcasts: Play an Unplayed Episode (oldest)",
             host.podcast_play_unheard_oldest,
         ),
         ("podcasts.shuffle_queue", "Podcasts: Play Queue Shuffled", host.podcast_shuffle_queue),

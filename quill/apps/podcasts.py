@@ -480,7 +480,7 @@ class PodcastsAppFrame(
             self._announce(f"{show.title} has no episodes yet.")
             return
         episode = ordered[0]
-        note = " (no unheard episodes; playing the most recent)" if episode.played else ""
+        note = " (no unplayed episodes; playing the most recent)" if episode.played else ""
         self._play_episode_object(show, episode, note=note)
 
     def _play_specific_episode(self, show_id: str, guid: str) -> None:

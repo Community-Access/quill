@@ -22,7 +22,7 @@ _SORT_LABELS = (
     "Title A-Z",
     "Longest first",
     "Shortest first",
-    "Unheard first",
+    "Unplayed first",
 )
 
 
@@ -123,7 +123,7 @@ class PlaylistRulesWindow:
         self._status_choice = wx.Choice(body, choices=list(_STATUS_LABELS))
         self._status_choice.SetName("Episode status filter")
         self._status_choice.SetHelpText(
-            "Only episodes in this state: unheard, in progress or heard. Any status "
+            "Only episodes in this state: unplayed, in progress or played. Any status "
             "does not narrow anything."
         )
         status_index = (

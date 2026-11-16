@@ -42,6 +42,7 @@ from quill.core.audio_enhance import (
     is_enhancement_active,
     probe_source_duration_ms,
 )
+from quill.core.podcasts.outro_skip import crossed_outro_boundary
 from quill.core.spotify.models import is_spotify_uri
 from quill.ui.audio.audio_engine import AudioEngine, create_engine
 from quill.ui.media.output_device_mixin import OutputDeviceMixin
@@ -159,7 +160,7 @@ class PodcastPlayerController(
         self._eq_bass_db = 0.0
         self._eq_mid_db = 0.0
         self._eq_treble_db = 0.0
-        self._compressor_enabled = False
+        self._compressor_enabled: bool | str = False  # or a level (compressor_levels)
         self._smart_speed_enabled = False
         #: Where the audio comes out (stereo / mono / left / right). Shared
         #: vocabulary with Quill Radio -- see quill.core.audio.channel_mode.
@@ -199,15 +200,13 @@ class PodcastPlayerController(
         self._state = PodcastPlaybackState(
             state=PodcastPlayerState.STOPPED, show_id=None, episode_guid=None, title=""
         )
-        #: Auto-skip outro (PodcastSettings.auto_skip_outro_seconds, per-show):
-        #: ends the episode that many ms before its own true end, exactly as
-        #: if it had finished naturally (auto-advance, delete-after-play, ...
-        #: all still fire via the same _on_finished path). A 1-second poll,
-        #: not an engine event -- neither backend has a "N ms before the end"
-        #: notification. _outro_fired guards against polling past the point
-        #: _on_finished has already reset state for this episode.
+        #: Auto-skip outro (auto_skip_outro_seconds): ends the episode early as
+        #: if it had finished, but only on a natural crossing into the window
+        #: (core/podcasts/outro_skip). A 1-second poll; neither engine has an
+        #: "N ms before the end" event. _outro_fired stops a second firing.
         self._auto_skip_outro_ms = 0
         self._outro_fired = False
+        self._outro_last_ms: int | None = None  # None after a start, resume or seek
         self._last_checkpoint_ms = 0  # see _checkpoint_periodically
         self._outro_poll_timer = wx.Timer(parent)
         parent.Bind(wx.EVT_TIMER, self._on_outro_poll, self._outro_poll_timer)
@@ -232,7 +231,7 @@ class PodcastPlayerController(
         bass_db: float | None = None,
         mid_db: float | None = None,
         treble_db: float | None = None,
-        compressor_enabled: bool | None = None,
+        compressor_enabled: bool | str | None = None,
         smart_speed_enabled: bool | None = None,
         channel_mode: str | None = None,
         auto_skip_intro_ms: int = 0,
@@ -277,7 +276,7 @@ class PodcastPlayerController(
         self._enhanced_duration_ms = probe_source_duration_ms(source) if self._is_enhanced() else 0
         self._auto_skip_outro_ms = max(0, int(auto_skip_outro_ms))
         self._finished_within_s = max(0, int(finished_within_s))
-        self._outro_fired = False
+        self._outro_fired, self._outro_last_ms = False, None
         self._recovered_from = ""
         start_ms = max(0, int(resume_ms))
         if start_ms <= 0 and auto_skip_intro_ms > 0:
@@ -348,7 +347,7 @@ class PodcastPlayerController(
         bass_db: float,
         mid_db: float,
         treble_db: float,
-        compressor_enabled: bool,
+        compressor_enabled: bool | str,
         smart_speed_enabled: bool = False,
         channel_mode: str | None = None,
     ) -> None:
@@ -419,6 +418,7 @@ class PodcastPlayerController(
         self._set_state(PodcastPlayerState.STOPPED)
 
     def seek(self, ms: int) -> None:
+        self._outro_last_ms = None  # a seek is never a crossing (outro_skip)
         if self._engine is None:
             return
         if not self._is_enhanced():
@@ -543,8 +543,11 @@ class PodcastPlayerController(
             return
         if self._state.state is not PodcastPlayerState.PLAYING:
             return
-        length = self.length_ms()
-        if length <= 0 or self.position_ms() < length - self._auto_skip_outro_ms:
+        position, previous = self.position_ms(), self._outro_last_ms
+        self._outro_last_ms = position
+        if not crossed_outro_boundary(
+            previous, position, self.length_ms(), self._auto_skip_outro_ms
+        ):
             return
         self._outro_fired = True
         if self._engine is not None:
