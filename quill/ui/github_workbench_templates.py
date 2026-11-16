@@ -156,8 +156,16 @@ class GitHubWorkbenchTemplatesMixin:
         if kind == "community_file" and filename in _SHEETS:
             from quill.ui import github_template_sheets_dialog as sheets
 
+            extra: dict[str, Any] = {}
+            if filename == "CODEOWNERS":
+                # Check Owners asks GitHub in the background (PRD 21.8).
+                extra["check"] = lambda rules, done: self._background(
+                    "check the code owners",
+                    lambda: self.items.check_codeowners(source, rules),
+                    done,
+                )
             sheet = getattr(sheets, _SHEETS[filename])(
-                self._template_parent(), text, announce=self._say
+                self._template_parent(), text, announce=self._say, **extra
             )
             saved = sheet.show()
             use_pull = bool(plan.needs_pull_request)
@@ -404,8 +412,18 @@ class GitHubWorkbenchTemplatesMixin:
             path, text = f"{folder}/pull_request_template.md", _PR_TEMPLATE
         else:
             names = list(STARTERS)
-            chosen = self._choose("New Template", "Start from:", [STARTERS[n] for n in names])
+            labels = [STARTERS[n] for n in names]
+            if kind == "issue_form":  # the SurveyJS and XLSForm door (PRD 21.4)
+                from quill.ui.github_workbench_form_file import FROM_FILE_LABEL
+
+                labels.append(FROM_FILE_LABEL)
+            chosen = self._choose("New Template", "Start from:", labels)
             if chosen < 0:
+                return
+            if chosen == len(names):
+                from quill.ui.github_workbench_form_file import start_from_form_file
+
+                start_from_form_file(self, repository, folder)
                 return
             prompt = (
                 "The discussion category's slug (its form is named after it):"

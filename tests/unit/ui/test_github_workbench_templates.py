@@ -552,3 +552,36 @@ def test_the_sheets_build_their_files(help_ready) -> None:
         assert owners.look_up() == "Line 2, /docs/: @writers own docs/a.md."
     finally:
         owners.dialog.Destroy()
+
+
+def test_new_template_starts_an_issue_form_from_a_surveyjs_file(
+    bench, builder, monkeypatch, tmp_path
+) -> None:
+    """PRD 21.4: the conversion's door is New Template's last "Start from" row."""
+    import json
+
+    from quill.core.github.template_builder import STARTERS
+
+    survey = tmp_path / "feedback_form.json"
+    survey.write_text(
+        json.dumps({
+            "title": "Feedback",
+            "elements": [
+                {"type": "text", "name": "who", "title": "Your name"},
+                {"type": "signaturepad", "name": "sig", "title": "Sign"},
+            ],
+        }),
+        encoding="utf-8",
+    )
+    picks = iter([0, len(STARTERS)])  # Issue form, then the file row
+    monkeypatch.setattr(f"{_MIXIN}._choose", lambda _self, *_a: next(picks))
+    monkeypatch.setattr(f"{_MIXIN}._ask_text", lambda _self, *_a, **_k: "feedback")
+    monkeypatch.setattr(
+        "quill.ui.github_workbench_form_file._pick_file", lambda _bench: str(survey)
+    )
+    _go(bench, NodeRef("repository", "templates", REPO))
+    builder.answers = [None]
+    bench.run("github.workbench.new_template")
+    assert builder.seen[0]["path"] == ".github/ISSUE_TEMPLATE/feedback.yml"
+    assert "Your name" in builder.seen[0]["text"]
+    assert any("did not carry over" in line and "Sign" in line for line in bench.said)

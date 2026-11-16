@@ -1,6 +1,6 @@
 {
  "_about": "Where the GitHub Workbench reaches each GitHub API operation (GitHub Workbench PRD section 19, GATE-GITHUB-COVER). Keys: rest and enterprise are 'METHOD path' rows of quill/data/github_api/rest.json and enterprise.json; graphql_mutations are the mutations of graphql.json; graphql_queries is the read-query ledger. status is covered (home is command:<id>, sheet:<kind>[.<field>] or node:<template>:<key>; via is the module that calls it), planned (row names its PLANNED feature or PRD section; home is its future place), no_api_needed or out_of_scope (reason says why). planned_ceiling may only go down. Check with python -m quill.tools.github_api_coverage_audit.",
- "planned_ceiling": 1155,
+ "planned_ceiling": 1152,
  "rest": {
   "GET /": {"status": "no_api_needed", "home": "Plumbing", "reason": "GitHub's own metadata (API root, IP ranges, versions, zen); nothing a person does."},
   "GET /advisories": {"status": "planned", "home": "Repository > Security > Advisories; Advisory sheet.", "row": "Security policy and advisories"},
@@ -538,7 +538,7 @@
   "PUT /orgs/{org}/teams/{team_slug}/memberships/{username}": {"status": "covered", "home": "command:github.workbench.bulk_access", "via": "quill/core/github/access.py"},
   "GET /orgs/{org}/teams/{team_slug}/repos": {"status": "covered", "home": "sheet:team", "via": "quill/core/github/sheets_orgs.py"},
   "DELETE /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}": {"status": "covered", "home": "command:github.workbench.bulk_access", "via": "quill/core/github/access.py"},
-  "GET /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}": {"status": "planned", "home": "Team sheet; Organization sheet > Teams.", "row": "Appendix E: teams/teams"},
+  "GET /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}": {"status": "covered", "home": "command:github.workbench.open_template", "via": "quill/core/github/codeowners_check.py"},
   "PUT /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}": {"status": "covered", "home": "command:github.workbench.bulk_access", "via": "quill/core/github/access.py"},
   "GET /orgs/{org}/teams/{team_slug}/teams": {"status": "covered", "home": "sheet:team", "via": "quill/core/github/sheets_orgs.py"},
   "POST /orgs/{org}/{security_product}/{enablement}": {"status": "planned", "home": "Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets.", "row": "Appendix E: orgs/orgs"},

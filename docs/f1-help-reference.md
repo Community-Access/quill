@@ -2336,7 +2336,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## GitHub Workbench
 
-Control coverage: 354 audited sites (354 helped).
+Control coverage: 356 audited sites (356 helped).
 
 ### Every window, and what it is for
 
@@ -3604,6 +3604,8 @@ Control coverage: 354 audited sites (354 helped).
 #### CodeownersDialog (`quill/ui/github_template_sheets_dialog.py`)
 
 - `look`: Say which rule owns the path above, and its owners.
+- `check`: Ask GitHub whether every owner exists and can write to this repository. GitHub skips one that cannot, without saying so.
+- `self.findings`: One line for each owner: whether it exists and can write, what to fix if not, and any that could not be checked.
 #### GitHubTimelineDialog (`quill/ui/github_timeline_dialog.py`)
 
 - `self._text`: One line per event with its date and who did it, newest last. The last line says whether this is the whole history.

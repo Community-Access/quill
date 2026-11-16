@@ -339,9 +339,17 @@ class CodeownersDialog(_Sheet):
     title = "Code Owners (CODEOWNERS)"
 
     def __init__(
-        self, parent: object, text: str, *, announce: Callable[[str], None] | None = None
+        self,
+        parent: object,
+        text: str,
+        *,
+        announce: Callable[[str], None] | None = None,
+        check: Callable[[str, Callable[[list[Any]], None]], None] | None = None,
     ) -> None:
         self.text = text
+        #: Starts the owner check in the background and calls back with the
+        #: results (PRD 21.8); None where there is no repository to ask.
+        self._check = check
         super().__init__(parent, announce)
 
     def body(self) -> None:
@@ -363,6 +371,45 @@ class CodeownersDialog(_Sheet):
         self.answer = wx.StaticText(self.dialog, label="")
         self.answer.SetName("Who owns it")
         self.root.Add(self.answer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+        if self._check is not None:
+            check = wx.Button(self.dialog, label="Check &Owners")
+            check.SetHelpText(
+                "Ask GitHub whether every owner exists and can write to this "
+                "repository. GitHub skips one that cannot, without saying so."
+            )
+            check.Bind(wx.EVT_BUTTON, lambda _e: self.check_owners())
+            self.root.Add(check, 0, wx.ALL, 8)
+            self.root.Add(
+                wx.StaticText(self.dialog, label="What the check &found:"),
+                0,
+                wx.LEFT | wx.RIGHT,
+                8,
+            )
+            self.findings = wx.TextCtrl(
+                self.dialog, value="", style=wx.TE_MULTILINE | wx.TE_READONLY
+            )
+            self.findings.SetName("What the owner check found")
+            self.findings.SetHelpText(
+                "One line for each owner: whether it exists and can write, what to "
+                "fix if not, and any that could not be checked."
+            )
+            self.root.Add(self.findings, 1, wx.EXPAND | wx.ALL, 8)
+
+    def check_owners(self) -> None:
+        if self._check is None:
+            return
+        self._announce("Checking the owners with GitHub.")
+        self._check(self.rules.GetValue(), self.show_findings)
+
+    def show_findings(self, results: list[Any]) -> None:
+        from quill.core.github.codeowners_check import summary
+
+        if not self.dialog:  # closed while GitHub was answering
+            return
+        problems = [r for r in results if r.state != "ok"]
+        ordered = problems + [r for r in results if r.state == "ok"]
+        self.findings.SetValue("\n".join(r.sentence for r in ordered))
+        self._announce(summary(results))
 
     def look_up(self) -> str:
         path = self.path.GetValue().strip()

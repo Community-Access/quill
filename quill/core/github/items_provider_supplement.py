@@ -193,6 +193,20 @@ class GitHubItemsSupplementMixin:
         (quill.core.github.template_catalog and template_save)."""
         return self._repo(full_name)
 
+    def check_codeowners(self: _RepositoryAccess, full_name: str, text: str) -> list[Any]:
+        """Each CODEOWNERS owner in *text*, checked against *full_name* (PRD 21.8).
+
+        Reads only: an account's permission on the repository, and a team's.
+        """
+        from quill.core.github.codeowners_check import check_owners, github_lookups
+
+        repo = self._repo(full_name)
+        client = getattr(self, "_gh", None)
+        if client is None:
+            raise RuntimeError("Sign in to GitHub to check owners.")
+        user_permission, team_can_push = github_lookups(repo, client.get_organization)
+        return check_owners(text, user_permission=user_permission, team_can_push=team_can_push)
+
     def fetch_security_alerts(
         self: _RepositoryAccess,
         full_name: str,

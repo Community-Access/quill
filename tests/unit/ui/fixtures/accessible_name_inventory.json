@@ -553,6 +553,7 @@
   "quill/ui/github_template_builder_dialog.py::TemplateBuilderDialog._build_form::wx.TextCtrl": "named",
   "quill/ui/github_template_field_dialog.py::FieldDialog.__init__.text::wx.TextCtrl": "named",
   "quill/ui/github_template_sheets_dialog.py::ChooserDialog._list::wx.ListBox": "named",
+  "quill/ui/github_template_sheets_dialog.py::CodeownersDialog.body::wx.TextCtrl": "named",
   "quill/ui/github_template_sheets_dialog.py::FundingDialog.body::wx.TextCtrl": "named",
   "quill/ui/github_template_sheets_dialog.py::_Sheet.text_box::wx.TextCtrl": "named",
   "quill/ui/github_timeline_dialog.py::GitHubTimelineDialog.__init__::wx.TextCtrl": "named",
