@@ -156,8 +156,16 @@ class GitHubWorkbenchTemplatesMixin:
         if kind == "community_file" and filename in _SHEETS:
             from quill.ui import github_template_sheets_dialog as sheets
 
+            extra: dict[str, Any] = {}
+            if filename == "CODEOWNERS":
+                # Check Owners asks GitHub in the background (PRD 21.8).
+                extra["check"] = lambda rules, done: self._background(
+                    "check the code owners",
+                    lambda: self.items.check_codeowners(source, rules),
+                    done,
+                )
             sheet = getattr(sheets, _SHEETS[filename])(
-                self._template_parent(), text, announce=self._say
+                self._template_parent(), text, announce=self._say, **extra
             )
             saved = sheet.show()
             use_pull = bool(plan.needs_pull_request)
