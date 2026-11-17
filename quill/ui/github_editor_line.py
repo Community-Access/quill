@@ -95,6 +95,9 @@ def _runner() -> Any:
     return run_subprocess_safely
 
 
+UNSAVED = "Save this document in a GitHub repository first."
+
+
 def _git_ready(host: LineHost) -> bool:
     if host.safe_mode:
         host.announce(SAFE_MODE)
@@ -129,6 +132,11 @@ def _with_site(
     if not _git_ready(host):
         return
     path = host.file_path()
+    if not path:
+        # Said now, not from the background task: an untitled document would
+        # otherwise answer late, after the listener has decided nothing happened.
+        host.announce(UNSAVED)
+        return
     first, last, _selection = host.span()
     runner = _runner()
 
