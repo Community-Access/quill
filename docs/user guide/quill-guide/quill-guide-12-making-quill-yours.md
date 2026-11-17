@@ -396,7 +396,8 @@ a list of **Matching settings** appears under it. After a short pause QUILL
 tells you how many there are. Press `Down Arrow` to move into the list, and
 `Enter` to go straight to the setting on its own page. Finding a setting never
 changes it. A setting you cannot change right now says "(disabled)" after its
-name.
+name. Once you are on the setting, change it (`Space` for a check box) and
+press `Enter` to save it and close Settings, just as OK does.
 
 `Ctrl+F` brings you back to the box from anywhere in the dialog. `Escape` in
 the box clears what you typed, and a second `Escape` closes Settings.
@@ -436,6 +437,7 @@ have changed something.
   **Next to QUILL, on this portable drive** (only in a portable copy), or
   **Custom folder**, chosen with **Choose Folder...**. When you change it,
   QUILL offers to restart, and the change takes effect when it starts again.
+  If you leave it as it is, OK never moves your data or asks to restart.
 - **Windows and your files** is covered in Chapter 3, under Making QUILL your
   text editor.
 

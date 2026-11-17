@@ -258,6 +258,21 @@ Lines…</strong> (<code>Ctrl+Alt+L</code>) turns each line of your editor
 selection into an issue, list markers and check boxes taken off, and can
 make them sub-issues of an issue you name. The spreadsheet reader is the
 WordPress Workbench’s, now shared.</p>
+<h3 id="fixes-from-todays-reports-2026-11-17">Fixes from today’s reports
+(2026-11-17)</h3>
+<p>Two fixes in code QUILL Lite shares with QUILL:</p>
+<ul>
+<li><strong>Crash reports keep your Windows user name out.</strong> A
+report already replaced <code>C:\Users\&lt;your name&gt;</code> with
+<code>[PATH]</code>, but missed the same path written with doubled
+backslashes or forward slashes, which is how a report’s settings and
+some error messages write it. All three are replaced now.</li>
+<li><strong>Saving a GitHub secret no longer fails one time in
+64.</strong> In the GitHub Workbench, saving a repository secret could
+stop with “characters a GitHub path cannot hold”. The key GitHub gives
+QUILL Lite to seal the secret sometimes starts with a slash, and it was
+checked as if it were part of the address.</li>
+</ul>
 <h3 id="github-from-the-line-you-are-on-2026-11-17">GitHub from the line
 you are on (2026-11-17)</h3>
 <p>Most GitHub questions start in a file. Put your cursor on a line, or
