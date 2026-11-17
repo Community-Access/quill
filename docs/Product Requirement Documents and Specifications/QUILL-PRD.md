@@ -11002,8 +11002,10 @@ uses), or a folder picker when no document is open or none is found.
   and carry them over" rather than silently discarding or blocking outright.
 - **Stash Changes... / Manage Stashes...** — save, list, apply, and drop
   stashes by name instead of `stash@{2}` indices.
-- **Who Wrote This Line...** — `git blame` on the current line of the open
-  document, spoken as author, summary, and short SHA.
+- **Who Changed This Line?** (was Who Wrote This Line..., moved to GitHub >
+  From This Line on 2026-11-17, GitHub PRD 22.3) — `git blame` on the current
+  line of the open document, spoken as author, date, summary and short SHA; a
+  second press within ten seconds opens the pull request that brought it.
 - **Start Bisect... / End Bisect** — a guided "Is this version good or
   bad?" loop (Yes = bad, No = good) instead of remembering `git bisect`'s
   own command sequence; announces the culprit commit when bisection

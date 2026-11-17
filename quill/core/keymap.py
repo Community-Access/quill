@@ -5,6 +5,7 @@ import sys
 from collections.abc import Mapping
 from pathlib import Path
 
+from quill.core.github.workbench_menu import line_key_bindings as github_line_bindings
 from quill.core.keymap_darwin import (
     apply_darwin_pack_overrides,
     darwin_runtime_chord,
@@ -1158,10 +1159,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # chords -- the leader-chord space is fully claimed.
     "github.list_codespaces": "",
     "github.create_codespace": "",
-    # GitHub Workbench Mode (2026-11-08, quill/core/github/workbench_menu.py).
-    # The switch and the GitHub menu's rows have no chord, as no GitHub command
-    # does: a few presses a day at most (rule 9), no chord is free in both
-    # keymaps, and the menu's access letter is the way in. QUILL Lite too.
+    # GitHub Workbench Mode and its menu's rows (workbench_menu.py): no chords, as no
+    # GitHub command has one (rules 7 and 9); the menu's access letter is the way in.
     "view.github_workbench_mode": "",
     "github.workbench_inbox": "",
     "github.workbench_my_work": "",
@@ -1171,6 +1170,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "github.workbench_releases": "",
     "github.workbench_explore": "",
     "github.clone_repository": "",
+    **github_line_bindings(),  # From This Line (workbench_menu.line_key_bindings)
     # Local git (Tools > Local Git). No default chords -- the single-letter
     # leader-chord space is fully claimed (see the github.* block above);
     # these are reachable via the menu and the Command Palette, and freely

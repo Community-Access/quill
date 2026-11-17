@@ -4388,5 +4388,53 @@
       "Ctrl+Shift+G - Open Word Count"
     ],
     "user_guide_section": "tools-for-reading-review-and-inspection"
+  },
+  {
+    "id": "github.copy_line_link",
+    "title": "GitHub: Copy GitHub Link to This Line",
+    "body": "Puts a link on the clipboard to the line your cursor is on, or the lines you have selected, in the commit you have checked out, so it keeps showing the same text after the file changes. The file must be in a git repository with a GitHub remote. QUILL says when that commit is not on GitHub yet, so the link will not open until you push, or when the file has changes you have not committed. Needs git; refused in Safe Mode.",
+    "user_guide_section": "from-the-line-you-are-on"
+  },
+  {
+    "id": "localgit.blame_at_cursor",
+    "title": "GitHub: Who Changed This Line?",
+    "body": "Says who last changed the line your cursor is on, when, and the commit's summary. Press it again within ten seconds to open the pull request that brought that commit. Needs git and the Developer profile or Developer Tools; refused in Safe Mode. It was Local Git's Who Wrote This Line... until November 2026.",
+    "user_guide_section": "from-the-line-you-are-on"
+  },
+  {
+    "id": "github.open_line_pull",
+    "title": "GitHub: Open the Pull Request for This Line",
+    "body": "Finds the commit that last changed the line your cursor is on and opens the pull request that brought it, in the GitHub Workbench's list narrowed to its number. If the commit went straight to its branch, QUILL says so. A private repository needs a signed-in account. Refused in Safe Mode.",
+    "user_guide_section": "from-the-line-you-are-on"
+  },
+  {
+    "id": "github.open_line",
+    "title": "GitHub: Open This Line on GitHub",
+    "body": "Opens the line your cursor is on, or the lines you have selected, on GitHub in your browser, at the commit you have checked out. QUILL says when that commit is not on GitHub yet. Needs git; refused in Safe Mode.",
+    "user_guide_section": "from-the-line-you-are-on"
+  },
+  {
+    "id": "github.issue_from_selection",
+    "title": "GitHub: New Issue from Selection",
+    "body": "Starts an issue in this file's repository that quotes the selected text as a code block under a link to those lines. The GitHub Workbench's New Issue window opens with the title and body filled in, so you can change them, and nothing is sent until you have read the preview and said yes. Select some text first. Refused in Safe Mode.",
+    "user_guide_section": "from-the-line-you-are-on"
+  },
+  {
+    "id": "github.issues_mentioning_file",
+    "title": "GitHub: Issues Mentioning This File",
+    "body": "Opens the GitHub Workbench's Search, Issues and Pull Requests, on this file's path in its repository, so you can see what has been said about it. Refused in Safe Mode.",
+    "user_guide_section": "from-the-line-you-are-on"
+  },
+  {
+    "id": "github.comment_on_line",
+    "title": "GitHub: Comment on This Line in the Open Pull Request",
+    "body": "Posts a review comment on the line your cursor is on, or the selected lines, in the open pull request for the branch you have checked out. It asks for the comment, in Markdown, first. If your copy and the pull request are at different commits, or the file has changes you have not committed, it says so and stops, because the line numbers would not match. Needs a signed-in account that can comment. Refused in Safe Mode.",
+    "user_guide_section": "from-the-line-you-are-on"
+  },
+  {
+    "id": "github.open_reference_at_cursor",
+    "title": "GitHub: Open the GitHub Reference at the Cursor",
+    "body": "Opens what is written where your cursor is: #42 or GH-42 in this file's repository, owner/name#42 in another, or a commit hash, each in the GitHub Workbench with its list narrowed to it; or @person, whose profile opens in your browser. A bare #42 needs the document to be in a GitHub repository. Refused in Safe Mode.",
+    "user_guide_section": "from-the-line-you-are-on"
   }
 ]

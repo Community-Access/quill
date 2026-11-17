@@ -1862,6 +1862,21 @@ computer, private ones included, without writing your token anywhere. And
 what it does. GitHub no longer needs the Developer profile, so the workbench is
 there in most profiles, as it always has been in QUILL Lite.
 
+#### From the line you are on
+
+Most GitHub questions start in a file: who changed this, which pull request
+brought it, is there already an issue about it? Put your cursor on a line, or
+select a few, and **GitHub > From This Line** answers without leaving the
+editor. **Copy GitHub Link to This Line** puts a link on the clipboard that
+keeps pointing at the same text after the file changes. **Who Changed This
+Line?** says who, when and why, and pressed twice opens the pull request that
+brought it. **New Issue from Selection...** starts an issue quoting your
+selection under a link to it, with a preview before anything is sent.
+**Issues Mentioning This File**, **Open This Line on GitHub** and **Comment on
+This Line in the Open Pull Request...** do what they say, and **Open the GitHub
+Reference at the Cursor** opens the `#42`, `owner/name#42`, commit or
+`@person` you are on. QUILL Lite has all eight, in its GitHub menu.
+
 #### Files on GitHub
 
 QUILL opens files straight from a GitHub repository, lets you browse the
@@ -2123,7 +2138,10 @@ itself, and the rebase carries on afterwards.
 - **Switch Branch** stops uncommitted work from following you to the other
   branch by surprise.
 - **Stash Changes** and **Manage Stashes** guide you through stashing.
-- **Who Wrote This Line** is `git blame` for the line you are on, spoken.
+- **Who Changed This Line?** is `git blame` for the line you are on, spoken.
+  Press it twice to open the pull request that brought the line. It lives
+  with the other From This Line commands, described under GitHub, from the
+  editor.
 - **Start Bisect** and **End Bisect** turn `git bisect` into a plain
   conversation: is this version good or bad?
 

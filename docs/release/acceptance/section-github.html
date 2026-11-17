@@ -943,11 +943,12 @@ single-choice list reading “<code>&lt;ref&gt;</code>:
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="git-05--who-wrote-this-line-localgitblame_at_cursor">GIT-05 —
-Who Wrote This Line… (<code>localgit.blame_at_cursor</code>)</h2>
-<p><em>What &amp; why.</em> Announce the author, summary, and commit of
-the line at the cursor (git blame), spoken rather than shown in a
-gutter.</p>
+<h2 id="git-05--who-changed-this-line-localgitblame_at_cursor">GIT-05 —
+Who Changed This Line? (<code>localgit.blame_at_cursor</code>)</h2>
+<p><em>What &amp; why.</em> Announce the author, date, summary, and
+commit of the line at the cursor (git blame), spoken rather than shown
+in a gutter; a second press opens the pull request that brought it
+(GitHub PRD 22.3).</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Open a <strong>committed</strong> file inside <code>qa-git</code>
@@ -955,15 +956,19 @@ gutter.</p>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ Local Git ▸ Who Wrote This
-Line…</strong>.</li>
+<li>Put the cursor on line 3, then <strong>Tools ▸ Git and GitHub ▸
+GitHub ▸ From This Line ▸ Who Changed This Line?</strong> (in workbench
+mode, <strong>GitHub ▸ From This Line</strong>).</li>
+<li>Press it again within ten seconds.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>“Line N: <code>&lt;author&gt;</code>, <code>&lt;summary&gt;</code>
-(<code>&lt;short-sha&gt;</code>)”. With no open file, “No file to
-blame”; a file outside a repo, “This file is not inside a git
-repository”.</li>
+<li>“Changed by <code>&lt;author&gt;</code> on
+<code>&lt;date&gt;</code>: <code>&lt;summary&gt;</code>
+(<code>&lt;short-sha&gt;</code>).” for line 3, not line 1. The second
+press opens the Workbench’s Pull Requests list on the pull request that
+brought it, or says the commit went straight to its branch. A file
+outside a repo: “This file is not in a git repository.”</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
