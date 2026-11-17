@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Pull requests you can hear: the plan</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="pull-requests-you-can-hear-the-plan">Pull requests you can hear:
+the plan</h1>
+<p><em>Plan of record, started 2026-11-09. QUILL and QUILL Lite, one
+shared implementation (rule 10). Cited as
+<code>pull-requests.md &lt;section&gt;</code>.</em></p>
+<h2 id="1-why-this-and-why-now">1. Why this, and why now</h2>
+<p>QUILL already turns a pull request into something you can walk. You
+hear the whole pull request in one sentence (“Approved, 2 checks
+failing, 1 open thread, 3 commits behind main”), you walk an outline of
+files, threads and checks, you comment on a line or a range, suggest a
+change, keep comments pending and send one review. GitHub Guide chapter
+5 describes all of it, and it is solid.</p>
+<p>What it does not do yet is <strong>tell you what changed</strong>.
+Today a change sounds like one of these:</p>
+<ul>
+<li>“Difference 2 of 5. Text changed at line 41.” Then, if you ask for
+more: “Change: changed ‘count&gt;10’ to ‘count&gt;=10’.”</li>
+<li>“Difference 3 of 5. 3 lines replaced with 5 at line 80.”</li>
+<li>“Added line 42: <code>        return total</code>” (with every space
+read, or not, depending on your screen reader).</li>
+</ul>
+<p>A sighted reviewer glances at a red-and-green block and knows in a
+second that a number went from 10 to 20, or that a function moved, or
+that 30 lines are the same edit made 30 times. A screen-reader user
+hears quoted fragments and line counts, and has to rebuild the meaning
+in their head. That is the gap.</p>
+<p>Changes come in every size: <strong>one character</strong>
+(<code>&gt;</code> became <code>&gt;=</code>), <strong>one name</strong>
+(<code>count</code> became <code>total</code>), <strong>one
+line</strong>, <strong>a block</strong> (a new function), <strong>many
+places at once</strong> (the same rename in 14 files), <strong>a
+move</strong> (code that went somewhere else unchanged) and
+<strong>nothing that matters</strong> (indentation, line endings). Each
+deserves its own kind of sentence.</p>
+<p>The goal is that a blind developer reviews a pull request
+<strong>faster and with more confidence than they could on the
+website</strong>, and enjoys it: never overwhelmed, never lost, always
+able to go one level deeper.</p>
+<h2 id="2-principles">2. Principles</h2>
+<ol type="1">
+<li><strong>Say what happened, not where the bytes are.</strong> “The
+limit went from 10 to 20” before “line 41”. The line number is always
+there, second.</li>
+<li><strong>Gist first, detail one key away.</strong> Every change has
+three depths: the <em>gist</em> (one short sentence), the
+<em>change</em> (before and after), and the <em>characters</em>
+(spelled, with punctuation named). You choose how deep, change by
+change. No verbosity setting decides it for you (GATE-13’s rule: say
+less, rather than making people configure how much less).</li>
+<li><strong>The size of the sentence matches the size of the
+change.</strong> One character gets one short sentence. A 200-line new
+file gets a sentence about its shape, not 200 lines read aloud.</li>
+<li><strong>Punctuation is content in code.</strong> In a change
+description, QUILL names the characters that changed (“greater-than
+became greater-than-or-equal”), whatever the screen reader’s punctuation
+level, the way dictation’s “hear the punctuation” already does. The full
+line still reads as normal text.</li>
+<li><strong>Never hide, never guess.</strong> Anything summarised can be
+expanded to the exact text. A heuristic (“this looks like a rename”)
+says it is a heuristic when it is not certain, and the plain diff is
+always one key away.</li>
+<li><strong>Your place is sacred.</strong> Reading never changes
+anything on GitHub. Leaving and coming back returns you to the same
+change. “Viewed” and “visited” are yours.</li>
+<li><strong>Speech, braille and sound together.</strong> Every sentence
+goes through the announcement service (GATE-BRAILLE). Braille gets a
+compact form that fits a 40-cell display. Sounds are optional cues,
+never the only signal.</li>
+<li><strong>Delight is in the timing.</strong> The right sentence at the
+right moment, a soft tone instead of a word you have heard a hundred
+times, and a moment of celebration when you have reviewed
+everything.</li>
+<li><strong>Descriptions guide; the text decides.</strong> A spoken
+description is where you start, never where you have to stop. Every
+change can be opened as real text, before and after, to arrow through
+character by character, select, copy and judge for yourself. A reviewer
+who wants to check QUILL’s sentence against the code can always do so in
+one key.</li>
+<li><strong>Every decision is yours, item by item.</strong> You can
+accept or decline each change and each suggestion on its own, and QUILL
+says plainly what that does on GitHub before it does it.</li>
+</ol>
+<h2 id="3-the-experience-from-the-reviewers-chair">3. The experience,
+from the reviewer’s chair</h2>
+<p>A walk-through of what it should feel like. Keys in this section are
+proposals (section 9 lists them and the rules they answer to).</p>
+<p><strong>Opening.</strong> Pull request #42 opens. You hear the one
+sentence you hear today, then one more: <strong>the shape</strong>.</p>
+<blockquote>
+<p>“Review loaded for pull request #42. Approved, 2 checks failing, 1
+open thread. 7 files: 4 source, 2 tests, 1 doc. Mostly in src/billing.
+Biggest: invoice.py, 48 lines added.”</p>
+</blockquote>
+<p><strong>The story, if you want it.</strong> Press <strong>What Is
+This Pull Request?</strong> and hear the author’s description, read as
+text with its headings and lists, then QUILL’s own plain account of the
+changes, file by file, in a sentence each:</p>
+<blockquote>
+<p>“invoice.py: new function round_total, and the tax rate changes from
+0.2 to 0.25. test_invoice.py: 3 new tests. README.md: one paragraph
+reworded.”</p>
+</blockquote>
+<p><strong>Walking the changes.</strong> In the review, <strong>Next
+Change</strong> and <strong>Previous Change</strong> walk every change
+in the pull request, across files, in order. Each change is its
+gist:</p>
+<blockquote>
+<p>“invoice.py, change 2 of 5. The tax rate went from 0.2 to 0.25. Line
+14.”</p>
+</blockquote>
+<blockquote>
+<p>“invoice.py, change 3 of 5. New function round_total, 9 lines, at
+line 30.”</p>
+</blockquote>
+<blockquote>
+<p>“utils.py. One character: greater-than became greater-than-or-equal,
+in <code>if count &gt;= limit</code>. Line 7.”</p>
+</blockquote>
+<blockquote>
+<p>“12 lines moved, unchanged, from line 80 to line 20.”</p>
+</blockquote>
+<blockquote>
+<p>“Formatting only: indentation, 6 lines.”</p>
+</blockquote>
+<p><strong>Going deeper.</strong> On any change, <strong>Tell Me
+More</strong> gives the before and after:</p>
+<blockquote>
+<p>“Before: <code>TAX_RATE = 0.2</code>. After:
+<code>TAX_RATE = 0.25</code>.”</p>
+</blockquote>
+<p>and <strong>Spell the Change</strong> gives the characters that
+differ, with punctuation named, then puts you in the details field where
+you can arrow by character.</p>
+<p><strong>Seeing for yourself.</strong> <strong>Before and
+After</strong> (<code>Ctrl+B</code>) opens the change in a window with
+two text fields, Before and After, holding the real lines with the lines
+around them. Arrow through either one; the other follows to the same
+line. A list of <strong>Changed parts</strong> takes you straight to
+each one: Enter selects the changed characters in both fields, so your
+screen reader reads exactly what differs and your braille display shows
+it under your fingers. Turn on <strong>Mark changes</strong> and the
+changed text is wrapped in spoken markers, “[was: 0.2]” and “[now:
+0.25]”, for when you would rather read a line than compare two.</p>
+<p><strong>Accept or decline, one at a time.</strong> In the walk and in
+Before and After, <strong>Accept</strong> says this change is fine, and
+the outline shows it as accepted. <strong>Decline</strong> asks you why,
+in a comment that goes with your review, attached to those lines. When
+you compose the review, QUILL has counted for you: “18 changes accepted,
+2 declined”, and with anything declined it starts the review as Request
+changes. If you are the author, a reviewer’s suggestion has its own
+<strong>Accept Suggestion</strong>, which commits it to your branch
+after showing you the exact before and after, and <strong>Decline
+Suggestion</strong>, which replies with your reason and resolves the
+thread.</p>
+<p><strong>The same edit, many times.</strong> When a pull request
+repeats one edit, QUILL says it once:</p>
+<blockquote>
+<p>“The same change in 14 places across 6 files: print( became
+logger.info(. Press Enter to list them.”</p>
+</blockquote>
+<p><strong>Commenting where you are.</strong> Comment on This Change
+attaches to exactly the lines of the change you are on, with the gist in
+the comment window’s title: “Comment on: the tax rate went from 0.2 to
+0.25”. A suggestion starts with the new text already in the box.</p>
+<p><strong>Keeping track.</strong> <strong>Mark File Viewed</strong>
+sets GitHub’s own “Viewed” checkbox, so your progress shows on the
+website too. Progress is one sentence away: “3 of 7 files viewed; 2
+comments pending.”</p>
+<p><strong>Finishing.</strong> When you have walked every change, you
+hear a short, warm sound and: “That’s every change. 2 comments pending.
+Compose your review?” Enter opens Compose Review with them listed.</p>
+<h2 id="4-describing-a-change">4. Describing a change</h2>
+<p>This is the heart of the plan: one shared describer,
+<code>quill/core/change_describer.py</code>, wx-free and strict-typed,
+used by the pull request review, the diff window, Compare Documents,
+local Git changes (Review Changes in project tasks) and Story Studio’s
+revisions. One engine means one way of hearing a change everywhere in
+the family.</p>
+<h3 id="41-what-it-takes-and-gives">4.1 What it takes and gives</h3>
+<ul>
+<li>Input: the old and new text of one hunk (or one Compare group), the
+file’s language if known, and the line numbers.</li>
+<li>Output: a <code>ChangeDescription</code> with <code>kind</code>,
+<code>gist</code> (one sentence, at most about 15 words before the
+location), <code>detail</code> (before and after),
+<code>characters</code> (the spelled difference), <code>braille</code>
+(a compact form), <code>lines</code> (exact range for comments) and
+<code>confidence</code> for anything heuristic.</li>
+</ul>
+<h3 id="42-the-kinds-smallest-to-largest">4.2 The kinds, smallest to
+largest</h3>
+<p>Each kind has a fixed sentence pattern, so you learn the shapes by
+ear.</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Detected by</th>
+<th>Gist</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Character</td>
+<td>one line, one changed span of at most 3 characters inside a
+token</td>
+<td>“One character: greater-than became greater-than-or-equal, in
+<code>if count &gt;= limit</code>.”</td>
+</tr>
+<tr>
+<td>Case</td>
+<td>the change is letter case only</td>
+<td>“Capital letter: <code>Total</code> was <code>total</code>.”</td>
+</tr>
+<tr>
+<td>Number</td>
+<td>a numeric literal changed and nothing else</td>
+<td>“10 became 20, in <code>limit = 20</code>.”</td>
+</tr>
+<tr>
+<td>Text</td>
+<td>a string literal changed</td>
+<td>“The text “Save” became “Save As”.”</td>
+</tr>
+<tr>
+<td>Name</td>
+<td>one identifier changed, in one line</td>
+<td>“<code>count</code> renamed to <code>total</code>.”</td>
+</tr>
+<tr>
+<td>Token</td>
+<td>a few tokens changed in one line</td>
+<td>“In line 41: <code>&gt;</code> became <code>&gt;=</code> and
+<code>10</code> became <code>limit</code>.”</td>
+</tr>
+<tr>
+<td>Line added or removed</td>
+<td>one whole line</td>
+<td>“Line added: <code>return total</code>.”</td>
+</tr>
+<tr>
+<td>Lines</td>
+<td>a short block (2 to 5 lines)</td>
+<td>“3 lines added after <code>def save(self):</code>: …” (the first
+line, then “and 2 more”)</td>
+</tr>
+<tr>
+<td>Block</td>
+<td>a block with a recognisable start</td>
+<td>“New function <code>round_total</code>, 9 lines.” / “Removed class
+<code>LegacyExporter</code>, 40 lines.”</td>
+</tr>
+<tr>
+<td>Moved</td>
+<td>removed lines reappear elsewhere unchanged (or nearly)</td>
+<td>“12 lines moved, unchanged, from line 80 to line 20.”</td>
+</tr>
+<tr>
+<td>Repeated</td>
+<td>the same token change in several places</td>
+<td>“The same change in 14 places: <code>print(</code> became
+<code>logger.info(</code>.”</td>
+</tr>
+<tr>
+<td>Formatting</td>
+<td>only whitespace, blank lines, line endings or line wrapping changed
+(6.7 defines it exactly)</td>
+<td>“Formatting only: indentation, 6 lines.”</td>
+</tr>
+<tr>
+<td>File</td>
+<td>added, deleted, renamed, binary, generated</td>
+<td>“New file, tests/test_invoice.py, 3 tests.” / “Renamed from util.py,
+unchanged.”</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-how-the-parts-are-found">4.3 How the parts are found</h3>
+<ul>
+<li><strong>Tokens, not words.</strong> Code is split into identifiers,
+numbers, strings, operators and punctuation (a small tokenizer per
+language family, falling back to a generic one), so
+<code>count&gt;10</code> is three tokens, not one “word”. Prose
+(Markdown, plain text, comments inside code) keeps word-level
+description, which already works well.</li>
+<li><strong>Character spans</strong> come from <code>difflib</code> on
+the line, as Compare Documents’ <code>InlineChange</code> already does,
+trimmed to token boundaries for the gist.</li>
+<li><strong>Blocks</strong> are recognised by their first line: the
+language servers QUILL already ships answer “what symbol starts here”
+for Python, JavaScript, TypeScript, HTML, CSS and JSON; a light pattern
+list covers the rest (<code>def</code>, <code>function</code>,
+<code>class</code>, <code>fn</code>, headings in Markdown). Without
+either, the gist says “N lines added” and quotes the first line.</li>
+<li><strong>Moves</strong> are matched by normalised line hashes across
+a file and across the pull request, with a minimum of 3 lines so trivial
+lines do not match.</li>
+<li><strong>Repeats</strong> group identical token-level changes; a
+group of 3 or more is said once.</li>
+<li><strong>Generated and lock files</strong>
+(<code>package-lock.json</code>, <code>*.min.js</code>, snapshot files,
+<code>.ipynb</code> output) are recognised and summarised in one line,
+with the full diff still one key away.</li>
+</ul>
+<h3 id="44-saying-characters">4.4 Saying characters</h3>
+<p>A <strong>character vocabulary</strong>, shared with dictation’s
+“hear the punctuation”: “greater-than”, “greater-than-or-equal” (said
+for <code>&gt;=</code>), “not-equal” (<code>!=</code>), “arrow”
+(<code>-&gt;</code>, <code>=&gt;</code>), “open bracket”, “close brace”,
+“backquote”, “space”, “tab”, “nothing” (for an empty side). Two
+characters that look alike are told apart: “hyphen” against “en dash”,
+“straight quote” against “curly quote”, “letter O” against “zero” when
+the change is between them. Unicode changes name the character
+(“non-breaking space became space”).</p>
+<h3 id="45-length-and-pacing">4.5 Length and pacing</h3>
+<ul>
+<li>The gist is short enough to hear while arrowing: at most about 15
+words before the location, and the location last.</li>
+<li>A quote of code inside a sentence is capped (about 60 characters,
+then “and more”); the full line is in Tell Me More.</li>
+<li>A change you have already heard, heard again, gives the gist only
+once more, then “same as before” if nothing moved.</li>
+</ul>
+<h2 id="5-the-pull-request-at-a-glance">5. The pull request at a
+glance</h2>
+<h3 id="51-the-shape-sentence">5.1 The shape sentence</h3>
+<p>After the existing one-sentence summary: the number of files by kind
+(source, tests, docs, config, generated), the area they are mostly in
+(the deepest common folder holding most of the change), and the biggest
+change. Built from data the review already loads (file list, additions,
+deletions), so no new requests.</p>
+<h3 id="52-what-is-this-pull-request">5.2 What Is This Pull
+Request?</h3>
+<p>A window (or the details pane, from the outline’s top row) with:</p>
+<ol type="1">
+<li>the title, author, branch into base, and age;</li>
+<li>the description, rendered from Markdown to readable text with
+headings and lists kept (the same renderer the GitHub windows use for
+issues);</li>
+<li><strong>Changes in plain words</strong>: one sentence per file,
+built from the change describer’s gists, biggest first, with generated
+files folded into one line;</li>
+<li>linked issues and what they say they close.</li>
+</ol>
+<p>Optionally, with consent and an AI chosen in Choose Your AI,
+<strong>Explain This Pull Request</strong> asks the AI for a summary,
+bounded and cited the way <code>diff_explanation.py</code> already
+bounds a diff explanation. It is a button, never automatic, and it says
+which AI was asked.</p>
+<h2 id="6-walking-and-reviewing">6. Walking and reviewing</h2>
+<h3 id="61-next-and-previous-change-everywhere">6.1 Next and previous
+change, everywhere</h3>
+<p>Moving from change to change is the most used thing in a review, so
+it works the same way in every place a change can be: the review
+outline, the diff window’s Differences and Patch lines, Before and
+After, and Compare Documents.</p>
+<table>
+<thead>
+<tr>
+<th>Move</th>
+<th>Key</th>
+<th>What you hear</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Next change / Previous change</td>
+<td><code>Ctrl+Alt+Shift+.</code> / <code>Ctrl+Alt+Shift+,</code></td>
+<td>the change’s gist, then “change 3 of 12”</td>
+</tr>
+<tr>
+<td>First change / Last change</td>
+<td><code>Ctrl+Alt+Shift+Home</code> /
+<code>Ctrl+Alt+Shift+End</code></td>
+<td>the gist, and “first change” or “last change”</td>
+</tr>
+<tr>
+<td>Next file / Previous file</td>
+<td><code>Ctrl+Down</code> / <code>Ctrl+Up</code></td>
+<td>the file, its kind and size, and how many changes it has</td>
+</tr>
+<tr>
+<td>Next undecided change</td>
+<td><code>Ctrl+Alt+Shift+U</code></td>
+<td>a change you have not accepted or declined</td>
+</tr>
+<tr>
+<td>Next unresolved thread / Next unvisited thread</td>
+<td><code>Alt+U</code> / <code>Alt+V</code>, as today</td>
+<td>as today</td>
+</tr>
+<tr>
+<td>Go to change number</td>
+<td><code>Ctrl+G</code> in the review window</td>
+<td>asks for a number, as Go To Line does</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Across files.</strong> Next Change moves through every
+change in every file, in outline order; at a file’s last change, the
+next press says the new file’s name first. Next File skips the rest of a
+file.</li>
+<li><strong>At the ends.</strong> The walk does not wrap silently: at
+the last change you hear “last change” and a soft end sound, and the
+next press says “back to the first change” before it wraps (the same
+edge sounds Compare Documents uses).</li>
+<li><strong>The outline follows.</strong> The tree’s selection moves
+with every step, so it always shows where you are, and Tab still reads
+the details.</li>
+<li><strong>Where you are</strong>, any time: the window’s status says
+“change 3 of 12, file 2 of 7”, and Review Progress (6.4) says it as a
+sentence.</li>
+<li><strong>Counting what you skip.</strong> When formatting-only or
+decided changes are skipped (6.7, 6.6), the count says so once, the
+first time: “12 changes, 4 formatting only, skipped.”</li>
+</ul>
+<h3 id="62-three-depths-three-keys">6.2 Three depths, three keys</h3>
+<ul>
+<li><strong>Gist</strong>: what you hear when you arrive.</li>
+<li><strong>Tell Me More</strong>: before and after, each as a line you
+can read.</li>
+<li><strong>Spell the Change</strong>: the differing characters, named;
+focus moves into the details field at the first changed character so
+arrows can inspect it.</li>
+</ul>
+<p>Pressing Tell Me More twice is Spell the Change, matching the
+family’s “press twice for more” habit (Which AI Am I Using).</p>
+<h3 id="63-before-and-after-the-text-itself">6.3 Before and After: the
+text itself</h3>
+<p>Spoken descriptions are a guide. The reviewer still needs the text:
+to arrow through it, read it at their own pace, check a single
+character, and decide. <strong>Before and After</strong>
+(<code>Ctrl+B</code> on a change, a file or a thread; also on each row’s
+context menu) opens one window for that:</p>
+<ul>
+<li><strong>Before</strong> and <strong>After</strong>, two read-only
+multi-line text fields with the real lines of the change and three lines
+of context around them (more with <strong>Show more context</strong>,
+<code>Alt+M</code>). Each line can start with its line number
+(<strong>Line numbers</strong>, a check box, kept as a preference) so a
+line can be found and quoted.</li>
+<li><strong>The caret follows.</strong> Moving to a line in one field
+puts the other field’s caret on the matching line, so Tab between them
+always lands in the same place. Nothing is announced when it moves; the
+screen reader reads the line you land on (GATE-13).</li>
+<li><strong>Changed parts</strong>, a list of every changed span in the
+change, in order: “Line 14: 0.2 became 0.25”. Enter moves both carets
+there and <strong>selects</strong> the changed characters in each field,
+which is how a screen reader and a braille display show exactly what
+differs without colour. Ctrl+Alt+Shift+. and , move to the next and
+previous changed part from either field, as they move to the next
+difference in Compare Documents.</li>
+<li><strong>Mark changes</strong> (a check box, kept as a preference)
+rewrites both fields with the differences inline and named in words,
+“[was: 0.2]” in Before and “[now: 0.25]” in After, or as symbols
+(<code>{-0.2-}</code> and <code>{+0.25+}</code>) for people who prefer
+them, using the same Words or Symbols choice as the diff window’s Line
+marks. Off, the fields hold the code exactly.</li>
+<li><strong>One column</strong>, a check box, interleaves the two:
+“Before 14:” then “After 14:” line by line in a single field, for
+comparing line against line without changing fields.</li>
+<li><strong>Open Before as a Document</strong> and <strong>Open After as
+a Document</strong> open the text in a QUILL tab, read-only, with every
+editor tool: Find, Go To Line, word count, and Compare Documents on the
+two.</li>
+<li><strong>Accept</strong> (<code>Alt+A</code>) and
+<strong>Decline</strong> (<code>Alt+D</code>), section 6.6, and
+<strong>Comment on This Change</strong>, so the decision is made where
+the reading is done.</li>
+<li>The window works for a whole file too: its fields hold every change
+in the file, with the unchanged stretches between them folded into one
+line each, “12 unchanged lines”, which Enter unfolds.</li>
+</ul>
+<p>The same window serves Compare Documents and Review Changes in
+project tasks, so the way to look at a change is the same everywhere in
+the family.</p>
+<h3 id="64-viewed-and-progress">6.4 Viewed, and progress</h3>
+<ul>
+<li><strong>Mark File Viewed</strong> uses GitHub’s own viewed state
+(GraphQL <code>markFileAsViewed</code> /
+<code>unmarkFileAsViewed</code>), so it agrees with the website. It is a
+write, so it needs sign-in, and it says so.</li>
+<li>The outline row for a viewed file says “viewed”; a file that changed
+after you marked it says “changed since viewed” (GitHub’s
+<code>DISMISSED</code> state).</li>
+<li><strong>Review Progress</strong> says one sentence: files viewed,
+changes walked, comments pending, threads you opened.</li>
+</ul>
+<h3 id="65-finishing-well">6.5 Finishing well</h3>
+<p>When the walk reaches the last change, a soft completion sound and
+one sentence: what you did and what is next. If comments are pending,
+Enter opens Compose Review with them listed by gist, not just by
+line.</p>
+<h3 id="66-accept-and-decline-change-by-change">6.6 Accept and Decline,
+change by change</h3>
+<p>GitHub has no “approve this one change”: a review approves or
+requests changes on the whole pull request, and comments are what attach
+to lines. So Accept and Decline are built from what GitHub does have,
+and each says what it will do before it does it.</p>
+<ul>
+<li><strong>Accept</strong> (<code>Alt+A</code>, and on each change’s
+context menu) records that you have checked this change and it is fine.
+The outline row says “accepted”, the walk skips accepted changes when
+you ask it to (<strong>Next Undecided</strong>), and accepting every
+change in a file offers to mark the file Viewed on GitHub. Accepting
+sends nothing on its own.</li>
+<li><strong>Decline</strong> (<code>Alt+D</code>) opens the comment
+window on that change’s lines, titled “Decline: the tax rate went from
+0.2 to 0.25”, and asks for a reason: a decline without a reason helps
+nobody. It is added to your review as a pending comment, so it is sent
+with your verdict, not on its own.</li>
+<li><strong>Undo</strong> a decision with the same key again, or
+<strong>Clear Decision</strong> on the context menu. A declined change’s
+pending comment is removed with it, after asking.</li>
+<li><strong>Accept All in This File</strong> and <strong>Accept the
+Rest</strong> exist, and ask first, for formatting-only and generated
+files; QUILL suggests them for those.</li>
+<li><strong>Decisions are kept</strong> on this computer, for your
+account and this pull request, beside the pending comments. Each is tied
+to the change’s exact text: when new commits arrive, an accepted change
+whose text is unchanged stays accepted, and one that changed reads
+“changed since you accepted it” and becomes undecided.</li>
+<li><strong>Composing the review</strong> starts from the decisions: the
+window says “18 changes accepted, 2 declined, 3 undecided”, the action
+starts as Request changes if anything was declined and Approve if
+everything was accepted, and <strong>Include the tally</strong> adds
+that line to the review message. You can change all of it; Submit Review
+is still the only thing that sends.</li>
+</ul>
+<h3 id="67-formatting-only-changes-show-skip-or-hide">6.7
+Formatting-only changes: show, skip or hide</h3>
+<p>Some changes are purely visual: indentation, spaces at the end of a
+line, blank lines, line endings, a long line wrapped onto two. Often
+nobody cares. Sometimes it matters a great deal: a reformat can hide a
+real change, and in some files the spacing <em>is</em> the meaning. So
+it is a choice, with a sensible default, a key to flip it for one
+review, and a hard safety rule.</p>
+<p><strong>What counts as formatting only.</strong> A change is
+formatting only when, after removing the kinds of formatting you chose
+to ignore, the before and after are identical, token for token. The
+kinds, each a preference:</p>
+<ul>
+<li>indentation (leading spaces and tabs);</li>
+<li>spaces at the end of a line;</li>
+<li>blank lines added or removed;</li>
+<li>line endings (CRLF and LF);</li>
+<li>re-wrapped lines (the same words, split across lines
+differently).</li>
+</ul>
+<p><strong>Never formatting, whatever the setting.</strong> Indentation
+is meaning in Python, YAML, Makefiles, CoffeeScript, Haskell and F#, and
+in Markdown lists and code blocks; a tab against spaces matters in a
+Makefile; trailing spaces end a line break in Markdown; whitespace
+inside a string is text. In those places an indentation, trailing-space
+or tab change is described as a real change, and the gist says why:
+“Indentation changed, which changes the code in Python: lines 12 to 18
+moved into the if block.”</p>
+<p><strong>The three ways to treat them</strong> (the preference
+<strong>Formatting-only changes</strong>):</p>
+<ul>
+<li><strong>Show</strong> (the default): they are walked like any
+change, with their own short gist, “Formatting only: indentation, 6
+lines”, so they cost one sentence and never surprise you.</li>
+<li><strong>Skip when walking</strong>: Next and Previous Change pass
+over them; they stay in the outline and in Before and After, marked
+“formatting only”, and the count says how many were skipped. Accepting
+them all is one command, Accept Formatting Changes, which asks
+first.</li>
+<li><strong>Hide</strong>: they are left out of the outline, the walk
+and the counts, as GitHub’s “Hide whitespace” does. A file whose only
+changes are formatting reads as one row: “styles.css, formatting only”.
+A line in the window’s status always says how many are hidden, so
+nothing disappears unannounced.</li>
+</ul>
+<p><strong>Flip it for this review.</strong> <strong>Formatting Changes:
+Show, Skip or Hide</strong> (<code>Ctrl+Shift+W</code>, after GitHub’s
+“w” for whitespace) cycles the three for the open review only, and says
+the result and the count: “Formatting-only changes hidden: 4.” Closing
+the review returns to the preference.</p>
+<p><strong>Comments still land.</strong> A thread or a pending comment
+on a hidden formatting change is never hidden: its change shows, marked,
+so no conversation is lost.</p>
+<h2 id="7-commenting">7. Commenting</h2>
+<ul>
+<li><strong>Comment on This Change</strong> anchors to the change’s
+exact lines (the existing <code>anchor_for</code> and
+<code>lines_for_range</code> already know GitHub’s rules), and the
+window’s title is the change’s gist.</li>
+<li><strong>Suggest a change</strong> starts with the new text in the
+box, with the change already made, so the reviewer edits rather than
+retypes.</li>
+<li><strong>Pending comments</strong> list by gist (“On: the tax rate
+went from 0.2 to 0.25”) as well as by line, so a review can be checked
+before it is sent.</li>
+<li><strong>Quick replies</strong>: on a thread, a short list of the
+replies people send most (“Done.”, “Good catch, fixed in the next
+commit.”, “Could you say more?”), editable, and saved per person. Never
+sent without the person choosing.</li>
+<li><strong>Reading a thread</strong> says who said what, in order, with
+code blocks and suggestions announced as such (“Suggestion: replace line
+14 with …”).</li>
+</ul>
+<h3 id="71-accepting-and-declining-suggestions-the-authors-side">7.1
+Accepting and declining suggestions (the author’s side)</h3>
+<p>When a reviewer suggests a change, the author decides on it, item by
+item:</p>
+<ul>
+<li>A thread holding a suggestion reads “Suggestion from alice, on line
+14: the tax rate becomes 0.25”, with the change described the way
+section 4 describes any change, and <strong>Before and After</strong>
+shows the lines as they are and as the suggestion would make them.</li>
+<li><strong>Accept Suggestion</strong> commits the suggested lines to
+the pull request’s branch, with a commit message naming the reviewer
+(“Apply suggestion from alice”), after showing exactly what will change
+and asking. It needs permission to push to the branch, and says so when
+the account does not have it. <strong>Accept Selected
+Suggestions</strong> puts several into one commit, as GitHub’s “Add
+suggestion to batch” does.</li>
+<li><strong>Decline Suggestion</strong> asks for a short reason, replies
+on the thread with it, and offers to resolve the thread.</li>
+<li>A suggestion on lines that have changed since it was written cannot
+be applied cleanly; QUILL says so and offers Before and After against
+the current lines instead of guessing.</li>
+</ul>
+<h2 id="8-sound-braille-and-the-screen-reader">8. Sound, braille and the
+screen reader</h2>
+<ul>
+<li><strong>Optional line cues.</strong> In Patch lines, a soft high
+tone for an added line, a low one for a removed line, nothing for
+unchanged. With cues on, the words “Added line” and “Removed line”
+shorten to the line number. Off by default, a preference (section 10),
+never required to understand anything.</li>
+<li><strong>Braille form.</strong> Each gist has a compact braille
+rendering: <code>+14 0.2→0.25</code>, <code>~7 &gt; → &gt;=</code>,
+<code>mv 80→20 12L</code>. The full sentence is a press of a routing key
+or Tell Me More away. Arrow characters fall back to <code>-&gt;</code>
+on displays and tables that lack them.</li>
+<li><strong>Nothing the screen reader already says</strong> (GATE-13):
+focus moves are not announced; the gist is the tree row’s own text where
+possible, so the screen reader reads it as part of the row, and is only
+announced when the change is reached by a command that does not move
+focus.</li>
+<li><strong>Punctuation in full lines</strong> is left to the screen
+reader; only the change description names characters.</li>
+</ul>
+<h2 id="9-keys-menus-and-help">9. Keys, menus and help</h2>
+<p>All keys are window-local (the review and diff windows), so they
+cannot claim an editor chord, and each follows the family rules
+(<code>quill/core/family_rules.py</code>). Proposals, to be checked
+against the window’s existing access keys (GATE-14):</p>
+<p>No bare letters: in a tree, typing a letter jumps to the next row
+starting with it, and reviewers use that to find a file by name.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Proposal</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Next Change / Previous Change</td>
+<td><code>Ctrl+Alt+Shift+.</code> / <code>Ctrl+Alt+Shift+,</code></td>
+<td>Compare Documents’ Next and Previous Difference: the same idea gets
+the same key (F8 is Start Selection in the editors)</td>
+</tr>
+<tr>
+<td>First Change / Last Change</td>
+<td><code>Ctrl+Alt+Shift+Home</code> /
+<code>Ctrl+Alt+Shift+End</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Go to Change Number</td>
+<td><code>Ctrl+G</code> in the review window</td>
+<td>Go To Line’s key, for the same idea</td>
+</tr>
+<tr>
+<td>Formatting Changes: Show, Skip or Hide</td>
+<td><code>Ctrl+Shift+W</code></td>
+<td>for this review only; the preference is the default</td>
+</tr>
+<tr>
+<td>Next File / Previous File</td>
+<td><code>Ctrl+Down</code> / <code>Ctrl+Up</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Tell Me More (twice: Spell the Change)</td>
+<td><code>F2</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Before and After</td>
+<td><code>Ctrl+B</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Mark File Viewed</td>
+<td><code>Ctrl+Shift+V</code></td>
+<td>toggles</td>
+</tr>
+<tr>
+<td>Comment on This Change</td>
+<td><code>Enter</code> on a change row; <code>Alt+L</code> as today</td>
+<td></td>
+</tr>
+<tr>
+<td>Accept / Decline (in Before and After and the review window)</td>
+<td><code>Alt+A</code> / <code>Alt+D</code> as buttons</td>
+<td>the review window’s Auto-Merge button (<code>Alt+A</code>) and
+Convert to Draft (<code>Alt+D</code>) move to free letters; GATE-14
+decides</td>
+</tr>
+<tr>
+<td>Next Undecided</td>
+<td><code>Ctrl+Alt+Shift+U</code></td>
+<td>Next Unresolved keeps <code>Alt+U</code></td>
+</tr>
+<tr>
+<td>What Is This Pull Request?</td>
+<td>a free access letter (<code>Alt+W</code> is Request Reviewers)</td>
+<td></td>
+</tr>
+<tr>
+<td>Review Progress</td>
+<td><code>Ctrl+Shift+P</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Every command is also on the window’s menu or context menu with its
+key in the label (the menu accelerator rule), has F1 help written at the
+construction site, and appears in What Can I Say Here for the review
+window, so “next change” and “what changed here” work from Say or Type a
+Command.</p>
+<h2 id="10-fine-tuning-your-preferences">10. Fine-tuning: your
+preferences</h2>
+<p>Jeff, 2026-11-09: “go with great defaults but allow the user to fine
+tune this the way they wish.” Every choice below has a default chosen so
+that most people never need to change it, and every one can be changed.
+They live on one page, <strong>Pull Requests</strong>, in Preferences’
+GitHub area, shared by QUILL and QUILL Lite (the same settings, one
+implementation, rule 10), each with F1 help written where it is built
+and keywords for Find a Setting. Each is a field in
+<code>Settings</code> under the settings gates (the vocabulary audit and
+GATE-SETDOC).</p>
+<p>The defaults are chosen to be quiet and complete, not to be tuned
+away: the preferences are for taste and habit, never the fix for a
+sentence that says too much (GATE-13). If a default turns out to be
+chatty, the sentence is changed, not the default.</p>
+<p><strong>Hearing changes</strong></p>
+<table>
+<thead>
+<tr>
+<th>Preference</th>
+<th>Default</th>
+<th>Choices</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Say the pull request’s shape when it opens</td>
+<td>On</td>
+<td>On, Off</td>
+</tr>
+<tr>
+<td>Start each change at</td>
+<td>The gist</td>
+<td>The gist, Before and after, The characters</td>
+</tr>
+<tr>
+<td>Name the characters that changed</td>
+<td>On</td>
+<td>On, Off (leave punctuation to the screen reader)</td>
+</tr>
+<tr>
+<td>Longest quote of code in a sentence</td>
+<td>60 characters</td>
+<td>20 to 200</td>
+</tr>
+<tr>
+<td>Say repeated changes once</td>
+<td>On, from 3 places</td>
+<td>On (from 2 to 10 places), Off</td>
+</tr>
+<tr>
+<td>Find code that moved</td>
+<td>On, from 3 lines</td>
+<td>On (from 2 to 20 lines), Off</td>
+</tr>
+<tr>
+<td>Fold generated and lock files</td>
+<td>On</td>
+<td>On, Off</td>
+</tr>
+<tr>
+<td>Formatting-only changes</td>
+<td>Show</td>
+<td>Show, Skip when walking, Hide</td>
+</tr>
+<tr>
+<td>Formatting to ignore</td>
+<td>Indentation, end-of-line spaces, blank lines, line endings,
+re-wrapped lines (all on)</td>
+<td>each on or off</td>
+</tr>
+<tr>
+<td>Treat spacing as meaning in Python, YAML, Makefiles, Markdown lists
+and code</td>
+<td>Always (not a preference)</td>
+<td>not offered: a safety rule</td>
+</tr>
+<tr>
+<td>Braille: compact change forms</td>
+<td>On</td>
+<td>On, Off (the full sentence)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Patch lines and sounds</strong></p>
+<table>
+<thead>
+<tr>
+<th>Preference</th>
+<th>Default</th>
+<th>Choices</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Line marks</td>
+<td>Words</td>
+<td>Words, Symbols (as today)</td>
+</tr>
+<tr>
+<td>Sound cues for added and removed lines</td>
+<td>Off</td>
+<td>On, Off</td>
+</tr>
+<tr>
+<td>With sound cues on, drop “Added line” and “Removed line”</td>
+<td>On</td>
+<td>On, Off</td>
+</tr>
+<tr>
+<td>A sound when every change is walked</td>
+<td>On</td>
+<td>On, Off</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Before and After</strong></p>
+<table>
+<thead>
+<tr>
+<th>Preference</th>
+<th>Default</th>
+<th>Choices</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lines of context</td>
+<td>3</td>
+<td>0 to 20</td>
+</tr>
+<tr>
+<td>Line numbers</td>
+<td>On</td>
+<td>On, Off</td>
+</tr>
+<tr>
+<td>Mark changes in the text</td>
+<td>Off (the code exactly)</td>
+<td>Off, Words (“[was: …]”), Symbols (<code>{-…-}</code>)</td>
+</tr>
+<tr>
+<td>Layout</td>
+<td>Two fields</td>
+<td>Two fields, One column</td>
+</tr>
+<tr>
+<td>The other field follows the caret</td>
+<td>On</td>
+<td>On, Off</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deciding</strong></p>
+<table>
+<thead>
+<tr>
+<th>Preference</th>
+<th>Default</th>
+<th>Choices</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What Accept does</td>
+<td>A private checkmark that counts toward the review</td>
+<td>That, or also post a short “Looks good” comment</td>
+</tr>
+<tr>
+<td>When every change in a file is accepted</td>
+<td>Offer to mark the file Viewed</td>
+<td>Offer, Always, Never</td>
+</tr>
+<tr>
+<td>A decline needs a reason</td>
+<td>On</td>
+<td>On, Off</td>
+</tr>
+<tr>
+<td>Next Change skips decided changes</td>
+<td>Off (Next Undecided does that)</td>
+<td>On, Off</td>
+</tr>
+<tr>
+<td>Compose Review starts from the decisions</td>
+<td>On</td>
+<td>On, Off</td>
+</tr>
+<tr>
+<td>Add the tally to the review message</td>
+<td>Off</td>
+<td>On, Off</td>
+</tr>
+<tr>
+<td>Viewed is GitHub’s own Viewed</td>
+<td>On</td>
+<td>On, Off (this computer only)</td>
+</tr>
+<tr>
+<td>Accepting a suggestion</td>
+<td>Commit it after asking</td>
+<td>Commit after asking; collect and commit when I say</td>
+</tr>
+</tbody>
+</table>
+<p><strong>AI</strong></p>
+<table>
+<thead>
+<tr>
+<th>Preference</th>
+<th>Default</th>
+<th>Choices</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Explain This Pull Request</td>
+<td>Available when your own AI is chosen; never automatic</td>
+<td>Available, Hidden</td>
+</tr>
+</tbody>
+</table>
+<h2 id="11-documentation">11. Documentation</h2>
+<p>Documentation is part of the feature, written as it is built:</p>
+<ul>
+<li><strong>GitHub Guide chapter 5</strong> is rewritten as a story:
+“Your first review”, from opening to sending, with every kind of change
+heard once, then the reference sections as they are now.</li>
+<li><strong>A sound gallery</strong>: a page, “What a change sounds
+like”, listing every kind in section 4.2 with its example sentence and
+braille form, so a person can learn the shapes before meeting them.</li>
+<li><strong>A lesson</strong> in Help &gt; Tutorials: review a small
+practice pull request (a fixture repository, so it works offline) with
+five planted changes, one of each size.</li>
+<li><strong>Release notes</strong> tell it as the story it is, with “try
+this” lines.</li>
+</ul>
+<h2 id="12-testing">12. Testing</h2>
+<ul>
+<li><strong>A corpus of real changes</strong>: about 200 hunks taken
+from public pull requests in several languages, each with the expected
+kind and gist, checked into <code>tests/fixtures/pull_requests/</code>.
+The describer must keep passing it; a change to a sentence is a reviewed
+change to the fixture.</li>
+<li><strong>Property tests</strong>: a gist never exceeds its length;
+every description round-trips to the exact lines it came from; nothing
+heuristic is stated as certain.</li>
+<li><strong>Performance</strong>: a 300-file, 20,000-line pull request
+describes in under a second on the reference machine, off the UI thread
+(task manager), with the outline usable while it works. GATE-PERF gains
+a case.</li>
+<li><strong>Screen-reader checks</strong> in <code>docs/qa/</code> for
+every new window and sentence, with NVDA, JAWS, Narrator and
+VoiceOver.</li>
+<li>The existing gates: GATE-13 (no over-announcing), GATE-14 (access
+keys), GATE-BRAILLE, help audits, the dialog contract, and QUILL Lite’s
+coverage gate for every new handler.</li>
+</ul>
+<h2 id="13-phases">13. Phases</h2>
+<p>Each phase ships on its own and is useful on its own.</p>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>What</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The change describer (section 4) with its corpus and its preferences
+(section 10, Hearing changes), used by the diff window’s Differences
+list and Compare Documents. Character vocabulary shared with
+dictation.</td>
+<td>large</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Walking: Next/Previous Change, First/Last, by number, and File
+across the pull request; formatting-only changes shown, skipped or
+hidden (6.7); three depths, comment on this change; the Before and After
+window (section 6.3), shared with Compare Documents.</td>
+<td>large</td>
+</tr>
+<tr>
+<td>3</td>
+<td>The shape sentence and What Is This Pull Request? (without AI).
+Quick replies. Pending comments by gist.</td>
+<td>medium</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Accept and Decline (section 6.6) and the decisions in Compose
+Review; Viewed (GitHub’s own state), Review Progress, finishing well,
+line cues and braille forms.</td>
+<td>large</td>
+</tr>
+<tr>
+<td>4b</td>
+<td>Accepting and declining suggestions as the author (section 7.1),
+including batches.</td>
+<td>medium</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Moves, repeats and generated files across the whole pull request;
+Explain This Pull Request with consent.</td>
+<td>medium</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Docs: chapter 5 as a story, the sound gallery, the practice lesson;
+release notes.</td>
+<td>medium, alongside each phase</td>
+</tr>
+</tbody>
+</table>
+<h2 id="14-decisions">14. Decisions</h2>
+<p>Decided 2026-11-09, on Jeff’s direction “great defaults, and let
+people fine tune”: every open question takes the proposed default, and
+each becomes a preference in section 10.</p>
+<ol type="1">
+<li><strong>Names</strong>: “Next Change”, “Tell Me More”, “Spell the
+Change”, “Before and After”, “What Is This Pull Request?”, “Accept”,
+“Decline”. Still open to a better word from Jeff or testers before phase
+2 ships.</li>
+<li><strong>Line cues</strong>: off by default; a preference.</li>
+<li><strong>Viewed</strong>: GitHub’s own viewed state by default; “this
+computer only” is a preference.</li>
+<li><strong>The AI summary</strong>: in phase 5, a button, never
+automatic; can be hidden.</li>
+<li><strong>Where the describer is used first</strong>: pull requests
+and Compare Documents together.</li>
+<li><strong>The practice repository</strong>: a fixture shipped with
+QUILL, so the lesson works offline.</li>
+<li><strong>What Accept means</strong>: a private checkmark that counts
+toward the review; posting “Looks good” is a preference.</li>
+<li><strong>A decline needs a reason</strong>: yes by default; a
+preference.</li>
+<li><strong>Accepting a suggestion</strong>: commit after asking, as
+GitHub does; collecting first is a preference.</li>
+<li><strong>Mark changes</strong>: off by default, so the fields hold
+the code exactly; Words or Symbols when turned on.</li>
+</ol>
+<h2 id="15-progress-log">15. Progress log</h2>
+<ul>
+<li><strong>2026-11-09.</strong> Plan written, from GitHub Guide chapter
+5, <code>diff_lines.py</code>, <code>compare_service.py</code> and
+<code>pr_summary.py</code> as they are on <code>main</code>. Nothing
+built yet.</li>
+<li><strong>2026-11-09, later still.</strong> Jeff: “we need ways to go
+to the next and previous change and we should be able to ignore
+formatting only changes if configured … Sometimes it matters, other
+times it does not.” 6.1 now covers moving between changes everywhere
+(first, last, by number, across files, at the ends); 6.7 defines
+formatting only, the three treatments, the per-review key and the safety
+rule; the preferences gained both.</li>
+<li><strong>2026-11-09, later.</strong> Jeff: “go with great defaults
+but allow the user to fine tune this the way they wish.” Section 10
+lists every preference with its default; section 14 records the
+decisions.</li>
+<li><strong>2026-11-09, the same day.</strong> Jeff: “users should also
+be able to richly look at the before and after scenarios and arrow
+through the text … Accept and reject buttons should be provided … they
+need to be able to analyze for themselves.” Added principles 9 and 10,
+the Before and After window (6.3), Accept and Decline (6.6), accepting
+and declining suggestions (7.1), their keys, phases and four more
+decisions.</li>
+</ul>
+</main>
+</body>
+</html>

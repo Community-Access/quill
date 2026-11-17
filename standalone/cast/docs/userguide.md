@@ -126,7 +126,7 @@ Behind every podcast is a **feed**, a web address where the podcast lists its
 episodes. You rarely need to know it, because Cast can find a podcast by its
 name. It is handy to know the word if someone sends you one.
 
-An episode you have not listened to yet is **unheard**. Cast uses that word
+An episode you have not listened to yet is **unplayed**. Cast uses that word
 everywhere, so you always know what is new to you.
 
 ### Opening Cast for the first time
@@ -216,7 +216,7 @@ Now for the good part.
 1. Press **Ctrl+Shift+S** to go to **Podcasts**. This is your library, laid
    out as a tree with one row for each podcast you follow.
 2. Arrow to the podcast you followed a moment ago.
-3. Press **Enter**. Cast plays its next unheard episode and tells you what it
+3. Press **Enter**. Cast plays its next unplayed episode and tells you what it
    is playing.
 
 If you have heard every episode already, Enter plays the most recent one and
@@ -501,7 +501,7 @@ straight there from anywhere in the window.
 | Place | What it holds | Key |
 |---|---|---|
 | Inbox | New episodes waiting for you to decide about them | Ctrl+Shift+I |
-| New Episodes | Every unheard episode | Ctrl+Shift+W |
+| New Episodes | Every unplayed episode | Ctrl+Shift+W |
 | Continue Listening | Episodes you stopped partway through | Ctrl+Shift+L |
 | Favorites | Your favorite podcasts | Alt+Shift+V |
 | Playlists | Your playlists | Alt+Shift+Y |
@@ -605,12 +605,12 @@ what it did. In the Play Queue it takes the episode out of the queue. In
 Downloads it deletes the saved file, and you can still stream the episode. In
 Continue Listening it forgets your place, so the episode starts from the top
 next time. In the Inbox it clears the episode out of the Inbox, and it is
-still unheard in its podcast.
+still unplayed in its podcast.
 
 Two choices on the View menu change what every list shows:
 
-- **View > Show** narrows every list at once: All Episodes, Unheard Only,
-  Started Only, Downloaded Only or Played Only. Choose Unheard Only and every
+- **View > Show** narrows every list at once: All Episodes, Unplayed Only,
+  Started Only, Downloaded Only or Played Only. Choose Unplayed Only and every
   list hides what you have already heard.
 - **View > Sort Episodes** puts them in the order you like: newest first,
   oldest first, by title, or by length with **Longest First** and **Shortest
@@ -626,12 +626,20 @@ the Play Queue included, you can select several and act on them together.
 2. Select the episodes you want:
    - **Shift+Up** or **Shift+Down** extends the selection.
    - **Ctrl+Space** adds or removes the episode under the cursor.
-   - **Ctrl+A** selects the whole list.
+   - **Ctrl+A** selects the whole list, and Cast says how many that is.
+   - **Alt+Shift+I** inverts the selection: what was selected is not, and
+     what was not is.
    Cast counts as you go.
 3. Press **Shift+F10**. The menu opens with actions for the whole selection:
-   add them to the queue, download them, mark them played, add them to a
-   playlist, remove their downloaded copies, or file them to an Inbox folder.
+   add them to the queue, download them, mark them played or unplayed, add
+   them to a playlist, remove their downloaded copies, or file them to an
+   Inbox folder. **Select All** and **Invert Selection** are on the same menu.
 4. Choose one. Cast tells you how many it did.
+
+> **QUILLBee's tip:** Catching up on a podcast with 400 old episodes and only
+> three worth keeping? Press Ctrl+A, then Ctrl+Space on the three to keep,
+> then Alt+Shift+I. Now only the other 397 are selected, ready for **Mark
+> 397 Episodes as Played**.
 
 Removing downloaded copies deletes only the files. The episodes stay in your
 library with your place in each, ready to download again whenever you like.
@@ -677,7 +685,7 @@ When some are unread, **Help > Notifications...** says how many, such as
 podcasts inside them. Try it now: press **Ctrl+Shift+S** and arrow down
 through the podcasts you follow. In the tree:
 
-- **Enter** on a podcast plays its next unheard episode. This is the one I
+- **Enter** on a podcast plays its next unplayed episode. This is the one I
   use every morning.
 - **Right Arrow** opens a podcast to show its episodes, newest first. Left
   Arrow closes it again.
@@ -696,7 +704,7 @@ through the podcasts you follow. In the tree:
   Stop and **Remove Download**.
 
 When your library grows, **View > Hide Caught-Up Podcasts** (Ctrl+Shift+H)
-takes the podcasts with nothing unheard out of the tree, so what is left is
+takes the podcasts with nothing unplayed out of the tree, so what is left is
 what has something new for you. Chapter 4, Finding podcasts you will love,
 shows how to make folders and file podcasts into them.
 
@@ -943,9 +951,12 @@ with a long list of credits. Cast can skip them for you, every time.
 4. Press **Save** (Ctrl+S), then **Close**.
 
 The intro skip only happens when an episode starts from the beginning, so
-picking up halfway through never throws you past where you were. When Cast
-stops early for the outro, it treats the episode as finished and moves on to
-whatever comes next. The same two settings are in Preferences > Playing if you
+picking up halfway through never throws you past where you were. The outro skip
+works the same gentle way: it only happens when you listen your way into the
+last stretch. Pick up an episode you left during its credits, or move into
+them yourself to catch a last sentence, and you hear the rest. An episode
+shorter than the skip plays in full. When Cast stops early for the outro, it
+treats the episode as finished and moves on to whatever comes next. The same two settings are in Preferences > Playing if you
 want them for every podcast.
 
 #### Scanning forward
@@ -1154,7 +1165,11 @@ roar. **Sound Enhancements** lets you shape the sound.
    sliders. Up is more, unless you chose the Windows keys in Slider Keys
    (see "Which way the arrow keys move a slider", below).
 4. Check **Even Out Volume** to bring quiet and loud parts closer together.
-   It is lovely for a laughing guest and a softly spoken host.
+   It is lovely for a laughing guest and a softly spoken host. How hard it
+   works is **How much to even out the volume**, in Preferences > Playing or
+   Settings for This Podcast: **Light** (the start), **Balanced**, or
+   **Strong**, which brings a whisper nearly up to a shout for a car or a
+   noisy kitchen. These are the same three levels as Earshot on the iPhone.
 5. Press **Apply** (Alt+Y). Playback picks up at the same spot with the new
    sound, and the window stays open so you can try something else.
 6. When it sounds right, press **Close**, Escape or Ctrl+W. You are back where
@@ -1234,6 +1249,19 @@ Two switches in Preferences > Playing decide what happens at the end: **Play
 the next episode in the Play Queue**, which is on, and **When the queue is
 empty, keep going with the same podcast**, which is off until you turn it on.
 With both off, Cast stops at the end of each episode.
+
+Two more switches in the same section shape the queue itself:
+
+- **Keep finished episodes in the Play Queue** leaves a finished episode where
+  it was, its row ending ", played", instead of taking it out. Missed the last
+  few minutes while you carried the shopping in? It is one Enter away. Playing
+  on steps over finished episodes, and Delete in the queue still removes one.
+- **At the end of the queue, start again from the first unplayed episode**
+  carries on from the top of the queue when the last episode finishes,
+  skipping anything you have finished. It never plays a finished episode
+  again, so it cannot go round in circles.
+
+Both start off, just as they do in Earshot.
 
 If you notice a pause between one episode and the next, turn on **Start
 loading the next episode before this one ends**, in the same section. Cast
@@ -1535,7 +1563,15 @@ beginning if you ever play it again.
    through."
 3. Press **Enter** to carry on from that point.
 4. Press **Delete** on an episode you are not going back to. Cast forgets your
-   place and takes it off the list, and the episode stays unheard.
+   place and takes it off the list, and the episode stays unplayed.
+
+An episode you stop in its last minute counts as finished, so it is marked
+played and leaves this list rather than waiting here at 99 percent. That
+covers stopping, switching to another episode, or closing Cast during the
+closing credits. Pausing never does: a pause keeps your place. To change how
+close to the end counts, set **Count as finished when stopped within the
+last** in Preferences, or for one podcast in Settings for This Podcast. Zero
+means only playing to the very end counts.
 
 If your place in an episode came from another device, the row says so at the
 end: "last played on Kitchen laptop", or "last played on Earshot" when it came
@@ -1556,7 +1592,7 @@ Two more ways back:
 ### Clearing out a podcast
 
 You have fallen behind on a podcast and want a fresh start, without forty
-unheard episodes staring at you.
+unplayed episodes staring at you.
 
 1. Select the podcast, or play one of its episodes.
 2. Press **Alt+Shift+E** (Episode > Mark All as Played). In the Command
@@ -1569,7 +1605,7 @@ me again** and Cast stops asking.
 
 For one episode at a time, press Shift+F10 on it and choose **Mark as
 Played**. On an episode you have already heard, the same row reads **Mark as
-Unheard**, which puts it back among the new ones, handy when you want to hear
+Unplayed**, which puts it back among the new ones, handy when you want to hear
 it again or marked it by mistake.
 
 ### Everything about what is playing
@@ -1718,6 +1754,9 @@ called "Book Club". A quick look saves you following the wrong one.
 2. Read **About this podcast** (Alt+A): its own description, as text you can
    arrow through.
 3. Press **Alt+R** for **Recent episodes**, the ten newest with their dates.
+4. Press **Alt+D** for **Episode description**: what the episode you chose in
+   Recent episodes is about. Arrow to another episode and its description
+   takes its place.
 
 Between them, these tell you whether it is the one you meant, whether it is
 still running, and whether it is in your language. Press **Follow** if it is,
@@ -2131,7 +2170,7 @@ rows stay in place rather than the whole library being cleared and rebuilt.
 
 In the tree:
 
-- **Enter** on a podcast plays its next unheard episode.
+- **Enter** on a podcast plays its next unplayed episode.
 - **Right Arrow** opens a podcast to show its episodes.
 - **F2** on a folder renames it.
 - **Delete** on a folder removes the folder and moves its podcasts out of
@@ -2141,10 +2180,10 @@ In the tree:
 A folder is a good place to listen from, too. A folder always includes any
 folders inside it. Press Shift+F10 on one for:
 
-- **Play All Unheard**, which queues the newest unheard episode from each
+- **Play All Unplayed**, which queues the newest unplayed episode from each
   podcast in it and starts playing. One from each keeps the queue a sensible
   length.
-- **Add All to Queue**, for every unheard episode in it.
+- **Add All to Queue**, for every unplayed episode in it.
 - **Move Up** and **Move Down**, which move the folder among its neighbours.
   Cast tells you where it is now, such as "News, 2 of 5".
 - **Export This Folder as OPML...**, to share one folder and what is inside
@@ -2179,13 +2218,13 @@ press Escape, listen to the library, and come back. Close keeps everything.
     folders in the way.
   - **Folders and podcasts together, by name**. Folders and podcasts mixed in
     one alphabetical list.
-- **Sort podcasts by**: title A to Z or Z to A, most unheard first, recently
+- **Sort podcasts by**: title A to Z or Z to A, most unplayed first, recently
   updated first, or your own order.
 - **Sort folders by**: your own order (the one Move Up and Move Down make),
-  name A to Z or Z to A, most unheard first, or most podcasts first.
+  name A to Z or Z to A, most unplayed first, or most podcasts first.
 - **Folders start** open, showing their podcasts, or closed until you open
   one.
-- **Counts say** how many episodes are unheard, how many podcasts a folder
+- **Counts say** how many episodes are unplayed, how many podcasts a folder
   holds, both, or nothing at all, if you would rather hear just the names.
 - **Leave out folders with nothing in them** keeps empty folders out of the
   way. They come back the moment you file a podcast in one.
@@ -2205,7 +2244,7 @@ never leaves any out.
 
 > **QUILLBee's tip:** A big library gets shorter still with View > Hide
 > Caught-Up Podcasts (Ctrl+Shift+H), which leaves out every podcast with
-> nothing unheard. It's a check item on the View menu, so the same key brings them
+> nothing unplayed. It's a check item on the View menu, so the same key brings them
 > all back. And if the Podcasts place ever looks emptier than you remember,
 > that check mark is the first thing to look at.
 
@@ -2372,7 +2411,7 @@ New Episodes place and choose **Mark All as Played...**. Cast asks first.
 
 ### The Inbox
 
-The **Inbox** (View > Inbox, Ctrl+Shift+I) holds the unheard episodes of the
+The **Inbox** (View > Inbox, Ctrl+Shift+I) holds the unplayed episodes of the
 podcasts you send there. It is a place for sorting, so everything you do in it
 is about deciding:
 
@@ -2380,7 +2419,7 @@ is about deciding:
 - Space adds it to the Play Queue.
 - Shift+F10 and **File to Inbox Folder...** puts it aside for later, which the
   Inbox folders section explains.
-- Delete takes it out of the Inbox. It stays unheard in its podcast's own
+- Delete takes it out of the Inbox. It stays unplayed in its podcast's own
   list.
 - **Mark All as Played...**, on the Inbox place's Applications key menu,
   clears the lot when you are starting fresh.
@@ -2457,7 +2496,7 @@ Any podcast can have its own limits in Settings for This Podcast
 (Ctrl+Alt+,), so a daily news show can keep three while a weekly one keeps
 everything.
 
-Trimming never deletes anything. A trimmed episode stays unheard in its
+Trimming never deletes anything. A trimmed episode stays unplayed in its
 podcast's own list, downloaded file and all. Episodes you have started,
 queued, or filed into an Inbox folder are never trimmed and do not count
 toward the limit.
@@ -2482,7 +2521,7 @@ Ways to add to it:
   one that is playing. **Play Next** on an episode's menu (Shift+F10) does the
   same.
 - On a folder in the Podcasts place, choose **Add All to Queue** for every
-  unheard episode in it.
+  unplayed episode in it.
 - In the Notifications window, choose **Add to Queue** on a new-episode
   notice.
 
@@ -2513,15 +2552,21 @@ The Applications key on the Play Queue place offers:
   them.
 
 When you just want something to listen to, open the Command Palette
-(Ctrl+Shift+P) and type "unheard". **Play an Unheard Episode (newest)** plays
+(Ctrl+Shift+P) and type "unplayed". **Play an Unplayed Episode (newest)** plays
 the next unstarted episode in your queue if there is one, then looks in the
 Inbox, then everywhere else, and picks the newest you have not started.
-**Play an Unheard Episode (oldest)** looks in the same order but picks the
+**Play an Unplayed Episode (oldest)** looks in the same order but picks the
 oldest, which suits a podcast you are working through from the start.
 
 If your queue is long, **Group the Play Queue by** in Preferences > The
 window clusters it by podcast or by folder. The play order does not change,
 and each group header says what it is: "News, group, 4 episodes".
+
+A group header stands for its whole group. On a header, **Move to Top** and
+**Move to Bottom** move every episode in the group together, in the order they
+were in. **Mark for Move** on a header picks the whole group up; select another
+header or an episode, then **Move Marked Above** or **Move Marked Below** puts
+the group there. Cast tells you how many episodes moved.
 
 If you would rather be walked through it, Help > Tutorials has a lesson called
 **The Queue**. It covers lineups and expiry as well.
@@ -2535,7 +2580,7 @@ the Inbox. **Stop Auto-Queueing New Episodes** on the same menu turns it off.
 You can also check it in the podcast's Settings for This Podcast.
 
 Starting a series from the beginning? In the same window, set **Auto-Queue
-takes the** to **Oldest unheard episode**. Cast then queues the podcast one
+takes the** to **Oldest unplayed episode**. Cast then queues the podcast one
 episode at a time from the start, instead of the newest first.
 
 #### Lineups
@@ -2551,7 +2596,7 @@ and have it back whenever you want.
    Tuesday: 5 episodes, in this order."
 
 Next Tuesday, choose **Apply Lineup...** and pick the name. The lineup's
-episodes that are still unheard move to the front in your order,
+episodes that are still unplayed move to the front in your order,
 and the rest of your queue waits behind them. Nothing is thrown away. Cast
 tells you how many it applied and how many it skipped because you had
 already heard them. Saving under a name you already used replaces that lineup.
@@ -2994,7 +3039,7 @@ Edit Rules to see how it is made. Then try your own.
    Playlist...**. Give it a name.
 2. Under **Shows**, check the podcasts to include. None checked means every
    podcast.
-3. Choose an **Episode status** (Alt+S), such as unheard.
+3. Choose an **Episode status** (Alt+S), such as unplayed.
 4. Fill in any of the rest, leaving 0 for "any":
    - **Published within days** (Alt+D), for recent episodes only.
    - **Minimum minutes** (Alt+M) and **Maximum minutes** (Alt+X), for
@@ -3396,13 +3441,20 @@ chapter where you would use them, and F1 on any row tells you more.
 - **Bass, in decibels**, **Middle, in decibels** and **Treble, in
   decibels**: the shape of the sound.
 - **Even out volume**: bring quiet and loud parts closer together.
+- **How much to even out the volume**: Light, Balanced or Strong.
 - **Shorten silences** and **How much silence to shorten**: trim the pauses.
 - **Skip forward by** and **Skip back by**: how far Ctrl+Right and Ctrl+Left
   jump.
 - **Skip the first** and **Stop this far before the end**: skip intros and
   outros.
+- **Count as finished when stopped within the last**: how close to the end
+  stopping marks an episode played. One minute unless you change it.
 - **Play the next episode in the Play Queue** and **When the queue is empty,
   keep going with the same podcast**: what happens when an episode ends.
+- **Keep finished episodes in the Play Queue**: leave a finished episode in
+  the queue, marked played.
+- **At the end of the queue, start again from the first unplayed episode**:
+  carry on from the top of the queue.
 - **Start loading the next episode before this one ends**: no pause between
   episodes.
 - **Sleep timer starts at (minutes, 0 = off)**: what the Sleep Timer offers
@@ -3434,7 +3486,7 @@ chapter where you would use them, and F1 on any row tells you more.
 - **When I follow a podcast, also fetch** and **How many, or how many
   months**: how
   much of a podcast's past to bring in when you follow it.
-- **Auto-Queue takes the**: the newest episode, or the oldest unheard one.
+- **Auto-Queue takes the**: the newest episode, or the oldest unplayed one.
 - **Fetch transcripts**: never, when an episode arrives, when you download
   it, or also make one yourself when the podcast has none.
 - **Follow permanent feed redirects**: let a podcast that has moved update
@@ -4055,13 +4107,13 @@ which it used, because a summary of the show notes is not a summary of what
 was said.
 
 **Build Me a Listening Run** (B). "I have 40 minutes." Type how many minutes
-you have, and AI help picks unheard episodes from your Inbox and New Episodes
+you have, and AI help picks unplayed episodes from your Inbox and New Episodes
 that fit, in an order worth hearing. Cast measures the time itself, so the run
 really fits. Review the list, then Apply Selected adds them to the end of your
 Play Queue.
 
 **Smart Playlist from a Sentence** (T). Describe the playlist you want, such as
-"unheard news under 20 minutes from this week". Cast shows the rules it would
+"unplayed news under 20 minutes from this week". Cast shows the rules it would
 save, one per row, in plain words. Apply Selected saves the smart playlist;
 you can change its rules later like any other smart playlist. A podcast or
 folder you named that Cast cannot find is left out and said.
@@ -4145,7 +4197,10 @@ on your computer and nowhere else.
 1. Press **Ctrl+Alt+Shift+S** (Episode > Listening Statistics).
 2. In **Period** (Alt+P), choose this week, this month, this year, or all
    time.
-3. Tab to the **Listening report** (Alt+R) and arrow through it line by line.
+3. If you file podcasts in folders, **Folder** (Alt+F) narrows the report to
+   one folder and every folder inside it, or to podcasts in no folder at all
+   ("Unfiled"). A podcast filed in two places is counted once.
+4. Tab to the **Listening report** (Alt+R) and arrow through it line by line.
 
 The report tells you how long you listened, how much time faster playback
 gave back to you, how many episodes you finished, and your podcasts with the
@@ -4322,6 +4377,13 @@ place never jumps while you are listening. Turn on **Sync when playback
 stops, as well** to send your place every time you pause. When the two
 computers disagree, the most recent place wins, so if you went back to hear
 something again, that is where you will be.
+
+If this computer's own file in the shared folder has been changed by something
+else since Cast last wrote it, such as a restore from a backup or a copy from
+another computer, Cast leaves it exactly as it is and tells you, rather than
+writing over it. Move that file out of the folder's devices folder and Cast
+writes a fresh one the next time it syncs. If Cast cannot write its file at
+all, it says that too, so your place never quietly stops travelling.
 
 With the plain file, **Include episode and file names** lets Cast name an
 episode when it tells you about a disagreement. Turn it off if you would
@@ -4766,7 +4828,7 @@ keeping watch, explains queue expiry and Inbox limits.
 #### The Inbox is missing episodes
 
 A podcast's Inbox limits can move older episodes out of the Inbox. They are
-still unheard in the podcast's own episode list, and nothing is deleted.
+still unplayed in the podcast's own episode list, and nothing is deleted.
 
 #### A download disappeared
 
@@ -4833,7 +4895,7 @@ matching, or never. And whatever the rules say, **your hands win**. What you
 add stays, what you keep stays, and what you remove never comes back.
 
 A weekday might look like this: open Lineups, arrow to Commute, press Enter on
-the first episode, and Cast plays its short unheard episodes one after another
+the first episode, and Cast plays its short unplayed episodes one after another
 through the Play Queue, with yesterday's already gone because you heard them.
 
 Your Lineups are shared with Quill Radio. Make one in Cast and it is there when
@@ -5025,7 +5087,7 @@ Adding something the Lineup already holds makes it stay until you remove it,
 and adding something you removed earlier takes it off Removed Items.
 
 A **podcast** in a Lineup stands for its next episode: playing it plays the
-podcast's next unheard episode, so a Lineup of five podcasts you follow is
+podcast's next unplayed episode, so a Lineup of five podcasts you follow is
 always five things worth hearing.
 
 ### Arrange the items
@@ -5297,7 +5359,7 @@ While it plays:
 - **Stop After This Item** (Ctrl+Alt+S) answers that in Cast the sleep timer
   does this: choose End of Episode in the Sleep Timer (Ctrl+Alt+T), or press
   **Ctrl+Alt+Shift+T** in the main window.
-- A **podcast** in a Lineup plays its next unheard episode.
+- A **podcast** in a Lineup plays its next unplayed episode.
 
 #### What Cast sends to Quill Radio
 
@@ -5335,7 +5397,7 @@ has rules, they are kept.
 1. Press the Applications key on the Play Queue place and choose **Apply
    Lineup...**.
 2. Choose a Lineup. Only Lineups with episodes in them are offered.
-3. The Lineup's episodes that are still unheard move to the front of the
+3. The Lineup's episodes that are still unplayed move to the front of the
    queue in its order, and the rest of your queue waits behind them. Nothing
    is thrown away.
 4. Cast tells you how many it applied and how many it skipped because you had
@@ -5554,7 +5616,7 @@ nothing; type "back up" in the Command Palette instead and press Enter.
 
 | Action | Key |
 | --- | --- |
-| Play the podcast's next unheard episode | Enter |
+| Play the podcast's next unplayed episode | Enter |
 | Open a podcast to show its episodes | Right Arrow |
 | Unfollow a podcast (Cast asks first) | Delete |
 | Remove a folder, moving its podcasts out | Delete |
@@ -5575,6 +5637,8 @@ Playlists, Enter opens a playlist.
 | Remove from this place (stays in your library) | Delete |
 | Rename | F2 |
 | Quick Actions 1 to 9 | Ctrl+1 to Ctrl+9 |
+| Select every episode in the list | Ctrl+A |
+| Invert the selection | Alt+Shift+I |
 | The episode's menu | Shift+F10 or the Applications key |
 
 ### In Notifications

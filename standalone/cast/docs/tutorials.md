@@ -63,7 +63,7 @@ Follow your first podcast, play one of its episodes, pause it, skip around in it
    - You should hear: Now following, the podcast's name, and how many episodes it has.
    - Worth knowing: Follow ACB Media Podcasts on the Podcasts menu follows ACB Media's whole directory in one step, and Import OPML in the Add Podcast window brings your list across from another app. File reading and planning happen in the background; imported subscriptions stay in your library if you stop the optional reachability check.
 
-4. **Play its next unheard episode.** Now for the good part. Go to Podcasts, your library, with one row for each podcast you follow. Arrow to the one you just followed and press Enter. Cast plays its next unheard episode. Want a particular one? Right Arrow opens the podcast so you can pick from its episodes, newest first.
+4. **Play its next unplayed episode.** Now for the good part. Go to Podcasts, your library, with one row for each podcast you follow. Arrow to the one you just followed and press Enter. Cast plays its next unplayed episode. Want a particular one? Right Arrow opens the podcast so you can pick from its episodes, newest first.
    - Keys: Ctrl+Shift+S, Enter, Right Arrow
    - You should hear: The episode Cast is playing, then the audio.
 
@@ -160,7 +160,7 @@ Find a podcast, an episode or one of your own notes by typing a word or two. The
    - Keys: Escape
    - You should hear: Your place again, with the cursor where you left it.
 
-6. **Narrow every list instead.** When you want fewer rows rather than one row, View, Show narrows every list at once: All Episodes, Unheard Only, Started Only, Downloaded Only or Played Only. View, Sort Episodes puts them in the order you like.
+6. **Narrow every list instead.** When you want fewer rows rather than one row, View, Show narrows every list at once: All Episodes, Unplayed Only, Started Only, Downloaded Only or Played Only. View, Sort Episodes puts them in the order you like.
    - Keys: Alt+V
    - You should hear: Each list showing only what you chose.
 
@@ -276,11 +276,11 @@ Choose which podcasts send new episodes to the Inbox, then sort through it like 
    - You should hear: The podcast's menu, then Cast confirming the change.
    - Worth knowing: Would you rather have nearly everything in the Inbox? In Preferences, under The Inbox, choose Every podcast except the ones I mark.
 
-3. **Open the Inbox.** The Inbox holds the unheard episodes of the podcasts you send there. When Cast opens and something is waiting, this is where it puts you, and the window title tells you how many.
+3. **Open the Inbox.** The Inbox holds the unplayed episodes of the podcasts you send there. When Cast opens and something is waiting, this is where it puts you, and the window title tells you how many.
    - Keys: Ctrl+Shift+I
    - You should hear: Inbox, then the first waiting episode.
 
-4. **Decide about each episode.** The Inbox is for deciding. Enter plays an episode now, Space adds it to the Play Queue, and Delete takes it out of the Inbox. Do not worry: nothing you do here removes an episode from your library. One you delete is still there, unheard, in its podcast.
+4. **Decide about each episode.** The Inbox is for deciding. Enter plays an episode now, Space adds it to the Play Queue, and Delete takes it out of the Inbox. Do not worry: nothing you do here removes an episode from your library. One you delete is still there, unplayed, in its podcast.
    - Keys: Enter, Space, Delete
    - You should hear: Added to the Play Queue, or what Delete did.
 
@@ -335,7 +335,7 @@ Fill the Play Queue, play one next, and move through it while it plays. You will
    - Keys: Shift+F10
    - You should hear: Cast confirming new episodes will be queued.
 
-7. **Save the order as a lineup.** Arrange the queue the way you like it, then choose Save Lineup from the Applications key on the Play Queue place and give it a name, such as Tuesday. Next Tuesday, Apply Lineup moves its unheard episodes to the front in your order.
+7. **Save the order as a lineup.** Arrange the queue the way you like it, then choose Save Lineup from the Applications key on the Play Queue place and give it a name, such as Tuesday. Next Tuesday, Apply Lineup moves its unplayed episodes to the front in your order.
    - Keys: Applications
    - You should hear: The lineup saved; later, how many it applied and skipped.
 
@@ -490,7 +490,7 @@ Make a QUILL Lineup: a list of episodes, and anything else Quill Radio plays, br
    - You should hear: The episode's title, then its audio.
    - Worth knowing: A station, a YouTube item or a file of your own is sent to Quill Radio, which opens if it needs to: Sent to Quill Radio to play.
 
-7. **Save the queue's order as a lineup.** On the Play Queue place, the Applications key offers Save Lineup. Type a name, such as Tuesday, and the queue's order becomes a lineup of episodes you added by hand. Apply Lineup puts its unheard episodes back at the front of the queue later.
+7. **Save the queue's order as a lineup.** On the Play Queue place, the Applications key offers Save Lineup. Type a name, such as Tuesday, and the queue's order becomes a lineup of episodes you added by hand. Apply Lineup puts its unplayed episodes back at the front of the queue later.
    - Keys: Applications
    - You should hear: Saved lineup Tuesday, then how many episodes, in this order.
    - Worth knowing: Saving under a name you already have replaces that lineup's episodes.
@@ -940,11 +940,11 @@ Put your podcasts in folders and in your own order, listen from a whole folder a
    - Keys: Alt+Up, Alt+Down
    - You should hear: Where it moved.
 
-5. **Listen from a whole folder.** On a folder's menu, Play All Unheard queues the newest unheard episode from each podcast in it and starts playing. Add All to Queue adds every unheard episode instead.
+5. **Listen from a whole folder.** On a folder's menu, Play All Unplayed queues the newest unplayed episode from each podcast in it and starts playing. Add All to Queue adds every unplayed episode instead.
    - Keys: Shift+F10
    - You should hear: The first episode playing, and how many were queued.
 
-6. **Hide what you have caught up on.** Hide Caught-Up Podcasts, on the View menu, hides the podcasts with nothing unheard, so only the ones with something new for you are left. Press it again to show them all.
+6. **Hide what you have caught up on.** Hide Caught-Up Podcasts, on the View menu, hides the podcasts with nothing unplayed, so only the ones with something new for you are left. Press it again to show them all.
    - Keys: Ctrl+Shift+H
    - You should hear: Caught-up podcasts hidden, and how many.
 

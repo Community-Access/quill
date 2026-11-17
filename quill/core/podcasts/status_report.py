@@ -34,7 +34,7 @@ def podcast_status_rows(
     return [
         ("Podcasts", "Subscribed shows", str(subscribed)),
         ("Podcasts", "Local shows", str(local)),
-        ("Podcasts", "Unheard episodes", str(unheard)),
+        ("Podcasts", "Unplayed episodes", str(unheard)),
         ("Podcasts", "Now playing", now_playing or "Nothing playing"),
         ("Podcasts", "Play Queue", f"{len(library.queue)} episode(s)"),
         ("Podcasts", "Downloads in progress", str(downloads_active)),

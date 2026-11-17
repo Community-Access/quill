@@ -319,6 +319,31 @@ back. QUILL Lite has the same window, from the same shared code.
   for learning with nothing at stake. It answers only on this computer, its
   Reset says exactly what it deletes, and Help > Tutorials has three lessons
   that use it.
+- **Help that knows WordPress** (2026-11-14). The Workbench answers Alt+F1,
+  Ctrl+F1, Ctrl+Shift+F1, F9 and Shift+F9 the way the GitHub Workbench does,
+  its glossary has 73 words with examples from your own site, and Settings
+  explains what Permalinks and the Discussion rules would actually do. Check
+  for Updates reads each plugin's changelog and tells you when it mentions a
+  security fix or a breaking change, turning a plugin off first asks what
+  depends on it, and Site Health findings gained Explain and Fix....
+- **More lessons** (2026-11-14). Seven more Practice Site lessons, Break It
+  on Purpose (a site that starts with a missing alt text, a broken link, a
+  plugin conflict and a wrong permalink, for you to find and fix), and Your
+  First Week, one short lesson a day for a new site owner.
+- **Fields from more plugins** (2026-11-14). Meta Box, Pods and CMB2 fields
+  have their own page in Properties beside Advanced Custom Fields, list and
+  group fields open in a proper editor instead of raw text, and the Content
+  Model shows every field group and who really registered each type.
+- **More Watches and plainer batches** (2026-11-14). Watches for new shop
+  orders, low stock, a certificate about to run out and plugins that may be
+  abandoned, plus a weekly sentence for each site. Plain-Language Batch
+  understands "older than a year", can move things to the Trash with Undo,
+  and answers "how many" questions without changing anything.
+- **Wider reach** (2026-11-14). By Name turns old shortcodes into blocks,
+  Across Sites covers every kind of thing, old Gravity Forms entries copy
+  into QAF, and Blogger, Medium, Substack and Squarespace exports import as
+  drafts. The Workbench can also save a static copy of a site and tell you
+  who has never signed in.
 
 #### Running the site
 
@@ -594,6 +619,53 @@ guided Forms lessons.
   test mode, the three kinds of amount, providers, publishing and what each
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
+
+### GitHub issue forms, written as plain text (2026-11-16)
+
+A GitHub issue form is the form people fill in when they open an issue. In
+both QUILL and QUILL Lite, Tools > Forms now has **Save As GitHub Issue
+Form...**, which saves the form you are writing as one, and **Open GitHub
+Issue Form...**, which reads one back so you can edit it as plain text in the
+form language. Before saving, a window lists what GitHub's forms cannot hold,
+one line each, such as a signature question or a condition, and says if
+GitHub would refuse the result. Going the other way, what only GitHub has
+(labels, the issue title prefix, ids, an answer shown as code) is kept with
+the form and given back on the next save, so QUILL's own five issue forms go
+to the form language and back unchanged. Nothing is sent anywhere, and both
+work in Safe Mode.
+
+### GitHub Workbench: code owners you can trust, and forms from SurveyJS and XLSForm (2026-11-15)
+
+A CODEOWNERS file can look perfect and protect nothing: GitHub quietly skips an
+owner who does not exist or cannot write, and only tells you after the file is
+on the default branch. The Code Owners window now has **Check Owners**, which
+asks GitHub about every person and team before you save, once each, and lists
+what to fix first: no such account, no such team, or access below write. An
+email address, or an owner GitHub did not answer for, is listed as unchecked,
+never as fine.
+
+Have a survey already built in SurveyJS or XLSForm? **New Template > Issue form
+> From a SurveyJS or XLSForm file...** turns it into a GitHub issue form and
+opens it in the builder, ready to check and save, with a sentence for every
+question GitHub forms cannot hold. And the GitHub guide's chapter 12 now covers
+Templates and community files from top to bottom.
+
+### QUILL Cast: finishing means finished, and Earshot's latest (2026-11-15)
+
+Stop an episode in its last minute and it counts as finished, so Continue
+Listening no longer keeps episodes waiting at 99 percent; how close to the end
+counts is a setting. The rest of the release keeps QUILL Cast in step with
+Earshot on the iPhone: the Play Queue can keep finished episodes and start
+again from the first unplayed one, Ctrl+A and Alt+Shift+I select and invert a
+list of episodes (in QUILL's Podcast Manager too) with bulk Mark as Unplayed,
+compression comes in Light, Balanced and Strong, group headings in the Play
+Queue move their whole group, Preview shows episode descriptions, and Listening
+Statistics narrows to a folder. Episodes are played or unplayed now, never
+heard or unheard. Fixes: the outro skip lets you hear an ending you go back to,
+one bad chapter time no longer loses every chapter, Listening Places never
+writes over a file it did not write and says when a write fails, and Mark as
+Played and Next does the whole finish. The plan of record is
+`docs/design/earshot.md`.
 
 ### Properties for everything in the GitHub Workbench (2026-11-10)
 

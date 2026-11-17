@@ -33,7 +33,7 @@ below names the chapter that shows how to use it.
 | Needs My Attention | What waits on you, from every site | 2 |
 | Sites | A branch for each connected site | 2 |
 | Calendar | Every site's content, a day to a place | 3 |
-| Across Sites | Terms, plugins, themes, people, settings, menus, synced patterns and application passwords on every site, and the Fleet | 9 |
+| Across Sites | Terms, plugins, themes, people, settings, menus, synced patterns, application passwords, starter pages, forms, content types, pages with a role, redirects and spam senders on every site, and the Fleet | 9 |
 | Search | WordPress search results from every site | 2 |
 | Practice Site | A WordPress site on this computer | 2 |
 | Help and Learning | How WordPress Thinks, Words and Keys | 2 |
@@ -71,7 +71,7 @@ Spam, Form Responses, Membership Orders and Watches.
 | Redirects | The Redirection plugin's redirects, and the 404 Log | 10 |
 | Search and Upkeep | Search visibility, sitemap, missed schedules, certificate, who is editing | 8 |
 | Administration Areas | Every part of running a site, and where QUILL handles it | 8 |
-| Content Model | Every content type and taxonomy, and who added it | 8 |
+| Content Model | Every content type, taxonomy and field group, and who added it | 8 |
 | More from This Site | The routes the site's plugins offer, by plugin | 8 |
 
 The Shop's places are Shop Orders, Draft Products, On Sale, Out of Stock,
@@ -121,7 +121,8 @@ last, and is left out below.
   Arrange Items...,
   Earlier Versions..., Default Navigation Menu..., Copy to Site....
 - **Plugin:** Read in Full, Activate or Deactivate, Check on WordPress.org...,
-  Find a Plugin on WordPress.org..., Open in Dashboard.
+  Find a Plugin on WordPress.org..., Pages Using Its Blocks, Open in
+  Dashboard.
 - **Theme:** Read in Full, Activate..., Find a Theme on WordPress.org..., Open
   in Dashboard.
 - **Template or template part:** Read in Full, Edit Block Markup..., Earlier
@@ -134,10 +135,13 @@ last, and is left out below.
 - **Synced pattern:** Read in Full, Copy to Site....
 - **Setting:** Read in Full, Language Pack Status....
 - **Site:** Open This Site, Open on the Site, Form Spam Questions..., Form Spam
-  by Week.
+  by Week, Visitor Words for Forms....
 - **By Name value:** Where It Is Used, Rename Everywhere..., Split..., Merge
-  Into..., Reassign..., Replace Everywhere..., Find Items Missing This Field.
-- **Across Sites row:** Read in Full, Make Them the Same..., Promote to
+  Into..., Reassign..., Replace Everywhere..., Find Items Missing This Field,
+  Convert to Block..., Update Pattern Everywhere..., Detach Copies..., Pages
+  Using Its Blocks.
+- **Across Sites row:** Read in Full, Make Them the Same..., Merge
+  Everywhere..., Remove Everywhere..., Promote to
   Network..., Revoke Everywhere..., Compare Global Styles, Install on Sites
   Missing It..., Open in Dashboard.
 - **Content Audit or Housekeeping finding:** Read in Full, Show Where It Is
@@ -295,15 +299,28 @@ Snapshot... (`Ctrl+Alt+Shift+S`), Read Site as Document (`Ctrl+Alt+D`).
 (`Ctrl+Shift+T`), Run a Saved Request... (`Ctrl+Alt+Q`), Saved Requests,
 Forget a Saved Request... (`Ctrl+Alt+Shift+F`), Plain-Language Batch...
 (`Ctrl+Alt+B`), Practice Site... (`Ctrl+Alt+P`), and the WXR Files submenu:
-Export Site as WXR... and Import WXR as Drafts..., reached with Alt+T, W,
-then E or I.
+Export Site as WXR..., Archive a Static Copy..., Import WXR as Drafts... and
+Import from Blogger, Medium, Substack or Squarespace..., reached with Alt+T,
+W, then E, S, I or B.
 
 **Window:** Switch to Editor (`Ctrl+Shift+E`). **Help:** Help for This View
-(`F1`).
+(`F1`), What Is This? (`Alt+F1`), WordPress Guide (`Ctrl+F1`), Search
+Help... (`Ctrl+Shift+F1`), Workbench Keys (`Alt+Shift+F1`), Say Last Result
+Again (`F9`) and Explain That (`Shift+F9`).
 
 The commands on a row's context menu that are not listed here have no key of
 their own, because they are used now and then. Reach them with the
 Applications key or Shift+F10.
+
+Some of those, by row:
+
+- **A Site Health or broken link row:** Explain (Enter), Fix..., Take Me
+  There and Open in Editor.
+- **A plugin:** What Depends on It, beside Activate or Deactivate.
+- **An explained setting** (Permalinks, the Discussion rules, Search engine
+  visibility and plugin settings): Open Its Documentation and Open in
+  Dashboard.
+- **A Help and Learning topic:** Open (Enter) and Take Me There.
 
 ## Where to next
 

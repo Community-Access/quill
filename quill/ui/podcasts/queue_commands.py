@@ -124,8 +124,13 @@ def mark_played_and_next(host: Any) -> None:
     show = library.find_show(show_id)
     episode = show.find_episode(guid) if show is not None else None
     if episode is not None:
-        episode.played = True
-        episode.position_ms = 0
+        # The whole finish, not just the flag: sync stamp, Quill Radio, the
+        # statistics and delete-after-play (earshot.md F1).
+        from quill.ui.podcasts.finish_bookkeeping import record_finish
+
+        record_finish(host, show, episode, file_still_open=True)
+    if controller is not None:
+        controller.forget_current_episode()
     step, _freed = step_after_finishing(library, show_id, guid)
     if step.kind == "play":
         _play(host, step)

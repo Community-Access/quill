@@ -23,6 +23,7 @@ from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.net import verified_ssl_context
 from quill.core.podcasts import feed_auth, transport
+from quill.core.podcasts.time_values import seconds_to_ms_or_none
 
 _TIMEOUT_SECONDS = 10.0
 _MAX_BYTES = 2_000_000
@@ -123,12 +124,13 @@ def parse_chapters(raw_bytes: bytes) -> list[PodcastChapter]:
         if not isinstance(entry, dict):
             continue
         title = str(entry.get("title", "")).strip()
-        start_time = entry.get("startTime")
-        if not title or not isinstance(start_time, (int, float)) or start_time < 0:
+        # One impossible time drops that chapter, never the list (earshot.md E2).
+        start_ms = seconds_to_ms_or_none(entry.get("startTime"))
+        if not title or start_ms is None:
             continue
         chapters.append(
             PodcastChapter(
-                start_ms=int(round(float(start_time) * 1000)),
+                start_ms=start_ms,
                 title=title,
                 image_url=str(entry.get("img", "") or ""),
                 link_url=str(entry.get("url", "") or ""),

@@ -45,3 +45,16 @@ def test_menu_ids_survive_a_rebuild_and_join_the_accelerator_map() -> None:
     assert mapping["file.new"] == 1
     assert mapping["tools.windows_dictation_toggle"] == first[0]
     assert mapping["tools.windows_dictation_settings"] == first[1]
+
+
+def test_activation_before_the_first_tab_does_not_raise() -> None:
+    """#1836: on macOS the frame is activated before any tab exists, and
+    ``self.editor`` was read before it was ever set -- on every activation."""
+
+    class Frame(WindowsDictationCommandsMixin):
+        pass
+
+    frame = Frame()
+    assert frame._dictation_control() is None
+    assert frame._dictation_targeted() is None
+    frame._dictation_rearm()  # returns quietly instead of raising

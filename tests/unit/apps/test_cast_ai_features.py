@@ -131,7 +131,7 @@ def test_a_sentence_becomes_a_smart_playlist(cast, monkeypatch) -> None:
             return wx.ID_OK
 
         def GetValue(self) -> str:
-            return "unheard Daily episodes"
+            return "unplayed Daily episodes"
 
     monkeypatch.setattr(wx, "TextEntryDialog", _Entry)
     cast.answers.append('{"name": "Daily", "episode_status": "unplayed", "shows": ["The Daily"]}')

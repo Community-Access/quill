@@ -17218,6 +17218,7 @@ own, and a test asserts it.
 | Tools > Forms | Form Payments Setup..., Insert Payment Field..., Verify Payment Setup... | `forms.payments_setup`, `forms.insert_payment`, `forms.verify_payments` |
 | Tools > Forms | Publish Form..., Insert Form Into Page..., Test on Site, Responses... | `forms.publish`, `forms.insert_into_page`, `forms.test_on_site`, `forms.responses` |
 | Tools > Forms | Save As Web Page..., Word Document..., Large Print..., Braille-Ready Text... | `forms.save_*` |
+| Tools > Forms | Save As GitHub Issue Form..., Open GitHub Issue Form... | `forms.save_github`, `forms.open_github` |
 | Tools > Forms | Draft a Form..., Plain Language..., Suggest Autofill Hints... | `forms.draft`, `forms.plain_language`, `forms.suggest_autofill` |
 
 - Rows about the form in front (`DOCUMENT_ONLY`) are enabled only in a form

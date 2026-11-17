@@ -35,6 +35,12 @@ _VERBS = (
     "promote_network",
     "compare_styles",
     "revoke_everywhere",
+    "convert_shortcode",
+    "update_pattern",
+    "detach_pattern",
+    "plugin_block_uses",
+    "merge_everywhere",
+    "remove_everywhere",
 )
 
 

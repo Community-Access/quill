@@ -138,8 +138,8 @@ _DEFERRED: tuple[tuple[str, str], ...] = (
     (r"contact-form-7/v1(/.*)?$", "Contact Form 7"),
     (r"fluentform/v1(/.*)?$", "Fluent Forms"),
     (r"forminator/v1(/.*)?$", "Forminator"),
-    # Field plugins without an adapter (field_plugins.FIELD_PLUGIN_SCOPE): their fields
-    # registered as meta are edited on Properties; their own namespaces are only read.
+    # Field plugins (field_plugins.FIELD_PLUGIN_SCOPE): the routes their adapters use are
+    # covered (workbench_coverage_routes); the rest of their namespaces are only read.
     (r"pods/v1(/.*)?$", "Pods"),
     (r"cmb2/v1(/.*)?$", "CMB2"),
 )

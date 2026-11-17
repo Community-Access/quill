@@ -52,7 +52,7 @@ from quill.core.wordpress.workbench_filter import (
     params_for,
     resolve_terms,
 )
-from quill.core.wordpress.workbench_help import HOW_IT_THINKS, START_HERE, help_rows
+from quill.core.wordpress.workbench_help import HOW_IT_THINKS, START_HERE
 from quill.core.wordpress.workbench_listing import page_limit
 from quill.core.wordpress.workbench_load import SiteContext, load
 from quill.core.wordpress.workbench_node_help import node_help as authored_help
@@ -78,9 +78,11 @@ from quill.ui.wordpress_workbench_bold import WorkbenchBoldCommands
 from quill.ui.wordpress_workbench_commands import WorkbenchRowCommands
 from quill.ui.wordpress_workbench_discovered import WorkbenchDiscoveredCommands
 from quill.ui.wordpress_workbench_editor_side import WorkbenchEditorSide
+from quill.ui.wordpress_workbench_field_lists import WorkbenchFieldLists
 from quill.ui.wordpress_workbench_forms_site import WorkbenchPluginCommands
 from quill.ui.wordpress_workbench_gaps import WorkbenchGapCommands
 from quill.ui.wordpress_workbench_guard import WorkbenchGuard, watch_writes
+from quill.ui.wordpress_workbench_help import WorkbenchHelpCommands
 from quill.ui.wordpress_workbench_lists import WorkbenchListCommands
 from quill.ui.wordpress_workbench_media_replace import WorkbenchMediaReplace
 from quill.ui.wordpress_workbench_menu_items import WorkbenchMenuItemCommands
@@ -90,6 +92,9 @@ from quill.ui.wordpress_workbench_parity import WorkbenchParityCommands
 from quill.ui.wordpress_workbench_people import WorkbenchPeopleCommands
 from quill.ui.wordpress_workbench_people_admin import WorkbenchPeopleAdminCommands
 from quill.ui.wordpress_workbench_people_bulk import WorkbenchPeopleBulkCommands
+from quill.ui.wordpress_workbench_problems import WorkbenchProblemCommands
+from quill.ui.wordpress_workbench_roles import WorkbenchRolesCommands
+from quill.ui.wordpress_workbench_scope_more import WorkbenchScopeMoreCommands
 from quill.ui.wordpress_workbench_sheets import WorkbenchSheetCommands
 from quill.ui.wordpress_workbench_site_check import WorkbenchSiteCheck
 from quill.ui.wordpress_workbench_site_editor import WorkbenchSiteEditorCommands
@@ -116,20 +121,25 @@ _REMOTE = frozenset({"items", "media", "comments", "users", "terms", "patterns",
 
 class WordPressWorkbenchProvider(
     WorkbenchPeopleBulkCommands,  # ahead of WorkbenchPeopleCommands: bulk Change Role, Remove
+    WorkbenchHelpCommands,  # the frame's help hooks and Help and Learning (Part D)
+    WorkbenchProblemCommands,  # Explain, Fix..., Take Me There; What Depends on It (D3)
     WorkbenchModerationCommands,
     WorkbenchEditorSide,
     WorkbenchPeopleAdminCommands,
     WorkbenchSiteTypesCommands,
+    WorkbenchFieldLists,  # Edit List... and Edit Group... on Properties
     WorkbenchSiteCheck,
     WorkbenchStatusCells,
     WorkbenchSearchCommands,
     WorkbenchMediaReplace,  # Media row > Replace File (media_replace)
     WorkbenchGapCommands,  # Earlier Versions, Check for Updates, Check Every Link
     WorkbenchWxrCommands,  # Tools > WXR Files
+    WorkbenchRolesCommands,  # ahead of WorkbenchListCommands: Roles through a role plugin
     WorkbenchListCommands,
     WorkbenchDiscoveredCommands,
     WorkbenchOptionsCommands,
     WorkbenchBoldCommands,
+    WorkbenchScopeMoreCommands,  # ahead of WorkbenchAcrossCommands: convert, merge, remove
     WorkbenchAcrossCommands,
     WorkbenchSweepCommands,
     WorkbenchRowCommands,
@@ -315,7 +325,7 @@ class WordPressWorkbenchProvider(
         """A node's rows, off the UI thread."""
         family, _sep, what = node.loader.partition(":")
         if family == "help":
-            return list(help_rows(what))
+            return list(self.load_help(what))  # words carry this site's examples (D1)
         if family == "sites":
             return [self._site_row(name) for name in self._profiles]
         if family in ("calendar", "watches", "practice"):
@@ -353,6 +363,7 @@ class WordPressWorkbenchProvider(
         with page_limit(self.pages_for_ref(ref)), scope as left:
             rows = load(ctx, node.loader, dict(node.preset), params, dynamic=dynamic)
             self.note_loaded(ref, len(rows))
+            self.remember_rows(rows)  # the glossary's examples come from these
         rows = self.with_update_facts(
             self.with_directory_facts(self.narrow_to_group(dynamic, rows))
         )
@@ -432,6 +443,8 @@ class WordPressWorkbenchProvider(
     # -- plumbing the mixins share ------------------------------------------------
 
     def say(self, text: str) -> None:
+        if text and self.frame is not None:
+            self.frame.last_result = text  # what F9 says again and Shift+F9 explains
         self._announce(text)
 
     @property

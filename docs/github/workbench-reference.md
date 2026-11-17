@@ -959,7 +959,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 310 yes, 1153 planned, 15 not needed and 526 left to GitHub.
+In all: 311 yes, 1152 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2504,7 +2504,7 @@ In all: 310 yes, 1153 planned, 15 not needed and 526 left to GitHub.
 
 #### Teams
 
-32 operations: 12 yes, 4 planned, 16 left to github.
+32 operations: 13 yes, 3 planned, 16 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2520,7 +2520,7 @@ In all: 310 yes, 1153 planned, 15 not needed and 526 left to GitHub.
 | Add or update team membership for a user | `PUT /orgs/{org}/teams/{team_slug}/memberships/{username}` | Yes | Account > Roles and Access > Bulk Access Changes... |
 | List team repositories | `GET /orgs/{org}/teams/{team_slug}/repos` | Yes | Properties (Alt+Enter) on Team |
 | Remove a repository from a team | `DELETE /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}` | Yes | Account > Roles and Access > Bulk Access Changes... |
-| Check team permissions for a repository | `GET /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}` | Planned | Team sheet; Organization sheet > Teams. |
+| Check team permissions for a repository | `GET /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}` | Yes | context menu > Open Template... |
 | Add or update team repository permissions | `PUT /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}` | Yes | Account > Roles and Access > Bulk Access Changes... |
 | List child teams | `GET /orgs/{org}/teams/{team_slug}/teams` | Yes | Properties (Alt+Enter) on Team |
 | Delete a team (Legacy) | `DELETE /teams/{team_id}` | Left to GitHub | Legacy team-by-id route; the Workbench uses the organization and slug route for the same thing. People > My Teams (by organization and slug). |

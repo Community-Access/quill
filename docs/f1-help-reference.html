@@ -1473,7 +1473,7 @@ Read-only.</li>
 <li><code>close</code>: Close Update History.</li>
 </ul>
 <h2 id="quill-cast">QUILL Cast</h2>
-<p>Control coverage: 341 audited sites (245 helped, 96 named-help).</p>
+<p>Control coverage: 343 audited sites (247 helped, 96 named-help).</p>
 <h3 id="every-window-and-what-it-is-for-1">Every window, and what it is
 for</h3>
 <p><strong>AI Usage.</strong> How much each AI you have set up has been
@@ -2057,6 +2057,14 @@ already has.</li>
 <li><code>close_btn</code>: Closes Feed Check and returns to where you
 were, without changing which podcasts you follow.</li>
 </ul>
+<h4
+id="feedpreviewdialog-quilluipodcastsfeed_preview_dialogpy">FeedPreviewDialog
+(<code>quill/ui/podcasts/feed_preview_dialog.py</code>)</h4>
+<ul>
+<li><code>self._episode_description</code>: What the episode selected in
+Recent episodes is about, in the publisher’s own words. Choose another
+episode to read its description.</li>
+</ul>
 <h4 id="firstrundialog-quilluipodcastsfirst_run_dialogpy">FirstRunDialog
 (<code>quill/ui/podcasts/first_run_dialog.py</code>)</h4>
 <ul>
@@ -2141,7 +2149,7 @@ id="managerphase4mixin-quilluipodcastsmanager_phase4py">ManagerPhase4Mixin
 (<code>quill/ui/podcasts/manager_phase4.py</code>)</h4>
 <ul>
 <li><code>self._episode_filter_choice</code>: Which episodes the list
-shows: all of them, only the unheard ones, only what is downloaded, and
+shows: all of them, only the unplayed ones, only what is downloaded, and
 so on. It narrows the list you are looking at and changes nothing about
 the episodes themselves.</li>
 <li><code>self._show_filter_choice</code>: Which podcasts the folder
@@ -2273,7 +2281,8 @@ id="playlistruleswindow-quilluipodcastsplaylist_rules_dialogpy">PlaylistRulesWin
 (<code>quill/ui/podcasts/playlist_rules_dialog.py</code>)</h4>
 <ul>
 <li><code>self._status_choice</code>: Only episodes in this state:
-unheard, in progress or heard. Any status does not narrow anything.</li>
+unplayed, in progress or played. Any status does not narrow
+anything.</li>
 <li><code>self._days_ctrl</code>: Only episodes published within this
 many days. 0 means no limit.</li>
 <li><code>self._min_minutes_ctrl</code>: Only episodes at least this
@@ -2426,6 +2435,9 @@ your listening year, to read or keep. It opens beside this window.</li>
 asking. Nothing else about your library changes.</li>
 <li><code>close_btn</code>: Closes this window and returns to where you
 were.</li>
+<li><code>self._scope_choice</code>: All folders, one folder with every
+folder inside it, or podcasts in no folder. A podcast filed in two
+places is counted once.</li>
 </ul>
 <h4 id="_peerreader-quilluipodcaststranscript_windowpy">_PeerReader
 (<code>quill/ui/podcasts/transcript_window.py</code>)</h4>
@@ -5677,7 +5689,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="github-workbench">GitHub Workbench</h2>
-<p>Control coverage: 354 audited sites (354 helped).</p>
+<p>Control coverage: 356 audited sites (356 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>Add GitHub Token.</strong> Paste a personal access token you
@@ -7476,6 +7488,12 @@ id="codeownersdialog-quilluigithub_template_sheets_dialogpy">CodeownersDialog
 <ul>
 <li><code>look</code>: Say which rule owns the path above, and its
 owners.</li>
+<li><code>check</code>: Ask GitHub whether every owner exists and can
+write to this repository. GitHub skips one that cannot, without saying
+so.</li>
+<li><code>self.findings</code>: One line for each owner: whether it
+exists and can write, what to fix if not, and any that could not be
+checked.</li>
 </ul>
 <h4
 id="githubtimelinedialog-quilluigithub_timeline_dialogpy">GitHubTimelineDialog
@@ -7593,8 +7611,8 @@ id="searchhelpdialog-quilluiworkbench_help_dialogspy">SearchHelpDialog
 <li><code>self.box</code>: Type a few words, such as who can merge or
 re-run. The results below narrow as you type; Enter moves to them.</li>
 <li><code>self.results</code>: Each result says what it is: a place, a
-command with its key, a GitHub word or a task. Enter goes there, runs it
-or reads it.</li>
+command with its key, a glossary word or a task. Enter goes there, runs
+it or reads it.</li>
 <li><code>go</code>: Do the selected result. Enter does the same.</li>
 <li><code>close</code>: Close Search Help. Escape does the same.</li>
 </ul>

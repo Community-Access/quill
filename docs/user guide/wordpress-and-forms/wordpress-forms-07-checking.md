@@ -220,6 +220,12 @@ draft saying you aim for WCAG 2.2 AA, when you last checked the site and
 what it found, and how to reach you about a problem. It is yours to edit,
 and nothing goes to the site until you send it.
 
+A statement says when you last checked, so it goes out of date. Turn on the
+Watch for **an accessibility statement whose facts have changed** in
+Workbench Options, and QUILL tells you when a newer Check the Whole Site has
+found something different and your published statement was saved before it
+(Chapter 8).
+
 ## Where to next
 
 - Previous: [Chapter 6: Comments, categories, tags, people and menus](wordpress-forms-06-comments-people-and-menus.html)

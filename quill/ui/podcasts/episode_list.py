@@ -29,7 +29,7 @@ __all__ = ["CastEpisodeListMixin", "PODCAST_COLUMNS", "NOTICE_COLUMNS"]
 #: The Favorites place's columns (qc.md 4.4): Title, Unheard, Last new episode, Folder.
 PODCAST_COLUMNS: tuple[tuple[str, str, int], ...] = (
     ("title", "Title", 320),
-    ("unheard", "Unheard", 80),
+    ("unheard", "Unplayed", 80),
     ("last_new", "Last new episode", 140),
     ("folder", "Folder", 160),
 )

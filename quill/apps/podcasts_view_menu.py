@@ -186,7 +186,7 @@ class CastViewMenuMixin:
     #: View > Show: the one episode filter, applied to every list (qc.md 4.2).
     _SHOW_FILTERS: tuple[tuple[str, str], ...] = (
         ("all", "&All Episodes"),
-        ("unplayed", "&Unheard Only"),
+        ("unplayed", "&Unplayed Only"),
         ("in_progress", "&Started Only"),
         ("downloaded", "&Downloaded Only"),
         ("played", "&Played Only"),

@@ -8,10 +8,10 @@ from quill.tools import cast_words_audit
 
 def test_the_forbidden_words_are_caught_as_whole_words_only() -> None:
     assert words.offences("Unsubscribe from this show") == ["Unsubscribe"]
-    assert words.offences("Search for unplayed episodes") == ["Search", "unplayed"]
+    assert words.offences("Search for unheard episodes") == ["Search", "unheard"]
     assert words.offences("Researching a podcast") == [], "a whole word, not a substring"
     assert words.offences("Import an OPML subscription list") == [], "the format's own name"
-    assert words.offences("Follow it; find it; unheard.") == []
+    assert words.offences("Follow it; find it; unplayed.") == []
 
 
 def test_the_tree_has_no_unreviewed_offence() -> None:

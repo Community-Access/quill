@@ -2999,13 +2999,17 @@ built in this order, because each piece needs the one before:
      (lp.csedesigns.com/wordpress);
    - every gate.
 
-### 17a.13 Open questions for Jeff
+### 17a.13 Questions for Jeff, answered 2026-11-15
 
-1. File extension for a form document: `.bfl`, or `.form.md` so other editors
-   show it as text?
-2. Should BAF's PHP BFL parser and QUILL's Python one share a conformance
-   suite in the BAF repository, so the two can never disagree?
-3. May the test site install QAF from `S:\code\qaf` for the regression plan?
+Jeff said yes to all three on 2026-11-15.
+
+1. File extension for a form document: **`.qaf`** (17a.17).
+2. BAF's PHP form parser, now QAF's, and QUILL's Python one **share a
+   conformance suite in the plugin's repository**, so the two can never
+   disagree.
+3. The test site **may install QAF from `S:\code\qaf`** for the regression
+   plan. The install itself is a plugin upload in wp-admin on the test site,
+   which Jeff does (section 19, Forms).
 
 ### 17a.14 Is BFL complete? Not yet (checked against BAF's code, 2026-11-04)
 
@@ -5051,11 +5055,83 @@ Asked: "can we also build gravity forms with quill's wordpress features?"
 - Tests: `test_wp_workbench_guard.py` (60), `test_wp_workbench_tiers.py`,
   `test_lite_submenu_letters.py`, and history, GitHub key and Sign Out tests.
 
+### 2026-11-14 overnight: the last WordPress Workbench requirements in code
+
+An audit of every WP-R requirement against the code found 31 built and 14
+partly built or not built. All 14 are now built; what is left is live and
+screen-reader checking (section 19).
+
+- **Help (WP-R-046 to 048).** The WordPress Workbench now answers every help
+  key GitHub's does: Alt+F1, Ctrl+F1, Ctrl+Shift+F1, Alt+Shift+F1, F9 and
+  Shift+F9 (`quill/ui/wordpress_workbench_help.py`,
+  `workbench_help_topics.py`). Help and Learning gained Do Something, The
+  Guide, What Changed and Ask a Person, which only opens a blank message.
+  The glossary has all 73 words D1 names, with examples from the person's
+  own site, and Settings explains Permalinks, the Discussion rules, search
+  engine visibility and plugin settings. Check for Updates reads each
+  plugin's changelog and says plainly when it mentions security fixes,
+  breaking changes or a database update; turning a plugin off first asks
+  the site what depends on it; Site Health and Broken Links rows gained
+  Explain, Fix..., Take Me There and Open in Editor.
+- **Tutorials (WP-R-049).** Seven more Practice Site lessons: menus, adding
+  a person and choosing a role, updating plugins safely, spam and
+  challenges, custom types and fields, staging to live, and Site Sets.
+  Break It on Purpose has five lessons: one sets up the problems, the others
+  fix a missing alt text, a broken link, a plugin conflict and a wrong
+  permalink, each with a check that notices the fix. Tools > Practice Site
+  offers Set Up and Take Away the Lesson Material, which writes only into the
+  Practice Site's own folder and undoes from Change History. Your First Week
+  gives a new site owner seven short daily lessons, nothing destructive by
+  default, and Start Here points to them. Both editors teach all of it.
+- **Fields and the Content Model (WP-R-033, 034, 036, 038).** Properties has
+  Edit List and Edit Group beside list and group custom fields, through the
+  editor's own windows, keeping parts the site does not describe. Meta Box,
+  Pods and CMB2 each have a Properties page (`field_plugins_more.py`,
+  `field_plugins_cmb2.py`), every save checked against the schema and
+  verified after. The Content Model lists field groups from every route's
+  schema and from the field plugins' own definitions, names who registered a
+  type only from evidence the site gives, and otherwise says unknown. Copy to
+  QUILL Site Types copies a definition after a preview and never deletes the
+  original. Custom Post Type UI has no REST API, so its types show as
+  unknown with a note.
+- **Watches, batch and visitor words (WP-R-020, 021, 050).** New Watches for
+  shop orders, low stock, a certificate running out within 30 days (the
+  site's own certificate, once a day, with its own egress entry), plugins
+  that may be abandoned, an out-of-date accessibility statement, and a
+  weekly sentence for each site; each off until checked and silent on its
+  first look. Plain-Language Batch reads ages, moves items to the Trash with
+  Undo, and answers "how many" questions without changing anything. Visitor
+  Words for Forms edits what QAF shows visitors, per site and language.
+- **Scope (WP-R-029, 040, 043, 044).** By Name converts core shortcodes to
+  their blocks, updates or detaches synced patterns, and lists the pages
+  using a plugin's blocks before it is removed. Across Sites covers every
+  kind in the PRD; starter pages and content types are compared but not
+  copied, for written reasons; terms merge or go on every site. Old Gravity
+  Forms entries copy into QAF. Blogger, Medium, Substack and Squarespace
+  exports import as drafts. The Workbench writes a static archive copy, lists
+  who has never signed in, edits roles through a role plugin, and answers
+  questions from the site's own content after consent.
+- **CI.** PyYAML is now a declared base dependency (it shipped only through
+  other packages, so CI lacked it), the Practice Site lock is pinned LF, and
+  five CodeQL findings are fixed in code.
+
+### 2026-11-15: the three Forms questions answered, and QAF pushed
+
+Jeff said yes to all three questions in 17a.13: form files are `.qaf`, the
+two form parsers share one conformance suite in the plugin's repository, and
+the test site may install QAF from `S:\code\qaf`. The two branches this
+record said were waiting to be pushed, `feat/json-form-model` and
+`chore/mit-license`, had already been merged into QAF's main (ac0ea69 and
+cc8d7ed), as had the payments work. QAF's spam work and the builder's next
+pass are committed and pushed on `feat/spam-hold-providers-challenges`
+(72bce84), with 601 PHPUnit tests passing. The QUILL tutorial books were
+checked on main and all six are current.
+
 ## 19. Remaining tasks
 
 **wp-admin parity (9.18), Jeff 2026-11-04, "we should have all of this":**
 
-- [ ] Route gaps (9.17), what remains: everything built on 2026-11-13 (gaps 1, 3, 4, 6, 7, 8, 10, 11, 12 and 13) tried on the live test site and with NVDA and JAWS; and the QUILL tutorial book regenerated (`python -m quill.tools.build_tutorials_reference --write`), which was already out of date before the new lesson.
+- [ ] Route gaps (9.17), what remains: everything built on 2026-11-13 (gaps 1, 3, 4, 6, 7, 8, 10, 11, 12 and 13) tried on the live test site and with NVDA and JAWS. (The tutorial books were checked current on main on 2026-11-15: all six match their lessons.)
 - [ ] Packages 1 to 3, what remains: the Workbench's new commands (Counts by Status, Duplicate as Draft, Empty Trash, Edit Picture, Regenerate Sizes, Attach, Detach, Download, Open in wp-admin, and Properties' Choose from Library and Remove Featured Image) tried on the live test site and with NVDA and JAWS.
 - [ ] Packages 4 and 5, what remains: the new comment and people commands (Comment Counts, Show Its Comments, Empty Comment Trash, Change Role and Remove on several people, Add a Person, Set New Password, Your Profile) tried on the live test site and with NVDA and JAWS.
 - [ ] Packages 6, 7 and 14, what remains: At a Glance, Activity, wp-admin Screens, wp-admin for This Place, the template commands and Additional CSS tried on the live test site (the plugin sentences on a site that has the plugins) and with NVDA and JAWS.
@@ -5066,6 +5142,23 @@ Asked: "can we also build gravity forms with quill's wordpress features?"
 - [ ] **Waiting on Jeff:** finish the Redirection plugin's setup on the test site (Tools > Redirection in wp-admin). Its database was never set up, so it has no groups and refuses to make one ("Invalid group or parameters"), and live check 95 now reports this as needing Jeff. New Redirect in the Workbench offers to make the Redirections group on a site with none, and says to finish the setup when the plugin refuses. Gravity Forms is also not installed there, so checks 104 to 108 and 124 to 126 are skipped.
 - [ ] Jeff's review of `how.md` and its ranked review notes; what he accepts becomes work here, and `how.md` is retired once its content lives in the manual and this record.
 - [ ] The 2026-11-14 leftovers tried on the live test site and with NVDA and JAWS: the masked OOPSpam key and post password, the Gravity Forms filter sent to the site with All and Any, a member's Access page on a PMPro site, Across Sites plugins with WordPress.org's words, the practice questions on Promote to Network, Revoke Everywhere, Install on Sites Missing It and Put Back, and Save Draft on a published post.
+
+- The 2026-11-14 overnight work tried on the live test site and the Practice
+  Site and with NVDA and JAWS: the WordPress help keys and Help and Learning,
+  changelogs in Check for Updates, What Depends on It, Explain and Fix... on
+  Site Health and Broken Links; the new Practice Site lessons, Break It on
+  Purpose (that Playground picks up the lesson material while running) and
+  Your First Week; the new Watches; Plain-Language Batch's ages, Trash and
+  questions; By Name's shortcode conversion and pattern commands; the new
+  Across Sites kinds; the four platform importers; the static archive.
+- **Waiting on QAF:** three routes QUILL now calls that QAF does not offer
+  yet: `qaf/v1/visitor-words` (Visitor Words for Forms), `POST
+  qaf/v1/entries` (Copy Old Entries into QAF) and `qaf/v1/spam/blocklist`
+  (blocked senders across sites). Each says plainly when the site lacks it
+  and sends nothing.
+- **Waiting on a plugin:** role editing is built against `members/v1/roles`;
+  neither Members nor User Role Editor documents a REST API, so this needs a
+  role plugin that offers one, or the route changed to match one that does.
 
 This list is kept current. A task is removed when it is done and checked, and
 the progress log above says what was done. Everything not listed here is
@@ -5093,15 +5186,14 @@ built.
   documentation and need a live install to verify. Backups, security,
   caching, multilingual, courses, stats and the rest each have a disposition
   in Administration Areas; which become first-class is Jeff's call.
-- QUILL Site Types (12b, decision 12): the plugin, then making types and
-  fields from the Content Model.
 
 ### Workbench groundwork (Workbench PRD WP-R-030 to WP-R-034)
 - Run `docs/qa/wordpress-live-run.py` on the branch before it merges:
   taxonomy discovery, Custom Fields lists and groups, and a custom type's
   terms have only met recorded responses.
-- Advanced Custom Fields: send changes back as `{"acf": ...}` and show the
-  fields in Custom Fields; Meta Box, Pods and CMB2.
+- Advanced Custom Fields, Meta Box, Pods and CMB2 pages, and the Content
+  Model's field groups and Copy to QUILL Site Types, tried on a site that has
+  each plugin (built from each plugin's documented REST shape).
 
 ### Every route, and more value (9.16)
 - **Waiting on Jeff:** the icons list, upload in pieces and Regenerate Sizes,
@@ -5116,31 +5208,22 @@ built.
   site is a write on the test host).
 
 ### Forms (17a)
-- Run the Forms regression tests 63 to 68 with BAF on the test site
-  (**waiting on Jeff**, 17a.13 question 3).
-- The plugin's own next pass (Preview, the Accessibility Coach, canvas
-  actions for sections and columns, repeater cards, Convert rewriting
-  conditions); the QAF rename on both sides *(in progress)*.
-  **Waiting on Jeff:** the BAF changes tried in a real
-  WordPress with NVDA and JAWS (this machine has no WordPress).
-- **Payments, waiting on Jeff:** the plugin's `feat/qaf-payments` run with
-  real PHPUnit and the WordPress test suite; installed on a test site with
-  Stripe test keys and a PayPal sandbox app; and the live checks in
+- **Waiting on Jeff:** install QAF from `S:\code\qaf` on the test site
+  (approved 2026-11-15, 17a.13 question 3; a plugin upload in wp-admin), then
+  run the Forms regression tests 63 to 68 against it.
+- The plugin's next pass (Preview, the Accessibility Coach, canvas actions
+  for sections and columns, repeater cards, Convert rewriting conditions) and
+  the spam work are committed and pushed on QAF's
+  `feat/spam-hold-providers-challenges` (72bce84, 601 PHPUnit tests passing);
+  that branch needs its pull request and merge. **Waiting on Jeff:** the QAF
+  changes tried in a real WordPress with NVDA and JAWS.
+- **Payments, waiting on Jeff:** the payments work is on QAF's main. What is
+  left is the run with the WordPress test suite; installing on a test site
+  with Stripe test keys and a PayPal sandbox app; and the live checks in
   `docs/qa/forms-payments-acceptance.md`, including a screen-reader pass
-  through Stripe's Payment Element and PayPal's buttons. Pushing the
-  branch is his call.
-
-- **Waiting on Jeff:** the three questions in 17a.13 (the file extension,
-  answered in 17a.17: `.qaf`; the shared conformance
-  suite, built in BAF's repository so either answer works; installing BAF on
-  the test site), and pushing `feat/json-form-model` in `S:\code\baf` (the
-  guard refuses publishing a branch here), and pushing BAF's
-  `chore/mit-license`, after which it is merged into `feat/json-form-model`.
+  through Stripe's Payment Element and PayPal's buttons.
 
 ### Docs and gates
-- CI green on the pull request, Community-Access/quill#1762 (opened as a
-  draft on 2026-11-05; CI's sharded suite is the gate, the local full suite
-  outruns an hour on this machine). platform_report was 53 of 53 locally.
 
 ### Connecting
 - **Waiting on Jeff:** WordPress.com sign-in, once the client id exists (he

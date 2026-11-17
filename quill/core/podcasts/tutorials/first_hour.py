@@ -72,11 +72,11 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 ),
             ),
             Step(
-                title="Play its next unheard episode",
+                title="Play its next unplayed episode",
                 body=(
                     "Now for the good part. Go to Podcasts, your library, with one "
                     "row for each podcast you follow. Arrow to the one you just "
-                    "followed and press Enter. Cast plays its next unheard episode. "
+                    "followed and press Enter. Cast plays its next unplayed episode. "
                     "Want a particular one? Right Arrow opens the podcast so you can "
                     "pick from its episodes, newest first."
                 ),
@@ -332,7 +332,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Narrow every list instead",
                 body=(
                     "When you want fewer rows rather than one row, View, Show narrows "
-                    "every list at once: All Episodes, Unheard Only, Started Only, "
+                    "every list at once: All Episodes, Unplayed Only, Started Only, "
                     "Downloaded Only or Played Only. View, Sort Episodes puts them in "
                     "the order you like."
                 ),

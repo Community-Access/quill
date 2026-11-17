@@ -1,7 +1,7 @@
 {
   "format": "quillville-picks",
   "version": 1,
-  "updated": "2026-10-29T18:12:02Z",
+  "updated": "2026-11-09T21:00:46Z",
   "title": "QuillVille Community Picks",
   "description": "Stations, podcasts and places the community recommends.",
   "collections": [
@@ -524,6 +524,15 @@
       "title": "Community suggestions",
       "description": "Suggested by the community and approved.",
       "items": [
+        {
+          "id": "super-hit-mix-radio",
+          "type": "stream",
+          "title": "Super Hit Mix Radio",
+          "added": "2026-11-09",
+          "description": "Super Hit Mix Radio is a wide variety station playing tunes from the 50s through today covering many genres. The station is owned by Donald Brown and is a fully licensed Internet station.",
+          "language": "English",
+          "stream_url": "https://streaming.live365.com/a91980"
+        },
         {
           "id": "aircheck-radio",
           "type": "stream",

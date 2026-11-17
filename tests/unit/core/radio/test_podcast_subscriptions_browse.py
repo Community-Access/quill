@@ -187,7 +187,7 @@ def test_a_subscription_with_unplayed_episodes_wears_an_unheard_badge(data_dir) 
     ]
     save_library(data_dir, library)
     nodes = _browse_my_podcasts([], safe_mode=True)
-    assert nodes[0].label == "Aardvark Hour (1 unheard)"
+    assert nodes[0].label == "Aardvark Hour (1 unplayed)"
 
 
 def test_an_episode_with_a_transcript_carries_it_in_its_node_id(data_dir, monkeypatch) -> None:

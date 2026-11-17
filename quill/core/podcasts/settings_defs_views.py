@@ -34,7 +34,7 @@ FOLDER_SORTS = (
     ("custom", "My own order"),
     ("name_az", "Name, A to Z"),
     ("name_za", "Name, Z to A"),
-    ("most_unheard", "Most unheard first"),
+    ("most_unheard", "Most unplayed first"),
     ("most_podcasts", "Most podcasts first"),
 )
 FOLDERS_OPEN = (
@@ -42,7 +42,7 @@ FOLDERS_OPEN = (
     ("closed", "Closed, until you open one"),
 )
 LIBRARY_COUNTS = (
-    ("unheard", "Unheard episodes"),
+    ("unheard", "Unplayed episodes"),
     ("podcasts", "Podcasts in each folder"),
     ("both", "Both"),
     ("none", "No counts"),
@@ -99,13 +99,13 @@ SETTINGS: tuple[SettingDef, ...] = (
         "library_counts",
         "Counts in the library say:",
         "What the number beside each folder and podcast tells you: how many episodes "
-        "are unheard, how many podcasts a folder holds, both, or nothing at all.",
+        "are unplayed, how many podcasts a folder holds, both, or nothing at all.",
         kind=KIND_CHOICE,
         category=CATEGORY_CURATION,
         levels=(LEVEL_GLOBAL,),
         default="both",
         choices=choices(*LIBRARY_COUNTS),
-        aliases=("unheard", "count", "number"),
+        aliases=("unplayed", "unheard", "count", "number"),
     ),
     define(
         "library_hide_empty_folders",

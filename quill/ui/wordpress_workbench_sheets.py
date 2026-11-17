@@ -8,7 +8,8 @@ A mixin on :class:`quill.ui.wordpress_workbench_window.WordPressWorkbenchProvide
   (:class:`quill.ui.workbench_sheet_editor.WorkbenchSheetEditor`). A field the
   person's role or Workbench access cannot change is read only, with the
   reason as its F1 help.
-- **Saving** is :func:`quill.core.wordpress.workbench_edit.save`: the conflict
+- **Saving** is :func:`quill.core.wordpress.workbench_edit.save` (through
+  :func:`~quill.core.wordpress.field_plugins_cmb2.save_with_cmb2`): the conflict
   check on ``modified_gmt``, the write, and the verify after it. A conflict
   sends nothing and asks Use Mine or Keep Theirs.
 - **Alt+Enter on several rows** is the batch sheet (section 9): only the
@@ -33,16 +34,18 @@ from quill.core.wordpress.field_plugins import (
     acf_schema,
     acf_values,
     meta_from_properties,
+    plugin_pages,
     route_properties,
     with_acf_page,
 )
+from quill.core.wordpress.field_plugins_cmb2 import save_with_cmb2
+from quill.core.wordpress.field_plugins_more import with_pages
 from quill.core.wordpress.site import kind_route
 from quill.core.wordpress.workbench_edit import (
     EditConflict,
     EditRefused,
     body_for,
     run_batch,
-    save,
 )
 from quill.core.wordpress.workbench_forms import form_plugins
 from quill.core.wordpress.workbench_moderation import version_of
@@ -150,6 +153,7 @@ class WorkbenchSheetCommands:
         meta: dict[str, Any] = {}
         schema: dict[str, Any] = {}
         acf: dict[str, Any] | None = None  # Advanced Custom Fields, where the site shows it
+        props: dict[str, Any] = {}
         if row.kind == "item":
             post_type = str(fresh.get("type", "") or row.subkind)
             for info in tx.taxonomies_for_type(api, post_type):
@@ -205,6 +209,22 @@ class WorkbenchSheetCommands:
             sheet = with_acf_page(sheet, acf)
             values.update(acf_values(fresh))
             meta = {**meta, **acf_lookup(acf)}
+        if row.kind in ("item", "term", "user", "comment"):  # Meta Box, Pods, CMB2 (WP-R-034)
+            pages = plugin_pages(
+                api,
+                row_kind=row.kind,
+                slug=str(fresh.get("type") or fresh.get("taxonomy") or row.subkind),
+                object_id=row.object_id,
+                properties=props,
+                raw=fresh,
+                namespaces=ctx.info.namespaces if ctx.info is not None else (),
+            )
+            sheet, more, checks = with_pages(sheet, pages)
+            values.update(more)
+            meta = {**meta, **checks}
+            for page in pages:  # CMB2's values as loaded, for Ctrl+Z
+                if page.before:
+                    fresh.setdefault(page.key, {}).update(page.before)
         return sheet, values, fresh, names, meta
 
     def _one_sheet(self, row: WbRow) -> None:
@@ -224,10 +244,16 @@ class WorkbenchSheetCommands:
                 title=sheet_title(row),
                 on_save=on_save if can_save else None,
                 locked=locked,
-                field_buttons=self._featured(row),
+                field_buttons={**self._featured(row), **self._structured(sheet, meta)},
             ).show()
 
         self.background(f"reading {row.title}", lambda: self._load_sheet(row), shown)
+
+    def _structured(self, sheet: SheetSpec, lookup: Mapping[str, Any]) -> dict[str, Any]:
+        """Edit List... and Edit Group... beside each list or group field (WP-R-033)."""
+        if not hasattr(self, "structured_buttons"):
+            return {}
+        return dict(self.structured_buttons(sheet, lookup))
 
     def _featured(self, row: WbRow) -> dict[str, Any]:
         """Choose from Library and Remove Featured Image, on an item's featured image (9.18)."""
@@ -282,7 +308,7 @@ class WorkbenchSheetCommands:
                         row.title,
                         result.sentence,
                         undo=lambda: (
-                            save(api, row, undo),
+                            save_with_cmb2(api, row, undo),
                             f"Put {row.title} back as it was.",
                         )[1],
                     )
@@ -295,7 +321,7 @@ class WorkbenchSheetCommands:
 
                 account = self.ensure(self.ctx(row.site)).account
                 check_role_save(api, account, row.object_id, body)
-            return save(api, row, body, loaded_modified=check, before=fresh)
+            return save_with_cmb2(api, row, body, loaded_modified=check, before=fresh)
 
         def failed(error: BaseException) -> None:
             if isinstance(error, EditConflict) and dlg.confirm(

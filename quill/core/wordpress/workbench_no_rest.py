@@ -78,6 +78,31 @@ ADMIN_SCREENS: Mapping[str, AdminScreen] = {
         "Settings > General > Site Language",
         "WordPress's REST API cannot install or update a language pack.",
     ),
+    "site_health": AdminScreen(
+        "wp-admin/site-health.php",
+        "Tools > Site Health",
+        "Site Health's own screen links each check to WordPress's guide for fixing it.",
+    ),
+    "general": AdminScreen(
+        "wp-admin/options-general.php",
+        "Settings > General",
+        "The site's two addresses are changed only in Settings > General.",
+    ),
+    "permalinks": AdminScreen(
+        "wp-admin/options-permalink.php",
+        "Settings > Permalinks",
+        "WordPress's REST API does not share or change how addresses look.",
+    ),
+    "reading": AdminScreen(
+        "wp-admin/options-reading.php",
+        "Settings > Reading",
+        "WordPress's REST API does not share or change search engine visibility.",
+    ),
+    "discussion": AdminScreen(
+        "wp-admin/options-discussion.php",
+        "Settings > Discussion",
+        "WordPress's REST API shares only two of the Discussion settings.",
+    ),
     "pmpro_discount_codes": AdminScreen(
         "wp-admin/admin.php?page=pmpro-discountcodes",
         "Memberships > Discount Codes",

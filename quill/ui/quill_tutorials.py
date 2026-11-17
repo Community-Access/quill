@@ -5,13 +5,18 @@ The shared window is :mod:`quill.ui.tutorials_window`; the lessons are
 probe that answers "did you do the step?" for an editor rather than a player.
 
 QUILL's questions are about documents: is one open, did the text change, did
-you save, is a selection live. Every probe reads a named attribute defensively
-and answers ``None`` when it cannot, so a lesson is quiet rather than stuck if
-a later refactor moves something.
+you save, is a selection live. Two more are about the WordPress Workbench, for
+the Practice Site lessons (WP-R-049): did a change reach the Practice Site
+through the Workbench since the step was shown, and is the lesson material
+there. Both read the open Workbench's own state -- its Change History and the
+Practice Site's folder -- and never ask a site anything. Every probe reads a
+named attribute defensively and answers ``None`` when it cannot, so a lesson is
+quiet rather than stuck if a later refactor moves something.
 """
 
 from __future__ import annotations
 
+import sys
 from typing import Any
 
 TITLE = "QUILL Tutorials"
@@ -21,7 +26,51 @@ _CHECKS: dict[str, str] = {
     "text-changed": "the document changed",
     "text-selected": "you have a selection",
     "document-saved": "the document is saved",
+    "practice-site-changed": "the Workbench changed the Practice Site",
+    "lesson-material-ready": "the lesson material is on the Practice Site",
 }
+
+
+def _workbench() -> Any:
+    """The open WordPress Workbench's provider, or None.
+
+    Read from the module only if something has already imported it: a
+    Workbench nobody opened is not open, and a lesson poll should never be
+    the thing that loads it.
+    """
+    module = sys.modules.get("quill.ui.wordpress_workbench_window")
+    frame = getattr(module, "_OPEN", {}).get("wordpress") if module is not None else None
+    return getattr(frame, "provider", None)
+
+
+def _recorded() -> int | None:
+    provider = _workbench()
+    history = getattr(provider, "history", None)
+    count = getattr(history, "recorded", None)
+    return count if isinstance(count, int) else None
+
+
+def _on_practice() -> bool | None:
+    provider = _workbench()
+    if provider is None:
+        return None
+    try:
+        return bool(provider.is_practice(provider.current_site()))
+    except Exception:  # noqa: BLE001 - a lesson poll never raises
+        return None
+
+
+def _material_ready() -> bool | None:
+    provider = _workbench()
+    if provider is None:
+        return None
+    try:
+        from quill.core.wordpress.workbench_practice import practice_dir
+        from quill.core.wordpress.workbench_practice_material import is_set_up
+
+        return is_set_up(practice_dir(provider._base()))
+    except Exception:  # noqa: BLE001 - see above
+        return None
 
 
 def _editor(host: Any) -> Any:
@@ -83,6 +132,7 @@ class QuillProbe:
             "length": _length(host),
             "selection": _has_selection(host),
             "modified": _modified(host),
+            "workbench_changes": _recorded(),
         }
 
     def answer(self, check: str, host: Any, baseline: dict[str, Any]) -> tuple[bool, str] | None:
@@ -93,6 +143,13 @@ class QuillProbe:
             return (_length(host) is not None, said)
         if check == "text-selected":
             return (_has_selection(host) is True, said)
+        if check == "practice-site-changed":
+            # A new Workbench change while the Practice Site is the current site.
+            before, now = baseline.get("workbench_changes"), _recorded()
+            grew = now is not None and now > (before or 0)
+            return (grew and _on_practice() is True, said)
+        if check == "lesson-material-ready":
+            return (_material_ready() is True, said)
         if check == "document-saved":
             # Saved means it *was* modified when the step began and is not now.
             return (baseline.get("modified") is True and _modified(host) is False, said)

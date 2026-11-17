@@ -1,9 +1,8 @@
 # GitHub and WordPress Workbench implementation status
 
-**Updated:** 2026-11-13  
-**Workspace:** `S:\QUILL`, branch `codex/workbench-combined-2026-11-10`  
-**Status:** WordPress is in progress and is the current focus. GitHub is
-paused.
+**Updated:** 2026-11-15  
+**Status:** WordPress's last requirements are in code (#1842). GitHub resumed
+on 2026-11-15 and is the current focus.
 
 The accepted specifications are the [GitHub Workbench PRD](../Product%20Requirement%20Documents%20and%20Specifications/github-workbench-prd.md)
 and [WordPress Workbench PRD](../Product%20Requirement%20Documents%20and%20Specifications/wordpress-workbench-prd.md).
@@ -43,11 +42,33 @@ checklist for both Workbenches is `complete.md` at the repository root
 - The classic GitHub Items/Explore and WordPress management-window fallback
   choices are retired. The editor doors open the Workbench.
 
-## GitHub: paused 2026-11-13
+## GitHub: resumed 2026-11-15
 
-Jeff paused GitHub work on 2026-11-13 to finish WordPress first. Where each
-stopped piece picks up is in
-[github-paused-2026-11-13.md](./github-paused-2026-11-13.md).
+Jeff paused GitHub work on 2026-11-13 to finish WordPress first, and resumed it
+on 2026-11-15 ("we already have a plan and need to complete the github work"),
+in the order this page and `complete.md` section 6 give. The pause note held
+no picks of its own and is retired.
+
+**2026-11-15, the rest of Phase 12, first PR.** Check Owners on the CODEOWNERS
+sheet asks GitHub whether every owner exists and can write
+(`quill/core/github/codeowners_check.py`); New Template > Issue form > From a
+SurveyJS or XLSForm file... is the conversion's door
+(`quill/ui/github_workbench_form_file.py`, `template_convert.form_file_to_draft`);
+and the GitHub guide's chapter 12 gains Templates and community files, which it
+never had.
+
+**2026-11-16, the rest of Phase 12, second PR: BFL interop.** Forms written in
+BFL (BITS Accessible Forms' language, the plain-text form language QUILL's
+Forms read and write) now go to and from GitHub issue forms through
+`quill/core/forms/interop_github.py`, which maps the QAF (QUILL Accessible
+Forms) model to GitHub's schema and back. GitHub-only keys (labels, title
+prefix, ids, `render`, per-option required check boxes) ride in the form's
+`@extensions`, so QUILL's own five issue forms round-trip unchanged (tested);
+everything a GitHub form cannot hold is one sentence in the report.
+`template_convert.qaf_to_draft` is now this module's export, so the SurveyJS
+and XLSForm door and the Forms commands convert the same way. Tools > Forms in
+both editors gains Save As GitHub Issue Form and Open GitHub Issue Form
+(`quill/ui/forms_github_commands.py`). Phase 12 is complete. Next: Phase 13.
 
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
@@ -70,9 +91,8 @@ it (302 covered, 1103 planned, 15 no_api_needed, 206 out_of_scope),
 GitHub can do, and where" chapter. The GHManage port (complete.md 10B.1) is
 done.
 
-What remains when work resumes: the real GHEC and GHES descriptions, the
-rest of Phase 12 (BFL text interop for forms, a menu door for SurveyJS and XLSForm
-conversion, and checking that CODEOWNERS owners exist), Phase 13 (API Console, Read as
+What remains: the real descriptions for GHEC (GitHub Enterprise Cloud) and
+GHES (GitHub Enterprise Server), Phase 13 (API Console, Read as
 Document, Watches and the rest of PRD section 22), the remaining PRD section
 14 features, Repository Sets in the UI, and manual NVDA, JAWS, Narrator,
 braille, scaling and live-account acceptance. The engineering checklist is

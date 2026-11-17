@@ -200,7 +200,7 @@ class CastPlacesHostMixin(CastPlaceContentMixin):
         self._fill_episodes(show)  # type: ignore[attr-defined]
         self._select_list_row(self._remembered_episode_row(show))  # type: ignore[attr-defined]
         count = unheard_count(show)
-        pane.set_heading(f"{show.title} ({count} unheard)")
+        pane.set_heading(f"{show.title} ({count} unplayed)")
         pane.focus()
         self._refresh_selection_buttons()  # type: ignore[attr-defined]
         self._refresh_notes_pane()  # type: ignore[attr-defined]
@@ -463,7 +463,7 @@ class CastPlacesHostMixin(CastPlaceContentMixin):
             from quill.core.podcasts.inbox import REMOVED_MARKER, inbox_key
 
             library.inbox_assignments[inbox_key(show.id, episode.guid)] = REMOVED_MARKER
-            said = f"Removed {episode.title} from the Inbox. It is still unheard in {show.title}."
+            said = f"Removed {episode.title} from the Inbox. It is still unplayed in {show.title}."
             # Earshot R4: with "Delete downloads when done" on, an episode you
             # dismiss is done with, so its file goes too -- unless it is kept.
             from quill.core.podcasts import retention

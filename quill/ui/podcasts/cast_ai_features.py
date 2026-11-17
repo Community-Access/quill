@@ -287,7 +287,7 @@ class CastDomainAiMixin(CastAskMixin):
                 candidates.append((show, episode))
         candidates = candidates[:60]
         if not candidates:
-            self._announce("Nothing unheard with a known length to choose from.")  # type: ignore[attr-defined]
+            self._announce("Nothing unplayed with a known length to choose from.")  # type: ignore[attr-defined]
             return
 
         def _read(text: str) -> None:
@@ -331,7 +331,7 @@ class CastDomainAiMixin(CastAskMixin):
 
         with wx.TextEntryDialog(  # dialog_button_contract: exempt
             self.frame,  # type: ignore[attr-defined]
-            "Describe the playlist, such as: unheard news under 20 minutes from this week",
+            "Describe the playlist, such as: unplayed news under 20 minutes from this week",
             "Smart Playlist from a Sentence",
         ) as entry:
             if entry.ShowModal() != wx.ID_OK:

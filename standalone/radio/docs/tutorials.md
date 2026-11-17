@@ -1016,7 +1016,7 @@ Find a podcast, subscribe to it, see what you have not heard yet, and read a tra
 
 4. **Find what you follow.** The Podcasts branch starts with a Subscriptions folder. Inside, each show has its own folder of its newest episodes. The Subscriptions folder says how many shows you follow, and each show says how many episodes you have not heard yet, just as Cast does.
    - Keys: Home, Right arrow
-   - You should hear: Subscriptions, with a number, then each show with its unheard count.
+   - You should hear: Subscriptions, with a number, then each show with its unplayed count.
    - Worth knowing: You can choose in Preferences how many episodes each show lists. It starts at the newest 25. Automatic downloads, keeping or clearing old episodes, and the full archive are in QUILL Cast.
 
 5. **Ask every show at once.** Check All Feeds Now, on the Subscriptions branch, checks every show you follow for new episodes in one go. That includes shows you have paused, so they are never out of reach.

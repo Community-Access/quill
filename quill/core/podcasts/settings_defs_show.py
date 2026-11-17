@@ -147,7 +147,7 @@ SETTINGS: tuple[SettingDef, ...] = (
         default=QUEUE_ORDER_NEWEST,
         choices=choices(
             (QUEUE_ORDER_NEWEST, "Newest episode"),
-            (QUEUE_ORDER_OLDEST, "Oldest unheard episode"),
+            (QUEUE_ORDER_OLDEST, "Oldest unplayed episode"),
         ),
         aliases=("queue", "beginning", "serial", "order"),
     ),

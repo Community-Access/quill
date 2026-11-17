@@ -564,3 +564,29 @@ def test_pull_request_templates_are_found() -> None:
         ("Feature", "## Feature\n"),
         ("Pull Request Template", "## Docs\n"),
     ]
+
+
+def test_a_surveyjs_file_starts_an_issue_form_and_says_what_it_left_out(tmp_path) -> None:
+    """New Template's file door (PRD 21.4): SurveyJS or XLSForm, through QAF."""
+    import json
+
+    import pytest
+
+    from quill.core.github.template_convert import form_file_to_draft
+
+    survey = {
+        "title": "Feedback",
+        "elements": [
+            {"type": "text", "name": "who", "title": "Your name", "isRequired": True},
+            {"type": "signaturepad", "name": "sig", "title": "Sign"},
+        ],
+    }
+    path = tmp_path / "feedback.json"
+    path.write_text(json.dumps(survey), encoding="utf-8")
+    draft, report = form_file_to_draft(str(path))
+    assert draft.top["name"] == "Feedback"
+    assert draft.top["description"] == "Converted from a SurveyJS form."
+    assert any(raw["attributes"].get("label") == "Your name" for raw in draft.fields)
+    assert any("Sign" in line for line in report)
+    with pytest.raises(ValueError, match="SurveyJS"):
+        form_file_to_draft(str(tmp_path / "notes.txt"))

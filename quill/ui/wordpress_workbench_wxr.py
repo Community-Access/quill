@@ -12,6 +12,12 @@ A mixin on :class:`quill.ui.wordpress_workbench_window.WordPressWorkbenchProvide
   as drafts. Files named in the export are downloaded only when the person
   chooses to, with the hosts named in the question; Ctrl+Z moves the drafts
   to the Trash.
+- **Import from Blogger, Medium, Substack or Squarespace**: the platform's
+  export read here (:mod:`quill.core.wordpress.platform_import`) as a WXR
+  file, then the same preview, drafts and Ctrl+Z as Import WXR as Drafts.
+- **Archive a Static Copy**: the published pages and posts as plain HTML
+  files with an index, and their media fetched from the site's own host only,
+  written to a folder (:mod:`quill.core.wordpress.static_archive`).
 
 Every network call runs through ``self.background``; every outcome is one sentence.
 """
@@ -39,6 +45,13 @@ _SCOPES = (
 )
 _DAY = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _WXR_FILES = "WordPress export files (*.xml)|*.xml|All files (*.*)|*.*"
+_PLATFORM_FILES = (
+    "Exports (*.xml;*.atom;*.zip)|*.xml;*.atom;*.zip|"
+    "Blogger backups (*.xml;*.atom)|*.xml;*.atom|"
+    "Medium and Substack exports (*.zip)|*.zip|All files (*.*)|*.*"
+)
+_IMPORT_WXR = "Import WXR as Drafts"
+_IMPORT_PLATFORM = "Import from Another Platform"
 
 
 class WorkbenchWxrCommands:
@@ -54,6 +67,7 @@ class WorkbenchWxrCommands:
     refresh: Callable[[], None]
     _site_now: Callable[[Any], str]
     _file: Callable[..., Path | None]
+    _folder: Callable[[str], Path | None]
 
     # -- export -----------------------------------------------------------------------
 
@@ -176,13 +190,59 @@ class WorkbenchWxrCommands:
 
         self.background(f"exporting {site} as WXR", work, done)
 
+    # -- a static copy for an archive (PRD 15.11) --------------------------------------
+
+    def do_archive_static(self, ref: Any, _row: WbRow | None) -> None:
+        site = self._site_now(ref)
+        if not site:
+            return
+        folder = self._folder(f"Archive a Static Copy of {site}: choose an empty folder")
+        if folder is None:
+            return
+        if any(folder.iterdir()):
+            folder = folder / f"{re.sub(r'[^A-Za-z0-9._-]+', '-', site).strip('-')}-archive"
+            if folder.exists() and any(folder.iterdir()):
+                self.say(f"{folder} is not empty; choose an empty folder for the archive.")
+                return
+        api = self.ctx(site).api
+        here = str(api.address.site_url)
+
+        def fetch(address: str) -> bytes:
+            from quill.core.wordpress import media_tools as mt
+
+            got = mt.download_file(
+                api._opener, address, timeout=max(api.timeout, 30.0), any_type=True
+            )
+            return bytes(got.content)
+
+        def work() -> Any:
+            from quill.core.wordpress.static_archive import archive_site
+
+            return archive_site(api, folder, site_url=here, site_name=site, fetch=fetch)
+
+        def done(report: Any) -> None:
+            said = report.sentence(str(folder))
+            self.say(said)
+            dlg.show_report(
+                self.parent,
+                self.show_modal,
+                title="Archive a Static Copy",
+                text="\n".join([said, "", *report.left_out]),
+                help_text=(
+                    "What went into the archive folder, then each thing left out and why. Files "
+                    "on other hosts are never fetched."
+                ),
+            )
+
+        self.background(f"archiving {site}", work, done)
+
     # -- import -----------------------------------------------------------------------
 
     def do_import_wxr(self, ref: Any, _row: WbRow | None) -> None:
         site = self._site_now(ref)
         if not site:
             return
-        path = self._file("Import WXR as Drafts", _WXR_FILES, save=False)
+        path = self._file(_IMPORT_WXR, _WXR_FILES, save=False)
         if path is None:
             return
         api = self.ctx(site).api
@@ -203,7 +263,43 @@ class WorkbenchWxrCommands:
             failed,
         )
 
-    def _import_planned(self, site: str, path: Path, plan: Any) -> None:
+    def do_import_platform(self, ref: Any, _row: WbRow | None) -> None:
+        site = self._site_now(ref)
+        if not site:
+            return
+        path = self._file(_IMPORT_PLATFORM, _PLATFORM_FILES, save=False)
+        if path is None:
+            return
+        api = self.ctx(site).api
+
+        def work() -> tuple[Any, Any]:
+            from quill.core.wordpress.platform_import import read_export
+            from quill.core.wordpress.wxr_import import plan_import
+
+            converted = read_export(path.read_bytes(), path.name)
+            return converted, plan_import(api, converted.wxr)
+
+        def failed(error: BaseException) -> None:
+            self.say(str(getattr(error, "plain", "") or error))
+
+        def planned(answer: tuple[Any, Any]) -> None:
+            converted, plan = answer
+            head = [*converted.notes, *plan.lines()[1:]]
+            self._import_planned(site, path, plan, title=f"Import from {converted.name}", head=head)
+
+        self.frame._run_background(
+            f"WordPress Workbench: reading {path.name}", work, planned, failed
+        )
+
+    def _import_planned(
+        self,
+        site: str,
+        path: Path,
+        plan: Any,
+        *,
+        title: str = _IMPORT_WXR,
+        head: list[str] | None = None,
+    ) -> None:
         if not plan.items:
             self.say(f"{path.name} has nothing {site} can take as a draft.")
             return
@@ -212,7 +308,7 @@ class WorkbenchWxrCommands:
             index = dlg.ask_choice(
                 self.parent,
                 self.show_modal,
-                title="Import WXR as Drafts",
+                title=title,
                 prompt="&Give unmatched authors' items to:",
                 rows=[name for _i, name in plan.people],
                 initial=ids.index(plan.fallback) if plan.fallback in ids else 0,
@@ -227,12 +323,12 @@ class WorkbenchWxrCommands:
         if not wdlg.ask_preview(
             self.parent,
             self.show_modal,
-            title="Import WXR as Drafts",
+            title=title,
             summary=(
                 f"Make {len(plan.items)} items from {path.name} on {site}, all as drafts? "
                 "Ctrl+Z moves them to the Trash afterwards."
             ),
-            lines=plan.lines(),
+            lines=plan.lines() if head is None else head,
             yes="Import as Drafts",
         ):
             return
@@ -259,9 +355,11 @@ class WorkbenchWxrCommands:
             if index is None:
                 return
             download = index == 0
-        self._send_import(site, path, plan, download=download)
+        self._send_import(site, path, plan, download=download, title=title)
 
-    def _send_import(self, site: str, path: Path, plan: Any, *, download: bool) -> None:
+    def _send_import(
+        self, site: str, path: Path, plan: Any, *, download: bool, title: str = _IMPORT_WXR
+    ) -> None:
         api = self.ctx(site).api
 
         def fetch(address: str) -> Any:
@@ -290,7 +388,7 @@ class WorkbenchWxrCommands:
             dlg.show_report(
                 self.parent,
                 self.show_modal,
-                title="Import WXR as Drafts",
+                title=title,
                 text="\n".join([said, "", *result.lines]),
                 help_text="What happened to each term, file and item, then what was left out.",
             )

@@ -27,6 +27,7 @@ from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.net import verified_ssl_context
 from quill.core.podcasts import feed_auth, transport
+from quill.core.podcasts.time_values import ms_or_none, seconds_to_ms_or_none
 
 _TIMEOUT_SECONDS = 15.0
 _MAX_BYTES = 10_000_000
@@ -257,18 +258,16 @@ def _parse_json_cues(data: object) -> list[TranscriptCue]:
             body = body.replace("\n", " ").strip()
             if not body:
                 continue
-            start = int(event.get("tStartMs") or 0)
-            duration = int(event.get("dDurationMs") or 0)
+            start = ms_or_none(event.get("tStartMs") or 0) or 0
+            duration = ms_or_none(event.get("dDurationMs") or 0) or 0
             cues.append(TranscriptCue(start, start + duration, body))
         return cues
     return []
 
 
 def _seconds_to_ms(value: object) -> int:
-    try:
-        return int(float(value) * 1000)  # type: ignore[arg-type]
-    except (TypeError, ValueError):
-        return 0
+    """A cue time; an impossible one reads as 0 so the cue keeps its text (E2)."""
+    return seconds_to_ms_or_none(value, allow_text=True) or 0
 
 
 def parse_transcript_cues(raw_bytes: bytes, transcript_type: str) -> list[TranscriptCue]:

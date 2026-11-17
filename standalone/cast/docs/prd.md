@@ -2368,4 +2368,30 @@ the release notes welcome a listener to 2.0, and the changelog is the complete
 record. Every standalone Quill app has the same row on the same key; a missing
 changelog is said, never silent.
 
+### 23.32 Earshot parity, round two (2026-11-15)
+
+Compared against Earshot 1.2.6 (TestFlight build 317, `c11dda93`); the plan of
+record, with every item, its code and what remains, is
+`docs/design/earshot.md`, and code cites it as `earshot.md <item>`. Jeff chose
+to build every item and to move Cast's wording to Played and Unplayed.
+
+- **FW** Count as finished when stopped within the last (one minute): leaving
+  an episode in its last minute marks it played, and Continue Listening no
+  longer keeps episodes at 99 percent (from a listener's report).
+- **E1** The outro skip fires only on a natural crossing, never on a resume or
+  seek into it, and never for an episode shorter than the skip.
+- **E2** Chapter, transcript and soundbite times are validated; `NaN` and
+  `Infinity` no longer lose a whole chapter list or break feed parsing.
+- **E3** This device's Listening Places file is replaced only while it is
+  still ours, and a failed write is said.
+- **F1** Mark as Played and Next does the whole finish.
+- **E4** Keep finished episodes in the Play Queue. **E7** Start the queue
+  again from its first unplayed episode. Both off.
+- **E5** Ctrl+A and Ctrl+Shift+I on the episode list, and bulk Mark as
+  Unplayed. **E6** How much to even out the volume: Light, Balanced, Strong.
+- **E8** Preview shows each episode's description. **E9** Listening
+  Statistics by folder. **E10** A Play Queue group heading moves and is
+  picked up as its whole group.
+- **D1** Played and Unplayed, never heard and unheard (GATE-CAST-WORDS).
+
 See `CHANGELOG.md` for the full, versioned history.

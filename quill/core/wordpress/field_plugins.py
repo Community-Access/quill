@@ -16,16 +16,18 @@ built by the same schema rules as registered meta, and a save goes back as
 after (:mod:`~quill.core.wordpress.workbench_edit`). Only fields in a group
 with "Show in REST API" on reach REST; the rest stay in wp-admin.
 
-The other field plugins are classified in :data:`FIELD_PLUGIN_SCOPE`, honestly:
-none has an adapter, and what of theirs QUILL reaches, it reaches as
-registered meta or by namespace.
+Meta Box and Pods (:mod:`~quill.core.wordpress.field_plugins_more`) and CMB2
+(:mod:`~quill.core.wordpress.field_plugins_cmb2`) follow the same pattern, each
+through its own REST exposure; :func:`plugin_pages` gathers whichever pages a
+site has for one object. :data:`FIELD_PLUGIN_SCOPE` says, honestly, what each
+plugin gets.
 
 Wx-free.
 """
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -41,6 +43,7 @@ __all__ = [
     "acf_schema",
     "acf_values",
     "meta_from_properties",
+    "plugin_pages",
     "read_acf",
     "route_properties",
     "with_acf_page",
@@ -153,6 +156,44 @@ def acf_lookup(schema: Mapping[str, Any] | None) -> dict[str, Any]:
     return {f"{ACF_PROPERTY}.{k}": v for k, v in (schema or {}).items() if isinstance(v, dict)}
 
 
+def plugin_pages(
+    api: WordPressApi,
+    *,
+    row_kind: str,
+    slug: str,
+    object_id: int,
+    properties: Mapping[str, Any],
+    raw: Mapping[str, Any],
+    namespaces: Sequence[str] = (),
+) -> list[Any]:
+    """The Meta Box, Pods and CMB2 pages one object has, each only where the site shows it.
+
+    Meta Box costs nothing more (its ``meta_box`` is in the object or schema
+    already read); Pods and CMB2 cost one request each, and only when their
+    namespace is in the site's index. A plugin that refuses this account
+    (``401``, ``403``) gets no page rather than a wrong one.
+    """
+    from quill.core.wordpress import field_plugins_cmb2 as cmb2
+    from quill.core.wordpress import field_plugins_more as more
+
+    have = {n.strip("/") for n in namespaces}
+    pages: list[Any] = []
+    found = more.metabox_page(properties, raw)
+    if found is not None:
+        pages.append(found)
+    if more.PODS_NAMESPACE in have:
+        pods = more.pods_definitions(api)
+        pod = more.pod_for(pods or [], row_kind, slug)
+        page = more.pods_page(pod, raw) if pod else None
+        if page is not None:
+            pages.append(page)
+    if cmb2.CMB2_NAMESPACE in have:
+        page = cmb2.cmb2_page(api, row_kind, slug, object_id)
+        if page is not None:
+            pages.append(page)
+    return pages
+
+
 # -- what each field plugin gets ---------------------------------------------------------
 
 
@@ -178,26 +219,30 @@ FIELD_PLUGIN_SCOPE: tuple[FieldPluginScope, ...] = (
     ),
     FieldPluginScope(
         "Meta Box",
-        "fields registered as post meta with show_in_rest, or a meta_box property from its "
-        "MB REST API extension",
-        "as registered meta",
-        "Fields it registers as REST meta appear on the Meta page like any registered meta. Its "
-        "meta_box property and its field-group definitions have no adapter; edit them in "
-        "wp-admin.",
+        "a meta_box property on each object from its MB REST API extension, or fields "
+        "registered as post meta with show_in_rest",
+        "read and write",
+        "Properties has a Meta Box page on items, terms, users and comments; a save goes back "
+        'as {"meta_box": {...}} on the same route, checked and verified. A field Meta Box does '
+        "not describe takes its kind from the value it holds; one whose value cannot say is read "
+        "only. Its field groups are listed in Content Model where its own posts are in REST.",
     ),
     FieldPluginScope(
         "Pods",
-        "fields registered as REST meta or REST fields per pod, and its own pods/v1 routes",
-        "as registered meta",
-        "Pod fields registered as meta appear on the Meta page; pods/v1 is listed under More "
-        "from This Site and written only through the REST Console's previews. No adapter.",
+        "fields shown as REST fields on each pod's wp/v2 route, described by its pods/v1 routes",
+        "read and write",
+        "Properties has a Pods page with the pod's fields, read from pods/v1/pods; a save sends "
+        "each as its own REST field, only where the pod allows writing in REST, checked and "
+        "verified. Relationship and file fields are read only. Content Model lists every pod "
+        "and its fields, and can copy one to QUILL Site Types.",
     ),
     FieldPluginScope(
         "CMB2",
-        "boxes with show_in_rest, served under cmb2/v1",
-        "not integrated",
-        "cmb2/v1 is read under More from This Site; fields CMB2 also registers as meta appear "
-        "on the Meta page. No adapter.",
+        "boxes with show_in_rest, served under cmb2/v1, one route per field",
+        "read and write",
+        "Properties has a CMB2 page with every box that applies; a save sends each field to its "
+        "own cmb2/v1 route and reads it back to check the site kept it. Boxes shown for reading "
+        "only, and file and taxonomy fields, are read only. Content Model lists the boxes.",
     ),
     FieldPluginScope(
         "Registered meta (any plugin or theme)",

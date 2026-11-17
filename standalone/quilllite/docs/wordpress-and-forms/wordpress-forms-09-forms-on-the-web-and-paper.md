@@ -6,7 +6,8 @@ A form you have written and checked can go four ways: onto your WordPress
 site through the QUILL Accessible Forms plugin, onto any website as a page
 of its own, onto paper in ordinary or large print, and into braille. This
 chapter covers each one, then reading the responses people send, bringing
-forms in from other form builders, and the optional AI help for forms. It
+forms in from other form builders, GitHub issue forms, and the optional AI
+help for forms. It
 ends with what is kept private and what Safe Mode turns off.
 
 ## QUILL Accessible Forms
@@ -162,6 +163,37 @@ builders.
 QUILL does not publish to those other plugins, only to QUILL Accessible
 Forms.
 
+## GitHub issue forms
+
+A GitHub issue form is the form people fill in when they open an issue in a
+GitHub repository. It is a YAML file (YAML is the plain-text settings format
+GitHub reads) kept in the repository's `.github/ISSUE_TEMPLATE` folder. You
+can write one in the form language, and bring one in to edit as plain text.
+Both commands are in Tools > Forms. They work without a site and in Safe
+Mode, and nothing is sent to GitHub.
+
+- **Save As GitHub Issue Form...:** saves the form in front as a `.yml`
+  issue form. GitHub's forms have five kinds of element: a note, a short
+  answer, a long answer, a drop-down list and check boxes. So before you
+  choose where to save, a window lists what changes, one line each. A
+  question type GitHub has no field for, such as a signature or a rating, is
+  left out; a choose-one question becomes a drop-down list; and conditions,
+  scores, limits, pages and translations are left out. If GitHub would
+  refuse the result, for example because two questions have the same label,
+  the window says that too. You hear, for example, "Saved Bug report.yml, a
+  GitHub issue form with 4 questions; 1 change was listed before saving."
+- **Open GitHub Issue Form...:** choose an issue form (`.yml`), and QUILL Lite
+  saves it as a form document and opens it. A discussion form, from a
+  `.github/DISCUSSION_TEMPLATE` folder, works the same way. What only GitHub
+  has, such as the issue title prefix, the labels, or an answer shown as
+  code, is kept with the form and given back when you save it as an issue
+  form again. So a form can go to the form language and back without losing
+  anything. You hear, for example, "Saved Bug report.qaf, bug_report.yml as
+  a form with 5 questions. Kept for saving back to GitHub: labels, title."
+
+To put an issue form in a repository, add it in the GitHub Workbench, under
+Repository > Templates (QUILL's GitHub guide, chapter 12), or commit it yourself.
+
 ## AI help with forms
 
 If you have chosen an AI in Choose Your AI, four commands can help. Each one
@@ -193,7 +225,8 @@ have read the proposal and said yes. Undo takes it all out in one step.
 - In Safe Mode, Publish Form, Insert Form Into Page, Test on Site, Responses
   and the four AI commands each say they are off: "Publish Form is off in
   Safe Mode, because it would reach your site or an AI." Writing, checking,
-  Fill It In Yourself and the four Save As commands still work.
+  Fill It In Yourself, the five Save As commands and Open GitHub Issue Form
+  still work.
 
 ## A walk-through: from your computer to your site
 

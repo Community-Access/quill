@@ -35,7 +35,7 @@ def play_folder(dialog: Any, folder_id: str) -> None:
     library = dialog._library
     pairs = folder_actions.latest_unplayed_per_show(library, folder_id)
     if not pairs:
-        dialog._announce("Nothing in that folder is unheard.")
+        dialog._announce("Nothing in that folder is unplayed.")
         return
     from quill.core.podcasts import queue as queue_module
 
@@ -76,7 +76,7 @@ def add_folder_to_queue(dialog: Any, folder_id: str) -> None:
         if queue_module.add_to_queue(library, str(show.id), str(episode.guid)):
             added += 1
     if not added:
-        dialog._announce("Nothing in that folder is unheard.")
+        dialog._announce("Nothing in that folder is unplayed.")
         return
     dialog._on_library_changed()
     dialog._announce(f"Added {added} episode{'' if added == 1 else 's'} to the queue.")

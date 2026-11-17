@@ -132,6 +132,12 @@ USER_ROWS: tuple[ActionRow, ...] = (
         "wp-admin screen, where Log Out Everywhere is one button.",
     ),
     _a(
+        "never_signed_in",
+        "Who Has Never Signed In",
+        "The people on this site with no sign-in recorded, where the site gives sign-in times "
+        "over REST (a plugin that registers last_login); otherwise it says it cannot tell.",
+    ),
+    _a(
         "invite_spreadsheet",
         "Invite from a Spreadsheet...",
         "Add people from a CSV file of email, role and name, after a preview of every row.",
@@ -189,6 +195,15 @@ MODEL_ROWS: tuple[ActionRow, ...] = (
         needs="manage_options",
     ),
     _a(
+        "move_to_site_types",
+        "Copy to QUILL Site Types...",
+        "The way to move a post type, taxonomy or field group a plugin or theme defines into "
+        "QUILL Site Types: a copy under the same key, after a preview. The original is not "
+        "deleted; the preview says what to turn off where, and what does not come across.",
+        tier=Tier.WRITE,
+        needs="manage_options",
+    ),
+    _a(
         "export_as_code",
         "Export as Code",
         "Every QUILL Site Types definition as the PHP register calls, opened in the editor, so "
@@ -218,6 +233,7 @@ KEYLESS: dict[str, str] = {
     command("cancel_membership"): "A cancellation is rare and stops payments: never a bare key.",
     command("user_app_passwords"): "Checked when a device is lost or a person leaves (rule 9).",
     command("sign_out_everywhere"): "Leaves QUILL for wp-admin, after a lost device (rule 9).",
+    command("never_signed_in"): "Checked when tidying accounts, a few times a year (rule 9).",
     command("invite_spreadsheet"): "People arrive in a batch a few times a year (rule 9).",
     command("insert_picked"): "Enter does it in picking mode, the only time it applies.",
     command("look_up_discount"): "A code is looked up when a member asks about it (rule 9).",
@@ -227,6 +243,7 @@ KEYLESS: dict[str, str] = {
     command("export_as_code"): "Exported once, when a site leaves the plugin (rule 9).",
     command("edit_site_type_fields"): "Fields change when a content type does, rarely (rule 9).",
     command("add_field_kind"): "A site adds its own kind once in a long while (rule 9).",
+    command("move_to_site_types"): "A definition moves once, when a site changes plugin (rule 9).",
     command("visual_review"): "A page is reviewed after a redesign, now and then (rule 9).",
     command("set_password"): "Set when a person is locked out, rarely; never a bare key (rule 9).",
 }

@@ -104,10 +104,19 @@ def health_test_lines(test: str, raw: Mapping[str, Any]) -> list[CheckLine]:
     status = str(raw.get("status", "info"))
     status = status if status in _STATUSES else "info"
     label = rendered(raw.get("label")) or TEST_NAMES.get(test, _words(test))
-    lines = [CheckLine(status, f"{label.rstrip('.')}.")]
+    detail = plain_description(raw.get("description"))
+    lines = [CheckLine(status, f"{label.rstrip('.')}.", test, detail)]
     if test == "authorization-header" and status != "good":
-        lines.append(CheckLine(status, AUTHORIZATION_EXPLAINED))
+        lines.append(CheckLine(status, AUTHORIZATION_EXPLAINED, test))
     return lines
+
+
+def plain_description(value: Any) -> str:
+    """Site Health's description (HTML) as plain sentences, at most 1,200 characters."""
+    from quill.core.wordpress.workbench_changelog import plain_text
+
+    text = rendered(value) if isinstance(value, Mapping) else str(value or "")
+    return plain_text(text)[:1200]
 
 
 def _words(test: str) -> str:

@@ -82,6 +82,12 @@ ACROSS_KINDS: Mapping[str, str] = {
     "menus": "Menus",
     "patterns": "Synced Patterns",
     "app_passwords": "Application Passwords",
+    "starter_pages": "Starter Pages",
+    "forms": "Forms",
+    "content_types": "Content Types",
+    "role_pages": "Pages with a Role",
+    "redirects": "Redirects",
+    "spam_senders": "Spam Senders",
 }
 
 _HREF = re.compile(r"""href=["']([^"'#]+)["']""", re.IGNORECASE)
@@ -417,6 +423,11 @@ def gather_across(
             from quill.core.wordpress.workbench_across_ops import gather_more
 
             for name, raw in gather_more(kind, site, api, missed).items():
+                found[name][site] = raw
+        else:
+            from quill.core.wordpress.workbench_across_more import gather_more_kinds
+
+            for name, raw in gather_more_kinds(kind, site, api, missed).items():
                 found[name][site] = raw
         if missed and unread is not None:
             unread.setdefault(site, []).extend(missed)

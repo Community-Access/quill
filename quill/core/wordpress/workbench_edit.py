@@ -104,8 +104,26 @@ def _int_of(value: object) -> int:
         raise EditRefused(f"{value} is not a number.") from exc
 
 
-#: Body keys that hold fields by name: registered meta, and Advanced Custom Fields.
-_FIELD_GROUPS = ("meta", "acf")
+#: Body keys that hold fields by name: registered meta, Advanced Custom Fields,
+#: Meta Box (field_plugins_more) and CMB2 (field_plugins_cmb2, sent per field).
+_FIELD_GROUPS = ("meta", "acf", "meta_box", "cmb2")
+
+#: Sheet keys of fields that are top-level REST fields of their own (Pods).
+_TOP_LEVEL = ("pods.",)
+
+
+def _checked(schema: Any, value: Any, label: str) -> Any:
+    """*value* as *schema* says, or :class:`EditRefused` naming the field and why."""
+    from quill.core.wordpress.custom_field_shapes import coerce
+    from quill.core.wordpress.custom_fields import FieldValueError
+
+    try:
+        return coerce(schema, value, label)
+    except FieldValueError as exc:
+        said = str(exc)
+        if exc.reason:
+            said = f"{said}: {exc.reason}"
+        raise EditRefused(said) from exc
 
 
 def body_for(
@@ -130,21 +148,19 @@ def body_for(
         group = next((g for g in _FIELD_GROUPS if change.key.startswith(f"{g}.")), "")
         if group:
             key = change.key.removeprefix(f"{group}.")
-            # Registered meta is looked up by its key; ACF's by "acf.<name>"
-            # (field_plugins.acf_lookup), so the two never collide.
+            # Registered meta is looked up by its key; a plugin's by its sheet key
+            # ("acf.<name>", field_plugins.acf_lookup), so the two never collide.
             schema = (meta_schema or {}).get(key if group == "meta" else change.key)
             if isinstance(schema, Mapping):
-                from quill.core.wordpress.custom_field_shapes import coerce
-                from quill.core.wordpress.custom_fields import FieldValueError
-
-                try:
-                    value = coerce(schema, value, spec.label)
-                except FieldValueError as exc:
-                    said = str(exc)
-                    if exc.reason:
-                        said = f"{said}: {exc.reason}"
-                    raise EditRefused(said) from exc
+                value = _checked(schema, value, spec.label)
             body.setdefault(group, {})[key] = value
+            continue
+        top = next((p for p in _TOP_LEVEL if change.key.startswith(p)), "")
+        if top:
+            schema = (meta_schema or {}).get(change.key)
+            if not isinstance(schema, Mapping):
+                raise EditRefused(f"{spec.label} is read only here.")
+            body[change.key.removeprefix(top)] = _checked(schema, value, spec.label)
             continue
         if row.kind == "setting" and change.key == "value":
             body[str(row.raw.get("key", ""))] = value
@@ -179,6 +195,8 @@ def _comparable(value: Any) -> Any:
         return sorted(str(v) for v in value)
     if isinstance(value, bool):
         return value
+    if isinstance(value, float) and value.is_integer():
+        value = int(value)  # 140.0 sent, "140" kept: the same number
     return "" if value is None else str(value)
 
 

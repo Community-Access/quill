@@ -67,7 +67,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "heard yet, just as Cast does."
                 ),
                 keys=("Home", "Right arrow"),
-                hear="Subscriptions, with a number, then each show with its unheard count.",
+                hear="Subscriptions, with a number, then each show with its unplayed count.",
                 note=(
                     "You can choose in Preferences how many episodes each show "
                     "lists. It starts at the newest 25. Automatic downloads, "

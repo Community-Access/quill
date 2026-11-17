@@ -59,10 +59,23 @@ NODE_HELP: Mapping[str, str] = {
     ),
     "practice": "A practice WordPress site on this computer, where nothing is at stake.",
     "calendar_day": "What was published or is scheduled on one day, on every site.",
-    "help": "Words, keys, and how WordPress thinks.",
+    "help": (
+        "Words, keys, how WordPress thinks, jobs in plain words, the guide, what changed, and "
+        "how to ask a person."
+    ),
     "how_it_thinks": "How WordPress thinks, in a paragraph.",
     "words": "WordPress's own words, each explained.",
     "keys": "Every key the Workbench answers to.",
+    "help_tasks": (
+        "Do Something: common jobs in plain words. Enter reads the steps; Take Me There goes "
+        "to the place the job is done."
+    ),
+    "help_guide": "The WordPress and Forms guide's chapters. Enter opens one in your browser.",
+    "help_changes": "What changed in the WordPress Workbench lately, in a few sentences.",
+    "help_ask": (
+        "How to ask a person: Enter starts a message to support in your own email. Nothing is "
+        "sent by the Workbench, and no password is ever put in it."
+    ),
     "site": "One site. Its overview is first; Right Arrow opens the rest.",
     "overview": "The site in sentences: its name, address, WordPress version and counts.",
     "posts": "The site's posts, newest change first. Enter opens one in the editor.",
@@ -151,8 +164,9 @@ NODE_HELP: Mapping[str, str] = {
     "more": "Every family of routes on this site, by namespace, and how many are reached.",
     "more_namespace": "One namespace's routes, with their methods and where each is reached.",
     "content_model": (
-        "The site's post types, taxonomies and field groups, and who registered each. Only "
-        "what QUILL Site Types defines can change here: Ctrl+N defines a new one."
+        "The site's post types, taxonomies and field groups, and who registered each, or "
+        "unknown. Only what QUILL Site Types defines can change here: Ctrl+N defines a new "
+        "one, and Copy to QUILL Site Types brings another plugin's in."
     ),
     "across": "The same name on every site, or a Site Set: where copies differ, what is missing.",
     "across_terms": "Each tag and category by name, on every site: differing slugs, sites without.",
@@ -163,6 +177,12 @@ NODE_HELP: Mapping[str, str] = {
     "across_app_passwords": "Each application password by name and person, on every site.",
     "across_menus": "Each menu by name, on every site: its items, and the sites without it.",
     "across_patterns": "Each synced pattern by title, on every site: its content, where missing.",
+    "across_starter_pages": "Each starter page by title, on every site: compared, not copied.",
+    "across_forms": "Each QUILL Accessible Forms form by title, on every site: its questions.",
+    "across_content_types": "Each post type by name, on every site: compared, not copied.",
+    "across_role_pages": "The front page and privacy page of every site, and when each changed.",
+    "across_redirects": "Each Redirection redirect by its address, on every site: where it leads.",
+    "across_spam_senders": "Each sender blocked by QUILL Accessible Forms, on every site.",
     "fleet": "Every site in one list: health, backups, security and updates, each known, "
     "unknown, unavailable or stale.",
     "by_name": "Everything on this site by name: terms, fields, authors, media, links, blocks.",
@@ -236,8 +256,19 @@ ROW_HELP: Mapping[str, str] = {
     ),
     "fact": "A fact about the site. Enter reads it in the details pane.",
     "setting": "A setting. Alt+Enter changes it.",
-    "problem": "A problem a check found. Enter reads what it means.",
+    "problem": (
+        "A problem a check found. Enter explains what it means for visitors, what causes it "
+        "and the steps; Fix..., Take Me There and Open in Editor are on its context menu."
+    ),
     "help": "A word or key. Enter reads it in full.",
+    "help_topic": (
+        "A help topic. Enter reads it, or opens the chapter or message it names; Take Me "
+        "There goes to the place it is about."
+    ),
+    "setting_help": (
+        "What a setting does on this site, with its own example. Enter reads it; Open Its "
+        "Documentation or Open in Dashboard goes where it is changed."
+    ),
     "namespace": "A family of routes. Enter lists what it offers.",
     "route": "A route on the site. Enter reads it; Alt+Enter shows what it accepts.",
     "search_result": (
@@ -247,7 +278,10 @@ ROW_HELP: Mapping[str, str] = {
     "global_style": (
         "A palette colour or font size in the active block theme. Change... previews the new value."
     ),
-    "model": "A post type or taxonomy. Alt+Enter shows its fields; who registered it says why.",
+    "model": (
+        "A post type, taxonomy or field group, with who registered it and how QUILL knows. "
+        "Alt+Enter shows its fields."
+    ),
     "ability": "An ability the site offers. Enter runs it, after a preview.",
     "menu": (
         "A menu. Enter reads where it is shown; Ctrl+N or Add Menu Item adds to it, and "

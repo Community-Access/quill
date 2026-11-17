@@ -286,6 +286,8 @@
   "quill/ui/github_template_sheets_dialog.py::ChooserDialog._buttons::wx.Button": "helped",
   "quill/ui/github_template_sheets_dialog.py::ChooserDialog._list::wx.ListBox": "helped",
   "quill/ui/github_template_sheets_dialog.py::CodeownersDialog.body::wx.Button": "helped",
+  "quill/ui/github_template_sheets_dialog.py::CodeownersDialog.body::wx.Button#2": "helped",
+  "quill/ui/github_template_sheets_dialog.py::CodeownersDialog.body::wx.TextCtrl": "helped",
   "quill/ui/github_template_sheets_dialog.py::FundingDialog.body::wx.TextCtrl": "helped",
   "quill/ui/github_template_sheets_dialog.py::_Sheet.__init__::wx.Button": "helped",
   "quill/ui/github_template_sheets_dialog.py::_Sheet.__init__::wx.Button#2": "helped",

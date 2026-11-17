@@ -71,7 +71,7 @@ def hit_label(hit: Any, unheard: int = 0) -> str:
     from quill.core.podcasts import search_index as si
 
     if hit.kind == si.KIND_SHOW:
-        extra = f" ({unheard} unheard)" if unheard else ""
+        extra = f" ({unheard} unplayed)" if unheard else ""
         return f"{hit.show_title} -- a podcast{extra}"
     if hit.kind == si.KIND_NOTE:
         return f"Note on {hit.episode_title}: {hit.snippet}"

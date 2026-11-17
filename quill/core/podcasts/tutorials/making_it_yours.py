@@ -71,9 +71,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Listen from a whole folder",
                 body=(
-                    "On a folder's menu, Play All Unheard queues the newest unheard "
+                    "On a folder's menu, Play All Unplayed queues the newest unplayed "
                     "episode from each podcast in it and starts playing. Add All to "
-                    "Queue adds every unheard episode instead."
+                    "Queue adds every unplayed episode instead."
                 ),
                 keys=("Shift+F10",),
                 hear="The first episode playing, and how many were queued.",
@@ -83,7 +83,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Hide what you have caught up on",
                 body=(
                     "Hide Caught-Up Podcasts, on the View menu, hides the podcasts "
-                    "with nothing unheard, so only the ones with something new for you "
+                    "with nothing unplayed, so only the ones with something new for you "
                     "are left. Press it again to show them all."
                 ),
                 keys=("Ctrl+Shift+H",),

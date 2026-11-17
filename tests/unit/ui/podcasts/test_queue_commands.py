@@ -47,6 +47,10 @@ class _Controller:
     def stop(self) -> None:
         self.stopped = True
 
+    def forget_current_episode(self) -> None:
+        self.forgotten = True
+        self.state = _State("", "")
+
 
 class _Host:
     """Only what the queue commands ask for."""
@@ -74,10 +78,18 @@ class _Host:
         self.sounds: list[Any] = []
         self.saves = 0
         self.played: list[str] = []
+        self.shared: list[tuple[str, int, bool]] = []
+        self.stats_flushes: list[bool] = []
 
     # what the commands call
     def _save_podcast_library(self) -> None:
         self.saves += 1
+
+    def _podcast_share_place(self, _show: Any, episode: Any, ms: int, *, finished: bool) -> None:
+        self.shared.append((episode.guid, ms, finished))
+
+    def _podcast_flush_stats(self, *, completed: bool = False) -> None:
+        self.stats_flushes.append(completed)
 
     def _announce(self, text: str, sound: Any = None) -> None:
         self.said.append(text)
@@ -242,3 +254,22 @@ def test_mark_played_and_next_with_nothing_playing_says_so(monkeypatch) -> None:
 
     assert host.said == ["Nothing is playing."]
     assert host.queue == ["a", "b"]
+
+
+def test_mark_played_and_next_does_the_whole_finish(monkeypatch) -> None:
+    """earshot.md F1: the sync stamp, the Radio share and the statistics, and no
+    position written back by the next episode's start."""
+    from quill.ui.podcasts.queue_commands import mark_played_and_next
+
+    _patch_playback(monkeypatch)
+    host = _Host("a", "b", playing="a", position=1_800_000)
+
+    mark_played_and_next(host)
+
+    episode = host._podcast_library.shows[0].find_episode("a")
+    assert episode.played is True
+    assert episode.position_ms == 0
+    assert episode.position_updated_at  # stamped, so the finish travels
+    assert host.shared == [("a", 0, True)]
+    assert host.stats_flushes == [True]
+    assert getattr(host._podcast_controller, "forgotten", False) is True

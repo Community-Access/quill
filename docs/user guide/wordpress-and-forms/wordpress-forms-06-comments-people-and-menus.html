@@ -386,6 +386,12 @@ its REST API.</li>
 <li><strong>Remove…</strong> takes them off the site. It asks who gets
 their posts first, and the preview counts them, so no writing is
 lost.</li>
+<li><strong>Who Has Never Signed In</strong> lists the people with no
+sign-in on record. WordPress itself does not keep sign-in times where
+QUILL can read them, so this works only when a plugin on the site
+records the last sign-in and shares it (as <code>last_login</code>). On
+any other site it says it cannot tell, rather than calling everyone
+new.</li>
 </ul>
 <p>Select several people to change all their roles, or remove them, in
 one go.</p>
@@ -407,6 +413,22 @@ in with is marked, so you do not revoke it by accident.</p>
 <p><strong>Site &gt; Roles and What They May Do</strong>
 (<code>Ctrl+Alt+R</code>) explains each role on the site in plain
 words.</p>
+<p>WordPress cannot change what a role may do by itself; that takes a
+role plugin. When the site’s role plugin shares its roles with QUILL
+(QUILL looks for the Members plugin’s <code>members/v1</code> routes),
+the same command lists the site’s own roles instead, each with how many
+capabilities it has:</p>
+<ul>
+<li>Choose a role to change what it may do. Its capabilities are listed
+one a line; delete a line to take one away, or add a line to give one.
+The preview says what the role gains and loses, and Ctrl+Z puts it
+back.</li>
+<li>Choose <strong>New Role…</strong> to make one. Give it a name, then
+its capabilities, one a line. Ctrl+Z takes the new role away again.</li>
+</ul>
+<p>A change to a role reaches everyone who has it at once, so read the
+preview carefully. On a site without such a plugin, change roles in
+wp-admin, with Members or User Role Editor.</p>
 <h2 id="menus">Menus</h2>
 <p>A menu is the list of links in your site’s header or footer that
 visitors use to find your pages. WordPress does not add a new page to a

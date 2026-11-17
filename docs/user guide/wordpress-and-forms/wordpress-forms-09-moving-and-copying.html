@@ -358,6 +358,89 @@ Uploaded files and new categories and tags stay, and the report says
 so.</p>
 <p>Then open the drafts, read them over, and publish the ones you
 want.</p>
+<h2 id="moving-in-from-blogger-medium-substack-or-squarespace">Moving in
+from Blogger, Medium, Substack or Squarespace</h2>
+<p>If your writing lives on another platform, ask it for its export
+first:</p>
+<ul>
+<li><strong>Blogger:</strong> Settings, then Back up content, or Google
+Takeout. You get an <code>.xml</code> or <code>.atom</code> file.</li>
+<li><strong>Medium:</strong> Settings, then Download your information.
+You get a <code>.zip</code>.</li>
+<li><strong>Substack:</strong> Settings, then Export. You get a
+<code>.zip</code>.</li>
+<li><strong>Squarespace:</strong> Settings, then Export, then WordPress.
+You get an <code>.xml</code> file.</li>
+</ul>
+<p>Then, in the Workbench:</p>
+<ol type="1">
+<li>Select the site you are moving into, or anything on it.</li>
+<li>Choose <strong>Tools &gt; WXR Files &gt; Import from Blogger,
+Medium, Substack or Squarespace…</strong> (Alt+T, then W, then B).</li>
+<li>Choose the export file. You do not have to say which platform it
+came from; QUILL can tell.</li>
+</ol>
+<p>QUILL reads the file on this computer and nothing else. From there it
+works just like importing a WXR file: the same question about authors
+who have no match, the same preview, everything made as a draft, and
+Ctrl+Z to move the drafts to the Trash.</p>
+<p>The preview starts with what QUILL found in the export:</p>
+<ul>
+<li><strong>Blogger:</strong> posts and pages come in, and labels become
+tags. Posts that were drafts on Blogger are said to be drafts. Comments,
+settings and the template are left out and counted.</li>
+<li><strong>Medium:</strong> each story comes in with its subtitle as
+the excerpt, and its author and date. Stories that were drafts on Medium
+are said to be. Responses and claps are not in Medium’s export.</li>
+<li><strong>Substack:</strong> each post comes in with its subtitle as
+the excerpt. A podcast episode gets a player for its audio at the top.
+Posts for paying subscribers come in as drafts like the rest, and the
+preview says how many there were. Threads are left out, and so is your
+subscriber list.</li>
+<li><strong>Squarespace:</strong> its export is nearly a WordPress
+export, but it leaves out a few things WordPress expects, and writes
+many links starting from the site’s root, such as “/menu”. QUILL fills
+those in with your Squarespace address, and the import then points links
+between the imported pages at your new site. Squarespace’s own layout
+markup is kept as it is.</li>
+</ul>
+<p><strong>Pictures.</strong> Blogger, Medium and Substack do not put
+pictures in their exports, so the drafts keep showing each picture from
+where it is now. The preview names those places, such as
+<code>substackcdn.com</code>, and nothing is downloaded. If you plan to
+close the old account, move the pictures into your Media Library first.
+A Squarespace export may name its files; if it does, you get the same
+Files question as a WXR import.</p>
+<p>If QUILL cannot tell what the file is, it says so, and nothing is
+sent.</p>
+<h2 id="keeping-a-static-copy-for-an-archive">Keeping a static copy for
+an archive</h2>
+<p>A WXR file is for moving a site to another WordPress. When you want a
+copy anyone can open in a browser years from now, with no WordPress at
+all, use <strong>Tools &gt; WXR Files &gt; Archive a Static
+Copy…</strong> (Alt+T, then W, then S).</p>
+<ol type="1">
+<li>Select the site in the tree.</li>
+<li>Choose <strong>Archive a Static Copy…</strong>.</li>
+<li>Choose an empty folder. If the folder you pick already has files in
+it, QUILL makes a new folder inside it, named after the site, and uses
+that.</li>
+</ol>
+<p>QUILL reads every published page and post and writes each one as its
+own plain web page, with its title as the heading and, for a post, the
+day it was published. A file called index.html lists them all, pages
+first, then posts, newest first. Open that file in your browser to
+start.</p>
+<p>Pictures, sounds, videos and documents the pages use are copied into
+a folder called media, and the pages point at those copies, so the
+archive works with no internet connection. Links from one page to
+another point at the copied pages too. QUILL only fetches files from
+your own site. A picture shown from somewhere else, such as a video
+service or another website, is left pointing where it was, and the
+report at the end names each one.</p>
+<p>Drafts and private posts are never part of the archive. Nothing on
+the site changes. The report says how many pages, posts and files went
+in, then lists anything left out and why.</p>
 <h2 id="copying-to-another-of-your-sites">Copying to another of your
 sites</h2>
 <p><strong>Item &gt; Copy to Site…</strong> (<code>Ctrl+Shift+Y</code>)
@@ -446,7 +529,25 @@ person, and keep this one;</li>
 <li><strong>Replace Everywhere…</strong>: another file, pattern, link,
 shortcode or form, in every page that uses this one;</li>
 <li><strong>Find Items Missing This Field</strong>, on a custom field:
-the posts and pages with no value.</li>
+the posts and pages with no value;</li>
+<li><strong>Convert to Block…</strong>, on a shortcode in Blocks and
+Shortcodes: turns gallery, caption, audio, video and embed shortcodes
+into the blocks WordPress’s own editor would make of them, on the items
+you check. A gallery needs its pictures in the Media Library, and an
+audio or video shortcode needs a file address; any one that cannot be
+converted cleanly stays as it was, and the preview says which and why.
+Playlist has no WordPress block, so it stays a shortcode;</li>
+<li><strong>Update Pattern Everywhere…</strong>, on a synced pattern in
+Patterns Used: change its blocks once, and every page that places it
+shows the change;</li>
+<li><strong>Detach Copies…</strong>, on a synced pattern: the pages you
+check get the pattern’s own blocks in its place, as Detach does in the
+block editor. Editing the pattern afterwards no longer changes those
+pages;</li>
+<li><strong>Pages Using Its Blocks</strong>, on a block from a plugin
+(or on the plugin’s own row under Plugins): every page using any block
+from that plugin. Look here before you remove a plugin, because its
+blocks stop showing once it is gone.</li>
 </ul>
 <p>Each is previewed item by item. Every item is read again before it is
 sent, and one that changed since the list was made is left alone. You
@@ -460,9 +561,23 @@ because templates find a part by its slug.</p>
 things your sites share, side by side: <strong>Tags and
 Categories</strong>, <strong>Plugins</strong>, <strong>Themes</strong>,
 <strong>People</strong>, <strong>Settings</strong>,
-<strong>Menus</strong>, <strong>Synced Patterns</strong> and
-<strong>Application Passwords</strong>. Each row says the versions in
-use and which sites are missing it.</p>
+<strong>Menus</strong>, <strong>Synced Patterns</strong>,
+<strong>Application Passwords</strong>, <strong>Starter Pages</strong>,
+<strong>Forms</strong>, <strong>Content Types</strong>, <strong>Pages
+with a Role</strong>, <strong>Redirects</strong> and <strong>Spam
+Senders</strong>. Each row says the versions in use and which sites are
+missing it. A site that does not run the plugin a list needs, such as
+Redirection for Redirects or QUILL Accessible Forms for Forms, is named
+as not read rather than missing, so nothing is ever made there by
+mistake.</p>
+<p>A few of these are for comparing only. Starter pages and content
+types are set up by each site’s theme and plugins, and WordPress cannot
+copy them from outside, so their rows show where they differ and stop
+there.</p>
+<p>Pages with a Role means the front page and the privacy policy page.
+WordPress does not say from outside which page is the privacy policy, so
+QUILL uses the page at its usual address, privacy-policy, and says so on
+the row.</p>
 <p><strong>Site &gt; Across Sites Scope…</strong>
 (<code>Ctrl+Alt+Y</code>) chooses every site, or one Site Set.
 <strong>Site &gt; Site Sets…</strong> (<code>Ctrl+Alt+T</code>) names a
@@ -474,7 +589,21 @@ previews every site’s change, and says how each went. It covers
 categories and tags, plugins (on or off), settings, people’s roles,
 synced patterns, menus and themes. WordPress cannot switch a theme from
 outside, so for a theme it opens each site’s Themes screen in your
-browser. A copied menu is final.</li>
+browser. A copied menu is final. It also covers forms (a site without
+the form gets a draft, so you can check who its notifications go to
+there; a site with it keeps its own settings and responses), pages with
+a role (the text of the one you choose goes to the others, which is how
+you bring stale privacy pages up to date), redirects (made where
+missing, in that site’s usual group) and spam senders (blocked on the
+sites that do not block them yet).</li>
+<li><strong>Merge Everywhere…</strong>, on a tag or category: name the
+term to merge it into, and on every site that has both, each post moves
+across and the old term is deleted. A site without a term of that name
+is left alone and named in the preview. It is final.</li>
+<li><strong>Remove Everywhere…</strong>, on a tag or category, a
+redirect or a spam sender: deleted on every site that has it, after a
+preview that starts on Cancel. The preview gives each site’s post count
+for a term. It cannot be undone.</li>
 <li><strong>Install on Sites Missing It…</strong> installs a plugin from
 WordPress.org on every site that lacks it, after a preview. For a theme,
 it opens each of those sites’ Add New screen.</li>
@@ -497,25 +626,36 @@ says known, unknown, unavailable or stale. If a site stops answering,
 its last answer stays, with when it came. The Fleet only reads.</p>
 <h2 id="lists-in-and-out">Lists in and out</h2>
 <ul>
-<li><strong>Edit &gt; Export List…</strong> (<code>Ctrl+Shift+X</code>)
-saves the list you are in as an Excel file, a CSV file or a Markdown
-table.</li>
-<li><strong>Edit &gt; Import Posts from a Spreadsheet…</strong>
+<li><p><strong>Edit &gt; Export List…</strong>
+(<code>Ctrl+Shift+X</code>) saves the list you are in as an Excel file,
+a CSV file or a Markdown table.</p></li>
+<li><p><strong>Edit &gt; Import Posts from a Spreadsheet…</strong>
 (<code>Ctrl+Shift+I</code>) makes posts or pages from an Excel or CSV
 file. It matches the columns to WordPress’s fields and shows you the
 match first. Rows marked published or scheduled come in as drafts, and
-you hear how each row went.</li>
-<li><strong>Edit &gt; Import a Folder of Documents…</strong>
+you hear how each row went.</p></li>
+<li><p><strong>Edit &gt; Import a Folder of Documents…</strong>
 (<code>Ctrl+Alt+Shift+I</code>) makes a draft from each Markdown, text
-or Word file in a folder, previewed file by file.</li>
-<li><strong>Tools &gt; Plain-Language Batch…</strong>
+or Word file in a folder, previewed file by file.</p></li>
+<li><p><strong>Tools &gt; Plain-Language Batch…</strong>
 (<code>Ctrl+Alt+B</code>) lets you write a change in words, such as
 <code>move all drafts by Sam to pending on Radio</code>,
 <code>add tag 2026 to posts in category Events on every site</code>, or
 <code>remove tag Old from all published posts by Ann</code>. QUILL finds
 the exact items you meant. A name that matches nothing is said, never
 guessed. Then it gives you a checklist of the items. Uncheck anything
-that should not change, then send. It does not use AI.</li>
+that should not change, then send. It does not use AI.</p>
+<p>Any of these can say how old: <code>older than a year</code>,
+<code>older than six months</code>, <code>newer than two weeks</code>,
+<code>before March 2024</code> or <code>after 2023</code>, all by the
+date of the post or page. To clear things out, say
+<code>move every draft older than a year to Trash</code> or
+<code>trash all drafts before March 2024</code>. You get the same
+checklist first, and <code>Ctrl+Z</code> puts everything back with the
+status it had. To ask instead of change, start with “how many”:
+<code>how many drafts are older than six months?</code> or
+<code>how many pages are pending on every site?</code> QUILL says the
+count for each site and changes nothing.</p></li>
 </ul>
 <p>In the editor, <strong>File &gt; WordPress &gt; Send and Copy &gt;
 Download My Writing…</strong> saves every page and post to a folder as

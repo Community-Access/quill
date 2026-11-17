@@ -3122,6 +3122,41 @@ start and the end of the episode).</p>
 release notes welcome a listener to 2.0, and the changelog is the
 complete record. Every standalone Quill app has the same row on the same
 key; a missing changelog is said, never silent.</p>
+<h3 id="2332-earshot-parity-round-two-2026-11-15">23.32 Earshot parity,
+round two (2026-11-15)</h3>
+<p>Compared against Earshot 1.2.6 (TestFlight build 317,
+<code>c11dda93</code>); the plan of record, with every item, its code
+and what remains, is <code>docs/design/earshot.md</code>, and code cites
+it as <code>earshot.md &lt;item&gt;</code>. Jeff chose to build every
+item and to move Cast’s wording to Played and Unplayed.</p>
+<ul>
+<li><strong>FW</strong> Count as finished when stopped within the last
+(one minute): leaving an episode in its last minute marks it played, and
+Continue Listening no longer keeps episodes at 99 percent (from a
+listener’s report).</li>
+<li><strong>E1</strong> The outro skip fires only on a natural crossing,
+never on a resume or seek into it, and never for an episode shorter than
+the skip.</li>
+<li><strong>E2</strong> Chapter, transcript and soundbite times are
+validated; <code>NaN</code> and <code>Infinity</code> no longer lose a
+whole chapter list or break feed parsing.</li>
+<li><strong>E3</strong> This device’s Listening Places file is replaced
+only while it is still ours, and a failed write is said.</li>
+<li><strong>F1</strong> Mark as Played and Next does the whole
+finish.</li>
+<li><strong>E4</strong> Keep finished episodes in the Play Queue.
+<strong>E7</strong> Start the queue again from its first unplayed
+episode. Both off.</li>
+<li><strong>E5</strong> Ctrl+A and Ctrl+Shift+I on the episode list, and
+bulk Mark as Unplayed. <strong>E6</strong> How much to even out the
+volume: Light, Balanced, Strong.</li>
+<li><strong>E8</strong> Preview shows each episode’s description.
+<strong>E9</strong> Listening Statistics by folder. <strong>E10</strong>
+A Play Queue group heading moves and is picked up as its whole
+group.</li>
+<li><strong>D1</strong> Played and Unplayed, never heard and unheard
+(GATE-CAST-WORDS).</li>
+</ul>
 <p>See <code>CHANGELOG.md</code> for the full, versioned history.</p>
 </main>
 </body>

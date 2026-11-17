@@ -112,7 +112,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "On the Play Queue place, the Applications key offers Save Lineup. "
                     "Type a name, such as Tuesday, and the queue's order becomes a "
                     "lineup of episodes you added by hand. Apply Lineup puts its "
-                    "unheard episodes back at the front of the queue later."
+                    "unplayed episodes back at the front of the queue later."
                 ),
                 keys=("Applications",),
                 hear="Saved lineup Tuesday, then how many episodes, in this order.",

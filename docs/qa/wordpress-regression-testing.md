@@ -400,7 +400,8 @@ keys: use the menus, or type "form" in the Command Palette. Where they are
 - **Tools > Forms:** Check This Form, Fill It In Yourself, Form Properties,
   Publish Form, Insert Form Into Page, Test on Site, Responses, Save As Web
   Page, Save As Word Document, Save As Large Print, Save As Braille-Ready
-  Text, Draft a Form, Plain Language, Suggest Autofill Hints.
+  Text, Save As GitHub Issue Form, Open GitHub Issue Form, Draft a Form,
+  Plain Language, Suggest Autofill Hints.
 
 The tests build one form, "Ask us anything", as the guided Forms lessons do.
 
@@ -431,7 +432,14 @@ The tests build one form, "Ask us anything", as the guided Forms lessons do.
     with 5 questions, lines to write on and boxes to check." and "Saved Ask us
     anything.txt, braille-ready text with 5 questions, one a block." Open
     both; with the braille pack installed, also save the UEB contracted .brf.
-    Repeat in Safe Mode: all four Save As commands still work.
+    Then Save As GitHub Issue Form: the What Changes window says Best way to
+    reply becomes a drop-down list and Phone number's condition is left out;
+    close it, save,
+    and expect "Saved Ask us anything.yml, a GitHub issue form with 5
+    questions; 2 changes were listed before saving." Open GitHub Issue Form on
+    that file, save it as Ask again.qaf, and expect it to open with the same
+    questions. Repeat in Safe Mode: all five Save As commands and Open GitHub
+    Issue Form still work.
 62. **Not a form.** In an ordinary text document, run Check This Form from
     the Command Palette. Expect "Check This Form works in a form document, a
     .qaf file. Start one with New Form in the File menu, or open one."

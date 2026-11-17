@@ -129,7 +129,10 @@ citations (the AI plan of record: Choose Your AI, Ask, the agents) resolve on
 disk, in `docs/design/codex.md`, as do `code.md <section>` citations (agentic
 coding and the Developer profile) in `docs/design/code.md`, as do
 `wordpress.md <section>` citations (WordPress and Forms in both editors, with
-its progress log and remaining tasks) in `docs/design/wordpress.md`, and
+its progress log and remaining tasks) in `docs/design/wordpress.md`, as do
+`earshot.md <item>` citations (Earshot parity, round two, 2026-11-15: FW, E1 to
+E10, F1 and D1, with its progress log and remaining tasks) in
+`docs/design/earshot.md`, and
 `phonon-voices-prd.md R-<n>` citations in
 `docs/Product Requirement Documents and Specifications/phonon-voices-prd.md`.
 Every AI menu in the family is laid out by `quill/core/ai/ai_menu_layout.py`:

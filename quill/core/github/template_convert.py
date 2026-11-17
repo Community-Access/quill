@@ -23,12 +23,12 @@ from quill.core.github.template_builder import (
     TemplateDraftError,
     check,
     load_draft,
-    new_field,
 )
 
 __all__ = [
     "check_form_text",
     "form_template_kind",
+    "form_file_to_draft",
     "form_to_markdown",
     "markdown_losses",
     "qaf_to_draft",
@@ -92,88 +92,48 @@ def form_to_markdown(draft: FormDraft) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
-_INPUT_TYPES = frozenset(
-    "text number email phone website date time datetime daterange name address currency "
-    "post_title user_login user_email".split()
-)
-_LONG_TYPES = frozenset({"textarea", "rich_text", "post_content", "post_excerpt"})
-
-
-def _qaf_label(item: Mapping[str, Any]) -> str:
-    label = item.get("label")
-    if isinstance(label, Mapping):  # translated labels: take the first language
-        label = next(iter(label.values()), "")
-    return str(label or item.get("id") or "").strip()
-
-
 def qaf_to_draft(model: Mapping[str, Any]) -> tuple[FormDraft, list[str]]:
-    """A QAF model as an issue form, and what was left out (one sentence each)."""
-    from quill.core.forms.model import TYPE_NAMES, iter_items
+    """A QAF model as an issue form, and what was left out (one sentence each).
 
-    title = model.get("title")
-    title = next(iter(title.values()), "") if isinstance(title, Mapping) else title
-    draft = FormDraft(
-        top={
-            "name": str(title or "Converted form"),
-            "description": "Converted from a QUILL form.",
-        }
-    )
-    report: list[str] = []
-    taken: list[str] = []
-    for item in iter_items(dict(model)):
-        kind = str(item.get("type") or "")
-        label = _qaf_label(item)
-        required = bool(item.get("required"))
-        help_text = str(item.get("help") or "")
-        choices = [
-            str(c.get("label") or c.get("value") or "")
-            for c in item.get("choices") or []
-            if isinstance(c, Mapping)
-        ]
-        made: dict[str, Any] | None = None
-        if kind in ("section", "columns"):
-            continue
-        if kind == "html":
-            made = new_field("markdown", value=help_text or label)
-        elif kind in _INPUT_TYPES:
-            made = new_field("input", label, required=required, description=help_text, taken=taken)
-        elif kind in _LONG_TYPES:
-            made = new_field(
-                "textarea", label, required=required, description=help_text, taken=taken
-            )
-        elif kind in ("select", "radio", "multiselect") and choices:
-            made = new_field(
-                "dropdown",
-                label,
-                options=choices,
-                multiple=kind == "multiselect",
-                required=required,
-                description=help_text,
-                taken=taken,
-            )
-        elif kind in ("checkbox", "consent"):
-            made = new_field(
-                "checkboxes",
-                label,
-                options=choices or [label],
-                required_options=[required] * max(1, len(choices)),
-                description=help_text,
-                taken=taken,
-            )
-        if made is None:
-            name = TYPE_NAMES.get(kind, kind)
-            report.append(f"{label or kind}: GitHub forms have no {name} field; left out.")
-            continue
-        if item.get("when"):
-            report.append(f"{label}: its condition is left out; GitHub forms show every field.")
-        if item.get("scoring"):
-            report.append(f"{label}: its scoring is left out.")
-        if made.get("id"):
-            taken.append(str(made["id"]))
-        draft.fields.append(made)
-    if not any(raw.get("type") != "markdown" for raw in draft.fields):
-        draft.fields.append(new_field("textarea", "Details", taken=taken))
+    The one export, :func:`quill.core.forms.interop_github.export_github_draft`,
+    which Save As GitHub Issue Form in the Forms commands also uses.
+    """
+    from quill.core.forms.interop_github import export_github_draft
+
+    draft, report = export_github_draft(model)
     return draft, report
+
+
+#: Files New Template can start an issue form from (PRD 21.4), by extension.
+FORM_FILE_KINDS: dict[str, str] = {".json": "SurveyJS", ".xlsx": "XLSForm", ".xls": "XLSForm"}
+
+
+def form_file_to_draft(path: str) -> tuple[FormDraft, list[str]]:
+    """A SurveyJS (``.json``) or XLSForm (``.xlsx``) file as an issue form.
+
+    Both go through the QUILL Forms model their importers already build
+    (``interop_surveyjs`` and ``interop_xlsform``), then :func:`qaf_to_draft`.
+    The report is the importer's sentences followed by what the issue form left
+    out, so nothing is lost without being said. Raises ``ValueError`` for any
+    other kind of file.
+    """
+    from pathlib import Path
+
+    suffix = Path(path).suffix.lower()
+    kind = FORM_FILE_KINDS.get(suffix)
+    if kind == "SurveyJS":
+        from quill.core.forms.interop_surveyjs import import_surveyjs
+
+        imported = import_surveyjs(Path(path).read_text(encoding="utf-8"))
+    elif kind == "XLSForm":
+        from quill.core.forms.interop_xlsform import import_xlsform
+
+        imported = import_xlsform(path)
+    else:
+        raise ValueError("Choose a SurveyJS form (.json) or an XLSForm (.xlsx).")
+    draft, left_out = qaf_to_draft(imported.model)
+    draft.top["description"] = f"Converted from a {kind} form."
+    return draft, [*imported.report, *left_out]
 
 
 def form_template_kind(path: str) -> str:

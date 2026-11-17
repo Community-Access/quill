@@ -47,6 +47,7 @@ from dataclasses import asdict, dataclass, field
 from dataclasses import fields as dataclass_fields
 
 from quill.core.display_text import clean_display_text
+from quill.core.podcasts.time_values import seconds_to_ms_or_none
 
 _ATTR = r'{name}\s*=\s*"([^"]*)"'
 
@@ -221,10 +222,8 @@ def _rows[T](raw: object, kind: type[T]) -> list[T]:
 
 
 def _seconds_to_ms(value: str) -> int:
-    try:
-        return max(0, int(float(value) * 1000))
-    except (TypeError, ValueError):
-        return 0
+    """A feed attribute's seconds; "inf" no longer takes the feed with it (E2)."""
+    return seconds_to_ms_or_none(value, allow_text=True) or 0
 
 
 _PERSON = re.compile(r"<podcast:person\b([^>]*)>(.*?)</podcast:person>", re.IGNORECASE | re.DOTALL)

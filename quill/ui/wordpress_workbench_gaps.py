@@ -161,9 +161,10 @@ class WorkbenchGapCommands:
             listed = update_rows(ctx)
             plugins = [uc.slug_of(r)[1] for r in listed if r.key.startswith("update:plugin:")]
             themes = [uc.slug_of(r)[1] for r in listed if r.key.startswith("update:theme:")]
-            latest = uc.Latest(
-                uc.latest_core(), uc.latest_plugins(plugins), uc.latest_themes(themes)
-            )
+            logs: dict[str, str] = {}  # each plugin's changelog, read with its version (D3)
+            core = uc.latest_core()
+            versions = uc.latest_plugins(plugins, changelogs=logs)
+            latest = uc.Latest(core, versions, uc.latest_themes(themes), logs)
             return latest, uc.mark_rows(listed, latest)
 
         def done(found: tuple[uc.Latest, list[WbRow]]) -> None:

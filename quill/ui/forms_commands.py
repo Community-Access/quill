@@ -27,6 +27,7 @@ from quill.ui import forms_fill as ff
 from quill.ui import forms_fill_window as ffw
 from quill.ui import wordpress_block_dialogs as wbd
 from quill.ui import wordpress_dialogs as dlg
+from quill.ui.forms_github_commands import FormsGitHubCommands
 from quill.ui.forms_outline_commands import FormsOutlineCommands
 from quill.ui.forms_payments_commands import FormsPaymentsCommands
 from quill.ui.forms_publish_commands import FormsPublishCommands
@@ -40,7 +41,9 @@ def not_a_form(command: str) -> str:
     )
 
 
-class FormsCommands(FormsPublishCommands, FormsOutlineCommands, FormsPaymentsCommands):
+class FormsCommands(
+    FormsPublishCommands, FormsOutlineCommands, FormsPaymentsCommands, FormsGitHubCommands
+):
     def __init__(self, host: Any) -> None:
         self.host = host
 

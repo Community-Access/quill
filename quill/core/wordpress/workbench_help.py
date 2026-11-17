@@ -11,10 +11,27 @@ with analogies from what people already know. Wx-free.
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
+
+from quill.core.wordpress.workbench_glossary import GLOSSARY, example_for
+from quill.core.wordpress.workbench_help_topics import (
+    ASK_ADDRESS,
+    GUIDE_CHAPTERS,
+    TASKS,
+    WHAT_CHANGED,
+)
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.workbench.help import HelpCatalogue, HelpRecord
 
-__all__ = ["HOW_IT_THINKS", "KEYS", "START_HERE", "WORDPRESS_HELP", "WORDS", "help_rows"]
+__all__ = [
+    "HOW_IT_THINKS",
+    "KEYS",
+    "START_HERE",
+    "TOPIC_VIEWS",
+    "WORDPRESS_HELP",
+    "WORDS",
+    "help_rows",
+]
 
 START_HERE = (
     "The WordPress Workbench is one window for your WordPress sites. The tree, where you "
@@ -24,7 +41,11 @@ START_HERE = (
     "F6 moves from pane to pane and then to the status bar. Enter does the obvious thing: "
     "on a post or page it opens it in the editor, where writing happens. The Applications "
     "key lists everything else; Alt+Enter opens Properties; Delete moves to the Trash, and "
-    "Ctrl+Z puts the last change back. F1 says what any control does.\n\nThis is an early "
+    "Ctrl+Z puts the last change back. F1 says what any control does.\n\nNew to looking "
+    "after a site? Your First Week, in the editor's Help > Tutorials, is one short lesson a "
+    "day for seven days, each ending with something real on your own site and nothing done "
+    "that you did not choose. The Practice Site lessons and Break It on Purpose are there "
+    "too, for trying things with nothing at stake.\n\nThis is an early "
     "preview, behind a developer setting. Your Tools > WordPress windows still work."
 )
 
@@ -38,26 +59,8 @@ HOW_IT_THINKS = (
     "publishes anyone's and moderates comments, and an Administrator runs the whole site."
 )
 
-WORDS = (
-    ("Post", "A dated piece of writing, filed under categories and tags."),
-    ("Page", "A piece that stands on its own, like About or Contact; pages can nest."),
-    ("Slug", "The last part of an address, such as about-us."),
-    ("Draft", "Saved on the site but not public."),
-    ("Pending review", "Written by someone who cannot publish, waiting for an editor."),
-    ("Scheduled", "Will be published by itself at a set time."),
-    ("Private", "Published, but only people signed in with the right role see it."),
-    ("Trash", "Like the Recycle Bin: Restore brings an item back until it is emptied."),
-    ("Category", "Like a folder for posts; categories can sit inside one another."),
-    ("Tag", "Like a label in Outlook: a word many posts can share."),
-    ("Taxonomy", "A way of grouping things: categories and tags are two."),
-    ("Custom post type", "A kind of content a plugin adds, such as Events or Products."),
-    ("Custom field", "An extra fact stored with an item, such as an event's date."),
-    ("Role", "What someone may do on the site: Subscriber up to Administrator."),
-    ("Capability", "One thing a role allows, such as publish pages."),
-    ("Application password", "A password made for one app, such as QUILL, and revocable."),
-    ("Held as spam", "A comment or form entry the site doubted, kept for you to judge."),
-    ("Site Health", "WordPress's own checks of how well the site is set up."),
-)
+WORDS = GLOSSARY
+"""Every glossary word (D1), from :mod:`~quill.core.wordpress.workbench_glossary`."""
 
 KEYS = (
     ("Enter", "The obvious thing: on a post or page, open it in the editor."),
@@ -82,6 +85,11 @@ KEYS = (
     ("F6", "The next pane, then the status bar."),
     ("Alt+1", "Where you are. Alt+2, how many are selected."),
     ("Shift+F1", "What your role lets you do here."),
+    ("Alt+F1", "What Is This? The WordPress word for the selected row, with your site's example."),
+    ("Ctrl+F1", "The WordPress and Forms guide, at the chapter for where you are."),
+    ("Ctrl+Shift+F1", "Search Help: places, commands, words and tasks."),
+    ("Alt+Shift+F1", "Every key in this window."),
+    ("F9", "Say the last result again. Shift+F9 explains it."),
 )
 
 
@@ -94,11 +102,67 @@ WORDPRESS_HELP = HelpCatalogue([
 """Every help record the Workbench shows, checked so no related link leads nowhere."""
 
 
-def help_rows(what: str) -> list[WbRow]:
-    """The Words or Keys node's rows."""
-    pairs = WORDS if what == "words" else KEYS
-    first, second = ("word", "meaning") if what == "words" else ("key", "does")
-    return [
-        WbRow("help", "", str(i), {first: a, second: b}, f"{a}: {b}")
-        for i, (a, b) in enumerate(pairs)
-    ]
+#: The Help and Learning nodes whose rows are topics (kind ``help_topic``).
+TOPIC_VIEWS = frozenset({"tasks", "guide", "changes", "ask"})
+
+_ASK = (
+    "Write to support",
+    "Write to support@community-access.org from your own email. Say what you were doing and "
+    "what you expected. The Workbench sends nothing, and puts no site address, user name or "
+    "password in the message; leave them out of what you write too.",
+)
+
+
+def _topic(index: int, title: str, body: str, target: str) -> WbRow:
+    return WbRow(
+        "help_topic",
+        "",
+        str(index),
+        {"title": title, "says": body},
+        f"{title}: {body}",
+        link=target if target.startswith("mailto:") else "",
+        raw={"target": target},
+    )
+
+
+def _topics(what: str) -> list[WbRow]:
+    if what == "tasks":
+        return [
+            _topic(i, title, steps, f"{template}:{key}")
+            for i, (_id, title, steps, (template, key)) in enumerate(TASKS)
+        ]
+    if what == "guide":
+        return [
+            _topic(
+                i,
+                f"Chapter {int(number)}: {title}",
+                f"Chapter {int(number)} of the WordPress and Forms guide. Enter opens it.",
+                f"chapter:{number}",
+            )
+            for i, (number, title) in enumerate(GUIDE_CHAPTERS)
+        ]
+    if what == "changes":
+        return [_topic(i, title, text, "") for i, (title, text) in enumerate(WHAT_CHANGED)]
+    if what == "ask":
+        return [_topic(0, _ASK[0], _ASK[1], ASK_ADDRESS)]
+    return []
+
+
+def help_rows(
+    what: str,
+    seen: Mapping[str, Sequence[WbRow]] | None = None,
+) -> list[WbRow]:
+    """A Help and Learning node's rows: words (with this site's examples), keys or topics."""
+    if what in TOPIC_VIEWS:
+        return _topics(what)
+    if what != "words":
+        return [
+            WbRow("help", "", str(i), {"key": a, "does": b}, f"{a}: {b}")
+            for i, (a, b) in enumerate(KEYS)
+        ]
+    rows = []
+    for i, (word, meaning) in enumerate(WORDS):
+        example = example_for(word, None, seen or {})
+        said = f"{meaning} {example}".strip()
+        rows.append(WbRow("help", "", str(i), {"word": word, "meaning": said}, f"{word}: {said}"))
+    return rows

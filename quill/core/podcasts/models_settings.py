@@ -138,6 +138,9 @@ class PodcastSettings:
     eq_mid_db: float = 0.0
     eq_treble_db: float = 0.0
     compressor_enabled: bool = False
+    #: How hard it works when on: "light", "balanced" or "strong" -- Earshot's
+    #: three levels and values (core/audio/compressor_levels, earshot.md E6).
+    compression_level: str = "light"
     smart_speed_enabled: bool = False
     #: Where the audio comes out: stereo / mono / left / right. An
     #: accessibility setting before a sound one -- mono keeps hard-panned
@@ -159,6 +162,12 @@ class PodcastSettings:
     #: delete-after-play, etc. all still fire).
     auto_skip_intro_seconds: int = 0
     auto_skip_outro_seconds: int = 0
+    #: Stopping this close to the end counts as finishing (0 = only a true
+    #: end does). Without it, an episode left during its closing credits kept
+    #: a place at 99% and sat in Continue Listening for ever. Applied when you
+    #: *leave* an episode (stop, switch, close) -- never on pause, which keeps
+    #: your place -- and Continue Listening hides a place already inside it.
+    finished_within_seconds: int = 60
     #: Auto-download (1.1.0) -- an *acquisition* policy, the counterpart to
     #: the retention policy above. How many of the newest episodes to fetch
     #: without being asked, on subscribe and on every refresh: 0 = off
@@ -302,6 +311,12 @@ class PodcastSettings:
     #: bytes, and somebody on a metered connection pays for them by the megabyte.
     prebuffer_next: bool = False
     continue_after_group: bool = False
+    #: Leave a finished episode in the Play Queue, marked played, instead of
+    #: removing it; the run steps over it (earshot.md E4). Off, as in Earshot.
+    keep_finished_in_queue: bool = False
+    #: At the end of the queue, start again from its first unplayed episode
+    #: (earshot.md E7). Off: a run that ends should end unless asked otherwise.
+    wrap_queue: bool = False
     #: What happens when a run ends, as one choice: "queue" (the default),
     #: "folder" or "stop". The two booleans above are how it is *stored* for an
     #: older build; "" means read them. See :mod:`quill.core.podcasts.run_end`.
@@ -359,6 +374,12 @@ class PodcastSettings:
     #: to episodes finished before it was switched on.
     delete_after_play: bool = False
 
+    def compressor(self) -> bool | str:
+        """What the enhancement builders take: ``False`` or a level (E6)."""
+        from quill.core.audio.compressor_levels import compressor_value
+
+        return compressor_value(self.compressor_enabled, self.compression_level)
+
     def to_dict(self) -> dict[str, object]:
         return {
             "playback_mode": self.playback_mode,
@@ -382,12 +403,14 @@ class PodcastSettings:
             "eq_mid_db": self.eq_mid_db,
             "eq_treble_db": self.eq_treble_db,
             "compressor_enabled": self.compressor_enabled,
+            "compression_level": self.compression_level,
             "smart_speed_enabled": self.smart_speed_enabled,
             "channel_mode": self.channel_mode,
             "skip_forward_seconds": self.skip_forward_seconds,
             "skip_back_seconds": self.skip_back_seconds,
             "auto_skip_intro_seconds": self.auto_skip_intro_seconds,
             "auto_skip_outro_seconds": self.auto_skip_outro_seconds,
+            "finished_within_seconds": self.finished_within_seconds,
             "auto_download_count": self.auto_download_count,
             "auto_download_queued": self.auto_download_queued,
             "auto_download_inbox": self.auto_download_inbox,
@@ -419,6 +442,8 @@ class PodcastSettings:
             "continue_after_queue": self.continue_after_queue,
             "prebuffer_next": self.prebuffer_next,
             "continue_after_group": self.continue_after_group,
+            "keep_finished_in_queue": self.keep_finished_in_queue,
+            "wrap_queue": self.wrap_queue,
             "run_end_action": self.run_end_action,
             "sleep_timer_reset_on_use": self.sleep_timer_reset_on_use,
             "sleep_timer_cancel_on_switch": self.sleep_timer_cancel_on_switch,
@@ -473,12 +498,18 @@ class PodcastSettings:
             eq_mid_db=clamp_eq_gain(_coerce_float(data.get("eq_mid_db"), 0.0)),
             eq_treble_db=clamp_eq_gain(_coerce_float(data.get("eq_treble_db"), 0.0)),
             compressor_enabled=bool(data.get("compressor_enabled", False)),
+            compression_level=_one_of(
+                data.get("compression_level"), {"light", "balanced", "strong"}, "light"
+            ),
             smart_speed_enabled=bool(data.get("smart_speed_enabled", False)),
             channel_mode=normalize_channel_mode(str(data.get("channel_mode", "stereo"))),
             skip_forward_seconds=max(1, _coerce_int(data.get("skip_forward_seconds"), 30)),
             skip_back_seconds=max(1, _coerce_int(data.get("skip_back_seconds"), 15)),
             auto_skip_intro_seconds=max(0, _coerce_int(data.get("auto_skip_intro_seconds"), 0)),
             auto_skip_outro_seconds=max(0, _coerce_int(data.get("auto_skip_outro_seconds"), 0)),
+            finished_within_seconds=min(
+                3600, max(0, _coerce_int(data.get("finished_within_seconds"), 60))
+            ),
             auto_download_count=max(-1, _coerce_int(data.get("auto_download_count"), 0)),
             auto_download_queued=bool(data.get("auto_download_queued", True)),
             auto_download_inbox=bool(data.get("auto_download_inbox", False)),
@@ -533,6 +564,8 @@ class PodcastSettings:
             continue_after_queue=bool(data.get("continue_after_queue", True)),
             prebuffer_next=bool(data.get("prebuffer_next", False)),
             continue_after_group=bool(data.get("continue_after_group", False)),
+            keep_finished_in_queue=bool(data.get("keep_finished_in_queue", False)),
+            wrap_queue=bool(data.get("wrap_queue", False)),
             run_end_action=_one_of(data.get("run_end_action"), {"queue", "folder", "stop"}, ""),
             sleep_timer_reset_on_use=bool(data.get("sleep_timer_reset_on_use", False)),
             sleep_timer_cancel_on_switch=bool(data.get("sleep_timer_cancel_on_switch", False)),

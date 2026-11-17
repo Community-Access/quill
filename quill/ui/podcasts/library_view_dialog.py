@@ -31,7 +31,7 @@ TITLE = "Rearrange Library and Inbox"
 SHOW_SORTS = (
     ("title_az", "Title, A to Z"),
     ("title_za", "Title, Z to A"),
-    ("unheard_first", "Most unheard first"),
+    ("unheard_first", "Most unplayed first"),
     ("recently_updated", "Recently updated first"),
     ("custom", "My own order"),
 )

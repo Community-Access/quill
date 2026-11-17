@@ -43,6 +43,10 @@ def _selection(dialog: Any) -> list[int]:
     """The selected queue indexes, or ``[]`` after saying that there are none."""
     indexes = dialog._selected_indexes()
     if not indexes:
+        # A group heading stands for its whole group (earshot.md E10).
+        heading = getattr(dialog, "_heading_group", lambda: None)()
+        if heading is not None:
+            return list(heading[1])
         dialog._announce("Nothing is selected.")
     return indexes
 

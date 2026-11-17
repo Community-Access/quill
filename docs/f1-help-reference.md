@@ -564,7 +564,7 @@ Control coverage: 341 audited sites (227 helped, 114 named-help).
 
 ## QUILL Cast
 
-Control coverage: 341 audited sites (245 helped, 96 named-help).
+Control coverage: 343 audited sites (247 helped, 96 named-help).
 
 ### Every window, and what it is for
 
@@ -839,6 +839,9 @@ Control coverage: 341 audited sites (245 helped, 96 named-help).
 - `self._copy_btn`: Put the selected podcast's feed address on the clipboard, so you can open it in a browser and see what the publisher is actually sending.
 - `self._find_btn`: For a feed that is not coming back at its address -- removed by the host, a web address that no longer exists, a web page where the feed was, or an empty feed: look up this show's title in the podcast directories and offer the feeds that answer, with their newest episode's date. Replace Feed keeps everything the podcast already has.
 - `close_btn`: Closes Feed Check and returns to where you were, without changing which podcasts you follow.
+#### FeedPreviewDialog (`quill/ui/podcasts/feed_preview_dialog.py`)
+
+- `self._episode_description`: What the episode selected in Recent episodes is about, in the publisher's own words. Choose another episode to read its description.
 #### FirstRunDialog (`quill/ui/podcasts/first_run_dialog.py`)
 
 - `self._body`: About QUILL Cast. Read only: arrow through it at your own pace.
@@ -871,7 +874,7 @@ Control coverage: 341 audited sites (245 helped, 96 named-help).
 - `unsubscribe_btn`: Removes the selected podcast from your library, along with your place in its episodes. Asks first, and says what happens to anything you have downloaded. The Delete key does the same thing.
 #### ManagerPhase4Mixin (`quill/ui/podcasts/manager_phase4.py`)
 
-- `self._episode_filter_choice`: Which episodes the list shows: all of them, only the unheard ones, only what is downloaded, and so on. It narrows the list you are looking at and changes nothing about the episodes themselves.
+- `self._episode_filter_choice`: Which episodes the list shows: all of them, only the unplayed ones, only what is downloaded, and so on. It narrows the list you are looking at and changes nothing about the episodes themselves.
 - `self._show_filter_choice`: Which podcasts the folder tree shows -- all of them, or only the ones with something unplayed. Nothing is unfollowed or hidden permanently.
 - `self._episode_search_ctrl`: Narrows the episode list of the podcast you are on, matching episode titles and the show notes. It searches this podcast only -- Search Everywhere is the one that crosses your whole library -- and it narrows whatever the filter and sort above already chose rather than replacing them. Enter says how many matched.
 #### NewFeedDialog (`quill/ui/podcasts/new_feed_dialog.py`)
@@ -919,7 +922,7 @@ Control coverage: 341 audited sites (245 helped, 96 named-help).
 - `self._list`: The queue in play order; Enter plays the selected episode now. Shift and arrow extend the selection, Ctrl and Space adds one, and Remove takes everything selected.
 #### PlaylistRulesWindow (`quill/ui/podcasts/playlist_rules_dialog.py`)
 
-- `self._status_choice`: Only episodes in this state: unheard, in progress or heard. Any status does not narrow anything.
+- `self._status_choice`: Only episodes in this state: unplayed, in progress or played. Any status does not narrow anything.
 - `self._days_ctrl`: Only episodes published within this many days. 0 means no limit.
 - `self._min_minutes_ctrl`: Only episodes at least this many minutes long. 0 means any length.
 - `self._max_minutes_ctrl`: Only episodes at most this many minutes long. 0 means any length.
@@ -984,6 +987,7 @@ Control coverage: 341 audited sites (245 helped, 96 named-help).
 - `year_btn`: Opens Year in Review: a few sentences about your listening year, to read or keep. It opens beside this window.
 - `clear_btn`: Deletes the whole listening log, after asking. Nothing else about your library changes.
 - `close_btn`: Closes this window and returns to where you were.
+- `self._scope_choice`: All folders, one folder with every folder inside it, or podcasts in no folder. A podcast filed in two places is counted once.
 #### _PeerReader (`quill/ui/podcasts/transcript_window.py`)
 
 - `close_btn`: Closes the transcript and returns to where you were.
@@ -2332,7 +2336,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## GitHub Workbench
 
-Control coverage: 354 audited sites (354 helped).
+Control coverage: 356 audited sites (356 helped).
 
 ### Every window, and what it is for
 
@@ -3600,6 +3604,8 @@ Control coverage: 354 audited sites (354 helped).
 #### CodeownersDialog (`quill/ui/github_template_sheets_dialog.py`)
 
 - `look`: Say which rule owns the path above, and its owners.
+- `check`: Ask GitHub whether every owner exists and can write to this repository. GitHub skips one that cannot, without saying so.
+- `self.findings`: One line for each owner: whether it exists and can write, what to fix if not, and any that could not be checked.
 #### GitHubTimelineDialog (`quill/ui/github_timeline_dialog.py`)
 
 - `self._text`: One line per event with its date and who did it, newest last. The last line says whether this is the whole history.
@@ -3656,7 +3662,7 @@ Control coverage: 354 audited sites (354 helped).
 #### SearchHelpDialog (`quill/ui/workbench_help_dialogs.py`)
 
 - `self.box`: Type a few words, such as who can merge or re-run. The results below narrow as you type; Enter moves to them.
-- `self.results`: Each result says what it is: a place, a command with its key, a GitHub word or a task. Enter goes there, runs it or reads it.
+- `self.results`: Each result says what it is: a place, a command with its key, a glossary word or a task. Enter goes there, runs it or reads it.
 - `go`: Do the selected result. Enter does the same.
 - `close`: Close Search Help. Escape does the same.
 #### WorkbenchPropertiesDialog (`quill/ui/workbench_properties_dialog.py`)

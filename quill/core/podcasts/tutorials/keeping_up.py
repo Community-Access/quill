@@ -65,7 +65,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Open the Inbox",
                 body=(
-                    "The Inbox holds the unheard episodes of the podcasts you send "
+                    "The Inbox holds the unplayed episodes of the podcasts you send "
                     "there. When Cast opens and something is waiting, this is where "
                     "it puts you, and the window title tells you how many."
                 ),
@@ -79,7 +79,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "The Inbox is for deciding. Enter plays an episode now, Space "
                     "adds it to the Play Queue, and Delete takes it out of the Inbox. "
                     "Do not worry: nothing you do here removes an episode from your "
-                    "library. One you delete is still there, unheard, in its podcast."
+                    "library. One you delete is still there, unplayed, in its podcast."
                 ),
                 keys=("Enter", "Space", "Delete"),
                 hear="Added to the Play Queue, or what Delete did.",
@@ -228,7 +228,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "Arrange the queue the way you like it, then choose Save Lineup "
                     "from the Applications key on the Play Queue place and give it a "
                     "name, such as Tuesday. Next Tuesday, Apply Lineup moves its "
-                    "unheard episodes to the front in your order."
+                    "unplayed episodes to the front in your order."
                 ),
                 keys=("Applications",),
                 hear="The lineup saved; later, how many it applied and skipped.",
