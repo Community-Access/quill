@@ -1,6 +1,6 @@
 # GitHub and WordPress Workbench implementation status
 
-**Updated:** 2026-11-15  
+**Updated:** 2026-11-17  
 **Status:** WordPress's last requirements are in code (#1842). GitHub resumed
 on 2026-11-15 and is the current focus.
 
@@ -69,6 +69,11 @@ everything a GitHub form cannot hold is one sentence in the report.
 and XLSForm door and the Forms commands convert the same way. Tools > Forms in
 both editors gains Save As GitHub Issue Form and Open GitHub Issue Form
 (`quill/ui/forms_github_commands.py`). Phase 12 is complete. Next: Phase 13.
+
+**2026-11-17, Phase 13: Export List (PRD 22.7).** Export List... on the
+Workbench's File menu (Ctrl+Shift+X), the WordPress Workbench's command, its
+writer moved to the shared engine (`quill/core/workbench/export.py`). Import
+issues from a spreadsheet and New Issues from Lines remain.
 
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and

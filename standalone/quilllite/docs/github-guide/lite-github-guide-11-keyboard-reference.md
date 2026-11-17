@@ -118,6 +118,7 @@ no AI menu, so here they belong to the Go row.
 | `Ctrl+F5` | Refresh, reading everything from GitHub again |
 | `Alt+Page Down` | Load more |
 | `Ctrl+Shift+Page Down` | Load all |
+| `Ctrl+Shift+X` | Export List: the list as shown, as Excel, CSV or a Markdown table |
 | Escape | Clear the filter box, then go back |
 
 ### Account and tools

@@ -2,6 +2,16 @@
 
 ## 2.0.0
 
+### Export any GitHub Workbench list (2026-11-17)
+
+**Export List...** (`Ctrl+Shift+X`), on the GitHub Workbench's own File menu,
+saves the list in front of you as it is shown, its columns, filter and rows, as an Excel
+workbook, a CSV file or a Markdown table. A Markdown table opens in the editor
+as a table if you like, where the table keys move cell by cell. It works on
+issues, pull requests, runs, alerts, people, Change History or any other list,
+and says how many rows it wrote and which hidden columns it left out. It is
+the WordPress Workbench's Export List, now one command shared by both.
+
 ### GitHub issue forms, written as plain text (2026-11-16)
 
 A GitHub issue form is the form people fill in when they open an issue. In
