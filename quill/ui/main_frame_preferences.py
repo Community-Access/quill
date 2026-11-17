@@ -1019,6 +1019,7 @@ class PreferencesMixin:
                 _data_location_refs["read"] = _read_data_location
                 _data_location_refs["resolve_target"] = _resolve_target
                 _data_location_refs["current"] = _app_data_dir()
+                _data_location_refs["initial"] = _read_data_location()  # what OK compares
 
             def _make_page_builder(
                 _p: object,
@@ -1394,9 +1395,8 @@ class PreferencesMixin:
                     return
                 _built_pages.add(idx)
                 _page_build_fns[idx]()
-                # Pages build lazily, after show_modal_dialog's show-time
-                # naming pass, so each new page needs its own pass or its
-                # controls read as bare values on macOS (#1012). Guarded: a
+                # Pages build after show_modal_dialog's naming pass, so each needs
+                # its own or reads as bare values on macOS (#1012). Guarded: a
                 # naming failure must never break switching Settings pages.
                 try:
                     ensure_accessible_names(dialog)
@@ -1408,9 +1408,8 @@ class PreferencesMixin:
 
             def _on_page_changed(_evt: object) -> None:
                 _build_page(notebook.GetSelection())
-                # Ctrl+Tab from inside a page lands on the new page's first
-                # control; but while ARROWING along the tab strip itself, focus
-                # must stay on the tabs so the tab names can be browsed.
+                # Ctrl+Tab from a page lands on the new page's first control;
+                # arrowing along the tab strip keeps focus on the tab names.
                 if wx.Window.FindFocus() is not notebook:
                     focus_primary_control(dialog)
 
@@ -1501,7 +1500,8 @@ class PreferencesMixin:
                     )
                 except ValueError as error:
                     self._set_status(str(error))
-        if data_location_choice is not None:
+        # Only a changed choice moves data; else every OK queued a move (QUILL_DATA_DIR).
+        if data_location_choice not in (None, _data_location_refs.get("initial")):
             chosen_mode, chosen_custom = data_location_choice
             resolve_target_fn = _data_location_refs.get("resolve_target")
             current_dir = _data_location_refs.get("current")
