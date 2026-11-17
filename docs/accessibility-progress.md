@@ -9,6 +9,55 @@ and progress** issue that `.github/workflows/accessibility-review.yml` opens on
 the first of the month, and each release's notes link to the latest one. Counts
 are counts of work, not a score: no number here says how accessible QUILL is.
 
+## November 2026 (to 17 November)
+
+This entry is written partway through the month and will be finished at its
+end.
+
+### Completed
+
+- **Controls without a label of their own can now be named** (2026-11-09).
+  QUILL moved to wxPython 4.3.2 (wxWidgets 3.3.4), the first release with
+  `SetAccessibleName`, and names such a control with it instead of a
+  workaround, so a screen reader reads the name straight from the control.
+  The code and its tests are done; the by-ear check is still open in
+  [#1693](https://github.com/Community-Access/quill/issues/1693).
+- **F1 help everywhere in the GitHub Workbench** (2026-11-10): what the
+  window and the focused control are for, Shift+F1 for every action with its
+  key, Alt+F1 for the GitHub word under the cursor, and a Help and Learning
+  branch of the tree. QUILL Lite has the same. See the CHANGELOG entry "Help
+  everywhere in the GitHub Workbench".
+- **Ctrl+Alt+F2 opens Get Help from Support in the nightly keyboard run.** The
+  continuous integration (CI) user interface automation run had sent the
+  chord in a way that lost Ctrl and Alt; with the modifiers held down
+  explicitly it has passed every night since 2026-11-12, and the test no
+  longer expects a failure
+  ([#1703](https://github.com/Community-Access/quill/issues/1703)). A person
+  still needs to press it on a real machine.
+
+The full detail of every change is in the
+[CHANGELOG](https://github.com/Community-Access/quill/blob/main/CHANGELOG.md).
+
+### In progress and open
+
+- **The nightly keyboard run of "Change a setting" fails.** Since 2026-11-12,
+  after finding Wrap find searches with Find a setting and pressing Space,
+  Enter has not closed the Settings dialog on the runner. It is being
+  investigated; it has not yet been confirmed on a real machine.
+- **Recorded screen reader testing** still has no results; help is wanted in
+  [#1694](https://github.com/Community-Access/quill/issues/1694).
+- **A crash on macOS when running from source**, reported by Marco Zehe
+  ([#1836](https://github.com/Community-Access/quill/issues/1836)): QUILL
+  restarted in a loop before any document opened. A fix is in review.
+
+### Known limitations
+
+See [Known limitations](ACCESSIBILITY.md#known-limitations) in ACCESSIBILITY.md.
+
+### How to help
+
+As in October, below.
+
 ## October 2026
 
 ### Completed
