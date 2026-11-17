@@ -401,6 +401,19 @@ investigation, the three bugs that probing found.
 <li><a href="converter-bakeoff.md">converter-bakeoff.md</a> – the Word
 conversion engine evidence (MarkItDown, Pandoc, python-docx, and why
 pydocx is retired).</li>
+<li><a
+href="github-regression-testing.md">github-regression-testing.md</a> –
+the GitHub Workbench against two real test repositories: every list,
+every properties sheet (each field changed, read back and put back) and
+every write command, run by <code>github-live-run.py</code>, which
+writes its results into the document.
+<code>tests/unit/docs/test_github_live_run_coverage.py</code> fails when
+a command or sheet is added without a scenario or a reason in the
+run.</li>
+<li><a
+href="wordpress-regression-testing.md">wordpress-regression-testing.md</a>
+– the same for WordPress and Forms, against the test site, run by
+<code>wordpress-live-run.py</code>.</li>
 <li><a href="ui-automation.md">ui-automation.md</a> – the
 <code>tests/uia</code> pywinauto suite: what it covers mechanically, and
 why it never runs on a live screen-reader desktop.</li>
