@@ -2719,7 +2719,7 @@ the Command Palette always. No chords (the `github.` family, rule 7).
 | --- | --- | --- |
 | Copy GitHub Lin&k to This Line | `cmd_github_copy_line_link` | `github.copy_line_link` |
 | Wh&o Changed This Line? | `cmd_github_who_changed_line` (Coding area) | `localgit.blame_at_cursor` |
-| Open the Pull Request for T&his Line | `cmd_github_open_line_pull` | `github.open_line_pull` |
+| Open the Pull Re&quest for This Line | `cmd_github_open_line_pull` | `github.open_line_pull` |
 | Open This Line on GitH&ub | `cmd_github_open_line` | `github.open_line` |
 | New Issue from Se&lection... | `cmd_github_issue_from_selection` | `github.issue_from_selection` |
 | Issues Mentioning This &File | `cmd_github_issues_mentioning_file` | `github.issues_mentioning_file` |

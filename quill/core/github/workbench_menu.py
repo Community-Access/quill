@@ -171,7 +171,7 @@ LINE_ROWS: tuple[Entry, ...] = (
     Row("localgit.blame_at_cursor", "Wh&o Changed This Line?", "cmd_github_who_changed_line"),
     Row(
         "github.open_line_pull",
-        "Open the Pull Request for T&his Line",
+        "Open the Pull Re&quest for This Line",
         "cmd_github_open_line_pull",
     ),
     Row("github.open_line", "Open This Line on GitH&ub", "cmd_github_open_line"),
