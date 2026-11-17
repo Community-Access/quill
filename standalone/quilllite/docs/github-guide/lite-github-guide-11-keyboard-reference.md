@@ -119,6 +119,8 @@ no AI menu, so here they belong to the Go row.
 | `Alt+Page Down` | Load more |
 | `Ctrl+Shift+Page Down` | Load all |
 | `Ctrl+Shift+X` | Export List: the list as shown, as Excel, CSV or a Markdown table |
+| `Ctrl+Alt+I` | Import Issues from a Spreadsheet |
+| `Ctrl+Alt+L` | New Issues from Lines |
 | Escape | Clear the filter box, then go back |
 
 ### Account and tools

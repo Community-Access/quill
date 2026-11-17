@@ -1018,6 +1018,8 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+9 | Start Here | `github.workbench.go_start` |
 | Ctrl+A | Select All | `github.workbench.select_all` |
 | Ctrl+Alt+F | Filter Builder... | `github.workbench.filter_builder` |
+| Ctrl+Alt+I | Import Issues from a Spreadsheet... | `github.workbench.import_issues` |
+| Ctrl+Alt+L | New Issues from Lines... | `github.workbench.issues_from_lines` |
 | Ctrl+B | Compare With Default | `github.workbench.compare_default` |
 | Ctrl+C | Copy | `github.workbench.copy` |
 | Ctrl+Cancel | Cancel Run... (Ctrl+Break, in the list) | `github.workbench.cancel_run` |

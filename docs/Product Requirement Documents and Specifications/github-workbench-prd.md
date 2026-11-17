@@ -2035,6 +2035,15 @@ Failed, everywhere).
   create them with a result per row.
 - **Issues from a task list:** select lines in a document and New Issues from
   Lines makes one issue per line, optionally as sub-issues of a parent.
+  *Built 2026-11-17:* Import Issues from a Spreadsheet... (Ctrl+Alt+I) and New
+  Issues from Lines... (Ctrl+Alt+L) on the Workbench's File menu
+  (`quill/core/github/issue_import.py`, `quill/ui/github_workbench_import.py`),
+  with the spreadsheet reader shared with WordPress
+  (`quill/core/workbench/spreadsheet.py`). Mapped: title, body, labels,
+  assignees, milestone and type; project fields are not mapped yet, and the
+  preview names such a column as left out. New Issues from Lines is a
+  Workbench command that starts from the editor's selection, rather than an
+  editor command.
 - **Copy settings between repositories:** labels, milestones, templates,
   rules, environments, access, Actions permissions and repository settings,
   each a check box, with the preview (section 18.3.2).

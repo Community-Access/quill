@@ -72,8 +72,10 @@ both editors gains Save As GitHub Issue Form and Open GitHub Issue Form
 
 **2026-11-17, Phase 13: Export List (PRD 22.7).** Export List... on the
 Workbench's File menu (Ctrl+Shift+X), the WordPress Workbench's command, its
-writer moved to the shared engine (`quill/core/workbench/export.py`). Import
-issues from a spreadsheet and New Issues from Lines remain.
+writer moved to the shared engine (`quill/core/workbench/export.py`). The same
+day: Import Issues from a Spreadsheet... (Ctrl+Alt+I) and New Issues from
+Lines... (Ctrl+Alt+L), sub-issues included, with the spreadsheet reader shared
+too (`quill/core/workbench/spreadsheet.py`).
 
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and

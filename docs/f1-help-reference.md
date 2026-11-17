@@ -2676,6 +2676,10 @@ Control coverage: 356 audited sites (356 helped).
 
 **File > Export List....** This list as it is shown, its columns, filter and rows, as Excel, CSV or a Markdown table the editor reads as a table. The same as the WordPress Workbench's.
 
+**File > Import Issues from a Spreadsheet....** Make issues in this repository from a CSV file or an Excel workbook: columns matched by name, a preview with a line per row, then a sentence per row.
+
+**File > New Issues from Lines....** One issue per line of the editor's selection, which you can change first, optionally each a sub-issue of an issue you name. Previewed before anything is made.
+
 **File > Close Workbench.** Close this window. The editor stays.
 
 **Edit > Undo GitHub Change.** Reverse your last change on GitHub, where GitHub allows it. In a text box, Ctrl+Z undoes your typing instead.
