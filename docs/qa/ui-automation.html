@@ -393,6 +393,25 @@ menu); helpers already account for it.</li>
 <li>The suite exercises the plain editor surface; grid/rich surfaces get
 their own tests as coverage grows.</li>
 </ul>
+<h3 id="save-as-on-the-hosted-runner">Save As on the hosted runner</h3>
+<p>Core task 3 (write a document and save it) failed on about half the
+nights from 2026-11-01, on commits that had passed the night before;
+6b46235f, which did not change, passed four nights in five. The
+diagnostics added on 2026-11-17 show what happens on a failing night:
+the path is in Save As’s File name box, focus is on it, there is no
+error window or suggestion list, and the dialog refuses OK however it is
+asked. Enter, Alt+S and a typed folder path, which should only move the
+dialog to that folder, all do nothing, and QUILL’s own code has nothing
+on that path (Save As is a plain <code>wx.FileDialog</code>). That is
+the runner’s Windows shell, not QUILL.</p>
+<p>So on GitHub Actions, and only there, a refusal of that exact shape
+(dialog still open, folder step went nowhere) makes the test an expected
+failure, with every diagnostic in its reason, and the dialog is closed
+with Escape. It passes on the nights the shell cooperates. Run anywhere
+else, the same refusal fails the test, because on a real desktop it
+would be a real fault. Before the refusal is accepted the test waits for
+the dialog to finish loading and tries three times, the second time
+folder first and then the name, as a person might.</p>
 </main>
 </body>
 </html>
