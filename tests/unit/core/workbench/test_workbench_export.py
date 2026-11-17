@@ -5,6 +5,8 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
+import pytest
+
 from quill.core.workbench.export import export_rows, hidden_columns_sentence, markdown_table
 
 HEAD = ["Number", "Title"]
@@ -20,7 +22,7 @@ def test_csv_opens_in_excel_with_its_bom(tmp_path: Path) -> None:
 
 
 def test_excel_freezes_its_heading_row(tmp_path: Path) -> None:
-    from openpyxl import load_workbook
+    load_workbook = pytest.importorskip("openpyxl").load_workbook
 
     path = tmp_path / "list.xlsx"
     assert export_rows(path, HEAD, ROWS) == 2
