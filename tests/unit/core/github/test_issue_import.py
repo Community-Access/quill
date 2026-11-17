@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from quill.core.github import issue_import as ii
 from quill.core.workbench.spreadsheet import read_spreadsheet
 
@@ -81,7 +83,7 @@ def test_lines_lose_their_markers_and_blanks() -> None:
 
 
 def test_the_shared_reader_reads_csv_and_excel(tmp_path: Path) -> None:
-    from openpyxl import Workbook
+    Workbook = pytest.importorskip("openpyxl").Workbook
 
     csv_path = tmp_path / "issues.csv"
     csv_path.write_text("﻿Title,Labels\nOne,bug\n,\nTwo,\n", encoding="utf-8")
