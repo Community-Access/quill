@@ -97,7 +97,15 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
     # -- hooks ------------------------------------------------------------ #
 
     def _dictation_control(self):  # noqa: ANN201 - the active tab's editor
-        return self.editor
+        # None until the first tab exists. The frame can be activated before
+        # then (macOS does it while the Responsible AI terms close, #1836),
+        # and an AttributeError here repeated on every activation.
+        return getattr(self, "editor", None)
+
+    def _dictation_rearm(self) -> None:
+        if self._dictation_control() is None:
+            return  # no document yet (#1836): the next activation arms it
+        super()._dictation_rearm()
 
     def _dictation_parent(self):  # noqa: ANN201 - QUILL's MainFrame owns a frame
         return self.frame
