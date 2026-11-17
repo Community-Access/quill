@@ -188,6 +188,13 @@ def _file_name_box(dialog) -> str:
         return f"(unreadable: {exc})"
 
 
+def _set_file_name(dialog, path: str) -> None:
+    """Put *path* in the File name box without typing it (see task 3)."""
+    box = dialog.child_window(auto_id="1001", control_type="Edit")
+    box.set_edit_text(path)
+    time.sleep(0.3)
+
+
 def test_core_task_3_write_and_save(quill_app) -> None:
     # Type a heading and a paragraph, Ctrl+S on the untitled document opens
     # Save As; type a path, Enter; the file is written and the title says so.
@@ -199,27 +206,26 @@ def test_core_task_3_write_and_save(quill_app) -> None:
     )
     _wait_title(quill_app, "[modified]")
     dialog = _open_window(quill_app, "^s", "Save")
-    # Alt+N is the common file dialog's own key for "File name:", so the path
-    # lands there whichever pane the dialog chose to focus first.
-    dialog.type_keys("%n^a" + _literal(str(target)), with_spaces=True)
+    # Alt+N is the common file dialog's own key for "File name:", so focus
+    # lands there whichever pane the dialog chose first. The path goes in through UI Automation
+    # rather than typed: typing opens the box's autocomplete list, and on the
+    # runner Enter and Alt+S were sometimes both spent on that list (the
+    # dialog stayed open three nights in ten). Enter then presses Save, which
+    # is what this task is about; Windows' own suggestion list is not.
+    dialog.type_keys("%n")
+    _set_file_name(dialog, str(target))
     typed = _file_name_box(dialog)
     dialog.type_keys("{ENTER}")
-    # The file name box autocompletes, and Enter can be spent closing its
-    # suggestion list. Alt+S is the dialog's own Save button key; on the
-    # runner one Alt+S was sometimes spent the same way (two nights in seven),
-    # so it is pressed until the dialog closes, three times at most.
-    for _attempt in range(3):
-        try:
-            _assert_closes(dialog, "Save file as", timeout=3, key="Enter")
-            break
-        except AssertionError:
-            dialog.type_keys("%s")
     try:
+        _assert_closes(dialog, "Save file as", timeout=5, key="Enter")
         _wait_title(quill_app, "written-by-keyboard")
     except AssertionError as exc:
         raise AssertionError(
-            f"{exc}; file name box held {typed!r}; windows open: "
-            f"{_window_titles(quill_app)!r}; spoken: {quill_app.spoken()!r}"
+            f"{exc}; file name box held {typed!r} before Enter and "
+            f"{_file_name_box(dialog)!r} after; the file "
+            f"{'exists' if target.exists() else 'does not exist'}; focus on "
+            f"{_focused_name()!r}; windows open: {_window_titles(quill_app)!r}; "
+            f"spoken: {quill_app.spoken()!r}"
         ) from exc
     _wait_title(quill_app, "[modified]", present=False)
     text = target.read_text(encoding="utf-8")
