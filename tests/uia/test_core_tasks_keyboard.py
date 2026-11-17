@@ -104,6 +104,19 @@ def _focused_name() -> str:
         return f"(unknown: {exc})"
 
 
+def _focused_toggle_state() -> str:
+    """The focused check box's state as UIA reports it: 0 off, 1 on."""
+    from pywinauto.controls.uiawrapper import UIAWrapper
+    from pywinauto.uia_defines import IUIA
+    from pywinauto.uia_element_info import UIAElementInfo
+
+    try:
+        info = UIAElementInfo(IUIA().get_focused_element())
+        return str(UIAWrapper(info).get_toggle_state())
+    except Exception as exc:  # noqa: BLE001 - diagnostics only
+        return f"(unknown: {exc})"
+
+
 def _assert_focus_inside(window, what: str) -> None:
     handle = int(window.wrapper_object().handle)
     assert handle in _focused_handle_chain(), f"keyboard focus left {what}"
@@ -261,9 +274,11 @@ def test_core_task_5_change_a_setting(quill_app) -> None:
     send_keys("{ENTER}")
     time.sleep(0.5)
     on_setting = _focused_name()
+    before_space = _focused_toggle_state()
     send_keys("{SPACE}")
     time.sleep(0.3)
     after_space = _focused_name()
+    toggled = _focused_toggle_state()
     send_keys("{ENTER}")
     try:
         _assert_closes(dialog, "the Settings dialog", key="Enter")
@@ -292,7 +307,9 @@ def test_core_task_5_change_a_setting(quill_app) -> None:
             break
         time.sleep(0.25)
     assert saved.get("wrap_find") is False, (
-        f"Wrap find searches was not turned off; wrap_find={saved.get('wrap_find')!r}"
+        f"Wrap find searches was not turned off; wrap_find={saved.get('wrap_find')!r}; "
+        f"its check box went from {before_space} to {toggled} on Space; "
+        f"settings.json held {document!r}; spoken: {quill_app.spoken()[-5:]!r}"
     )
     _assert_focus_back_in_main(quill_app)
 
