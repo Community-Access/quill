@@ -77,12 +77,16 @@ def fill_path(template: str, ident: Mapping[str, str]) -> str:
     and a branch's ``feature/x`` keep their slashes, which is what GitHub's
     paths want, and a label called "good first issue" travels as
     ``good%20first%20issue``. A value with ``..`` or a backslash is refused,
-    so no field can steer a request to another path.
+    so no field can steer a request to another path. Only values the
+    template names are checked: a secret's base64 ``public_key`` rides in
+    *ident* too and may start with ``/``, which refused one save in 64.
     """
     from urllib.parse import quote
 
     path = template
     for key, value in ident.items():
+        if "{" + key + "}" not in path:
+            continue
         text = str(value)
         if ".." in text or "\\" in text or text.startswith("/") or text.endswith("/"):
             raise ValueError(f"Refusing a {key} with characters a GitHub path cannot hold.")
