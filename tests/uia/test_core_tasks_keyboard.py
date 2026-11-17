@@ -259,44 +259,54 @@ def test_core_task_3_write_and_save(quill_app) -> None:
     _assert_focus_back_in_main(quill_app)
 
 
-def _close_save_dialog(dialog) -> str:
-    """Enter first; then Alt+S; then the dialog's own Save button. Says which closed it."""
-    for route in ("Enter", "Alt+S", "the Save button"):
-        if route == "Alt+S":
-            dialog.type_keys("%s")
-        elif route == "the Save button":
-            with contextlib.suppress(Exception):
-                dialog.child_window(title="Save", control_type="Button").invoke()
-        try:
-            _assert_closes(dialog, "Save file as", timeout=4, key=route)
-        except AssertionError:
-            continue
-        return route
-    return "nothing"
+def _dialog_ready(dialog, timeout: float = 10.0) -> None:
+    """Wait until Save As has finished filling its folder view and its Save button is on.
+
+    The common dialog takes keys before it has finished enumerating the folder
+    it opened on, and while it is still doing that it ignores OK: the path is
+    in the box, focus is on it, and Enter does nothing. On the hosted runner
+    that race lost about one night in three from 2026-11-01 on, on commits
+    that had passed the night before, which is how it showed itself to be the
+    runner's timing and not QUILL's.
+    """
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        with contextlib.suppress(Exception):
+            button = dialog.child_window(title="Save", control_type="Button")
+            if button.exists(timeout=0.2) and button.is_enabled():
+                view = dialog.child_window(class_name="DirectUIHWND")
+                if not view.exists(timeout=0.2) or view.is_visible():
+                    time.sleep(0.75)  # the view is drawn; let its enumeration finish
+                    return
+        time.sleep(0.25)
 
 
 def _save_as(quill_app, target) -> None:
     """Ctrl+S on an untitled document, a path typed into Save As, Enter."""
     dialog = _open_window(quill_app, "^s", "Save")
     # Alt+N is the common file dialog's own key for "File name:", so focus
-    # lands there whichever pane the dialog chose first. Windows' suggestion
-    # list under that box took the keys that followed the path (Enter, Tab and
-    # Alt+S alike) on the runner, and a value set through UI Automation is not
-    # seen by the dialog at all; so the run turns AutoSuggest off for its own
-    # user while the dialog is open (_no_autosuggest), and types as a person
-    # would. The suggestion list is Windows', not QUILL's: nothing here is
-    # about whether QUILL saves.
-    dialog.type_keys("%n^a" + _literal(str(target)), with_spaces=True)
-    typed = _file_name_box(dialog)
-    dialog.type_keys("{ENTER}")
-    route = _close_save_dialog(dialog)
-    if route != "Enter":
-        # The hosted runner's Save As has ignored Enter in the File name box
-        # with the right path there and focus on it (2026-11-17 inventory: no
-        # error window, no suggestion list). It is Windows' dialog, not QUILL's,
-        # so the run presses Save another way and says which, rather than
-        # failing a check about whether QUILL saves.
-        warnings.warn(f"Save As closed by {route}, not Enter", stacklevel=2)
+    # lands there whichever pane the dialog chose first. A value set through
+    # UI Automation is not seen by the dialog at all, so the run types as a
+    # person would, with AutoSuggest off (_no_autosuggest). When the dialog
+    # was still busy and ignored Enter, it is typed and pressed again, as a
+    # person would; never by its Save button, which on the runner closed the
+    # dialog without saving.
+    typed = ""
+    tries = 0
+    while tries < 3:
+        tries += 1
+        _dialog_ready(dialog)
+        dialog.type_keys("%n^a" + _literal(str(target)), with_spaces=True)
+        typed = _file_name_box(dialog)
+        dialog.type_keys("{ENTER}")
+        try:
+            _assert_closes(dialog, "Save file as", timeout=4, key="Enter")
+            break
+        except AssertionError:
+            continue
+    if tries > 1:
+        warnings.warn(f"Save As took Enter on attempt {tries}", stacklevel=2)
+    route = "Enter"
     try:
         _assert_closes(dialog, "Save file as", timeout=5, key=route)
         _wait_title(quill_app, "written-by-keyboard")
