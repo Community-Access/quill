@@ -1019,6 +1019,7 @@ class PreferencesMixin:
                 _data_location_refs["read"] = _read_data_location
                 _data_location_refs["resolve_target"] = _resolve_target
                 _data_location_refs["current"] = _app_data_dir()
+                _data_location_refs["initial"] = _read_data_location()  # what OK compares
 
             def _make_page_builder(
                 _p: object,
@@ -1307,6 +1308,7 @@ class PreferencesMixin:
             action: dict[str, object] = {"mode": "cancel", "imported": None}
 
             _ok_btn = wx.Button(dialog, id=wx.ID_OK)
+            _ok_btn.SetDefault()  # Enter on a setting is OK; the affirmative id alone is not
             _cancel_btn = wx.Button(dialog, id=wx.ID_CANCEL)
             _apply_btn = wx.Button(dialog, label="&Apply")
             _apply_btn.SetName("Apply settings without closing")
@@ -1316,10 +1318,9 @@ class PreferencesMixin:
             _btn_row.Add(_cancel_btn, 0, wx.RIGHT, 8)
             _btn_row.Add(_apply_btn, 0)
             outer.Add(_btn_row, 0, wx.EXPAND | wx.ALL, 8)
-            # The dialog's own sizer. It was built and filled but never set, so
-            # the notebook and the button row were laid out by nobody, and Find a
-            # setting (which wraps the dialog's sizer) was never installed: Ctrl+F
-            # in Settings did nothing. Found by the keyboard-only core-task run.
+            # The dialog's own sizer. Built but never set, nothing laid out the
+            # notebook and buttons and Find a setting (which wraps it) never
+            # installed: Ctrl+F did nothing. Found by the keyboard core-task run.
             dialog.SetSizer(outer)
 
             _apply_btn.Enable(False)
@@ -1394,9 +1395,8 @@ class PreferencesMixin:
                     return
                 _built_pages.add(idx)
                 _page_build_fns[idx]()
-                # Pages build lazily, after show_modal_dialog's show-time
-                # naming pass, so each new page needs its own pass or its
-                # controls read as bare values on macOS (#1012). Guarded: a
+                # Pages build after show_modal_dialog's naming pass, so each needs
+                # its own or reads as bare values on macOS (#1012). Guarded: a
                 # naming failure must never break switching Settings pages.
                 try:
                     ensure_accessible_names(dialog)
@@ -1408,9 +1408,8 @@ class PreferencesMixin:
 
             def _on_page_changed(_evt: object) -> None:
                 _build_page(notebook.GetSelection())
-                # Ctrl+Tab from inside a page lands on the new page's first
-                # control; but while ARROWING along the tab strip itself, focus
-                # must stay on the tabs so the tab names can be browsed.
+                # Ctrl+Tab from a page lands on the new page's first control;
+                # arrowing along the tab strip keeps focus on the tab names.
                 if wx.Window.FindFocus() is not notebook:
                     focus_primary_control(dialog)
 
@@ -1501,7 +1500,8 @@ class PreferencesMixin:
                     )
                 except ValueError as error:
                     self._set_status(str(error))
-        if data_location_choice is not None:
+        # Only a changed choice moves data; else every OK queued a move (QUILL_DATA_DIR).
+        if data_location_choice not in (None, _data_location_refs.get("initial")):
             chosen_mode, chosen_custom = data_location_choice
             resolve_target_fn = _data_location_refs.get("resolve_target")
             current_dir = _data_location_refs.get("current")

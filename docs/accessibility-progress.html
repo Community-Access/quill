@@ -279,24 +279,26 @@ the modifiers held down explicitly it has passed every night since
 2026-11-12, and the test no longer expects a failure (<a
 href="https://github.com/Community-Access/quill/issues/1703">#1703</a>).
 A person still needs to press it on a real machine.</li>
+<li><strong>Enter saves Settings</strong> (2026-11-17). Settings had no
+default button, so after Find a setting took you to a setting, Enter did
+nothing. It now does what OK does. The nightly keyboard run of “Change a
+setting” found it, and also found that OK could offer to move your data
+folder when you had not touched it; that is fixed too.</li>
+<li><strong>QUILL run from source on a Mac no longer restarts in a
+loop</strong> (2026-11-17), reported by Marco Zehe (<a
+href="https://github.com/Community-Access/quill/issues/1836">#1836</a>).</li>
 </ul>
 <p>The full detail of every change is in the <a
 href="https://github.com/Community-Access/quill/blob/main/CHANGELOG.md">CHANGELOG</a>.</p>
 <h3 id="in-progress-and-open">In progress and open</h3>
 <ul>
-<li><strong>The nightly keyboard run of “Change a setting”
-fails.</strong> Since 2026-11-12, after finding Wrap find searches with
-Find a setting and pressing Space, Enter has not closed the Settings
-dialog on the runner. It is being investigated; it has not yet been
-confirmed on a real machine.</li>
+<li><strong>The nightly keyboard run of “Write and save” fails some
+nights.</strong> On the runner, Windows’ own Save As dialog sometimes
+stays open after Enter and Alt+S. It does not happen every night and has
+not been seen on a real machine; it needs a look on one.</li>
 <li><strong>Recorded screen reader testing</strong> still has no
 results; help is wanted in <a
 href="https://github.com/Community-Access/quill/issues/1694">#1694</a>.</li>
-<li><strong>A crash on macOS when running from source</strong>, reported
-by Marco Zehe (<a
-href="https://github.com/Community-Access/quill/issues/1836">#1836</a>):
-QUILL restarted in a loop before any document opened. A fix is in
-review.</li>
 </ul>
 <h3 id="known-limitations">Known limitations</h3>
 <p>See <a href="ACCESSIBILITY.md#known-limitations">Known

@@ -2,6 +2,20 @@
 
 ## 2.0.0
 
+### Fixes from today's reports (2026-11-17)
+
+Two fixes in code QUILL Lite shares with QUILL:
+
+- **Crash reports keep your Windows user name out.** A report already replaced
+  `C:\Users\<your name>` with `[PATH]`, but missed the same path written with
+  doubled backslashes or forward slashes, which is how a report's settings and
+  some error messages write it. All three are replaced now.
+- **Saving a GitHub secret no longer fails one time in 64.** In the GitHub
+  Workbench, saving a repository secret could stop with "characters a GitHub
+  path cannot hold". The key GitHub gives QUILL Lite to seal the secret
+  sometimes starts with a slash, and it was checked as if it were part of the
+  address.
+
 ### GitHub from the line you are on (2026-11-17)
 
 Most GitHub questions start in a file. Put your cursor on a line, or select a

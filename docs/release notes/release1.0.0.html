@@ -4276,7 +4276,8 @@ of what would come back, before you restore it.</li>
 lines that led to the offer, so whoever reads one can see what happened.
 They never include your document text. Before they are written, they are
 cleaned of GitHub tokens, OpenAI keys, AWS credentials, Slack tokens and
-long strings that look like secrets.</li>
+long strings that look like secrets, and your Windows user name is taken
+out of every file path, however the path is written.</li>
 <li><strong>Every kind of internal error has a short support
 code</strong>, in the form <code>[QUILL-...]</code>. It goes into crash
 reports and turns “it said something went wrong” into something specific
@@ -4601,6 +4602,25 @@ as the Open and Save As dialogs always did.</li>
 <p><strong>Try this:</strong> double-click a document in File Explorer
 to open it in QUILL, then press Ctrl+O. The dialog is already in that
 document’s folder.</p>
+<h3 id="four-fixes-from-the-last-reports">Four fixes from the last
+reports</h3>
+<ul>
+<li><strong>Enter saves Settings.</strong> Find a setting takes you
+straight to the setting you asked for. Change it, press Enter, and
+Settings saves and closes, just as OK does. Until now Enter did nothing
+there.</li>
+<li><strong>OK never moves your data by surprise.</strong> Pressing OK
+in Settings could offer to move your whole data folder and restart, in a
+copy of QUILL that keeps its data somewhere of its own, even though you
+had not touched “Store QUILL’s data”. Now only a change you make there
+moves anything.</li>
+<li><strong>A GitHub secret saves every time.</strong> In the GitHub
+Workbench, saving a repository secret failed about once in 64 tries with
+“characters a GitHub path cannot hold”. It no longer does.</li>
+<li><strong>QUILL starts on a Mac.</strong> Run from source on macOS,
+QUILL restarted in a loop before the first document opened. Thanks to
+Marco Zehe for the report.</li>
+</ul>
 <h3 id="late-changes-somafm-dectalk-and-windows-ocr">Late changes:
 SomaFM, DECtalk and Windows OCR</h3>
 <p><strong>Unreleased correction:</strong> The shared Radio code retires

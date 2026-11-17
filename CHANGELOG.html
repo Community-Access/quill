@@ -947,6 +947,38 @@ Lite’s): what you need, test mode, the three kinds of amount, providers,
 publishing and what each refusal means, what the person paying hears
 with a screen reader, receipts, refunds, reporting and going live.</li>
 </ul>
+<h3 id="fixes-from-todays-reports-2026-11-17">Fixes from today’s reports
+(2026-11-17)</h3>
+<ul>
+<li><strong>Enter saves Settings.</strong> After Find a setting took you
+to a setting, pressing Enter on it did nothing, because Settings had no
+default button. Enter now does what OK does, as in any Windows
+dialog.</li>
+<li><strong>OK in Settings no longer offers to move your data.</strong>
+Pressing OK compared the “Store QUILL’s data” choice with the folder
+QUILL was using, even when you had not touched it. Where the two
+differed, as in a copy of QUILL run with its own data folder, OK set
+your whole data folder to move and asked you to restart, before it saved
+the change you had made. Only a choice you change counts now.</li>
+<li><strong>Crash reports keep your Windows user name out.</strong> A
+report already replaced <code>C:\Users\&lt;your name&gt;</code> with
+<code>[PATH]</code>, but missed the same path written with doubled
+backslashes or forward slashes, which is how a report’s settings and
+some error messages write it. All three are replaced now. Found in two
+crash reports sent from an older build (#1838, #1841).</li>
+<li><strong>Saving a GitHub secret no longer fails one time in
+64.</strong> In the GitHub Workbench, saving a repository secret could
+stop with “characters a GitHub path cannot hold”. The key GitHub gives
+QUILL to seal the secret sometimes starts with a slash, and QUILL
+checked it as if it were part of the address.</li>
+<li><strong>QUILL run from source on a Mac no longer restarts in a
+loop.</strong> Dictation looked for the editor whenever the window
+became active, which on macOS happens before the first document opens
+(#1836, reported by Marco Zehe).</li>
+<li><strong>The nightly keyboard run checks Ctrl+Alt+F2
+properly.</strong> It now opens Get Help from Support there, so the test
+no longer expects it to fail (#1703).</li>
+</ul>
 <h3 id="github-from-the-line-you-are-on-2026-11-17">GitHub from the line
 you are on (2026-11-17)</h3>
 <p>Most GitHub questions start in a file. Put your cursor on a line, or
