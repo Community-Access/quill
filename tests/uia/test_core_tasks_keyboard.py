@@ -279,9 +279,15 @@ def test_core_task_5_change_a_setting(quill_app) -> None:
     saved: dict[str, object] = {}
     while time.monotonic() < deadline:
         try:
-            saved = json.loads(settings_file.read_text(encoding="utf-8"))
+            document = json.loads(settings_file.read_text(encoding="utf-8"))
         except (OSError, ValueError):
-            saved = {}
+            document = {}
+        # Settings are saved as {"groups": {"editing": {"wrap_find": false}}}
+        # (SET-5), so the key is looked for in every group, not at the top.
+        saved = {}
+        for group in (document.get("groups") or {}).values():
+            if isinstance(group, dict):
+                saved.update(group)
         if saved.get("wrap_find") is False:
             break
         time.sleep(0.25)
