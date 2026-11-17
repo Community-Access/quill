@@ -929,9 +929,12 @@ quietly throws them away, and it doesn’t just refuse.</li>
 uncommitted work aside under a name you’ll recognize, then list, apply
 or drop any stash later, with no <code>stash@{2}</code> references to
 remember.</li>
-<li><strong>Who Wrote This Line…</strong> runs <code>git blame</code> on
-the line your cursor is on and tells you who last changed it, when, and
-the commit’s summary.</li>
+<li><strong>Who Changed This Line?</strong> runs <code>git blame</code>
+on the line your cursor is on and tells you who last changed it, when,
+and the commit’s summary; press it again soon after to open the pull
+request that brought it. It moved to <strong>GitHub &gt; From This
+Line</strong> in November 2026, beside the other commands about the line
+you are on; the GitHub Guide’s Chapter 7 covers them.</li>
 <li><strong>Start Bisect… / End Bisect</strong> runs a
 <code>git bisect</code> session as plain questions and answers. QUILL
 checks out a commit and asks “Is this version good or bad?” Answer, and

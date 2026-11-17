@@ -290,32 +290,14 @@ class LocalGitMixin:
     # Blame
 
     def local_git_blame_at_cursor(self) -> None:
-        """Tools > Local Git > Who Wrote This Line..."""
-        if not self._local_git_ready():
-            return
-        path = getattr(getattr(self, "document", None), "path", None)
-        if not path:
-            self._set_status("No file to blame")
-            return
-        root = self._local_git_find_root(Path(path))
-        if root is None:
-            self._set_status("This file is not inside a git repository")
-            return
-        try:
-            line = self.editor.GetCurrentLine() + 1
-        except Exception:  # noqa: BLE001 - defensive, editor state can vary
-            line = 1
-        rel_path = str(Path(path).resolve().relative_to(Path(root).resolve()))
+        """GitHub > From This Line > Who Changed This Line? (PRD 22.3).
 
-        from quill.core.local_git import blame_line
-
-        def work(_progress: object) -> object:
-            return blame_line(str(root), rel_path, line, runner=self._local_git_runner())
-
-        def on_done(info: Any) -> None:
-            self._set_status(f"Line {line}: {info.author}, {info.summary} ({info.commit_sha[:7]})")
-
-        self._run_background_task(f"Checking blame for line {line}", work, on_done)
+        The shared command (``quill/ui/github_editor_line.py``): the last commit,
+        author and date for the caret's line, and its pull request on a second
+        press. It used to read ``GetCurrentLine()``, which QUILL's text control
+        does not have, and so answered for line 1 whatever the caret was on.
+        """
+        self.run_github_line_command("localgit.blame_at_cursor")  # type: ignore[attr-defined]
 
     # ------------------------------------------------------------------
     # Bisect
@@ -675,7 +657,7 @@ class LocalGitMixin:
             ),
             (
                 "localgit.blame_at_cursor",
-                "Local Git: Who Wrote This Line...",
+                "Who Changed This Line?",
                 self.local_git_blame_at_cursor,
             ),
             ("localgit.bisect_start", "Local Git: Start Bisect...", self.local_git_bisect_start),

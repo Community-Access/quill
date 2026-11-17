@@ -34,6 +34,7 @@ from __future__ import annotations
 
 from quill.core.forms.menu import LAYER_KEYS as FORMS_LAYER_KEYS
 from quill.core.forms.menu import lite_handler as forms_lite_handler
+from quill.core.github.workbench_menu import ALL_ROWS as GITHUB_ROWS
 from quill.core.wordpress.menu import LAYER_KEYS, lite_handler
 
 __all__ = [
@@ -328,20 +329,6 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_find": "edit.find",
     "cmd_find_all": "edit.find_all_matches",
     "cmd_find_open_docs": "edit.find_in_open_documents",
-    "cmd_github_workbench": "file.open_github_items",
-    "cmd_github_manage_accounts": "file.github_manage_accounts",
-    # 2026-11-08: GitHub Workbench Mode and its menu, one table for both
-    # (quill/core/github/workbench_menu.py), so QUILL Lite's rows are QUILL's.
-    "cmd_github_clone": "github.clone_repository",
-    "cmd_toggle_github_workbench": "view.github_workbench_mode",
-    "cmd_github_inbox": "github.workbench_inbox",
-    "cmd_github_my_work": "github.workbench_my_work",
-    "cmd_github_notifications": "github.view_notifications",
-    "cmd_github_issues": "github.workbench_issues",
-    "cmd_github_pulls": "github.workbench_pulls",
-    "cmd_github_actions_runs": "github.workbench_actions_runs",
-    "cmd_github_releases": "github.workbench_releases",
-    "cmd_github_explore": "github.workbench_explore",
     "cmd_find_next": "edit.find_next",
     "cmd_find_previous": "edit.find_previous",
     "cmd_focus_status_bar": "navigate.next_region",
@@ -546,6 +533,8 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     **{lite_handler(command_id): command_id for command_id in LAYER_KEYS.values()},
     # The Forms key on the same layer (forms/menu.py LAYER_KEYS).
     **{forms_lite_handler(command_id): command_id for command_id in FORMS_LAYER_KEYS.values()},
+    # Every GitHub menu row (workbench_menu.py) names both sides, From This Line's too.
+    **{row.lite_handler: row.command_id for row in GITHUB_ROWS if row.lite_handler},
 }
 
 #: Handlers with no QUILL command id because the *control* answers the key.

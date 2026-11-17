@@ -2997,6 +2997,23 @@ the document is part of a pull request checked out in a worktree.</li>
 <code>owner/name#42</code>, <code>@person</code>, commit hashes) are
 recognized; Alt+Enter on one opens its Properties sheet.</li>
 </ul>
+<p><strong>Built 2026-11-17.</strong> GitHub &gt; From This Line in
+QUILL (also Tools &gt; Git and GitHub &gt; GitHub &gt; From This Line),
+and flat rows in QUILL Lite’s GitHub menu, from one table
+(<code>workbench_menu.LINE_ROWS</code>); the logic is
+<code>quill/core/github/editor_line.py</code> and
+<code>quill/ui/github_editor_line.py</code>. Two departures, both
+decided rather than missed: the reference command is <strong>Open the
+GitHub Reference at the Cursor</strong>, keyless, because family rule 1
+gives Alt+Enter to Redo (Word repeats the last action on it), which
+outranks this section; and it opens the item in the Workbench’s list
+narrowed to it (<code>filter:#42</code>), since the Properties sheet is
+reached from there with Alt+Enter. Who Changed This Line? keeps Local
+Git’s command id (<code>localgit.blame_at_cursor</code>) and so its
+Developer-profile gate in QUILL and the Coding area in QUILL Lite. A
+second press within ten seconds opens the pull request. Comment on This
+Line refuses when the checkout and the pull request are at different
+commits, or the file has uncommitted changes.</p>
 <h3 id="224-reading-github-like-a-document">22.4 Reading GitHub like a
 document</h3>
 <ul>

@@ -109,6 +109,21 @@ KEYLESS_WITH_REASON: dict[str, str] = {
             "cmd_github_explore",
         )
     },
+    **{
+        handler: "As in QUILL (rule 2), where the From This Line commands have no chord "
+        "either (PRD 22.3): no GitHub command takes an editor chord (rule 7), and Alt+Enter, "
+        "which the PRD asked for, is Redo's in both editors (rule 1). Alt+G reaches them."
+        for handler in (
+            "cmd_github_copy_line_link",
+            "cmd_github_who_changed_line",
+            "cmd_github_open_line_pull",
+            "cmd_github_open_line",
+            "cmd_github_issue_from_selection",
+            "cmd_github_issues_mentioning_file",
+            "cmd_github_comment_on_line",
+            "cmd_github_open_reference_at_cursor",
+        )
+    },
     "cmd_open_studio": "Rule 7: launching another app does not take an editor chord. "
     "Lite already uses QUILL's positional QuillVille keys for editing commands. "
     "Alt+T, Q reaches Studio when the shared release gate permits it; the user can "

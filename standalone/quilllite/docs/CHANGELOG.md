@@ -2,6 +2,38 @@
 
 ## 2.0.0
 
+### GitHub from the line you are on (2026-11-17)
+
+Most GitHub questions start in a file. Put your cursor on a line, or select a
+few, and eight new rows in the GitHub menu answer without leaving the editor.
+They sit between separators while workbench mode is on, and are in the Command
+Palette always. QUILL has the same eight, as GitHub > From This Line.
+
+- **Copy GitHub Link to This Line** copies a link to these lines in the
+  commit you have checked out, so it keeps showing the same text after the
+  file changes. **Open This Line on GitHub** opens it in your browser. Both say
+  when the commit is not on GitHub yet, or the file has uncommitted changes.
+- **Who Changed This Line?** says who last changed the line, when and why;
+  press it again within ten seconds to open the pull request that brought it,
+  or use **Open the Pull Request for This Line**. It is in every profile,
+  as Local Git's rows are in QUILL Lite.
+- **New Issue from Selection...** opens the Workbench's New Issue window with
+  the selection quoted as code under a link to it, and a preview before
+  anything is sent.
+- **Issues Mentioning This File** opens the Workbench's search on the file's
+  path.
+- **Comment on This Line in the Open Pull Request...** posts a review comment
+  on these lines of the pull request for the branch you have checked out. It
+  stops first, saying why, if your copy and the pull request are at different
+  commits or the file has changes you have not committed.
+- **Open the GitHub Reference at the Cursor** opens the `#42`, `GH-42`,
+  `owner/name#42` or commit hash you are on in the Workbench, narrowed to it,
+  or an `@person`'s profile in your browser.
+
+All eight are refused in Safe Mode, need git, have no key out of the box, and
+can be reached from Say or Type a Command. The GitHub Guide's Chapter 7 has
+the details.
+
 ### Export any GitHub Workbench list (2026-11-17)
 
 **Export List...** (`Ctrl+Shift+X`), on the GitHub Workbench's own File menu,

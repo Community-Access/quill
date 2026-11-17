@@ -217,7 +217,6 @@
         "help.why_unavailable",
         "localgit.bisect_reset",
         "localgit.bisect_start",
-        "localgit.blame_at_cursor",
         "localgit.interactive_rebase",
         "localgit.manage_stashes",
         "localgit.rebase_abort",

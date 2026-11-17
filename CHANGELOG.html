@@ -947,6 +947,44 @@ Lite’s): what you need, test mode, the three kinds of amount, providers,
 publishing and what each refusal means, what the person paying hears
 with a screen reader, receipts, refunds, reporting and going live.</li>
 </ul>
+<h3 id="github-from-the-line-you-are-on-2026-11-17">GitHub from the line
+you are on (2026-11-17)</h3>
+<p>Most GitHub questions start in a file. Put your cursor on a line, or
+select a few, and <strong>GitHub &gt; From This Line</strong> answers
+without leaving the editor (with workbench mode off, <strong>Tools &gt;
+Git and GitHub &gt; GitHub &gt; From This Line</strong>). QUILL Lite has
+the same eight rows, straight in its GitHub menu.</p>
+<ul>
+<li><strong>Copy GitHub Link to This Line</strong> copies a link to
+these lines in the commit you have checked out, so it keeps showing the
+same text after the file changes. <strong>Open This Line on
+GitHub</strong> opens it in your browser. Both say when the commit is
+not on GitHub yet, or the file has uncommitted changes.</li>
+<li><strong>Who Changed This Line?</strong> says who last changed the
+line, when and why; press it again within ten seconds to open the pull
+request that brought it, or use <strong>Open the Pull Request for This
+Line</strong>. It was Local Git’s <strong>Who Wrote This Line…</strong>,
+which always answered for line 1 wherever the cursor was; it now answers
+for your line. It keeps its command id, any key you gave it, and its
+need for the Developer profile.</li>
+<li><strong>New Issue from Selection…</strong> opens the Workbench’s New
+Issue window with the selection quoted as code under a link to it, and a
+preview before anything is sent.</li>
+<li><strong>Issues Mentioning This File</strong> opens the Workbench’s
+search on the file’s path.</li>
+<li><strong>Comment on This Line in the Open Pull Request…</strong>
+posts a review comment on these lines of the pull request for the branch
+you have checked out. It stops first, saying why, if your copy and the
+pull request are at different commits or the file has changes you have
+not committed.</li>
+<li><strong>Open the GitHub Reference at the Cursor</strong> opens the
+<code>#42</code>, <code>GH-42</code>, <code>owner/name#42</code> or
+commit hash you are on in the Workbench, narrowed to it, or an
+<code>@person</code>’s profile in your browser.</li>
+</ul>
+<p>All eight are refused in Safe Mode, need git, have no key out of the
+box, and can be reached from Say or Type a Command. The GitHub Guide’s
+Chapter 7 has the details.</p>
 <h3 id="export-any-github-workbench-list-2026-11-17">Export any GitHub
 Workbench list (2026-11-17)</h3>
 <p><strong>Export List…</strong> (<code>Ctrl+Shift+X</code>), on the

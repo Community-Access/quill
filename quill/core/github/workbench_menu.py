@@ -42,6 +42,8 @@ __all__ = [
     "ANNOUNCE_ON",
     "GITHUB_MENU_KEY",
     "GITHUB_MENU_TITLE",
+    "ALL_ROWS",
+    "LINE_ROWS",
     "LITE_GITHUB_MENU",
     "LITE_NORMAL_HANDLERS",
     "LOCAL_GIT_ROWS",
@@ -60,6 +62,8 @@ __all__ = [
     "Row",
     "Submenu",
     "command_ids",
+    "command_rows",
+    "line_key_bindings",
     "fill",
     "lite_arrange",
     "lite_handlers",
@@ -159,6 +163,42 @@ _CODESPACE_ROWS_NORMAL: tuple[Entry, ...] = (
     Row("github.create_codespace", "Create Codespace..."),
 )
 
+#: GitHub from the editor (PRD 22.3, 2026-11-17): a submenu in both of QUILL's
+#: homes, flat rows in QUILL Lite's GitHub menu (so no letter of V, W, I, S, P,
+#: A, C, G or H). Who Changed This Line? is Local Git's old Who Wrote This Line.
+LINE_ROWS: tuple[Entry, ...] = (
+    Row("github.copy_line_link", "Copy GitHub Lin&k to This Line", "cmd_github_copy_line_link"),
+    Row("localgit.blame_at_cursor", "Wh&o Changed This Line?", "cmd_github_who_changed_line"),
+    Row(
+        "github.open_line_pull",
+        "Open the Pull Re&quest for This Line",
+        "cmd_github_open_line_pull",
+    ),
+    Row("github.open_line", "Open This Line on GitH&ub", "cmd_github_open_line"),
+    None,
+    Row(
+        "github.issue_from_selection",
+        "New Issue from Se&lection...",
+        "cmd_github_issue_from_selection",
+    ),
+    Row(
+        "github.issues_mentioning_file",
+        "Issues Mentioning This &File",
+        "cmd_github_issues_mentioning_file",
+    ),
+    Row(
+        "github.comment_on_line",
+        "Commen&t on This Line in the Open Pull Request...",
+        "cmd_github_comment_on_line",
+    ),
+    None,
+    Row(
+        "github.open_reference_at_cursor",
+        "Open the GitHub &Reference at the Cursor",
+        "cmd_github_open_reference_at_cursor",
+    ),
+)
+
 #: Tools > Git and GitHub > GitHub while the mode is off.
 REPOSITORY_ROWS: tuple[Entry, ...] = (
     Row("file.open_github_repository", "&Open a Repository..."),
@@ -169,6 +209,9 @@ REPOSITORY_ROWS: tuple[Entry, ...] = (
     *_ADMIN_ROWS[12:],
     None,
     *_CODESPACE_ROWS_NORMAL,
+    None,
+    # L: no other row here has it.
+    Submenu("From This &Line", LINE_ROWS),
 )
 
 #: Tools > Git and GitHub > Local Git while the mode is off; the Local Git
@@ -179,8 +222,6 @@ LOCAL_GIT_ROWS: tuple[Entry, ...] = (
     None,
     Row("localgit.stash_changes", "&Stash Changes..."),
     Row("localgit.manage_stashes", "Manage St&ashes..."),
-    None,
-    Row("localgit.blame_at_cursor", "&Who Wrote This Line..."),
     None,
     Row("localgit.bisect_start", "S&tart Bisect..."),
     Row("localgit.bisect_reset", "&End Bisect"),
@@ -220,6 +261,9 @@ WORKBENCH_ROWS: tuple[Entry, ...] = (
     Row("github.workbench_issues", "This Repository's I&ssues", "cmd_github_issues"),
     Row("github.workbench_pulls", "This Repository's &Pull Requests", "cmd_github_pulls"),
     Row("github.workbench_actions_runs", "&Actions Runs", "cmd_github_actions_runs"),
+    None,
+    # GitHub from the editor (PRD 22.3). R: free on this menu.
+    Submenu("F&rom This Line", LINE_ROWS),
     None,
     # D: A is Actions Runs'. QUILL only: QUILL Lite has no such command.
     Row("file.open_github_reference", "Open GitHub A&ddress..."),
@@ -265,6 +309,14 @@ NEW_COMMAND_IDS: tuple[str, ...] = (
     "github.clone_repository",
     # Phase 4 (GitHub PRD section 6): the Workbench's Pull Requests door.
     "github.workbench_pulls",
+    # GitHub from the editor (PRD 22.3, 2026-11-17).
+    "github.copy_line_link",
+    "github.open_line_pull",
+    "github.open_line",
+    "github.issue_from_selection",
+    "github.issues_mentioning_file",
+    "github.comment_on_line",
+    "github.open_reference_at_cursor",
 )
 
 
@@ -307,6 +359,27 @@ def _walk(entries: Iterable[Entry]) -> Iterable[Row]:
             yield from _walk(entry.entries)
 
 
+def line_key_bindings() -> dict[str, str]:
+    """From This Line's new commands for the keymap, all keyless (PRD 22.3).
+
+    Keyless like every GitHub command (rule 7). The PRD asks for Alt+Enter on
+    a reference; rule 1 gives Alt+Enter to Redo, which both editors have (Word
+    repeats the last action on it), so the reference command is on the menu
+    and the Command Palette instead. Who Changed This Line? is Local Git's
+    ``localgit.blame_at_cursor`` and keeps its own row in the keymap.
+    """
+    return {
+        row.command_id: ""
+        for row in command_rows(LINE_ROWS)
+        if not row.command_id.startswith("localgit.")
+    }
+
+
+def command_rows(entries: Iterable[Entry]) -> list[Row]:
+    """Every row in *entries*, submenus included, in order."""
+    return list(_walk(entries))
+
+
 def command_ids(entries: Iterable[Entry] = WORKBENCH_ROWS) -> list[str]:
     """Every command id in *entries*, submenus included, in order."""
     return [row.command_id for row in _walk(entries)]
@@ -315,6 +388,18 @@ def command_ids(entries: Iterable[Entry] = WORKBENCH_ROWS) -> list[str]:
 def lite_handlers(entries: Iterable[Entry] = WORKBENCH_ROWS) -> list[str]:
     """QUILL Lite's handlers in *entries*, in order."""
     return [row.lite_handler for row in _walk(entries) if row.lite_handler]
+
+
+def _flatten(entries: Iterable[Entry]) -> Iterable[Row | None]:
+    """*entries* with each submenu's rows in its place, between separators
+    (QUILL Lite's GitHub menu has no submenus)."""
+    for entry in entries:
+        if isinstance(entry, Submenu):
+            yield None
+            yield from _flatten(entry.entries)
+            yield None
+        else:
+            yield entry
 
 
 def _lite_only(entries: Sequence[Entry]) -> tuple[Entry, ...]:
@@ -344,6 +429,15 @@ def _tidy(entries: Sequence[Entry]) -> tuple[Entry, ...]:
         out.pop()
     return tuple(out)
 
+
+#: Every GitHub row in both editors' menus, each once, wherever it sits: the
+#: table QUILL Lite's parity map reads both names from (quill/core/lite/parity.py).
+ALL_ROWS: tuple[Row, ...] = tuple(
+    {
+        row.command_id: row
+        for row in command_rows((*WORKBENCH_ROWS, *MOVED_OUT_ROWS, *NORMAL_REMOTE_ROWS))
+    }.values()
+)
 
 #: QUILL Lite's GitHub menu: :data:`WORKBENCH_ROWS` less QUILL's own rows.
 LITE_GITHUB_MENU: tuple[Entry, ...] = _lite_only(WORKBENCH_ROWS)
@@ -443,13 +537,11 @@ def lite_arrange(
     moved = set(LITE_NORMAL_HANDLERS)
     second_routes = {TOGGLE_LITE_HANDLER, "cmd_github_guide"}
     menu: list[LiteRow] = []
-    for entry in LITE_GITHUB_MENU:
+    for entry in _flatten(LITE_GITHUB_MENU):
         if entry is None:
             if menu and menu[-1][4] != "sep":
                 menu.append((GITHUB_MENU_TITLE, "", "", "", "sep"))
             continue
-        if not isinstance(entry, Row):
-            continue  # QUILL Lite's menu has no submenus
         found = by_handler.get(entry.lite_handler)
         if found is None:
             continue
