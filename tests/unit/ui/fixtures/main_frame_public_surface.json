@@ -766,6 +766,7 @@
   "review_last_ocr_result",
   "run_batch_conversion_wizard",
   "run_current_file",
+  "run_github_line_command",
   "run_profile_onboarding",
   "run_python_tool",
   "run_quillin_command",
