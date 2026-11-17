@@ -205,11 +205,15 @@ def test_core_task_3_write_and_save(quill_app) -> None:
     typed = _file_name_box(dialog)
     dialog.type_keys("{ENTER}")
     # The file name box autocompletes, and Enter can be spent closing its
-    # suggestion list. Alt+S is the dialog's own Save button key.
-    try:
-        _assert_closes(dialog, "Save file as", timeout=3)
-    except AssertionError:
-        dialog.type_keys("%s")
+    # suggestion list. Alt+S is the dialog's own Save button key; on the
+    # runner one Alt+S was sometimes spent the same way (two nights in seven),
+    # so it is pressed until the dialog closes, three times at most.
+    for _attempt in range(3):
+        try:
+            _assert_closes(dialog, "Save file as", timeout=3, key="Enter")
+            break
+        except AssertionError:
+            dialog.type_keys("%s")
     try:
         _wait_title(quill_app, "written-by-keyboard")
     except AssertionError as exc:
