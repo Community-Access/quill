@@ -620,6 +620,32 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Fixes from today's reports (2026-11-17)
+
+- **Enter saves Settings.** After Find a setting took you to a setting,
+  pressing Enter on it did nothing, because Settings had no default button.
+  Enter now does what OK does, as in any Windows dialog.
+- **OK in Settings no longer offers to move your data.** Pressing OK compared
+  the "Store QUILL's data" choice with the folder QUILL was using, even when
+  you had not touched it. Where the two differed, as in a copy of QUILL run
+  with its own data folder, OK set your whole data folder to move and asked
+  you to restart, before it saved the change you had made. Only a choice you
+  change counts now.
+- **Crash reports keep your Windows user name out.** A report already replaced
+  `C:\Users\<your name>` with `[PATH]`, but missed the same path written with
+  doubled backslashes or forward slashes, which is how a report's settings and
+  some error messages write it. All three are replaced now. Found in two
+  crash reports sent from an older build (#1838, #1841).
+- **Saving a GitHub secret no longer fails one time in 64.** In the GitHub
+  Workbench, saving a repository secret could stop with "characters a GitHub
+  path cannot hold". The key GitHub gives QUILL to seal the secret sometimes
+  starts with a slash, and QUILL checked it as if it were part of the address.
+- **QUILL run from source on a Mac no longer restarts in a loop.** Dictation
+  looked for the editor whenever the window became active, which on macOS
+  happens before the first document opens (#1836, reported by Marco Zehe).
+- **The nightly keyboard run checks Ctrl+Alt+F2 properly.** It now opens Get
+  Help from Support there, so the test no longer expects it to fail (#1703).
+
 ### GitHub issue forms, written as plain text (2026-11-16)
 
 A GitHub issue form is the form people fill in when they open an issue. In

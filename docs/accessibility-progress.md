@@ -34,21 +34,26 @@ end.
   longer expects a failure
   ([#1703](https://github.com/Community-Access/quill/issues/1703)). A person
   still needs to press it on a real machine.
+- **Enter saves Settings** (2026-11-17). Settings had no default button, so
+  after Find a setting took you to a setting, Enter did nothing. It now does
+  what OK does. The nightly keyboard run of "Change a setting" found it, and
+  also found that OK could offer to move your data folder when you had not
+  touched it; that is fixed too.
+- **QUILL run from source on a Mac no longer restarts in a loop** (2026-11-17),
+  reported by Marco Zehe
+  ([#1836](https://github.com/Community-Access/quill/issues/1836)).
 
 The full detail of every change is in the
 [CHANGELOG](https://github.com/Community-Access/quill/blob/main/CHANGELOG.md).
 
 ### In progress and open
 
-- **The nightly keyboard run of "Change a setting" fails.** Since 2026-11-12,
-  after finding Wrap find searches with Find a setting and pressing Space,
-  Enter has not closed the Settings dialog on the runner. It is being
-  investigated; it has not yet been confirmed on a real machine.
+- **The nightly keyboard run of "Write and save" fails some nights.** On the
+  runner, Windows' own Save As dialog sometimes stays open after Enter and
+  Alt+S. It does not happen every night and has not been seen on a real
+  machine; it needs a look on one.
 - **Recorded screen reader testing** still has no results; help is wanted in
   [#1694](https://github.com/Community-Access/quill/issues/1694).
-- **A crash on macOS when running from source**, reported by Marco Zehe
-  ([#1836](https://github.com/Community-Access/quill/issues/1836)): QUILL
-  restarted in a loop before any document opened. A fix is in review.
 
 ### Known limitations
 
