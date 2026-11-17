@@ -78,6 +78,28 @@ def _window_titles(quill_app) -> list[str]:
         return [f"(could not list windows: {exc})"]
 
 
+def _window_inventory(quill_app) -> list[str]:
+    """Every top-level window of the process: class, title, and what it holds."""
+    try:
+        from pywinauto import Desktop
+
+        found = []
+        for window in Desktop(backend="uia").windows(process=quill_app.process.pid):
+            info = window.element_info
+            texts = []
+            for child in window.descendants()[:40]:
+                name = child.window_text()
+                if name:
+                    texts.append(f"{child.element_info.control_type}:{name}")
+            found.append(
+                f"[{info.class_name!r} {window.window_text()!r} visible={window.is_visible()} "
+                f"rect={window.rectangle()} holds={texts[:15]}]"
+            )
+        return found
+    except Exception as exc:  # noqa: BLE001 - diagnostics must never mask the failure
+        return [f"(could not list windows: {exc})"]
+
+
 def _focused_handle_chain() -> list[int]:
     """Window handles from the focused element up to the desktop."""
     from pywinauto.uia_defines import IUIA
@@ -258,7 +280,7 @@ def _save_as(quill_app, target) -> None:
             f"{exc}; file name box held {typed!r} before Enter and "
             f"{_file_name_box(dialog)!r} after; the file "
             f"{'exists' if target.exists() else 'does not exist'}; focus on "
-            f"{_focused_name()!r}; windows open: {_window_titles(quill_app)!r}; "
+            f"{_focused_name()!r}; windows open: {_window_inventory(quill_app)!r}; "
             f"spoken: {quill_app.spoken()!r}"
         ) from exc
 
