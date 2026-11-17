@@ -94,15 +94,16 @@ class GitHubWorkbenchLiteMixin:
     # -- the two windows ---------------------------------------------------- #
 
     def open_github_items(
-        self, initial_view: str = "", reference: Any = None, node: str = ""
+        self, initial_view: str = "", reference: Any = None, node: str = "", then: str = ""
     ) -> None:
         """GitHub Items, on a view (the GitHub menu) or a reference (from Explore).
 
         With the GitHub Workbench in use, the Workbench window instead, at
-        *node* (a door's place) or *initial_view* (an Items view).
+        *node* (a door's place) or *initial_view* (an Items view), and then
+        *then* (a search or a new issue from the editor, PRD 22.3).
         """
         provider = self._github_provider(
-            lambda: self.open_github_items(initial_view, reference, node)
+            lambda: self.open_github_items(initial_view, reference, node, then)
         )
         if provider is None:
             return
@@ -131,6 +132,7 @@ class GitHubWorkbenchLiteMixin:
             gist_source=getattr(self, "_github_gist_source", None),
             guide_product="quilllite",
             open_document=self._github_open_document,
+            then=then,
         )
 
     def _github_open_document(self, path: Any) -> None:

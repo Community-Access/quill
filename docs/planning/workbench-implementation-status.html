@@ -319,6 +319,21 @@ way. Tools &gt; Forms in both editors gains Save As GitHub Issue Form
 and Open GitHub Issue Form
 (<code>quill/ui/forms_github_commands.py</code>). Phase 12 is complete.
 Next: Phase 13.</p>
+<p><strong>2026-11-17, Phase 13: GitHub from the editor (PRD
+22.3).</strong> GitHub &gt; From This Line in QUILL (and under Tools
+&gt; Git and GitHub &gt; GitHub), flat rows in QUILL Lite’s GitHub menu:
+Copy GitHub Link to This Line, Who Changed This Line? (Local Git’s
+blame, renamed, and fixed to answer for the caret’s line rather than
+line 1), Open the Pull Request for This Line, Open This Line on GitHub,
+New Issue from Selection…, Issues Mentioning This File, Comment on This
+Line in the Open Pull Request… and Open the GitHub Reference at the
+Cursor. One table (<code>workbench_menu.LINE_ROWS</code>), one
+implementation (<code>quill/ui/github_editor_line.py</code>, core in
+<code>quill/core/github/editor_line.py</code>), catalogue rows so a
+sentence reaches them. The Workbench learned three requests from the
+editor: <code>filter:</code>, <code>search:</code> and
+<code>issue:</code>. Next in Phase 13: comment editors, list export and
+import, Dry Run and the practice repository.</p>
 <p><strong>2026-11-17, Phase 13: Export List (PRD 22.7).</strong> Export
 List… on the Workbench’s File menu (Ctrl+Shift+X), the WordPress
 Workbench’s command, its writer moved to the shared engine
@@ -351,12 +366,13 @@ covered, 1103 planned, 15 no_api_needed, 206 out_of_scope),
 “Everything GitHub can do, and where” chapter. The GHManage port
 (complete.md 10B.1) is done.</p>
 <p>What remains: the real descriptions for GHEC (GitHub Enterprise
-Cloud) and GHES (GitHub Enterprise Server), Phase 13 (API Console, Read
-as Document, Watches and the rest of PRD section 22), the remaining PRD
-section 14 features, Repository Sets in the UI, and manual NVDA, JAWS,
-Narrator, braille, scaling and live-account acceptance. The engineering
-checklist is in the <a href="./github-roadmap.md">GitHub Workbench
-roadmap</a>.</p>
+Cloud) and GHES (GitHub Enterprise Server), the rest of Phase 13
+(comment editors, list export and import, plain-language batches, Dry
+Run, the practice repository, Compare Accounts and the rest of PRD
+section 22), the remaining PRD section 14 features, Repository Sets in
+the UI, and manual NVDA, JAWS, Narrator, braille, scaling and
+live-account acceptance. The engineering checklist is in the <a
+href="./github-roadmap.md">GitHub Workbench roadmap</a>.</p>
 <h2 id="wordpress">WordPress</h2>
 <h3 id="done">Done</h3>
 <p>Everything below is in <code>S:\QUILL</code>, uncommitted on

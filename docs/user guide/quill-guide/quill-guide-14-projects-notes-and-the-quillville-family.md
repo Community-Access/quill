@@ -662,8 +662,11 @@ started if you change your mind partway.
 - **Stash Changes... / Manage Stashes...** put your uncommitted work aside
   under a name you'll recognize, then list, apply or drop any stash later,
   with no `stash@{2}` references to remember.
-- **Who Wrote This Line...** runs `git blame` on the line your cursor is on
-  and tells you who last changed it, when, and the commit's summary.
+- **Who Changed This Line?** runs `git blame` on the line your cursor is on
+  and tells you who last changed it, when, and the commit's summary; press it
+  again soon after to open the pull request that brought it. It moved to
+  **GitHub > From This Line** in November 2026, beside the other commands
+  about the line you are on; the GitHub Guide's Chapter 7 covers them.
 - **Start Bisect... / End Bisect** runs a `git bisect` session as plain
   questions and answers. QUILL checks out a commit and asks "Is this version
   good or bad?" Answer, and it narrows the search until it tells you exactly

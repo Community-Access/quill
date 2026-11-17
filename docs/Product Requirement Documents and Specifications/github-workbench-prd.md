@@ -1962,6 +1962,21 @@ editor commands open no window unless they must (QUILL and QUILL Lite both):
 - References in any document (`#42`, `owner/name#42`, `@person`, commit
   hashes) are recognized; Alt+Enter on one opens its Properties sheet.
 
+**Built 2026-11-17.** GitHub > From This Line in QUILL (also Tools > Git and
+GitHub > GitHub > From This Line), and flat rows in QUILL Lite's GitHub menu,
+from one table (`workbench_menu.LINE_ROWS`); the logic is
+`quill/core/github/editor_line.py` and `quill/ui/github_editor_line.py`. Two
+departures, both decided rather than missed: the reference command is **Open
+the GitHub Reference at the Cursor**, keyless, because family rule 1 gives
+Alt+Enter to Redo (Word repeats the last action on it), which outranks this
+section; and it opens the item in the Workbench's list narrowed to it
+(`filter:#42`), since the Properties sheet is reached from there with
+Alt+Enter. Who Changed This Line? keeps Local Git's command id
+(`localgit.blame_at_cursor`) and so its Developer-profile gate in QUILL and
+the Coding area in QUILL Lite. A second press within ten seconds opens the
+pull request. Comment on This Line refuses when the checkout and the pull
+request are at different commits, or the file has uncommitted changes.
+
 ### 22.4 Reading GitHub like a document
 
 - **Read as Document** (Item menu) opens an issue, pull request or discussion

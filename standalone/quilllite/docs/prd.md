@@ -2702,3 +2702,30 @@ The working plan, its decisions and its progress log are `docs/design/command-ke
 **Safety.** Only commands this window can run now are offered. A disabled command is refused with its reason, never swapped. CAUTION commands confirm; exit, sign-in, send, delete and settings are never run from a sentence. Jev's pick runs only above the 6.4 thresholds (confidence, fit, margin); tier 4's only when it agrees with tier 2 and the command is SAFE. Otherwise "Did you mean". Failures say one line, once, and fall to the next tier. Nothing is sent in Safe Mode.
 
 **Measured.** Live through the gateway on 2026-11-09: 2,883 requests, no errors, median 176 ms; 211 of 232 hand-written requests right against tier 2's 154; 2,183 of 2,184 corpus rows (`docs/release/jev-live-test-2026-11-09.md`).
+
+## GitHub from the editor (2026-11-17)
+
+GitHub PRD 22.3, in both editors from one table (`LINE_ROWS` in
+`quill/core/github/workbench_menu.py`) and one implementation
+(`quill/ui/github_editor_line.py`, wx-free core in
+`quill/core/github/editor_line.py`). QUILL Lite's adapter is
+`quill/apps/lite_github_line.py`, mixed into `DocumentToolsMixin`, so only a
+document window has the rows. They sit flat in the GitHub menu, between
+separators, while workbench mode is on (QUILL Lite's GitHub menu has no
+submenus; `lite_arrange` flattens QUILL's From This Line submenu), and are in
+the Command Palette always. No chords (the `github.` family, rule 7).
+
+| Row | Handler | QUILL command |
+| --- | --- | --- |
+| Copy GitHub Lin&k to This Line | `cmd_github_copy_line_link` | `github.copy_line_link` |
+| Wh&o Changed This Line? | `cmd_github_who_changed_line` (Coding area) | `localgit.blame_at_cursor` |
+| Open the Pull Re&quest for This Line | `cmd_github_open_line_pull` | `github.open_line_pull` |
+| Open This Line on GitH&ub | `cmd_github_open_line` | `github.open_line` |
+| New Issue from Se&lection... | `cmd_github_issue_from_selection` | `github.issue_from_selection` |
+| Issues Mentioning This &File | `cmd_github_issues_mentioning_file` | `github.issues_mentioning_file` |
+| Commen&t on This Line in the Open Pull Request... | `cmd_github_comment_on_line` | `github.comment_on_line` |
+| Open the GitHub &Reference at the Cursor | `cmd_github_open_reference_at_cursor` | `github.open_reference_at_cursor` |
+
+All eight have catalogue rows (`quill/core/command_catalogue/editor_github_line.py`),
+so a sentence reaches them; commenting is CONFIRM. Each reads the working copy
+with git in the background, says one sentence, and is refused in Safe Mode.

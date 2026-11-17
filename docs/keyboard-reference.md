@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 588.
+Editor commands with default bindings: 595.
 
 ## The QUILL editor
 
@@ -473,15 +473,22 @@ Editor commands with default bindings: 588.
 | (unbound by default) | GitHub: Change Default Branch... | `github.change_default_branch` |
 | (unbound by default) | GitHub: Change Repository Visibility... | `github.change_repository_visibility` |
 | (unbound by default) | Clone Repository... | `github.clone_repository` |
+| (unbound by default) | Comment on line | `github.comment_on_line` |
 | (unbound by default) | GitHub: Commit Multiple Files... | `github.commit_multiple_files` |
 | (unbound by default) | GitHub: Configure Branch Protection... | `github.configure_branch_protection` |
+| (unbound by default) | Copy line link | `github.copy_line_link` |
 | (unbound by default) | GitHub: Create Codespace... | `github.create_codespace` |
 | (unbound by default) | GitHub: Create Release... | `github.create_release` |
 | (unbound by default) | GitHub: Create Repository... | `github.create_repository` |
 | (unbound by default) | GitHub: Delete Branch... | `github.delete_branch` |
 | (unbound by default) | GitHub: Dispatch Workflow... | `github.dispatch_workflow` |
 | (unbound by default) | GitHub: Fork Repository... | `github.fork_repository` |
+| (unbound by default) | Issue from selection | `github.issue_from_selection` |
+| (unbound by default) | Issues mentioning file | `github.issues_mentioning_file` |
 | (unbound by default) | GitHub: Codespaces... | `github.list_codespaces` |
+| (unbound by default) | Open line | `github.open_line` |
+| (unbound by default) | Open line pull | `github.open_line_pull` |
+| (unbound by default) | Open reference at cursor | `github.open_reference_at_cursor` |
 | (unbound by default) | GitHub: Rename Repository... | `github.rename_repository` |
 | (unbound by default) | GitHub: Notifications... | `github.view_notifications` |
 | (unbound by default) | GitHub: Security Alerts... | `github.view_security_alerts` |
@@ -494,7 +501,7 @@ Editor commands with default bindings: 588.
 | (unbound by default) | Workbench releases | `github.workbench_releases` |
 | (unbound by default) | Local Git: End Bisect | `localgit.bisect_reset` |
 | (unbound by default) | Local Git: Start Bisect... | `localgit.bisect_start` |
-| (unbound by default) | Local Git: Who Wrote This Line... | `localgit.blame_at_cursor` |
+| (unbound by default) | Who Changed This Line? | `localgit.blame_at_cursor` |
 | (unbound by default) | Local Git: Interactive Rebase... | `localgit.interactive_rebase` |
 | (unbound by default) | Local Git: Manage Stashes... | `localgit.manage_stashes` |
 | (unbound by default) | Local Git: Abort Rebase | `localgit.rebase_abort` |

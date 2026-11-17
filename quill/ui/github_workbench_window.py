@@ -17,6 +17,7 @@ both editors call: QUILL Lite is never ahead.
 
 from __future__ import annotations
 
+import json
 from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any
@@ -404,11 +405,36 @@ class GitHubWorkbenchProvider(
         return github_status_cells(self, frame)
 
     def after_open(self, then: str) -> None:
-        """What a door asked for once the window is open: a sheet's page, or a command."""
+        """What a door asked for once the window is open.
+
+        ``sheet:<page>`` opens the repository's Properties at a page;
+        ``filter:<text>`` narrows the list just opened (``#42``);
+        ``search:<query>`` opens Search > Issues and Pull Requests on a query;
+        ``issue:<json [title, body]>`` starts a new issue with that draft
+        (GitHub PRD 22.3, from the editor); anything else is an editor command.
+        """
         repository = self.current_repository_name()
         if self.frame is None:
             return
-        if then.startswith("sheet:"):
+        if then.startswith("filter:"):
+            # The place is already open; narrow its list (#42 from the editor).
+            self.frame.filter.ChangeValue(then.partition(":")[2])
+            self.frame.apply_filter()
+            self.frame.list.SetFocus()
+        elif then.startswith("search:"):
+            self._go_filtered("", "search_issues", "", then.partition(":")[2])
+        elif then.startswith("issue:"):
+            if not repository:
+                self._say("Open a repository first. Ctrl+L opens one by name or link.")
+                return
+            from quill.core.github.issue_templates import GitHubIssueTemplate
+
+            title, body = json.loads(then.partition(":")[2])
+            draft = GitHubIssueTemplate(
+                "Selection in the editor", "", title=str(title), body=str(body)
+            )
+            self._create_issue_from_template(repository, draft)
+        elif then.startswith("sheet:"):
             if not repository:
                 self._say("Open a repository first. Ctrl+L opens one by name or link.")
                 return

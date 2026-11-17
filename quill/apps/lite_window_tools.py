@@ -38,6 +38,7 @@ import wx
 from quill.apps.lite_dialogs import edit_file_format
 from quill.apps.lite_dialogs_entry import ask_text
 from quill.apps.lite_github_accounts import GitHubAccountsLiteMixin
+from quill.apps.lite_github_line import GitHubLineLiteMixin
 from quill.apps.lite_github_open import GitHubFileOpenMixin
 from quill.apps.lite_github_workbench import GitHubWorkbenchLiteMixin
 from quill.apps.lite_window_backups import DocumentBackupsMixin
@@ -71,6 +72,7 @@ class DocumentToolsMixin(
     GitHubFileOpenMixin,
     GitHubAccountsLiteMixin,
     GitHubWorkbenchLiteMixin,  # the Workbench, workbench mode, Clone (lite_github_workbench.py)
+    GitHubLineLiteMixin,  # GitHub > From This Line (lite_github_line.py, PRD 22.3)
     DocumentReplaceJobsMixin,
 ):
     """Line tools, case tools, and the file-format dialog."""

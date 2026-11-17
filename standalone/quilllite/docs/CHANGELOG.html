@@ -258,6 +258,42 @@ Lines…</strong> (<code>Ctrl+Alt+L</code>) turns each line of your editor
 selection into an issue, list markers and check boxes taken off, and can
 make them sub-issues of an issue you name. The spreadsheet reader is the
 WordPress Workbench’s, now shared.</p>
+<h3 id="github-from-the-line-you-are-on-2026-11-17">GitHub from the line
+you are on (2026-11-17)</h3>
+<p>Most GitHub questions start in a file. Put your cursor on a line, or
+select a few, and eight new rows in the GitHub menu answer without
+leaving the editor. They sit between separators while workbench mode is
+on, and are in the Command Palette always. QUILL has the same eight, as
+GitHub &gt; From This Line.</p>
+<ul>
+<li><strong>Copy GitHub Link to This Line</strong> copies a link to
+these lines in the commit you have checked out, so it keeps showing the
+same text after the file changes. <strong>Open This Line on
+GitHub</strong> opens it in your browser. Both say when the commit is
+not on GitHub yet, or the file has uncommitted changes.</li>
+<li><strong>Who Changed This Line?</strong> says who last changed the
+line, when and why; press it again within ten seconds to open the pull
+request that brought it, or use <strong>Open the Pull Request for This
+Line</strong>. It is in every profile, as Local Git’s rows are in QUILL
+Lite.</li>
+<li><strong>New Issue from Selection…</strong> opens the Workbench’s New
+Issue window with the selection quoted as code under a link to it, and a
+preview before anything is sent.</li>
+<li><strong>Issues Mentioning This File</strong> opens the Workbench’s
+search on the file’s path.</li>
+<li><strong>Comment on This Line in the Open Pull Request…</strong>
+posts a review comment on these lines of the pull request for the branch
+you have checked out. It stops first, saying why, if your copy and the
+pull request are at different commits or the file has changes you have
+not committed.</li>
+<li><strong>Open the GitHub Reference at the Cursor</strong> opens the
+<code>#42</code>, <code>GH-42</code>, <code>owner/name#42</code> or
+commit hash you are on in the Workbench, narrowed to it, or an
+<code>@person</code>’s profile in your browser.</li>
+</ul>
+<p>All eight are refused in Safe Mode, need git, have no key out of the
+box, and can be reached from Say or Type a Command. The GitHub Guide’s
+Chapter 7 has the details.</p>
 <h3 id="export-any-github-workbench-list-2026-11-17">Export any GitHub
 Workbench list (2026-11-17)</h3>
 <p><strong>Export List…</strong> (<code>Ctrl+Shift+X</code>), on the

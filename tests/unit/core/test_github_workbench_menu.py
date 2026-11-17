@@ -124,8 +124,10 @@ def test_the_github_menu_is_a_short_list_of_doors() -> None:
         "github.workbench_pulls",
         "github.workbench_actions_runs",
     ]
+    # From This Line (PRD 22.3) and Local Git are the two submenus.
     assert [entry.title for entry in table.WORKBENCH_ROWS if isinstance(entry, table.Submenu)] == [
-        "&Local Git"
+        "F&rom This Line",
+        "&Local Git",
     ]
     # Inbox is the one door for "what needs me": My Work and Notifications left.
     assert "github.workbench_my_work" not in top
