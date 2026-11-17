@@ -13,6 +13,7 @@ with the wizard completed, and the installer is not built on this runner.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import time
 
@@ -188,9 +189,37 @@ def _file_name_box(dialog) -> str:
         return f"(unreadable: {exc})"
 
 
+@contextlib.contextmanager
+def _no_autosuggest():
+    """Windows' AutoSuggest off for this user while the block runs, then put back.
+
+    HKCU's ``AutoComplete\\AutoSuggest`` is what the file dialogs' File name
+    box reads when it starts; "no" leaves the box a plain edit field.
+    """
+    import winreg
+
+    key_path = r"Software\Microsoft\Windows\CurrentVersion\Explorer\AutoComplete"
+    key = winreg.CreateKeyEx(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_ALL_ACCESS)
+    try:
+        try:
+            before: object = winreg.QueryValueEx(key, "AutoSuggest")[0]
+        except FileNotFoundError:
+            before = None
+        winreg.SetValueEx(key, "AutoSuggest", 0, winreg.REG_SZ, "no")
+        try:
+            yield
+        finally:
+            if before is None:
+                winreg.DeleteValue(key, "AutoSuggest")
+            else:
+                winreg.SetValueEx(key, "AutoSuggest", 0, winreg.REG_SZ, str(before))
+    finally:
+        winreg.CloseKey(key)
+
+
 def test_core_task_3_write_and_save(quill_app) -> None:
     # Type a heading and a paragraph, Ctrl+S on the untitled document opens
-    # Save As; type a path, Tab, Alt+S; the file is written and the title says so.
+    # Save As; type a path, Enter; the file is written and the title says so.
     target = quill_app.documents_dir / "written-by-keyboard.md"
     quill_app.main_window.set_focus()
     quill_app.main_window.type_keys(
@@ -198,35 +227,40 @@ def test_core_task_3_write_and_save(quill_app) -> None:
         with_spaces=True,
     )
     _wait_title(quill_app, "[modified]")
-    dialog = _open_window(quill_app, "^s", "Save")
-    # Alt+N is the common file dialog's own key for "File name:", so focus
-    # lands there whichever pane the dialog chose first. Typing the path opens
-    # the box's suggestion list, and on the runner Enter, and then Alt+S, were
-    # sometimes spent on that list (three nights in ten). Tab leaves the box,
-    # which closes the list and keeps what was typed; Alt+S is then Save.
-    # (Setting the box's value through UI Automation instead is not seen by
-    # the dialog at all: Enter then saved nothing, every time.)
-    dialog.type_keys("%n^a" + _literal(str(target)), with_spaces=True)
-    typed = _file_name_box(dialog)
-    dialog.type_keys("{TAB}")
-    time.sleep(0.3)
-    dialog.type_keys("%s")
-    try:
-        _assert_closes(dialog, "Save file as", timeout=5, key="Alt+S")
-        _wait_title(quill_app, "written-by-keyboard")
-    except AssertionError as exc:
-        raise AssertionError(
-            f"{exc}; file name box held {typed!r} before Tab and "
-            f"{_file_name_box(dialog)!r} after; the file "
-            f"{'exists' if target.exists() else 'does not exist'}; focus on "
-            f"{_focused_name()!r}; windows open: {_window_titles(quill_app)!r}; "
-            f"spoken: {quill_app.spoken()!r}"
-        ) from exc
+    with _no_autosuggest():
+        _save_as(quill_app, target)
     _wait_title(quill_app, "[modified]", present=False)
     text = target.read_text(encoding="utf-8")
     assert "Keyboard heading" in text and "Typed without a mouse." in text
     quill_app.wait_spoken("Saved", timeout=15)
     _assert_focus_back_in_main(quill_app)
+
+
+def _save_as(quill_app, target) -> None:
+    """Ctrl+S on an untitled document, a path typed into Save As, Enter."""
+    dialog = _open_window(quill_app, "^s", "Save")
+    # Alt+N is the common file dialog's own key for "File name:", so focus
+    # lands there whichever pane the dialog chose first. Windows' suggestion
+    # list under that box took the keys that followed the path (Enter, Tab and
+    # Alt+S alike) on the runner, and a value set through UI Automation is not
+    # seen by the dialog at all; so the run turns AutoSuggest off for its own
+    # user while the dialog is open (_no_autosuggest), and types as a person
+    # would. The suggestion list is Windows', not QUILL's: nothing here is
+    # about whether QUILL saves.
+    dialog.type_keys("%n^a" + _literal(str(target)), with_spaces=True)
+    typed = _file_name_box(dialog)
+    dialog.type_keys("{ENTER}")
+    try:
+        _assert_closes(dialog, "Save file as", timeout=5, key="Enter")
+        _wait_title(quill_app, "written-by-keyboard")
+    except AssertionError as exc:
+        raise AssertionError(
+            f"{exc}; file name box held {typed!r} before Enter and "
+            f"{_file_name_box(dialog)!r} after; the file "
+            f"{'exists' if target.exists() else 'does not exist'}; focus on "
+            f"{_focused_name()!r}; windows open: {_window_titles(quill_app)!r}; "
+            f"spoken: {quill_app.spoken()!r}"
+        ) from exc
 
 
 def test_core_task_4_find_and_replace(quill_app) -> None:
