@@ -253,8 +253,58 @@ commitments are in <a href="ACCESSIBILITY.md">ACCESSIBILITY.md</a>.</p>
 first of the month, and each release’s notes link to the latest one.
 Counts are counts of work, not a score: no number here says how
 accessible QUILL is.</p>
-<h2 id="october-2026">October 2026</h2>
+<h2 id="november-2026-to-17-november">November 2026 (to 17
+November)</h2>
+<p>This entry is written partway through the month and will be finished
+at its end.</p>
 <h3 id="completed">Completed</h3>
+<ul>
+<li><strong>Controls without a label of their own can now be
+named</strong> (2026-11-09). QUILL moved to wxPython 4.3.2 (wxWidgets
+3.3.4), the first release with <code>SetAccessibleName</code>, and names
+such a control with it instead of a workaround, so a screen reader reads
+the name straight from the control. The code and its tests are done; the
+by-ear check is still open in <a
+href="https://github.com/Community-Access/quill/issues/1693">#1693</a>.</li>
+<li><strong>F1 help everywhere in the GitHub Workbench</strong>
+(2026-11-10): what the window and the focused control are for, Shift+F1
+for every action with its key, Alt+F1 for the GitHub word under the
+cursor, and a Help and Learning branch of the tree. QUILL Lite has the
+same. See the CHANGELOG entry “Help everywhere in the GitHub
+Workbench”.</li>
+<li><strong>Ctrl+Alt+F2 opens Get Help from Support in the nightly
+keyboard run.</strong> The continuous integration (CI) user interface
+automation run had sent the chord in a way that lost Ctrl and Alt; with
+the modifiers held down explicitly it has passed every night since
+2026-11-12, and the test no longer expects a failure (<a
+href="https://github.com/Community-Access/quill/issues/1703">#1703</a>).
+A person still needs to press it on a real machine.</li>
+</ul>
+<p>The full detail of every change is in the <a
+href="https://github.com/Community-Access/quill/blob/main/CHANGELOG.md">CHANGELOG</a>.</p>
+<h3 id="in-progress-and-open">In progress and open</h3>
+<ul>
+<li><strong>The nightly keyboard run of “Change a setting”
+fails.</strong> Since 2026-11-12, after finding Wrap find searches with
+Find a setting and pressing Space, Enter has not closed the Settings
+dialog on the runner. It is being investigated; it has not yet been
+confirmed on a real machine.</li>
+<li><strong>Recorded screen reader testing</strong> still has no
+results; help is wanted in <a
+href="https://github.com/Community-Access/quill/issues/1694">#1694</a>.</li>
+<li><strong>A crash on macOS when running from source</strong>, reported
+by Marco Zehe (<a
+href="https://github.com/Community-Access/quill/issues/1836">#1836</a>):
+QUILL restarted in a loop before any document opened. A fix is in
+review.</li>
+</ul>
+<h3 id="known-limitations">Known limitations</h3>
+<p>See <a href="ACCESSIBILITY.md#known-limitations">Known
+limitations</a> in ACCESSIBILITY.md.</p>
+<h3 id="how-to-help">How to help</h3>
+<p>As in October, below.</p>
+<h2 id="october-2026">October 2026</h2>
+<h3 id="completed-1">Completed</h3>
 <ul>
 <li><strong>We adopted the Open Source Accessibility Framework.</strong>
 QUILL now has an <a href="ACCESSIBILITY.md">ACCESSIBILITY.md</a> with
@@ -299,7 +349,7 @@ watchdog in QUILL Lite”.</li>
 </ul>
 <p>The full detail of every change is in the <a
 href="https://github.com/Community-Access/quill/blob/main/CHANGELOG.md">CHANGELOG</a>.</p>
-<h3 id="in-progress-and-open">In progress and open</h3>
+<h3 id="in-progress-and-open-1">In progress and open</h3>
 <ul>
 <li><strong>Recorded screen reader testing.</strong> The sign-off
 records for QUILL Lite 2.0.0, Quill Radio 3.2.0, QUILL Cast 2.0.0 and
@@ -320,7 +370,7 @@ href="https://github.com/Community-Access/quill/issues/1695">#1695</a>.</li>
 before these three were filed. 110 issues carry the label in total, all
 closed; the most recent was closed in August 2026.</li>
 </ul>
-<h3 id="known-limitations">Known limitations</h3>
+<h3 id="known-limitations-1">Known limitations</h3>
 <p>See <a href="ACCESSIBILITY.md#known-limitations">Known
 limitations</a> in ACCESSIBILITY.md.</p>
 <h3 id="lessons-learned">Lessons learned</h3>
@@ -331,7 +381,7 @@ to find from the issue tracker. From now on, accessibility work that has
 an issue gets the <code>accessibility</code> label, and each update here
 links to it.</li>
 </ul>
-<h3 id="how-to-help">How to help</h3>
+<h3 id="how-to-help-1">How to help</h3>
 <p>Issues labelled <a
 href="https://github.com/Community-Access/quill/issues?q=is%3Aopen+label%3Aaccessibility">accessibility</a>;
 report a barrier with the <a

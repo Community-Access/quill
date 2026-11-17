@@ -2999,13 +2999,17 @@ built in this order, because each piece needs the one before:
      (lp.csedesigns.com/wordpress);
    - every gate.
 
-### 17a.13 Open questions for Jeff
+### 17a.13 Questions for Jeff, answered 2026-11-15
 
-1. File extension for a form document: `.bfl`, or `.form.md` so other editors
-   show it as text?
-2. Should BAF's PHP BFL parser and QUILL's Python one share a conformance
-   suite in the BAF repository, so the two can never disagree?
-3. May the test site install QAF from `S:\code\qaf` for the regression plan?
+Jeff said yes to all three on 2026-11-15.
+
+1. File extension for a form document: **`.qaf`** (17a.17).
+2. BAF's PHP form parser, now QAF's, and QUILL's Python one **share a
+   conformance suite in the plugin's repository**, so the two can never
+   disagree.
+3. The test site **may install QAF from `S:\code\qaf`** for the regression
+   plan. The install itself is a plugin upload in wp-admin on the test site,
+   which Jeff does (section 19, Forms).
 
 ### 17a.14 Is BFL complete? Not yet (checked against BAF's code, 2026-11-04)
 
@@ -5111,11 +5115,23 @@ screen-reader checking (section 19).
   other packages, so CI lacked it), the Practice Site lock is pinned LF, and
   five CodeQL findings are fixed in code.
 
+### 2026-11-15: the three Forms questions answered, and QAF pushed
+
+Jeff said yes to all three questions in 17a.13: form files are `.qaf`, the
+two form parsers share one conformance suite in the plugin's repository, and
+the test site may install QAF from `S:\code\qaf`. The two branches this
+record said were waiting to be pushed, `feat/json-form-model` and
+`chore/mit-license`, had already been merged into QAF's main (ac0ea69 and
+cc8d7ed), as had the payments work. QAF's spam work and the builder's next
+pass are committed and pushed on `feat/spam-hold-providers-challenges`
+(72bce84), with 601 PHPUnit tests passing. The QUILL tutorial books were
+checked on main and all six are current.
+
 ## 19. Remaining tasks
 
 **wp-admin parity (9.18), Jeff 2026-11-04, "we should have all of this":**
 
-- [ ] Route gaps (9.17), what remains: everything built on 2026-11-13 (gaps 1, 3, 4, 6, 7, 8, 10, 11, 12 and 13) tried on the live test site and with NVDA and JAWS; and the QUILL tutorial book regenerated (`python -m quill.tools.build_tutorials_reference --write`), which was already out of date before the new lesson.
+- [ ] Route gaps (9.17), what remains: everything built on 2026-11-13 (gaps 1, 3, 4, 6, 7, 8, 10, 11, 12 and 13) tried on the live test site and with NVDA and JAWS. (The tutorial books were checked current on main on 2026-11-15: all six match their lessons.)
 - [ ] Packages 1 to 3, what remains: the Workbench's new commands (Counts by Status, Duplicate as Draft, Empty Trash, Edit Picture, Regenerate Sizes, Attach, Detach, Download, Open in wp-admin, and Properties' Choose from Library and Remove Featured Image) tried on the live test site and with NVDA and JAWS.
 - [ ] Packages 4 and 5, what remains: the new comment and people commands (Comment Counts, Show Its Comments, Empty Comment Trash, Change Role and Remove on several people, Add a Person, Set New Password, Your Profile) tried on the live test site and with NVDA and JAWS.
 - [ ] Packages 6, 7 and 14, what remains: At a Glance, Activity, wp-admin Screens, wp-admin for This Place, the template commands and Additional CSS tried on the live test site (the plugin sentences on a site that has the plugins) and with NVDA and JAWS.
@@ -5192,26 +5208,20 @@ built.
   site is a write on the test host).
 
 ### Forms (17a)
-- Run the Forms regression tests 63 to 68 with BAF on the test site
-  (**waiting on Jeff**, 17a.13 question 3).
-- The plugin's own next pass (Preview, the Accessibility Coach, canvas
-  actions for sections and columns, repeater cards, Convert rewriting
-  conditions); the QAF rename on both sides *(in progress)*.
-  **Waiting on Jeff:** the BAF changes tried in a real
-  WordPress with NVDA and JAWS (this machine has no WordPress).
-- **Payments, waiting on Jeff:** the plugin's `feat/qaf-payments` run with
-  real PHPUnit and the WordPress test suite; installed on a test site with
-  Stripe test keys and a PayPal sandbox app; and the live checks in
+- **Waiting on Jeff:** install QAF from `S:\code\qaf` on the test site
+  (approved 2026-11-15, 17a.13 question 3; a plugin upload in wp-admin), then
+  run the Forms regression tests 63 to 68 against it.
+- The plugin's next pass (Preview, the Accessibility Coach, canvas actions
+  for sections and columns, repeater cards, Convert rewriting conditions) and
+  the spam work are committed and pushed on QAF's
+  `feat/spam-hold-providers-challenges` (72bce84, 601 PHPUnit tests passing);
+  that branch needs its pull request and merge. **Waiting on Jeff:** the QAF
+  changes tried in a real WordPress with NVDA and JAWS.
+- **Payments, waiting on Jeff:** the payments work is on QAF's main. What is
+  left is the run with the WordPress test suite; installing on a test site
+  with Stripe test keys and a PayPal sandbox app; and the live checks in
   `docs/qa/forms-payments-acceptance.md`, including a screen-reader pass
-  through Stripe's Payment Element and PayPal's buttons. Pushing the
-  branch is his call.
-
-- **Waiting on Jeff:** the three questions in 17a.13 (the file extension,
-  answered in 17a.17: `.qaf`; the shared conformance
-  suite, built in BAF's repository so either answer works; installing BAF on
-  the test site), and pushing `feat/json-form-model` in `S:\code\baf` (the
-  guard refuses publishing a branch here), and pushing BAF's
-  `chore/mit-license`, after which it is merged into `feat/json-form-model`.
+  through Stripe's Payment Element and PayPal's buttons.
 
 ### Docs and gates
 

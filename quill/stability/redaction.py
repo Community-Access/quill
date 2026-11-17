@@ -47,7 +47,12 @@ _SECRET_NAME_RE = re.compile(
 # Absolute Windows / POSIX paths. We replace only the *directory*
 # portion so the trailing file name (often meaningful) remains, but
 # the user-specific prefix is gone.
-_WINDOWS_PATH_RE = re.compile(r"(?i)\b[A-Z]:\\(?:Users|Documents and Settings)\\[^\\\s\"']+")
+# One backslash, two (a path inside JSON or a Python repr, as the crash
+# reports in #1838 and #1841 quoted them) or a forward slash: all three
+# reach a report, and the user folder's name is cut from each.
+_WINDOWS_PATH_RE = re.compile(
+    r"(?i)\b[A-Z]:(?:\\{1,2}|/)(?:Users|Documents and Settings)(?:\\{1,2}|/)[^\\/\s\"']+"
+)
 _POSIX_PATH_RE = re.compile(r"\b/(?:home|Users)/[^/\s\"']+(?:/[^/\s\"']+)*")
 _MACOS_PATH_RE = re.compile(r"\b/Users/[^/\s\"']+(?:/[^/\s\"']+)*")
 
