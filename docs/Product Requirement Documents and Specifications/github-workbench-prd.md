@@ -2042,6 +2042,9 @@ Failed, everywhere).
 - **Export any list** as CSV, Excel, Markdown table or a QUILL table document,
   with the columns showing: issues, members, the access matrix, alerts,
   runs, Change History.
+  *Built 2026-11-17:* Export List... on the Workbench's File menu (Ctrl+Shift+X), the WordPress
+  Workbench's command, moved to the shared engine
+  (`quill/core/workbench/export.py`); the Markdown table opens in the editor.
 - **Import issues** from CSV or a spreadsheet: map columns to title, body,
   labels, assignees, milestone, type and project fields, preview every issue,
   create them with a result per row.

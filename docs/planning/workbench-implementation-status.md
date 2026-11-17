@@ -83,6 +83,11 @@ catalogue rows so a sentence reaches them. The Workbench learned three
 requests from the editor: `filter:`, `search:` and `issue:`. Next in Phase 13:
 comment editors, list export and import, Dry Run and the practice repository.
 
+**2026-11-17, Phase 13: Export List (PRD 22.7).** Export List... on the
+Workbench's File menu (Ctrl+Shift+X), the WordPress Workbench's command, its
+writer moved to the shared engine (`quill/core/workbench/export.py`). Import
+issues from a spreadsheet and New Issues from Lines remain.
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

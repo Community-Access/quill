@@ -15,8 +15,8 @@ Palette always. QUILL has the same eight, as GitHub > From This Line.
   when the commit is not on GitHub yet, or the file has uncommitted changes.
 - **Who Changed This Line?** says who last changed the line, when and why;
   press it again within ten seconds to open the pull request that brought it,
-  or use **Open the Pull Request for This Line**. It needs Developer
-  Tools, as in QUILL.
+  or use **Open the Pull Request for This Line**. It is in every profile,
+  as Local Git's rows are in QUILL Lite.
 - **New Issue from Selection...** opens the Workbench's New Issue window with
   the selection quoted as code under a link to it, and a preview before
   anything is sent.
@@ -33,6 +33,16 @@ Palette always. QUILL has the same eight, as GitHub > From This Line.
 All eight are refused in Safe Mode, need git, have no key out of the box, and
 can be reached from Say or Type a Command. The GitHub Guide's Chapter 7 has
 the details.
+
+### Export any GitHub Workbench list (2026-11-17)
+
+**Export List...** (`Ctrl+Shift+X`), on the GitHub Workbench's own File menu,
+saves the list in front of you as it is shown, its columns, filter and rows, as an Excel
+workbook, a CSV file or a Markdown table. A Markdown table opens in the editor
+as a table if you like, where the table keys move cell by cell. It works on
+issues, pull requests, runs, alerts, people, Change History or any other list,
+and says how many rows it wrote and which hidden columns it left out. It is
+the WordPress Workbench's Export List, now one command shared by both.
 
 ### GitHub issue forms, written as plain text (2026-11-16)
 

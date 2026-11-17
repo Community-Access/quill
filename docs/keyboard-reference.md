@@ -1074,6 +1074,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+T | Start in Local Worktree... | `github.workbench.start_worktree` |
 | Ctrl+Shift+U | Columns... | `github.workbench.columns` |
 | Ctrl+Shift+W | What Failed... | `github.workbench.what_failed` |
+| Ctrl+Shift+X | Export List... | `github.workbench.export_list` |
 | Ctrl+Y | Redo GitHub Change | `github.workbench.redo_change` |
 | Ctrl+Z | Undo GitHub Change | `github.workbench.undo_change` |
 | Delete | Remove, safely (in the list) | `github.workbench.remove` |
