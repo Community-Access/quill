@@ -109,7 +109,7 @@ def _assert_focus_inside(window, what: str) -> None:
     assert handle in _focused_handle_chain(), f"keyboard focus left {what}"
 
 
-def _assert_closes(window, what: str, timeout: float = 10.0) -> None:
+def _assert_closes(window, what: str, timeout: float = 10.0, *, key: str = "Escape") -> None:
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         try:
@@ -118,7 +118,7 @@ def _assert_closes(window, what: str, timeout: float = 10.0) -> None:
         except Exception:  # noqa: BLE001 - a destroyed window counts as closed
             return
         time.sleep(0.25)
-    raise AssertionError(f"Escape did not close {what}")
+    raise AssertionError(f"{key} did not close {what}")
 
 
 def _assert_named(window, what: str) -> None:
@@ -260,10 +260,21 @@ def test_core_task_5_change_a_setting(quill_app) -> None:
         ) from exc
     send_keys("{ENTER}")
     time.sleep(0.5)
+    on_setting = _focused_name()
     send_keys("{SPACE}")
     time.sleep(0.3)
+    after_space = _focused_name()
     send_keys("{ENTER}")
-    _assert_closes(dialog, "the Settings dialog")
+    try:
+        _assert_closes(dialog, "the Settings dialog", key="Enter")
+    except AssertionError as exc:
+        # The nightly run has failed here since 2026-11-12; say where focus
+        # was at each step so the log shows which key went astray.
+        raise AssertionError(
+            f"{exc}; focus after Enter on the match was on {on_setting!r}, after "
+            f"Space on {after_space!r}, after the last Enter on {_focused_name()!r}; "
+            f"spoken: {quill_app.spoken()[-5:]!r}"
+        ) from exc
     deadline = time.monotonic() + 15
     saved: dict[str, object] = {}
     while time.monotonic() < deadline:
@@ -300,10 +311,6 @@ def test_core_task_6_help_and_support(quill_app) -> None:
     _assert_focus_back_in_main(quill_app)
 
 
-@pytest.mark.xfail(
-    reason="#1703: Ctrl+Alt+F2 sent by pywinauto opened nothing on the CI runner",
-    strict=False,
-)
 def test_core_task_6_support_chord(quill_app) -> None:
     # The documented chord for Get Help from Support, Ctrl+Alt+F2. Kept apart
     # from the menu route so a chord problem cannot hide the task passing.
