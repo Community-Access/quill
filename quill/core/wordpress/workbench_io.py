@@ -37,6 +37,7 @@ from typing import Any
 
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.site import kind_route
+from quill.core.workbench.export import export_rows, markdown_table  # shared since 2026-11-17
 
 __all__ = [
     "IMPORT_COLUMNS",
@@ -79,48 +80,6 @@ DOC_SUFFIXES = (".md", ".markdown", ".txt", ".docx")
 
 def _header(text: str) -> str:
     return " ".join(str(text).strip().lower().replace("_", " ").split())
-
-
-def export_rows(
-    path: Path, headings: Sequence[str], rows: Iterable[Sequence[str]], *, kind: str = ""
-) -> int:
-    """Write *rows* under *headings* to *path* (``.csv``, ``.xlsx`` or ``.md``); the count."""
-    data = [list(map(str, row)) for row in rows]
-    suffix = kind or path.suffix.lower().lstrip(".")
-    if suffix in ("md", "markdown"):
-        path.write_text(markdown_table(headings, data), encoding="utf-8", newline="\n")
-        return len(data)
-    if suffix == "xlsx":
-        from openpyxl import Workbook
-
-        book = Workbook()
-        sheet = book.active
-        sheet.title = "Workbench"
-        sheet.append(list(headings))
-        for row in data:
-            sheet.append(row)
-        sheet.freeze_panes = "A2"
-        book.save(str(path))
-        return len(data)
-    buffer = io.StringIO()
-    writer = csv.writer(buffer, lineterminator="\r\n")
-    writer.writerow(list(headings))
-    writer.writerows(data)
-    path.write_text(buffer.getvalue(), encoding="utf-8-sig", newline="")
-    return len(data)
-
-
-def markdown_table(headings: Sequence[str], rows: Iterable[Sequence[str]]) -> str:
-    """A Markdown (pipe) table; a pipe or line break inside a cell stays text."""
-
-    def cell(text: object) -> str:
-        said = str(text).replace("\\", "\\\\").replace("|", "\\|").replace("\r", "")
-        return said.replace("\n", "<br>")
-
-    lines = ["| " + " | ".join(cell(h) for h in headings) + " |"]
-    lines.append("|" + "|".join(" --- " for _ in headings) + "|")
-    lines += ["| " + " | ".join(cell(c) for c in row) + " |" for row in rows]
-    return "\n".join(lines) + "\n"
 
 
 @dataclass(frozen=True)
