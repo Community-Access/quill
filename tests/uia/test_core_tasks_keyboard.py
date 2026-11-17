@@ -96,6 +96,11 @@ def _window_inventory(quill_app) -> list[str]:
                 f"[{info.class_name!r} {window.window_text()!r} visible={window.is_visible()} "
                 f"rect={window.rectangle()} holds={texts[:15]}]"
             )
+        # The win32 view too: untitled windows (an error balloon, a tooltip
+        # saying why a name was refused) are invisible to the uia listing.
+        for window in Desktop(backend="win32").windows(process=quill_app.process.pid):
+            if window.is_visible():
+                found.append(f"win32 {window.class_name()!r} {window.window_text()!r}")
         return found
     except Exception as exc:  # noqa: BLE001 - diagnostics must never mask the failure
         return [f"(could not list windows: {exc})"]
@@ -259,6 +264,18 @@ def test_core_task_3_write_and_save(quill_app) -> None:
     _assert_focus_back_in_main(quill_app)
 
 
+def _address(dialog) -> str:
+    """The folder the dialog shows, from its address bar's toolbar name."""
+    try:
+        for bar in dialog.descendants(control_type="ToolBar"):
+            name = bar.window_text()
+            if name.startswith("Address"):
+                return name
+    except Exception as exc:  # noqa: BLE001 - diagnostics only
+        return f"(unreadable: {exc})"
+    return "(no address bar)"
+
+
 def _dialog_ready(dialog, timeout: float = 10.0) -> None:
     """Wait until Save As has finished filling its folder view and its Save button is on.
 
@@ -293,10 +310,21 @@ def _save_as(quill_app, target) -> None:
     # dialog without saving.
     typed = ""
     tries = 0
+    moved = "not tried"
     while tries < 3:
         tries += 1
         _dialog_ready(dialog)
-        dialog.type_keys("%n^a" + _literal(str(target)), with_spaces=True)
+        if tries == 2:
+            # Folder first, then the name: Enter on a folder moves the dialog
+            # there and keeps it open, which shows whether Enter arrives at all.
+            before = _address(dialog)
+            dialog.type_keys("%n^a" + _literal(str(target.parent)) + "{ENTER}", with_spaces=True)
+            time.sleep(1.5)
+            moved = f"{before!r} -> {_address(dialog)!r}"
+            _dialog_ready(dialog)
+            dialog.type_keys("%n^a" + _literal(target.name), with_spaces=True)
+        else:
+            dialog.type_keys("%n^a" + _literal(str(target)), with_spaces=True)
         typed = _file_name_box(dialog)
         dialog.type_keys("{ENTER}")
         try:
@@ -305,7 +333,7 @@ def _save_as(quill_app, target) -> None:
         except AssertionError:
             continue
     if tries > 1:
-        warnings.warn(f"Save As took Enter on attempt {tries}", stacklevel=2)
+        warnings.warn(f"Save As took Enter on attempt {tries}; folder step {moved}", stacklevel=2)
     route = "Enter"
     try:
         _assert_closes(dialog, "Save file as", timeout=5, key=route)
@@ -316,7 +344,7 @@ def _save_as(quill_app, target) -> None:
             f"{_file_name_box(dialog)!r} after; the file "
             f"{'exists' if target.exists() else 'does not exist'}; focus on "
             f"{_focused_name()!r}; windows open: {_window_inventory(quill_app)!r}; "
-            f"spoken: {quill_app.spoken()!r}"
+            f"spoken: {quill_app.spoken()!r}; folder step: {moved}"
         ) from exc
 
 
