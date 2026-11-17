@@ -103,6 +103,13 @@ _FILE = MenuSpec(
             "Ctrl+Enter",
             "Open the selected file in the editor that opened this window.",
         ),
+        _row(
+            "export_list",
+            "E&xport List...",
+            "Ctrl+Shift+X",
+            "This list as it is shown, its columns, filter and rows, as Excel, CSV or a "
+            "Markdown table the editor reads as a table. The same as the WordPress Workbench's.",
+        ),
         None,
         _row("close", "&Close Workbench", "Alt+F4", "Close this window. The editor stays."),
     ),
