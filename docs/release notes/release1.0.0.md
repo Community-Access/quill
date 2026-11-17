@@ -3765,7 +3765,8 @@ happen.
   offer, so whoever reads one can see what happened. They never include your
   document text. Before they are written, they are cleaned of GitHub tokens,
   OpenAI keys, AWS credentials, Slack tokens and long strings that look like
-  secrets.
+  secrets, and your Windows user name is taken out of every file path, however
+  the path is written.
 - **Every kind of internal error has a short support code**, in the form
   `[QUILL-...]`. It goes into crash reports and turns "it said something went
   wrong" into something specific that support can look up. Every new kind of
@@ -4059,6 +4060,21 @@ out.
 
 **Try this:** double-click a document in File Explorer to open it in QUILL,
 then press Ctrl+O. The dialog is already in that document's folder.
+
+### Four fixes from the last reports
+
+- **Enter saves Settings.** Find a setting takes you straight to the setting
+  you asked for. Change it, press Enter, and Settings saves and closes, just as
+  OK does. Until now Enter did nothing there.
+- **OK never moves your data by surprise.** Pressing OK in Settings could offer
+  to move your whole data folder and restart, in a copy of QUILL that keeps its
+  data somewhere of its own, even though you had not touched "Store QUILL's
+  data". Now only a change you make there moves anything.
+- **A GitHub secret saves every time.** In the GitHub Workbench, saving a
+  repository secret failed about once in 64 tries with "characters a GitHub
+  path cannot hold". It no longer does.
+- **QUILL starts on a Mac.** Run from source on macOS, QUILL restarted in a
+  loop before the first document opened. Thanks to Marco Zehe for the report.
 
 ### Late changes: SomaFM, DECtalk and Windows OCR
 
