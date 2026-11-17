@@ -42,6 +42,15 @@ nothing looks broken.
   probing found. `radio-signoff.md` is its fast run.
 - [converter-bakeoff.md](converter-bakeoff.md) -- the Word conversion engine
   evidence (MarkItDown, Pandoc, python-docx, and why pydocx is retired).
+- [github-regression-testing.md](github-regression-testing.md) -- the GitHub
+  Workbench against two real test repositories: every list, every properties
+  sheet (each field changed, read back and put back) and every write command,
+  run by `github-live-run.py`, which writes its results into the document.
+  `tests/unit/docs/test_github_live_run_coverage.py` fails when a command or
+  sheet is added without a scenario or a reason in the run.
+- [wordpress-regression-testing.md](wordpress-regression-testing.md) -- the
+  same for WordPress and Forms, against the test site, run by
+  `wordpress-live-run.py`.
 - [ui-automation.md](ui-automation.md) -- the `tests/uia` pywinauto suite:
   what it covers mechanically, and why it never runs on a live screen-reader
   desktop.
