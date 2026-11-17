@@ -118,7 +118,9 @@ git, **Help > Download Optional Components** has a portable copy.
   quietly throws them away.
 - **Stash Changes...** and **Manage Stashes...,** by name rather than
   `stash@{2}`.
-- **Who Wrote This Line...,** git blame for the line you are on.
+- **Who Changed This Line?,** git blame for the line you are on; twice, its
+  pull request. Since November 2026 it is on **GitHub > From This Line**, with
+  the other commands about the line you are on (the GitHub Guide, Chapter 7).
 - **Start Bisect...** and **End Bisect,** as plain questions: "Is this
   version good or bad?"
 - **Resolve Conflicts...,** one conflict at a time: "Conflict 1 of 3: your

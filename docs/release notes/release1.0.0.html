@@ -2266,6 +2266,23 @@ And <strong>Save to GitHub…</strong> is now called <strong>Commit to
 GitHub…</strong>, because that is what it does. GitHub no longer needs
 the Developer profile, so the workbench is there in most profiles, as it
 always has been in QUILL Lite.</p>
+<h4 id="from-the-line-you-are-on">From the line you are on</h4>
+<p>Most GitHub questions start in a file: who changed this, which pull
+request brought it, is there already an issue about it? Put your cursor
+on a line, or select a few, and <strong>GitHub &gt; From This
+Line</strong> answers without leaving the editor. <strong>Copy GitHub
+Link to This Line</strong> puts a link on the clipboard that keeps
+pointing at the same text after the file changes. <strong>Who Changed
+This Line?</strong> says who, when and why, and pressed twice opens the
+pull request that brought it. <strong>New Issue from Selection…</strong>
+starts an issue quoting your selection under a link to it, with a
+preview before anything is sent. <strong>Issues Mentioning This
+File</strong>, <strong>Open This Line on GitHub</strong> and
+<strong>Comment on This Line in the Open Pull Request…</strong> do what
+they say, and <strong>Open the GitHub Reference at the Cursor</strong>
+opens the <code>#42</code>, <code>owner/name#42</code>, commit or
+<code>@person</code> you are on. QUILL Lite has all eight, in its GitHub
+menu.</p>
 <h4 id="files-on-github">Files on GitHub</h4>
 <p>QUILL opens files straight from a GitHub repository, lets you browse
 the repository’s tree, and saves a file back. Your token is kept in the
@@ -2531,8 +2548,10 @@ comparison you can listen to, not a raw diff.</li>
 you to the other branch by surprise.</li>
 <li><strong>Stash Changes</strong> and <strong>Manage Stashes</strong>
 guide you through stashing.</li>
-<li><strong>Who Wrote This Line</strong> is <code>git blame</code> for
-the line you are on, spoken.</li>
+<li><strong>Who Changed This Line?</strong> is <code>git blame</code>
+for the line you are on, spoken. Press it twice to open the pull request
+that brought the line. It lives with the other From This Line commands,
+described under GitHub, from the editor.</li>
 <li><strong>Start Bisect</strong> and <strong>End Bisect</strong> turn
 <code>git bisect</code> into a plain conversation: is this version good
 or bad?</li>

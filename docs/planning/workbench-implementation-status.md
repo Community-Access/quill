@@ -1,6 +1,6 @@
 # GitHub and WordPress Workbench implementation status
 
-**Updated:** 2026-11-15  
+**Updated:** 2026-11-17  
 **Status:** WordPress's last requirements are in code (#1842). GitHub resumed
 on 2026-11-15 and is the current focus.
 
@@ -70,6 +70,19 @@ and XLSForm door and the Forms commands convert the same way. Tools > Forms in
 both editors gains Save As GitHub Issue Form and Open GitHub Issue Form
 (`quill/ui/forms_github_commands.py`). Phase 12 is complete. Next: Phase 13.
 
+**2026-11-17, Phase 13: GitHub from the editor (PRD 22.3).** GitHub > From
+This Line in QUILL (and under Tools > Git and GitHub > GitHub), flat rows in
+QUILL Lite's GitHub menu: Copy GitHub Link to This Line, Who Changed This
+Line? (Local Git's blame, renamed, and fixed to answer for the caret's line
+rather than line 1), Open the Pull Request for This Line, Open This Line on
+GitHub, New Issue from Selection..., Issues Mentioning This File, Comment on
+This Line in the Open Pull Request... and Open the GitHub Reference at the
+Cursor. One table (`workbench_menu.LINE_ROWS`), one implementation
+(`quill/ui/github_editor_line.py`, core in `quill/core/github/editor_line.py`),
+catalogue rows so a sentence reaches them. The Workbench learned three
+requests from the editor: `filter:`, `search:` and `issue:`. Next in Phase 13:
+comment editors, list export and import, Dry Run and the practice repository.
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench
@@ -92,8 +105,9 @@ GitHub can do, and where" chapter. The GHManage port (complete.md 10B.1) is
 done.
 
 What remains: the real descriptions for GHEC (GitHub Enterprise Cloud) and
-GHES (GitHub Enterprise Server), Phase 13 (API Console, Read as
-Document, Watches and the rest of PRD section 22), the remaining PRD section
+GHES (GitHub Enterprise Server), the rest of Phase 13 (comment editors, list
+export and import, plain-language batches, Dry Run, the practice repository,
+Compare Accounts and the rest of PRD section 22), the remaining PRD section
 14 features, Repository Sets in the UI, and manual NVDA, JAWS, Narrator,
 braille, scaling and live-account acceptance. The engineering checklist is
 in the [GitHub Workbench roadmap](./github-roadmap.md).

@@ -336,9 +336,11 @@ Try this with a real (or throwaway test) repository:
    with you. It never throws them away.
 3. **Stash Changes...** / **Manage Stashes...**: put work aside with a name,
    then list, apply, or drop it later.
-4. **Who Wrote This Line...**: with your cursor on a line in an open file
-   that's part of a git repo, this speaks who last touched that line, when,
-   and the commit's summary.
+4. **Who Changed This Line?** (now on **GitHub > From This Line**, or
+   **Tools > Git and GitHub > GitHub > From This Line**): with your cursor on a
+   line in an open file that's part of a git repo, this speaks who last
+   touched that line, when, and the commit's summary. Press it again to open
+   the pull request that brought it.
 5. **Start Bisect...**: give it a known-bad and a known-good commit, and QUILL
    checks out the midpoint and asks "Is this version good or bad?" Answer, and
    it narrows down to the exact commit that introduced the problem. **End

@@ -188,7 +188,7 @@ These are implementation claims to preserve and verify, not instructions to rebu
 - [x] Read issue/PR/discussion as a structured document; preserve authors, dates, headings, code, links and export options. *(Done 2026-11-13: Read as Document..., Ctrl+Shift+I and the row menu; `core/github/thread_document.py` reads comments, reviews and line comments or a discussion with replies, a heading per post with author and date, bodies verbatim; Open in Editor in both editors, Save as Markdown or HTML.)*
 - [ ] Comment editors: mentions/references/emoji, saved replies, attachments, accessible Markdown preview and optional pre-post accessibility checks.
 - [x] Watches using existing notification scheduling, consent/feedback settings and explicit freshness; never mark remote notifications read on load. *(Done 2026-11-13: the Watches node (Ctrl+7) lists runs, reviews, releases and comments rules per account (`core/github/watches.py`, `github_watches.json`); checked on the notification interval while the Workbench is open, after consent; rows say "checked 3 minutes ago"; Ctrl+N adds, Enter edits, Delete removes, Pause and Check Now on the row menu; never reads the inbox.)*
-- [ ] Editor commands: line permalink, blame/related PR, open line/PR, issue from selection, file mentions, comment on PR line and reference Properties.
+- [x] Editor commands: line permalink, blame/related PR, open line/PR, issue from selection, file mentions, comment on PR line and reference Properties. *(Done 2026-11-17: GitHub > From This Line in QUILL (and Tools > Git and GitHub > GitHub > From This Line), flat rows in QUILL Lite's GitHub menu, one table (`workbench_menu.LINE_ROWS`); `quill/core/github/editor_line.py` (permalink, blame sentence, issue draft, file search, open-PR query, line anchor, references in text) and `quill/ui/github_editor_line.py`; QUILL's adapter `main_frame_github_line.py`, QUILL Lite's `lite_github_line.py`. Who Changed This Line? is Local Git's blame command renamed and fixed (it always answered for line 1). The reference command is keyless and opens the item in the Workbench list narrowed to it: rule 1 gives Alt+Enter to Redo. Tests: `test_editor_line.py`, `test_github_editor_line.py`, `test_lite_github_line.py`. Not yet run against a live repository or with a screen reader.)*
 - [ ] CSV/Excel/Markdown/QUILL table export; previewed issue import; issues/sub-issues from document lines.
 - [ ] Plain-language query/batch commands through the shared catalogue, with resolved targets, editable previews and deterministic non-AI paths.
 - [ ] Dry Run across every write, practice repository creation/seeding/reset/cleanup and guided tutorials.
@@ -892,7 +892,7 @@ phase's PR. Ids are never renumbered; a dropped requirement keeps its id with
   and never blocking (22.4).
 - [ ] **AUDIT** GH-R-083 Should: Watches with one-sentence results and sounds through the
   shared feedback channels (22.5).
-- [ ] **AUDIT** GH-R-084 Should: the editor commands of 22.3.
+- [ ] **AUDIT** GH-R-084 Should: the editor commands of 22.3. *(Built 2026-11-17, see GH-C; live and screen-reader checks remain.)*
 - [ ] **AUDIT** GH-R-085 Should: export of any list; import of issues from CSV (22.7).
 - [ ] **AUDIT** GH-R-086 May: plain-language batches through the Command Key work (22.6).
 - [ ] **AUDIT** GH-R-087 Should: Dry Run and the practice repository (22.8).

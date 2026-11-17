@@ -1561,6 +1561,16 @@ at any branch, tag or commit, shows READMEs, and opens a file to edit. See
 who last changed each run of its lines. See
 [Blame and file history](../github-guide/github-guide-07-code-and-repositories.html#blame-and-file-history).
 
+#### From the line you are on
+
+In a file from a GitHub repository on your computer, **GitHub > From This
+Line** (or **Tools > Git and GitHub > GitHub > From This Line**) copies a link
+to the line, says who changed it and opens the pull request that brought it,
+starts an issue quoting your selection, lists the issues that mention the
+file, comments on the line in the branch's open pull request, and opens the
+`#42` or commit hash the cursor is on. See
+[From the line you are on](../github-guide/github-guide-07-code-and-repositories.html#from-the-line-you-are-on).
+
 #### Rate limits and quiet refreshes
 
 `Ctrl+Shift+L` says how much of GitHub's hourly allowance is left, and a reload

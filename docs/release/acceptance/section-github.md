@@ -547,21 +547,26 @@ uncommitted changes are in the way.
 
 ---
 
-## GIT-05 — Who Wrote This Line… (`localgit.blame_at_cursor`)
+## GIT-05 — Who Changed This Line? (`localgit.blame_at_cursor`)
 
-*What & why.* Announce the author, summary, and commit of the line at the cursor
-(git blame), spoken rather than shown in a gutter.
+*What & why.* Announce the author, date, summary, and commit of the line at the
+cursor (git blame), spoken rather than shown in a gutter; a second press opens
+the pull request that brought it (GitHub PRD 22.3).
 
 **Before you start**
 - Open a **committed** file inside `qa-git` (e.g. `a.txt`) and put the cursor on a
   line.
 
 **Do this**
-1. **Tools ▸ Git and GitHub ▸ Local Git ▸ Who Wrote This Line…**.
+1. Put the cursor on line 3, then **Tools ▸ Git and GitHub ▸ GitHub ▸ From This
+   Line ▸ Who Changed This Line?** (in workbench mode, **GitHub ▸ From This Line**).
+2. Press it again within ten seconds.
 
 **You should see and hear**
-- "Line N: `<author>`, `<summary>` (`<short-sha>`)". With no open file, "No file to
-  blame"; a file outside a repo, "This file is not inside a git repository".
+- "Changed by `<author>` on `<date>`: `<summary>` (`<short-sha>`)." for line 3, not
+  line 1. The second press opens the Workbench's Pull Requests list on the pull
+  request that brought it, or says the commit went straight to its branch. A
+  file outside a repo: "This file is not in a git repository."
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
