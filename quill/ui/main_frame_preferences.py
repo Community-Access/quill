@@ -1307,6 +1307,7 @@ class PreferencesMixin:
             action: dict[str, object] = {"mode": "cancel", "imported": None}
 
             _ok_btn = wx.Button(dialog, id=wx.ID_OK)
+            _ok_btn.SetDefault()  # Enter on a setting is OK; the affirmative id alone is not
             _cancel_btn = wx.Button(dialog, id=wx.ID_CANCEL)
             _apply_btn = wx.Button(dialog, label="&Apply")
             _apply_btn.SetName("Apply settings without closing")
@@ -1316,10 +1317,9 @@ class PreferencesMixin:
             _btn_row.Add(_cancel_btn, 0, wx.RIGHT, 8)
             _btn_row.Add(_apply_btn, 0)
             outer.Add(_btn_row, 0, wx.EXPAND | wx.ALL, 8)
-            # The dialog's own sizer. It was built and filled but never set, so
-            # the notebook and the button row were laid out by nobody, and Find a
-            # setting (which wraps the dialog's sizer) was never installed: Ctrl+F
-            # in Settings did nothing. Found by the keyboard-only core-task run.
+            # The dialog's own sizer. Built but never set, nothing laid out the
+            # notebook and buttons and Find a setting (which wraps it) never
+            # installed: Ctrl+F did nothing. Found by the keyboard core-task run.
             dialog.SetSizer(outer)
 
             _apply_btn.Enable(False)
