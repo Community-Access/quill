@@ -16,6 +16,12 @@ from quill.ui.workbench_status_bar import StatusCell
 __all__ = ["github_status_cells"]
 
 
+def _dry_run_words() -> str:
+    from quill.core.github.dry_run import DRY_RUN
+
+    return ". Dry Run: nothing is sent" if DRY_RUN.on else ""
+
+
 def github_status_cells(provider: Any, frame: Any) -> Sequence[StatusCell]:
     """The five cells, reading *provider* and *frame* each time they are drawn."""
 
@@ -42,7 +48,7 @@ def github_status_cells(provider: Any, frame: Any) -> Sequence[StatusCell]:
         StatusCell(
             "account",
             "Account",
-            lambda: "Signed in" if provider.signed_in else "Not signed in",
+            lambda: ("Signed in" if provider.signed_in else "Not signed in") + _dry_run_words(),
             "Whether GitHub knows who you are. The editor's GitHub menu manages accounts.",
         ),
         StatusCell(

@@ -1505,6 +1505,14 @@ branch in a new folder beside your checkout and walks each conflicted file,
 without changing the folder you are in. See
 [The whole patch, a revert, and conflicts](../github-guide/github-guide-05-pull-requests-and-review.html#the-whole-patch-a-revert-and-conflicts).
 
+#### Dry Run and practising
+
+In the GitHub Workbench, **Dry Run** on its Tools menu stops every write before
+it is sent and says what it would have sent, and **Practice on GitHub...** on
+its Help menu makes a private practice repository to learn on. See
+[Dry Run](../github-guide/github-guide-12-the-workbench.html#dry-run) and
+[Practice on GitHub](../github-guide/github-guide-12-the-workbench.html#practice-on-github).
+
 #### Emoji by name
 
 In the GitHub Workbench's details pane and in Read as Document, emoji

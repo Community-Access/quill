@@ -2,6 +2,17 @@
 
 ## 2.0.0
 
+### Dry Run and a practice repository (2026-11-18)
+
+**Dry Run**, on the GitHub Workbench's Tools menu, lets every command
+ask and preview as usual and then stop before sending anything to GitHub,
+saying exactly what it would have sent. **Practice on GitHub...**, on its
+Help menu, makes `quill-practice`, a private repository in your account
+with issues, labels, a pull request and a failing run to learn on, and
+deletes it or starts it over when you finish. Failures in the Workbench are
+now said without the support code in brackets. Chapter 12 of the GitHub Guide
+has the details.
+
 ### Emoji by name (2026-11-18)
 
 In the GitHub Workbench's details pane and in Read as Document, emoji

@@ -29408,6 +29408,27 @@ shortcode outside code with its name, from
 <code>emoji_catalog.json</code> (a catalogue name with underscores) and
 <code>GITHUB_ALIASES</code> for GitHub’s own; used by the Workbench
 details pane and <code>thread_markdown</code>.</p>
+<p><strong>Dry Run and the practice repository (GitHub PRD
+22.8).</strong> <code>DRY_RUN</code> in
+<code>quill/core/github/dry_run.py</code> is one process-wide switch;
+<code>request_json</code>, <code>review_graphql._request</code> and
+<code>GitHubItemsProvider._require_write_access</code> call it before
+anything is sent, so every GitHub write in the Workbench (and the
+editor’s GitHub commands) stops with <code>DryRunStop</code> naming the
+request, after the command’s own questions and preview. Tools &gt; Dry
+Run (<code>Ctrl+Alt+D</code>) toggles it; the status bar’s Account cell
+says so. The Workbench’s failure sentence
+(<code>failure_sentence</code>) now says a coded error’s message without
+its bracketed code. Help &gt; Practice on GitHub…
+(<code>Ctrl+Alt+P</code>, <code>practice_repository.py</code>,
+<code>github_workbench_practice.py</code>) makes, opens and deletes
+<code>quill-practice</code>. The tutorials gain the “GitHub, on a
+practice repository” track, six lessons
+(<code>quill/core/tutorials/github_lessons.py</code>, registered in
+<code>quill/core/quill_tutorials/__init__.py</code>), each Workbench
+step carrying its key from <code>WORKBENCH_KEYS</code>;
+<code>docs/user guide/tutorials.md</code> is regenerated from the
+catalogue.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

@@ -17475,6 +17475,22 @@ replaces each known shortcode outside code with its name, from
 `emoji_catalog.json` (a catalogue name with underscores) and `GITHUB_ALIASES`
 for GitHub's own; used by the Workbench details pane and `thread_markdown`.
 
+**Dry Run and the practice repository (GitHub PRD 22.8).** `DRY_RUN` in
+`quill/core/github/dry_run.py` is one process-wide switch; `request_json`,
+`review_graphql._request` and `GitHubItemsProvider._require_write_access`
+call it before anything is sent, so every GitHub write in the Workbench (and
+the editor's GitHub commands) stops with `DryRunStop` naming the request,
+after the command's own questions and preview. Tools > Dry Run
+(`Ctrl+Alt+D`) toggles it; the status bar's Account cell says so. The
+Workbench's failure sentence (`failure_sentence`) now says a coded error's
+message without its bracketed code. Help > Practice on GitHub...
+(`Ctrl+Alt+P`, `practice_repository.py`, `github_workbench_practice.py`)
+makes, opens and deletes `quill-practice`. The tutorials gain the "GitHub, on
+a practice repository" track, six lessons (`quill/core/tutorials/github_lessons.py`,
+registered in `quill/core/quill_tutorials/__init__.py`), each Workbench step
+carrying its key from `WORKBENCH_KEYS`; `docs/user guide/tutorials.md` is
+regenerated from the catalogue.
+
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and
 `tests/unit/docs/test_github_live_run_coverage.py` fails when a write command

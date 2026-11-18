@@ -2104,6 +2104,20 @@ And a small one that is heard everywhere: an issue that says "Shipped
 emoji shortcodes by name, as the website shows them, "Shipped rocket", and
 leaves the ones inside code exactly as they were typed.
 
+#### Somewhere safe to learn
+
+The writes are where people get nervous: close the wrong issue, merge the
+wrong pull request, and it happened to a real project in front of real
+people. Two things take the nerves out. **Dry Run** lets you walk through any
+command, every question and every preview, and stops at the last moment to
+tell you exactly what it would have sent, so learning a command, or checking a
+batch of fifty twice, costs nothing. And **Practice on GitHub** makes a
+private repository of your own with a typo to fix, a task list, a question, a
+pull request to review and a build that fails on purpose, so you can do it all
+for real where nothing matters, and throw it away when you are done. Six new
+lessons in Help > Tutorials walk you through it, step by step, each saying
+what to press and what you should hear.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

@@ -20,6 +20,12 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.github.items_provider import GitHubItem
+from quill.ui.github_workbench_dry_run import (
+    DRY_RUN_REASONS,
+    DRY_RUN_VERBS,
+    GitHubWorkbenchDryRunMixin,
+    failure_sentence,
+)
 from quill.ui.github_workbench_inbox_rules import (
     INBOX_RULE_REASONS,
     INBOX_RULE_VERBS,
@@ -30,13 +36,23 @@ from quill.ui.github_workbench_merge import (
     MERGE_VERBS,
     GitHubWorkbenchMergeMixin,
 )
+from quill.ui.github_workbench_practice import (
+    PRACTICE_REASONS,
+    PRACTICE_VERBS,
+    GitHubWorkbenchPracticeMixin,
+)
 from quill.ui.github_workbench_pull_tools import (
     PULL_TOOL_REASONS,
     PULL_TOOL_VERBS,
     GitHubWorkbenchPullToolsMixin,
 )
 
-__all__ = ["DEVELOPMENT_REASONS", "DEVELOPMENT_VERBS", "GitHubWorkbenchDevelopmentMixin"]
+__all__ = [
+    "DEVELOPMENT_REASONS",
+    "DEVELOPMENT_VERBS",
+    "GitHubWorkbenchDevelopmentMixin",
+    "failure_sentence",
+]
 
 DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     "create_branch": frozenset({"item"}),
@@ -45,6 +61,8 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **PULL_TOOL_VERBS,
     **MERGE_VERBS,
     **INBOX_RULE_VERBS,
+    **DRY_RUN_VERBS,
+    **PRACTICE_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -54,11 +72,17 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **PULL_TOOL_REASONS,
     **MERGE_REASONS,
     **INBOX_RULE_REASONS,
+    **DRY_RUN_REASONS,
+    **PRACTICE_REASONS,
 }
 
 
 class GitHubWorkbenchDevelopmentMixin(
-    GitHubWorkbenchPullToolsMixin, GitHubWorkbenchMergeMixin, GitHubWorkbenchInboxRulesMixin
+    GitHubWorkbenchPullToolsMixin,
+    GitHubWorkbenchMergeMixin,
+    GitHubWorkbenchInboxRulesMixin,
+    GitHubWorkbenchDryRunMixin,
+    GitHubWorkbenchPracticeMixin,
 ):
     items: Any
     frame: Any

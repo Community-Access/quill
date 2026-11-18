@@ -412,6 +412,13 @@ _TOOLS = MenuSpec(
             "Where the Workbench opens, how notifications check, lists and privacy.",
         ),
         _row(
+            "dry_run",
+            "&Dry Run",
+            "Ctrl+Alt+D",
+            "Turn Dry Run on or off. While it is on, every write asks and previews as usual, "
+            "then stops before sending and says what it would have sent.",
+        ),
+        _row(
             "api_console",
             "GitHub &API Console...",
             "Ctrl+Shift+J",
@@ -455,6 +462,13 @@ _HELP = MenuSpec(
             "&Search Help...",
             "Ctrl+Shift+F1",
             "Type a few words to find a help topic, a command or a GitHub word.",
+        ),
+        _row(
+            "practice",
+            "&Practice on GitHub...",
+            "Ctrl+Alt+P",
+            "Make, open or delete quill-practice, a private repository with issues, a pull "
+            "request and a failing run to learn on.",
         ),
         _row(
             "keys",

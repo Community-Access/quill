@@ -411,6 +411,44 @@ The help keys work everywhere in the window:
 | `Ctrl+Shift+F1` | Search all of help: places, commands, words and tasks |
 | `Alt+Shift+F1` | Every key in the window |
 
+## Dry Run
+
+**Dry Run**, on the Workbench's Tools menu, is a switch for the whole Workbench
+(its key there is Ctrl+Alt+D).
+While it is on, every command still asks its questions and shows its preview
+exactly as usual, and then, at the moment it would change something on
+GitHub, it stops and says what it would have sent: "Dry run: QUILL would send
+PATCH /repos/octo/app/issues/7 (state, state_reason). Nothing was changed."
+Lists, sheets, previews and everything else that only reads keep working.
+
+It is for learning a command without consequences, and for checking a big
+batch twice before you send it for real. The Account cell of the status bar
+says "Dry Run: nothing is sent" while it is on, and it stays on until you
+turn it off again or close QUILL Lite. Local Git work, such as making a
+worktree, does not touch GitHub and is not stopped.
+
+## Practice on GitHub
+
+**Practice on GitHub...**, on the Workbench's Help menu (Ctrl+Alt+P there),
+makes a private repository
+in your own account, `quill-practice`, to learn the writes on, where nothing
+matters. After asking, QUILL Lite fills it with:
+
+- three issues: a typo to label, assign and close; a task list to check off
+  and turn into sub-issues; and a question to answer and close as not
+  planned;
+- two labels, "practice: bug" and "practice: question";
+- a branch, `fix-greeting`, with a pull request to review and merge;
+- a workflow that fails on purpose, so What Failed, Re-run and the jobs window
+  have a failure to read.
+
+You hear each part as it is made, and then the Workbench opens the repository.
+The next time, the same command offers **Open It**, **Delete It and Start
+Over...** and **Delete It...**; both deletions ask first. GitHub lets an app
+delete a repository only when you signed in with the `delete_repo`
+permission; without it, QUILL Lite says so and tells you where on GitHub to delete
+it yourself.
+
 ## Workbench Options
 
 GitHub's preferences live in the Workbench, not in the editor's Options:

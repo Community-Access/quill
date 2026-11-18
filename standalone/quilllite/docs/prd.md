@@ -2771,4 +2771,5 @@ Workbench's, so they are the same in both editors
 and its added and removed line sounds are the shared diff window's, so QUILL
 Lite has them too, as is the jobs window's Follow This Job and Alt+8, and the
 Workbench's Inbox Rules... (`quill/ui/github_workbench_inbox_rules.py`) and
-emoji shortcodes read by name (`quill/core/github/emoji_names.py`).
+emoji shortcodes read by name (`quill/core/github/emoji_names.py`), Dry
+Run and Practice on GitHub.

@@ -620,6 +620,18 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Dry Run and a practice repository (2026-11-18)
+
+**Tools > Dry Run** (`Ctrl+Alt+D`) in the GitHub Workbench lets every command
+ask and preview as usual and then stop before sending anything to GitHub,
+saying exactly what it would have sent. **Help > Practice on GitHub...**
+(`Ctrl+Alt+P`) makes `quill-practice`, a private repository in your account
+with issues, labels, a pull request and a failing run to learn on, and
+deletes it or starts it over when you finish. Failures in the Workbench are
+now said without the support code in brackets. Help > Tutorials has six new
+GitHub lessons that use the practice repository, from making it to deleting
+it. Chapter 12 of the GitHub Guide has the details.
+
 ### Emoji by name (2026-11-18)
 
 In the GitHub Workbench's details pane and in Read as Document, emoji

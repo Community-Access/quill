@@ -45,6 +45,7 @@ from quill.core.github.auth_diagnostics import github_exception_hint
 from quill.core.github.branch_compare import GitHubBranchComparison, fetch_branch_comparison
 from quill.core.github.branch_divergence import with_divergence
 from quill.core.github.discussion_actions import GitHubDiscussionActionsMixin
+from quill.core.github.dry_run import stop_if_dry
 from quill.core.github.github_provider import _get_gh_module, require_pygithub
 from quill.core.github.issue_comments import list_comments as _list_issue_comments
 from quill.core.github.items_errors import GitHubItemsError
@@ -1264,10 +1265,9 @@ class GitHubItemsProvider(
 
     def _require_write_access(self, action: str) -> None:
         if not self._token:
-            raise GitHubItemsError(
-                f"To {action} you need a signed-in GitHub account; "
-                "the anonymous viewer is read-only."
-            )
+            needed = f"To {action} you need a signed-in GitHub account; "
+            raise GitHubItemsError(needed + "the anonymous viewer is read-only.")
+        stop_if_dry(action)
 
     def close(self) -> None:
         """Release the underlying GitHub session."""

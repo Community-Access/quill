@@ -334,9 +334,9 @@ class GitHubWorkbenchActionsMixin(
             self._announce(text)
 
     def _background(self, name: str, work: Callable[[], Any], done: Callable[[Any], None]) -> None:
-        frame = self.frame
-        frame._run_background(
-            f"Workbench {name}", work, done, lambda error: self._say(f"Could not {name}: {error}")
+        said = _development.failure_sentence
+        self.frame._run_background(
+            f"Workbench {name}", work, done, lambda e: self._say(said(name, e))
         )
 
     def _current_repository(self) -> str:

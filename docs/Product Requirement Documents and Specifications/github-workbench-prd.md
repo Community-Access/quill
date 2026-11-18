@@ -2131,6 +2131,24 @@ Failed, everywhere).
 - **Dry Run,** a Workbench-wide switch on the status bar: every write shows
   its preview and stops there, saying "Dry run: nothing was changed." Useful
   for learning and for checking a big batch twice.
+  *Built 2026-11-18:* Tools > Dry Run (`Ctrl+Alt+D`), a process-wide switch
+  (`quill/core/github/dry_run.py`) checked at the three doors every write goes
+  through: `request_json` (a write method, or a GraphQL mutation it carries),
+  the review window's GraphQL transport, and
+  `GitHubItemsProvider._require_write_access` (PyGithub). The stop names what
+  would have been sent ("send PATCH /repos/o/r/issues/7 (state,
+  state_reason)"); the Account cell says it is on; it lasts until turned off
+  or QUILL closes.
+- *Practice repository built 2026-11-18:* Help > Practice on GitHub...
+  (`Ctrl+Alt+P`, `quill/core/github/practice_repository.py`) makes private
+  `quill-practice` with three issues, two labels, a branch and pull request,
+  and a workflow that fails on purpose, then opens it; later it offers Open,
+  Delete and Start Over, and Delete, naming the `delete_repo` permission when
+  GitHub refuses. *Tutorials built 2026-11-18:* QUILL's Help > Tutorials
+  gains the track "GitHub, on a practice repository"
+  (`quill/core/tutorials/github_lessons.py`): make it; an issue (label,
+  comment, close); Dry Run; review and merge; a failed run; delete it. Keys
+  come from `WORKBENCH_KEYS`. QUILL Lite's catalogue does not have them yet.
 
 ### 22.9 Several accounts, side by side
 
