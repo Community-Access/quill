@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Microsoft Copilot SDK 2.0: what it means for QUILL, and the
+plan</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="microsoft-copilot-sdk-20-what-it-means-for-quill-and-the-plan">Microsoft
+Copilot SDK 2.0: what it means for QUILL, and the plan</h1>
+<p><strong>Owner:</strong> Jeff Bishop / Community Access
+<strong>Written:</strong> 2026-11-18, after Microsoft’s Ignite 2026
+announcement (17 November 2026). <strong>Status:</strong> planning only.
+Nothing here is built. Open work is tracked in
+<code>complete.md</code>.</p>
+<h2 id="what-changed">What changed</h2>
+<p>Microsoft Copilot SDK 2.0 is the renamed GitHub Copilot SDK, the
+library QUILL’s <strong>My GitHub Copilot</strong> connection runs on.
+Microsoft describes it as programmatic access to the same agent
+“harness” behind its Copilot products. The points that matter to
+QUILL:</p>
+<ul>
+<li><strong>A new package name.</strong> 2.0 is on PyPI (the Python
+package index) as <code>microsoft-copilot-sdk</code>, now at 2.0.1. The
+old <code>github-copilot-sdk</code> is at 1.0.34 and QUILL pins 1.0.28
+(<code>pyproject.toml</code>, extra <code>ai-copilot</code>). The source
+moved to <code>github.com/microsoft/copilot-sdk</code>.</li>
+<li><strong>The runtime is rewritten in Rust</strong>, with bindings for
+TypeScript, Python, Go, .NET (Microsoft’s application framework), Java
+and Rust.</li>
+<li><strong>Many sessions in one process.</strong> In 1.x every session
+needed its own container or process. In 2.0 one runtime hosts many
+isolated sessions, each with its own state, credentials, tools, files
+and history.</li>
+<li><strong>Much faster and lighter.</strong> Microsoft’s figures:
+creating a session fell from 5.25 seconds to 55 milliseconds, and ten
+clients use about 126 MB of memory instead of 1.4 GB.</li>
+<li><strong>Sessions outlive the client.</strong> A session can persist
+after the process that started it has gone.</li>
+<li><strong>The architecture is the integrator’s choice</strong>: where
+the model loop runs, and where file and shell actions run, from no
+sandbox at all to sandboxes and separate workers.</li>
+</ul>
+<p>Not yet known, and to be read in the 2.0 source before building:</p>
+<ul>
+<li>whether the 1.x calls QUILL depends on survive (see below);</li>
+<li>what the runtime download fetches on first use
+(<code>python -m copilot download-runtime --in-process</code> pre-stages
+it, checked against the release’s SHA-256 sums), and so what the
+installer must ship and the network egress audit must list.</li>
+</ul>
+<p>Answered by the package itself: the default transport runs the
+runtime in-process (a separate process is still available); a persisted
+session keeps its state on this computer, in
+<code>~/.copilot/session-state/&lt;id&gt;/</code>; and the licence is
+MIT.</p>
+<h2 id="how-quill-uses-the-sdk-today">How QUILL uses the SDK today</h2>
+<ul>
+<li><code>quill/ai_packs/copilot.py</code>: the harness pack. Text only,
+or QUILL’s own family tools offered as Copilot custom tools. The SDK’s
+own file and shell tools are never offered, and every permission request
+outside QUILL’s tools is refused, so QUILL owns every edit.</li>
+<li><code>quill/core/ai/copilot_chat.py</code>: Ask and the chat. Each
+turn runs in a <strong>fresh session</strong> with QUILL’s local history
+resent, so nothing about a conversation lives in Copilot.</li>
+<li><code>copilot_sign_in.py</code>, <code>copilot_auth.py</code>,
+<code>copilot_quota.py</code>, <code>copilot_state.py</code>: sign-in
+with the token passed explicitly (<code>github_token=</code>,
+<code>use_logged_in_user=False</code>), never through the environment;
+quota and model lists.</li>
+<li>The facts the pack relies on were “checked against the SDK 1.0.28
+source”: <code>send_and_wait</code> with QUILL’s own timeout and
+<code>session.abort()</code>, <code>system_message</code> in
+<strong>append</strong> mode (keeping the CLI’s safety sections),
+<code>available_tools</code>, <code>on_permission_request</code>, an
+<code>env=</code> that passes the child no other credential,
+<code>models.list</code>, and the <code>session.error</code> event
+fields.</li>
+</ul>
+<h2 id="what-20-could-do-for-quill">What 2.0 could do for QUILL</h2>
+<ol type="1">
+<li><strong>Faster answers.</strong> QUILL starts a fresh session every
+turn. At 55 milliseconds instead of five seconds, that design costs
+almost nothing, so the privacy choice behind it no longer costs
+speed.</li>
+<li><strong>Less memory across the family.</strong> QUILL, QUILL Lite
+and the QuillVille apps that use Ask can each start Copilot. One lighter
+runtime matters most on smaller machines (a BrailleNote Evolve, for
+instance).</li>
+<li><strong>Possibly a smaller install</strong>, if the Python binding
+no longer needs the bundled CLI. To be confirmed.</li>
+<li><strong>Resumable conversations, if wanted.</strong> Persistent
+sessions would let a long agent task survive closing the window. This
+goes against “nothing lives in Copilot”, so it is a decision for Jeff,
+not a default.</li>
+</ol>
+<h2 id="risks">Risks</h2>
+<ul>
+<li><strong>The 1.x line will fall behind.</strong> It is at 1.0.34 and
+QUILL is on 1.0.28. Fixes from here on will land in 2.x.</li>
+<li><strong>A renamed package and a rewritten runtime</strong> can break
+every fact the pack pins. The tests that pin them are the guard; each
+must be re-checked, not assumed.</li>
+<li><strong>Persistent sessions are new data.</strong> If 2.0 keeps
+sessions by default, QUILL must turn that off or delete them, or a chat
+QUILL believes is private would be kept somewhere QUILL does not show.
+That needs a row in the network egress audit and the privacy notes.</li>
+<li><strong>Safe Mode and consent</strong> must still stop every Copilot
+path.</li>
+</ul>
+<h2 id="features-worth-bringing-into-quill-most-impact-first">Features
+worth bringing into QUILL, most impact first</h2>
+<p>Read from the 2.0.1 package’s own README
+(<code>microsoft-copilot-sdk</code>, MIT, Python 3.11 or later) on
+2026-11-18. None is built or tried yet.</p>
+<ol type="1">
+<li><strong>Questions asked in QUILL’s own dialogs (UI elicitation and
+user input requests).</strong> The agent can ask the person to confirm,
+choose from a list, or type an answer, through handlers the app
+supplies. QUILL would answer them with its own accessible dialogs (a
+list for choices, a labelled text field, OK and Cancel with no access
+keys, F1 help), so an agent never stalls or guesses when it needs a
+decision. This is the biggest gain for a screen-reader user: today a
+Copilot turn can only end in text.</li>
+<li><strong>Hearing what the agent is doing (session hooks).</strong>
+Hooks fire before and after each tool call and when a sub-agent starts
+or stops. QUILL can say each step once, in plain words (“Reading
+notes.md”, “Searching the repository”, “Done: 3 files changed”), through
+the announcement service, so it is also brailled. Long agent runs stop
+being silent.</li>
+<li><strong>No separate Copilot program (in-process transport).</strong>
+The default transport loads the runtime as a library inside QUILL
+instead of starting a child process. QUILL could drop the bundled CLI in
+<code>tools\copilot</code>, start faster and use less memory. The
+trade-off is stated plainly in the README: no crash isolation and no
+sandbox. QUILL already offers the agent no file or shell tools of its
+own, which is what makes this acceptable, but a crash in the runtime
+would take QUILL down, so it needs a fallback to the separate-process
+transport.</li>
+<li><strong>Any AI through one engine (custom providers, BYOK).</strong>
+A session can use an OpenAI-compatible service, Azure, Anthropic, Google
+or a local Ollama, with the person’s own key. Choose Your AI could run
+every connection through the same agent engine, with QUILL’s family
+tools, permission broker and diff review the same everywhere, instead of
+a separate client per provider. Local Ollama gives a private, offline
+agent.</li>
+<li><strong>Answers QUILL can rely on (structured output).</strong>
+<code>send_and_wait_typed</code> returns a checked Pydantic object
+instead of free text. Suggest Document Metadata, alt-text review, triage
+labels, commit messages and WordPress SEO fields would get validated
+fields, not text to parse and hope.</li>
+<li><strong>QUILL’s own skills (skill providers).</strong> A session can
+be given skills from the app instead of files on disk: how QUILL’s keys
+work, the house style for docs, how to write alt text, the WordPress and
+GitHub task recipes. The agent then knows the family’s rules without a
+long prompt.</li>
+<li><strong>Long work that does not forget (infinite sessions).</strong>
+The runtime compacts a long conversation in the background so it does
+not hit the context limit. Useful for the coding agent and long
+documents. <strong>But</strong> by default it saves session state to
+<code>~/.copilot/session-state/&lt;id&gt;/</code> on this computer.
+QUILL must turn this off, or delete each session’s folder when the turn
+ends, until Jeff decides otherwise (see Risks).</li>
+<li><strong>Images as data (blob attachments).</strong> A picture can be
+sent as data rather than a file path. Describe Image and Ask about a
+picture could use Copilot without writing a temporary file.</li>
+<li><strong>Smaller ones.</strong>
+<ul>
+<li>Auto routing tiers: a “faster” or “smarter” choice for one session
+without naming a model.</li>
+<li>Network callbacks: QUILL answers proxy questions, so people behind a
+company proxy can sign in.</li>
+<li><code>get_events()</code>: a session’s history for the diagnostic
+bundle.</li>
+<li>Customize mode for the system message: replace one section (tone)
+while keeping the safety sections, more precise than append.</li>
+<li>Memory (opt-in, across turns): leave off, as QUILL keeps its own
+history.</li>
+<li>Telemetry: an optional extra; leave it out.</li>
+</ul></li>
+</ol>
+<p>Suggested order: 3 and 2 with the switch to 2.0 (they change how it
+runs and what is heard), then 1, then 5, then 4 and 6 (they reshape
+Choose Your AI and need Jeff’s yes), and 7 only after the persistence
+decision.</p>
+<h2 id="the-plan">The plan</h2>
+<p>Each step is one pull request.</p>
+<ol type="1">
+<li><strong>Read and pin (no behaviour change).</strong>
+<ul>
+<li>Read the 2.0 Python binding, and record answers to the “not yet
+known” list above in this file.</li>
+<li>Move the 1.x pin from 1.0.28 to 1.0.34 meanwhile, if its changelog
+shows only fixes.</li>
+</ul></li>
+<li><strong>A 2.0 pack beside the 1.x one.</strong>
+<ul>
+<li>Add <code>quill/ai_packs/copilot2.py</code> behind the extra
+<code>ai-copilot2</code> (<code>microsoft-copilot-sdk==2.0.x</code>),
+with the same contract: text only or QUILL’s family tools, every other
+permission refused, the system prompt appended, the token passed
+explicitly, Safe Mode respected.</li>
+<li>Choose the “no sandbox” architecture, with no SDK file or shell
+actions, because QUILL’s Safe Editor Tool Gateway already does that
+job.</li>
+<li>Turn off session persistence, or delete each session when its turn
+ends, and test that nothing is left behind.</li>
+</ul></li>
+<li><strong>Measure.</strong> Time to first token, memory with three
+apps asking, and install size, 1.x against 2.0, on Jeff’s PC and on a
+low-end device.</li>
+<li><strong>Switch.</strong>
+<ul>
+<li>Make 2.0 the default for My GitHub Copilot, and keep 1.x one release
+as a fallback.</li>
+<li>Update <code>components.json</code>, the third-party notices, the
+network egress audit, the Choose Your AI help, and
+<code>docs/design/codex.md</code>.</li>
+<li>Remove 1.x the release after.</li>
+</ul></li>
+<li><strong>Decide (Jeff).</strong> Whether to offer resumable agent
+sessions at all, and if so, only for the coding agent
+(<code>docs/design/code.md</code>) with a visible list of kept sessions
+and a way to delete each.</li>
+</ol>
+<h2 id="sources">Sources</h2>
+<ul>
+<li><a
+href="https://www.thurrott.com/a-i/microsoft-copilot-a-i/344006/ignite-2026-microsoft-copilot-sdk-2-0-is-now-available">Thurrott:
+Ignite 2026, Microsoft Copilot SDK 2.0 is now available</a></li>
+<li>Microsoft’s announcement:
+commandline.microsoft.com/microsoft-copilot-sdk-2-0-github/</li>
+<li>Getting started:
+github.com/microsoft/copilot-sdk/blob/main/docs/getting-started.md (not
+yet read)</li>
+<li>PyPI: <code>microsoft-copilot-sdk</code> 2.0.1;
+<code>github-copilot-sdk</code> 1.0.34 (checked with pip on
+2026-11-18)</li>
+</ul>
+</main>
+</body>
+</html>

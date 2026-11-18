@@ -428,7 +428,7 @@ From EdSharp's `help/History.md`, 9 October to 17 November 2026 (D:\code\jamal\E
 
 ## Part 5. Other queued work
 
-- [ ] **Microsoft Copilot SDK 2.0** (Ignite 2026, https://www.thurrott.com/a-i/microsoft-copilot-a-i/344006/ignite-2026-microsoft-copilot-sdk-2-0-is-now-available): read it and say what it means for QUILL's AI (`docs/design/codex.md`, Choose Your AI, the Copilot chat code).
+- [ ] **Microsoft Copilot SDK 2.0:** reviewed 2026-11-18. The plan and the features worth bringing in are in `docs/design/copilot.md`; its five steps are the work.
 - [ ] **Quill Cast queue, from Chris Nova (2026-11-17):** with two items in the queue, the first finished and the second did not start until he started it.
   - Found and fixed in #1889: when the next episode cannot start (nothing downloaded, no address), Cast stopped and said nothing. It now says why.
   - Simulated on 2026-11-18 with two real MP3s through the real Cast window, library, queue and libmpv: downloaded and streamed episodes both advance on their own. Not reproduced.
