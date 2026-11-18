@@ -110,7 +110,7 @@ class GitHubWorkbenchViewMixin:
             return verb[7:] in _TOGGLE_KEYS or verb == "filter_clear"
         if verb in ("show_only_cell", "hide_cell"):
             return self._selected_row() is not None
-        return verb in ("columns", "load_all", "next_unread", "previous_unread")
+        return verb in ("columns", "load_more", "load_all", "next_unread", "previous_unread")
 
     def _selected_row(self) -> object | None:
         return self.frame.selected_row() if self.frame is not None else None
@@ -141,6 +141,7 @@ class GitHubWorkbenchViewMixin:
             return True
         actions = {
             "columns": self.choose_columns,
+            "load_more": self.load_more,
             "load_all": self.load_all,
             "next_unread": lambda: self.move_unread(1),
             "previous_unread": lambda: self.move_unread(-1),
@@ -298,8 +299,25 @@ class GitHubWorkbenchViewMixin:
         self._load_all_for = frame.current
         frame.reload()
 
+    def load_more(self) -> None:
+        """Load More: one more page of this view, up to Load All's thousand."""
+        frame = self.frame
+        ref = frame.current
+        pages = getattr(self, "_more_pages", None)
+        if pages is None:
+            pages = self._more_pages = {}
+        if self.page_limit(ref, 1) >= 1000:
+            self._say("Every page this view can hold is already loaded.")
+            return
+        pages[ref] = pages.get(ref, 1) + 1
+        frame.reload()
+
     def page_limit(self, ref: Any, default: int) -> int:
-        return 1000 if ref is not None and ref == self._load_all_for else default
+        """Rows to ask for: a page, a page more for each Load More, or Load All's thousand."""
+        if ref is not None and ref == self._load_all_for:
+            return 1000
+        pages = (getattr(self, "_more_pages", None) or {}).get(ref, 1)
+        return min(1000, default * pages)
 
     def move_unread(self, step: int) -> None:
         frame = self.frame

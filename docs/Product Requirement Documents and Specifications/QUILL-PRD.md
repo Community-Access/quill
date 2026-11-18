@@ -17491,6 +17491,12 @@ registered in `quill/core/quill_tutorials/__init__.py`), each Workbench step
 carrying its key from `WORKBENCH_KEYS`; `docs/user guide/tutorials.md` is
 regenerated from the catalogue.
 
+**Load More and an honest first page (GitHub PRD 17.3).** `page_limit` counts
+Load More presses per node (a page more each, up to Load All's 1,000) and
+applies to Explore-backed nodes as well as items; `load_explore` passes the
+limit and returns the fetch's incomplete-read sentence, which becomes the
+Items cell's note. Load More had been a menu row with no handler.
+
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and
 `tests/unit/docs/test_github_live_run_coverage.py` fails when a write command

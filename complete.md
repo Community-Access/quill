@@ -167,7 +167,7 @@ These are implementation claims to preserve and verify, not instructions to rebu
 - [ ] Verify per-account Read Only/Organize/Full, Safe Mode, tiers, typed confirmations, self-lockout prevention and permission explanations.
 - [ ] Verify encrypted write-only secrets for repository/environment/organization scopes and selected-repository access.
 - [ ] Verify View As Role, Compare Roles, Why Can't They?, My Access Here, access reviews and bulk changes against actual server authority.
-- [ ] Complete all-attribute filters, Show Only/Hide, grouping, sorting, columns, Load More/All and honest local-filter scope.
+- [ ] Complete all-attribute filters, Show Only/Hide, grouping, sorting, columns, Load More/All and honest local-filter scope. *(2026-11-18: Load More works on every list and Load All reaches the Explore-backed nodes; a partial list says so in the Items cell. Remaining: grouping, sorting and the column chooser beyond issues and pull requests.)*
 - [ ] Keep readiness tied to the exact HEAD/revision; invalidate it when anything relevant changes.
 
 ### GH-B. Templates — DONE, Phase 12

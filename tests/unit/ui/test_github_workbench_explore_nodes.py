@@ -98,3 +98,36 @@ def test_a_repository_view_from_explore_is_scoped_to_its_repository(bench) -> No
     _go(bench, NodeRef("repository", "labels", REPO))
     assert bench.provider._explore.calls[-1][:2] == ("labels", REPO)
     assert bench.list.GetItemCount() == 1
+
+
+# -- Load More, Load All and an honest first page (GitHub PRD 17.3) -------------
+
+
+def test_explore_views_ask_for_a_page_and_load_more_and_all_raise_it(bench) -> None:
+    seen: list[int] = []
+    explore = bench.provider._explore
+    plain = explore.fetch_with_status
+
+    def counted(view: str, **kw: Any):
+        seen.append(kw.get("limit", 0))
+        return plain(view, **kw)
+
+    explore.fetch_with_status = counted
+    _go(bench, NodeRef("", "assigned"))
+    bench.provider.load_more()
+    bench.provider.load_more()
+    bench.provider.load_all()
+    assert seen == [50, 100, 150, 1000]
+    bench.provider.load_more()
+    assert seen[-1] == 1000
+
+
+def test_a_first_page_that_is_not_everything_says_so(bench) -> None:
+    explore = bench.provider._explore
+    explore.fetch_with_status = lambda view, **kw: SimpleNamespace(
+        items=(), warning="Gists: showing the first 50 items; more may exist"
+    )
+    _go(bench, NodeRef("", "assigned"))
+    assert bench.provider.local_note == (
+        "Gists: showing the first 50 items; more may exist. Load More or Load All reads the rest."
+    )

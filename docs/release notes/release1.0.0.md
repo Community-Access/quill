@@ -2118,6 +2118,14 @@ for real where nothing matters, and throw it away when you are done. Six new
 lessons in Help > Tutorials walk you through it, step by step, each saying
 what to press and what you should hear.
 
+#### A list that says when it is not the whole list
+
+A list that silently stops at fifty rows is worse than a slow one: the
+fifty-first notification is the one you never hear about. Every list in the
+Workbench now says when it holds only part of what GitHub has, and **Load
+More** and **Load All** work on all of them, so "that is everything" is
+something QUILL tells you rather than something you assume.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

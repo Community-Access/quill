@@ -1341,6 +1341,12 @@ Search > Saved Searches, and Pin makes it a node under Needs My Attention.
   run's duration, a release asset's size) are filtered over the loaded rows,
   and the status bar says so: "Filtered locally: 40 loaded. Load All to be
   sure." Load All fetches every page first.
+  *2026-11-18:* Load More (`Alt+PageDown`) works on every node, a page more
+  each time, and Load All reaches the Explore-backed nodes too (Notifications,
+  My Work, discussions, labels, merge queue), which had been fixed at 50 rows;
+  the Explore cap rose from 100 to 1,000 (`explore.MOST_ROWS`). A view that
+  holds part of GitHub's list puts that sentence, with "Load More or Load All
+  reads the rest", in the Items cell (`load_explore(notes=...)`).
 - **The attribute lists per row type are in Appendix C,** in the Filter
   column. The highlights for issues and pull requests: state and state
   reason, type, labels, milestone, assignee, author, mentions, commenter,

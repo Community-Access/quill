@@ -17,7 +17,13 @@ from quill.core.github.explore_models import ExploreRow
 from quill.core.workbench.filters import Query, render
 from quill.core.workbench.tree import Need, NodeSpec, Scope
 
-__all__ = ["EXPLORE_PREFIX", "explore_row_type", "explore_unavailable", "load_explore"]
+__all__ = [
+    "EXPLORE_PAGE",
+    "EXPLORE_PREFIX",
+    "explore_row_type",
+    "explore_unavailable",
+    "load_explore",
+]
 
 EXPLORE_PREFIX = "explore:"
 
@@ -79,6 +85,18 @@ def explore_unavailable(node: NodeSpec, *, instance: str, signed_in: bool, query
     return ""
 
 
+#: An Explore view's first page, as Explore always loaded it; Load More adds one.
+EXPLORE_PAGE = 50
+
+
+def _more_note(warning: str) -> str:
+    """GitHub's "showing the first 50 items; more may exist", with what to do about it."""
+    said = warning.rstrip(".") + "."
+    if "more may exist" in warning:
+        said += " Load More or Load All reads the rest."
+    return said
+
+
 def _matches_reason(row: ExploreRow, reason: str) -> bool:
     source, kind = _REASONS.get(reason, ("", ""))
     first = row.detail.split("\n", 1)[0]
@@ -86,9 +104,21 @@ def _matches_reason(row: ExploreRow, reason: str) -> bool:
 
 
 def load_explore(
-    client: Any, node: NodeSpec, *, instance: str, query: Query, account: str = ""
+    client: Any,
+    node: NodeSpec,
+    *,
+    instance: str,
+    query: Query,
+    account: str = "",
+    limit: int = 50,
+    notes: list[str] | None = None,
 ) -> list[ExploreRow]:
-    """Fetch an Explore node's rows. Runs off the UI thread."""
+    """Fetch an Explore node's rows. Runs off the UI thread.
+
+    *limit* is the Workbench's page (Load More and Load All raise it); a view
+    that stopped short, or has more than it loaded, says so into *notes*, so
+    the status bar never passes off a first page as the whole list.
+    """
     view = node.loader.removeprefix(EXPLORE_PREFIX)
     repositories: tuple[str, ...] = ()
     categories: tuple[str, ...] = ()
@@ -104,7 +134,11 @@ def load_explore(
         query=render(query) if node.scope is Scope.QUERY else "",
         repositories=repositories,
         categories=categories,
+        limit=limit,
     )
+    warning = str(getattr(result, "warning", "") or "")
+    if notes is not None and warning:
+        notes.append(_more_note(warning))
     rows = list(result.items)
     reason = dict(node.preset).get("reason", "")
     return [row for row in rows if _matches_reason(row, reason)] if reason else rows

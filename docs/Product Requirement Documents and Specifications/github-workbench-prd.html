@@ -2206,7 +2206,13 @@ GitHub’s search does not index (a project field on a list that is not a
 project view, a workflow run’s duration, a release asset’s size) are
 filtered over the loaded rows, and the status bar says so: “Filtered
 locally: 40 loaded. Load All to be sure.” Load All fetches every page
-first.</li>
+first. <em>2026-11-18:</em> Load More (<code>Alt+PageDown</code>) works
+on every node, a page more each time, and Load All reaches the
+Explore-backed nodes too (Notifications, My Work, discussions, labels,
+merge queue), which had been fixed at 50 rows; the Explore cap rose from
+100 to 1,000 (<code>explore.MOST_ROWS</code>). A view that holds part of
+GitHub’s list puts that sentence, with “Load More or Load All reads the
+rest”, in the Items cell (<code>load_explore(notes=...)</code>).</li>
 <li><strong>The attribute lists per row type are in Appendix C,</strong>
 in the Filter column. The highlights for issues and pull requests: state
 and state reason, type, labels, milestone, assignee, author, mentions,

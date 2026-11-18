@@ -620,6 +620,15 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Load More, on every list (2026-11-18)
+
+**Load More** (`Alt+Page Down`) in the GitHub Workbench now reads one more page
+of any list, and **Load All** reaches every list too: Notifications, My Work,
+discussions, labels, the merge queue and the rest, which used to stop at their
+first 50 rows whatever you asked. When a list holds only part of what GitHub
+has, the status bar says so and says how to read the rest. Chapter 13 of the
+GitHub Guide has the details.
+
 ### Dry Run and a practice repository (2026-11-18)
 
 **Tools > Dry Run** (`Ctrl+Alt+D`) in the GitHub Workbench lets every command

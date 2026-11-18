@@ -51,6 +51,10 @@ class _NoRedirect(HTTPRedirectHandler):
         return None
 
 
+#: The most rows one Explore view loads, which Load All asks for (PRD 17.3).
+MOST_ROWS = 1000
+
+
 class GitHubExploreClient(ExploreNotificationsMixin, GitHubGistsMixin):
     """Bounded reads and explicit writes using the workbench's existing session."""
 
@@ -141,7 +145,7 @@ class GitHubExploreClient(ExploreNotificationsMixin, GitHubGistsMixin):
                 repo=repo,
                 query=query,
                 person=person,
-                limit=max(1, min(limit, 100)),
+                limit=max(1, min(limit, MOST_ROWS)),
                 warnings=warnings,
                 include_read=include_read,
             )

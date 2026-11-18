@@ -57,6 +57,7 @@ from quill.ui.github_items_view import (
 from quill.ui.github_workbench_across import ACROSS_PREFIX, GitHubWorkbenchAcrossMixin
 from quill.ui.github_workbench_actions import GitHubWorkbenchActionsMixin
 from quill.ui.github_workbench_explore import (
+    EXPLORE_PAGE,
     EXPLORE_PREFIX,
     explore_row_type,
     explore_unavailable,
@@ -252,9 +253,15 @@ class GitHubWorkbenchProvider(
                 from quill.core.github.explore import GitHubExploreClient
 
                 self._explore = GitHubExploreClient(self.items)
-            rows = list(load_explore(self._explore, node, instance=ref.instance, query=query))
+            notes: list[str] = []
+            limit, where = self.page_limit(ref, EXPLORE_PAGE), ref.instance
+            found = load_explore(
+                self._explore, node, instance=where, query=query, limit=limit, notes=notes
+            )
+            rows = list(found)
             if node.loader == "explore:notifications":
-                self.local_note = str(getattr(self._explore, "inbox_rules_note", "") or "")
+                notes.insert(0, str(getattr(self._explore, "inbox_rules_note", "") or ""))
+            self.local_note = " ".join(note for note in notes if note)
             return rows
         if node.loader.startswith(HELP_PREFIX):
             return list(self.load_help(node))

@@ -129,6 +129,17 @@ checks the pull requests already loaded and the Items cell of the status bar
 says so. **View > Load All** (`Ctrl+Shift+Page Down`) loads every page to be
 sure.
 
+### More rows
+
+Every list starts with one page: 30 issues or pull requests, 50 rows of
+anything else. **Load More** (`Alt+Page Down`) reads one page more each time,
+and **Load All** (`Ctrl+Shift+Page Down`) reads up to a thousand at once.
+Both work on every list in the Workbench, Notifications, My Work, discussions,
+labels and the merge queue included. When a list holds only part of what
+GitHub has, the Items cell of the status bar says so, for example "Gists:
+showing the first 50 items; more may exist. Load More or Load All reads the
+rest.", so a short list is never mistaken for the whole of it.
+
 ### Shaping the list
 
 - **View > Show** chooses issues, pull requests or both, and **View > Open or

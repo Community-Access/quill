@@ -29429,6 +29429,13 @@ practice repository” track, six lessons
 step carrying its key from <code>WORKBENCH_KEYS</code>;
 <code>docs/user guide/tutorials.md</code> is regenerated from the
 catalogue.</p>
+<p><strong>Load More and an honest first page (GitHub PRD
+17.3).</strong> <code>page_limit</code> counts Load More presses per
+node (a page more each, up to Load All’s 1,000) and applies to
+Explore-backed nodes as well as items; <code>load_explore</code> passes
+the limit and returns the fetch’s incomplete-read sentence, which
+becomes the Items cell’s note. Load More had been a menu row with no
+handler.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and
