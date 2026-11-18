@@ -322,6 +322,7 @@ class GitHubPullReviewMenusMixin:
             number=self._number,
             current_head_sha=current_sha,
             announce_cb=self._announce,
+            provider=self._review_provider(),
             **extra,
         ).show()
         if draft is None:

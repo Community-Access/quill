@@ -149,6 +149,10 @@ Load All reaches Explore-backed nodes, and a partial list says so in the
 Items cell. Grouping and the column chooser remain for issues and pull
 requests only.
 
+**2026-11-18, one comment window.** Discussion replies, line comments and the
+review message reach the comment composer. Hide Whitespace Changes and Choose
+Commit... in the diff window (`commit_review.py`).
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

@@ -17497,6 +17497,22 @@ applies to Explore-backed nodes as well as items; `load_explore` passes the
 limit and returns the fetch's incomplete-read sentence, which becomes the
 Items cell's note. Load More had been a menu row with no handler.
 
+**One comment window (GH-C).** `compose_with_provider` opens the composer from
+windows that hold a GitHub Items provider (a `TokenApi` from its token and a
+thread-and-CallAfter background); `ok_label` "Use This Text" hands text back.
+Discussion replies and Reply to Thread use it, and the line comment and review message dialogs
+have Comment Window... (`Alt+W`). The Properties check list
+(`workbench_check_group.py`) is now covered by tests: one check box per
+choice, three-state over several items with "on 3 of 5", and a delta of only
+what changed.
+
+**Whitespace and one commit at a time (GH-D).** The diff window's Hide
+Whitespace Changes (`Alt+W`) and Choose Commit... (`Alt+T`), from
+`quill/core/github/commit_review.py`: `whitespace_only` over the patch lines,
+and `pull_commits` and `commit_diff` (a `GitHubPullDiff` of one commit against
+its first parent), read off the UI thread with a `TokenApi` from the
+provider's token.
+
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and
 `tests/unit/docs/test_github_live_run_coverage.py` fails when a write command

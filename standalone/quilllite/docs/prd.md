@@ -2773,4 +2773,6 @@ Lite has them too, as is the jobs window's Follow This Job and Alt+8, and the
 Workbench's Inbox Rules... (`quill/ui/github_workbench_inbox_rules.py`) and
 emoji shortcodes read by name (`quill/core/github/emoji_names.py`), Dry
 Run and Practice on GitHub, and Load More and Load All on every Workbench
-list.
+list. The comment window in a discussion reply, a line comment and the review
+message is the shared one, as are Hide Whitespace Changes and Choose Commit...
+in the diff window.

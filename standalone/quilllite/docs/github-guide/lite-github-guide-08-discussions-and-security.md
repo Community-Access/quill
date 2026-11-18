@@ -44,8 +44,10 @@ votes, 60 percent".
 ### Replying
 
 **Reply...** (`Alt+R`) replies to the selected comment, or to the discussion
-itself when the first row is selected. The prompt says which: "Your reply to
-bob's comment:". You hear "Posted your reply". A closed discussion takes no
+itself when the first row is selected. It opens the comment window, titled
+with which: "Reply to bob's comment", with Insert Mention (bob first),
+Insert Reference, Insert Emoji, Insert Saved Reply, Preview and the check
+before posting. You hear "Posted your reply". A closed discussion takes no
 replies, so the button is unavailable.
 
 ### Marking the answer

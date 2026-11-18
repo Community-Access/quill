@@ -1924,6 +1924,18 @@ coverage gate (section 19) from day one.
   joined them (`quill/core/github/review_viewed.py`,
   `quill/ui/github_pr_review_viewed.py`). Still to come: hiding whitespace,
   side-by-side reading and one commit at a time.
+  *Comment boxes, 2026-11-18:* the discussion reply and the review window's
+  Reply to Thread open the comment composer; the line comment and the review message have Comment Window...
+  (`Alt+W`), which opens it on the text so far with an OK button reading Use
+  This Text (`compose_with_provider`, `quill/ui/github_comment_composer.py`).
+  *Whitespace and one commit, 2026-11-18,* in the diff window rather than the
+  review window, where the patch lines are: Hide Whitespace Changes (`Alt+W`;
+  `commit_review.whitespace_only` pairs a removed and an added line equal
+  once spaces and tabs go, and drops blank changed lines) and Choose Commit...
+  (`Alt+T`; `pull_commits`, `commit_diff` against the first parent, in the
+  diff window's own model, so comments and the compare walk work unchanged).
+  Ctrl+Shift+H and Ctrl+Shift+K in the key table above are not bound. Still to
+  come: side-by-side reading.
 - **Task lists inside bodies.** The `- [ ]` items in an issue's body are a
   list on the issue's sheet: check one off and the body is updated; convert
   an item to a sub-issue.

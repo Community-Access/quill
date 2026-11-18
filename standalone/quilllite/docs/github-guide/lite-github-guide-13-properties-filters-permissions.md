@@ -126,8 +126,9 @@ every page to be sure.
 ### More rows
 
 Every list starts with one page: 30 issues or pull requests, 50 rows of
-anything else. **Load More** (`Alt+Page Down`) reads one page more each time,
-and **Load All** (`Ctrl+Shift+Page Down`) reads up to a thousand at once.
+anything else. **Load More**, on the Workbench's View menu (Alt+Page Down
+there), reads one page more each time, and **Load All** on the same menu reads
+up to a thousand at once.
 Both work on every list in the Workbench, Notifications, My Work, discussions,
 labels and the merge queue included. When a list holds only part of what
 GitHub has, the Items cell of the status bar says so, for example "Gists:

@@ -361,6 +361,7 @@
   "quill/ui/github_pending_deployments_dialog.py::PendingDeploymentsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_pending_deployments_dialog.py::PendingDeploymentsDialog._review::wx.MessageDialog": "native",
   "quill/ui/github_pr_diff_comments.py::GitHubPullDiffCommentsMixin._ask_line_range::wx.TextEntryDialog": "native",
+  "quill/ui/github_pr_diff_comments.py::GitHubPullDiffCommentsMixin._commits_listed::wx.SingleChoiceDialog": "native",
   "quill/ui/github_pr_diff_dialog.py::GitHubPullDiffDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_pr_review_dialog.py::GitHubPullReviewDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_pr_review_dialog.py::GitHubPullReviewDialog._confirm::wx.MessageDialog": "native",

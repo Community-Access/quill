@@ -620,6 +620,23 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### One commit at a time, and whitespace hidden (2026-11-18)
+
+The pull request diff window has **Hide Whitespace Changes**, which leaves out
+lines that changed only their spaces, tabs or blank lines, and **Choose
+Commit...**, which shows one commit of the pull request at a time, against the
+commit before it, with the whole pull request one choice away. Chapter 5 of the
+GitHub Guide has the details.
+
+### One comment window everywhere (2026-11-18)
+
+A reply to a discussion, and Reply to Thread in a pull request review, now
+open the same comment window as a comment in the GitHub Workbench, with mentions, references, emoji, saved replies, a preview
+and the check before posting. A line comment and the review message each have
+**Comment Window...** (`Alt+W`), which opens it with what you have written so
+far and brings the text back. Chapters 5 and 8 of the GitHub Guide have the
+details.
+
 ### Load More, on every list (2026-11-18)
 
 **Load More** (`Alt+Page Down`) in the GitHub Workbench now reads one more page

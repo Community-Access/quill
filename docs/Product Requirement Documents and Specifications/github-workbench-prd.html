@@ -2956,7 +2956,22 @@ Viewed and file-level comments (<code>subject_type: file</code>, through
 the comment composer) joined them
 (<code>quill/core/github/review_viewed.py</code>,
 <code>quill/ui/github_pr_review_viewed.py</code>). Still to come: hiding
-whitespace, side-by-side reading and one commit at a time.</li>
+whitespace, side-by-side reading and one commit at a time. <em>Comment
+boxes, 2026-11-18:</em> the discussion reply and the review window’s
+Reply to Thread open the comment composer; the line comment and the
+review message have Comment Window… (<code>Alt+W</code>), which opens it
+on the text so far with an OK button reading Use This Text
+(<code>compose_with_provider</code>,
+<code>quill/ui/github_comment_composer.py</code>). <em>Whitespace and
+one commit, 2026-11-18,</em> in the diff window rather than the review
+window, where the patch lines are: Hide Whitespace Changes
+(<code>Alt+W</code>; <code>commit_review.whitespace_only</code> pairs a
+removed and an added line equal once spaces and tabs go, and drops blank
+changed lines) and Choose Commit… (<code>Alt+T</code>;
+<code>pull_commits</code>, <code>commit_diff</code> against the first
+parent, in the diff window’s own model, so comments and the compare walk
+work unchanged). Ctrl+Shift+H and Ctrl+Shift+K in the key table above
+are not bound. Still to come: side-by-side reading.</li>
 <li><strong>Task lists inside bodies.</strong> The <code>- [ ]</code>
 items in an issue’s body are a list on the issue’s sheet: check one off
 and the body is updated; convert an item to a sub-issue. <em>Built

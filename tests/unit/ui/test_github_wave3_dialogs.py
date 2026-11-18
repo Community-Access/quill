@@ -422,11 +422,12 @@ def test_batch_cancel_sends_nothing(items) -> None:
 
 
 def test_discussion_thread_reply_and_answer(frame, monkeypatch: pytest.MonkeyPatch) -> None:
-    from quill.ui import github_discussion_dialog
     from quill.ui.github_discussion_dialog import GitHubDiscussionDialog
 
     provider = _Provider()
-    monkeypatch.setattr(github_discussion_dialog, "ask_text", lambda *_a: "Thanks!")
+    monkeypatch.setattr(
+        "quill.ui.github_comment_composer.compose_with_provider", lambda *_a, **_k: "Thanks!"
+    )
     _modal(monkeypatch, "quill.ui.github_discussion_dialog", [wx.ID_YES])
     dialog = GitHubDiscussionDialog(frame, provider, repo="o/r", number=4)
     spoken: list[str] = []
@@ -450,11 +451,12 @@ def test_discussion_thread_reply_and_answer(frame, monkeypatch: pytest.MonkeyPat
 
 
 def test_discussion_reply_failure_is_spoken(frame, monkeypatch: pytest.MonkeyPatch) -> None:
-    from quill.ui import github_discussion_dialog
     from quill.ui.github_discussion_dialog import GitHubDiscussionDialog
 
     provider = _Provider()
-    monkeypatch.setattr(github_discussion_dialog, "ask_text", lambda *_a: "Hi")
+    monkeypatch.setattr(
+        "quill.ui.github_comment_composer.compose_with_provider", lambda *_a, **_k: "Hi"
+    )
     dialog = GitHubDiscussionDialog(frame, provider, repo="o/r", number=4)
     spoken: list[str] = []
     dialog._announce = spoken.append

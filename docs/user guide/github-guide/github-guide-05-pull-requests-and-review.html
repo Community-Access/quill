@@ -423,6 +423,16 @@ the arrows go from change to change. The hunk headings stay, so each
 change still says where it is. You hear how many changed lines there are
 and how many unchanged ones were left out; uncheck it to see them
 again.</li>
+<li><strong>Hide Whitespace Changes</strong> (<code>Alt+W</code>) leaves
+out changed lines that differ from their partner only in spaces, tabs or
+blank lines, such as a block that was only reindented, so what is left
+is what really changed. You hear how many lines it left out.</li>
+<li><strong>Choose Commit…</strong> (<code>Alt+T</code>) reviews one
+commit of the pull request at a time. It lists them oldest first,
+“3f9a2c1 Fix the parser, by ann”, with “All commits: the whole pull
+request” at the top to come back. The file list, the differences and the
+patch lines then show only that commit’s change, against the commit
+before it, and the summary at the top says which commit you are on.</li>
 <li><strong>Patch lines:</strong> (<code>Alt+P</code>), the patch one
 line to a row. This is where you comment.</li>
 <li><strong>Comment on This Line…</strong> (<code>Alt+L</code>),
@@ -472,6 +482,12 @@ starts.</li>
 keep the comment and send it with your review.</li>
 <li><strong>Post Now</strong> (<code>Alt+P</code>): send it on its own,
 straight away.</li>
+<li><strong>Comment Window…</strong> (<code>Alt+W</code>): write the
+comment in the same comment window as everywhere else, with Insert
+Mention, Insert Reference, Insert Emoji, Insert Saved Reply, Preview and
+the check before posting. Its button says <strong>Use This
+Text</strong>, which puts what you wrote back in the Comment box
+here.</li>
 <li><strong>Cancel</strong>.</li>
 </ul>
 <p>Most of the time you want <strong>Add to Review</strong>. GitHub then
@@ -505,6 +521,10 @@ has:</p>
 <li><strong>Review message:</strong> (<code>Alt+M</code>), your overall
 comment. Request changes needs one; so does Comment, unless you have
 line comments.</li>
+<li><strong>Comment Window…</strong> (<code>Alt+W</code>) writes the
+message in the comment window, with mentions, references, emoji, saved
+replies, the preview and the check; <strong>Use This Text</strong>
+brings it back.</li>
 <li><strong>Discard Saved Draft</strong>, to throw away a saved review
 message.</li>
 <li><strong>Submit Review</strong>, which sends it, and <strong>Save
@@ -528,9 +548,11 @@ against the current diff.</p>
 <p>On a thread in the outline:</p>
 <ul>
 <li><code>Ctrl+R</code>, or <strong>Reply to Thread…</strong>
-(<code>Alt+R</code>), replies. Type it in <strong>Reply to this review
-thread:</strong> and press <strong>OK</strong>. You hear “Reply posted
-to the review thread.”</li>
+(<code>Alt+R</code>), replies. It opens the comment window,
+<strong>Reply to Review Thread</strong>, with the thread’s author first
+under Insert Mention, and Preview and the check as everywhere else;
+<strong>Post</strong> sends it. You hear “Reply posted to the review
+thread.”</li>
 <li><code>Ctrl+Shift+R</code> resolves the thread, or reopens a resolved
 one. It asks first. You hear “Review conversation resolved.” If GitHub
 does not let you change it, QUILL says so.</li>

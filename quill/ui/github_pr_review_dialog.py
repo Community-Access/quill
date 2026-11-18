@@ -551,10 +551,17 @@ class GitHubPullReviewDialog(
         if not self._reply_btn.IsEnabled():
             self._announce("Sign in and select an open pull request to reply.")
             return
-        body = self._text_entry("Reply to this review thread:", "Reply to Review Thread")
-        if body is None:
+        from quill.ui.github_comment_composer import compose_with_provider
+
+        root = self._threads[index].root
+        who = str(getattr(root, "author", "") or "")
+        body = compose_with_provider(
+            self.dialog, self._review_provider(), title="Reply to Review Thread",
+            repository=self._repo, say=self._announce, people=[who] if who else [],
+        )  # fmt: skip
+        if not body:
             return
-        comment_id = self._threads[index].root.id
+        comment_id = root.id
         self._run_action(
             lambda: self._client.reply_to_thread(self._repo, self._number, comment_id, body),
             "Reply posted to the review thread.",
