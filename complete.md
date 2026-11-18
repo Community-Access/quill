@@ -8,7 +8,7 @@
 
 For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claude.log`. The commands and gates are in `CLAUDE.md`.
 
-- **Done on 2026-11-18:** Kelly Ford's diff marks (#1890), the Cast queue and download fixes for Chris Nova and Jessica Dail (#1889, #1892), every EdSharp item (#1891), and the Copilot SDK 2.0 plan (#1893, `docs/design/copilot.md`; 2.0 replaces 1.x outright).
+- **Done on 2026-11-18:** five WordPress data-loss fixes (Send Back, Approve and Schedule, plugin Status, Gravity spam, Replace File, Put Back), Kelly Ford's diff marks (#1890), the Cast queue and download fixes for Chris Nova and Jessica Dail (#1889, #1892), every EdSharp item (#1891), and the Copilot SDK 2.0 plan (#1893, `docs/design/copilot.md`; 2.0 replaces 1.x outright).
 - **Screen-reader testing** is done by Jeff's testers and is not tracked here.
 - **Next:** Part 1 below, the GitHub Workbench, in this order: the endpoint table (1.2), the open features and checks (1.3), then the documentation pass (1.4).
 - **How to work here:**
@@ -198,86 +198,18 @@ When 1.2 and 1.3 are done, the GitHub Workbench's documentation is brought up to
 - **Plugin scope:** WooCommerce and Yoast are in, with QAF, Gravity Forms and Paid Memberships Pro. **To do:** update the WordPress PRD and `docs/design/wordpress.md` to say so.
 - **Rank Math:** read only (assumed; Jeff did not answer).
 
-### 2.2 Where it stands
-
-The everyday jobs are done: writing, publishing, scheduling, media, comments, categories and tags, people, menus, widgets, templates and styles. What is left falls into four groups:
-
-- A handful of small gaps in core WordPress (menu auto-add, revisions from a Workbench row, replacing a media file, WXR import and export, a complete link check).
-- Plugin depth: the rest of WooCommerce, Gravity Forms entry editing, membership levels, and Redirection's groups and options.
-- Updates, backups and security, which need either a plugin's API or a way in that is not REST (WP-CLI over SSH).
-- Nothing at all has been tried on a live site since the Workbench work began.
-
-| Area | Jobs | Done | wp-admin only | Being built today | Missing | Deferred |
-|---|---|---|---|---|---|---|
-| Posts and pages | 27 | 25 | 1 | 0 | 1 | 0 |
-| Media | 15 | 12 | 2 | 0 | 1 | 0 |
-| Categories, tags, taxonomies | 6 | 6 | 0 | 0 | 0 | 0 |
-| Comments | 9 | 7 | 2 | 0 | 0 | 0 |
-| Users | 15 | 10 | 5 | 0 | 0 | 0 |
-| Menus and widgets | 11 | 10 | 0 | 0 | 1 | 0 |
-| Appearance | 10 | 7 | 3 | 0 | 0 | 0 |
-| Plugins and themes | 10 | 6 | 2 | 0 | 1 | 1 |
-| Settings | 10 | 4 | 6 | 0 | 0 | 0 |
-| Tools | 12 | 6 | 3 | 0 | 3 | 0 |
-| Forms | 14 | 11 | 1 | 0 | 2 | 0 |
-| Shop (WooCommerce) | 30 | 12 | 2 | 7 | 9 | 0 |
-| Events | 9 | 5 | 3 | 1 | 0 | 0 |
-| SEO | 9 | 4 | 1 | 2 | 2 | 0 |
-| Memberships | 10 | 6 | 1 | 0 | 3 | 0 |
-| Redirects | 3 | 2 | 0 | 0 | 1 | 0 |
-| Multisite | 3 | 2 | 1 | 0 | 0 | 0 |
-| Maintenance | 9 | 2 | 2 | 0 | 2 | 3 |
-| Total | 212 | 137 | 35 | 10 | 26 | 4 |
-
-These are counts from my list of jobs, not from a code metric, so read them as rough. The "wp-admin only" column is mostly WordPress's limit, not QUILL's.
-
 ### 2.3 Missing in QUILL
 
 The most useful to a site owner come first in each area. "Route" means the REST route that does it. "wp-admin" means there is no route.
 
-##### Posts and pages
-
-Nothing missing.
-
-Already done and worth knowing: Markdown or HTML on new items, open existing items as HTML (blocks kept) or Markdown (blocks kept as islands), drafts, publish, schedule, preview, conflict check, Properties with author, template, parent, format, pingbacks and featured image, bulk edit with Undo, Trash, Empty Trash, duplicate, the review queue, the calendar, site-wide Find and Replace, importing folders and spreadsheets as drafts, and Copy to Site. The post lock is wp-admin only, and QUILL opens the edit screen and says why.
-
 ##### Media
 
-Scaling the original and the media size settings are wp-admin only, and QUILL already says so.
-
-##### Categories, tags and custom taxonomies
-
-Nothing missing. Add, rename, merge, convert, delete, hierarchy, term fields and Advanced Custom Fields, custom taxonomies found from the site, and Across Sites all work. Defining a new taxonomy needs the QUILL Site Types plugin, which has never run in a real WordPress (see "Built but not yet tried live").
-
-##### Comments
-
-Nothing missing that REST allows. The comment blocklist (`disallowed_keys`), moderation keys, avatars, threading and notification settings are wp-admin only, and the scope matrix says so.
-
-##### Users
-
-Nothing missing that REST allows. Password reset emails, the welcome email, Log Out Everywhere, profile preferences and editing roles are wp-admin only. Editing roles needs a plugin such as Members or User Role Editor, and neither has a REST API that I know of (unverified). QUILL opens the right screen for each.
-
-##### Menus and widgets
-
-Menus can be created (New Here), deleted (Shift+Delete), have items added from the Workbench (Add Menu Item, or Ctrl+N with a menu selected) and edited (the editor's Menus window), add new top-level pages automatically (a check box on Properties, and a command), have locations set and earlier versions restored. Widgets can be added, changed, moved, removed and previewed.
-
-##### Appearance
-
-Nothing missing that REST allows. Activating, installing, updating or deleting a theme, the classic Customizer and the theme file editor are wp-admin only, because `wp/v2/themes` only reads. Global Styles, templates and template parts (edit, create, reset, earlier versions), Additional CSS, patterns and fonts all work.
-
-##### Plugins and themes
-
-- **Running updates** is in the deferred section below, because REST cannot do it.
-
-Uploading a plugin as a zip file (every premium plugin) and turning automatic updates on or off are wp-admin only.
-
-##### Settings
-
-Nothing missing that REST allows. Permalinks, media sizes, the privacy policy page, who may register and the default role, feeds, post by email and search engine visibility are wp-admin only. Search engine visibility is judged from the sitemap and says so.
-
-##### Tools
-
-Site Health's Info tab and the privacy export and erase requests are wp-admin only, and QUILL opens them without pretending a request was done.
+- **Scale or crop a picture on this computer, and send it back.** This was marked wp-admin only, and it need not be. WordPress has no route that scales an existing original in place, but QUILL can do the work locally and upload the result:
+  - Open the picture from the Media Library, scale it (to a width, a height, or a percentage, keeping its shape), crop or rotate it, with the size and file weight said before and after, using Pillow, which QUILL already ships.
+  - Send it back through the Replace File path already built: in place where the site lists a replace route, otherwise as a new file with every use pointed at it (previewed, with Ctrl+Z, and a redirect offered where Redirection is active).
+  - Then ask the site to make its sizes again (`POST wp/v2/media/{id}/post-process` with `action: create-image-subsizes`, WordPress 5.3 and later), so thumbnails match.
+  - For a quick rotate or crop of a site's picture without a local copy, `POST wp/v2/media/{id}/edit` (WordPress 5.5 and later) does it on the site and makes an edited copy; offer it where the site's index lists it.
+  - What stays wp-admin only: the site-wide media size settings (thumbnail, medium and large widths), because WordPress does not expose them to REST.
 
 ##### Forms
 
@@ -287,11 +219,25 @@ QAF is covered end to end: build, publish, settings, status, delete, entries, vi
 
 Gravity Forms' own settings, add-ons and licence are wp-admin only.
 
+###### Payments in QUILL Accessible Forms (QAF)
+
+QAF takes payments through Stripe and PayPal today (`quill/core/forms/payments.py`, `docs/design/forms-payments-plugin-contract.md`): one provider list per form, credentials only on the WordPress site, nothing moved by QUILL. Two additions, each in both editors and in the QAF plugin's contract, with the same care as Stripe and PayPal.
+
+- **Square as a third payment provider.**
+  - **Why:** many small organizations, churches and clubs already take card payments in person with Square, and want online forms to land in the same account and reports.
+  - **QUILL side:** add `square` to `PAYMENT_PROVIDERS`, its checks in `semantic_errors` (currencies Square supports for the account's country, its minimum amount, its statement-descriptor rules), the provider in the form editor's Payment settings, Check This Form, the BFL (QUILL's plain-text form language) round trip, the payment help and both guides' "Taking payments with your forms" chapters.
+  - **Plugin side:** the QAF payment contract gains a Square adapter: Square's Web Payments SDK for the card field (its accessible card entry, checked with a screen reader before release), the Payments API for the charge, an idempotency key on every request, webhooks (`payment.updated`, `refund.updated`) to confirm and reconcile, refunds through the Refunds API, sandbox and production modes, and the access token and location id kept in the site's options, never in the form.
+  - **Done when:** a test-mode payment, a declined card, a refund and a webhook replay all work on the test site, and the receipt and the entry show the same amount and status.
+- **More than one connection per provider, and choosing between them.**
+  - **Why:** one site often takes money for different purposes into different accounts: event fees to one Stripe account, donations to another; a chapter's own Square location; PayPal kept only for people who ask for it.
+  - **Connections:** the QAF plugin stores any number of named connections for each provider ("Stripe: Events", "Stripe: Donations", "Square: Downtown location"), each with its own mode (test or live), credentials, currency and descriptor. QUILL's Payments settings in the WordPress Workbench lists them (names, provider, mode and whether they work; no secret is ever shown, spoken or logged) and checks each with the provider.
+  - **Choosing by selection:** a form names the connections it offers, in order, and which is the default. The person paying sees the choices only when there is more than one, as a plain labelled list ("Pay with: Card (Stripe), PayPal, Card (Square)").
+  - **Choosing by rule:** a form can pick the connection from its answers, with rules in the same plain style as the form's conditions: by amount ("over $500: Stripe: Large gifts"), by a choice field ("Fund: Building, then Square: Building fund"), by currency, by date (a campaign window), or by fallback when a connection is down. Rules are checked in order and a form always has a fallback, so a payment never has nowhere to go.
+  - **Seen and checked:** Check This Form says which connection each rule leads to and finds rules that can never fire or leave a gap; the entry and the receipt record which connection took the money; reports and refunds go to that connection.
+  - **Safety:** test and live connections are never mixed on one form without a warning; deleting a connection that a published form uses is refused, naming the forms; changing one is previewed with the forms it affects.
+  - **Done when:** a form with two Stripe connections, a PayPal and a Square routes test payments by each kind of rule, and refunds return to the account that took them.
+
 ##### Shop (WooCommerce)
-
-Being built today, in new uncommitted files (`workbench_shop_care.py`, `workbench_shop_setup.py`): product reviews, webhooks, customer details, editing one variation, shipping zones with their locations and methods, tax rates and classes, attributes and their terms, and brands. I found no commands wired to them in the window yet.
-
-Still missing after that:
 
 - **Edit every product field.** Who: shop managers. Route: `POST wc/v3/products/{id}`. Edit Product changes price, sale price, stock, status and categories only. Missing: SKU, description, short description, sale dates, weight and dimensions, shipping class, images, downloads, upsells and cross-sells, tax class.
 - **Create an order, or change its items and addresses.** Who: shops taking phone orders. Route: `POST wc/v3/orders`, `POST wc/v3/orders/{id}`.
@@ -301,30 +247,15 @@ Still missing after that:
 
 Also missing but less urgent: editing many products at once (`products/batch`), generating variations (`products/{id}/variations/generate`), shipping classes (`products/shipping_classes`), and Analytics (`wc-analytics/reports/*`). Scheduled Actions and the extensions marketplace are wp-admin only. Subscriptions and Bookings are paid extensions with their own routes, not in scope.
 
-##### Events (The Events Calendar)
-
-Events, venues and organizers (list, past, filter, new, edit, trash) are done. Event categories and tags are being built today (`workbench_event_terms.py`). Recurring events need Events Calendar Pro, and its series is changed in wp-admin, which QUILL says. Settings and the importer are wp-admin only. Tickets and RSVP (Event Tickets) are deferred plugins.
-
 ##### SEO (Yoast SEO)
 
-SEO title, description, keyphrase, show in search results, search appearance and site scores are done. Social title and description and the bulk editor are being built today (`workbench_seo_bulk.py`).
-
-Still missing:
-
 - **Canonical address, primary category and schema type per post.** Route: only where Yoast registers that post meta for REST, which most sites do not. I have not verified which of these the bulk editor routes carry. Otherwise they stay in the post's Yoast panel.
-- **Rank Math.** It is the other common SEO plugin and has its own `rankmath/v1` namespace. QUILL has no adapter, so it is read only, under More from This Site. Whether to support it is a decision (below).
-
-Yoast's settings, redirects (Premium), schema settings and indexing are wp-admin only, and the SEO node lists each with its screen.
 
 ##### Memberships (Paid Memberships Pro)
-
-Levels, orders, subscriptions and renewals due are listed. Change Membership Level, Cancel Membership, Check Membership Access and discount codes (look up one, make one) work.
 
 - **Create or edit a membership level.** Who: the site owner changing a price or adding a tier. Route: PMPro's abilities, if the site offers a level-writing one, or `pmpro/v1/membership_level` (I believe it takes POST, unverified). Today levels are read only.
 - **Members of a level, as a list.** Who: the owner emailing or counting one tier's members. Route: unverified. `pmpro/v1/recent_memberships` exists. Otherwise build it from users plus each person's levels, which is slow on big sites. Today you see a person's memberships one person at a time.
 - **Every discount code, as a list.** `pmpro/v1` reads one code at a time. The list works only where an ability offers it, and otherwise opens wp-admin, which QUILL says.
-
-Reports and payment settings are wp-admin only. The wp-admin map has only PMPro's Dashboard. Add Levels, Members, Orders, Discount Codes, Reports and Settings so "wp-admin for This Place" reaches each one.
 
 ##### Redirects (Redirection)
 
@@ -332,15 +263,9 @@ List, add, change, turn on and off, delete, test an address, and the 404 log are
 
 - **Groups, import and export, and Redirection's options.** Route: `redirection/v1/group`, `/import`, `/export`, `/setting` (from the plugin's docs, unverified). Coverage marks them planned.
 
-##### Multisite
-
-Each subsite works as its own site, and Promote to Network is built. The Network Admin screens have no REST routes, so they are wp-admin only.
-
 ##### Maintenance
 
 - **Missed scheduled tasks beyond posts.** Search and Upkeep lists posts still Scheduled after their time. No other WP-Cron task is visible to REST. WP Crontrol is named as the plugin that lists them. I do not know that it has a REST API (unverified).
-
-Caching (purge), maintenance mode, email delivery tests and an activity log (who changed what) all need plugins. They are in the Administration Areas node with "Open in Dashboard". Updates, backups and security are below.
 
 ### 2.4 Built but not yet tried live
 
@@ -375,17 +300,9 @@ From the review of 2026-11-14 (the full notes are in git history; the walkthroug
 
 ###### Safety: things that can change or lose data unexpectedly
 
-1. Workbench Access, Safe Mode and View As Role can be bypassed. The access check (refusal_for) only looks at commands in the selected row's own context menu, so menu-bar and node commands run unchecked under Read Only: Empty Spam, Empty Comment Trash, New Here, Import Posts, Import a Folder, Import WXR, Put Back from a Snapshot, Install on Sites Missing It, Promote to Network, and REST Console writes. Delete and Shift+Delete on a user row (Remove) and on an Application Passwords row (Revoke) also skip the check.
-2. Shift+Delete on an Application Passwords row goes through generic Delete Permanently and skips the guard that stops you revoking the password the Workbench itself signs in with.
-3. Ctrl+Z is unreliable in two opposite ways. A change recorded with no undo stays on top of Change History, so Ctrl+Z repeats "{summary} cannot be undone." and every older undo becomes unreachable (Delete Permanently, Approve and Schedule, Send Back, Copy to Site, imports, batches, Resend Notifications, Revoke Everywhere). And many writes are not recorded at all (Reply, Merge Into, Convert, Allow This Sender, the Empty commands, New Here, products, orders, coupons, events, redirects, membership changes, form status and settings, Find a Plugin install), so Ctrl+Z right after them silently undoes an older, unrelated change, perhaps on another site.
-4. Preview windows default to the action button while message boxes default to Cancel, so Enter proceeds through previews, even at the Destructive tier (Empty Trash's "Delete Permanently", Merge Into).
-5. The plugin Properties sheet's Status field can deactivate any plugin with no confirmation, skipping both the Application Passwords lockout guard and the "QUILL relies on" warning that Activate or Deactivate gives.
-6. Put Back from a Snapshot restores only title, content and excerpt (name and description for terms); status, slug, terms, featured image and parent are not set back, deleted items return as bare drafts, and a snapshot silently leaves out custom post types, templates, global styles, Navigation menus and form data.
-7. Sign Out This Site is irreversible but preselects "Remove {site} from QUILL" with OK as the default, so Enter twice signs out and forgets the site.
-8. Send Back with a Note on a published post unpublishes it with no preview and no undo; Approve and Schedule reschedules published posts without the warning Move to Another Day gives.
-9. Gravity Spam and Not Spam send the entry as it was when the list loaded, overwriting answers changed since.
-10. Replace File asks about deleting the old file after the preview, and after "Delete the old file", Ctrl+Z points every page back at the deleted file.
-11. Properties on posts drops plain category and tag names (only "News (12)" or an id works) while the confirmation says they were added.
+Ten of the eleven are fixed (checked 2026-11-18; five by #1837, five by the WordPress safety pull request). Left:
+
+1. Many Workbench writes are not written to Change History (Reply, Merge Into, Convert, Allow This Sender, the Empty commands, New Here, products, orders, coupons, events, redirects, membership changes, form status and settings, Find a Plugin install), so Ctrl+Z straight after one silently undoes an older, unrelated change, perhaps on another site. Each should record a step, with an undo where one is possible. (Undo already passes over a step that cannot be undone.)
 
 ###### Keys that do not work, or teach the wrong thing
 

@@ -143,12 +143,21 @@ class WorkbenchQueueCommands:
             return
 
         def previewed(when: datetime, words: str) -> None:
+            lines = list(titles)
+            published = [r.title for r in rows if r.status == "publish"]
+            if published:
+                # The same warning Move to Another Day gives (how.md review, safety 8):
+                # scheduling a published item takes it off the site until then.
+                lines.append(
+                    f"{len(published)} of these {'is' if len(published) == 1 else 'are'} "
+                    "already published, and will be off the site until the new time."
+                )
             if wdlg.ask_preview(
                 self.parent,
                 self.show_modal,
                 title="Approve and Schedule",
                 summary=f"Approve {len(rows)} on {site} and schedule them for {words}.",
-                lines=titles,
+                lines=lines,
                 yes="Schedule",
             ):
                 body = {"status": "future", "date_gmt": date_gmt(when)}
@@ -220,15 +229,47 @@ class WorkbenchQueueCommands:
         text = self._ask_note("Send Back with a Note", "&What needs changing:", required=True)
         if text is None:
             return
-        api = self.ctx(rows[0].site).api
+        site = rows[0].site
+        # A preview first, and a warning for anything live (how.md review, safety 8):
+        # sending back a published post takes it off the site.
+        lines = [f"{r.title} ({r.status or 'draft'})" for r in rows]
+        live = sum(1 for r in rows if r.status == "publish")
+        if live:
+            lines.append(
+                f"{live} published {'item comes' if live == 1 else 'items come'} off the site "
+                "and become drafts. Undo puts them back."
+            )
+        if not wdlg.ask_preview(
+            self.parent,
+            self.show_modal,
+            title="Send Back with a Note",
+            summary=f"Send {len(rows)} on {site} back to their writers as drafts, with your note.",
+            lines=lines,
+            yes="Send Back",
+        ):
+            return
+        api = self.ctx(site).api
+        before = {r.route: (r.status or "draft") for r in rows}
 
         def work() -> None:
             for r in rows:
                 notes.add_note(api, int(r.object_id), text)
                 api.post(r.route, {"status": "draft"})
 
+        def undo() -> str:
+            for route, status in before.items():
+                api.post(route, {"status": status})
+            return f"Put {len(before)} back as they were on {site}. Your note stays on each."
+
+        def redo() -> str:
+            for route in before:
+                api.post(route, {"status": "draft"})
+            return f"Sent back {len(before)} on {site} again."
+
         def done(_none: object) -> None:
-            self.history.record(Change(rows[0].route, f"Sent back {len(rows)} on {rows[0].site}."))
+            self.history.record(
+                Change(rows[0].route, f"Sent back {len(rows)} on {site}.", undo=undo, redo=redo)
+            )
             self.say(f"Sent back {len(rows)} as drafts, with your note. WordPress sends no email.")
             self.refresh()
 

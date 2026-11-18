@@ -175,24 +175,9 @@ class WorkbenchMediaReplace:
         plan: mr.Repoint,
         redirects: bool,
     ) -> None:
-        lines = [
-            *mr.preview_lines(facts, new, old_url, in_place=False),
-            f"{len(plan.items)} items use it, and each is pointed at the new file:",
-            *plan.lines(),
-            "Ctrl+Z puts every item back; the new file stays in the library.",
-        ]
-        if not wdlg.ask_preview(
-            self.parent,
-            self.show_modal,
-            title="Replace File",
-            summary=(
-                f"Upload {path.name} to {row.site} as a new file and point every use of "
-                f"{row.title} at it? The file's address changes."
-            ),
-            lines=lines,
-            yes="Upload and Repoint",
-        ):
-            return
+        # The old file's fate is asked first, so the preview can say truly what
+        # Ctrl+Z can do: once the old file is deleted, pointing pages back at
+        # it would break them (how.md review, safety 10).
         fate = dlg.ask_choice(
             self.parent,
             self.show_modal,
@@ -205,6 +190,26 @@ class WorkbenchMediaReplace:
             ),
         )
         if fate is None:
+            return
+        lines = [
+            *mr.preview_lines(facts, new, old_url, in_place=False),
+            f"{len(plan.items)} items use it, and each is pointed at the new file:",
+            *plan.lines(),
+            "Ctrl+Z puts every item back; the new file stays in the library."
+            if fate == 0
+            else "The old file is then deleted for good, so this cannot be undone.",
+        ]
+        if not wdlg.ask_preview(
+            self.parent,
+            self.show_modal,
+            title="Replace File",
+            summary=(
+                f"Upload {path.name} to {row.site} as a new file and point every use of "
+                f"{row.title} at it? The file's address changes."
+            ),
+            lines=lines,
+            yes="Upload and Repoint",
+        ):
             return
         redirect = redirects and dlg.confirm(
             self.parent,
@@ -230,7 +235,7 @@ class WorkbenchMediaReplace:
     ) -> None:
         api = self.ctx(row.site).api
 
-        def work() -> tuple[str, list[Any]]:
+        def work() -> tuple[str, list[Any], bool]:
             from quill.core.wordpress.workbench_by_name import apply_edits
 
             made = api.upload("wp/v2/media", path.name, path.read_bytes(), new.kind)
@@ -243,18 +248,20 @@ class WorkbenchMediaReplace:
                 kept = False
             said_redirect = self._add_redirect(api, plan.old_url, new_url) if redirect else ""
             said = mr.said_after_repoint(len(sent), failed, redirect=said_redirect, old_kept=kept)
-            return said, sent
+            return said, sent, kept
 
-        def done(answer: tuple[str, list[Any]]) -> None:
+        def done(answer: tuple[str, list[Any], bool]) -> None:
             from quill.core.wordpress.workbench_by_name import undo_edits
 
-            said, sent = answer
+            said, sent, kept = answer
             self.say(said)
 
             def undo() -> str:
                 return undo_edits(lambda _site: api, sent) + " The new file stays in the library."
 
-            self.history.record(Change(row.title, said, undo=undo if sent else None))
+            # Undo points pages back at the old file, so only while it still exists.
+            undoable = bool(sent) and kept
+            self.history.record(Change(row.title, said, undo=undo if undoable else None))
             self.refresh()
 
         self.background(f"replacing {row.title}", work, done)

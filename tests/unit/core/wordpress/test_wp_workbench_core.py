@@ -326,6 +326,24 @@ def test_gravity_forms_entries_and_spam_send_the_whole_entry() -> None:
     assert api.writes[-1] == ("PUT", "gf/v2/entries/5", {**entry, "status": "spam"})
 
 
+def test_gravity_spam_reads_the_entry_fresh_and_keeps_newer_answers() -> None:
+    """how.md review, safety 9: an answer changed after the list loaded survives."""
+    loaded = {"id": "5", "form_id": "1", "status": "active", "1": "Ann"}
+    api = Api({
+        "gf/v2/forms": {"1": {"id": "1", "title": "Signup", "entries": "1"}},
+        "gf/v2/entries": {"entries": [loaded]},
+    })
+    ctx = _ctx(api, ("gf/v2",))
+    found = load_forms(ctx, "entries")
+    api.answers["gf/v2/entries/5"] = {**loaded, "1": "Ann Smith"}  # edited since
+    set_entry_spam(ctx, found, True)
+    assert api.writes[-1] == (
+        "PUT",
+        "gf/v2/entries/5",
+        {**loaded, "1": "Ann Smith", "status": "spam"},
+    )
+
+
 # --------------------------------------------------------------------------- #
 # permissions and people
 

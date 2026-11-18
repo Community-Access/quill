@@ -432,11 +432,8 @@ browser, then come back and press F5.</p>
 <ol type="1">
 <li>QUILL finds every post, page, synced pattern, featured image and
 custom field that uses the old file.</li>
-<li>The preview lists the old and new file, and then every item that
-will be changed. It also names anything it found but cannot change, such
-as a field that holds the file’s number instead of its address. Press
-<strong>Upload and Repoint</strong>.</li>
-<li>QUILL asks about <strong>The Old File</strong>:
+<li>QUILL asks about <strong>The Old File</strong> first, so the preview
+can tell you whether you can change your mind afterwards:
 <ul>
 <li><strong>Keep the old file in the library</strong>, the safe
 choice;</li>
@@ -444,6 +441,11 @@ choice;</li>
 (cannot be undone)</strong>. It is deleted only if every use really was
 moved.</li>
 </ul></li>
+<li>The preview lists the old and new file, and then every item that
+will be changed. It also names anything it found but cannot change, such
+as a field that holds the file’s number instead of its address. Its last
+line says whether Ctrl+Z can put things back. Press <strong>Upload and
+Repoint</strong>.</li>
 <li>If your site has the Redirection plugin, QUILL asks whether to
 <strong>Add a Redirect</strong> from the old address to the new one. Say
 yes if other websites, emails or search engines link to the old file.
@@ -452,8 +454,11 @@ Without a redirect, those links stop working.</li>
 <p>At the end you hear one sentence, such as “The file’s address
 changes; QUILL updated 4 places that used it. A redirect now sends the
 old address to the new one. The old file is still in the library.”</p>
-<p>Changed your mind? Ctrl+Z points every item back at the old file. The
-new file stays in the library, and you can delete it if you like.</p>
+<p>Changed your mind? If you kept the old file, Ctrl+Z points every item
+back at it. The new file stays in the library, and you can delete it if
+you like. If you deleted the old file, there is nothing to point back
+at, so Ctrl+Z says this cannot be undone rather than breaking your
+pages.</p>
 <h2 id="listening-and-watching">Listening and watching</h2>
 <p><strong>View &gt; Play Media Here</strong> plays the sound or video
 block the caret is in, inside a page. It opens a small player and starts
