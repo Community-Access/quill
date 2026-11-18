@@ -3160,6 +3160,18 @@ Control coverage: 365 audited sites (365 helped).
 
 **Cancel Run.** Stop the run. QUILL asks first.
 
+**Re-run One Job.** One job again, with debug logs if asked.
+
+**Force Cancel.** When Cancel has not stopped it.
+
+**Download Logs.** Every log of the run, as a zip file.
+
+**Delete Logs.** Delete its logs; the run stays.
+
+**Approvals.** Who approved or rejected its deployments.
+
+**Earlier Attempts.** How an earlier attempt went, or its logs.
+
 **View Artifacts.** Files the run produced, to download.
 
 **Combined Check Status.** Every check on the commit, at once.

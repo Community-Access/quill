@@ -907,7 +907,7 @@ Keys the window answers that are not menu rows:
 
 - **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Add to or Remove from Favorites; Properties...
 - **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
-- **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., View Artifacts...; More: Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
+- **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., Re-run One Job...; More: Force Cancel..., Download Logs..., Delete Logs..., Approvals, Earlier Attempts..., View Artifacts..., Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link; Properties...
 - **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., React..., Compare With Previous; More: Compare With Default, Copy Link, Open on GitHub; Properties...
 - **release_asset**: Download, Copy Link, Delete Asset...; Properties...
@@ -1054,7 +1054,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 568 yes, 467 planned, 225 not needed and 744 left to GitHub.
+In all: 577 yes, 456 planned, 226 not needed and 745 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1062,7 +1062,7 @@ In all: 568 yes, 467 planned, 225 not needed and 744 left to GitHub.
 
 #### Actions
 
-208 operations: 95 yes, 53 planned, 16 not needed, 44 left to github.
+208 operations: 102 yes, 44 planned, 17 not needed, 45 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1188,7 +1188,7 @@ In all: 568 yes, 467 planned, 225 not needed and 744 left to GitHub.
 | Get a concurrency group for a repository | `GET /repos/{owner}/{repo}/actions/concurrency_groups/{concurrency_group_name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Get a job for a workflow run | `GET /repos/{owner}/{repo}/actions/jobs/{job_id}` | Yes | Properties (Alt+Enter) on Job |
 | Download job logs for a workflow run | `GET /repos/{owner}/{repo}/actions/jobs/{job_id}/logs` | Yes | Item > What Failed... (Ctrl+Shift+W) |
-| Re-run a job from a workflow run | `POST /repos/{owner}/{repo}/actions/jobs/{job_id}/rerun` | Planned | Run sheet. |
+| Re-run a job from a workflow run | `POST /repos/{owner}/{repo}/actions/jobs/{job_id}/rerun` | Yes | context menu > Re-run One Job... |
 | Download step logs for a workflow run job | `GET /repos/{owner}/{repo}/actions/jobs/{job_id}/steps/{step_number}/logs` | Planned | Job sheet. |
 | Get the customization template for an OIDC subject claim for a repository | `GET /repos/{owner}/{repo}/actions/oidc/customization/sub` | Left to GitHub | Cloud identity (OIDC) claim settings are one-off security plumbing for company deployments, set up on GitHub's site. |
 | Set the customization template for an OIDC subject claim for a repository | `PUT /repos/{owner}/{repo}/actions/oidc/customization/sub` | Left to GitHub | Cloud identity (OIDC) claim settings are one-off security plumbing for company deployments, set up on GitHub's site. |
@@ -1229,19 +1229,19 @@ In all: 568 yes, 467 planned, 225 not needed and 744 left to GitHub.
 | List workflow runs for a repository | `GET /repos/{owner}/{repo}/actions/runs` | Yes | Navigator: Repository > owner/name > Actions > Runs |
 | Delete a workflow run | `DELETE /repos/{owner}/{repo}/actions/runs/{run_id}` | Yes | context menu > Delete Run... |
 | Get a workflow run | `GET /repos/{owner}/{repo}/actions/runs/{run_id}` | Yes | Properties (Alt+Enter) on Workflow Run |
-| Get the review history for a workflow run | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/approvals` | Planned | Run sheet. |
+| Get the review history for a workflow run | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/approvals` | Yes | context menu > Approvals |
 | Approve a workflow run for a fork pull request | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/approve` | Yes | context menu > Approve Run from a Fork... |
 | List workflow run artifacts | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts` | Yes | context menu > View Artifacts... |
-| Get a workflow run attempt | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}` | Planned | Run sheet. |
+| Get a workflow run attempt | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}` | Yes | context menu > Earlier Attempts... |
 | List jobs for a workflow run attempt | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs` | Planned | Job sheet. |
-| Download workflow run attempt logs | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/logs` | Planned | Run sheet. |
+| Download workflow run attempt logs | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/logs` | Yes | context menu > Earlier Attempts... |
 | Cancel a workflow run | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/cancel` | Yes | context menu > Cancel Run... (Ctrl+Cancel) |
 | List concurrency groups for a workflow run | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/concurrency_groups` | Planned | Repository > Actions; Organization sheet > Actions; Run, Job, Workflow, Artifact, Cache, Runner, Secret and Variable sheets. |
-| Review custom deployment protection rules for a workflow run | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/deployment_protection_rule` | Planned | Run sheet. |
-| Force cancel a workflow run | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/force-cancel` | Planned | Run sheet. |
+| Review custom deployment protection rules for a workflow run | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/deployment_protection_rule` | Left to GitHub | Only a GitHub App acting as a custom deployment protection rule answers this; a person approves through Review Pending Deployments. |
+| Force cancel a workflow run | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/force-cancel` | Yes | context menu > Force Cancel... |
 | List jobs for a workflow run | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs` | Yes | Properties (Alt+Enter) on Workflow Run |
-| Delete workflow run logs | `DELETE /repos/{owner}/{repo}/actions/runs/{run_id}/logs` | Planned | Run sheet. |
-| Download workflow run logs | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs` | Planned | Run sheet. |
+| Delete workflow run logs | `DELETE /repos/{owner}/{repo}/actions/runs/{run_id}/logs` | Yes | context menu > Delete Logs... |
+| Download workflow run logs | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs` | Yes | context menu > Download Logs... |
 | Get pending deployments for a workflow run | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments` | Yes | context menu > Review Pending Deployments... |
 | Review pending deployments for a workflow run | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments` | Yes | context menu > Review Pending Deployments... |
 | Re-run a workflow | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun` | Yes | context menu > Re-run Workflow |
@@ -1262,7 +1262,7 @@ In all: 568 yes, 467 planned, 225 not needed and 744 left to GitHub.
 | Disable a workflow | `PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/disable` | Yes | context menu > Turn Workflow On or Off... |
 | Create a workflow dispatch event | `POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches` | Yes | Repository > Run Workflow on Branch... (Ctrl+Shift+R) |
 | Enable a workflow | `PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable` | Yes | context menu > Turn Workflow On or Off... |
-| List workflow runs for a workflow | `GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs` | Planned | Run sheet. |
+| List workflow runs for a workflow | `GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs` | Not needed | A workflow's Runs shows the repository's runs filtered to that workflow; one route serves both. |
 | Get workflow usage | `GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/timing` | Planned | Workflow sheet. |
 | List environment secrets | `GET /repos/{owner}/{repo}/environments/{environment_name}/secrets` | Yes | Properties (Alt+Enter) on Environment |
 | Get an environment public key | `GET /repos/{owner}/{repo}/environments/{environment_name}/secrets/public-key` | Planned | Secret and variable sheets (write-only values). |
@@ -2459,7 +2459,7 @@ In all: 568 yes, 467 planned, 225 not needed and 744 left to GitHub.
 
 #### Repositories
 
-74 operations: 51 yes, 16 planned, 5 not needed, 2 left to github.
+74 operations: 52 yes, 15 planned, 5 not needed, 2 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2536,7 +2536,7 @@ In all: 568 yes, 467 planned, 225 not needed and 744 left to GitHub.
 | List public repositories | `GET /repositories` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
 | List repositories for the authenticated user | `GET /user/repos` | Yes | Navigator: Repositories > My Repositories |
 | Create a repository for the authenticated user | `POST /user/repos` | Yes | editor GitHub menu > Create Repository... |
-| List repositories for a user | `GET /users/{username}/repos` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
+| List repositories for a user | `GET /users/{username}/repos` | Yes | Navigator: Person > person > Repositories |
 
 #### Search
 
@@ -2638,7 +2638,7 @@ In all: 568 yes, 467 planned, 225 not needed and 744 left to GitHub.
 
 #### Users
 
-55 operations: 31 yes, 15 planned, 4 not needed, 5 left to github.
+55 operations: 32 yes, 14 planned, 4 not needed, 5 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2690,7 +2690,7 @@ In all: 568 yes, 467 planned, 225 not needed and 744 left to GitHub.
 | Delete attestations by ID | `DELETE /users/{username}/attestations/{attestation_id}` | Left to GitHub | Build provenance (attestations) is read by tools in a release pipeline, not by a person. |
 | List attestations | `GET /users/{username}/attestations/{subject_digest}` | Left to GitHub | Build provenance (attestations) is read by tools in a release pipeline, not by a person. |
 | List followers of a user | `GET /users/{username}/followers` | Planned | Person > You: Follow (section 16.7). |
-| List the people a user follows | `GET /users/{username}/following` | Planned | Person > You: Follow (section 16.7). |
+| List the people a user follows | `GET /users/{username}/following` | Yes | Navigator: Person > person > Following |
 | Check if a user follows another user | `GET /users/{username}/following/{target_user}` | Yes | Properties (Alt+Enter) on Person |
 | List GPG keys for a user | `GET /users/{username}/gpg_keys` | Planned | Account > Keys. |
 | Get contextual information for a user | `GET /users/{username}/hovercard` | Planned | Person sheet; Account > Profile and Status, Keys, Emails; People branch. |

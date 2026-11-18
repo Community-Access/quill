@@ -222,6 +222,14 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a("rerun_failed", "Re-run Failed Jobs Only", _W, "push", "Run only what failed again."),
         _a("rerun", "Re-run Workflow", _W, "push", "Run the whole workflow again."),
         _a("cancel_run", "Cancel Run...", _W, "push", "Stop the run. QUILL asks first."),
+        _a(
+            "rerun_job", "Re-run One Job...", _W, "push", "One job again, with debug logs if asked."
+        ),
+        _a("force_cancel_run", "Force Cancel...", _W, "push", "When Cancel has not stopped it."),
+        _a("download_run_logs", "Download Logs...", help="Every log of the run, as a zip file."),
+        _a("delete_run_logs", "Delete Logs...", _D, "push", "Delete its logs; the run stays."),
+        _a("run_approvals", "Approvals", help="Who approved or rejected its deployments."),
+        _a("run_attempts", "Earlier Attempts...", help="How an earlier attempt went, or its logs."),
         _a("artifacts", "View Artifacts...", help="Files the run produced, to download."),
         _OPEN_WEB,
         _a("check_status", "Combined Check Status", help="Every check on the commit, at once."),

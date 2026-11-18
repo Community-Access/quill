@@ -2941,9 +2941,11 @@ Timeline…, Read as Document…, Summarize Discussion, React…, Labels…,
 Assignees…, Milestone…, Projects…, Edit Title…, Add to or Remove from
 Favorites; Properties…</li>
 <li><strong>run</strong>: Jobs and Logs, What Failed…, Re-run Failed
-Jobs Only, Re-run Workflow, Cancel Run…, View Artifacts…; More: Open on
-GitHub, Combined Check Status, Review Pending Deployments…, Approve Run
-from a Fork…, Delete Run…, Copy Link; Properties…</li>
+Jobs Only, Re-run Workflow, Cancel Run…, Re-run One Job…; More: Force
+Cancel…, Download Logs…, Delete Logs…, Approvals, Earlier Attempts…,
+View Artifacts…, Open on GitHub, Combined Check Status, Review Pending
+Deployments…, Approve Run from a Fork…, Delete Run…, Copy Link;
+Properties…</li>
 <li><strong>workflow</strong>: Runs, Run Workflow on Branch…, Turn
 Workflow On or Off…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>release</strong>: Assets, Edit Release…, Draft Release
@@ -3319,14 +3321,14 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 568 yes, 467 planned, 225 not needed and 744 left to
+<p>In all: 577 yes, 456 planned, 226 not needed and 745 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
 is planned under Repository &gt; Wiki.</p>
 <h3 id="rest-operations-by-category">REST operations, by category</h3>
 <h4 id="actions">Actions</h4>
-<p>208 operations: 95 yes, 53 planned, 16 not needed, 44 left to
+<p>208 operations: 102 yes, 44 planned, 17 not needed, 45 left to
 github.</p>
 <table>
 <thead>
@@ -4167,8 +4169,8 @@ reads the list.</td>
 <tr>
 <td>Re-run a job from a workflow run</td>
 <td><code>POST /repos/{owner}/{repo}/actions/jobs/{job_id}/rerun</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Re-run One Job…</td>
 </tr>
 <tr>
 <td>Download step logs for a workflow run job</td>
@@ -4429,8 +4431,8 @@ repository</td>
 <tr>
 <td>Get the review history for a workflow run</td>
 <td><code>GET /repos/{owner}/{repo}/actions/runs/{run_id}/approvals</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Approvals</td>
 </tr>
 <tr>
 <td>Approve a workflow run for a fork pull request</td>
@@ -4447,8 +4449,8 @@ repository</td>
 <tr>
 <td>Get a workflow run attempt</td>
 <td><code>GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Earlier Attempts…</td>
 </tr>
 <tr>
 <td>List jobs for a workflow run attempt</td>
@@ -4459,8 +4461,8 @@ repository</td>
 <tr>
 <td>Download workflow run attempt logs</td>
 <td><code>GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/logs</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Earlier Attempts…</td>
 </tr>
 <tr>
 <td>Cancel a workflow run</td>
@@ -4478,14 +4480,15 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>Review custom deployment protection rules for a workflow run</td>
 <td><code>POST /repos/{owner}/{repo}/actions/runs/{run_id}/deployment_protection_rule</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App acting as a custom deployment protection rule
+answers this; a person approves through Review Pending Deployments.</td>
 </tr>
 <tr>
 <td>Force cancel a workflow run</td>
 <td><code>POST /repos/{owner}/{repo}/actions/runs/{run_id}/force-cancel</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Force Cancel…</td>
 </tr>
 <tr>
 <td>List jobs for a workflow run</td>
@@ -4496,14 +4499,14 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>Delete workflow run logs</td>
 <td><code>DELETE /repos/{owner}/{repo}/actions/runs/{run_id}/logs</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Logs…</td>
 </tr>
 <tr>
 <td>Download workflow run logs</td>
 <td><code>GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Download Logs…</td>
 </tr>
 <tr>
 <td>Get pending deployments for a workflow run</td>
@@ -4632,8 +4635,9 @@ Workflows</td>
 <tr>
 <td>List workflow runs for a workflow</td>
 <td><code>GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Not needed</td>
+<td>A workflow’s Runs shows the repository’s runs filtered to that
+workflow; one route serves both.</td>
 </tr>
 <tr>
 <td>Get workflow usage</td>
@@ -11132,7 +11136,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="repositories">Repositories</h4>
-<p>74 operations: 51 yes, 16 planned, 5 not needed, 2 left to
+<p>74 operations: 52 yes, 15 planned, 5 not needed, 2 left to
 github.</p>
 <table>
 <thead>
@@ -11611,9 +11615,8 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 <tr>
 <td>List repositories for a user</td>
 <td><code>GET /users/{username}/repos</code></td>
-<td>Planned</td>
-<td>Repository sheet (General, Features, Merging, Webhooks, Autolinks,
-Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; Repositories</td>
 </tr>
 </tbody>
 </table>
@@ -12139,7 +12142,7 @@ slug).</td>
 </tbody>
 </table>
 <h4 id="users">Users</h4>
-<p>55 operations: 31 yes, 15 planned, 4 not needed, 5 left to
+<p>55 operations: 32 yes, 14 planned, 4 not needed, 5 left to
 github.</p>
 <table>
 <thead>
@@ -12452,8 +12455,8 @@ pipeline, not by a person.</td>
 <tr>
 <td>List the people a user follows</td>
 <td><code>GET /users/{username}/following</code></td>
-<td>Planned</td>
-<td>Person &gt; You: Follow (section 16.7).</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; Following</td>
 </tr>
 <tr>
 <td>Check if a user follows another user</td>

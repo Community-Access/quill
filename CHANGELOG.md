@@ -620,6 +620,23 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### More on a workflow run (2026-11-18)
+
+A workflow run's row in the GitHub Workbench has six more commands:
+
+- **Re-run One Job...** picks one job, then re-runs it as it was or with
+  debug logging.
+- **Force Cancel...**, after asking, for a run that Cancel did not stop. Its
+  cleanup steps are skipped, which the question says.
+- **Download Logs...** saves every log of the run as a zip file.
+- **Delete Logs...**, after asking; the run itself is kept.
+- **Approvals** says who approved or rejected each of its deployments, and
+  what they wrote.
+- **Earlier Attempts...**, on a run that was re-run, says how an earlier
+  attempt went or downloads its logs.
+
+Planned GitHub endpoints fall from 467 to 456.
+
 ### Reacting to a release (2026-11-18)
 
 **React...** on a release in the GitHub Workbench adds or removes your

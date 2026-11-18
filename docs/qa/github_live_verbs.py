@@ -969,6 +969,9 @@ VERBS: dict[str, Scenario | str] = {
             "pull_codespace",
         )
     },
+    "rerun_job": "needs Jeff: a finished run on the test repository (it starts Actions minutes)",
+    "force_cancel_run": "needs Jeff: a run stuck cancelling, which cannot be made on purpose",
+    "delete_run_logs": "needs Jeff: a run whose logs may be lost",
     "react_release": "needs Jeff: a release on the test repository; add and remove a rocket",
     "restore_package_version": "needs Jeff: a package version deleted in the last 30 days",
     "autofix_alert": "needs Jeff: a code scanning alert on a repository with CodeQL",
