@@ -78,6 +78,21 @@ class FormsMenuMixin:
                 if item is not None:
                     item.Enable(is_form)
 
+    def _forms_binding(self, command_id: str) -> str | None:
+        """A row's key, leaving out a WordPress-layer chord while WordPress is off.
+
+        The layer's prefix is refused with WordPress off, so a row that showed
+        "Ctrl+Alt+Shift+Grave, F" then advertised a key that did nothing (UX review
+        item 18); the row keeps its menu path and its other keys.
+        """
+        from quill.core.wordpress.menu import LAYER_PREFIX
+
+        binding = self._binding_for(command_id)  # type: ignore[attr-defined]
+        wordpress_on = self._feature_enabled("core.wordpress")  # type: ignore[attr-defined]
+        if binding and binding.startswith(LAYER_PREFIX) and not wordpress_on:
+            return None
+        return binding
+
     def _fill_forms_menu(self, menu: Any, rows: tuple[Any, ...]) -> Any:
         """Put *rows* in *menu*, nesting each :class:`Submenu` as it comes."""
         import wx
@@ -95,7 +110,7 @@ class FormsMenuMixin:
                 command_id,
                 title.replace("&", "").removesuffix("..."),
                 (lambda h=handler: getattr(self._forms(), h)()),
-                self._binding_for(command_id),  # type: ignore[attr-defined]
+                self._forms_binding(command_id),
             )
             menu.Append(ids[command_id], self._menu_label(title, command_id))  # type: ignore[attr-defined]
             self.frame.Bind(  # type: ignore[attr-defined]

@@ -326,13 +326,18 @@ class WorkbenchCommandsMixin:
             event.Skip()
             return
         plain = not event.HasAnyModifiers()
+        on_lists = focused in (self.tree, self.list)
         if code == wx.WXK_ESCAPE and plain:
+            # Escape clears the filter first. From Details it returns to the list, so
+            # leaving that pane never jumps the tree to another node (UX review item 36);
+            # anywhere else it goes Back.
             if self.filter.GetValue():
                 self.clear_filter()
+            elif focused is not None and focused is getattr(self, "details", None):
+                self.list.SetFocus()
             else:
                 self.back()
             return
-        on_lists = focused in (self.tree, self.list)
         if code == wx.WXK_BACK and plain and on_lists:
             self.back()
             return

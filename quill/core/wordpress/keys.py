@@ -31,6 +31,7 @@ __all__ = [
     "LAYER_PREFIX",
     "LEFT_MESSAGE",
     "STARTED_MESSAGE",
+    "TIMED_OUT_MESSAGE",
     "TIMEOUT_SECONDS",
     "Outcome",
     "WordPressKeyLayer",
@@ -50,6 +51,9 @@ ESCAPE = "Escape"
 
 STARTED_MESSAGE = "WordPress keys"
 LEFT_MESSAGE = "Left WordPress keys"
+#: Said when the letter never came, so the next key typed is known to go to the
+#: document (UX review item 17: the timeout used to be silent).
+TIMED_OUT_MESSAGE = "WordPress keys timed out"
 
 
 def unknown_message(key: str) -> str:
@@ -156,6 +160,19 @@ class WordPressKeyLayer:
         """Leave silently (focus left the document, a menu opened)."""
         self._started_at = None
 
+    def timed_out(self) -> bool:
+        """True once, when the prefix was pressed and its letter has not come in time.
+
+        The editor asks this a moment after :attr:`TIMEOUT_SECONDS` and, if True,
+        says :data:`TIMED_OUT_MESSAGE`; a layer left or used meanwhile is False.
+        """
+        if self._started_at is None:
+            return False
+        if self._timeout > 0 and self._clock() - self._started_at > self._timeout:
+            self._started_at = None
+            return True
+        return False
+
     def press(self, key: str, layer: Mapping[str, str]) -> Outcome:
         """The key after the prefix, spelled ``"O"``, ``"Shift+S"`` or :data:`ESCAPE`.
 
@@ -168,10 +185,27 @@ class WordPressKeyLayer:
         if key == ESCAPE:
             return Outcome(message=LEFT_MESSAGE)
         spelled = _canonical(key)
-        command = layer.get(spelled, "")
-        if command:
-            return Outcome(command=command)
-        return Outcome(message=unknown_message(spelled or key))
+        for candidate in (spelled, *_without_prefix_keys(spelled)):
+            command = layer.get(candidate, "")
+            if command:
+                return Outcome(command=command)
+        return Outcome(
+            message=unknown_message(_without_prefix_keys(spelled)[-1] if spelled else key)
+        )
+
+
+def _without_prefix_keys(spelled: str) -> tuple[str, ...]:
+    """*spelled* with the prefix's Ctrl and Alt let go, then with Shift too.
+
+    The prefix is Ctrl+Alt+Shift+Grave, and a letter pressed before those are
+    released arrives as Ctrl+Alt+Shift+O; no layer key uses Ctrl or Alt, so that
+    is read as Shift+O, then O (UX review item 17). Anything else is unchanged.
+    """
+    parts = spelled.split("+")
+    if len(parts) < 3 or "Ctrl" not in parts or "Alt" not in parts:
+        return (spelled,)
+    letter = parts[-1]
+    return (f"Shift+{letter}", letter) if "Shift" in parts else (letter,)
 
 
 def event_key(key_code: int, *, ctrl: bool, alt: bool, shift: bool, escape_code: int = 27) -> str:
