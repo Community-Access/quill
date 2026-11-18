@@ -304,16 +304,19 @@ ADMIN_MAP: tuple[AdminScreen, ...] = (
         "import.php",
         "Tools > Import",
         "posts",
-        "dashboard",
-        "Importers are not in REST; Send a Folder as Drafts, in the editor, sends files.",
+        "workbench",
+        "The Workbench's Tools > WXR Files imports a WXR file, or an export from Blogger, "
+        "Medium, Substack or Squarespace, as drafts; Send a Folder as Drafts, in the editor, "
+        "sends files.",
     ),
     _s(
         "export",
         "export.php",
         "Tools > Export",
         "posts",
-        "dashboard",
-        "The WXR export is not in REST; Download My Writing, in the editor, saves posts.",
+        "workbench",
+        "The Workbench's Tools > WXR Files exports the site as a WXR file on this computer, "
+        "built from what QUILL reads; Download My Writing, in the editor, saves posts.",
     ),
     _s(
         "site_health",

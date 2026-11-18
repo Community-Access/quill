@@ -306,22 +306,12 @@ Ten of the eleven are fixed (checked 2026-11-18; five by #1837, five by the Word
 
 ###### Keys that do not work, or teach the wrong thing
 
-12. Ctrl+Shift+F (Filter Builder) and Ctrl+Alt+Shift+F (Forget a Saved Request) only move to the filter box, and Ctrl+Alt+R (Roles) reloads the list, because the shared frame's key hook (workbench_frame_commands.py) runs before the menu.
-13. In QUILL's Insert menu all seven WordPress rows reuse access letters other Insert rows already hold, and three of four View rows do too, so none can be chosen by its letter.
-14. Tools > WordPress, Tools > Forms and Edit > WordPress have no access letter in either editor; QUILL Lite menu labels also give no Alt route.
 15. Menu letters and layer letters disagree for several rows (Check Before Publishing P against K; Media Library B against M; about eight across Tools and Forms).
 16. Four Gravity rows in the Workbench Item menu have no access letter; context-menu rows and "More" have none at all, and context menus show no chords.
-17. The layer keeps modifiers held from the prefix ("No WordPress command on Ctrl+Alt+Shift+O."), and its four-second timeout is silent, so a late letter types into the document.
-18. Responses shows "(Ctrl+Alt+Shift+Grave, F)" even when WordPress is off and the layer is refused.
 
 ###### Dead ends and lost features
 
-19. Fifteen Tools > WordPress rows now always open the Workbench (workbench_door always returns True), making their older windows unreachable; some of those windows did things the Workbench cannot, such as Fonts install and delete, Synced Patterns block editing, and, until Arrange Items arrived on 2026-11-14, rearranging menu items. Docstrings still say "behind its flag".
 20. Menu items cannot be seen, renamed, moved or removed inside the Workbench; Arrange Items hands off to the editor's Menus window, which has no previews and no Ctrl+Z.
-21. WordPress.com is offered in Connect, then refused with "not available in this build yet".
-22. The wp-admin map still says WXR import and export are "Only in wp-admin" though Tools > WXR Files now does both; there is no Tools node in the site tree.
-23. Start Here still says the Workbench is "early preview, behind a developer setting" and that the Tools windows still work; both are false.
-24. Help and refusal sentences point at commands that moved or never existed ("Menus is in File, WordPress, Running the Site", "choose Trash as the status in Open", "then reconnect").
 
 ###### What is heard, and what is not
 
@@ -339,6 +329,7 @@ Ten of the eleven are fixed (checked 2026-11-18; five by #1837, five by the Word
 33. Consent is uneven: In Short and Ask the Site send text to an AI without asking while Visual Review asks; Make a Listening Version and Publish a Document as a Page upload without a first confirmation.
 34. Shop, event and membership rows mostly name no capability, so they are never greyed and an Editor answers several dialogs before WooCommerce or PMPro refuses; choosers in those dialogs do not start on the current value.
 36. Escape outside the filter box goes Back to another node from any pane, so pressing Escape to leave Details jumps the tree.
+35. QUILL Lite ignores the Form Payments switch, so payment commands run in Lite where QUILL would refuse: Lite ahead of QUILL, which the family rules forbid.
 37. Dozens of editor WordPress commands have no key and no written reason; the rule 8 gate cannot see them because they are not in DEFAULT_KEYMAP.
 
 ## Part 3. Other work

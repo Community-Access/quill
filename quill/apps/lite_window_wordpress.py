@@ -99,6 +99,13 @@ class DocumentWordPressMixin:
         if not any(h.startswith("cmd_wp_") for h in self._wordpress_key_bindings()):
             return False  # the WordPress area is switched off: not our key, Forms' F or no
         self._announce(layer.start())
+
+        def check() -> None:
+            if layer.timed_out():
+                self._announce(keys.TIMED_OUT_MESSAGE)
+
+        if wx.GetApp() is not None:  # no event loop, no timer (a test's fake window)
+            wx.CallLater(int(keys.TIMEOUT_SECONDS * 1000) + 100, check)
         return True
 
     def _wordpress_key_bindings(self) -> dict[str, str]:

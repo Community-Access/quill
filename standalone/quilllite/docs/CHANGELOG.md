@@ -8,6 +8,15 @@ Tools > Customize Features (Ctrl+Alt+F10) has a new area, **Form Payments**,
 off until you turn it on, as QUILL's is. While it is off, Tools > Forms has no
 payment commands. Every profile but Everything leaves it off, and it needs
 Forms on. The profiles now count 25 areas.
+### WordPress: the WordPress key says when it times out (2026-11-18)
+
+- The WordPress key's four-second wait now ends out loud: "WordPress keys
+  timed out", so you know the next key types into the document.
+- Ctrl, Alt and Shift still held from the WordPress key no longer spoil the
+  letter: Ctrl+Alt+Shift+O runs O's command.
+- With the WordPress area switched off, Tools > Forms > Responses no longer
+  shows the WordPress key, which cannot work then.
+- The Connect window offers WordPress.com only once QUILL can sign in to it.
 
 ### WordPress: five ways the Workbench could lose your work, closed (2026-11-18)
 

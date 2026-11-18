@@ -131,10 +131,10 @@ class WordPressCommands(
         return copy, profile
 
     def workbench_door(self, command_id: str) -> bool:
-        """Open the WordPress Workbench for a Tools > WordPress door, behind its flag.
+        """Open the WordPress Workbench for a Tools > WordPress door.
 
-        True when the Workbench opened (the door's own window is skipped); False,
-        without the developer flag, so every door works exactly as before.
+        True when the Workbench opened, so the door's own window is skipped; False
+        for a door whose own window still does something the Workbench cannot.
         """
         from quill.ui.wordpress_workbench_window import open_from_door
 
@@ -418,8 +418,8 @@ class WordPressCommands(
             title="Move to Trash",
             message=(
                 f"Move '{title or 'untitled'}' on {profile.name} to the Trash? It can be brought "
-                f"back: "
-                "choose Trash as the status in Open."
+                "back: in the WordPress Workbench, its Trash lists it, and Restore from Trash "
+                "puts it back."
             ),
             yes_label="Move to Trash",
         ):
