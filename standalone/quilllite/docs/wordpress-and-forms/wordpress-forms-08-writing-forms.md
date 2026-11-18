@@ -245,7 +245,7 @@ reference or donation. Tools > Forms > Form Payments Setup chooses Stripe
 and/or PayPal and starts in test mode. Advanced product, quantity, price,
 total and coupon components can be written in the form source. Actual
 checkout requires a compatible QAF WordPress plugin; see
-[Payments](wordpress-forms-09-forms-on-the-web-and-paper.html#payments-stripe-and-paypal).
+[Payments](wordpress-forms-09-forms-on-the-web-and-paper.html#payments-stripe-paypal-and-square).
 Fields some sites use to make posts or register users remain site-managed.
 
 ## The form outline

@@ -268,8 +268,13 @@ class FormsPublishCommands(
                         "form to a test-configured site before trying checkout."
                     )
                 require_ready(api, remote)
-            remote_config = payment_config(remote) if payment_fields(remote) else None
-            paid = remote_config.providers if remote_config else ()
+            from quill.core.forms.payments import effective_providers, raw_payment_config
+
+            paid = (
+                tuple(effective_providers(raw_payment_config(remote)))
+                if payment_fields(remote)
+                else ()
+            )
             return form, bs.pages_showing(api, link.form_id), bs.plugin_prefix(api), paid
 
         self.with_qaf(
@@ -286,6 +291,8 @@ class FormsPublishCommands(
         "stripe": "Stripe's test card 4242 4242 4242 4242 with any future date and any "
         "three-digit code",
         "paypal": "a PayPal sandbox buyer account",
+        "square": "Square's sandbox card 4111 1111 1111 1111 with any future date, the code 111 "
+        "and any postal code",
     }
 
     def _open_test(

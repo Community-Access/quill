@@ -4,7 +4,7 @@ A form can take money: a registration fee, a membership renewal, an order
 for T-shirts, a donation where the giver picks the amount. You write the
 payment into the form in QUILL Lite, publish it to your WordPress site, and the
 QUILL Accessible Forms plugin (QAF) on the site takes the payment through
-Stripe, PayPal, or both.
+Stripe, PayPal or Square, or several of them.
 
 QUILL Lite never touches the money and never sees a card number or a secret key.
 Its job is to describe what the form charges, to check that the site is ready
@@ -157,26 +157,79 @@ QUILL Lite checks these before it publishes, and Check This Form lists them too:
 Choose **Tools > Forms > Form Payments Setup...**. These settings belong to
 this form; another form can use different ones.
 
-- **Providers:** Stripe; Stripe, then PayPal; PayPal; or PayPal, then Stripe.
-  With two, the person paying chooses, and the first is chosen for them to
-  start with.
+- **Pay with:** who takes the money, separated by commas, in the order the
+  person paying sees them: `stripe`, `paypal` or `square` for that provider's
+  main account on the site, or a named connection such as `stripe:events` or
+  `square:downtown` (see "More than one account" below). With more than one,
+  the person paying chooses, and the first is chosen for them to start with.
+- **Choose by rule:** leave it empty to let the person paying choose. To pick
+  the account from the form's answers instead, see "Choosing the account by
+  rule" below.
 - **Currency:** three letters, such as `usd`, `eur`, `gbp` or `cad`. The
   site must take that currency through every provider you chose. PayPal takes
   fewer currencies than Stripe; Indian rupees, for example, work through
-  Stripe only.
+  Stripe only. Square takes only `usd`, `cad`, `gbp`, `aud`, `jpy` and `eur`,
+  and each Square location only its own country's.
 - **Mode:** Payment, for a fixed or calculated amount, or Donation.
 - **Capture:** Automatic takes the money when the person pays. Manual only
   authorizes it, so you can check the order first and take the money later in
-  the Stripe or PayPal dashboard.
+  the Stripe, PayPal or Square dashboard.
 - **Test mode:** checked while you test. Unchecking it and pressing Save in
   Form asks "Save live payment mode in this form?", and you have to say Use
   Live Mode.
 - **Statement descriptor:** optional. The text on the payer's card statement,
-  5 to 22 plain letters, digits and spaces, with at least one letter, such as
-  `BITS CONFERENCE`. Leave it empty to use the account's own.
+  5 to 22 plain letters, digits and spaces (at most 20 with Square), with at
+  least one letter, such as `BITS CONFERENCE`. Leave it empty to use the
+  account's own.
 
 Press **Save in Form**. Like everything else in a form, this changes only the
 document until you publish.
+
+### More than one account
+
+One site often takes money into different accounts: event fees into one
+Stripe account, donations into another, a chapter's own Square location. The
+site keeps each as a named **connection**, set up in wp-admin under **QAF
+Forms > Payments**, each with its own keys, test or live mode and currency.
+Each has a short name you use in the form: `stripe:events`,
+`stripe:donations`, `square:downtown`. Plain `stripe`, `paypal` or `square`
+means that provider's main connection.
+
+Type the connections in **Pay with**, in order. The person paying hears the
+choices only when there is more than one, as a plain list such as "Pay with:
+Card (Stripe), PayPal, Card (Square)".
+
+### Choosing the account by rule
+
+Instead of letting the person paying choose, the form can choose for them
+from their answers. Type one rule a line in **Choose by rule**: the
+condition, a colon, then the connection. Rules are checked in order and the
+first that fits takes the payment:
+
+```
+amount over 500: stripe:large-gifts
+#fund is building: square:building
+from 2026-12-01 until 2026-12-31: stripe:campaign
+otherwise: stripe:events
+```
+
+- `amount over 500` and `amount under 10` compare the amount the site works
+  out, exactly.
+- `#fund is building` matches a choice question by its id, and the choice by
+  its value or by what the person reads.
+- `currency is cad` matches the form's currency.
+- `from 2026-12-01 until 2026-12-31` is a campaign window, both days
+  included; either end can be left out.
+- `otherwise` is required and comes last: it takes every payment no rule
+  catches, so a payment never has nowhere to go. If a rule's connection is
+  down when someone pays, the site skips that rule and carries on down the
+  list.
+
+Check This Form finds a rule that can never take a payment, and says why: a
+choice the question does not have, a question that is not in the form, an
+amount the form never charges, a window that ends before it starts, or a
+rule an earlier one always catches first. It also finds rules with no
+otherwise. A form uses either Pay with or rules, never both.
 
 ## Checking the site: Verify Payment Setup
 
@@ -195,6 +248,17 @@ paypal: not configured, webhook not ready
   mode. Keys typed in but never checked do not count.
 - **webhook ready** means the provider can tell the site when a payment
   succeeds, fails or is refunded, and the site has verified that.
+
+On a site with named connections the report lists each one too, such as
+"Connection Stripe: Events (stripe:events, test): works", and ends with where
+this form sends the money: "When amount over 500, stripe:large-gifts takes the
+payment. Otherwise, stripe:events takes it." In the WordPress Workbench, the
+site's Properties (`Alt+Shift+Enter`) has a **Payments** page with the same
+list.
+
+Before publishing, every connection the form can send money to must exist on
+the site, be finished, and be in the same test or live mode as the form. A
+form never mixes test and live connections.
 
 Nothing is charged and nothing is changed by this check.
 
@@ -249,7 +313,9 @@ mode is not good enough, because the site's copy is what takes money.
 
 When it opens the page, QUILL Lite tells you what to pay with: "To pay in test
 mode, use Stripe's test card 4242 4242 4242 4242 with any future date and any
-three-digit code, or a PayPal sandbox buyer account. Never a real card."
+three-digit code, or a PayPal sandbox buyer account. Never a real card." For
+Square it is the sandbox card 4111 1111 1111 1111 with any future date, the
+code 111 and any postal code.
 
 A few more Stripe test cards are worth trying: `4000 0000 0000 0002` is
 declined, and `4000 0025 0000 3155` asks for an extra bank check. Stripe
@@ -374,8 +440,9 @@ not yet captured.
 
 ## Refunds
 
-Refunds are made in the Stripe or PayPal dashboard, not in QUILL Lite and not in
-wp-admin. The provider tells the site, the response becomes **partly
+Refunds are made in the Stripe, PayPal or Square dashboard, not in QUILL Lite
+and not in wp-admin, and always in the account that took the payment: the
+response's payment says which connection that was. The provider tells the site, the response becomes **partly
 refunded** or **refunded**, and Refresh Payment Status shows it. A partial
 refund is never shown as a full one, and a refunded payment never goes back
 to paid.
@@ -383,7 +450,7 @@ to paid.
 ## Manual capture
 
 With Capture set to Manual, a payment stops at **authorized, not yet
-captured**. Take the money in the Stripe or PayPal dashboard when you are
+captured**. Take the money in the Stripe, PayPal or Square dashboard when you are
 ready, and the response becomes paid. If you void it, or the authorization
 runs out, it becomes cancelled. How long an authorization lasts depends on
 the provider and the card: about a week for most cards through Stripe, and
@@ -436,7 +503,7 @@ live. Switch them too, or take them down.
 - QUILL Lite never stores, sends or asks for a payment key, and has no setting for
   one. The plugin keeps them on the site, and its screens never show a secret
   again once saved.
-- Card numbers go from the person's browser straight to Stripe or PayPal.
+- Card numbers go from the person's browser straight to Stripe, PayPal or Square.
   They never reach the site or QUILL Lite.
 - Every network step in QUILL Lite asks first and names the site: Verify Payment
   Setup, Publish Form, Test on Site and Refresh Payment Status. Safe Mode

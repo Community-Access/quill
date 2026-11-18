@@ -487,7 +487,7 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         aliases=("payments", "payment", "stripe", "paypal", "donations", "checkout"),
         description=(
             "Configure a published form to take payment -- an order, a donation, a "
-            "registration fee -- through Stripe or PayPal on the WordPress site "
+            "registration fee -- through Stripe, PayPal or Square on the WordPress site "
             "that hosts it, with a compatible QAF payment plugin "
             "(Tools > Forms > Form Payments Setup). QUILL writes "
             "the configuration and reads payment status; cards are entered on "

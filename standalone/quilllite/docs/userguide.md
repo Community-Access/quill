@@ -236,7 +236,7 @@ WordPress and Forms manual.
 
 ### [Chapter 16: Taking payments with your forms](guide/lite-guide-16-taking-payments.html)
 
-A form can take a fee, an order total or a donation through Stripe or PayPal.
+A form can take a fee, an order total or a donation through Stripe, PayPal or Square.
 This chapter goes from what you need before you start to going live:
 test mode, adding a payment field, choosing providers, publishing and what
 each refusal means, what the person paying hears with a screen reader,

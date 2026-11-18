@@ -49,7 +49,7 @@ DESCRIPTIONS: dict[str, str] = {
     "signature": "A signature.",
     "calculation": "A number worked out from other answers.",
     "repeater": "A group of questions they can fill in more than once.",
-    "payment": "Stripe or PayPal checkout on a compatible WordPress site; starts in test mode.",
+    "payment": "Stripe, PayPal or Square checkout on a QAF WordPress site; starts in test mode.",
     "html": "Text or information shown on the form, not a question.",
 }
 

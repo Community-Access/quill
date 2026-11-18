@@ -159,8 +159,9 @@ class WordPressAbilitiesCommands(WordPressApiSiteBase):
             prompt="&Question:",
             multiline=True,
             help_text=(
-                "Ask about your site. The AI you chose in Choose Your AI may ask to use one of "
-                "the abilities you turned on; QUILL asks you before it runs."
+                f"Ask about your site. Your question goes to {_ai_name(ai)}, with the names of "
+                "the abilities you turned on. It may ask "
+                "to use one; QUILL asks you before it runs, and before what it returns is sent."
             ),
         )
         if question is None or not question.strip():
@@ -176,7 +177,7 @@ class WordPressAbilitiesCommands(WordPressApiSiteBase):
                 self.host.parent,
                 self.host.show_modal,
                 title="Run Ability",
-                message=ab.approval_message(profile.name, ability, given),
+                message=ab.approval_message(profile.name, ability, given, _ai_name(ai)),
                 yes_label=f"Run {ability.label}",
             ):
                 self.host.announce(f"Nothing was run on {profile.name}.")
@@ -294,14 +295,6 @@ class WordPressAbilitiesCommands(WordPressApiSiteBase):
 
 def _ai_name(ai: Any) -> str:
     """The connection in use, as Which AI Am I Using says it; else a plain stand-in."""
-    service_of = getattr(ai, "_ai_service", None)
-    service = service_of() if callable(service_of) else None
-    which = getattr(service, "which_ai", None)
-    if callable(which):
-        try:
-            said = str(which() or "").strip()
-        except Exception:  # noqa: BLE001 - only words for a confirm
-            said = ""
-        if said:
-            return f"the AI you chose ({said.rstrip('.')})"
-    return "the AI you chose in Choose Your AI"
+    from quill.ui.wordpress_check_commands import ai_name
+
+    return ai_name(ai)

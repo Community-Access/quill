@@ -197,13 +197,27 @@ class Response:
     payment: dict[str, str] = field(default_factory=dict, repr=False)
 
 
+#: The entry's payment facts QUILL keeps, and nothing else the site sends:
+#: contract version 2 adds the connection that took the money.
+PAYMENT_KEYS = (
+    "provider",
+    "status",
+    "amount",
+    "currency",
+    "receipt_url",
+    "transaction_id",
+    "connection",
+    "connection_name",
+)
+
+
 def response_from_payload(raw: Any) -> Response:
     data = raw if isinstance(raw, dict) else {}
     answers = data.get("fields")
     payment = data.get("payment")
     metadata = {
         key: str(payment[key])
-        for key in ("provider", "status", "amount", "currency", "receipt_url", "transaction_id")
+        for key in PAYMENT_KEYS
         if isinstance(payment, dict)
         and isinstance(payment.get(key), (str, int, float))
         and not isinstance(payment.get(key), bool)
