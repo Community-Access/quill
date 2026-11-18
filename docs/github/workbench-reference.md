@@ -970,7 +970,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 324 yes, 1139 planned, 15 not needed and 526 left to GitHub.
+In all: 326 yes, 1137 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -978,7 +978,7 @@ In all: 324 yes, 1139 planned, 15 not needed and 526 left to GitHub.
 
 #### Actions
 
-208 operations: 42 yes, 159 planned, 7 left to github.
+208 operations: 43 yes, 158 planned, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1129,7 +1129,7 @@ In all: 324 yes, 1139 planned, 15 not needed and 526 left to GitHub.
 | Delete a repository Actions policy | `DELETE /repos/{owner}/{repo}/actions/policies/{policy_id}` | Planned | Repository > Actions; Organization sheet > Actions; Run, Job, Workflow, Artifact, Cache, Runner, Secret and Variable sheets. |
 | Get a repository Actions policy | `GET /repos/{owner}/{repo}/actions/policies/{policy_id}` | Planned | Repository > Actions; Organization sheet > Actions; Run, Job, Workflow, Artifact, Cache, Runner, Secret and Variable sheets. |
 | Update a repository Actions policy | `PUT /repos/{owner}/{repo}/actions/policies/{policy_id}` | Planned | Repository > Actions; Organization sheet > Actions; Run, Job, Workflow, Artifact, Cache, Runner, Secret and Variable sheets. |
-| List self-hosted runners for a repository | `GET /repos/{owner}/{repo}/actions/runners` | Planned | Repository > Actions > Runners |
+| List self-hosted runners for a repository | `GET /repos/{owner}/{repo}/actions/runners` | Yes | Navigator: Repository > owner/name > Actions > Runners |
 | Get runner version end-of-life schedule for a repository | `GET /repos/{owner}/{repo}/actions/runners/deprecations/{version}` | Planned | Repository > Actions > Runners |
 | List runner applications for a repository | `GET /repos/{owner}/{repo}/actions/runners/downloads` | Planned | Repository > Actions > Runners |
 | Create configuration for a just-in-time runner for a repository | `POST /repos/{owner}/{repo}/actions/runners/generate-jitconfig` | Planned | Repository > Actions > Runners |
@@ -1756,12 +1756,12 @@ In all: 324 yes, 1139 planned, 15 not needed and 526 left to GitHub.
 
 #### Dependency graph
 
-5 operations: 5 planned.
+5 operations: 1 yes, 4 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | Get a diff of the dependencies between commits | `GET /repos/{owner}/{repo}/dependency-graph/compare/{basehead}` | Planned | Repository > Security > Dependencies; Export SBOM. |
-| Export a software bill of materials (SBOM) for a repository. | `GET /repos/{owner}/{repo}/dependency-graph/sbom` | Planned | Repository > Security > Dependencies; Export SBOM. |
+| Export a software bill of materials (SBOM) for a repository. | `GET /repos/{owner}/{repo}/dependency-graph/sbom` | Yes | Repository > Export Software Bill of Materials... (Ctrl+Alt+B) |
 | Fetch a software bill of materials (SBOM) for a repository. | `GET /repos/{owner}/{repo}/dependency-graph/sbom/fetch-report/{sbom_uuid}` | Planned | Repository > Security > Dependencies; Export SBOM. |
 | Request generation of a software bill of materials (SBOM) for a repository. | `GET /repos/{owner}/{repo}/dependency-graph/sbom/generate-report` | Planned | Repository > Security > Dependencies; Export SBOM. |
 | Create a snapshot of dependencies for a repository | `POST /repos/{owner}/{repo}/dependency-graph/snapshots` | Planned | Repository > Security > Dependencies; Export SBOM. |

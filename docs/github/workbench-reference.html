@@ -2888,14 +2888,14 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 324 yes, 1139 planned, 15 not needed and 526 left to
+<p>In all: 326 yes, 1137 planned, 15 not needed and 526 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
 is planned under Repository &gt; Wiki.</p>
 <h3 id="rest-operations-by-category">REST operations, by category</h3>
 <h4 id="actions">Actions</h4>
-<p>208 operations: 42 yes, 159 planned, 7 left to github.</p>
+<p>208 operations: 43 yes, 158 planned, 7 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -3852,8 +3852,8 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>List self-hosted runners for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/runners</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Runners</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Actions &gt; Runners</td>
 </tr>
 <tr>
 <td>Get runner version end-of-life schedule for a repository</td>
@@ -7372,7 +7372,7 @@ sheet; Dependabot secrets; dependabot.yml sheet.</td>
 </tbody>
 </table>
 <h4 id="dependency-graph">Dependency graph</h4>
-<p>5 operations: 5 planned.</p>
+<p>5 operations: 1 yes, 4 planned.</p>
 <table>
 <thead>
 <tr>
@@ -7392,8 +7392,8 @@ sheet; Dependabot secrets; dependabot.yml sheet.</td>
 <tr>
 <td>Export a software bill of materials (SBOM) for a repository.</td>
 <td><code>GET /repos/{owner}/{repo}/dependency-graph/sbom</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Dependencies; Export SBOM.</td>
+<td>Yes</td>
+<td>Repository &gt; Export Software Bill of Materials… (Ctrl+Alt+B)</td>
 </tr>
 <tr>
 <td>Fetch a software bill of materials (SBOM) for a repository.</td>

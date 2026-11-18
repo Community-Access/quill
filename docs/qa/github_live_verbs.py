@@ -1075,6 +1075,21 @@ def export_list(run: Any) -> str:
     return ", ".join(sizes) + " rows"
 
 
+def runners_and_sbom(run: Any) -> str:
+    from quill.core.github.runners_sbom import RunnersError, fetch_runners, save_sbom, sbom_name
+
+    runners = fetch_runners(run.api, run.repo)
+    with tempfile.TemporaryDirectory() as folder:
+        target = Path(folder) / sbom_name(run.repo)
+        try:
+            said = save_sbom(run.api, run.repo, target)
+        except RunnersError as exc:
+            said = f"no bill of materials ({exc})"
+        else:
+            _expect(target.stat().st_size > 0, "an empty file")
+    return f"{len(runners)} self-hosted runners; {said}"
+
+
 def check_with_git(run: Any) -> str:
     done = subprocess.run(["git", "--version"], capture_output=True, text=True, check=False)
     _expect(done.returncode == 0, "git is not installed")
@@ -1089,6 +1104,7 @@ FEATURES: dict[str, Scenario | str] = {
     "Viewed files in a pull request review (PRD 22.1)": review_viewed_files,
     "Open Patch in Editor: the whole change as one diff": open_patch,
     "Why Can't I Merge?, for the exact commit": why_cant_merge,
+    "Runners and Export Software Bill of Materials (PRD 14.2)": runners_and_sbom,
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

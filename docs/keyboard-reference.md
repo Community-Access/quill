@@ -1024,6 +1024,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+8 | Saved Searches | `github.workbench.go_saved_searches` |
 | Ctrl+9 | Start Here | `github.workbench.go_start` |
 | Ctrl+A | Select All | `github.workbench.select_all` |
+| Ctrl+Alt+B | Export Software Bill of Materials... | `github.workbench.export_sbom` |
 | Ctrl+Alt+D | Dry Run | `github.workbench.dry_run` |
 | Ctrl+Alt+F | Filter Builder... | `github.workbench.filter_builder` |
 | Ctrl+Alt+I | Import Issues from a Spreadsheet... | `github.workbench.import_issues` |

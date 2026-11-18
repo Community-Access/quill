@@ -33,6 +33,7 @@ _KINDS = {
     "person": "person",
     "notification": "notification",
     "invitation": "invitation",
+    "runner": "runner",
     "issue": "issue",
     "pr": "pull_request",
     "label": "label",

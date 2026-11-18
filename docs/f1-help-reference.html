@@ -6030,6 +6030,9 @@ Enter shows its jobs and logs; Ctrl+Shift+W says what failed;
 Ctrl+Shift+F5 re-runs the failed jobs.</p>
 <p><strong>repository: Workflows.</strong> Workflows: the automations
 defined in the repository.</p>
+<p><strong>repository: Runners.</strong> Runners: the machines this
+repository runs its own jobs on, online or not, busy or idle, with their
+labels. Only administrators can see them.</p>
 <p><strong>repository: Caches.</strong> Caches: files Actions kept
 between runs. Delete removes one.</p>
 <p><strong>repository: Code.</strong> Code: files, branches, commits,
@@ -6355,6 +6358,9 @@ workflow that can be started by hand, on a branch.</p>
 <p><strong>Repository &gt; Repository Actions….</strong> Everything else
 for this repository: star, watch, fork, clone, Codespaces, settings and
 administration, as a list you can run from.</p>
+<p><strong>Repository &gt; Export Software Bill of Materials….</strong>
+Save the repository’s dependency graph as an SPDX file: every package it
+uses.</p>
 <p><strong>Account &gt; Manage GitHub Accounts….</strong> Add, switch,
 sign in again or remove GitHub accounts.</p>
 <p><strong>Account &gt; GitHub API Rate Limit.</strong> How much of the
@@ -6516,6 +6522,8 @@ changed files.</p>
 <p><strong>Set Status.</strong> Report a check you ran yourself: passed,
 failed or still running.</p>
 <p><strong>Delete Tag.</strong> Remove the tag; the commit stays.</p>
+<p><strong>Show Details.</strong> The runner’s state, system and
+labels.</p>
 <p><strong>Accept Invitation.</strong> Join the repository with the
 access offered.</p>
 <p><strong>Decline Invitation.</strong> Say no to it.</p>
@@ -6545,8 +6553,6 @@ description.</p>
 <p><strong>Delete Gist.</strong> Delete the gist.</p>
 <p><strong>Open Discussion Thread.</strong> Read the whole thread.</p>
 <p><strong>Dismiss or Reopen Alert.</strong> Dismiss with a reason.</p>
-<p><strong>Show Details.</strong> The cache’s key, size and last
-use.</p>
 <p><strong>Delete Cache.</strong> Delete this Actions cache.</p>
 <p><strong>Run.</strong> Run the saved search.</p>
 <p><strong>Remove Saved Search.</strong> Forget it on this device.</p>

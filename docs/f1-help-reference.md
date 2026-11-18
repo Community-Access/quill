@@ -2588,6 +2588,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **repository: Workflows.** Workflows: the automations defined in the repository.
 
+**repository: Runners.** Runners: the machines this repository runs its own jobs on, online or not, busy or idle, with their labels. Only administrators can see them.
+
 **repository: Caches.** Caches: files Actions kept between runs. Delete removes one.
 
 **repository: Code.** Code: files, branches, commits, tags, and the upstream of a fork.
@@ -2898,6 +2900,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Repository > Repository Actions....** Everything else for this repository: star, watch, fork, clone, Codespaces, settings and administration, as a list you can run from.
 
+**Repository > Export Software Bill of Materials....** Save the repository's dependency graph as an SPDX file: every package it uses.
+
 **Account > Manage GitHub Accounts....** Add, switch, sign in again or remove GitHub accounts.
 
 **Account > GitHub API Rate Limit.** How much of the GitHub API is left, and when it resets.
@@ -3078,6 +3082,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Delete Tag.** Remove the tag; the commit stays.
 
+**Show Details.** The runner's state, system and labels.
+
 **Accept Invitation.** Join the repository with the access offered.
 
 **Decline Invitation.** Say no to it.
@@ -3121,8 +3127,6 @@ Control coverage: 365 audited sites (365 helped).
 **Open Discussion Thread.** Read the whole thread.
 
 **Dismiss or Reopen Alert.** Dismiss with a reason.
-
-**Show Details.** The cache's key, size and last use.
 
 **Delete Cache.** Delete this Actions cache.
 

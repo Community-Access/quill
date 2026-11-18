@@ -2777,4 +2777,5 @@ list. The comment window in a discussion reply, a line comment and the review
 message is the shared one, as are Hide Whitespace Changes and Choose Commit...
 in the diff window. Invitations, Turn Workflow On or Off..., New Tag...,
 Delete Tag..., Set Your Status..., Set Status... on a commit and the
-timeline's Hide or Show Comment... are the Workbench's too.
+timeline's Hide or Show Comment... are the Workbench's too, as are the
+Runners node and Export Software Bill of Materials...

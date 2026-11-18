@@ -17535,6 +17535,10 @@ with `changeUserStatus`. The timeline's Hide or Show Comment... (`Alt+C`)
 hides the comment at the cursor for a reason or shows it again
 (`comment_moderation.py`; timeline entries carry a comment's `node_id`), and a
 commit's Set Status... posts a commit status (`commit_status.py`).
+Repository > Actions > Runners lists self-hosted runners, read-only
+(`quill/core/github/runners_sbom.py`, explore view `runners`, row type
+`runner`), and Export Software Bill of Materials... (`Ctrl+Alt+B`, verb
+`export_sbom`) saves the dependency graph as an SPDX file.
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

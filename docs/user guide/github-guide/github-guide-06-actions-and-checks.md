@@ -7,8 +7,8 @@ website gives you a page of collapsed boxes and a log thousands of lines long.
 This chapter shows you how to get from "the build failed" to the line that
 broke it in a few keys: the run list, What Failed, jobs and logs, and the
 commands that rerun, cancel, delete and approve runs. It also covers combined
-check status, deployments waiting for approval, artifacts, caches, and the
-names of a repository's secrets.
+check status, deployments waiting for approval, artifacts, caches, self-hosted
+runners, and the names of a repository's secrets.
 
 Reading runs and logs works signed out for a public repository. Anything that
 changes a run needs a signed-in account.
@@ -217,6 +217,33 @@ reads the cache's key, size, branch and when it was last used, newest first.
 A stale or broken cache can make a build fail in strange ways. On a cache's
 row, **Delete Cache...** removes it after asking. Workflows build it again the
 next time they need it.
+
+## Self-hosted runners
+
+A runner is the machine a workflow's jobs run on. GitHub lends its own, and a
+repository can bring its own as well, called self-hosted: a lab machine with a
+graphics card, a Mac for signing, a build server inside a company network.
+When those jobs sit waiting forever, the first question is whether the
+machine is even there.
+
+In the GitHub Workbench, **Repository > Actions > Runners** lists them. Each
+row reads the runner's name, its state and its system, such as "lab-1:
+online, busy, Linux" or "old-mac: offline, macOS". "Online, idle" means it is
+there and waiting for work; "online, busy" means it is running a job now;
+"offline" means GitHub has not heard from it, which is why jobs that ask for
+it never start. The details pane adds the runner's labels, the words a
+workflow's `runs-on:` line asks for, so you can check that the job and the
+machine agree. Enter, or **Open on GitHub**, opens the repository's runner
+settings page.
+
+GitHub shows runners only to the repository's administrators. Anyone else
+hears "GitHub shows owner/name's runners only to its administrators." in the
+node's note, rather than an empty list that looks like there are none. A
+repository that uses only GitHub's own runners lists nothing.
+
+Adding and removing a self-hosted runner is done on the machine itself, with
+GitHub's own setup script, so the Workbench reads runners and does not
+register them.
 
 ## Secret and variable names
 

@@ -2152,6 +2152,13 @@ A spam comment can be folded away from an issue's timeline, and someone who
 runs tests outside GitHub can report the result on the commit with **Set
 Status...**.
 
+When a job sits in the queue and never starts, the question is usually
+whether the machine it asked for is there at all. **Runners** under a
+repository's Actions answers it: "lab-1: online, busy, Linux", or "offline".
+And when a security review asks what the project is built from, **Export
+Software Bill of Materials...** saves every package as an SPDX (Software
+Package Data Exchange) file, the format those reviews read.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

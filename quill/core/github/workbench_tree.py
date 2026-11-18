@@ -294,6 +294,14 @@ _REPOSITORY: tuple[NodeSpec, ...] = (
     _r("runs", "Runs", "actions", loader="items:runs", row_type="run"),
     _r("workflows", "Workflows", "actions", loader="items:workflows", row_type="workflow"),
     _r(
+        "runners",
+        "Runners",
+        "actions",
+        needs=_SIGN_IN,
+        loader="explore:runners",
+        row_type="runner",
+    ),
+    _r(
         "caches",
         "Caches",
         "actions",
@@ -473,7 +481,7 @@ PLANNED = CoverageTable((
     _planned("Dependency graph and SBOM export", "Repository > Security > Dependencies"),
     _planned("Annotated tags", "Repository > Code > Tags > New Tag..."),
     _planned("Transfer a repository", "Repository > Settings > Transfer..."),
-    _planned("Self-hosted runners", "Repository > Actions > Runners"),
+    _planned("Self-hosted runners (registering and removing)", "Repository > Actions > Runners"),
     _planned("Star lists", "Repositories > Starred > each list"),
     _planned("Profile and status", "Account > Profile and Status..."),
 ))

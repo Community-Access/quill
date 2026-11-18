@@ -29483,7 +29483,13 @@ Your Status… (<code>Ctrl+Alt+S</code>,
 (<code>Alt+C</code>) hides the comment at the cursor for a reason or
 shows it again (<code>comment_moderation.py</code>; timeline entries
 carry a comment’s <code>node_id</code>), and a commit’s Set Status…
-posts a commit status (<code>commit_status.py</code>).</p>
+posts a commit status (<code>commit_status.py</code>). Repository &gt;
+Actions &gt; Runners lists self-hosted runners, read-only
+(<code>quill/core/github/runners_sbom.py</code>, explore view
+<code>runners</code>, row type <code>runner</code>), and Export Software
+Bill of Materials… (<code>Ctrl+Alt+B</code>, verb
+<code>export_sbom</code>) saves the dependency graph as an SPDX
+file.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

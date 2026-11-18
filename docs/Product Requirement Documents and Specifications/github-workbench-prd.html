@@ -1775,7 +1775,12 @@ card</td>
 </tr>
 <tr>
 <td>Dependency graph and software bill of materials (SBOM) export</td>
-<td>Not found</td>
+<td><strong>Built 2026-11-18:</strong> Repository &gt; Export Software
+Bill of Materials… (<code>Ctrl+Alt+B</code>, also on Repository Actions)
+saves <code>GET /repos/{owner}/{repo}/dependency-graph/sbom</code> as an
+SPDX (Software Package Data Exchange) JSON file and says the package
+count; a repository without a dependency graph is told where to turn it
+on (<code>quill/core/github/runners_sbom.py</code>)</td>
 <td>Repository &gt; Security &gt; Dependencies</td>
 </tr>
 <tr>
@@ -1800,7 +1805,13 @@ Comment… on the comment at the cursor, for a reason
 </tr>
 <tr>
 <td>Self-hosted runners</td>
-<td>Not found</td>
+<td><strong>Built 2026-11-18,</strong> read-only: Repository &gt;
+Actions &gt; Runners
+(<code>GET /repos/{owner}/{repo}/actions/runners</code>), row type
+<code>runner</code> reading “name: online, busy, Linux” with labels in
+the details; administrators only, and anyone else is told so in the node
+note (<code>quill/core/github/runners_sbom.py</code>). Registering and
+removing a runner stay planned</td>
 <td>Repository &gt; Actions &gt; Runners (read-only)</td>
 </tr>
 <tr>
