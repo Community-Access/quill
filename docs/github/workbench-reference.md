@@ -556,10 +556,13 @@ Everything below is generated from the tables the window is built from. The GitH
 | Issues and Pull Requests (`:search_issues`) | search | Search Issues and Pull Requests: everything GitHub finds for the words and qualifiers in the filter box, such as is:open author:@me. Ctrl+N saves the search. |
 | Code (`:search_code`) | search | Search Code: files whose text matches the filter box. Needs sign-in. |
 | Commits (`:search_commits`) | search | Search Commits: commits whose message matches the filter box. |
+| Security Advisories (`:search_advisories`) | search | Security Advisories: search GitHub's Advisory Database by package, CVE or GHSA id. |
 | Repositories (`:search_repositories`) | search | Search Repositories: repositories whose name or description matches the filter box. |
 | Saved Searches (`:saved_searches`) | search | Saved Searches: searches you kept, on this computer. Enter runs one; Delete removes it. |
 | People (`:people`) | the top | People: who you follow, who follows you, and anybody you look up. |
 | My Profile (`:my_profile`) | people | My Profile: your profile as GitHub shows it, your year of contributions as numbers, and what you pinned. |
+| My Keys (`:my_keys`) | people | My Keys: your SSH keys, GPG keys and SSH signing keys, each with its fingerprint. Ctrl+N adds one. |
+| Sponsorships (`:sponsorships`) | people | Sponsorships: who you sponsor on GitHub Sponsors, and who sponsors you. |
 | People I Follow (`:following`) | people | People I Follow: accounts you follow. Enter opens a person's node. |
 | My Followers (`:followers`) | people | My Followers: accounts that follow you. |
 | My Teams (`:my_teams`) | people | My Teams: every team you belong to, across your organizations. Alt+Enter opens a team's sheet. |
@@ -625,16 +628,23 @@ Everything below is generated from the tables the window is built from. The GitH
 | Community Profile (`repository:community`) | repository, insights | Community Profile: the README, license and guidelines GitHub checks. |
 | Commit Activity (`repository:commit_activity`) | repository, insights | Commit Activity: GitHub's statistics graphs as rows: commits and lines each week, the busiest hours, and each contributor's lines. |
 | Deployments and Environments (`repository:deployments`) | repository, repository | Deployments and Environments: where the code was deployed. |
+| Wiki (`repository:wiki`) | repository, repository | Wiki: whether the wiki is on. Enter opens it on GitHub; Clone Wiki copies its pages to a folder to edit. |
 | GitHub Pages (`repository:pages`) | repository, repository | GitHub Pages: the website built from this repository. |
 | Security (`repository:security`) | repository, repository | Security: alerts about vulnerable code and leaked secrets. |
+| Policy (`repository:security_policy`) | repository, security | Policy: where the security policy is, and whether vulnerabilities can be reported privately. |
 | Alerts (`repository:alerts`) | repository, security | Alerts: open security alerts. Enter reads one. |
 | Dismissed and Resolved Alerts (`repository:alerts_closed`) | repository, security | Dismissed and Resolved Alerts: alerts no longer open. |
+| Advisories (`repository:advisories`) | repository, security | Advisories: this repository's security advisories. New Here reports a vulnerability or drafts an advisory. |
 | Settings (`repository:settings`) | repository, repository | Settings: names of secrets, branch protection and general settings. |
 | Secret and Variable Names (`repository:secrets`) | repository, settings | Secret and Variable Names: the names only; GitHub never shows values. |
 | Branch Protection (`repository:branch_protection`) | repository, settings | Branch Protection: who may change a branch and what a change needs first. Enter opens the setting. |
 | General (`repository:general`) | repository, settings | General: the name, visibility and default branch. Enter opens one. |
+| Webhooks (`repository:webhooks`) | repository, settings | Webhooks: the addresses GitHub tells about events here. Ctrl+N adds one; Recent Deliveries on a webhook says what was sent and redelivers it. |
+| Deploy Keys (`repository:deploy_keys`) | repository, settings | Deploy Keys: SSH keys that let a server clone, pull or push this one repository. Ctrl+N adds one. |
+| Autolinks (`repository:autolinks`) | repository, settings | Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one. |
 | person (`person:person`) | person | A person: their repositories, activity, followers and who they follow. |
 | Profile (`person:person_profile`) | person, person | Profile: who this person is, their year of contributions as numbers, and what they pinned. |
+| Sponsor (`person:person_sponsor`) | person, person | Sponsor: whether this person takes sponsorships, and each tier with its price. |
 | Repositories (`person:person_repositories`) | person, person | Repositories: this person's public repositories. |
 | Activity (`person:person_activity`) | person, person | Activity: what this person did lately on GitHub. |
 | Followers (`person:person_followers`) | person, person | Followers: who follows this person. |
@@ -642,6 +652,8 @@ Everything below is generated from the tables the window is built from. The GitH
 | organization (`organization:organization`) | organization | An organization: its repositories. |
 | Repositories (`organization:organization_repositories`) | organization, organization | Repositories: the organization's repositories you can see. |
 | Teams (`organization:organization_teams`) | organization, organization | Teams: the organization's teams, as GitHub nests them. Alt+Enter opens a team's sheet: its members and maintainers, repositories and roles, child teams and code review assignment. |
+| Packages (`organization:organization_packages`) | organization, organization | Packages: this organization's container images and other packages. Ctrl+N restores one deleted in the last 30 days. |
+| Webhooks (`organization:organization_webhooks`) | organization, organization | Webhooks: the addresses GitHub tells about events across this organization. Ctrl+N adds one. |
 | Templates (`organization:organization_templates`) | organization, organization | Templates: the defaults in the organization's .github repository, which every repository without its own uses. Enter builds or edits one. |
 
 ### The menu bar and its keys
@@ -795,6 +807,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Repository Actions... | Ctrl+Shift+G | Everything else for this repository: star, watch, fork, clone, Codespaces, settings and administration, as a list you can run from. |
 | Export Software Bill of Materials... | Ctrl+Alt+B | Save the repository's dependency graph as an SPDX file: every package it uses. |
 | Transfer Repository... | Ctrl+Alt+T | Move the repository to another person or organization; asks for its name first. |
+| Clone Wiki... | Ctrl+Alt+W | Copy the repository's wiki pages to a folder, to edit them as Markdown. |
 
 #### Account
 
@@ -862,8 +875,6 @@ Keys the window answers that are not menu rows:
 - **branch**: Commits, Compare With Default, Compare Branches..., Compare With Previous, Open in Codespaces..., Copy Name, Delete Branch...; Properties...
 - **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
 - **tag**: Open, Delete Tag..., Read Tag Message, Commit Comments..., Compare With Previous, Compare With Default; More: Copy Link, Open on GitHub; Properties...
-- **package**: Show Details, Open on GitHub, Delete Package Version..., Delete Package..., Copy Link; Properties...
-- **runner**: Show Details, Open on GitHub, Copy Link; Properties...
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally; Properties...
 - **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Pin, Star Lists...; More: Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List...; Properties...
@@ -892,6 +903,16 @@ Keys the window answers that are not menu rows:
 - **repository_set**: Use This Set, Edit Repositories..., Set Filter..., New Set..., Rename Set..., Delete Set...; Properties...
 - **by_name**: Variants and Missing From, Make Them the Same..., Add to Missing..., Find Uses, Rename Everywhere..., Merge Into...; More: Close Everywhere..., Move Open Work To..., Promote to Organization..., Delete Everywhere...; Properties...
 - **fleet**: Open Repository, Open on GitHub, Copy Link; Properties...
+- **runner**: Show Details, Runner Labels..., Remove Runner..., Open on GitHub, Copy Link; Properties...
+- **package**: Show Details, Open on GitHub, Delete Package Version..., Delete Package..., Copy Link; Properties...
+- **key**: Show Details, Delete Key..., Open on GitHub; Properties...
+- **advisory**: Show Details, Publish or Close Advisory..., Request CVE..., Open on GitHub, Copy Link; Properties...
+- **webhook**: Show Details, Ping, Recent Deliveries..., Change Address or Secret..., Delete Webhook..., Open on GitHub; Properties...
+- **deploy_key**: Show Details, Delete Deploy Key..., Open on GitHub; Properties...
+- **autolink**: Show Details, Delete Autolink..., Open on GitHub; Properties...
+- **wiki**: Open on GitHub, Clone Wiki..., Copy Link; Properties...
+- **sponsorship**: Show Details, Cancel Sponsorship..., Open on GitHub; Properties...
+- **sponsor_tier**: Show Details, Sponsor at This Tier..., Open on GitHub; Properties...
 
 ### Workbench Options
 
@@ -915,6 +936,7 @@ Keys the window answers that are not menu rows:
 - **Annotated tag**: A tag that carries a message, who made it and when. Releases usually use one. A lightweight tag is only a name for a commit.
 - **Artifact**: A file a run produced and kept, to download.
 - **Assignee**: The person an issue or pull request is given to.
+- **Autolink**: A prefix, such as BUG-, that GitHub turns into a link to another system.
 - **Branch**: A line of work: a name that follows the newest commit of one set of changes. Under Code, Branches.
 - **Branch protection**: Rules that decide who may change a branch and what a change needs.
 - **Cache**: Files Actions keeps between runs to make them faster. Under Actions, Caches.
@@ -922,6 +944,7 @@ Keys the window answers that are not menu rows:
 - **Codespace**: A computer in the cloud with the repository ready to work on. It can cost money.
 - **Collaborator**: Somebody given access to one repository.
 - **Commit**: A saved change, with a message saying why. Under Code, Commits.
+- **Deploy key**: An SSH key that reaches one repository only, for a server to clone, pull or push.
 - **Deployment**: Code sent to an environment, such as a website.
 - **Discussion**: A conversation in a repository that is not an issue.
 - **Draft**: A pull request that is not ready for review yet.
@@ -934,6 +957,7 @@ Keys the window answers that are not menu rows:
 - **Invitation**: Someone with admin access asking you to join their repository, with the access they chose. It waits under Needs My Attention > Invitations and expires after a week.
 - **Issue**: A note about a bug, an idea or a task, with a conversation under it. Under a repository's Issues.
 - **Job**: One part of a run, on one machine, made of steps.
+- **Key**: An SSH key lets git push and pull without a password; a GPG key or SSH signing key marks your commits Verified. GitHub keeps only the public half.
 - **Label**: A coloured tag on issues and pull requests, such as bug. Under Labels.
 - **Mention**: Your login written with an at sign, such as @you, which notifies you.
 - **Merge**: Bringing a pull request's changes into the branch it targets. Item, Merge, Ctrl+Shift+Enter.
@@ -956,7 +980,9 @@ Keys the window answers that are not menu rows:
 - **Runner**: A machine that runs a workflow's jobs. GitHub provides them, or a repository brings its own, called self-hosted, listed under Actions > Runners.
 - **Saved search**: A search kept on this computer, to run again. Under Saved Searches.
 - **Secret**: A value, such as a password, that workflows use and GitHub never shows.
+- **Security advisory**: A notice that a package has a vulnerability: which versions, how serious, and where it is fixed. Each has a GHSA id, and often a CVE number too.
 - **Security alert**: A warning that code, a dependency or a secret in it is at risk.
+- **Sponsorship**: Money you pay someone through GitHub Sponsors for their open-source work, each month or once, at one of the tiers they offer.
 - **Squash**: Merging a pull request as one single commit, instead of all of its commits.
 - **Star**: A bookmark on a repository, which also shows you like it.
 - **Star list**: One of your own named groups of starred repositories, such as Screen readers. A repository can be on several.
@@ -968,6 +994,8 @@ Keys the window answers that are not menu rows:
 - **Variable**: A value workflows use that is not secret.
 - **Watch**: Asking GitHub to tell you about a repository's activity.
 - **Watch rule**: A rule kept on this computer that tells you when something happens on GitHub: a run finishes, a review arrives, a release or a comment. Under Watches. Not the same as watching a repository on GitHub, which sends notifications.
+- **Webhook**: An address GitHub sends a message to when something happens in a repository, such as a push. Continuous integration and chat bots use them.
+- **Wiki**: A repository's own pages of documentation, kept by GitHub as a git repository of their own, owner/name.wiki.
 - **Workflow**: One automation, defined in a file in the repository. Under Actions, Workflows.
 - **Workflow dispatch**: Starting a workflow by hand, on a branch you choose.
 
@@ -984,7 +1012,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
+In all: 392 yes, 1064 planned, 15 not needed and 533 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -992,7 +1020,7 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 
 #### Actions
 
-208 operations: 43 yes, 158 planned, 7 left to github.
+208 operations: 48 yes, 153 planned, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1145,17 +1173,17 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 | Update a repository Actions policy | `PUT /repos/{owner}/{repo}/actions/policies/{policy_id}` | Planned | Repository > Actions; Organization sheet > Actions; Run, Job, Workflow, Artifact, Cache, Runner, Secret and Variable sheets. |
 | List self-hosted runners for a repository | `GET /repos/{owner}/{repo}/actions/runners` | Yes | Navigator: Repository > owner/name > Actions > Runners |
 | Get runner version end-of-life schedule for a repository | `GET /repos/{owner}/{repo}/actions/runners/deprecations/{version}` | Planned | Repository > Actions > Runners |
-| List runner applications for a repository | `GET /repos/{owner}/{repo}/actions/runners/downloads` | Planned | Repository > Actions > Runners |
+| List runner applications for a repository | `GET /repos/{owner}/{repo}/actions/runners/downloads` | Yes | Navigator: Repository > owner/name > Actions > Runners |
 | Create configuration for a just-in-time runner for a repository | `POST /repos/{owner}/{repo}/actions/runners/generate-jitconfig` | Planned | Repository > Actions > Runners |
-| Create a registration token for a repository | `POST /repos/{owner}/{repo}/actions/runners/registration-token` | Planned | Repository > Actions > Runners |
+| Create a registration token for a repository | `POST /repos/{owner}/{repo}/actions/runners/registration-token` | Yes | Navigator: Repository > owner/name > Actions > Runners |
 | Create a remove token for a repository | `POST /repos/{owner}/{repo}/actions/runners/remove-token` | Planned | Repository > Actions > Runners |
-| Delete a self-hosted runner from a repository | `DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}` | Planned | Repository > Actions > Runners |
+| Delete a self-hosted runner from a repository | `DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}` | Yes | context menu > Remove Runner... |
 | Get a self-hosted runner for a repository | `GET /repos/{owner}/{repo}/actions/runners/{runner_id}` | Yes | Properties (Alt+Enter) on Runner |
 | Remove all custom labels from a self-hosted runner for a repository | `DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels` | Planned | Repository > Actions > Runners |
 | List labels for a self-hosted runner for a repository | `GET /repos/{owner}/{repo}/actions/runners/{runner_id}/labels` | Yes | Item > Properties... (Alt+Enter) |
-| Add custom labels to a self-hosted runner for a repository | `POST /repos/{owner}/{repo}/actions/runners/{runner_id}/labels` | Planned | Repository > Actions > Runners |
+| Add custom labels to a self-hosted runner for a repository | `POST /repos/{owner}/{repo}/actions/runners/{runner_id}/labels` | Yes | context menu > Runner Labels... |
 | Set custom labels for a self-hosted runner for a repository | `PUT /repos/{owner}/{repo}/actions/runners/{runner_id}/labels` | Yes | Properties (Alt+Enter) on Runner: Custom labels |
-| Remove a custom label from a self-hosted runner for a repository | `DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels/{name}` | Planned | Repository > Actions > Runners |
+| Remove a custom label from a self-hosted runner for a repository | `DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels/{name}` | Yes | context menu > Runner Labels... |
 | List workflow runs for a repository | `GET /repos/{owner}/{repo}/actions/runs` | Yes | Navigator: Repository > owner/name > Actions > Runs |
 | Delete a workflow run | `DELETE /repos/{owner}/{repo}/actions/runs/{run_id}` | Yes | context menu > Delete Run... |
 | Get a workflow run | `GET /repos/{owner}/{repo}/actions/runs/{run_id}` | Yes | Properties (Alt+Enter) on Workflow Run |
@@ -1782,13 +1810,13 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 
 #### Deploy keys
 
-4 operations: 2 yes, 2 planned.
+4 operations: 4 yes.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | List deploy keys | `GET /repos/{owner}/{repo}/keys` | Yes | Properties (Alt+Enter) on Repository |
-| Create a deploy key | `POST /repos/{owner}/{repo}/keys` | Planned | Repository sheet > Deploy Keys. |
-| Delete a deploy key | `DELETE /repos/{owner}/{repo}/keys/{key_id}` | Planned | Repository sheet > Deploy Keys. |
+| Create a deploy key | `POST /repos/{owner}/{repo}/keys` | Yes | Navigator: Repository > owner/name > Settings > Deploy Keys |
+| Delete a deploy key | `DELETE /repos/{owner}/{repo}/keys/{key_id}` | Yes | context menu > Delete Deploy Key... |
 | Get a deploy key | `GET /repos/{owner}/{repo}/keys/{key_id}` | Yes | Properties (Alt+Enter) on Deploy Key |
 
 #### Deployments
@@ -2058,7 +2086,7 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 
 #### Organizations
 
-129 operations: 21 yes, 108 planned.
+129 operations: 27 yes, 95 planned, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2085,16 +2113,16 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 | Block a user from an organization | `PUT /orgs/{org}/blocks/{username}` | Planned | Organization sheet > Blocked Users; Person > You: Block. |
 | List failed organization invitations | `GET /orgs/{org}/failed_invitations` | Planned | Organization sheet > Members. |
 | List organization webhooks | `GET /orgs/{org}/hooks` | Yes | Properties (Alt+Enter) on Organization |
-| Create an organization webhook | `POST /orgs/{org}/hooks` | Planned | Organization sheet > Webhooks. |
-| Delete an organization webhook | `DELETE /orgs/{org}/hooks/{hook_id}` | Planned | Organization sheet > Webhooks. |
+| Create an organization webhook | `POST /orgs/{org}/hooks` | Yes | Navigator: Organization > organization > Webhooks |
+| Delete an organization webhook | `DELETE /orgs/{org}/hooks/{hook_id}` | Yes | context menu > Delete Webhook... |
 | Get an organization webhook | `GET /orgs/{org}/hooks/{hook_id}` | Planned | Organization sheet > Webhooks. |
 | Update an organization webhook | `PATCH /orgs/{org}/hooks/{hook_id}` | Planned | Organization sheet > Webhooks. |
 | Get a webhook configuration for an organization | `GET /orgs/{org}/hooks/{hook_id}/config` | Planned | Organization sheet > Webhooks. |
-| Update a webhook configuration for an organization | `PATCH /orgs/{org}/hooks/{hook_id}/config` | Planned | Organization sheet > Webhooks. |
-| List deliveries for an organization webhook | `GET /orgs/{org}/hooks/{hook_id}/deliveries` | Planned | Organization sheet > Webhooks. |
+| Update a webhook configuration for an organization | `PATCH /orgs/{org}/hooks/{hook_id}/config` | Yes | context menu > Change Address or Secret... |
+| List deliveries for an organization webhook | `GET /orgs/{org}/hooks/{hook_id}/deliveries` | Yes | context menu > Recent Deliveries... |
 | Get a webhook delivery for an organization webhook | `GET /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}` | Planned | Organization sheet > Webhooks. |
-| Redeliver a delivery for an organization webhook | `POST /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}/attempts` | Planned | Organization sheet > Webhooks. |
-| Ping an organization webhook | `POST /orgs/{org}/hooks/{hook_id}/pings` | Planned | Organization sheet > Webhooks. |
+| Redeliver a delivery for an organization webhook | `POST /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}/attempts` | Yes | context menu > Recent Deliveries... |
+| Ping an organization webhook | `POST /orgs/{org}/hooks/{hook_id}/pings` | Yes | context menu > Ping |
 | Get route stats by actor | `GET /orgs/{org}/insights/api/route-stats/{actor_type}/{actor_id}` | Planned | Organization > Insights > API usage (read). |
 | Get subject stats | `GET /orgs/{org}/insights/api/subject-stats` | Planned | Organization > Insights > API usage (read). |
 | Get summary stats | `GET /orgs/{org}/insights/api/summary-stats` | Planned | Organization > Insights > API usage (read). |
@@ -2137,13 +2165,13 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 | Remove outside collaborator from an organization | `DELETE /orgs/{org}/outside_collaborators/{username}` | Planned | Organization sheet > Outside Collaborators. |
 | Convert an organization member to outside collaborator | `PUT /orgs/{org}/outside_collaborators/{username}` | Planned | Organization sheet > Outside Collaborators. |
 | List requests to access organization resources with fine-grained personal access tokens | `GET /orgs/{org}/personal-access-token-requests` | Yes | Properties (Alt+Enter) on Organization |
-| Review requests to access organization resources with fine-grained personal access tokens | `POST /orgs/{org}/personal-access-token-requests` | Planned | Organization sheet > Token Requests. |
-| Review a request to access organization resources with a fine-grained personal access token | `POST /orgs/{org}/personal-access-token-requests/{pat_request_id}` | Planned | Organization sheet > Token Requests. |
-| List repositories requested to be accessed by a fine-grained personal access token | `GET /orgs/{org}/personal-access-token-requests/{pat_request_id}/repositories` | Planned | Organization sheet > Token Requests. |
-| List fine-grained personal access tokens with access to organization resources | `GET /orgs/{org}/personal-access-tokens` | Planned | Organization sheet > Token Requests. |
-| Update the access to organization resources via fine-grained personal access tokens | `POST /orgs/{org}/personal-access-tokens` | Planned | Organization sheet > Token Requests. |
-| Update the access a fine-grained personal access token has to organization resources | `POST /orgs/{org}/personal-access-tokens/{pat_id}` | Planned | Organization sheet > Token Requests. |
-| List repositories a fine-grained personal access token has access to | `GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories` | Planned | Organization sheet > Token Requests. |
+| Review requests to access organization resources with fine-grained personal access tokens | `POST /orgs/{org}/personal-access-token-requests` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
+| Review a request to access organization resources with a fine-grained personal access token | `POST /orgs/{org}/personal-access-token-requests/{pat_request_id}` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
+| List repositories requested to be accessed by a fine-grained personal access token | `GET /orgs/{org}/personal-access-token-requests/{pat_request_id}/repositories` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
+| List fine-grained personal access tokens with access to organization resources | `GET /orgs/{org}/personal-access-tokens` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
+| Update the access to organization resources via fine-grained personal access tokens | `POST /orgs/{org}/personal-access-tokens` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
+| Update the access a fine-grained personal access token has to organization resources | `POST /orgs/{org}/personal-access-tokens/{pat_id}` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
+| List repositories a fine-grained personal access token has access to | `GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
 | Get registered app installations for external custom properties | `GET /orgs/{org}/properties/installations` | Planned | Organization sheet > Custom Properties. |
 | Register an app installation for external custom properties | `POST /orgs/{org}/properties/installations` | Planned | Organization sheet > Custom Properties. |
 | Get all external custom properties for a GitHub App installation in an organization | `GET /orgs/{org}/properties/installations/schema` | Planned | Organization sheet > Custom Properties. |
@@ -2194,24 +2222,24 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 
 #### Packages
 
-27 operations: 4 yes, 23 planned.
+27 operations: 10 yes, 17 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | Get list of conflicting packages during Docker migration for organization | `GET /orgs/{org}/docker/conflicts` | Planned | Repositories > My Packages; Package sheet. |
-| List packages for an organization | `GET /orgs/{org}/packages` | Planned | Repositories > My Packages; Package sheet. |
-| Delete a package for an organization | `DELETE /orgs/{org}/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
+| List packages for an organization | `GET /orgs/{org}/packages` | Yes | Navigator: Organization > organization > Packages |
+| Delete a package for an organization | `DELETE /orgs/{org}/packages/{package_type}/{package_name}` | Yes | context menu > Delete Package... |
 | Get a package for an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
-| Restore a package for an organization | `POST /orgs/{org}/packages/{package_type}/{package_name}/restore` | Planned | Repositories > My Packages; Package sheet. |
-| List package versions for a package owned by an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}/versions` | Planned | Repositories > My Packages; Package sheet. |
-| Delete package version for an organization | `DELETE /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Planned | Repositories > My Packages; Package sheet. |
+| Restore a package for an organization | `POST /orgs/{org}/packages/{package_type}/{package_name}/restore` | Yes | Navigator: Organization > organization > Packages |
+| List package versions for a package owned by an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}/versions` | Yes | context menu > Delete Package Version... |
+| Delete package version for an organization | `DELETE /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Yes | context menu > Delete Package Version... |
 | Get a package version for an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Planned | Repositories > My Packages; Package sheet. |
 | Restore package version for an organization | `POST /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Planned | Repositories > My Packages; Package sheet. |
 | Get list of conflicting packages during Docker migration for authenticated-user | `GET /user/docker/conflicts` | Planned | Repositories > My Packages; Package sheet. |
 | List packages for the authenticated user's namespace | `GET /user/packages` | Yes | Navigator: Repositories > My Packages |
 | Delete a package for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}` | Yes | context menu > Delete Package... |
 | Get a package for the authenticated user | `GET /user/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
-| Restore a package for the authenticated user | `POST /user/packages/{package_type}/{package_name}/restore` | Planned | Repositories > My Packages; Package sheet. |
+| Restore a package for the authenticated user | `POST /user/packages/{package_type}/{package_name}/restore` | Yes | Navigator: Repositories > My Packages |
 | List package versions for a package owned by the authenticated user | `GET /user/packages/{package_type}/{package_name}/versions` | Yes | context menu > Delete Package Version... |
 | Delete a package version for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}/versions/{package_version_id}` | Yes | context menu > Delete Package Version... |
 | Get a package version for the authenticated user | `GET /user/packages/{package_type}/{package_name}/versions/{package_version_id}` | Planned | Repositories > My Packages; Package sheet. |
@@ -2389,7 +2417,7 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 
 #### Repositories
 
-74 operations: 39 yes, 35 planned.
+74 operations: 47 yes, 27 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2402,8 +2430,8 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 | Create an attestation | `POST /repos/{owner}/{repo}/attestations` | Planned | Repository > Security > Attestations (read). |
 | List attestations | `GET /repos/{owner}/{repo}/attestations/{subject_digest}` | Planned | Repository > Security > Attestations (read). |
 | Get all autolinks of a repository | `GET /repos/{owner}/{repo}/autolinks` | Yes | Properties (Alt+Enter) on Repository |
-| Create an autolink reference for a repository | `POST /repos/{owner}/{repo}/autolinks` | Planned | Repository sheet > Autolinks. |
-| Delete an autolink reference from a repository | `DELETE /repos/{owner}/{repo}/autolinks/{autolink_id}` | Planned | Repository sheet > Autolinks. |
+| Create an autolink reference for a repository | `POST /repos/{owner}/{repo}/autolinks` | Yes | Navigator: Repository > owner/name > Settings > Autolinks |
+| Delete an autolink reference from a repository | `DELETE /repos/{owner}/{repo}/autolinks/{autolink_id}` | Yes | context menu > Delete Autolink... |
 | Get an autolink reference of a repository | `GET /repos/{owner}/{repo}/autolinks/{autolink_id}` | Planned | Repository sheet > Autolinks. |
 | Disable Dependabot security updates | `DELETE /repos/{owner}/{repo}/automated-security-fixes` | Yes | Properties (Alt+Enter) on Repository: Dependabot security updates |
 | Check if Dependabot security updates are enabled for a repository | `GET /repos/{owner}/{repo}/automated-security-fixes` | Yes | Properties (Alt+Enter) on Repository |
@@ -2418,16 +2446,16 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 | Create a fork | `POST /repos/{owner}/{repo}/forks` | Yes | editor GitHub menu > Fork Repository... |
 | Get the hash algorithm for a repository | `GET /repos/{owner}/{repo}/hash-algorithm` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
 | List repository webhooks | `GET /repos/{owner}/{repo}/hooks` | Yes | Properties (Alt+Enter) on Repository |
-| Create a repository webhook | `POST /repos/{owner}/{repo}/hooks` | Planned | Repository sheet > Webhooks. |
-| Delete a repository webhook | `DELETE /repos/{owner}/{repo}/hooks/{hook_id}` | Planned | Repository sheet > Webhooks. |
+| Create a repository webhook | `POST /repos/{owner}/{repo}/hooks` | Yes | Navigator: Repository > owner/name > Settings > Webhooks |
+| Delete a repository webhook | `DELETE /repos/{owner}/{repo}/hooks/{hook_id}` | Yes | context menu > Delete Webhook... |
 | Get a repository webhook | `GET /repos/{owner}/{repo}/hooks/{hook_id}` | Yes | Properties (Alt+Enter) on Webhook |
 | Update a repository webhook | `PATCH /repos/{owner}/{repo}/hooks/{hook_id}` | Yes | Properties (Alt+Enter) on Webhook: Active |
 | Get a webhook configuration for a repository | `GET /repos/{owner}/{repo}/hooks/{hook_id}/config` | Planned | Repository sheet > Webhooks. |
-| Update a webhook configuration for a repository | `PATCH /repos/{owner}/{repo}/hooks/{hook_id}/config` | Planned | Repository sheet > Webhooks. |
-| List deliveries for a repository webhook | `GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries` | Planned | Repository sheet > Webhooks. |
+| Update a webhook configuration for a repository | `PATCH /repos/{owner}/{repo}/hooks/{hook_id}/config` | Yes | context menu > Change Address or Secret... |
+| List deliveries for a repository webhook | `GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries` | Yes | context menu > Recent Deliveries... |
 | Get a delivery for a repository webhook | `GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}` | Planned | Repository sheet > Webhooks. |
-| Redeliver a delivery for a repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts` | Planned | Repository sheet > Webhooks. |
-| Ping a repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/pings` | Planned | Repository sheet > Webhooks. |
+| Redeliver a delivery for a repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts` | Yes | context menu > Recent Deliveries... |
+| Ping a repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/pings` | Yes | context menu > Ping |
 | Test the push repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/tests` | Planned | Repository sheet > Webhooks. |
 | Disable immutable releases | `DELETE /repos/{owner}/{repo}/immutable-releases` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
 | Check if immutable releases are enabled for a repository | `GET /repos/{owner}/{repo}/immutable-releases` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
@@ -2508,23 +2536,23 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 
 #### Security advisories
 
-14 operations: 14 planned.
+14 operations: 6 yes, 8 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
-| List global security advisories | `GET /advisories` | Planned | Repository > Security > Advisories; Advisory sheet. |
+| List global security advisories | `GET /advisories` | Yes | Navigator: Search > Security Advisories |
 | Get a global security advisory | `GET /advisories/{ghsa_id}` | Planned | Repository > Security > Advisories; Advisory sheet. |
 | List repository security advisories for an organization | `GET /orgs/{org}/security-advisories` | Planned | Repository > Security > Advisories; Advisory sheet. |
-| List repository security advisories | `GET /repos/{owner}/{repo}/security-advisories` | Planned | Repository > Security > Advisories; Advisory sheet. |
-| Create a repository security advisory | `POST /repos/{owner}/{repo}/security-advisories` | Planned | Repository > Security > Advisories; Advisory sheet. |
-| Privately report a security vulnerability | `POST /repos/{owner}/{repo}/security-advisories/reports` | Planned | Repository > Security > Advisories; Advisory sheet. |
+| List repository security advisories | `GET /repos/{owner}/{repo}/security-advisories` | Yes | Navigator: Repository > owner/name > Security > Advisories |
+| Create a repository security advisory | `POST /repos/{owner}/{repo}/security-advisories` | Yes | Navigator: Repository > owner/name > Security > Advisories |
+| Privately report a security vulnerability | `POST /repos/{owner}/{repo}/security-advisories/reports` | Yes | Navigator: Repository > owner/name > Security > Advisories |
 | Get a repository security advisory | `GET /repos/{owner}/{repo}/security-advisories/{ghsa_id}` | Planned | Repository > Security > Advisories; Advisory sheet. |
-| Update a repository security advisory | `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id}` | Planned | Repository > Security > Advisories; Advisory sheet. |
+| Update a repository security advisory | `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id}` | Yes | context menu > Publish or Close Advisory... |
 | List repository security advisory comments | `GET /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments` | Planned | Repository > Security > Advisories; Advisory sheet. |
 | Create a repository advisory comment | `POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments` | Planned | Repository > Security > Advisories; Advisory sheet. |
 | Get a repository advisory comment | `GET /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments/{comment_id}` | Planned | Repository > Security > Advisories; Advisory sheet. |
 | Update a repository advisory comment | `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments/{comment_id}` | Planned | Repository > Security > Advisories; Advisory sheet. |
-| Request a CVE for a repository security advisory | `POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/cve` | Planned | Repository > Security > Advisories; Advisory sheet. |
+| Request a CVE for a repository security advisory | `POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/cve` | Yes | context menu > Request CVE... |
 | Create a temporary private fork | `POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/forks` | Planned | Repository > Security > Advisories; Advisory sheet. |
 
 #### Teams
@@ -2568,7 +2596,7 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 
 #### Users
 
-55 operations: 10 yes, 45 planned.
+55 operations: 19 yes, 36 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2587,9 +2615,9 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 | Unfollow a user | `DELETE /user/following/{username}` | Yes | context menu > Follow or Unfollow |
 | Check if a person is followed by the authenticated user | `GET /user/following/{username}` | Yes | context menu > Follow or Unfollow |
 | Follow a user | `PUT /user/following/{username}` | Yes | context menu > Follow or Unfollow |
-| List GPG keys for the authenticated user | `GET /user/gpg_keys` | Planned | Account > Keys. |
-| Create a GPG key for the authenticated user | `POST /user/gpg_keys` | Planned | Account > Keys. |
-| Delete a GPG key for the authenticated user | `DELETE /user/gpg_keys/{gpg_key_id}` | Planned | Account > Keys. |
+| List GPG keys for the authenticated user | `GET /user/gpg_keys` | Yes | Navigator: People > My Keys |
+| Create a GPG key for the authenticated user | `POST /user/gpg_keys` | Yes | Navigator: People > My Keys |
+| Delete a GPG key for the authenticated user | `DELETE /user/gpg_keys/{gpg_key_id}` | Yes | context menu > Delete Key... |
 | Get a GPG key for the authenticated user | `GET /user/gpg_keys/{gpg_key_id}` | Planned | Account > Keys. |
 | List issue fields | `GET /user/issue-fields` | Planned | Account > Issue Fields (fields for your own repositories) |
 | Create an issue field | `POST /user/issue-fields` | Planned | Account > Issue Fields (fields for your own repositories) |
@@ -2599,17 +2627,17 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 | Create an issue type | `POST /user/issue-types` | Planned | Account > Issue Types (types for your own repositories) |
 | Delete an issue type | `DELETE /user/issue-types/{issue_type_id}` | Planned | Account > Issue Types (types for your own repositories) |
 | Update an issue type | `PUT /user/issue-types/{issue_type_id}` | Planned | Account > Issue Types (types for your own repositories) |
-| List public SSH keys for the authenticated user | `GET /user/keys` | Planned | Account > Keys. |
-| Create a public SSH key for the authenticated user | `POST /user/keys` | Planned | Account > Keys. |
-| Delete a public SSH key for the authenticated user | `DELETE /user/keys/{key_id}` | Planned | Account > Keys. |
+| List public SSH keys for the authenticated user | `GET /user/keys` | Yes | Navigator: People > My Keys |
+| Create a public SSH key for the authenticated user | `POST /user/keys` | Yes | Navigator: People > My Keys |
+| Delete a public SSH key for the authenticated user | `DELETE /user/keys/{key_id}` | Yes | context menu > Delete Key... |
 | Get a public SSH key for the authenticated user | `GET /user/keys/{key_id}` | Planned | Account > Keys. |
 | List public email addresses for the authenticated user | `GET /user/public_emails` | Planned | Account > Profile and Status: Emails. |
 | Delete social accounts for the authenticated user | `DELETE /user/social_accounts` | Planned | Account > Profile and Status: Social accounts. |
 | List social accounts for the authenticated user | `GET /user/social_accounts` | Planned | Account > Profile and Status: Social accounts. |
 | Add social accounts for the authenticated user | `POST /user/social_accounts` | Planned | Account > Profile and Status: Social accounts. |
-| List SSH signing keys for the authenticated user | `GET /user/ssh_signing_keys` | Planned | Account > Keys. |
-| Create a SSH signing key for the authenticated user | `POST /user/ssh_signing_keys` | Planned | Account > Keys. |
-| Delete an SSH signing key for the authenticated user | `DELETE /user/ssh_signing_keys/{ssh_signing_key_id}` | Planned | Account > Keys. |
+| List SSH signing keys for the authenticated user | `GET /user/ssh_signing_keys` | Yes | Navigator: People > My Keys |
+| Create a SSH signing key for the authenticated user | `POST /user/ssh_signing_keys` | Yes | Navigator: People > My Keys |
+| Delete an SSH signing key for the authenticated user | `DELETE /user/ssh_signing_keys/{ssh_signing_key_id}` | Yes | context menu > Delete Key... |
 | Get an SSH signing key for the authenticated user | `GET /user/ssh_signing_keys/{ssh_signing_key_id}` | Planned | Account > Keys. |
 | Get a user using their ID | `GET /user/{account_id}` | Planned | Person sheet; Account > Profile and Status, Keys, Emails; People branch. |
 | List users | `GET /users` | Planned | Person sheet; Account > Profile and Status, Keys, Emails; People branch. |
@@ -3031,14 +3059,14 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 
 #### GraphQL: Sponsors
 
-9 mutations: 9 planned.
+9 mutations: 2 yes, 7 planned.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
-| `cancelSponsorship` | Planned | People > person > Sponsor; Account > Sponsors |
+| `cancelSponsorship` | Yes | context menu > Cancel Sponsorship... |
 | `createSponsorsListing` | Planned | People > person > Sponsor; Account > Sponsors |
 | `createSponsorsTier` | Planned | People > person > Sponsor; Account > Sponsors |
-| `createSponsorship` | Planned | People > person > Sponsor; Account > Sponsors |
+| `createSponsorship` | Yes | context menu > Sponsor at This Tier... |
 | `createSponsorships` | Planned | People > person > Sponsor; Account > Sponsors |
 | `publishSponsorsTier` | Planned | People > person > Sponsor; Account > Sponsors |
 | `retireSponsorsTier` | Planned | People > person > Sponsor; Account > Sponsors |

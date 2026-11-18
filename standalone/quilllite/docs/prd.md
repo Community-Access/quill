@@ -2779,5 +2779,9 @@ in the diff window. Invitations, Turn Workflow On or Off..., New Tag...,
 Delete Tag..., Set Your Status..., Set Status... on a commit and the
 timeline's Hide or Show Comment... are the Workbench's too, as are the
 Runners node, Export Software Bill of Materials..., annotated tags, Read
-Tag Message, Transfer Repository..., Commit Activity, My Packages, Star Lists, profiles, Unlink Branch... and Not a
-Duplicate...
+Tag Message, Transfer Repository..., Commit Activity, My Packages, Star Lists, profiles, Unlink Branch..., Not a
+Duplicate..., and the security policy, advisories and Advisory Database
+search, My Keys, and the Webhooks, Deploy Keys and Autolinks
+settings, an organization's webhooks too, GitHub Sponsors, and the
+Wiki node with Clone Wiki..., an organization's
+packages, and runner administration

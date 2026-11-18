@@ -32,6 +32,40 @@ NODE_HELP: dict[str, str] = {
         "Runners: the machines this repository runs its own jobs on, online or not, busy "
         "or idle, with their labels. Only administrators can see them."
     ),
+    "repository:wiki": (
+        "Wiki: whether the wiki is on. Enter opens it on GitHub; Clone Wiki copies its "
+        "pages to a folder to edit."
+    ),
+    "repository:webhooks": (
+        "Webhooks: the addresses GitHub tells about events here. Ctrl+N adds one; Recent "
+        "Deliveries on a webhook says what was sent and redelivers it."
+    ),
+    "organization:organization_packages": (
+        "Packages: this organization's container images and other packages. Ctrl+N "
+        "restores one deleted in the last 30 days."
+    ),
+    "organization:organization_webhooks": (
+        "Webhooks: the addresses GitHub tells about events across this organization. "
+        "Ctrl+N adds one."
+    ),
+    "repository:deploy_keys": (
+        "Deploy Keys: SSH keys that let a server clone, pull or push this one repository. "
+        "Ctrl+N adds one."
+    ),
+    "repository:autolinks": (
+        "Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one."
+    ),
+    "repository:security_policy": (
+        "Policy: where the security policy is, and whether vulnerabilities can be reported "
+        "privately."
+    ),
+    "repository:advisories": (
+        "Advisories: this repository's security advisories. New Here reports a vulnerability "
+        "or drafts an advisory."
+    ),
+    ":search_advisories": (
+        "Security Advisories: search GitHub's Advisory Database by package, CVE or GHSA id."
+    ),
     ":star_lists": (
         "Star Lists: every repository on each of your star lists, the list's name first. "
         "Ctrl+N makes a list; Star Lists on any repository chooses its lists."
@@ -219,6 +253,14 @@ NODE_HELP: dict[str, str] = {
         "Profile: who this person is, their year of contributions as numbers, and what they pinned."
     ),
     "person:person_repositories": "Repositories: this person's public repositories.",
+    ":sponsorships": ("Sponsorships: who you sponsor on GitHub Sponsors, and who sponsors you."),
+    "person:person_sponsor": (
+        "Sponsor: whether this person takes sponsorships, and each tier with its price."
+    ),
+    ":my_keys": (
+        "My Keys: your SSH keys, GPG keys and SSH signing keys, each with its fingerprint. "
+        "Ctrl+N adds one."
+    ),
     ":my_profile": (
         "My Profile: your profile as GitHub shows it, your year of contributions as numbers, "
         "and what you pinned."

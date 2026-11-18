@@ -2504,6 +2504,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Commits.** Search Commits: commits whose message matches the filter box.
 
+**Security Advisories.** Security Advisories: search GitHub's Advisory Database by package, CVE or GHSA id.
+
 **Repositories.** Search Repositories: repositories whose name or description matches the filter box.
 
 **Saved Searches.** Saved Searches: searches you kept, on this computer. Enter runs one; Delete removes it.
@@ -2511,6 +2513,10 @@ Control coverage: 365 audited sites (365 helped).
 **People.** People: who you follow, who follows you, and anybody you look up.
 
 **My Profile.** My Profile: your profile as GitHub shows it, your year of contributions as numbers, and what you pinned.
+
+**My Keys.** My Keys: your SSH keys, GPG keys and SSH signing keys, each with its fingerprint. Ctrl+N adds one.
+
+**Sponsorships.** Sponsorships: who you sponsor on GitHub Sponsors, and who sponsors you.
 
 **People I Follow.** People I Follow: accounts you follow. Enter opens a person's node.
 
@@ -2642,13 +2648,19 @@ Control coverage: 365 audited sites (365 helped).
 
 **repository: Deployments and Environments.** Deployments and Environments: where the code was deployed.
 
+**repository: Wiki.** Wiki: whether the wiki is on. Enter opens it on GitHub; Clone Wiki copies its pages to a folder to edit.
+
 **repository: GitHub Pages.** GitHub Pages: the website built from this repository.
 
 **repository: Security.** Security: alerts about vulnerable code and leaked secrets.
 
+**repository: Policy.** Policy: where the security policy is, and whether vulnerabilities can be reported privately.
+
 **repository: Alerts.** Alerts: open security alerts. Enter reads one.
 
 **repository: Dismissed and Resolved Alerts.** Dismissed and Resolved Alerts: alerts no longer open.
+
+**repository: Advisories.** Advisories: this repository's security advisories. New Here reports a vulnerability or drafts an advisory.
 
 **repository: Settings.** Settings: names of secrets, branch protection and general settings.
 
@@ -2658,9 +2670,17 @@ Control coverage: 365 audited sites (365 helped).
 
 **repository: General.** General: the name, visibility and default branch. Enter opens one.
 
+**repository: Webhooks.** Webhooks: the addresses GitHub tells about events here. Ctrl+N adds one; Recent Deliveries on a webhook says what was sent and redelivers it.
+
+**repository: Deploy Keys.** Deploy Keys: SSH keys that let a server clone, pull or push this one repository. Ctrl+N adds one.
+
+**repository: Autolinks.** Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one.
+
 **person: person.** A person: their repositories, activity, followers and who they follow.
 
 **person: Profile.** Profile: who this person is, their year of contributions as numbers, and what they pinned.
+
+**person: Sponsor.** Sponsor: whether this person takes sponsorships, and each tier with its price.
 
 **person: Repositories.** Repositories: this person's public repositories.
 
@@ -2675,6 +2695,10 @@ Control coverage: 365 audited sites (365 helped).
 **organization: Repositories.** Repositories: the organization's repositories you can see.
 
 **organization: Teams.** Teams: the organization's teams, as GitHub nests them. Alt+Enter opens a team's sheet: its members and maintainers, repositories and roles, child teams and code review assignment.
+
+**organization: Packages.** Packages: this organization's container images and other packages. Ctrl+N restores one deleted in the last 30 days.
+
+**organization: Webhooks.** Webhooks: the addresses GitHub tells about events across this organization. Ctrl+N adds one.
 
 **organization: Templates.** Templates: the defaults in the organization's .github repository, which every repository without its own uses. Enter builds or edits one.
 
@@ -2914,6 +2938,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Repository > Transfer Repository....** Move the repository to another person or organization; asks for its name first.
 
+**Repository > Clone Wiki....** Copy the repository's wiki pages to a folder, to edit them as Markdown.
+
 **Account > Manage GitHub Accounts....** Add, switch, sign in again or remove GitHub accounts.
 
 **Account > GitHub API Rate Limit.** How much of the GitHub API is left, and when it resets.
@@ -3100,12 +3126,6 @@ Control coverage: 365 audited sites (365 helped).
 
 **Read Tag Message.** Who made the tag, when, and its message.
 
-**Show Details.** The package's type, visibility and repository.
-
-**Delete Package Version.** Choose a version, newest first with its tags, and delete it after asking.
-
-**Delete Package.** Delete the package and every version, after you type its name.
-
 **Accept Invitation.** Join the repository with the access offered.
 
 **Decline Invitation.** Say no to it.
@@ -3153,6 +3173,8 @@ Control coverage: 365 audited sites (365 helped).
 **Open Discussion Thread.** Read the whole thread.
 
 **Dismiss or Reopen Alert.** Dismiss with a reason.
+
+**Show Details.** The cache's key, size and last use.
 
 **Delete Cache.** Delete this Actions cache.
 
@@ -3237,6 +3259,38 @@ Control coverage: 365 audited sites (365 helped).
 **Delete Everywhere.** Delete the label, or remove the topic, in every repository, after the preview.
 
 **Open Repository.** Select the repository's node in the tree.
+
+**Runner Labels.** Add a label, or take one away.
+
+**Remove Runner.** GitHub forgets it; asks first.
+
+**Delete Package Version.** Choose a version, newest first with its tags, and delete it after asking.
+
+**Delete Package.** Delete the package and every version, after you type its name.
+
+**Delete Key.** Remove it; asks first.
+
+**Publish or Close Advisory.** Change its state.
+
+**Request CVE.** Ask GitHub for a CVE number.
+
+**Ping.** Send it a test message.
+
+**Recent Deliveries.** Read and redeliver.
+
+**Change Address or Secret.** The secret is write-only.
+
+**Delete Webhook.** Stop sending it anything.
+
+**Delete Deploy Key.** Remove it; asks first.
+
+**Delete Autolink.** Remove it; asks first.
+
+**Clone Wiki.** Copy its pages to a folder, to edit them.
+
+**Cancel Sponsorship.** Stop it; asks first.
+
+**Sponsor at This Tier.** Pay; you type their login.
 
 ### Every Workbench option
 

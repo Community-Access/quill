@@ -20,6 +20,16 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.github.items_provider import GitHubItem
+from quill.ui.github_workbench_account_keys import (
+    ACCOUNT_KEY_REASONS,
+    ACCOUNT_KEY_VERBS,
+    GitHubWorkbenchAccountKeysMixin,
+)
+from quill.ui.github_workbench_advisories import (
+    ADVISORY_REASONS,
+    ADVISORY_VERBS,
+    GitHubWorkbenchAdvisoriesMixin,
+)
 from quill.ui.github_workbench_dry_run import (
     DRY_RUN_REASONS,
     DRY_RUN_VERBS,
@@ -51,6 +61,21 @@ from quill.ui.github_workbench_pull_tools import (
     PULL_TOOL_VERBS,
     GitHubWorkbenchPullToolsMixin,
 )
+from quill.ui.github_workbench_runner_admin import (
+    RUNNER_ADMIN_REASONS,
+    RUNNER_ADMIN_VERBS,
+    GitHubWorkbenchRunnerAdminMixin,
+)
+from quill.ui.github_workbench_settings_lists import (
+    SETTINGS_LIST_REASONS,
+    SETTINGS_LIST_VERBS,
+    GitHubWorkbenchSettingsListsMixin,
+)
+from quill.ui.github_workbench_sponsors import (
+    SPONSOR_REASONS,
+    SPONSOR_VERBS,
+    GitHubWorkbenchSponsorsMixin,
+)
 from quill.ui.github_workbench_star_lists import (
     STAR_LIST_REASONS,
     STAR_LIST_VERBS,
@@ -81,6 +106,11 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **TIER2_VERBS,
     **PACKAGE_VERBS,
     **STAR_LIST_VERBS,
+    **ADVISORY_VERBS,
+    **ACCOUNT_KEY_VERBS,
+    **SETTINGS_LIST_VERBS,
+    **SPONSOR_VERBS,
+    **RUNNER_ADMIN_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -95,6 +125,11 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **TIER2_REASONS,
     **PACKAGE_REASONS,
     **STAR_LIST_REASONS,
+    **ADVISORY_REASONS,
+    **ACCOUNT_KEY_REASONS,
+    **SETTINGS_LIST_REASONS,
+    **SPONSOR_REASONS,
+    **RUNNER_ADMIN_REASONS,
 }
 
 
@@ -107,6 +142,11 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchTier2Mixin,
     GitHubWorkbenchPackagesMixin,
     GitHubWorkbenchStarListsMixin,
+    GitHubWorkbenchAdvisoriesMixin,
+    GitHubWorkbenchAccountKeysMixin,
+    GitHubWorkbenchSettingsListsMixin,
+    GitHubWorkbenchSponsorsMixin,
+    GitHubWorkbenchRunnerAdminMixin,
 ):
     items: Any
     frame: Any

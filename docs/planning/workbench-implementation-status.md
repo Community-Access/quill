@@ -187,6 +187,33 @@ Star Lists... and Rename or Delete Star List... (`star_lists.py`,
 **2026-11-18, issue links.** Unlink Branch... and Not a Duplicate... on an
 issue (`issue_links.py`).
 
+**2026-11-18, security policy and advisories (GX11).** Security > Policy and
+Advisories, New Here to report or draft, Publish or Close Advisory..., Request
+CVE..., and Search > Security Advisories (`security_advisories.py`,
+`github_workbench_advisories.py`).
+
+**2026-11-18, keys.** People > My Keys: SSH, GPG and signing keys, add and
+delete (`account_keys.py`, `github_workbench_account_keys.py`).
+
+**2026-11-18, settings lists.** Settings > Webhooks (ping, deliveries,
+redeliver, address and secret), Deploy Keys and Autolinks
+(`repo_settings_lists.py`, `github_workbench_settings_lists.py`). An
+organization's webhooks the same way (Organizations > org > Webhooks).
+
+**2026-11-18, sponsors.** People > Sponsorships and each person's Sponsor,
+Sponsor at This Tier... and Cancel Sponsorship... (`sponsors.py`,
+`github_workbench_sponsors.py`).
+
+**2026-11-18, the wiki.** Repository > Wiki and Clone Wiki... (`wiki.py`);
+listing pages in the Workbench remains, as GitHub has no wiki API.
+
+**2026-11-18, an organization's packages.** Organizations > org > Packages,
+and Ctrl+N in a packages list restores a deleted package (`packages.py`).
+
+**2026-11-18, runner administration.** New Runner (setup commands to the
+clipboard), Runner Labels and Remove Runner (`runner_admin.py`,
+`github_workbench_runner_admin.py`).
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench
@@ -215,6 +242,36 @@ Compare Accounts and the rest of PRD section 22), the remaining PRD section
 14 features, Repository Sets in the UI, and manual NVDA, JAWS, Narrator,
 braille, scaling and live-account acceptance. The engineering checklist is
 in the [GitHub Workbench roadmap](./github-roadmap.md).
+
+### What is left, as of 2026-11-18
+
+The night of 2026-11-17 to 18 finished PRD sections 14.1 and 14.2 and
+everything in 14.3 that GitHub's API allows to a person's sign-in. What
+remains, in four kinds:
+
+- **Needs Jeff.** `python docs/qa/github-live-run.py --create` on Windows
+  against the test repositories, signed in after 2026-11-18 so the sign-in
+  carries `user`, `read:packages`, `delete:packages`, the three key
+  permissions and `admin:org_hook`; and the seventeen screen-reader checks in
+  `docs/qa/screen-reader-checks-2026-10.md`. The live run marks every write
+  that would spend money or change his own account "needs Jeff" rather than
+  doing it.
+- **GitHub offers no API.** Wiki pages (the Wiki node clones them instead),
+  making or editing saved replies, creating a token, and an organization's
+  fine-grained token requests and grants (GitHub Apps only). These are
+  `out_of_scope` or narrowed PLANNED rows with the reason written.
+- **Still planned, narrow.** Five PLANNED rows remain: listing and editing
+  wiki pages inside the Workbench; advisory comments, private forks and an
+  organization's advisories; a package's single version and other people's
+  packages; the dependency-graph compare and SBOM report endpoints; runner
+  just-in-time configuration and removal tokens.
+- **The API long tail.** About 1,060 endpoints in Appendices E and F are
+  still `planned` in `quill/core/github/api_coverage.json`, mostly
+  organization administration (permissions, custom properties, roles,
+  rulesets at organization level), Codespaces, Copilot, and the rest of
+  Actions administration. `python -m quill.tools.github_api_coverage_audit`
+  counts them, and the reference's "Everything GitHub can do, and where"
+  chapter lists each one with its intended home.
 
 ## WordPress
 

@@ -1141,27 +1141,27 @@ Source: PRD section 14. Its “today” statements describe the source audit rev
 |---|---|---|
 | Close reason: completed, not planned, or duplicate of #n | **Built:** Close or Reopen... asks the reason (2026-11-17); Not a Duplicate... takes the mark back (2026-11-18, `issue_links.py`) | Item > Close Issue... asks the reason; the details pane shows it |
 | Linked pull requests and branches for an issue ("Development"), and "create a branch for this issue" | **Built:** the issue sheet's Relationships page and Create Branch for This Issue... (2026-11-17); Unlink Branch... (2026-11-18, `issue_links.py`) | Issue details; Item > Linked Pull Requests; Item > Create Branch for Issue... (next to Start in Local Worktree) |
-| Saved replies | Roadmap GX05 and GX12, not built | Item > Insert Saved Reply in every comment box; Tools > Workbench Options > Saved Replies |
-| Wiki | Roadmap GX12, not built | Repository > Wiki (pages as a list, read in details, edit in the editor) |
+| Saved replies | **Built 2026-11-17:** Insert Saved Reply in the comment window (`comment_compose.saved_replies`, `viewer.savedReplies`); GitHub has no API to make or edit them, so that stays on GitHub | Item > Insert Saved Reply in every comment box; Tools > Workbench Options > Saved Replies |
+| Wiki | **Partly built 2026-11-18:** Repository > Wiki says whether it is on; Clone Wiki... (`Ctrl+Alt+W`) copies its pages to edit as Markdown (`wiki.py`). GitHub has no wiki API, so listing pages in the Workbench remains | Repository > Wiki (pages as a list, read in details, edit in the editor) |
 | Repository invitations: accept or decline | **Built 2026-11-18** (`repo_invitations.py`) | Needs My Attention > Invitations |
 | Edit description, website and features (issues, wiki, discussions, projects on or off) | **Built:** the repository sheet's Description and feature switches (`sheets_repo.py`) | Repository > Settings > General |
 | Rulesets: read them | **Built:** the ruleset sheet (`sheets_code.py`, `rulesets.py`) | Repository > Settings > Rulesets (read-only list; editing stays on github.com) |
 | Enable or disable a workflow | **Built 2026-11-18:** Turn Workflow On or Off... (`workflow_state.py`) | Workflow context menu; Item menu |
 | Revert a merged pull request | **Built:** Revert... on a merged pull request (`revert_pull`) | PR context menu > More > Revert... |
-| Security policy, private vulnerability reports, repository security advisories | Not found (an advisory credit appears only as a notification reason) | Repository > Security > Policy; Security > Advisories (roadmap GX11) |
+| Security policy, private vulnerability reports, repository security advisories | **Built 2026-11-18:** Security > Policy and Advisories, private reports and drafts, publish, close, request a CVE, and the Advisory Database search (`security_advisories.py`); comments and private forks remain | Repository > Security > Policy; Security > Advisories (roadmap GX11) |
 
 ### 14.2 Worth adding later (useful, less often)
 
 | Feature | Status today | New home |
 |---|---|---|
-| Packages (GitHub Packages, container registry) | **Built 2026-11-18:** Repositories > My Packages, with Delete Package Version... and Delete Package... (`packages.py`); an organization's packages and restoring remain | Repository > Packages; Repositories > My Packages |
+| Packages (GitHub Packages, container registry) | **Built 2026-11-18:** Repositories > My Packages, with Delete Package Version... and Delete Package... (`packages.py`); an organization's packages and restoring followed the same day | Repository > Packages; Repositories > My Packages |
 | Teams and organization members | Out of scope by a code comment ("Organizations in, Teams out"); roadmap GX13 adds team permissions. Now in scope: section 18.3.3 | Repositories > Organizations > org > Members, Teams; People > My Teams |
 | Insights charts as tables: commit activity, code frequency, punch card | **Built 2026-11-18:** Repository > Insights > Commit Activity (`repo_activity.py`): weekly commits, code frequency, the ten busiest hours, participation and contributors, as sentences | Repository > Insights (tables, never charts only) |
 | Dependency graph and software bill of materials (SBOM) export | **Built 2026-11-18:** Repository > Export Software Bill of Materials... (`Ctrl+Alt+B`), SPDX file (`runners_sbom.py`) | Repository > Security > Dependencies |
 | Tags: create and delete outside a release | **Built 2026-11-18:** New Tag... and Delete Tag... (`tags.py`); annotated tags with a message, and Read Tag Message | Repository > Code > Tags context menu |
 | Hide a comment (moderation: spam, off-topic, outdated) | Not found | Comment context in details > Hide Comment... |
 | Transfer a repository | **Built 2026-11-18:** Repository > Transfer Repository... (`Ctrl+Alt+T`), typed confirmation (`repo_transfer.py`) | Repository > Settings > Transfer... |
-| Self-hosted runners | **Built 2026-11-18:** Repository > Actions > Runners, read-only (`runners_sbom.py`); registering and removing stay planned | Repository > Actions > Runners (read-only) |
+| Self-hosted runners | **Built 2026-11-18:** Repository > Actions > Runners (`runners_sbom.py`); New Runner (setup commands to the clipboard), Runner Labels and Remove Runner followed the same day (`runner_admin.py`) | Repository > Actions > Runners (read-only) |
 | Star lists | **Built 2026-11-18:** Repositories > Star Lists, New Star List..., Star Lists... on a repository, Rename or Delete Star List... (`star_lists.py`) | Repositories > Starred > each list |
 | Your profile and status | **Built 2026-11-18:** Account > Set Your Status... (`user_status.py`); People > My Profile and each person's Profile (`profile.py`) | Account > Profile and Status... |
 
@@ -1176,11 +1176,14 @@ a home and a Properties sheet:
   organization. Create, edit the address, content type and events (every
   event GitHub offers, as a check list), turn on or off, see recent
   deliveries and their responses, redeliver, ping. The webhook secret is
-  write-only: you can set a new one, never read the old one.
+  write-only: you can set a new one, never read the old one. *(Repository
+  webhooks built 2026-11-18, `repo_settings_lists.py`, and an
+  organization's the same day.)*
 - **Deploy keys:** Repository > Settings > Deploy Keys. Add (title, key,
   read-only or read-write), delete. The key text is shown as GitHub shows it.
+  *(Built 2026-11-18.)*
 - **Autolink references:** Repository > Settings > Autolinks. Add a prefix and
-  URL template (alphanumeric or numeric), delete.
+  URL template (alphanumeric or numeric), delete. *(Built 2026-11-18.)*
 - **Secret and variable values:** variables are read and written in full.
   Secrets stay write-only, as GitHub itself keeps them: Set Value... encrypts
   the new value with the repository's or environment's or organization's
@@ -1192,14 +1195,19 @@ a home and a Properties sheet:
 - **Organization audit log:** Organizations > org > Audit Log, read-only and
   filterable by actor, action, repository and date (needs `read:audit_log`
   and an organization plan that offers the API).
-- **SSH and GPG keys, SSH signing keys:** Account > Keys. List, add, delete.
+- **SSH and GPG keys, SSH signing keys:** Account > Keys. List, add, delete. *(Built 2026-11-18 as People > My Keys, `account_keys.py`.)*
 - **Personal access tokens:** an organization owner can review, approve and
   deny fine-grained token requests, and revoke access, under Organizations >
   org > Token Requests. Creating a token has no API, so Account > Tokens
   opens the right GitHub page and the Workbench checks the result
-  (section 18.1).
+  (section 18.1). *(2026-11-18: not possible. GitHub serves the token-request
+  and token-grant endpoints to GitHub Apps only, so a person's sign-in is
+  refused; the coverage table marks them out of scope with that reason.)*
 - **Sponsors:** People > person > Sponsor, and Account > Sponsors for your
-  own sponsorships and sponsors, read and manage what the API allows.
+  own sponsorships and sponsors, read and manage what the API allows. *(Built
+  2026-11-18: People > Sponsorships and each person's Sponsor, sponsoring at a
+  tier with the login typed, and cancelling; `sponsors.py`. Running a
+  sponsors listing of your own, its tiers, stays on GitHub.)*
 
 What is left on github.com is only what GitHub offers no API for, and the
 coverage table says so row by row (section 19): Marketplace purchases,

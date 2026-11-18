@@ -35,6 +35,14 @@ _KINDS = {
     "invitation": "invitation",
     "runner": "runner",
     "package": "package",
+    "advisory": "advisory",
+    "key": "key",
+    "webhook": "webhook",
+    "deploy_key": "deploy_key",
+    "autolink": "autolink",
+    "sponsorship": "sponsorship",
+    "sponsor_tier": "sponsor_tier",
+    "wiki": "wiki",
     "issue": "issue",
     "pr": "pull_request",
     "label": "label",
@@ -132,7 +140,7 @@ def load_explore(
         repositories, categories = tuple(state.repositories), tuple(state.categories)
     result = client.fetch_with_status(
         view,
-        repo=instance if node.scope is Scope.REPOSITORY else "",
+        repo=instance if node.scope in (Scope.REPOSITORY, Scope.ORGANIZATION) else "",
         person=instance if node.scope is Scope.PERSON else "",
         query=render(query) if node.scope is Scope.QUERY else "",
         repositories=repositories,

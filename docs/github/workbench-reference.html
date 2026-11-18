@@ -1144,6 +1144,12 @@ sign-in.</td>
 <td>Search Commits: commits whose message matches the filter box.</td>
 </tr>
 <tr>
+<td>Security Advisories (<code>:search_advisories</code>)</td>
+<td>search</td>
+<td>Security Advisories: search GitHub’s Advisory Database by package,
+CVE or GHSA id.</td>
+</tr>
+<tr>
 <td>Repositories (<code>:search_repositories</code>)</td>
 <td>search</td>
 <td>Search Repositories: repositories whose name or description matches
@@ -1166,6 +1172,18 @@ up.</td>
 <td>people</td>
 <td>My Profile: your profile as GitHub shows it, your year of
 contributions as numbers, and what you pinned.</td>
+</tr>
+<tr>
+<td>My Keys (<code>:my_keys</code>)</td>
+<td>people</td>
+<td>My Keys: your SSH keys, GPG keys and SSH signing keys, each with its
+fingerprint. Ctrl+N adds one.</td>
+</tr>
+<tr>
+<td>Sponsorships (<code>:sponsorships</code>)</td>
+<td>people</td>
+<td>Sponsorships: who you sponsor on GitHub Sponsors, and who sponsors
+you.</td>
 </tr>
 <tr>
 <td>People I Follow (<code>:following</code>)</td>
@@ -1563,6 +1581,12 @@ lines each week, the busiest hours, and each contributor’s lines.</td>
 <td>Deployments and Environments: where the code was deployed.</td>
 </tr>
 <tr>
+<td>Wiki (<code>repository:wiki</code>)</td>
+<td>repository, repository</td>
+<td>Wiki: whether the wiki is on. Enter opens it on GitHub; Clone Wiki
+copies its pages to a folder to edit.</td>
+</tr>
+<tr>
 <td>GitHub Pages (<code>repository:pages</code>)</td>
 <td>repository, repository</td>
 <td>GitHub Pages: the website built from this repository.</td>
@@ -1571,6 +1595,12 @@ lines each week, the busiest hours, and each contributor’s lines.</td>
 <td>Security (<code>repository:security</code>)</td>
 <td>repository, repository</td>
 <td>Security: alerts about vulnerable code and leaked secrets.</td>
+</tr>
+<tr>
+<td>Policy (<code>repository:security_policy</code>)</td>
+<td>repository, security</td>
+<td>Policy: where the security policy is, and whether vulnerabilities
+can be reported privately.</td>
 </tr>
 <tr>
 <td>Alerts (<code>repository:alerts</code>)</td>
@@ -1582,6 +1612,12 @@ lines each week, the busiest hours, and each contributor’s lines.</td>
 (<code>repository:alerts_closed</code>)</td>
 <td>repository, security</td>
 <td>Dismissed and Resolved Alerts: alerts no longer open.</td>
+</tr>
+<tr>
+<td>Advisories (<code>repository:advisories</code>)</td>
+<td>repository, security</td>
+<td>Advisories: this repository’s security advisories. New Here reports
+a vulnerability or drafts an advisory.</td>
 </tr>
 <tr>
 <td>Settings (<code>repository:settings</code>)</td>
@@ -1608,6 +1644,25 @@ first. Enter opens the setting.</td>
 one.</td>
 </tr>
 <tr>
+<td>Webhooks (<code>repository:webhooks</code>)</td>
+<td>repository, settings</td>
+<td>Webhooks: the addresses GitHub tells about events here. Ctrl+N adds
+one; Recent Deliveries on a webhook says what was sent and redelivers
+it.</td>
+</tr>
+<tr>
+<td>Deploy Keys (<code>repository:deploy_keys</code>)</td>
+<td>repository, settings</td>
+<td>Deploy Keys: SSH keys that let a server clone, pull or push this one
+repository. Ctrl+N adds one.</td>
+</tr>
+<tr>
+<td>Autolinks (<code>repository:autolinks</code>)</td>
+<td>repository, settings</td>
+<td>Autolinks: prefixes such as BUG- that GitHub turns into links.
+Ctrl+N adds one.</td>
+</tr>
+<tr>
 <td>person (<code>person:person</code>)</td>
 <td>person</td>
 <td>A person: their repositories, activity, followers and who they
@@ -1618,6 +1673,12 @@ follow.</td>
 <td>person, person</td>
 <td>Profile: who this person is, their year of contributions as numbers,
 and what they pinned.</td>
+</tr>
+<tr>
+<td>Sponsor (<code>person:person_sponsor</code>)</td>
+<td>person, person</td>
+<td>Sponsor: whether this person takes sponsorships, and each tier with
+its price.</td>
 </tr>
 <tr>
 <td>Repositories (<code>person:person_repositories</code>)</td>
@@ -1656,6 +1717,18 @@ and what they pinned.</td>
 <td>Teams: the organization’s teams, as GitHub nests them. Alt+Enter
 opens a team’s sheet: its members and maintainers, repositories and
 roles, child teams and code review assignment.</td>
+</tr>
+<tr>
+<td>Packages (<code>organization:organization_packages</code>)</td>
+<td>organization, organization</td>
+<td>Packages: this organization’s container images and other packages.
+Ctrl+N restores one deleted in the last 30 days.</td>
+</tr>
+<tr>
+<td>Webhooks (<code>organization:organization_webhooks</code>)</td>
+<td>organization, organization</td>
+<td>Webhooks: the addresses GitHub tells about events across this
+organization. Ctrl+N adds one.</td>
 </tr>
 <tr>
 <td>Templates (<code>organization:organization_templates</code>)</td>
@@ -2383,6 +2456,12 @@ package it uses.</td>
 <td>Move the repository to another person or organization; asks for its
 name first.</td>
 </tr>
+<tr>
+<td>Clone Wiki…</td>
+<td>Ctrl+Alt+W</td>
+<td>Copy the repository’s wiki pages to a folder, to edit them as
+Markdown.</td>
+</tr>
 </tbody>
 </table>
 <h4 id="account">Account</h4>
@@ -2641,10 +2720,6 @@ Properties…</li>
 <li><strong>tag</strong>: Open, Delete Tag…, Read Tag Message, Commit
 Comments…, Compare With Previous, Compare With Default; More: Copy Link,
 Open on GitHub; Properties…</li>
-<li><strong>package</strong>: Show Details, Open on GitHub, Delete
-Package Version…, Delete Package…, Copy Link; Properties…</li>
-<li><strong>runner</strong>: Show Details, Open on GitHub, Copy Link;
-Properties…</li>
 <li><strong>invitation</strong>: Accept Invitation…, Decline
 Invitation…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>notification</strong>: Open, Mark Read, Mark Done, Snooze
@@ -2708,6 +2783,27 @@ More: Close Everywhere…, Move Open Work To…, Promote to Organization…,
 Delete Everywhere…; Properties…</li>
 <li><strong>fleet</strong>: Open Repository, Open on GitHub, Copy Link;
 Properties…</li>
+<li><strong>runner</strong>: Show Details, Runner Labels…, Remove
+Runner…, Open on GitHub, Copy Link; Properties…</li>
+<li><strong>package</strong>: Show Details, Open on GitHub, Delete
+Package Version…, Delete Package…, Copy Link; Properties…</li>
+<li><strong>key</strong>: Show Details, Delete Key…, Open on GitHub;
+Properties…</li>
+<li><strong>advisory</strong>: Show Details, Publish or Close Advisory…,
+Request CVE…, Open on GitHub, Copy Link; Properties…</li>
+<li><strong>webhook</strong>: Show Details, Ping, Recent Deliveries…,
+Change Address or Secret…, Delete Webhook…, Open on GitHub;
+Properties…</li>
+<li><strong>deploy_key</strong>: Show Details, Delete Deploy Key…, Open
+on GitHub; Properties…</li>
+<li><strong>autolink</strong>: Show Details, Delete Autolink…, Open on
+GitHub; Properties…</li>
+<li><strong>wiki</strong>: Open on GitHub, Clone Wiki…, Copy Link;
+Properties…</li>
+<li><strong>sponsorship</strong>: Show Details, Cancel Sponsorship…,
+Open on GitHub; Properties…</li>
+<li><strong>sponsor_tier</strong>: Show Details, Sponsor at This Tier…,
+Open on GitHub; Properties…</li>
 </ul>
 <h3 id="workbench-options">Workbench Options</h3>
 <table>
@@ -2811,6 +2907,8 @@ name for a commit.</li>
 download.</li>
 <li><strong>Assignee</strong>: The person an issue or pull request is
 given to.</li>
+<li><strong>Autolink</strong>: A prefix, such as BUG-, that GitHub turns
+into a link to another system.</li>
 <li><strong>Branch</strong>: A line of work: a name that follows the
 newest commit of one set of changes. Under Code, Branches.</li>
 <li><strong>Branch protection</strong>: Rules that decide who may change
@@ -2825,6 +2923,8 @@ repository ready to work on. It can cost money.</li>
 repository.</li>
 <li><strong>Commit</strong>: A saved change, with a message saying why.
 Under Code, Commits.</li>
+<li><strong>Deploy key</strong>: An SSH key that reaches one repository
+only, for a server to clone, pull or push.</li>
 <li><strong>Deployment</strong>: Code sent to an environment, such as a
 website.</li>
 <li><strong>Discussion</strong>: A conversation in a repository that is
@@ -2851,6 +2951,9 @@ My Attention &gt; Invitations and expires after a week.</li>
 a conversation under it. Under a repository’s Issues.</li>
 <li><strong>Job</strong>: One part of a run, on one machine, made of
 steps.</li>
+<li><strong>Key</strong>: An SSH key lets git push and pull without a
+password; a GPG key or SSH signing key marks your commits Verified.
+GitHub keeps only the public half.</li>
 <li><strong>Label</strong>: A coloured tag on issues and pull requests,
 such as bug. Under Labels.</li>
 <li><strong>Mention</strong>: Your login written with an at sign, such
@@ -2902,8 +3005,14 @@ self-hosted, listed under Actions &gt; Runners.</li>
 run again. Under Saved Searches.</li>
 <li><strong>Secret</strong>: A value, such as a password, that workflows
 use and GitHub never shows.</li>
+<li><strong>Security advisory</strong>: A notice that a package has a
+vulnerability: which versions, how serious, and where it is fixed. Each
+has a GHSA id, and often a CVE number too.</li>
 <li><strong>Security alert</strong>: A warning that code, a dependency
 or a secret in it is at risk.</li>
+<li><strong>Sponsorship</strong>: Money you pay someone through GitHub
+Sponsors for their open-source work, each month or once, at one of the
+tiers they offer.</li>
 <li><strong>Squash</strong>: Merging a pull request as one single
 commit, instead of all of its commits.</li>
 <li><strong>Star</strong>: A bookmark on a repository, which also shows
@@ -2930,6 +3039,11 @@ repository’s activity.</li>
 you when something happens on GitHub: a run finishes, a review arrives,
 a release or a comment. Under Watches. Not the same as watching a
 repository on GitHub, which sends notifications.</li>
+<li><strong>Webhook</strong>: An address GitHub sends a message to when
+something happens in a repository, such as a push. Continuous
+integration and chat bots use them.</li>
+<li><strong>Wiki</strong>: A repository’s own pages of documentation,
+kept by GitHub as a git repository of their own, owner/name.wiki.</li>
 <li><strong>Workflow</strong>: One automation, defined in a file in the
 repository. Under Actions, Workflows.</li>
 <li><strong>Workflow dispatch</strong>: Starting a workflow by hand, on
@@ -2956,14 +3070,14 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 348 yes, 1115 planned, 15 not needed and 526 left to
+<p>In all: 392 yes, 1064 planned, 15 not needed and 533 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
 is planned under Repository &gt; Wiki.</p>
 <h3 id="rest-operations-by-category">REST operations, by category</h3>
 <h4 id="actions">Actions</h4>
-<p>208 operations: 43 yes, 158 planned, 7 left to github.</p>
+<p>208 operations: 48 yes, 153 planned, 7 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -3932,8 +4046,8 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>List runner applications for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/runners/downloads</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Runners</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Actions &gt; Runners</td>
 </tr>
 <tr>
 <td>Create configuration for a just-in-time runner for a repository</td>
@@ -3944,8 +4058,8 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>Create a registration token for a repository</td>
 <td><code>POST /repos/{owner}/{repo}/actions/runners/registration-token</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Runners</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Actions &gt; Runners</td>
 </tr>
 <tr>
 <td>Create a remove token for a repository</td>
@@ -3956,8 +4070,8 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>Delete a self-hosted runner from a repository</td>
 <td><code>DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Runners</td>
+<td>Yes</td>
+<td>context menu &gt; Remove Runner…</td>
 </tr>
 <tr>
 <td>Get a self-hosted runner for a repository</td>
@@ -3981,8 +4095,8 @@ repository</td>
 <tr>
 <td>Add custom labels to a self-hosted runner for a repository</td>
 <td><code>POST /repos/{owner}/{repo}/actions/runners/{runner_id}/labels</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Runners</td>
+<td>Yes</td>
+<td>context menu &gt; Runner Labels…</td>
 </tr>
 <tr>
 <td>Set custom labels for a self-hosted runner for a repository</td>
@@ -3994,8 +4108,8 @@ repository</td>
 <td>Remove a custom label from a self-hosted runner for a
 repository</td>
 <td><code>DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels/{name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Runners</td>
+<td>Yes</td>
+<td>context menu &gt; Runner Labels…</td>
 </tr>
 <tr>
 <td>List workflow runs for a repository</td>
@@ -7485,7 +7599,7 @@ repository.</td>
 </tbody>
 </table>
 <h4 id="deploy-keys">Deploy keys</h4>
-<p>4 operations: 2 yes, 2 planned.</p>
+<p>4 operations: 4 yes.</p>
 <table>
 <thead>
 <tr>
@@ -7505,14 +7619,15 @@ repository.</td>
 <tr>
 <td>Create a deploy key</td>
 <td><code>POST /repos/{owner}/{repo}/keys</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Deploy Keys.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Deploy
+Keys</td>
 </tr>
 <tr>
 <td>Delete a deploy key</td>
 <td><code>DELETE /repos/{owner}/{repo}/keys/{key_id}</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Deploy Keys.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Deploy Key…</td>
 </tr>
 <tr>
 <td>Get a deploy key</td>
@@ -8859,7 +8974,7 @@ Importer replaces it.</td>
 </tbody>
 </table>
 <h4 id="organizations">Organizations</h4>
-<p>129 operations: 21 yes, 108 planned.</p>
+<p>129 operations: 27 yes, 95 planned, 7 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -9027,14 +9142,14 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Create an organization webhook</td>
 <td><code>POST /orgs/{org}/hooks</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Webhooks</td>
 </tr>
 <tr>
 <td>Delete an organization webhook</td>
 <td><code>DELETE /orgs/{org}/hooks/{hook_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Webhook…</td>
 </tr>
 <tr>
 <td>Get an organization webhook</td>
@@ -9057,14 +9172,14 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Update a webhook configuration for an organization</td>
 <td><code>PATCH /orgs/{org}/hooks/{hook_id}/config</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Change Address or Secret…</td>
 </tr>
 <tr>
 <td>List deliveries for an organization webhook</td>
 <td><code>GET /orgs/{org}/hooks/{hook_id}/deliveries</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Recent Deliveries…</td>
 </tr>
 <tr>
 <td>Get a webhook delivery for an organization webhook</td>
@@ -9075,14 +9190,14 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Redeliver a delivery for an organization webhook</td>
 <td><code>POST /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}/attempts</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Recent Deliveries…</td>
 </tr>
 <tr>
 <td>Ping an organization webhook</td>
 <td><code>POST /orgs/{org}/hooks/{hook_id}/pings</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Ping</td>
 </tr>
 <tr>
 <td>Get route stats by actor</td>
@@ -9345,50 +9460,64 @@ personal access tokens</td>
 <td>Review requests to access organization resources with fine-grained
 personal access tokens</td>
 <td><code>POST /orgs/{org}/personal-access-token-requests</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Token Requests.</td>
+<td>Left to GitHub</td>
+<td>GitHub serves this to GitHub Apps only (its reference: Only GitHub
+Apps can use this endpoint), so a person’s sign-in is refused; owners
+review token requests on the organization’s settings page.</td>
 </tr>
 <tr>
 <td>Review a request to access organization resources with a
 fine-grained personal access token</td>
 <td><code>POST /orgs/{org}/personal-access-token-requests/{pat_request_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Token Requests.</td>
+<td>Left to GitHub</td>
+<td>GitHub serves this to GitHub Apps only (its reference: Only GitHub
+Apps can use this endpoint), so a person’s sign-in is refused; owners
+review token requests on the organization’s settings page.</td>
 </tr>
 <tr>
 <td>List repositories requested to be accessed by a fine-grained
 personal access token</td>
 <td><code>GET /orgs/{org}/personal-access-token-requests/{pat_request_id}/repositories</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Token Requests.</td>
+<td>Left to GitHub</td>
+<td>GitHub serves this to GitHub Apps only (its reference: Only GitHub
+Apps can use this endpoint), so a person’s sign-in is refused; owners
+review token requests on the organization’s settings page.</td>
 </tr>
 <tr>
 <td>List fine-grained personal access tokens with access to organization
 resources</td>
 <td><code>GET /orgs/{org}/personal-access-tokens</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Token Requests.</td>
+<td>Left to GitHub</td>
+<td>GitHub serves this to GitHub Apps only (its reference: Only GitHub
+Apps can use this endpoint), so a person’s sign-in is refused; owners
+review token requests on the organization’s settings page.</td>
 </tr>
 <tr>
 <td>Update the access to organization resources via fine-grained
 personal access tokens</td>
 <td><code>POST /orgs/{org}/personal-access-tokens</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Token Requests.</td>
+<td>Left to GitHub</td>
+<td>GitHub serves this to GitHub Apps only (its reference: Only GitHub
+Apps can use this endpoint), so a person’s sign-in is refused; owners
+review token requests on the organization’s settings page.</td>
 </tr>
 <tr>
 <td>Update the access a fine-grained personal access token has to
 organization resources</td>
 <td><code>POST /orgs/{org}/personal-access-tokens/{pat_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Token Requests.</td>
+<td>Left to GitHub</td>
+<td>GitHub serves this to GitHub Apps only (its reference: Only GitHub
+Apps can use this endpoint), so a person’s sign-in is refused; owners
+review token requests on the organization’s settings page.</td>
 </tr>
 <tr>
 <td>List repositories a fine-grained personal access token has access
 to</td>
 <td><code>GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Token Requests.</td>
+<td>Left to GitHub</td>
+<td>GitHub serves this to GitHub Apps only (its reference: Only GitHub
+Apps can use this endpoint), so a person’s sign-in is refused; owners
+review token requests on the organization’s settings page.</td>
 </tr>
 <tr>
 <td>Get registered app installations for external custom properties</td>
@@ -9704,7 +9833,7 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 </tbody>
 </table>
 <h4 id="packages">Packages</h4>
-<p>27 operations: 4 yes, 23 planned.</p>
+<p>27 operations: 10 yes, 17 planned.</p>
 <table>
 <thead>
 <tr>
@@ -9725,14 +9854,14 @@ organization</td>
 <tr>
 <td>List packages for an organization</td>
 <td><code>GET /orgs/{org}/packages</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Packages</td>
 </tr>
 <tr>
 <td>Delete a package for an organization</td>
 <td><code>DELETE /orgs/{org}/packages/{package_type}/{package_name}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Package…</td>
 </tr>
 <tr>
 <td>Get a package for an organization</td>
@@ -9743,20 +9872,20 @@ organization</td>
 <tr>
 <td>Restore a package for an organization</td>
 <td><code>POST /orgs/{org}/packages/{package_type}/{package_name}/restore</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Packages</td>
 </tr>
 <tr>
 <td>List package versions for a package owned by an organization</td>
 <td><code>GET /orgs/{org}/packages/{package_type}/{package_name}/versions</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Package Version…</td>
 </tr>
 <tr>
 <td>Delete package version for an organization</td>
 <td><code>DELETE /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Package Version…</td>
 </tr>
 <tr>
 <td>Get a package version for an organization</td>
@@ -9798,8 +9927,8 @@ authenticated-user</td>
 <tr>
 <td>Restore a package for the authenticated user</td>
 <td><code>POST /user/packages/{package_type}/{package_name}/restore</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>Navigator: Repositories &gt; My Packages</td>
 </tr>
 <tr>
 <td>List package versions for a package owned by the authenticated
@@ -10692,7 +10821,7 @@ user</td>
 </tbody>
 </table>
 <h4 id="repositories">Repositories</h4>
-<p>74 operations: 39 yes, 35 planned.</p>
+<p>74 operations: 47 yes, 27 planned.</p>
 <table>
 <thead>
 <tr>
@@ -10761,14 +10890,15 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 <tr>
 <td>Create an autolink reference for a repository</td>
 <td><code>POST /repos/{owner}/{repo}/autolinks</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Autolinks.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt;
+Autolinks</td>
 </tr>
 <tr>
 <td>Delete an autolink reference from a repository</td>
 <td><code>DELETE /repos/{owner}/{repo}/autolinks/{autolink_id}</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Autolinks.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Autolink…</td>
 </tr>
 <tr>
 <td>Get an autolink reference of a repository</td>
@@ -10864,14 +10994,15 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 <tr>
 <td>Create a repository webhook</td>
 <td><code>POST /repos/{owner}/{repo}/hooks</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt;
+Webhooks</td>
 </tr>
 <tr>
 <td>Delete a repository webhook</td>
 <td><code>DELETE /repos/{owner}/{repo}/hooks/{hook_id}</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Webhook…</td>
 </tr>
 <tr>
 <td>Get a repository webhook</td>
@@ -10894,14 +11025,14 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 <tr>
 <td>Update a webhook configuration for a repository</td>
 <td><code>PATCH /repos/{owner}/{repo}/hooks/{hook_id}/config</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Change Address or Secret…</td>
 </tr>
 <tr>
 <td>List deliveries for a repository webhook</td>
 <td><code>GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Recent Deliveries…</td>
 </tr>
 <tr>
 <td>Get a delivery for a repository webhook</td>
@@ -10912,14 +11043,14 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 <tr>
 <td>Redeliver a delivery for a repository webhook</td>
 <td><code>POST /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Recent Deliveries…</td>
 </tr>
 <tr>
 <td>Ping a repository webhook</td>
 <td><code>POST /repos/{owner}/{repo}/hooks/{hook_id}/pings</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Ping</td>
 </tr>
 <tr>
 <td>Test the push repository webhook</td>
@@ -11358,7 +11489,7 @@ requests (section 22.1).</td>
 </tbody>
 </table>
 <h4 id="security-advisories">Security advisories</h4>
-<p>14 operations: 14 planned.</p>
+<p>14 operations: 6 yes, 8 planned.</p>
 <table>
 <thead>
 <tr>
@@ -11372,8 +11503,8 @@ requests (section 22.1).</td>
 <tr>
 <td>List global security advisories</td>
 <td><code>GET /advisories</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Yes</td>
+<td>Navigator: Search &gt; Security Advisories</td>
 </tr>
 <tr>
 <td>Get a global security advisory</td>
@@ -11390,20 +11521,23 @@ requests (section 22.1).</td>
 <tr>
 <td>List repository security advisories</td>
 <td><code>GET /repos/{owner}/{repo}/security-advisories</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Security &gt;
+Advisories</td>
 </tr>
 <tr>
 <td>Create a repository security advisory</td>
 <td><code>POST /repos/{owner}/{repo}/security-advisories</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Security &gt;
+Advisories</td>
 </tr>
 <tr>
 <td>Privately report a security vulnerability</td>
 <td><code>POST /repos/{owner}/{repo}/security-advisories/reports</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Security &gt;
+Advisories</td>
 </tr>
 <tr>
 <td>Get a repository security advisory</td>
@@ -11414,8 +11548,8 @@ requests (section 22.1).</td>
 <tr>
 <td>Update a repository security advisory</td>
 <td><code>PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Publish or Close Advisory…</td>
 </tr>
 <tr>
 <td>List repository security advisory comments</td>
@@ -11444,8 +11578,8 @@ requests (section 22.1).</td>
 <tr>
 <td>Request a CVE for a repository security advisory</td>
 <td><code>POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/cve</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Request CVE…</td>
 </tr>
 <tr>
 <td>Create a temporary private fork</td>
@@ -11694,7 +11828,7 @@ slug).</td>
 </tbody>
 </table>
 <h4 id="users">Users</h4>
-<p>55 operations: 10 yes, 45 planned.</p>
+<p>55 operations: 19 yes, 36 planned.</p>
 <table>
 <thead>
 <tr>
@@ -11798,20 +11932,20 @@ slug).</td>
 <tr>
 <td>List GPG keys for the authenticated user</td>
 <td><code>GET /user/gpg_keys</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Keys</td>
 </tr>
 <tr>
 <td>Create a GPG key for the authenticated user</td>
 <td><code>POST /user/gpg_keys</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Keys</td>
 </tr>
 <tr>
 <td>Delete a GPG key for the authenticated user</td>
 <td><code>DELETE /user/gpg_keys/{gpg_key_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Key…</td>
 </tr>
 <tr>
 <td>Get a GPG key for the authenticated user</td>
@@ -11870,20 +12004,20 @@ slug).</td>
 <tr>
 <td>List public SSH keys for the authenticated user</td>
 <td><code>GET /user/keys</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Keys</td>
 </tr>
 <tr>
 <td>Create a public SSH key for the authenticated user</td>
 <td><code>POST /user/keys</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Keys</td>
 </tr>
 <tr>
 <td>Delete a public SSH key for the authenticated user</td>
 <td><code>DELETE /user/keys/{key_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Key…</td>
 </tr>
 <tr>
 <td>Get a public SSH key for the authenticated user</td>
@@ -11918,20 +12052,20 @@ slug).</td>
 <tr>
 <td>List SSH signing keys for the authenticated user</td>
 <td><code>GET /user/ssh_signing_keys</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Keys</td>
 </tr>
 <tr>
 <td>Create a SSH signing key for the authenticated user</td>
 <td><code>POST /user/ssh_signing_keys</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Keys</td>
 </tr>
 <tr>
 <td>Delete an SSH signing key for the authenticated user</td>
 <td><code>DELETE /user/ssh_signing_keys/{ssh_signing_key_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Key…</td>
 </tr>
 <tr>
 <td>Get an SSH signing key for the authenticated user</td>
@@ -13747,7 +13881,7 @@ ready</td>
 </tbody>
 </table>
 <h4 id="graphql-sponsors">GraphQL: Sponsors</h4>
-<p>9 mutations: 9 planned.</p>
+<p>9 mutations: 2 yes, 7 planned.</p>
 <table>
 <thead>
 <tr>
@@ -13759,8 +13893,8 @@ ready</td>
 <tbody>
 <tr>
 <td><code>cancelSponsorship</code></td>
-<td>Planned</td>
-<td>People &gt; person &gt; Sponsor; Account &gt; Sponsors</td>
+<td>Yes</td>
+<td>context menu &gt; Cancel Sponsorship…</td>
 </tr>
 <tr>
 <td><code>createSponsorsListing</code></td>
@@ -13774,8 +13908,8 @@ ready</td>
 </tr>
 <tr>
 <td><code>createSponsorship</code></td>
-<td>Planned</td>
-<td>People &gt; person &gt; Sponsor; Account &gt; Sponsors</td>
+<td>Yes</td>
+<td>context menu &gt; Sponsor at This Tier…</td>
 </tr>
 <tr>
 <td><code>createSponsorships</code></td>

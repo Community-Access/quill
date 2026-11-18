@@ -120,6 +120,7 @@ no AI menu, so here they belong to the Go row.
 | `Ctrl+Shift+G` | Repository Actions |
 | `Ctrl+Alt+B` | Export Software Bill of Materials |
 | `Ctrl+Alt+T` | Transfer Repository |
+| `Ctrl+Alt+W` | Clone Wiki |
 | `Ctrl+Q`, `Ctrl+Shift+Q` | Mark a notification read; mark the whole list read |
 | `Ctrl+Alt+N` | Inbox Rules... |
 | `Ctrl+D` | Add to Favorites, or take it out |

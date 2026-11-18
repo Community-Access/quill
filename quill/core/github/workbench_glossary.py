@@ -66,6 +66,30 @@ GLOSSARY: dict[str, str] = {
         "A tag that carries a message, who made it and when. Releases usually use one. "
         "A lightweight tag is only a name for a commit."
     ),
+    "Wiki": (
+        "A repository's own pages of documentation, kept by GitHub as a git repository "
+        "of their own, owner/name.wiki."
+    ),
+    "Sponsorship": (
+        "Money you pay someone through GitHub Sponsors for their open-source work, each "
+        "month or once, at one of the tiers they offer."
+    ),
+    "Webhook": (
+        "An address GitHub sends a message to when something happens in a repository, "
+        "such as a push. Continuous integration and chat bots use them."
+    ),
+    "Deploy key": (
+        "An SSH key that reaches one repository only, for a server to clone, pull or push."
+    ),
+    "Autolink": ("A prefix, such as BUG-, that GitHub turns into a link to another system."),
+    "Key": (
+        "An SSH key lets git push and pull without a password; a GPG key or SSH signing "
+        "key marks your commits Verified. GitHub keeps only the public half."
+    ),
+    "Security advisory": (
+        "A notice that a package has a vulnerability: which versions, how serious, and "
+        "where it is fixed. Each has a GHSA id, and often a CVE number too."
+    ),
     "Star list": (
         "One of your own named groups of starred repositories, such as Screen readers. "
         "A repository can be on several."
@@ -152,6 +176,14 @@ ROW_TYPE_WORDS: dict[str, str] = {
     "invitation": "Invitation",
     "runner": "Runner",
     "package": "Package",
+    "advisory": "Security advisory",
+    "key": "Key",
+    "webhook": "Webhook",
+    "sponsorship": "Sponsorship",
+    "wiki": "Wiki",
+    "sponsor_tier": "Sponsorship",
+    "deploy_key": "Deploy key",
+    "autolink": "Autolink",
     "repository": "Repository",
     "person": "Mention",
     "label": "Label",

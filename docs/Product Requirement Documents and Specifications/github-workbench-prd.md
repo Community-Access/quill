@@ -961,26 +961,26 @@ tree, so adding it later does not reshape anything.
 | Close reason: completed, not planned, or duplicate of #n | **Built 2026-11-17.** Close or Reopen... asks the reason; a duplicate names its original through GraphQL `closeIssue`; the sheet's State shows it. Not a Duplicate... (2026-11-18, `unmarkIssueAsDuplicate`, `quill/core/github/issue_links.py`) takes the mark back | Item > Close Issue... asks the reason; the details pane shows it |
 | Linked pull requests and branches for an issue ("Development"), and "create a branch for this issue" | **Built 2026-11-17.** Linked branches on the issue sheet's Relationships page; Create Branch for This Issue... (`createLinkedBranch`). Unlink Branch... (2026-11-18, `deleteLinkedBranch`, `quill/core/github/issue_links.py`) lists the linked branches and unlinks one after asking; the branch stays | Issue details; Item > Linked Pull Requests; Item > Create Branch for Issue... (next to Start in Local Worktree) |
 | Saved replies | **Inserting built 2026-11-17** (the comment composer's Insert Saved Reply); managing them stays on GitHub | Item > Insert Saved Reply in every comment box; Tools > Workbench Options > Saved Replies |
-| Wiki | Roadmap GX12, not built | Repository > Wiki (pages as a list, read in details, edit in the editor) |
+| Wiki | **Partly built 2026-11-18.** Repository > Wiki (explore view `wiki`, row type `wiki`) reads `has_wiki` and says whether the wiki is on, Enter opening it on GitHub; Clone Wiki... (`Ctrl+Alt+W`, verb `clone_wiki`) runs the existing clone with `owner/name.wiki` filled in, which the clone already parses to `https://github.com/owner/name.wiki.git` with the token in the child's environment (`quill/core/github/wiki.py`). GitHub has no API for wiki pages, so listing and editing pages inside the Workbench stays planned, as "Wiki: pages listed and edited in the Workbench" | Repository > Wiki (pages as a list, read in details, edit in the editor) |
 | Repository invitations: accept or decline | **Built 2026-11-18.** Needs My Attention > Invitations lists them (who invited you, the access, expired or not); Accept Invitation... (Enter) and Decline Invitation... ask first (`quill/core/github/repo_invitations.py`) | Needs My Attention > Invitations |
 | Edit description, website and features (issues, wiki, discussions, projects on or off) | Rename, visibility, default branch and topics only | Repository > Settings > General |
 | Rulesets: read them | Read only inside merge readiness, with a link out | Repository > Settings > Rulesets (read-only list; editing stays on github.com) |
 | Enable or disable a workflow | **Built:** the workflow sheet's Enabled field; since 2026-11-18 also Turn Workflow On or Off... on the row, which says the state in words first, including GitHub's own sixty-day switch-off (`quill/core/github/workflow_state.py`) | Workflow context menu; Item menu |
 | Revert a merged pull request | **Built 2026-11-17.** Revert Pull Request... on a merged pull request's row opens the pull request that undoes it (GraphQL `revertPullRequest`), asking its title and whether it is a draft | PR context menu > Revert Pull Request... |
-| Security policy, private vulnerability reports, repository security advisories | Not found (an advisory credit appears only as a notification reason) | Repository > Security > Policy; Security > Advisories (roadmap GX11) |
+| Security policy, private vulnerability reports, repository security advisories | **Built 2026-11-18:** Security > Policy (explore view `security_policy`: SECURITY.md in the root, `.github` or `docs`, opened in the editor, and whether private reporting is on), Security > Advisories (`security_advisories`, row type `advisory`; drafts for administrators and security managers, refusal said), New Here: report privately (`POST .../reports`) or draft (`POST .../security-advisories`, optional package), Publish or Close Advisory... (`PATCH`, publishing wants the GHSA id typed), Request CVE... (`POST .../cve`), and Search > Security Advisories (`GET /advisories` by package, CVE or GHSA id); `quill/core/github/security_advisories.py`, `quill/ui/github_workbench_advisories.py`. Advisory comments, temporary private forks and an organization's advisories remain planned | Repository > Security > Policy; Security > Advisories (roadmap GX11) |
 
 ### 14.2 Worth adding later (useful, less often)
 
 | Feature | Status today | New home |
 |---|---|---|
-| Packages (GitHub Packages, container registry) | **Built 2026-11-18:** Repositories > My Packages (explore view `my_packages`, row type `package`; `GET /user/packages` once per package type), Delete Package Version... (versions newest first with container tags; a 400 for the only or a heavily downloaded version is said) and Delete Package... (typed name), in `quill/core/github/packages.py` and `quill/ui/github_workbench_packages.py`. An organization's packages and restoring remain planned | Repository > Packages; Repositories > My Packages |
+| Packages (GitHub Packages, container registry) | **Built 2026-11-18:** Repositories > My Packages (explore view `my_packages`, row type `package`; `GET /user/packages` once per package type), Delete Package Version... (versions newest first with container tags; a 400 for the only or a heavily downloaded version is said) and Delete Package... (typed name), in `quill/core/github/packages.py` and `quill/ui/github_workbench_packages.py`. An organization's packages (Organizations > org > Packages, `/orgs/{org}/packages`, row keys `@org/type/name`) and restoring (Ctrl+N in either list, `POST .../restore` by type and name) followed the same day | Repository > Packages; Repositories > My Packages |
 | Teams and organization members | Out of scope by a code comment ("Organizations in, Teams out"); roadmap GX13 adds team permissions. Now in scope: section 18.3.3 | Repositories > Organizations > org > Members, Teams; People > My Teams |
 | Insights charts as tables: commit activity, code frequency, punch card | **Built 2026-11-18:** Repository > Insights > Commit Activity (explore view `commit_stats`, `quill/core/github/repo_activity.py`): `/stats/participation`, `/stats/commit_activity` (twelve weeks, busiest day), `/stats/code_frequency`, `/stats/punch_card` (ten busiest hours, UTC) and `/stats/contributors` (commits, lines added and removed), each row a sentence; a 202 says "still counting", and no statistics says why | Repository > Insights (tables, never charts only) |
 | Dependency graph and software bill of materials (SBOM) export | **Built 2026-11-18:** Repository > Export Software Bill of Materials... (`Ctrl+Alt+B`, also on Repository Actions) saves `GET /repos/{owner}/{repo}/dependency-graph/sbom` as an SPDX (Software Package Data Exchange) JSON file and says the package count; a repository without a dependency graph is told where to turn it on (`quill/core/github/runners_sbom.py`) | Repository > Security > Dependencies |
 | Tags: create and delete outside a release | **Built 2026-11-18.** New Tag... (Ctrl+N in Tags) makes a lightweight tag on a branch, tag or commit; Delete Tag... asks, naming a release built on the tag (`quill/core/github/tags.py`). A message makes the tag annotated (`POST .../git/tags`, then the ref points at the tag object); Read Tag Message says tagger, date and message (`GET .../git/tags/{sha}`); a taken name is found with `GET .../git/matching-refs` | Repository > Code > Tags context menu |
 | Hide a comment | **Built 2026-11-18** in the timeline: Hide or Show Comment... on the comment at the cursor, for a reason (`minimizeComment`, `unminimizeComment`; `quill/core/github/comment_moderation.py`) | Details > Hide Comment... |
 | Transfer a repository | **Built 2026-11-18:** Repository > Transfer Repository... (`Ctrl+Alt+T`, also on Repository Actions; `POST /repos/{owner}/{repo}/transfer`). Asks the new owner, then the typed full name (tier 3, needs administration); says whether it moved at once or waits for a person to accept; 403 and 422 said in words (`quill/core/github/repo_transfer.py`) | Repository > Settings > Transfer... |
-| Self-hosted runners | **Built 2026-11-18,** read-only: Repository > Actions > Runners (`GET /repos/{owner}/{repo}/actions/runners`), row type `runner` reading "name: online, busy, Linux" with labels in the details; administrators only, and anyone else is told so in the node note (`quill/core/github/runners_sbom.py`). Registering and removing a runner stay planned | Repository > Actions > Runners (read-only) |
+| Self-hosted runners | **Built 2026-11-18,** read-only: Repository > Actions > Runners (`GET /repos/{owner}/{repo}/actions/runners`), row type `runner` reading "name: online, busy, Linux" with labels in the details; administrators only, and anyone else is told so in the node note (`quill/core/github/runners_sbom.py`). New Runner... (Ctrl+N; `GET .../runners/downloads`, `POST .../registration-token`; the setup commands for the chosen system, with the download's SHA-256 check, copied to the clipboard and the token never said, remembered for redaction), Runner Labels... (`POST`/`DELETE .../labels`, only custom labels removable) and Remove Runner... (`DELETE .../runners/{id}`) followed the same day in `quill/core/github/runner_admin.py`. Just-in-time configuration and removal tokens remain planned | Repository > Actions > Runners (read-only) |
 | Star lists | **Built 2026-11-18:** Repositories > Star Lists (explore view `star_lists`, `viewer.lists`): every repository on every list as an ordinary repository row, the list's name first, empty lists named in the node note. New Star List... (`Ctrl+N`, `createUserList`), Star Lists... on any repository row (`updateUserListsForItem`, current lists checked), Rename or Delete Star List... on a Star Lists row (`updateUserList`, `deleteUserList`). Needs the `user` scope (`quill/core/github/star_lists.py`, `quill/ui/github_workbench_star_lists.py`) | Repositories > Starred > each list |
 | Your profile and status | **Status built 2026-11-18:** Account > Set Your Status... (`Ctrl+Alt+S`, `changeUserStatus`; message, emoji by name, busy, when it clears; `quill/core/github/user_status.py`). **Profile built 2026-11-18:** People > My Profile (`viewer`) and Profile first under every person (`user(login)`; explore views `my_profile`, `person_profile`): who they are, bio, status, website, the year's contributions by kind (`contributionsCollection`), the calendar as the busiest day, longest and current streak and a row per month, and `pinnedItems` as repository rows (`quill/core/github/profile.py`). Editing the profile stays on GitHub | Account > Profile and Status... |
 
@@ -1000,6 +1000,20 @@ a home and a Properties sheet:
   read-only or read-write), delete. The key text is shown as GitHub shows it.
 - **Autolink references:** Repository > Settings > Autolinks. Add a prefix and
   URL template (alphanumeric or numeric), delete.
+- **Built 2026-11-18, for a repository:** Settings > Webhooks, Deploy Keys and
+  Autolinks (explore views `webhooks`, `deploy_keys`, `autolinks`; row types
+  `webhook`, `deploy_key`, `autolink`; `quill/core/github/repo_settings_lists.py`,
+  `quill/ui/github_workbench_settings_lists.py`). New Here adds each; a
+  webhook's events are push, everything, or a check list of the common ones,
+  and its secret goes through a `wx.PasswordEntryDialog`, sent once and never
+  said, shown or kept. Ping, Recent Deliveries... with redelivery, Change
+  Address or Secret... (`PATCH .../config`), and Delete on each; Delete is the
+  key's action on all three. Turning a webhook on or off stays on its sheet.
+  An organization's webhooks followed the same day (Organizations > org >
+  Webhooks, explore view `org_webhooks`; `hooks_path` picks `/orgs/{org}/hooks`
+  for a bare name; organization nodes now pass their login to Explore
+  loaders; sign-in asks `admin:org_hook`). Editing a webhook's events remains
+  planned.
 - **Secret and variable values:** variables are read and written in full.
   Secrets stay write-only, as GitHub itself keeps them: Set Value... encrypts
   the new value with the repository's or environment's or organization's
@@ -1012,13 +1026,42 @@ a home and a Properties sheet:
   filterable by actor, action, repository and date (needs `read:audit_log`
   and an organization plan that offers the API).
 - **SSH and GPG keys, SSH signing keys:** Account > Keys. List, add, delete.
+  **Built 2026-11-18** as People > My Keys (explore view `my_keys`, row type
+  `key`; `/user/keys`, `/user/gpg_keys`, `/user/ssh_signing_keys`): each key a
+  sentence with its OpenSSH SHA256 fingerprint, New Here reading a `.pub` or
+  `.asc` file or a paste and refusing a private key or the wrong kind before
+  sending, Delete Key... saying what stops working. A kind GitHub refuses is a
+  node note, not a failure of the list. Sign In with GitHub asks
+  `admin:public_key`, `admin:gpg_key` and `admin:ssh_signing_key`
+  (`quill/core/github/account_keys.py`,
+  `quill/ui/github_workbench_account_keys.py`). Delete and Ctrl+N's tables
+  moved to `quill/core/github/item_shortcuts.py` to keep `item_actions.py`
+  under its size budget.
 - **Personal access tokens:** an organization owner can review, approve and
   deny fine-grained token requests, and revoke access, under Organizations >
   org > Token Requests. Creating a token has no API, so Account > Tokens
   opens the right GitHub page and the Workbench checks the result
   (section 18.1).
+  **Found 2026-11-18:** reviewing, approving, denying and revoking go through
+  `/orgs/{org}/personal-access-token-requests` and `.../personal-access-tokens`,
+  which GitHub's reference marks "Only GitHub Apps can use this endpoint". A
+  person's sign-in is refused, so the Workbench cannot do this; the seven rows
+  are `out_of_scope` with that reason, and owners use the organization's
+  settings page on GitHub.
 - **Sponsors:** People > person > Sponsor, and Account > Sponsors for your
   own sponsorships and sponsors, read and manage what the API allows.
+  **Built 2026-11-18:** People > Sponsorships (`sponsorshipsAsSponsor`,
+  `sponsorshipsAsMaintainer`; who sponsors you as person rows) and Sponsor
+  under every person (`repositoryOwner ... on Sponsorable`: listing, whether
+  you sponsor them, each tier with its price; the custom-amount tier left to
+  GitHub). Sponsor at This Tier... (`createSponsorship` with `tierId` and
+  `privacyLevel`) says the price and recurrence and wants the login typed;
+  Cancel Sponsorship... (`cancelSponsorship`) asks first
+  (`quill/core/github/sponsors.py`, `quill/ui/github_workbench_sponsors.py`).
+  Creating and running your own listing and tiers remain on GitHub. The
+  newer row types (runners through sponsorships) live in
+  `quill/core/github/item_action_parts.py`, merged into the Workbench's
+  table, to keep `item_actions.py` under its size budget.
 
 What is left on github.com is only what GitHub offers no API for, and the
 coverage table says so row by row (section 19): Marketplace purchases,

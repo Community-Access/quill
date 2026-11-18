@@ -1698,7 +1698,17 @@ Workbench Options &gt; Saved Replies</td>
 </tr>
 <tr>
 <td>Wiki</td>
-<td>Roadmap GX12, not built</td>
+<td><strong>Partly built 2026-11-18.</strong> Repository &gt; Wiki
+(explore view <code>wiki</code>, row type <code>wiki</code>) reads
+<code>has_wiki</code> and says whether the wiki is on, Enter opening it
+on GitHub; Clone Wiki… (<code>Ctrl+Alt+W</code>, verb
+<code>clone_wiki</code>) runs the existing clone with
+<code>owner/name.wiki</code> filled in, which the clone already parses
+to <code>https://github.com/owner/name.wiki.git</code> with the token in
+the child’s environment (<code>quill/core/github/wiki.py</code>). GitHub
+has no API for wiki pages, so listing and editing pages inside the
+Workbench stays planned, as “Wiki: pages listed and edited in the
+Workbench”</td>
 <td>Repository &gt; Wiki (pages as a list, read in details, edit in the
 editor)</td>
 </tr>
@@ -1741,8 +1751,21 @@ draft</td>
 <tr>
 <td>Security policy, private vulnerability reports, repository security
 advisories</td>
-<td>Not found (an advisory credit appears only as a notification
-reason)</td>
+<td><strong>Built 2026-11-18:</strong> Security &gt; Policy (explore
+view <code>security_policy</code>: SECURITY.md in the root,
+<code>.github</code> or <code>docs</code>, opened in the editor, and
+whether private reporting is on), Security &gt; Advisories
+(<code>security_advisories</code>, row type <code>advisory</code>;
+drafts for administrators and security managers, refusal said), New
+Here: report privately (<code>POST .../reports</code>) or draft
+(<code>POST .../security-advisories</code>, optional package), Publish
+or Close Advisory… (<code>PATCH</code>, publishing wants the GHSA id
+typed), Request CVE… (<code>POST .../cve</code>), and Search &gt;
+Security Advisories (<code>GET /advisories</code> by package, CVE or
+GHSA id); <code>quill/core/github/security_advisories.py</code>,
+<code>quill/ui/github_workbench_advisories.py</code>. Advisory comments,
+temporary private forks and an organization’s advisories remain
+planned</td>
 <td>Repository &gt; Security &gt; Policy; Security &gt; Advisories
 (roadmap GX11)</td>
 </tr>
@@ -1768,7 +1791,10 @@ Version… (versions newest first with container tags; a 400 for the only
 or a heavily downloaded version is said) and Delete Package… (typed
 name), in <code>quill/core/github/packages.py</code> and
 <code>quill/ui/github_workbench_packages.py</code>. An organization’s
-packages and restoring remain planned</td>
+packages (Organizations &gt; org &gt; Packages,
+<code>/orgs/{org}/packages</code>, row keys <code>@org/type/name</code>)
+and restoring (Ctrl+N in either list, <code>POST .../restore</code> by
+type and name) followed the same day</td>
 <td>Repository &gt; Packages; Repositories &gt; My Packages</td>
 </tr>
 <tr>
@@ -1838,8 +1864,16 @@ Actions &gt; Runners
 (<code>GET /repos/{owner}/{repo}/actions/runners</code>), row type
 <code>runner</code> reading “name: online, busy, Linux” with labels in
 the details; administrators only, and anyone else is told so in the node
-note (<code>quill/core/github/runners_sbom.py</code>). Registering and
-removing a runner stay planned</td>
+note (<code>quill/core/github/runners_sbom.py</code>). New Runner…
+(Ctrl+N; <code>GET .../runners/downloads</code>,
+<code>POST .../registration-token</code>; the setup commands for the
+chosen system, with the download’s SHA-256 check, copied to the
+clipboard and the token never said, remembered for redaction), Runner
+Labels… (<code>POST</code>/<code>DELETE .../labels</code>, only custom
+labels removable) and Remove Runner…
+(<code>DELETE .../runners/{id}</code>) followed the same day in
+<code>quill/core/github/runner_admin.py</code>. Just-in-time
+configuration and removal tokens remain planned</td>
 <td>Repository &gt; Actions &gt; Runners (read-only)</td>
 </tr>
 <tr>
@@ -1896,6 +1930,25 @@ shown as GitHub shows it.</li>
 <li><strong>Autolink references:</strong> Repository &gt; Settings &gt;
 Autolinks. Add a prefix and URL template (alphanumeric or numeric),
 delete.</li>
+<li><strong>Built 2026-11-18, for a repository:</strong> Settings &gt;
+Webhooks, Deploy Keys and Autolinks (explore views
+<code>webhooks</code>, <code>deploy_keys</code>, <code>autolinks</code>;
+row types <code>webhook</code>, <code>deploy_key</code>,
+<code>autolink</code>;
+<code>quill/core/github/repo_settings_lists.py</code>,
+<code>quill/ui/github_workbench_settings_lists.py</code>). New Here adds
+each; a webhook’s events are push, everything, or a check list of the
+common ones, and its secret goes through a
+<code>wx.PasswordEntryDialog</code>, sent once and never said, shown or
+kept. Ping, Recent Deliveries… with redelivery, Change Address or
+Secret… (<code>PATCH .../config</code>), and Delete on each; Delete is
+the key’s action on all three. Turning a webhook on or off stays on its
+sheet. An organization’s webhooks followed the same day (Organizations
+&gt; org &gt; Webhooks, explore view <code>org_webhooks</code>;
+<code>hooks_path</code> picks <code>/orgs/{org}/hooks</code> for a bare
+name; organization nodes now pass their login to Explore loaders;
+sign-in asks <code>admin:org_hook</code>). Editing a webhook’s events
+remains planned.</li>
 <li><strong>Secret and variable values:</strong> variables are read and
 written in full. Secrets stay write-only, as GitHub itself keeps them:
 Set Value… encrypts the new value with the repository’s or environment’s
@@ -1910,15 +1963,52 @@ Audit Log, read-only and filterable by actor, action, repository and
 date (needs <code>read:audit_log</code> and an organization plan that
 offers the API).</li>
 <li><strong>SSH and GPG keys, SSH signing keys:</strong> Account &gt;
-Keys. List, add, delete.</li>
+Keys. List, add, delete. <strong>Built 2026-11-18</strong> as People
+&gt; My Keys (explore view <code>my_keys</code>, row type
+<code>key</code>; <code>/user/keys</code>, <code>/user/gpg_keys</code>,
+<code>/user/ssh_signing_keys</code>): each key a sentence with its
+OpenSSH SHA256 fingerprint, New Here reading a <code>.pub</code> or
+<code>.asc</code> file or a paste and refusing a private key or the
+wrong kind before sending, Delete Key… saying what stops working. A kind
+GitHub refuses is a node note, not a failure of the list. Sign In with
+GitHub asks <code>admin:public_key</code>, <code>admin:gpg_key</code>
+and <code>admin:ssh_signing_key</code>
+(<code>quill/core/github/account_keys.py</code>,
+<code>quill/ui/github_workbench_account_keys.py</code>). Delete and
+Ctrl+N’s tables moved to
+<code>quill/core/github/item_shortcuts.py</code> to keep
+<code>item_actions.py</code> under its size budget.</li>
 <li><strong>Personal access tokens:</strong> an organization owner can
 review, approve and deny fine-grained token requests, and revoke access,
 under Organizations &gt; org &gt; Token Requests. Creating a token has
 no API, so Account &gt; Tokens opens the right GitHub page and the
-Workbench checks the result (section 18.1).</li>
+Workbench checks the result (section 18.1). <strong>Found
+2026-11-18:</strong> reviewing, approving, denying and revoking go
+through <code>/orgs/{org}/personal-access-token-requests</code> and
+<code>.../personal-access-tokens</code>, which GitHub’s reference marks
+“Only GitHub Apps can use this endpoint”. A person’s sign-in is refused,
+so the Workbench cannot do this; the seven rows are
+<code>out_of_scope</code> with that reason, and owners use the
+organization’s settings page on GitHub.</li>
 <li><strong>Sponsors:</strong> People &gt; person &gt; Sponsor, and
 Account &gt; Sponsors for your own sponsorships and sponsors, read and
-manage what the API allows.</li>
+manage what the API allows. <strong>Built 2026-11-18:</strong> People
+&gt; Sponsorships (<code>sponsorshipsAsSponsor</code>,
+<code>sponsorshipsAsMaintainer</code>; who sponsors you as person rows)
+and Sponsor under every person
+(<code>repositoryOwner ... on Sponsorable</code>: listing, whether you
+sponsor them, each tier with its price; the custom-amount tier left to
+GitHub). Sponsor at This Tier… (<code>createSponsorship</code> with
+<code>tierId</code> and <code>privacyLevel</code>) says the price and
+recurrence and wants the login typed; Cancel Sponsorship…
+(<code>cancelSponsorship</code>) asks first
+(<code>quill/core/github/sponsors.py</code>,
+<code>quill/ui/github_workbench_sponsors.py</code>). Creating and
+running your own listing and tiers remain on GitHub. The newer row types
+(runners through sponsorships) live in
+<code>quill/core/github/item_action_parts.py</code>, merged into the
+Workbench’s table, to keep <code>item_actions.py</code> under its size
+budget.</li>
 </ul>
 <p>What is left on github.com is only what GitHub offers no API for, and
 the coverage table says so row by row (section 19): Marketplace

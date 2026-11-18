@@ -118,6 +118,19 @@ WORKBENCH_SCOPES: tuple[tuple[str, str], ...] = (
         "Repositories > My Packages: your packages and their versions, private ones too.",
     ),
     (
+        "admin:org_hook",
+        "Organizations > org > Webhooks: an organization's webhooks, for its owners.",
+    ),
+    (
+        "admin:public_key",
+        "People > My Keys: listing, adding and deleting your SSH keys.",
+    ),
+    ("admin:gpg_key", "People > My Keys: listing, adding and deleting your GPG keys."),
+    (
+        "admin:ssh_signing_key",
+        "People > My Keys: listing, adding and deleting your SSH signing keys.",
+    ),
+    (
         "delete:packages",
         "Delete Package... and Delete Package Version..., which ask first, and type the "
         "name for a whole package.",

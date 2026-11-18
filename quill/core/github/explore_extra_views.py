@@ -31,6 +31,12 @@ EXTRA_REPO_VIEWS = frozenset({
     "insights",
     "community",
     "commit_stats",
+    "advisories",
+    "security_policy",
+    "webhooks",
+    "deploy_keys",
+    "autolinks",
+    "wiki",
     "actions_caches",
     "secrets",
     "merge_queue",
@@ -43,9 +49,14 @@ EXTRA_ACCOUNT_VIEWS = frozenset({
     "my_packages",
     "star_lists",
     "my_profile",
+    "advisory_search",
+    "my_keys",
+    "org_webhooks",
+    "sponsorships",
+    "org_packages",
 })
 #: Views of one person, answered from the login in Explore's person box.
-EXTRA_PERSON_VIEWS = frozenset({"person_profile"})
+EXTRA_PERSON_VIEWS = frozenset({"person_profile", "person_sponsor"})
 EXTRA_VIEWS = SEARCH_VIEWS | EXTRA_REPO_VIEWS | EXTRA_ACCOUNT_VIEWS | EXTRA_PERSON_VIEWS
 _REDIRECTS = (301, 302, 303, 307, 308)
 
@@ -74,6 +85,45 @@ def fetch_extra_view(
             return fetch_invitations(TokenApi(token), limit=limit)
         except GitHubRestError as exc:
             raise GitHubExploreError(f"Could not read your invitations: {exc}") from exc
+    if view in ("sponsorships", "person_sponsor"):
+        from quill.core.github.sponsors import (
+            SponsorError,
+            fetch_sponsor_page,
+            fetch_sponsorships,
+        )
+        from quill.core.github.workbench_api import TokenApi
+
+        try:
+            if view == "sponsorships":
+                return fetch_sponsorships(TokenApi(token), warnings)
+            if not person.strip():
+                raise GitHubExploreError("Enter a GitHub username for this people view.")
+            return fetch_sponsor_page(TokenApi(token), person.strip().lstrip("@"))
+        except SponsorError as exc:
+            raise GitHubExploreError(str(exc.args[0])) from exc
+    if view == "org_webhooks":
+        from quill.core.github import repo_settings_lists as lists
+        from quill.core.github.workbench_api import TokenApi
+
+        if not repo or "/" in repo:
+            raise GitHubExploreError("Choose an organization for its webhooks.")
+        try:
+            return lists.fetch_webhooks(TokenApi(token), repo)
+        except lists.SettingsListError as exc:
+            raise GitHubExploreError(str(exc.args[0])) from exc
+    if view == "my_keys":
+        from quill.core.github.account_keys import fetch_keys
+        from quill.core.github.workbench_api import TokenApi
+
+        return fetch_keys(TokenApi(token), warnings)
+    if view == "advisory_search":
+        from quill.core.github.security_advisories import AdvisoryError, search_advisories
+        from quill.core.github.workbench_api import TokenApi
+
+        try:
+            return search_advisories(TokenApi(token), query, limit=limit)
+        except AdvisoryError as exc:
+            raise GitHubExploreError(str(exc.args[0])) from exc
     if view in ("my_profile", "person_profile"):
         from quill.core.github.profile import ProfileError, fetch_profile
         from quill.core.github.workbench_api import TokenApi
@@ -90,6 +140,16 @@ def fetch_extra_view(
         from quill.core.github.workbench_api import TokenApi
 
         return list_rows(fetch_lists(TokenApi(token)), warnings)
+    if view == "org_packages":
+        from quill.core.github.packages import PackageError, fetch_packages
+        from quill.core.github.workbench_api import TokenApi
+
+        if not repo or "/" in repo:
+            raise GitHubExploreError("Choose an organization for its packages.")
+        try:
+            return fetch_packages(TokenApi(token), limit=limit, org=repo)
+        except PackageError as exc:
+            raise GitHubExploreError(str(exc.args[0])) from exc
     if view == "my_packages":
         from quill.core.github.packages import PackageError, fetch_packages
         from quill.core.github.workbench_api import TokenApi
@@ -112,6 +172,41 @@ def fetch_extra_view(
             return fetch_insights(token, repo, limit=limit, warnings=warnings)
         if view == "community":
             return fetch_community_profile(token, repo)
+        if view == "wiki":
+            from quill.core.github.wiki import WikiError, fetch_wiki
+            from quill.core.github.workbench_api import TokenApi
+
+            try:
+                return fetch_wiki(TokenApi(token), repo)
+            except WikiError as exc:
+                raise GitHubExploreError(str(exc.args[0])) from exc
+        if view in ("webhooks", "deploy_keys", "autolinks"):
+            from quill.core.github import repo_settings_lists as lists
+            from quill.core.github.workbench_api import TokenApi
+
+            fetch = {
+                "webhooks": lists.fetch_webhooks,
+                "deploy_keys": lists.fetch_deploy_keys,
+                "autolinks": lists.fetch_autolinks,
+            }[view]
+            try:
+                return fetch(TokenApi(token), repo)
+            except lists.SettingsListError as exc:
+                raise GitHubExploreError(str(exc.args[0])) from exc
+        if view in ("advisories", "security_policy"):
+            from quill.core.github.security_advisories import (
+                AdvisoryError,
+                fetch_advisories,
+                fetch_policy,
+            )
+            from quill.core.github.workbench_api import TokenApi
+
+            try:
+                if view == "advisories":
+                    return fetch_advisories(TokenApi(token), repo, limit=limit)
+                return fetch_policy(TokenApi(token), repo)
+            except AdvisoryError as exc:
+                raise GitHubExploreError(str(exc.args[0])) from exc
         if view == "commit_stats":
             from quill.core.github.repo_activity import fetch_activity
 

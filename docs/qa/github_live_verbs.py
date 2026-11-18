@@ -404,6 +404,72 @@ def star_list_round_trip(run: Any) -> str:
     return f"{said} Deleted it again."
 
 
+def webhook_round_trip(run: Any) -> str:
+    """Add a webhook to an address that answers nothing, ping it, read its deliveries, delete."""
+    from quill.core.github import repo_settings_lists as sl
+
+    before = {row.key for row in sl.fetch_webhooks(run.api, run.repo)}
+    sl.add_webhook(run.api, run.repo, "https://example.invalid/quill-live", events=["push"])
+    made = [row for row in sl.fetch_webhooks(run.api, run.repo) if row.key not in before]
+    _expect(len(made) == 1, f"expected one new webhook, found {len(made)}")
+    hook = made[0].key
+    try:
+        sl.ping_webhook(run.api, run.repo, hook)
+        time.sleep(3)
+        deliveries = sl.fetch_deliveries(run.api, run.repo, hook)
+    finally:
+        sl.delete_webhook(run.api, run.repo, hook)
+    return f"{made[0].label} {len(deliveries)} deliveries read. Deleted it again."
+
+
+def deploy_key_round_trip(run: Any) -> str:
+    import shutil
+
+    from quill.core.github import repo_settings_lists as sl
+
+    keygen = shutil.which("ssh-keygen")
+    if keygen is None:
+        return "ssh-keygen is not on this computer, so no key was made to add"
+    with tempfile.TemporaryDirectory() as folder:
+        path = Path(folder) / "quill-live"
+        subprocess.run(
+            [keygen, "-t", "ed25519", "-N", "", "-C", "quill-live", "-f", str(path)],
+            capture_output=True,
+            check=True,
+        )
+        said = sl.add_deploy_key(
+            run.api, run.repo, "quill-live", (path.with_suffix(".pub")).read_text("utf-8")
+        )
+    made = next(row for row in sl.fetch_deploy_keys(run.api, run.repo) if "quill-live" in row.label)
+    sl.delete_deploy_key(run.api, run.repo, made.key)
+    return f"{said} Deleted it again."
+
+
+def autolink_round_trip(run: Any) -> str:
+    from quill.core.github import repo_settings_lists as sl
+
+    prefix = f"QL{int(time.time()) % 10000}-"
+    said = sl.add_autolink(
+        run.api, run.repo, prefix, "https://example.org/ticket/<num>", alphanumeric=False
+    )
+    made = next(
+        row for row in sl.fetch_autolinks(run.api, run.repo) if row.label.startswith(prefix)
+    )
+    sl.delete_autolink(run.api, run.repo, made.key)
+    return f"{said} Deleted it again."
+
+
+def runner_setup(run: Any) -> str:
+    """Build the setup commands (a real one-hour token, never printed); register nothing."""
+    from quill.core.github.runner_admin import fetch_downloads, setup_commands
+
+    downloads = fetch_downloads(run.api, run.repo)
+    _expect(bool(downloads), "GitHub listed no runner downloads")
+    commands = setup_commands(run.api, run.repo, downloads[0])
+    _expect("--token " in commands, "no token in the commands")
+    return f"setup commands built for {downloads[0].label}, {len(commands.splitlines())} lines"
+
+
 def commit_status(run: Any) -> str:
     from quill.core.github.commit_status import set_commit_status
 
@@ -857,6 +923,23 @@ VERBS: dict[str, Scenario | str] = {
     "close_reopen": close_reopen,
     "create_branch": create_branch,
     "unlink_branch": "with create_branch: linked, unlinked, then deleted",
+    "new_webhook": webhook_round_trip,
+    "ping_webhook": "with new_webhook: pinged",
+    "webhook_deliveries": "with new_webhook: its deliveries read",
+    "change_webhook": "needs Jeff: changing a real webhook's address or secret",
+    "delete_webhook": "with new_webhook: deleted again",
+    "new_deploy_key": deploy_key_round_trip,
+    "delete_deploy_key": "with new_deploy_key: deleted again",
+    "new_autolink": autolink_round_trip,
+    "delete_autolink": "with new_autolink: deleted again",
+    "sponsor": "needs Jeff: sponsoring charges real money",
+    "clone_wiki": "needs Jeff: clones into a folder you choose, from the editor",
+    "cancel_sponsorship": "needs Jeff: cancels one of your real sponsorships",
+    "new_key": "needs Jeff: adds a key to your own GitHub account",
+    "delete_key": "needs Jeff: deletes a key from your own GitHub account",
+    "new_advisory": "needs Jeff: a report or a draft advisory can be closed but never deleted",
+    "advisory_state": "needs Jeff: needs a draft advisory to close; publishing is public for good",
+    "request_cve": "needs Jeff: GitHub reviews every CVE request by hand",
     "not_duplicate": "needs Jeff: the duplicate mark needs a second issue closed as a duplicate",
     "edit_tasks": task_lists,
     "convert_tasks": "with edit_tasks: checked, converted and linked",
@@ -886,6 +969,10 @@ VERBS: dict[str, Scenario | str] = {
     "transfer_repository": "not here: needs a second account or an organization to receive it",
     "delete_package_version": "not here: the live run publishes no package to delete",
     "delete_package": "not here: the live run publishes no package to delete",
+    "new_runner": runner_setup,
+    "runner_labels": "not here: the test repositories have no self-hosted runner",
+    "remove_runner": "not here: the test repositories have no self-hosted runner",
+    "restore_package": "not here: the live run deletes no package to restore",
     "new_star_list": star_list_round_trip,
     "star_lists": "with new_star_list: the test repository put on the list",
     "edit_star_list": "with new_star_list: renamed, then deleted",
@@ -1158,6 +1245,32 @@ def my_profile(run: Any) -> str:
     return f"{rows[0].label} {year}"
 
 
+def security_policy_and_database(run: Any) -> str:
+    from quill.core.github.security_advisories import fetch_policy, search_advisories
+
+    policy = fetch_policy(run.api, run.repo)
+    found = search_advisories(run.api, "lodash", limit=5)
+    _expect(bool(found), "the Advisory Database found nothing for lodash")
+    return f"{policy[0].label} {policy[-1].label} Database: {found[0].label}"
+
+
+def my_keys(run: Any) -> str:
+    from quill.core.github.account_keys import fetch_keys
+
+    warnings: list[str] = []
+    rows = fetch_keys(run.api, warnings)
+    said = f"{len(rows)} keys" + (f"; first: {rows[0].label}" if rows else "")
+    return said + (f" Refused, in words: {warnings[0]}" if warnings else "")
+
+
+def sponsorships(run: Any) -> str:
+    from quill.core.github.sponsors import fetch_sponsor_page, fetch_sponsorships
+
+    rows = fetch_sponsorships(run.api, [])
+    page = fetch_sponsor_page(run.api, "nvaccess")
+    return f"{len(rows)} sponsorships. {page[0].label}"
+
+
 def check_with_git(run: Any) -> str:
     done = subprocess.run(["git", "--version"], capture_output=True, text=True, check=False)
     _expect(done.returncode == 0, "git is not installed")
@@ -1176,6 +1289,11 @@ FEATURES: dict[str, Scenario | str] = {
     "Commit Activity as tables (PRD 14.2)": commit_activity,
     "My Packages, or the permission it needs said in words (PRD 14.2)": my_packages,
     "My Profile, with the contribution calendar as numbers (PRD 14.2)": my_profile,
+    "My Keys: SSH, GPG and signing keys with fingerprints (PRD 14.3)": my_keys,
+    "Sponsorships, and a person's tiers (PRD 14.3)": sponsorships,
+    "Security policy, private reporting, and the Advisory Database (GX11)": (
+        security_policy_and_database
+    ),
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

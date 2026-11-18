@@ -92,3 +92,22 @@ def test_delete_package_wants_the_typed_name(monkeypatch: Any) -> None:
     window._do_delete_package(None, ROW)
     assert window.said == ["Cancelled; the package was not deleted."]
     assert not any(method == "DELETE" for method, _p, _q in window.api.sent)
+
+
+def test_an_organizations_package_rows_keep_the_organization(monkeypatch: Any) -> None:
+    window = _Window(pick=0)
+    row = package_row(ENGINE, "community-access")
+    window._do_delete_package_version(None, row)
+    assert window.api.sent[-1][:2] == (
+        "DELETE",
+        "/orgs/community-access/packages/container/quill-engine/versions/2",
+    )
+
+
+def test_ctrl_n_restores_a_deleted_package() -> None:
+    window = _Window(pick=1)
+    window._ask_text = lambda *_a, **_k: "left-pad"
+    window.frame.current = SimpleNamespace(key="packages")
+    assert window._fits_restore_package(None)
+    window._do_restore_package(SimpleNamespace(instance=""), None)
+    assert window.api.sent[-1][:2] == ("POST", "/user/packages/npm/left-pad/restore")

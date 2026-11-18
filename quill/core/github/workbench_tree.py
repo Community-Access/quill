@@ -167,6 +167,14 @@ _FIXED: tuple[NodeSpec, ...] = (
     ),
     _n("search_commits", "Commits", "search", scope=_Q, loader="explore:commit_search"),
     _n(
+        "search_advisories",
+        "Security Advisories",
+        "search",
+        scope=_Q,
+        loader="explore:advisory_search",
+        row_type="advisory",
+    ),
+    _n(
         "search_repositories",
         "Repositories",
         "search",
@@ -189,6 +197,15 @@ _FIXED: tuple[NodeSpec, ...] = (
         needs=_SIGN_IN,
         loader="explore:my_profile",
         row_type="mixed",
+    ),
+    _n("my_keys", "My Keys", "people", needs=_SIGN_IN, loader="explore:my_keys", row_type="key"),
+    _n(
+        "sponsorships",
+        "Sponsorships",
+        "people",
+        needs=_SIGN_IN,
+        loader="explore:sponsorships",
+        row_type="sponsorship",
     ),
     _n(
         "following",
@@ -388,8 +405,10 @@ _REPOSITORY: tuple[NodeSpec, ...] = (
         loader="explore:deployments",
         row_type="deployment",
     ),
+    _r("wiki", "Wiki", loader="explore:wiki", row_type="wiki"),
     _r("pages", "GitHub Pages", loader="explore:pages"),
     _r("security", "Security"),
+    _r("security_policy", "Policy", "security", loader="explore:security_policy", row_type="mixed"),
     _r("alerts", "Alerts", "security", loader="explore:security", row_type="security_alert"),
     _r(
         "alerts_closed",
@@ -398,6 +417,7 @@ _REPOSITORY: tuple[NodeSpec, ...] = (
         loader="explore:security_closed",
         row_type="security_alert",
     ),
+    _r("advisories", "Advisories", "security", loader="explore:advisories", row_type="advisory"),
     _r("settings", "Settings"),
     _r(
         "secrets",
@@ -420,6 +440,21 @@ _REPOSITORY: tuple[NodeSpec, ...] = (
         needs=frozenset({Need.SIGN_IN, Need.ADMIN}),
         loader="admin:general",
     ),
+    *(
+        _r(
+            key,
+            label,
+            "settings",
+            needs=frozenset({Need.SIGN_IN, Need.ADMIN}),
+            loader=f"explore:{key}",
+            row_type=row,
+        )
+        for key, label, row in (
+            ("webhooks", "Webhooks", "webhook"),
+            ("deploy_keys", "Deploy Keys", "deploy_key"),
+            ("autolinks", "Autolinks", "autolink"),
+        )
+    ),
 )
 
 _PERSON: tuple[NodeSpec, ...] = (
@@ -428,6 +463,7 @@ _PERSON: tuple[NodeSpec, ...] = (
         NodeSpec(key, label, "person", scope=Scope.PERSON, loader=f"explore:{view}", row_type=row)
         for key, label, view, row in (
             ("person_profile", "Profile", "person_profile", "mixed"),
+            ("person_sponsor", "Sponsor", "person_sponsor", "sponsor_tier"),
             ("person_repositories", "Repositories", "person_repos", "repository"),
             ("person_activity", "Activity", "person_activity", "event"),
             ("person_followers", "Followers", "person_followers", "person"),
@@ -454,6 +490,24 @@ _ORGANIZATION: tuple[NodeSpec, ...] = (
         needs=_SIGN_IN,
         loader="teams:organization",
         row_type="team",
+    ),
+    NodeSpec(
+        "organization_packages",
+        "Packages",
+        "organization",
+        scope=Scope.ORGANIZATION,
+        needs=_SIGN_IN,
+        loader="explore:org_packages",
+        row_type="package",
+    ),
+    NodeSpec(
+        "organization_webhooks",
+        "Webhooks",
+        "organization",
+        scope=Scope.ORGANIZATION,
+        needs=_SIGN_IN,
+        loader="explore:org_webhooks",
+        row_type="webhook",
     ),
     # PRD 21.3: the defaults in the organization's .github repository.
     NodeSpec(
@@ -496,12 +550,20 @@ def _planned(feature: str, node: str, reference: str = "") -> CoverageRow:
 
 PLANNED = CoverageTable((
     # 14.1, worth adding: people will look for these.
-    _planned("Saved replies", "Item > Insert Saved Reply", "GX05, GX12"),
-    _planned("Wiki", "Repository > Wiki", "GX12"),
-    _planned("Security policy and advisories", "Repository > Security > Advisories", "GX11"),
+    _planned(
+        "Wiki: pages listed and edited in the Workbench", "Repository > Wiki > each page", "GX12"
+    ),
+    _planned(
+        "Security advisories: comments, private forks, an organization's",
+        "Repository > Security > Advisories",
+        "GX11",
+    ),
     # 14.2, worth adding later.
-    _planned("Packages: an organization's, and restoring", "Repositories > My Packages"),
     _planned("Dependency graph and SBOM export", "Repository > Security > Dependencies"),
-    _planned("Self-hosted runners (registering and removing)", "Repository > Actions > Runners"),
+    _planned("Packages: one version at a time, and other people's", "Packages > a version"),
+    _planned(
+        "Self-hosted runners: just-in-time setup and removal tokens",
+        "Repository > Actions > Runners > a token",
+    ),
 ))
 """GitHub features with a future home and no node yet (GitHub PRD 14.1, 14.2)."""

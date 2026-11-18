@@ -15,7 +15,21 @@ deletes, because Enter must never destroy anything.
 from __future__ import annotations
 
 from quill.core.github.across_actions import ACROSS_ROWS
-from quill.core.workbench.actions import ActionRow, ActionTable, Tier
+from quill.core.github.item_action_parts import (
+    _COPY_LINK,
+    _D,
+    _O,
+    _OPEN_WEB,
+    _PROPERTIES,
+    _R,
+    _W,
+    ACCOUNT_ROWS,
+    PROPERTIES_COMMAND,
+    _a,
+    _default,
+)
+from quill.core.github.item_shortcuts import DELETE_COMMANDS, NEW_HERE
+from quill.core.workbench.actions import ActionRow, ActionTable
 
 __all__ = [
     "CODESPACES_COMMAND",
@@ -27,37 +41,10 @@ __all__ = [
     "RATE_LIMIT_COMMAND",
 ]
 
-PROPERTIES_COMMAND = "github.workbench.properties"
 CODESPACES_COMMAND = "github.workbench.open_codespaces"
 RATE_LIMIT_COMMAND = "github.workbench.rate_limit"
 CODESPACES_ROW_TYPES = frozenset({"repository", "branch", "pull_request"})
 
-_R, _O, _W, _D = Tier.READ, Tier.ORGANIZE, Tier.WRITE, Tier.DESTRUCTIVE
-
-
-def _a(
-    verb: str,
-    label: str,
-    tier: Tier = _R,
-    requirement: str = "",
-    help: str = "",  # noqa: A002 - the field's name
-    *,
-    default: bool = False,
-) -> ActionRow:
-    return ActionRow(f"github.workbench.{verb}", label, tier, requirement, help, default)
-
-
-def _default(verb: str, label: str, help: str) -> ActionRow:  # noqa: A002
-    return _a(verb, label, _R, "", help, default=True)
-
-
-_PROPERTIES = ActionRow(
-    PROPERTIES_COMMAND,
-    "Properties...",
-    help="Everything about this item on one sheet. Alt+Enter opens it from anywhere.",
-)
-_COPY_LINK = _a("copy_link", "Copy Link", help="Copy the item's GitHub address.")
-_OPEN_WEB = _a("open_on_github", "Open on GitHub", help="Open the item in your browser.")
 _CODESPACES = ActionRow(
     CODESPACES_COMMAND,
     "Open in Codespaces...",
@@ -311,32 +298,6 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _OPEN_WEB,
         _PROPERTIES,
     ),
-    "package": (
-        _default("show_details", "Show Details", "The package's type, visibility and repository."),
-        _OPEN_WEB,
-        _a(
-            "delete_package_version",
-            "Delete Package Version...",
-            _D,
-            "sign_in",
-            "Choose a version, newest first with its tags, and delete it after asking.",
-        ),
-        _a(
-            "delete_package",
-            "Delete Package...",
-            _D,
-            "sign_in",
-            "Delete the package and every version, after you type its name.",
-        ),
-        _COPY_LINK,
-        _PROPERTIES,
-    ),
-    "runner": (
-        _default("show_details", "Show Details", "The runner's state, system and labels."),
-        _OPEN_WEB,
-        _COPY_LINK,
-        _PROPERTIES,
-    ),
     "invitation": (
         _a(
             "accept_invitation",
@@ -546,43 +507,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     **ACROSS_ROWS,
 }
 
+_ROWS.update(ACCOUNT_ROWS)
+
 GITHUB_ACTIONS = ActionTable(_ROWS, properties_command=PROPERTIES_COMMAND)
 """Every GitHub row type's menu, checked against the shared rules on import."""
-
-#: What Delete does on each row type (Part C, C3): always a safe removal, an
-#: undoable one or one that asks first, and never on a type that has none.
-DELETE_COMMANDS: dict[str, str] = {
-    "notification": "github.workbench.mark_done",
-    "saved_search": "github.workbench.remove_search",
-    "favorite": "github.workbench.favorite",
-    "issue": "github.workbench.close_reopen",
-    "pull_request": "github.workbench.close_reopen",
-    "branch": "github.workbench.delete_branch",
-    "label": "github.workbench.delete_label",
-    "release_asset": "github.workbench.delete_asset",
-    "gist": "github.workbench.delete_gist",
-    "cache": "github.workbench.delete_cache",
-    "run": "github.workbench.delete_run",
-    "watch": "github.workbench.remove_watch",
-    "repository_set": "github.workbench.across_delete_set",
-    "tag": "github.workbench.delete_tag",
-}
-
-#: What Ctrl+N makes on each node (C3, "New, here"), by the node's key.
-NEW_HERE: dict[str, str] = {
-    "issues": "github.workbench.new_issue",
-    "issues_and_pulls": "github.workbench.new_issue",
-    "pulls": "github.workbench.new_pull",
-    "saved_searches": "github.workbench.save_search",
-    "search_issues": "github.workbench.save_search",
-    "releases": "github.workbench.new_release",
-    "tags": "github.workbench.new_tag",
-    "star_lists": "github.workbench.new_star_list",
-    "my_gists": "github.workbench.new_gist",
-    "across": "github.workbench.choose_repositories",
-    "across_sets": "github.workbench.across_new_set",
-    "pinned": "github.workbench.pin_repository",
-    "watches": "github.workbench.add_watch",
-    "templates": "github.workbench.new_template",
-    "discussions": "github.workbench.new_discussion",
-}

@@ -1605,6 +1605,40 @@ numbers. See
 Workbench undo a linked branch and a "duplicate of" mark. See
 [Closing, branches and task lists](../github-guide/github-guide-04-issues.html#closing-branches-and-task-lists).
 
+#### Security policy and advisories
+
+**Repository > Security > Policy** and **Advisories** in the GitHub Workbench
+say how to report a vulnerability, report one privately, and list and manage
+a repository's security advisories; **Search > Security Advisories** searches
+GitHub's Advisory Database. See
+[Security advisories](../github-guide/github-guide-08-discussions-and-security.html#security-advisories).
+
+#### Your keys
+
+**People > My Keys** in the GitHub Workbench lists, adds and deletes your SSH,
+GPG and signing keys, each with its fingerprint. See
+[My Keys](../github-guide/github-guide-12-the-workbench.html#my-keys).
+
+#### Webhooks, deploy keys and autolinks
+
+**Repository > Settings > Webhooks, Deploy Keys and Autolinks** in the GitHub
+Workbench list, add and delete each, and a webhook can be pinged and its
+deliveries read and sent again. See
+[Webhooks, deploy keys and autolinks](../github-guide/github-guide-07-code-and-repositories.html#webhooks-deploy-keys-and-autolinks).
+
+#### GitHub Sponsors
+
+**People > Sponsorships** and **Sponsor** under any person, in the GitHub
+Workbench, read and change your GitHub Sponsors sponsorships, with the
+person's login typed before anything is charged. See
+[Sponsorships](../github-guide/github-guide-12-the-workbench.html#sponsorships).
+
+#### The wiki
+
+**Repository > Wiki** and **Clone Wiki...** (`Ctrl+Alt+W`) in the GitHub
+Workbench bring a repository's wiki pages to a folder as Markdown files. See
+[The wiki](../github-guide/github-guide-07-code-and-repositories.html#the-wiki).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

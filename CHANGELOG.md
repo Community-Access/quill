@@ -620,6 +620,73 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Adding, labelling and removing a self-hosted runner (2026-11-18)
+
+`Ctrl+N` in **Repository > Actions > Runners** puts the commands that set up a
+new runner on the clipboard, for the machine's system, with a one-hour token
+that is never said. **Runner Labels...** adds or removes a label, and **Remove
+Runner...** forgets a runner after asking. Chapter 6 of the GitHub Guide has
+the details.
+
+### An organization's packages, and restoring a package (2026-11-18)
+
+**Organizations >** an organization **> Packages** in the GitHub Workbench lists
+an organization's packages with Delete Package Version and Delete Package, and
+`Ctrl+N` in either packages list brings back a package deleted in the last 30
+days. Chapter 7 of the GitHub Guide has the details.
+
+### The wiki (2026-11-18)
+
+**Repository > Wiki** in the GitHub Workbench says whether a repository's wiki
+is on and opens it on GitHub, and **Clone Wiki...** (`Ctrl+Alt+W`) copies its
+pages to a folder as Markdown files to edit in the editor and push back with
+git. GitHub has no API for wiki pages, so this is the way in. Chapter 7 of the
+GitHub Guide has the details.
+
+### GitHub Sponsors (2026-11-18)
+
+**People > Sponsorships** in the GitHub Workbench lists who you sponsor and
+who sponsors you, and **Sponsor** under any person lists their tiers with
+prices. **Sponsor at This Tier...** says the price and has you type their
+login before GitHub charges anything; **Cancel Sponsorship...** asks first.
+Chapter 12 of the GitHub Guide has the details.
+
+### An organization's webhooks (2026-11-18)
+
+**Organizations >** an organization **> Webhooks** in the GitHub Workbench
+lists, adds, pings and deletes an organization's webhooks, with Recent
+Deliveries and redelivery, exactly as a repository's do. Sign In with GitHub
+asks for the `admin:org_hook` permission for it. Chapter 7 of the GitHub Guide
+has the details.
+
+### Webhooks, deploy keys and autolinks (2026-11-18)
+
+**Repository > Settings** in the GitHub Workbench now has **Webhooks**,
+**Deploy Keys** and **Autolinks**, each a list of sentences with `Ctrl+N` to
+add one and Delete to remove one. A webhook also has Ping, Recent Deliveries
+with redelivery, and Change Address or Secret; its secret is typed in a
+password box and never shown, said or kept. Chapter 7 of the GitHub Guide has
+the details.
+
+### Your SSH, GPG and signing keys (2026-11-18)
+
+**People > My Keys** in the GitHub Workbench lists your SSH keys, GPG keys and
+SSH signing keys, each with the fingerprint `ssh-keygen -lf` prints, so you
+can tell which key is which. `Ctrl+N` adds one, read from a file or pasted,
+and refuses a private key before anything is sent; **Delete Key...** says what
+stops working first. Sign In with GitHub now asks for the three key
+permissions. Chapter 12 of the GitHub Guide has the details.
+
+### Security policy, advisories, and reporting a vulnerability privately (2026-11-18)
+
+**Repository > Security > Policy** in the GitHub Workbench says where a
+repository's security policy is and whether vulnerabilities can be reported
+privately. **Advisories** lists its security advisories as sentences, and New
+Here there reports a vulnerability privately or drafts an advisory;
+**Publish or Close Advisory...** and **Request CVE...** are on each. **Search >
+Security Advisories** searches GitHub's Advisory Database by package, CVE or
+GHSA id. Chapter 8 of the GitHub Guide has the details.
+
 ### Unlinking a branch, and taking back "duplicate of" (2026-11-18)
 
 **Unlink Branch...** on an issue takes a linked branch off its Development,

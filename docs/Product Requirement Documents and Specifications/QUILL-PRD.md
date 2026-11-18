@@ -17553,6 +17553,20 @@ lists. People > My Profile and each person's Profile
 (`quill/core/github/profile.py`) read a profile and its contribution calendar
 as sentences. Unlink Branch... and Not a Duplicate... on an issue
 (`quill/core/github/issue_links.py`) undo a linked branch and a duplicate mark.
+Security > Policy and Advisories, private reports and drafts, and Search >
+Security Advisories (`quill/core/github/security_advisories.py`) cover GX11.
+People > My Keys (`quill/core/github/account_keys.py`) lists, adds and
+deletes your SSH, GPG and signing keys. Settings > Webhooks, Deploy Keys and
+Autolinks (`quill/core/github/repo_settings_lists.py`) list, add and delete
+each; a webhook secret is write-only and never said. An organization's
+webhooks are under Organizations > org > Webhooks. People > Sponsorships and
+each person's Sponsor (`quill/core/github/sponsors.py`) read and change GitHub
+Sponsors, with the login typed before money is spent. Repository > Wiki and
+Clone Wiki... (`Ctrl+Alt+W`, `quill/core/github/wiki.py`) reach a wiki the way
+git does, since GitHub has no wiki API. An organization's packages are under
+Organizations > org > Packages, and Ctrl+N in a packages list restores one.
+Ctrl+N in Runners copies a new runner's setup commands; Runner Labels and
+Remove Runner are on each runner (`quill/core/github/runner_admin.py`).
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

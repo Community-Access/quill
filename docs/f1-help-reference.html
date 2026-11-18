@@ -5916,6 +5916,8 @@ filter box, such as is:open author:@me. Ctrl+N saves the search.</p>
 filter box. Needs sign-in.</p>
 <p><strong>Commits.</strong> Search Commits: commits whose message
 matches the filter box.</p>
+<p><strong>Security Advisories.</strong> Security Advisories: search
+GitHub’s Advisory Database by package, CVE or GHSA id.</p>
 <p><strong>Repositories.</strong> Search Repositories: repositories
 whose name or description matches the filter box.</p>
 <p><strong>Saved Searches.</strong> Saved Searches: searches you kept,
@@ -5924,6 +5926,10 @@ on this computer. Enter runs one; Delete removes it.</p>
 anybody you look up.</p>
 <p><strong>My Profile.</strong> My Profile: your profile as GitHub shows
 it, your year of contributions as numbers, and what you pinned.</p>
+<p><strong>My Keys.</strong> My Keys: your SSH keys, GPG keys and SSH
+signing keys, each with its fingerprint. Ctrl+N adds one.</p>
+<p><strong>Sponsorships.</strong> Sponsorships: who you sponsor on
+GitHub Sponsors, and who sponsors you.</p>
 <p><strong>People I Follow.</strong> People I Follow: accounts you
 follow. Enter opens a person’s node.</p>
 <p><strong>My Followers.</strong> My Followers: accounts that follow
@@ -6092,14 +6098,22 @@ GitHub’s statistics graphs as rows: commits and lines each week, the
 busiest hours, and each contributor’s lines.</p>
 <p><strong>repository: Deployments and Environments.</strong>
 Deployments and Environments: where the code was deployed.</p>
+<p><strong>repository: Wiki.</strong> Wiki: whether the wiki is on.
+Enter opens it on GitHub; Clone Wiki copies its pages to a folder to
+edit.</p>
 <p><strong>repository: GitHub Pages.</strong> GitHub Pages: the website
 built from this repository.</p>
 <p><strong>repository: Security.</strong> Security: alerts about
 vulnerable code and leaked secrets.</p>
+<p><strong>repository: Policy.</strong> Policy: where the security
+policy is, and whether vulnerabilities can be reported privately.</p>
 <p><strong>repository: Alerts.</strong> Alerts: open security alerts.
 Enter reads one.</p>
 <p><strong>repository: Dismissed and Resolved Alerts.</strong> Dismissed
 and Resolved Alerts: alerts no longer open.</p>
+<p><strong>repository: Advisories.</strong> Advisories: this
+repository’s security advisories. New Here reports a vulnerability or
+drafts an advisory.</p>
 <p><strong>repository: Settings.</strong> Settings: names of secrets,
 branch protection and general settings.</p>
 <p><strong>repository: Secret and Variable Names.</strong> Secret and
@@ -6109,10 +6123,20 @@ who may change a branch and what a change needs first. Enter opens the
 setting.</p>
 <p><strong>repository: General.</strong> General: the name, visibility
 and default branch. Enter opens one.</p>
+<p><strong>repository: Webhooks.</strong> Webhooks: the addresses GitHub
+tells about events here. Ctrl+N adds one; Recent Deliveries on a webhook
+says what was sent and redelivers it.</p>
+<p><strong>repository: Deploy Keys.</strong> Deploy Keys: SSH keys that
+let a server clone, pull or push this one repository. Ctrl+N adds
+one.</p>
+<p><strong>repository: Autolinks.</strong> Autolinks: prefixes such as
+BUG- that GitHub turns into links. Ctrl+N adds one.</p>
 <p><strong>person: person.</strong> A person: their repositories,
 activity, followers and who they follow.</p>
 <p><strong>person: Profile.</strong> Profile: who this person is, their
 year of contributions as numbers, and what they pinned.</p>
+<p><strong>person: Sponsor.</strong> Sponsor: whether this person takes
+sponsorships, and each tier with its price.</p>
 <p><strong>person: Repositories.</strong> Repositories: this person’s
 public repositories.</p>
 <p><strong>person: Activity.</strong> Activity: what this person did
@@ -6129,6 +6153,11 @@ organization’s repositories you can see.</p>
 teams, as GitHub nests them. Alt+Enter opens a team’s sheet: its members
 and maintainers, repositories and roles, child teams and code review
 assignment.</p>
+<p><strong>organization: Packages.</strong> Packages: this
+organization’s container images and other packages. Ctrl+N restores one
+deleted in the last 30 days.</p>
+<p><strong>organization: Webhooks.</strong> Webhooks: the addresses
+GitHub tells about events across this organization. Ctrl+N adds one.</p>
 <p><strong>organization: Templates.</strong> Templates: the defaults in
 the organization’s .github repository, which every repository without
 its own uses. Enter builds or edits one.</p>
@@ -6377,6 +6406,8 @@ uses.</p>
 <p><strong>Repository &gt; Transfer Repository….</strong> Move the
 repository to another person or organization; asks for its name
 first.</p>
+<p><strong>Repository &gt; Clone Wiki….</strong> Copy the repository’s
+wiki pages to a folder, to edit them as Markdown.</p>
 <p><strong>Account &gt; Manage GitHub Accounts….</strong> Add, switch,
 sign in again or remove GitHub accounts.</p>
 <p><strong>Account &gt; GitHub API Rate Limit.</strong> How much of the
@@ -6543,12 +6574,6 @@ failed or still running.</p>
 <p><strong>Delete Tag.</strong> Remove the tag; the commit stays.</p>
 <p><strong>Read Tag Message.</strong> Who made the tag, when, and its
 message.</p>
-<p><strong>Show Details.</strong> The package’s type, visibility and
-repository.</p>
-<p><strong>Delete Package Version.</strong> Choose a version, newest
-first with its tags, and delete it after asking.</p>
-<p><strong>Delete Package.</strong> Delete the package and every
-version, after you type its name.</p>
 <p><strong>Accept Invitation.</strong> Join the repository with the
 access offered.</p>
 <p><strong>Decline Invitation.</strong> Say no to it.</p>
@@ -6582,6 +6607,8 @@ description.</p>
 <p><strong>Delete Gist.</strong> Delete the gist.</p>
 <p><strong>Open Discussion Thread.</strong> Read the whole thread.</p>
 <p><strong>Dismiss or Reopen Alert.</strong> Dismiss with a reason.</p>
+<p><strong>Show Details.</strong> The cache’s key, size and last
+use.</p>
 <p><strong>Delete Cache.</strong> Delete this Actions cache.</p>
 <p><strong>Run.</strong> Run the saved search.</p>
 <p><strong>Remove Saved Search.</strong> Forget it on this device.</p>
@@ -6663,6 +6690,26 @@ deleted, after the preview.</p>
 topic, in every repository, after the preview.</p>
 <p><strong>Open Repository.</strong> Select the repository’s node in the
 tree.</p>
+<p><strong>Runner Labels.</strong> Add a label, or take one away.</p>
+<p><strong>Remove Runner.</strong> GitHub forgets it; asks first.</p>
+<p><strong>Delete Package Version.</strong> Choose a version, newest
+first with its tags, and delete it after asking.</p>
+<p><strong>Delete Package.</strong> Delete the package and every
+version, after you type its name.</p>
+<p><strong>Delete Key.</strong> Remove it; asks first.</p>
+<p><strong>Publish or Close Advisory.</strong> Change its state.</p>
+<p><strong>Request CVE.</strong> Ask GitHub for a CVE number.</p>
+<p><strong>Ping.</strong> Send it a test message.</p>
+<p><strong>Recent Deliveries.</strong> Read and redeliver.</p>
+<p><strong>Change Address or Secret.</strong> The secret is
+write-only.</p>
+<p><strong>Delete Webhook.</strong> Stop sending it anything.</p>
+<p><strong>Delete Deploy Key.</strong> Remove it; asks first.</p>
+<p><strong>Delete Autolink.</strong> Remove it; asks first.</p>
+<p><strong>Clone Wiki.</strong> Copy its pages to a folder, to edit
+them.</p>
+<p><strong>Cancel Sponsorship.</strong> Stop it; asks first.</p>
+<p><strong>Sponsor at This Tier.</strong> Pay; you type their login.</p>
 <h3 id="every-workbench-option">Every Workbench option</h3>
 <p><strong>General: Open the Workbench on.</strong> Where the window
 opens when no menu row asks for a place: Inbox (Start Here until you

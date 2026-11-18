@@ -17,11 +17,13 @@ from quill.core.github.explore_models import ExploreRow
 __all__ = ["PACKAGE_REASONS", "PACKAGE_VERBS", "GitHubWorkbenchPackagesMixin"]
 
 PACKAGE_VERBS: dict[str, frozenset[str]] = {
+    "restore_package": frozenset({"view"}),
     "delete_package_version": frozenset({"package"}),
     "delete_package": frozenset({"package"}),
 }
 
 PACKAGE_REASONS: dict[str, str] = {
+    "restore_package": "Restore Package is Ctrl+N in a list of packages, while you are signed in.",
     "delete_package_version": "Delete Package Version is for a package, while you are signed in.",
     "delete_package": "Delete Package is for a package, while you are signed in.",
 }
@@ -34,15 +36,18 @@ class GitHubWorkbenchPackagesMixin:
     _background: Callable[[str, Callable[[], Any], Callable[[Any], None]], None]
     _choose: Callable[[str, str, list[str]], int]
     _confirm: Callable[[str, str], bool]
+    _ask_text: Callable[..., str]
 
     def github_api(self) -> Any:
         raise NotImplementedError
 
     @staticmethod
-    def _package(row: object) -> tuple[str, str] | None:
+    def _package(row: object) -> tuple[str, str, str] | None:
+        """(organization or "", type, name) for a package row."""
+        from quill.core.github.packages import row_parts
+
         if isinstance(row, ExploreRow) and row.kind == "package" and "/" in row.key:
-            kind, _, name = row.key.partition("/")
-            return kind, name
+            return row_parts(row.key)
         return None
 
     def _fits_delete_package_version(self, row: object) -> bool:
@@ -57,15 +62,15 @@ class GitHubWorkbenchPackagesMixin:
         found = self._package(row)
         if found is None:
             return
-        kind, name = found
+        org, kind, name = found
         api = self.github_api()
         self._background(
             "list the versions",
-            lambda: fetch_versions(api, kind, name),
-            lambda versions: self._pick_version(kind, name, list(versions)),
+            lambda: fetch_versions(api, kind, name, org),
+            lambda versions: self._pick_version(kind, name, list(versions), org),
         )
 
-    def _pick_version(self, kind: str, name: str, versions: list[Any]) -> None:
+    def _pick_version(self, kind: str, name: str, versions: list[Any], org: str = "") -> None:
         from quill.core.github.packages import delete_version
 
         if not versions:
@@ -88,7 +93,7 @@ class GitHubWorkbenchPackagesMixin:
         api = self.github_api()
         self._background(
             "delete the version",
-            lambda: delete_version(api, kind, name, version),
+            lambda: delete_version(api, kind, name, version, org),
             lambda said: (self._say(str(said)), self.frame.reload()),
         )
 
@@ -99,7 +104,7 @@ class GitHubWorkbenchPackagesMixin:
         found = self._package(row)
         if found is None:
             return
-        kind, name = found
+        org, kind, name = found
         if not TypedConfirmDialog(
             self.frame.frame,
             title="Delete Package",
@@ -116,6 +121,36 @@ class GitHubWorkbenchPackagesMixin:
         api = self.github_api()
         self._background(
             "delete the package",
-            lambda: delete_package(api, kind, name),
+            lambda: delete_package(api, kind, name, org),
+            lambda said: (self._say(str(said)), self.frame.reload()),
+        )
+
+    # -- restoring ---------------------------------------------------------------------
+
+    def _fits_restore_package(self, _row: object) -> bool:
+        key = getattr(getattr(self.frame, "current", None), "key", "")
+        return self.signed_in and key in ("packages", "organization_packages")
+
+    def _do_restore_package(self, ref: Any, _row: object) -> None:
+        from quill.core.github.packages import PACKAGE_TYPES, restore_package
+
+        org = (
+            ref.instance
+            if getattr(self.frame.current, "key", "") == "organization_packages"
+            else ""
+        )
+        picked = self._choose(
+            "Restore Package", "Which type of package was deleted?", list(PACKAGE_TYPES)
+        )
+        if picked < 0:
+            return
+        kind = PACKAGE_TYPES[picked]
+        name = self._ask_text("Restore Package", f"The deleted {kind} package's name:")
+        if not name:
+            return
+        api = self.github_api()
+        self._background(
+            "restore the package",
+            lambda: restore_package(api, kind, name, org),
             lambda said: (self._say(str(said)), self.frame.reload()),
         )
