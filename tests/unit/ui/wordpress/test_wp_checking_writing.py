@@ -103,12 +103,14 @@ class FakeEditor:
         return self.service
 
 
-def test_in_short_goes_on_top_as_one_change_with_a_version_kept(wp) -> None:
+def test_in_short_goes_on_top_as_one_change_with_a_version_kept(wp, wp_dialogs) -> None:
     copy = _open_doc(wp, "The festival runs all weekend.\n")
     wp.host.caret = 20
     service = FakeService()
     wp.host.ai_editor = lambda: FakeEditor(service)
+    wp_dialogs.answer("confirm", True)
     wp.cmd_in_short()
+    assert "(5 words)" in wp_dialogs.asked("confirm")[0]["message"]
     assert "The festival runs all weekend." in service.prompts[0]
     assert wp.host.text == (
         "**In short:** Two short sentences. Plain ones.\n\nThe festival runs all weekend.\n"
@@ -135,7 +137,17 @@ def test_in_short_when_ai_is_not_ready_sends_nothing(wp) -> None:
     assert service.prompts == [] and wp.host.text == "Text."
 
 
-def test_in_short_failures_and_empty_answers_change_nothing(wp) -> None:
+def test_in_short_asks_before_it_sends_the_page(wp, wp_dialogs) -> None:
+    """UX review item 33: In Short sent the page to an AI without asking."""
+    _open_doc(wp, "Text.")
+    service = FakeService()
+    wp.host.ai_editor = lambda: FakeEditor(service)
+    wp.cmd_in_short()
+    assert service.prompts == [] and wp.host.announced[-1] == "Nothing was sent."
+
+
+def test_in_short_failures_and_empty_answers_change_nothing(wp, wp_dialogs) -> None:
+    wp_dialogs.answer("confirm", True, True)
     _open_doc(wp, "Text.")
     wp.host.ai_editor = lambda: FakeEditor(FakeService(error="The AI is busy. Try again soon."))
     wp.cmd_in_short()

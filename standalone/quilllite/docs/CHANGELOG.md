@@ -2,6 +2,16 @@
 
 ## 2.0.0
 
+### WordPress: it asks before anything leaves for an AI or the Media Library (2026-11-18)
+
+In Short now asks before it sends the page's text to your AI, naming the AI
+and the number of words, as Visual Review always did. Ask the Site says,
+before an ability runs, that what it returns goes to your AI too. Make a
+Listening Version asks before it records and uploads the first time, and
+Publish a Document as a Page asks before it uploads the original: an
+uploaded file can be reached on the site before the page is published
+(review item 33).
+
 ### WordPress: the WordPress key says when it times out (2026-11-18)
 
 - The WordPress key's four-second wait now ends out loud: "WordPress keys
