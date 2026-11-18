@@ -167,10 +167,21 @@ and the title.
 - **Selected review hunk** shows the part of the file a thread is about, when
   you came here from a thread.
 - **Line marks:** (`Alt+M`) chooses how changed lines are marked in the patch
-  list: **Words** ("Added line 12", "Removed line 9", "Unchanged line 13") or
-  **Symbols** (plus and minus). Symbols are shorter, but your screen reader
-  says them only when it reads punctuation, and QUILL reminds you of that when
-  you choose them. Your choice is kept.
+  list, from four styles designed by Kelly Ford for GHManage and The Chat
+  Place: **Words** ("Added line 12", "Removed line 9", "Unchanged line 13"),
+  **Short words** ("Add 12", "Del 9", "Same 13"), **Diff symbols** ("+ 12",
+  "- 9", "= 13"), or **Diff symbols with changed lines**, where a removed line
+  is followed straight away by the line that replaced it, marked "!-" and "!+",
+  so each change is heard old then new. Symbols are shorter, but your screen
+  reader says them only when it reads punctuation, and QUILL reminds you of
+  that when you choose them. Your choice is kept, and it is the same choice
+  Compare Files, Compare with File and WordPress's Compare with Site use.
+- **Next and previous change**: in the patch list, `Alt+N` and `Alt+P` (the
+  keys Kelly Ford's GHManage uses), or `F8` and `Shift+F8` (as in Compare
+  Files), move to the first line of the next or previous change and say
+  where you are: "Change 2 of 5, at new line 41: 1 line removed, 1 added."
+  When a few lines were replaced by as many, it also says which words
+  changed: "Changed Thursday to Friday."
 - **Changed Lines Only** (`Alt+H`), beside it, leaves the unchanged lines
   around each change out of the patch list, so the arrows go from change to
   change. The hunk headings stay, so each change still says where it is. You

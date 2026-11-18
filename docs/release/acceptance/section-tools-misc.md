@@ -108,11 +108,14 @@ start a keyboard-navigable difference session.
 **Do this**
 1. Command Palette → “Compare with File”, or **Tools menu ▸ Compare with File…**.
 2. In the file dialog pick **`compare-revised.txt`**; press **Enter**.
-3. Read the unified-diff preview box, then dismiss it (Enter / Escape).
+3. Read the preview box, then dismiss it (Enter / Escape).
 
 **You should see and hear**
-- The file dialog is keyboard-navigable. A **Compare with File** preview box shows a
-  unified diff that reflects all three edits in substance (**March → April**, the
+- The file dialog is keyboard-navigable. A **Compare with File** preview box starts
+  with a summary ("Comparing ... with compare-revised.txt: N lines added, N removed,
+  in N places"), then each run of changes under "Lines A to B:", every line marked
+  first in the Diff Line Marks style ("Added:", "Removed:", "Unchanged:" by default).
+  It reflects all three edits in substance (**March → April**, the
   added **“and performance”**, and the added **“A follow-up review…”** line).
 - On dismiss, a compare session starts: the status announces something like
   **“Compare session started. 2 documents. 1 differing line group found”** and the

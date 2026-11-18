@@ -15,7 +15,6 @@ at, which is what conflict protection compares (5.4).
 
 from __future__ import annotations
 
-import difflib
 from collections.abc import Callable
 from typing import Any
 
@@ -492,15 +491,16 @@ def failure_sentence(exc: BaseException) -> str:
 
 
 def compare_text(site: str, mine: str, *, site_name: str) -> str:
-    diff = list(difflib.ndiff(site.splitlines(), mine.splitlines()))
-    lines = []
-    for row in diff:
-        if row.startswith("- "):
-            lines.append(f"Site: {row[2:]}")
-        elif row.startswith("+ "):
-            lines.append(f"Yours: {row[2:]}")
-    if not lines:
+    """Your copy against the site's, each line marked in the Diff Line Marks style.
+
+    "Removed" is on the site and not in yours; "Added" is yours and not on the
+    site. The marks are Kelly Ford's (quill.core.diff_marks).
+    """
+    from quill.core.diff_marks import render_texts
+    from quill.core.github.review_preferences import load_line_marks
+
+    if site.splitlines() == mine.splitlines():
         return f"Your copy and the copy on {site_name} are the same."
-    head = f"{sum(1 for x in lines if x.startswith('Site:'))} lines only on {site_name}, "
-    head += f"{sum(1 for x in lines if x.startswith('Yours:'))} only in yours.\n\n"
-    return head + "\n".join(lines)
+    return render_texts(
+        site, mine, f"the copy on {site_name}", "your copy", style=load_line_marks()
+    )

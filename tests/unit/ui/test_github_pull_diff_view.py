@@ -22,16 +22,25 @@ def test_file_label_carries_status_counts_and_rename() -> None:
 def test_render_uses_the_compare_engines_spoken_walk() -> None:
     base = "alpha\nbravo\ncharlie\n"
     head = "alpha\nbravo two\ncharlie\ndelta\n"
-    out = render_pull_file_diff("notes.md", base, head, base_label="main", head_label="this PR")
+    out = render_pull_file_diff(
+        "notes.md", base, head, base_label="main", head_label="this PR", style="words"
+    )
     # The Compare Documents voice: numbered differences with locations.
     assert "2 differences" in out
     assert "Difference 1 of 2." in out
     assert "line 2" in out
-    # Both sides are labeled the screen-reader-friendly way.
-    assert "main: bravo" in out
-    assert "this PR: bravo two" in out
+    # Each line is marked first, in a style a screen reader always speaks.
+    assert "Removed: bravo" in out
+    assert "Added: bravo two" in out
     # The word-level change is described, not just dumped.
     assert "changed" in out or "added" in out
+
+
+def test_changed_lines_style_pairs_old_with_new() -> None:
+    out = render_pull_file_diff("n.md", "a\nb\n", "a\nB\n", style="changed")
+    assert "!- b\n!+ B" in out
+    short = render_pull_file_diff("n.md", "a\nb\n", "a\nB\n", style="short")
+    assert "Del b\nAdd B" in short
 
 
 def test_added_and_deleted_files_are_stated_plainly() -> None:

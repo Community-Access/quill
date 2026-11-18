@@ -662,7 +662,12 @@ IMAP client), <a
 href="https://github.com/kellylford/rssquick">RSSQuick</a> (accessible
 WPF RSS reader), and <a
 href="https://github.com/kellylford/ChatViewer">ChatViewer</a> (GitHub
-Copilot Chat viewer).</li>
+Copilot Chat viewer). The four ways QUILL marks a changed line in every
+difference it shows (words, short words, diff symbols, and diff symbols
+with changed lines) are Kelly’s design from GHManage and The Chat Place,
+and <code>quill/core/diff_marks.py</code> is adapted from his
+<code>difftext.py</code> in TheIdeaPlace app-kit under the MIT licence,
+with his copyright and permission notice kept in the module.</li>
 </ul>
 <h2 id="release-process">Release process</h2>
 <p>Releases are cut from <code>main</code>. Hotfixes may use short-lived

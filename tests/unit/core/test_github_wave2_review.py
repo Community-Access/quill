@@ -513,3 +513,17 @@ def test_summary_text_for_closed_and_unknown_checks() -> None:
     assert open_pull.sentence() == (
         "Review required, 1 check running, no open threads, auto-merge on, merge readiness unknown."
     )
+
+
+def test_change_runs_and_which_words_changed() -> None:
+    from quill.core.github.diff_lines import change_runs, describe_change
+
+    lines = parse_diff_lines(
+        "@@ -1,4 +1,4 @@\n keep\n-meet next Thursday\n+meet next Friday\n same\n-gone\n"
+    )
+    runs = change_runs(lines)
+    assert runs == [(2, 3), (5, 5)]
+    assert describe_change(lines, runs[0], 1, 2) == (
+        "Change 1 of 2, at new line 2: 1 line removed, 1 added. Changed Thursday to Friday."
+    )
+    assert describe_change(lines, runs[1], 2, 2) == "Change 2 of 2, at old line 4: 1 line removed."

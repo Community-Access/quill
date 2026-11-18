@@ -236,7 +236,8 @@ Review action and Submit Review have no access key; reach them with Tab.
 
 | Key | What it does |
 | --- | --- |
-| `Alt+M` | Line marks: words or symbols |
+| `Alt+M` | Line marks: words, short words, diff symbols, or diff symbols with changed lines |
+| `Alt+N` / `Alt+P` | Next / previous change in the patch list, "Change 2 of 5" (`F8` / `Shift+F8` too) |
 | `Alt+H` | Changed Lines Only |
 | `Alt+W` | Hide Whitespace Changes |
 | `Alt+T` | Choose Commit |

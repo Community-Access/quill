@@ -668,7 +668,7 @@ Hear the earlier versions of a post, the ones kept on this computer and the site
 
 5. **Hear what is different.** Compare with Site, in File, WordPress, lists the differences between the site's copy and yours, a line at a time. It is the check worth making before you send a restored version.
    - Keys: Ctrl+Alt+Shift+Grave, C
-   - You should hear: Lines starting Site: for the site's copy, and Yours: for yours.
+   - You should hear: A count of lines added and removed, then each change: Removed for the site's line, Added for yours.
    - Worth knowing: Changed your mind? Your text from before the restore is the newest row in Previous Versions, marked Before restore.
 
 Nothing you send is ever lost: the site's copy is kept before every update. Restore is the way back, and it never publishes.

@@ -78,6 +78,36 @@ class CompareDialog:
         self._ws_check = wx.CheckBox(panel, label="Ignore trailing whitespace")
         root.Add(self._ws_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
+        # How each changed line is marked: Kelly Ford's four styles
+        # (quill.core.diff_marks), the one Diff Line Marks choice every diff
+        # view in QUILL shares, so it is remembered here and there alike.
+        from quill.core import diff_marks
+        from quill.core.github.review_preferences import load_line_marks
+
+        self._marks = diff_marks
+        self._line_style = load_line_marks()
+        marks_row = wx.BoxSizer(wx.HORIZONTAL)
+        marks_row.Add(
+            wx.StaticText(panel, label="&Mark lines as:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
+        )
+        self._marks_choice = wx.Choice(
+            panel, choices=[diff_marks.LABELS[style] for style in diff_marks.STYLES]
+        )
+        self._marks_choice.SetSelection(diff_marks.STYLES.index(self._line_style))
+        self._marks_choice.SetName("Mark lines as")
+        set_spoken_name(self._marks_choice, "Mark lines as")
+        self._marks_choice.SetHelpText(
+            "How each line of a difference is marked: words, short words, diff symbols, or "
+            "diff symbols with each changed line read old then new. Remembered for every diff."
+        )
+        marks_row.Add(self._marks_choice, 0)
+        root.Add(marks_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+        self._marks_note = wx.StaticText(
+            panel,
+            label=diff_marks.SYMBOLS_NOTE if diff_marks.is_symbol_style(self._line_style) else "",
+        )
+        root.Add(self._marks_note, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+
         # Buttons.
         btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self._btn_prev = wx.Button(panel, label="Previous (Shift+F8)")
@@ -103,6 +133,7 @@ class CompareDialog:
         self._btn_summary.Bind(wx.EVT_BUTTON, lambda _e: self._speak_current())
         self._btn_close.Bind(wx.EVT_BUTTON, lambda _e: self.dialog.EndModal(wx.ID_CANCEL))
         self._diff_list.Bind(wx.EVT_LISTBOX, self._on_list_select)
+        self._marks_choice.Bind(wx.EVT_CHOICE, self._on_marks_changed)
         self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_key)
 
         if g0 is not None:
@@ -174,13 +205,32 @@ class CompareDialog:
         self._status_label.SetLabel(
             f"Difference {g.index} of {g.total}. Press F8 / Shift+F8 to navigate."
         )
-        self._detail.SetValue(g.summary_verbose)
+        self._detail.SetValue(self._detail_text(g))
+
+    def _detail_text(self, g: DifferenceGroup) -> str:
+        """The difference described, then its lines, each marked first."""
+        lines = self._marks.render_replacement(g.left_text, g.right_text, self._line_style)
+        return "\n".join([g.summary_verbose, "", *lines])
+
+    def _on_marks_changed(self, _event: object) -> None:
+        from quill.core.github.review_preferences import save_line_marks
+
+        index = self._marks_choice.GetSelection()
+        if not 0 <= index < len(self._marks.STYLES):
+            return
+        self._line_style = self._marks.STYLES[index]
+        save_line_marks(self._line_style)
+        symbols = self._marks.is_symbol_style(self._line_style)
+        self._marks_note.SetLabel(self._marks.SYMBOLS_NOTE if symbols else "")
+        g = self._svc.current()
+        if g is not None:
+            self._detail.SetValue(self._detail_text(g))
 
     def _speak_current(self) -> None:
         g = self._svc.current()
         if g is None:
             return
-        self._detail.SetValue(g.summary_verbose)
+        self._detail.SetValue(self._detail_text(g))
         # Re-set focus to detail so SR re-reads it.
         self._wx.CallAfter(self._detail.SetFocus)
 

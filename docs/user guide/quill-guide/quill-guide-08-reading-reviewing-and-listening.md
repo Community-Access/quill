@@ -597,6 +597,28 @@ Once a comparison is open, these keys do most of the work:
 The compare dialog is a list you can review with your screen reader, one
 difference at a time, entirely from the keyboard.
 
+### How changed lines are marked
+
+Each difference ends with its lines, and each line starts with a mark that
+says what happened to it. **Mark lines as** (`Alt+M` in the compare dialog)
+chooses the marks, from four styles designed by Kelly Ford for his GHManage
+and The Chat Place:
+
+- **Words**: "Added: ...", "Removed: ...", "Unchanged: ...". The default.
+- **Short words**: "Add", "Del", "Same".
+- **Diff symbols**: "+", "-" and "=".
+- **Diff symbols with changed lines**: as symbols, but a removed line is
+  followed straight away by the line that replaced it, marked "!-" and "!+",
+  so you hear each change old then new.
+
+A blank line reads "blank line". Your screen reader speaks symbols only at a
+punctuation level that reads them, and QUILL says so when you choose one.
+The choice is kept, and **Compare with File**, WordPress's **Compare with
+Site** and the GitHub Workbench's pull request reviews all use it, so a
+change reads the same wherever you meet it. Compare with File begins with a
+summary, "Comparing notes.md with draft.md: 3 lines added, 1 removed, in 2
+places", then gives each change with where it is ("Lines 10 to 15:").
+
 ### Compare sounds
 
 If you use a sound pack, compare mode plays short earcons: one when a
