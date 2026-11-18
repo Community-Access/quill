@@ -161,6 +161,8 @@ ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
     "webhook": (
         _default("show_details", "Show Details", "Its address, events and last delivery."),
         _a("ping_webhook", "Ping", _O, "admin", "Send it a test message."),
+        _a("webhook_test_push", "Send Test Push", _O, "admin", "A push event, if it listens."),
+        _a("webhook_on_off", "Turn On or Off...", _W, "admin", "Stop or start its events."),
         _a("webhook_deliveries", "Recent Deliveries...", _W, "admin", "Read and redeliver."),
         _a(
             "change_webhook",

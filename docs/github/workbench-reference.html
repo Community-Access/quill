@@ -3130,28 +3130,29 @@ Properties…</li>
 <li><strong>workflow</strong>: Runs, Run Workflow on Branch…, Turn
 Workflow On or Off…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>release</strong>: Assets, Edit Release…, Draft Release
-Notes…, Upload Asset…, React…, Compare With Previous; More: Compare With
-Default, Copy Link, Open on GitHub; Properties…</li>
+Notes…, Upload Asset…, React…, Delete Release…; More: Compare With
+Previous, Compare With Default, Copy Link, Open on GitHub;
+Properties…</li>
 <li><strong>release_asset</strong>: Download, Copy Link, Delete Asset…;
 Properties…</li>
 <li><strong>branch</strong>: Commits, Compare With Default, Compare
-Branches…, Compare With Previous, Open in Codespaces…, Copy Name, Delete
-Branch…; Properties…</li>
+Branches…, Merge Into…, Download Source…, Compare With Previous; More:
+Open in Codespaces…, Copy Name, Delete Branch…; Properties…</li>
 <li><strong>commit</strong>: Open, Commit Comments…, Set Status…,
 Compare With Previous, Compare With Default, Copy Link, Open on GitHub;
 Properties…</li>
-<li><strong>tag</strong>: Open, Delete Tag…, Read Tag Message, Commit
-Comments…, Compare With Previous, Compare With Default; More: Copy Link,
-Open on GitHub; Properties…</li>
+<li><strong>tag</strong>: Open, Delete Tag…, Read Tag Message, Download
+Source…, Commit Comments…, Compare With Previous; More: Compare With
+Default, Copy Link, Open on GitHub; Properties…</li>
 <li><strong>invitation</strong>: Accept Invitation…, Decline
 Invitation…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>notification</strong>: Open, Mark Read, Mark Done, Snooze
 for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally;
 Properties…</li>
 <li><strong>repository</strong>: Open, Star or Unstar, Watch or Unwatch,
-Clone…, Pin, Star Lists…; More: Add to or Remove from Favorites, Open on
-GitHub, Open in Codespaces…, Rename or Delete Star List…;
-Properties…</li>
+Clone…, Send Repository Dispatch…, Pin; More: Star Lists…, Add to or
+Remove from Favorites, Open on GitHub, Open in Codespaces…, Rename or
+Delete Star List…; Properties…</li>
 <li><strong>person</strong>: Open, Follow or Unfollow, Open on GitHub;
 Properties…</li>
 <li><strong>label</strong>: Find Issues with Label, Edit Label…, Delete
@@ -3166,14 +3167,16 @@ Copilot Autofix…, Show Every Place, Open on GitHub; Properties…</li>
 Properties…</li>
 <li><strong>saved_search</strong>: Run, Remove Saved Search;
 Properties…</li>
+<li><strong>deployment</strong>: Open, Delete Deployment…, Copy Link,
+Open on GitHub; Properties…</li>
 <li><strong>result</strong>: Open, Copy Link, Open on GitHub;
 Properties…</li>
 <li><strong>file</strong>: Open in Editor, Copy Link, Open on GitHub;
 Properties…</li>
 <li><strong>folder</strong>: Open Folder, Open on GitHub;
 Properties…</li>
-<li><strong>milestone</strong>: Find Issues in Milestone, Copy Link,
-Open on GitHub; Properties…</li>
+<li><strong>milestone</strong>: Find Issues in Milestone, Delete
+Milestone…, Copy Link, Open on GitHub; Properties…</li>
 <li><strong>template</strong>: Open Template…, Convert Form or
 Template…, Copy to Repositories…, Copy Link, Open on GitHub;
 Properties…</li>
@@ -3225,9 +3228,9 @@ Package…, Copy Link; Properties…</li>
 Properties…</li>
 <li><strong>advisory</strong>: Show Details, Publish or Close Advisory…,
 Request CVE…, Open on GitHub, Copy Link; Properties…</li>
-<li><strong>webhook</strong>: Show Details, Ping, Recent Deliveries…,
-Change Address or Secret…, Delete Webhook…, Open on GitHub;
-Properties…</li>
+<li><strong>webhook</strong>: Show Details, Ping, Send Test Push, Turn
+On or Off…, Recent Deliveries…, Change Address or Secret…; More: Delete
+Webhook…, Open on GitHub; Properties…</li>
 <li><strong>deploy_key</strong>: Show Details, Delete Deploy Key…, Open
 on GitHub; Properties…</li>
 <li><strong>autolink</strong>: Show Details, Delete Autolink…, Open on
@@ -3511,7 +3514,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 699 yes, 154 planned, 285 not needed and 866 left to
+<p>In all: 708 yes, 145 planned, 285 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -5879,7 +5882,7 @@ QUILL is a writing and coding tool, not an accounts console.</td>
 </tbody>
 </table>
 <h4 id="branches">Branches</h4>
-<p>38 operations: 7 yes, 1 planned, 30 not needed.</p>
+<p>38 operations: 8 yes, 30 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -6145,9 +6148,8 @@ the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 <tr>
 <td>Merge a branch</td>
 <td><code>POST /repos/{owner}/{repo}/merges</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Merge Into…</td>
 </tr>
 </tbody>
 </table>
@@ -8158,7 +8160,7 @@ Keys</td>
 </tbody>
 </table>
 <h4 id="deployments">Deployments</h4>
-<p>21 operations: 15 yes, 1 planned, 3 not needed, 2 left to github.</p>
+<p>21 operations: 16 yes, 3 not needed, 2 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -8186,9 +8188,8 @@ this; a person has no way to.</td>
 <tr>
 <td>Delete a deployment</td>
 <td><code>DELETE /repos/{owner}/{repo}/deployments/{deployment_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Deployments and Environments; Environment and
-Deployment sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Deployment…</td>
 </tr>
 <tr>
 <td>Get a deployment</td>
@@ -8725,8 +8726,7 @@ Limits.</td>
 </tbody>
 </table>
 <h4 id="issues">Issues</h4>
-<p>66 operations: 45 yes, 1 planned, 13 not needed, 7 left to
-github.</p>
+<p>66 operations: 46 yes, 13 not needed, 7 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -9139,8 +9139,8 @@ planning statuses, concurrency groups); not built, by Jeff’s choice
 <tr>
 <td>Delete a milestone</td>
 <td><code>DELETE /repos/{owner}/{repo}/milestones/{milestone_number}</code></td>
-<td>Planned</td>
-<td>Milestone sheet; Issue &gt; Organize: Milestone.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Milestone…</td>
 </tr>
 <tr>
 <td>Get a milestone</td>
@@ -9533,7 +9533,7 @@ job done on GitHub’s site.</td>
 </tbody>
 </table>
 <h4 id="organizations">Organizations</h4>
-<p>129 operations: 68 yes, 6 planned, 12 not needed, 43 left to
+<p>129 operations: 69 yes, 5 planned, 12 not needed, 43 left to
 github.</p>
 <table>
 <thead>
@@ -9725,8 +9725,8 @@ reads the list.</td>
 <tr>
 <td>Update an organization webhook</td>
 <td><code>PATCH /orgs/{org}/hooks/{hook_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Turn On or Off…</td>
 </tr>
 <tr>
 <td>Get a webhook configuration for an organization</td>
@@ -11378,7 +11378,7 @@ planning statuses, concurrency groups); not built, by Jeff’s choice
 </tbody>
 </table>
 <h4 id="releases">Releases</h4>
-<p>13 operations: 10 yes, 2 planned, 1 not needed.</p>
+<p>13 operations: 11 yes, 1 planned, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -11440,8 +11440,8 @@ planning statuses, concurrency groups); not built, by Jeff’s choice
 <tr>
 <td>Delete a release</td>
 <td><code>DELETE /repos/{owner}/{repo}/releases/{release_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Releases; Release and Release asset sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Release…</td>
 </tr>
 <tr>
 <td>Get a release</td>
@@ -11471,7 +11471,7 @@ it returns.</td>
 </tbody>
 </table>
 <h4 id="repositories">Repositories</h4>
-<p>74 operations: 56 yes, 7 planned, 6 not needed, 5 left to github.</p>
+<p>74 operations: 60 yes, 3 planned, 6 not needed, 5 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -11615,9 +11615,8 @@ and People</td>
 <tr>
 <td>Create a repository dispatch event</td>
 <td><code>POST /repos/{owner}/{repo}/dispatches</code></td>
-<td>Planned</td>
-<td>Repository sheet (General, Features, Merging, Webhooks, Autolinks,
-Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Send Repository Dispatch…</td>
 </tr>
 <tr>
 <td>List forks</td>
@@ -11711,8 +11710,8 @@ reads the list.</td>
 <tr>
 <td>Test the push repository webhook</td>
 <td><code>POST /repos/{owner}/{repo}/hooks/{hook_id}/tests</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Send Test Push</td>
 </tr>
 <tr>
 <td>Disable immutable releases</td>
@@ -11875,8 +11874,8 @@ reads the list.</td>
 <tr>
 <td>Download a repository archive (tar)</td>
 <td><code>GET /repos/{owner}/{repo}/tarball/{ref}</code></td>
-<td>Planned</td>
-<td>File and folder sheets; Commit to GitHub.</td>
+<td>Yes</td>
+<td>context menu &gt; Download Source…</td>
 </tr>
 <tr>
 <td>List repository teams</td>
@@ -11924,8 +11923,8 @@ and Team Access</td>
 <tr>
 <td>Download a repository archive (zip)</td>
 <td><code>GET /repos/{owner}/{repo}/zipball/{ref}</code></td>
-<td>Planned</td>
-<td>File and folder sheets; Commit to GitHub.</td>
+<td>Yes</td>
+<td>context menu &gt; Download Source…</td>
 </tr>
 <tr>
 <td>Create a repository using a template</td>
