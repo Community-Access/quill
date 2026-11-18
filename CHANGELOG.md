@@ -17,9 +17,23 @@ GitHub guide's Workbench chapter lists them under "More commands on rows".
 Every GitHub operation is now covered or classified: none is left
 planned. The cloud agent's are a public preview, so they send only what
 GitHub documents and show GitHub's own answer.
+### Podcast downloads no longer stall the window (2026-11-18)
+
+From Chris Nova: while a podcast episode downloaded, QUILL Cast (and QUILL's
+own podcasts) seemed to pause until the "downloaded" sound, because every
+64 KB read was a progress report the window had to handle. Progress now
+reaches the window at most twice a second, and always at the last byte.
 
 ### WordPress
 
+### WordPress: Properties keeps your edits when a save fails (2026-11-18)
+
+The WordPress Workbench's Properties sheet closed on OK the moment it sent
+the change, so a refusal from the site, or Cancel on "Changed on the Site",
+lost every edit on it (review item 32). Now OK and Apply grey out while the
+save is on its way, and the sheet closes only once the site has taken it; a
+failure, or declining to replace someone else's change, leaves the sheet open
+with your edits.
 ### WordPress: keys, Escape, and words that were no longer true (2026-11-18)
 
 From the WordPress review's list, the items that were still true when checked:

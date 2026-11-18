@@ -21,8 +21,13 @@ sent (:func:`quill.core.workbench.properties.changes`).
 
 *on_save* is given the sheet's :class:`SheetState`; the provider sends it
 off the UI thread and says the result. OK saves and closes; Apply saves and
-keeps the sheet open on what was sent. Nothing here talks to a network, and
-opening says nothing: the reader says the title and the first field (GATE-13).
+keeps the sheet open on what was sent. A provider that answers
+:data:`PENDING` is still saving: the sheet stays open, with OK and Apply
+greyed, until it calls :meth:`WorkbenchSheetEditor.save_finished` -- so a
+save that fails, or a conflict answered with Cancel, keeps every edit on the
+sheet rather than closing it on what was never saved (UX review item 32).
+Nothing here talks to a network, and opening says nothing: the reader says
+the title and the first field (GATE-13).
 """
 
 from __future__ import annotations
@@ -40,12 +45,20 @@ from quill.core.workbench.properties import (
     Value,
     as_text,
 )
-from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_modal_dialog
+from quill.ui.dialog_contract import (
+    apply_modal_ids,
+    bind_close_button,
+    dialog_alive,
+    show_modal_dialog,
+)
 from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 from quill.ui.workbench_properties_dialog import field_text
 
-__all__ = ["MIXED_WORD", "FieldButton", "WorkbenchSheetEditor"]
+#: What *on_save* answers when the save is still on its way; see the module docstring.
+PENDING = "pending"
+
+__all__ = ["MIXED_WORD", "PENDING", "FieldButton", "WorkbenchSheetEditor"]
 
 MIXED_WORD = "Mixed"
 
@@ -79,7 +92,7 @@ class WorkbenchSheetEditor:
         *,
         title: str,
         copy_text: Callable[[str], None],
-        on_save: Callable[[SheetState], bool | None] | None = None,
+        on_save: Callable[[SheetState], bool | str | None] | None = None,
         locked: Mapping[str, str] | None = None,
         field_buttons: Mapping[str, Sequence[FieldButton]] | None = None,
     ) -> None:
@@ -92,6 +105,10 @@ class WorkbenchSheetEditor:
         self.title = title
         self._copy_text = copy_text
         self._on_save = on_save
+        self._save_buttons: tuple[Any, ...] = ()
+        self._waiting_close = False
+        self._in_save = False
+        self._early: bool | None = None
         self._locked = dict(locked or {})
         self.state = SheetState(sheet, loaded=dict(values))  # type: ignore[arg-type]
         self.controls: dict[str, Any] = {}
@@ -138,6 +155,7 @@ class WorkbenchSheetEditor:
             apply.SetHelpText("Save what you changed and keep the sheet open.")
             apply.Bind(wx.EVT_BUTTON, lambda _e: self._save(close=False))
             buttons.Add(ok, 0, wx.RIGHT, 8)
+            self._save_buttons = (ok, apply)
         cancel = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel" if on_save else "Close")
         cancel.SetHelpText("Close the sheet without saving. Escape does the same.")
         bind_close_button(self.dialog, cancel, modeless=False)
@@ -272,7 +290,35 @@ class WorkbenchSheetEditor:
             if close:
                 self.dialog.EndModal(self._wx.ID_OK)
             return
-        saved = self._on_save(state) is not False
+        self._waiting_close = close
+        self._early = None
+        self._in_save = True
+        try:
+            answer = self._on_save(state)
+        finally:
+            self._in_save = False
+        if answer == PENDING:
+            if self._early is not None:  # it finished before on_save even returned
+                self._after_save(self._early, close=close)
+                return
+            for button in self._save_buttons:
+                button.Enable(False)
+            return
+        self._after_save(answer is not False, close=close)
+
+    def save_finished(self, saved: bool) -> None:
+        """The provider's pending save has ended: close on OK, or stay with the edits."""
+        if getattr(self, "_in_save", False):
+            self._early = saved  # _save applies it as soon as on_save returns
+            return
+        if not dialog_alive(self.dialog):
+            return  # closed with Cancel while it was saving
+        for button in self._save_buttons:
+            button.Enable(True)
+        self._after_save(saved, close=self._waiting_close)
+
+    def _after_save(self, saved: bool, *, close: bool) -> None:
+        state = self.state
         self._forget_secrets(clear_boxes=saved)
         if not saved:
             return
