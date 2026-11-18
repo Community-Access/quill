@@ -947,8 +947,8 @@ Keys the window answers that are not menu rows:
 
 ### Context menus, by row type
 
-- **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Relationships..., Issue Fields..., Delete Issue..., Add to or Remove from Favorites; Properties...
-- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites, Re-request Review...; Properties...
+- **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Relationships..., Issue Fields..., Delete Issue..., Add to or Remove from Favorites, Link a Pull Request That Closes It..., Unlink a Pull Request...; Properties...
+- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites, Re-request Review..., Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn Off Agent Merge...; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., Re-run One Job...; More: Force Cancel..., Download Logs..., Delete Logs..., Approvals, Earlier Attempts..., View Artifacts..., Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link, Read a Step's Log...; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link; Properties...
 - **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., React..., Delete Release...; More: Compare With Previous, Compare With Default, Copy Link, Open on GitHub, GitHub's Release Notes...; Properties...
@@ -958,11 +958,11 @@ Keys the window answers that are not menu rows:
 - **tag**: Open, Delete Tag..., Read Tag Message, Download Source..., Commit Comments..., Compare With Previous; More: Compare With Default, Copy Link, Open on GitHub; Properties...
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally; Properties...
-- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Send Repository Dispatch..., Pin; More: Star Lists..., Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List..., Fork Workflow Settings, Fork Workflows from Private Repositories..., Languages, License, Star History, Mark Its Notifications Read, Set a Custom Property..., Compare Dependencies..., SBOM Report, Ruleset History..., Secret Scanning History; Properties...
+- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Send Repository Dispatch..., Pin; More: Star Lists..., Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List..., Fork Workflow Settings, Fork Workflows from Private Repositories..., Languages, License, Star History, Mark Its Notifications Read, Set a Custom Property..., Compare Dependencies..., SBOM Report, Ruleset History..., Secret Scanning History, Require Sign-off on Web Commits..., Sponsor Links, Dependency Manifests, Start an Agent Task..., Agent Tasks, An Agent Task's Progress..., Automations, New Automation..., Run an Automation..., Rename an Automation..., Delete an Automation..., An Automation's History..., An Automation's Tasks..., Automation Tools and Triggers, Agent Secrets from the Organization, Agent Variables from the Organization; Properties...
 - **person**: Open, Follow or Unfollow, Open on GitHub; Properties...
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
 - **gist**: Edit Gist..., Star or Unstar, Comments..., History..., Forks..., Fork Gist; More: Copy Link, Open on GitHub, Delete Gist...; Properties...
-- **discussion**: Open Discussion Thread, Read as Document..., Copy Link, Open on GitHub; Properties...
+- **discussion**: Open Discussion Thread, Read as Document..., Copy Link, Open on GitHub, Close Discussion..., Reopen Discussion; More: Delete Discussion..., Upvote, Remove Upvote, Vote in the Poll..., Edit a Comment..., Delete a Comment...; Properties...
 - **security_alert**: Open, Dismiss or Reopen Alert..., Copilot Autofix..., Show Every Place, Open on GitHub, Where It Was Found; Properties...
 - **cache**: Show Details, Delete Cache...; Properties...
 - **saved_search**: Run, Remove Saved Search; Properties...
@@ -972,14 +972,14 @@ Keys the window answers that are not menu rows:
 - **folder**: Open Folder, Open on GitHub; Properties...
 - **milestone**: Find Issues in Milestone, Delete Milestone..., Copy Link, Open on GitHub; Properties...
 - **template**: Open Template..., Convert Form or Template..., Copy to Repositories..., Copy Link, Open on GitHub; Properties...
-- **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link, New View..., Items in a View...; Properties...
+- **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link, New View..., Items in a View..., Rename a View..., Delete a View..., Rename a Field..., Add an Issue Field..., Edit a Draft..., Make a Draft an Issue..., Move an Item..., Edit a Status Update..., Delete a Status Update..., Delete a Workflow..., Share the Project..., Link a Team..., Unlink a Team...; Properties...
 - **team**: Members and Access..., Copy Link, Open on GitHub, Delete Team..., Pending Invitations; Properties...
-- **organization**: Open, Roles..., Rulesets..., Open on GitHub, Fork Workflow Settings, Fork Workflows from Private Repositories...; More: Dependabot Repository Access, Give Dependabot a Repository..., Take a Repository from Dependabot..., Dependabot's Default Access..., Make Someone an Outside Collaborator..., Define a Custom Property..., Set Repositories' Custom Property..., New Team..., Accept Membership, My Activity Here; Properties...
+- **organization**: Open, Roles..., Rulesets..., Open on GitHub, Fork Workflow Settings, Fork Workflows from Private Repositories...; More: Dependabot Repository Access, Give Dependabot a Repository..., Take a Repository from Dependabot..., Dependabot's Default Access..., Make Someone an Outside Collaborator..., Define a Custom Property..., Set Repositories' Custom Property..., New Team..., Accept Membership, My Activity Here, Require Sign-off on Web Commits..., Follow Organization, Unfollow Organization; Properties...
 - **favorite**: Open, Copy Link, Open on GitHub, Add to or Remove from Favorites; Properties...
 - **admin_action**: Open; Properties...
 - **watch**: Edit Watch..., Pause or Resume Watch, Check Watches Now, Remove Watch, Open on GitHub; Properties...
 - **help_topic**: Open, Take Me There; Properties...
-- **node**: Refresh, Open on GitHub, Help for This View, New Organization Runner..., Just-in-Time Runner..., Just-in-Time Runner...; More: Is a Runner Version Retiring?..., Is a Runner Version Retiring?..., Email Visibility..., Interaction Limits, Limit Interactions..., Lift Interaction Limits; Properties...
+- **node**: Refresh, Open on GitHub, Help for This View, New Organization Runner..., Just-in-Time Runner..., Just-in-Time Runner...; More: Is a Runner Version Retiring?..., Is a Runner Version Retiring?..., Email Visibility..., Interaction Limits, Limit Interactions..., Lift Interaction Limits, Set Up a Sponsors Profile..., New Sponsor Tier..., Patreon Sponsorships..., My Agent Tasks, My Automations; Properties...
 - **across_item**: Open in Its Repository, Next Repository, Previous Repository, View More from This Repository, Read Issue Type and Fields, Every Release or Latest Only; More: Open on GitHub, Copy Link; Properties...
 - **across_status**: Open, Next Repository, Previous Repository, View More from This Repository, Open on GitHub; Properties...
 - **repository_set**: Use This Set, Edit Repositories..., Set Filter..., New Set..., Rename Set..., Delete Set...; Properties...
@@ -987,7 +987,7 @@ Keys the window answers that are not menu rows:
 - **fleet**: Open Repository, Open on GitHub, Copy Link; Properties...
 - **runner**: Show Details, Runner Labels..., Remove Runner..., Open on GitHub, Copy Link, Removal Commands...; Properties...
 - **pages_site**: Show Details, Check Site, Rebuild, Turn Off Pages..., Open on GitHub, Copy Link; Properties...
-- **environment**: Show Details, Secrets..., Variables..., Branch Policies..., Protection Rules..., Delete...; More: Open on GitHub, Copy Link; Properties...
+- **environment**: Show Details, Secrets..., Variables..., Branch Policies..., Protection Rules..., Delete...; More: Open on GitHub, Copy Link, Pin Environment, Unpin Environment, Move Environment...; Properties...
 - **codespace**: Show Details, Start, Stop, Change Machine..., Export to a Branch, Publish to a New Repository...; More: Delete..., Open on GitHub, Copy Link; Properties...
 - **package**: Show Details, Open on GitHub, Show Versions, Restore Package Version..., Delete Package Version..., Delete Package..., Copy Link; Properties...
 - **key**: Show Details, Delete Key..., Open on GitHub; Properties...
@@ -997,8 +997,8 @@ Keys the window answers that are not menu rows:
 - **autolink**: Show Details, Delete Autolink..., Open on GitHub; Properties...
 - **resource**: Show Details, Change..., Repositories Allowed..., Delete..., Open on GitHub, Copy Link; More: Removal Commands..., Add Runner Label..., Remove Runner Label..., Runners in This Group, Hosted Runners in This Group, Add a Runner to This Group..., Remove a Runner from This Group..., Teams It Adds To; Properties...
 - **wiki**: Open on GitHub, Clone Wiki..., Copy Link; Properties...
-- **sponsorship**: Show Details, Cancel Sponsorship..., Open on GitHub; Properties...
-- **sponsor_tier**: Show Details, Sponsor at This Tier..., Open on GitHub; Properties...
+- **sponsorship**: Show Details, Cancel Sponsorship..., Open on GitHub, Sponsorship Preferences...; Properties...
+- **sponsor_tier**: Show Details, Sponsor at This Tier..., Open on GitHub, Publish Tier, Retire Tier...; Properties...
 
 ### Workbench Options
 
@@ -1100,7 +1100,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
+In all: 848 yes, 0 planned, 290 not needed and 866 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1364,38 +1364,38 @@ In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 
 #### Agent automations
 
-12 operations: 10 planned, 2 not needed.
+12 operations: 10 yes, 2 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
-| List automations for user | `GET /agents/automations` | Planned | Item > Copilot; Repository > Copilot (section 22.1). |
-| List automations for a repository | `GET /agents/repos/{owner}/{repo}/automations` | Planned | Item > Copilot; Repository > Copilot (section 22.1). |
-| Create an automation for a repository | `POST /agents/repos/{owner}/{repo}/automations` | Planned | Item > Copilot; Repository > Copilot (section 22.1). |
-| List available automation tools for a repository | `GET /agents/repos/{owner}/{repo}/automations/available-tools` | Planned | Item > Copilot; Repository > Copilot (section 22.1). |
-| List available automation triggers for a repository | `GET /agents/repos/{owner}/{repo}/automations/available-triggers` | Planned | Item > Copilot; Repository > Copilot (section 22.1). |
-| Delete an automation | `DELETE /agents/repos/{owner}/{repo}/automations/{automation_id}` | Planned | Item > Copilot; Repository > Copilot (section 22.1). |
+| List automations for user | `GET /agents/automations` | Yes | context menu > My Automations |
+| List automations for a repository | `GET /agents/repos/{owner}/{repo}/automations` | Yes | context menu > Automations |
+| Create an automation for a repository | `POST /agents/repos/{owner}/{repo}/automations` | Yes | context menu > New Automation... |
+| List available automation tools for a repository | `GET /agents/repos/{owner}/{repo}/automations/available-tools` | Yes | context menu > Automation Tools and Triggers |
+| List available automation triggers for a repository | `GET /agents/repos/{owner}/{repo}/automations/available-triggers` | Yes | context menu > Automation Tools and Triggers |
+| Delete an automation | `DELETE /agents/repos/{owner}/{repo}/automations/{automation_id}` | Yes | context menu > Delete an Automation... |
 | Get an automation | `GET /agents/repos/{owner}/{repo}/automations/{automation_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Update an automation | `PATCH /agents/repos/{owner}/{repo}/automations/{automation_id}` | Planned | Item > Copilot; Repository > Copilot (section 22.1). |
-| List revisions for an automation | `GET /agents/repos/{owner}/{repo}/automations/{automation_id}/revisions` | Planned | Item > Copilot; Repository > Copilot (section 22.1). |
+| Update an automation | `PATCH /agents/repos/{owner}/{repo}/automations/{automation_id}` | Yes | context menu > Rename an Automation... |
+| List revisions for an automation | `GET /agents/repos/{owner}/{repo}/automations/{automation_id}/revisions` | Yes | context menu > An Automation's History... |
 | Get an automation revision | `GET /agents/repos/{owner}/{repo}/automations/{automation_id}/revisions/{revision_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| List tasks for an automation in a repository | `GET /agents/repos/{owner}/{repo}/automations/{automation_id}/tasks` | Planned | Item > Copilot; Repository > Copilot (section 22.1). |
-| Run an automation | `POST /agents/repos/{owner}/{repo}/automations/{automation_id}/tasks` | Planned | Item > Copilot; Repository > Copilot (section 22.1). |
+| List tasks for an automation in a repository | `GET /agents/repos/{owner}/{repo}/automations/{automation_id}/tasks` | Yes | context menu > An Automation's Tasks... |
+| Run an automation | `POST /agents/repos/{owner}/{repo}/automations/{automation_id}/tasks` | Yes | context menu > Run an Automation... |
 
 #### Agent tasks
 
-5 operations: 3 planned, 2 not needed.
+5 operations: 3 yes, 2 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
-| List tasks for repository | `GET /agents/repos/{owner}/{repo}/tasks` | Planned | Item > Copilot > Agent Sessions (section 22.1). |
-| Start a task | `POST /agents/repos/{owner}/{repo}/tasks` | Planned | Item > Copilot > Agent Sessions (section 22.1). |
+| List tasks for repository | `GET /agents/repos/{owner}/{repo}/tasks` | Yes | context menu > Agent Tasks |
+| Start a task | `POST /agents/repos/{owner}/{repo}/tasks` | Yes | context menu > Start an Agent Task... |
 | Get a task by repo | `GET /agents/repos/{owner}/{repo}/tasks/{task_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| List tasks | `GET /agents/tasks` | Planned | Item > Copilot > Agent Sessions (section 22.1). |
+| List tasks | `GET /agents/tasks` | Yes | context menu > My Agent Tasks |
 | Get a task by ID | `GET /agents/tasks/{task_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 
 #### Agents
 
-30 operations: 22 yes, 2 planned, 6 not needed.
+30 operations: 24 yes, 6 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1417,8 +1417,8 @@ In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 | Set selected repositories for an organization variable | `PUT /orgs/{org}/agents/variables/{name}/repositories` | Not needed | Replaces the whole list at once; Repositories Allowed adds and removes one repository at a time instead, so a change somebody else makes meanwhile is kept. |
 | Remove selected repository from an organization variable | `DELETE /orgs/{org}/agents/variables/{name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
 | Add selected repository to an organization variable | `PUT /orgs/{org}/agents/variables/{name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
-| List repository organization secrets | `GET /repos/{owner}/{repo}/agents/organization-secrets` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| List repository organization variables | `GET /repos/{owner}/{repo}/agents/organization-variables` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
+| List repository organization secrets | `GET /repos/{owner}/{repo}/agents/organization-secrets` | Yes | context menu > Agent Secrets from the Organization |
+| List repository organization variables | `GET /repos/{owner}/{repo}/agents/organization-variables` | Yes | context menu > Agent Variables from the Organization |
 | List repository secrets | `GET /repos/{owner}/{repo}/agents/secrets` | Yes | Navigator: Repository > owner/name > Settings > Copilot Agent Secrets |
 | Get a repository public key | `GET /repos/{owner}/{repo}/agents/secrets/public-key` | Yes | Navigator: Repository > owner/name > Settings > Copilot Agent Secrets |
 | Delete a repository secret | `DELETE /repos/{owner}/{repo}/agents/secrets/{secret_name}` | Yes | context menu > Delete... |
@@ -2409,13 +2409,13 @@ In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 
 #### Pull requests
 
-39 operations: 24 yes, 4 planned, 7 not needed, 4 left to github.
+39 operations: 28 yes, 7 not needed, 4 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
-| Disable Agent Merge for a pull request | `DELETE /agents/repos/{owner}/{repo}/pulls/{pull_number}/agent-merge` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
-| Get Agent Merge configuration for a pull request | `GET /agents/repos/{owner}/{repo}/pulls/{pull_number}/agent-merge` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
-| Update Agent Merge configuration for a pull request | `PUT /agents/repos/{owner}/{repo}/pulls/{pull_number}/agent-merge` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
+| Disable Agent Merge for a pull request | `DELETE /agents/repos/{owner}/{repo}/pulls/{pull_number}/agent-merge` | Yes | context menu > Turn Off Agent Merge... |
+| Get Agent Merge configuration for a pull request | `GET /agents/repos/{owner}/{repo}/pulls/{pull_number}/agent-merge` | Yes | context menu > Agent Merge |
+| Update Agent Merge configuration for a pull request | `PUT /agents/repos/{owner}/{repo}/pulls/{pull_number}/agent-merge` | Yes | context menu > Turn On Agent Merge |
 | List pull requests | `GET /repos/{owner}/{repo}/pulls` | Yes | Navigator: Repository > owner/name > Pull Requests |
 | Create a pull request | `POST /repos/{owner}/{repo}/pulls` | Yes | File > New Here... (Ctrl+N) |
 | List review comments in a repository | `GET /repos/{owner}/{repo}/pulls/comments` | Not needed | Every review comment in the repository at once; the Workbench reads each pull request's own, where they mean something. |
@@ -2428,7 +2428,7 @@ In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 | Create a review comment for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/comments` | Yes | context menu > Review... |
 | Create a reply for a review comment | `POST /repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies` | Yes | context menu > Review... |
 | List commits on a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/commits` | Yes | Item > File Differences... (Ctrl+Shift+D) |
-| Request a Copilot code review for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/copilot-code-review` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
+| Request a Copilot code review for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/copilot-code-review` | Yes | context menu > Ask Copilot to Review |
 | List pull requests files | `GET /repos/{owner}/{repo}/pulls/{pull_number}/files` | Yes | Item > File Differences... (Ctrl+Shift+D) |
 | Check if a pull request has been merged | `GET /repos/{owner}/{repo}/pulls/{pull_number}/merge` | Not needed | Whether a pull request is merged is part of the pull request itself, which every list and sheet already reads. |
 | Merge a pull request | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge` | Yes | Item > Merge... (Ctrl+Shift+Enter) |
@@ -2810,7 +2810,7 @@ In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 
 #### GraphQL: Deployments
 
-10 mutations: 2 planned, 8 not needed.
+10 mutations: 2 yes, 8 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
@@ -2820,30 +2820,30 @@ In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 | `createEnvironment` | Not needed | The same change as PUT /repos/{owner}/{repo}/environments/{environment_name}, the route the Workbench uses for it (already built); one route per operation. |
 | `deleteDeployment` | Not needed | The same change as DELETE /repos/{owner}/{repo}/deployments/{deployment_id}, the route the Workbench uses for it (planned there); one route per operation. |
 | `deleteEnvironment` | Not needed | The same change as DELETE /repos/{owner}/{repo}/environments/{environment_name}, the route the Workbench uses for it (planned there); one route per operation. |
-| `pinEnvironment` | Planned | Repository > Deployments; Environment sheet |
+| `pinEnvironment` | Yes | context menu > Unpin Environment |
 | `rejectDeployments` | Not needed | The same change as POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments, the route the Workbench uses for it (already built); one route per operation. |
-| `reorderEnvironment` | Planned | Repository > Deployments; Environment sheet |
+| `reorderEnvironment` | Yes | context menu > Move Environment... |
 | `updateEnvironment` | Not needed | The same change as PUT /repos/{owner}/{repo}/environments/{environment_name}, the route the Workbench uses for it (already built); one route per operation. |
 
 #### GraphQL: Discussions
 
-13 mutations: 5 yes, 8 planned.
+13 mutations: 13 yes.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
 | `addDiscussionComment` | Yes | context menu > Open Discussion Thread |
-| `addDiscussionPollVote` | Planned | Repository > Discussions; Discussion sheet |
-| `addUpvote` | Planned | Repository > Discussions; Discussion sheet |
-| `closeDiscussion` | Planned | Repository > Discussions; Discussion sheet |
+| `addDiscussionPollVote` | Yes | context menu > Vote in the Poll... |
+| `addUpvote` | Yes | context menu > Upvote |
+| `closeDiscussion` | Yes | context menu > Close Discussion... |
 | `createDiscussion` | Yes | Navigator: Repository > owner/name > Discussions |
-| `deleteDiscussion` | Planned | Repository > Discussions; Discussion sheet |
-| `deleteDiscussionComment` | Planned | Repository > Discussions; Discussion sheet |
+| `deleteDiscussion` | Yes | context menu > Delete Discussion... |
+| `deleteDiscussionComment` | Yes | context menu > Delete a Comment... |
 | `markDiscussionCommentAsAnswer` | Yes | context menu > Open Discussion Thread |
-| `removeUpvote` | Planned | Repository > Discussions; Discussion sheet |
-| `reopenDiscussion` | Planned | Repository > Discussions; Discussion sheet |
+| `removeUpvote` | Yes | context menu > Remove Upvote |
+| `reopenDiscussion` | Yes | context menu > Reopen Discussion |
 | `unmarkDiscussionCommentAsAnswer` | Yes | context menu > Open Discussion Thread |
 | `updateDiscussion` | Yes | Properties (Alt+Enter) on Discussion: Title |
-| `updateDiscussionComment` | Planned | Repository > Discussions; Discussion sheet |
+| `updateDiscussionComment` | Yes | context menu > Edit a Comment... |
 
 #### GraphQL: Enterprise administration
 
@@ -2909,13 +2909,13 @@ In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 
 #### GraphQL: Issues
 
-51 mutations: 16 yes, 2 planned, 31 not needed, 2 left to github.
+51 mutations: 18 yes, 31 not needed, 2 left to github.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
 | `addAssigneesToAssignable` | Not needed | The same change as POST /repos/{owner}/{repo}/issues/{issue_number}/assignees, the route the Workbench uses for it (already built); one route per operation. |
 | `addBlockedBy` | Yes | context menu > Reorder Sub-issues... |
-| `addCloseIssueReferences` | Planned | Issue sheet; Item menu |
+| `addCloseIssueReferences` | Yes | context menu > Link a Pull Request That Closes It... |
 | `addComment` | Not needed | The same change as POST /repos/{owner}/{repo}/issues/{issue_number}/comments, the route the Workbench uses for it (already built); one route per operation. |
 | `addLabelsToLabelable` | Not needed | The same change as POST /repos/{owner}/{repo}/issues/{issue_number}/labels, the route the Workbench uses for it (already built); one route per operation. |
 | `addRelatesTo` | Not needed | The Workbench does this through GitHub's REST API (relates_to on Relationships...), which changes the same thing; a second way to one place is not needed. |
@@ -2943,7 +2943,7 @@ In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 | `rejectPendingIssueSuggestions` | Left to GitHub | A preview GitHub may still change (issue artifacts and suggestions, stacked pull requests, pull request creation caps, code quality, planning statuses, concurrency groups); not built, by Jeff's choice (2026-11-18). |
 | `removeAssigneesFromAssignable` | Not needed | The same change as DELETE /repos/{owner}/{repo}/issues/{issue_number}/assignees, the route the Workbench uses for it (already built); one route per operation. |
 | `removeBlockedBy` | Yes | context menu > Reorder Sub-issues... |
-| `removeCloseIssueReferences` | Planned | Issue sheet; Item menu |
+| `removeCloseIssueReferences` | Yes | context menu > Unlink a Pull Request... |
 | `removeLabelsFromLabelable` | Not needed | The same change as DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}, the route the Workbench uses for it (already built); one route per operation. |
 | `removeRelatesTo` | Not needed | The Workbench does this through GitHub's REST API (relates_to on Relationships...), which changes the same thing; a second way to one place is not needed. |
 | `removeSubIssue` | Yes | context menu > Reorder Sub-issues... |
@@ -2982,20 +2982,20 @@ In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 
 #### GraphQL: Organizations
 
-11 mutations: 3 planned, 2 not needed, 6 left to github.
+11 mutations: 3 yes, 2 not needed, 6 left to github.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
 | `addVerifiableDomain` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 | `approveVerifiableDomain` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 | `deleteVerifiableDomain` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
-| `followOrganization` | Planned | Organization sheet |
+| `followOrganization` | Yes | context menu > Follow Organization |
 | `regenerateVerifiableDomainToken` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 | `removeOutsideCollaborator` | Not needed | The same change as DELETE /orgs/{org}/outside_collaborators/{username}, the route the Workbench uses for it (planned there); one route per operation. |
 | `setOrganizationInteractionLimit` | Not needed | The same change as PUT /orgs/{org}/interaction-limits, the route the Workbench uses for it (planned there); one route per operation. |
-| `unfollowOrganization` | Planned | Organization sheet |
+| `unfollowOrganization` | Yes | context menu > Unfollow Organization |
 | `updateOrganizationAllowPrivateRepositoryForkingSetting` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
-| `updateOrganizationWebCommitSignoffSetting` | Planned | Organization sheet |
+| `updateOrganizationWebCommitSignoffSetting` | Yes | context menu > Require Sign-off on Web Commits... |
 | `verifyVerifiableDomain` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 
 #### GraphQL: Packages
@@ -3008,7 +3008,7 @@ In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 
 #### GraphQL: Projects
 
-32 mutations: 18 yes, 14 planned.
+32 mutations: 31 yes, 1 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
@@ -3016,34 +3016,34 @@ In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 | `addProjectV2ItemById` | Yes | Properties (Alt+Enter) on Issue: Projects |
 | `archiveProjectV2Item` | Yes | Properties (Alt+Enter) on Project |
 | `clearProjectV2ItemFieldValue` | Yes | Properties (Alt+Enter) on Project |
-| `convertProjectV2DraftIssueItemToIssue` | Planned | Projects; Project sheet |
+| `convertProjectV2DraftIssueItemToIssue` | Yes | context menu > Make a Draft an Issue... |
 | `copyProjectV2` | Yes | context menu > Copy Project... |
 | `createProjectV2` | Yes | Properties (Alt+Enter) on Issue: Projects |
 | `createProjectV2Field` | Yes | context menu > New Field... |
-| `createProjectV2IssueField` | Planned | Projects; Project sheet |
+| `createProjectV2IssueField` | Yes | context menu > Add an Issue Field... |
 | `createProjectV2StatusUpdate` | Yes | context menu > Post Status Update... |
-| `createProjectV2View` | Planned | Projects; Project sheet |
+| `createProjectV2View` | Not needed | New View on a Project makes a view through REST, which GitHub added for both organization and personal Projects. |
 | `deleteProjectV2` | Yes | context menu > Delete Project... |
 | `deleteProjectV2Field` | Yes | context menu > Delete Field... |
 | `deleteProjectV2Item` | Yes | Properties (Alt+Enter) on Issue: Projects |
-| `deleteProjectV2StatusUpdate` | Planned | Projects; Project sheet |
-| `deleteProjectV2View` | Planned | Projects; Project sheet |
-| `deleteProjectV2Workflow` | Planned | Projects; Project sheet |
+| `deleteProjectV2StatusUpdate` | Yes | context menu > Delete a Status Update... |
+| `deleteProjectV2View` | Yes | context menu > Delete a View... |
+| `deleteProjectV2Workflow` | Yes | context menu > Delete a Workflow... |
 | `linkProjectV2ToRepository` | Yes | context menu > Link to Repository... |
-| `linkProjectV2ToTeam` | Planned | Projects; Project sheet |
+| `linkProjectV2ToTeam` | Yes | context menu > Link a Team... |
 | `markProjectV2AsTemplate` | Yes | context menu > Template... |
 | `unarchiveProjectV2Item` | Yes | Properties (Alt+Enter) on Project |
 | `unlinkProjectV2FromRepository` | Yes | context menu > Unlink from Repository... |
-| `unlinkProjectV2FromTeam` | Planned | Projects; Project sheet |
+| `unlinkProjectV2FromTeam` | Yes | context menu > Unlink a Team... |
 | `unmarkProjectV2AsTemplate` | Yes | context menu > Template... |
 | `updateProjectV2` | Yes | Properties (Alt+Enter) on Project: Title |
-| `updateProjectV2Collaborators` | Planned | Projects; Project sheet |
-| `updateProjectV2DraftIssue` | Planned | Projects; Project sheet |
-| `updateProjectV2Field` | Planned | Projects; Project sheet |
+| `updateProjectV2Collaborators` | Yes | context menu > Share the Project... |
+| `updateProjectV2DraftIssue` | Yes | context menu > Edit a Draft... |
+| `updateProjectV2Field` | Yes | context menu > Rename a Field... |
 | `updateProjectV2ItemFieldValue` | Yes | Properties (Alt+Enter) on Project |
-| `updateProjectV2ItemPosition` | Planned | Projects; Project sheet |
-| `updateProjectV2StatusUpdate` | Planned | Projects; Project sheet |
-| `updateProjectV2View` | Planned | Projects; Project sheet |
+| `updateProjectV2ItemPosition` | Yes | context menu > Move an Item... |
+| `updateProjectV2StatusUpdate` | Yes | context menu > Edit a Status Update... |
+| `updateProjectV2View` | Yes | context menu > Rename a View... |
 
 #### GraphQL: Projects (classic)
 
@@ -3122,7 +3122,7 @@ In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 
 #### GraphQL: Repositories
 
-18 mutations: 1 planned, 14 not needed, 3 left to github.
+18 mutations: 1 yes, 14 not needed, 3 left to github.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
@@ -3142,24 +3142,24 @@ In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 | `updateRepository` | Not needed | The same change as PATCH /repos/{owner}/{repo}, the route the Workbench uses for it (already built); one route per operation. |
 | `updateRepositoryCustomProperty` | Not needed | The same change as PUT /orgs/{org}/properties/schema/{custom_property_name}, the route the Workbench uses for it (planned there); one route per operation. |
 | `updateRepositoryRuleset` | Not needed | The same change as PUT /repos/{owner}/{repo}/rulesets/{ruleset_id}, the route the Workbench uses for it (already built); one route per operation. |
-| `updateRepositoryWebCommitSignoffSetting` | Planned | Repository sheet |
+| `updateRepositoryWebCommitSignoffSetting` | Yes | context menu > Require Sign-off on Web Commits... |
 | `updateTopics` | Not needed | The same change as PUT /repos/{owner}/{repo}/topics, the route the Workbench uses for it (already built); one route per operation. |
 
 #### GraphQL: Sponsors
 
-9 mutations: 2 yes, 6 planned, 1 not needed.
+9 mutations: 8 yes, 1 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
 | `cancelSponsorship` | Yes | context menu > Cancel Sponsorship... |
-| `createSponsorsListing` | Planned | People > person > Sponsor; Account > Sponsors |
-| `createSponsorsTier` | Planned | People > person > Sponsor; Account > Sponsors |
+| `createSponsorsListing` | Yes | context menu > Set Up a Sponsors Profile... |
+| `createSponsorsTier` | Yes | context menu > New Sponsor Tier... |
 | `createSponsorship` | Yes | context menu > Sponsor at This Tier... |
 | `createSponsorships` | Not needed | The same change as createSponsorship, the route the Workbench uses for it (already built); one route per operation. |
-| `publishSponsorsTier` | Planned | People > person > Sponsor; Account > Sponsors |
-| `retireSponsorsTier` | Planned | People > person > Sponsor; Account > Sponsors |
-| `updatePatreonSponsorability` | Planned | People > person > Sponsor; Account > Sponsors |
-| `updateSponsorshipPreferences` | Planned | People > person > Sponsor; Account > Sponsors |
+| `publishSponsorsTier` | Yes | context menu > Publish Tier |
+| `retireSponsorsTier` | Yes | context menu > Retire Tier... |
+| `updatePatreonSponsorability` | Yes | context menu > Patreon Sponsorships... |
+| `updateSponsorshipPreferences` | Yes | context menu > Sponsorship Preferences... |
 
 #### GraphQL: Teams
 
@@ -3192,10 +3192,10 @@ In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 | `closingIssuesReferences` | Yes | Properties (Alt+Enter) on Pull Request |
 | `compare` | Yes | Navigator: Repository > owner/name > Code > Branches |
 | `contributionsCollection` | Yes | Navigator: People > My Profile |
-| `dependencyGraphManifests` | Planned | Repository > Security > Dependencies |
+| `dependencyGraphManifests` | Yes | context menu > Dependency Manifests |
 | `discussionCategories` | Yes | Navigator: Repository > owner/name > Discussions |
 | `discussions` | Yes | Navigator: Repository > owner/name > Discussions |
-| `fundingLinks` | Planned | Repository > General (sponsor links) |
+| `fundingLinks` | Yes | context menu > Sponsor Links |
 | `issueTypes` | Yes | context menu > Set Issue Type... |
 | `linkedBranches` | Yes | Properties (Alt+Enter) on Issue: Linked branches |
 | `lists` | Yes | Navigator: Repositories > Star Lists |

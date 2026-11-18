@@ -10,7 +10,7 @@ For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claud
 
 - **Done on 2026-11-18:** five WordPress data-loss fixes (Send Back, Approve and Schedule, plugin Status, Gravity spam, Replace File, Put Back), Kelly Ford's diff marks (#1890), the Cast queue and download fixes for Chris Nova and Jessica Dail (#1889, #1892), every EdSharp item (#1891), and the Copilot SDK 2.0 plan (#1893, `docs/design/copilot.md`; 2.0 replaces 1.x outright).
 - **Screen-reader testing** is done by Jeff's testers and is not tracked here.
-- **Next:** Part 1 below, the GitHub Workbench, in this order: the endpoint table (1.2), the open features and checks (1.3), then the documentation pass (1.4).
+- **Next:** Part 1 below, the GitHub Workbench: the endpoints are done (1.1); next the open features and checks (1.3), then the documentation pass (1.4).
 - **How to work here:**
   - Squash-merge with `gh api -X PUT repos/Community-Access/quill/pulls/N/merge -f merge_method=squash`.
   - Log each step to `claude.log`, with the time read from a clock.
@@ -25,93 +25,21 @@ For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claud
 
 ## Part 1. The GitHub Workbench
 
-### 1.1 Where it stands
+### 1.1 Where it stands, and 1.2 the endpoints
 
-- GitHub's API has 2,004 rows in the coverage table. Late on 2026-11-18, with #1887 and the Pages batch merged, 611 are covered, 255 need no route of their own, 866 are out of scope with a reason written down, and **272 are still planned**.
-- Done on 2026-11-18: one resource engine for 34 lists of settings (#1877); 327 planned rows settled as needing nothing or out of scope, Enterprise Cloud among them (#1878); Repositories Allowed for secrets, variables and runner groups (#1879); Actions rules, immutable releases, code scanning setup and safety on Properties (#1880); Copilot Autofix, every place an alert was found, and SARIF upload (#1881).
-- Out of scope by Jeff's decision on 2026-11-18: everything that needs GitHub Enterprise Cloud, and company administration such as billing, Copilot seat management, private runner networking, migrations and paid Advanced Security. What a small organization such as Community-Access uses stays in.
-
-### 1.2 Endpoints still to build, by area
-
-Settled a second time on 2026-11-18, at Jeff's request: of 422 then planned, 6 were built and only needed counting, 26 need nothing, and 81 are out of scope with their reasons in `api_coverage.json` (Copilot Spaces by Jeff's choice). Jeff then chose to build the Copilot coding agent (17) and Sponsors as the one sponsored (7), and to leave GitHub Classroom (5) and the preview features (32: issue artifacts and suggestions, stacked pull requests, pull request creation caps, code quality, planning statuses, concurrency groups) out of scope. Every one of the 272 left is to build.
-
-**Order:** organization (roles, rulesets, teams, runners and runner groups, which repositories may use Actions, immutable releases, property values, members), issues (relations, blocked-by, issue fields and types, pinned comments, deleting an issue), Projects (items, fields, views, drafts), the Copilot coding agent, Sponsors, then the repository and account rest (Discussions, gists, commit comments, environment rules, dispatches, merges, release and deployment deletes, re-requests, secret locations, advisory comments, SBOM and dependency compare, source downloads, templates, email visibility, installed apps).
-
-| Area | Endpoints still planned |
-|---|---|
-| actions/permissions | 12 |
-| agent-automations/agent-automations | 10 |
-| projects/items | 10 |
-| orgs/organization-roles | 8 |
-| actions/self-hosted-runners | 7 |
-| Security advisories: comments, private forks, an organization's | 5 |
-| actions/self-hosted-runner-groups | 5 |
-| gists/gists | 5 |
-| orgs/orgs | 5 |
-| activity/events | 4 |
-| apps/installations | 4 |
-| deployments/branch-policies | 4 |
-| deployments/protection-rules | 4 |
-| gists/comments | 4 |
-| issues/issue-dependencies | 4 |
-| orgs/members | 4 |
-| orgs/rules | 4 |
-| projects/fields | 4 |
-| repos/repos | 4 |
-| section 21.8 | 4 |
-| users/issue-fields | 4 |
-| Dependency graph and SBOM export | 3 |
-| Self-hosted runners: just-in-time setup and removal tokens | 3 |
-| activity/watching | 3 |
-| agent-tasks/agent-tasks | 3 |
-| commits/comments | 3 |
-| dependabot/repository-access | 3 |
-| interactions/user | 3 |
-| issues/comments | 3 |
-| issues/issue-field-values | 3 |
-| issues/issues | 3 |
-| issues/sub-issues | 3 |
-| orgs/custom-properties | 3 |
-| orgs/issue-fields | 3 |
-| pulls/agent-merge | 3 |
-| reactions/reactions | 3 |
-| search/search | 3 |
-| secret-scanning/secret-scanning | 3 |
-| activity/notifications | 2 |
-| activity/starring | 2 |
-| checks/runs | 2 |
-| projects/drafts | 2 |
-| projects/projects | 2 |
-| projects/views | 2 |
-| releases/releases | 2 |
-| repos/contents | 2 |
-| repos/custom-properties | 2 |
-| teams/teams | 2 |
-| users/emails | 2 |
-| actions/workflow-jobs | 1 |
-| agents/secrets | 1 |
-| agents/variables | 1 |
-| branches/branches | 1 |
-| checks/suites | 1 |
-| commits/commits | 1 |
-| dependabot/alerts | 1 |
-| deployments/deployments | 1 |
-| issues/milestones | 1 |
-| orgs/outside-collaborators | 1 |
-| orgs/rule-suites | 1 |
-| orgs/webhooks | 1 |
-| pulls/copilot-code-review | 1 |
-| pulls/review-requests | 1 |
-| repos/rule-suites | 1 |
-| repos/rules | 1 |
-| repos/webhooks | 1 |
-| teams/members | 1 |
-| users/gpg-keys | 1 |
-| users/keys | 1 |
-| users/social-accounts | 1 |
-| users/ssh-signing-keys | 1 |
-| GraphQL-only changes | 62 |
-| **Total** | **272** |
+Every operation in GitHub's API is now covered, needs no route of its own,
+or is out of scope with its reason written down in
+`quill/core/github/api_coverage.json`: the planned ceiling is 0. The last
+272 were built on 2026-11-18 in batches 15 to 22 (#1895 to #1901 and
+#1907), the last 116 of them as one table of single-call commands
+(`quill/core/github/quick_tables.py`) that feeds the menus, the write
+requirements, the live run and the coverage table. Out of scope by Jeff's
+decision: GitHub Enterprise Cloud, company administration (billing, Copilot
+seats, private runner networking, migrations, paid Advanced Security),
+Copilot Spaces, GitHub Classroom and the preview features listed in the
+table. The Copilot cloud agent's APIs are a public preview; their commands
+send only what GitHub documents and show GitHub's own answer, so they need
+a live run on a Copilot plan before anyone relies on them (1.5).
 
 ### 1.3 Not endpoints: features and checks still open
 

@@ -700,8 +700,41 @@ and is never said or shown.
 - **A team:** Pending Invitations and Delete Team.... **An invitation to an
   organization:** Teams It Adds To.
 - **A Project:** New View... and Items in a View....
+- **A discussion:** Close Discussion... (resolved, outdated or a duplicate),
+  Reopen Discussion, Delete Discussion..., Upvote, Remove Upvote, Vote in the
+  Poll..., Edit a Comment... and Delete a Comment....
+- **An issue:** Link a Pull Request That Closes It... and Unlink a Pull
+  Request....
+- **An environment:** Pin Environment, Unpin Environment and Move
+  Environment....
+- **A repository or an organization:** Require Sign-off on Web Commits....
+  **An organization:** Follow Organization and Unfollow Organization. **A
+  repository:** Sponsor Links (its FUNDING.yml) and Dependency Manifests.
+- **A Project, inside:** Rename a View..., Delete a View..., Rename a
+  Field..., Add an Issue Field..., Edit a Draft..., Make a Draft an
+  Issue..., Move an Item..., Edit a Status Update..., Delete a Status
+  Update..., Delete a Workflow..., Share the Project..., Link a Team... and
+  Unlink a Team....
+- **Your sponsorships:** Set Up a Sponsors Profile..., New Sponsor Tier...
+  and Patreon Sponsorships...; on a sponsorship, Sponsorship
+  Preferences...; on one of your tiers, Publish Tier and Retire Tier....
+- **Copilot's cloud agent, on a repository:** Start an Agent Task..., Agent
+  Tasks, An Agent Task's Progress..., Automations, New Automation..., Run an
+  Automation..., Rename an Automation..., Delete an Automation..., An
+  Automation's History..., An Automation's Tasks..., Automation Tools and
+  Triggers, Agent Secrets from the Organization and Agent Variables from the
+  Organization. **On a pull request:** Ask Copilot to Review, Agent Merge,
+  Turn On Agent Merge and Turn Off Agent Merge.... **On your profile:** My
+  Agent Tasks and My Automations. These need a Copilot plan with the cloud
+  agent, and GitHub calls them a preview: QUILL sends only what GitHub
+  documents and reads you GitHub's own answer.
 - **Your emails:** Email Visibility.... **Your profile:** Interaction
   Limits, Limit Interactions... and Lift Interaction Limits.
+
+A few of these use parts of GitHub newer than the description QUILL was
+built against (closing references, a Project's views and issue fields).
+Those first read from GitHub what the change needs, and if GitHub has
+changed it, they send nothing and say to use Open on GitHub instead.
 
 ## Workbench Options
 

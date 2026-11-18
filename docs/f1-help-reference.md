@@ -3220,6 +3220,10 @@ Control coverage: 384 audited sites (384 helped).
 
 **Add to or Remove from Favorites.** Keep it in Favorites.
 
+**Link a Pull Request That Closes It.** Say which pull requests close this issue when they merge.
+
+**Unlink a Pull Request.** Take a pull request off the ones that close this issue.
+
 **Properties.** Everything about this item on one sheet. Alt+Enter opens it from anywhere.
 
 **Review.** Read the review threads and checks, and review it.
@@ -3249,6 +3253,14 @@ Control coverage: 384 audited sites (384 helped).
 **Commit Comments.** Comments on the commit and its lines.
 
 **Re-request Review.** Ask reviewers who already reviewed to look again.
+
+**Ask Copilot to Review.** Ask Copilot for a code review of this pull request.
+
+**Agent Merge.** Whether Copilot merges this pull request itself once it is ready, and how.
+
+**Turn On Agent Merge.** Let Copilot merge this pull request once its checks and reviews allow.
+
+**Turn Off Agent Merge.** Stop Copilot merging this pull request.
 
 **Jobs and Logs.** The run's jobs, steps and logs.
 
@@ -3394,6 +3406,38 @@ Control coverage: 384 audited sites (384 helped).
 
 **Secret Scanning History.** When GitHub last scanned this repository for secrets, and how.
 
+**Require Sign-off on Web Commits.** Whether commits made on GitHub's site must carry a sign-off.
+
+**Sponsor Links.** Where people can sponsor this repository, from its FUNDING.yml.
+
+**Dependency Manifests.** Each manifest file GitHub reads dependencies from, and how many it found.
+
+**Start an Agent Task.** Give Copilot's cloud agent a job here; it works on a branch of its own.
+
+**Agent Tasks.** Copilot's cloud agent tasks in this repository, and how each is going.
+
+**An Agent Task's Progress.** Everything GitHub says about one agent task.
+
+**Automations.** This repository's Copilot automations.
+
+**New Automation.** An automation: a prompt Copilot runs whenever its trigger fires.
+
+**Run an Automation.** Run one of this repository's automations now.
+
+**Rename an Automation.** Give one of this repository's automations another name.
+
+**Delete an Automation.** Delete one of this repository's automations; tasks it ran stay.
+
+**An Automation's History.** Each change to one automation, newest first.
+
+**An Automation's Tasks.** The tasks one automation has run.
+
+**Automation Tools and Triggers.** What an automation here may do, and what may start it.
+
+**Agent Secrets from the Organization.** The organization's agent secrets this repository may use (names only).
+
+**Agent Variables from the Organization.** The organization's agent variables this repository may use.
+
 **Open.** Select the person's node in the tree.
 
 **Follow or Unfollow.** Follow them, or stop.
@@ -3419,6 +3463,22 @@ Control coverage: 384 audited sites (384 helped).
 **Delete Gist.** Delete the gist.
 
 **Open Discussion Thread.** Read the whole thread.
+
+**Close Discussion.** Close it as resolved, outdated or a duplicate.
+
+**Reopen Discussion.** Open a closed discussion again.
+
+**Delete Discussion.** Delete it and every comment in it, for good.
+
+**Upvote.** Add your upvote, which helps it rise in the list.
+
+**Remove Upvote.** Take your upvote back.
+
+**Vote in the Poll.** Choose an answer in this discussion's poll.
+
+**Edit a Comment.** Change a comment you may edit.
+
+**Delete a Comment.** Delete a comment you may delete.
 
 **Dismiss or Reopen Alert.** Dismiss with a reason.
 
@@ -3472,6 +3532,32 @@ Control coverage: 384 audited sites (384 helped).
 
 **Items in a View.** What one of this Project's views shows, in its order and with its filter.
 
+**Rename a View.** Give one of this Project's views another name.
+
+**Delete a View.** Delete one of this Project's views; its items stay.
+
+**Rename a Field.** Give one of this Project's fields another name.
+
+**Add an Issue Field.** Add one of the organization's issue fields to this Project.
+
+**Edit a Draft.** Change a draft's title and text.
+
+**Make a Draft an Issue.** Turn a draft into a real issue in a repository; it stays in the Project.
+
+**Move an Item.** Put an item in another place in the Project's own order.
+
+**Edit a Status Update.** Change a status update's status or text.
+
+**Delete a Status Update.** Delete one of this Project's status updates.
+
+**Delete a Workflow.** Delete one of this Project's automatic workflows.
+
+**Share the Project.** Give a person a role in this Project, or take it away.
+
+**Link a Team.** Show this Project on a team's Projects.
+
+**Unlink a Team.** Take this Project off a team's Projects.
+
 **Members and Access.** Open the team's sheet at its members: add people, change a role, remove.
 
 **Delete Team.** Delete this team, and its child teams.
@@ -3508,6 +3594,12 @@ Control coverage: 384 audited sites (384 helped).
 
 **My Activity Here.** What you have done lately in this organization's repositories.
 
+**Require Sign-off on Web Commits.** Whether commits made on GitHub's site, in every repository here, must carry a sign-off.
+
+**Follow Organization.** See this organization's public activity in your feed.
+
+**Unfollow Organization.** Stop seeing this organization in your feed.
+
 **Open.** Open the settings dialog for this; it asks before saving.
 
 **Edit Watch.** Change what the watch looks at.
@@ -3543,6 +3635,16 @@ Control coverage: 384 audited sites (384 helped).
 **Limit Interactions.** For a while, let only some people comment and open issues in all your repositories.
 
 **Lift Interaction Limits.** Let everyone take part in your repositories again.
+
+**Set Up a Sponsors Profile.** Start taking sponsorships: GitHub reviews the profile before it shows.
+
+**New Sponsor Tier.** Add a tier to your Sponsors profile, as a draft or published.
+
+**Patreon Sponsorships.** Let sponsors pay through Patreon as well as GitHub.
+
+**My Agent Tasks.** Every cloud agent task you started, in any repository.
+
+**My Automations.** Every Copilot automation you made.
 
 **Open in Its Repository.** Go to the item in its own repository, where every action for it is. Back returns to this row, filter and page.
 
@@ -3611,6 +3713,12 @@ Control coverage: 384 audited sites (384 helped).
 **Protection Rules.** Apps that must approve a deployment.
 
 **Delete.** Delete it, after asking.
+
+**Pin Environment.** Keep this environment at the top of the repository's Deployments.
+
+**Unpin Environment.** Let this environment take its usual place again.
+
+**Move Environment.** Put this pinned environment at another place among the pinned ones.
 
 **Start.** Start it, as it was when it stopped.
 
@@ -3688,7 +3796,13 @@ Control coverage: 384 audited sites (384 helped).
 
 **Cancel Sponsorship.** Stop it; asks first.
 
+**Sponsorship Preferences.** Whether people see this sponsorship, and whether you get the maintainer's emails.
+
 **Sponsor at This Tier.** Pay; you type their login.
+
+**Publish Tier.** Publish one of your draft tiers.
+
+**Retire Tier.** Stop offering one of your tiers; sponsors on it stay.
 
 ### Every Workbench option
 

@@ -3191,7 +3191,8 @@ Conversation…, Pin or Unpin Issue, Transfer Issue…, Check or Uncheck a
 Task…, Convert Tasks to Sub-issues…, Create Branch for This Issue…,
 Unlink Branch…, Not a Duplicate…, Set Issue Type…, Reorder Sub-issues…,
 Relationships…, Issue Fields…, Delete Issue…, Add to or Remove from
-Favorites; Properties…</li>
+Favorites, Link a Pull Request That Closes It…, Unlink a Pull Request…;
+Properties…</li>
 <li><strong>pull_request</strong>: Review…, File Differences…, Comment…,
 Merge…, Why Can’t I Merge?, Auto-Merge…; More: Reviews…, Open in a
 Codespace, Add to or Remove from Merge Queue…, Open Patch in Editor,
@@ -3199,7 +3200,9 @@ Revert Pull Request…, Resolve Conflicts in a Worktree…, Copy Link, Open
 on GitHub, Start in Local Worktree…, Open in Codespaces…, Commit
 Comments…, View Timeline…, Read as Document…, Summarize Discussion,
 React…, Labels…, Assignees…, Milestone…, Projects…, Edit Title…, Add to
-or Remove from Favorites, Re-request Review…; Properties…</li>
+or Remove from Favorites, Re-request Review…, Ask Copilot to Review,
+Agent Merge, Turn On Agent Merge, Turn Off Agent Merge…;
+Properties…</li>
 <li><strong>run</strong>: Jobs and Logs, What Failed…, Re-run Failed
 Jobs Only, Re-run Workflow, Cancel Run…, Re-run One Job…; More: Force
 Cancel…, Download Logs…, Delete Logs…, Approvals, Earlier Attempts…,
@@ -3236,7 +3239,13 @@ Remove from Favorites, Open on GitHub, Open in Codespaces…, Rename or
 Delete Star List…, Fork Workflow Settings, Fork Workflows from Private
 Repositories…, Languages, License, Star History, Mark Its Notifications
 Read, Set a Custom Property…, Compare Dependencies…, SBOM Report,
-Ruleset History…, Secret Scanning History; Properties…</li>
+Ruleset History…, Secret Scanning History, Require Sign-off on Web
+Commits…, Sponsor Links, Dependency Manifests, Start an Agent Task…,
+Agent Tasks, An Agent Task’s Progress…, Automations, New Automation…,
+Run an Automation…, Rename an Automation…, Delete an Automation…, An
+Automation’s History…, An Automation’s Tasks…, Automation Tools and
+Triggers, Agent Secrets from the Organization, Agent Variables from the
+Organization; Properties…</li>
 <li><strong>person</strong>: Open, Follow or Unfollow, Open on GitHub;
 Properties…</li>
 <li><strong>label</strong>: Find Issues with Label, Edit Label…, Delete
@@ -3245,7 +3254,9 @@ Label…; Properties…</li>
 History…, Forks…, Fork Gist; More: Copy Link, Open on GitHub, Delete
 Gist…; Properties…</li>
 <li><strong>discussion</strong>: Open Discussion Thread, Read as
-Document…, Copy Link, Open on GitHub; Properties…</li>
+Document…, Copy Link, Open on GitHub, Close Discussion…, Reopen
+Discussion; More: Delete Discussion…, Upvote, Remove Upvote, Vote in the
+Poll…, Edit a Comment…, Delete a Comment…; Properties…</li>
 <li><strong>security_alert</strong>: Open, Dismiss or Reopen Alert…,
 Copilot Autofix…, Show Every Place, Open on GitHub, Where It Was Found;
 Properties…</li>
@@ -3269,7 +3280,11 @@ Properties…</li>
 <li><strong>project</strong>: Open on GitHub, Add Draft Issue…, New
 Field…, Delete Field…, Post Status Update…, Link to Repository…; More:
 Unlink from Repository…, Template…, Copy Project…, Delete Project…, Copy
-Link, New View…, Items in a View…; Properties…</li>
+Link, New View…, Items in a View…, Rename a View…, Delete a View…,
+Rename a Field…, Add an Issue Field…, Edit a Draft…, Make a Draft an
+Issue…, Move an Item…, Edit a Status Update…, Delete a Status Update…,
+Delete a Workflow…, Share the Project…, Link a Team…, Unlink a Team…;
+Properties…</li>
 <li><strong>team</strong>: Members and Access…, Copy Link, Open on
 GitHub, Delete Team…, Pending Invitations; Properties…</li>
 <li><strong>organization</strong>: Open, Roles…, Rulesets…, Open on
@@ -3278,7 +3293,8 @@ Repositories…; More: Dependabot Repository Access, Give Dependabot a
 Repository…, Take a Repository from Dependabot…, Dependabot’s Default
 Access…, Make Someone an Outside Collaborator…, Define a Custom
 Property…, Set Repositories’ Custom Property…, New Team…, Accept
-Membership, My Activity Here; Properties…</li>
+Membership, My Activity Here, Require Sign-off on Web Commits…, Follow
+Organization, Unfollow Organization; Properties…</li>
 <li><strong>favorite</strong>: Open, Copy Link, Open on GitHub, Add to
 or Remove from Favorites; Properties…</li>
 <li><strong>admin_action</strong>: Open; Properties…</li>
@@ -3289,7 +3305,8 @@ Watches Now, Remove Watch, Open on GitHub; Properties…</li>
 New Organization Runner…, Just-in-Time Runner…, Just-in-Time Runner…;
 More: Is a Runner Version Retiring?…, Is a Runner Version Retiring?…,
 Email Visibility…, Interaction Limits, Limit Interactions…, Lift
-Interaction Limits; Properties…</li>
+Interaction Limits, Set Up a Sponsors Profile…, New Sponsor Tier…,
+Patreon Sponsorships…, My Agent Tasks, My Automations; Properties…</li>
 <li><strong>across_item</strong>: Open in Its Repository, Next
 Repository, Previous Repository, View More from This Repository, Read
 Issue Type and Fields, Every Release or Latest Only; More: Open on
@@ -3311,7 +3328,8 @@ Runner…, Open on GitHub, Copy Link, Removal Commands…; Properties…</li>
 Off Pages…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>environment</strong>: Show Details, Secrets…, Variables…,
 Branch Policies…, Protection Rules…, Delete…; More: Open on GitHub, Copy
-Link; Properties…</li>
+Link, Pin Environment, Unpin Environment, Move Environment…;
+Properties…</li>
 <li><strong>codespace</strong>: Show Details, Start, Stop, Change
 Machine…, Export to a Branch, Publish to a New Repository…; More:
 Delete…, Open on GitHub, Copy Link; Properties…</li>
@@ -3339,9 +3357,9 @@ This Group…, Teams It Adds To; Properties…</li>
 <li><strong>wiki</strong>: Open on GitHub, Clone Wiki…, Copy Link;
 Properties…</li>
 <li><strong>sponsorship</strong>: Show Details, Cancel Sponsorship…,
-Open on GitHub; Properties…</li>
+Open on GitHub, Sponsorship Preferences…; Properties…</li>
 <li><strong>sponsor_tier</strong>: Show Details, Sponsor at This Tier…,
-Open on GitHub; Properties…</li>
+Open on GitHub, Publish Tier, Retire Tier…; Properties…</li>
 </ul>
 <h3 id="workbench-options">Workbench Options</h3>
 <table>
@@ -3613,7 +3631,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 792 yes, 57 planned, 289 not needed and 866 left to
+<p>In all: 848 yes, 0 planned, 290 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -5252,7 +5270,7 @@ whose whole activity My Activity Feed already reads.</td>
 </tbody>
 </table>
 <h4 id="agent-automations">Agent automations</h4>
-<p>12 operations: 10 planned, 2 not needed.</p>
+<p>12 operations: 10 yes, 2 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -5266,38 +5284,38 @@ whose whole activity My Activity Feed already reads.</td>
 <tr>
 <td>List automations for user</td>
 <td><code>GET /agents/automations</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; My Automations</td>
 </tr>
 <tr>
 <td>List automations for a repository</td>
 <td><code>GET /agents/repos/{owner}/{repo}/automations</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Automations</td>
 </tr>
 <tr>
 <td>Create an automation for a repository</td>
 <td><code>POST /agents/repos/{owner}/{repo}/automations</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; New Automation…</td>
 </tr>
 <tr>
 <td>List available automation tools for a repository</td>
 <td><code>GET /agents/repos/{owner}/{repo}/automations/available-tools</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Automation Tools and Triggers</td>
 </tr>
 <tr>
 <td>List available automation triggers for a repository</td>
 <td><code>GET /agents/repos/{owner}/{repo}/automations/available-triggers</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Automation Tools and Triggers</td>
 </tr>
 <tr>
 <td>Delete an automation</td>
 <td><code>DELETE /agents/repos/{owner}/{repo}/automations/{automation_id}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Delete an Automation…</td>
 </tr>
 <tr>
 <td>Get an automation</td>
@@ -5309,14 +5327,14 @@ reads the list.</td>
 <tr>
 <td>Update an automation</td>
 <td><code>PATCH /agents/repos/{owner}/{repo}/automations/{automation_id}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Rename an Automation…</td>
 </tr>
 <tr>
 <td>List revisions for an automation</td>
 <td><code>GET /agents/repos/{owner}/{repo}/automations/{automation_id}/revisions</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; An Automation’s History…</td>
 </tr>
 <tr>
 <td>Get an automation revision</td>
@@ -5328,19 +5346,19 @@ reads the list.</td>
 <tr>
 <td>List tasks for an automation in a repository</td>
 <td><code>GET /agents/repos/{owner}/{repo}/automations/{automation_id}/tasks</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; An Automation’s Tasks…</td>
 </tr>
 <tr>
 <td>Run an automation</td>
 <td><code>POST /agents/repos/{owner}/{repo}/automations/{automation_id}/tasks</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Run an Automation…</td>
 </tr>
 </tbody>
 </table>
 <h4 id="agent-tasks">Agent tasks</h4>
-<p>5 operations: 3 planned, 2 not needed.</p>
+<p>5 operations: 3 yes, 2 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -5354,14 +5372,14 @@ reads the list.</td>
 <tr>
 <td>List tasks for repository</td>
 <td><code>GET /agents/repos/{owner}/{repo}/tasks</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot &gt; Agent Sessions (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Agent Tasks</td>
 </tr>
 <tr>
 <td>Start a task</td>
 <td><code>POST /agents/repos/{owner}/{repo}/tasks</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot &gt; Agent Sessions (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Start an Agent Task…</td>
 </tr>
 <tr>
 <td>Get a task by repo</td>
@@ -5373,8 +5391,8 @@ reads the list.</td>
 <tr>
 <td>List tasks</td>
 <td><code>GET /agents/tasks</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot &gt; Agent Sessions (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; My Agent Tasks</td>
 </tr>
 <tr>
 <td>Get a task by ID</td>
@@ -5386,7 +5404,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="agents">Agents</h4>
-<p>30 operations: 22 yes, 2 planned, 6 not needed.</p>
+<p>30 operations: 24 yes, 6 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -5519,16 +5537,14 @@ makes meanwhile is kept.</td>
 <tr>
 <td>List repository organization secrets</td>
 <td><code>GET /repos/{owner}/{repo}/agents/organization-secrets</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Agent Secrets from the Organization</td>
 </tr>
 <tr>
 <td>List repository organization variables</td>
 <td><code>GET /repos/{owner}/{repo}/agents/organization-variables</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Agent Variables from the Organization</td>
 </tr>
 <tr>
 <td>List repository secrets</td>
@@ -11070,7 +11086,7 @@ to one place.</td>
 </tbody>
 </table>
 <h4 id="pull-requests">Pull requests</h4>
-<p>39 operations: 24 yes, 4 planned, 7 not needed, 4 left to github.</p>
+<p>39 operations: 28 yes, 7 not needed, 4 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -11084,20 +11100,20 @@ to one place.</td>
 <tr>
 <td>Disable Agent Merge for a pull request</td>
 <td><code>DELETE /agents/repos/{owner}/{repo}/pulls/{pull_number}/agent-merge</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Turn Off Agent Merge…</td>
 </tr>
 <tr>
 <td>Get Agent Merge configuration for a pull request</td>
 <td><code>GET /agents/repos/{owner}/{repo}/pulls/{pull_number}/agent-merge</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Agent Merge</td>
 </tr>
 <tr>
 <td>Update Agent Merge configuration for a pull request</td>
 <td><code>PUT /agents/repos/{owner}/{repo}/pulls/{pull_number}/agent-merge</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Turn On Agent Merge</td>
 </tr>
 <tr>
 <td>List pull requests</td>
@@ -11176,8 +11192,8 @@ reads the list.</td>
 <tr>
 <td>Request a Copilot code review for a pull request</td>
 <td><code>POST /repos/{owner}/{repo}/pulls/{pull_number}/copilot-code-review</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Ask Copilot to Review</td>
 </tr>
 <tr>
 <td>List pull requests files</td>
@@ -13133,7 +13149,7 @@ Workbench uses for it (already built); one route per operation.</td>
 </tbody>
 </table>
 <h4 id="graphql-deployments">GraphQL: Deployments</h4>
-<p>10 mutations: 2 planned, 8 not needed.</p>
+<p>10 mutations: 2 yes, 8 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -13187,8 +13203,8 @@ Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>pinEnvironment</code></td>
-<td>Planned</td>
-<td>Repository &gt; Deployments; Environment sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Unpin Environment</td>
 </tr>
 <tr>
 <td><code>rejectDeployments</code></td>
@@ -13200,8 +13216,8 @@ operation.</td>
 </tr>
 <tr>
 <td><code>reorderEnvironment</code></td>
-<td>Planned</td>
-<td>Repository &gt; Deployments; Environment sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Move Environment…</td>
 </tr>
 <tr>
 <td><code>updateEnvironment</code></td>
@@ -13213,7 +13229,7 @@ Workbench uses for it (already built); one route per operation.</td>
 </tbody>
 </table>
 <h4 id="graphql-discussions">GraphQL: Discussions</h4>
-<p>13 mutations: 5 yes, 8 planned.</p>
+<p>13 mutations: 13 yes.</p>
 <table>
 <thead>
 <tr>
@@ -13230,18 +13246,18 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>addDiscussionPollVote</code></td>
-<td>Planned</td>
-<td>Repository &gt; Discussions; Discussion sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Vote in the Poll…</td>
 </tr>
 <tr>
 <td><code>addUpvote</code></td>
-<td>Planned</td>
-<td>Repository &gt; Discussions; Discussion sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Upvote</td>
 </tr>
 <tr>
 <td><code>closeDiscussion</code></td>
-<td>Planned</td>
-<td>Repository &gt; Discussions; Discussion sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Close Discussion…</td>
 </tr>
 <tr>
 <td><code>createDiscussion</code></td>
@@ -13250,13 +13266,13 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>deleteDiscussion</code></td>
-<td>Planned</td>
-<td>Repository &gt; Discussions; Discussion sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Discussion…</td>
 </tr>
 <tr>
 <td><code>deleteDiscussionComment</code></td>
-<td>Planned</td>
-<td>Repository &gt; Discussions; Discussion sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Delete a Comment…</td>
 </tr>
 <tr>
 <td><code>markDiscussionCommentAsAnswer</code></td>
@@ -13265,13 +13281,13 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>removeUpvote</code></td>
-<td>Planned</td>
-<td>Repository &gt; Discussions; Discussion sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Remove Upvote</td>
 </tr>
 <tr>
 <td><code>reopenDiscussion</code></td>
-<td>Planned</td>
-<td>Repository &gt; Discussions; Discussion sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Reopen Discussion</td>
 </tr>
 <tr>
 <td><code>unmarkDiscussionCommentAsAnswer</code></td>
@@ -13285,8 +13301,8 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateDiscussionComment</code></td>
-<td>Planned</td>
-<td>Repository &gt; Discussions; Discussion sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Edit a Comment…</td>
 </tr>
 </tbody>
 </table>
@@ -13650,7 +13666,7 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tbody>
 </table>
 <h4 id="graphql-issues">GraphQL: Issues</h4>
-<p>51 mutations: 16 yes, 2 planned, 31 not needed, 2 left to github.</p>
+<p>51 mutations: 18 yes, 31 not needed, 2 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -13674,8 +13690,8 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>addCloseIssueReferences</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Yes</td>
+<td>context menu &gt; Link a Pull Request That Closes It…</td>
 </tr>
 <tr>
 <td><code>addComment</code></td>
@@ -13851,8 +13867,8 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>removeCloseIssueReferences</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Yes</td>
+<td>context menu &gt; Unlink a Pull Request…</td>
 </tr>
 <tr>
 <td><code>removeLabelsFromLabelable</code></td>
@@ -14043,7 +14059,7 @@ the gh gei extension.</td>
 </tbody>
 </table>
 <h4 id="graphql-organizations">GraphQL: Organizations</h4>
-<p>11 mutations: 3 planned, 2 not needed, 6 left to github.</p>
+<p>11 mutations: 3 yes, 2 not needed, 6 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -14076,8 +14092,8 @@ deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td><code>followOrganization</code></td>
-<td>Planned</td>
-<td>Organization sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Follow Organization</td>
 </tr>
 <tr>
 <td><code>regenerateVerifiableDomainToken</code></td>
@@ -14101,8 +14117,8 @@ Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>unfollowOrganization</code></td>
-<td>Planned</td>
-<td>Organization sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Unfollow Organization</td>
 </tr>
 <tr>
 <td><code>updateOrganizationAllowPrivateRepositoryForkingSetting</code></td>
@@ -14113,8 +14129,8 @@ deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td><code>updateOrganizationWebCommitSignoffSetting</code></td>
-<td>Planned</td>
-<td>Organization sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Require Sign-off on Web Commits…</td>
 </tr>
 <tr>
 <td><code>verifyVerifiableDomain</code></td>
@@ -14147,7 +14163,7 @@ operation.</td>
 </tbody>
 </table>
 <h4 id="graphql-projects">GraphQL: Projects</h4>
-<p>32 mutations: 18 yes, 14 planned.</p>
+<p>32 mutations: 31 yes, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -14179,8 +14195,8 @@ operation.</td>
 </tr>
 <tr>
 <td><code>convertProjectV2DraftIssueItemToIssue</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Make a Draft an Issue…</td>
 </tr>
 <tr>
 <td><code>copyProjectV2</code></td>
@@ -14199,8 +14215,8 @@ operation.</td>
 </tr>
 <tr>
 <td><code>createProjectV2IssueField</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Add an Issue Field…</td>
 </tr>
 <tr>
 <td><code>createProjectV2StatusUpdate</code></td>
@@ -14209,8 +14225,9 @@ operation.</td>
 </tr>
 <tr>
 <td><code>createProjectV2View</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Not needed</td>
+<td>New View on a Project makes a view through REST, which GitHub added
+for both organization and personal Projects.</td>
 </tr>
 <tr>
 <td><code>deleteProjectV2</code></td>
@@ -14229,18 +14246,18 @@ operation.</td>
 </tr>
 <tr>
 <td><code>deleteProjectV2StatusUpdate</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Delete a Status Update…</td>
 </tr>
 <tr>
 <td><code>deleteProjectV2View</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Delete a View…</td>
 </tr>
 <tr>
 <td><code>deleteProjectV2Workflow</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Delete a Workflow…</td>
 </tr>
 <tr>
 <td><code>linkProjectV2ToRepository</code></td>
@@ -14249,8 +14266,8 @@ operation.</td>
 </tr>
 <tr>
 <td><code>linkProjectV2ToTeam</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Link a Team…</td>
 </tr>
 <tr>
 <td><code>markProjectV2AsTemplate</code></td>
@@ -14269,8 +14286,8 @@ operation.</td>
 </tr>
 <tr>
 <td><code>unlinkProjectV2FromTeam</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Unlink a Team…</td>
 </tr>
 <tr>
 <td><code>unmarkProjectV2AsTemplate</code></td>
@@ -14284,18 +14301,18 @@ operation.</td>
 </tr>
 <tr>
 <td><code>updateProjectV2Collaborators</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Share the Project…</td>
 </tr>
 <tr>
 <td><code>updateProjectV2DraftIssue</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Edit a Draft…</td>
 </tr>
 <tr>
 <td><code>updateProjectV2Field</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Rename a Field…</td>
 </tr>
 <tr>
 <td><code>updateProjectV2ItemFieldValue</code></td>
@@ -14304,18 +14321,18 @@ operation.</td>
 </tr>
 <tr>
 <td><code>updateProjectV2ItemPosition</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Move an Item…</td>
 </tr>
 <tr>
 <td><code>updateProjectV2StatusUpdate</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Edit a Status Update…</td>
 </tr>
 <tr>
 <td><code>updateProjectV2View</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Rename a View…</td>
 </tr>
 </tbody>
 </table>
@@ -14701,7 +14718,7 @@ Workbench uses for it (planned there); one route per operation.</td>
 </tbody>
 </table>
 <h4 id="graphql-repositories">GraphQL: Repositories</h4>
-<p>18 mutations: 1 planned, 14 not needed, 3 left to github.</p>
+<p>18 mutations: 1 yes, 14 not needed, 3 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -14822,8 +14839,8 @@ operation.</td>
 </tr>
 <tr>
 <td><code>updateRepositoryWebCommitSignoffSetting</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Require Sign-off on Web Commits…</td>
 </tr>
 <tr>
 <td><code>updateTopics</code></td>
@@ -14834,7 +14851,7 @@ Workbench uses for it (already built); one route per operation.</td>
 </tbody>
 </table>
 <h4 id="graphql-sponsors">GraphQL: Sponsors</h4>
-<p>9 mutations: 2 yes, 6 planned, 1 not needed.</p>
+<p>9 mutations: 8 yes, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -14851,13 +14868,13 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>createSponsorsListing</code></td>
-<td>Planned</td>
-<td>People &gt; person &gt; Sponsor; Account &gt; Sponsors</td>
+<td>Yes</td>
+<td>context menu &gt; Set Up a Sponsors Profile…</td>
 </tr>
 <tr>
 <td><code>createSponsorsTier</code></td>
-<td>Planned</td>
-<td>People &gt; person &gt; Sponsor; Account &gt; Sponsors</td>
+<td>Yes</td>
+<td>context menu &gt; New Sponsor Tier…</td>
 </tr>
 <tr>
 <td><code>createSponsorship</code></td>
@@ -14872,23 +14889,23 @@ for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>publishSponsorsTier</code></td>
-<td>Planned</td>
-<td>People &gt; person &gt; Sponsor; Account &gt; Sponsors</td>
+<td>Yes</td>
+<td>context menu &gt; Publish Tier</td>
 </tr>
 <tr>
 <td><code>retireSponsorsTier</code></td>
-<td>Planned</td>
-<td>People &gt; person &gt; Sponsor; Account &gt; Sponsors</td>
+<td>Yes</td>
+<td>context menu &gt; Retire Tier…</td>
 </tr>
 <tr>
 <td><code>updatePatreonSponsorability</code></td>
-<td>Planned</td>
-<td>People &gt; person &gt; Sponsor; Account &gt; Sponsors</td>
+<td>Yes</td>
+<td>context menu &gt; Patreon Sponsorships…</td>
 </tr>
 <tr>
 <td><code>updateSponsorshipPreferences</code></td>
-<td>Planned</td>
-<td>People &gt; person &gt; Sponsor; Account &gt; Sponsors</td>
+<td>Yes</td>
+<td>context menu &gt; Sponsorship Preferences…</td>
 </tr>
 </tbody>
 </table>
@@ -15001,8 +15018,8 @@ twin</h3>
 </tr>
 <tr>
 <td><code>dependencyGraphManifests</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Dependencies</td>
+<td>Yes</td>
+<td>context menu &gt; Dependency Manifests</td>
 </tr>
 <tr>
 <td><code>discussionCategories</code></td>
@@ -15016,8 +15033,8 @@ twin</h3>
 </tr>
 <tr>
 <td><code>fundingLinks</code></td>
-<td>Planned</td>
-<td>Repository &gt; General (sponsor links)</td>
+<td>Yes</td>
+<td>context menu &gt; Sponsor Links</td>
 </tr>
 <tr>
 <td><code>issueTypes</code></td>

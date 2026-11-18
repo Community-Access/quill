@@ -2,17 +2,21 @@
 
 ## 1.0.0
 
-### GitHub Workbench: 59 more commands on rows (2026-11-18)
+### GitHub Workbench: 116 more commands on rows, and every endpoint settled (2026-11-18)
 
 Repositories, commits, runs, pull requests, releases, alerts, advisories,
-runners, runner groups, organizations, teams, invitations, Projects and
-your own account gain commands that each make one call to GitHub: from a
-repository's languages and star history to an organization's Dependabot
-access, a team's pending invitations, a Project's new view and a runner
+runners, runner groups, organizations, teams, invitations, discussions,
+environments, Projects, sponsorships, Copilot's cloud agent (tasks,
+automations, Agent Merge, Copilot review) and your own account gain commands
+that each make one call to GitHub: from a repository's languages and star
+history to an organization's Dependabot access, closing a discussion as
+outdated, pinning an environment, renaming a Project's view, and a runner
 that takes one job. They are one table (`quill/core/github/quick_tables.py`),
 so menus, permissions, the live run and the API coverage table agree. The
 GitHub guide's Workbench chapter lists them under "More commands on rows".
-65 planned GitHub operations are now covered or classified.
+Every GitHub operation is now covered or classified: none is left
+planned. The cloud agent's are a public preview, so they send only what
+GitHub documents and show GitHub's own answer.
 
 ### WordPress
 

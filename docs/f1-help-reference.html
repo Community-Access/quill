@@ -6707,6 +6707,10 @@ read, add and remove.</p>
 <p><strong>Delete Issue.</strong> Delete it for good; asks first.</p>
 <p><strong>Add to or Remove from Favorites.</strong> Keep it in
 Favorites.</p>
+<p><strong>Link a Pull Request That Closes It.</strong> Say which pull
+requests close this issue when they merge.</p>
+<p><strong>Unlink a Pull Request.</strong> Take a pull request off the
+ones that close this issue.</p>
 <p><strong>Properties.</strong> Everything about this item on one sheet.
 Alt+Enter opens it from anywhere.</p>
 <p><strong>Review.</strong> Read the review threads and checks, and
@@ -6737,6 +6741,14 @@ for this. Starting a Codespace can cost money, so QUILL asks first.</p>
 lines.</p>
 <p><strong>Re-request Review.</strong> Ask reviewers who already
 reviewed to look again.</p>
+<p><strong>Ask Copilot to Review.</strong> Ask Copilot for a code review
+of this pull request.</p>
+<p><strong>Agent Merge.</strong> Whether Copilot merges this pull
+request itself once it is ready, and how.</p>
+<p><strong>Turn On Agent Merge.</strong> Let Copilot merge this pull
+request once its checks and reviews allow.</p>
+<p><strong>Turn Off Agent Merge.</strong> Stop Copilot merging this pull
+request.</p>
 <p><strong>Jobs and Logs.</strong> The run’s jobs, steps and logs.</p>
 <p><strong>What Failed.</strong> The failing steps and their log
 lines.</p>
@@ -6855,6 +6867,38 @@ materials report, and read it.</p>
 repository’s rulesets, and who made it.</p>
 <p><strong>Secret Scanning History.</strong> When GitHub last scanned
 this repository for secrets, and how.</p>
+<p><strong>Require Sign-off on Web Commits.</strong> Whether commits
+made on GitHub’s site must carry a sign-off.</p>
+<p><strong>Sponsor Links.</strong> Where people can sponsor this
+repository, from its FUNDING.yml.</p>
+<p><strong>Dependency Manifests.</strong> Each manifest file GitHub
+reads dependencies from, and how many it found.</p>
+<p><strong>Start an Agent Task.</strong> Give Copilot’s cloud agent a
+job here; it works on a branch of its own.</p>
+<p><strong>Agent Tasks.</strong> Copilot’s cloud agent tasks in this
+repository, and how each is going.</p>
+<p><strong>An Agent Task’s Progress.</strong> Everything GitHub says
+about one agent task.</p>
+<p><strong>Automations.</strong> This repository’s Copilot
+automations.</p>
+<p><strong>New Automation.</strong> An automation: a prompt Copilot runs
+whenever its trigger fires.</p>
+<p><strong>Run an Automation.</strong> Run one of this repository’s
+automations now.</p>
+<p><strong>Rename an Automation.</strong> Give one of this repository’s
+automations another name.</p>
+<p><strong>Delete an Automation.</strong> Delete one of this
+repository’s automations; tasks it ran stay.</p>
+<p><strong>An Automation’s History.</strong> Each change to one
+automation, newest first.</p>
+<p><strong>An Automation’s Tasks.</strong> The tasks one automation has
+run.</p>
+<p><strong>Automation Tools and Triggers.</strong> What an automation
+here may do, and what may start it.</p>
+<p><strong>Agent Secrets from the Organization.</strong> The
+organization’s agent secrets this repository may use (names only).</p>
+<p><strong>Agent Variables from the Organization.</strong> The
+organization’s agent variables this repository may use.</p>
 <p><strong>Open.</strong> Select the person’s node in the tree.</p>
 <p><strong>Follow or Unfollow.</strong> Follow them, or stop.</p>
 <p><strong>Find Issues with Label.</strong> Issues and pull requests
@@ -6873,6 +6917,20 @@ changed.</p>
 <p><strong>Fork Gist.</strong> Copy it to your own gists.</p>
 <p><strong>Delete Gist.</strong> Delete the gist.</p>
 <p><strong>Open Discussion Thread.</strong> Read the whole thread.</p>
+<p><strong>Close Discussion.</strong> Close it as resolved, outdated or
+a duplicate.</p>
+<p><strong>Reopen Discussion.</strong> Open a closed discussion
+again.</p>
+<p><strong>Delete Discussion.</strong> Delete it and every comment in
+it, for good.</p>
+<p><strong>Upvote.</strong> Add your upvote, which helps it rise in the
+list.</p>
+<p><strong>Remove Upvote.</strong> Take your upvote back.</p>
+<p><strong>Vote in the Poll.</strong> Choose an answer in this
+discussion’s poll.</p>
+<p><strong>Edit a Comment.</strong> Change a comment you may edit.</p>
+<p><strong>Delete a Comment.</strong> Delete a comment you may
+delete.</p>
 <p><strong>Dismiss or Reopen Alert.</strong> Dismiss with a reason.</p>
 <p><strong>Copilot Autofix.</strong> Ask for a fix, or commit it.</p>
 <p><strong>Show Every Place.</strong> Each place it was found.</p>
@@ -6908,6 +6966,31 @@ after a preview of each.</p>
 board or a roadmap.</p>
 <p><strong>Items in a View.</strong> What one of this Project’s views
 shows, in its order and with its filter.</p>
+<p><strong>Rename a View.</strong> Give one of this Project’s views
+another name.</p>
+<p><strong>Delete a View.</strong> Delete one of this Project’s views;
+its items stay.</p>
+<p><strong>Rename a Field.</strong> Give one of this Project’s fields
+another name.</p>
+<p><strong>Add an Issue Field.</strong> Add one of the organization’s
+issue fields to this Project.</p>
+<p><strong>Edit a Draft.</strong> Change a draft’s title and text.</p>
+<p><strong>Make a Draft an Issue.</strong> Turn a draft into a real
+issue in a repository; it stays in the Project.</p>
+<p><strong>Move an Item.</strong> Put an item in another place in the
+Project’s own order.</p>
+<p><strong>Edit a Status Update.</strong> Change a status update’s
+status or text.</p>
+<p><strong>Delete a Status Update.</strong> Delete one of this Project’s
+status updates.</p>
+<p><strong>Delete a Workflow.</strong> Delete one of this Project’s
+automatic workflows.</p>
+<p><strong>Share the Project.</strong> Give a person a role in this
+Project, or take it away.</p>
+<p><strong>Link a Team.</strong> Show this Project on a team’s
+Projects.</p>
+<p><strong>Unlink a Team.</strong> Take this Project off a team’s
+Projects.</p>
 <p><strong>Members and Access.</strong> Open the team’s sheet at its
 members: add people, change a role, remove.</p>
 <p><strong>Delete Team.</strong> Delete this team, and its child
@@ -6941,6 +7024,13 @@ property one value in several repositories.</p>
 has invited you.</p>
 <p><strong>My Activity Here.</strong> What you have done lately in this
 organization’s repositories.</p>
+<p><strong>Require Sign-off on Web Commits.</strong> Whether commits
+made on GitHub’s site, in every repository here, must carry a
+sign-off.</p>
+<p><strong>Follow Organization.</strong> See this organization’s public
+activity in your feed.</p>
+<p><strong>Unfollow Organization.</strong> Stop seeing this organization
+in your feed.</p>
 <p><strong>Open.</strong> Open the settings dialog for this; it asks
 before saving.</p>
 <p><strong>Edit Watch.</strong> Change what the watch looks at.</p>
@@ -6975,6 +7065,16 @@ comment in your repositories, and until when.</p>
 people comment and open issues in all your repositories.</p>
 <p><strong>Lift Interaction Limits.</strong> Let everyone take part in
 your repositories again.</p>
+<p><strong>Set Up a Sponsors Profile.</strong> Start taking
+sponsorships: GitHub reviews the profile before it shows.</p>
+<p><strong>New Sponsor Tier.</strong> Add a tier to your Sponsors
+profile, as a draft or published.</p>
+<p><strong>Patreon Sponsorships.</strong> Let sponsors pay through
+Patreon as well as GitHub.</p>
+<p><strong>My Agent Tasks.</strong> Every cloud agent task you started,
+in any repository.</p>
+<p><strong>My Automations.</strong> Every Copilot automation you
+made.</p>
 <p><strong>Open in Its Repository.</strong> Go to the item in its own
 repository, where every action for it is. Back returns to this row,
 filter and page.</p>
@@ -7038,6 +7138,12 @@ deploy.</p>
 <p><strong>Protection Rules.</strong> Apps that must approve a
 deployment.</p>
 <p><strong>Delete.</strong> Delete it, after asking.</p>
+<p><strong>Pin Environment.</strong> Keep this environment at the top of
+the repository’s Deployments.</p>
+<p><strong>Unpin Environment.</strong> Let this environment take its
+usual place again.</p>
+<p><strong>Move Environment.</strong> Put this pinned environment at
+another place among the pinned ones.</p>
 <p><strong>Start.</strong> Start it, as it was when it stopped.</p>
 <p><strong>Stop.</strong> Stop it; its files are kept.</p>
 <p><strong>Change Machine.</strong> A bigger or smaller machine.</p>
@@ -7097,7 +7203,12 @@ person in when they accept.</p>
 <p><strong>Clone Wiki.</strong> Copy its pages to a folder, to edit
 them.</p>
 <p><strong>Cancel Sponsorship.</strong> Stop it; asks first.</p>
+<p><strong>Sponsorship Preferences.</strong> Whether people see this
+sponsorship, and whether you get the maintainer’s emails.</p>
 <p><strong>Sponsor at This Tier.</strong> Pay; you type their login.</p>
+<p><strong>Publish Tier.</strong> Publish one of your draft tiers.</p>
+<p><strong>Retire Tier.</strong> Stop offering one of your tiers;
+sponsors on it stay.</p>
 <h3 id="every-workbench-option">Every Workbench option</h3>
 <p><strong>General: Open the Workbench on.</strong> Where the window
 opens when no menu row asks for a place: Inbox (Start Here until you

@@ -73,7 +73,9 @@ def test_every_table_agrees_with_the_commands() -> None:
     assert len(verbs) == len(set(verbs))
     for q in QUICK:
         assert callable(getattr(_Host, f"_do_{q.verb}"))
-        assert q.endpoints and all(e in QUICK_ENDPOINTS for e in q.endpoints)
+        assert q.endpoints and all(
+            e.removeprefix("graphql:") in QUICK_ENDPOINTS for e in q.endpoints
+        )
         assert any(r.command_id.endswith(q.verb) for t in q.menu for r in QUICK_ROWS[t])
         if q.writes:
             assert q.live.startswith(("needs Jeff:", "not here:")), q.verb
@@ -177,3 +179,45 @@ def test_re_request_review_names_the_reviewers() -> None:
     host = _Host(api, ["@ann, bo"], instance="o/r")
     host._do_rerequest_review(None, item)
     assert api.sent[0][2] == {"reviewers": ["ann", "bo"]}
+
+
+class _Gql(_Api):
+    def __init__(self, answers: list[dict[str, Any]]) -> None:
+        super().__init__({})
+        self.answers, self.queries = answers, []
+
+    def graphql(self, query: str, variables: Any) -> dict[str, Any]:
+        self.queries.append((query, variables))
+        return self.answers.pop(0)
+
+
+def test_close_a_discussion_finds_its_id_then_closes_it_for_the_reason_chosen() -> None:
+    api = _Gql([{"repository": {"discussion": {"id": "D_1"}}}, {}])
+    row = ExploreRow("Q", "d", "u", "o/r", "discussion", "7")
+    host = _Host(api, [1])
+    host._do_close_discussion(None, row)
+    assert api.queries[-1][1] == {"input": {"discussionId": "D_1", "reason": "OUTDATED"}}
+    assert host.said == ["Closed the discussion."]
+
+
+def test_a_mutation_newer_than_its_schema_is_refused_when_github_changed_it() -> None:
+    api = _Gql([{"__type": {"inputFields": [{"name": "somethingElse"}]}}])
+    item = GitHubItem(number=4, title="Bug", state="open", url="u", is_pr=False)
+    host = _Host(api, ["12"], instance="o/r")
+    host._do_link_closing_pull(None, item)
+    assert "GitHub changed how this works" in host.said[-1]
+    assert len(api.queries) == 1, "nothing was sent"
+
+
+def test_no_github_operation_is_left_planned() -> None:
+    import json
+    from pathlib import Path
+
+    table = json.loads(Path("quill/core/github/api_coverage.json").read_text(encoding="utf-8"))
+    left = [
+        name
+        for section in ("rest", "graphql_mutations", "graphql_queries")
+        for name, row in table[section].items()
+        if row["status"] == "planned"
+    ]
+    assert left == []
