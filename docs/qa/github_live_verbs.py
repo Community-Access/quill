@@ -861,6 +861,11 @@ def issues_from_lines(run: Any) -> str:
     return "two lines, two sub-issues, then deleted"
 
 
+#: The import commands (PRD 22.7), whose scenarios are defined just above.
+VERBS["import_issues"] = import_issues
+VERBS["issues_from_lines"] = issues_from_lines
+
+
 def export_list(run: Any) -> str:
     from quill.core.workbench.export import export_rows
 
@@ -889,8 +894,6 @@ def check_with_git(run: Any) -> str:
 FEATURES: dict[str, Scenario | str] = {
     "git on this computer (the line commands need it)": check_with_git,
     "From This Line: link, blame, pull for the commit, references (PRD 22.3)": line_commands,
-    "Import Issues from a Spreadsheet (PRD 22.7)": import_issues,
-    "New Issues from Lines, as sub-issues (PRD 22.7)": issues_from_lines,
     "Export List: CSV, Markdown and Excel (PRD 22.7)": export_list,
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
