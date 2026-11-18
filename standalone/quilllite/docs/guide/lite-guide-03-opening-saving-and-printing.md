@@ -1130,6 +1130,22 @@ others keep their own menus. It works in the empty window too, where it makes
 a GitHub launcher with nothing to write in. Chapter 2 of the GitHub Guide
 walks through the menu.
 
+In a file from a GitHub repository on your computer, eight rows of the
+**GitHub** menu work from the line you are on: they copy a link to it, say who
+changed it and open the pull request that brought it, start an issue quoting
+your selection, list the issues that mention the file, comment on the line in
+the branch's open pull request, and open the `#42` or commit hash the cursor is
+on. See
+[From the line you are on](../github-guide/lite-github-guide-07-code-and-repositories.html#from-the-line-you-are-on).
+
+In the GitHub Workbench, **Export List...** (**Ctrl+Shift+X**, on the
+Workbench's File menu) saves the list in front of you as an Excel workbook, a
+CSV file or a Markdown table. **Import Issues from a Spreadsheet...**
+(**Ctrl+Alt+I**) and **New Issues from Lines...** (**Ctrl+Alt+L**) make many
+issues at once, after a preview that says which rows GitHub would refuse. See
+[Taking a list with you](../github-guide/lite-github-guide-12-the-workbench.html#taking-a-list-with-you)
+and [Bringing issues in](../github-guide/lite-github-guide-12-the-workbench.html#bringing-issues-in).
+
 All of it is in its own book, which ships with QUILL Lite:
 [The GitHub Guide for QUILL and QUILL Lite](../github-guide/lite-github-guide.html). Start
 with [Chapter 1: Getting started](../github-guide/lite-github-guide-01-getting-started.html)

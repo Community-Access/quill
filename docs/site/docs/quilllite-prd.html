@@ -4194,7 +4194,7 @@ family, rule 7).</p>
 </tr>
 <tr>
 <td>Wh&amp;o Changed This Line?</td>
-<td><code>cmd_github_who_changed_line</code> (Coding area)</td>
+<td><code>cmd_github_who_changed_line</code></td>
 <td><code>localgit.blame_at_cursor</code></td>
 </tr>
 <tr>
@@ -4234,6 +4234,27 @@ family, rule 7).</p>
 sentence reaches them; commenting is CONFIRM. Each reads the working
 copy with git in the background, says one sentence, and is refused in
 Safe Mode.</p>
+<p>All eight are in every profile, as QUILL Lite’s Local Git rows are:
+the Coding area is QUILL’s <code>project.*</code> commands and nothing
+else (<code>test_project_developer_profile</code>). In QUILL, Who
+Changed This Line? keeps <code>localgit.blame_at_cursor</code>’s
+Developer-profile gate.</p>
+<h2 id="export-and-import-in-the-github-workbench-2026-11-17">Export and
+import in the GitHub Workbench (2026-11-17)</h2>
+<p>GitHub PRD 22.7. QUILL Lite opens the same GitHub Workbench window as
+QUILL, so it has these without commands of its own: <strong>Export
+List…</strong> (Ctrl+Shift+X) writes the list as shown to
+<code>.xlsx</code>, <code>.csv</code> or a Markdown table
+(<code>quill/core/workbench/export.py</code>, shared with the WordPress
+Workbench); <strong>Import Issues from a Spreadsheet…</strong>
+(Ctrl+Alt+I) and <strong>New Issues from Lines…</strong> (Ctrl+Alt+L)
+make issues in bulk after a preview
+(<code>quill/core/github/issue_import.py</code>,
+<code>quill/ui/github_workbench_import.py</code>). New Issues from Lines
+starts from the selection of the document window that opened the
+Workbench. The keys are the Workbench window’s own
+(<code>WORKBENCH_KEYS</code>), not editor chords, so they take nothing
+from QUILL Lite’s keymap.</p>
 </main>
 </body>
 </html>

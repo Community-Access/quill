@@ -221,6 +221,15 @@ window. QUILL Lite opens the same GitHub workbench from **Tools > GitHub
 Workbench...**. The [GitHub tutorial](../tutorials/08-github-inside-quill.md)
 walks through every control and its screen reader behavior.
 
+Most GitHub questions start on a line of a file, so **GitHub > From This
+Line** answers them there: copy a link to the line that keeps pointing at the
+same text, hear who changed it and open the pull request that brought it, or
+turn your selection into a new issue with a preview first. In the GitHub
+Workbench, **Export List** takes any list with you as an Excel workbook, a CSV
+file or a Markdown table, and **Import Issues from a Spreadsheet** and **New
+Issues from Lines** make many issues at once, after a preview that says which
+rows GitHub would refuse and why.
+
 ## Your website, from your editor
 
 Perhaps you write a blog, or post the news to your organization's website. If
