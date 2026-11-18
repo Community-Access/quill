@@ -559,6 +559,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Repositories (`:search_repositories`) | search | Search Repositories: repositories whose name or description matches the filter box. |
 | Saved Searches (`:saved_searches`) | search | Saved Searches: searches you kept, on this computer. Enter runs one; Delete removes it. |
 | People (`:people`) | the top | People: who you follow, who follows you, and anybody you look up. |
+| My Profile (`:my_profile`) | people | My Profile: your profile as GitHub shows it, your year of contributions as numbers, and what you pinned. |
 | People I Follow (`:following`) | people | People I Follow: accounts you follow. Enter opens a person's node. |
 | My Followers (`:followers`) | people | My Followers: accounts that follow you. |
 | My Teams (`:my_teams`) | people | My Teams: every team you belong to, across your organizations. Alt+Enter opens a team's sheet. |
@@ -633,6 +634,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Branch Protection (`repository:branch_protection`) | repository, settings | Branch Protection: who may change a branch and what a change needs first. Enter opens the setting. |
 | General (`repository:general`) | repository, settings | General: the name, visibility and default branch. Enter opens one. |
 | person (`person:person`) | person | A person: their repositories, activity, followers and who they follow. |
+| Profile (`person:person_profile`) | person, person | Profile: who this person is, their year of contributions as numbers, and what they pinned. |
 | Repositories (`person:person_repositories`) | person, person | Repositories: this person's public repositories. |
 | Activity (`person:person_activity`) | person, person | Activity: what this person did lately on GitHub. |
 | Followers (`person:person_followers`) | person, person | Followers: who follows this person. |
