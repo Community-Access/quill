@@ -2379,6 +2379,25 @@ and workflow job logs. Run actions now use GitHub’s actual run ID. See
 the <a href="../github/workbench-reference.md">workbench reference</a>
 for keys, context menus, account requirements, and current
 limitations.</p>
+<h4 id="lists-out-issues-in">Lists out, issues in</h4>
+<p>A list is only useful while you are looking at it, unless you can
+take it with you. <strong>Export List…</strong> (Ctrl+Shift+X), on the
+Workbench’s File menu, saves the list in front of you exactly as shown,
+its columns, filter and rows, as an Excel workbook, a CSV file or a
+Markdown table you can open straight in the editor and read cell by
+cell. Issues, pull requests, runs, alerts, people and Change History all
+export the same way.</p>
+<p>Work often arrives the other way round: a spreadsheet of bugs from a
+meeting, or a task list in your notes. <strong>Import Issues from a
+Spreadsheet…</strong> (Ctrl+Alt+I) reads a CSV or Excel file, works out
+which column is the title, body, labels, assignees, milestone and type
+from the names in its first row, and shows you a preview that uses your
+spreadsheet’s own row numbers. A row GitHub would refuse is skipped, and
+the preview says why, before anything is sent. <strong>New Issues from
+Lines…</strong> (Ctrl+Alt+L) turns each line you selected into an issue,
+takes off list markers and check boxes, and can make them all sub-issues
+of an issue you name. Afterwards a window lists every issue made, and
+Change History keeps each one.</p>
 <h4 id="reviewing-a-pull-request-line-by-line">Reviewing a pull request
 line by line</h4>
 <p>Open a pull request in Review and the first thing you hear is the
@@ -4602,7 +4621,7 @@ as the Open and Save As dialogs always did.</li>
 <p><strong>Try this:</strong> double-click a document in File Explorer
 to open it in QUILL, then press Ctrl+O. The dialog is already in that
 document’s folder.</p>
-<h3 id="four-fixes-from-the-last-reports">Four fixes from the last
+<h3 id="five-fixes-from-the-last-reports">Five fixes from the last
 reports</h3>
 <ul>
 <li><strong>Enter saves Settings.</strong> Find a setting takes you
@@ -4614,6 +4633,11 @@ in Settings could offer to move your whole data folder and restart, in a
 copy of QUILL that keeps its data somewhere of its own, even though you
 had not touched “Store QUILL’s data”. Now only a change you make there
 moves anything.</li>
+<li><strong>Crash reports keep your Windows user name out.</strong> A
+report already hid <code>C:\Users\&lt;your name&gt;</code>, but missed
+the same path written with doubled backslashes or forward slashes, which
+is how a report’s settings and some error messages write it. All three
+are hidden now.</li>
 <li><strong>A GitHub secret saves every time.</strong> In the GitHub
 Workbench, saving a repository secret failed about once in 64 tries with
 “characters a GitHub path cannot hold”. It no longer does.</li>

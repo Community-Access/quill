@@ -117,6 +117,24 @@ Choose **Create Issue** to send it or cancel to leave the repository
 unchanged. When GitHub confirms it, the Workbench says the new issue number
 and refreshes the list.
 
+### Many issues at once
+
+When the issues already exist somewhere else, you do not have to type them one
+by one:
+
+- **New Issue from Selection...**, in the editor's GitHub menu under From This
+  Line, starts one issue quoting the lines you selected, under a link to them.
+  See [From the line you are on](github-guide-07-code-and-repositories.html#from-the-line-you-are-on).
+- **New Issues from Lines...** (`Ctrl+Alt+L`), on the Workbench's File menu,
+  makes one issue from each line you selected, a task list included, and can
+  make them sub-issues of an issue you name.
+- **Import Issues from a Spreadsheet...** (`Ctrl+Alt+I`), on the same menu,
+  makes one issue from each row of a CSV or Excel file, with its labels,
+  assignees, milestone and type.
+
+Both of the last two show a preview first, and say which rows GitHub would
+refuse and why. See [Bringing issues in](github-guide-12-the-workbench.html#bringing-issues-in).
+
 ## Labels, milestones and assignees
 
 ### Labels
