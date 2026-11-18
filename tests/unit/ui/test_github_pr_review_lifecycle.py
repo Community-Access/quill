@@ -25,6 +25,10 @@ class _Stub:
     _refresh_landed = GitHubPullReviewDialog._refresh_landed
     _refresh_failed = GitHubPullReviewDialog._refresh_failed
 
+    def _load_viewed(self) -> None:
+        """The viewed states load after the review; their own tests cover them."""
+        self.viewed_loads = getattr(self, "viewed_loads", 0) + 1
+
     def __init__(self, diff_error: str = "") -> None:
         self._repo, self._number = "o/r", 5
         self._loading = False

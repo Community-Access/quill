@@ -358,6 +358,13 @@ Insert Saved Reply, a spoken Preview and an optional Check before
 posting (<code>quill/core/github/comment_compose.py</code>,
 <code>quill/ui/github_comment_composer.py</code>). Review, discussion
 and line-comment boxes are next.</p>
+<p><strong>2026-11-17, GH-D: viewed files in review.</strong> Each
+changed file in the review outline carries its viewed state; Mark as
+Viewed or Not Viewed, Show Only Files Not Viewed, and Comment on This
+File… (<code>subject_type: file</code>, through the composer).
+<code>quill/core/github/review_viewed.py</code>,
+<code>quill/ui/github_pr_review_viewed.py</code>. Whitespace options and
+one commit at a time remain.</p>
 <p>What is built: the editor menu and QUILL Lite route GitHub browsing
 doors to the shared Workbench. Native Items, Explore, review,
 permissions, and repository administration features are reached through

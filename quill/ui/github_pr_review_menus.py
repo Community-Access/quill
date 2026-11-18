@@ -89,6 +89,7 @@ class GitHubPullReviewMenusMixin:
         elif kind == "file":
             add("Open File Differences", self._open_file_diff, enabled=self._diff is not None)
             add("Copy File Name", self._copy_file_name)
+            self._viewed_menu_rows(add)  # type: ignore[attr-defined]
         elif kind == "check" and 0 <= index < len(self._checks):
             add(
                 "Open Check on GitHub",
@@ -150,10 +151,7 @@ class GitHubPullReviewMenusMixin:
 
     def _copy_file_name(self, _event: object) -> None:
         if self._node_kind()[0] == "file":
-            self._copy_text(
-                self._outline.GetItemText(self._outline.GetSelection()),
-                "Copied file name.",
-            )
+            self._copy_text(self._selected_file_path(), "Copied file name.")  # type: ignore[attr-defined]
 
     def _copy_thread_link(self, _event: object) -> None:
         kind, index = self._node_kind()
@@ -172,7 +170,7 @@ class GitHubPullReviewMenusMixin:
     def _open_file_diff(self, _event: object) -> None:
         if self._node_kind()[0] != "file" or self._diff is None:
             return
-        self._show_file_diff(self._outline.GetItemText(self._outline.GetSelection()))
+        self._show_file_diff(self._selected_file_path())  # type: ignore[attr-defined]
 
     def _open_thread_file_diff(self, _event: object) -> None:
         kind, index = self._node_kind()

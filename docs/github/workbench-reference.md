@@ -962,7 +962,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 314 yes, 1149 planned, 15 not needed and 526 left to GitHub.
+In all: 316 yes, 1147 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2932,7 +2932,7 @@ In all: 314 yes, 1149 planned, 15 not needed and 526 left to GitHub.
 
 #### GraphQL: Pull requests
 
-36 mutations: 9 yes, 27 planned.
+36 mutations: 11 yes, 25 planned.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
@@ -2952,7 +2952,7 @@ In all: 314 yes, 1149 planned, 15 not needed and 526 left to GitHub.
 | `dismissPullRequestReview` | Planned | Pull request sheet; Item menu |
 | `enablePullRequestAutoMerge` | Yes | Properties (Alt+Enter) on Pull Request: Merge automatically when ready |
 | `enqueuePullRequest` | Yes | Item > Merge... (Ctrl+Shift+Enter) |
-| `markFileAsViewed` | Planned | Pull request sheet; Item menu |
+| `markFileAsViewed` | Yes | context menu > Review... |
 | `markPullRequestReadyForReview` | Yes | Properties (Alt+Enter) on Pull Request: Draft |
 | `mergePullRequest` | Planned | Pull request sheet; Item menu |
 | `removePullRequestCreationCapBypassUsers` | Planned | Pull request sheet; Item menu |
@@ -2965,7 +2965,7 @@ In all: 314 yes, 1149 planned, 15 not needed and 526 left to GitHub.
 | `revertPullRequest` | Planned | Pull request sheet; Item menu |
 | `submitPullRequestReview` | Planned | Pull request sheet; Item menu |
 | `unarchivePullRequest` | Planned | Pull request sheet; Item menu |
-| `unmarkFileAsViewed` | Planned | Pull request sheet; Item menu |
+| `unmarkFileAsViewed` | Yes | context menu > Review... |
 | `unresolveReviewThread` | Yes | context menu > Review... |
 | `updatePullRequest` | Planned | Pull request sheet; Item menu |
 | `updatePullRequestBranch` | Planned | Pull request sheet; Item menu |

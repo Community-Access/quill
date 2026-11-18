@@ -117,6 +117,27 @@ resolve it or mark it read.
 
 Neither of these tells GitHub anything. "Visited" lives only in this window.
 
+## Files you have viewed
+
+GitHub remembers, for you alone, which of a pull request's files you have
+viewed, so a long review can be done in sittings. Signed in, the review
+window reads that after the review loads, and each row under **Changed files**
+ends with its state: "src/status.py, viewed", "src/status.py, not viewed", or
+"src/status.py, changed since you viewed it" when someone pushed to it after
+you looked. The status line says how many you have viewed, such as "3 of 12
+files viewed."
+
+Shift+F10 on a file has:
+
+- **Mark as Viewed**, or **Mark as Not Viewed** on one you have viewed. It is
+  the same mark GitHub's Files tab shows, and you hear the new count.
+- **Show Only Files Not Viewed** hides the files you have viewed, so the
+  outline holds only what is left; **Show All Files** brings them back. You
+  hear how many are left.
+- **Comment on This File...** opens the comment window for a comment on the
+  whole file rather than a line: for a file that should not be there, or one
+  to rename. It posts at once, outside any review you have pending.
+
 ## Changed since my last review
 
 When someone pushes more commits after you have reviewed, you do not want to

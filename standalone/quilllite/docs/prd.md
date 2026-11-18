@@ -2757,3 +2757,5 @@ Task... and Convert Tasks to Sub-issues... (`quill/core/github/issue_development
 commands, so QUILL Lite has them without rows of its own. The Workbench's
 Comment... opens the comment composer too
 (`quill/ui/github_comment_composer.py`), the same window in both editors.
+The pull request review window shows viewed files, Show Only Files Not
+Viewed and Comment on This File... too (`quill/ui/github_pr_review_viewed.py`).

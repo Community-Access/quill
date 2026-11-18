@@ -23,6 +23,7 @@ from quill.ui.github_pr_review_menus import GitHubPullReviewMenusMixin
 from quill.ui.github_pr_review_merge import GitHubPullReviewMergeMixin
 from quill.ui.github_pr_review_policy import GitHubPullReviewPolicyMixin
 from quill.ui.github_pr_review_render import GitHubPullReviewRenderMixin
+from quill.ui.github_pr_review_viewed import GitHubPullReviewViewedMixin
 from quill.ui.spoken_name import set_spoken_name
 
 if TYPE_CHECKING:
@@ -38,6 +39,7 @@ class GitHubPullReviewDialog(
     GitHubPullReviewMenusMixin,
     GitHubPullReviewMergeMixin,
     GitHubPullReviewCopilotMixin,
+    GitHubPullReviewViewedMixin,
 ):
     """Three-pane reader for one PR's state, review threads, and check runs."""
 
@@ -344,6 +346,7 @@ class GitHubPullReviewDialog(
         if generation != self._refresh_generation or not dialog_alive(self.dialog):
             return
         self._refresh_ready(state, threads, diff, summary)
+        self._load_viewed()
         if diff_error:
             # The threads and checks loaded; say plainly that the changed files did not.
             message = f"Could not load the diff: {diff_error}"
@@ -375,14 +378,15 @@ class GitHubPullReviewDialog(
             )
             return
         if kind == "file":
-            path = self._outline.GetItemText(self._outline.GetSelection())
+            path = self._selected_file_path()
             file = (
                 next((f for f in self._diff.files if f.filename == path), None)
                 if self._diff
                 else None
             )
             self._thread_detail.SetValue(
-                f"{path}\n{file.status}; +{file.additions} -{file.deletions} lines."
+                f"{path}\n{file.status}; +{file.additions} -{file.deletions} lines. "
+                f"{self._file_state_sentence(path)}".rstrip()
                 if file
                 else f"{path}\nReview comments are available; file diff unavailable."
             )

@@ -620,6 +620,17 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Files you have viewed, in a pull request review (2026-11-17)
+
+The pull request review window now shows, for each changed file, whether you
+have viewed it, as GitHub keeps it for you: viewed, not viewed, or changed
+since you viewed it. A file's context menu has **Mark as Viewed** (or **Mark
+as Not Viewed**), the same mark GitHub's Files tab shows, and **Show Only
+Files Not Viewed**, so the outline holds only what is left to review. **Comment
+on This File...** comments on a whole file rather than a line, in the comment
+window with its mentions, preview and check. Chapter 5 of the GitHub Guide has
+the details.
+
 ### Writing a comment, with help (2026-11-17)
 
 **Comment...** in the GitHub Workbench now opens a comment window that does

@@ -2917,8 +2917,17 @@ accessible pages.</li>
 <li><strong>Pull request review, the remaining pieces:</strong> mark a
 file as viewed and filter to unviewed files; multi-line and file-level
 comments; hide whitespace changes; split or unified diff as two ways of
-reading; review one commit at a time; “changes since your last
-review”.</li>
+reading; review one commit at a time; “changes since your last review”.
+<em>Built by 2026-11-17:</em> multi-line comments, suggestions and
+“changes since your last review” were already in the review window; on
+2026-11-17 viewed files (<code>markFileAsViewed</code>,
+<code>unmarkFileAsViewed</code>, each file’s
+<code>viewerViewedState</code> in its outline name), Show Only Files Not
+Viewed and file-level comments (<code>subject_type: file</code>, through
+the comment composer) joined them
+(<code>quill/core/github/review_viewed.py</code>,
+<code>quill/ui/github_pr_review_viewed.py</code>). Still to come: hiding
+whitespace, side-by-side reading and one commit at a time.</li>
 <li><strong>Task lists inside bodies.</strong> The <code>- [ ]</code>
 items in an issue’s body are a list on the issue’s sheet: check one off
 and the body is updated; convert an item to a sub-issue. <em>Built

@@ -1487,6 +1487,14 @@ The diff's patch lines take a comment on one line or a range, with an
 optional suggested change, sent now or kept for your review. See
 [Commenting on a line or a range](../github-guide/github-guide-05-pull-requests-and-review.html#commenting-on-a-line-or-a-range).
 
+#### Files you have viewed
+
+In a pull request review, each changed file says whether you have viewed it,
+as GitHub keeps it for you. Its context menu marks it viewed or not, **Show
+Only Files Not Viewed** leaves only what is left, and **Comment on This
+File...** comments on the whole file. See
+[Files you have viewed](../github-guide/github-guide-05-pull-requests-and-review.html#files-you-have-viewed).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

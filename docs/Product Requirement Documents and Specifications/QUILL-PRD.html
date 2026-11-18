@@ -29327,6 +29327,15 @@ Preview and an optional Check before posting, from
 <code>quill/core/github/comment_compose.py</code>. Lookups run on the
 Workbench’s background path; Ctrl+Enter posts; Attach Files explains
 that GitHub has no attachment API.</p>
+<p><strong>Viewed files in review (GH-D).</strong> The pull request
+review window loads each changed file’s <code>viewerViewedState</code>
+after the review and names it in the outline; Mark as Viewed or Not
+Viewed (<code>markFileAsViewed</code>, <code>unmarkFileAsViewed</code>),
+Show Only Files Not Viewed, and Comment on This File…
+(<code>subject_type: file</code>) are on a file’s context menu. File
+actions read the path from the node, never from its label.
+<code>quill/core/github/review_viewed.py</code>,
+<code>quill/ui/github_pr_review_viewed.py</code>.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and
