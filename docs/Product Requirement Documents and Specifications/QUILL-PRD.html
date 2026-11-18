@@ -29479,7 +29479,11 @@ in Tags) and Delete Tag… (<code>quill/core/github/tags.py</code>:
 Your Status… (<code>Ctrl+Alt+S</code>,
 <code>quill/core/github/user_status.py</code>) reads
 <code>viewer.status</code> and sets or clears it with
-<code>changeUserStatus</code>.</p>
+<code>changeUserStatus</code>. The timeline’s Hide or Show Comment…
+(<code>Alt+C</code>) hides the comment at the cursor for a reason or
+shows it again (<code>comment_moderation.py</code>; timeline entries
+carry a comment’s <code>node_id</code>), and a commit’s Set Status…
+posts a commit status (<code>commit_status.py</code>).</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

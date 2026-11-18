@@ -978,7 +978,7 @@ tree, so adding it later does not reshape anything.
 | Insights charts as tables: commit activity, code frequency, punch card | Not found | Repository > Insights (tables, never charts only) |
 | Dependency graph and software bill of materials (SBOM) export | Not found | Repository > Security > Dependencies |
 | Tags: create and delete outside a release | **Built 2026-11-18.** New Tag... (Ctrl+N in Tags) makes a lightweight tag on a branch, tag or commit; Delete Tag... asks, naming a release built on the tag (`quill/core/github/tags.py`) | Repository > Code > Tags context menu |
-| Hide a comment (moderation: spam, off-topic, outdated) | Not found | Comment context in details > Hide Comment... |
+| Hide a comment | **Built 2026-11-18** in the timeline: Hide or Show Comment... on the comment at the cursor, for a reason (`minimizeComment`, `unminimizeComment`; `quill/core/github/comment_moderation.py`) | Details > Hide Comment... |
 | Transfer a repository | Not found (only issues transfer) | Repository > Settings > Transfer... |
 | Self-hosted runners | Not found | Repository > Actions > Runners (read-only) |
 | Star lists | Not found | Repositories > Starred > each list |

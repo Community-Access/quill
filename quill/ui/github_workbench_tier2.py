@@ -14,7 +14,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.github.explore_models import ExploreRow
-from quill.core.github.items_provider import GitHubTag
+from quill.core.github.items_provider import GitHubCommit, GitHubTag
 from quill.core.github.workflows import GitHubWorkflow
 
 __all__ = ["TIER2_REASONS", "TIER2_VERBS", "GitHubWorkbenchTier2Mixin"]
@@ -26,6 +26,7 @@ TIER2_VERBS: dict[str, frozenset[str]] = {
     "new_tag": frozenset({"view"}),
     "delete_tag": frozenset({"tag"}),
     "user_status": frozenset({"view"}),
+    "commit_status": frozenset({"commit"}),
 }
 
 TIER2_REASONS: dict[str, str] = {
@@ -35,6 +36,7 @@ TIER2_REASONS: dict[str, str] = {
     "new_tag": "New Tag is for a repository's Tags, while you are signed in.",
     "delete_tag": "Delete Tag is for a tag, while you are signed in.",
     "user_status": "Your status is for the account you are signed in with.",
+    "commit_status": "Set Status is for a commit, while you are signed in.",
 }
 
 
@@ -224,5 +226,32 @@ class GitHubWorkbenchTier2Mixin:
         self._background(
             "set your status",
             lambda: set_status(api, message, emoji=emoji, busy=busy, clear_after=after),
+            self._say,
+        )
+
+    # -- a commit's status ---------------------------------------------------------
+
+    def _fits_commit_status(self, row: object) -> bool:
+        return self.signed_in and isinstance(row, GitHubCommit) and bool(row.sha)
+
+    def _do_commit_status(self, ref: Any, row: object) -> None:
+        from quill.core.github.commit_status import STATES, set_commit_status
+
+        assert isinstance(row, GitHubCommit)
+        title = f"Set Status on {row.short_sha or row.sha[:7]}"
+        picked = self._choose(title, "What happened?", [label for label, _code in STATES])
+        if picked < 0:
+            return
+        context = self._ask_text(
+            title, "The check's name, as it shows among the commit's checks:", value="manual"
+        )
+        if not context:
+            return
+        description = self._ask_text(title, "A few words about it, or blank:")
+        link = self._ask_text(title, "A link to the details (https://...), or blank:")
+        api, repository, state, sha = self.github_api(), ref.instance, STATES[picked][1], row.sha
+        self._background(
+            "set the commit status",
+            lambda: set_commit_status(api, repository, sha, state, context, description, link),
             self._say,
         )

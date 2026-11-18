@@ -2148,6 +2148,9 @@ activity, and turns it back on. And a tag no longer needs a release: the Tags
 view makes one on any branch or commit, and deletes one, warning first when a
 release depends on it. Going on holiday? **Set Your Status...** puts "Back
 Monday" beside your name, marks you busy and clears itself when you are back.
+A spam comment can be folded away from an issue's timeline, and someone who
+runs tests outside GitHub can report the result on the commit with **Set
+Status...**.
 
 #### Reviewing a pull request line by line
 

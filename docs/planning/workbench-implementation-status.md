@@ -156,7 +156,8 @@ Commit... in the diff window (`commit_review.py`).
 **2026-11-18, invitations and workflow state.** Needs My Attention >
 Invitations with Accept and Decline (`repo_invitations.py`); Turn Workflow On
 or Off... (`workflow_state.py`). New Tag... and Delete Tag... (`tags.py`). Set Your Status...
-(`user_status.py`).
+(`user_status.py`). Hide or Show Comment... in the timeline
+(`comment_moderation.py`) and Set Status... on a commit (`commit_status.py`).
 
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and

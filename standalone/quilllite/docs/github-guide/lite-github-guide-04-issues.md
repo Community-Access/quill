@@ -127,6 +127,13 @@ loaded," and the number of events. A very long history is read up to five
 hundred events, and QUILL says when it stopped early: "Only part of the
 history was read."
 
+A comment that is spam, abuse, off topic, outdated, a duplicate or resolved
+can be folded away for everyone without deleting it, as GitHub's own "Hide"
+does. Put the cursor on its line, the one that says "commented", and press
+**Hide or Show Comment...**. Choose the reason, or **Show it again**
+for one that was hidden. You hear "Hid the comment as off topic." You need
+triage access to the repository.
+
 ## Writing a new issue
 
 In the GitHub Workbench, open a repository's **Issues** or **Issues and Pull

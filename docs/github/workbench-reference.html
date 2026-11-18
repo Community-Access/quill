@@ -2584,8 +2584,8 @@ Properties…</li>
 <li><strong>branch</strong>: Commits, Compare With Default, Compare
 Branches…, Compare With Previous, Open in Codespaces…, Copy Name, Delete
 Branch…; Properties…</li>
-<li><strong>commit</strong>: Open, Commit Comments…, Compare With
-Previous, Compare With Default, Copy Link, Open on GitHub;
+<li><strong>commit</strong>: Open, Commit Comments…, Set Status…,
+Compare With Previous, Compare With Default, Copy Link, Open on GitHub;
 Properties…</li>
 <li><strong>tag</strong>: Open, Delete Tag…, Commit Comments…, Compare
 With Previous, Compare With Default, Copy Link, Open on GitHub;
@@ -2888,7 +2888,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 321 yes, 1142 planned, 15 not needed and 526 left to
+<p>In all: 324 yes, 1139 planned, 15 not needed and 526 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -6493,7 +6493,7 @@ and Team Access</td>
 </tbody>
 </table>
 <h4 id="commits">Commits</h4>
-<p>14 operations: 6 yes, 8 planned.</p>
+<p>14 operations: 7 yes, 7 planned.</p>
 <table>
 <thead>
 <tr>
@@ -6592,9 +6592,8 @@ comments.</td>
 <tr>
 <td>Create a commit status</td>
 <td><code>POST /repos/{owner}/{repo}/statuses/{sha}</code></td>
-<td>Planned</td>
-<td>Commit sheet; Repository &gt; Code &gt; Commits; Commit
-comments.</td>
+<td>Yes</td>
+<td>context menu &gt; Set Status…</td>
 </tr>
 </tbody>
 </table>
@@ -12657,7 +12656,7 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tbody>
 </table>
 <h4 id="graphql-issues">GraphQL: Issues</h4>
-<p>51 mutations: 11 yes, 40 planned.</p>
+<p>51 mutations: 13 yes, 38 planned.</p>
 <table>
 <thead>
 <tr>
@@ -12789,8 +12788,8 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>minimizeComment</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Yes</td>
+<td>context menu &gt; View Timeline…</td>
 </tr>
 <tr>
 <td><code>pinIssue</code></td>
@@ -12874,8 +12873,8 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>unminimizeComment</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Yes</td>
+<td>context menu &gt; View Timeline…</td>
 </tr>
 <tr>
 <td><code>unpinIssue</code></td>

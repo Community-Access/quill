@@ -2336,7 +2336,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## GitHub Workbench
 
-Control coverage: 364 audited sites (364 helped).
+Control coverage: 365 audited sites (365 helped).
 
 ### Every window, and what it is for
 
@@ -3074,6 +3074,8 @@ Control coverage: 364 audited sites (364 helped).
 
 **Delete Branch.** Delete the branch on GitHub.
 
+**Set Status.** Report a check you ran yourself: passed, failed or still running.
+
 **Delete Tag.** Remove the tag; the commit stays.
 
 **Accept Invitation.** Join the repository with the access offered.
@@ -3668,6 +3670,7 @@ Control coverage: 364 audited sites (364 helped).
 
 - `self._text`: One line per event with its date and who did it, newest last. The last line says whether this is the whole history.
 - `self._copy_btn`: Copy the whole history to the clipboard.
+- `self._hide_btn`: With the cursor on a comment's line: fold it away for everyone for a reason, such as spam or off topic, without deleting it; or show a hidden one again.
 - `close_btn`: Close the timeline.
 #### WorkbenchListDialog (`quill/ui/github_workbench_list_dialog.py`)
 

@@ -17531,7 +17531,10 @@ including `disabled_inactivity`, and asks. Both are
 Delete Tag... (`quill/core/github/tags.py`: `valid_tag_name`, `create_tag`,
 `release_for_tag`, `delete_tag`). Account > Set Your Status... (`Ctrl+Alt+S`,
 `quill/core/github/user_status.py`) reads `viewer.status` and sets or clears it
-with `changeUserStatus`.
+with `changeUserStatus`. The timeline's Hide or Show Comment... (`Alt+C`)
+hides the comment at the cursor for a reason or shows it again
+(`comment_moderation.py`; timeline entries carry a comment's `node_id`), and a
+commit's Set Status... posts a commit status (`commit_status.py`).
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

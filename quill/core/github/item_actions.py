@@ -285,6 +285,13 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     "commit": (
         _default("open", "Open", "The commit's message and changed files."),
         _COMMIT_COMMENTS,
+        _a(
+            "commit_status",
+            "Set Status...",
+            _W,
+            "push",
+            "Report a check you ran yourself: passed, failed or still running.",
+        ),
         _COMPARE_PREVIOUS,
         _COMPARE_DEFAULT,
         _COPY_LINK,

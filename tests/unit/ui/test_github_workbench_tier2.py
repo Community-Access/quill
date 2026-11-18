@@ -131,3 +131,17 @@ def test_clear_status_from_the_same_window() -> None:
     window._choose = lambda *_a: 1
     window._do_user_status(REF, None)
     assert window.said == ["Your status is cleared."]
+
+
+def test_set_status_on_a_commit_asks_and_posts() -> None:
+    from quill.core.github.items_provider import GitHubCommit
+    from tests.unit.core.github_workbench.test_commit_status import FakeApi as StatusApi
+
+    window = _Window()
+    window.api = StatusApi()
+    window._choose = lambda *_a: 1
+    texts = ["lab", "2 failed", ""]
+    window._ask_text = lambda *_a, **_k: texts.pop(0)
+    window._do_commit_status(REF, GitHubCommit("abc1234def", "abc1234", "Fix it"))
+    assert window.api.sent[0][2]["state"] == "failure"
+    assert window.said == ["Set lab to failed on commit abc1234."]

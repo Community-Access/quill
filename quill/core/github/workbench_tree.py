@@ -472,7 +472,6 @@ PLANNED = CoverageTable((
     _planned("Insights tables: commit activity, code frequency", "Repository > Insights"),
     _planned("Dependency graph and SBOM export", "Repository > Security > Dependencies"),
     _planned("Annotated tags", "Repository > Code > Tags > New Tag..."),
-    _planned("Hide a comment", "Details > Hide Comment..."),
     _planned("Transfer a repository", "Repository > Settings > Transfer..."),
     _planned("Self-hosted runners", "Repository > Actions > Runners"),
     _planned("Star lists", "Repositories > Starred > each list"),
