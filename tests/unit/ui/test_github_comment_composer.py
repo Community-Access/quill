@@ -8,7 +8,7 @@ import pytest
 import wx
 
 from quill.ui.github_comment_composer import CommentComposer, compose_comment
-from tests.unit.core.github.test_comment_compose import FakeApi
+from tests.unit.core.github_workbench.test_comment_compose import FakeApi
 from tests.wx_session import shared_wx_app
 
 

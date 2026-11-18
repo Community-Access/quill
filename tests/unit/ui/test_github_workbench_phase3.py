@@ -192,7 +192,7 @@ def test_comment_posts_through_items_and_says_one_result(bench, monkeypatch) -> 
 def test_delete_on_an_issue_closes_it_after_asking(bench, monkeypatch) -> None:
     # Closing an issue asks GitHub's reason (completed, not planned, duplicate):
     # that question is the asking, and the reason travels with the close.
-    from tests.unit.core.github.test_issue_development import FakeApi
+    from tests.unit.core.github_workbench.test_issue_development import FakeApi
 
     api = FakeApi()
     asked: list[str] = []

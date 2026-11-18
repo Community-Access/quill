@@ -10,7 +10,7 @@ import pytest
 from quill.core.github.items_provider import GitHubItem
 from quill.ui.github_workbench_development import GitHubWorkbenchDevelopmentMixin
 from quill.ui.github_workbench_writes import GitHubWorkbenchWritesMixin
-from tests.unit.core.github.test_issue_development import FakeApi
+from tests.unit.core.github_workbench.test_issue_development import FakeApi
 
 ISSUE = GitHubItem(
     number=7,
