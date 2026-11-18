@@ -174,13 +174,16 @@ def test_files_list_a_folder_and_enter_opens_a_subfolder(bench) -> None:
 
 
 def test_comment_posts_through_items_and_says_one_result(bench, monkeypatch) -> None:
+    # Comment... opens the comment composer; its own tests drive the window.
+    composed: list[str] = []
     monkeypatch.setattr(
-        "quill.ui.github_workbench_actions.GitHubWorkbenchActionsMixin._ask_text",
-        lambda _self, *_a, **_k: "Looks good",
+        "quill.ui.github_comment_composer.compose_comment",
+        lambda *_a, title, **_k: composed.append(title) or "Looks good",
     )
     _go(bench, NodeRef("repository", "issues", REPO))
     bench.list.Select(0)
     bench.run("github.workbench.comment")
+    assert composed == ["Comment on #1"]
     assert bench.items.comments == [(REPO, 1, "Looks good")]
     assert bench.said[-1] == "Comment posted on #1."
     bench.run("github.workbench.explain_result")
