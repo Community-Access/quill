@@ -620,6 +620,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Traffic and Contributors (`repository:traffic`) | repository, insights | Traffic and Contributors: views, clones and who contributes. |
 | Health Snapshot (`repository:health`) | repository, insights | Health Snapshot: extra activity data, loaded only when you turn it on in Workbench Options. |
 | Community Profile (`repository:community`) | repository, insights | Community Profile: the README, license and guidelines GitHub checks. |
+| Commit Activity (`repository:commit_activity`) | repository, insights | Commit Activity: GitHub's statistics graphs as rows: commits and lines each week, the busiest hours, and each contributor's lines. |
 | Deployments and Environments (`repository:deployments`) | repository, repository | Deployments and Environments: where the code was deployed. |
 | GitHub Pages (`repository:pages`) | repository, repository | GitHub Pages: the website built from this repository. |
 | Security (`repository:security`) | repository, repository | Security: alerts about vulnerable code and leaked secrets. |
