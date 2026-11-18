@@ -632,7 +632,7 @@ already checked. Check or uncheck, press `Enter`, and QUILL says what changed:
 one repository at a time rather than replacing the list, so a change somebody
 else makes at the same moment is kept. A secret that is open to all
 repositories says to change its visibility to Selected repositories first.
-Planned GitHub endpoints fall from 583 to 551.
+Planned GitHub endpoints fall from 577 to 545.
 
 ### What is left to build for GitHub, and what is not (2026-11-18)
 
