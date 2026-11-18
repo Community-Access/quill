@@ -62,6 +62,10 @@ GLOSSARY: dict[str, str] = {
         "GitHub telling you something happened on a thread you are part of. Under "
         "Needs My Attention."
     ),
+    "Runner": (
+        "A machine that runs a workflow's jobs. GitHub provides them, or a repository "
+        "brings its own, called self-hosted, listed under Actions > Runners."
+    ),
     "Invitation": (
         "Someone with admin access asking you to join their repository, with the access "
         "they chose. It waits under Needs My Attention > Invitations and expires after a week."
@@ -134,6 +138,7 @@ ROW_TYPE_WORDS: dict[str, str] = {
     "tag": "Tag",
     "notification": "Notification",
     "invitation": "Invitation",
+    "runner": "Runner",
     "repository": "Repository",
     "person": "Mention",
     "label": "Label",

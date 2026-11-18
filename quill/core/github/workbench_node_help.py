@@ -28,6 +28,10 @@ NODE_HELP: dict[str, str] = {
         "Notifications: what GitHub has told you about, unread first. Ctrl+Q marks "
         "one read, Delete marks it done, and Ctrl+Shift+Q marks the whole view read."
     ),
+    "repository:runners": (
+        "Runners: the machines this repository runs its own jobs on, online or not, busy "
+        "or idle, with their labels. Only administrators can see them."
+    ),
     ":invitations": (
         "Invitations: repositories you have been invited to, who invited you and with what "
         "access. Accept or Decline from a row's context menu."

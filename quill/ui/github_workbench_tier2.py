@@ -27,6 +27,7 @@ TIER2_VERBS: dict[str, frozenset[str]] = {
     "delete_tag": frozenset({"tag"}),
     "user_status": frozenset({"view"}),
     "commit_status": frozenset({"commit"}),
+    "export_sbom": frozenset({"view"}),
 }
 
 TIER2_REASONS: dict[str, str] = {
@@ -37,6 +38,7 @@ TIER2_REASONS: dict[str, str] = {
     "delete_tag": "Delete Tag is for a tag, while you are signed in.",
     "user_status": "Your status is for the account you are signed in with.",
     "commit_status": "Set Status is for a commit, while you are signed in.",
+    "export_sbom": "Export Software Bill of Materials is for a repository.",
 }
 
 
@@ -254,4 +256,34 @@ class GitHubWorkbenchTier2Mixin:
             "set the commit status",
             lambda: set_commit_status(api, repository, sha, state, context, description, link),
             self._say,
+        )
+
+    # -- the software bill of materials --------------------------------------------
+
+    def _fits_export_sbom(self, _row: object) -> bool:
+        current = getattr(self.frame, "current", None)
+        return self.signed_in and getattr(current, "template", "") == "repository"
+
+    def _do_export_sbom(self, ref: Any, _row: object) -> None:
+        from pathlib import Path
+
+        from quill.core.github.runners_sbom import save_sbom, sbom_name
+        from quill.ui.dialog_contract import show_modal_dialog
+
+        repository = ref.instance
+        wx = self.frame._wx
+        style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
+        with wx.FileDialog(
+            self.frame.frame,
+            "Export Software Bill of Materials",
+            defaultFile=sbom_name(repository),
+            wildcard="SPDX JSON (*.spdx.json)|*.spdx.json",
+            style=style,
+        ) as box:
+            if show_modal_dialog(box, "Export Software Bill of Materials") != wx.ID_OK:
+                return
+            target = Path(box.GetPath())
+        api = self.github_api()
+        self._background(
+            "export the bill of materials", lambda: save_sbom(api, repository, target), self._say
         )

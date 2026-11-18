@@ -45,6 +45,7 @@ VIEWS: tuple[tuple[str, str], ...] = (
     ("secrets", "Secret and variable names"),
     ("merge_queue", "Merge queue"),
     ("invitations", "Repository invitations"),
+    ("runners", "Self-hosted runners"),
     ("billing_usage", "Billing and usage"),
     ("security_closed", "Dismissed and resolved security alerts"),
 )
@@ -67,6 +68,7 @@ REPO_VIEWS = frozenset({
     "secrets",
     "security_closed",
     "merge_queue",
+    "runners",
 })
 QUERY_VIEWS = frozenset({"search", "code_search", "commit_search", "repo_search"})
 """Views that run the query typed in the search box."""
@@ -96,6 +98,7 @@ AUTH_VIEWS = frozenset({
     "billing_usage",
     "merge_queue",
     "invitations",
+    "runners",
 })
 
 VIEW_NOTES: dict[str, str] = {

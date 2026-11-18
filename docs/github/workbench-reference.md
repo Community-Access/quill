@@ -598,6 +598,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Actions (`repository:actions`) | repository, repository | Actions: the repository's workflow runs, workflows and caches. |
 | Runs (`repository:runs`) | repository, actions | Runs: each time a workflow ran. Enter shows its jobs and logs; Ctrl+Shift+W says what failed; Ctrl+Shift+F5 re-runs the failed jobs. |
 | Workflows (`repository:workflows`) | repository, actions | Workflows: the automations defined in the repository. |
+| Runners (`repository:runners`) | repository, actions | Runners: the machines this repository runs its own jobs on, online or not, busy or idle, with their labels. Only administrators can see them. |
 | Caches (`repository:caches`) | repository, actions | Caches: files Actions kept between runs. Delete removes one. |
 | Code (`repository:code`) | repository, repository | Code: files, branches, commits, tags, and the upstream of a fork. |
 | Files (`repository:files`) | repository, code | Files: the repository's files on its default branch, a folder at a time. Enter opens a folder, or a file in the editor. |
@@ -787,6 +788,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Compare With Previous | Alt+Shift+B | The selected tag or release against the one before it, or a commit against its parent. |
 | Run Workflow on Branch... | Ctrl+Shift+R | Start a workflow that can be started by hand, on a branch. |
 | Repository Actions... | Ctrl+Shift+G | Everything else for this repository: star, watch, fork, clone, Codespaces, settings and administration, as a list you can run from. |
+| Export Software Bill of Materials... | Ctrl+Alt+B | Save the repository's dependency graph as an SPDX file: every package it uses. |
 
 #### Account
 
@@ -854,6 +856,7 @@ Keys the window answers that are not menu rows:
 - **branch**: Commits, Compare With Default, Compare Branches..., Compare With Previous, Open in Codespaces..., Copy Name, Delete Branch...; Properties...
 - **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
 - **tag**: Open, Delete Tag..., Commit Comments..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
+- **runner**: Show Details, Open on GitHub, Copy Link; Properties...
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally; Properties...
 - **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Pin, Add to or Remove from Favorites; More: Open on GitHub, Open in Codespaces...; Properties...
@@ -941,6 +944,7 @@ Keys the window answers that are not menu rows:
 - **Role**: What somebody may do: read, triage, write, maintain or admin.
 - **Ruleset**: A newer, named set of branch and tag rules that can cover many branches.
 - **Run**: One time a workflow ran, with its jobs, steps and logs. Under Actions, Runs.
+- **Runner**: A machine that runs a workflow's jobs. GitHub provides them, or a repository brings its own, called self-hosted, listed under Actions > Runners.
 - **Saved search**: A search kept on this computer, to run again. Under Saved Searches.
 - **Secret**: A value, such as a password, that workflows use and GitHub never shows.
 - **Security alert**: A warning that code, a dependency or a secret in it is at risk.
@@ -970,7 +974,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 324 yes, 1139 planned, 15 not needed and 526 left to GitHub.
+In all: 326 yes, 1137 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -978,7 +982,7 @@ In all: 324 yes, 1139 planned, 15 not needed and 526 left to GitHub.
 
 #### Actions
 
-208 operations: 42 yes, 159 planned, 7 left to github.
+208 operations: 43 yes, 158 planned, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1129,7 +1133,7 @@ In all: 324 yes, 1139 planned, 15 not needed and 526 left to GitHub.
 | Delete a repository Actions policy | `DELETE /repos/{owner}/{repo}/actions/policies/{policy_id}` | Planned | Repository > Actions; Organization sheet > Actions; Run, Job, Workflow, Artifact, Cache, Runner, Secret and Variable sheets. |
 | Get a repository Actions policy | `GET /repos/{owner}/{repo}/actions/policies/{policy_id}` | Planned | Repository > Actions; Organization sheet > Actions; Run, Job, Workflow, Artifact, Cache, Runner, Secret and Variable sheets. |
 | Update a repository Actions policy | `PUT /repos/{owner}/{repo}/actions/policies/{policy_id}` | Planned | Repository > Actions; Organization sheet > Actions; Run, Job, Workflow, Artifact, Cache, Runner, Secret and Variable sheets. |
-| List self-hosted runners for a repository | `GET /repos/{owner}/{repo}/actions/runners` | Planned | Repository > Actions > Runners |
+| List self-hosted runners for a repository | `GET /repos/{owner}/{repo}/actions/runners` | Yes | Navigator: Repository > owner/name > Actions > Runners |
 | Get runner version end-of-life schedule for a repository | `GET /repos/{owner}/{repo}/actions/runners/deprecations/{version}` | Planned | Repository > Actions > Runners |
 | List runner applications for a repository | `GET /repos/{owner}/{repo}/actions/runners/downloads` | Planned | Repository > Actions > Runners |
 | Create configuration for a just-in-time runner for a repository | `POST /repos/{owner}/{repo}/actions/runners/generate-jitconfig` | Planned | Repository > Actions > Runners |
@@ -1756,12 +1760,12 @@ In all: 324 yes, 1139 planned, 15 not needed and 526 left to GitHub.
 
 #### Dependency graph
 
-5 operations: 5 planned.
+5 operations: 1 yes, 4 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | Get a diff of the dependencies between commits | `GET /repos/{owner}/{repo}/dependency-graph/compare/{basehead}` | Planned | Repository > Security > Dependencies; Export SBOM. |
-| Export a software bill of materials (SBOM) for a repository. | `GET /repos/{owner}/{repo}/dependency-graph/sbom` | Planned | Repository > Security > Dependencies; Export SBOM. |
+| Export a software bill of materials (SBOM) for a repository. | `GET /repos/{owner}/{repo}/dependency-graph/sbom` | Yes | Repository > Export Software Bill of Materials... (Ctrl+Alt+B) |
 | Fetch a software bill of materials (SBOM) for a repository. | `GET /repos/{owner}/{repo}/dependency-graph/sbom/fetch-report/{sbom_uuid}` | Planned | Repository > Security > Dependencies; Export SBOM. |
 | Request generation of a software bill of materials (SBOM) for a repository. | `GET /repos/{owner}/{repo}/dependency-graph/sbom/generate-report` | Planned | Repository > Security > Dependencies; Export SBOM. |
 | Create a snapshot of dependencies for a repository | `POST /repos/{owner}/{repo}/dependency-graph/snapshots` | Planned | Repository > Security > Dependencies; Export SBOM. |

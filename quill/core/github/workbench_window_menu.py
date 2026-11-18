@@ -380,6 +380,12 @@ _REPOSITORY = MenuSpec(
             "Everything else for this repository: star, watch, fork, clone, Codespaces, "
             "settings and administration, as a list you can run from.",
         ),
+        _row(
+            "export_sbom",
+            "Export Software &Bill of Materials...",
+            "Ctrl+Alt+B",
+            "Save the repository's dependency graph as an SPDX file: every package it uses.",
+        ),
     ),
 )
 

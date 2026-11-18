@@ -1550,6 +1550,17 @@ or Remove from Merge Queue...** are on the row too, and a repository's
 **Merge Queue** lists its queue. See
 [Why Can't I Merge?](../github-guide/github-guide-05-pull-requests-and-review.html#why-cant-i-merge).
 
+#### Runners and a software bill of materials
+
+**Repository > Actions > Runners** in the GitHub Workbench lists a
+repository's self-hosted runners, online or offline, busy or idle, with their
+labels. **Export Software Bill of Materials...** (`Ctrl+Alt+B`) saves every
+package the repository depends on as an SPDX (Software Package Data Exchange)
+file. See
+[Self-hosted runners](../github-guide/github-guide-06-actions-and-checks.html#self-hosted-runners)
+and
+[A software bill of materials](../github-guide/github-guide-08-discussions-and-security.html#a-software-bill-of-materials).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

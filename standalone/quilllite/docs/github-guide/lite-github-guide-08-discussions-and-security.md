@@ -6,7 +6,8 @@ Two kinds of conversation that are not issues. Discussions are a repository's
 forum: questions, ideas and announcements, with threaded replies, answers and
 polls. Security alerts are GitHub telling a repository about a vulnerable
 package, a weakness in the code, or a secret committed by mistake. This
-chapter covers reading and taking part in both.
+chapter covers reading and taking part in both, and saving a repository's
+software bill of materials for a security review.
 
 ## Discussions
 
@@ -119,6 +120,25 @@ GitHub sends the alert back in its new state.
 Dismissed and fixed alerts have their own view, **Dismissed and resolved
 security alerts**. There, **Reopen Alert...** on the context menu asks first,
 then reopens the alert.
+
+## A software bill of materials
+
+A software bill of materials, or SBOM, is the list of every package a
+repository depends on, with versions and licences. Security reviews,
+procurement and some contracts ask for one. GitHub builds it from the
+repository's dependency graph, in SPDX (Software Package Data Exchange), the
+standard format those tools read.
+
+In the GitHub Workbench, select a repository and choose **Repository > Export
+Software Bill of Materials...** (`Ctrl+Alt+B`), or the same row on
+**Repository Actions** (`Ctrl+Shift+G`). A Save dialog offers a name such as
+`owner-name.spdx.json`. When it is saved you hear "Saved owner-name.spdx.json:
+212 packages, in SPDX format." The file is JSON (JavaScript Object
+Notation), so QUILL Lite opens it like any other text file.
+
+A repository whose dependency graph is turned off has nothing to export, and
+QUILL Lite says where to turn it on: the repository's settings, under Code
+security. Nothing is saved in that case.
 
 ---
 

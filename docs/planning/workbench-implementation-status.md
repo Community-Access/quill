@@ -159,6 +159,11 @@ or Off... (`workflow_state.py`). New Tag... and Delete Tag... (`tags.py`). Set Y
 (`user_status.py`). Hide or Show Comment... in the timeline
 (`comment_moderation.py`) and Set Status... on a commit (`commit_status.py`).
 
+**2026-11-18, runners and the bill of materials.** Repository > Actions >
+Runners, read-only, and Export Software Bill of Materials... (`Ctrl+Alt+B`),
+both in `runners_sbom.py`; the export is a Workbench verb in
+`github_workbench_tier2.py`.
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

@@ -114,6 +114,7 @@ REPOSITORY_ACTIONS: tuple[tuple[str, str], ...] = (
     ("Dispatch Workflow...", "github.dispatch_workflow"),
     ("Create Release...", "github.create_release"),
     ("Security Alerts...", "github.view_security_alerts"),
+    ("Export Software Bill of Materials...", f"{_P}export_sbom"),
     ("Open in Codespaces: list your Codespaces...", "github.list_codespaces"),
     ("Create Codespace... (can cost money; asks first)", "github.create_codespace"),
     ("Rename Repository...", "github.rename_repository"),

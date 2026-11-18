@@ -308,6 +308,12 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _OPEN_WEB,
         _PROPERTIES,
     ),
+    "runner": (
+        _default("show_details", "Show Details", "The runner's state, system and labels."),
+        _OPEN_WEB,
+        _COPY_LINK,
+        _PROPERTIES,
+    ),
     "invitation": (
         _a(
             "accept_invitation",

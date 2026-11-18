@@ -2,6 +2,16 @@
 
 ## 2.0.0
 
+### Self-hosted runners, and a software bill of materials (2026-11-18)
+
+**Repository > Actions > Runners** in the GitHub Workbench lists the machines
+a repository brings to run its own jobs: online and idle, online and busy, or
+offline, with each one's system and labels, so a job waiting forever has an
+answer. **Export Software Bill of Materials...** (`Ctrl+Alt+B`, on the
+Workbench's Repository menu and on Repository Actions) saves every package the
+repository depends on as an SPDX (Software Package Data Exchange) file for a
+security review. Chapters 6 and 8 of the GitHub Guide have the details.
+
 ### Hiding a comment, and a commit's status (2026-11-18)
 
 An issue's timeline has **Hide or Show Comment...**, which folds a comment away
