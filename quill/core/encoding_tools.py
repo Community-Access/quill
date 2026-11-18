@@ -152,6 +152,27 @@ def encode_non_ascii_to_entities(text: str, *, prefer_named: bool = True) -> str
     return "".join(parts)
 
 
+#: Files Windows' command interpreter runs. It reads a UTF-8 byte-order mark
+#: as part of the first command, so ``@echo off`` becomes three stray bytes and
+#: an unknown command, and the script misbehaves from its first line (from
+#: EdSharp's history, 2026-11). These are always saved without one.
+NO_BOM_SUFFIXES: frozenset[str] = frozenset({".bat", ".cmd"})
+
+
+def save_encoding(path: object, encoding: str) -> str:
+    """The encoding to save *path* in: *encoding*, minus a UTF-8 byte-order
+    mark on a batch file (:data:`NO_BOM_SUFFIXES`), which ``cmd.exe`` cannot read.
+
+    *path* is anything with a ``suffix`` (a :class:`pathlib.Path`) or a string.
+    """
+    from pathlib import Path
+
+    suffix = str(getattr(path, "suffix", "") or Path(str(path)).suffix).lower()
+    if suffix in NO_BOM_SUFFIXES and encoding.lower().replace("_", "-") == "utf-8-sig":
+        return "utf-8"
+    return encoding
+
+
 def reencode_text(text: str, encoding: str) -> bytes:
     """Encode *text* to *encoding*, never losing data.
 

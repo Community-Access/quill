@@ -301,6 +301,7 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "edit.insert_equation": "core.format",
     "app.repeat_last_announcement": "core.accessibility",
     "app.announcement_self_test": "core.accessibility",
+    "app.say_check": "core.accessibility",
     "app.report_editor_surface": "core.accessibility",
     "app.braille_ab": "core.accessibility",
     "ai.suggest_metadata": "future.ai",

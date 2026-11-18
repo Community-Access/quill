@@ -78,6 +78,14 @@ NEVER_ROWS: tuple[CommandSpec, ...] = (
         where="Help, Troubleshooting",
     ),
     CommandSpec(
+        "app.say_check",
+        "Check What QUILL Says",
+        aliases=("testsay", "say test", "speech check", "over-announcing"),
+        risk=_N,
+        group="Help",
+        where="Command Palette",
+    ),
+    CommandSpec(
         "app.report_editor_surface",
         "Report the Editor Surface",
         aliases=("braille diagnostic", "surface class", "emulation"),

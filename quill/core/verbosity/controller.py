@@ -188,13 +188,25 @@ class VerbosityController:
     # -- status queries (§18-§20) ------------------------------------------
 
     def where_am_i(
-        self, *, line: int | None = None, total: int | None = None, column: int | None = None
+        self,
+        *,
+        line: int | None = None,
+        total: int | None = None,
+        column: int | None = None,
+        percent: int | None = None,
     ) -> str:
+        """ "Line 12 of 40, column 5, 30 percent".
+
+        *line* and *total* count lines in the text itself, so a paragraph the
+        window wraps is still one line (EdSharp's Say Position, 2026-11).
+        """
         parts: list[str] = []
         if line is not None:
             parts.append(f"Line {line}" + (f" of {total}" if total else ""))
         if column is not None:
             parts.append(f"column {column}")
+        if percent is not None and parts:
+            parts.append(f"{percent} percent")
         return ", ".join(parts) if parts else "Position unknown"
 
     def what_changed(self) -> str:

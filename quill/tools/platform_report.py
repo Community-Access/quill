@@ -347,6 +347,11 @@ GATES: tuple[Gate, ...] = (
         "GATE-DPI: no window size in raw pixels now every app is DPI aware",
         (sys.executable, "-m", "quill.tools.fixed_pixel_audit"),
     ),
+    Gate(
+        "reading-check",
+        "the guides at about ninth grade, and tutorials within their promised time (EdSharp)",
+        (sys.executable, "-m", "quill.tools.reading_check"),
+    ),
 )
 
 

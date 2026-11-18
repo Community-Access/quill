@@ -138,8 +138,13 @@ several layers of help, and you can reach each one from the keyboard.
 - **Open Welcome Guide** is for when you want a lighter introduction.
 - **Open Keyboard Reference** (the QUILL key, then `Shift+K`) is for when you
   want the exact keys you have now.
-- **Key Cheatsheet** gives you a quick list of shortcuts. It has no menu
+- **Key Cheatsheet** lists every command with its key. It has no menu
   row: press `Alt+Shift+/` (or `Ctrl+F1`), or find it in the Command Palette.
+  **Order** (`Alt+O`) shows it three ways, as EdSharp does: **Menu order**,
+  each menu's commands under its name ("Edit menu:"), for what is in a menu;
+  **Name order**, for whether a command exists; and **Key order**, keys
+  first ("Ctrl+F: Find..."), for what a key does. Type in the search box to
+  keep only the commands whose name or key contains what you type.
 - **What Can I Say Here?** (`Ctrl+Alt+Shift+F1`) gives help on the spot, for
   the document you are in.
 - **Why Don't I See a Feature?** is for when a command seems to have
