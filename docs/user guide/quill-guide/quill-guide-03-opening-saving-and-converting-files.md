@@ -1507,9 +1507,9 @@ without changing the folder you are in. See
 
 #### Dry Run and practising
 
-In the GitHub Workbench, **Tools > Dry Run** stops every write before it is
-sent and says what it would have sent, and **Help > Practice on GitHub...**
-makes a private practice repository to learn on. See
+In the GitHub Workbench, **Dry Run** on its Tools menu stops every write before
+it is sent and says what it would have sent, and **Practice on GitHub...** on
+its Help menu makes a private practice repository to learn on. See
 [Dry Run](../github-guide/github-guide-12-the-workbench.html#dry-run) and
 [Practice on GitHub](../github-guide/github-guide-12-the-workbench.html#practice-on-github).
 
