@@ -24,8 +24,8 @@ class WordPressDesignCommands(WordPressAdminBase):
     # Fonts (6.5+)
 
     def cmd_fonts(self) -> None:
-        if self.workbench_door("wordpress.fonts"):
-            return  # the developer flag sends this door to the WordPress Workbench
+        # Its own window: installing and deleting fonts is not in the Workbench yet
+        # (UX review item 19), so this door is not sent there.
         profile = self.admin_site("Fonts")
         if profile is None:
             return
@@ -143,8 +143,8 @@ class WordPressDesignCommands(WordPressAdminBase):
     # Synced Patterns
 
     def cmd_synced_patterns(self) -> None:
-        if self.workbench_door("wordpress.synced_patterns"):
-            return  # the developer flag sends this door to the WordPress Workbench
+        # Its own window: editing a synced pattern's blocks is not in the Workbench
+        # yet (UX review item 19), so this door is not sent there.
         profile = self.admin_site("Synced Patterns")
         if profile is None:
             return
