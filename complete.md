@@ -1177,8 +1177,8 @@ a home and a Properties sheet:
   event GitHub offers, as a check list), turn on or off, see recent
   deliveries and their responses, redeliver, ping. The webhook secret is
   write-only: you can set a new one, never read the old one. *(Repository
-  webhooks built 2026-11-18, `repo_settings_lists.py`; an organization's
-  remain.)*
+  webhooks built 2026-11-18, `repo_settings_lists.py`, and an
+  organization's the same day.)*
 - **Deploy keys:** Repository > Settings > Deploy Keys. Add (title, key,
   read-only or read-write), delete. The key text is shown as GitHub shows it.
   *(Built 2026-11-18.)*

@@ -121,3 +121,11 @@ def test_deletes_ask_first() -> None:
         "/repos/o/r/keys/3",
         "/repos/o/r/autolinks/7",
     ]
+
+
+def test_new_here_fits_an_organizations_webhooks_too() -> None:
+    window = _Window("organization_webhooks", [1, 1], ["https://ci.example.org/org"], secret="")
+    assert window._fits_new_webhook(None)
+    window._do_new_webhook(SimpleNamespace(instance="community-access"), None)
+    assert window.api.sent[-1][1] == "/orgs/community-access/hooks"
+    assert window.api.sent[-1][2]["events"] == ["*"]

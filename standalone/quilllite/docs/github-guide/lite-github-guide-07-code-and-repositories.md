@@ -498,6 +498,10 @@ On a webhook:
 - **Delete Webhook...**, or the Delete key, asks first. Its delivery history
   goes with it.
 
+An organization has webhooks of its own, which hear about every repository in
+it: **Organizations >** the organization **> Webhooks**, with the same
+commands. They need you to own the organization.
+
 ### Deploy keys
 
 A deploy key is an SSH key that reaches this one repository only, so a server

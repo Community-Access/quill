@@ -649,6 +649,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | organization (`organization:organization`) | organization | An organization: its repositories. |
 | Repositories (`organization:organization_repositories`) | organization, organization | Repositories: the organization's repositories you can see. |
 | Teams (`organization:organization_teams`) | organization, organization | Teams: the organization's teams, as GitHub nests them. Alt+Enter opens a team's sheet: its members and maintainers, repositories and roles, child teams and code review assignment. |
+| Webhooks (`organization:organization_webhooks`) | organization, organization | Webhooks: the addresses GitHub tells about events across this organization. Ctrl+N adds one. |
 | Templates (`organization:organization_templates`) | organization, organization | Templates: the defaults in the organization's .github repository, which every repository without its own uses. Enter builds or edits one. |
 
 ### The menu bar and its keys
@@ -1001,7 +1002,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 373 yes, 1090 planned, 15 not needed and 526 left to GitHub.
+In all: 379 yes, 1084 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2075,7 +2076,7 @@ In all: 373 yes, 1090 planned, 15 not needed and 526 left to GitHub.
 
 #### Organizations
 
-129 operations: 21 yes, 108 planned.
+129 operations: 27 yes, 102 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2102,16 +2103,16 @@ In all: 373 yes, 1090 planned, 15 not needed and 526 left to GitHub.
 | Block a user from an organization | `PUT /orgs/{org}/blocks/{username}` | Planned | Organization sheet > Blocked Users; Person > You: Block. |
 | List failed organization invitations | `GET /orgs/{org}/failed_invitations` | Planned | Organization sheet > Members. |
 | List organization webhooks | `GET /orgs/{org}/hooks` | Yes | Properties (Alt+Enter) on Organization |
-| Create an organization webhook | `POST /orgs/{org}/hooks` | Planned | Organization sheet > Webhooks. |
-| Delete an organization webhook | `DELETE /orgs/{org}/hooks/{hook_id}` | Planned | Organization sheet > Webhooks. |
+| Create an organization webhook | `POST /orgs/{org}/hooks` | Yes | Navigator: Organization > organization > Webhooks |
+| Delete an organization webhook | `DELETE /orgs/{org}/hooks/{hook_id}` | Yes | context menu > Delete Webhook... |
 | Get an organization webhook | `GET /orgs/{org}/hooks/{hook_id}` | Planned | Organization sheet > Webhooks. |
 | Update an organization webhook | `PATCH /orgs/{org}/hooks/{hook_id}` | Planned | Organization sheet > Webhooks. |
 | Get a webhook configuration for an organization | `GET /orgs/{org}/hooks/{hook_id}/config` | Planned | Organization sheet > Webhooks. |
-| Update a webhook configuration for an organization | `PATCH /orgs/{org}/hooks/{hook_id}/config` | Planned | Organization sheet > Webhooks. |
-| List deliveries for an organization webhook | `GET /orgs/{org}/hooks/{hook_id}/deliveries` | Planned | Organization sheet > Webhooks. |
+| Update a webhook configuration for an organization | `PATCH /orgs/{org}/hooks/{hook_id}/config` | Yes | context menu > Change Address or Secret... |
+| List deliveries for an organization webhook | `GET /orgs/{org}/hooks/{hook_id}/deliveries` | Yes | context menu > Recent Deliveries... |
 | Get a webhook delivery for an organization webhook | `GET /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}` | Planned | Organization sheet > Webhooks. |
-| Redeliver a delivery for an organization webhook | `POST /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}/attempts` | Planned | Organization sheet > Webhooks. |
-| Ping an organization webhook | `POST /orgs/{org}/hooks/{hook_id}/pings` | Planned | Organization sheet > Webhooks. |
+| Redeliver a delivery for an organization webhook | `POST /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}/attempts` | Yes | context menu > Recent Deliveries... |
+| Ping an organization webhook | `POST /orgs/{org}/hooks/{hook_id}/pings` | Yes | context menu > Ping |
 | Get route stats by actor | `GET /orgs/{org}/insights/api/route-stats/{actor_type}/{actor_id}` | Planned | Organization > Insights > API usage (read). |
 | Get subject stats | `GET /orgs/{org}/insights/api/subject-stats` | Planned | Organization > Insights > API usage (read). |
 | Get summary stats | `GET /orgs/{org}/insights/api/summary-stats` | Planned | Organization > Insights > API usage (read). |

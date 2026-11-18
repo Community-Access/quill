@@ -2,7 +2,8 @@
 
 Three settings that are lists, each row a sentence:
 
-* **Webhooks**: "https://ci.example.org/hook: on, JSON, push and
+* **Webhooks**, a repository's and (Organizations > org > Webhooks) an
+  organization's: "https://ci.example.org/hook: on, JSON, push and
   pull_request, last delivery succeeded (200)." New Here adds one (address,
   content type, events, and a secret that is write-only: it can be set, never
   read back, and is never spoken or logged). On a webhook: **Ping**, **Recent
@@ -31,6 +32,7 @@ from quill.core.github.rest_transport import GitHubRestError
 from quill.core.github.workbench_api import GitHubApi
 
 __all__ = [
+    "hooks_path",
     "COMMON_EVENTS",
     "Delivery",
     "SettingsListError",
@@ -88,10 +90,16 @@ class Delivery:
         return f"{self.event} at {self.when}: {result} ({self.code or self.status}){again}"
 
 
+def hooks_path(owner: str) -> str:
+    """Where *owner*'s webhooks live: ``owner/name`` is a repository, a name an organization."""
+    return f"/repos/{owner}/hooks" if "/" in owner else f"/orgs/{owner}/hooks"
+
+
 def _refused(exc: GitHubRestError, doing: str) -> SettingsListError:
     if exc.status in (403, 404):
         return SettingsListError(
-            f"GitHub refused to {doing}: it needs administration of the repository."
+            f"GitHub refused to {doing}: it needs administration of the repository or "
+            "organization, and for an organization's webhooks the admin:org_hook permission."
         )
     if exc.status == 422:
         return SettingsListError(f"GitHub could not {doing}: {exc}")
@@ -141,7 +149,8 @@ def _hook_row(repository: str, raw: Mapping[str, Any]) -> ExploreRow:
         )
     state = "on" if raw.get("active") else "off"
     label = f"{url}: {state}, {kind}, {_events(events)}, {delivered}."
-    page = f"https://github.com/{repository}/settings/hooks/{raw.get('id')}"
+    where = repository if "/" in repository else f"organizations/{repository}"
+    page = f"https://github.com/{where}/settings/hooks/{raw.get('id')}"
     detail = f"{label}\nEvents: {', '.join(events) or 'none'}.\n{page}"
     return ExploreRow(label, detail, page, repository, "webhook", str(raw.get("id") or ""))
 
@@ -149,7 +158,7 @@ def _hook_row(repository: str, raw: Mapping[str, Any]) -> ExploreRow:
 def fetch_webhooks(api: GitHubApi, repository: str) -> list[ExploreRow]:
     return [
         _hook_row(repository, raw)
-        for raw in _get(api, f"/repos/{repository}/hooks", f"list {repository}'s webhooks")
+        for raw in _get(api, hooks_path(repository), f"list {repository}'s webhooks")
     ]
 
 
@@ -183,7 +192,7 @@ def add_webhook(
     _send(
         api,
         "POST",
-        f"/repos/{repository}/hooks",
+        hooks_path(repository),
         "add the webhook",
         {"name": "web", "active": True, "events": events, "config": config},
     )
@@ -200,20 +209,20 @@ def change_webhook(
         body["secret"] = secret
     if not body:
         raise SettingsListError("Nothing to change.")
-    _send(api, "PATCH", f"/repos/{repository}/hooks/{hook}/config", "change the webhook", body)
+    _send(api, "PATCH", f"{hooks_path(repository)}/{hook}/config", "change the webhook", body)
     parts = (["address"] if url else []) + (["secret"] if secret else [])
     return f"Changed the webhook's {' and '.join(parts)}."
 
 
 def ping_webhook(api: GitHubApi, repository: str, hook: str) -> str:
-    _send(api, "POST", f"/repos/{repository}/hooks/{hook}/pings", "ping the webhook")
+    _send(api, "POST", f"{hooks_path(repository)}/{hook}/pings", "ping the webhook")
     return "Sent a ping. Its result is the newest of the webhook's Recent Deliveries."
 
 
 def fetch_deliveries(api: GitHubApi, repository: str, hook: str) -> list[Delivery]:
     found = []
     for raw in _get(
-        api, f"/repos/{repository}/hooks/{hook}/deliveries", "read the webhook's deliveries"
+        api, f"{hooks_path(repository)}/{hook}/deliveries", "read the webhook's deliveries"
     ):
         event = str(raw.get("event") or "")
         if raw.get("action"):
@@ -235,14 +244,14 @@ def redeliver(api: GitHubApi, repository: str, hook: str, delivery: Delivery) ->
     _send(
         api,
         "POST",
-        f"/repos/{repository}/hooks/{hook}/deliveries/{delivery.id}/attempts",
+        f"{hooks_path(repository)}/{hook}/deliveries/{delivery.id}/attempts",
         "redeliver it",
     )
     return f"Asked GitHub to deliver the {delivery.event} event again."
 
 
 def delete_webhook(api: GitHubApi, repository: str, hook: str) -> str:
-    _send(api, "DELETE", f"/repos/{repository}/hooks/{hook}", "delete the webhook")
+    _send(api, "DELETE", f"{hooks_path(repository)}/{hook}", "delete the webhook")
     return "Deleted the webhook. GitHub sends it nothing more."
 
 

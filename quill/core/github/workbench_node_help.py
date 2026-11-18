@@ -36,6 +36,10 @@ NODE_HELP: dict[str, str] = {
         "Webhooks: the addresses GitHub tells about events here. Ctrl+N adds one; Recent "
         "Deliveries on a webhook says what was sent and redelivers it."
     ),
+    "organization:organization_webhooks": (
+        "Webhooks: the addresses GitHub tells about events across this organization. "
+        "Ctrl+N adds one."
+    ),
     "repository:deploy_keys": (
         "Deploy Keys: SSH keys that let a server clone, pull or push this one repository. "
         "Ctrl+N adds one."

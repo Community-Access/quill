@@ -2,6 +2,14 @@
 
 ## 2.0.0
 
+### An organization's webhooks (2026-11-18)
+
+**Organizations >** an organization **> Webhooks** in the GitHub Workbench
+lists, adds, pings and deletes an organization's webhooks, with Recent
+Deliveries and redelivery, exactly as a repository's do. Sign In with GitHub
+asks for the `admin:org_hook` permission for it. Chapter 7 of the GitHub Guide
+has the details.
+
 ### Webhooks, deploy keys and autolinks (2026-11-18)
 
 **Repository > Settings** in the GitHub Workbench now has **Webhooks**,

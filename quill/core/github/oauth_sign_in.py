@@ -118,6 +118,10 @@ WORKBENCH_SCOPES: tuple[tuple[str, str], ...] = (
         "Repositories > My Packages: your packages and their versions, private ones too.",
     ),
     (
+        "admin:org_hook",
+        "Organizations > org > Webhooks: an organization's webhooks, for its owners.",
+    ),
+    (
         "admin:public_key",
         "People > My Keys: listing, adding and deleting your SSH keys.",
     ),

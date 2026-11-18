@@ -17558,7 +17558,8 @@ Security Advisories (`quill/core/github/security_advisories.py`) cover GX11.
 People > My Keys (`quill/core/github/account_keys.py`) lists, adds and
 deletes your SSH, GPG and signing keys. Settings > Webhooks, Deploy Keys and
 Autolinks (`quill/core/github/repo_settings_lists.py`) list, add and delete
-each; a webhook secret is write-only and never said.
+each; a webhook secret is write-only and never said. An organization's
+webhooks are under Organizations > org > Webhooks.
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

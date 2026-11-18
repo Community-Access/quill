@@ -1922,8 +1922,12 @@ common ones, and its secret goes through a
 kept. Ping, Recent Deliveries… with redelivery, Change Address or
 Secret… (<code>PATCH .../config</code>), and Delete on each; Delete is
 the key’s action on all three. Turning a webhook on or off stays on its
-sheet. An organization’s webhooks and editing a webhook’s events remain
-planned.</li>
+sheet. An organization’s webhooks followed the same day (Organizations
+&gt; org &gt; Webhooks, explore view <code>org_webhooks</code>;
+<code>hooks_path</code> picks <code>/orgs/{org}/hooks</code> for a bare
+name; organization nodes now pass their login to Explore loaders;
+sign-in asks <code>admin:org_hook</code>). Editing a webhook’s events
+remains planned.</li>
 <li><strong>Secret and variable values:</strong> variables are read and
 written in full. Secrets stay write-only, as GitHub itself keeps them:
 Set Value… encrypts the new value with the repository’s or environment’s

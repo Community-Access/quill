@@ -197,7 +197,8 @@ delete (`account_keys.py`, `github_workbench_account_keys.py`).
 
 **2026-11-18, settings lists.** Settings > Webhooks (ping, deliveries,
 redeliver, address and secret), Deploy Keys and Autolinks
-(`repo_settings_lists.py`, `github_workbench_settings_lists.py`).
+(`repo_settings_lists.py`, `github_workbench_settings_lists.py`). An
+organization's webhooks the same way (Organizations > org > Webhooks).
 
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and

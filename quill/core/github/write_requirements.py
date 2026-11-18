@@ -92,7 +92,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}request_cve": ("repo:admin", _V),
     f"{_P}new_key": ("sign_in", _V),
     f"{_P}delete_key": ("sign_in", _D),
-    f"{_P}new_webhook": ("repo:admin", _V),
+    f"{_P}new_webhook": ("repo:admin", _V),  # or an organization owner, for its webhooks
     f"{_P}ping_webhook": ("repo:admin", _O),
     f"{_P}webhook_deliveries": ("repo:admin", _V),
     f"{_P}change_webhook": ("repo:admin", _V),

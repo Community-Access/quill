@@ -50,6 +50,7 @@ EXTRA_ACCOUNT_VIEWS = frozenset({
     "my_profile",
     "advisory_search",
     "my_keys",
+    "org_webhooks",
 })
 #: Views of one person, answered from the login in Explore's person box.
 EXTRA_PERSON_VIEWS = frozenset({"person_profile"})
@@ -81,6 +82,16 @@ def fetch_extra_view(
             return fetch_invitations(TokenApi(token), limit=limit)
         except GitHubRestError as exc:
             raise GitHubExploreError(f"Could not read your invitations: {exc}") from exc
+    if view == "org_webhooks":
+        from quill.core.github import repo_settings_lists as lists
+        from quill.core.github.workbench_api import TokenApi
+
+        if not repo or "/" in repo:
+            raise GitHubExploreError("Choose an organization for its webhooks.")
+        try:
+            return lists.fetch_webhooks(TokenApi(token), repo)
+        except lists.SettingsListError as exc:
+            raise GitHubExploreError(str(exc.args[0])) from exc
     if view == "my_keys":
         from quill.core.github.account_keys import fetch_keys
         from quill.core.github.workbench_api import TokenApi

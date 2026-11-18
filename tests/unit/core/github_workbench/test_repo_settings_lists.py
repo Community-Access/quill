@@ -175,3 +175,22 @@ def test_the_three_nodes_reach_their_loader(monkeypatch: Any) -> None:
     assert fetch_extra_view(provider, "webhooks", **ask) == ["fetch_webhooks"]
     assert fetch_extra_view(provider, "deploy_keys", **ask) == ["fetch_deploy_keys"]
     assert fetch_extra_view(provider, "autolinks", **ask) == ["fetch_autolinks"]
+
+
+def test_an_organizations_webhooks_use_its_own_paths(monkeypatch: Any) -> None:
+    from quill.core.github.explore_extra_views import fetch_extra_view
+
+    assert sl.hooks_path("o/r") == "/repos/o/r/hooks"
+    assert sl.hooks_path("community-access") == "/orgs/community-access/hooks"
+    api = FakeApi()
+    rows = sl.fetch_webhooks(api, "community-access")
+    assert api.sent[-1][1] == "/orgs/community-access/hooks"
+    assert rows[0].url == "https://github.com/organizations/community-access/settings/hooks/9"
+    sl.ping_webhook(api, "community-access", "9")
+    assert api.sent[-1][1] == "/orgs/community-access/hooks/9/pings"
+    monkeypatch.setattr(sl, "fetch_webhooks", lambda _api, owner: [owner])
+    provider = SimpleNamespace(token="t", is_authenticated=True)
+    ask = {"query": "", "limit": 5, "warnings": []}
+    assert fetch_extra_view(provider, "org_webhooks", repo="community-access", **ask) == [
+        "community-access"
+    ]

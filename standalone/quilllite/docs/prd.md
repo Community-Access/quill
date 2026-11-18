@@ -2782,4 +2782,4 @@ Runners node, Export Software Bill of Materials..., annotated tags, Read
 Tag Message, Transfer Repository..., Commit Activity, My Packages, Star Lists, profiles, Unlink Branch..., Not a
 Duplicate..., and the security policy, advisories and Advisory Database
 search, My Keys, and the Webhooks, Deploy Keys and Autolinks
-settings
+settings, an organization's webhooks too

@@ -66,7 +66,7 @@ class GitHubWorkbenchSettingsListsMixin:
         return row if found and isinstance(row, ExploreRow) else None
 
     def _fits_new_webhook(self, _row: object) -> bool:
-        return self._on_node("webhooks")
+        return self._on_node("webhooks") or self._on_node("organization_webhooks")
 
     def _fits_new_deploy_key(self, _row: object) -> bool:
         return self._on_node("deploy_keys")

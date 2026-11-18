@@ -481,6 +481,15 @@ _ORGANIZATION: tuple[NodeSpec, ...] = (
         loader="teams:organization",
         row_type="team",
     ),
+    NodeSpec(
+        "organization_webhooks",
+        "Webhooks",
+        "organization",
+        scope=Scope.ORGANIZATION,
+        needs=_SIGN_IN,
+        loader="explore:org_webhooks",
+        row_type="webhook",
+    ),
     # PRD 21.3: the defaults in the organization's .github repository.
     NodeSpec(
         "organization_templates",

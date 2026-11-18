@@ -1701,6 +1701,12 @@ opens a team’s sheet: its members and maintainers, repositories and
 roles, child teams and code review assignment.</td>
 </tr>
 <tr>
+<td>Webhooks (<code>organization:organization_webhooks</code>)</td>
+<td>organization, organization</td>
+<td>Webhooks: the addresses GitHub tells about events across this
+organization. Ctrl+N adds one.</td>
+</tr>
+<tr>
 <td>Templates (<code>organization:organization_templates</code>)</td>
 <td>organization, organization</td>
 <td>Templates: the defaults in the organization’s .github repository,
@@ -3023,7 +3029,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 373 yes, 1090 planned, 15 not needed and 526 left to
+<p>In all: 379 yes, 1084 planned, 15 not needed and 526 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -8927,7 +8933,7 @@ Importer replaces it.</td>
 </tbody>
 </table>
 <h4 id="organizations">Organizations</h4>
-<p>129 operations: 21 yes, 108 planned.</p>
+<p>129 operations: 27 yes, 102 planned.</p>
 <table>
 <thead>
 <tr>
@@ -9095,14 +9101,14 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Create an organization webhook</td>
 <td><code>POST /orgs/{org}/hooks</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Webhooks</td>
 </tr>
 <tr>
 <td>Delete an organization webhook</td>
 <td><code>DELETE /orgs/{org}/hooks/{hook_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Webhook…</td>
 </tr>
 <tr>
 <td>Get an organization webhook</td>
@@ -9125,14 +9131,14 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Update a webhook configuration for an organization</td>
 <td><code>PATCH /orgs/{org}/hooks/{hook_id}/config</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Change Address or Secret…</td>
 </tr>
 <tr>
 <td>List deliveries for an organization webhook</td>
 <td><code>GET /orgs/{org}/hooks/{hook_id}/deliveries</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Recent Deliveries…</td>
 </tr>
 <tr>
 <td>Get a webhook delivery for an organization webhook</td>
@@ -9143,14 +9149,14 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Redeliver a delivery for an organization webhook</td>
 <td><code>POST /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}/attempts</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Recent Deliveries…</td>
 </tr>
 <tr>
 <td>Ping an organization webhook</td>
 <td><code>POST /orgs/{org}/hooks/{hook_id}/pings</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Ping</td>
 </tr>
 <tr>
 <td>Get route stats by actor</td>

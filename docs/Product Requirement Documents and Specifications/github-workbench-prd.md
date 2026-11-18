@@ -1009,7 +1009,11 @@ a home and a Properties sheet:
   said, shown or kept. Ping, Recent Deliveries... with redelivery, Change
   Address or Secret... (`PATCH .../config`), and Delete on each; Delete is the
   key's action on all three. Turning a webhook on or off stays on its sheet.
-  An organization's webhooks and editing a webhook's events remain planned.
+  An organization's webhooks followed the same day (Organizations > org >
+  Webhooks, explore view `org_webhooks`; `hooks_path` picks `/orgs/{org}/hooks`
+  for a bare name; organization nodes now pass their login to Explore
+  loaders; sign-in asks `admin:org_hook`). Editing a webhook's events remains
+  planned.
 - **Secret and variable values:** variables are read and written in full.
   Secrets stay write-only, as GitHub itself keeps them: Set Value... encrypts
   the new value with the repository's or environment's or organization's
