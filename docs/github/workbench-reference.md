@@ -937,14 +937,14 @@ Keys the window answers that are not menu rows:
 - **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., Re-run One Job...; More: Force Cancel..., Download Logs..., Delete Logs..., Approvals, Earlier Attempts..., View Artifacts..., Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link; Properties...
-- **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., React..., Compare With Previous; More: Compare With Default, Copy Link, Open on GitHub; Properties...
+- **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., React..., Delete Release...; More: Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
 - **release_asset**: Download, Copy Link, Delete Asset...; Properties...
-- **branch**: Commits, Compare With Default, Compare Branches..., Compare With Previous, Open in Codespaces..., Copy Name, Delete Branch...; Properties...
+- **branch**: Commits, Compare With Default, Compare Branches..., Merge Into..., Download Source..., Compare With Previous; More: Open in Codespaces..., Copy Name, Delete Branch...; Properties...
 - **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
-- **tag**: Open, Delete Tag..., Read Tag Message, Commit Comments..., Compare With Previous, Compare With Default; More: Copy Link, Open on GitHub; Properties...
+- **tag**: Open, Delete Tag..., Read Tag Message, Download Source..., Commit Comments..., Compare With Previous; More: Compare With Default, Copy Link, Open on GitHub; Properties...
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally; Properties...
-- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Pin, Star Lists...; More: Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List...; Properties...
+- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Send Repository Dispatch..., Pin; More: Star Lists..., Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List...; Properties...
 - **person**: Open, Follow or Unfollow, Open on GitHub; Properties...
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
 - **gist**: Edit Gist..., Star or Unstar, Copy Link, Open on GitHub, Delete Gist...; Properties...
@@ -952,10 +952,11 @@ Keys the window answers that are not menu rows:
 - **security_alert**: Open, Dismiss or Reopen Alert..., Copilot Autofix..., Show Every Place, Open on GitHub; Properties...
 - **cache**: Show Details, Delete Cache...; Properties...
 - **saved_search**: Run, Remove Saved Search; Properties...
+- **deployment**: Open, Delete Deployment..., Copy Link, Open on GitHub; Properties...
 - **result**: Open, Copy Link, Open on GitHub; Properties...
 - **file**: Open in Editor, Copy Link, Open on GitHub; Properties...
 - **folder**: Open Folder, Open on GitHub; Properties...
-- **milestone**: Find Issues in Milestone, Copy Link, Open on GitHub; Properties...
+- **milestone**: Find Issues in Milestone, Delete Milestone..., Copy Link, Open on GitHub; Properties...
 - **template**: Open Template..., Convert Form or Template..., Copy to Repositories..., Copy Link, Open on GitHub; Properties...
 - **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link; Properties...
 - **team**: Members and Access..., Copy Link, Open on GitHub; Properties...
@@ -977,7 +978,7 @@ Keys the window answers that are not menu rows:
 - **package**: Show Details, Open on GitHub, Show Versions, Restore Package Version..., Delete Package Version..., Delete Package..., Copy Link; Properties...
 - **key**: Show Details, Delete Key..., Open on GitHub; Properties...
 - **advisory**: Show Details, Publish or Close Advisory..., Request CVE..., Open on GitHub, Copy Link; Properties...
-- **webhook**: Show Details, Ping, Recent Deliveries..., Change Address or Secret..., Delete Webhook..., Open on GitHub; Properties...
+- **webhook**: Show Details, Ping, Send Test Push, Turn On or Off..., Recent Deliveries..., Change Address or Secret...; More: Delete Webhook..., Open on GitHub; Properties...
 - **deploy_key**: Show Details, Delete Deploy Key..., Open on GitHub; Properties...
 - **autolink**: Show Details, Delete Autolink..., Open on GitHub; Properties...
 - **resource**: Show Details, Change..., Repositories Allowed..., Delete..., Open on GitHub, Copy Link; Properties...
@@ -1085,7 +1086,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
+In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1481,7 +1482,7 @@ In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 
 #### Branches
 
-38 operations: 7 yes, 1 planned, 30 not needed.
+38 operations: 8 yes, 30 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1522,7 +1523,7 @@ In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 | Set user access restrictions | `PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
 | Rename a branch | `POST /repos/{owner}/{repo}/branches/{branch}/rename` | Yes | Properties (Alt+Enter) on Branch: Name |
 | Sync a fork branch with the upstream repository | `POST /repos/{owner}/{repo}/merge-upstream` | Yes | Navigator: Repository > owner/name > Code > Upstream |
-| Merge a branch | `POST /repos/{owner}/{repo}/merges` | Planned | Branch sheet; Branch sheet > Protection; Ruleset sheet (section 18.3.1). |
+| Merge a branch | `POST /repos/{owner}/{repo}/merges` | Yes | context menu > Merge Into... |
 
 #### Campaigns
 
@@ -1894,13 +1895,13 @@ In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 
 #### Deployments
 
-21 operations: 15 yes, 1 planned, 3 not needed, 2 left to github.
+21 operations: 16 yes, 3 not needed, 2 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | List deployments | `GET /repos/{owner}/{repo}/deployments` | Yes | Navigator: Repository > owner/name > Deployments and Environments |
 | Create a deployment | `POST /repos/{owner}/{repo}/deployments` | Left to GitHub | Only a GitHub App, using its own app token, or a build tool can call this; a person has no way to. |
-| Delete a deployment | `DELETE /repos/{owner}/{repo}/deployments/{deployment_id}` | Planned | Repository > Deployments and Environments; Environment and Deployment sheets. |
+| Delete a deployment | `DELETE /repos/{owner}/{repo}/deployments/{deployment_id}` | Yes | context menu > Delete Deployment... |
 | Get a deployment | `GET /repos/{owner}/{repo}/deployments/{deployment_id}` | Yes | Properties (Alt+Enter) on Deployment |
 | List deployment statuses | `GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses` | Yes | Properties (Alt+Enter) on Deployment |
 | Create a deployment status | `POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses` | Left to GitHub | Only a GitHub App, using its own app token, or a build tool can call this; a person has no way to. |
@@ -2009,7 +2010,7 @@ In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 
 #### Issues
 
-66 operations: 45 yes, 1 planned, 13 not needed, 7 left to github.
+66 operations: 46 yes, 13 not needed, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2074,7 +2075,7 @@ In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 | Update a label | `PATCH /repos/{owner}/{repo}/labels/{name}` | Yes | Properties (Alt+Enter) on Label: Colour |
 | List milestones | `GET /repos/{owner}/{repo}/milestones` | Yes | Navigator: Repository > owner/name > Milestones |
 | Create a milestone | `POST /repos/{owner}/{repo}/milestones` | Yes | context menu > Milestone... |
-| Delete a milestone | `DELETE /repos/{owner}/{repo}/milestones/{milestone_number}` | Planned | Milestone sheet; Issue > Organize: Milestone. |
+| Delete a milestone | `DELETE /repos/{owner}/{repo}/milestones/{milestone_number}` | Yes | context menu > Delete Milestone... |
 | Get a milestone | `GET /repos/{owner}/{repo}/milestones/{milestone_number}` | Yes | context menu > Milestone... |
 | Update a milestone | `PATCH /repos/{owner}/{repo}/milestones/{milestone_number}` | Yes | context menu > Milestone... |
 | List labels for issues in a milestone | `GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels` | Not needed | The labels of a milestone's issues, which the issue lists filtered to that milestone already show. |
@@ -2159,7 +2160,7 @@ In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 
 #### Organizations
 
-129 operations: 68 yes, 6 planned, 12 not needed, 43 left to github.
+129 operations: 69 yes, 5 planned, 12 not needed, 43 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2189,7 +2190,7 @@ In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 | Create an organization webhook | `POST /orgs/{org}/hooks` | Yes | Navigator: Organization > organization > Webhooks |
 | Delete an organization webhook | `DELETE /orgs/{org}/hooks/{hook_id}` | Yes | context menu > Delete Webhook... |
 | Get an organization webhook | `GET /orgs/{org}/hooks/{hook_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Update an organization webhook | `PATCH /orgs/{org}/hooks/{hook_id}` | Planned | Organization sheet > Webhooks. |
+| Update an organization webhook | `PATCH /orgs/{org}/hooks/{hook_id}` | Yes | context menu > Turn On or Off... |
 | Get a webhook configuration for an organization | `GET /orgs/{org}/hooks/{hook_id}/config` | Not needed | A webhook's settings come with the webhook, which its list and sheet already read; changes go through the config route. |
 | Update a webhook configuration for an organization | `PATCH /orgs/{org}/hooks/{hook_id}/config` | Yes | context menu > Change Address or Secret... |
 | List deliveries for an organization webhook | `GET /orgs/{org}/hooks/{hook_id}/deliveries` | Yes | context menu > Recent Deliveries... |
@@ -2470,7 +2471,7 @@ In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 
 #### Releases
 
-13 operations: 10 yes, 2 planned, 1 not needed.
+13 operations: 11 yes, 1 planned, 1 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2482,7 +2483,7 @@ In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 | Generate release notes content for a release | `POST /repos/{owner}/{repo}/releases/generate-notes` | Planned | Repository > Releases; Release and Release asset sheets. |
 | Get the latest release | `GET /repos/{owner}/{repo}/releases/latest` | Yes | context menu > Edit Release... |
 | Get a release by tag name | `GET /repos/{owner}/{repo}/releases/tags/{tag}` | Yes | context menu > Edit Release... |
-| Delete a release | `DELETE /repos/{owner}/{repo}/releases/{release_id}` | Planned | Repository > Releases; Release and Release asset sheets. |
+| Delete a release | `DELETE /repos/{owner}/{repo}/releases/{release_id}` | Yes | context menu > Delete Release... |
 | Get a release | `GET /repos/{owner}/{repo}/releases/{release_id}` | Yes | context menu > Edit Release... |
 | Update a release | `PATCH /repos/{owner}/{repo}/releases/{release_id}` | Yes | context menu > Edit Release... |
 | List release assets | `GET /repos/{owner}/{repo}/releases/{release_id}/assets` | Not needed | A release's assets come with the release itself, which every read of it returns. |
@@ -2490,7 +2491,7 @@ In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 
 #### Repositories
 
-74 operations: 56 yes, 7 planned, 6 not needed, 5 left to github.
+74 operations: 60 yes, 3 planned, 6 not needed, 5 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2514,7 +2515,7 @@ In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 | Get repository content | `GET /repos/{owner}/{repo}/contents/{path}` | Yes | Navigator: Repository > owner/name > Code > Files |
 | Create or update file contents | `PUT /repos/{owner}/{repo}/contents/{path}` | Yes | Navigator: Repository > owner/name > Code > Files |
 | List repository contributors | `GET /repos/{owner}/{repo}/contributors` | Yes | Navigator: Repository > owner/name > People > Contributors and People |
-| Create a repository dispatch event | `POST /repos/{owner}/{repo}/dispatches` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
+| Create a repository dispatch event | `POST /repos/{owner}/{repo}/dispatches` | Yes | context menu > Send Repository Dispatch... |
 | List forks | `GET /repos/{owner}/{repo}/forks` | Yes | Navigator: Repository > owner/name > People > Forks |
 | Create a fork | `POST /repos/{owner}/{repo}/forks` | Yes | editor GitHub menu > Fork Repository... |
 | Get the hash algorithm for a repository | `GET /repos/{owner}/{repo}/hash-algorithm` | Left to GitHub | Lists every repository, user, organization, gist or event on GitHub; a person works with their own and those they follow, which the Workbench lists. |
@@ -2529,7 +2530,7 @@ In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 | Get a delivery for a repository webhook | `GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Redeliver a delivery for a repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts` | Yes | context menu > Recent Deliveries... |
 | Ping a repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/pings` | Yes | context menu > Ping |
-| Test the push repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/tests` | Planned | Repository sheet > Webhooks. |
+| Test the push repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/tests` | Yes | context menu > Send Test Push |
 | Disable immutable releases | `DELETE /repos/{owner}/{repo}/immutable-releases` | Yes | Properties (Alt+Enter) on Repository: Immutable releases |
 | Check if immutable releases are enabled for a repository | `GET /repos/{owner}/{repo}/immutable-releases` | Yes | Properties (Alt+Enter) on Repository |
 | Enable immutable releases | `PUT /repos/{owner}/{repo}/immutable-releases` | Yes | Properties (Alt+Enter) on Repository: Immutable releases |
@@ -2554,7 +2555,7 @@ In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 | Get repository ruleset history | `GET /repos/{owner}/{repo}/rulesets/{ruleset_id}/history` | Planned | Ruleset sheet (section 18.3.1). |
 | Get repository ruleset version | `GET /repos/{owner}/{repo}/rulesets/{ruleset_id}/history/{version_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | List repository tags | `GET /repos/{owner}/{repo}/tags` | Yes | Navigator: Repository > owner/name > Code > Tags |
-| Download a repository archive (tar) | `GET /repos/{owner}/{repo}/tarball/{ref}` | Planned | File and folder sheets; Commit to GitHub. |
+| Download a repository archive (tar) | `GET /repos/{owner}/{repo}/tarball/{ref}` | Yes | context menu > Download Source... |
 | List repository teams | `GET /repos/{owner}/{repo}/teams` | Yes | Navigator: Repository > owner/name > People > Collaborators and Team Access |
 | Get all repository topics | `GET /repos/{owner}/{repo}/topics` | Yes | Properties (Alt+Enter) on Repository: Topics |
 | Replace all repository topics | `PUT /repos/{owner}/{repo}/topics` | Yes | Properties (Alt+Enter) on Repository: Topics |
@@ -2562,7 +2563,7 @@ In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 | Disable vulnerability alerts | `DELETE /repos/{owner}/{repo}/vulnerability-alerts` | Yes | Properties (Alt+Enter) on Repository: Dependabot alerts |
 | Check if vulnerability alerts are enabled for a repository | `GET /repos/{owner}/{repo}/vulnerability-alerts` | Yes | Properties (Alt+Enter) on Repository |
 | Enable vulnerability alerts | `PUT /repos/{owner}/{repo}/vulnerability-alerts` | Yes | Properties (Alt+Enter) on Repository: Dependabot alerts |
-| Download a repository archive (zip) | `GET /repos/{owner}/{repo}/zipball/{ref}` | Planned | File and folder sheets; Commit to GitHub. |
+| Download a repository archive (zip) | `GET /repos/{owner}/{repo}/zipball/{ref}` | Yes | context menu > Download Source... |
 | Create a repository using a template | `POST /repos/{template_owner}/{template_repo}/generate` | Yes | Repository > Repository Actions... (Ctrl+Shift+G) |
 | List public repositories | `GET /repositories` | Left to GitHub | Lists every repository, user, organization, gist or event on GitHub; a person works with their own and those they follow, which the Workbench lists. |
 | List repositories for the authenticated user | `GET /user/repos` | Yes | Navigator: Repositories > My Repositories |

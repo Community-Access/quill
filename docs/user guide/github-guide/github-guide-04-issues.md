@@ -205,6 +205,11 @@ To create a milestone while editing an issue, open its **Properties**, go to
   which you can leave empty.
 - **Close Milestone...** (`Alt+L`) closes the selected milestone after asking.
   On a closed one it reads **Reopen Milestone...**.
+
+In the Workbench, a milestone's context menu also has **Delete
+Milestone...**, which deletes it after asking. Its issues and pull requests
+stay, with no milestone. Closing keeps the milestone and its history, and is
+usually what you want.
 - **Open on GitHub** (`Alt+O`) and **Refresh** (`Alt+R`).
 
 Every change is reported from what GitHub sends back.

@@ -202,6 +202,23 @@ menu, beside Secrets... and Variables...:
   Add one by choosing from the apps GitHub says are installed and can do this;
   if there are none, QUILL says so. Delete removes one.
 
+## Starting workflows from outside
+
+A workflow can start on `repository_dispatch`, an event sent on purpose rather
+than by a push. **Send Repository Dispatch...**, on a repository's context
+menu, sends one: give the event's name, as the workflow's `types` list says,
+such as `deploy`, and optionally extra values as JSON, such as
+`{"env": "test"}`, which the workflow reads as `github.event.client_payload`.
+You hear "Sent deploy." and the run appears under Actions.
+
+## Deleting a deployment
+
+Under Repository > Deployments, a deployment's context menu has **Delete
+Deployment...**, which removes it from the history after asking. GitHub
+deletes only an inactive deployment; a newer deployment to the same
+environment makes the older one inactive, and QUILL says so if you try too
+early.
+
 ## Artifacts
 
 A run can leave files behind: a built installer, a test report. On a run,

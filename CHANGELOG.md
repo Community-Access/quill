@@ -743,6 +743,22 @@ lines the same way, with the same saved choice.
 With thanks to Kelly Ford, whose GHManage has been the measure for QUILL's
 GitHub work from the start.
 
+### GitHub: deleting releases, milestones and deployments, and more on rows (2026-11-18)
+
+- **Delete Release...** (keep the tag, or delete it too), **Delete
+  Milestone...** (its issues stay) and **Delete Deployment...** (GitHub
+  deletes only an inactive one, and QUILL says so).
+- A webhook gains **Send Test Push** and **Turn On or Off...**, for an
+  organization's webhooks as well as a repository's.
+- A branch gains **Merge Into...**, a merge on GitHub without a pull request,
+  that says whether it merged, had nothing to merge, or conflicted.
+- A branch or tag gains **Download Source...**, as a zip or tar.gz.
+- A repository gains **Send Repository Dispatch...**, which starts workflows
+  that listen for it, with optional JSON values.
+
+9 more GitHub endpoints are covered; 145 remain planned. Written up in the
+GitHub guide's Issues, Actions and Code and Repositories chapters.
+
 ### GitHub: issue fields, related issues, pinned comments and deleting an issue (2026-11-18)
 
 - **Issue Fields...** on an issue lists every field its owner defines with
