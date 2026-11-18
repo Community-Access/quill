@@ -83,6 +83,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}mark_all_read": ("sign_in", _O),
     f"{_P}save_search": ("local", _O),
     f"{_P}new_issue": ("sign_in", _V),
+    f"{_P}import_issues": ("sign_in", _V),
+    f"{_P}issues_from_lines": ("sign_in", _V),
     # Templates (PRD 21.6): Save commits to the repository, or to the owner's
     # .github repository for an inherited default. Tier 1: visible to others.
     f"{_P}open_template": ("repo:write", _V),

@@ -63,6 +63,7 @@ from quill.ui.github_workbench_explore import (
     load_explore,
 )
 from quill.ui.github_workbench_help import HELP_PREFIX, GitHubWorkbenchHelpMixin
+from quill.ui.github_workbench_import import GitHubWorkbenchImportMixin
 from quill.ui.github_workbench_loaders import LOCAL_PREFIXES, load_local
 from quill.ui.github_workbench_place import GitHubWorkbenchPlaceMixin
 from quill.ui.github_workbench_properties import PAGE_FOR_VERB, GitHubWorkbenchPropertiesMixin
@@ -110,6 +111,7 @@ _NEEDS_WORDS = {
 
 
 class GitHubWorkbenchProvider(
+    GitHubWorkbenchImportMixin,
     GitHubWorkbenchToolsMixin,
     GitHubWorkbenchViewMixin,
     GitHubWorkbenchPropertiesMixin,

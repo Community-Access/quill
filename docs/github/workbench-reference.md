@@ -649,6 +649,8 @@ Everything below is generated from the tables the window is built from. The GitH
 | Open on GitHub | Shift+Enter | Open the selected row, or the node, in your browser. |
 | Open in Editor | Ctrl+Enter | Open the selected file in the editor that opened this window. |
 | Export List... | Ctrl+Shift+X | This list as it is shown, its columns, filter and rows, as Excel, CSV or a Markdown table the editor reads as a table. The same as the WordPress Workbench's. |
+| Import Issues from a Spreadsheet... | Ctrl+Alt+I | Make issues in this repository from a CSV file or an Excel workbook: columns matched by name, a preview with a line per row, then a sentence per row. |
+| New Issues from Lines... | Ctrl+Alt+L | One issue per line of the editor's selection, which you can change first, optionally each a sub-issue of an issue you name. Previewed before anything is made. |
 | Close Workbench | Alt+F4 | Close this window. The editor stays. |
 
 #### Edit
