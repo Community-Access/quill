@@ -561,6 +561,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Saved Searches (`:saved_searches`) | search | Saved Searches: searches you kept, on this computer. Enter runs one; Delete removes it. |
 | People (`:people`) | the top | People: who you follow, who follows you, and anybody you look up. |
 | My Profile (`:my_profile`) | people | My Profile: your profile as GitHub shows it, your year of contributions as numbers, and what you pinned. |
+| My Keys (`:my_keys`) | people | My Keys: your SSH keys, GPG keys and SSH signing keys, each with its fingerprint. Ctrl+N adds one. |
 | People I Follow (`:following`) | people | People I Follow: accounts you follow. Enter opens a person's node. |
 | My Followers (`:followers`) | people | My Followers: accounts that follow you. |
 | My Teams (`:my_teams`) | people | My Teams: every team you belong to, across your organizations. Alt+Enter opens a team's sheet. |
@@ -874,6 +875,7 @@ Keys the window answers that are not menu rows:
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
 - **gist**: Edit Gist..., Star or Unstar, Copy Link, Open on GitHub, Delete Gist...; Properties...
 - **discussion**: Open Discussion Thread, Read as Document..., Copy Link, Open on GitHub; Properties...
+- **key**: Show Details, Delete Key..., Open on GitHub; Properties...
 - **advisory**: Show Details, Publish or Close Advisory..., Request CVE..., Open on GitHub, Copy Link; Properties...
 - **security_alert**: Open, Dismiss or Reopen Alert..., Open on GitHub; Properties...
 - **cache**: Show Details, Delete Cache...; Properties...
@@ -938,6 +940,7 @@ Keys the window answers that are not menu rows:
 - **Invitation**: Someone with admin access asking you to join their repository, with the access they chose. It waits under Needs My Attention > Invitations and expires after a week.
 - **Issue**: A note about a bug, an idea or a task, with a conversation under it. Under a repository's Issues.
 - **Job**: One part of a run, on one machine, made of steps.
+- **Key**: An SSH key lets git push and pull without a password; a GPG key or SSH signing key marks your commits Verified. GitHub keeps only the public half.
 - **Label**: A coloured tag on issues and pull requests, such as bug. Under Labels.
 - **Mention**: Your login written with an at sign, such as @you, which notifies you.
 - **Merge**: Bringing a pull request's changes into the branch it targets. Item, Merge, Ctrl+Shift+Enter.
