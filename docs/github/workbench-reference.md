@@ -837,7 +837,7 @@ Keys the window answers that are not menu rows:
 
 ### Context menus, by row type
 
-- **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Set Issue Type..., Reorder Sub-issues..., Add to or Remove from Favorites; Properties...
+- **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Create Branch for This Issue..., Set Issue Type..., Reorder Sub-issues..., Add to or Remove from Favorites; Properties...
 - **pull_request**: Review..., File Differences..., Comment..., Merge..., Copy Link, Open on GitHub; More: Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., View Artifacts...; More: Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Open on GitHub, Copy Link; Properties...
@@ -960,7 +960,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 311 yes, 1152 planned, 15 not needed and 526 left to GitHub.
+In all: 314 yes, 1149 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2769,7 +2769,7 @@ In all: 311 yes, 1152 planned, 15 not needed and 526 left to GitHub.
 
 #### GraphQL: Issues
 
-51 mutations: 9 yes, 42 planned.
+51 mutations: 11 yes, 40 planned.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
@@ -2782,13 +2782,13 @@ In all: 311 yes, 1152 planned, 15 not needed and 526 left to GitHub.
 | `addSubIssue` | Yes | context menu > Reorder Sub-issues... |
 | `applyPendingIssueSuggestions` | Planned | Issue sheet; Item menu |
 | `clearLabelsFromLabelable` | Planned | Issue sheet; Item menu |
-| `closeIssue` | Planned | Issue sheet; Item menu |
+| `closeIssue` | Yes | context menu > Close or Reopen... |
 | `createIssue` | Planned | Issue sheet; Item menu |
 | `createIssueField` | Planned | Issue sheet; Item menu |
 | `createIssueFieldValue` | Planned | Issue sheet; Item menu |
 | `createIssueType` | Planned | Issue sheet; Item menu |
 | `createLabel` | Planned | Issue sheet; Item menu |
-| `createLinkedBranch` | Planned | Issue sheet; Item menu |
+| `createLinkedBranch` | Yes | context menu > Create Branch for This Issue... |
 | `deleteIssue` | Planned | Issue sheet; Item menu |
 | `deleteIssueComment` | Planned | Issue sheet; Item menu |
 | `deleteIssueField` | Planned | Issue sheet; Item menu |
@@ -3057,7 +3057,7 @@ In all: 311 yes, 1152 planned, 15 not needed and 526 left to GitHub.
 | `discussions` | Yes | Navigator: Repository > owner/name > Discussions |
 | `fundingLinks` | Planned | Repository > General (sponsor links) |
 | `issueTypes` | Yes | context menu > Set Issue Type... |
-| `linkedBranches` | Planned | Issue details; Item > Linked Pull Requests |
+| `linkedBranches` | Yes | Properties (Alt+Enter) on Issue: Linked branches |
 | `lists` | Planned | Repositories > Starred > each list |
 | `mergeQueue` | Yes | Item > Merge... (Ctrl+Shift+Enter) |
 | `pinnedItems` | Planned | People > person > Profile; Account > Profile |

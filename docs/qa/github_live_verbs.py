@@ -121,12 +121,38 @@ def comment(run: Any) -> str:
 
 
 def close_reopen(run: Any) -> str:
+    """Close for each of GitHub's three reasons, as the window asks; reopen after each."""
+    from quill.core.github.issue_development import CLOSE_REASONS, close_issue
+
     number = int(run.ids["issue"])
-    run.items.update_items(run.repo, [number], state="closed")
-    _expect(_issue_state(run, run.repo, number)["state"] == "closed", "still open after Close")
-    run.items.update_items(run.repo, [number], state="open")
-    _expect(_issue_state(run, run.repo, number)["state"] == "open", "still closed after Reopen")
-    return "closed, then reopened"
+    original = int(run.ids["sub_issue"])
+    seen = []
+    for reason in CLOSE_REASONS:
+        dup = original if reason.rest == "duplicate" else 0
+        close_issue(run.api, run.repo, number, reason, duplicate_of=dup)
+        state = _issue_state(run, run.repo, number)
+        _expect(state["state"] == "closed", f"still open after closing as {reason.said}")
+        seen.append(str(state.get("state_reason")))
+        run.items.update_items(run.repo, [number], state="open")
+        _expect(_issue_state(run, run.repo, number)["state"] == "open", "still closed")
+    _expect(seen == ["completed", "not_planned", "duplicate"], f"reasons GitHub kept: {seen}")
+    return "closed as completed, not planned and duplicate, reopened after each"
+
+
+def create_branch(run: Any) -> str:
+    from quill.core.github.issue_development import (
+        branch_name_for,
+        create_linked_branch,
+        linked_branches,
+    )
+
+    number = int(run.ids["issue"])
+    name = f"{branch_name_for(number, TAG)}-{int(time.time())}"
+    said = create_linked_branch(run.api, run.repo, number, name)
+    linked = linked_branches(run.api, run.repo, number)
+    run.rest("DELETE", f"/repos/{run.repo}/git/refs/heads/{name}")
+    _expect(name in linked, f"not linked: {linked}")
+    return f"{said} It was listed as linked, then deleted."
 
 
 def labels(run: Any) -> str:
@@ -678,6 +704,7 @@ VERBS: dict[str, Scenario | str] = {
     "cancel_run": cancel_run,
     "clone": "needs Jeff: clones into a folder you choose, then opens it in the editor",
     "close_reopen": close_reopen,
+    "create_branch": create_branch,
     "comment": comment,
     "delete_asset": "with upload_asset: uploaded, then deleted",
     "delete_branch": "with merge: the merged pull request's branch is deleted",

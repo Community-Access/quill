@@ -67,6 +67,10 @@ class GitHubWorkbenchWritesMixin:
     def _do_close_reopen(self, ref: Any, row: object) -> None:
         assert isinstance(row, GitHubItem)
         closing = row.state == "open"
+        if closing and not row.is_pr:
+            # GitHub closes an issue for a reason; a pull request has none.
+            self._close_issue_with_reason(ref, row)  # type: ignore[attr-defined]
+            return
         verb = "Close" if closing else "Reopen"
         if not self._confirm(f"{verb} #{row.number}", f"{verb} #{row.number}, {row.title}?"):
             return

@@ -2970,6 +2970,8 @@ Control coverage: 356 audited sites (356 helped).
 
 **Transfer Issue.** Move it to another repository.
 
+**Create Branch for This Issue.** Make a branch from the default branch, linked to it as its Development.
+
 **Set Issue Type.** Bug, feature, task and so on.
 
 **Reorder Sub-issues.** Change the order of sub-issues.

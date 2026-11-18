@@ -134,6 +134,13 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a("lock", "Lock or Unlock Conversation...", _W, "triage", "Stop or allow new comments."),
         _a("pin", "Pin or Unpin Issue", _O, "triage", "Pin it to the top of the issues list."),
         _a("transfer", "Transfer Issue...", _W, "push", "Move it to another repository."),
+        _a(
+            "create_branch",
+            "Create Branch for This Issue...",
+            _W,
+            "push",
+            "Make a branch from the default branch, linked to it as its Development.",
+        ),
         _a("issue_type", "Set Issue Type...", _W, "triage", "Bug, feature, task and so on."),
         _a("sub_issues", "Reorder Sub-issues...", _W, "triage", "Change the order of sub-issues."),
         _FAVORITE,
