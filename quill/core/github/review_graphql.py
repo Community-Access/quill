@@ -75,6 +75,9 @@ def _request(
     errors_out: list[str] | None = None,
 ) -> dict[str, Any]:
     """POST one GraphQL document; *errors_out* collects field errors beside partial data."""
+    from quill.core.github.dry_run import stop_request_if_dry
+
+    stop_request_if_dry("POST", "/graphql", {"query": query})
     payload = json.dumps({"query": query, "variables": variables}).encode("utf-8")
     request = Request(
         "https://api.github.com/graphql",

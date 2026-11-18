@@ -124,6 +124,9 @@ def request_json(
     """
     if not path.startswith("/") or "//" in path or "\\" in path:
         raise GitHubRestError("Refusing a GitHub API path that is not a plain absolute path.")
+    from quill.core.github.dry_run import stop_request_if_dry
+
+    stop_request_if_dry(method, path, body)
     limits = tracker if tracker is not None else RATE_LIMITS
     if wait := limits.wait_seconds():
         raise GitHubRestError(wait_message(wait), status=429, headers={"retry-after": str(wait)})

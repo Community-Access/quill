@@ -152,6 +152,7 @@ no AI menu, so here they belong to the Go row.
 | `Ctrl+Shift+K` | Manage GitHub Accounts |
 | `Ctrl+Shift+L` | GitHub's remaining hourly allowance |
 | `Ctrl+Shift+O` | Workbench Options |
+| `Ctrl+Alt+D` | Dry Run on or off |
 | `Alt+F4` | Close the Workbench |
 
 ### Hearing where you are, and help
@@ -165,6 +166,7 @@ no AI menu, so here they belong to the Go row.
 | `Alt+F1` | What the GitHub word for the row means |
 | `Ctrl+F1` | This guide, at the right chapter |
 | `Ctrl+Shift+F1` | Search all of help |
+| `Ctrl+Alt+P` | Practice on GitHub |
 | `Alt+Shift+F1` | Every key in the window |
 
 ### New Pull Request

@@ -24,6 +24,7 @@ from quill.core.quill_tutorials import (
 from quill.core.tutorials.coding_lessons import CODING_TRACK, coding_lessons
 from quill.core.tutorials.dictation_lessons import dictation_lessons
 from quill.core.tutorials.forms_lessons import forms_lessons
+from quill.core.tutorials.github_lessons import GITHUB_TRACK, github_lessons
 from quill.core.tutorials.model import Track, TutorialSet, build
 from quill.core.tutorials.wordpress_break_it_lessons import BREAK_TRACK, break_it_lessons
 from quill.core.tutorials.wordpress_first_week import FIRST_WEEK_TRACK, first_week_lessons
@@ -95,6 +96,8 @@ TRACKS: tuple[Track, ...] = (
         "fill it in yourself, save it in large print or braille, and publish it "
         "to your site and read the responses.",
     ),
+    # GitHub on the practice repository (GitHub PRD 22.8 and D8, 2026-11-18).
+    GITHUB_TRACK,
     # The Developer profile's lesson; shown only while core.developer is on.
     CODING_TRACK,
 )
@@ -147,6 +150,7 @@ CATALOGUE: TutorialSet = build(
         surfaces=("QUILL",),
         app="QUILL",
     ),
+    github_lessons(),
     coding_lessons(
         {
             "open_folder": "project.open_folder",

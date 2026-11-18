@@ -812,6 +812,7 @@ VERBS: dict[str, Scenario | str] = {
     "mark_read": "needs Jeff: would mark one of your real notifications read",
     "merge": merge_and_delete_branch,
     "revert_pull": revert_merged,
+    "practice": "needs Jeff: makes quill-practice in your own account, then deletes it",
     "inbox_rules": "needs Jeff: a rule acts on your real notifications as they load",
     "auto_merge": "not here: needs a pull request waiting on a required check; none is required",
     "merge_queue": "not here: a merge queue needs an organization repository's ruleset",

@@ -78,6 +78,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}revert_pull": ("repo:write", _V),
     f"{_P}auto_merge": ("repo:write", _V),
     f"{_P}inbox_rules": ("sign_in", _O),
+    f"{_P}practice": ("sign_in", _D),
     f"{_P}merge_queue": ("repo:write", _V),
     f"{_P}sub_issues": ("repo:triage", _O),
     f"{_P}transfer": ("repo:write", _D),

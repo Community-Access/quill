@@ -808,6 +808,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Row | Key | What it does |
 | --- | --- | --- |
 | Workbench Options... | Ctrl+Shift+O | Where the Workbench opens, how notifications check, lists and privacy. |
+| Dry Run | Ctrl+Alt+D | Turn Dry Run on or off. While it is on, every write asks and previews as usual, then stops before sending and says what it would have sent. |
 | GitHub API Console... | Ctrl+Shift+J | Send any GitHub REST request or GraphQL query: completion from GitHub's API description, what it does and needs said first, the answer as a tree. |
 
 #### Window
@@ -825,6 +826,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | What Is This? | Alt+F1 | The GitHub word for this row, explained. |
 | GitHub Workbench Guide | Ctrl+F1 | The guide, opened at the chapter for where you are. |
 | Search Help... | Ctrl+Shift+F1 | Type a few words to find a help topic, a command or a GitHub word. |
+| Practice on GitHub... | Ctrl+Alt+P | Make, open or delete quill-practice, a private repository with issues, a pull request and a failing run to learn on. |
 | Workbench Keys | Alt+Shift+F1 | Every key in this window, by family. |
 | Say Last Result Again | F9 | Say the last result again. |
 | Explain That | Shift+F9 | What the last result means and what you might do next. |

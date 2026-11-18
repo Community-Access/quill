@@ -3194,8 +3194,29 @@ delete it when you finish, so people can learn tier 3 actions on
 something that does not matter.</li>
 <li><strong>Dry Run,</strong> a Workbench-wide switch on the status bar:
 every write shows its preview and stops there, saying “Dry run: nothing
-was changed.” Useful for learning and for checking a big batch
-twice.</li>
+was changed.” Useful for learning and for checking a big batch twice.
+<em>Built 2026-11-18:</em> Tools &gt; Dry Run (<code>Ctrl+Alt+D</code>),
+a process-wide switch (<code>quill/core/github/dry_run.py</code>)
+checked at the three doors every write goes through:
+<code>request_json</code> (a write method, or a GraphQL mutation it
+carries), the review window’s GraphQL transport, and
+<code>GitHubItemsProvider._require_write_access</code> (PyGithub). The
+stop names what would have been sent (“send PATCH /repos/o/r/issues/7
+(state, state_reason)”); the Account cell says it is on; it lasts until
+turned off or QUILL closes.</li>
+<li><em>Practice repository built 2026-11-18:</em> Help &gt; Practice on
+GitHub… (<code>Ctrl+Alt+P</code>,
+<code>quill/core/github/practice_repository.py</code>) makes private
+<code>quill-practice</code> with three issues, two labels, a branch and
+pull request, and a workflow that fails on purpose, then opens it; later
+it offers Open, Delete and Start Over, and Delete, naming the
+<code>delete_repo</code> permission when GitHub refuses. <em>Tutorials
+built 2026-11-18:</em> QUILL’s Help &gt; Tutorials gains the track
+“GitHub, on a practice repository”
+(<code>quill/core/tutorials/github_lessons.py</code>): make it; an issue
+(label, comment, close); Dry Run; review and merge; a failed run; delete
+it. Keys come from <code>WORKBENCH_KEYS</code>. QUILL Lite’s catalogue
+does not have them yet.</li>
 </ul>
 <h3 id="229-several-accounts-side-by-side">22.9 Several accounts, side
 by side</h3>

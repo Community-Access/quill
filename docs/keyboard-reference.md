@@ -1024,10 +1024,12 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+8 | Saved Searches | `github.workbench.go_saved_searches` |
 | Ctrl+9 | Start Here | `github.workbench.go_start` |
 | Ctrl+A | Select All | `github.workbench.select_all` |
+| Ctrl+Alt+D | Dry Run | `github.workbench.dry_run` |
 | Ctrl+Alt+F | Filter Builder... | `github.workbench.filter_builder` |
 | Ctrl+Alt+I | Import Issues from a Spreadsheet... | `github.workbench.import_issues` |
 | Ctrl+Alt+L | New Issues from Lines... | `github.workbench.issues_from_lines` |
 | Ctrl+Alt+N | Inbox Rules... | `github.workbench.inbox_rules` |
+| Ctrl+Alt+P | Practice on GitHub... | `github.workbench.practice` |
 | Ctrl+B | Compare With Default | `github.workbench.compare_default` |
 | Ctrl+C | Copy | `github.workbench.copy` |
 | Ctrl+Cancel | Cancel Run... (Ctrl+Break, in the list) | `github.workbench.cancel_run` |

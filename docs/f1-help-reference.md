@@ -2920,6 +2920,8 @@ Control coverage: 361 audited sites (361 helped).
 
 **Tools > Workbench Options....** Where the Workbench opens, how notifications check, lists and privacy.
 
+**Tools > Dry Run.** Turn Dry Run on or off. While it is on, every write asks and previews as usual, then stops before sending and says what it would have sent.
+
 **Tools > GitHub API Console....** Send any GitHub REST request or GraphQL query: completion from GitHub's API description, what it does and needs said first, the answer as a tree.
 
 **Window > Switch to Editor.** Bring forward the editor that opened this window.
@@ -2933,6 +2935,8 @@ Control coverage: 361 audited sites (361 helped).
 **Help > GitHub Workbench Guide.** The guide, opened at the chapter for where you are.
 
 **Help > Search Help....** Type a few words to find a help topic, a command or a GitHub word.
+
+**Help > Practice on GitHub....** Make, open or delete quill-practice, a private repository with issues, a pull request and a failing run to learn on.
 
 **Help > Workbench Keys.** Every key in this window, by family.
 

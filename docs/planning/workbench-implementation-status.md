@@ -138,6 +138,12 @@ rules that run on every Notifications load (`inbox_rules.py`,
 `github_workbench_inbox_rules.py`). Emoji shortcodes read by name in the
 details pane and Read as Document (`emoji_names.py`).
 
+**2026-11-18, Dry Run and the practice repository.** Tools > Dry Run stops
+every GitHub write at the transport with what it would have sent
+(`dry_run.py`); Help > Practice on GitHub... makes, opens and deletes
+`quill-practice` (`practice_repository.py`). Six GitHub tutorials on it in
+QUILL's Help > Tutorials (`github_lessons.py`); QUILL Lite's are next.
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

@@ -1,6 +1,6 @@
 # QUILL Tutorials
 
-Welcome. There are 68 short lessons here, about 384 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 74 short lessons here, about 414 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials...** in QUILL. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -86,6 +86,13 @@ The keys here are the ones QUILL comes with. If you have changed a key, the less
   - Fill It In Yourself (5 minutes)
   - Save it as large print or braille-ready text (4 minutes)
   - Publish it and read the responses (7 minutes)
+- **GitHub, on a practice repository**: Make a private repository to practise on, then file and close an issue, try Dry Run, review and merge a pull request, read a failed run, and delete the repository when you finish.
+  - Make a repository to practise on (5 minutes)
+  - Label, comment on and close an issue (6 minutes)
+  - Try a command without sending it (4 minutes)
+  - Review and merge a pull request (8 minutes)
+  - Read a failed run (5 minutes)
+  - Delete the practice repository (2 minutes)
 - **Coding, in the Developer profile**: Work on a folder of code with an AI: ask for a change, review every edit, allow the commands it runs, hear the test results, and undo a whole turn.
   - Your first project task (12 minutes)
 
@@ -2155,6 +2162,173 @@ Publish your form to a WordPress site running QUILL Accessible Forms, put it on 
    - Worth knowing: Responses are people's personal details. They are read only while this window is open and saved only where you choose, with Export to CSV or Export to Word.
 
 Your form is live, and you can hear every answer it brings in. The first time you use a site in a session, you are also told how many new responses are waiting.
+
+## GitHub, on a practice repository
+
+Make a private repository to practise on, then file and close an issue, try Dry Run, review and merge a pull request, read a failed run, and delete the repository when you finish.
+
+### Make a repository to practise on
+
+Make quill-practice, a private repository with issues, a pull request and a failing run, and find your way round it.
+
+*3 steps, about 5 minutes.*
+
+1. **Open the GitHub Workbench.** The Workbench is the window for everything on GitHub. Open it from the editor's GitHub menu, signed in with the account you want to practise in.
+   - You should hear: GitHub Workbench, and its tree.
+
+2. **Make the practice repository.** Choose Practice on GitHub from the Help menu. QUILL says what it will make and asks first; say Yes. It is private, in your own account, and nothing else of yours is touched.
+   - Keys: Ctrl+Alt+P
+   - You should hear: Made, private, with a workflow that fails on purpose, 3 issues.
+   - Worth knowing: Making it takes a few seconds; you hear each part as it is made.
+
+3. **Look round.** The tree is now at the repository. Arrow down through its places: Issues, Pull Requests, Runs and the rest. Enter on one lists it.
+   - Keys: Down, Enter
+   - You should hear: Issues, and a count of open issues.
+
+You have somewhere to make mistakes. The next lessons all happen here, and the last one deletes it.
+
+Next: Label, comment on and close an issue.
+
+### Label, comment on and close an issue
+
+Work one issue from start to finish: a label, a comment, and closing it.
+
+*6 steps, about 6 minutes.*
+
+1. **Open the GitHub Workbench.** The Workbench is the window for everything on GitHub. Open it from the editor's GitHub menu, signed in with the account you want to practise in.
+   - You should hear: GitHub Workbench, and its tree.
+
+2. **Go to the practice repository.** Choose Practice on GitHub from the Help menu, then Open It. The tree moves to quill-practice in your account.
+   - Keys: Ctrl+Alt+P
+   - You should hear: quill-practice is ready to practise on.
+
+3. **List the issues.** Go to the repository's Issues. The list holds the three practice issues, newest first.
+   - Keys: Ctrl+Shift+1
+   - You should hear: Issues, 3 shown.
+
+4. **Label the typo.** Select the issue about the greeting's typo and open its context menu. Choose Labels, and check practice: bug.
+   - Keys: Shift+F10
+   - You should hear: Labels for the issue, and the practice labels.
+
+5. **Comment on it.** Open the comment window, write a line saying you will fix it, and post it. Preview reads it to you first if you like.
+   - Keys: Ctrl+Shift+M
+   - You should hear: Comment on, and the issue's number.
+
+6. **Close it as completed.** From the context menu choose Close or Reopen. QUILL asks why, as GitHub does; choose Completed.
+   - Keys: Shift+F10
+   - You should hear: Closed as completed.
+
+That is the whole life of most issues: a label, a word, and closing it.
+
+Next: Try a command without sending it.
+
+### Try a command without sending it
+
+Turn Dry Run on, walk through a command, hear what it would have sent.
+
+*5 steps, about 4 minutes.*
+
+1. **Open the GitHub Workbench.** The Workbench is the window for everything on GitHub. Open it from the editor's GitHub menu, signed in with the account you want to practise in.
+   - You should hear: GitHub Workbench, and its tree.
+
+2. **Go to the practice repository.** Choose Practice on GitHub from the Help menu, then Open It. The tree moves to quill-practice in your account.
+   - Keys: Ctrl+Alt+P
+   - You should hear: quill-practice is ready to practise on.
+
+3. **Turn Dry Run on.** Turn Dry Run on from the Tools menu. Every write now asks and previews as usual, then stops.
+   - Keys: Ctrl+Alt+D
+   - You should hear: Dry Run is on.
+
+4. **Try closing an issue.** Select an open issue, choose Close or Reopen from its context menu and answer the question as if you meant it.
+   - Keys: Shift+F10
+   - You should hear: Dry run: QUILL would send PATCH, and Nothing was changed.
+
+5. **Turn it off again.** The same command turns Dry Run off, and writes go to GitHub again. It is also off whenever QUILL starts.
+   - Keys: Ctrl+Alt+D
+   - You should hear: Dry Run is off.
+
+Use Dry Run whenever you want to see a command through before it counts.
+
+Next: Review and merge a pull request.
+
+### Review and merge a pull request
+
+Read a pull request's change, find out whether it can merge, and merge it.
+
+*6 steps, about 8 minutes.*
+
+1. **Open the GitHub Workbench.** The Workbench is the window for everything on GitHub. Open it from the editor's GitHub menu, signed in with the account you want to practise in.
+   - You should hear: GitHub Workbench, and its tree.
+
+2. **Go to the practice repository.** Choose Practice on GitHub from the Help menu, then Open It. The tree moves to quill-practice in your account.
+   - Keys: Ctrl+Alt+P
+   - You should hear: quill-practice is ready to practise on.
+
+3. **List the pull requests.** Go to the repository's Pull Requests and select the one that fixes the greeting.
+   - Keys: Ctrl+Shift+2
+   - You should hear: Pull Requests, 1 shown.
+
+4. **Read the change.** Open its file differences. In the patch lines, check Changed Lines Only and arrow through: an added and a removed line each have a sound.
+   - Keys: Ctrl+Shift+D
+   - You should hear: PR diff, and the changed file.
+
+5. **Ask whether it can merge.** Close the diff. From the pull request's context menu choose Why Can't I Merge? It names the commit its answer is about.
+   - Keys: Shift+F10
+   - You should hear: can merge into main, as of commit
+   - Worth knowing: The practice run fails on purpose, but it is not a required check.
+
+6. **Merge it.** Merge it. QUILL checks again, asks how to merge, and asks you to type the number, then merges only the commit it checked, nothing newer.
+   - Keys: Ctrl+Shift+Enter
+   - You should hear: Merged, and the new commit.
+
+Reading, asking and merging is most of what a reviewer does all day.
+
+Next: Read a failed run.
+
+### Read a failed run
+
+Find out why a workflow run failed, and run only what failed again.
+
+*5 steps, about 5 minutes.*
+
+1. **Open the GitHub Workbench.** The Workbench is the window for everything on GitHub. Open it from the editor's GitHub menu, signed in with the account you want to practise in.
+   - You should hear: GitHub Workbench, and its tree.
+
+2. **Go to the practice repository.** Choose Practice on GitHub from the Help menu, then Open It. The tree moves to quill-practice in your account.
+   - Keys: Ctrl+Alt+P
+   - You should hear: quill-practice is ready to practise on.
+
+3. **List the runs.** Go to the repository's Runs and select a failed one. The practice workflow fails every time.
+   - Keys: Ctrl+Shift+4
+   - You should hear: failure, Practice checks.
+
+4. **Read what failed.** Open What Failed: the failing step and its last log lines, as one text you can read with the arrows.
+   - Keys: Ctrl+Shift+W
+   - You should hear: What failed, and Fail on purpose.
+
+5. **Run only the failure again.** Close the text and re-run the failed jobs. It will fail again, which is the point here; in a real repository you would fix it first.
+   - Keys: Ctrl+Shift+F5
+   - You should hear: re-run
+
+What Failed is usually all you need; the jobs window has the whole log.
+
+Next: Delete the practice repository.
+
+### Delete the practice repository
+
+Delete quill-practice, or start it over fresh.
+
+*2 steps, about 2 minutes.*
+
+1. **Open the GitHub Workbench.** The Workbench is the window for everything on GitHub. Open it from the editor's GitHub menu, signed in with the account you want to practise in.
+   - You should hear: GitHub Workbench, and its tree.
+
+2. **Delete it.** Choose Practice on GitHub from the Help menu, then Delete It, and say Yes. Delete It and Start Over makes a fresh one instead.
+   - Keys: Ctrl+Alt+P
+   - You should hear: Deleted, and quill-practice.
+   - Worth knowing: GitHub lets an app delete a repository only with the delete_repo permission; without it, QUILL says where on GitHub to delete it.
+
+That is the track. Everything you practised works the same on real work.
 
 ## Coding, in the Developer profile
 
