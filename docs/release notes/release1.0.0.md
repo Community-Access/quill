@@ -2172,6 +2172,11 @@ under **My Packages**, and clear out an old version without opening a
 browser. And the stars you have sorted into lists on GitHub are under **Star
 Lists**, where one key puts a repository on the lists you choose.
 
+A GitHub profile's calendar of green squares has never said anything to a
+screen reader. **My Profile**, and **Profile** under anyone you look up, say
+it in numbers instead: the year's contributions, the busiest day, the longest
+streak and the current one, and each month in turn.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

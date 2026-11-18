@@ -1163,7 +1163,7 @@ Source: PRD section 14. Its “today” statements describe the source audit rev
 | Transfer a repository | **Built 2026-11-18:** Repository > Transfer Repository... (`Ctrl+Alt+T`), typed confirmation (`repo_transfer.py`) | Repository > Settings > Transfer... |
 | Self-hosted runners | **Built 2026-11-18:** Repository > Actions > Runners, read-only (`runners_sbom.py`); registering and removing stay planned | Repository > Actions > Runners (read-only) |
 | Star lists | **Built 2026-11-18:** Repositories > Star Lists, New Star List..., Star Lists... on a repository, Rename or Delete Star List... (`star_lists.py`) | Repositories > Starred > each list |
-| Your profile and status | Not found | Account > Profile and Status... |
+| Your profile and status | **Built 2026-11-18:** Account > Set Your Status... (`user_status.py`); People > My Profile and each person's Profile (`profile.py`) | Account > Profile and Status... |
 
 ### 14.3 Brought in after all (Jeff, 2026-11-09: "If I can do it in GitHub I should be able to do it")
 

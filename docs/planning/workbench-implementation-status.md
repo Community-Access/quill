@@ -181,6 +181,9 @@ said as sign in again.
 Star Lists... and Rename or Delete Star List... (`star_lists.py`,
 `github_workbench_star_lists.py`).
 
+**2026-11-18, profiles.** People > My Profile and each person's Profile
+(`profile.py`, explore views `my_profile` and `person_profile`).
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

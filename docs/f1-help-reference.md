@@ -2510,6 +2510,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **People.** People: who you follow, who follows you, and anybody you look up.
 
+**My Profile.** My Profile: your profile as GitHub shows it, your year of contributions as numbers, and what you pinned.
+
 **People I Follow.** People I Follow: accounts you follow. Enter opens a person's node.
 
 **My Followers.** My Followers: accounts that follow you.
@@ -2657,6 +2659,8 @@ Control coverage: 365 audited sites (365 helped).
 **repository: General.** General: the name, visibility and default branch. Enter opens one.
 
 **person: person.** A person: their repositories, activity, followers and who they follow.
+
+**person: Profile.** Profile: who this person is, their year of contributions as numbers, and what they pinned.
 
 **person: Repositories.** Repositories: this person's public repositories.
 

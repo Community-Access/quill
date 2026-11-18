@@ -215,7 +215,14 @@ NODE_HELP: dict[str, str] = {
     ),
     "repository:general": "General: the name, visibility and default branch. Enter opens one.",
     "person:person": "A person: their repositories, activity, followers and who they follow.",
+    "person:person_profile": (
+        "Profile: who this person is, their year of contributions as numbers, and what they pinned."
+    ),
     "person:person_repositories": "Repositories: this person's public repositories.",
+    ":my_profile": (
+        "My Profile: your profile as GitHub shows it, your year of contributions as numbers, "
+        "and what you pinned."
+    ),
     "person:person_activity": "Activity: what this person did lately on GitHub.",
     "person:person_followers": "Followers: who follows this person.",
     "person:person_following": "Following: who this person follows.",

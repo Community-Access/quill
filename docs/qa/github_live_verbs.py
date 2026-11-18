@@ -1138,6 +1138,15 @@ def my_packages(run: Any) -> str:
     return f"{len(rows)} packages" + (f"; first: {rows[0].label}" if rows else "")
 
 
+def my_profile(run: Any) -> str:
+    from quill.core.github.profile import fetch_profile
+
+    rows = fetch_profile(run.api, "")
+    _expect(bool(rows), "no profile rows")
+    year = next((row.label for row in rows if "in the last year" in row.label), "no year row")
+    return f"{rows[0].label} {year}"
+
+
 def check_with_git(run: Any) -> str:
     done = subprocess.run(["git", "--version"], capture_output=True, text=True, check=False)
     _expect(done.returncode == 0, "git is not installed")
@@ -1155,6 +1164,7 @@ FEATURES: dict[str, Scenario | str] = {
     "Runners and Export Software Bill of Materials (PRD 14.2)": runners_and_sbom,
     "Commit Activity as tables (PRD 14.2)": commit_activity,
     "My Packages, or the permission it needs said in words (PRD 14.2)": my_packages,
+    "My Profile, with the contribution calendar as numbers (PRD 14.2)": my_profile,
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

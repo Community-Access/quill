@@ -970,7 +970,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 344 yes, 1119 planned, 15 not needed and 526 left to GitHub.
+In all: 346 yes, 1117 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -3061,7 +3061,7 @@ In all: 344 yes, 1119 planned, 15 not needed and 526 left to GitHub.
 | `blockedBy` | Yes | context menu > Reorder Sub-issues... |
 | `closingIssuesReferences` | Yes | Properties (Alt+Enter) on Pull Request |
 | `compare` | Yes | Navigator: Repository > owner/name > Code > Branches |
-| `contributionsCollection` | Planned | Account > Profile (the contribution table, as a table) |
+| `contributionsCollection` | Yes | Navigator: People > My Profile |
 | `dependencyGraphManifests` | Planned | Repository > Security > Dependencies |
 | `discussionCategories` | Yes | Navigator: Repository > owner/name > Discussions |
 | `discussions` | Yes | Navigator: Repository > owner/name > Discussions |
@@ -3070,7 +3070,7 @@ In all: 344 yes, 1119 planned, 15 not needed and 526 left to GitHub.
 | `linkedBranches` | Yes | Properties (Alt+Enter) on Issue: Linked branches |
 | `lists` | Yes | Navigator: Repositories > Star Lists |
 | `mergeQueue` | Yes | Item > Merge... (Ctrl+Shift+Enter) |
-| `pinnedItems` | Planned | People > person > Profile; Account > Profile |
+| `pinnedItems` | Yes | Navigator: People > My Profile |
 | `projectsV2` | Yes | Navigator: Repository > owner/name > Projects |
 | `rateLimit` | Yes | Account > GitHub API Rate Limit (Ctrl+Shift+L) |
 | `reviewDecision` | Yes | Navigator: Repository > owner/name > Pull Requests |

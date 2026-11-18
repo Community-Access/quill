@@ -168,7 +168,13 @@ class GitHubExploreClient(ExploreNotificationsMixin, GitHubGistsMixin):
         include_read: bool = False,
     ) -> list[ExploreRow]:
         extra = fetch_extra_view(
-            self._provider, view, repo=repo, query=query, limit=limit, warnings=warnings
+            self._provider,
+            view,
+            repo=repo,
+            query=query,
+            limit=limit,
+            warnings=warnings,
+            person=person,
         )
         if extra is not None:
             return extra

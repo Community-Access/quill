@@ -37,8 +37,16 @@ EXTRA_REPO_VIEWS = frozenset({
     "runners",
 })
 #: Account views (Billing and Usage), answered without a repository.
-EXTRA_ACCOUNT_VIEWS = frozenset({"billing_usage", "invitations", "my_packages", "star_lists"})
-EXTRA_VIEWS = SEARCH_VIEWS | EXTRA_REPO_VIEWS | EXTRA_ACCOUNT_VIEWS
+EXTRA_ACCOUNT_VIEWS = frozenset({
+    "billing_usage",
+    "invitations",
+    "my_packages",
+    "star_lists",
+    "my_profile",
+})
+#: Views of one person, answered from the login in Explore's person box.
+EXTRA_PERSON_VIEWS = frozenset({"person_profile"})
+EXTRA_VIEWS = SEARCH_VIEWS | EXTRA_REPO_VIEWS | EXTRA_ACCOUNT_VIEWS | EXTRA_PERSON_VIEWS
 _REDIRECTS = (301, 302, 303, 307, 308)
 
 
@@ -50,6 +58,7 @@ def fetch_extra_view(
     query: str,
     limit: int,
     warnings: list[str],
+    person: str = "",
 ) -> list[ExploreRow] | None:
     """Rows for a Wave 4 view, or ``None`` when *view* is not one of them."""
     if view not in EXTRA_VIEWS:
@@ -65,6 +74,17 @@ def fetch_extra_view(
             return fetch_invitations(TokenApi(token), limit=limit)
         except GitHubRestError as exc:
             raise GitHubExploreError(f"Could not read your invitations: {exc}") from exc
+    if view in ("my_profile", "person_profile"):
+        from quill.core.github.profile import ProfileError, fetch_profile
+        from quill.core.github.workbench_api import TokenApi
+
+        login = person if view == "person_profile" else ""
+        if view == "person_profile" and not login.strip():
+            raise GitHubExploreError("Enter a GitHub username for this people view.")
+        try:
+            return fetch_profile(TokenApi(token), login)
+        except ProfileError as exc:
+            raise GitHubExploreError(str(exc.args[0])) from exc
     if view == "star_lists":
         from quill.core.github.star_lists import fetch_lists, list_rows
         from quill.core.github.workbench_api import TokenApi

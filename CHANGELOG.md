@@ -620,6 +620,14 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Profiles as sentences (2026-11-18)
+
+**People > My Profile** in the GitHub Workbench, and **Profile** under any
+person, read a GitHub profile as rows: who they are, their bio and status,
+the year's contributions by kind, the contribution calendar as numbers (the
+busiest day, the longest and current streak, and each month), and what they
+pinned. Chapter 12 of the GitHub Guide has the details.
+
 ### Star lists (2026-11-18)
 
 **Repositories > Star Lists** in the GitHub Workbench lists every repository

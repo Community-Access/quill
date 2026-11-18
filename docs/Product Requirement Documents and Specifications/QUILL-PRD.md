@@ -17549,7 +17549,9 @@ GitHub's statistics charts as sentences. Repositories > My Packages
 lists your packages with Delete Package Version... and Delete Package...; the
 sign-in now asks `user`, `read:packages` and `delete:packages`. Repositories >
 Star Lists (`quill/core/github/star_lists.py`) reads and edits GitHub's star
-lists.
+lists. People > My Profile and each person's Profile
+(`quill/core/github/profile.py`) read a profile and its contribution calendar
+as sentences.
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

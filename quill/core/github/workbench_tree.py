@@ -183,6 +183,14 @@ _FIXED: tuple[NodeSpec, ...] = (
     ),
     _n("people", "People"),
     _n(
+        "my_profile",
+        "My Profile",
+        "people",
+        needs=_SIGN_IN,
+        loader="explore:my_profile",
+        row_type="mixed",
+    ),
+    _n(
         "following",
         "People I Follow",
         "people",
@@ -419,6 +427,7 @@ _PERSON: tuple[NodeSpec, ...] = (
     *(
         NodeSpec(key, label, "person", scope=Scope.PERSON, loader=f"explore:{view}", row_type=row)
         for key, label, view, row in (
+            ("person_profile", "Profile", "person_profile", "mixed"),
             ("person_repositories", "Repositories", "person_repos", "repository"),
             ("person_activity", "Activity", "person_activity", "event"),
             ("person_followers", "Followers", "person_followers", "person"),
@@ -496,6 +505,5 @@ PLANNED = CoverageTable((
     _planned("Packages: an organization's, and restoring", "Repositories > My Packages"),
     _planned("Dependency graph and SBOM export", "Repository > Security > Dependencies"),
     _planned("Self-hosted runners (registering and removing)", "Repository > Actions > Runners"),
-    _planned("Profile and status", "Account > Profile and Status..."),
 ))
 """GitHub features with a future home and no node yet (GitHub PRD 14.1, 14.2)."""

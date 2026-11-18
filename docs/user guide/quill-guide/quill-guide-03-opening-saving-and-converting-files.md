@@ -1592,6 +1592,13 @@ repositories; `Ctrl+N` there makes a list, and **Star Lists...** on any
 repository chooses its lists. See
 [Star lists](../github-guide/github-guide-07-code-and-repositories.html#star-lists).
 
+#### Profiles
+
+**People > My Profile** in the GitHub Workbench, and **Profile** under any
+person, read a profile as sentences, with the contribution calendar as
+numbers. See
+[Profiles](../github-guide/github-guide-12-the-workbench.html#profiles).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

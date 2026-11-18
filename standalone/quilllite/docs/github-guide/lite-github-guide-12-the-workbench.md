@@ -185,6 +185,23 @@ gives them a place in the tree, with their repositories and activity. Follow
 or Unfollow is on a person's context menu. `Ctrl+6` goes to Projects; each
 repository's own Projects are under it.
 
+### Profiles
+
+**People > My Profile** is your own profile, and every person's place in the
+tree starts with **Profile**, theirs. GitHub's profile page is a picture, with
+a calendar of green squares; here it is rows, each whole on its own:
+
+- Who they are: "jeff (Jeff Bishop): Tucson, Arizona; 120 followers,
+  following 40.", then their bio, status and website.
+- Their year: "1,234 contributions in the last year: 900 commits, 120 issues,
+  200 pull requests and 14 reviews."
+- The calendar as numbers: the busiest day, the longest streak and when it
+  ended, the current streak, and one row for each month, newest first, such
+  as "October 2026: 140 contributions." Today not having a contribution yet
+  does not end the current streak.
+- What they pinned: "Pinned: community-access/quill, An editor, 12 stars."
+  These are repository rows, so Enter opens the repository.
+
 ### My Billing and Usage
 
 **People > My Billing and Usage** reads this month's metered use of your
@@ -194,8 +211,8 @@ discounts, and a last row with the month's total. It is read only; Enter
 opens your billing page on GitHub.
 
 GitHub shares these figures only with a token that is allowed to read your
-plan: a classic token with the `user` scope, or a fine-grained token with
-Plan read permission. Without that, the list does not pretend you used
+plan: a classic token with the `user` scope, which Sign In with GitHub asks
+for, or a fine-grained token with Plan read permission. Without that, the list does not pretend you used
 nothing. Its one row says which permission is missing and that the same
 figures are on GitHub's billing page.
 
