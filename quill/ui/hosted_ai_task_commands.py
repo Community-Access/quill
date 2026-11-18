@@ -5,14 +5,15 @@ Your AI commands, so both editors get the handler the moment they get the rest
 and QUILL's adapter keeps having no commands of its own.
 
 **Do a Document Task** (Ctrl+3 in both editors) opens the agent window
-(:mod:`quill.ui.agent_window`) on the document. It needs agent tools, which only
-My GitHub Copilot and Codex have (codex.md 10A.7), so it is capability-gated
-like every AI command (10A.8): the menu row says "(needs Copilot or Codex)"
-when the connection in use cannot, and pressing it sends nothing and offers the
-switch in one Yes/No.
+(:mod:`quill.ui.agent_window`) on the document. It needs agent tools, which
+Copilot, Codex, and supported My own key providers have (codex.md 10A.7), so
+it is capability-gated like every AI command (10A.8): the menu row says
+"(needs an AI that runs tasks)" when the connection in use cannot, and pressing
+it sends nothing and offers the switch in one Yes/No.
 
 **The engine is the connection in use**: Copilot's tool harness on this app's
-own GitHub sign-in, or Codex given this app's own ChatGPT access token
+own GitHub sign-in, Codex given this app's own ChatGPT access token, or the
+selected own-key provider's task harness
 (:meth:`quill.ui.hosted_ai_copilot_route.CopilotRouteMixin.agent_harness`).
 """
 

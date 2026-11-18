@@ -1,7 +1,7 @@
 """Speakers, Sections and Summary: QUILL Transcribe's agent task (codex.md 6.6).
 
-The person presses Ctrl+F3 (AI > Speakers, Sections and Summary...) and an
-agent engine -- My GitHub Copilot or Codex -- reads the transcript as text,
+The person presses Ctrl+F3 (AI > Speakers, Sections and Summary...) and a
+task-capable AI engine reads the transcript as text,
 names the speakers from what they say, adds section headings, and writes a
 summary and an action list. Speech to text stays on this computer, or with the
 speech provider the person chose: the model only ever sees words.

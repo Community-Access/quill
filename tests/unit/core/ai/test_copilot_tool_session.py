@@ -23,6 +23,7 @@ import time
 import types
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -104,6 +105,12 @@ class ToolResult:
 
 
 @dataclass
+class SkillProviderDescriptor:
+    name: str
+    description: str
+
+
+@dataclass
 class ToolInvocation:
     session_id: str = ""
     tool_call_id: str = ""
@@ -141,6 +148,9 @@ class Rec:
     sent: list[str] = field(default_factory=list)
     tool_results: list[ToolResult] = field(default_factory=list)
     permission_answers: list[Any] = field(default_factory=list)
+    session_metadata: list[Any] = field(default_factory=list)
+    deleted_sessions: list[str] = field(default_factory=list)
+    resumed_session_id: str = ""
     stop_hangs: bool = False
     clients_made: int = 0
     turn_started: threading.Event = field(default_factory=threading.Event)
@@ -232,6 +242,14 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
         async def disconnect(self) -> None:
             rec.calls.append("disconnect")
 
+        async def get_events(self) -> list[Any]:
+            return [
+                types.SimpleNamespace(
+                    type="assistant.message",
+                    data=types.SimpleNamespace(content="private conversation text"),
+                )
+            ]
+
     class CopilotClient:
         def __init__(self, **kwargs: Any) -> None:
             rec.clients_made += 1
@@ -248,6 +266,18 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
             (state / "events.jsonl").write_text("{}", encoding="utf-8")
             return CopilotSession(kwargs)
 
+        async def resume_session(self, session_id: str, **kwargs: Any) -> CopilotSession:
+            rec.resumed_session_id = session_id
+            rec.session_kwargs = kwargs
+            return CopilotSession(kwargs)
+
+        async def list_sessions(self) -> list[Any]:
+            rec.calls.append("list_sessions")
+            return list(rec.session_metadata)
+
+        async def delete_session(self, session_id: str) -> None:
+            rec.deleted_sessions.append(session_id)
+
         async def stop(self) -> None:
             rec.calls.append("stop")
             if rec.stop_hangs:
@@ -258,6 +288,7 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
 
     module = types.ModuleType("copilot")
     module.__spec__ = importlib.machinery.ModuleSpec("copilot", None)
+    module.__path__ = []  # type: ignore[attr-defined]
     module.CopilotClient = CopilotClient  # type: ignore[attr-defined]
     module.RuntimeConnection = RuntimeConnection  # type: ignore[attr-defined]
     return module
@@ -273,11 +304,15 @@ def rec(monkeypatch: pytest.MonkeyPatch, absent_env) -> Rec:
     rpc = types.ModuleType("copilot.rpc")
     rpc.PermissionDecisionReject = PermissionDecisionReject  # type: ignore[attr-defined]
     rpc.PermissionDecisionApproveOnce = PermissionDecisionApproveOnce  # type: ignore[attr-defined]
+    sdk_session = types.ModuleType("copilot.session")
+    sdk_session.SkillProviderDescriptor = SkillProviderDescriptor  # type: ignore[attr-defined]
     module.tools = tools_mod  # type: ignore[attr-defined]
     module.rpc = rpc  # type: ignore[attr-defined]
+    module.session = sdk_session  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "copilot", module)
     monkeypatch.setitem(sys.modules, "copilot.tools", tools_mod)
     monkeypatch.setitem(sys.modules, "copilot.rpc", rpc)
+    monkeypatch.setitem(sys.modules, "copilot.session", sdk_session)
     absent_env("QUILL_SAFE_MODE", "COPILOT_CLI_PATH", "COPILOT_SDK_DEFAULT_CONNECTION")
     monkeypatch.setattr(pack, "resolve_runtime_path", lambda: Path("runtime.node"))
     monkeypatch.setattr(pack, "prepare_inprocess_runtime", lambda: Path("runtime.node"))
@@ -446,7 +481,8 @@ def test_tool_round_trip_reads_then_applies_a_reviewed_patch(rec: Rec, tmp_path:
 
 def test_session_options_stream_append_and_stay_in_the_app_folder(rec: Rec, tmp_path: Path) -> None:
     registry, _gw = _registry(tmp_path, FakeHost())
-    _session(tmp_path, registry, ScriptedApprover()).run()
+    events: list[AgentEvent] = []
+    _session(tmp_path, registry, ScriptedApprover(), events).run()
     folders = _folders(tmp_path)
     assert rec.session_kwargs["events"]["streaming"] is True
     assert rec.session_kwargs["system_message"]["mode"] == "append"
@@ -455,6 +491,10 @@ def test_session_options_stream_append_and_stay_in_the_app_folder(rec: Rec, tmp_
     assert "working_directory" not in rec.client_kwargs
     assert rec.client_kwargs["runtime"].base_directory == str(folders.home)
     assert all(t.skip_permission is False for t in rec.session_kwargs["tools"]["definitions"])
+    assert rec.session_kwargs["skills"]["enabled"] is False
+    completion = next(e for e in events if e.kind is AgentEventKind.AGENT_COMPLETED)
+    assert completion.detail["event_types"] == "assistant.message=1"
+    assert "private conversation text" not in str(completion.detail)
 
 
 def test_hooks_emit_safe_accessible_progress_without_changing_tool_permissions(
@@ -664,6 +704,188 @@ def test_session_files_are_swept_at_start_and_deleted_at_task_end(rec: Rec, tmp_
         _session(tmp_path, registry, ScriptedApprover()).run()
     assert seen_at_create == [False]  # swept before the child started
     assert not folders.root.exists()  # and nothing left after the task
+
+
+def test_explicit_session_retention_preserves_sdk_history_but_clears_work(
+    rec: Rec, tmp_path: Path
+) -> None:
+    folders = agent_folders("copilot", "QUILL", base=tmp_path / "ai", retain_home=True)
+    existing = folders.home / "session-state" / "previous" / "events.jsonl"
+    existing.parent.mkdir(parents=True)
+    existing.write_text("retained", encoding="utf-8")
+    registry, _gw = _registry(tmp_path, FakeHost())
+
+    session = pack.CopilotHarness().start_tool_session(
+        _agent(),
+        AIContext(prompt="Fix the headings."),
+        registry,
+        ScriptedApprover(),
+        lambda _event: None,
+        folders=folders,
+    )
+    assert isinstance(session, CopilotToolSession)
+    session.run()
+
+    assert existing.read_text(encoding="utf-8") == "retained"
+    assert rec.session_kwargs["session_id"] == session.session_id
+    assert rec.session_kwargs["name"] == "Doc"
+    assert not folders.work.exists()
+
+
+def test_keep_sessions_preference_selects_persistent_app_folders(rec: Rec, tmp_path: Path) -> None:
+    from quill.core.ai.copilot_preferences import CopilotPreferences, save_copilot_preferences
+
+    data_dir = tmp_path / "app"
+    save_copilot_preferences(
+        CopilotPreferences(auto_tier="efficiency", keep_sessions=True, long_context=True), data_dir
+    )
+    registry, _gw = _registry(tmp_path, FakeHost())
+    session = pack.CopilotHarness(data_dir=data_dir).start_tool_session(
+        _agent(),
+        AIContext(prompt="Fix the headings."),
+        registry,
+        ScriptedApprover(),
+        lambda _event: None,
+    )
+    assert isinstance(session, CopilotToolSession)
+    assert session._folders.retain_home
+    session.run()
+    assert session._folders.home.exists()
+    assert rec.session_kwargs["github"]["capi"]["auto_tier"] == "efficiency"
+    assert rec.session_kwargs["state"]["infinite_sessions"] == {"enabled": True}
+
+
+def test_long_context_stays_disabled_without_session_retention(rec: Rec, tmp_path: Path) -> None:
+    from quill.core.ai.copilot_preferences import CopilotPreferences, save_copilot_preferences
+
+    data_dir = tmp_path / "app"
+    save_copilot_preferences(CopilotPreferences(long_context=True), data_dir)
+    registry, _gw = _registry(tmp_path, FakeHost())
+    session = pack.CopilotHarness(data_dir=data_dir).start_tool_session(
+        _agent(),
+        AIContext(prompt="Fix the headings."),
+        registry,
+        ScriptedApprover(),
+        lambda _event: None,
+    )
+    assert isinstance(session, CopilotToolSession)
+    assert session._create_kwargs()["state"]["infinite_sessions"] == {"enabled": False}
+
+
+def test_saved_sessions_list_only_local_metadata_and_delete_selected_session(
+    rec: Rec, tmp_path: Path
+) -> None:
+    data_dir = tmp_path / "app"
+    rec.session_metadata = [
+        types.SimpleNamespace(
+            session_id="older",
+            modified_time=datetime(2026, 1, 1, 12, 0),
+            is_remote=False,
+            summary="private conversation",
+        ),
+        types.SimpleNamespace(
+            session_id="newer",
+            modified_time=datetime(2026, 2, 1, 12, 0),
+            is_remote=False,
+            summary="also private",
+        ),
+        types.SimpleNamespace(
+            session_id="remote",
+            modified_time=datetime(2026, 3, 1, 12, 0),
+            is_remote=True,
+            summary="remote conversation",
+        ),
+    ]
+    harness = pack.CopilotHarness(data_dir=data_dir)
+
+    sessions = harness.list_saved_sessions()
+    harness.delete_saved_session("newer")
+
+    assert [session.session_id for session in sessions] == ["newer", "older"]
+    assert sessions[0].modified_at == "2026-02-01 12:00"
+    assert "private" not in repr(sessions)
+    assert rec.deleted_sessions == ["newer"]
+    assert rec.calls.count("start") == 2
+    assert rec.calls.count("stop") == 2
+
+
+def test_selected_saved_session_is_resumed_once_with_current_safety_options(
+    rec: Rec, tmp_path: Path
+) -> None:
+    from quill.core.ai.copilot_preferences import (
+        CopilotPreferences,
+        load_copilot_preferences,
+        save_copilot_preferences,
+    )
+
+    data_dir = tmp_path / "app"
+    save_copilot_preferences(
+        CopilotPreferences(keep_sessions=True, resume_session_id="saved-session"), data_dir
+    )
+    registry, _gw = _registry(tmp_path, FakeHost())
+    session = pack.CopilotHarness(data_dir=data_dir).start_tool_session(
+        _agent(),
+        AIContext(prompt="Continue this work."),
+        registry,
+        ScriptedApprover(),
+        lambda _event: None,
+    )
+
+    assert isinstance(session, CopilotToolSession)
+    result = session.run()
+
+    assert result.status == "completed"
+    assert rec.resumed_session_id == "saved-session"
+    assert "session_id" not in rec.session_kwargs
+    assert "name" not in rec.session_kwargs
+    assert rec.session_kwargs["tools"]["available_tools"]
+    assert rec.session_kwargs["permissions"]["on_request"]
+    assert load_copilot_preferences(data_dir).resume_session_id == ""
+    assert session.session_id == "saved-session"
+
+
+def test_enabled_ai_library_skills_are_shared_only_after_opt_in(
+    rec: Rec, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.core.ai.copilot_preferences import (
+        CopilotPreferences,
+        save_copilot_preferences,
+    )
+    from quill.core.skill_pack import SQP_SCHEMA
+    from quill.core.skill_store import SkillStore
+
+    data_dir = tmp_path / "app"
+    save_copilot_preferences(CopilotPreferences(share_enabled_skills=True), data_dir)
+    monkeypatch.setattr("quill.core.paths.app_data_dir", lambda: data_dir)
+    store = SkillStore(data_dir / "skills")
+    source = (
+        f"---\nschema: {SQP_SCHEMA}\nname: Enabled skill\n"
+        "description: Available only after opt-in.\n"
+        "author: Test\nversion: 1.0.0\n---\n\n"
+        "# Step 1: Work\n\nUse {selection}.\n"
+    )
+    store.add_source(source)
+    store.add_source(source.replace("Enabled skill", "Disabled skill"))
+    store.disable("disabled-skill")
+    registry, _gw = _registry(tmp_path, FakeHost())
+    session = pack.CopilotHarness(data_dir=data_dir).start_tool_session(
+        _agent(),
+        AIContext(prompt="Fix the headings."),
+        registry,
+        ScriptedApprover(),
+        lambda _event: None,
+        folders=_folders(tmp_path),
+    )
+    assert isinstance(session, CopilotToolSession)
+
+    kwargs = session._create_kwargs()
+    provider = kwargs["skills"]["provider"]
+    listed = provider.list_skills()
+    assert [(skill.name, skill.description) for skill in listed] == [
+        ("Enabled skill", "Available only after opt-in.")
+    ]
+    assert provider.read_skill("Enabled skill") == source
+    assert provider.read_skill("Disabled skill") is None
 
 
 def _run_in_thread(session: CopilotToolSession) -> tuple[threading.Thread, list[Any]]:

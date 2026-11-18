@@ -38,7 +38,7 @@ import asyncio
 import logging
 import threading
 import uuid
-from collections import deque
+from collections import Counter, deque
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
@@ -67,6 +67,18 @@ STOP_SECONDS = 1.0
 CLOSE_SECONDS = 2.0
 
 REFUSAL_FEEDBACK = "QUILL offers only its own tools; this request is not allowed."
+_SAFE_EVENT_TYPES = frozenset({
+    "assistant.message",
+    "assistant.message_delta",
+    "assistant.reasoning",
+    "assistant.usage",
+    "session.idle",
+    "session.error",
+    "tool.execution_start",
+    "tool.execution_complete",
+    "tool.execution_error",
+    "user.message",
+})
 
 
 @dataclass(frozen=True, slots=True)
@@ -78,6 +90,31 @@ class SdkParts:
     binary_cls: Any
     reject_cls: Any
     approve_cls: Any
+    skill_descriptor_cls: Any | None = None
+
+
+class _AppSkillProvider:
+    """Expose only enabled, app-installed skills through the SDK provider API."""
+
+    def __init__(self, descriptor_cls: Any) -> None:
+        from quill.core.paths import app_data_dir
+        from quill.core.skill_store import SkillStore
+
+        self._store = SkillStore(app_data_dir() / "skills")
+        self._descriptor_cls = descriptor_cls
+
+    def list_skills(self) -> list[Any]:
+        return [
+            self._descriptor_cls(name=skill.name, description=skill.description)
+            for skill in self._store.all()
+            if skill.enabled
+        ]
+
+    def read_skill(self, name: str) -> str | None:
+        skill = self._store.find_by_name(name)
+        if skill is None or not skill.enabled:
+            return None
+        return skill.source
 
 
 def _permission_detail(request: Any) -> str:
@@ -135,13 +172,17 @@ class CopilotToolSession:
         client_factory: Callable[[AgentFolders], Any],
         folders: AgentFolders,
         session_options: dict[str, Any],
+        enable_long_context: bool = False,
+        share_enabled_skills: bool = False,
+        resume_session_id: str = "",
+        on_resume_consumed: Callable[[], None] | None = None,
         keep_open: bool = False,
         on_usage: Callable[[TurnUsage], None] | None = None,
         display_name: str = "GitHub Copilot",
         stop_seconds: float = STOP_SECONDS,
         close_seconds: float = CLOSE_SECONDS,
     ) -> None:
-        self._id = uuid.uuid4().hex
+        self._id = resume_session_id or uuid.uuid4().hex
         self._agent = agent
         self._ctx = ctx
         self._tools = tools
@@ -151,6 +192,10 @@ class CopilotToolSession:
         self._client_factory = client_factory
         self._folders = folders
         self._session_options = dict(session_options)
+        self._enable_long_context = enable_long_context and folders.retain_home
+        self._share_enabled_skills = share_enabled_skills
+        self._resume_session_id = resume_session_id
+        self._on_resume_consumed = on_resume_consumed
         self._keep_open = keep_open
         self._on_usage = on_usage
         self._name = display_name
@@ -243,7 +288,14 @@ class CopilotToolSession:
             await client.start()
             if self._cancelled:
                 return self._cancelled_result()
-            session = await client.create_session(**self._create_kwargs())
+            session_kwargs = self._create_kwargs()
+            if self._resume_session_id:
+                session_kwargs.pop("session_id", None)
+                session_kwargs.pop("name", None)
+                session = await client.resume_session(self._resume_session_id, **session_kwargs)
+                self._consume_resume_selection()
+            else:
+                session = await client.create_session(**session_kwargs)
             session.on(self._on_event)
             prompt: str | None = f"{self._ctx.prompt}\n\n{self._ctx.context_text}".strip()
             while prompt is not None:
@@ -255,12 +307,16 @@ class CopilotToolSession:
                     await self._quietly(session.abort(), self._stop_seconds / 2)
                     return self._cancelled_result()
                 if self._turn_error:
-                    self._emit(AgentEvent(AgentEventKind.ERROR, self._turn_error))
+                    history = await self._safe_event_history(session)
+                    self._emit(AgentEvent(AgentEventKind.ERROR, self._turn_error, history))
                     return HarnessResult(status="error", error=self._turn_error)
                 prompt = await self._next_prompt()
             if self._cancelled:
                 return self._cancelled_result()
-            self._emit(AgentEvent(AgentEventKind.AGENT_COMPLETED, f"{self._name} finished."))
+            history = await self._safe_event_history(session)
+            self._emit(
+                AgentEvent(AgentEventKind.AGENT_COMPLETED, f"{self._name} finished.", history)
+            )
             return HarnessResult(status="completed", final_text=self._answer)
         finally:
             await self._shutdown(client, session)
@@ -282,7 +338,9 @@ class CopilotToolSession:
         # Decision 4: Copilot's own tools only when the person turned them on.
         names.extend(sorted(getattr(self._tools, "vendor_tools", frozenset())))
         self._recorded_tools = list(names)
-        kwargs: dict[str, Any] = session_safety_options()
+        kwargs: dict[str, Any] = session_safety_options(
+            infinite_sessions_enabled=self._enable_long_context
+        )
         kwargs.update(self._session_options)
         kwargs["permissions"] = {"on_request": self._on_permission}
         kwargs["tools"] = {"definitions": sdk_tools, "available_tools": names}
@@ -300,10 +358,61 @@ class CopilotToolSession:
         kwargs["working_directory"] = getattr(self._tools, "vendor_cwd", "") or str(
             self._folders.work
         )
+        if self._folders.retain_home:
+            kwargs["session_id"] = self._id
+            kwargs["name"] = self._agent.display_name
+        if self._share_enabled_skills:
+            if self._sdk.skill_descriptor_cls is None:
+                raise RuntimeError("The installed Copilot SDK cannot provide AI Library skills.")
+            kwargs["skills"] = {
+                "enabled": True,
+                "provider": _AppSkillProvider(self._sdk.skill_descriptor_cls),
+            }
         system_message = system_message_for(self._agent.system_prompt)
         if system_message is not None:
             kwargs["system_message"] = system_message
         return kwargs
+
+    def _consume_resume_selection(self) -> None:
+        if self._on_resume_consumed is None:
+            return
+        try:
+            self._on_resume_consumed()
+        except OSError:
+            _log.exception("Could not clear the one-time Copilot resume selection.")
+            self._emit(
+                AgentEvent(
+                    AgentEventKind.WARNING,
+                    "This saved Copilot session may be selected again because its resume choice "
+                    "could not be cleared.",
+                )
+            )
+
+    async def _safe_event_history(self, session: Any) -> dict[str, str]:
+        """Summarize event metadata only; never retain or expose event payloads."""
+        get_events = getattr(session, "get_events", None)
+        if not callable(get_events):
+            return {}
+        try:
+            events = await get_events()
+        except Exception as exc:  # noqa: BLE001 - diagnostics must not hide a task result
+            _log.warning("Copilot event history was unavailable: %s", type(exc).__name__)
+            self._emit(
+                AgentEvent(
+                    AgentEventKind.WARNING,
+                    "Copilot event history could not be summarized.",
+                    {"diagnostic": "event_history_unavailable"},
+                )
+            )
+            return {}
+        counts = Counter(
+            _event_type(event) if _event_type(event) in _SAFE_EVENT_TYPES else "other"
+            for event in events
+        )
+        return {
+            "event_count": str(len(events)),
+            "event_types": ", ".join(f"{kind}={count}" for kind, count in sorted(counts.items())),
+        }
 
     # -- engine callbacks ---------------------------------------------------
 

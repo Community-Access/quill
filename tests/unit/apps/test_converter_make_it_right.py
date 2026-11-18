@@ -62,7 +62,7 @@ class _Service:
         return capability != "agent_tools" or self.tools
 
     def needs_label(self, capability: str) -> str:
-        return "" if self.can_do(capability) else "(needs Copilot or Codex)"
+        return "" if self.can_do(capability) else "(needs an AI that runs tasks)"
 
     def agent_harness(self, connection: str) -> object:
         self.harnesses.append(connection)
@@ -201,7 +201,7 @@ def test_the_row_is_in_the_ai_menu_on_ctrl_f3(converter) -> None:
     menu = bar.GetMenu(bar.FindMenu("AI"))
     labels = [item.GetItemLabel() for item in menu.GetMenuItems()]
     # No agent connection yet, so the row says what it needs (codex.md 10A.8).
-    assert "&Make This Right for My Player (needs Copilot or Codex)...\tCtrl+F3" in labels
+    assert "&Make This Right for My Player (needs an AI that runs tasks)...\tCtrl+F3" in labels
     assert converter.commands.get("tools.hosted_ai_task") is not None
 
 

@@ -76,7 +76,7 @@ _ROUTE_SUFFIX = re.compile(r"\s*\((?:(?:Alt|Ctrl|Shift|QUILL Key|Cmd)[^()]*|&\w)
 _TAB = chr(9)
 
 #: What a capability-gated AI row adds while the connection in use cannot run it
-#: (codex.md 10A.8): "Do a Document Task (needs Copilot or Codex)...". The
+#: (codex.md 10A.8): "Do a Document Task (needs an AI that runs tasks)...". The
 #: guide names the command, and the row is still that command.
 _NEEDS_SUFFIX = re.compile(r"\s*\(needs [^()]*\)")
 

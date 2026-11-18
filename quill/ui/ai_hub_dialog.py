@@ -1144,8 +1144,8 @@ class AIHubDialog:
         self._deepgram_key_ctrl.Refresh()
 
     def _on_ok(self, event: object) -> None:
-        # The provider, its key and its address are saved by Use My Own AI Key
-        # now (decision 20); the Hub saves only what is still its own.
+        if not self._sessions_panel.save_preferences():
+            return
         if not self._lite_mode:
             _save_deepgram_key(self._deepgram_key_ctrl.GetValue())
             _save_deepgram_max_speakers(self._max_speakers_spin.GetValue())

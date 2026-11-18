@@ -36,6 +36,17 @@ def test_the_table_of_10a7() -> None:
     assert caps.can(caps.record_for("own_key"), "image_generation")
 
 
+@pytest.mark.parametrize(
+    "provider",
+    ["openai", "gemini", "claude", "openrouter", "ollama_cloud", "custom", "ollama"],
+)
+def test_supported_own_key_providers_can_run_agent_tasks(provider: str) -> None:
+    record = caps.record_for("own_key", own_key_provider=provider)
+
+    assert caps.can(record, "agent_tools")
+    assert record.claim("agent_tools").source
+
+
 def test_copilot_and_codex_are_not_available_yet_and_so_can_do_nothing() -> None:
     for name in ("copilot", "codex"):
         record = caps.record_for(name)
@@ -82,7 +93,9 @@ def test_the_offer_lists_who_could_when_nothing_set_up_can() -> None:
     )
     assert offer.target == "" and offer.open_row == "chatgpt"
     tasks = caps.switch_offer("agent_tools", set_up=["free"], in_use="free")
-    assert tasks.sentence == "Agent tasks need My GitHub Copilot or Codex. Choose one now?"
+    assert tasks.sentence == (
+        "Agent tasks need My GitHub Copilot, Codex or My own key. Choose one now?"
+    )
 
 
 def test_openai_gemini_and_claude_keys_see_and_are_offered_by_name() -> None:
@@ -114,4 +127,4 @@ def test_every_own_key_picture_claim_cites_where_it_was_read() -> None:
 
 def test_menu_labels_say_what_a_command_needs() -> None:
     assert caps.needs_label("pictures") == "(needs a connection that sees)"
-    assert caps.needs_label("agent_tools") == "(needs Copilot or Codex)"
+    assert caps.needs_label("agent_tools") == "(needs an AI that runs tasks)"

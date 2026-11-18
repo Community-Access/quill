@@ -183,10 +183,22 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
             return rec.quota
 
     class CopilotClient:
-        def __init__(self, *, mode: str, runtime: Any, github: dict[str, Any]) -> None:
+        def __init__(
+            self,
+            *,
+            mode: str,
+            runtime: Any,
+            github: dict[str, Any],
+            network: dict[str, Any] | None = None,
+        ) -> None:
             assert mode == "empty"
             rec.clients += 1
-            rec.client_kwargs = {"mode": mode, "runtime": runtime, "github": github}
+            rec.client_kwargs = {
+                "mode": mode,
+                "runtime": runtime,
+                "github": github,
+                "network": network,
+            }
             self.rpc = types.SimpleNamespace(account=Account())
 
         async def start(self) -> None:
@@ -423,6 +435,23 @@ def test_chosen_model_is_passed_and_auto_lets_copilot_choose(rec: Rec, tmp_path:
     _on_worker(lambda: _chat(tmp_path, model=AUTO_MODEL).ask("Hi"))
     assert rec.sessions[0]["model"] == "gpt-6"
     assert "model" not in rec.sessions[1]
+
+
+def test_auto_tier_preference_applies_only_to_copilot_auto(tmp_path: Path) -> None:
+    from quill.core.ai.copilot_preferences import (
+        CopilotPreferences,
+        save_copilot_preferences,
+    )
+
+    save_copilot_preferences(CopilotPreferences(auto_tier="efficiency"), tmp_path)
+    chat = CopilotChat(data_dir=tmp_path)
+
+    auto_options = chat._session_kwargs("", AUTO_MODEL, streaming=False)
+    named_model_options = chat._session_kwargs("", "gpt-6", streaming=False)
+
+    assert auto_options["github"]["capi"]["auto_tier"] == "efficiency"
+    assert "model" not in auto_options
+    assert "auto_tier" not in named_model_options["github"]["capi"]
 
 
 def test_a_picture_type_copilot_cannot_take_is_refused_before_anything_starts(

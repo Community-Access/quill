@@ -101,7 +101,11 @@ CAPABILITIES: tuple[str, ...] = (
 _NEEDS: dict[str, tuple[str, str, str]] = {
     TEXT: ("Text requests need", "a connection that answers in text", "(needs an AI connection)"),
     PICTURES: ("Pictures need", "a connection that can see", "(needs a connection that sees)"),
-    AGENT_TOOLS: ("Agent tasks need", "a connection that runs tasks", "(needs Copilot or Codex)"),
+    AGENT_TOOLS: (
+        "Agent tasks need",
+        "a connection that runs tasks",
+        "(needs an AI that runs tasks)",
+    ),
     WEB_SEARCH: ("Web search needs", "a connection that can search", "(needs web search)"),
     STREAMING: ("Streaming needs", "a connection that streams", "(needs streaming)"),
     IMAGE_GENERATION: ("Pictures made by AI need", "your own key", "(needs your own key)"),
@@ -130,17 +134,42 @@ _SRC_OWN_SEE = "AiService.own_key_can_see (hosted_ai_own_key_route.py); own_key_
 _SRC_OWN_STREAM = "own_key_gemini.stream_answer streams; the OpenAI own-key client does not"
 _SRC_OWN_MEDIA = "image_generation.py, cloud_tts.py, gemini_tts.py: own key only (codex.md 7)"
 _SRC_LAYER = "codex.md 10A.7: this layer runs no agent tools on a direct route"
-#: Agent tasks on My own key (code.md 3.3, 3.5): the two providers with an engine.
+#: Agent tasks on My own key (code.md 3.3, 3.5), by the selected provider.
 _SRC_OWN_AGENT: dict[str, tuple[str, str]] = {
+    "openai": (
+        "Copilot SDK 2 BYOK with the provider and model selected in Choose Your AI; "
+        "quill/core/ai/copilot_byok.py and quill/ai_packs/copilot.py",
+        "requires the selected model to support tools",
+    ),
+    "gemini": (
+        "Copilot SDK 2 BYOK with the provider and model selected in Choose Your AI; "
+        "quill/core/ai/copilot_byok.py and quill/ai_packs/copilot.py",
+        "requires the selected model to support tools",
+    ),
     "claude": (
         "Claude Agent SDK, QUILL's tools as an in-process MCP server "
         "(code.claude.com/docs/en/agent-sdk); quill/ai_packs/claude_tool_session.py",
-        "needs the Claude Agent SDK",
+        "requires the Claude Agent SDK",
+    ),
+    "openrouter": (
+        "Copilot SDK 2 BYOK with the provider and model selected in Choose Your AI; "
+        "quill/core/ai/copilot_byok.py and quill/ai_packs/copilot.py",
+        "requires the selected model to support tools",
+    ),
+    "ollama_cloud": (
+        "Copilot SDK 2 BYOK with the provider and model selected in Choose Your AI; "
+        "quill/core/ai/copilot_byok.py and quill/ai_packs/copilot.py",
+        "requires the selected model to support tools",
+    ),
+    "custom": (
+        "Copilot SDK 2 BYOK with the provider and model selected in Choose Your AI; "
+        "quill/core/ai/copilot_byok.py and quill/ai_packs/copilot.py",
+        "requires the selected model to support tools",
     ),
     "ollama": (
         "Ollama /api/chat tools (docs.ollama.com/api), QUILL's own loop; "
         "quill/core/ai/harness/ollama_tools.py",
-        "practice, per model",
+        "requires the selected model to support tools",
     ),
 }
 #: The AI Hub's providers in My own key (decision 20): one text source each.

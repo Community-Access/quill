@@ -65,7 +65,7 @@ class _Service:
         return capability != "agent_tools" or self.tools
 
     def needs_label(self, capability: str) -> str:
-        return "" if self.can_do(capability) else "(needs Copilot or Codex)"
+        return "" if self.can_do(capability) else "(needs an AI that runs tasks)"
 
     def agent_harness(self, connection: str) -> object:
         self.harnesses.append(connection)

@@ -161,6 +161,13 @@ def test_the_controls_and_the_status_line_name_the_engine(world) -> None:
     assert not window.stop_button.IsEnabled()
 
 
+def test_own_key_task_status_and_transcript_do_not_misidentify_the_engine() -> None:
+    from quill.core.ai.agent_task_words import engine_name, status_line
+
+    assert status_line("own_key") == "Using your selected AI"
+    assert engine_name("own_key") == "Your selected AI"
+
+
 def test_allow_once_runs_the_step_and_the_summary_is_spoken_once(world) -> None:
     world.answers.append(ApprovalChoice.ONCE)
     window = world.make(_Harness(_BOLD))

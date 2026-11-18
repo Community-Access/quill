@@ -381,8 +381,16 @@ class CopilotChat:
         if system_message is not None:
             kwargs["system_message"] = system_message
         chosen = (model or self.model).strip()
-        if chosen and chosen != AUTO_MODEL:
+        if chosen and chosen.lower() != AUTO_MODEL:
             kwargs["model"] = chosen
+        if chosen.lower() in {"", AUTO_MODEL}:
+            from quill.core.ai.copilot_preferences import load_copilot_preferences
+
+            github = dict(kwargs.get("github", {}))
+            capi = dict(github.get("capi", {}))
+            capi["auto_tier"] = load_copilot_preferences(self.data_dir).auto_tier
+            github["capi"] = capi
+            kwargs["github"] = github
         return kwargs
 
     def _turn(

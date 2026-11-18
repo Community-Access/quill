@@ -86,7 +86,7 @@ KNOWN_ADDITIONS: dict[str, str] = {
     ),
     "microsoft-copilot-sdk": (
         "The Microsoft Copilot SDK 2.0 dist-info, for the notices gate (2026-11-18, "
-        "docs/design/copilot.md). Expected: rebaseline with --write."
+        "docs/design/codex.md section 3.7). Expected: rebaseline with --write."
     ),
 }
 

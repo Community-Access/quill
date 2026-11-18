@@ -126,6 +126,7 @@ def _fake_sdk(rec: _Recorder) -> types.ModuleType:
             mode: str,
             runtime: RuntimeConnection,
             github: dict[str, Any],
+            network: dict[str, Any] | None = None,
         ) -> None:
             assert mode == "empty"
             assert isinstance(runtime, InProcessRuntimeConnection)
@@ -134,6 +135,7 @@ def _fake_sdk(rec: _Recorder) -> types.ModuleType:
                 "mode": mode,
                 "runtime": runtime,
                 "github": github,
+                "network": network,
             }
 
         async def start(self) -> None:
@@ -255,6 +257,8 @@ def test_token_passed_explicitly_and_never_in_environ(rec: _Recorder, monkeypatc
 def test_no_stored_token_never_borrows_a_cli_sign_in(rec: _Recorder, no_token) -> None:
     _run()
     assert rec.client_kwargs["github"] == {"use_logged_in_user": False}
+    assert rec.client_kwargs["network"]["scope"] == "connection"
+    assert rec.client_kwargs["network"]["resolve_proxy"].__name__ == "resolve_system_proxy"
 
 
 def test_byok_uses_the_selected_saved_provider_without_github_auth(
