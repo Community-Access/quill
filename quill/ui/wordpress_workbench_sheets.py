@@ -235,17 +235,27 @@ class WorkbenchSheetCommands:
             locked, can_save = self._locked(sheet, row)
             loaded_modified = version_of(row.kind, fresh)  # comments and users: their fields
 
-            def on_save(state: SheetState) -> bool:
-                return self._save_one(sheet, row, state, fresh, names, meta, loaded_modified)
+            shown_editor: list[Any] = []
 
-            self._editor(
+            def finished(saved: bool) -> None:
+                if shown_editor:
+                    shown_editor[0].save_finished(saved)
+
+            def on_save(state: SheetState) -> bool | str:
+                return self._save_one(
+                    sheet, row, state, fresh, names, meta, loaded_modified, finished=finished
+                )
+
+            editor = self._editor(
                 sheet,
                 values,
                 title=sheet_title(row),
                 on_save=on_save if can_save else None,
                 locked=locked,
                 field_buttons={**self._featured(row), **self._structured(sheet, meta)},
-            ).show()
+            )
+            shown_editor.append(editor)
+            editor.show()
 
         self.background(f"reading {row.title}", lambda: self._load_sheet(row), shown)
 
@@ -272,7 +282,11 @@ class WorkbenchSheetCommands:
         names: Mapping[str, Mapping[str, int]],
         meta_schema: Mapping[str, Any],
         loaded_modified: str,
-    ) -> bool:
+        *,
+        finished: Callable[[bool], None] | None = None,
+    ) -> bool | str:
+        """Send one sheet's changes. With *finished*, answers PENDING and calls it
+        with whether the save landed, so the sheet stays open until it knows."""
         if row.kind == "form_entry" and row.subkind == "gravity":
             return bool(self.gravity_entry_save(row, state))  # type: ignore[attr-defined]
         try:
@@ -300,6 +314,8 @@ class WorkbenchSheetCommands:
         api = self.ctx(row.site).api
 
         def done(result: Any) -> None:
+            if finished is not None:
+                finished(True)
             self.say(result.sentence)
             if "slug" in body and hasattr(self, "offer_redirect"):
                 self.offer_redirect(row, str(fresh.get("link", "") or ""))
@@ -325,6 +341,11 @@ class WorkbenchSheetCommands:
                 check_role_save(api, account, row.object_id, body)
             return save_with_cmb2(api, row, body, loaded_modified=check, before=fresh)
 
+        def gave_up(error: BaseException) -> None:
+            self.say(getattr(error, "plain", "") or str(error))
+            if finished is not None:
+                finished(False)  # the sheet stays open, with every edit still on it
+
         def failed(error: BaseException) -> None:
             if isinstance(error, EditConflict) and dlg.confirm(
                 self.parent,
@@ -333,14 +354,27 @@ class WorkbenchSheetCommands:
                 message=f"{error.args[0]} Send your changes anyway, replacing theirs?",
                 yes_label="Use Mine",
             ):
-                self.background("saving anyway", lambda: work(""), done)
+                self.frame._run_background(
+                    f"WordPress Workbench: saving {row.title} anyway",
+                    lambda: work(""),
+                    done,
+                    gave_up,
+                )
                 return
-            if not isinstance(error, EditConflict):
-                self.say(getattr(error, "plain", "") or str(error))
+            if isinstance(error, EditConflict):
+                self.say("Nothing was sent. Your changes are still on the sheet.")
+                if finished is not None:
+                    finished(False)
+                return
+            gave_up(error)
 
         self.frame._run_background(
             f"WordPress Workbench: saving {row.title}", lambda: work(loaded_modified), done, failed
         )
+        if finished is not None:
+            from quill.ui.workbench_sheet_editor import PENDING
+
+            return PENDING
         return True
 
     # -- several rows (section 9) -------------------------------------------------

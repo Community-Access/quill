@@ -325,7 +325,6 @@ Ten of the eleven are fixed (checked 2026-11-18; five by #1837, five by the Word
 
 30. The site tree gives every site every plugin's branch whether installed or not (over 100 nodes per site), each selection reads the network, and discovery rebuilds the tree and collapses what you expanded.
 31. The Item menu leaves out rows the context menu has (Earlier Versions, Duplicate, Change Role, Remove, Set New Password, Replace File, Edit Picture), breaking the engine's promise that More never hides anything only a right-click can reach.
-32. The Properties sheet closes on OK before the save finishes, so a failure or a conflict Cancel loses the edits.
 33. Consent is uneven: In Short and Ask the Site send text to an AI without asking while Visual Review asks; Make a Listening Version and Publish a Document as a Page upload without a first confirmation.
 34. Shop, event and membership rows mostly name no capability, so they are never greyed and an Editor answers several dialogs before WooCommerce or PMPro refuses; choosers in those dialogs do not start on the current value.
 35. QUILL Lite ignores the Form Payments switch, so payment commands run in Lite where QUILL would refuse: Lite ahead of QUILL, which the family rules forbid.

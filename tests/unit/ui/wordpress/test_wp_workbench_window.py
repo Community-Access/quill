@@ -469,6 +469,30 @@ def test_alt_enter_opens_the_post_sheet_and_ok_saves_with_verify(bench, sheets) 
     assert bench.api.writes[-1] == ("POST", "wp/v2/posts/1", {"title": "Hello"})
 
 
+def test_a_failed_save_leaves_the_sheet_open_with_its_edits(bench, sheets, monkeypatch) -> None:
+    """UX review item 32: OK closed the sheet before the save came back."""
+    from quill.core.wordpress.api import WordPressApiError
+    from quill.ui import workbench_sheet_editor as editor
+
+    _go(bench, NodeRef("site", "posts", SITE))
+    _select(bench, 0)
+    bench.run(command("sheet"))
+    sheet = sheets[-1]
+    ended: list[int] = []
+    monkeypatch.setattr(sheet.dialog, "EndModal", ended.append)
+    monkeypatch.setattr(editor, "dialog_alive", lambda _d: True)
+
+    def refuse(*_a: Any, **_k: Any) -> Any:
+        raise WordPressApiError("The site refused the change.")
+
+    monkeypatch.setattr(bench.api, "post", refuse)
+    sheet.controls["title"].ChangeValue("Hello again")
+    sheet._save(close=True)
+    assert ended == [] and sheet.controls["title"].GetValue() == "Hello again"
+    assert sheet._save_buttons[0].IsEnabled()  # ready to try again
+    assert "refused" in bench.said[-1]
+
+
 def test_several_rows_get_the_batch_sheet_with_mixed_values(bench, sheets, monkeypatch) -> None:
     monkeypatch.setattr(dlg, "confirm", lambda *a, **k: True)
     _go(bench, NodeRef("site", "posts", SITE))
