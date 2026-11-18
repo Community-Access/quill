@@ -109,7 +109,42 @@ is marking them read in the background. Refresh in a minute to check."
 Shift+F10 on a notification has the same commands, plus one more:
 **Mark Notification Read**, **Mark Done**, **Unsubscribe from Thread**, and,
 for the whole view, **Mark All Read...**. Mark Notification Read marks it read
-without opening it.
+without opening it. **Inbox Rules...** is in the Item menu, below.
+
+## Inbox rules
+
+Some notifications always get the same answer: a Dependabot update you will
+never read before it merges, a busy repository you only watch, a mention you
+always want first. An inbox rule gives that answer for you as the list
+arrives. In the GitHub Workbench, choose **Item > Inbox Rules...**
+(`Ctrl+Alt+N`). The window lists your rules, each read as a sentence, and
+**New Rule...**:
+
+1. **What should the rule do?** Mark it done, Mark it read, or Move it to the
+   top.
+2. **From which repository?** An `owner/name`, or a `*` for any part, so
+   `octo/*` is every repository of `octo`. Leave it blank for any. If a
+   notification was selected, its repository is already filled in.
+3. **Why it came to you:** any reason, or one of GitHub's, such as "you were
+   mentioned" or "review requested".
+4. **What it is about:** anything, or a pull request, an issue, a discussion, a
+   release, a workflow run, a commit or a security alert.
+5. **Words its title must contain**, or blank for any. Dependabot's titles
+   start with "Bump".
+
+A rule needs at least one of these; one with none would act on every
+notification, and QUILL Lite will not save it. Before saving, QUILL Lite reads the rule
+back and tries it on the notifications already loaded today: "When a
+notification is from octo/*, about a pull request, with 'Bump' in its title:
+mark it done. It matches 3 of the 41 notifications loaded today, and would
+mark them done:" and their titles. Yes saves it; No saves nothing.
+
+From then on the rules run every time Notifications loads, before you see the
+list, the first rule that fits each notification deciding what happens to it.
+Marking done and marking read are sent to GitHub, as if you had pressed the
+keys yourself; moving to the top only changes the order here. After the list
+loads you hear what they did: "Inbox rules: 3 marked done, 1 moved to the
+top." To delete a rule, choose it in the Inbox Rules window and say Yes.
 
 ## How often QUILL checks
 

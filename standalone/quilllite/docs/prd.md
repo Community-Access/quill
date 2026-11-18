@@ -2769,4 +2769,6 @@ Queue..., the Merge Queue node and Merge's check of the exact commit are the
 Workbench's, so they are the same in both editors
 (`quill/ui/github_workbench_merge.py`). The diff window's Changed Lines Only
 and its added and removed line sounds are the shared diff window's, so QUILL
-Lite has them too, as is the jobs window's Follow This Job and Alt+8.
+Lite has them too, as is the jobs window's Follow This Job and Alt+8, and the
+Workbench's Inbox Rules... (`quill/ui/github_workbench_inbox_rules.py`) and
+emoji shortcodes read by name (`quill/core/github/emoji_names.py`).

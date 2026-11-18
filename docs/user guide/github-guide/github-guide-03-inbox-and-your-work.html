@@ -346,7 +346,44 @@ minute to check.”</p>
 <strong>Mark Notification Read</strong>, <strong>Mark Done</strong>,
 <strong>Unsubscribe from Thread</strong>, and, for the whole view,
 <strong>Mark All Read…</strong>. Mark Notification Read marks it read
-without opening it.</p>
+without opening it. <strong>Inbox Rules…</strong> is in the Item menu,
+below.</p>
+<h2 id="inbox-rules">Inbox rules</h2>
+<p>Some notifications always get the same answer: a Dependabot update
+you will never read before it merges, a busy repository you only watch,
+a mention you always want first. An inbox rule gives that answer for you
+as the list arrives. In the GitHub Workbench, choose <strong>Item &gt;
+Inbox Rules…</strong> (<code>Ctrl+Alt+N</code>). The window lists your
+rules, each read as a sentence, and <strong>New Rule…</strong>:</p>
+<ol type="1">
+<li><strong>What should the rule do?</strong> Mark it done, Mark it
+read, or Move it to the top.</li>
+<li><strong>From which repository?</strong> An <code>owner/name</code>,
+or a <code>*</code> for any part, so <code>octo/*</code> is every
+repository of <code>octo</code>. Leave it blank for any. If a
+notification was selected, its repository is already filled in.</li>
+<li><strong>Why it came to you:</strong> any reason, or one of GitHub’s,
+such as “you were mentioned” or “review requested”.</li>
+<li><strong>What it is about:</strong> anything, or a pull request, an
+issue, a discussion, a release, a workflow run, a commit or a security
+alert.</li>
+<li><strong>Words its title must contain</strong>, or blank for any.
+Dependabot’s titles start with “Bump”.</li>
+</ol>
+<p>A rule needs at least one of these; one with none would act on every
+notification, and QUILL will not save it. Before saving, QUILL reads the
+rule back and tries it on the notifications already loaded today: “When
+a notification is from octo/*, about a pull request, with ‘Bump’ in its
+title: mark it done. It matches 3 of the 41 notifications loaded today,
+and would mark them done:” and their titles. Yes saves it; No saves
+nothing.</p>
+<p>From then on the rules run every time Notifications loads, before you
+see the list, the first rule that fits each notification deciding what
+happens to it. Marking done and marking read are sent to GitHub, as if
+you had pressed the keys yourself; moving to the top only changes the
+order here. After the list loads you hear what they did: “Inbox rules: 3
+marked done, 1 moved to the top.” To delete a rule, choose it in the
+Inbox Rules window and say Yes.</p>
 <h2 id="how-often-quill-checks">How often QUILL checks</h2>
 <p>GitHub tells apps how often they may check the inbox, usually once a
 minute, and asks them to keep to it. QUILL does. If you reload sooner,

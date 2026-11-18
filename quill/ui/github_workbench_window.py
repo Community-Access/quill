@@ -252,7 +252,10 @@ class GitHubWorkbenchProvider(
                 from quill.core.github.explore import GitHubExploreClient
 
                 self._explore = GitHubExploreClient(self.items)
-            return list(load_explore(self._explore, node, instance=ref.instance, query=query))
+            rows = list(load_explore(self._explore, node, instance=ref.instance, query=query))
+            if node.loader == "explore:notifications":
+                self.local_note = str(getattr(self._explore, "inbox_rules_note", "") or "")
+            return rows
         if node.loader.startswith(HELP_PREFIX):
             return list(self.load_help(node))
         if node.loader.startswith(ACROSS_PREFIX):
@@ -328,10 +331,12 @@ class GitHubWorkbenchProvider(
         return row_cells(row, columns, full=False)
 
     def detail(self, row: object) -> str:
+        from quill.core.github.emoji_names import name_shortcodes
+
         if isinstance(row, ExploreRow):
-            return row.detail
+            return name_shortcodes(row.detail)
         if isinstance(row, GitHubItem):
-            return item_detail(row, [])[0]
+            return name_shortcodes(item_detail(row, [])[0])
         return model_detail(row)
 
     def row_type(self, node: NodeSpec, row: object) -> str:

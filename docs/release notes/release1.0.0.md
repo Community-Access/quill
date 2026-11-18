@@ -2087,6 +2087,23 @@ answers "how far along is it?" whenever you ask. GitHub keeps a running job's
 log to its own web page, so the full log still arrives when the job is done,
 and QUILL says so, rather than pretending otherwise.
 
+#### An inbox that sorts itself
+
+Every maintainer has notifications they answer the same way every time:
+Dependabot's updates, a repository they only half follow, the mentions they
+always want first. **Inbox Rules...** lets QUILL give that answer for you.
+A rule is built a question at a time (what to do, from where, why, about
+what, with which words) and read back as a sentence. Then, before anything is
+saved, QUILL tries it on today's notifications and tells you exactly which it
+would have caught, so a rule that catches too much is found before it acts,
+not after. From then on the list arrives already sorted, and you hear what the
+rules did.
+
+And a small one that is heard everywhere: an issue that says "Shipped
+:rocket:" used to be read as colon, rocket, colon. QUILL now reads GitHub's
+emoji shortcodes by name, as the website shows them, "Shipped rocket", and
+leaves the ones inside code exactly as they were typed.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

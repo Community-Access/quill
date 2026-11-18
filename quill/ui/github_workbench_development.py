@@ -20,6 +20,11 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.github.items_provider import GitHubItem
+from quill.ui.github_workbench_inbox_rules import (
+    INBOX_RULE_REASONS,
+    INBOX_RULE_VERBS,
+    GitHubWorkbenchInboxRulesMixin,
+)
 from quill.ui.github_workbench_merge import (
     MERGE_REASONS,
     MERGE_VERBS,
@@ -39,6 +44,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     "convert_tasks": frozenset({"item"}),
     **PULL_TOOL_VERBS,
     **MERGE_VERBS,
+    **INBOX_RULE_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -47,10 +53,13 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     "convert_tasks": "Task lists are for an issue, while you are signed in.",
     **PULL_TOOL_REASONS,
     **MERGE_REASONS,
+    **INBOX_RULE_REASONS,
 }
 
 
-class GitHubWorkbenchDevelopmentMixin(GitHubWorkbenchPullToolsMixin, GitHubWorkbenchMergeMixin):
+class GitHubWorkbenchDevelopmentMixin(
+    GitHubWorkbenchPullToolsMixin, GitHubWorkbenchMergeMixin, GitHubWorkbenchInboxRulesMixin
+):
     items: Any
     frame: Any
     signed_in: bool

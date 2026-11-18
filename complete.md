@@ -219,7 +219,7 @@ Reconcile these against actual code and the operation ledger. Some individual ac
 - [ ] Discussion polls, spotlight and category sections.
 - [ ] GitHub service status with opt-in network access and a useful explanation.
 - [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
-- [ ] Inbox rules with preview; follow a live job log on request; changed-lines-only and optional diff sounds; named emoji. *(2026-11-18: Changed Lines Only and the added and removed line sounds built in the diff window; Follow This Job and Alt+8 in the jobs window, following steps because GitHub's REST log exists only once a job ends. Remaining: inbox rules, named emoji.)*
+- [x] Inbox rules with preview; follow a live job log on request; changed-lines-only and optional diff sounds; named emoji. *(2026-11-18: Changed Lines Only and the added and removed line sounds built in the diff window; Follow This Job and Alt+8 in the jobs window, following steps because GitHub's REST log exists only once a job ends. Inbox rules built 2026-11-18 (`inbox_rules.py`, `github_workbench_inbox_rules.py`). Emoji shortcodes read by name in the details pane and Read as Document (`emoji_names.py`).)*
 - [ ] Least-privilege advice based on observed usage with honest uncertainty; artifact attestations and immutable release evidence.
 
 ### GH-E. Across Repositories and Repository Sets — OPEN

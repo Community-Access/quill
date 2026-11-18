@@ -261,7 +261,13 @@ def _heading(entry: ThreadEntry) -> str:
 
 
 def thread_markdown(doc: ThreadDocument) -> str:
-    """The document as Markdown: a heading per post, bodies as GitHub wrote them."""
+    """The document as Markdown: a heading per post, bodies as GitHub wrote them.
+
+    Emoji shortcodes outside code are read by name (``:tada:``, party popper),
+    since this is a document for reading (:mod:`quill.core.github.emoji_names`).
+    """
+    from quill.core.github.emoji_names import name_shortcodes
+
     kind = doc.kind.capitalize()
     lines = [
         f"# {kind} {doc.repository}#{doc.number}: {doc.title}",
@@ -275,7 +281,7 @@ def thread_markdown(doc: ThreadDocument) -> str:
         lines.extend(["", _heading(entry), ""])
         if entry.note:
             lines.extend([f"{entry.note}.", ""])
-        body = entry.body.strip()
+        body = name_shortcodes(entry.body.strip())
         lines.append(body if body else "(No text.)")
         if entry.url:
             lines.extend(["", f"Link: <{entry.url}>"])

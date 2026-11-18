@@ -119,6 +119,7 @@ no AI menu, so here they belong to the Go row.
 | `Ctrl+Shift+R` | Run a workflow on a branch |
 | `Ctrl+Shift+G` | Repository Actions |
 | `Ctrl+Q`, `Ctrl+Shift+Q` | Mark a notification read; mark the whole list read |
+| `Ctrl+Alt+N` | Inbox Rules... |
 | `Ctrl+D` | Add to Favorites, or take it out |
 | `Ctrl+C`, `Ctrl+Shift+C` | Copy the row; copy its address |
 | Delete | The safe removal for the row, asking first when it cannot be undone |

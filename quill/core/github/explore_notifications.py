@@ -38,6 +38,7 @@ class ExploreNotificationsMixin:
         self._inbox: dict[str, list[GitHubNotification]] = {}
         self._last_modified: dict[str, str] = {}
         self.notifications_loaded_at = ""
+        self.inbox_rules_note = ""
 
     def notification_wait_seconds(self, include_read: bool) -> int:
         """Seconds until GitHub's poll interval allows another check of this query."""
@@ -58,7 +59,41 @@ class ExploreNotificationsMixin:
                 self._last_modified[key] = inbox.last_modified
             notes = list(self._inbox.get(key, []))
         self.notifications_loaded_at = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
-        return [notification_row(note) for note in notes]
+        return [notification_row(note) for note in self._run_inbox_rules(notes)]
+
+    def _run_inbox_rules(self, notes: list[GitHubNotification]) -> list[GitHubNotification]:
+        """Inbox rules (PRD 22.12), on this worker thread: done and read are sent, then kept."""
+        from quill.core.github.inbox_rules import RuleRun, apply_rules, load_rules
+
+        self.inbox_rules_note = ""
+        rules = load_rules()
+        if not rules or not self._provider.is_authenticated:
+            return notes
+        run = apply_rules(rules, notes)
+        failed, done = 0, set()
+        for note_id in run.done:
+            try:
+                self._provider.mark_notification_done(note_id)
+            except Exception:  # noqa: BLE001 - one refusal must not stop the rest
+                failed += 1
+                continue
+            self._forget(note_id)
+            done.add(note_id)
+        read = set()
+        for note_id in run.read:
+            try:
+                self._provider.mark_notification_read(note_id)
+            except Exception:  # noqa: BLE001
+                failed += 1
+                continue
+            self._mark_cached_read(note_id)
+            read.add(note_id)
+        kept = [replace(n, unread=False) if n.id in read else n for n in run.kept]
+        kept += [n for n in notes if n.id in run.done and n.id not in done]
+        said = RuleRun(done=sorted(done), read=sorted(read), to_top=run.to_top).sentence
+        could_not = f"{failed} could not be changed on GitHub." if failed else ""
+        self.inbox_rules_note = f"{said} {could_not}".strip()
+        return kept
 
     def cached_notification_rows(self, include_read: bool) -> list[ExploreRow]:
         """The last inbox read for this query, with local Done and read changes applied."""
@@ -76,6 +111,15 @@ class ExploreNotificationsMixin:
                 ),
                 None,
             )
+
+    def loaded_notifications(self) -> list[GitHubNotification]:
+        """Every notification read so far, once each: what an inbox rule is tried on."""
+        with self._notification_lock:
+            seen: dict[str, GitHubNotification] = {}
+            for notes in self._inbox.values():
+                for note in notes:
+                    seen.setdefault(note.id, note)
+            return list(seen.values())
 
     def notification_summary(self, include_read: bool) -> str:
         with self._notification_lock:

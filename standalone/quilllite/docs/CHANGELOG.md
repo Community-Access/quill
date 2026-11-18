@@ -2,6 +2,23 @@
 
 ## 2.0.0
 
+### Emoji by name (2026-11-18)
+
+In the GitHub Workbench's details pane and in Read as Document, emoji
+shortcodes such as `:tada:` and `:+1:` are read by name, "party popper" and
+"thumbs up", rather than spelled out; shortcodes in code are left alone.
+Chapter 12 of the GitHub Guide has the details.
+
+### Inbox rules (2026-11-18)
+
+**Item > Inbox Rules...** (`Ctrl+Alt+N`) in the GitHub Workbench makes rules
+for notifications: mark done, mark read or move to the top whatever comes
+from a repository (with `*` for any part), for a reason, about a kind of thing,
+or with words in its title. Each new rule is read back and tried on the
+notifications loaded today before it is saved, and the rules run every time
+Notifications loads, saying what they did. Chapter 3 of the GitHub Guide has
+the details.
+
 ### Following a running job (2026-11-18)
 
 The workflow jobs window has **Follow This Job** (`Alt+W`). Check it on a
