@@ -29,6 +29,7 @@ TIER2_VERBS: dict[str, frozenset[str]] = {
     "transfer_repository": frozenset({"view"}),
     "unlink_branch": frozenset({"item"}),
     "not_duplicate": frozenset({"item"}),
+    "clone_wiki": frozenset({"view"}),
     "user_status": frozenset({"view"}),
     "commit_status": frozenset({"commit"}),
     "export_sbom": frozenset({"view"}),
@@ -44,6 +45,7 @@ TIER2_REASONS: dict[str, str] = {
     "transfer_repository": "Transfer Repository is for a repository, while you are signed in.",
     "unlink_branch": "Unlink Branch is for an issue, while you are signed in.",
     "not_duplicate": "Not a Duplicate is for an issue, while you are signed in.",
+    "clone_wiki": "Clone Wiki is for a repository.",
     "user_status": "Your status is for the account you are signed in with.",
     "commit_status": "Set Status is for a commit, while you are signed in.",
     "export_sbom": "Export Software Bill of Materials is for a repository.",
@@ -423,4 +425,37 @@ class GitHubWorkbenchTier2Mixin:
             "take back the duplicate mark",
             lambda: not_a_duplicate(api, repository, number, int(typed)),
             self._say,
+        )
+
+    # -- the wiki --------------------------------------------------------------------
+
+    def _fits_clone_wiki(self, _row: object) -> bool:
+        current = getattr(self.frame, "current", None)
+        return getattr(current, "template", "") == "repository"
+
+    def _do_clone_wiki(self, ref: Any, _row: object) -> None:
+        """The clone QUILL uses for any repository, with the wiki's address filled in."""
+        import os
+        import sys
+
+        from quill.core.github.wiki import wiki_address
+        from quill.stability.safe_mode import should_enable_safe_mode
+        from quill.ui.github_clone import CloneHost, default_clone_folder, start_clone
+
+        def run(name: str, work: Any, done: Any, failed: Any) -> None:
+            self.frame._run_background(name, work, done, failed)
+
+        start_clone(
+            CloneHost(
+                parent=self.frame.frame,
+                announce=self._say,
+                run_background=run,
+                after_clone=lambda folder: self._say(
+                    f"The wiki's pages are in {folder}, one Markdown file each."
+                ),
+                initial_repo=wiki_address(ref.instance),
+                default_folder=default_clone_folder(),
+                safe_mode=should_enable_safe_mode(sys.argv, os.environ),
+            ),
+            token_loader=lambda: str(getattr(self.items, "token", None) or ""),
         )

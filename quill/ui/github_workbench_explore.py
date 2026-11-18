@@ -42,6 +42,7 @@ _KINDS = {
     "autolink": "autolink",
     "sponsorship": "sponsorship",
     "sponsor_tier": "sponsor_tier",
+    "wiki": "wiki",
     "issue": "issue",
     "pr": "pull_request",
     "label": "label",

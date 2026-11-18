@@ -628,6 +628,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Community Profile (`repository:community`) | repository, insights | Community Profile: the README, license and guidelines GitHub checks. |
 | Commit Activity (`repository:commit_activity`) | repository, insights | Commit Activity: GitHub's statistics graphs as rows: commits and lines each week, the busiest hours, and each contributor's lines. |
 | Deployments and Environments (`repository:deployments`) | repository, repository | Deployments and Environments: where the code was deployed. |
+| Wiki (`repository:wiki`) | repository, repository | Wiki: whether the wiki is on. Enter opens it on GitHub; Clone Wiki copies its pages to a folder to edit. |
 | GitHub Pages (`repository:pages`) | repository, repository | GitHub Pages: the website built from this repository. |
 | Security (`repository:security`) | repository, repository | Security: alerts about vulnerable code and leaked secrets. |
 | Policy (`repository:security_policy`) | repository, security | Policy: where the security policy is, and whether vulnerabilities can be reported privately. |
@@ -805,6 +806,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Repository Actions... | Ctrl+Shift+G | Everything else for this repository: star, watch, fork, clone, Codespaces, settings and administration, as a list you can run from. |
 | Export Software Bill of Materials... | Ctrl+Alt+B | Save the repository's dependency graph as an SPDX file: every package it uses. |
 | Transfer Repository... | Ctrl+Alt+T | Move the repository to another person or organization; asks for its name first. |
+| Clone Wiki... | Ctrl+Alt+W | Copy the repository's wiki pages to a folder, to edit them as Markdown. |
 
 #### Account
 
@@ -907,6 +909,7 @@ Keys the window answers that are not menu rows:
 - **webhook**: Show Details, Ping, Recent Deliveries..., Change Address or Secret..., Delete Webhook..., Open on GitHub; Properties...
 - **deploy_key**: Show Details, Delete Deploy Key..., Open on GitHub; Properties...
 - **autolink**: Show Details, Delete Autolink..., Open on GitHub; Properties...
+- **wiki**: Open on GitHub, Clone Wiki..., Copy Link; Properties...
 - **sponsorship**: Show Details, Cancel Sponsorship..., Open on GitHub; Properties...
 - **sponsor_tier**: Show Details, Sponsor at This Tier..., Open on GitHub; Properties...
 
@@ -991,6 +994,7 @@ Keys the window answers that are not menu rows:
 - **Watch**: Asking GitHub to tell you about a repository's activity.
 - **Watch rule**: A rule kept on this computer that tells you when something happens on GitHub: a run finishes, a review arrives, a release or a comment. Under Watches. Not the same as watching a repository on GitHub, which sends notifications.
 - **Webhook**: An address GitHub sends a message to when something happens in a repository, such as a push. Continuous integration and chat bots use them.
+- **Wiki**: A repository's own pages of documentation, kept by GitHub as a git repository of their own, owner/name.wiki.
 - **Workflow**: One automation, defined in a file in the repository. Under Actions, Workflows.
 - **Workflow dispatch**: Starting a workflow by hand, on a branch you choose.
 

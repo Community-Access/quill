@@ -2207,6 +2207,10 @@ And for the projects you depend on, **Sponsor** under any maintainer lists
 what they ask for, tier by tier, and supports them after you type their name,
 so a stray Enter can never spend your money.
 
+A project's wiki is a click away on the web and nowhere in GitHub's API.
+**Clone Wiki...** brings its pages home as Markdown files you edit in the
+editor you already know.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

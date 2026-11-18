@@ -204,6 +204,9 @@ organization's webhooks the same way (Organizations > org > Webhooks).
 Sponsor at This Tier... and Cancel Sponsorship... (`sponsors.py`,
 `github_workbench_sponsors.py`).
 
+**2026-11-18, the wiki.** Repository > Wiki and Clone Wiki... (`wiki.py`);
+listing pages in the Workbench remains, as GitHub has no wiki API.
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

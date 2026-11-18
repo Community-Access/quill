@@ -1698,7 +1698,17 @@ Workbench Options &gt; Saved Replies</td>
 </tr>
 <tr>
 <td>Wiki</td>
-<td>Roadmap GX12, not built</td>
+<td><strong>Partly built 2026-11-18.</strong> Repository &gt; Wiki
+(explore view <code>wiki</code>, row type <code>wiki</code>) reads
+<code>has_wiki</code> and says whether the wiki is on, Enter opening it
+on GitHub; Clone Wiki… (<code>Ctrl+Alt+W</code>, verb
+<code>clone_wiki</code>) runs the existing clone with
+<code>owner/name.wiki</code> filled in, which the clone already parses
+to <code>https://github.com/owner/name.wiki.git</code> with the token in
+the child’s environment (<code>quill/core/github/wiki.py</code>). GitHub
+has no API for wiki pages, so listing and editing pages inside the
+Workbench stays planned, as “Wiki: pages listed and edited in the
+Workbench”</td>
 <td>Repository &gt; Wiki (pages as a list, read in details, edit in the
 editor)</td>
 </tr>

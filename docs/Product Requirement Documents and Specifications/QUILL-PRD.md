@@ -17561,7 +17561,9 @@ Autolinks (`quill/core/github/repo_settings_lists.py`) list, add and delete
 each; a webhook secret is write-only and never said. An organization's
 webhooks are under Organizations > org > Webhooks. People > Sponsorships and
 each person's Sponsor (`quill/core/github/sponsors.py`) read and change GitHub
-Sponsors, with the login typed before money is spent.
+Sponsors, with the login typed before money is spent. Repository > Wiki and
+Clone Wiki... (`Ctrl+Alt+W`, `quill/core/github/wiki.py`) reach a wiki the way
+git does, since GitHub has no wiki API.
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

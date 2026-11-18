@@ -469,6 +469,22 @@ community-access/notes. The old address redirects." Moving it to a person
 sends them a request they have a day to accept, and QUILL says so. Only an
 owner or administrator of the repository can transfer it.
 
+## The wiki
+
+A wiki is a repository's own pages of documentation. GitHub keeps them as a
+git repository of their own, with no API for the pages, so QUILL works on them
+the way git does.
+
+**Repository > Wiki** in the GitHub Workbench says whether the repository's
+wiki is on. When it is, Enter opens it on GitHub to read, and **Clone Wiki...**
+(`Ctrl+Alt+W`, on the Repository menu) opens the same Clone Repository window
+as any clone, with the wiki's address already filled in, such as
+`community-access/quill.wiki`. Its pages arrive in that folder as Markdown
+files, one for each page, named after the page's title. Open one in the
+editor, change it, then commit and push with git, and GitHub shows the change
+at once. A wiki that is turned off says so, and that its administrators turn
+it on in the repository's Properties, on the Features page.
+
 ## Webhooks, deploy keys and autolinks
 
 Three of a repository's settings are lists, under **Repository > Settings**

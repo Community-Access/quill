@@ -2648,6 +2648,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **repository: Deployments and Environments.** Deployments and Environments: where the code was deployed.
 
+**repository: Wiki.** Wiki: whether the wiki is on. Enter opens it on GitHub; Clone Wiki copies its pages to a folder to edit.
+
 **repository: GitHub Pages.** GitHub Pages: the website built from this repository.
 
 **repository: Security.** Security: alerts about vulnerable code and leaked secrets.
@@ -2933,6 +2935,8 @@ Control coverage: 365 audited sites (365 helped).
 **Repository > Export Software Bill of Materials....** Save the repository's dependency graph as an SPDX file: every package it uses.
 
 **Repository > Transfer Repository....** Move the repository to another person or organization; asks for its name first.
+
+**Repository > Clone Wiki....** Copy the repository's wiki pages to a folder, to edit them as Markdown.
 
 **Account > Manage GitHub Accounts....** Add, switch, sign in again or remove GitHub accounts.
 
@@ -3275,6 +3279,8 @@ Control coverage: 365 audited sites (365 helped).
 **Delete Deploy Key.** Remove it; asks first.
 
 **Delete Autolink.** Remove it; asks first.
+
+**Clone Wiki.** Copy its pages to a folder, to edit them.
 
 **Cancel Sponsorship.** Stop it; asks first.
 

@@ -1633,6 +1633,12 @@ Workbench, read and change your GitHub Sponsors sponsorships, with the
 person's login typed before anything is charged. See
 [Sponsorships](../github-guide/github-guide-12-the-workbench.html#sponsorships).
 
+#### The wiki
+
+**Repository > Wiki** and **Clone Wiki...** (`Ctrl+Alt+W`) in the GitHub
+Workbench bring a repository's wiki pages to a folder as Markdown files. See
+[The wiki](../github-guide/github-guide-07-code-and-repositories.html#the-wiki).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

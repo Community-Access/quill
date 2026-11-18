@@ -32,6 +32,10 @@ NODE_HELP: dict[str, str] = {
         "Runners: the machines this repository runs its own jobs on, online or not, busy "
         "or idle, with their labels. Only administrators can see them."
     ),
+    "repository:wiki": (
+        "Wiki: whether the wiki is on. Enter opens it on GitHub; Clone Wiki copies its "
+        "pages to a folder to edit."
+    ),
     "repository:webhooks": (
         "Webhooks: the addresses GitHub tells about events here. Ctrl+N adds one; Recent "
         "Deliveries on a webhook says what was sent and redelivers it."

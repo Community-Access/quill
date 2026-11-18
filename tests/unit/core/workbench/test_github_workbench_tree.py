@@ -78,5 +78,7 @@ def test_planned_features_have_a_future_home_and_no_node_yet() -> None:
     assert PLANNED.rows
     assert all(row.status is CoverageStatus.PLANNED for row in PLANNED.rows)
     labels = {node.label for _t, node in GITHUB_TREE.all_nodes()}
-    assert "Wiki" not in labels
-    assert "Packages" not in labels
+    # A planned feature with a node of its own name is built: retire the row
+    # (the Wiki and Packages nodes arrived 2026-11-18, each with what is left of
+    # it still planned under a narrower name).
+    assert not {row.operation for row in PLANNED.rows} & labels

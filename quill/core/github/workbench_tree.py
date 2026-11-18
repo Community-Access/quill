@@ -405,6 +405,7 @@ _REPOSITORY: tuple[NodeSpec, ...] = (
         loader="explore:deployments",
         row_type="deployment",
     ),
+    _r("wiki", "Wiki", loader="explore:wiki", row_type="wiki"),
     _r("pages", "GitHub Pages", loader="explore:pages"),
     _r("security", "Security"),
     _r("security_policy", "Policy", "security", loader="explore:security_policy", row_type="mixed"),
@@ -540,7 +541,9 @@ def _planned(feature: str, node: str, reference: str = "") -> CoverageRow:
 
 PLANNED = CoverageTable((
     # 14.1, worth adding: people will look for these.
-    _planned("Wiki", "Repository > Wiki", "GX12"),
+    _planned(
+        "Wiki: pages listed and edited in the Workbench", "Repository > Wiki > each page", "GX12"
+    ),
     _planned(
         "Security advisories: comments, private forks, an organization's",
         "Repository > Security > Advisories",

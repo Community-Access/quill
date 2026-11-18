@@ -431,6 +431,7 @@ own list, and `Shift+F1` reads it with the keys:
 - **A webhook:** Show Details, Ping, Recent Deliveries, Change Address or
   Secret, and Delete Webhook.
 - **A deploy key or an autolink:** Show Details, Delete, and Open on GitHub.
+- **The wiki:** Open on GitHub and Clone Wiki.
 - **A sponsorship:** Show Details and Cancel Sponsorship. **A sponsor tier:**
   Show Details and Sponsor at This Tier.
 - **A notification:** Open, Mark Read, Mark Done, Unsubscribe from Thread, and

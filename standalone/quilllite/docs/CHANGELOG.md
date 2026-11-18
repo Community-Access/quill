@@ -2,6 +2,14 @@
 
 ## 2.0.0
 
+### The wiki (2026-11-18)
+
+**Repository > Wiki** in the GitHub Workbench says whether a repository's wiki
+is on and opens it on GitHub, and **Clone Wiki...** (`Ctrl+Alt+W`) copies its
+pages to a folder as Markdown files to edit in the editor and push back with
+git. GitHub has no API for wiki pages, so this is the way in. Chapter 7 of the
+GitHub Guide has the details.
+
 ### GitHub Sponsors (2026-11-18)
 
 **People > Sponsorships** in the GitHub Workbench lists who you sponsor and

@@ -392,6 +392,12 @@ _REPOSITORY = MenuSpec(
             "Ctrl+Alt+T",
             "Move the repository to another person or organization; asks for its name first.",
         ),
+        _row(
+            "clone_wiki",
+            "Clone &Wiki...",
+            "Ctrl+Alt+W",
+            "Copy the repository's wiki pages to a folder, to edit them as Markdown.",
+        ),
     ),
 )
 

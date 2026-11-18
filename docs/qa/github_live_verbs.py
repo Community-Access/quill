@@ -922,6 +922,7 @@ VERBS: dict[str, Scenario | str] = {
     "new_autolink": autolink_round_trip,
     "delete_autolink": "with new_autolink: deleted again",
     "sponsor": "needs Jeff: sponsoring charges real money",
+    "clone_wiki": "needs Jeff: clones into a folder you choose, from the editor",
     "cancel_sponsorship": "needs Jeff: cancels one of your real sponsorships",
     "new_key": "needs Jeff: adds a key to your own GitHub account",
     "delete_key": "needs Jeff: deletes a key from your own GitHub account",
