@@ -29,7 +29,7 @@ from quill.core.github.search_views import SEARCH_VIEWS, run_search
 
 EXTRA_REPO_VIEWS = frozenset({"insights", "community", "actions_caches", "secrets", "merge_queue"})
 #: Account views (Billing and Usage), answered without a repository.
-EXTRA_ACCOUNT_VIEWS = frozenset({"billing_usage"})
+EXTRA_ACCOUNT_VIEWS = frozenset({"billing_usage", "invitations"})
 EXTRA_VIEWS = SEARCH_VIEWS | EXTRA_REPO_VIEWS | EXTRA_ACCOUNT_VIEWS
 _REDIRECTS = (301, 302, 303, 307, 308)
 
@@ -49,6 +49,14 @@ def fetch_extra_view(
     token = getattr(provider, "token", None)
     if view in SEARCH_VIEWS:
         return run_search(token, view, query, limit=limit, warnings=warnings)
+    if view == "invitations":
+        from quill.core.github.repo_invitations import fetch_invitations
+        from quill.core.github.workbench_api import TokenApi
+
+        try:
+            return fetch_invitations(TokenApi(token), limit=limit)
+        except GitHubRestError as exc:
+            raise GitHubExploreError(f"Could not read your invitations: {exc}") from exc
     if view == "billing_usage":
         from quill.core.github.billing_usage import fetch_billing_usage
 

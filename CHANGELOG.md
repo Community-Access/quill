@@ -620,6 +620,15 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Invitations, and turning a workflow on or off (2026-11-18)
+
+**Needs My Attention > Invitations** in the GitHub Workbench lists the
+repositories you have been invited to, who invited you and with what access,
+and accepts or declines each after asking. **Turn Workflow On or Off...** on a
+workflow says whether it is on, or turned off and by whom, including GitHub's
+own switch-off after sixty quiet days, and asks before changing it. Chapters 3
+and 6 of the GitHub Guide have the details.
+
 ### Re-run Failed Jobs, pressed twice (2026-11-18)
 
 Pressing **Re-run Failed Jobs** again before GitHub had answered the first

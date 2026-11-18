@@ -62,6 +62,10 @@ GLOSSARY: dict[str, str] = {
         "GitHub telling you something happened on a thread you are part of. Under "
         "Needs My Attention."
     ),
+    "Invitation": (
+        "Someone with admin access asking you to join their repository, with the access "
+        "they chose. It waits under Needs My Attention > Invitations and expires after a week."
+    ),
     "Inbox": (
         "The Workbench's one list of what needs you, made from notifications, "
         "review requests, assignments and mentions."
@@ -129,6 +133,7 @@ ROW_TYPE_WORDS: dict[str, str] = {
     "commit": "Commit",
     "tag": "Tag",
     "notification": "Notification",
+    "invitation": "Invitation",
     "repository": "Repository",
     "person": "Mention",
     "label": "Label",

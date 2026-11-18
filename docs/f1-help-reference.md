@@ -2464,6 +2464,8 @@ Control coverage: 364 audited sites (364 helped).
 
 **Notifications.** Notifications: what GitHub has told you about, unread first. Ctrl+Q marks one read, Delete marks it done, and Ctrl+Shift+Q marks the whole view read.
 
+**Invitations.** Invitations: repositories you have been invited to, who invited you and with what access. Accept or Decline from a row's context menu.
+
 **Review Requests.** Review Requests: pull requests somebody asked you to review. Enter opens the review.
 
 **Assigned to Me.** Assigned to Me: issues and pull requests assigned to you, anywhere.
@@ -3044,6 +3046,8 @@ Control coverage: 364 audited sites (364 helped).
 
 **Run Workflow on Branch.** Start it on a branch.
 
+**Turn Workflow On or Off.** Turn it off so nothing starts it, or back on.
+
 **Assets.** The release's files and their download counts.
 
 **Edit Release.** Change its notes, name and flags.
@@ -3067,6 +3071,10 @@ Control coverage: 364 audited sites (364 helped).
 **Copy Name.** Copy the branch name.
 
 **Delete Branch.** Delete the branch on GitHub.
+
+**Accept Invitation.** Join the repository with the access offered.
+
+**Decline Invitation.** Say no to it.
 
 **Mark Read.** Mark it read on GitHub.
 

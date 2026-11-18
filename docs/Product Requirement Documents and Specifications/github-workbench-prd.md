@@ -962,10 +962,10 @@ tree, so adding it later does not reshape anything.
 | Linked pull requests and branches for an issue ("Development"), and "create a branch for this issue" | **Built 2026-11-17.** Linked branches on the issue sheet's Relationships page; Create Branch for This Issue... (`createLinkedBranch`). Unlinking a branch (`deleteLinkedBranch`) is not built yet | Issue details; Item > Linked Pull Requests; Item > Create Branch for Issue... (next to Start in Local Worktree) |
 | Saved replies | **Inserting built 2026-11-17** (the comment composer's Insert Saved Reply); managing them stays on GitHub | Item > Insert Saved Reply in every comment box; Tools > Workbench Options > Saved Replies |
 | Wiki | Roadmap GX12, not built | Repository > Wiki (pages as a list, read in details, edit in the editor) |
-| Repository invitations: accept or decline | Seen only as a notification type | Needs My Attention > Invitations |
+| Repository invitations: accept or decline | **Built 2026-11-18.** Needs My Attention > Invitations lists them (who invited you, the access, expired or not); Accept Invitation... (Enter) and Decline Invitation... ask first (`quill/core/github/repo_invitations.py`) | Needs My Attention > Invitations |
 | Edit description, website and features (issues, wiki, discussions, projects on or off) | Rename, visibility, default branch and topics only | Repository > Settings > General |
 | Rulesets: read them | Read only inside merge readiness, with a link out | Repository > Settings > Rulesets (read-only list; editing stays on github.com) |
-| Enable or disable a workflow | Not found | Workflow context menu; Item menu |
+| Enable or disable a workflow | **Built:** the workflow sheet's Enabled field; since 2026-11-18 also Turn Workflow On or Off... on the row, which says the state in words first, including GitHub's own sixty-day switch-off (`quill/core/github/workflow_state.py`) | Workflow context menu; Item menu |
 | Revert a merged pull request | **Built 2026-11-17.** Revert Pull Request... on a merged pull request's row opens the pull request that undoes it (GraphQL `revertPullRequest`), asking its title and whether it is a draft | PR context menu > Revert Pull Request... |
 | Security policy, private vulnerability reports, repository security advisories | Not found (an advisory credit appears only as a notification reason) | Repository > Security > Policy; Security > Advisories (roadmap GX11) |
 

@@ -42,6 +42,17 @@ can start has to be run from GitHub's own page.
 In QUILL, **Tools > Git and GitHub > GitHub > Dispatch Workflow...** does the
 same without opening GitHub Items.
 
+### Turning a workflow on or off
+
+A workflow that is turned off runs on nothing: not on a push, not on a
+schedule, not even Run Workflow. GitHub turns off a scheduled workflow by
+itself after sixty days without activity in the repository, which is a common
+reason a nightly job quietly stopped. **Turn Workflow On or Off...** on a
+workflow's context menu says its state in words first, "on", "turned off" or
+"turned off by GitHub after 60 days without activity", and asks before
+changing it. You hear "Turned on" and its name, or "Turned off". The
+workflow's Properties sheet has the same switch as its Enabled field.
+
 ## What Failed
 
 This is the command to learn first. Select a failed run in **Workflow Runs**

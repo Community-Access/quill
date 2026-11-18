@@ -348,6 +348,20 @@ def run_workflow(run: Any) -> str:
     return f"dispatched and finished in the seed (run {run.ids['run']})"
 
 
+def workflow_state(run: Any) -> str:
+    """Turn the live workflow off, read it back, and turn it on again."""
+    from quill.core.github.workflow_state import set_enabled
+
+    path = f"/repos/{run.repo}/actions/workflows/quill-live.yml"
+    workflow_id = int(run.rest("GET", path)["id"])
+    set_enabled(run.api, run.repo, workflow_id, "quill-live", False)
+    off = run.rest("GET", path)["state"]
+    set_enabled(run.api, run.repo, workflow_id, "quill-live", True)
+    on = run.rest("GET", path)["state"]
+    _expect(off == "disabled_manually" and on == "active", f"states were {off}, {on}")
+    return "turned off, read back as off, turned on again"
+
+
 def cancel_run(run: Any) -> str:
     run_id = _dispatch(run, "pass")
     run.items.cancel_workflow_run(run.repo, run_id)
@@ -812,6 +826,9 @@ VERBS: dict[str, Scenario | str] = {
     "mark_read": "needs Jeff: would mark one of your real notifications read",
     "merge": merge_and_delete_branch,
     "revert_pull": revert_merged,
+    "workflow_state": workflow_state,
+    "accept_invitation": "not here: needs an invitation from a second GitHub account",
+    "decline_invitation": "not here: needs an invitation from a second GitHub account",
     "practice": "needs Jeff: makes quill-practice in your own account, then deletes it",
     "inbox_rules": "needs Jeff: a rule acts on your real notifications as they load",
     "auto_merge": "not here: needs a pull request waiting on a required check; none is required",

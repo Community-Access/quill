@@ -17520,6 +17520,15 @@ GX04 down found that Re-run Failed Jobs pressed twice before GitHub answered
 sent two requests; `_do_rerun_failed` now keeps the runs it is sending and
 says the second press is already on its way.
 
+**Invitations and workflow state (GitHub PRD 14.1).** Needs My Attention >
+Invitations is the Explore account view `invitations`
+(`quill/core/github/repo_invitations.py`: `fetch_invitations`, `accept`,
+`decline`), row type `invitation`, Accept (Enter) and Decline each asking
+first, an expired invitation not acceptable. Turn Workflow On or Off... on a
+workflow (`quill/core/github/workflow_state.py`) says GitHub's state in words,
+including `disabled_inactivity`, and asks. Both are
+`quill/ui/github_workbench_tier2.py`.
+
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and
 `tests/unit/docs/test_github_live_run_coverage.py` fails when a write command

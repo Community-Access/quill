@@ -200,12 +200,12 @@ These are implementation claims to preserve and verify, not instructions to rebu
 Reconcile these against actual code and the operation ledger. Some individual actions may already exist.
 
 - [ ] Issue close reasons, development links, branch creation for an issue, task-list editing/conversion, organization issue fields. *(Done 2026-11-17 except organization issue fields: Close or Reopen asks the reason, duplicate included; Linked branches on the issue sheet; Create Branch for This Issue; Check or Uncheck a Task; Convert Tasks to Sub-issues. `issue_development.py`, `github_workbench_development.py`; tests `test_issue_development.py`, `test_github_workbench_development.py`. Unlinking a branch is not built.)*
-- [ ] Saved replies, repository invitations, wiki and cross-linked discussion → issue → PR workflows.
+- [ ] Saved replies, repository invitations, wiki and cross-linked discussion → issue → PR workflows. *(2026-11-18: saved replies insert in every comment box; repository invitations listed, accepted and declined (`repo_invitations.py`). Remaining: wiki, cross-linked workflows.)*
 - [ ] Repository General/features, complete creation/template options, transfer, standalone tags, topics and star lists.
 - [ ] Rulesets/protection management, organization/member/team access, custom roles and audit logs.
 - [ ] Webhooks and deliveries/redelivery/ping; deploy keys; autolinks; organization secret/variable repository selection.
 - [ ] Account profile/status, SSH/GPG/signing keys, token-request administration, billing/usage and Sponsors where APIs permit.
-- [ ] Workflow enable/disable and accessible workflow authoring; triggers/jobs/steps/inputs/permissions/dependency graph as linear controls.
+- [ ] Workflow enable/disable and accessible workflow authoring; triggers/jobs/steps/inputs/permissions/dependency graph as linear controls. *(2026-11-18: enable and disable on the sheet and as Turn Workflow On or Off... (`workflow_state.py`). Remaining: authoring.)*
 - [ ] Dependabot configuration and PR commands; CODEOWNERS editing/ownership lookup.
 - [x] Merge conflict resolution in an isolated worktree; PR revert; exact patch review. *(2026-11-17: Resolve Conflicts in a Worktree..., Revert Pull Request... and Open Patch in Editor (`pull_tools.py`, `github_workbench_pull_tools.py`). Conflicts are QUILL's, which keeps local Git.)*
 - [x] Review viewed/unviewed state, multiline/file comments, whitespace options, per-commit review, changed-since-review, suggestions and pending review drafts. *(2026-11-17: viewed and unviewed files, Show Only Files Not Viewed and file-level comments built (`review_viewed.py`, `github_pr_review_viewed.py`); multi-line comments, suggestions, changed-since-review and pending reviews were already there. 2026-11-18: Hide Whitespace Changes and Choose Commit... in the diff window (`commit_review.py`).)*

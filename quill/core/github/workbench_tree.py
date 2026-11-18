@@ -54,6 +54,14 @@ _FIXED: tuple[NodeSpec, ...] = (
         row_type="notification",
     ),
     _n(
+        "invitations",
+        "Invitations",
+        "attention",
+        needs=_SIGN_IN,
+        loader="explore:invitations",
+        row_type="invitation",
+    ),
+    _n(
         "review_requests",
         "Review Requests",
         "attention",
@@ -458,7 +466,6 @@ PLANNED = CoverageTable((
     _planned("Linked pull requests and branches for an issue", "Item > Linked Pull Requests"),
     _planned("Saved replies", "Item > Insert Saved Reply", "GX05, GX12"),
     _planned("Wiki", "Repository > Wiki", "GX12"),
-    _planned("Repository invitations", "Needs My Attention > Invitations"),
     _planned("Security policy and advisories", "Repository > Security > Advisories", "GX11"),
     # 14.2, worth adding later.
     _planned("Packages", "Repository > Packages"),

@@ -2137,6 +2137,15 @@ and added again; **Hide Whitespace Changes** leaves only what really changed.
 And a pull request of twelve commits can now be reviewed the way its author
 built it, a commit at a time, with **Choose Commit...**.
 
+#### Small doors that were missing
+
+An invitation to a repository used to reach QUILL only as a notification you
+could read and not answer. **Invitations** now sits under Needs My Attention,
+and Accept or Decline is one key away. And the nightly build that quietly
+stopped two months ago has an answer too: **Turn Workflow On or Off...** says
+in words when GitHub switched a workflow off itself after sixty days without
+activity, and turns it back on.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

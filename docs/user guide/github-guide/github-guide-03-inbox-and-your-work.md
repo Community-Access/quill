@@ -110,6 +110,17 @@ Shift+F10 on a notification has the same commands, plus one more:
 for the whole view, **Mark All Read...**. Mark Notification Read marks it read
 without opening it. **Inbox Rules...** is in the Item menu, below.
 
+## Invitations
+
+When someone invites you to a repository, GitHub sends a notification, and
+the invitation itself waits in **Needs My Attention > Invitations**. Each row
+says the repository, who invited you and with what access, "octo/app: ann
+invited you, write access", and the details say when. Enter, or **Accept
+Invitation...** on the context menu, asks and then joins you to the
+repository; **Decline Invitation...** asks and says no. An invitation expires
+after a week; an expired one says so, cannot be accepted, and can still be
+declined to clear it away.
+
 ## Inbox rules
 
 Some notifications always get the same answer: a Dependabot update you will
