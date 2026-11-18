@@ -1575,6 +1575,17 @@ file, comments on the line in the branch's open pull request, and opens the
 `#42` or commit hash the cursor is on. See
 [From the line you are on](../github-guide/github-guide-07-code-and-repositories.html#from-the-line-you-are-on).
 
+#### Lists out and issues in
+
+On the GitHub Workbench's File menu, **Export List...** saves the list in
+front of you, as shown, as an Excel workbook, a CSV file or a Markdown table.
+**Import Issues from a Spreadsheet...** makes an issue from each row of a CSV or
+Excel file, and **New Issues from Lines...** one from each line you selected,
+after a preview that says which rows GitHub would refuse. Inside the
+Workbench their keys are `Ctrl+Shift+X`, `Ctrl+Alt+I` and `Ctrl+Alt+L`. See
+[Taking a list with you](../github-guide/github-guide-12-the-workbench.html#taking-a-list-with-you)
+and [Bringing issues in](../github-guide/github-guide-12-the-workbench.html#bringing-issues-in).
+
 #### Rate limits and quiet refreshes
 
 `Ctrl+Shift+L` says how much of GitHub's hourly allowance is left, and a reload

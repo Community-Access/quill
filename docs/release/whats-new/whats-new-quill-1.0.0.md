@@ -9,18 +9,23 @@ QUILL 1.0 is the first general release. These are the newest parts; the full rel
 - **Pictures** ask for alternative text. Scheduling and earlier versions are there too.
 - **Blocks, made plain:** Next Block and Where Am I in Edit > WordPress. A block QUILL does not know goes back untouched.
 - **Checking:** Check This Page with axe-core, and Check the Whole Site with safe fixes in bulk.
-- **Looking after the site:** comments, categories and tags, people, menus (Add Menu Item, Add New Pages Automatically, Arrange Items) and the Media Library (Replace File).
+- **Looking after the site:** comments, categories and tags, people, menus and the Media Library.
 - **The WordPress Workbench** (Ctrl+Alt+Shift+Grave, then H) runs the whole site, with a preview before every change, Ctrl+Z, Needs My Attention and F1. Where WordPress cannot do something, it says so and opens wp-admin.
-- **Moving and copying:** export a site as WXR and import one as drafts, Copy to Site, snapshots and Across Sites. The Practice Site lets you try it all on your own computer.
+- **Moving and copying:** WXR export and import, Copy to Site, snapshots and Across Sites, and a Practice Site to try it all.
 - **Plugins:** WooCommerce, The Events Calendar, Yoast SEO, Paid Memberships Pro, Redirection, Gravity Forms.
-- **Keys:** Ctrl+Alt+Shift+Grave, then O to open, P to publish, D for a draft, M for the Media Library. File > Publish is gone; your saved connections come across by themselves.
+- **Keys:** Ctrl+Alt+Shift+Grave, then O to open, P to publish, D for a draft, M for the Media Library.
 
 ### Forms
 
 - **File > New Form** writes an accessible form as a short `.qaf` text document, in the language of the QUILL Accessible Forms plugin (formerly BITS Accessible Forms).
 - **Tools > Forms > Fill It In Yourself** lets you tab through your own form as a visitor would, before anyone else sees it.
 - Check This Form, rules read as sentences in Format > Form Rules, and saving as a web page, Word, large print or braille-ready text. Publish and Responses work with sites running the plugin.
-- **Payments:** Insert Payment Field, Form Payments Setup and Verify Payment Setup prepare Stripe and PayPal fields, in test mode first. Publishing checks the site is ready, Test on Site refuses a live-payment form, and Responses show and export each payment. Checkout needs QAF payment contract version 1 on the site. Chapter 18 of the guide walks through it.
+- **Payments:** Stripe and PayPal fields, set up and verified in test mode first. Publishing checks the site is ready, and Responses show each payment. Chapter 18 of the guide walks through it.
+
+## GitHub
+
+- **From the line you are on:** GitHub > From This Line copies a link to the line, says who changed it, opens its pull request, or starts an issue from your selection.
+- **The Workbench:** Export List (Ctrl+Shift+X) saves any list as Excel, CSV or Markdown. Import Issues (Ctrl+Alt+I) and New Issues from Lines (Ctrl+Alt+L) make many issues at once, after a preview.
 
 ## Say or Type a Command
 

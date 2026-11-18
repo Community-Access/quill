@@ -143,6 +143,24 @@ anyway. It is worth reading: the issue you were about to write is often
 already there, and a comment on it helps more than a second copy. When the
 issue is created, you hear "Created issue" with its number and title.
 
+### Many issues at once
+
+When the issues already exist somewhere else, you do not have to type them one
+by one:
+
+- **New Issue from Selection...**, in the GitHub menu, starts one issue
+  quoting the lines you selected, under a link to them.
+  See [From the line you are on](lite-github-guide-07-code-and-repositories.html#from-the-line-you-are-on).
+- **New Issues from Lines...** (`Ctrl+Alt+L`), on the Workbench's File menu,
+  makes one issue from each line you selected, a task list included, and can
+  make them sub-issues of an issue you name.
+- **Import Issues from a Spreadsheet...** (`Ctrl+Alt+I`), on the same menu,
+  makes one issue from each row of a CSV or Excel file, with its labels,
+  assignees, milestone and type.
+
+Both of the last two show a preview first, and say which rows GitHub would
+refuse and why. See [Bringing issues in](lite-github-guide-12-the-workbench.html#bringing-issues-in).
+
 ## Labels, milestones and assignees
 
 ### Labels

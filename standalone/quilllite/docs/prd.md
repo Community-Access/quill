@@ -2718,7 +2718,7 @@ the Command Palette always. No chords (the `github.` family, rule 7).
 | Row | Handler | QUILL command |
 | --- | --- | --- |
 | Copy GitHub Lin&k to This Line | `cmd_github_copy_line_link` | `github.copy_line_link` |
-| Wh&o Changed This Line? | `cmd_github_who_changed_line` (Coding area) | `localgit.blame_at_cursor` |
+| Wh&o Changed This Line? | `cmd_github_who_changed_line` | `localgit.blame_at_cursor` |
 | Open the Pull Re&quest for This Line | `cmd_github_open_line_pull` | `github.open_line_pull` |
 | Open This Line on GitH&ub | `cmd_github_open_line` | `github.open_line` |
 | New Issue from Se&lection... | `cmd_github_issue_from_selection` | `github.issue_from_selection` |
@@ -2729,3 +2729,22 @@ the Command Palette always. No chords (the `github.` family, rule 7).
 All eight have catalogue rows (`quill/core/command_catalogue/editor_github_line.py`),
 so a sentence reaches them; commenting is CONFIRM. Each reads the working copy
 with git in the background, says one sentence, and is refused in Safe Mode.
+
+All eight are in every profile, as QUILL Lite's Local Git rows are: the Coding
+area is QUILL's `project.*` commands and nothing else
+(`test_project_developer_profile`). In QUILL, Who Changed This Line? keeps
+`localgit.blame_at_cursor`'s Developer-profile gate.
+
+## Export and import in the GitHub Workbench (2026-11-17)
+
+GitHub PRD 22.7. QUILL Lite opens the same GitHub Workbench window as QUILL, so
+it has these without commands of its own: **Export List...** (Ctrl+Shift+X)
+writes the list as shown to `.xlsx`, `.csv` or a Markdown table
+(`quill/core/workbench/export.py`, shared with the WordPress Workbench);
+**Import Issues from a Spreadsheet...** (Ctrl+Alt+I) and **New Issues from
+Lines...** (Ctrl+Alt+L) make issues in bulk after a preview
+(`quill/core/github/issue_import.py`, `quill/ui/github_workbench_import.py`).
+New Issues from Lines starts from the selection of the document window that
+opened the Workbench. The keys are the Workbench window's own
+(`WORKBENCH_KEYS`), not editor chords, so they take nothing from QUILL Lite's
+keymap.

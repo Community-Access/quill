@@ -1971,6 +1971,26 @@ controls, Pages builds, labels, gists, and workflow job logs. Run actions now
 use GitHub's actual run ID. See the [workbench reference](../github/workbench-reference.md)
 for keys, context menus, account requirements, and current limitations.
 
+#### Lists out, issues in
+
+A list is only useful while you are looking at it, unless you can take it with
+you. **Export List...** (Ctrl+Shift+X), on the Workbench's File menu, saves the
+list in front of you exactly as shown, its columns, filter and rows, as an
+Excel workbook, a CSV file or a Markdown table you can open straight in the
+editor and read cell by cell. Issues, pull requests, runs, alerts, people and
+Change History all export the same way.
+
+Work often arrives the other way round: a spreadsheet of bugs from a meeting,
+or a task list in your notes. **Import Issues from a Spreadsheet...**
+(Ctrl+Alt+I) reads a CSV or Excel file, works out which column is the title,
+body, labels, assignees, milestone and type from the names in its first row,
+and shows you a preview that uses your spreadsheet's own row numbers. A row
+GitHub would refuse is skipped, and the preview says why, before anything is
+sent. **New Issues from Lines...** (Ctrl+Alt+L) turns each line you selected
+into an issue, takes off list markers and check boxes, and can make them all
+sub-issues of an issue you name. Afterwards a window lists every issue made,
+and Change History keeps each one.
+
 #### An issue's reason, its branch and its task list
 
 Closing an issue now asks why, the way GitHub records it: completed, not
@@ -4092,7 +4112,7 @@ out.
 **Try this:** double-click a document in File Explorer to open it in QUILL,
 then press Ctrl+O. The dialog is already in that document's folder.
 
-### Four fixes from the last reports
+### Five fixes from the last reports
 
 - **Enter saves Settings.** Find a setting takes you straight to the setting
   you asked for. Change it, press Enter, and Settings saves and closes, just as
@@ -4101,6 +4121,10 @@ then press Ctrl+O. The dialog is already in that document's folder.
   to move your whole data folder and restart, in a copy of QUILL that keeps its
   data somewhere of its own, even though you had not touched "Store QUILL's
   data". Now only a change you make there moves anything.
+- **Crash reports keep your Windows user name out.** A report already hid
+  `C:\Users\<your name>`, but missed the same path written with doubled
+  backslashes or forward slashes, which is how a report's settings and some
+  error messages write it. All three are hidden now.
 - **A GitHub secret saves every time.** In the GitHub Workbench, saving a
   repository secret failed about once in 64 tries with "characters a GitHub
   path cannot hold". It no longer does.

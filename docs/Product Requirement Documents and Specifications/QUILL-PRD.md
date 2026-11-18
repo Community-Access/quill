@@ -17352,3 +17352,44 @@ saved searches, My Work, account and repository discovery, labels, Pages,
 activity, notifications, and workflow job logs. The [workbench reference](../github/workbench-reference.md)
 defines the current interaction model and the [audit](../planning/github-workbench.md)
 records remaining gaps and release verification.
+
+### 2026-11-17: GitHub from the line, Export List, and issues in bulk
+
+**GitHub from the editor (GitHub PRD 22.3).** Eight commands work from the
+caret's line or the selection, in GitHub > From This Line (QUILL, and under
+Tools > Git and GitHub > GitHub with Workbench Mode off) and as flat rows of
+QUILL Lite's GitHub menu: Copy GitHub Link to This Line, Open This Line on
+GitHub, Who Changed This Line? (Local Git's `localgit.blame_at_cursor`,
+renamed, and fixed to answer for the caret's line rather than line 1; a second
+press within ten seconds opens the pull request that brought the commit), Open
+the Pull Request for This Line, New Issue from Selection..., Issues Mentioning
+This File, Comment on This Line in the Open Pull Request... and Open the
+GitHub Reference at the Cursor. One table (`workbench_menu.LINE_ROWS`), one
+implementation (`quill/ui/github_editor_line.py` over
+`quill/core/github/editor_line.py`), and catalogue rows so Say or Type a
+Command reaches them. Keyless under rule 7; Alt+Enter, which the GitHub PRD
+asked for, stays Redo's under rule 1. Refused in Safe Mode and without git; an
+untitled document is told to save first, at once rather than from the
+background.
+
+**Export List (GitHub PRD 22.7).** Export List... (Ctrl+Shift+X) on the
+Workbench's File menu writes the list as shown, columns, filter and rows, as
+`.xlsx`, `.csv` or a Markdown table. The writer moved from the WordPress
+Workbench to the shared engine (`quill/core/workbench/export.py`), so both
+Workbenches export through one implementation.
+
+**Issues in bulk (GitHub PRD 22.7).** Import Issues from a Spreadsheet...
+(Ctrl+Alt+I) maps columns by name to title, body, labels, assignees, milestone
+and type, previews with the sheet's own row numbers, and skips with a reason
+any row GitHub would refuse (`quill/core/github/issue_import.py`). New Issues
+from Lines... (Ctrl+Alt+L) makes one issue per selected line, list markers and
+check boxes removed, optionally as sub-issues. Nothing is sent before the
+preview's Create Issues; a result window gives a sentence per issue and Change
+History records each. The spreadsheet reader is shared with WordPress
+(`quill/core/workbench/spreadsheet.py`). Project fields are not mapped yet.
+
+**Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
+list, sheet and write command against two test repositories, and
+`tests/unit/docs/test_github_live_run_coverage.py` fails when a write command
+or sheet is added without a scenario or a reason
+(`docs/qa/github-regression-testing.md`).
