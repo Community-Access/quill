@@ -220,6 +220,17 @@ two branches has two tabs:
 **Open on GitHub** (`Alt+G`) opens the comparison in your browser. Comparing
 only reads, so it works signed out.
 
+## Setting a commit's status
+
+People who run their own checks outside GitHub Actions, in a test lab or by
+hand, report the result on the commit as a status. On a commit row, **Set
+Status...** asks what happened (passed, failed, still running, or could not
+run), the check's name as it shows among the commit's checks (it starts as
+`manual`), a few words, and a link to the details if there is one. It shows
+beside the commit's other checks, and branch protection can require it like
+any other. You hear "Set lab tests to failed on commit 3f9a2c1." You need
+write access.
+
 ## Commit comments
 
 On a commit row, in the Commits view or in a branch's commits, the context

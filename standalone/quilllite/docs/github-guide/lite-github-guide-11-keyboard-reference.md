@@ -365,6 +365,7 @@ Review action and Submit Review have no access key; reach them with Tab.
 | --- | --- | --- |
 | Timeline | `Alt+H` | History, oldest first |
 | Timeline | `Alt+A` | Copy All |
+| Timeline | `Alt+C` | Hide or Show Comment |
 | Reorder Sub-issues | `Alt+U` | Move Up |
 | Reorder Sub-issues | `Alt+D` | Move Down |
 | Edit Release | `Alt+N` | Release name |

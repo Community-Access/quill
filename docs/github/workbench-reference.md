@@ -852,7 +852,7 @@ Keys the window answers that are not menu rows:
 - **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., Compare With Previous, Compare With Default; More: Copy Link, Open on GitHub; Properties...
 - **release_asset**: Download, Copy Link, Delete Asset...; Properties...
 - **branch**: Commits, Compare With Default, Compare Branches..., Compare With Previous, Open in Codespaces..., Copy Name, Delete Branch...; Properties...
-- **commit**: Open, Commit Comments..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
+- **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
 - **tag**: Open, Delete Tag..., Commit Comments..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally; Properties...
@@ -970,7 +970,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 321 yes, 1142 planned, 15 not needed and 526 left to GitHub.
+In all: 324 yes, 1139 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1607,7 +1607,7 @@ In all: 321 yes, 1142 planned, 15 not needed and 526 left to GitHub.
 
 #### Commits
 
-14 operations: 6 yes, 8 planned.
+14 operations: 7 yes, 7 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1624,7 +1624,7 @@ In all: 321 yes, 1142 planned, 15 not needed and 526 left to GitHub.
 | Get the combined status for a specific reference | `GET /repos/{owner}/{repo}/commits/{ref}/status` | Yes | context menu > Combined Check Status |
 | List commit statuses for a reference | `GET /repos/{owner}/{repo}/commits/{ref}/statuses` | Planned | Commit sheet; Repository > Code > Commits; Commit comments. |
 | Compare two commits | `GET /repos/{owner}/{repo}/compare/{basehead}` | Yes | Repository > Compare Branches... (Ctrl+Shift+B) |
-| Create a commit status | `POST /repos/{owner}/{repo}/statuses/{sha}` | Planned | Commit sheet; Repository > Code > Commits; Commit comments. |
+| Create a commit status | `POST /repos/{owner}/{repo}/statuses/{sha}` | Yes | context menu > Set Status... |
 
 #### Copilot
 
@@ -2779,7 +2779,7 @@ In all: 321 yes, 1142 planned, 15 not needed and 526 left to GitHub.
 
 #### GraphQL: Issues
 
-51 mutations: 11 yes, 40 planned.
+51 mutations: 13 yes, 38 planned.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
@@ -2807,7 +2807,7 @@ In all: 321 yes, 1142 planned, 15 not needed and 526 left to GitHub.
 | `deleteLabel` | Planned | Issue sheet; Item menu |
 | `deleteLinkedBranch` | Planned | Issue sheet; Item menu |
 | `lockLockable` | Planned | Issue sheet; Item menu |
-| `minimizeComment` | Planned | Issue sheet; Item menu |
+| `minimizeComment` | Yes | context menu > View Timeline... |
 | `pinIssue` | Yes | context menu > Pin or Unpin Issue |
 | `pinIssueComment` | Planned | Issue sheet; Item menu |
 | `rejectPendingIssueSuggestions` | Planned | Issue sheet; Item menu |
@@ -2824,7 +2824,7 @@ In all: 321 yes, 1142 planned, 15 not needed and 526 left to GitHub.
 | `transferIssue` | Yes | context menu > Transfer Issue... |
 | `unlockLockable` | Planned | Issue sheet; Item menu |
 | `unmarkIssueAsDuplicate` | Planned | Issue sheet; Item menu |
-| `unminimizeComment` | Planned | Issue sheet; Item menu |
+| `unminimizeComment` | Yes | context menu > View Timeline... |
 | `unpinIssue` | Yes | context menu > Pin or Unpin Issue |
 | `unpinIssueComment` | Planned | Issue sheet; Item menu |
 | `updateIssue` | Planned | Issue sheet; Item menu |

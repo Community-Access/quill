@@ -620,6 +620,14 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Hiding a comment, and a commit's status (2026-11-18)
+
+An issue's timeline has **Hide or Show Comment...**, which folds a comment away
+for everyone for a reason, spam or off topic, without deleting it, and shows
+it again. A commit's context menu has **Set Status...**, which reports a check
+you ran yourself on that commit. Chapters 4 and 7 of the GitHub Guide have the
+details.
+
 ### Your GitHub status (2026-11-18)
 
 **Set Your Status...** on the GitHub Workbench's Account menu reads the

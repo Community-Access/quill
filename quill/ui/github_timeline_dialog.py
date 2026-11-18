@@ -65,9 +65,17 @@ class GitHubTimelineDialog:
         self._copy_btn = wx.Button(panel, wx.ID_ANY, label="Copy &All")
         self._copy_btn.SetHelpText("Copy the whole history to the clipboard.")
         self._copy_btn.Enable(False)
+        self._hide_btn = wx.Button(panel, wx.ID_ANY, label="Hide or Show &Comment...")
+        self._hide_btn.SetHelpText(
+            "With the cursor on a comment's line: fold it away for everyone for a reason, "
+            "such as spam or off topic, without deleting it; or show a hidden one again."
+        )
+        self._hide_btn.Enable(False)
+        self._entries: tuple[object, ...] = ()
         close_btn = wx.Button(panel, wx.ID_CANCEL, label="Close")
         close_btn.SetHelpText("Close the timeline.")
         buttons.Add(self._copy_btn, 0, wx.RIGHT, 6)
+        buttons.Add(self._hide_btn, 0, wx.RIGHT, 6)
         buttons.AddStretchSpacer()
         buttons.Add(close_btn)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
@@ -76,6 +84,7 @@ class GitHubTimelineDialog:
         outer.Add(panel, 1, wx.EXPAND)
         self.dialog.SetSizer(outer)
         self._copy_btn.Bind(wx.EVT_BUTTON, self._copy)
+        self._hide_btn.Bind(wx.EVT_BUTTON, lambda _event: self._hide_or_show())
 
     def _load(self) -> None:
         fetch = getattr(self._provider, "fetch_timeline", None)
@@ -102,11 +111,55 @@ class GitHubTimelineDialog:
         self._text.SetValue(result.text())
         self._text.SetInsertionPoint(0)
         self._copy_btn.Enable(True)
+        self._entries = tuple(result.entries)
+        self._hide_btn.Enable(any(getattr(e, "node_id", "") for e in self._entries))
         events = len(result.entries)
         self._announce(
             f"Timeline loaded, {events} event{'s' if events != 1 else ''}."
             + ("" if result.complete else " Only part of the history was read.")
         )
+
+    def _entry_at_cursor(self) -> object | None:
+        _ok, _column, line = self._text.PositionToXY(self._text.GetInsertionPoint())
+        return self._entries[line] if 0 <= line < len(self._entries) else None
+
+    def _hide_or_show(self) -> None:
+        """Hide the comment on the cursor's line for a reason, or show it again (14.2)."""
+        from quill.core.github.comment_moderation import REASONS, hide_comment, show_comment
+        from quill.core.github.workbench_api import TokenApi
+
+        wx = self._wx
+        entry = self._entry_at_cursor()
+        node_id = str(getattr(entry, "node_id", "") or "")
+        if not node_id:
+            self._announce("Put the cursor on a line that says commented, then try again.")
+            return
+        labels = [f"Hide as {label.casefold()}" for label, _code in REASONS] + ["Show it again"]
+        who = getattr(entry, "actor", "") or "someone"
+        with wx.SingleChoiceDialog(
+            self.dialog, f"The comment by {who}:", "Hide or Show Comment", labels
+        ) as box:
+            box.SetName("Hide or show comment")
+            if show_modal_dialog(box, "Hide or Show Comment", announce=self._announce) != wx.ID_OK:
+                return
+            picked = box.GetSelection()
+        api = TokenApi(getattr(self._provider, "token", None))
+
+        def work() -> str:
+            if picked >= len(REASONS):
+                return show_comment(api, node_id)
+            return hide_comment(api, node_id, REASONS[picked][1])
+
+        def worker() -> None:
+            try:
+                said = work()
+            except Exception as exc:  # noqa: BLE001 - said, never raised into wx
+                reason = str(exc.args[0]) if exc.args else str(exc)
+                wx.CallAfter(self._announce, f"Could not change the comment: {reason}")
+                return
+            wx.CallAfter(self._announce, said)
+
+        threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: one GraphQL write.
 
     def _failed(self, message: str) -> None:
         if not dialog_alive(self.dialog):

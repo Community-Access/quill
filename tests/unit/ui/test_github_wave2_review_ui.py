@@ -382,3 +382,55 @@ def test_choose_commit_shows_one_commit_and_back(diff_dialog, monkeypatch) -> No
     diff_dialog._choose_commit()
     assert diff_dialog._diff is diff_dialog._whole_diff
     assert diff_dialog._files.GetCount() == 2
+
+
+def test_the_timeline_hides_the_comment_on_the_cursors_line(wx_app, monkeypatch) -> None:
+    from quill.core.github.timeline import TimelineEntry, TimelineResult
+
+    monkeypatch.setattr("quill.ui.github_timeline_dialog.threading.Thread", _SyncThread)
+    patch_call_after(monkeypatch)
+    sent: list[tuple[str, str]] = []
+    monkeypatch.setattr(
+        "quill.core.github.comment_moderation.hide_comment",
+        lambda _api, node, why: (sent.append((node, why)), "Hid it.")[1],
+    )
+    frame = wx.Frame(None)
+    spoken: list[str] = []
+    dialog = GitHubTimelineDialog(frame, object(), "owner/repo", 7, announce_cb=spoken.append)
+    try:
+        entries = (
+            TimelineEntry("2026-11-01", "ann", "added the label bug"),
+            TimelineEntry("2026-11-02", "bo", "commented: buy now", "IC_2"),
+        )
+        dialog._ready(TimelineResult(entries))
+        assert dialog._hide_btn.IsEnabled()
+        dialog._text.SetInsertionPoint(0)
+        dialog._hide_or_show()
+        assert spoken[-1].startswith("Put the cursor on a line that says commented")
+
+        class _Choice:
+            def __init__(self, *_a, **_k) -> None:
+                pass
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_a) -> None:
+                pass
+
+            def SetName(self, _n) -> None:  # noqa: N802
+                pass
+
+            def GetSelection(self) -> int:  # noqa: N802
+                return 0
+
+        monkeypatch.setattr(wx, "SingleChoiceDialog", _Choice)
+        monkeypatch.setattr(
+            "quill.ui.github_timeline_dialog.show_modal_dialog", lambda *_a, **_k: wx.ID_OK
+        )
+        dialog._text.SetInsertionPoint(dialog._text.XYToPosition(0, 1))
+        dialog._hide_or_show()
+        assert sent == [("IC_2", "SPAM")] and spoken[-1] == "Hid it."
+    finally:
+        dialog.dialog.Destroy()
+        frame.Destroy()

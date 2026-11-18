@@ -373,6 +373,16 @@ def tags_made_and_deleted(run: Any) -> str:
     return f"{said} Deleted it again."
 
 
+def commit_status(run: Any) -> str:
+    from quill.core.github.commit_status import set_commit_status
+
+    sha = run.rest("GET", f"/repos/{run.repo}/commits/{run.ids['default_branch']}")["sha"]
+    said = set_commit_status(run.api, run.repo, sha, "success", "quill-live", "by the live run")
+    found = run.rest("GET", f"/repos/{run.repo}/commits/{sha}/statuses")
+    _expect(any(s["context"] == "quill-live" for s in found), "no status")
+    return said
+
+
 def cancel_run(run: Any) -> str:
     run_id = _dispatch(run, "pass")
     run.items.cancel_workflow_run(run.repo, run_id)
@@ -840,6 +850,7 @@ VERBS: dict[str, Scenario | str] = {
     "workflow_state": workflow_state,
     "new_tag": tags_made_and_deleted,
     "delete_tag": "with new_tag: made, then deleted",
+    "commit_status": commit_status,
     "user_status": "needs Jeff: changes the status on your own GitHub profile",
     "accept_invitation": "not here: needs an invitation from a second GitHub account",
     "decline_invitation": "not here: needs an invitation from a second GitHub account",

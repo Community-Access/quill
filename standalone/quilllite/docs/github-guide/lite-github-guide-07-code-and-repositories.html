@@ -476,6 +476,15 @@ the same way the pull request diff does.</li>
 <p><strong>Open on GitHub</strong> (<code>Alt+G</code>) opens the
 comparison in your browser. Comparing only reads, so it works signed
 out.</p>
+<h2 id="setting-a-commits-status">Setting a commit’s status</h2>
+<p>People who run their own checks outside GitHub Actions, in a test lab
+or by hand, report the result on the commit as a status. On a commit
+row, <strong>Set Status…</strong> asks what happened (passed, failed,
+still running, or could not run), the check’s name as it shows among the
+commit’s checks (it starts as <code>manual</code>), a few words, and a
+link to the details if there is one. It shows beside the commit’s other
+checks, and branch protection can require it like any other. You hear
+“Set lab tests to failed on commit 3f9a2c1.” You need write access.</p>
 <h2 id="commit-comments">Commit comments</h2>
 <p>On a commit row, in the Commits view or in a branch’s commits, the
 context menu has <strong>Commit Comments…</strong>. It opens the
