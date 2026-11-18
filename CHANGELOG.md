@@ -655,6 +655,37 @@ From EdSharp's recent history, checked against QUILL:
   tutorials); nothing new may be, and nothing listed may get harder.
 
 
+### WordPress: five ways the Workbench could lose your work, closed (2026-11-18)
+
+The WordPress review of 14 November listed eleven ways the Workbench could
+change or lose something without warning. Checked again against today's
+code, five were already fixed and one is half fixed. These are fixed now:
+
+- **Send Back with a Note** shows a preview first, and warns when a post is
+  already published, because sending it back takes it off the site. Ctrl+Z
+  now puts each post back as it was (your note stays).
+- **Approve and Schedule** warns when a post is already published, as Move to
+  Another Day does: it is off the site until the new time.
+- **A plugin's Status on its Properties sheet** gets the same checks as
+  Deactivate: the plugin QUILL signs in through is refused, and any other
+  asks first, with the "QUILL relies on this plugin" warning when there is
+  one. Before, saving the sheet switched it off with no question.
+- **Gravity Forms Spam and Not Spam** read the entry fresh before changing
+  it. Before, they sent the entry as it was when the list loaded, overwriting
+  any answer changed since.
+- **Replace File** asks about the old file before the preview, so the preview
+  can say whether Ctrl+Z will work. If the old file is deleted, Ctrl+Z says
+  it cannot be undone, instead of pointing every page at a file that no
+  longer exists.
+- **Put Back from a Snapshot** restores a post's or page's status, address,
+  categories and tags, featured image, parent and order, not only its words,
+  and a category's address and parent. A deleted item still comes back as a
+  draft, now with the rest as it was.
+
+Still open: some Workbench changes (Reply, Merge Into, the Empty commands,
+shop and event edits, among others) are not yet written to Change History,
+so Ctrl+Z straight after one undoes an older change instead.
+
 ### Four ways to mark a changed line, from Kelly Ford (2026-11-18)
 
 A difference is a list of lines, each one added, removed or left as it was.

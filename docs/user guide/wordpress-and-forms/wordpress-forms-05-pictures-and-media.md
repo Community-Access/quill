@@ -177,14 +177,15 @@ wp-admin there. Replace the file in the browser, then come back and press F5.
 
 1. QUILL finds every post, page, synced pattern, featured image and custom
    field that uses the old file.
-2. The preview lists the old and new file, and then every item that will be
-   changed. It also names anything it found but cannot change, such as a
-   field that holds the file's number instead of its address. Press
-   **Upload and Repoint**.
-3. QUILL asks about **The Old File**:
+2. QUILL asks about **The Old File** first, so the preview can tell you
+   whether you can change your mind afterwards:
    - **Keep the old file in the library**, the safe choice;
    - **Delete the old file permanently once every use is moved (cannot be
      undone)**. It is deleted only if every use really was moved.
+3. The preview lists the old and new file, and then every item that will be
+   changed. It also names anything it found but cannot change, such as a
+   field that holds the file's number instead of its address. Its last line
+   says whether Ctrl+Z can put things back. Press **Upload and Repoint**.
 4. If your site has the Redirection plugin, QUILL asks whether to **Add a
    Redirect** from the old address to the new one. Say yes if other websites,
    emails or search engines link to the old file. Without a redirect, those
@@ -194,8 +195,10 @@ At the end you hear one sentence, such as "The file's address changes; QUILL
 updated 4 places that used it. A redirect now sends the old address to the
 new one. The old file is still in the library."
 
-Changed your mind? Ctrl+Z points every item back at the old file. The new
-file stays in the library, and you can delete it if you like.
+Changed your mind? If you kept the old file, Ctrl+Z points every item back
+at it. The new file stays in the library, and you can delete it if you like.
+If you deleted the old file, there is nothing to point back at, so Ctrl+Z
+says this cannot be undone rather than breaking your pages.
 
 ## Listening and watching
 
