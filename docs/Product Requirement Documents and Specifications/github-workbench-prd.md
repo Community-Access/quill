@@ -2293,9 +2293,21 @@ visible row would make JAWS repeat the row.
   schema's `viewerCanSeeIssueFields`), on the Issue sheet and in filters.
 - **Follow a running job's log live,** new lines read as they arrive on
   request, with Alt+8 for how far along it is.
+  *Built 2026-11-18, with one departure:* the REST job log exists only once a
+  job ends (GitHub streams a running log only to its own page), so Follow
+  This Job (`Alt+W`, jobs window) follows the job's **steps** instead: it
+  polls every 10 seconds off the UI thread and says each step starting and
+  finishing and the job's end, then stops; Alt+8 says the step it is on, how
+  many are done and which failed. `quill/core/github/job_follow.py`,
+  `quill/ui/github_workflow_job_follow.py`.
 - **Hearing a diff:** a short sound for added and removed lines (through the
   family's sound scheme, optional), and Read Changes Only, which skips
   unchanged context.
+  *Built 2026-11-18* in the diff window: Changed Lines Only (`Alt+H`, hunk
+  headings kept, `diff_lines.changed_only`) and the sound events
+  `diff_line_added` and `diff_line_removed` on arriving at a single line
+  (`diff_lines.line_sound`), with Ink clips and VS Code Signals'
+  `diffLineInserted` and `diffLineDeleted`.
 - **Emoji shortcodes** (`:rocket:`) read by name everywhere.
 - **Least privilege advisor:** the token health check (`token_health.py`)
   extended to say which scopes the account has but the Workbench never used,

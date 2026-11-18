@@ -16,6 +16,8 @@
     "conversation_thinking_tick": "progress.wav",
     "dictation_locked_off": "voiceRecordingStopped.wav",
     "dictation_locked_on": "voiceRecordingStarted.wav",
+    "diff_line_added": "diffLineInserted.wav",
+    "diff_line_removed": "diffLineDeleted.wav",
     "document_saved": "save.wav",
     "error": "error.wav",
     "print_complete": "success.wav",

@@ -251,7 +251,26 @@ def unified_diff_text(files: Sequence[object]) -> str:
     return "\n".join(chunks) + ("\n" if chunks else "")
 
 
+#: The sound for arriving on a line of each kind; others are silent.
+LINE_SOUNDS: dict[str, str] = {"added": "diff_line_added", "removed": "diff_line_removed"}
+
+
+def changed_only(lines: tuple[DiffLine, ...] | list[DiffLine]) -> tuple[int, ...]:
+    """The indexes of *lines* to show when Changed Lines Only is checked.
+
+    Unchanged context goes; hunk headings and notes stay, so each change still
+    says where it is.
+    """
+    return tuple(index for index, line in enumerate(lines) if line.kind != "context")
+
+
+def line_sound(line: DiffLine) -> str:
+    """The sound event for arriving on *line*: added, removed, or none."""
+    return LINE_SOUNDS.get(line.kind, "")
+
+
 __all__ = [
+    "LINE_SOUNDS",
     "LINE_MARKS_SYMBOLS",
     "LINE_MARKS_WORDS",
     "LINE_MARK_LABELS",
@@ -260,6 +279,8 @@ __all__ = [
     "DiffLine",
     "LineCommentAnchor",
     "anchor_for",
+    "changed_only",
+    "line_sound",
     "lines_for_range",
     "parse_diff_lines",
     "parse_range",

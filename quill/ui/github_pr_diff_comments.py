@@ -24,6 +24,8 @@ from quill.core.github.diff_lines import (
     DiffLine,
     LineCommentAnchor,
     anchor_for,
+    changed_only,
+    line_sound,
     lines_for_range,
     parse_diff_lines,
     parse_range,
@@ -44,6 +46,7 @@ class GitHubPullDiffCommentsMixin:
         wx = self._wx
         self._line_style = load_line_marks()
         self._patch_lines: tuple[DiffLine, ...] = ()
+        self._visible: tuple[int, ...] = ()
         self._posting = False
         self._pending_store = LineCommentDraftStore.load(getattr(self._provider, "token", None))
 
@@ -60,6 +63,13 @@ class GitHubPullDiffCommentsMixin:
         self._marks_choice.SetSelection(LINE_MARK_STYLES.index(self._line_style))
         marks_row.Add(marks_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
         marks_row.Add(self._marks_choice, 0)
+        self._changed_only = wx.CheckBox(panel, label="C&hanged Lines Only")
+        self._changed_only.SetName("Changed lines only")
+        self._changed_only.SetHelpText(
+            "Leave out the unchanged lines around each change, so the arrows move from "
+            "change to change. Hunk headings stay, so each change still says where it is."
+        )
+        marks_row.Add(self._changed_only, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 12)
         root.Add(marks_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         self._marks_note = wx.StaticText(
             panel, label=SYMBOLS_NOTE if self._line_style == LINE_MARKS_SYMBOLS else ""
@@ -110,6 +120,8 @@ class GitHubPullDiffCommentsMixin:
         root.Add(self._pending_label, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
 
         self._marks_choice.Bind(wx.EVT_CHOICE, self._on_marks_changed)
+        self._changed_only.Bind(wx.EVT_CHECKBOX, self._on_changed_only)
+        self._patch_list.Bind(wx.EVT_LISTBOX, self._on_patch_line)
         self._comment_line_btn.Bind(wx.EVT_BUTTON, self._comment_on_line)
         self._comment_lines_btn.Bind(wx.EVT_BUTTON, self._comment_on_lines)
         self._copy_diff_btn.Bind(wx.EVT_BUTTON, self._copy_diff)
@@ -147,12 +159,47 @@ class GitHubPullDiffCommentsMixin:
         self._update_comment_buttons()
 
     def _render_patch_lines(self) -> None:
-        selected = set(self._patch_list.GetSelections())
-        rows = [render_line(line, self._line_style) for line in self._patch_lines]
+        before = {
+            self._visible[position]
+            for position in self._patch_list.GetSelections()
+            if 0 <= position < len(self._visible)
+        }
+        if self._changed_only.GetValue():
+            self._visible = changed_only(self._patch_lines)
+        else:
+            self._visible = tuple(range(len(self._patch_lines)))
+        rows = [render_line(self._patch_lines[index], self._line_style) for index in self._visible]
         self._patch_list.Set(rows or ["GitHub sent no patch lines for this file."])
-        for index in selected:
-            if index < len(rows):
-                self._patch_list.SetSelection(index)
+        for position, index in enumerate(self._visible):
+            if index in before:
+                self._patch_list.SetSelection(position)
+
+    def _on_changed_only(self, _event: object) -> None:
+        self._render_patch_lines()
+        if self._changed_only.GetValue() and self._patch_lines:
+            changes = sum(1 for line in self._patch_lines if line.kind in ("added", "removed"))
+            self._announce(
+                f"{changes} changed line{'s' if changes != 1 else ''}, without the "
+                f"{len(self._patch_lines) - len(self._visible)} unchanged around them."
+            )
+
+    def _on_patch_line(self, _event: object) -> None:
+        """Arriving on an added or removed line plays its sound (Sound Scheme, optional)."""
+        chosen = self._selected_patch_lines()
+        if len(chosen) != 1:
+            return
+        if not line_sound(chosen[0]):
+            return
+        added = chosen[0].kind == "added"
+        try:
+            from quill.core.sound_events import SoundEvent
+            from quill.ui import sound_manager
+
+            sound_manager.post_sound(
+                SoundEvent.DIFF_LINE_ADDED if added else SoundEvent.DIFF_LINE_REMOVED
+            )
+        except Exception:  # noqa: BLE001 - a sound never interrupts reading
+            pass
 
     def _on_marks_changed(self, _event: object) -> None:
         index = self._marks_choice.GetSelection()
@@ -170,9 +217,9 @@ class GitHubPullDiffCommentsMixin:
 
     def _selected_patch_lines(self) -> list[DiffLine]:
         return [
-            self._patch_lines[index]
-            for index in self._patch_list.GetSelections()
-            if 0 <= index < len(self._patch_lines)
+            self._patch_lines[self._visible[position]]
+            for position in self._patch_list.GetSelections()
+            if 0 <= position < len(self._visible)
         ]
 
     # -- commenting ---------------------------------------------------

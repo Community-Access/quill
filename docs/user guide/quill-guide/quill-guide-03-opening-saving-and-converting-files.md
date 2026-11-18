@@ -1505,6 +1505,20 @@ branch in a new folder beside your checkout and walks each conflicted file,
 without changing the folder you are in. See
 [The whole patch, a revert, and conflicts](../github-guide/github-guide-05-pull-requests-and-review.html#the-whole-patch-a-revert-and-conflicts).
 
+#### Following a running job
+
+In a run's jobs window, **Follow This Job** says each step of a running job
+as it starts and finishes, and the job's end; `Alt+8` says how far along it
+is. See
+[Following a job while it runs](../github-guide/github-guide-06-actions-and-checks.html#following-a-job-while-it-runs).
+
+#### Hearing a diff
+
+In a pull request's diff window, **Changed Lines Only** leaves out the
+unchanged lines, and an added or a removed line plays a short sound as you
+arrow onto it; both sounds are in the Sound Scheme window. See
+[The diff](../github-guide/github-guide-05-pull-requests-and-review.html#the-diff).
+
 #### Why a pull request cannot merge
 
 **Why Can't I Merge?** on a pull request's row in the GitHub Workbench says

@@ -143,6 +143,8 @@
     "windows_dictation_on": "windows_dictation_on.wav",
     "windows_dictation_phrase": "windows_dictation_phrase.wav",
     "windows_dictation_working": "windows_dictation_working.wav",
-    "word_corrected": "word_corrected.wav"
+    "word_corrected": "word_corrected.wav",
+    "diff_line_added": "diff_line_added.wav",
+    "diff_line_removed": "diff_line_removed.wav"
   }
 }

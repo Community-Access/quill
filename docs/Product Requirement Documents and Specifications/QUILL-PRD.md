@@ -17442,6 +17442,23 @@ Queue... are on the row, reusing `merge_automation.py`, and Repository >
 Merge Queue lists the default branch's queue. `quill/core/github/merge_readiness.py`,
 `quill/core/github/merge_queue.py`, `quill/ui/github_workbench_merge.py`.
 
+**Hearing a diff (GitHub PRD 22.12).** The pull request diff window's patch
+list has Changed Lines Only (`Alt+H`), which drops context lines and keeps
+hunk headings, the list mapping each row back to its patch line
+(`diff_lines.changed_only`). Arriving on one added or removed line posts
+`diff_line_added` or `diff_line_removed` (`SoundEvent`, Comparing group in the
+Sound Scheme window); Ink has `diff_line_added.wav` and
+`diff_line_removed.wav` (`scripts/gen_ink_sounds.py --diff-lines`), and VS
+Code Signals maps them to `diffLineInserted.wav` and `diffLineDeleted.wav`.
+
+**Following a running job (GitHub PRD 22.12).** The workflow jobs window's
+Follow This Job (`Alt+W`) polls the selected job every 10 seconds
+(`job_follow.FOLLOW_SECONDS`, a `wx.Timer`, the read on a worker thread and
+back through `wx.CallAfter`) and says what changed (`step_changes`): steps
+starting and finishing, and the job's end, after which it stops. Alt+8, a
+char hook on the window, says `progress_sentence`. GitHub's REST job log
+exists only once a job ends, so the steps are what can be followed.
+
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and
 `tests/unit/docs/test_github_live_run_coverage.py` fails when a write command

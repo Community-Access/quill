@@ -2767,4 +2767,6 @@ greyed with that reason. QUILL being ahead is allowed; QUILL Lite being
 ahead is not. Why Can't I Merge?, Auto-Merge..., Add to or Remove from Merge
 Queue..., the Merge Queue node and Merge's check of the exact commit are the
 Workbench's, so they are the same in both editors
-(`quill/ui/github_workbench_merge.py`).
+(`quill/ui/github_workbench_merge.py`). The diff window's Changed Lines Only
+and its added and removed line sounds are the shared diff window's, so QUILL
+Lite has them too, as is the jobs window's Follow This Job and Alt+8.

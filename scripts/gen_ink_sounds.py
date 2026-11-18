@@ -1083,10 +1083,30 @@ def generate_inline_note_line() -> None:
     write_wav("inline_note_line.wav", tap, vol=0.30)
 
 
+def generate_diff_lines() -> None:
+    """Arriving on an added or a removed line of a diff (2026-11-18).
+
+    Heard on every arrow press through a patch, so quieter and shorter still
+    than the inline-note tap: an added line is a soft bell that lifts a whole
+    tone, a removed line a muted triangle that drops a fourth, low enough
+    never to be mistaken for Compare's next and previous ticks.
+    """
+    added = _concat(_bell(1175, 40), _silence(6), _bell(1319, 55))
+    write_wav("diff_line_added.wav", added, vol=0.26)
+    removed = _concat(
+        _tone(392, 35, tri_at, _swell_env(2, 6, 0.3, 10)),
+        _silence(6),
+        _tone(294, 45, tri_at, _swell_env(2, 8, 0.3, 14)),
+    )
+    write_wav("diff_line_removed.wav", removed, vol=0.30)
+
+
 if __name__ == "__main__":
     import sys
 
-    if "--inline-note-line" in sys.argv:
+    if "--diff-lines" in sys.argv:
+        generate_diff_lines()
+    elif "--inline-note-line" in sys.argv:
         generate_inline_note_line()
     elif "--cast-outcomes" in sys.argv:
         generate_cast_outcomes()

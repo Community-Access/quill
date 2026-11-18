@@ -128,6 +128,11 @@ Merge Queue... on the row, and Repository > Merge Queue.
 `quill/core/github/merge_readiness.py`, `quill/core/github/merge_queue.py`,
 `quill/ui/github_workbench_merge.py`. Batch merges remain.
 
+**2026-11-18, hearing a diff.** Changed Lines Only in the diff window, and
+the `diff_line_added` and `diff_line_removed` sounds on arriving at a line.
+Follow This Job and Alt+8 in the jobs window (`job_follow.py`,
+`github_workflow_job_follow.py`).
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

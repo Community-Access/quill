@@ -229,6 +229,7 @@ Review action and Submit Review have no access key; reach them with Tab.
 | Key | What it does |
 | --- | --- |
 | `Alt+M` | Line marks: words or symbols |
+| `Alt+H` | Changed Lines Only |
 | `Alt+P` | Patch lines |
 | Shift with the arrows | Select a run of patch lines |
 | Enter | Comment on the line, or on the selected lines |
@@ -297,6 +298,8 @@ Review action and Submit Review have no access key; reach them with Tab.
 | `Alt+R` | Open Run on GitHub |
 | `Alt+F` | What Failed... |
 | `Alt+C` | Re-request Check |
+| `Alt+W` | Follow This Job |
+| `Alt+8` | How far along the selected job is |
 | Enter | Load the selected job's log |
 
 ### Pending Deployments

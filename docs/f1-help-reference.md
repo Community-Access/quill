@@ -3470,6 +3470,7 @@ Control coverage: 361 audited sites (361 helped).
 #### GitHubPullDiffCommentsMixin (`quill/ui/github_pr_diff_comments.py`)
 
 - `self._marks_choice`: How patch lines are marked: words (Added line, Removed line) or symbols (plus and minus). Symbols need your screen reader to read punctuation.
+- `self._changed_only`: Leave out the unchanged lines around each change, so the arrows move from change to change. Hunk headings stay, so each change still says where it is.
 - `self._marks_note`: Reminds you that symbols are spoken only with punctuation.
 - `self._patch_list`: The selected file's changes, one line per row. Shift with the arrows selects a run of lines. Enter comments on the selected lines.
 - `self._comment_line_btn`: Write a comment on the selected patch line, for your review or to post now.
@@ -3668,6 +3669,9 @@ Control coverage: 361 audited sites (361 helped).
 - `copy`: Copy every line as text. Ctrl+C does the same.
 - `close`: Close the results.
 - `again`: Run the failed items again. F8 does the same.
+#### WorkflowJobFollowMixin (`quill/ui/github_workflow_job_follow.py`)
+
+- `self._follow_box`: While checked, QUILL reads the selected job again every few seconds and says each step as it starts and finishes, and the job's end. Alt+8 says how far along it is at any time.
 #### WorkflowJobsDialog (`quill/ui/github_workflow_jobs_dialog.py`)
 
 - `self._attempt_choice`: Which attempt of the run to show, when it ran more than once.
