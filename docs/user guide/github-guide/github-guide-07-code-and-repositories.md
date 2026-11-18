@@ -205,6 +205,17 @@ Backspace comes back.
 Signed in, the context menu has **Delete Branch** and the branch name. To
 confirm, you type the branch's name. It cannot be undone from QUILL.
 
+It also has:
+
+- **Merge Into...**, which merges the branch into another, on GitHub, as a
+  merge commit, the way GitHub's merge button would but with no pull request.
+  QUILL offers the default branch first and asks before merging. You hear
+  "Merged topic into main as abc1234.", or that there was nothing to merge, or
+  that the two conflict and nothing was merged. Branch protection still
+  applies: a protected branch that needs a pull request refuses.
+- **Download Source...**, the branch's files as a zip or tar.gz file, saved
+  where you choose. A tag's context menu has it too.
+
 ### Comparing branches
 
 Select a branch and press **Compare...** (`Alt+C`) or `Ctrl+Shift+B`. QUILL
@@ -304,6 +315,9 @@ Signed in, a release's context menu and **Actions...** have:
   "Uploaded" with the file's name and size.
 - **Delete Asset**, inside a release's file list, removes a file after asking.
   Its download count goes with it.
+- **Delete Release...** deletes the release, its notes and its files. Choose
+  **Delete the release, keep the tag**, which leaves the tagged commit as it
+  was, or **Delete the release and its tag**. It cannot be undone.
 
 In QUILL, **Tools > Git and GitHub > GitHub > Create Release...** makes a new
 release: a tag, an optional title, your own notes or GitHub's, and whether to
@@ -509,6 +523,10 @@ change it you set a new one. GitHub sends a new webhook a ping straight away.
 On a webhook:
 
 - **Ping** sends it a test message.
+- **Send Test Push**, on a repository's webhook, asks GitHub to send it the
+  latest push as a test, if it listens for pushes.
+- **Turn On or Off...** stops GitHub sending it anything, without deleting it,
+  or starts it again.
 - **Recent Deliveries...** lists what GitHub sent, newest first: "push at
   2026-11-18 09:30: succeeded (200)", or failed with the code it got back.
   Choose one to deliver it again, after a question.
