@@ -3029,7 +3029,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 379 yes, 1084 planned, 15 not needed and 526 left to
+<p>In all: 379 yes, 1077 planned, 15 not needed and 533 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -8933,7 +8933,7 @@ Importer replaces it.</td>
 </tbody>
 </table>
 <h4 id="organizations">Organizations</h4>
-<p>129 operations: 27 yes, 102 planned.</p>
+<p>129 operations: 27 yes, 95 planned, 7 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -9419,50 +9419,64 @@ personal access tokens</td>
 <td>Review requests to access organization resources with fine-grained
 personal access tokens</td>
 <td><code>POST /orgs/{org}/personal-access-token-requests</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Token Requests.</td>
+<td>Left to GitHub</td>
+<td>GitHub serves this to GitHub Apps only (its reference: Only GitHub
+Apps can use this endpoint), so a person’s sign-in is refused; owners
+review token requests on the organization’s settings page.</td>
 </tr>
 <tr>
 <td>Review a request to access organization resources with a
 fine-grained personal access token</td>
 <td><code>POST /orgs/{org}/personal-access-token-requests/{pat_request_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Token Requests.</td>
+<td>Left to GitHub</td>
+<td>GitHub serves this to GitHub Apps only (its reference: Only GitHub
+Apps can use this endpoint), so a person’s sign-in is refused; owners
+review token requests on the organization’s settings page.</td>
 </tr>
 <tr>
 <td>List repositories requested to be accessed by a fine-grained
 personal access token</td>
 <td><code>GET /orgs/{org}/personal-access-token-requests/{pat_request_id}/repositories</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Token Requests.</td>
+<td>Left to GitHub</td>
+<td>GitHub serves this to GitHub Apps only (its reference: Only GitHub
+Apps can use this endpoint), so a person’s sign-in is refused; owners
+review token requests on the organization’s settings page.</td>
 </tr>
 <tr>
 <td>List fine-grained personal access tokens with access to organization
 resources</td>
 <td><code>GET /orgs/{org}/personal-access-tokens</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Token Requests.</td>
+<td>Left to GitHub</td>
+<td>GitHub serves this to GitHub Apps only (its reference: Only GitHub
+Apps can use this endpoint), so a person’s sign-in is refused; owners
+review token requests on the organization’s settings page.</td>
 </tr>
 <tr>
 <td>Update the access to organization resources via fine-grained
 personal access tokens</td>
 <td><code>POST /orgs/{org}/personal-access-tokens</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Token Requests.</td>
+<td>Left to GitHub</td>
+<td>GitHub serves this to GitHub Apps only (its reference: Only GitHub
+Apps can use this endpoint), so a person’s sign-in is refused; owners
+review token requests on the organization’s settings page.</td>
 </tr>
 <tr>
 <td>Update the access a fine-grained personal access token has to
 organization resources</td>
 <td><code>POST /orgs/{org}/personal-access-tokens/{pat_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Token Requests.</td>
+<td>Left to GitHub</td>
+<td>GitHub serves this to GitHub Apps only (its reference: Only GitHub
+Apps can use this endpoint), so a person’s sign-in is refused; owners
+review token requests on the organization’s settings page.</td>
 </tr>
 <tr>
 <td>List repositories a fine-grained personal access token has access
 to</td>
 <td><code>GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Token Requests.</td>
+<td>Left to GitHub</td>
+<td>GitHub serves this to GitHub Apps only (its reference: Only GitHub
+Apps can use this endpoint), so a person’s sign-in is refused; owners
+review token requests on the organization’s settings page.</td>
 </tr>
 <tr>
 <td>Get registered app installations for external custom properties</td>

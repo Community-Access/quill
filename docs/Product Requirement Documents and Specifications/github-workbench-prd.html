@@ -1961,7 +1961,14 @@ Ctrl+N’s tables moved to
 review, approve and deny fine-grained token requests, and revoke access,
 under Organizations &gt; org &gt; Token Requests. Creating a token has
 no API, so Account &gt; Tokens opens the right GitHub page and the
-Workbench checks the result (section 18.1).</li>
+Workbench checks the result (section 18.1). <strong>Found
+2026-11-18:</strong> reviewing, approving, denying and revoking go
+through <code>/orgs/{org}/personal-access-token-requests</code> and
+<code>.../personal-access-tokens</code>, which GitHub’s reference marks
+“Only GitHub Apps can use this endpoint”. A person’s sign-in is refused,
+so the Workbench cannot do this; the seven rows are
+<code>out_of_scope</code> with that reason, and owners use the
+organization’s settings page on GitHub.</li>
 <li><strong>Sponsors:</strong> People &gt; person &gt; Sponsor, and
 Account &gt; Sponsors for your own sponsorships and sponsors, read and
 manage what the API allows.</li>

@@ -1002,7 +1002,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 379 yes, 1084 planned, 15 not needed and 526 left to GitHub.
+In all: 379 yes, 1077 planned, 15 not needed and 533 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2076,7 +2076,7 @@ In all: 379 yes, 1084 planned, 15 not needed and 526 left to GitHub.
 
 #### Organizations
 
-129 operations: 27 yes, 102 planned.
+129 operations: 27 yes, 95 planned, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2155,13 +2155,13 @@ In all: 379 yes, 1084 planned, 15 not needed and 526 left to GitHub.
 | Remove outside collaborator from an organization | `DELETE /orgs/{org}/outside_collaborators/{username}` | Planned | Organization sheet > Outside Collaborators. |
 | Convert an organization member to outside collaborator | `PUT /orgs/{org}/outside_collaborators/{username}` | Planned | Organization sheet > Outside Collaborators. |
 | List requests to access organization resources with fine-grained personal access tokens | `GET /orgs/{org}/personal-access-token-requests` | Yes | Properties (Alt+Enter) on Organization |
-| Review requests to access organization resources with fine-grained personal access tokens | `POST /orgs/{org}/personal-access-token-requests` | Planned | Organization sheet > Token Requests. |
-| Review a request to access organization resources with a fine-grained personal access token | `POST /orgs/{org}/personal-access-token-requests/{pat_request_id}` | Planned | Organization sheet > Token Requests. |
-| List repositories requested to be accessed by a fine-grained personal access token | `GET /orgs/{org}/personal-access-token-requests/{pat_request_id}/repositories` | Planned | Organization sheet > Token Requests. |
-| List fine-grained personal access tokens with access to organization resources | `GET /orgs/{org}/personal-access-tokens` | Planned | Organization sheet > Token Requests. |
-| Update the access to organization resources via fine-grained personal access tokens | `POST /orgs/{org}/personal-access-tokens` | Planned | Organization sheet > Token Requests. |
-| Update the access a fine-grained personal access token has to organization resources | `POST /orgs/{org}/personal-access-tokens/{pat_id}` | Planned | Organization sheet > Token Requests. |
-| List repositories a fine-grained personal access token has access to | `GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories` | Planned | Organization sheet > Token Requests. |
+| Review requests to access organization resources with fine-grained personal access tokens | `POST /orgs/{org}/personal-access-token-requests` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
+| Review a request to access organization resources with a fine-grained personal access token | `POST /orgs/{org}/personal-access-token-requests/{pat_request_id}` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
+| List repositories requested to be accessed by a fine-grained personal access token | `GET /orgs/{org}/personal-access-token-requests/{pat_request_id}/repositories` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
+| List fine-grained personal access tokens with access to organization resources | `GET /orgs/{org}/personal-access-tokens` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
+| Update the access to organization resources via fine-grained personal access tokens | `POST /orgs/{org}/personal-access-tokens` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
+| Update the access a fine-grained personal access token has to organization resources | `POST /orgs/{org}/personal-access-tokens/{pat_id}` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
+| List repositories a fine-grained personal access token has access to | `GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
 | Get registered app installations for external custom properties | `GET /orgs/{org}/properties/installations` | Planned | Organization sheet > Custom Properties. |
 | Register an app installation for external custom properties | `POST /orgs/{org}/properties/installations` | Planned | Organization sheet > Custom Properties. |
 | Get all external custom properties for a GitHub App installation in an organization | `GET /orgs/{org}/properties/installations/schema` | Planned | Organization sheet > Custom Properties. |

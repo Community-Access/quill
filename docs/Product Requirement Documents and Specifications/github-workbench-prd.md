@@ -1042,6 +1042,12 @@ a home and a Properties sheet:
   org > Token Requests. Creating a token has no API, so Account > Tokens
   opens the right GitHub page and the Workbench checks the result
   (section 18.1).
+  **Found 2026-11-18:** reviewing, approving, denying and revoking go through
+  `/orgs/{org}/personal-access-token-requests` and `.../personal-access-tokens`,
+  which GitHub's reference marks "Only GitHub Apps can use this endpoint". A
+  person's sign-in is refused, so the Workbench cannot do this; the seven rows
+  are `out_of_scope` with that reason, and owners use the organization's
+  settings page on GitHub.
 - **Sponsors:** People > person > Sponsor, and Account > Sponsors for your
   own sponsorships and sponsors, read and manage what the API allows.
 

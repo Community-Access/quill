@@ -1200,7 +1200,9 @@ a home and a Properties sheet:
   deny fine-grained token requests, and revoke access, under Organizations >
   org > Token Requests. Creating a token has no API, so Account > Tokens
   opens the right GitHub page and the Workbench checks the result
-  (section 18.1).
+  (section 18.1). *(2026-11-18: not possible. GitHub serves the token-request
+  and token-grant endpoints to GitHub Apps only, so a person's sign-in is
+  refused; the coverage table marks them out of scope with that reason.)*
 - **Sponsors:** People > person > Sponsor, and Account > Sponsors for your
   own sponsorships and sponsors, read and manage what the API allows.
 
