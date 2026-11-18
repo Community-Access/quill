@@ -3,8 +3,11 @@
 Each line of GitHub's unified patch becomes a :class:`DiffLine` that knows its
 line number in the old file and the new one, so a comment can be placed the
 way GitHub's REST API wants it (``line``/``side``, plus ``start_line``/
-``start_side`` for a range). How the line is *marked* is the reader's choice:
-words ("Added line 12") or symbols ("+ 12"). Symbols are shorter but a screen
+``start_side`` for a range). How the line is *marked* is the reader's choice,
+from the four styles of :mod:`quill.core.diff_marks` (Kelly Ford's, shared with
+GHManage and The Chat Place): words ("Added line 12"), short words ("Add 12"),
+symbols ("+ 12"), or symbols with changed lines, where a removed line and its
+replacement read as a pair ("!- 12", "!+ 12"). Symbols are shorter but a screen
 reader only speaks them at a punctuation level that reads them, which is what
 :data:`SYMBOLS_NOTE` tells the person who picks them.
 
@@ -17,19 +20,16 @@ import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 
+from quill.core import diff_marks
 from quill.core.github.review_errors import GitHubReviewError
 
-LINE_MARKS_WORDS = "words"
-LINE_MARKS_SYMBOLS = "symbols"
-LINE_MARK_STYLES: tuple[str, ...] = (LINE_MARKS_WORDS, LINE_MARKS_SYMBOLS)
-LINE_MARK_LABELS: dict[str, str] = {
-    LINE_MARKS_WORDS: "Words: Added line, Removed line",
-    LINE_MARKS_SYMBOLS: "Symbols: plus and minus",
-}
-SYMBOLS_NOTE = (
-    "Symbols are spoken only when your screen reader reads punctuation. "
-    "Turn punctuation reading up, or choose Words."
-)
+LINE_MARKS_WORDS = diff_marks.WORDS
+LINE_MARKS_SHORT = diff_marks.SHORT
+LINE_MARKS_SYMBOLS = diff_marks.SYMBOLS
+LINE_MARKS_CHANGED = diff_marks.CHANGED
+LINE_MARK_STYLES: tuple[str, ...] = diff_marks.STYLES
+LINE_MARK_LABELS: dict[str, str] = dict(diff_marks.LABELS)
+SYMBOLS_NOTE = diff_marks.SYMBOLS_NOTE
 
 _HEADER = re.compile(r"^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@(.*)$")
 _SUGGESTION = re.compile(r"\n?```suggestion\n.*?\n?```\n?", re.DOTALL)
@@ -89,37 +89,63 @@ def parse_diff_lines(patch: str) -> tuple[DiffLine, ...]:
     return tuple(out)
 
 
-def render_line(line: DiffLine, style: str = LINE_MARKS_WORDS) -> str:
-    """The line as the reader hears it, in the chosen mark style."""
-    symbols = style == LINE_MARKS_SYMBOLS
+def is_symbol_style(style: str) -> bool:
+    """True for the two styles whose marks a screen reader may not speak."""
+    return diff_marks.is_symbol_style(style)
+
+
+def reading_order(lines: Sequence[DiffLine], style: str) -> list[tuple[int, bool]]:
+    """``(index, paired)`` in the order to show *lines* in *style*.
+
+    Only the changed-lines style reorders: each removed line is followed by
+    the added line that replaced it, and both are *paired* ("!-", "!+").
+    """
+    code = {"added": "+", "removed": "-", "note": "\\"}
+    marks = [code.get(line.kind, " ") for line in lines]
+    return [(index, mark.startswith("!")) for index, mark in diff_marks.reading_order(marks, style)]
+
+
+def _short_or_words(line: DiffLine, short: bool) -> str:
+    text = line.text if line.text.strip() else "blank line"
+    if line.kind == "added":
+        return f"Add {line.new_line}: {text}" if short else f"Added line {line.new_line}: {text}"
+    if line.kind == "removed":
+        return f"Del {line.old_line}: {text}" if short else f"Removed line {line.old_line}: {text}"
+    return f"Same {line.new_line}: {text}" if short else f"Unchanged line {line.new_line}: {text}"
+
+
+def render_line(line: DiffLine, style: str = LINE_MARKS_WORDS, *, paired: bool = False) -> str:
+    """The line as the reader hears it, in the chosen mark style.
+
+    *paired* marks a removed or added line that is half of a change in the
+    changed-lines style ("!-", "!+"); :func:`reading_order` says which are.
+    """
+    style = diff_marks.style_or_default(style)
+    symbols = diff_marks.is_symbol_style(style)
+    if line.kind in ("added", "removed", "context") and not symbols:
+        return _short_or_words(line, style == LINE_MARKS_SHORT)
     if line.kind == "hunk":
         where = f"old line {line.old_line}, new line {line.new_line}"
         heading = f": {line.text}" if line.text else ""
         return f"@@ {where} @@{heading}" if symbols else f"Changes at {where}{heading}"
+    text = line.text if line.text.strip() else "blank line"
+    bang = "!" if paired and style == LINE_MARKS_CHANGED else ""
     if line.kind == "added":
-        return (
-            f"+ {line.new_line}: {line.text}"
-            if symbols
-            else (f"Added line {line.new_line}: {line.text}")
-        )
+        return f"{bang}+ {line.new_line}: {text}"
     if line.kind == "removed":
-        return (
-            f"- {line.old_line}: {line.text}"
-            if symbols
-            else (f"Removed line {line.old_line}: {line.text}")
-        )
+        return f"{bang}- {line.old_line}: {text}"
     if line.kind == "context":
-        return (
-            f"  {line.new_line}: {line.text}"
-            if symbols
-            else (f"Unchanged line {line.new_line}: {line.text}")
-        )
-    return f"\\ {line.text}" if symbols else f"Note: {line.text}"
+        return f"= {line.new_line}: {text}"
+    return f"Note: {line.text}"
 
 
 def render_patch(patch: str, style: str = LINE_MARKS_WORDS) -> str:
-    """A whole patch, one rendered line per row."""
-    return "\n".join(render_line(line, style) for line in parse_diff_lines(patch))
+    """A whole patch, one rendered line per row, in the style's reading order."""
+    lines = parse_diff_lines(patch)
+    return "\n".join(
+        render_line(lines[index], style, paired=paired)
+        for index, paired in reading_order(lines, style)
+    )
 
 
 @dataclass(frozen=True, slots=True)

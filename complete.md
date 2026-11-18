@@ -6,6 +6,16 @@
 
 ## Start here
 
+### Pick up here (handoff, 2026-11-18 09:05 MST)
+
+For whoever continues this work, person or AI. The running log of every step is `D:\quill\claude.log` on Jeff's computer.
+
+- **Merged today:** #1887 and #1888 (GitHub Workbench batches). 272 GitHub endpoints are still planned (Part 1.2).
+- **Open:** #1889, Chris Nova's Cast queue fix (branch `cast/queue-advance`). Its size-gate failure is fixed; merge it when CI is green. See Part 5 for what is still unknown.
+- **In progress:** Kelly Ford's diff marks (Part 2), on branch `diff/kelly-marks`. Built and tested; the pull request is the next step.
+- **Then:** the EdSharp items (Part 4), then the GitHub API batches in the order of Part 1.2 until planned is 0, then the GitHub documentation pass (1.3).
+- **How to work here:** the commands and gates are in `CLAUDE.md`. Squash-merge with `gh api -X PUT repos/Community-Access/quill/pulls/N/merge -f merge_method=squash`. Log each step to `claude.log` with the time read from a clock, never guessed.
+
 ### The order of work
 
 Jeff set this order on 2026-11-18. The GitHub Workbench comes first, above everything else.
@@ -161,13 +171,12 @@ When the table above is empty, the GitHub Workbench's documentation is brought u
 
 Kelly Ford asked on 2026-11-18 whether QUILL had seen how GHManage and The Chat Place let a person choose how changes are marked. Jeff: make it rich, everywhere, and give attribution. Kelly's `difftext.py` (in TheIdeaPlace/app-kit) is MIT licensed, so it may be adapted with its copyright notice and credit.
 
-- [ ] Four ways to mark a line, with Kelly's own marks so a change reads the same in QUILL, GHManage and The Chat Place: words (Added:, Removed:, Unchanged:), short words (Add, Del, Same), symbols (+, -, =), and symbols with changed lines (!- old line, then !+ its new line, pair by pair).
-- [ ] A changed line also says which words changed, from Compare Files' word-level difference.
-- [ ] "Lines 10 to 15:" before each run, a summary line per file ("src/app.py: modified, 2 lines added, 1 removed"), and "blank line" for an empty one.
-- [ ] Next and previous change, saying "Change 2 of 5".
-- [ ] A reminder, when a symbol style is chosen, that symbols are only spoken at a punctuation level that reads them.
-- [ ] The same in every place QUILL shows a difference: Compare Files and its modes, the GitHub Workbench's pull requests, commits and comparisons, and both editors; with the existing sounds and braille.
-- [ ] Credit to Kelly Ford in the code, the changelog, the guide and the credits.
+Built on branch `diff/kelly-marks` (2026-11-18): `quill/core/diff_marks.py` (adapted from Kelly's `difftext.py`, MIT notice kept) with the four styles, "!-"/"!+" pairing, "Lines 10 to 15:", file summaries, "blank line" and the punctuation reminder. It is used by Compare Files (a new Mark lines as choice), Compare with File, WordPress Compare with Site, and the Workbench's pull request patch list, File Differences, Compare Branches and local git differences, all through one saved choice. Credited in the code, the changelog, both guides and CONTRIBUTING. QUILL Lite has no compare views, so nothing there to change.
+
+Still to do:
+
+- [ ] A changed pair in the Workbench's patch list also says which words changed (Compare Files already does, through `_word_diff_label`).
+- [ ] Next and previous change in the Workbench's patch list, saying "Change 2 of 5" (Compare Files already says "Difference 2 of 5").
 
 ## Part 3. WordPress: what is still missing
 
@@ -457,7 +466,10 @@ From EdSharp's `help/History.md`, 9 October to 17 November 2026 (D:\code\jamal\E
 ## Part 5. Other queued work
 
 - [ ] **Microsoft Copilot SDK 2.0** (Ignite 2026, https://www.thurrott.com/a-i/microsoft-copilot-a-i/344006/ignite-2026-microsoft-copilot-sdk-2-0-is-now-available): read it and say what it means for QUILL's AI (`docs/design/codex.md`, Choose Your AI, the Copilot chat code).
-- [ ] **Quill Cast queue, from Chris Nova (2026-11-17):** with two items in the queue, the first finished and the second did not start until he started it. Find why and fix it.
+- [ ] **Quill Cast queue, from Chris Nova (2026-11-17):** with two items in the queue, the first finished and the second did not start until he started it.
+  - Found and fixed in #1889: when the next episode cannot start (nothing downloaded, no address), Cast stopped and said nothing. It now says why.
+  - Simulated on 2026-11-18 with two real MP3s through the real Cast window, library, queue and libmpv: downloaded and streamed episodes both advance on their own. Not reproduced.
+  - Not tested: the Windows Media engine (used when libmpv is not installed), which runs only on Windows. Next: ask Chris which engine he uses and whether the episodes were downloaded or streamed, or try it on a Windows machine.
 
 ## Part 6. The Workbench delivery checklist
 

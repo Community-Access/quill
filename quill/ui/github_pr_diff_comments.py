@@ -19,16 +19,17 @@ from pathlib import Path
 from quill.core.github.diff_lines import (
     LINE_MARK_LABELS,
     LINE_MARK_STYLES,
-    LINE_MARKS_SYMBOLS,
     SYMBOLS_NOTE,
     DiffLine,
     LineCommentAnchor,
     anchor_for,
     changed_only,
+    is_symbol_style,
     line_sound,
     lines_for_range,
     parse_diff_lines,
     parse_range,
+    reading_order,
     render_line,
     unified_diff_text,
 )
@@ -86,7 +87,7 @@ class GitHubPullDiffCommentsMixin:
         self._whole_diff = self._diff
         root.Add(marks_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         self._marks_note = wx.StaticText(
-            panel, label=SYMBOLS_NOTE if self._line_style == LINE_MARKS_SYMBOLS else ""
+            panel, label=SYMBOLS_NOTE if is_symbol_style(self._line_style) else ""
         )
         self._marks_note.SetName("Line marks note")
         self._marks_note.SetHelpText("Reminds you that symbols are spoken only with punctuation.")
@@ -189,7 +190,15 @@ class GitHubPullDiffCommentsMixin:
 
             gone = whitespace_only(self._patch_lines)
             self._visible = tuple(index for index in self._visible if index not in gone)
-        rows = [render_line(self._patch_lines[index], self._line_style) for index in self._visible]
+        shown = set(self._visible)
+        kept = [line for index, line in enumerate(self._patch_lines) if index in shown]
+        where = [index for index in range(len(self._patch_lines)) if index in shown]
+        order = reading_order(kept, self._line_style)
+        self._visible = tuple(where[position] for position, _paired in order)
+        rows = [
+            render_line(kept[position], self._line_style, paired=paired)
+            for position, paired in order
+        ]
         self._patch_list.Set(rows or ["GitHub sent no patch lines for this file."])
         for position, index in enumerate(self._visible):
             if index in before:
@@ -309,7 +318,7 @@ class GitHubPullDiffCommentsMixin:
             return
         self._line_style = LINE_MARK_STYLES[index]
         saved = save_line_marks(self._line_style)
-        symbols = self._line_style == LINE_MARKS_SYMBOLS
+        symbols = is_symbol_style(self._line_style)
         self._marks_note.SetLabel(SYMBOLS_NOTE if symbols else "")
         self._render_patch_lines()
         if symbols:

@@ -15,8 +15,9 @@ import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 
-from quill.core.diffing import build_unified_diff
+from quill.core.diff_marks import render_texts
 from quill.core.document import Document
+from quill.core.github.review_preferences import load_line_marks
 from quill.io.text import read_text_document
 
 
@@ -189,11 +190,14 @@ class CompareMixin:
             self._set_status(f"No differences from {target.name}")
             return
         current_name = self.document.name
-        diff_text = build_unified_diff(
-            self.editor.GetValue(),
+        # Marked line by line in the Diff Line Marks style (Kelly Ford's four,
+        # quill.core.diff_marks), so "+" and "-" are never the only signal.
+        diff_text = render_texts(
             other_document.text,
-            current_name,
+            self.editor.GetValue(),
             target.name,
+            current_name,
+            style=load_line_marks(),
         )
         max_chars = 12000
         if len(diff_text) > max_chars:

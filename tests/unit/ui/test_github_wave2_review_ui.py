@@ -232,9 +232,18 @@ def test_patch_lines_follow_the_line_mark_style(diff_dialog) -> None:
     assert diff_dialog._patch_list.GetString(3) == "Added line 2: new"
     diff_dialog._marks_choice.SetSelection(1)
     diff_dialog._on_marks_changed(None)
+    assert diff_dialog._patch_list.GetString(3) == "Add 2: new"
+    assert review_preferences.load_line_marks() == "short"
+    diff_dialog._marks_choice.SetSelection(2)
+    diff_dialog._on_marks_changed(None)
     assert diff_dialog._patch_list.GetString(3) == "+ 2: new"
     assert "punctuation" in diff_dialog.spoken[-1]
     assert review_preferences.load_line_marks() == "symbols"
+    diff_dialog._marks_choice.SetSelection(3)
+    diff_dialog._on_marks_changed(None)
+    assert review_preferences.load_line_marks() == "changed"
+    rows = list(diff_dialog._patch_list.GetStrings())
+    assert rows[2:] == ["!- 2: old", "!+ 2: new", "+ 3: more"]
 
 
 def test_comment_on_lines_adds_to_the_pending_review(diff_dialog, monkeypatch) -> None:

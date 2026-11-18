@@ -620,6 +620,48 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Four ways to mark a changed line, from Kelly Ford (2026-11-18)
+
+A difference is a list of lines, each one added, removed or left as it was.
+The usual way to show which is a "+", a "-" or a space at the start of the
+line, and at a screen reader's lower punctuation levels none of those is
+spoken. Kelly Ford solved this in GHManage and The Chat Place, and QUILL now
+uses his design and his code (adapted, MIT licence), so a change reads the
+same in all three:
+
+- **Words**: "Added: ...", "Removed: ...", "Unchanged: ...". The default.
+- **Short words**: "Add", "Del", "Same". Shorter, still spoken at every
+  punctuation level.
+- **Diff symbols**: "+", "-" and "=" (the "=" stands for the space, which is
+  never spoken).
+- **Diff symbols with changed lines**: as symbols, but a removed line and the
+  line that replaced it read as a pair, "!-" then "!+", so each change is
+  heard whole, old then new.
+
+The mark always comes first, a blank line reads "blank line", and each run of
+changes starts with where it is ("Lines 10 to 15:"). Choosing a symbol style
+reminds you that symbols are only spoken at a punctuation level that reads
+them.
+
+**Everywhere QUILL shows a difference**, with one shared choice that every
+view remembers:
+
+- **Compare Files** has a new **Mark lines as** choice (`Alt+M`), and each
+  difference now ends with its lines, marked.
+- **Compare with File** gives a summary ("Comparing notes.md with
+  draft.md: 3 lines added, 1 removed, in 2 places") and then each change,
+  marked, instead of raw unified-diff text.
+- **WordPress > Compare with Site** marks your copy against the site's the
+  same way.
+- **GitHub Workbench**: **Line marks** on a pull request's files now has all
+  four styles; in the changed-lines style the patch list puts each removed
+  line straight before its replacement. File Differences, Compare Branches
+  and a local repository's differences mark their lines too.
+
+QUILL Lite has no compare views yet, so there is nothing there to change.
+With thanks to Kelly Ford, whose GHManage has been the measure for QUILL's
+GitHub work from the start.
+
 ### Reviews already on a pull request (2026-11-18)
 
 **Reviews...** on a pull request in the GitHub Workbench lists its reviews
