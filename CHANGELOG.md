@@ -620,9 +620,9 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
-### Batch files, Replace and Where Am I, from EdSharp (2026-11-18)
+### From EdSharp: batch files, Replace, Where Am I, the command list, and checks on what QUILL says (2026-11-18)
 
-Three things from EdSharp's recent history, checked against QUILL:
+From EdSharp's recent history, checked against QUILL:
 
 - **A batch file is saved without a byte-order mark.** Windows' command
   interpreter reads the mark as part of the first command, so a `.cmd` or
@@ -634,7 +634,25 @@ Three things from EdSharp's recent history, checked against QUILL:
 - **Where Am I says the percent, and counts real lines.** "Line 12 of 40,
   column 5, 30 percent". A paragraph the window wraps is one line, as it is
   in the file and in the status bar, where before Where Am I could count the
-  wrapped screen lines.
+  wrapped screen lines. **Pressed twice quickly** it opens everything in a
+  window: the position, the document, its counts and encoding, then every
+  command and its key. (F1 already opens a window on the first press.)
+- **The Key Cheatsheet in three orders** (Alt+Shift+/, then Order, Alt+O):
+  menu order with each menu under its name, name order, and key order with
+  the keys first, for "what does this key do". The search box works in all
+  three.
+- **Check What QUILL Says...** (Command Palette), EdSharp's testSay: every
+  command that only speaks is run once and twice, and a new document lists
+  what QUILL meant to say beside an empty column for what your screen reader
+  said, to mark Same, Extra or Missing.
+- **What QUILL did not say goes in the session log**, with why: Quiet or
+  Meeting Mode, a repeat, no speech output, or a failure, and whether QUILL
+  was the window in front.
+- **The guides are measured.** `python -m quill.tools.reading_check` (in the
+  platform report) checks each user-guide chapter's reading grade against
+  about ninth grade, as EdSharp does, and each tutorial's estimated time
+  against what it promises. What is over today is listed (9 chapters, 14
+  tutorials); nothing new may be, and nothing listed may get harder.
 
 
 ### What is left for GitHub, settled a second time (2026-11-18)

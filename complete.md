@@ -410,13 +410,7 @@ Vulnerability data (a plugin version with a known hole) would come from Wordfenc
 
 ## Part 4. From the EdSharp review
 
-From EdSharp's `help/History.md`, 9 October to 17 November 2026 (D:\code\jamal\EdSharp), checked against QUILL on 2026-11-18. QUILL already has EdSharp's Say Clipboard presses, its search syntax, its settings migration, its safe saves and its key checks. Done on branch `edsharp/small-checks` (2026-11-18): batch files saved without a byte-order mark, Replace's "$" kept literal (it already was; now tested), and Where Am I saying the percent and counting lines in the text.
-
-- [ ] **testSay:** press every Say command once and twice, and write what the screen reader said beside what QUILL meant to say. It would catch over-announcing (GATE-13) and missing speech on real JAWS and NVDA.
-- [ ] **Log what was not spoken:** when QUILL is not in front, a message it does not speak goes into the session log with the reason.
-- [ ] **Every command in one list, sorted three ways:** menu order, name order and key order, with a filter and a jump to a line.
-- [ ] **A second press opens a review window:** Where Am I pressed twice shows everything in a window, followed by every command and key; Shift+F1 pressed twice does the same for the control's help.
-- [ ] **A reading-grade check for the guides**, about ninth grade, and a check that each tutorial runs under its promised length.
+Done (2026-11-18, #1891): every item from EdSharp's history, 9 October to 17 November 2026. Batch files are saved without a byte-order mark; Replace keeps a literal "$"; Where Am I says the percent, counts text lines, and opens everything in a window when pressed twice (F1 already opens a window); the Key Cheatsheet lists commands in menu, name or key order; Check What QUILL Says... is testSay; what QUILL did not say goes in the session log with why; and `quill.tools.reading_check` measures the guides' reading grade and the tutorials' time.
 
 ## Part 5. Other queued work
 

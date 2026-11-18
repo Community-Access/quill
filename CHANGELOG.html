@@ -948,10 +948,10 @@ publishing and what each refusal means, what the person paying hears
 with a screen reader, receipts, refunds, reporting and going live.</li>
 </ul>
 <h3
-id="batch-files-replace-and-where-am-i-from-edsharp-2026-11-18">Batch
-files, Replace and Where Am I, from EdSharp (2026-11-18)</h3>
-<p>Three things from EdSharp’s recent history, checked against
-QUILL:</p>
+id="from-edsharp-batch-files-replace-where-am-i-the-command-list-and-checks-on-what-quill-says-2026-11-18">From
+EdSharp: batch files, Replace, Where Am I, the command list, and checks
+on what QUILL says (2026-11-18)</h3>
+<p>From EdSharp’s recent history, checked against QUILL:</p>
 <ul>
 <li><strong>A batch file is saved without a byte-order mark.</strong>
 Windows’ command interpreter reads the mark as part of the first
@@ -963,7 +963,27 @@ on. It already did in both editors; a test now keeps it that way.</li>
 <li><strong>Where Am I says the percent, and counts real lines.</strong>
 “Line 12 of 40, column 5, 30 percent”. A paragraph the window wraps is
 one line, as it is in the file and in the status bar, where before Where
-Am I could count the wrapped screen lines.</li>
+Am I could count the wrapped screen lines. <strong>Pressed twice
+quickly</strong> it opens everything in a window: the position, the
+document, its counts and encoding, then every command and its key. (F1
+already opens a window on the first press.)</li>
+<li><strong>The Key Cheatsheet in three orders</strong> (Alt+Shift+/,
+then Order, Alt+O): menu order with each menu under its name, name
+order, and key order with the keys first, for “what does this key do”.
+The search box works in all three.</li>
+<li><strong>Check What QUILL Says…</strong> (Command Palette), EdSharp’s
+testSay: every command that only speaks is run once and twice, and a new
+document lists what QUILL meant to say beside an empty column for what
+your screen reader said, to mark Same, Extra or Missing.</li>
+<li><strong>What QUILL did not say goes in the session log</strong>,
+with why: Quiet or Meeting Mode, a repeat, no speech output, or a
+failure, and whether QUILL was the window in front.</li>
+<li><strong>The guides are measured.</strong>
+<code>python -m quill.tools.reading_check</code> (in the platform
+report) checks each user-guide chapter’s reading grade against about
+ninth grade, as EdSharp does, and each tutorial’s estimated time against
+what it promises. What is over today is listed (9 chapters, 14
+tutorials); nothing new may be, and nothing listed may get harder.</li>
 </ul>
 <h3 id="what-is-left-for-github-settled-a-second-time-2026-11-18">What
 is left for GitHub, settled a second time (2026-11-18)</h3>

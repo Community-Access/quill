@@ -1780,6 +1780,7 @@ class CommandRegistryMixin:
             self.run_announcement_self_test,
             self._binding_for("app.announcement_self_test"),
         )
+        self._register_say_check_commands()  # main_frame_say_check
         self.commands.register(
             "app.report_editor_surface",
             "Report Editor Surface",
