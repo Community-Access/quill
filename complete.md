@@ -1154,7 +1154,7 @@ Source: PRD section 14. Its “today” statements describe the source audit rev
 
 | Feature | Status today | New home |
 |---|---|---|
-| Packages (GitHub Packages, container registry) | **Built 2026-11-18:** Repositories > My Packages, with Delete Package Version... and Delete Package... (`packages.py`); an organization's packages and restoring remain | Repository > Packages; Repositories > My Packages |
+| Packages (GitHub Packages, container registry) | **Built 2026-11-18:** Repositories > My Packages, with Delete Package Version... and Delete Package... (`packages.py`); an organization's packages and restoring followed the same day | Repository > Packages; Repositories > My Packages |
 | Teams and organization members | Out of scope by a code comment ("Organizations in, Teams out"); roadmap GX13 adds team permissions. Now in scope: section 18.3.3 | Repositories > Organizations > org > Members, Teams; People > My Teams |
 | Insights charts as tables: commit activity, code frequency, punch card | **Built 2026-11-18:** Repository > Insights > Commit Activity (`repo_activity.py`): weekly commits, code frequency, the ten busiest hours, participation and contributors, as sentences | Repository > Insights (tables, never charts only) |
 | Dependency graph and software bill of materials (SBOM) export | **Built 2026-11-18:** Repository > Export Software Bill of Materials... (`Ctrl+Alt+B`), SPDX file (`runners_sbom.py`) | Repository > Security > Dependencies |

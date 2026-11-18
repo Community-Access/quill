@@ -53,6 +53,7 @@ EXTRA_ACCOUNT_VIEWS = frozenset({
     "my_keys",
     "org_webhooks",
     "sponsorships",
+    "org_packages",
 })
 #: Views of one person, answered from the login in Explore's person box.
 EXTRA_PERSON_VIEWS = frozenset({"person_profile", "person_sponsor"})
@@ -139,6 +140,16 @@ def fetch_extra_view(
         from quill.core.github.workbench_api import TokenApi
 
         return list_rows(fetch_lists(TokenApi(token)), warnings)
+    if view == "org_packages":
+        from quill.core.github.packages import PackageError, fetch_packages
+        from quill.core.github.workbench_api import TokenApi
+
+        if not repo or "/" in repo:
+            raise GitHubExploreError("Choose an organization for its packages.")
+        try:
+            return fetch_packages(TokenApi(token), limit=limit, org=repo)
+        except PackageError as exc:
+            raise GitHubExploreError(str(exc.args[0])) from exc
     if view == "my_packages":
         from quill.core.github.packages import PackageError, fetch_packages
         from quill.core.github.workbench_api import TokenApi

@@ -652,6 +652,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | organization (`organization:organization`) | organization | An organization: its repositories. |
 | Repositories (`organization:organization_repositories`) | organization, organization | Repositories: the organization's repositories you can see. |
 | Teams (`organization:organization_teams`) | organization, organization | Teams: the organization's teams, as GitHub nests them. Alt+Enter opens a team's sheet: its members and maintainers, repositories and roles, child teams and code review assignment. |
+| Packages (`organization:organization_packages`) | organization, organization | Packages: this organization's container images and other packages. Ctrl+N restores one deleted in the last 30 days. |
 | Webhooks (`organization:organization_webhooks`) | organization, organization | Webhooks: the addresses GitHub tells about events across this organization. Ctrl+N adds one. |
 | Templates (`organization:organization_templates`) | organization, organization | Templates: the defaults in the organization's .github repository, which every repository without its own uses. Enter builds or edits one. |
 
@@ -1011,7 +1012,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 381 yes, 1075 planned, 15 not needed and 533 left to GitHub.
+In all: 387 yes, 1069 planned, 15 not needed and 533 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2221,24 +2222,24 @@ In all: 381 yes, 1075 planned, 15 not needed and 533 left to GitHub.
 
 #### Packages
 
-27 operations: 4 yes, 23 planned.
+27 operations: 10 yes, 17 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | Get list of conflicting packages during Docker migration for organization | `GET /orgs/{org}/docker/conflicts` | Planned | Repositories > My Packages; Package sheet. |
-| List packages for an organization | `GET /orgs/{org}/packages` | Planned | Repositories > My Packages; Package sheet. |
-| Delete a package for an organization | `DELETE /orgs/{org}/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
+| List packages for an organization | `GET /orgs/{org}/packages` | Yes | Navigator: Organization > organization > Packages |
+| Delete a package for an organization | `DELETE /orgs/{org}/packages/{package_type}/{package_name}` | Yes | context menu > Delete Package... |
 | Get a package for an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
-| Restore a package for an organization | `POST /orgs/{org}/packages/{package_type}/{package_name}/restore` | Planned | Repositories > My Packages; Package sheet. |
-| List package versions for a package owned by an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}/versions` | Planned | Repositories > My Packages; Package sheet. |
-| Delete package version for an organization | `DELETE /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Planned | Repositories > My Packages; Package sheet. |
+| Restore a package for an organization | `POST /orgs/{org}/packages/{package_type}/{package_name}/restore` | Yes | Navigator: Organization > organization > Packages |
+| List package versions for a package owned by an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}/versions` | Yes | context menu > Delete Package Version... |
+| Delete package version for an organization | `DELETE /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Yes | context menu > Delete Package Version... |
 | Get a package version for an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Planned | Repositories > My Packages; Package sheet. |
 | Restore package version for an organization | `POST /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Planned | Repositories > My Packages; Package sheet. |
 | Get list of conflicting packages during Docker migration for authenticated-user | `GET /user/docker/conflicts` | Planned | Repositories > My Packages; Package sheet. |
 | List packages for the authenticated user's namespace | `GET /user/packages` | Yes | Navigator: Repositories > My Packages |
 | Delete a package for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}` | Yes | context menu > Delete Package... |
 | Get a package for the authenticated user | `GET /user/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
-| Restore a package for the authenticated user | `POST /user/packages/{package_type}/{package_name}/restore` | Planned | Repositories > My Packages; Package sheet. |
+| Restore a package for the authenticated user | `POST /user/packages/{package_type}/{package_name}/restore` | Yes | Navigator: Repositories > My Packages |
 | List package versions for a package owned by the authenticated user | `GET /user/packages/{package_type}/{package_name}/versions` | Yes | context menu > Delete Package Version... |
 | Delete a package version for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}/versions/{package_version_id}` | Yes | context menu > Delete Package Version... |
 | Get a package version for the authenticated user | `GET /user/packages/{package_type}/{package_name}/versions/{package_version_id}` | Planned | Repositories > My Packages; Package sheet. |

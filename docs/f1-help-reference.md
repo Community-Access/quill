@@ -2696,6 +2696,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **organization: Teams.** Teams: the organization's teams, as GitHub nests them. Alt+Enter opens a team's sheet: its members and maintainers, repositories and roles, child teams and code review assignment.
 
+**organization: Packages.** Packages: this organization's container images and other packages. Ctrl+N restores one deleted in the last 30 days.
+
 **organization: Webhooks.** Webhooks: the addresses GitHub tells about events across this organization. Ctrl+N adds one.
 
 **organization: Templates.** Templates: the defaults in the organization's .github repository, which every repository without its own uses. Enter builds or edits one.

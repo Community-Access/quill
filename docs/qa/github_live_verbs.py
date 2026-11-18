@@ -958,6 +958,7 @@ VERBS: dict[str, Scenario | str] = {
     "transfer_repository": "not here: needs a second account or an organization to receive it",
     "delete_package_version": "not here: the live run publishes no package to delete",
     "delete_package": "not here: the live run publishes no package to delete",
+    "restore_package": "not here: the live run deletes no package to restore",
     "new_star_list": star_list_round_trip,
     "star_lists": "with new_star_list: the test repository put on the list",
     "edit_star_list": "with new_star_list: renamed, then deleted",

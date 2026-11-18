@@ -50,6 +50,7 @@ VIEWS: tuple[tuple[str, str], ...] = (
     ("deploy_keys", "Repository deploy keys"),
     ("autolinks", "Repository autolinks"),
     ("org_webhooks", "Organization webhooks"),
+    ("org_packages", "Organization packages"),
     ("wiki", "Repository wiki"),
     ("advisory_search", "GitHub Advisory Database"),
     ("actions_caches", "Actions caches"),

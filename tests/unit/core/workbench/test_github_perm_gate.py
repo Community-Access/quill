@@ -105,6 +105,7 @@ def test_every_declared_command_is_a_real_row() -> None:
         "new_webhook",  # New Here in Settings > Webhooks
         "new_deploy_key",  # New Here in Settings > Deploy Keys
         "new_autolink",  # New Here in Settings > Autolinks
+        "restore_package",  # New Here in a list of packages
     }
     for command_id in COMMAND_REQUIREMENTS:
         verb = command_id.removeprefix("github.workbench.")

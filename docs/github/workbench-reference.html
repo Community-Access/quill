@@ -1719,6 +1719,12 @@ opens a team’s sheet: its members and maintainers, repositories and
 roles, child teams and code review assignment.</td>
 </tr>
 <tr>
+<td>Packages (<code>organization:organization_packages</code>)</td>
+<td>organization, organization</td>
+<td>Packages: this organization’s container images and other packages.
+Ctrl+N restores one deleted in the last 30 days.</td>
+</tr>
+<tr>
 <td>Webhooks (<code>organization:organization_webhooks</code>)</td>
 <td>organization, organization</td>
 <td>Webhooks: the addresses GitHub tells about events across this
@@ -3064,7 +3070,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 381 yes, 1075 planned, 15 not needed and 533 left to
+<p>In all: 387 yes, 1069 planned, 15 not needed and 533 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -9827,7 +9833,7 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 </tbody>
 </table>
 <h4 id="packages">Packages</h4>
-<p>27 operations: 4 yes, 23 planned.</p>
+<p>27 operations: 10 yes, 17 planned.</p>
 <table>
 <thead>
 <tr>
@@ -9848,14 +9854,14 @@ organization</td>
 <tr>
 <td>List packages for an organization</td>
 <td><code>GET /orgs/{org}/packages</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Packages</td>
 </tr>
 <tr>
 <td>Delete a package for an organization</td>
 <td><code>DELETE /orgs/{org}/packages/{package_type}/{package_name}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Package…</td>
 </tr>
 <tr>
 <td>Get a package for an organization</td>
@@ -9866,20 +9872,20 @@ organization</td>
 <tr>
 <td>Restore a package for an organization</td>
 <td><code>POST /orgs/{org}/packages/{package_type}/{package_name}/restore</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Packages</td>
 </tr>
 <tr>
 <td>List package versions for a package owned by an organization</td>
 <td><code>GET /orgs/{org}/packages/{package_type}/{package_name}/versions</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Package Version…</td>
 </tr>
 <tr>
 <td>Delete package version for an organization</td>
 <td><code>DELETE /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Package Version…</td>
 </tr>
 <tr>
 <td>Get a package version for an organization</td>
@@ -9921,8 +9927,8 @@ authenticated-user</td>
 <tr>
 <td>Restore a package for the authenticated user</td>
 <td><code>POST /user/packages/{package_type}/{package_name}/restore</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>Navigator: Repositories &gt; My Packages</td>
 </tr>
 <tr>
 <td>List package versions for a package owned by the authenticated

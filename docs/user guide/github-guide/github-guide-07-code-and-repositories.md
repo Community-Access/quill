@@ -603,7 +603,13 @@ the `read:packages` permission and deleting needs `delete:packages`; Sign In
 with GitHub asks for both, and an account signed in before November 2026 is
 told to sign in again rather than seeing an empty list.
 
-An organization's packages are not listed here yet; open them on GitHub.
+An organization's packages are under **Organizations >** the organization **>
+Packages**, read and deleted the same way.
+
+`Ctrl+N` in My Packages, or in an organization's Packages, brings back a
+package deleted in the last 30 days: QUILL asks its type and name, and says
+"Restored the npm package left-pad.", or that GitHub has no such deleted
+package.
 
 ## Gists
 

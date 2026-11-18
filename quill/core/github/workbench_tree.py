@@ -492,6 +492,15 @@ _ORGANIZATION: tuple[NodeSpec, ...] = (
         row_type="team",
     ),
     NodeSpec(
+        "organization_packages",
+        "Packages",
+        "organization",
+        scope=Scope.ORGANIZATION,
+        needs=_SIGN_IN,
+        loader="explore:org_packages",
+        row_type="package",
+    ),
+    NodeSpec(
         "organization_webhooks",
         "Webhooks",
         "organization",
@@ -550,8 +559,8 @@ PLANNED = CoverageTable((
         "GX11",
     ),
     # 14.2, worth adding later.
-    _planned("Packages: an organization's, and restoring", "Repositories > My Packages"),
     _planned("Dependency graph and SBOM export", "Repository > Security > Dependencies"),
+    _planned("Packages: one version at a time, and other people's", "Packages > a version"),
     _planned("Self-hosted runners (registering and removing)", "Repository > Actions > Runners"),
 ))
 """GitHub features with a future home and no node yet (GitHub PRD 14.1, 14.2)."""

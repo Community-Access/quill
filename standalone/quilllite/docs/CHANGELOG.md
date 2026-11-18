@@ -2,6 +2,13 @@
 
 ## 2.0.0
 
+### An organization's packages, and restoring a package (2026-11-18)
+
+**Organizations >** an organization **> Packages** in the GitHub Workbench lists
+an organization's packages with Delete Package Version and Delete Package, and
+`Ctrl+N` in either packages list brings back a package deleted in the last 30
+days. Chapter 7 of the GitHub Guide has the details.
+
 ### The wiki (2026-11-18)
 
 **Repository > Wiki** in the GitHub Workbench says whether a repository's wiki

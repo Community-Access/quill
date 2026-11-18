@@ -46,6 +46,8 @@ NEW_HERE: dict[str, str] = {
     "my_keys": "github.workbench.new_key",
     "webhooks": "github.workbench.new_webhook",
     "organization_webhooks": "github.workbench.new_webhook",
+    "packages": "github.workbench.restore_package",
+    "organization_packages": "github.workbench.restore_package",
     "deploy_keys": "github.workbench.new_deploy_key",
     "autolinks": "github.workbench.new_autolink",
     "my_gists": "github.workbench.new_gist",

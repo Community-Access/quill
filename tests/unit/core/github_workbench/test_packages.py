@@ -39,7 +39,7 @@ class FakeApi:
         for part, code in self.status.items():
             if part in f"{method} {path} {query}":
                 raise GitHubRestError("no", status=code)
-        if path == "/user/packages":
+        if path.endswith("/packages"):
             return RestResponse(200, {}, [ENGINE] if query["package_type"] == "container" else [])
         if path.endswith("/versions"):
             return RestResponse(200, {}, VERSIONS)
@@ -105,3 +105,30 @@ def test_the_my_packages_node_reaches_its_loader(monkeypatch: Any) -> None:
     provider = SimpleNamespace(token="t", is_authenticated=True)
     rows = fetch_extra_view(provider, "my_packages", repo="", query="", limit=5, warnings=[])
     assert rows == ["a row"]
+
+
+def test_an_organizations_packages_and_restoring(monkeypatch: Any) -> None:
+    from types import SimpleNamespace
+
+    from quill.core.github.explore_extra_views import fetch_extra_view
+
+    api = FakeApi()
+    rows = pk.fetch_packages(api, org="community-access")
+    assert api.sent[0][1] == "/orgs/community-access/packages"
+    assert rows[0].key == "@community-access/container/quill-engine"
+    assert pk.row_parts(rows[0].key) == ("community-access", "container", "quill-engine")
+    assert pk.row_parts("npm/left-pad") == ("", "npm", "left-pad")
+    pk.delete_package(api, "npm", "x", "community-access")
+    assert api.sent[-1][:2] == ("DELETE", "/orgs/community-access/packages/npm/x")
+    assert pk.restore_package(api, "npm", " x ") == "Restored the npm package x."
+    assert api.sent[-1][:2] == ("POST", "/user/packages/npm/x/restore")
+    with pytest.raises(pk.PackageError, match="no deleted npm package called y"):
+        pk.restore_package(FakeApi({"POST": 404}), "npm", "y")
+    with pytest.raises(pk.PackageError, match="not a package type"):
+        pk.restore_package(api, "zip", "y")
+    monkeypatch.setattr(pk, "fetch_packages", lambda _api, limit, org: [org])
+    provider = SimpleNamespace(token="t", is_authenticated=True)
+    ask = {"query": "", "limit": 5, "warnings": []}
+    assert fetch_extra_view(provider, "org_packages", repo="community-access", **ask) == [
+        "community-access"
+    ]
