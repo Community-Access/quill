@@ -7,8 +7,8 @@ comments wedged between the lines. QUILL turns it into an outline you can
 walk: the pull request, its changed files, the conversations on each file, and
 its checks. This chapter covers reading a pull request, the diff, commenting
 on a line or a range, suggesting a change, sending a review, replying and
-resolving, asking Copilot for a review, and then everything that gets a pull
-request merged.
+resolving, asking Copilot for a review, everything that gets a pull request
+merged, and the whole patch, a revert and conflicts.
 
 Reading works signed out. Everything that writes needs a signed-in account.
 
@@ -350,6 +350,53 @@ On a check in the outline, the context menu has **Re-request Check...**,
 which asks GitHub to run that check again. Some checks are older-style commit
 statuses rather than check runs, and those cannot be re-run from outside;
 QUILL says so. Chapter 6 covers checks and workflow runs in full.
+
+## The whole patch, a revert, and conflicts
+
+Three commands on a pull request's row in the GitHub Workbench do what the
+web's Files tab, its Revert button and its conflict editor do.
+
+### Open Patch in Editor
+
+**Open Patch in Editor** opens the pull request's whole change as one
+document: every changed file, one after another, as a unified diff, the same
+text the website's `.diff` link gives and the text `git apply` reads. Each
+file starts with a line beginning `diff --git`, so the editor's Find moves
+from file to file, and each change starts with a line beginning `@@`, which
+names the lines it touches. A removed line starts with a minus sign and an
+added line with a plus sign.
+
+A file GitHub sends no text change for, such as an image or a very large file,
+is not left out silently: it has a line of its own starting with `#`, which
+names the file and says so. When the patch opens you hear how many files it
+has and how many of them have no text, for example "Opened the patch of #42.
+The patch has 12 files. 1 of them has no text change GitHub can send, binary
+or too large, and each is named on a line starting with #."
+
+The patch is saved as `<repository>-pr-<number>.diff` in the folder where the
+Workbench keeps the documents it opens, so Save As keeps a copy anywhere you
+like.
+
+### Revert Pull Request
+
+On a merged pull request, **Revert Pull Request...** opens a new pull request
+that undoes it, as the Revert button on the website does. QUILL asks for the
+new pull request's title, which starts as `Revert "` and the old title, and
+then asks whether to open it as a draft. Yes opens a draft, which nobody can
+merge until it is marked ready; No opens it ready for review. Nothing is
+undone until the revert is itself merged, so this is a proposal, not a
+change to the branch.
+
+You hear "Opened pull request #57, which reverts #42." A pull request that
+is not merged has nothing to revert; the command is greyed, and its help says
+why. You need write access to the repository.
+
+### Conflicts
+
+QUILL Lite has no local Git, so it does not resolve conflicts on your
+computer. **Resolve Conflicts in a Worktree...** is in QUILL, where it fetches
+the pull request into a folder of its own, merges its base there and walks
+each conflicted file; in QUILL Lite the row is greyed and says so.
 
 ## Writing a new pull request
 

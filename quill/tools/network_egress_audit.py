@@ -272,6 +272,7 @@ from quill.tools.network_egress_entries import _REVIEWED_EGRESS  # noqa: E402
 #   chosen folder is not yet set up -- only after an explicit confirmation
 #   dialog states exactly what will run. Triggered: Tools > Sync Folder with
 #   GitHub... (explicit user action only). Blocked in Safe Mode.
+#   github/pull_tools.py::prepare_conflict_worktree's `git fetch` is the same, asked first.
 #
 # quill/core/github/clone.py::clone_repository (Clone Repository..., 2026-11-08)
 #   `git clone` via run_subprocess_safely (argv, no shell), after the person

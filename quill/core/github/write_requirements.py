@@ -74,6 +74,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}star": ("sign_in", _O),
     f"{_P}star_gist": ("sign_in+scope:gist", _O),
     f"{_P}start_worktree": ("local", _O),
+    f"{_P}resolve_conflicts": ("local", _O),
+    f"{_P}revert_pull": ("repo:write", _V),
     f"{_P}sub_issues": ("repo:triage", _O),
     f"{_P}transfer": ("repo:write", _D),
     f"{_P}unsnooze": ("local", _O),

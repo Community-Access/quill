@@ -2030,6 +2030,26 @@ tomorrow and it still does, on any computer, and on github.com too. A comment
 on a whole file, rather than a line, opens in the same comment window as any
 other.
 
+#### When a pull request will not merge
+
+"This branch has conflicts that must be resolved" is where a lot of people
+using a screen reader stop, because GitHub's conflict editor is a page of
+markers to find by eye. In QUILL, **Resolve Conflicts in a Worktree...** on
+the pull request takes it to your own computer instead: after asking, it
+fetches the two branches with your own Git, merges them in a new folder beside
+the one you are working in, and hands each conflicted file to the same
+Resolve Conflicts window the editor's Local Git uses, one conflict at a time,
+yours and theirs read out. Your own folder is never touched, nothing is
+committed for you, and QUILL tells you the one command that pushes the
+result.
+
+Two neighbours came with it, in both editors. **Open Patch in Editor** puts
+the whole change in front of you as one document, every file in turn, to read
+with Find rather than click through; an image or a file too big to show is
+named, not skipped. And when something merged that should not have,
+**Revert Pull Request...** opens the pull request that undoes it, as a draft
+if you like, so taking a change back is a review like any other.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

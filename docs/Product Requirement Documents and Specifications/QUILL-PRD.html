@@ -29336,6 +29336,21 @@ Show Only Files Not Viewed, and Comment on This File…
 actions read the path from the node, never from its label.
 <code>quill/core/github/review_viewed.py</code>,
 <code>quill/ui/github_pr_review_viewed.py</code>.</p>
+<p><strong>A pull request’s patch, revert and conflicts
+(GH-PT).</strong> Three rows on a pull request in the Workbench. Open
+Patch in Editor writes the whole change as one unified diff
+(<code>&lt;repo&gt;-pr-&lt;n&gt;.diff</code>, built from the pull
+request’s files; a file with no text change is named on a <code>#</code>
+line) and opens it. Revert Pull Request… opens the pull request that
+undoes a merged one (<code>revertPullRequest</code>), asking its title
+and whether it is a draft. Resolve Conflicts in a Worktree… is QUILL’s
+alone, since QUILL keeps local Git: it asks, fetches the head and base
+with the person’s own git (the only network use, listed in the egress
+audit), merges the base into a new <code>pr-&lt;n&gt;-conflicts</code>
+worktree without committing, and walks the conflicted files with Tools
+&gt; Local Git’s Resolve Conflicts; the person commits and pushes.
+<code>quill/core/github/pull_tools.py</code>,
+<code>quill/ui/github_workbench_pull_tools.py</code>.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

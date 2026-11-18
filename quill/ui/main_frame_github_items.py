@@ -43,6 +43,14 @@ class GitHubItemsMixin:
 
         start_issue_worktree(self, parent, repository, number, title, is_pr)
 
+    def resolve_github_pull_conflicts(
+        self, parent: object, repository: str, number: int, head: str, base: str
+    ) -> None:
+        """Workbench: Resolve Conflicts in a Worktree, for pull request #*number*."""
+        from quill.ui.github_issue_worktree import resolve_pull_conflicts
+
+        resolve_pull_conflicts(self, parent, repository, number, head, base)
+
     def open_github_reference(self) -> None:
         """Open a pasted GitHub URL in the best available QUILL view."""
         wx = self._wx
@@ -166,6 +174,7 @@ class GitHubItemsMixin:
             gist_source=self._github_gist_source,
             ai_summarizer=self._github_ai_summarizer,
             start_worktree=self.start_github_issue_worktree,
+            resolve_conflicts=self.resolve_github_pull_conflicts,
             open_document=lambda path: self.open_file(path),
         )
 

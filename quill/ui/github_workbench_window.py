@@ -143,11 +143,13 @@ class GitHubWorkbenchProvider(
         ai_summarizer: Callable[[], Callable[[str], str] | None] | None = None,
         start_worktree: Callable[[object, str, int, str, bool], None] | None = None,
         open_document: Callable[[Path], None] | None = None,
+        resolve_conflicts: Callable[[object, str, int, str, str], None] | None = None,
     ) -> None:
         self.items = items
         self._open_document = open_document
         self.ai_summarizer = ai_summarizer
         self.start_worktree = start_worktree
+        self.resolve_conflicts = resolve_conflicts
         self._guide_product = guide_product
         self._gist_source = gist_source
         self._repositories: list[str] = [repository] if repository else []
@@ -516,6 +518,7 @@ def open_github_workbench(
     ai_summarizer: Callable[[], Callable[[str], str] | None] | None = None,
     start_worktree: Callable[[object, str, int, str, bool], None] | None = None,
     open_document: Callable[[Path], None] | None = None,
+    resolve_conflicts: Callable[[object, str, int, str, str], None] | None = None,
 ) -> WorkbenchFrame:
     """Open the one GitHub Workbench (or bring it forward), at *node* or *view*.
 
@@ -562,6 +565,7 @@ def open_github_workbench(
         ai_summarizer=ai_summarizer,
         start_worktree=start_worktree,
         open_document=open_document,
+        resolve_conflicts=resolve_conflicts,
     )
     provider.adopt_remembered_instances()
     frame = WorkbenchFrame(

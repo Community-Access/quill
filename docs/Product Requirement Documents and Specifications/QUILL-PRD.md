@@ -17415,6 +17415,20 @@ outline; Mark as Viewed or Not Viewed (`markFileAsViewed`,
 from the node, never from its label. `quill/core/github/review_viewed.py`,
 `quill/ui/github_pr_review_viewed.py`.
 
+**A pull request's patch, revert and conflicts (GH-PT).** Three rows on a
+pull request in the Workbench. Open Patch in Editor writes the whole change
+as one unified diff (`<repo>-pr-<n>.diff`, built from the pull request's
+files; a file with no text change is named on a `#` line) and opens it.
+Revert Pull Request... opens the pull request that undoes a merged one
+(`revertPullRequest`), asking its title and whether it is a draft. Resolve
+Conflicts in a Worktree... is QUILL's alone, since QUILL keeps local Git: it
+asks, fetches the head and base with the person's own git (the only network
+use, listed in the egress audit), merges the base into a new
+`pr-<n>-conflicts` worktree without committing, and walks the conflicted
+files with Tools > Local Git's Resolve Conflicts; the person commits and
+pushes. `quill/core/github/pull_tools.py`,
+`quill/ui/github_workbench_pull_tools.py`.
+
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and
 `tests/unit/docs/test_github_live_run_coverage.py` fails when a write command

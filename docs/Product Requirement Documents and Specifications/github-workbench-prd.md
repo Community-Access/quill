@@ -966,7 +966,7 @@ tree, so adding it later does not reshape anything.
 | Edit description, website and features (issues, wiki, discussions, projects on or off) | Rename, visibility, default branch and topics only | Repository > Settings > General |
 | Rulesets: read them | Read only inside merge readiness, with a link out | Repository > Settings > Rulesets (read-only list; editing stays on github.com) |
 | Enable or disable a workflow | Not found | Workflow context menu; Item menu |
-| Revert a merged pull request | Not found | PR context menu > More > Revert... |
+| Revert a merged pull request | **Built 2026-11-17.** Revert Pull Request... on a merged pull request's row opens the pull request that undoes it (GraphQL `revertPullRequest`), asking its title and whether it is a draft | PR context menu > Revert Pull Request... |
 | Security policy, private vulnerability reports, repository security advisories | Not found (an advisory credit appears only as a notification reason) | Repository > Security > Policy; Security > Advisories (roadmap GX11) |
 
 ### 14.2 Worth adding later (useful, less often)
@@ -1890,6 +1890,22 @@ coverage gate (section 19) from day one.
   conflicted file in the editor at its first conflict, offers Keep Ours,
   Keep Theirs, Keep Both per conflict, and commits the result. GitHub's web
   conflict editor is one of its least accessible pages.
+  *Built 2026-11-17, with one departure:* Resolve Conflicts in a Worktree...
+  on an open pull request's row (QUILL; the editor owns local Git) asks
+  before it fetches the head and base branches with the person's own git,
+  makes branch `pr-<n>-conflicts` from the head in a new worktree beside the
+  checkout, merges the base there with `--no-commit`, and walks each
+  conflicted file with the editor's Resolve Conflicts (`MergeConflictDialog`).
+  It does **not** commit or push: the person does, and QUILL says the exact
+  `git push <remote> pr-<n>-conflicts:<head>`, because a merge commit pushed
+  to someone else's branch is not a step to take for them. A pull request from
+  a fork is refused with the reason. With it, two neighbours: **Open Patch in
+  Editor** (the whole change as one unified diff from
+  `GET .../pulls/{n}/files`, a `#` line naming each file GitHub sends no text
+  for) and **Revert Pull Request...** (`revertPullRequest`, title and draft
+  asked). `quill/core/github/pull_tools.py`,
+  `quill/ui/github_workbench_pull_tools.py`,
+  `quill/ui/github_issue_worktree.resolve_pull_conflicts`.
 - **Pull request review, the remaining pieces:** mark a file as viewed and
   filter to unviewed files; multi-line and file-level comments; hide
   whitespace changes; split or unified diff as two ways of reading; review

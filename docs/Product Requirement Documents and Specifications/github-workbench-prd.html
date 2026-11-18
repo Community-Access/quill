@@ -1722,8 +1722,11 @@ stays on github.com)</td>
 </tr>
 <tr>
 <td>Revert a merged pull request</td>
-<td>Not found</td>
-<td>PR context menu &gt; More &gt; Revert…</td>
+<td><strong>Built 2026-11-17.</strong> Revert Pull Request… on a merged
+pull request’s row opens the pull request that undoes it (GraphQL
+<code>revertPullRequest</code>), asking its title and whether it is a
+draft</td>
+<td>PR context menu &gt; Revert Pull Request…</td>
 </tr>
 <tr>
 <td>Security policy, private vulnerability reports, repository security
@@ -2913,7 +2916,27 @@ Item &gt; Resolve Conflicts… checks out the branches in a local
 worktree, opens each conflicted file in the editor at its first
 conflict, offers Keep Ours, Keep Theirs, Keep Both per conflict, and
 commits the result. GitHub’s web conflict editor is one of its least
-accessible pages.</li>
+accessible pages. <em>Built 2026-11-17, with one departure:</em> Resolve
+Conflicts in a Worktree… on an open pull request’s row (QUILL; the
+editor owns local Git) asks before it fetches the head and base branches
+with the person’s own git, makes branch
+<code>pr-&lt;n&gt;-conflicts</code> from the head in a new worktree
+beside the checkout, merges the base there with
+<code>--no-commit</code>, and walks each conflicted file with the
+editor’s Resolve Conflicts (<code>MergeConflictDialog</code>). It does
+<strong>not</strong> commit or push: the person does, and QUILL says the
+exact
+<code>git push &lt;remote&gt; pr-&lt;n&gt;-conflicts:&lt;head&gt;</code>,
+because a merge commit pushed to someone else’s branch is not a step to
+take for them. A pull request from a fork is refused with the reason.
+With it, two neighbours: <strong>Open Patch in Editor</strong> (the
+whole change as one unified diff from
+<code>GET .../pulls/{n}/files</code>, a <code>#</code> line naming each
+file GitHub sends no text for) and <strong>Revert Pull Request…</strong>
+(<code>revertPullRequest</code>, title and draft asked).
+<code>quill/core/github/pull_tools.py</code>,
+<code>quill/ui/github_workbench_pull_tools.py</code>,
+<code>quill/ui/github_issue_worktree.resolve_pull_conflicts</code>.</li>
 <li><strong>Pull request review, the remaining pieces:</strong> mark a
 file as viewed and filter to unviewed files; multi-line and file-level
 comments; hide whitespace changes; split or unified diff as two ways of

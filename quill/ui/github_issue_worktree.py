@@ -114,6 +114,77 @@ def start_issue_worktree(
     )
 
 
+def resolve_pull_conflicts(
+    frame: Any, parent: object, repository: str, number: int, head: str, base: str
+) -> None:
+    """Put pull request #*number*'s head in a new worktree, merge *base* there, walk the conflicts.
+
+    The checkout the person is in is never changed. ``git fetch`` is the one
+    network use, by their own git, and only after they say yes.
+    """
+    from quill.core.github.pull_tools import (
+        conflict_branch_name,
+        prepare_conflict_worktree,
+        remote_for,
+    )
+
+    if not frame._local_git_ready():
+        return
+    root = _local_git_root_for_issue(frame, parent, repository)
+    if root is None:
+        return
+    runner = frame._local_git_runner()
+    remote = remote_for(runner, root, repository)
+    if not remote:
+        _show_message(
+            frame,
+            parent,
+            f"No remote of this checkout is {repository}. Choose a checkout whose origin "
+            "or upstream remote is that repository.",
+            "Repository Does Not Match",
+        )
+        return
+    try:
+        taken = [branch.name for branch in list_local_branches(root, runner=runner)]
+    except Exception as exc:  # noqa: BLE001 - local Git preflight is user-visible
+        _show_message(frame, parent, f"Could not inspect this checkout: {exc}", "Local Git")
+        return
+    path = default_worktree_path(root, conflict_branch_name(number))
+    if not _confirm(
+        frame,
+        parent,
+        f"Resolve the conflicts of pull request #{number} in a folder of its own.\n\n"
+        f"QUILL will fetch {head} and {base} from {remote} (your own git does this, the "
+        f"only network use), make branch {conflict_branch_name(number)} from {head} in "
+        f"{path}, and merge {base} into it there without committing. The checkout you "
+        "are in is not changed.\n\nContinue?",
+    ):
+        frame._set_status("Conflict worktree cancelled")
+        return
+
+    def work(_progress: object) -> object:
+        return prepare_conflict_worktree(
+            runner,
+            root,
+            remote=remote,
+            number=number,
+            head=head,
+            base=base,
+            path=path,
+            taken_branches=taken,
+        )
+
+    def done(result: Any) -> None:
+        if not result.ok or not result.files:
+            _show_message(frame, parent, result.message, "Resolve Conflicts in a Worktree")
+            return
+        frame._set_status(result.message)
+        frame._announce(result.message)
+        frame._local_git_resolve_next_conflict(result.path, list(result.files), 0)
+
+    frame._run_background_task(f"Preparing #{number} to resolve", work, done)
+
+
 def _local_git_root_for_issue(frame: Any, parent: object, repository: str) -> str | None:
     path = getattr(getattr(frame, "document", None), "path", None)
     if path:
@@ -167,4 +238,4 @@ def _show_message(frame: Any, parent: object, message: str, title: str) -> None:
         dialog.Destroy()
 
 
-__all__ = ["default_worktree_path", "start_issue_worktree"]
+__all__ = ["default_worktree_path", "resolve_pull_conflicts", "start_issue_worktree"]

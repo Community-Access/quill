@@ -458,7 +458,6 @@ PLANNED = CoverageTable((
     _planned("Saved replies", "Item > Insert Saved Reply", "GX05, GX12"),
     _planned("Wiki", "Repository > Wiki", "GX12"),
     _planned("Repository invitations", "Needs My Attention > Invitations"),
-    _planned("Revert a merged pull request", "Pull request context menu > More > Revert..."),
     _planned("Security policy and advisories", "Repository > Security > Advisories", "GX11"),
     # 14.2, worth adding later.
     _planned("Packages", "Repository > Packages"),
