@@ -80,8 +80,8 @@ _WHEEL_DLLS = {
 #: Import or folder names that differ from the distribution's name.
 _ALIASES = {
     "pil": "pillow",
-    # The GitHub Copilot SDK imports as ``copilot`` (its package data folder).
-    "copilot": "github-copilot-sdk",
+    # The Microsoft Copilot SDK imports as ``copilot`` (its package data folder).
+    "copilot": "microsoft-copilot-sdk",
     # The Phonon 31m model and voices, data folder in the shared runtime.
     "phonon-models": "phonon-31m",
     "nacl": "pynacl",

@@ -84,9 +84,9 @@ KNOWN_ADDITIONS: dict[str, str] = {
         "quillville-runtime.spec since 2026-10-31 (codex.md 10A.12). Expected: "
         "rebaseline with --write after the first build that carries it."
     ),
-    "github-copilot-sdk": (
-        "The GitHub Copilot SDK's dist-info, for the notices gate (2026-10-31, "
-        "codex.md 10A.12). Expected: rebaseline with --write."
+    "microsoft-copilot-sdk": (
+        "The Microsoft Copilot SDK 2.0 dist-info, for the notices gate (2026-11-18, "
+        "docs/design/copilot.md). Expected: rebaseline with --write."
     ),
 }
 

@@ -338,14 +338,14 @@ Upstream: https://github.com/kurtmckee/feedparser-sgmllib
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Keep the PSF copyright notice and licence with the distribution and summarise any changes we made.
 
-GitHub Copilot SDK (copilot)
-----------------------------
+Microsoft Copilot SDK (copilot)
+-------------------------------
 
 What it is: The Python SDK for My GitHub Copilot, using the SDK 2 in-process native runtime. Ships in the shared runtime; licensed under MIT with GitHub's copyright.
 Version: 2.0.1
 Licence: MIT
 Copyright: Copyright GitHub, Inc.
-Upstream: https://github.com/github/copilot-sdk
+Upstream: https://github.com/microsoft/copilot-sdk
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
 
@@ -4449,7 +4449,7 @@ Library.
 MIT License
 -----------
 
-Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, ripgrep (rg.exe), TG Drop Deck (adapted code), Kokoro-82M voices and kokoro-onnx, ptts (Phonon text-to-speech runtime), Piper text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), BlindRadio network table, Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), Dial tuning hiss (quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav), GitHub REST API description.
+Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, Microsoft Copilot SDK (copilot), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, ripgrep (rg.exe), TG Drop Deck (adapted code), Kokoro-82M voices and kokoro-onnx, ptts (Phonon text-to-speech runtime), Piper text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), BlindRadio network table, Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), Dial tuning hiss (quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav), GitHub REST API description.
 
 What it asks of us: Keep the copyright notice and the permission notice with every copy.
 

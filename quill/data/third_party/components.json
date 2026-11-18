@@ -744,8 +744,8 @@
       "pypi": "feedparser-sgmllib"
     },
     {
-      "id": "github-copilot-sdk",
-      "name": "GitHub Copilot SDK (copilot)",
+      "id": "microsoft-copilot-sdk",
+      "name": "Microsoft Copilot SDK (copilot)",
       "group": "runtime",
       "version": "2.0.1",
       "licenses": [
@@ -753,7 +753,7 @@
       ],
       "license_label": "MIT",
       "copyright": "Copyright GitHub, Inc.",
-      "homepage": "https://github.com/github/copilot-sdk",
+      "homepage": "https://github.com/microsoft/copilot-sdk",
       "what": "The Python SDK for My GitHub Copilot, using the SDK 2 in-process native runtime. Ships in the shared runtime; licensed under MIT with GitHub's copyright.",
       "products": [
         "all"
