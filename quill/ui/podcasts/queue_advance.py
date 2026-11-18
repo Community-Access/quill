@@ -12,27 +12,43 @@ from __future__ import annotations
 from collections.abc import Callable
 
 
-def start_next(host: object, show: object, episode: object, up_next: str) -> bool:
+def start_next(
+    host: object, show: object, episode: object, up_next: str, *, from_queue: bool = False
+) -> bool:
     """Start *episode* for the podcasts *host*; say *up_next* if it started, why if not.
 
     *host* is the PodcastsMixin: its ``_podcast_controller``,
-    ``_podcast_library`` and ``_announce``.
+    ``_podcast_library`` and ``_announce``. With *from_queue*, an episode that
+    cannot start is passed over for the next one in the queue that can, so one
+    episode with nothing to play does not stop the run (Chris Nova,
+    2026-11-18); each one passed over is named, and stays in the queue.
     """
+    from quill.core.podcasts.queue_steps import step_next
     from quill.ui.podcasts.show_actions import start_episode_playback
 
     announce: Callable[[str], None] = getattr(host, "_announce")  # noqa: B009
-    started = start_episode_playback(
-        getattr(host, "_podcast_controller"),  # noqa: B009
-        getattr(host, "_podcast_library"),  # noqa: B009
-        show,
-        episode,
+    library = getattr(host, "_podcast_library")  # noqa: B009
+    controller = getattr(host, "_podcast_controller")  # noqa: B009
+    skipped: list[str] = []
+    attempts = max(1, len(getattr(library, "queue", ()))) if from_queue else 1
+    for _ in range(attempts):
+        if start_episode_playback(controller, library, show, episode) is not False:
+            if skipped:
+                up_next = (
+                    f"Could not start {', '.join(skipped)}: nothing to play yet. "
+                    f"Playing {getattr(episode, 'title', '')} instead."
+                )
+            announce(up_next)
+            return True
+        skipped.append(getattr(episode, "title", ""))
+        if len(skipped) >= attempts:
+            break
+        step = step_next(library, getattr(show, "id", ""), getattr(episode, "guid", ""))
+        if step.kind != "play":
+            break
+        show, episode = step.show, step.episode
+    announce(
+        f"Could not start the next episode, {', '.join(skipped)}. "
+        "It has nothing to play yet; download it or check its address."
     )
-    title = getattr(episode, "title", "")
-    if started is False:
-        announce(
-            f"Could not start the next episode, {title}. "
-            "It has nothing to play yet; download it or check its address."
-        )
-        return False
-    announce(up_next)
-    return True
+    return False

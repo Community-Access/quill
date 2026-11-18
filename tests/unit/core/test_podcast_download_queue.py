@@ -477,3 +477,116 @@ def test_enqueue_carries_auth_header_to_the_transfer(
     queue.shutdown()
     assert item.status == "completed"
     assert captured["auth"] == "Basic zzz"
+
+
+class _DiskFullResponse(_FakeResponse):
+    pass
+
+
+def test_a_full_disk_is_named_and_never_retried(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Jessica Dail, 2026-11-18: a BrailleNote with a full disk heard
+    "Download connection dropped; reconnecting" five times."""
+    import errno as errno_module
+
+    monkeypatch.setattr(
+        feed_auth, "urlopen_auth_safe", lambda *a, **k: _FakeResponse([b"x" * 10, b"y"])
+    )
+    real_open = open
+
+    class _FullHandle:
+        def __init__(self, handle: object) -> None:
+            self._handle = handle
+
+        def write(self, _data: bytes) -> int:
+            raise OSError(errno_module.ENOSPC, "No space left on device")
+
+        def __enter__(self) -> _FullHandle:
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            self._handle.close()  # type: ignore[attr-defined]
+
+    def fake_open(path: object, mode: str = "r", *a: object, **k: object) -> object:
+        handle = real_open(path, mode, *a, **k)  # type: ignore[call-overload]
+        return _FullHandle(handle) if "b" in mode and str(path).endswith(".mp3") else handle
+
+    monkeypatch.setattr("builtins.open", fake_open)
+    reconnects: list[int] = []
+    failed = threading.Event()
+    queue = PodcastDownloadQueue(
+        on_status_changed=lambda item: failed.set() if item.status == "failed" else None,
+        on_reconnect=lambda _i, attempt, _m: reconnects.append(attempt),
+        reconnect_wait_seconds=0.05,
+    )
+    try:
+        queue.enqueue(
+            "item1",
+            show_id="s1",
+            episode_guid="g1",
+            url="https://x/e.mp3",
+            destination=tmp_path / "ep.mp3",
+        )
+        assert failed.wait(timeout=5)
+        item = queue.get("item1")
+        assert item is not None
+        assert item.error_kind == "disk"
+        assert "] The disk is full" in item.error_message
+        assert "connection" not in item.error_message
+        assert reconnects == []
+    finally:
+        queue.shutdown()
+
+
+def test_a_refusal_is_named_and_never_retried(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def not_found(*_a: object, **_k: object) -> _FakeResponse:
+        raise download_queue.urllib.error.HTTPError("https://x/e.mp3", 404, "Not Found", {}, None)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", not_found)
+    with pytest.raises(download_queue.DownloadRefusedError, match="HTTP 404, not found"):
+        _fetch_chunked(
+            "https://x/e.mp3",
+            tmp_path / "ep.mp3",
+            pause_event=threading.Event(),
+            cancel_event=threading.Event(),
+            on_progress=lambda *_a: None,
+        )
+
+
+def test_a_busy_server_is_still_retried(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def busy(*_a: object, **_k: object) -> _FakeResponse:
+        raise download_queue.urllib.error.HTTPError("https://x/e.mp3", 503, "Busy", {}, None)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", busy)
+    with pytest.raises(DownloadError) as caught:
+        _fetch_chunked(
+            "https://x/e.mp3",
+            tmp_path / "ep.mp3",
+            pause_event=threading.Event(),
+            cancel_event=threading.Event(),
+            on_progress=lambda *_a: None,
+        )
+    assert caught.value.kind == "network"
+
+
+def test_a_dropped_connection_is_logged_with_what_a_report_needs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    def drop(*_a: object, **_k: object) -> _FakeResponse:
+        raise download_queue.urllib.error.URLError("reset by peer")
+
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", drop)
+    with caplog.at_level("WARNING"), pytest.raises(DownloadError, match="dropped: reset by peer"):
+        _fetch_chunked(
+            "https://cdn.example.com/feed/e.mp3?token=SECRET",
+            tmp_path / "ep.mp3",
+            pause_event=threading.Event(),
+            cancel_event=threading.Event(),
+            on_progress=lambda *_a: None,
+        )
+    logged = caplog.text
+    assert "host=cdn.example.com" in logged and "free" in logged
+    assert "SECRET" not in logged and "/feed/" not in logged

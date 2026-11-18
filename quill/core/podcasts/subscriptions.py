@@ -142,6 +142,9 @@ class PodcastLibrary:
         self.queue.append(
             QueueItem(show_id=show_id, episode_guid=episode_guid, added_at=now_iso(), reason=reason)
         )
+        from quill.core.podcasts import queue_events
+
+        queue_events.queued(show_id, episode_guid)
         return True
 
     def find_show(self, show_id: str) -> PodcastShow | None:

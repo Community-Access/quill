@@ -71,6 +71,10 @@ class PodcastTransfersMixin:
         self._podcast_cue_download_started(item)
         if item.status == "failed":
             self._record_podcast_download_problem(item)
+            if getattr(item, "error_kind", "") == "disk":
+                # Never retried and never "connection dropped": the listener has
+                # to free space, so this one is said, not only logged.
+                self._announce(item.error_message.split("] ", 1)[-1])
             from quill.ui.podcasts import download_run
 
             download_run.step(self, item.episode_guid, failed_title=str(item.episode_guid))
@@ -231,6 +235,11 @@ class PodcastTransfersMixin:
         #: episode can stop it.
         self._podcast_cache_item_id = ""
         self._podcast_cache_key: tuple[str, str] = ("", "")
+        # Download Queued Episodes, the moment an episode joins the queue from
+        # anywhere (Chris Nova, 2026-11-18), not at the show's next refresh.
+        from quill.core.podcasts import queue_events
+
+        queue_events.set_listener(self._podcast_on_episode_queued)  # type: ignore[attr-defined]
 
     def _podcast_manage_playback_cache(self, state: object) -> None:
         """Keep the cache pointed at whatever is playing now.
