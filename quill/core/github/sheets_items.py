@@ -73,7 +73,8 @@ VIEWER_ITEM_QUERY = (
     "viewerCanDelete viewerCanType reactionGroups{content viewerHasReacted} "
     "projectItems(first:20){nodes{id project{id title}}} "
     "parent{number title} subIssues(first:50){nodes{number title}} "
-    "closedByPullRequestsReferences(first:10){nodes{number title}}} "
+    "closedByPullRequestsReferences(first:10){nodes{number title}} "
+    "linkedBranches(first:10){nodes{ref{name}}}} "
     "... on PullRequest{id viewerCanUpdate viewerCanClose viewerCanReopen viewerCanLabel "
     "viewerCanAssign viewerCanSubscribe viewerSubscription viewerCanReact "
     "viewerCanEnableAutoMerge viewerCanDisableAutoMerge viewerCanUpdateBranch "
@@ -144,6 +145,10 @@ def _viewer(data: Mapping[str, Any]) -> dict[str, Value]:
         item, "closingIssuesReferences", "nodes"
     )
     found["linked"] = _numbers(linked)
+    branches = dig(item, "linkedBranches", "nodes") or []
+    found["branches"] = tuple(
+        str(dig(node, "ref", "name")) for node in branches if dig(node, "ref", "name")
+    )
     found["auto_merge"] = bool(item.get("autoMergeRequest"))
     return found
 
@@ -417,6 +422,12 @@ _RELATIONSHIPS = page(
     ro("parent", "Parent issue", help="The issue this one is a sub-issue of."),
     ro("sub_issues", "Sub-issues", _K.LIST, "Its sub-issues, in order."),
     ro("linked", "Linked pull requests", _K.LIST, "Pull requests that close it when merged."),
+    ro(
+        "branches",
+        "Linked branches",
+        _K.LIST,
+        "Branches made for it: its Development on GitHub. Create Branch for This Issue adds one.",
+    ),
 )
 _CONVERSATION = page(
     "conversation",

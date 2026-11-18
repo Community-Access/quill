@@ -2,6 +2,21 @@
 
 ## 2.0.0
 
+### An issue's reason, its branch and its task list (2026-11-17)
+
+In the GitHub Workbench, closing an issue now asks why, as GitHub does:
+**Completed**, **Not planned**, or **Duplicate of another issue...**, which
+asks for the other issue's number and records it on GitHub. Until now Close or
+Reopen... promised a reason and never asked. **Create Branch for This
+Issue...** makes a branch from the default branch, named as GitHub suggests
+(`7-fix-the-parser`), and links it to the issue, so it is the issue's
+Development on GitHub; the issue's properties list its **Linked branches**.
+**Check or Uncheck a Task...** turns over one item of the issue's task list,
+and **Convert Tasks to Sub-issues...** makes each plain task an issue of its
+own and links its line to it. Both read the description again just before
+saving, and save nothing if somebody changed it meanwhile. Chapter 4 of the
+GitHub Guide has the details.
+
 ### Many issues at once, from a spreadsheet or from lines (2026-11-17)
 
 The GitHub Workbench's File menu gains two ways to make issues in bulk, each

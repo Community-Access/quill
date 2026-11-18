@@ -236,6 +236,40 @@ number. Signed in, it holds:
 On a pull request, the submenu holds only Lock and Unlock, because the others
 are for issues.
 
+## Closing, branches and task lists
+
+In the GitHub Workbench, Shift+F10 on an issue has these too.
+
+**Close or Reopen...** on an open issue asks why, as GitHub does: **Completed**,
+**Not planned**, or **Duplicate of another issue...**, which then asks for the
+other issue's number. You hear "Closed #7 as not planned." or "Closed #7 as a
+duplicate of #3, Original title." A duplicate is recorded on GitHub against
+the issue you named. On a closed issue the same command reopens it, and a pull
+request keeps the plain question, because GitHub gives it no reason.
+
+**Create Branch for This Issue...** makes a branch for the work, from the
+default branch, and links it to the issue, so GitHub lists it under the
+issue's Development. QUILL suggests a name the way GitHub does, such as
+`7-fix-the-parser`; change it if you like. A name git would refuse, or a
+branch that already exists, is refused before anything is sent. Afterwards you
+hear how to start: `git fetch`, then `git switch` and the name. The issue's
+properties (Alt+Enter) list its **Linked branches** on the Relationships page,
+beside the pull requests that will close it.
+
+An issue's task list is the lines of its description that start with a check
+box, `- [ ]` or `- [x]`.
+
+- **Check or Uncheck a Task...** lists the tasks, each read as "Done" or "Not
+  done" and its words. Enter on one turns it over and saves the description.
+- **Convert Tasks to Sub-issues...** makes each task that is not an issue yet
+  into an issue of its own, a sub-issue of this one, and changes its line to a
+  link to the new issue, checked or not as it was. It names the tasks and asks
+  first. GitHub then shows each line as the issue and its state.
+
+Both read the description again just before saving. If somebody changed it on
+GitHub while you were choosing, nothing is saved and you are told to try
+again, so nobody's edit is lost.
+
 ## Projects and dependencies
 
 GitHub Projects are boards that track issues and pull requests across one or

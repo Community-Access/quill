@@ -1991,6 +1991,19 @@ into an issue, takes off list markers and check boxes, and can make them all
 sub-issues of an issue you name. Afterwards a window lists every issue made,
 and Change History keeps each one.
 
+#### An issue's reason, its branch and its task list
+
+Closing an issue now asks why, the way GitHub records it: completed, not
+planned, or a duplicate of another issue you name by number. **Create Branch
+for This Issue...** starts the work on a branch named after the issue and
+links it, so anyone looking at the issue on GitHub sees the branch under
+Development, and the issue's properties list it too. And an issue's task list
+is no longer a row of boxes you have to find by ear: **Check or Uncheck a
+Task...** reads each task as done or not done and turns over the one you
+choose, and **Convert Tasks to Sub-issues...** makes each task an issue of its
+own and links its line to it. Neither saves over an edit somebody made while
+you were choosing.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

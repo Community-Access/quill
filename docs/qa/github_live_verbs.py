@@ -121,12 +121,77 @@ def comment(run: Any) -> str:
 
 
 def close_reopen(run: Any) -> str:
+    """Close for each of GitHub's three reasons, as the window asks; reopen after each."""
+    from quill.core.github.issue_development import CLOSE_REASONS, close_issue
+
     number = int(run.ids["issue"])
-    run.items.update_items(run.repo, [number], state="closed")
-    _expect(_issue_state(run, run.repo, number)["state"] == "closed", "still open after Close")
-    run.items.update_items(run.repo, [number], state="open")
-    _expect(_issue_state(run, run.repo, number)["state"] == "open", "still closed after Reopen")
-    return "closed, then reopened"
+    original = int(run.ids["sub_issue"])
+    seen = []
+    for reason in CLOSE_REASONS:
+        dup = original if reason.rest == "duplicate" else 0
+        close_issue(run.api, run.repo, number, reason, duplicate_of=dup)
+        state = _issue_state(run, run.repo, number)
+        _expect(state["state"] == "closed", f"still open after closing as {reason.said}")
+        seen.append(str(state.get("state_reason")))
+        run.items.update_items(run.repo, [number], state="open")
+        _expect(_issue_state(run, run.repo, number)["state"] == "open", "still closed")
+    _expect(seen == ["completed", "not_planned", "duplicate"], f"reasons GitHub kept: {seen}")
+    return "closed as completed, not planned and duplicate, reopened after each"
+
+
+def task_lists(run: Any) -> str:
+    """Check or Uncheck a Task, then Convert Tasks to Sub-issues, on an issue of its own."""
+    from quill.core.github.issue_development import (
+        convertible,
+        linked_body,
+        task_items,
+        toggle_task,
+    )
+
+    body = f"{TAG} tasks:\n- [ ] {TAG} task one\n- [x] {TAG} task two\n"
+    made = run.rest(
+        "POST", f"/repos/{run.repo}/issues", {"title": f"{TAG} task list", "body": body}
+    )
+    number = int(made["number"])
+    try:
+        first = task_items(body)[0]
+        run.rest("PATCH", f"/repos/{run.repo}/issues/{number}", {"body": toggle_task(body, first)})
+        now = str(_issue_state(run, run.repo, number)["body"])
+        _expect(f"- [x] {TAG} task one" in now, "the task was not checked")
+        made_subs: dict[int, int] = {}
+        for item in convertible(now):
+            issue = run.rest("POST", f"/repos/{run.repo}/issues", {"title": item.text})
+            run.rest(
+                "POST",
+                f"/repos/{run.repo}/issues/{number}/sub_issues",
+                {"sub_issue_id": int(issue["id"])},
+            )
+            made_subs[item.line] = int(issue["number"])
+        run.rest(
+            "PATCH", f"/repos/{run.repo}/issues/{number}", {"body": linked_body(now, made_subs)}
+        )
+        _expect(convertible(str(_issue_state(run, run.repo, number)["body"])) == [], "not linked")
+        for sub in made_subs.values():
+            _delete_issue(run, run.repo, sub)
+    finally:
+        _delete_issue(run, run.repo, number)
+    return "checked one task, converted both to sub-issues and linked them, then deleted"
+
+
+def create_branch(run: Any) -> str:
+    from quill.core.github.issue_development import (
+        branch_name_for,
+        create_linked_branch,
+        linked_branches,
+    )
+
+    number = int(run.ids["issue"])
+    name = f"{branch_name_for(number, TAG)}-{int(time.time())}"
+    said = create_linked_branch(run.api, run.repo, number, name)
+    linked = linked_branches(run.api, run.repo, number)
+    run.rest("DELETE", f"/repos/{run.repo}/git/refs/heads/{name}")
+    _expect(name in linked, f"not linked: {linked}")
+    return f"{said} It was listed as linked, then deleted."
 
 
 def labels(run: Any) -> str:
@@ -678,6 +743,9 @@ VERBS: dict[str, Scenario | str] = {
     "cancel_run": cancel_run,
     "clone": "needs Jeff: clones into a folder you choose, then opens it in the editor",
     "close_reopen": close_reopen,
+    "create_branch": create_branch,
+    "edit_tasks": task_lists,
+    "convert_tasks": "with edit_tasks: checked, converted and linked",
     "comment": comment,
     "delete_asset": "with upload_asset: uploaded, then deleted",
     "delete_branch": "with merge: the merged pull request's branch is deleted",

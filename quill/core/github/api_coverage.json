@@ -1330,7 +1330,7 @@
   "cloneProject": {"status": "out_of_scope", "home": "Projects (version 2)", "reason": "GitHub retired Projects (classic); the Workbench works with Projects (version 2)."},
   "cloneTemplateRepository": {"status": "planned", "home": "Repository sheet", "row": "Appendix F: repos"},
   "closeDiscussion": {"status": "planned", "home": "Repository > Discussions; Discussion sheet", "row": "Appendix F: discussions"},
-  "closeIssue": {"status": "planned", "home": "Issue sheet; Item menu", "row": "Close reason: completed, not planned, duplicate"},
+  "closeIssue": {"status": "covered", "home": "command:github.workbench.close_reopen", "via": "quill/core/github/issue_development.py"},
   "closePullRequest": {"status": "planned", "home": "Pull request sheet; Item menu", "row": "Appendix F: pulls"},
   "convertProjectCardNoteToIssue": {"status": "out_of_scope", "home": "Projects (version 2)", "reason": "GitHub retired Projects (classic); the Workbench works with Projects (version 2)."},
   "convertProjectV2DraftIssueItemToIssue": {"status": "planned", "home": "Projects; Project sheet", "row": "Appendix F: projects"},
@@ -1352,7 +1352,7 @@
   "createIssueFieldValue": {"status": "planned", "home": "Issue sheet; Item menu", "row": "Appendix F: issues"},
   "createIssueType": {"status": "planned", "home": "Issue sheet; Item menu", "row": "Appendix F: issues"},
   "createLabel": {"status": "planned", "home": "Issue sheet; Item menu", "row": "Appendix F: issues"},
-  "createLinkedBranch": {"status": "planned", "home": "Issue sheet; Item menu", "row": "Linked pull requests and branches for an issue"},
+  "createLinkedBranch": {"status": "covered", "home": "command:github.workbench.create_branch", "via": "quill/core/github/issue_development.py"},
   "createMigrationSource": {"status": "out_of_scope", "home": "None", "reason": "GitHub Enterprise Importer migrations, run by administrators with the gh gei extension."},
   "createProject": {"status": "out_of_scope", "home": "Projects (version 2)", "reason": "GitHub retired Projects (classic); the Workbench works with Projects (version 2)."},
   "createProjectV2": {"status": "covered", "home": "sheet:issue.projects", "via": "quill/core/github/sheets_items.py"},
@@ -1591,7 +1591,7 @@
   "fundingLinks": {"status": "planned", "home": "Repository > General (sponsor links)", "row": "Appendix F: sponsors"},
   "dependencyGraphManifests": {"status": "planned", "home": "Repository > Security > Dependencies", "row": "Dependency graph and SBOM export"},
   "lists": {"status": "planned", "home": "Repositories > Starred > each list", "row": "Star lists"},
-  "linkedBranches": {"status": "planned", "home": "Issue details; Item > Linked Pull Requests", "row": "Linked pull requests and branches for an issue"}
+  "linkedBranches": {"status": "covered", "home": "sheet:issue.branches", "via": "quill/core/github/sheets_items.py"}
  },
  "enterprise": {
   "DELETE /admin/hooks/{hook_id}": {"status": "out_of_scope", "home": "Open on GitHub: the server's own pages", "reason": "Only on GitHub Enterprise Server, and the Workbench connects to GitHub.com accounts only (accounts.py refuses other hosts)."},
