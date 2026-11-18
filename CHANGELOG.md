@@ -4,6 +4,15 @@
 
 ### WordPress
 
+### WordPress: Properties keeps your edits when a save fails (2026-11-18)
+
+The WordPress Workbench's Properties sheet closed on OK the moment it sent
+the change, so a refusal from the site, or Cancel on "Changed on the Site",
+lost every edit on it (review item 32). Now OK and Apply grey out while the
+save is on its way, and the sheet closes only once the site has taken it; a
+failure, or declining to replace someone else's change, leaves the sheet open
+with your edits.
+
 Most people meet WordPress because they write something: a blog, or the news
 for their organization's site. That is where this story starts. You connect a
 site, write a post in the editor you already use, and publish it when you are

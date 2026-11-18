@@ -151,6 +151,11 @@ row on one sheet: a post's title, status, author, categories, featured image
 and the rest, or a picture's alternative text and caption. Change what you
 like and press OK, or Apply to save and keep the sheet open.
 
+The sheet waits for the site's answer before it closes: OK and Apply grey out
+while the change is on its way. If the site refuses it, or someone changed the
+same thing meanwhile and you choose not to replace their change, the sheet
+stays open with your edits still on it, so you can fix them or try again.
+
 Select several rows and Properties changes them all at once. A field where
 they differ says "Mixed", and stays as it is unless you change it.
 
