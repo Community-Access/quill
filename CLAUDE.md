@@ -124,13 +124,14 @@ not on disk. The same holds for `qc.md` (the 2026-09/10 family QC plan) and
 `ear.md` (Earshot parity), both retired on 2026-10-03: `qc.md <id>` citations
 resolve in git history, `ear.md` was never committed and is summarised in the
 Cast PRD (section 23.25), and the open screen-reader checks moved to
-`docs/qa/screen-reader-checks-2026-10.md`. Likewise `wp_missing.md` and `complete2.md`, merged into the
-root `complete.md` on 2026-11-18 as its Parts 3 and 7 (with `how.md`'s review
-notes as Part 8, its walkthrough moved to `docs/design/wordpress-ux-walkthrough.md`,
-and `ear.md`'s leftovers as Part 5.1): their citations resolve there, and in git
-history. `complete.md`
-is the one list of open work, GitHub Workbench first; add to it rather than
-starting a new root file. Unlike those, `codex.md <section>`
+`docs/qa/screen-reader-checks-2026-10.md`. Likewise `wp_missing.md`, `complete2.md` and `how.md`'s review
+notes, merged into the root `complete.md` on 2026-11-18 (the walkthrough moved
+to `docs/design/wordpress-ux-walkthrough.md`), and the same day `complete.md`
+was trimmed to open work only: their citations, and citations of its old part
+numbers, resolve in git history. `complete.md` is the one list of open work,
+GitHub Workbench first, with a "Pick up here" section for whoever continues;
+add to it rather than starting a new root file, and delete an item when it is
+built. Unlike those, `codex.md <section>`
 citations (the AI plan of record: Choose Your AI, Ask, the agents) resolve on
 disk, in `docs/design/codex.md`, as do `code.md <section>` citations (agentic
 coding and the Developer profile) in `docs/design/code.md`, as do
