@@ -501,6 +501,42 @@ section 22), the remaining PRD section 14 features, Repository Sets in
 the UI, and manual NVDA, JAWS, Narrator, braille, scaling and
 live-account acceptance. The engineering checklist is in the <a
 href="./github-roadmap.md">GitHub Workbench roadmap</a>.</p>
+<h3 id="what-is-left-as-of-2026-11-18">What is left, as of
+2026-11-18</h3>
+<p>The night of 2026-11-17 to 18 finished PRD sections 14.1 and 14.2 and
+everything in 14.3 that GitHub’s API allows to a person’s sign-in. What
+remains, in four kinds:</p>
+<ul>
+<li><strong>Needs Jeff.</strong>
+<code>python docs/qa/github-live-run.py --create</code> on Windows
+against the test repositories, signed in after 2026-11-18 so the sign-in
+carries <code>user</code>, <code>read:packages</code>,
+<code>delete:packages</code>, the three key permissions and
+<code>admin:org_hook</code>; and the seventeen screen-reader checks in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>. The live run marks
+every write that would spend money or change his own account “needs
+Jeff” rather than doing it.</li>
+<li><strong>GitHub offers no API.</strong> Wiki pages (the Wiki node
+clones them instead), making or editing saved replies, creating a token,
+and an organization’s fine-grained token requests and grants (GitHub
+Apps only). These are <code>out_of_scope</code> or narrowed PLANNED rows
+with the reason written.</li>
+<li><strong>Still planned, narrow.</strong> Five PLANNED rows remain:
+listing and editing wiki pages inside the Workbench; advisory comments,
+private forks and an organization’s advisories; a package’s single
+version and other people’s packages; the dependency-graph compare and
+SBOM report endpoints; runner just-in-time configuration and removal
+tokens.</li>
+<li><strong>The API long tail.</strong> About 1,060 endpoints in
+Appendices E and F are still <code>planned</code> in
+<code>quill/core/github/api_coverage.json</code>, mostly organization
+administration (permissions, custom properties, roles, rulesets at
+organization level), Codespaces, Copilot, and the rest of Actions
+administration.
+<code>python -m quill.tools.github_api_coverage_audit</code> counts
+them, and the reference’s “Everything GitHub can do, and where” chapter
+lists each one with its intended home.</li>
+</ul>
 <h2 id="wordpress">WordPress</h2>
 <h3 id="done">Done</h3>
 <p>Everything below is in <code>S:\QUILL</code>, uncommitted on

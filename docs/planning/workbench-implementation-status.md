@@ -243,6 +243,36 @@ Compare Accounts and the rest of PRD section 22), the remaining PRD section
 braille, scaling and live-account acceptance. The engineering checklist is
 in the [GitHub Workbench roadmap](./github-roadmap.md).
 
+### What is left, as of 2026-11-18
+
+The night of 2026-11-17 to 18 finished PRD sections 14.1 and 14.2 and
+everything in 14.3 that GitHub's API allows to a person's sign-in. What
+remains, in four kinds:
+
+- **Needs Jeff.** `python docs/qa/github-live-run.py --create` on Windows
+  against the test repositories, signed in after 2026-11-18 so the sign-in
+  carries `user`, `read:packages`, `delete:packages`, the three key
+  permissions and `admin:org_hook`; and the seventeen screen-reader checks in
+  `docs/qa/screen-reader-checks-2026-10.md`. The live run marks every write
+  that would spend money or change his own account "needs Jeff" rather than
+  doing it.
+- **GitHub offers no API.** Wiki pages (the Wiki node clones them instead),
+  making or editing saved replies, creating a token, and an organization's
+  fine-grained token requests and grants (GitHub Apps only). These are
+  `out_of_scope` or narrowed PLANNED rows with the reason written.
+- **Still planned, narrow.** Five PLANNED rows remain: listing and editing
+  wiki pages inside the Workbench; advisory comments, private forks and an
+  organization's advisories; a package's single version and other people's
+  packages; the dependency-graph compare and SBOM report endpoints; runner
+  just-in-time configuration and removal tokens.
+- **The API long tail.** About 1,060 endpoints in Appendices E and F are
+  still `planned` in `quill/core/github/api_coverage.json`, mostly
+  organization administration (permissions, custom properties, roles,
+  rulesets at organization level), Codespaces, Copilot, and the rest of
+  Actions administration. `python -m quill.tools.github_api_coverage_audit`
+  counts them, and the reference's "Everything GitHub can do, and where"
+  chapter lists each one with its intended home.
+
 ## WordPress
 
 ### Done
