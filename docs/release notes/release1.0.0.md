@@ -2004,6 +2004,21 @@ choose, and **Convert Tasks to Sub-issues...** makes each task an issue of its
 own and links its line to it. Neither saves over an edit somebody made while
 you were choosing.
 
+#### A comment you can hear before you send it
+
+GitHub's comment box completes names as you type and shows a preview; neither
+helps much by ear. **Comment...** in the Workbench now opens a window with the
+same help, said instead of shown. Mentions come from a list, the conversation's
+people first, and so do references to issues, found by words in their titles.
+Emoji are found by name, and your saved replies on GitHub are one choice away.
+**Preview** reads the comment line by line the way GitHub will lay it out,
+saying which lines are headings, tasks, quotes or code, what each image and
+link stands for, and exactly who will be notified. A check before posting, on
+to begin with, catches what trips a screen-reader user reading your comment
+later: an image with no description, a link that says "click here", a
+heading that skips a level. And where GitHub allows no attachment from outside
+its website, the window says so instead of offering a button that cannot work.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

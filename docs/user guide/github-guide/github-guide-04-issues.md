@@ -53,10 +53,40 @@ it offers to set one up.
 
 ## Commenting
 
-You need to be signed in to comment. Select an issue and choose **Comment...**
-from its context menu or the **Item** menu. Type the comment and press OK to
-post it. Nothing is sent until you accept the comment window. GitHub's
-permission response is shown in words if your account cannot comment.
+You need to be signed in to comment. Select an issue or pull request and choose **Comment...** from its context
+menu or the **Item** menu. The comment window opens with the cursor in
+**Comment:**. Write in Markdown; Enter starts a new line, and Ctrl+Enter posts.
+
+The buttons under the comment put things at the cursor:
+
+- **Insert Mention...** (`Alt+M`) lists the people in the conversation first,
+  then everyone who may be assigned, and inserts `@` and the name. GitHub will
+  notify them.
+- **Insert Reference...** (`Alt+R`) asks for words in a title, or a number,
+  and lists the issues and pull requests that match; it inserts `#` and the
+  number.
+- **Insert Emoji...** (`Alt+E`) finds an emoji by its name, such as "thumbs up"
+  or "party".
+- **Insert Saved Reply...** (`Alt+S`) lists the saved replies you keep on
+  GitHub, under Settings, Saved replies.
+- **Attach Files...** (`Alt+F`) explains why it cannot: GitHub lets no other
+  program attach a file. Put the file in a release or a gist and paste its link,
+  or attach it on github.com.
+- **Preview** (`Alt+P`) reads the comment into the **Preview:** box as GitHub
+  will show it, one line each, saying what every line is: "Heading 2: Plan",
+  "Not done: Run it", "Quote: ...", a code block and how long it is, and what
+  each image and link stands for. Its last lines name who the comment will
+  notify and which issues it refers to.
+
+**Check before posting** (`Alt+H`) is on to begin with. When you post, it looks
+for things that trip a reader: an image with no description, a link that says
+"click here", a heading that skips a level, a long run of capital letters, and
+a comment that is only an emoji. If it finds any, it lists them and asks
+whether to post anyway; No takes you back to the comment. Turn it off for a
+comment you know is fine.
+
+**Post** sends the comment; Cancel or Escape sends nothing. GitHub's refusal is
+said in words if your account cannot comment.
 
 The current Workbench posts new issue comments. Editing or deleting an
 existing comment is not in its current issue actions; use GitHub.com for those

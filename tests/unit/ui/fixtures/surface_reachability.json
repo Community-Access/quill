@@ -104,6 +104,7 @@
   "quill.ui.github_api_console": "reachable",
   "quill.ui.github_artifacts_dialog": "reachable",
   "quill.ui.github_clone": "reachable",
+  "quill.ui.github_comment_composer": "reachable",
   "quill.ui.github_commit_comments_dialog": "reachable",
   "quill.ui.github_compare_branches_dialog": "reachable",
   "quill.ui.github_dialogs": "reachable",

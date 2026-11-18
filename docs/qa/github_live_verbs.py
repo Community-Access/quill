@@ -934,6 +934,18 @@ VERBS["import_issues"] = import_issues
 VERBS["issues_from_lines"] = issues_from_lines
 
 
+def comment_composer(run: Any) -> str:
+    """The composer's lookups against real GitHub: people, references, saved replies."""
+    from quill.core.github import comment_compose as cc
+
+    people = cc.mention_candidates(run.api, run.repo, already=[run.login])
+    _expect(run.login in people, f"the owner was not offered: {people}")
+    refs = cc.reference_candidates(run.api, run.repo, run.ids["issue"])
+    _expect(bool(refs) and refs[0].number == int(run.ids["issue"]), "the issue was not found")
+    replies = cc.saved_replies(run.api)
+    return f"{len(people)} people, issue #{refs[0].number} found, {len(replies)} saved replies"
+
+
 def export_list(run: Any) -> str:
     from quill.core.workbench.export import export_rows
 
@@ -963,6 +975,7 @@ FEATURES: dict[str, Scenario | str] = {
     "git on this computer (the line commands need it)": check_with_git,
     "From This Line: link, blame, pull for the commit, references (PRD 22.3)": line_commands,
     "Export List: CSV, Markdown and Excel (PRD 22.7)": export_list,
+    "The comment composer's lookups (PRD 22.4)": comment_composer,
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

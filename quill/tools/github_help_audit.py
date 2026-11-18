@@ -51,6 +51,10 @@ _SCAN_GLOBS: tuple[str, ...] = ("quill/ui/github_*.py", "quill/ui/workbench_*.py
 
 #: Surface constructions whose titles the scan cannot resolve, with the reason.
 TITLE_EXEMPT: dict[str, str] = {
+    "quill/ui/github_comment_composer.py::CommentComposer.__init__": (
+        'Titled after what it comments on ("Comment on #42"); its purpose is the '
+        '"Comment on" entry in SURFACE_PURPOSES.'
+    ),
     "quill/ui/github_issue_form_dialog.py::IssueFormDialog.__init__": (
         "One form window for issues, discussions and the template preview, titled by "
         "what it files; each title has its purpose in workbench_help's SURFACE_PURPOSES."

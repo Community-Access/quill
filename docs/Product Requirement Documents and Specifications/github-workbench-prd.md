@@ -960,7 +960,7 @@ tree, so adding it later does not reshape anything.
 |---|---|---|
 | Close reason: completed, not planned, or duplicate of #n | **Built 2026-11-17.** Close or Reopen... asks the reason; a duplicate names its original through GraphQL `closeIssue`; the sheet's State shows it | Item > Close Issue... asks the reason; the details pane shows it |
 | Linked pull requests and branches for an issue ("Development"), and "create a branch for this issue" | **Built 2026-11-17.** Linked branches on the issue sheet's Relationships page; Create Branch for This Issue... (`createLinkedBranch`). Unlinking a branch (`deleteLinkedBranch`) is not built yet | Issue details; Item > Linked Pull Requests; Item > Create Branch for Issue... (next to Start in Local Worktree) |
-| Saved replies | Roadmap GX05 and GX12, not built | Item > Insert Saved Reply in every comment box; Tools > Workbench Options > Saved Replies |
+| Saved replies | **Inserting built 2026-11-17** (the comment composer's Insert Saved Reply); managing them stays on GitHub | Item > Insert Saved Reply in every comment box; Tools > Workbench Options > Saved Replies |
 | Wiki | Roadmap GX12, not built | Repository > Wiki (pages as a list, read in details, edit in the editor) |
 | Repository invitations: accept or decline | Seen only as a notification type | Needs My Attention > Invitations |
 | Edit description, website and features (issues, wiki, discussions, projects on or off) | Rename, visibility, default branch and topics only | Repository > Settings > General |
@@ -2000,6 +2000,23 @@ request are at different commits, or the file has uncommitted changes.
   with no alt text (and an offer to describe it with AI), headings out of
   order, link text like "here", a table with no header row. It offers, never
   blocks.
+
+  *Built 2026-11-17 for comments, as the comment composer:* the Workbench's
+  Comment... opens `quill/ui/github_comment_composer.py` over
+  `quill/core/github/comment_compose.py`. Insert Mention (the conversation's
+  people, then `GET /repos/{r}/assignees`), Insert Reference (search by title
+  words, or a number), Insert Emoji (QUILL's emoji list), Insert Saved Reply
+  (GraphQL `viewer.savedReplies`), a spoken Preview that says each line's
+  kind, what images and links stand for, who will be notified and what is
+  referred to, and an optional Check before posting (images without
+  descriptions, vague links, skipped heading levels, long capitals,
+  emoji-only comments). Two deliberate departures: mentions and references
+  are chosen from lists, not completed as you type, because a list is
+  announced and a completion popup in a multi-line box is not reliably; and
+  attachments are explained, not offered, because GitHub has no API to attach
+  a file. Not yet: the AI image description, the table-header check, and the
+  same composer for review replies, discussion replies, line comments,
+  issues, pull requests and releases.
 - **Pictures, diagrams and math in issues** are read the way QUILL reads
   them in Markdown pages: Mermaid diagrams as their accessible text, math as
   speech, and images described on request.

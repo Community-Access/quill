@@ -317,6 +317,11 @@ SURFACE_PURPOSES: dict[str, str] = {
         "A template's form as people will meet it. Show Body shows what GitHub would "
         "write; nothing is sent anywhere."
     ),
+    "Comment on": (
+        "Write a comment for GitHub. Insert Mention, Insert Reference, Insert Emoji and "
+        "Insert Saved Reply put what you choose at the cursor; Preview reads the comment as "
+        "GitHub will show it. Ctrl+Enter or Post sends it, after the check if it is on."
+    ),
     "Template:": (
         "Build or edit a template: its keys, its fields as a list, its source and a "
         "preview, with the problems GitHub would report listed before Save."

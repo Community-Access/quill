@@ -1519,6 +1519,14 @@ status. See
 event to a line. See
 [The timeline](../github-guide/github-guide-04-issues.html#the-timeline).
 
+#### Writing a comment
+
+**Comment...** in the GitHub Workbench opens a comment window with **Insert
+Mention...**, **Insert Reference...**, **Insert Emoji...** and **Insert Saved
+Reply...**, a **Preview** that reads the comment as GitHub will show it, and a
+check before posting that is on to begin with. Ctrl+Enter posts. See
+[Commenting](../github-guide/github-guide-04-issues.html#commenting).
+
 #### Reacting to issues and comments
 
 **React...** adds or removes one of GitHub's eight reactions on an issue, a

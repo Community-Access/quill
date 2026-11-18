@@ -2,6 +2,20 @@
 
 ## 2.0.0
 
+### Writing a comment, with help (2026-11-17)
+
+**Comment...** in the GitHub Workbench now opens a comment window that does
+what GitHub's own comment box does, by ear. **Insert Mention...** (`Alt+M`)
+lists the conversation's people first; **Insert Reference...** (`Alt+R`) finds
+an issue or pull request by words in its title; **Insert Emoji...** (`Alt+E`)
+finds one by name; **Insert Saved Reply...** (`Alt+S`) uses the saved replies
+you keep on GitHub. **Preview** (`Alt+P`) reads the comment as GitHub will show
+it, saying what each line is and who will be notified. **Check before posting**
+(`Alt+H`), on to begin with, asks before sending a comment with an image that
+has no description, a "click here" link, a skipped heading level, a long run of
+capitals or only an emoji. Ctrl+Enter posts. **Attach Files...** says plainly
+that GitHub lets no other program attach a file, and what to do instead.
+
 ### An issue's reason, its branch and its task list (2026-11-17)
 
 In the GitHub Workbench, closing an issue now asks why, as GitHub does:

@@ -17400,6 +17400,13 @@ a fresh read still matches what was shown.
 `quill/core/github/issue_development.py`,
 `quill/ui/github_workbench_development.py`.
 
+**The comment composer (GH-C).** The Workbench's Comment... opens
+`quill/ui/github_comment_composer.py`: Insert Mention, Insert Reference,
+Insert Emoji, Insert Saved Reply, a spoken Preview and an optional Check before
+posting, from `quill/core/github/comment_compose.py`. Lookups run on the
+Workbench's background path; Ctrl+Enter posts; Attach Files explains that
+GitHub has no attachment API.
+
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and
 `tests/unit/docs/test_github_live_run_coverage.py` fails when a write command

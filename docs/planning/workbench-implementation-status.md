@@ -101,6 +101,13 @@ the description's task list, reading it again before saving. Core:
 `quill/ui/github_workbench_development.py`. Organization issue fields and
 unlinking a branch remain.
 
+**2026-11-17, GH-C: the comment composer.** Comment... opens a composer with
+Insert Mention, Insert Reference, Insert Emoji, Insert Saved Reply, a spoken
+Preview and an optional Check before posting
+(`quill/core/github/comment_compose.py`,
+`quill/ui/github_comment_composer.py`). Review, discussion and line-comment
+boxes are next.
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench
