@@ -598,6 +598,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Actions (`repository:actions`) | repository, repository | Actions: the repository's workflow runs, workflows and caches. |
 | Runs (`repository:runs`) | repository, actions | Runs: each time a workflow ran. Enter shows its jobs and logs; Ctrl+Shift+W says what failed; Ctrl+Shift+F5 re-runs the failed jobs. |
 | Workflows (`repository:workflows`) | repository, actions | Workflows: the automations defined in the repository. |
+| Runners (`repository:runners`) | repository, actions | Runners: the machines this repository runs its own jobs on, online or not, busy or idle, with their labels. Only administrators can see them. |
 | Caches (`repository:caches`) | repository, actions | Caches: files Actions kept between runs. Delete removes one. |
 | Code (`repository:code`) | repository, repository | Code: files, branches, commits, tags, and the upstream of a fork. |
 | Files (`repository:files`) | repository, code | Files: the repository's files on its default branch, a folder at a time. Enter opens a folder, or a file in the editor. |
@@ -787,6 +788,8 @@ Everything below is generated from the tables the window is built from. The GitH
 | Compare With Previous | Alt+Shift+B | The selected tag or release against the one before it, or a commit against its parent. |
 | Run Workflow on Branch... | Ctrl+Shift+R | Start a workflow that can be started by hand, on a branch. |
 | Repository Actions... | Ctrl+Shift+G | Everything else for this repository: star, watch, fork, clone, Codespaces, settings and administration, as a list you can run from. |
+| Export Software Bill of Materials... | Ctrl+Alt+B | Save the repository's dependency graph as an SPDX file: every package it uses. |
+| Transfer Repository... | Ctrl+Alt+T | Move the repository to another person or organization; asks for its name first. |
 
 #### Account
 
@@ -853,7 +856,8 @@ Keys the window answers that are not menu rows:
 - **release_asset**: Download, Copy Link, Delete Asset...; Properties...
 - **branch**: Commits, Compare With Default, Compare Branches..., Compare With Previous, Open in Codespaces..., Copy Name, Delete Branch...; Properties...
 - **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
-- **tag**: Open, Delete Tag..., Commit Comments..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
+- **tag**: Open, Delete Tag..., Read Tag Message, Commit Comments..., Compare With Previous, Compare With Default; More: Copy Link, Open on GitHub; Properties...
+- **runner**: Show Details, Open on GitHub, Copy Link; Properties...
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally; Properties...
 - **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Pin, Add to or Remove from Favorites; More: Open on GitHub, Open in Codespaces...; Properties...
@@ -902,6 +906,7 @@ Keys the window answers that are not menu rows:
 ### GitHub words
 
 - **Actions**: GitHub's automation: workflows that run on events, such as a push.
+- **Annotated tag**: A tag that carries a message, who made it and when. Releases usually use one. A lightweight tag is only a name for a commit.
 - **Artifact**: A file a run produced and kept, to download.
 - **Assignee**: The person an issue or pull request is given to.
 - **Branch**: A line of work: a name that follows the newest commit of one set of changes. Under Code, Branches.
@@ -941,6 +946,7 @@ Keys the window answers that are not menu rows:
 - **Role**: What somebody may do: read, triage, write, maintain or admin.
 - **Ruleset**: A newer, named set of branch and tag rules that can cover many branches.
 - **Run**: One time a workflow ran, with its jobs, steps and logs. Under Actions, Runs.
+- **Runner**: A machine that runs a workflow's jobs. GitHub provides them, or a repository brings its own, called self-hosted, listed under Actions > Runners.
 - **Saved search**: A search kept on this computer, to run again. Under Saved Searches.
 - **Secret**: A value, such as a password, that workflows use and GitHub never shows.
 - **Security alert**: A warning that code, a dependency or a secret in it is at risk.
