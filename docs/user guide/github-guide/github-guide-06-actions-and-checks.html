@@ -448,6 +448,22 @@ each deployment to it. Add one by choosing from the apps GitHub says are
 installed and can do this; if there are none, QUILL says so. Delete
 removes one.</li>
 </ul>
+<h2 id="starting-workflows-from-outside">Starting workflows from
+outside</h2>
+<p>A workflow can start on <code>repository_dispatch</code>, an event
+sent on purpose rather than by a push. <strong>Send Repository
+Dispatch…</strong>, on a repository’s context menu, sends one: give the
+event’s name, as the workflow’s <code>types</code> list says, such as
+<code>deploy</code>, and optionally extra values as JSON, such as
+<code>{"env": "test"}</code>, which the workflow reads as
+<code>github.event.client_payload</code>. You hear “Sent deploy.” and
+the run appears under Actions.</p>
+<h2 id="deleting-a-deployment">Deleting a deployment</h2>
+<p>Under Repository &gt; Deployments, a deployment’s context menu has
+<strong>Delete Deployment…</strong>, which removes it from the history
+after asking. GitHub deletes only an inactive deployment; a newer
+deployment to the same environment makes the older one inactive, and
+QUILL says so if you try too early.</p>
 <h2 id="artifacts">Artifacts</h2>
 <p>A run can leave files behind: a built installer, a test report. On a
 run, choose <strong>View Artifacts…</strong>. The window lists them with

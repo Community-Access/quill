@@ -466,6 +466,19 @@ the Commits view, and Backspace comes back.</p>
 <p>Signed in, the context menu has <strong>Delete Branch</strong> and
 the branch name. To confirm, you type the branch’s name. It cannot be
 undone from QUILL.</p>
+<p>It also has:</p>
+<ul>
+<li><strong>Merge Into…</strong>, which merges the branch into another,
+on GitHub, as a merge commit, the way GitHub’s merge button would but
+with no pull request. QUILL offers the default branch first and asks
+before merging. You hear “Merged topic into main as abc1234.”, or that
+there was nothing to merge, or that the two conflict and nothing was
+merged. Branch protection still applies: a protected branch that needs a
+pull request refuses.</li>
+<li><strong>Download Source…</strong>, the branch’s files as a zip or
+tar.gz file, saved where you choose. A tag’s context menu has it
+too.</li>
+</ul>
 <h3 id="comparing-branches">Comparing branches</h3>
 <p>Select a branch and press <strong>Compare…</strong>
 (<code>Alt+C</code>) or <code>Ctrl+Shift+B</code>. QUILL asks for the
@@ -564,6 +577,10 @@ the file, confirm, and QUILL says how far it has got at 25, 50 and 75
 percent, then “Uploaded” with the file’s name and size.</li>
 <li><strong>Delete Asset</strong>, inside a release’s file list, removes
 a file after asking. Its download count goes with it.</li>
+<li><strong>Delete Release…</strong> deletes the release, its notes and
+its files. Choose <strong>Delete the release, keep the tag</strong>,
+which leaves the tagged commit as it was, or <strong>Delete the release
+and its tag</strong>. It cannot be undone.</li>
 </ul>
 <p>In QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub &gt; Create
 Release…</strong> makes a new release: a tag, an optional title, your
@@ -770,6 +787,11 @@ GitHub sends a new webhook a ping straight away.</p>
 <p>On a webhook:</p>
 <ul>
 <li><strong>Ping</strong> sends it a test message.</li>
+<li><strong>Send Test Push</strong>, on a repository’s webhook, asks
+GitHub to send it the latest push as a test, if it listens for
+pushes.</li>
+<li><strong>Turn On or Off…</strong> stops GitHub sending it anything,
+without deleting it, or starts it again.</li>
 <li><strong>Recent Deliveries…</strong> lists what GitHub sent, newest
 first: “push at 2026-11-18 09:30: succeeded (200)”, or failed with the
 code it got back. Choose one to deliver it again, after a question.</li>
