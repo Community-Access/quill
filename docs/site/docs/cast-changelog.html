@@ -251,6 +251,19 @@ changes; this file keeps the engineering record. The 1.x release notes
 were retired on 2026-10-03.</p>
 <h2 id="unreleased">Unreleased</h2>
 <h3
+id="downloading-an-episode-no-longer-stalls-cast-2026-11-18">Downloading
+an episode no longer stalls Cast (2026-11-18)</h3>
+<p>Chris Nova reported (2026-11-18) that while an episode downloaded,
+the computer seemed to pause until the “downloaded” sound. The download
+itself ran in the background, but it reported its progress after every
+64 KB it read, about a thousand times for an hour-long episode, and each
+report made Cast refresh its status bar and the Podcast Manager. On a
+fast connection those reports came faster than the window could answer
+them, so keys and the screen reader waited behind them. Progress is now
+reported at most twice a second, and always at the last byte, so the
+readout still moves and the window stays free. QUILL’s own podcast
+downloads use the same code and get the same fix.</p>
+<h3
 id="when-the-next-queued-episode-cannot-start-cast-says-so-2026-11-18">When
 the next queued episode cannot start, Cast says so (2026-11-18)</h3>
 <p>Chris Nova reported (2026-11-17) that with two episodes in the Play

@@ -2,6 +2,13 @@
 
 ## 1.0.0
 
+### Podcast downloads no longer stall the window (2026-11-18)
+
+From Chris Nova: while a podcast episode downloaded, QUILL Cast (and QUILL's
+own podcasts) seemed to pause until the "downloaded" sound, because every
+64 KB read was a progress report the window had to handle. Progress now
+reaches the window at most twice a second, and always at the last byte.
+
 ### WordPress
 
 Most people meet WordPress because they write something: a blog, or the news

@@ -590,3 +590,40 @@ def test_a_dropped_connection_is_logged_with_what_a_report_needs(
     logged = caplog.text
     assert "host=cdn.example.com" in logged and "free" in logged
     assert "SECRET" not in logged and "/feed/" not in logged
+
+
+def test_progress_reaches_the_listener_a_few_times_a_second_not_once_a_chunk(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Chris Nova, 2026-11-18: Cast stalled while an episode downloaded, because
+    every 64 KB chunk was a report, and every report was work on the UI thread."""
+    chunks = [b"x" * 10] * 200
+    monkeypatch.setattr(
+        feed_auth,
+        "urlopen_auth_safe",
+        lambda *a, **k: _FakeResponse(list(chunks), content_length=2000),
+    )
+    ticks = iter(range(10_000))
+    reports: list[tuple[str, int]] = []
+    completed = threading.Event()
+    queue = PodcastDownloadQueue(
+        on_status_changed=lambda item: reports.append((item.status, item.bytes_downloaded)),
+        on_completed=lambda _item: completed.set(),
+        clock=lambda: next(ticks) * 0.01,  # 200 chunks over about two seconds
+    )
+    try:
+        queue.enqueue(
+            "item1",
+            show_id="s1",
+            episode_guid="g1",
+            url="https://x/e.mp3",
+            destination=tmp_path / "ep.mp3",
+        )
+        assert completed.wait(timeout=5)
+    finally:
+        queue.shutdown()
+    progress = [written for status, written in reports if status == "downloading" and written]
+    assert len(progress) <= 8, progress  # was 200
+    assert progress[-1] == 2000  # the last byte is always reported
+    item = queue.get("item1")
+    assert item is not None and item.bytes_downloaded == 2000
