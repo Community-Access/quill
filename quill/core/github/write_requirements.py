@@ -19,6 +19,7 @@ wx-free and strict-typed.
 from __future__ import annotations
 
 from quill.core.github.permissions import WriteTier
+from quill.core.github.quick_tables import QUICK_REQUIREMENTS
 
 __all__ = ["COMMAND_REQUIREMENTS", "requirement_for"]
 
@@ -169,6 +170,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}relationships": ("repo:triage", _O),
     f"{_P}issue_fields": ("repo:triage", _O),
     f"{_P}delete_release": ("repo:push", _D),
+    f"{_P}gist_comments": ("sign_in+scope:gist", _V),
+    f"{_P}fork_gist": ("sign_in+scope:gist", _V),
     f"{_P}delete_milestone": ("repo:triage", _D),
     f"{_P}delete_deployment": ("repo:push", _D),
     f"{_P}webhook_test_push": ("repo:admin", _O),
@@ -224,6 +227,10 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}across_move_open": ("repo:write", _V),
     f"{_P}across_promote_org": ("org:owner+repo:admin", _D),
 }
+
+
+# The quick commands (quill/core/github/quick_tables.py) declare their own.
+COMMAND_REQUIREMENTS.update(QUICK_REQUIREMENTS)
 
 
 def requirement_for(command_id: str) -> tuple[str, WriteTier] | None:

@@ -2586,6 +2586,10 @@ Control coverage: 384 audited sites (384 helped).
 
 **Ask a Person.** Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email.
 
+**People and Organizations.** Search People and Organizations: accounts whose name or login matches the filter box, such as jeff or type:org location:Tucson. Enter opens one.
+
+**Topics.** Search Topics: GitHub topics matching the filter box, with what each is about. Add one to a repository on its Properties.
+
 **My Codespaces.** My Codespaces: every codespace of yours. Start, Stop, Change Machine, Export to a Branch and Delete are on each row.
 
 **My Codespaces Secrets.** My Codespaces Secrets: values given to your own codespaces.
@@ -2611,6 +2615,12 @@ Control coverage: 384 audited sites (384 helped).
 **Repositories I Watch.** Repositories I Watch: every repository you get notifications for.
 
 **Gists I Starred.** Gists I Starred: gists you starred, newest first.
+
+**Licences.** Licences: the open source licences GitHub offers a new repository.
+
+**.gitignore Templates.** .gitignore Templates: lists of files to leave out, offered to a new repository.
+
+**Codes of Conduct.** Codes of Conduct: the codes of conduct GitHub offers a repository.
 
 **repository: owner/name.** A repository: its issues, pull requests, actions, code, releases and settings, each a node below. Ctrl+Shift+1 to Ctrl+Shift+0 jump to them.
 
@@ -2769,6 +2779,24 @@ Control coverage: 384 audited sites (384 helped).
 **person: Following.** Following: who this person follows.
 
 **person: Packages.** Packages: this person's public packages. Show Versions lists each one's versions.
+
+**person: SSH Keys.** SSH Keys: the public keys this person signs in to Git with; useful to check one before giving them access to a server.
+
+**person: GPG Keys.** GPG Keys: the keys GitHub checks this person's signed commits against.
+
+**person: SSH Signing Keys.** SSH Signing Keys: SSH keys this person signs commits with.
+
+**person: Social Accounts.** Social Accounts: the links on this person's profile.
+
+**person: Gists.** Gists: this person's public gists, newest first.
+
+**person: Starred.** Starred: the repositories this person starred, newest first.
+
+**person: Watching.** Watching: the repositories this person watches.
+
+**person: Projects.** Projects: this person's public Projects.
+
+**person: People They Follow: Activity.** People They Follow: Activity: public activity of the accounts this person follows.
 
 **organization: organization.** An organization: its repositories.
 
@@ -3192,6 +3220,10 @@ Control coverage: 384 audited sites (384 helped).
 
 **Add to or Remove from Favorites.** Keep it in Favorites.
 
+**Link a Pull Request That Closes It.** Say which pull requests close this issue when they merge.
+
+**Unlink a Pull Request.** Take a pull request off the ones that close this issue.
+
 **Properties.** Everything about this item on one sheet. Alt+Enter opens it from anywhere.
 
 **Review.** Read the review threads and checks, and review it.
@@ -3219,6 +3251,16 @@ Control coverage: 384 audited sites (384 helped).
 **Open in Codespaces.** Open GitHub's Codespaces page for this. Starting a Codespace can cost money, so QUILL asks first.
 
 **Commit Comments.** Comments on the commit and its lines.
+
+**Re-request Review.** Ask reviewers who already reviewed to look again.
+
+**Ask Copilot to Review.** Ask Copilot for a code review of this pull request.
+
+**Agent Merge.** Whether Copilot merges this pull request itself once it is ready, and how.
+
+**Turn On Agent Merge.** Let Copilot merge this pull request once its checks and reviews allow.
+
+**Turn Off Agent Merge.** Stop Copilot merging this pull request.
 
 **Jobs and Logs.** The run's jobs, steps and logs.
 
@@ -3252,6 +3294,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Delete Run.** Delete the run and its logs.
 
+**Read a Step's Log.** One step's log, to read without downloading the whole run's.
+
 **Runs.** This workflow's runs.
 
 **Run Workflow on Branch.** Start it on a branch.
@@ -3274,6 +3318,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Compare With Default.** Compare it with the default branch: commits each way, files, any open pull request.
 
+**GitHub's Release Notes.** The notes GitHub writes from the changes since another tag.
+
 **Download.** Download the file in your browser.
 
 **Delete Asset.** Remove the file from the release.
@@ -3291,6 +3337,18 @@ Control coverage: 384 audited sites (384 helped).
 **Delete Branch.** Delete the branch on GitHub.
 
 **Set Status.** Report a check you ran yourself: passed, failed or still running.
+
+**Check Run Details.** One check's result, its summary and every annotation it left.
+
+**Re-run a Check Suite.** Ask an app to run its checks on this commit again.
+
+**Branches at This Commit.** Which branches end at this commit.
+
+**Reactions on a Commit Comment.** Who reacted to a comment on this commit, and how.
+
+**React to a Commit Comment.** Add a reaction to a comment on this commit.
+
+**Remove My Reaction from a Commit Comment.** Take back a reaction you gave a comment on this commit.
 
 **Delete Tag.** Remove the tag; the commit stays.
 
@@ -3326,6 +3384,60 @@ Control coverage: 384 audited sites (384 helped).
 
 **Rename or Delete Star List.** In Star Lists: rename the list this row is on, change who sees it, or delete it.
 
+**Fork Workflow Settings.** How workflows run for pull requests from forks of private repositories.
+
+**Fork Workflows from Private Repositories.** Choose whether fork pull requests run workflows, and with what.
+
+**Languages.** How much of the code is in each language, as GitHub counts it.
+
+**License.** The licence GitHub found, and the file it is in.
+
+**Star History.** How many people starred it over time.
+
+**Mark Its Notifications Read.** Mark every notification about this repository as read.
+
+**Set a Custom Property.** Give one of the organization's custom properties a value here.
+
+**Compare Dependencies.** Which dependencies changed between two branches, tags or commits, and their known vulnerabilities.
+
+**SBOM Report.** Ask GitHub to build a software bill of materials report, and read it.
+
+**Ruleset History.** Each change to one of this repository's rulesets, and who made it.
+
+**Secret Scanning History.** When GitHub last scanned this repository for secrets, and how.
+
+**Require Sign-off on Web Commits.** Whether commits made on GitHub's site must carry a sign-off.
+
+**Sponsor Links.** Where people can sponsor this repository, from its FUNDING.yml.
+
+**Dependency Manifests.** Each manifest file GitHub reads dependencies from, and how many it found.
+
+**Start an Agent Task.** Give Copilot's cloud agent a job here; it works on a branch of its own.
+
+**Agent Tasks.** Copilot's cloud agent tasks in this repository, and how each is going.
+
+**An Agent Task's Progress.** Everything GitHub says about one agent task.
+
+**Automations.** This repository's Copilot automations.
+
+**New Automation.** An automation: a prompt Copilot runs whenever its trigger fires.
+
+**Run an Automation.** Run one of this repository's automations now.
+
+**Rename an Automation.** Give one of this repository's automations another name.
+
+**Delete an Automation.** Delete one of this repository's automations; tasks it ran stay.
+
+**An Automation's History.** Each change to one automation, newest first.
+
+**An Automation's Tasks.** The tasks one automation has run.
+
+**Automation Tools and Triggers.** What an automation here may do, and what may start it.
+
+**Agent Secrets from the Organization.** The organization's agent secrets this repository may use (names only).
+
+**Agent Variables from the Organization.** The organization's agent variables this repository may use.
+
 **Open.** Select the person's node in the tree.
 
 **Follow or Unfollow.** Follow them, or stop.
@@ -3340,15 +3452,41 @@ Control coverage: 384 audited sites (384 helped).
 
 **Star or Unstar.** Star it, or take the star away.
 
+**Comments.** Read its comments; add, change or delete.
+
+**History.** Every saved version, with how much changed.
+
+**Forks.** Who forked it, and when.
+
+**Fork Gist.** Copy it to your own gists.
+
 **Delete Gist.** Delete the gist.
 
 **Open Discussion Thread.** Read the whole thread.
+
+**Close Discussion.** Close it as resolved, outdated or a duplicate.
+
+**Reopen Discussion.** Open a closed discussion again.
+
+**Delete Discussion.** Delete it and every comment in it, for good.
+
+**Upvote.** Add your upvote, which helps it rise in the list.
+
+**Remove Upvote.** Take your upvote back.
+
+**Vote in the Poll.** Choose an answer in this discussion's poll.
+
+**Edit a Comment.** Change a comment you may edit.
+
+**Delete a Comment.** Delete a comment you may delete.
 
 **Dismiss or Reopen Alert.** Dismiss with a reason.
 
 **Copilot Autofix.** Ask for a fix, or commit it.
 
 **Show Every Place.** Each place it was found.
+
+**Where It Was Found.** Every file, commit, issue or comment the secret is in.
 
 **Show Details.** The cache's key, size and last use.
 
@@ -3390,13 +3528,77 @@ Control coverage: 384 audited sites (384 helped).
 
 **Delete Project.** Asks for its title typed out.
 
+**New View.** Add a view to this Project: a table, a board or a roadmap.
+
+**Items in a View.** What one of this Project's views shows, in its order and with its filter.
+
+**Rename a View.** Give one of this Project's views another name.
+
+**Delete a View.** Delete one of this Project's views; its items stay.
+
+**Rename a Field.** Give one of this Project's fields another name.
+
+**Add an Issue Field.** Add one of the organization's issue fields to this Project.
+
+**Edit a Draft.** Change a draft's title and text.
+
+**Make a Draft an Issue.** Turn a draft into a real issue in a repository; it stays in the Project.
+
+**Move an Item.** Put an item in another place in the Project's own order.
+
+**Edit a Status Update.** Change a status update's status or text.
+
+**Delete a Status Update.** Delete one of this Project's status updates.
+
+**Delete a Workflow.** Delete one of this Project's automatic workflows.
+
+**Share the Project.** Give a person a role in this Project, or take it away.
+
+**Link a Team.** Show this Project on a team's Projects.
+
+**Unlink a Team.** Take this Project off a team's Projects.
+
 **Members and Access.** Open the team's sheet at its members: add people, change a role, remove.
+
+**Delete Team.** Delete this team, and its child teams.
+
+**Pending Invitations.** People invited to this team who have not joined yet.
 
 **Open.** Select the organization's node in the tree.
 
 **Roles.** Who holds each role; give or take one.
 
 **Rulesets.** Read, enforce, review or delete.
+
+**Fork Workflow Settings.** How workflows run for pull requests from forks of private repositories.
+
+**Fork Workflows from Private Repositories.** Choose whether fork pull requests run workflows, and with what.
+
+**Dependabot Repository Access.** Which private repositories Dependabot may read to update dependencies.
+
+**Give Dependabot a Repository.** Let Dependabot read one more private repository.
+
+**Take a Repository from Dependabot.** Stop Dependabot reading a private repository.
+
+**Dependabot's Default Access.** Which new repositories Dependabot may read without being given them.
+
+**Make Someone an Outside Collaborator.** Take someone out of the organization's members but keep their repository access.
+
+**Define a Custom Property.** Add or change a property every repository here can be given.
+
+**Set Repositories' Custom Property.** Give a custom property one value in several repositories.
+
+**New Team.** Make a team in this organization.
+
+**Accept Membership.** Join this organization, when it has invited you.
+
+**My Activity Here.** What you have done lately in this organization's repositories.
+
+**Require Sign-off on Web Commits.** Whether commits made on GitHub's site, in every repository here, must carry a sign-off.
+
+**Follow Organization.** See this organization's public activity in your feed.
+
+**Unfollow Organization.** Stop seeing this organization in your feed.
 
 **Open.** Open the settings dialog for this; it asks before saving.
 
@@ -3415,6 +3617,34 @@ Control coverage: 384 audited sites (384 helped).
 **Refresh.** Load this view again. F5 does the same.
 
 **Help for This View.** What this view shows. F1 does the same.
+
+**New Organization Runner.** Copy the commands that set up a runner every allowed repository may use.
+
+**Just-in-Time Runner.** A runner that takes one job and then goes: its configuration, on the clipboard.
+
+**Just-in-Time Runner.** A runner that takes one job and then goes: its configuration, on the clipboard.
+
+**Is a Runner Version Retiring?.** Whether GitHub is retiring a version of the runner program, and when.
+
+**Is a Runner Version Retiring?.** Whether GitHub is retiring a version of the runner program, and when.
+
+**Email Visibility.** Whether your primary email address shows on your profile and in your commits.
+
+**Interaction Limits.** Whether you have limited who may comment in your repositories, and until when.
+
+**Limit Interactions.** For a while, let only some people comment and open issues in all your repositories.
+
+**Lift Interaction Limits.** Let everyone take part in your repositories again.
+
+**Set Up a Sponsors Profile.** Start taking sponsorships: GitHub reviews the profile before it shows.
+
+**New Sponsor Tier.** Add a tier to your Sponsors profile, as a draft or published.
+
+**Patreon Sponsorships.** Let sponsors pay through Patreon as well as GitHub.
+
+**My Agent Tasks.** Every cloud agent task you started, in any repository.
+
+**My Automations.** Every Copilot automation you made.
 
 **Open in Its Repository.** Go to the item in its own repository, where every action for it is. Back returns to this row, filter and page.
 
@@ -3466,6 +3696,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Remove Runner.** GitHub forgets it; asks first.
 
+**Removal Commands.** Copy the commands that take this runner off its machine.
+
 **Check Site.** The latest build, then the custom domain's health.
 
 **Rebuild.** Ask GitHub for a fresh build.
@@ -3481,6 +3713,12 @@ Control coverage: 384 audited sites (384 helped).
 **Protection Rules.** Apps that must approve a deployment.
 
 **Delete.** Delete it, after asking.
+
+**Pin Environment.** Keep this environment at the top of the repository's Deployments.
+
+**Unpin Environment.** Let this environment take its usual place again.
+
+**Move Environment.** Put this pinned environment at another place among the pinned ones.
 
 **Start.** Start it, as it was when it stopped.
 
@@ -3508,6 +3746,14 @@ Control coverage: 384 audited sites (384 helped).
 
 **Request CVE.** Ask GitHub for a CVE number.
 
+**Advisory Comments.** The private discussion on this draft advisory.
+
+**Comment on Advisory.** Write in the advisory's private discussion.
+
+**Edit an Advisory Comment.** Change something you wrote in the advisory's discussion.
+
+**Make a Private Fork for the Fix.** A temporary private fork where collaborators can work on the fix.
+
 **Ping.** Send it a test message.
 
 **Send Test Push.** A push event, if it listens.
@@ -3530,11 +3776,33 @@ Control coverage: 384 audited sites (384 helped).
 
 **Delete.** Remove it; asks first.
 
+**Removal Commands.** Copy the commands that take this runner off its machine.
+
+**Add Runner Label.** Give this runner a label workflows can ask for.
+
+**Remove Runner Label.** Take away a label someone gave this runner; GitHub's own labels stay.
+
+**Runners in This Group.** The self-hosted runners in this group.
+
+**Hosted Runners in This Group.** The larger GitHub-hosted runners in this group.
+
+**Add a Runner to This Group.** Move one of the organization's runners into this group.
+
+**Remove a Runner from This Group.** Take a runner out of this group; it goes back to the Default group.
+
+**Teams It Adds To.** The teams this invitation puts the person in when they accept.
+
 **Clone Wiki.** Copy its pages to a folder, to edit them.
 
 **Cancel Sponsorship.** Stop it; asks first.
 
+**Sponsorship Preferences.** Whether people see this sponsorship, and whether you get the maintainer's emails.
+
 **Sponsor at This Tier.** Pay; you type their login.
+
+**Publish Tier.** Publish one of your draft tiers.
+
+**Retire Tier.** Stop offering one of your tiers; sponsors on it stay.
 
 ### Every Workbench option
 

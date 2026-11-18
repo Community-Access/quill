@@ -526,10 +526,8 @@ def _resource_nodes(scope: str) -> tuple[NodeSpec, ...]:
     """The list-shaped settings of the resource engine, for one scope."""
     from quill.core.github.resource_specs import RESOURCE_SPECS
 
-    where: dict[str, Any] = {
-        "repository": {"scope": _REPO},
-        "organization": {"scope": Scope.ORGANIZATION},
-    }
+    scopes = {"repository": _REPO, "organization": Scope.ORGANIZATION, "person": Scope.PERSON}
+    where: dict[str, Any] = {name: {"scope": found} for name, found in scopes.items()}
     return tuple(
         NodeSpec(
             spec.key,
@@ -551,7 +549,7 @@ GITHUB_TREE = TreeSpec(
     (*_FIXED, *MORE_FIXED, *_resource_nodes("user")),
     {
         "repository": (*_REPOSITORY, *MORE_REPOSITORY, *_resource_nodes("repository")),
-        "person": _PERSON,
+        "person": (*_PERSON, *_resource_nodes("person")),
         "organization": (*_ORGANIZATION, *_resource_nodes("organization")),
     },
 )

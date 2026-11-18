@@ -38,6 +38,7 @@ __all__ = [
     "fetch_downloads",
     "remove_label",
     "remove_runner",
+    "runner_token",
     "setup_commands",
 ]
 
@@ -72,7 +73,7 @@ def _refused(exc: GitHubRestError, doing: str) -> RunnerAdminError:
 
 def fetch_downloads(api: GitHubApi, repository: str) -> list[Download]:
     try:
-        data = api.rest("GET", f"/repos/{repository}/actions/runners/downloads").data
+        data = api.rest("GET", f"{_owner_path(repository)}/actions/runners/downloads").data
     except GitHubRestError as exc:
         raise _refused(exc, "read the runner downloads") from exc
     found = []
@@ -90,18 +91,33 @@ def fetch_downloads(api: GitHubApi, repository: str) -> list[Download]:
     return found
 
 
-def setup_commands(api: GitHubApi, repository: str, download: Download) -> str:
-    """The commands to paste on the machine; they hold a token that works for an hour."""
+def _owner_path(repository: str) -> str:
+    """``/repos/owner/name`` for a repository, ``/orgs/name`` for an organization."""
+    return f"/repos/{repository}" if "/" in repository else f"/orgs/{repository}"
+
+
+def runner_token(api: GitHubApi, repository: str, kind: str = "registration") -> str:
+    """A one-hour runner token (registration or removal), remembered as a secret."""
     from quill.stability.redaction import remember_secret
 
     try:
-        data = api.rest("POST", f"/repos/{repository}/actions/runners/registration-token").data
+        data = api.rest("POST", f"{_owner_path(repository)}/actions/runners/{kind}-token").data
     except GitHubRestError as exc:
         raise _refused(exc, "get a runner token") from exc
     token = str(data.get("token") or "") if isinstance(data, Mapping) else ""
     if not token:
         raise RunnerAdminError("GitHub sent no runner token.")
     remember_secret(token)
+    return token
+
+
+def setup_commands(api: GitHubApi, repository: str, download: Download) -> str:
+    """The commands to paste on the machine; they hold a token that works for an hour.
+
+    *repository* is ``owner/name``, or an organization's login for a runner
+    every repository it allows may use.
+    """
+    token = runner_token(api, repository)
     url = f"https://github.com/{repository}"
     name, sha = download.filename, download.sha256
     if download.os == "win":

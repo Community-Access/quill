@@ -2,6 +2,21 @@
 
 ## 1.0.0
 
+### GitHub Workbench: 116 more commands on rows, and every endpoint settled (2026-11-18)
+
+Repositories, commits, runs, pull requests, releases, alerts, advisories,
+runners, runner groups, organizations, teams, invitations, discussions,
+environments, Projects, sponsorships, Copilot's cloud agent (tasks,
+automations, Agent Merge, Copilot review) and your own account gain commands
+that each make one call to GitHub: from a repository's languages and star
+history to an organization's Dependabot access, closing a discussion as
+outdated, pinning an environment, renaming a Project's view, and a runner
+that takes one job. They are one table (`quill/core/github/quick_tables.py`),
+so menus, permissions, the live run and the API coverage table agree. The
+GitHub guide's Workbench chapter lists them under "More commands on rows".
+Every GitHub operation is now covered or classified: none is left
+planned. The cloud agent's are a public preview, so they send only what
+GitHub documents and show GitHub's own answer.
 ### Podcast downloads no longer stall the window (2026-11-18)
 
 From Chris Nova: while a podcast episode downloaded, QUILL Cast (and QUILL's
@@ -783,6 +798,23 @@ QUILL Lite's **Compare with Site** is the same shared code, so it marks its
 lines the same way, with the same saved choice.
 With thanks to Kelly Ford, whose GHManage has been the measure for QUILL's
 GitHub work from the start.
+
+### GitHub: a gist's comments, history and forks (2026-11-18)
+
+A gist's context menu in the Workbench gains **Comments...** (read, add,
+change and delete), **History...** (each saved version and how much changed),
+**Forks...** and **Fork Gist**. 7 more GitHub endpoints are covered; 122
+remain planned. In the GitHub guide's Workbench chapter, under Gists.
+
+### GitHub: a person's public lists, GitHub's templates, and People and Topics search (2026-11-18)
+
+A person's place in the Workbench's tree now lists their SSH keys, GPG keys,
+SSH signing keys, social accounts, gists, starred and watched repositories,
+Projects, and the activity of people they follow. Repositories gains GitHub's
+Licences, .gitignore Templates and Codes of Conduct. Search gains **People and
+Organizations** and **Topics**. 14 more GitHub endpoints are covered and 2
+need nothing; 129 remain planned. The GitHub guide's Workbench chapter has
+them under Search, People and Lists of settings.
 
 ### GitHub: deleting releases, milestones and deployments, and more on rows (2026-11-18)
 
