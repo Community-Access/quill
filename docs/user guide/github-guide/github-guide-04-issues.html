@@ -355,6 +355,11 @@ GitHub’s own “Hide” does. Put the cursor on its line, the one that says
 (<code>Alt+C</code>). Choose the reason, or <strong>Show it
 again</strong> for one that was hidden. You hear “Hid the comment as off
 topic.” You need triage access to the repository.</p>
+<p>To keep one comment at the top of the conversation, such as the
+answer or the current plan, put the cursor on its line and press
+<strong>Pin or Unpin Comment…</strong> (<code>Alt+P</code>). Choose
+<strong>Pin it to the top</strong> or <strong>Unpin it</strong>. GitHub
+shows a pinned comment first, for everyone.</p>
 <h2 id="writing-a-new-issue">Writing a new issue</h2>
 <p>Open a repository’s <strong>Issues</strong> or <strong>Issues and
 Pull Requests</strong> node. Choose <strong>Item &gt; New Here…</strong>
@@ -512,6 +517,30 @@ sub-issue in your browser.</li>
 </ul>
 <p>On a pull request, the submenu holds only Lock and Unlock, because
 the others are for issues.</p>
+<h2 id="issue-fields">Issue fields</h2>
+<p>An organization can give every issue extra values of its own, such as
+Priority, Points or Due date; on your own account you can make them for
+your own repositories (the Workbench’s <strong>People &gt; My Issue
+Fields</strong>, and an organization’s <strong>Issue Fields</strong>).
+Choose <strong>Issue Fields…</strong> on an issue’s context menu to see
+each one with this issue’s value: “Priority (single choice, field 1):
+High”, or “Due (date, field 2): not set”. A field you may not see, or
+one of a kind QUILL does not know yet, says so rather than looking
+empty.</p>
+<p>Choose a field to change it. A single choice offers its choices and
+<strong>Clear it</strong>. Any other field with a value asks
+<strong>Change it…</strong> or <strong>Clear it</strong> first, so
+pressing Cancel never clears anything; then QUILL asks for the value the
+way its kind needs: a number, a date as year-month-day (2026-12-31), or
+text. Only that field is sent, so a value someone else set on another
+field is kept. You hear “Points is now 5 on #4.”</p>
+<h2 id="deleting-an-issue">Deleting an issue</h2>
+<p>Closing an issue keeps it, its comments and its history; that is
+almost always what you want. A repository’s admins can also delete an
+issue for good, such as one made by mistake or full of spam: choose
+<strong>Delete Issue…</strong>. QUILL explains that GitHub cannot bring
+it back, and asks you to type the issue’s number; anything else deletes
+nothing. A pull request cannot be deleted this way.</p>
 <h2 id="closing-branches-and-task-lists">Closing, branches and task
 lists</h2>
 <p>In the GitHub Workbench, Shift+F10 on an issue has these too.</p>
@@ -570,6 +599,8 @@ then starts with what it is, so the kind comes first:</p>
 <li>“Parent: #12 Spring release (open)”</li>
 <li>“Sub-issue: #44 Write the help (open)”</li>
 <li>“Blocked by: #38 Fix the parser (closed)”</li>
+<li>“Related: #47 The old design (closed)”, linked without either
+waiting on the other.</li>
 <li>“Blocking: #50 Publish (open)”, an issue that waits on this
 one.</li>
 </ul>
@@ -583,11 +614,14 @@ is already a sub-issue of something else, QUILL asks before moving it
 here.</li>
 <li><strong>Add Blocked By…</strong> (<code>Alt+B</code>) records that
 another issue must be finished first.</li>
+<li><strong>Add Related…</strong> (<code>Alt+T</code>) links an issue
+that belongs with this one, such as an earlier attempt, without saying
+either must wait.</li>
 <li><strong>Remove</strong> (<code>Alt+R</code>) takes away the selected
-sub-issue or blocked-by link, after asking. Both issues stay; only the
-link goes, and you can add it again. A parent row and a “Blocking” row
-are the other end of another issue’s link, so you change them from that
-issue.</li>
+sub-issue, blocked-by or related link, after asking. Both issues stay;
+only the link goes, and you can add it again. A parent row and a
+“Blocking” row are the other end of another issue’s link, so you change
+them from that issue.</li>
 </ul>
 <p>After each change QUILL reads the relationships back from GitHub and
 says what happened, such as “#41 is now blocked by #38.” <strong>Reorder

@@ -933,7 +933,7 @@ Keys the window answers that are not menu rows:
 
 ### Context menus, by row type
 
-- **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Relationships..., Add to or Remove from Favorites; Properties...
+- **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Relationships..., Issue Fields..., Delete Issue..., Add to or Remove from Favorites; Properties...
 - **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., Re-run One Job...; More: Force Cancel..., Download Logs..., Delete Logs..., Approvals, Earlier Attempts..., View Artifacts..., Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link; Properties...
@@ -1085,7 +1085,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 691 yes, 176 planned, 271 not needed and 866 left to GitHub.
+In all: 699 yes, 154 planned, 285 not needed and 866 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2009,7 +2009,7 @@ In all: 691 yes, 176 planned, 271 not needed and 866 left to GitHub.
 
 #### Issues
 
-66 operations: 38 yes, 9 planned, 12 not needed, 7 left to github.
+66 operations: 45 yes, 1 planned, 13 not needed, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2023,8 +2023,8 @@ In all: 691 yes, 176 planned, 271 not needed and 866 left to GitHub.
 | Delete an issue comment | `DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}` | Yes | Properties (Alt+Enter) on Comment |
 | Get an issue comment | `GET /repos/{owner}/{repo}/issues/comments/{comment_id}` | Yes | Properties (Alt+Enter) on Comment: Comment |
 | Update an issue comment | `PATCH /repos/{owner}/{repo}/issues/comments/{comment_id}` | Yes | Properties (Alt+Enter) on Comment: Comment |
-| Unpin an issue comment | `DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/pin` | Planned | Comment sheet; Conversation page. |
-| Pin an issue comment | `PUT /repos/{owner}/{repo}/issues/comments/{comment_id}/pin` | Planned | Comment sheet; Conversation page. |
+| Unpin an issue comment | `DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/pin` | Yes | context menu > View Timeline... |
+| Pin an issue comment | `PUT /repos/{owner}/{repo}/issues/comments/{comment_id}/pin` | Yes | context menu > View Timeline... |
 | List issue events for a repository | `GET /repos/{owner}/{repo}/issues/events` | Not needed | An issue's events are part of its timeline, which Timeline already reads in full. |
 | Get an issue event | `GET /repos/{owner}/{repo}/issues/events/{event_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Get an issue | `GET /repos/{owner}/{repo}/issues/{issue_number}` | Yes | context menu > Show Details |
@@ -2045,9 +2045,9 @@ In all: 691 yes, 176 planned, 271 not needed and 866 left to GitHub.
 | List dependencies an issue is blocking | `GET /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocking` | Yes | context menu > Relationships... |
 | List issue events | `GET /repos/{owner}/{repo}/issues/{issue_number}/events` | Not needed | An issue's events are part of its timeline, which Timeline already reads in full. |
 | List issue field values for an issue | `GET /repos/{owner}/{repo}/issues/{issue_number}/issue-field-values` | Yes | context menu > Read Issue Type and Fields |
-| Add issue field values to an issue | `POST /repos/{owner}/{repo}/issues/{issue_number}/issue-field-values` | Planned | Issue and Pull request sheets; Label, Milestone and Issue type sheets; comments; timeline. |
-| Set issue field values for an issue | `PUT /repos/{owner}/{repo}/issues/{issue_number}/issue-field-values` | Planned | Issue and Pull request sheets; Label, Milestone and Issue type sheets; comments; timeline. |
-| Delete an issue field value from an issue | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/issue-field-values/{issue_field_id}` | Planned | Issue and Pull request sheets; Label, Milestone and Issue type sheets; comments; timeline. |
+| Add issue field values to an issue | `POST /repos/{owner}/{repo}/issues/{issue_number}/issue-field-values` | Yes | context menu > Issue Fields... |
+| Set issue field values for an issue | `PUT /repos/{owner}/{repo}/issues/{issue_number}/issue-field-values` | Not needed | Setting one field at a time does the same, and keeps a value someone else set on another field; replacing every value would lose it. |
+| Delete an issue field value from an issue | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/issue-field-values/{issue_field_id}` | Yes | context menu > Issue Fields... |
 | Remove all labels from an issue | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels` | Not needed | Replaces or clears every label at once; the Workbench adds and removes labels one at a time, so somebody else's change is kept. |
 | List labels for an issue | `GET /repos/{owner}/{repo}/issues/{issue_number}/labels` | Yes | context menu > Labels... |
 | Add labels to an issue | `POST /repos/{owner}/{repo}/issues/{issue_number}/labels` | Yes | context menu > Labels... |
@@ -2056,9 +2056,9 @@ In all: 691 yes, 176 planned, 271 not needed and 866 left to GitHub.
 | Unlock an issue | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/lock` | Yes | context menu > Lock or Unlock Conversation... |
 | Lock an issue | `PUT /repos/{owner}/{repo}/issues/{issue_number}/lock` | Yes | context menu > Lock or Unlock Conversation... |
 | Get parent issue | `GET /repos/{owner}/{repo}/issues/{issue_number}/parent` | Yes | context menu > Relationships... |
-| List issues related to an issue | `GET /repos/{owner}/{repo}/issues/{issue_number}/relates_to` | Planned | Issue and Pull request sheets; Label, Milestone and Issue type sheets; comments; timeline. |
-| Add a related issue | `POST /repos/{owner}/{repo}/issues/{issue_number}/relates_to` | Planned | Issue and Pull request sheets; Label, Milestone and Issue type sheets; comments; timeline. |
-| Remove a related issue | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/relates_to/{issue_id}` | Planned | Issue and Pull request sheets; Label, Milestone and Issue type sheets; comments; timeline. |
+| List issues related to an issue | `GET /repos/{owner}/{repo}/issues/{issue_number}/relates_to` | Yes | context menu > Relationships... |
+| Add a related issue | `POST /repos/{owner}/{repo}/issues/{issue_number}/relates_to` | Yes | context menu > Relationships... |
+| Remove a related issue | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/relates_to/{issue_id}` | Yes | context menu > Relationships... |
 | Remove sub-issue | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/sub_issue` | Yes | context menu > Relationships... |
 | List sub-issues | `GET /repos/{owner}/{repo}/issues/{issue_number}/sub_issues` | Yes | context menu > Reorder Sub-issues... |
 | Add sub-issue | `POST /repos/{owner}/{repo}/issues/{issue_number}/sub_issues` | Yes | context menu > Relationships... |
@@ -2894,7 +2894,7 @@ In all: 691 yes, 176 planned, 271 not needed and 866 left to GitHub.
 
 #### GraphQL: Issues
 
-51 mutations: 15 yes, 16 planned, 18 not needed, 2 left to github.
+51 mutations: 16 yes, 2 planned, 31 not needed, 2 left to github.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
@@ -2903,22 +2903,22 @@ In all: 691 yes, 176 planned, 271 not needed and 866 left to GitHub.
 | `addCloseIssueReferences` | Planned | Issue sheet; Item menu |
 | `addComment` | Not needed | The same change as POST /repos/{owner}/{repo}/issues/{issue_number}/comments, the route the Workbench uses for it (already built); one route per operation. |
 | `addLabelsToLabelable` | Not needed | The same change as POST /repos/{owner}/{repo}/issues/{issue_number}/labels, the route the Workbench uses for it (already built); one route per operation. |
-| `addRelatesTo` | Planned | Issue sheet; Item menu |
+| `addRelatesTo` | Not needed | The Workbench does this through GitHub's REST API (relates_to on Relationships...), which changes the same thing; a second way to one place is not needed. |
 | `addSubIssue` | Yes | context menu > Reorder Sub-issues... |
 | `applyPendingIssueSuggestions` | Left to GitHub | A preview GitHub may still change (issue artifacts and suggestions, stacked pull requests, pull request creation caps, code quality, planning statuses, concurrency groups); not built, by Jeff's choice (2026-11-18). |
 | `clearLabelsFromLabelable` | Not needed | The same change as DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels, the route the Workbench uses for it (planned there); one route per operation. |
 | `closeIssue` | Yes | context menu > Close or Reopen... |
 | `createIssue` | Not needed | The same change as POST /repos/{owner}/{repo}/issues, the route the Workbench uses for it (already built); one route per operation. |
-| `createIssueField` | Planned | Issue sheet; Item menu |
-| `createIssueFieldValue` | Planned | Issue sheet; Item menu |
-| `createIssueType` | Planned | Issue sheet; Item menu |
+| `createIssueField` | Not needed | The Workbench does this through GitHub's REST API (the Issue Fields lists), which changes the same thing; a second way to one place is not needed. |
+| `createIssueFieldValue` | Not needed | The Workbench does this through GitHub's REST API (issue-field-values on Issue Fields...), which changes the same thing; a second way to one place is not needed. |
+| `createIssueType` | Not needed | The Workbench does this through GitHub's REST API (the Issue Types lists), which changes the same thing; a second way to one place is not needed. |
 | `createLabel` | Not needed | The same change as POST /repos/{owner}/{repo}/labels, the route the Workbench uses for it (already built); one route per operation. |
 | `createLinkedBranch` | Yes | context menu > Create Branch for This Issue... |
-| `deleteIssue` | Planned | Issue sheet; Item menu |
+| `deleteIssue` | Yes | context menu > Delete Issue... |
 | `deleteIssueComment` | Not needed | The same change as DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}, the route the Workbench uses for it (already built); one route per operation. |
-| `deleteIssueField` | Planned | Issue sheet; Item menu |
-| `deleteIssueFieldValue` | Planned | Issue sheet; Item menu |
-| `deleteIssueType` | Planned | Issue sheet; Item menu |
+| `deleteIssueField` | Not needed | The Workbench does this through GitHub's REST API (the Issue Fields lists), which changes the same thing; a second way to one place is not needed. |
+| `deleteIssueFieldValue` | Not needed | The Workbench does this through GitHub's REST API (issue-field-values on Issue Fields...), which changes the same thing; a second way to one place is not needed. |
+| `deleteIssueType` | Not needed | The Workbench does this through GitHub's REST API (the Issue Types lists), which changes the same thing; a second way to one place is not needed. |
 | `deleteLabel` | Not needed | The same change as DELETE /repos/{owner}/{repo}/labels/{name}, the route the Workbench uses for it (already built); one route per operation. |
 | `deleteLinkedBranch` | Yes | context menu > Unlink Branch... |
 | `lockLockable` | Not needed | The same change as PUT /repos/{owner}/{repo}/issues/{issue_number}/lock, the route the Workbench uses for it (already built); one route per operation. |
@@ -2930,12 +2930,12 @@ In all: 691 yes, 176 planned, 271 not needed and 866 left to GitHub.
 | `removeBlockedBy` | Yes | context menu > Reorder Sub-issues... |
 | `removeCloseIssueReferences` | Planned | Issue sheet; Item menu |
 | `removeLabelsFromLabelable` | Not needed | The same change as DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}, the route the Workbench uses for it (already built); one route per operation. |
-| `removeRelatesTo` | Planned | Issue sheet; Item menu |
+| `removeRelatesTo` | Not needed | The Workbench does this through GitHub's REST API (relates_to on Relationships...), which changes the same thing; a second way to one place is not needed. |
 | `removeSubIssue` | Yes | context menu > Reorder Sub-issues... |
 | `reopenIssue` | Not needed | The same change as PATCH /repos/{owner}/{repo}/issues/{issue_number}, the route the Workbench uses for it (already built); one route per operation. |
 | `replaceActorsForAssignable` | Yes | Item > Assign to Copilot... (Ctrl+Shift+A) |
-| `reprioritizeSubIssue` | Planned | Issue sheet; Item menu |
-| `setIssueFieldValue` | Planned | Issue sheet; Item menu |
+| `reprioritizeSubIssue` | Not needed | The Workbench does this through GitHub's REST API (sub_issues/priority on Reorder Sub-issues...), which changes the same thing; a second way to one place is not needed. |
+| `setIssueFieldValue` | Not needed | The Workbench does this through GitHub's REST API (issue-field-values on Issue Fields...), which changes the same thing; a second way to one place is not needed. |
 | `transferIssue` | Yes | context menu > Transfer Issue... |
 | `unlockLockable` | Not needed | The same change as DELETE /repos/{owner}/{repo}/issues/{issue_number}/lock, the route the Workbench uses for it (already built); one route per operation. |
 | `unmarkIssueAsDuplicate` | Yes | context menu > Not a Duplicate... |
@@ -2944,10 +2944,10 @@ In all: 691 yes, 176 planned, 271 not needed and 866 left to GitHub.
 | `unpinIssueComment` | Not needed | The same change as the REST route for pinning a comment; one route per operation. |
 | `updateIssue` | Not needed | The same change as PATCH /repos/{owner}/{repo}/issues/{issue_number}, the route the Workbench uses for it (already built); one route per operation. |
 | `updateIssueComment` | Not needed | The same change as PATCH /repos/{owner}/{repo}/issues/comments/{comment_id}, the route the Workbench uses for it (already built); one route per operation. |
-| `updateIssueField` | Planned | Issue sheet; Item menu |
-| `updateIssueFieldValue` | Planned | Issue sheet; Item menu |
+| `updateIssueField` | Not needed | The Workbench does this through GitHub's REST API (the Issue Fields lists), which changes the same thing; a second way to one place is not needed. |
+| `updateIssueFieldValue` | Not needed | The Workbench does this through GitHub's REST API (issue-field-values on Issue Fields...), which changes the same thing; a second way to one place is not needed. |
 | `updateIssueIssueType` | Yes | context menu > Set Issue Type... |
-| `updateIssueType` | Planned | Issue sheet; Item menu |
+| `updateIssueType` | Not needed | The Workbench does this through GitHub's REST API (the Issue Types lists), which changes the same thing; a second way to one place is not needed. |
 | `updateLabel` | Not needed | The same change as PATCH /repos/{owner}/{repo}/labels/{name}, the route the Workbench uses for it (already built); one route per operation. |
 
 #### GraphQL: Migrations

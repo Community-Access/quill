@@ -2336,7 +2336,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## GitHub Workbench
 
-Control coverage: 382 audited sites (382 helped).
+Control coverage: 384 audited sites (384 helped).
 
 ### Every window, and what it is for
 
@@ -3186,6 +3186,10 @@ Control coverage: 382 audited sites (382 helped).
 
 **Relationships.** Parent, sub-issues, and blocked by: read, add and remove.
 
+**Issue Fields.** Set or clear the owner's fields.
+
+**Delete Issue.** Delete it for good; asks first.
+
 **Add to or Remove from Favorites.** Keep it in Favorites.
 
 **Properties.** Everything about this item on one sheet. Alt+Enter opens it from anywhere.
@@ -3709,6 +3713,7 @@ Control coverage: 382 audited sites (382 helped).
 - `self._list`: This issue's parent, sub-issues, the issues blocking it and the issues it blocks, each row starting with which. Enter opens the selected issue.
 - `self._add_sub`: Makes another issue a sub-issue of this one. Type it as #12, owner/repo#12, or paste its address. An issue with a parent already is moved here, after you say so.
 - `self._add_blocked`: Records that another issue must be finished before this one can be.
+- `self._add_related`: Records that another issue is related to this one, without either waiting on the other.
 - `self._remove`: Removes the selected sub-issue or blocked-by link. The issues themselves stay. A parent or an issue this one blocks is changed from that other issue.
 - `close`: Closes this window. Every change has already been sent.
 #### GitHubItemsDialog (`quill/ui/github_items_dialog.py`)
@@ -4004,6 +4009,7 @@ Control coverage: 382 audited sites (382 helped).
 - `self._text`: One line per event with its date and who did it, newest last. The last line says whether this is the whole history.
 - `self._copy_btn`: Copy the whole history to the clipboard.
 - `self._hide_btn`: With the cursor on a comment's line: fold it away for everyone for a reason, such as spam or off topic, without deleting it; or show a hidden one again.
+- `self._pin_btn`: With the cursor on a comment's line: pin it, so it shows first in the conversation for everyone, or unpin it.
 - `close_btn`: Close the timeline.
 #### WorkbenchListDialog (`quill/ui/github_workbench_list_dialog.py`)
 

@@ -34,8 +34,8 @@ __all__ = ["IssueRelationsDialog", "removable"]
 
 
 def removable(relations: Relations, index: int) -> tuple[str, IssueRef] | None:
-    """``("sub", ref)`` or ``("blocked", ref)`` for row *index*, or None for a row
-    this issue cannot change (its parent, or an issue it blocks)."""
+    """``("sub", ref)``, ``("blocked", ref)`` or ``("related", ref)`` for row *index*,
+    or None for a row this issue cannot change (its parent, or an issue it blocks)."""
     offset = 1 if relations.parent is not None else 0
     index -= offset
     if 0 <= index < len(relations.sub_issues):
@@ -43,6 +43,9 @@ def removable(relations: Relations, index: int) -> tuple[str, IssueRef] | None:
     index -= len(relations.sub_issues)
     if 0 <= index < len(relations.blocked_by):
         return "blocked", relations.blocked_by[index]
+    index -= len(relations.blocked_by)
+    if 0 <= index < len(relations.related):
+        return "related", relations.related[index]
     return None
 
 
@@ -98,6 +101,11 @@ class IssueRelationsDialog:
         self._add_blocked.SetHelpText(
             "Records that another issue must be finished before this one can be."
         )
+        self._add_related = wx.Button(panel, label="Add Rela&ted...")
+        self._add_related.SetHelpText(
+            "Records that another issue is related to this one, without either waiting on "
+            "the other."
+        )
         self._remove = wx.Button(panel, label="&Remove")
         self._remove.SetHelpText(
             "Removes the selected sub-issue or blocked-by link. The issues themselves stay. "
@@ -105,7 +113,7 @@ class IssueRelationsDialog:
         )
         close = wx.Button(panel, wx.ID_CANCEL, "Close")
         close.SetHelpText("Closes this window. Every change has already been sent.")
-        for button in (self._add_sub, self._add_blocked, self._remove):
+        for button in (self._add_sub, self._add_blocked, self._add_related, self._remove):
             row.Add(button, 0, wx.RIGHT, 6)
         row.AddStretchSpacer()
         row.Add(close)
@@ -120,6 +128,7 @@ class IssueRelationsDialog:
         self.dialog.SetSize(dip_size(self.dialog, 600, 440))
         self._add_sub.Bind(wx.EVT_BUTTON, lambda _e: self.add_sub_issue())
         self._add_blocked.Bind(wx.EVT_BUTTON, lambda _e: self.add_blocked_by())
+        self._add_related.Bind(wx.EVT_BUTTON, lambda _e: self.add_related())
         self._remove.Bind(wx.EVT_BUTTON, lambda _e: self.remove_selected())
         apply_listbox_activation(self._list, self._open_selected)
         bind_close_button(self.dialog, close, modeless=False)
@@ -178,6 +187,7 @@ class IssueRelationsDialog:
             *([relations.parent] if relations.parent else []),
             *relations.sub_issues,
             *relations.blocked_by,
+            *relations.related,
             *relations.blocking,
         ]
         index = self._list.GetSelection()
@@ -273,16 +283,30 @@ class IssueRelationsDialog:
 
         self._run("Adding the link...", work)
 
+    def add_related(self) -> None:
+        text = self._ask_text("Add Related", "&Related issue (#12, owner/repo#12 or address):")
+        if not text or not text.strip():
+            return
+
+        def work() -> str:
+            other = self._api.issue_ref(text, self._repo)
+            if other.number == self._number and other.repo == self._repo:
+                raise GitHubItemsError("An issue cannot be related to itself.")
+            self._api.add_related(self._repo, self._number, other)
+            return f"#{self._number} is now related to #{other.number}."
+
+        self._run("Adding the link...", work)
+
     def remove_selected(self) -> None:
         found = removable(self._relations, self._list.GetSelection())
         if found is None:
             self._say(
-                "Select a sub-issue or a blocked-by row. A parent, or an issue this one blocks, "
-                "is changed from that other issue."
+                "Select a sub-issue, blocked-by or related row. A parent, or an issue this one "
+                "blocks, is changed from that other issue."
             )
             return
         kind, ref = found
-        what = "sub-issue" if kind == "sub" else "blocked-by link"
+        what = {"sub": "sub-issue", "blocked": "blocked-by link", "related": "related issue"}[kind]
         if not self._confirm(
             "Remove",
             f"Remove #{ref.number} {ref.title!r} as a {what} of #{self._number}? "
@@ -294,6 +318,9 @@ class IssueRelationsDialog:
             if kind == "sub":
                 self._api.remove_sub_issue(self._repo, self._number, ref)
                 return f"#{ref.number} is no longer a sub-issue of #{self._number}."
+            if kind == "related":
+                self._api.remove_related(self._repo, self._number, ref)
+                return f"#{self._number} is no longer related to #{ref.number}."
             self._api.remove_blocked_by(self._repo, self._number, ref)
             return f"#{self._number} is no longer blocked by #{ref.number}."
 

@@ -154,6 +154,8 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
             "triage",
             "Parent, sub-issues, and blocked by: read, add and remove.",
         ),
+        _a("issue_fields", "Issue Fields...", _W, "triage", "Set or clear the owner's fields."),
+        _a("delete_issue", "Delete Issue...", _D, "admin", "Delete it for good; asks first."),
         _FAVORITE,
         _PROPERTIES,
     ),

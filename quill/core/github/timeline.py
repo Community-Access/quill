@@ -40,6 +40,8 @@ class TimelineEntry:
     text: str
     node_id: str = ""
     """A comment's GraphQL id, so it can be hidden; "" for every other event."""
+    comment_id: str = ""
+    """A comment's REST id, so it can be pinned; "" for every other event."""
 
     @property
     def line(self) -> str:
@@ -133,7 +135,9 @@ def timeline_entry(row: Mapping[str, Any]) -> TimelineEntry | None:
         text = f"merged this as {sha}" if sha else "merged this"
     elif event == "commented":
         text = "commented" + (f": {summary}" if (summary := _first_line(row.get("body"))) else "")
-        return TimelineEntry(when, actor, text, str(row.get("node_id") or ""))
+        return TimelineEntry(
+            when, actor, text, str(row.get("node_id") or ""), str(row.get("id") or "")
+        )
     else:
         text = event.replace("_", " ").replace("-", " ")
     return TimelineEntry(when=when, actor=actor, text=text)
