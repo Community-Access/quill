@@ -71,11 +71,18 @@ class GitHubTimelineDialog:
             "such as spam or off topic, without deleting it; or show a hidden one again."
         )
         self._hide_btn.Enable(False)
+        self._pin_btn = wx.Button(panel, wx.ID_ANY, label="&Pin or Unpin Comment...")
+        self._pin_btn.SetHelpText(
+            "With the cursor on a comment's line: pin it, so it shows first in the "
+            "conversation for everyone, or unpin it."
+        )
+        self._pin_btn.Enable(False)
         self._entries: tuple[object, ...] = ()
         close_btn = wx.Button(panel, wx.ID_CANCEL, label="Close")
         close_btn.SetHelpText("Close the timeline.")
         buttons.Add(self._copy_btn, 0, wx.RIGHT, 6)
         buttons.Add(self._hide_btn, 0, wx.RIGHT, 6)
+        buttons.Add(self._pin_btn, 0, wx.RIGHT, 6)
         buttons.AddStretchSpacer()
         buttons.Add(close_btn)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
@@ -85,6 +92,7 @@ class GitHubTimelineDialog:
         self.dialog.SetSizer(outer)
         self._copy_btn.Bind(wx.EVT_BUTTON, self._copy)
         self._hide_btn.Bind(wx.EVT_BUTTON, lambda _event: self._hide_or_show())
+        self._pin_btn.Bind(wx.EVT_BUTTON, lambda _event: self._pin_or_unpin())
 
     def _load(self) -> None:
         fetch = getattr(self._provider, "fetch_timeline", None)
@@ -113,6 +121,7 @@ class GitHubTimelineDialog:
         self._copy_btn.Enable(True)
         self._entries = tuple(result.entries)
         self._hide_btn.Enable(any(getattr(e, "node_id", "") for e in self._entries))
+        self._pin_btn.Enable(any(getattr(e, "comment_id", "") for e in self._entries))
         events = len(result.entries)
         self._announce(
             f"Timeline loaded, {events} event{'s' if events != 1 else ''}."
@@ -160,6 +169,41 @@ class GitHubTimelineDialog:
             wx.CallAfter(self._announce, said)
 
         threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: one GraphQL write.
+
+    def _pin_or_unpin(self) -> None:
+        """Pin the comment on the cursor's line to the top of the conversation, or unpin it."""
+        from quill.core.github.comment_moderation import pin_comment
+        from quill.core.github.workbench_api import TokenApi
+
+        wx = self._wx
+        entry = self._entry_at_cursor()
+        comment_id = str(getattr(entry, "comment_id", "") or "")
+        if not comment_id:
+            self._announce("Put the cursor on a line that says commented, then try again.")
+            return
+        who = getattr(entry, "actor", "") or "someone"
+        with wx.SingleChoiceDialog(
+            self.dialog,
+            f"The comment by {who}:",
+            "Pin or Unpin Comment",
+            ["Pin it to the top", "Unpin it"],
+        ) as box:
+            box.SetName("Pin or unpin comment")
+            if show_modal_dialog(box, "Pin or Unpin Comment", announce=self._announce) != wx.ID_OK:
+                return
+            pin = box.GetSelection() == 0
+        api = TokenApi(getattr(self._provider, "token", None))
+
+        def worker() -> None:
+            try:
+                said = pin_comment(api, self._repo, comment_id, pin=pin)
+            except Exception as exc:  # noqa: BLE001 - said, never raised into wx
+                reason = str(exc.args[0]) if exc.args else str(exc)
+                wx.CallAfter(self._announce, f"Could not change the comment: {reason}")
+                return
+            wx.CallAfter(self._announce, said)
+
+        threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: one REST write.
 
     def _failed(self, message: str) -> None:
         if not dialog_alive(self.dialog):

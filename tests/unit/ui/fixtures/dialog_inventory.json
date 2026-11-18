@@ -404,6 +404,7 @@
   "quill/ui/github_template_sheets_dialog.py::_Sheet.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_timeline_dialog.py::GitHubTimelineDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_timeline_dialog.py::GitHubTimelineDialog._hide_or_show::wx.SingleChoiceDialog": "native",
+  "quill/ui/github_timeline_dialog.py::GitHubTimelineDialog._pin_or_unpin::wx.SingleChoiceDialog": "native",
   "quill/ui/github_workbench_account_keys.py::GitHubWorkbenchAccountKeysMixin._read_key_file::wx.FileDialog": "native",
   "quill/ui/github_workbench_across_names.py::GitHubWorkbenchAcrossNamesMixin._choose_many::wx.MultiChoiceDialog": "native",
   "quill/ui/github_workbench_actions.py::GitHubWorkbenchActionsMixin._ask_text::wx.TextEntryDialog": "native",

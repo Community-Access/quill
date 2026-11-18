@@ -3111,7 +3111,8 @@ Start in Local Worktree…, Assign to Copilot…, Lock or Unlock
 Conversation…, Pin or Unpin Issue, Transfer Issue…, Check or Uncheck a
 Task…, Convert Tasks to Sub-issues…, Create Branch for This Issue…,
 Unlink Branch…, Not a Duplicate…, Set Issue Type…, Reorder Sub-issues…,
-Relationships…, Add to or Remove from Favorites; Properties…</li>
+Relationships…, Issue Fields…, Delete Issue…, Add to or Remove from
+Favorites; Properties…</li>
 <li><strong>pull_request</strong>: Review…, File Differences…, Comment…,
 Merge…, Why Can’t I Merge?, Auto-Merge…; More: Reviews…, Open in a
 Codespace, Add to or Remove from Merge Queue…, Open Patch in Editor,
@@ -3510,11 +3511,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<<<<<<< HEAD
-<p>In all: 691 yes, 176 planned, 271 not needed and 866 left to
-=======
-<p>In all: 642 yes, 228 planned, 268 not needed and 866 left to
->>>>>>> origin/main
+<p>In all: 699 yes, 154 planned, 285 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -8728,7 +8725,7 @@ Limits.</td>
 </tbody>
 </table>
 <h4 id="issues">Issues</h4>
-<p>66 operations: 38 yes, 9 planned, 12 not needed, 7 left to
+<p>66 operations: 45 yes, 1 planned, 13 not needed, 7 left to
 github.</p>
 <table>
 <thead>
@@ -8807,14 +8804,14 @@ Comments</td>
 <tr>
 <td>Unpin an issue comment</td>
 <td><code>DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/pin</code></td>
-<td>Planned</td>
-<td>Comment sheet; Conversation page.</td>
+<td>Yes</td>
+<td>context menu &gt; View Timeline…</td>
 </tr>
 <tr>
 <td>Pin an issue comment</td>
 <td><code>PUT /repos/{owner}/{repo}/issues/comments/{comment_id}/pin</code></td>
-<td>Planned</td>
-<td>Comment sheet; Conversation page.</td>
+<td>Yes</td>
+<td>context menu &gt; View Timeline…</td>
 </tr>
 <tr>
 <td>List issue events for a repository</td>
@@ -8956,23 +8953,21 @@ reads in full.</td>
 <tr>
 <td>Add issue field values to an issue</td>
 <td><code>POST /repos/{owner}/{repo}/issues/{issue_number}/issue-field-values</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Yes</td>
+<td>context menu &gt; Issue Fields…</td>
 </tr>
 <tr>
 <td>Set issue field values for an issue</td>
 <td><code>PUT /repos/{owner}/{repo}/issues/{issue_number}/issue-field-values</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Not needed</td>
+<td>Setting one field at a time does the same, and keeps a value someone
+else set on another field; replacing every value would lose it.</td>
 </tr>
 <tr>
 <td>Delete an issue field value from an issue</td>
 <td><code>DELETE /repos/{owner}/{repo}/issues/{issue_number}/issue-field-values/{issue_field_id}</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Yes</td>
+<td>context menu &gt; Issue Fields…</td>
 </tr>
 <tr>
 <td>Remove all labels from an issue</td>
@@ -9027,23 +9022,20 @@ removes labels one at a time, so somebody else’s change is kept.</td>
 <tr>
 <td>List issues related to an issue</td>
 <td><code>GET /repos/{owner}/{repo}/issues/{issue_number}/relates_to</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Yes</td>
+<td>context menu &gt; Relationships…</td>
 </tr>
 <tr>
 <td>Add a related issue</td>
 <td><code>POST /repos/{owner}/{repo}/issues/{issue_number}/relates_to</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Yes</td>
+<td>context menu &gt; Relationships…</td>
 </tr>
 <tr>
 <td>Remove a related issue</td>
 <td><code>DELETE /repos/{owner}/{repo}/issues/{issue_number}/relates_to/{issue_id}</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Yes</td>
+<td>context menu &gt; Relationships…</td>
 </tr>
 <tr>
 <td>Remove sub-issue</td>
@@ -9541,11 +9533,7 @@ job done on GitHub’s site.</td>
 </tbody>
 </table>
 <h4 id="organizations">Organizations</h4>
-<<<<<<< HEAD
 <p>129 operations: 68 yes, 6 planned, 12 not needed, 43 left to
-=======
-<p>129 operations: 58 yes, 17 planned, 11 not needed, 43 left to
->>>>>>> origin/main
 github.</p>
 <table>
 <thead>
@@ -13582,8 +13570,7 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tbody>
 </table>
 <h4 id="graphql-issues">GraphQL: Issues</h4>
-<p>51 mutations: 15 yes, 16 planned, 18 not needed, 2 left to
-github.</p>
+<p>51 mutations: 16 yes, 2 planned, 31 not needed, 2 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -13626,8 +13613,10 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>addRelatesTo</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s REST API (relates_to on
+Relationships…), which changes the same thing; a second way to one place
+is not needed.</td>
 </tr>
 <tr>
 <td><code>addSubIssue</code></td>
@@ -13662,18 +13651,24 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>createIssueField</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s REST API (the Issue Fields
+lists), which changes the same thing; a second way to one place is not
+needed.</td>
 </tr>
 <tr>
 <td><code>createIssueFieldValue</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s REST API
+(issue-field-values on Issue Fields…), which changes the same thing; a
+second way to one place is not needed.</td>
 </tr>
 <tr>
 <td><code>createIssueType</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s REST API (the Issue Types
+lists), which changes the same thing; a second way to one place is not
+needed.</td>
 </tr>
 <tr>
 <td><code>createLabel</code></td>
@@ -13688,8 +13683,8 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>deleteIssue</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Issue…</td>
 </tr>
 <tr>
 <td><code>deleteIssueComment</code></td>
@@ -13700,18 +13695,24 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>deleteIssueField</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s REST API (the Issue Fields
+lists), which changes the same thing; a second way to one place is not
+needed.</td>
 </tr>
 <tr>
 <td><code>deleteIssueFieldValue</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s REST API
+(issue-field-values on Issue Fields…), which changes the same thing; a
+second way to one place is not needed.</td>
 </tr>
 <tr>
 <td><code>deleteIssueType</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s REST API (the Issue Types
+lists), which changes the same thing; a second way to one place is not
+needed.</td>
 </tr>
 <tr>
 <td><code>deleteLabel</code></td>
@@ -13782,8 +13783,10 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>removeRelatesTo</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s REST API (relates_to on
+Relationships…), which changes the same thing; a second way to one place
+is not needed.</td>
 </tr>
 <tr>
 <td><code>removeSubIssue</code></td>
@@ -13804,13 +13807,17 @@ uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>reprioritizeSubIssue</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s REST API
+(sub_issues/priority on Reorder Sub-issues…), which changes the same
+thing; a second way to one place is not needed.</td>
 </tr>
 <tr>
 <td><code>setIssueFieldValue</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s REST API
+(issue-field-values on Issue Fields…), which changes the same thing; a
+second way to one place is not needed.</td>
 </tr>
 <tr>
 <td><code>transferIssue</code></td>
@@ -13861,13 +13868,17 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateIssueField</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s REST API (the Issue Fields
+lists), which changes the same thing; a second way to one place is not
+needed.</td>
 </tr>
 <tr>
 <td><code>updateIssueFieldValue</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s REST API
+(issue-field-values on Issue Fields…), which changes the same thing; a
+second way to one place is not needed.</td>
 </tr>
 <tr>
 <td><code>updateIssueIssueType</code></td>
@@ -13876,8 +13887,10 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateIssueType</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s REST API (the Issue Types
+lists), which changes the same thing; a second way to one place is not
+needed.</td>
 </tr>
 <tr>
 <td><code>updateLabel</code></td>

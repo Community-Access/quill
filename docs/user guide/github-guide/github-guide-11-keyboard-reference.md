@@ -371,10 +371,12 @@ Review action and Submit Review have no access key; reach them with Tab.
 | Timeline | `Alt+H` | History, oldest first |
 | Timeline | `Alt+A` | Copy All |
 | Timeline | `Alt+C` | Hide or Show Comment |
+| Timeline | `Alt+P` | Pin or Unpin Comment |
 | Reorder Sub-issues | `Alt+U` | Move Up |
 | Reorder Sub-issues | `Alt+D` | Move Down |
 | Relationships | `Alt+S` | Add Sub-issue... |
 | Relationships | `Alt+B` | Add Blocked By... |
+| Relationships | `Alt+T` | Add Related... |
 | Relationships | `Alt+R` | Remove |
 | Roles in | `Alt+O` | Roles |
 | Roles in | `Alt+W` | Who holds it |

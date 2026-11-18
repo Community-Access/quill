@@ -119,6 +119,11 @@ does. Put the cursor on its line, the one that says "commented", and press
 for one that was hidden. You hear "Hid the comment as off topic." You need
 triage access to the repository.
 
+To keep one comment at the top of the conversation, such as the answer or the
+current plan, put the cursor on its line and press **Pin or Unpin Comment...**
+(`Alt+P`). Choose **Pin it to the top** or **Unpin it**. GitHub shows a pinned
+comment first, for everyone.
+
 ## Writing a new issue
 
 Open a repository's **Issues** or **Issues and Pull Requests** node. Choose
@@ -273,6 +278,33 @@ number. Signed in, it holds:
 On a pull request, the submenu holds only Lock and Unlock, because the others
 are for issues.
 
+## Issue fields
+
+An organization can give every issue extra values of its own, such as
+Priority, Points or Due date; on your own account you can make them for your
+own repositories (the Workbench's **People > My Issue Fields**, and an
+organization's **Issue Fields**). Choose **Issue Fields...** on an issue's
+context menu to see each one with this issue's value: "Priority (single
+choice, field 1): High", or "Due (date, field 2): not set". A field you may
+not see, or one of a kind QUILL does not know yet, says so rather than looking
+empty.
+
+Choose a field to change it. A single choice offers its choices and **Clear
+it**. Any other field with a value asks **Change it...** or **Clear it**
+first, so pressing Cancel never clears anything; then QUILL asks for the value
+the way its kind needs: a number, a date as year-month-day (2026-12-31), or
+text. Only that field is sent, so a value someone else set on another field is
+kept. You hear "Points is now 5 on #4."
+
+## Deleting an issue
+
+Closing an issue keeps it, its comments and its history; that is almost always
+what you want. A repository's admins can also delete an issue for good, such
+as one made by mistake or full of spam: choose **Delete Issue...**. QUILL
+explains that GitHub cannot bring it back, and asks you to type the issue's
+number; anything else deletes nothing. A pull request cannot be deleted this
+way.
+
 ## Closing, branches and task lists
 
 In the GitHub Workbench, Shift+F10 on an issue has these too.
@@ -328,6 +360,8 @@ starts with what it is, so the kind comes first:
 - "Parent: #12 Spring release (open)"
 - "Sub-issue: #44 Write the help (open)"
 - "Blocked by: #38 Fix the parser (closed)"
+- "Related: #47 The old design (closed)", linked without either waiting on
+  the other.
 - "Blocking: #50 Publish (open)", an issue that waits on this one.
 
 An issue in another repository is named with it, such as "acme/tools#7".
@@ -339,8 +373,10 @@ Enter opens the selected issue in your browser.
   QUILL asks before moving it here.
 - **Add Blocked By...** (`Alt+B`) records that another issue must be
   finished first.
-- **Remove** (`Alt+R`) takes away the selected sub-issue or blocked-by
-  link, after asking. Both issues stay; only the link goes, and you can add
+- **Add Related...** (`Alt+T`) links an issue that belongs with this one,
+  such as an earlier attempt, without saying either must wait.
+- **Remove** (`Alt+R`) takes away the selected sub-issue, blocked-by or
+  related link, after asking. Both issues stay; only the link goes, and you can add
   it again. A parent row and a "Blocking" row are the other end of another
   issue's link, so you change them from that issue.
 
