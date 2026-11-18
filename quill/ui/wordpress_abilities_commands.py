@@ -271,7 +271,7 @@ class WordPressAbilitiesCommands(WordPressApiSiteBase):
             ):
                 self.host.announce(f"Nothing from {profile.name} was sent.")
                 return
-            source = f"Answered from {digest.included} posts and pages of {profile.name}."
+            source = f"Answered from {sa.posts_and_pages(digest.included)} of {profile.name}."
             pai.ask_text(
                 ai,
                 sa.ask_prompt(profile.name, question, digest),

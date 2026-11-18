@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import blocks as bk
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.site import plain_text, raw_text, rendered
@@ -276,7 +277,9 @@ def site_map(
     out.append(MapRow(0, f"Posts, {len(posts)}"))
     for cat_id in sorted(by_category, key=lambda c: categories.get(c, "Uncategorised").lower()):
         items = by_category[cat_id]
-        out.append(MapRow(1, f"{categories.get(cat_id, 'Uncategorised')}, {len(items)} posts"))
+        out.append(
+            MapRow(1, f"{categories.get(cat_id, 'Uncategorised')}, {plural(len(items), 'post')}")
+        )
         for post_id, title, link in items:
             menus = in_menus.get(post_id, [])
             where = f", in {', '.join(menus)}" if menus else ""

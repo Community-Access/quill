@@ -26,6 +26,7 @@ from collections.abc import Iterable, Mapping, Sequence
 from enum import StrEnum
 from pathlib import Path
 
+from quill.core.counted import a_or_an
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.wordpress.site import Account
 from quill.core.wordpress.sites import sites_path
@@ -213,7 +214,7 @@ def _lowest_role(capability: str) -> str:
 
 
 def _a(role: str) -> str:
-    return f"an {role}" if role[:1].lower() in "aeiou" else f"a {role}"
+    return a_or_an(role)
 
 
 def refusal(capability: str, account: Account | None, site: str) -> str:

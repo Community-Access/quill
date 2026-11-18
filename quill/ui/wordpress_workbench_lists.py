@@ -27,7 +27,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from typing import Any
 
-from quill.core.counted import plural
+from quill.core.counted import a_or_an, plural
 from quill.core.wordpress import site_admin as admin
 from quill.core.wordpress.workbench_create import (
     ROLES_CANNOT_CHANGE,
@@ -319,7 +319,7 @@ class WorkbenchListCommands:
             self.say(f"Made the {what.noun} {named} on {site}{state}.")
             self.refresh()
 
-        self.background(f"making a {what.noun}", lambda: create(api, what, answers), done)
+        self.background(f"making {a_or_an(what.noun)}", lambda: create(api, what, answers), done)
 
     # -- terms --------------------------------------------------------------------
 
@@ -402,7 +402,7 @@ class WorkbenchListCommands:
             self.parent,
             self.show_modal,
             title=f"Make {row.title} a {word.title()}",
-            message=f"Make {row.title} a {word} on {row.site}? Every post filed under it "
+            message=f"Make {row.title} {a_or_an(word)} on {row.site}? Every post filed under it "
             f"moves to the {word}, and the old one is deleted.",
             yes_label="Convert",
         ):
@@ -416,7 +416,7 @@ class WorkbenchListCommands:
                     f"{plural(len(failed), 'post')} could not be moved, so {row.title} was kept."
                 )
             else:
-                self.say(f"{row.title} is now a {word}.")
+                self.say(f"{row.title} is now {a_or_an(word)}.")
             self.refresh()
 
         self.background(

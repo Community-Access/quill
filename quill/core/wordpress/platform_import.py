@@ -43,6 +43,7 @@ from dataclasses import dataclass, field
 from typing import Any
 from urllib.parse import urljoin, urlparse
 
+from quill.core.counted import a_or_an, plural
 from quill.core.wordpress.wxr_read import (
     MAX_FILE_BYTES,
     MAX_ITEMS,
@@ -122,7 +123,7 @@ def _pictures_note(items: list[WxrItem], platform: str) -> str:
     if not hosts:
         return f"The {platform} export has no pictures in its posts."
     return (
-        f"Pictures are not in a {platform} export, so the drafts keep showing them from "
+        f"Pictures are not in {a_or_an(platform)} export, so the drafts keep showing them from "
         f"where they are now ({', '.join(hosts[:4])}); nothing is downloaded."
     )
 
@@ -448,7 +449,8 @@ def read_substack(data: bytes, name: str = "the file") -> Converted:
             )
         )
     notes = [
-        f"From a Substack export: {len(found.items)} posts, the subtitle as each excerpt.",
+        f"From a Substack export: {plural(len(found.items), 'post')}, the subtitle as each "
+        f"excerpt.",
         _pictures_note(found.items, "Substack"),
         "Subscribers are not imported; their list is a separate file in the export.",
     ]

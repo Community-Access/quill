@@ -308,7 +308,7 @@ def test_validate_wxr_names_what_is_wrong(tmp_path) -> None:
     good.write_bytes(
         _wxr("<item><wp:post_id>1</wp:post_id><wp:post_type>post</wp:post_type></item>")
     )
-    assert validate_wxr(good) == (True, "good.xml is a well-formed WXR 1.2 file with 1 items.")
+    assert validate_wxr(good) == (True, "good.xml is a well-formed WXR 1.2 file with 1 item.")
     old = tmp_path / "old.xml"
     old.write_bytes(_wxr("", version="1.1"))
     assert validate_wxr(old) == (False, "old.xml does not say it is WXR version 1.2.")
@@ -503,11 +503,11 @@ def test_plan_import_matches_people_and_terms_and_names_what_it_leaves(tmp_path)
     assert [i.post_id for i in plan.items] == [100, 200, 201]
     assert [a.post_id for a in plan.attachments] == [300] and plan.hosts == ["old.example"]
     left = "\n".join(plan.left_out)
-    assert "1 event items: a type this site does not have" in left
-    assert "1 nav_menu_item items: menus are rebuilt in Appearance, Menus" in left
-    assert "1 post (trash) items: trashed and automatic drafts are not imported" in left
-    assert "1 terms of genre, a taxonomy this site does not have" in left
-    assert "1 comments: QUILL imports writing, not conversations" in left
+    assert "1 event item: a type this site does not have" in left
+    assert "1 nav_menu_item item: menus are rebuilt in Appearance, Menus" in left
+    assert "1 post (trash) item: trashed and automatic drafts are not imported" in left
+    assert "1 term of genre, a taxonomy this site does not have" in left
+    assert "1 comment: QUILL imports writing, not conversations" in left
     lines = plan.lines()
     assert lines[1].startswith("Everything is made as a draft; nothing is published.")
     assert "Author bob is Carol here." in lines
@@ -557,7 +557,7 @@ def test_skipped_files_keep_pointing_at_the_old_site() -> None:
     assert f'src="{OLD}/wp-content/uploads/pic-300x200.jpg"' in morning["content"]
     relinked = next(b for _m, r, b in api.writes if r == "wp/v2/posts/1003")
     assert f'href="{NEW}/?p=1004"' in relinked["content"]  # links between items still move
-    assert any("files, skipped as you chose" in line for line in plan.left_out)
+    assert any("skipped as you chose" in line for line in plan.left_out)
 
 
 def test_a_file_that_fails_to_download_is_one_line_and_keeps_its_old_address() -> None:

@@ -12,6 +12,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import site_taxonomies as tx
 from quill.core.wordpress import site_types as stypes
 from quill.core.wordpress.api import WordPressApiError
@@ -232,7 +233,7 @@ def load_sidebars(ctx: SiteContext) -> list[WbRow]:
                 "sidebar",
                 str(r.get("id", "")),
                 {"sidebar": name, "widgets": str(count), "status": str(r.get("status", ""))},
-                f"{name}, {count} widgets.",
+                f"{name}, {plural(count, 'widget')}.",
                 route=f"wp/v2/sidebars/{r.get('id', '')}",
                 raw=r,
             )

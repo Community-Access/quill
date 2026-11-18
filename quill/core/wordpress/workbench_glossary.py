@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
 
+from quill.core.counted import plural
 from quill.core.wordpress.workbench_rows import WbRow
 
 __all__ = ["GLOSSARY", "ROW_TYPE_WORDS", "example_for", "meaning_of", "term_for"]
@@ -348,7 +349,11 @@ def _plugins(_row: WbRow | None, seen: Seen) -> str:
     if not plugins:
         return ""
     on = sum(1 for r in plugins if r.status in ("active", "network-active"))
-    return f"{_on(plugins[0])}, {on} of {len(plugins)} plugins are on, such as {plugins[0].title}."
+    verb = "is" if on == 1 else "are"
+    return (
+        f"{_on(plugins[0])}, {on} of {plural(len(plugins), 'plugin')} {verb} on, "
+        f"such as {plugins[0].title}."
+    )
 
 
 def _alt(_row: WbRow | None, seen: Seen) -> str:

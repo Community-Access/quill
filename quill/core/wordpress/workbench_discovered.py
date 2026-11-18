@@ -25,6 +25,7 @@ import json
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from quill.core.counted import a_or_an, plural
 from quill.core.wordpress.abilities import Ability
 from quill.core.wordpress.api import WordPressApi
 from quill.core.wordpress.workbench_coverage import classify, namespace_of, status_words
@@ -250,7 +251,8 @@ def model_rows(api: WordPressApi, site: str, *, namespaces: Sequence[str] = ()) 
                     site,
                     str(slug),
                     cells,
-                    f"{name}, a {kind} ({slug}), registered by {owner}. {found.evidence} {said}",
+                    f"{name}, {a_or_an(kind)} ({slug}), registered by {owner}. "
+                    f"{found.evidence} {said}",
                     subkind=what,
                     raw={
                         **info,
@@ -283,7 +285,8 @@ def model_rows(api: WordPressApi, site: str, *, namespaces: Sequence[str] = ()) 
                     "in_rest": "yes",
                 },
                 f"{name}, a field group ({key}), registered by {_SITE_TYPES}, with "
-                f"{len(fields)} fields: {kinds or 'none'}. {_editable_words('field group')}",
+                f"{plural(len(fields), 'field')}: {kinds or 'none'}. "
+                f"{_editable_words('field group')}",
                 subkind="field_group",
                 raw={"editable_definition": True, "definition": group},
             )

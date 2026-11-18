@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import local as lc
 from quill.core.wordpress import looks_history as lh
 from quill.core.wordpress import navigation as nav
@@ -187,7 +188,9 @@ class WordPressRouteHistory:
         def details(index: int) -> str:
             version = versions[index]
             gone = version.missing_from(menu)
-            lines = [f"{len(version.nodes)} items then:"] + [f"- {n[0]}" for n in version.nodes]
+            lines = [f"{plural(len(version.nodes), 'item')} then:"] + [
+                f"- {n[0]}" for n in version.nodes
+            ]
             if gone:
                 lines += ["", "Since removed:"] + [f"- {n[0]}" for n in gone]
             return "\n".join(lines)
@@ -213,7 +216,7 @@ class WordPressRouteHistory:
                 f"bringing items back to {menu.name}",
                 lambda: lh.bring_back(api, menu, version),
                 lambda added: self.host.announce(
-                    f"{len(added)} items back in {menu.name}, at the end."
+                    f"{plural(len(added), 'item')} back in {menu.name}, at the end."
                 ),
             )
             return dlg.CLOSE

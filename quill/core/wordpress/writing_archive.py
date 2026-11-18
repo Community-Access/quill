@@ -25,6 +25,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlparse
 from zipfile import BadZipFile
 
+from quill.core.counted import plural
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.wordpress import checks as chk
 from quill.core.wordpress import cross_site as xs
@@ -223,7 +224,7 @@ def read_folder(folder: Path, *, site_name: str) -> list[FolderFile]:
 
 def folder_sentence(files: list[FolderFile], site_name: str) -> str:
     flagged = sum(1 for f in files if f.findings)
-    head = f"Send {len(files)} files to {site_name} as drafts?"
+    head = f"Send {plural(len(files), 'file')} to {site_name} as drafts?"
     if flagged:
         return head + f" Check Before Publishing found things to look at in {flagged} of them."
     return head + " Check Before Publishing found nothing to look at."

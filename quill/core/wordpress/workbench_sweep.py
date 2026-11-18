@@ -39,6 +39,7 @@ from datetime import UTC, datetime, timedelta
 from functools import partial
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress.readability import describe, reading_level
 from quill.core.wordpress.site import friendly_date, human_size
 from quill.core.wordpress.workbench_across import SiteScan
@@ -275,9 +276,9 @@ def content_audit(scan: SiteScan, *, now: datetime | None = None) -> list[WbRow]
                 f"{title}: another published item has the same text.",
             )
         if words > 5000:
-            add("long", "Very long", f"{title}: {words} words.")
+            add("long", "Very long", f"{title}: {plural(words, 'word')}.")
         elif words < 50:
-            add("short", "Very short", f"{title}: {words} words.")
+            add("short", "Very short", f"{title}: {plural(words, 'word')}.")
         if words >= 100:
             level = reading_level(content, is_html=True)
             if level.grade > HARD_GRADE:

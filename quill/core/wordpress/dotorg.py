@@ -38,6 +38,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+from quill.core.counted import plural
 from quill.core.error_codes import CodedError
 
 __all__ = [
@@ -142,7 +143,7 @@ class DotorgTheme:
             parts.append(f"by {self.author}")
         if self.rating >= 0:
             stars = self.rating / 20
-            parts.append(f"rated {stars:.1f} of 5 by {self.ratings} people")
+            parts.append(f"rated {stars:.1f} of 5 by {plural(self.ratings, 'person', 'people')}")
         needs = [
             f"WordPress {self.requires}" if self.requires else "",
             f"PHP {self.requires_php}" if self.requires_php else "",
@@ -304,7 +305,9 @@ class DotorgPlugin:
         if self.author:
             parts.append(f"by {self.author}")
         if self.rating >= 0 and self.ratings:
-            parts.append(f"rated {self.rating / 20:.1f} of 5 by {self.ratings} people")
+            parts.append(
+                f"rated {self.rating / 20:.1f} of 5 by {plural(self.ratings, 'person', 'people')}"
+            )
         if self.active_installs >= 0:
             parts.append(f"{self.active_installs:,}+ active installs")
         if self.last_updated:

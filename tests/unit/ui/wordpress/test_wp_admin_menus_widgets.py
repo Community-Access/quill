@@ -201,7 +201,7 @@ def test_remove_confirms_and_lifts_children(wp, wp_site, wp_dialogs):
     assert wp_site.sent("DELETE", f"{API}/menu-items/12") == []
     wp_dialogs.answer("confirm", True)
     rows = wp_dialogs.press("Remove...", 1)
-    assert "Its 1 items move up into its place." in wp_dialogs.asked("confirm")[-1]["message"]
+    assert "Its 1 item moves up into its place." in wp_dialogs.asked("confirm")[-1]["message"]
     assert rows == ["Home, page, level 1, 1 of 2", "Spring, page, level 1, 2 of 2"]
     assert wp_site.body(wp_site.sent("POST", f"{API}/menu-items/13")[0]) == {
         "parent": 0,

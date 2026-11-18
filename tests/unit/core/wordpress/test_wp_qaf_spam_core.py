@@ -146,7 +146,7 @@ def test_any_other_refusal_is_not_hidden_by_the_fallback() -> None:
     api = Api({"qaf/v1/entries/11/spam": WordPressApiError("in the trash", status=409)})
     with pytest.raises(WordPressApiError, match="trash"):
         mark_entry(api, _held(), True)
-    assert set_entry_spam(_ctx(api, "qaf/v1"), [_held()], True) == ["11: in the trash"]
+    assert set_entry_spam(_ctx(api, "qaf/v1"), [_held()], True) == ["Form entry 11: in the trash"]
     assert len(api.writes) == 2  # the two tries, and no status write behind them
 
 

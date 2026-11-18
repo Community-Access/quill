@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.wordpress import navigation as nav
@@ -107,8 +108,8 @@ class MenuVersion:
     def spoken(self, current: nav.Menu) -> str:
         now = {_flat(r.node) for r in nav.rows(current.nodes)}
         gone = [n for n in self.nodes if n not in now]
-        change = f", {len(gone)} items since removed" if gone else ", same items as now"
-        return f"{friendly_date(self.stamp)}, {len(self.nodes)} items{change}"
+        change = f", {plural(len(gone), 'item')} since removed" if gone else ", same items as now"
+        return f"{friendly_date(self.stamp)}, {plural(len(self.nodes), 'item')}{change}"
 
     def missing_from(self, current: nav.Menu) -> list[tuple[str, str, int, str]]:
         now = {_flat(r.node) for r in nav.rows(current.nodes)}

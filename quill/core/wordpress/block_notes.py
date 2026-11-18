@@ -22,6 +22,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
+from quill.core.counted import a_or_an
 from quill.core.wordpress import block_spans as bs
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.blocks import Block
@@ -224,7 +225,7 @@ def place_words(spans: Sequence[bs.Span], index: int) -> str:
     if len(same) == 1:
         return f"the {kind}"
     position = same.index(index) + 1 if index in same else 0
-    return f"the {ordinal(position)} {kind}" if position else f"a {kind}"
+    return f"the {ordinal(position)} {kind}" if position else a_or_an(kind)
 
 
 def locate(

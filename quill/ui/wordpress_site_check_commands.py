@@ -19,6 +19,7 @@ import difflib
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import cdp
 from quill.core.wordpress import checks as chk
 from quill.core.wordpress import local as lc
@@ -156,7 +157,9 @@ class WordPressSiteCheckCommands:
                 visitor.append((_ref(page), rules))
             following = start + _CHUNK
             if following < len(pages):
-                self.host.announce(f"Checked {following} of {len(pages)} pages on {profile.name}.")
+                self.host.announce(
+                    f"Checked {following} of {plural(len(pages), 'page')} on {profile.name}."
+                )
                 self._visitor_chunk(profile, pages, content, visitor, following)
                 return
             self._site_checked(profile, pages, content, visitor, visitor_checked=True)

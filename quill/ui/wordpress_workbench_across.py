@@ -23,6 +23,7 @@ import time
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress.workbench_across import (
     across_rows,
     gather_across,
@@ -274,7 +275,7 @@ class WorkbenchAcrossCommands(WorkbenchByNameCommands):
             self.parent,
             self.show_modal,
             title=f"Make {row.key} the Same",
-            summary=f"{len(edits)} sites get {row.key} as {winner}.",
+            summary=f"{plural(len(edits), 'site')} get {row.key} as {winner}.",
             lines=[e.line for e in edits] + [f"Not changed. {o.line}" for o in refused],
             yes="Make Them the Same",
         ):
@@ -284,7 +285,7 @@ class WorkbenchAcrossCommands(WorkbenchByNameCommands):
             outcomes, sent = result
             outcomes = outcomes + refused
             good = sum(1 for o in outcomes if o.ok)
-            said = f"{row.key}: {good} of {len(outcomes)} sites changed to {winner}."
+            said = f"{row.key}: {good} of {plural(len(outcomes), 'site')} changed to {winner}."
             self._across_report(f"Make {row.key} the Same", said, outcomes)
             restorable = [e for e in sent if e.before is not None]
             self.history.record(
@@ -354,7 +355,8 @@ class WorkbenchAcrossCommands(WorkbenchByNameCommands):
             self.show_modal,
             title=f"Make {row.key} the Same",
             summary=(
-                f"{len(targets)} sites get the {row.key} menu's items as links, pointed at each "
+                f"{plural(len(targets), 'site')} {'gets' if len(targets) == 1 else 'get'} the "
+                f"{row.key} menu's items as links, pointed at each "
                 "site's own address. Their items are replaced, and this cannot be undone."
             ),
             lines=[
@@ -377,7 +379,7 @@ class WorkbenchAcrossCommands(WorkbenchByNameCommands):
         def done(outcomes: list[Outcome]) -> None:
             outcomes = outcomes + refused
             good = sum(1 for o in outcomes if o.ok)
-            said = f"{row.key}: {good} of {len(outcomes)} sites now have the same menu."
+            said = f"{row.key}: {good} of {plural(len(outcomes), 'site')} now have the same menu."
             self._across_report(f"Make {row.key} the Same", said, outcomes)
             self.history.record(Change(row.key, said, undo=None))
             self.refresh()
@@ -506,7 +508,8 @@ class WorkbenchAcrossCommands(WorkbenchByNameCommands):
             self.show_modal,
             title="Revoke Everywhere",
             summary=(
-                f"{row.key} is revoked on {len(plan)} sites. Anything signing in with it stops "
+                f"{row.key} is revoked on {plural(len(plan), 'site')}. Anything signing in "
+                f"with it stops "
                 "working, and this cannot be undone: a revoked password cannot be restored."
             ),
             lines=[f"{site}: revokes {row.key}" for site, _route in plan]
@@ -529,7 +532,10 @@ class WorkbenchAcrossCommands(WorkbenchByNameCommands):
         def done(outcomes: list[Outcome]) -> None:
             outcomes = outcomes + refused
             good = sum(1 for o in outcomes if o.ok)
-            said = f"{row.key}: revoked on {good} of {len(outcomes)} sites. It cannot be undone."
+            said = (
+                f"{row.key}: revoked on {good} of {plural(len(outcomes), 'site')}. It "
+                f"cannot be undone."
+            )
             self._across_report("Revoke Everywhere", said, outcomes)
             self.history.record(Change(row.key, said, undo=None))
             self.refresh()
@@ -569,7 +575,11 @@ class WorkbenchAcrossCommands(WorkbenchByNameCommands):
             sets.pop(name.strip(), None)
         options.site_sets = sets
         save_options(options, self._data_dir)
-        self.say(f"{name.strip()}: {len(picked)} sites." if picked else f"Removed {name.strip()}.")
+        self.say(
+            f"{name.strip()}: {plural(len(picked), 'site')}."
+            if picked
+            else f"Removed {name.strip()}."
+        )
 
     def do_scope(self, _ref: Any, _row: WbRow | None) -> None:
         sets = list(load_options(self._data_dir).site_sets)

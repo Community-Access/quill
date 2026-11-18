@@ -167,7 +167,7 @@ def test_merge_a_term_everywhere_moves_posts_then_deletes_it(bench, monkeypatch)
         ("DELETE", "wp/v2/categories/5"),
     ]
     assert bench.api.writes[1][2] == {"categories": [9, 6]}
-    assert "merged into Shows on 1 of 1 sites" in bench.said[-1]
+    assert "merged into Shows on 1 of 1 site" in bench.said[-1]
     assert not bench.provider.history.can_undo()
 
 

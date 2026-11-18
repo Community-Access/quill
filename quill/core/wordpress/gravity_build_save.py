@@ -27,6 +27,7 @@ from typing import Any
 from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.gravity_build import (
     FIELD_TYPES,
+    LABEL_PLACEMENTS,
     admin_notification,
     default_confirmation,
     field_name,
@@ -121,7 +122,11 @@ def change_lines(before: Mapping[str, Any] | None, after: Mapping[str, Any]) -> 
         ("Title", a.title, b.title),
         ("Description", a.description, b.description),
         ("Button text", a.button, b.button),
-        ("Label placement", a.label_placement, b.label_placement),
+        (
+            "Label placement",
+            LABEL_PLACEMENTS.get(a.label_placement, a.label_placement),
+            LABEL_PLACEMENTS.get(b.label_placement, b.label_placement),
+        ),
         ("Confirmation message", a.confirmation, b.confirmation),
         ("Admin notification To", a.notify_to, b.notify_to),
         ("Admin notification subject", a.notify_subject, b.notify_subject),

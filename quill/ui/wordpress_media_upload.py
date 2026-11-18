@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import local as lc
 from quill.core.wordpress import media_tools as mt
 from quill.core.wordpress import site_media as wpm
@@ -322,7 +323,7 @@ def upload_summary(site_name: str, results: list[UploadResult], skipped: int = 0
     if len(results) == 1 and uploaded:
         parts.append(f"{uploaded[0].entry.filename} uploaded to {site_name}.")
     elif uploaded:
-        parts.append(f"{len(uploaded)} of {len(results)} files uploaded to {site_name}.")
+        parts.append(f"{len(uploaded)} of {plural(len(results), 'file')} uploaded to {site_name}.")
     elif not reused:
         parts.append(f"Nothing was uploaded to {site_name}.")
     if reused:

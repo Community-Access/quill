@@ -42,6 +42,7 @@ __all__ = [
     "conflicts",
     "list_states",
     "merge_values",
+    "say_value",
 ]
 
 
@@ -117,6 +118,23 @@ class FieldSpec:
     choices: tuple[str, ...] = ()
     create: str = ""
     """A picker's New... button ("New Label..."): creates the thing and uses it at once."""
+    choice_words: tuple[str, ...] = ()
+    """What each of *choices* is called aloud, in the same order ("Draft" for
+    ``draft``, "Monday" for ``1``). Empty: the choices are already words."""
+
+    def word_for(self, value: object) -> str:
+        """*value* as a person says it: its choice word, or the value in words."""
+        if self.choice_words and isinstance(value, (str, int)) and not isinstance(value, bool):
+            text = str(value)
+            if text in self.choices:
+                return self.choice_words[self.choices.index(text)]
+        return _say(value)
+
+    def value_for(self, word: str) -> str:
+        """The stored choice a shown *word* stands for (the word itself if unlisted)."""
+        if word in self.choice_words:
+            return self.choices[self.choice_words.index(word)]
+        return word
 
 
 @dataclass(frozen=True)
@@ -234,6 +252,11 @@ def conflicts(
     )
 
 
+def say_value(value: object) -> str:
+    """A field value in words: a list joined with commas, never Python's tuple."""
+    return _say(value)
+
+
 def _say(value: object) -> str:
     if isinstance(value, ListDelta):
         parts = [f"add {', '.join(value.added)}"] if value.added else []
@@ -255,7 +278,11 @@ def as_text(sheet: SheetSpec, values: Mapping[str, object], *, title: str = "") 
         lines.append("")
         lines.append(page.title)
         for spec in page.fields:
-            shown = HIDDEN_WORD if spec.kind is FieldKind.SECRET else _say(values.get(spec.key))
+            shown = (
+                HIDDEN_WORD
+                if spec.kind is FieldKind.SECRET
+                else spec.word_for(values.get(spec.key))
+            )
             lines.append(f"{spec.label}: {shown}")
     return "\n".join(lines)
 

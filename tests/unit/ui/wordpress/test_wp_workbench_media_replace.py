@@ -168,7 +168,7 @@ def test_a_file_type_the_library_does_not_take_is_refused(bench, monkeypatch, tm
     monkeypatch.setattr(bench.provider, "_file", lambda *_a, **_k: path)
     bench.provider.do_replace_file(None, _media())
     assert bench.said[-1] == (
-        "notes.qzx is a application/octet-stream, which a WordPress Media Library does not take."
+        "notes.qzx is an application/octet-stream, which a WordPress Media Library does not take."
     )
 
 

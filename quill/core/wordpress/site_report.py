@@ -22,6 +22,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.wordpress.checks import Finding
 from quill.core.wordpress.site_fixes import SAFE_FIXES
@@ -194,11 +195,11 @@ def site_summary(
     """ "Community Radio: 47 problems on 17 of 42 pages. 52 in October 2026." """
     total = sum(p.count for p in problems)
     if not total:
-        line = f"{site_name}: no problems found on {pages} pages"
+        line = f"{site_name}: no problems found on {plural(pages, 'page')}"
     else:
         affected = len({ref for p in problems for ref in p.pages})
         line = f"{site_name}: {total} problem" + ("" if total == 1 else "s")
-        line += f" on {affected} of {pages} pages"
+        line += f" on {affected} of {plural(pages, 'page')}"
     if previous is not None:
         line += f". {previous.problems} in {previous.month}"
     return line + "."
@@ -229,7 +230,8 @@ def accessibility_statement(
         if last.problems:
             paras.append(
                 f"We last checked every page and post in {checked}. That check found "
-                f"{last.problems} things to fix across {last.pages} pages, and we are working "
+                f"{last.problems} things to fix across {plural(last.pages, 'page')}, and we "
+                f"are working "
                 "through them."
             )
         else:

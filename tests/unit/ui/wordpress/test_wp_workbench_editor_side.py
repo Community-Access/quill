@@ -304,7 +304,7 @@ def test_invite_from_a_spreadsheet_previews_then_adds_each_person(
     assert "sends no email" in previews[0]["summary"]
     posts = [w for w in bench.api.writes if w[:2] == ("POST", "wp/v2/users")]
     assert len(posts) == 1 and posts[0][2]["email"] == "ann.new@example.com"
-    assert bench.said[-1] == f"Added 1 of 1 people to {SITE}."
+    assert bench.said[-1] == f"Added 1 of 1 person to {SITE}."
 
 
 def test_invite_cancelled_at_the_preview_sends_nothing(bench, monkeypatch, tmp_path) -> None:

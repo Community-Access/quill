@@ -310,7 +310,8 @@ class WorkbenchGravityBuildCommands:
             fields = gb.fields_of(converted.form)
             lines = [
                 f"Site: {row.site}",
-                f"New Gravity Forms form: {converted.form.get('title')}, {len(fields)} fields.",
+                f"New Gravity Forms form: {converted.form.get('title')}, "
+                f"{plural(len(fields), 'field')}.",
                 *(f"Cannot carry over: {line}" for line in converted.lost),
                 "Responses stay with the QUILL Accessible Forms form; none are copied.",
             ]

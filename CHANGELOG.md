@@ -36,6 +36,23 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress: names you can hear (2026-11-18)
+
+Review item 28: what WordPress says aloud is a name, not a stored code.
+
+- Rows are called by their names: "Add a Widget to Footer", not "sidebar-1",
+  and a menu by its name, not its number. A row with only a number says what
+  it is: "Comment 12 Properties", not "12 Properties".
+- Form entries carry their number: "Signup entry 5".
+- Choices in Properties are offered by name, and saved as the code the site
+  expects: Published, Scheduled, Waiting for approval; the first day of the
+  week as Monday, not 1. Gravity Forms label placement changes read "Left
+  aligned (was Top aligned)".
+- Changing several rows at once lists categories as "News, Events", not
+  Python's "('News',)"; the GitHub Workbench's confirmation does the same.
+- "an event", "an SEO title", and counts that agree with their nouns and verbs
+  ("1 post moved", "1 page uses") across WordPress and Forms.
+
 ### WordPress Workbench: long loads say how they ended (2026-11-18)
 
 Refresh, Load More, Load All and a filter the site answers said they had started and

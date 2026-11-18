@@ -18,6 +18,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING, Any
 
+from quill.core.counted import a_or_an, plural
 from quill.core.wordpress import comments as cm
 from quill.core.wordpress import custom_fields as cf
 from quill.core.wordpress import site_features as sf
@@ -64,7 +65,7 @@ class WordPressApiWritingCommands(
             form = cf.build_form(schema, values, kept)
             if not form.fields and not form.structured:
                 if not quiet:
-                    self.host.announce(f"{profile.name} has no custom fields for a {kind}.")
+                    self.host.announce(f"{profile.name} has no custom fields for {a_or_an(kind)}.")
                 return
             if not form.fields:
                 self.edit_lists_and_groups(form, fresh, profile)
@@ -83,9 +84,9 @@ class WordPressApiWritingCommands(
                 self.host.show_modal,
                 title="Custom Fields",
                 purpose=(
-                    f"The fields {profile.name} adds to a {kind}, from its plugins and theme, "
-                    f"such as an SEO title or an event date.{more} Changes go to the site with "
-                    "your next Save Draft to Site or Publish."
+                    f"The fields {profile.name} adds to {a_or_an(kind)}, from its plugins and "
+                    f"theme, such as an SEO title or an event date.{more} Changes go to the site "
+                    "with your next Save Draft to Site or Publish."
                 ),
                 fields=form.fields,
             )
@@ -196,7 +197,7 @@ class CommentMarks:
         def mark_everything(_index: int | None) -> object:
             ids = {c.id for c in self.live}
             self.marked = set() if ids and ids <= self.marked else ids
-            host.announce(f"{len(self.marked)} comments marked.")
+            host.announce(f"{plural(len(self.marked), 'comment')} marked.")
             return rows()
 
         def with_marked(_index: int | None) -> object:

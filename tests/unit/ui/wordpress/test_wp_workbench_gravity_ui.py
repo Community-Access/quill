@@ -326,7 +326,7 @@ def test_entry_notes_are_read_and_one_is_added(bench, answers) -> None:
     write = bench.api.writes[-1]
     assert write[:2] == ("POST", "gf/v2/entries/5/notes")
     assert write[2]["value"] == "Rang her back" and write[2]["user_name"] == "Jeff"
-    assert bench.said[-1] == f"Added a note to Signup entry on {SITE}."
+    assert bench.said[-1] == f"Added a note to Signup entry 5 on {SITE}."
     bench.provider.history.undo()
     assert bench.api.writes[-1][:2] == ("DELETE", "gf/v2/notes/2")
 

@@ -47,6 +47,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
+from quill.core.counted import a_or_an
 from quill.core.wordpress import custom_field_shapes as shapes
 from quill.core.wordpress import custom_fields as cf
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
@@ -155,7 +156,7 @@ def plugin_field(
         why_not = f"{plugin} does not say what kind of value it holds, so QUILL leaves it as it is."
     if why_not:
         kind = FieldKind.MULTILINE if shapes.json_type(spec) in ("array", "object") else _T
-        text = f"{name}, a {plugin} field. Read only here: {why_not} Change it in wp-admin."
+        text = f"{name}, {a_or_an(plugin)} field. Read only here: {why_not} Change it in wp-admin."
         return FieldSpec(key, label, kind, True, help=text), False
     built = _schema_field(key, name, spec)
     help_text = f"{built.help} A {plugin} field.{(' ' + note) if note else ''}"

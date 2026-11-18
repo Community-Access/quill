@@ -34,6 +34,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
+from quill.core.counted import a_or_an
 from quill.core.forms import model as M
 from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.gravity_build import DISPLAY_TYPES, field_name, fields_of
@@ -148,7 +149,7 @@ def _why_lost(spec: Mapping[str, Any], questions: Mapping[str, Any]) -> str:
     if kind in _PAYMENT_TYPES:
         return f"{name}: payment details stay with Gravity Forms"
     if kind not in SHARED:
-        return f"{name}: a {kind} field, which QUILL Accessible Forms has no match for"
+        return f"{name}: {a_or_an(kind)} field, which QUILL Accessible Forms has no match for"
     if qaf_id(spec.get("id")) not in questions:
         return f"{name}: the QUILL Accessible Forms form has no question for it"
     return ""

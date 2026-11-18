@@ -131,7 +131,7 @@ def test_install_missing_installs_a_plugin_by_slug_after_the_preview(bench, monk
         [f"{SITE}: installs akismet, left inactive", "Not checked on WordPress.org."]
     ]
     assert ("POST", "wp/v2/plugins", {"slug": "akismet", "status": "inactive"}) in bench.api.writes
-    assert "installed on 1 of 1 sites" in bench.said[-1]
+    assert "installed on 1 of 1 site" in bench.said[-1]
 
 
 def test_install_missing_opens_add_new_for_a_theme_and_cancel_sends_nothing(

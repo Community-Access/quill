@@ -19,6 +19,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+from quill.core.counted import a_or_an, plural
 from quill.core.wordpress import blocks as bk
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.site import raw_text, rendered
@@ -65,7 +66,7 @@ class Menu:
         kind = "menu" if self.source == "classic" else "Navigation block"
         where = f", in {', '.join(self.locations)}" if self.locations else ""
         count = sum(1 for _ in walk(self.nodes))
-        return f"{self.name}, {kind}, {count} items{where}"
+        return f"{self.name}, {kind}, {plural(count, 'item')}{where}"
 
 
 @dataclass(frozen=True)
@@ -186,10 +187,12 @@ def problems(menu: Menu, statuses: dict[int, str]) -> list[str]:
         if node.kind in {"page", "post"} and node.object_id:
             status = statuses.get(node.object_id, "missing")
             if status in {"draft", "pending", "private", "future"}:
-                found.append(f"{node.title} points to a {status} {node.kind}: a dead link.")
+                found.append(f"{node.title} points to {a_or_an(status)} {node.kind}: a dead link.")
             elif status in {"trash", "missing"}:
                 where = "in the Trash" if status == "trash" else "gone"
-                found.append(f"{node.title} points to a {node.kind} that is {where}: a dead link.")
+                found.append(
+                    f"{node.title} points to {a_or_an(node.kind)} that is {where}: a dead link."
+                )
     return found
 
 

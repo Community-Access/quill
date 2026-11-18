@@ -20,6 +20,7 @@ from typing import Any
 from urllib.parse import unquote, urlparse
 from urllib.request import Request
 
+from quill.core.counted import a_or_an
 from quill.core.error_codes import CodedError
 from quill.core.wordpress.api import WordPressApi
 from quill.core.wordpress.site import human_size, raw_text
@@ -329,7 +330,9 @@ def make_smaller_copy(data: bytes, max_width: int, format_name: str) -> SmallerC
 
     fmt = next((f for f in SMALLER_FORMATS if f[0].lower() == format_name.lower()), None)
     if fmt is None:
-        raise MediaImageError(f"QUILL cannot make a {format_name} copy. Choose JPEG, WebP or PNG.")
+        raise MediaImageError(
+            f"QUILL cannot make {a_or_an(format_name)} copy. Choose JPEG, WebP or PNG."
+        )
     label, extension, mime = fmt
     try:
         with Image.open(io.BytesIO(data)) as image:

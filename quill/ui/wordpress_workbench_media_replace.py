@@ -23,7 +23,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from quill.core.counted import plural
+from quill.core.counted import a_or_an, plural
 from quill.core.wordpress import media_replace as mr
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.workbench.history import Change
@@ -67,7 +67,9 @@ class WorkbenchMediaReplace:
             return
         kind = mt.content_type_for(path.name)
         if not mt.allowed_content_type(kind):
-            self.say(f"{path.name} is a {kind}, which a WordPress Media Library does not take.")
+            self.say(
+                f"{path.name} is {a_or_an(kind)}, which a WordPress Media Library does not take."
+            )
             return
         new = mr.FileFacts(path.name, size, kind)
         api = self.ctx(row.site).api
