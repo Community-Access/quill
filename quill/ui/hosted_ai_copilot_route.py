@@ -273,7 +273,8 @@ class CopilotRouteMixin:
 
         Copilot runs its tool harness on this app's own GitHub sign-in; Codex
         is given this app's own ChatGPT access token as its ``token_provider``.
-        Each starts on the model chosen for it, when one is.
+        Own-key providers use their saved key and chosen model. Each starts on
+        the model chosen for it, when one is.
         """
         chosen = connection or str(getattr(self, "connection_in_use", "") or "")
         settings = getattr(self._app, "settings", None)
@@ -295,12 +296,13 @@ class CopilotRouteMixin:
         return None
 
     def _own_key_agent_harness(self) -> Any:
-        """Agent tasks on My own key (code.md 3.3, 3.5): Claude, or Ollama practice.
+        """Agent tasks on the chosen own-key connection (code.md 3.3, 3.5).
 
         Claude runs through the Claude Agent SDK on the person's own Anthropic
         key (the optional ``quill[ai-claude]`` extra); Ollama on this computer
-        runs QUILL's own loop and sends nothing. Every other provider answers
-        text only, so there is no engine for a task and the gate says so.
+        runs QUILL's own loop and sends nothing. OpenAI-compatible and Gemini
+        providers use SDK 2 BYOK with the provider and model already selected
+        in Use My Own AI Key; no GitHub sign-in is borrowed.
         """
         provider = str(getattr(self, "own_key_provider", "") or "")
         model = str(getattr(self, "own_key_model", "") or "")
@@ -313,4 +315,14 @@ class CopilotRouteMixin:
             from quill.core.assistant_ai import load_provider_api_key
 
             return ClaudeToolHarness(api_key=load_provider_api_key("claude"), model=model)
+        from quill.core.ai.copilot_byok import SUPPORTED_BYOK_PROVIDERS
+
+        if provider in SUPPORTED_BYOK_PROVIDERS:
+            from quill.ai_packs.copilot import CopilotByokHarness
+
+            return CopilotByokHarness(
+                provider=provider,
+                model=model,
+                agent_name=self.agent_name,
+            )
         return None

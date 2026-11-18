@@ -257,6 +257,46 @@ def test_no_stored_token_never_borrows_a_cli_sign_in(rec: _Recorder, no_token) -
     assert rec.client_kwargs["github"] == {"use_logged_in_user": False}
 
 
+def test_byok_uses_the_selected_saved_provider_without_github_auth(
+    rec: _Recorder, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.core import assistant_ai
+    from quill.core.ai import own_key_providers
+
+    monkeypatch.setattr(
+        own_key_providers, "host_for", lambda _provider: "https://api.openai.com/v1"
+    )
+    monkeypatch.setattr(assistant_ai, "stored_provider_api_key", lambda _provider: "sk-stored")
+    monkeypatch.setattr(
+        copilot_auth,
+        "stored_token",
+        lambda *_a: pytest.fail("BYOK must not read a GitHub token"),
+    )
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-ambient")
+    harness = pack.CopilotByokHarness(provider="openai", model="gpt-selected")
+
+    assert harness._make_invoke()(_agent(), _ctx()) == "The answer."
+    assert rec.client_kwargs["github"] == {"use_logged_in_user": False}
+    assert rec.session_kwargs["github"] == {
+        "capi": {"enabled": False},
+        "telemetry_enabled": False,
+    }
+    assert rec.session_kwargs["model"] == "gpt-selected"
+    assert rec.session_kwargs["inference"] == {
+        "default_provider": "quill_user",
+        "providers": [
+            {
+                "name": "quill_user",
+                "type": "openai",
+                "base_url": "https://api.openai.com/v1",
+                "api_key": "sk-stored",
+            }
+        ],
+    }
+    assert rec.env_during_call["OPENAI_API_KEY"] == "sk-ambient"
+    assert "token" not in rec.client_kwargs["github"]
+
+
 def test_inherited_token_vars_are_not_used_for_github_auth(
     rec: _Recorder, no_token, monkeypatch
 ) -> None:

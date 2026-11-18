@@ -88,6 +88,7 @@ from __future__ import annotations
 import os
 import sys
 from collections.abc import Callable, Sequence
+from dataclasses import replace
 from typing import TYPE_CHECKING, Any
 
 from quill.ai_packs._base import Invoke, SdkHarness
@@ -273,7 +274,13 @@ class CopilotHarness(SdkHarness):
         """
         import copilot  # type: ignore[import-not-found]
 
-        return copilot.CopilotClient(**_client_kwargs(copilot, self.agent_name, str(folders.home)))
+        return copilot.CopilotClient(**self._client_options(copilot, str(folders.home)))
+
+    def _client_options(self, copilot: Any, base_directory: str) -> dict[str, Any]:
+        return _client_kwargs(copilot, self.agent_name, base_directory)
+
+    def _session_provider_options(self, model: str = "") -> dict[str, Any]:
+        return {"model": model} if model else {}
 
     def is_available(self) -> tuple[bool, str | None]:
         """Report a missing SDK or runtime without trying to download either."""
@@ -314,8 +321,7 @@ class CopilotHarness(SdkHarness):
         if not available:
             return RefusedToolSession(reason or "GitHub Copilot is not available.", emit)
         options: dict[str, Any] = {}
-        if model:
-            options["model"] = model
+        options.update(self._session_provider_options(model or ""))
         return CopilotToolSession(
             agent=agent,
             ctx=ctx,
@@ -349,6 +355,7 @@ class CopilotHarness(SdkHarness):
             session_kwargs["permissions"] = {"on_request": _deny_own_tools}
             session_kwargs["tools"] = {"available_tools": available_tools_for()}
             session_kwargs["events"] = {"streaming": False}
+            session_kwargs.update(self._session_provider_options())
             system_message = system_message_for(agent.system_prompt)
             if system_message is not None:
                 session_kwargs["system_message"] = system_message
@@ -385,3 +392,62 @@ class CopilotHarness(SdkHarness):
             return asyncio.run(_run())
 
         return invoke
+
+
+class CopilotByokHarness(CopilotHarness):
+    """Copilot SDK agent tools using only the user's explicitly selected provider."""
+
+    pack_id = "copilot_byok"
+    pack_name = "Copilot SDK (your provider)"
+
+    def __init__(
+        self,
+        *,
+        provider: str,
+        model: str,
+        agent_name: str = copilot_auth.DEFAULT_AGENT_NAME,
+    ) -> None:
+        super().__init__(agent_name=agent_name)
+        from quill.core.ai.copilot_byok import load_selected_connection
+
+        try:
+            self._connection = load_selected_connection(provider, model)
+            self._connection_error = ""
+        except (OSError, ValueError) as exc:
+            self._connection = None
+            self._connection_error = str(exc)
+
+    def capabilities(self) -> HarnessCapabilities:
+        base = super().capabilities()
+        local = bool(self._connection and self._connection.local_only)
+        return replace(
+            base,
+            requires_oauth=False,
+            requires_api_key=not local,
+            local_only=local,
+        )
+
+    def is_available(self) -> tuple[bool, str | None]:
+        available, reason = super().is_available()
+        if not available:
+            return available, reason
+        if self._connection is None:
+            return False, self._connection_error or "The selected provider is not ready."
+        return True, None
+
+    def _client_options(self, copilot: Any, base_directory: str) -> dict[str, Any]:
+        prepare_inprocess_runtime()
+        return {
+            "mode": "empty",
+            "runtime": copilot.RuntimeConnection.for_inprocess(base_directory=base_directory),
+            "github": {"use_logged_in_user": False},
+        }
+
+    def _session_provider_options(self, model: str = "") -> dict[str, Any]:
+        if self._connection is None:
+            return {}
+        return {
+            "github": {"capi": {"enabled": False}, "telemetry_enabled": False},
+            "inference": self._connection.inference_options(),
+            "model": model or self._connection.model,
+        }
