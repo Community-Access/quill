@@ -241,10 +241,13 @@ never saved. You hear what was saved, where, and what was left out.
 3. The preview lists every change. Press **Put Back**.
 
 Posts, pages, synced patterns, categories and tags changed since the snapshot
-are set back to it. WordPress keeps a revision of each post and page it
-changes, so even this can be undone from Previous Versions. Ones deleted
-since are made again as drafts, at new addresses. Menus, settings, people,
-plugins and media files are not put back.
+are set back to it: not only their words, but their status, address,
+categories and tags, featured image, parent page and order. WordPress keeps a
+revision of each post and page it changes, so even this can be undone from
+Previous Versions. Ones deleted since are made again as drafts, with
+everything else as it was; if their address has been taken since, WordPress
+adds a number to it. Menus, settings, people, plugins and media files are not
+put back.
 
 If the snapshot came from the Practice Site and you are putting it on a real
 site, QUILL asks you by name first.

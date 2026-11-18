@@ -85,6 +85,9 @@ def test_send_back_leaves_a_note_and_returns_the_draft(bench, monkeypatch) -> No
         block_notes, "add_note", lambda api, ident, text: notes.append((ident, text))
     )
     monkeypatch.setattr(dlg, "ask_text", lambda *a, **k: "Needs a photo")
+    from quill.ui import wordpress_workbench_dialogs as wdlg
+
+    monkeypatch.setattr(wdlg, "ask_preview", lambda *a, **k: True)  # Send Back previews first
     _go(bench, NodeRef("site", "posts", SITE))
     _select(bench, 1)
     bench.run(command("send_back"))

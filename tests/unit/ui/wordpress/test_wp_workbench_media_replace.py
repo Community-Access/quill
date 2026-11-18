@@ -249,6 +249,19 @@ def test_repoint_can_delete_the_old_file_once_every_use_moved(bench, new_file, m
     assert bench.said[-1].endswith("The old file was deleted.")
 
 
+def test_deleting_the_old_file_leaves_nothing_to_undo(bench, new_file, monkeypatch) -> None:
+    """how.md review, safety 10: Ctrl+Z must not point pages at a deleted file."""
+    _answers(monkeypatch, [0, 1])
+    seen = _previews(monkeypatch)
+    bench.provider.do_replace_file(None, _media())
+    assert any("cannot be undone" in str(line) for line in str(seen[-1]).split(","))
+    assert not bench.provider.history.can_undo()
+    writes = len(bench.api.writes)
+    bench.provider.do_undo(None, None)
+    assert len(bench.api.writes) == writes
+    assert bench.said[-1].endswith("This cannot be undone.")
+
+
 def test_repoint_offers_a_redirect_where_the_site_has_redirection(
     bench, new_file, monkeypatch
 ) -> None:
@@ -279,7 +292,7 @@ def test_a_declined_redirect_is_not_added_and_breakage_is_said(
     ("choices", "preview"),
     [
         ([None], True),  # cancelled at How
-        ([0], False),  # cancelled at the preview
+        ([0, 0], False),  # cancelled at the preview, asked after the old file's fate
         ([0, None], True),  # cancelled at the old file's fate
     ],
 )

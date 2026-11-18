@@ -68,7 +68,7 @@ from quill.core.workbench.properties import (
 )
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui.wordpress_workbench_batch_sheets import _GRAVITY_SHEETS, _NO_EDIT, BATCH_SHEETS
-from quill.ui.wordpress_workbench_sheet_guards import setting_cleared
+from quill.ui.wordpress_workbench_sheet_guards import plugin_status_cleared, setting_cleared
 
 __all__ = ["BATCH_SHEETS", "WorkbenchSheetCommands"]
 
@@ -293,6 +293,8 @@ class WorkbenchSheetCommands:
         if not body:
             self.say("Nothing changed on this row.")
             return True
+        if not plugin_status_cleared(self, row, body):
+            return False
         if row.kind == "setting" and not setting_cleared(self, row, body):
             return False
         api = self.ctx(row.site).api
