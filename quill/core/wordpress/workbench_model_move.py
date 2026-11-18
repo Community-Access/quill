@@ -23,6 +23,8 @@ import re
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from quill.core.counted import a_or_an
+
 __all__ = ["kind_for", "move_body", "move_preview"]
 
 
@@ -160,7 +162,7 @@ def move_preview(
         )
     else:
         tail = (
-            f"Nothing is removed from {owner}. QUILL Site Types will not take a {noun} that "
+            f"Nothing is removed from {owner}. QUILL Site Types will not take {a_or_an(noun)} that "
             f"something else still registers, so turn it off in {owner} first (its content "
             "stays in the database), then copy it here; until then the site refuses and nothing "
             "changes."

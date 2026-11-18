@@ -195,7 +195,7 @@ class WorkbenchPeopleAdminCommands:
         def done(results: list[tuple[people.Invite, str]]) -> None:
             made = [invite for invite, why in results if not why]
             failed = [(invite, why) for invite, why in results if why]
-            said = f"Added {len(made)} of {len(results)} people to {site}."
+            said = f"Added {len(made)} of {plural(len(results), 'person', 'people')} to {site}."
             if failed:
                 first, why = failed[0]
                 said += f" {len(failed)} failed; the first, {first.email}: {why}"

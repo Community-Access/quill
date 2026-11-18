@@ -96,7 +96,7 @@ def test_site_map_is_pages_by_parent_then_posts_by_category(wp, wp_site, wp_dial
         "Team, draft, level 2",
         "Contact, level 1",
         "Posts, 1",
-        "News, 1 posts",
+        "News, 1 post",
         "Hello, level 2",
     ]
 

@@ -447,7 +447,8 @@ def compare_styles(per_site: Mapping[str, dict[str, str] | str]) -> tuple[str, l
         lines.append(f"{style}: " + "; ".join(f"{s} {val}" for s, val in values.items()))
     differ = len(names) - same
     summary = (
-        f"{differ} of {len(names)} styles differ across {len(readable)} sites; {same} are the same."
+        f"{differ} of {len(names)} styles differ across {plural(len(readable), 'site')}; "
+        f"{same} {'is' if same == 1 else 'are'} the same."
         if readable
         else "No site's global styles could be read."
     )

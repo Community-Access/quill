@@ -34,6 +34,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
+from quill.core.counted import a_or_an, plural
 from quill.core.wordpress.block_catalog import Field, assign_access_keys
 
 __all__ = [
@@ -182,9 +183,13 @@ def coerce(spec: Mapping[str, Any], value: Any, label: str = "") -> Any:
             raise FieldValueError(label or "This field", "Enter a list of values.")
         minimum, maximum = spec.get("minItems"), spec.get("maxItems")
         if isinstance(minimum, int) and len(value) < minimum:
-            raise FieldValueError(label or "This field", f"Enter at least {minimum} items.")
+            raise FieldValueError(
+                label or "This field", f"Enter at least {plural(minimum, 'item')}."
+            )
         if isinstance(maximum, int) and len(value) > maximum:
-            raise FieldValueError(label or "This field", f"Enter no more than {maximum} items.")
+            raise FieldValueError(
+                label or "This field", f"Enter no more than {plural(maximum, 'item')}."
+            )
         if spec.get("uniqueItems") is True:
             normalized = [json.dumps(item, sort_keys=True, ensure_ascii=False) for item in value]
             if len(normalized) != len(set(normalized)):
@@ -206,9 +211,13 @@ def coerce(spec: Mapping[str, Any], value: Any, label: str = "") -> Any:
             )
         minimum, maximum = spec.get("minProperties"), spec.get("maxProperties")
         if isinstance(minimum, int) and len(value) < minimum:
-            raise FieldValueError(label or "This field", f"Include at least {minimum} fields.")
+            raise FieldValueError(
+                label or "This field", f"Include at least {plural(minimum, 'field')}."
+            )
         if isinstance(maximum, int) and len(value) > maximum:
-            raise FieldValueError(label or "This field", f"Include no more than {maximum} fields.")
+            raise FieldValueError(
+                label or "This field", f"Include no more than {plural(maximum, 'field')}."
+            )
         # Keys the schema does not name are carried through untouched.
         return {
             key: coerce(props[key], item, label)
@@ -254,7 +263,7 @@ def coerce(spec: Mapping[str, Any], value: Any, label: str = "") -> Any:
                 value = int(text) if kind == "integer" else float(text)
             except ValueError as exc:
                 word = "whole number" if kind == "integer" else "number"
-                raise FieldValueError(label or "This field", f"Enter a {word}.") from exc
+                raise FieldValueError(label or "This field", f"Enter {a_or_an(word)}.") from exc
         if kind == "number" and not math.isfinite(float(value)):
             raise FieldValueError(label or "This field", "Enter a finite number.")
         minimum, maximum = spec.get("minimum"), spec.get("maximum")

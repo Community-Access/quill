@@ -33,13 +33,37 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-__all__ = ["Counted", "plural"]
+__all__ = ["Counted", "a_or_an", "plural"]
 
 
 def plural(count: int, singular: str, plural_form: str = "") -> str:
     """``3 episodes`` / ``1 episode`` -- the count and its noun, agreeing."""
     word = singular if count == 1 else (plural_form or f"{singular}s")
     return f"{count} {word}"
+
+
+def a_or_an(word: str) -> str:
+    """``an event`` / ``a page`` -- the article a spoken noun takes, then the noun.
+
+    By the first letter, with the few English exceptions that matter for the
+    words these apps say: a silent h (an hour), and a u or eu that sounds like
+    "you" (a user, a URL). An acronym said letter by letter keeps its letter's
+    sound only when written in capitals of one to four letters (an SEO title).
+    """
+    text = word.strip()
+    if not text:
+        return "a"
+    lower = text.lower()
+    first = text.split()[0]
+    if first.isupper() and 1 < len(first) <= 4:
+        vowel_sound = first[0] in "AEFHILMNORSX"
+    elif lower.startswith(("hour", "honest", "honour", "honor", "heir")):
+        vowel_sound = True
+    elif lower.startswith(("uni", "use", "usu", "uti", "eu", "one", "once", "url", "ura")):
+        vowel_sound = False
+    else:
+        vowel_sound = lower[0] in "aeiou"
+    return f"{'an' if vowel_sound else 'a'} {text}"
 
 
 @dataclass(frozen=True, slots=True)

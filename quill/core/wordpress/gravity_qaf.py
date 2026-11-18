@@ -26,6 +26,7 @@ from dataclasses import dataclass
 from dataclasses import field as dc_field
 from typing import Any
 
+from quill.core.counted import a_or_an
 from quill.core.forms import expr as E
 from quill.core.forms import model as M
 from quill.core.wordpress.gravity_build import (
@@ -158,7 +159,7 @@ def to_qaf(form: Mapping[str, Any]) -> Conversion:
             continue
         if kind not in SHARED:
             lost.append(
-                f"{field_name(field)} is a {kind} field, which QUILL Accessible Forms "
+                f"{field_name(field)} is {a_or_an(kind)} field, which QUILL Accessible Forms "
                 "has no match for."
             )
             continue

@@ -33,6 +33,7 @@ from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
+from quill.core.counted import a_or_an
 from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.site import friendly_date
 from quill.core.wordpress.workbench_forms import GRAVITY_NAMESPACE
@@ -169,7 +170,7 @@ def _feed_row(site: str, feed: Mapping[str, Any], titles: Mapping[str, str]) -> 
             "site": site,
         },
         detail=(
-            f"{name}, a {addon} feed on {form}, {state}. "
+            f"{name}, {a_or_an(addon)} feed on {form}, {state}. "
             + (
                 "It runs when this form is submitted."
                 if active

@@ -48,6 +48,7 @@ from quill.core.workbench.properties import (
     FieldSpec,
     list_states,
     merge_values,
+    say_value,
 )
 from quill.ui.github_workbench_history import GitHubWorkbenchHistoryMixin
 
@@ -302,7 +303,9 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
         close: bool,
     ) -> None:
         tier = self.tier_of(target, changes)
-        words = f"{target.title()}: " + "; ".join(f"{c.label} to {c.after}" for c in changes)
+        words = f"{target.title()}: " + "; ".join(
+            f"{c.label} to {say_value(c.after)}" for c in changes
+        )
         name = target.ident.get("repo") or target.ident.get("name") or target.title()
         if not self.confirm_tier(tier, words, name):
             return

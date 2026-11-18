@@ -34,6 +34,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urljoin, urlparse
 
+from quill.core.counted import plural
 from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.site import rendered
 
@@ -66,11 +67,15 @@ class ArchiveReport:
 
     def sentence(self, folder: str) -> str:
         said = (
-            f"Archived {self.pages} pages, {self.posts} posts and {self.files} files into "
+            f"Archived {plural(self.pages, 'page')}, {plural(self.posts, 'post')} and "
+            f"{plural(self.files, 'file')} into "
             f"{folder}. Open index.html there in a browser."
         )
         if self.left_out:
-            said += f" {len(self.left_out)} things were left out; the report names each."
+            said += (
+                f" {plural(len(self.left_out), 'thing')} "
+                f"{'was' if len(self.left_out) == 1 else 'were'} left out; the report names each."
+            )
         return said
 
 

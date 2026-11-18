@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import site as wp
 from quill.core.wordpress import site_library as lib
 from quill.core.wordpress.api import WordPressApiError
@@ -276,7 +277,8 @@ class WordPressDesignCommands(WordPressAdminBase):
                 "unsyncing a pattern",
                 lambda: lib.unsync_pattern(api, pattern, found),
                 lambda n: (
-                    f"{pattern.title} is no longer synced; {n} pages now hold their own copy."
+                    f"{pattern.title} is no longer synced; {plural(n, 'page')} now "
+                    f"{'holds its' if n == 1 else 'hold their'} own copy."
                 ),
             )
             live[live.index(pattern)] = lib.Pattern(

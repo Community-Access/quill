@@ -19,6 +19,7 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import TYPE_CHECKING, Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import comments as cm
 from quill.core.wordpress import site as wp
 from quill.core.wordpress import site_admin as sa
@@ -225,7 +226,7 @@ class WordPressAdminCommands(
             self.site_job(
                 "approving comments",
                 lambda: cm.set_many(api, ids, "approve"),
-                lambda n: f"{n} comments approved on {profile.name}.",
+                lambda n: f"{plural(n, 'comment')} approved on {profile.name}.",
             )
             live.clear()
             return rows()

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import navigation as nav
 from quill.core.wordpress import site as wp
 from quill.core.wordpress import site_structure as ss
@@ -235,9 +236,9 @@ class WordPressMenuCommands(WordPressAdminBase):
             node = at(index)
             if node is None:
                 return None
-            under = (
-                f" Its {len(node.children)} items move up into its place." if node.children else ""
-            )
+            moving = len(node.children)
+            verb = "moves" if moving == 1 else "move"
+            under = f" Its {plural(moving, 'item')} {verb} up into its place." if moving else ""
             if not dlg.confirm(
                 self.host.parent,
                 self.host.show_modal,

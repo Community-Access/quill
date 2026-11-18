@@ -21,6 +21,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
+from quill.core.counted import a_or_an
 from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.plugin_shop_seo import length_note
 from quill.core.wordpress.site import rendered
@@ -157,7 +158,7 @@ def seo_row(raw: Mapping[str, Any], site: str) -> WbRow:
             or ("not set" if "_yoast_wpseo_focuskw" in meta else "not readable"),
         },
         detail=(
-            f"{title}, a {kind}. "
+            f"{title}, {a_or_an(kind)}. "
             + length_note("SEO title", seo_title, TITLE_LIMIT)
             + ". "
             + length_note("Meta description", description, DESCRIPTION_LIMIT)

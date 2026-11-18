@@ -23,6 +23,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.wordpress import site as wp
@@ -98,7 +99,7 @@ def coming_up(sites: list[SiteCall]) -> tuple[list[Scheduled], list[str]]:
 
 
 def coming_up_sentence(items: list[Scheduled], failed: list[str], sites: int) -> str:
-    where = "your site" if sites == 1 else f"your {sites} sites"
+    where = "your site" if sites == 1 else f"your {plural(sites, 'site')}"
     if not items:
         said = f"Nothing is scheduled on {where}."
     else:
@@ -109,7 +110,7 @@ def coming_up_sentence(items: list[Scheduled], failed: list[str], sites: int) ->
             f"{first.site}, {wp.friendly_date(first.date_gmt)}."
         )
     if failed:
-        said += f" {len(failed)} sites did not answer."
+        said += f" {plural(len(failed), 'site')} did not answer."
     return said
 
 
@@ -248,14 +249,14 @@ def what_changed(
 
 
 def what_changed_sentence(changes: list[Change], failed: list[str], sites: int) -> str:
-    where = "your site" if sites == 1 else f"your {sites} sites"
+    where = "your site" if sites == 1 else f"your {plural(sites, 'site')}"
     if not changes:
         said = f"Nothing new on {where} since you last looked."
     else:
         touched = len({c.site for c in changes})
-        said = f"{len(changes)} changes on {touched} of {where.removeprefix('your ')}."
+        said = f"{plural(len(changes), 'change')} on {touched} of {where.removeprefix('your ')}."
         if sites == 1:
-            said = f"{len(changes)} changes on {where} since you last looked."
+            said = f"{plural(len(changes), 'change')} on {where} since you last looked."
     if failed:
-        said += f" {len(failed)} sites did not answer."
+        said += f" {plural(len(failed), 'site')} did not answer."
     return said

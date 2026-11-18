@@ -157,12 +157,12 @@ def test_with_no_ability_on_the_site_is_asked_about_its_content(site, wp_site, w
         in (wp_dialogs.asked("ask_text")[0]["help_text"])
     )
     consent = wp_dialogs.asked("confirm")[0]["message"]
-    assert consent.startswith("Send the text of 1 posts and pages from Community Radio")
+    assert consent.startswith("Send the text of 1 post or page from Community Radio")
     assert "Only published content is included." in consent
     assert "Question: When is jazz?" in service.prompts[0]
     assert "Jazz is on Fridays." in service.prompts[0] and "<p>" not in service.prompts[0]
     assert wp_dialogs.reports[-1]["text"] == (
-        "Jazz is on Fridays, says Schedule.\n\nAnswered from 1 posts and pages of Community Radio."
+        "Jazz is on Fridays, says Schedule.\n\nAnswered from 1 post or page of Community Radio."
     )
     query = wp_site.sent("GET", f"{API}/posts")[0].full_url
     assert "status=publish&" in query and "context=edit" not in query

@@ -161,4 +161,4 @@ def test_menu_history_lists_a_navigation_autosave_beside_its_revisions(
         [{"id": 8, "modified_gmt": "2026-11-01T10:00:00", "content": {"raw": home + shows}}],
     )
     wpr.cmd_menu_history()
-    assert "1 items since removed" in wp_dialogs.window["rows"][0]
+    assert "1 item since removed" in wp_dialogs.window["rows"][0]

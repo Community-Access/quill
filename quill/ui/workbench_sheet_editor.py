@@ -191,13 +191,18 @@ class WorkbenchSheetEditor:
             else:
                 control.SetValue(bool(value))
         elif self.editable(spec) and spec.kind is FieldKind.CHOICE:
-            choices = list(spec.choices)
-            if not mixed and value not in (None, "") and str(value) not in choices:
-                choices.insert(0, str(value))
+            # Shown by name ("Monday", "Draft"), read back as the stored value.
+            def named(code: object) -> str:
+                return spec.word_for(code) if spec.choice_words else str(code)
+
+            choices = [named(c) for c in spec.choices]
+            shown = "" if mixed or value in (None, "") else named(value)
+            if shown and shown not in choices:
+                choices.insert(0, shown)
             if mixed:
                 choices.insert(0, _UNCHANGED)
             control = wx.Choice(panel, choices=choices)
-            current = _UNCHANGED if mixed else str(value or "")
+            current = _UNCHANGED if mixed else shown
             control.SetSelection(choices.index(current) if current in choices else 0)
         else:
             style = 0 if self.editable(spec) else wx.TE_READONLY
@@ -242,6 +247,8 @@ class WorkbenchSheetEditor:
         return row
 
     def _text(self, spec: FieldSpec, value: object) -> str:
+        if spec.choice_words and value not in (None, ""):
+            return spec.word_for(value)
         if self.editable(spec):
             if isinstance(value, tuple):
                 return ", ".join(str(v) for v in value)
@@ -260,7 +267,7 @@ class WorkbenchSheetEditor:
             return bool(control.GetValue())
         if spec.kind is FieldKind.CHOICE:
             text = control.GetStringSelection()
-            return MIXED if text == _UNCHANGED else text
+            return MIXED if text == _UNCHANGED else spec.value_for(text)
         text = control.GetValue()
         if text == MIXED_WORD and self.state.loaded.get(spec.key) is MIXED:
             return MIXED

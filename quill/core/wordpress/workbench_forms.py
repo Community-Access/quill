@@ -328,7 +328,7 @@ def _entry_row(
             "plugin": PLUGIN_NAMES[plugin],
             "status": word,
             "when": friendly_date(when) if when else "",
-            "what": f"{form_title} entry",
+            "what": f"{form_title} entry {entry_id}",
             "from": "",
             "site": ctx.name,
         },

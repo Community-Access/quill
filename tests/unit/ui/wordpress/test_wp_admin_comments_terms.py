@@ -314,7 +314,7 @@ def test_merge_moves_posts_in_one_batch(wp, wp_site, wp_dialogs):
     wp_dialogs.press("Merge Into...", 1)
     batch = wp_site.body(wp_site.sent("POST", "/wp-json/batch/v1")[0])
     assert batch["requests"][0]["body"] == {"categories": [1]}
-    assert wp.host.announced[-1] == "1 posts moved to News; Events deleted."
+    assert wp.host.announced[-1] == "1 post moved to News; Events deleted."
 
 
 def test_convert_category_to_tag(wp, wp_site, wp_dialogs):
@@ -334,7 +334,7 @@ def test_convert_category_to_tag(wp, wp_site, wp_dialogs):
     assert len(rows) == 1
     batch = wp_site.body(wp_site.sent("POST", "/wp-json/batch/v1")[0])
     assert batch["requests"][0]["body"] == {"categories": [1], "tags": [5, 7]}
-    assert wp.host.announced[-1] == "Events is now a tag on Community Radio; 1 posts moved."
+    assert wp.host.announced[-1] == "Events is now a tag on Community Radio; 1 post moved."
 
 
 def test_find_unused_deletes_them_together_but_never_the_default(wp, wp_site, wp_dialogs):

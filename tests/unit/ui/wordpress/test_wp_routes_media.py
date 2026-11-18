@@ -381,7 +381,7 @@ def test_menu_history_restores_a_navigation_revision(wpr, wp_site, wp_dialogs) -
         wp_site, [{"id": 5, "modified_gmt": "2026-10-02T10:00:00", "content": {"raw": OLD_NAV}}]
     )
     wpr.cmd_menu_history()
-    assert "1 items since removed" in wp_dialogs.window["rows"][0]
+    assert "1 item since removed" in wp_dialogs.window["rows"][0]
     assert "Shows" in wp_dialogs.window["details"](0)
     wp_dialogs.answer("confirm", True)
     wp_dialogs.press("&Restore This Version...", 0)
@@ -399,7 +399,7 @@ def test_menu_history_brings_back_a_removed_item(wpr, wp_site, wp_dialogs) -> No
     wp_dialogs.press("&Bring Back Removed Items...", 0)
     content = wp_site.body(wp_site.sent("POST", f"{API}/navigation/70")[0])["content"]
     assert '"label":"Shows"' in content
-    assert wpr.host.announced[-1] == "1 items back in Main, at the end."
+    assert wpr.host.announced[-1] == "1 item back in Main, at the end."
 
 
 def test_menu_history_with_no_revisions(wpr, wp_site) -> None:
@@ -433,7 +433,7 @@ def test_classic_menu_history_from_snapshots(wpr, wp_site, wp_dialogs) -> None:
     classic_site(wp_site, [item(1, "Home", 1)])  # Shows was removed on the site
     wp_site.on("POST", f"{API}/menu-items", {"id": 9})
     wpr.cmd_menu_history()
-    assert "1 items since removed" in wp_dialogs.window["rows"][0]
+    assert "1 item since removed" in wp_dialogs.window["rows"][0]
     labels = [a.label for a in wp_dialogs.window["actions"]]
     assert labels == ["&Bring Back Removed Items..."]
     wp_dialogs.answer("confirm", True)

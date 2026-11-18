@@ -34,6 +34,7 @@ from dataclasses import dataclass, field
 from typing import Any
 from urllib.parse import urlparse
 
+from quill.core.counted import plural
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.media_replace import _stem_pattern, rewrite_uses
 from quill.core.wordpress.workbench_site_copy import rewrite_links
@@ -102,7 +103,7 @@ class ImportPlan:
             said.append(f"{_type_words(item.post_type)}: {item.title or '(no title)'}.")
         if self.attachments:
             said.append(
-                f"{len(self.attachments)} files to download from {', '.join(self.hosts)} "
+                f"{plural(len(self.attachments), 'file')} to download from {', '.join(self.hosts)} "
                 "and upload here, if you agree."
             )
         said += [f"Left out: {line}." for line in self.left_out]
@@ -159,13 +160,16 @@ def plan_import(api: WordPressApi, wxr: WxrFile) -> ImportPlan:
     _plan_items(api, plan)
     if wxr.beyond_cap:
         plan.left_out.append(
-            f"{wxr.beyond_cap} items past the first {len(wxr.items)} the file holds; import "
+            f"{plural(wxr.beyond_cap, 'item')} past the first {len(wxr.items)} the file "
+            f"holds; import "
             "the rest from a smaller export"
         )
     plan.left_out.append(META_LEFT_OUT)
     comments = sum(i.comments for i in plan.items)
     if comments:
-        plan.left_out.append(f"{comments} comments: QUILL imports writing, not conversations")
+        plan.left_out.append(
+            f"{plural(comments, 'comment')}: QUILL imports writing, not conversations"
+        )
     return plan
 
 
@@ -196,7 +200,9 @@ def _plan_terms(api: WordPressApi, plan: ImportPlan) -> None:
             plan.create_terms.append(term)
     plan.create_terms.sort(key=lambda t: bool(t.parent))  # parents first
     for taxonomy, count in sorted(missing_tax.items()):
-        plan.left_out.append(f"{count} terms of {taxonomy}, a taxonomy this site does not have")
+        plan.left_out.append(
+            f"{plural(count, 'term')} of {taxonomy}, a taxonomy this site does not have"
+        )
 
 
 def _plan_items(api: WordPressApi, plan: ImportPlan) -> None:
@@ -222,7 +228,9 @@ def _plan_items(api: WordPressApi, plan: ImportPlan) -> None:
         else:
             plan.items.append(item)
     for kind, count in sorted(skipped.items()):
-        plan.left_out.append(f"{count} {kind} items: {_why_skipped(kind)}")
+        plan.left_out.append(
+            f"{count} {kind} {'item' if count == 1 else 'items'}: {_why_skipped(kind)}"
+        )
 
 
 def _why_skipped(kind: str) -> str:
@@ -342,7 +350,8 @@ def send_import(
     moved = _upload_files(api, plan, fetch, result) if fetch and plan.attachments else {}
     if plan.attachments and not fetch:
         plan.left_out.append(
-            f"{len(plan.attachments)} files, skipped as you chose: the text still points at "
+            f"{plural(len(plan.attachments), 'file')}, skipped as you chose: the text still "
+            f"points at "
             f"{', '.join(plan.hosts)}"
         )
     new_ids: dict[int, int] = {}

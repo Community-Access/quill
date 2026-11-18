@@ -338,7 +338,7 @@ def answer_tree(value: Any, label: str = "Answer", *, depth: int = 0) -> TreeNod
     if depth > 12:
         return TreeNode(f"{label}: (deeper than shown)", [])
     if isinstance(value, dict):
-        node = TreeNode(f"{label} ({len(value)} fields)", [])
+        node = TreeNode(f"{label} ({plural(len(value), 'field')})", [])
         for key, child in value.items():
             if isinstance(child, (dict, list)):
                 node.children.append(answer_tree(child, str(key), depth=depth + 1))

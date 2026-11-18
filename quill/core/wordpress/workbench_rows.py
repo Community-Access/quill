@@ -77,9 +77,26 @@ class WbRow:
 
     @property
     def title(self) -> str:
-        for column in ("title", "name", "what", "plugin", "theme", "setting", "form", "site"):
+        for column in (
+            "title",
+            "name",
+            "what",
+            "sidebar",
+            "menu",
+            "report",
+            "zone",
+            "family",
+            "namespace",
+            "plugin",
+            "theme",
+            "setting",
+            "form",
+            "site",
+        ):
             if self.cells.get(column):
                 return self.cells[column]
+        if self.key.isdigit():  # "Comment 12", never a bare "12" (item 28)
+            return f"{self.kind.replace('_', ' ').capitalize()} {self.key}"
         return self.key
 
     @property

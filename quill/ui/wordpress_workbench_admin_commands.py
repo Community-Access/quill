@@ -29,6 +29,7 @@ from collections.abc import Callable, Sequence
 from datetime import date
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import dotorg
 from quill.core.wordpress.workbench_no_rest import (
     ADMIN_SCREENS,
@@ -179,7 +180,8 @@ class WorkbenchAdminCommands:
                 title="Install on Sites Missing It",
                 summary=(
                     f"WordPress's REST API cannot install a theme, so QUILL opens Appearance > "
-                    f"Themes > Add New for {row.key} on {len(missing)} sites in your browser."
+                    f"Themes > Add New for {row.key} on {plural(len(missing), 'site')} in "
+                    f"your browser."
                 ),
                 lines=[f"{site}: opens Add New, searching for {slug}" for site in missing],
                 yes="Open Them",
@@ -240,7 +242,9 @@ class WorkbenchAdminCommands:
         def done(failed: list[str]) -> None:
             made = len(missing) - len(failed)
             more = f" Not installed: {'; '.join(failed[:3])}" if failed else ""
-            self.say(f"{name} installed on {made} of {len(missing)} sites, inactive.{more}")
+            self.say(
+                f"{name} installed on {made} of {plural(len(missing), 'site')}, inactive.{more}"
+            )
             self.refresh()
 
         self.background("installing a plugin", work, done)

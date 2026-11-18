@@ -28,6 +28,7 @@ from collections.abc import Mapping
 from dataclasses import replace
 from typing import TYPE_CHECKING, Any
 
+from quill.core.counted import a_or_an
 from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.site import plain_text, rendered
 from quill.core.wordpress.workbench_rows import WbRow
@@ -195,7 +196,7 @@ def _listed(ctx: SiteContext, route: str, noun: str) -> list[WbRow]:
                 name,
                 version or "not said",
                 update,
-                f"{name}, a {noun} on {ctx.name}, version {version or 'not said'}.{known}",
+                f"{name}, {a_or_an(noun)} on {ctx.name}, version {version or 'not said'}.{known}",
                 status=str(item.get("status", "") or ""),
                 raw=item,
             )

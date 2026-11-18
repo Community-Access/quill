@@ -352,7 +352,7 @@ class WorkbenchScopeMoreCommands:
         def done(outcomes: list[Outcome]) -> None:
             outcomes = outcomes + blocked
             merged = sum(1 for o in outcomes if o.ok and o.title == row.key)
-            said = f"{row.key}: merged into {target} on {merged} of {len(sources)} sites."
+            said = f"{row.key}: merged into {target} on {merged} of {plural(len(sources), 'site')}."
             self._across_report(f"Merge {row.key} Everywhere", said, outcomes)
             self.history.record(Change(row.key, said, undo=None))
             self.refresh()
@@ -385,7 +385,7 @@ class WorkbenchScopeMoreCommands:
             self.parent,
             self.show_modal,
             title=f"Remove {row.key} Everywhere",
-            summary=f"{row.key} is removed on {len(plan)} sites. This cannot be undone.",
+            summary=f"{row.key} is removed on {plural(len(plan), 'site')}. This cannot be undone.",
             lines=[step.line for step in plan] + [f"Not changed. {o.line}" for o in refused],
             yes="Remove",
             destructive=True,
@@ -395,7 +395,10 @@ class WorkbenchScopeMoreCommands:
         def done(outcomes: list[Outcome]) -> None:
             outcomes = outcomes + refused
             good = sum(1 for o in outcomes if o.ok)
-            said = f"{row.key}: removed on {good} of {len(outcomes)} sites. It cannot be undone."
+            said = (
+                f"{row.key}: removed on {good} of {plural(len(outcomes), 'site')}. It "
+                f"cannot be undone."
+            )
             self._across_report(f"Remove {row.key} Everywhere", said, outcomes)
             self.history.record(Change(row.key, said, undo=None))
             self.refresh()

@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from quill.core.ai.doc_images import DocImage
+from quill.core.counted import plural
 from quill.core.wordpress import local as lc
 from quill.core.wordpress import media_alt as ma
 from quill.core.wordpress import media_tools as mt
@@ -237,7 +238,8 @@ class WordPressMediaLibrary:
             cache.update(found)
             used = sum(1 for places in found.values() if places)
             self.host.announce(
-                f"Used In is ready: {used} of {len(found)} files on {profile.name} are used "
+                f"Used In is ready: {used} of {plural(len(found), 'file')} on {profile.name} "
+                f"{'is' if used == 1 else 'are'} used "
                 "in a page or post."
             )
 

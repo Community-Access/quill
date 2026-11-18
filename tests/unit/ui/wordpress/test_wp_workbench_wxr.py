@@ -296,7 +296,7 @@ def test_import_downloads_the_files_when_chosen(bench, site, monkeypatch, tmp_pa
     (draft,) = _drafts(bench.api)
     assert draft["author"] == 3 and draft["featured_media"] == 900
     assert 'class="wp-image-900"' in draft["content"]
-    assert "with 1 files" in bench.said[-1]
+    assert "with 1 file" in bench.said[-1]
 
 
 @pytest.mark.parametrize(

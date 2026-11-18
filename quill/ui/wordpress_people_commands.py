@@ -12,6 +12,7 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import site as wp
 from quill.core.wordpress import site_admin as sa
 from quill.core.wordpress import sites as st
@@ -237,7 +238,8 @@ class WordPressPeopleCommands(WordPressAdminBase):
                     self.host.show_modal,
                     title="Delete User",
                     message=(
-                        f"Delete {user.name} from {profile.name}? Their {count} posts move to "
+                        f"Delete {user.name} from {profile.name}? Their "
+                        f"{plural(count, 'post')} {'moves' if count == 1 else 'move'} to "
                         f"{heir.name}. This cannot be undone."
                     ),
                     yes_label=f"Delete {user.name}",

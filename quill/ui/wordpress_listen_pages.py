@@ -24,6 +24,7 @@ import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import episode as ep
 from quill.core.wordpress import listening as ls
 from quill.core.wordpress import local as lc
@@ -430,7 +431,8 @@ class WordPressListenPages:
                 )
             else:
                 self.host.announce(
-                    f"{len(present)} files are in {profile.name}'s Media Library. Their "
+                    f"{plural(len(present), 'file')} {'is' if len(present) == 1 else 'are'} "
+                    f"in {profile.name}'s Media Library. Their "
                     "addresses are copied, one on each line."
                 )
 

@@ -168,6 +168,10 @@ they differ says "Mixed", and stays as it is unless you change it.
 
 A field you cannot change is still there to read, and F1 on it says why.
 
+A choice is offered by name, the way WordPress's own screens say it: a post
+is Published or Scheduled, not `publish` or `future`, and the first day of
+the week is Monday, not 1. QUILL saves the code the site expects.
+
 When a site's plugins keep extra fields for a category, a person or a
 comment, Properties shows them on a **Custom Fields** page. A field that
 holds a list or a group is a labelled box of JSON text, and QUILL checks it

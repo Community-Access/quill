@@ -18,6 +18,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.error_codes import CodedError
 
 __all__ = [
@@ -249,5 +250,5 @@ def validate_wxr(path: Path) -> tuple[bool, str]:
     items = channel.findall("item")
     bad = [i for i in items if not _text(i, "wp:post_type") or not _text(i, "wp:post_id")]
     if bad:
-        return False, f"{len(bad)} items in {path.name} have no post type or number."
-    return True, f"{path.name} is a well-formed WXR 1.2 file with {len(items)} items."
+        return False, f"{plural(len(bad), 'item')} in {path.name} have no post type or number."
+    return True, f"{path.name} is a well-formed WXR 1.2 file with {plural(len(items), 'item')}."

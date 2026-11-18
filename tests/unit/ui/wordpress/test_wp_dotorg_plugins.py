@@ -114,7 +114,7 @@ def test_find_plugin_installs_the_chosen_one_inactive_after_a_preview_with_limit
     assert ("POST", "wp/v2/plugins", {"slug": "old-forms", "status": "inactive"}) in (
         bench.api.writes
     )
-    assert bench.said[-1].startswith("Old Forms installed on 1 of 1 sites, inactive")
+    assert bench.said[-1].startswith("Old Forms installed on 1 of 1 site, inactive")
 
 
 def test_find_plugin_cancelled_at_the_preview_installs_nothing(bench, monkeypatch) -> None:

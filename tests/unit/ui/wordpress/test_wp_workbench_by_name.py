@@ -269,7 +269,7 @@ def test_compare_global_styles_reports_each_site(bench, monkeypatch) -> None:
     monkeypatch.setattr(across, "site_styles", lambda _api: {"Colour Base": "#fff"})
     bench.provider.do_compare_styles(None, _across("themes", "TT5", {}, {}))
     assert seen[0]["title"] == "Compare Global Styles"
-    assert "0 of 1 styles differ across 1 sites" in seen[0]["text"]
+    assert "0 of 1 styles differ across 1 site" in seen[0]["text"]
 
 
 def test_promote_to_network_says_a_single_site_is_not_a_network(bench, monkeypatch) -> None:
@@ -322,7 +322,7 @@ def test_revoke_a_password_everywhere_previews_and_says_there_is_no_undo(
     bench.provider.do_revoke_everywhere(None, row)
     assert "cannot be undone" in seen[0]["summary"]
     assert bench.api.writes[-1] == ("DELETE", "wp/v2/users/me/application-passwords/u1", {})
-    assert "revoked on 1 of 1 sites" in bench.said[-1]
+    assert "revoked on 1 of 1 site" in bench.said[-1]
     assert not bench.provider.history.can_undo()
     bench.provider.do_revoke_everywhere(None, _across("plugins", "x", {}, {}))
     assert bench.said[-1].startswith("Revoke Everywhere works on")

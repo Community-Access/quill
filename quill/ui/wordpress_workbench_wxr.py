@@ -343,7 +343,8 @@ class WorkbenchWxrCommands:
                 title="Files in the Export",
                 prompt="&Files:",
                 rows=[
-                    f"Download the {len(plan.attachments)} files from {hosts} and upload them "
+                    f"Download the {plural(len(plan.attachments), 'file')} from {hosts} and "
+                    f"upload them "
                     f"to {site}",
                     "Skip the files; the text keeps pointing at the old site",
                 ],
@@ -381,7 +382,8 @@ class WorkbenchWxrCommands:
             said = (
                 f"Imported {result.count} of "
                 f"{plural(len(plan.items), 'item')} from {path.name} into "
-                f"{site} as drafts, with {result.uploaded} files. Ctrl+Z moves the drafts to "
+                f"{site} as drafts, with {plural(result.uploaded, 'file')}. Ctrl+Z moves the "
+                f"drafts to "
                 "the Trash."
             )
             self.say(said)

@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import TYPE_CHECKING, Any
 
+from quill.core.counted import a_or_an, plural
 from quill.core.wordpress import site as wp
 from quill.core.wordpress import site_admin as sa
 from quill.core.wordpress import site_library as lib
@@ -76,7 +77,7 @@ class WordPressTermsCommands(WordPressAdminBase):
             for t in live:
                 parent = f", under {name_of(t.parent)}" if t.parent and name_of(t.parent) else ""
                 mark = ", the default" if t.id == default[0] and noun == "category" else ""
-                out.append(f"{t.name}, {t.slug}, {t.count} posts{parent}{mark}")
+                out.append(f"{t.name}, {t.slug}, {plural(t.count, 'post')}{parent}{mark}")
             return out
 
         def at(index: int | None) -> wp.Term | None:
@@ -143,7 +144,9 @@ class WordPressTermsCommands(WordPressAdminBase):
                 title=f"Delete {noun.title()}",
                 message=(
                     f"Delete the {noun} {term.name} from {profile.name}? "
-                    f"{term.count} posts use it; they keep their other {nouns}.{fallback}"
+                    f"{plural(term.count, 'post')} {'uses' if term.count == 1 else 'use'} it; "
+                    f"{'it keeps its' if term.count == 1 else 'they keep their'} other "
+                    f"{nouns}.{fallback}"
                 ),
                 yes_label=f"Delete {term.name}",
             ):
@@ -180,7 +183,7 @@ class WordPressTermsCommands(WordPressAdminBase):
                 self.host.show_modal,
                 title="Merge",
                 message=(
-                    f"Move {source.count} posts from {source.name} to {target.name} "
+                    f"Move {plural(source.count, 'post')} from {source.name} to {target.name} "
                     f"on {profile.name}, then delete {source.name}?"
                 ),
                 yes_label="Merge",
@@ -189,7 +192,9 @@ class WordPressTermsCommands(WordPressAdminBase):
             self.site_job(
                 "merging",
                 lambda: wp.merge_terms(api, taxonomy, source.id, target.id),
-                lambda moved: f"{moved} posts moved to {target.name}; {source.name} deleted.",
+                lambda moved: (
+                    f"{plural(moved, 'post')} moved to {target.name}; {source.name} deleted."
+                ),
             )
             live.remove(source)
             return rows()
@@ -209,17 +214,19 @@ class WordPressTermsCommands(WordPressAdminBase):
                 self.host.show_modal,
                 title=f"Convert to {other.title()}",
                 message=(
-                    f"Turn the {noun} {term.name} on {profile.name} into a {other}? Its "
-                    f"{term.count} posts get the {other} {term.name}, and the {noun} is deleted."
+                    f"Turn the {noun} {term.name} on {profile.name} into {a_or_an(other)}? Its "
+                    f"{plural(term.count, 'post')} {'gets' if term.count == 1 else 'get'} the "
+                    f"{other} {term.name}, and the {noun} is deleted."
                 ),
                 yes_label=f"Convert to {other.title()}",
             ):
                 return None
             self.site_job(
-                f"converting to a {other}",
+                f"converting to {a_or_an(other)}",
                 lambda: lib.convert_term(api, term),
                 lambda result: (
-                    f"{term.name} is now a {other} on {profile.name}; {result[1]} posts moved."
+                    f"{term.name} is now {a_or_an(other)} on {profile.name}; "
+                    f"{plural(result[1], 'post')} moved."
                 ),
             )
             live.remove(term)
@@ -284,7 +291,7 @@ class WordPressTermsCommands(WordPressAdminBase):
             ),
             dlg.Action(
                 f"&Convert to {other.title()}...",
-                f"Turn the selected {noun} into a {other}, keeping its posts.",
+                f"Turn the selected {noun} into {a_or_an(other)}, keeping its posts.",
                 convert,
             ),
             dlg.Action(

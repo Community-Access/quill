@@ -28,6 +28,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.forms import model as M
 from quill.core.forms.errors import FormImportError
 from quill.core.forms.interop_common import ImportResult, clean, safe_id
@@ -369,7 +370,9 @@ def export_github_draft(model: Mapping[str, Any]) -> tuple[Any, list[str]]:
         draft.fields.append(made)
     pages = model.get("pages") or []
     if len(pages) > 1:
-        report.append(f"The form's {len(pages)} pages become one page; GitHub forms have no pages.")
+        report.append(
+            f"The form's {plural(len(pages), 'page')} become one page; GitHub forms have no pages."
+        )
     if model.get("translations"):
         report.append("Only the form's own language is saved; GitHub forms have no translations.")
     if model.get("confirmations") or model.get("notifications") or model.get("payments"):

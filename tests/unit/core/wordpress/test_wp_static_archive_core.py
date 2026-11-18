@@ -83,7 +83,7 @@ def test_pages_posts_and_own_host_media_are_written_and_linked(tmp_path: Path) -
     assert '<a href="pages/about.html">About &amp; Us</a>' in index
     assert '<a href="posts/2024-05-01-hello.html">Hello</a>' in index
     assert report.left_out == [f"Not fetched, on another host: {AWAY}"]
-    assert "Archived 1 pages, 1 posts and 2 files" in report.sentence(str(tmp_path))
+    assert "Archived 1 page, 1 post and 2 files" in report.sentence(str(tmp_path))
 
 
 def test_a_refused_list_and_a_failed_file_are_named_not_hidden(tmp_path: Path) -> None:

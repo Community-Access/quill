@@ -22,7 +22,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from quill.core.counted import plural
+from quill.core.counted import a_or_an, plural
 from quill.core.wordpress import looks_history as lh
 from quill.core.wordpress import navigation as nav
 from quill.core.wordpress import site_structure as ss
@@ -173,7 +173,7 @@ class WorkbenchWidgetCommands:
 
         def done(made: dict[str, Any]) -> None:
             widget_id = str(made.get("id", ""))
-            summary = f"Added a {name} widget to {row.title} on {row.site}."
+            summary = f"Added {a_or_an(name)} widget to {row.title} on {row.site}."
 
             def undo() -> str:
                 api.delete(f"wp/v2/widgets/{widget_id}", force=True)
@@ -183,7 +183,7 @@ class WorkbenchWidgetCommands:
             self.say(summary)
             self.refresh()
 
-        self.background(f"adding a {name} widget", work, done)
+        self.background(f"adding {a_or_an(name)} widget", work, done)
 
     # -- choose one of the area's widgets ------------------------------------------
 

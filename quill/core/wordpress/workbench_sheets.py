@@ -23,14 +23,19 @@ back by id or by name (:func:`term_ids`). Wx-free and network-free.
 from __future__ import annotations
 
 import json
-import re
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from typing import Any
 
 from quill.core.wordpress.menu_item_add import MENU_SHEET
 from quill.core.wordpress.site import friendly_date, human_size, raw_text, rendered
 from quill.core.wordpress.workbench_moderation import SHEET_HELP as HELP
 from quill.core.wordpress.workbench_rows import WbRow
+from quill.core.wordpress.workbench_sheet_words import (
+    choice_words,
+    labelled,
+    setting_value,
+    term_ids,
+)
 from quill.core.workbench.properties import FieldKind, FieldSpec, PageSpec, SheetSpec, Value
 
 __all__ = [
@@ -64,6 +69,8 @@ _T, _M, _N, _C, _CH, _L, _D, _K = (
 
 
 def _f(key: str, label: str, kind: FieldKind = _T, **more: Any) -> FieldSpec:
+    if kind is _CH and more.get("choices") and "choice_words" not in more:
+        more["choice_words"] = choice_words(tuple(more["choices"]))
     return FieldSpec(key, label, kind, **more)
 
 
@@ -73,35 +80,6 @@ def _ro(key: str, label: str, kind: FieldKind = _T) -> FieldSpec:
 
 def _page(key: str, title: str, *fields: FieldSpec) -> PageSpec:
     return PageSpec(key, title, tuple(fields))
-
-
-def labelled(name: str, ident: int) -> str:
-    """ "News (12)": a term or person by name, with the id that saves it."""
-    return f"{name} ({ident})" if name else str(ident)
-
-
-_ID_AT_END = re.compile(r"\((\d+)\)\s*$")
-
-
-def term_ids(values: Sequence[str], names: Mapping[str, int]) -> tuple[list[int], list[str]]:
-    """Ids for "News (12)", "12" or "News"; and the names that match nothing."""
-    ids: list[int] = []
-    unknown: list[str] = []
-    folded = {name.casefold(): ident for name, ident in names.items()}
-    for value in values:
-        text = value.strip()
-        if not text:
-            continue
-        match = _ID_AT_END.search(text)
-        if match:
-            ids.append(int(match.group(1)))
-        elif text.isdigit():
-            ids.append(int(text))
-        elif text.casefold() in folded:
-            ids.append(folded[text.casefold()])
-        else:
-            unknown.append(text)
-    return ids, unknown
 
 
 def _item_sheet(row: WbRow, taxonomies: Mapping[str, str], meta: Mapping[str, Any]) -> SheetSpec:
@@ -175,7 +153,15 @@ def _schema_field(key: str, name: str, spec: Mapping[str, Any]) -> FieldSpec:
     help_text = str(spec.get("description") or f"The {name} field.")
     if spec.get("enum"):
         choices = tuple(str(v) for v in spec.get("enum") or [])
-        return FieldSpec(key, label, _CH, readonly, help=help_text, choices=choices)
+        return FieldSpec(
+            key,
+            label,
+            _CH,
+            readonly,
+            help=help_text,
+            choices=choices,
+            choice_words=choice_words(choices),
+        )
     if "boolean" in kinds:
         return FieldSpec(key, label, _C, readonly, help=help_text)
     if "integer" in kinds or "number" in kinds:
@@ -488,6 +474,8 @@ def sheet_for(
         if not found:
             found = {k: v for k, v in _CORE_TAXONOMY_FIELDS.items() if k in row.raw}
         return _item_sheet(row, found, meta or {})
+    if row.kind == "setting":
+        return _setting_sheet(str(row.raw.get("key", "") or row.key))
     if row.kind in _STATIC:
         base = _STATIC[row.kind]
         if row.kind in ("comment", "term", "user") and meta:
@@ -505,6 +493,17 @@ def sheet_for(
     if schema:
         return schema_sheet(row.kind, row.kind.replace("_", " ").title(), schema)
     return _raw_sheet(row.kind, row.raw or dict(row.cells))
+
+
+def _setting_sheet(key: str) -> SheetSpec:
+    """A setting's sheet: a choice by name where WordPress stores a code (item 28)."""
+    base = _STATIC["setting"]
+    value = setting_value(key)
+    if value is None:
+        return base
+    page = base.pages[0]
+    fields = tuple(value if f.key == "value" else f for f in page.fields)
+    return SheetSpec(base.kind, base.title, (PageSpec(page.key, page.title, fields),))
 
 
 def sheet_title(row: WbRow) -> str:

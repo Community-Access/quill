@@ -25,6 +25,7 @@ from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.site import raw_text, rendered
 
 __all__ = [
+    "posts_and_pages",
     "MAX_CHARS",
     "MAX_ITEMS",
     "PER_ITEM",
@@ -55,6 +56,11 @@ class Digest:
     left_out: int
     private: int = 0
     unread: list[str] = field(default_factory=list)
+
+
+def posts_and_pages(count: int) -> str:
+    """ "1 post or page", "4 posts and pages": the count and the words agreeing."""
+    return f"{count} post or page" if count == 1 else f"{count} posts and pages"
 
 
 def read_content(
@@ -141,7 +147,7 @@ def ask_prompt(site: str, question: str, digest: Digest) -> str:
 def consent_message(site: str, ai_name: str, digest: Digest) -> str:
     """What the confirm says before anything is sent."""
     said = (
-        f"Send the text of {digest.included} posts and pages from {site} with your question to "
+        f"Send the text of {posts_and_pages(digest.included)} from {site} with your question to "
         f"{ai_name}?"
     )
     if digest.private:

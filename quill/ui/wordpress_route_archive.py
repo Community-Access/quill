@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import across_sites as ac
 from quill.core.wordpress import writing_archive as wa
 from quill.ui import wordpress_dialogs as dlg
@@ -122,7 +123,7 @@ class WordPressRouteArchive:
 
         def sent(result: tuple[list[Any], list[str]]) -> None:
             drafts, failed = result
-            said = f"{len(drafts)} drafts from {folder.name} are on {profile.name}."
+            said = f"{plural(len(drafts), 'draft')} from {folder.name} are on {profile.name}."
             if failed:
                 said += f" {len(failed)} could not be sent: {failed[0]}"
             self.host.announce(said)
@@ -130,7 +131,7 @@ class WordPressRouteArchive:
         self.with_route(  # type: ignore[attr-defined]
             profile,
             "writing",
-            f"sending {len(files)} drafts to {profile.name}",
+            f"sending {plural(len(files), 'draft')} to {profile.name}",
             lambda api: wa.send_folder(api, files),
             sent,
         )

@@ -399,7 +399,7 @@ class WorkbenchSheetCommands:
         values = merge_values([values_for(r) for r in rows])
         for key in ("add_categories", "remove_categories", "add_tags", "remove_tags"):
             values[key] = ()
-        title = f"{plural(len(rows), 'item')} Properties - {rows[0].site}"
+        title = f"Properties of {plural(len(rows), 'item')} - {rows[0].site}"
 
         def on_save(state: SheetState) -> None:
             self._send_batch(sheet, rows, state)
@@ -438,7 +438,9 @@ class WorkbenchSheetCommands:
             return
         bodies = self._bodies(rows, edits)
         site = rows[0].site
-        said = ", ".join(f"{sheet.field(k).label} to {v}" for k, v in edits.items())
+        said = ", ".join(
+            f"{sheet.field(k).label} to {sheet.field(k).word_for(v)}" for k, v in edits.items()
+        )
         listing = "\n".join(f"- {r.title}" for r in rows[:25])
         more = f"\nand {len(rows) - 25} more" if len(rows) > 25 else ""
         if not dlg.confirm(

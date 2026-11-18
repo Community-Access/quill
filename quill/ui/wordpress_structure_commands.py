@@ -9,6 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from quill.core.counted import plural
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.wordpress import navigation as nav
 from quill.core.wordpress import site as wp
@@ -352,14 +353,14 @@ class WordPressStructureCommands(WordPressAdminBase):
                 self.host.parent,
                 self.host.show_modal,
                 title="Undo Bulk Edit",
-                message=f"Put {count} items on {profile.name} back as they were?",
+                message=f"Put {plural(count, 'item')} on {profile.name} back as they were?",
                 yes_label="Undo",
             ):
                 return None
 
             def done(n: int) -> None:
                 self._keep_bulk_record(profile.id, None)
-                self.host.announce(f"{n} items put back on {profile.name}.")
+                self.host.announce(f"{plural(n, 'item')} put back on {profile.name}.")
 
             self.background("undoing a bulk edit", lambda: lib.undo_bulk_edit(api, record), done)  # type: ignore[attr-defined]
             return None
