@@ -100,6 +100,7 @@ AI_MENU_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     # -- Which AI ----------------------------------------------------------------
     (_AI, "W&hich AI Am I Using", "Ctrl+8", "cmd_ai_which", ""),
     (_AI, "Choose &Your AI...", "Ctrl+4", "cmd_ai_choose", ""),
+    (_AI, "AI &Hub...", "Ctrl+Alt+Shift+H", "cmd_ai_hub", ""),
     _SEP,
     # -- Accounts and Usage: the once-a-year windows, every one on its own key --
     (_AI, ACCOUNTS_TITLE, "", "", "sub"),

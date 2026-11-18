@@ -24,7 +24,7 @@ def test_engines_tab_is_registered_in_hub() -> None:
 def test_engine_list_is_named_and_populated_from_targets() -> None:
     body = _panel_source()
     assert 'self.engine_list.SetName("AI engines")' in body
-    assert "list_targets(self._build_registry())" in body
+    assert "list_targets(self._build_registry(), data_dir=self._data_dir)" in body
     # The three states the user needs to distinguish.
     assert '_("Active")' in body
     assert '_("Available")' in body
@@ -33,7 +33,7 @@ def test_engine_list_is_named_and_populated_from_targets() -> None:
 
 def test_set_active_and_setup_are_wired() -> None:
     body = _panel_source()
-    assert "set_active(self._build_registry(), target.harness_id)" in body
+    assert "self._build_registry(), target.harness_id, data_dir=self._data_dir" in body
     assert "sign_in_copilot_for_app(" in body
     assert "install_pack(pack_id)" in body
 

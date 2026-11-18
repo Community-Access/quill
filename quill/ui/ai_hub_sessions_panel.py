@@ -11,6 +11,7 @@ this panel only finds the most recent session and opens it.
 from __future__ import annotations
 
 from collections.abc import Callable
+from pathlib import Path
 
 from quill.core.i18n import _
 
@@ -24,12 +25,14 @@ class SessionsPanel:
         *,
         parent_dialog: object,
         announce: Callable[[str], None],
+        directory: Path | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
         self._parent_dialog = parent_dialog
         self._announce = announce
+        self._directory = directory
 
         self.panel = wx.Panel(notebook)
         self._build()
@@ -68,7 +71,7 @@ class SessionsPanel:
         from quill.core.ai.sessions import most_recent_session
         from quill.ui.session_browser import SessionBrowserDialog
 
-        session = most_recent_session()
+        session = most_recent_session(directory=self._directory)
         if session is None:
             self._set_status(_("No saved AI writing sessions yet"))
             from quill.ui.dialog_contract import show_message_box
@@ -86,3 +89,23 @@ class SessionsPanel:
             )
             return
         SessionBrowserDialog(self._parent_dialog, session, announce=self._set_status).show()
+
+
+def create_sessions_panel(
+    notebook: object,
+    *,
+    parent_dialog: object,
+    announce: Callable[[str], None],
+    app_name: str,
+    app_context: object | None,
+) -> SessionsPanel:
+    data_dir = getattr(app_context, "data_dir", None)
+    if app_name == "QUILL Lite" and data_dir is None:
+        raise RuntimeError("QUILL Lite AI Hub requires its app data directory.")
+    directory = Path(data_dir) / "ai-sessions" if app_name == "QUILL Lite" else None
+    return SessionsPanel(
+        notebook,
+        parent_dialog=parent_dialog,
+        announce=announce,
+        directory=directory,
+    )

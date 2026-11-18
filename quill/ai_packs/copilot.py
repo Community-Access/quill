@@ -89,6 +89,7 @@ import os
 import sys
 from collections.abc import Callable, Sequence
 from dataclasses import replace
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from quill.ai_packs._base import Invoke, SdkHarness
@@ -104,6 +105,7 @@ from quill.stability.safe_mode import should_enable_safe_mode
 if TYPE_CHECKING:
     from quill.ai_packs.copilot_tool_session import SdkParts
     from quill.core.ai.approvals import Approver
+    from quill.core.ai.copilot_byok import CopilotByokConnection
     from quill.core.ai.family_tools import FamilyToolRegistry
     from quill.core.ai.harness import ToolSession
     from quill.core.ai.tool_gateway import Emit
@@ -247,9 +249,15 @@ class CopilotHarness(SdkHarness):
         invoke: Invoke | None = None,
         *,
         agent_name: str = copilot_auth.DEFAULT_AGENT_NAME,
+        data_dir: Path | None = None,
     ) -> None:
         super().__init__(invoke)
         self.agent_name = agent_name
+        self.data_dir = data_dir
+
+    def _agent_folders(self) -> AgentFolders:
+        base = self.data_dir / "ai" if self.data_dir is not None else None
+        return agent_folders("copilot", self.agent_name, base=base)
 
     def capabilities(self) -> HarnessCapabilities:
         return HarnessCapabilities(
@@ -330,7 +338,7 @@ class CopilotHarness(SdkHarness):
             emit=emit,
             sdk=_sdk_parts(),
             client_factory=self._tool_client,
-            folders=folders or agent_folders("copilot", self.agent_name),
+            folders=folders or self._agent_folders(),
             session_options=options,
             keep_open=keep_open,
             on_usage=on_usage,
@@ -342,7 +350,6 @@ class CopilotHarness(SdkHarness):
         import asyncio
 
         reject = _reject_class()
-        agent_name = self.agent_name
 
         def _deny_own_tools(request: object, invocation: object) -> object:
             # QUILL owns the editor: every kind (shell, write, read, url, mcp,
@@ -361,7 +368,7 @@ class CopilotHarness(SdkHarness):
                 session_kwargs["system_message"] = system_message
 
             async def _run() -> str:
-                folders = agent_folders("copilot", agent_name).prepare()
+                folders = self._agent_folders().prepare()
                 client: Any | None = None
                 try:
                     client = self._tool_client(folders)
@@ -406,10 +413,12 @@ class CopilotByokHarness(CopilotHarness):
         provider: str,
         model: str,
         agent_name: str = copilot_auth.DEFAULT_AGENT_NAME,
+        data_dir: Path | None = None,
     ) -> None:
-        super().__init__(agent_name=agent_name)
+        super().__init__(agent_name=agent_name, data_dir=data_dir)
         from quill.core.ai.copilot_byok import load_selected_connection
 
+        self._connection: CopilotByokConnection | None
         try:
             self._connection = load_selected_connection(provider, model)
             self._connection_error = ""

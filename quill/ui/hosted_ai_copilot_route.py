@@ -282,7 +282,9 @@ class CopilotRouteMixin:
             from quill.ai_packs.copilot import CopilotHarness
 
             model = str(getattr(settings, "ai_copilot_model", "") or "")
-            return _ModelHarness(CopilotHarness(agent_name=self.agent_name), model)
+            return _ModelHarness(
+                CopilotHarness(agent_name=self.agent_name, data_dir=self.data_dir), model
+            )
         if chosen == CODEX:
             from quill.core.ai.harness.codex import CodexHarness
 
@@ -324,5 +326,6 @@ class CopilotRouteMixin:
                 provider=provider,
                 model=model,
                 agent_name=self.agent_name,
+                data_dir=self.data_dir,
             )
         return None

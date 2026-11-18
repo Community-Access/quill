@@ -32,7 +32,7 @@ def _selection_only(agent: AgentSpec, ctx: AIContext) -> str:
     )
 
 
-def build_engine_registry() -> HarnessRegistry:
+def build_engine_registry(agent_name: str = "QUILL") -> HarnessRegistry:
     """Return a registry of Native, every optional SDK pack and Codex, for selection."""
     registry = HarnessRegistry()
     registry.register(NativeHarness(_selection_only))
@@ -40,10 +40,10 @@ def build_engine_registry() -> HarnessRegistry:
     # ai_packs depends on the harness layer, not the other way around.
     from quill.ai_packs import register_all
 
-    register_all(registry)
+    register_all(registry, agent_name=agent_name)
     # Codex is core, not a pack: its engine is the bundled app-server child,
     # with no SDK to install (codex.md 5.2, Phase 4b).
     from quill.core.ai.harness.codex import CodexHarness
 
-    registry.register(CodexHarness())
+    registry.register(CodexHarness(agent_name=agent_name))
     return registry

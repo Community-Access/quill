@@ -16,8 +16,10 @@ import pytest
 
 from quill.ui.ai_hub_dialog import AIHubDialog
 
-_SOURCE = (Path(__file__).resolve().parents[3] / "quill" / "ui" / "ai_hub_dialog.py").read_text(
-    encoding="utf-8"
+_UI = Path(__file__).resolve().parents[3] / "quill" / "ui"
+_SOURCE = "\n".join(
+    path.read_text(encoding="utf-8")
+    for path in (_UI / "ai_hub_dialog.py", _UI / "ai_hub_provider_panel.py")
 )
 
 
@@ -31,6 +33,8 @@ def test_open_use_my_own_ai_key_saves_the_hub_then_opens_it_after_closing() -> N
     events: list[str] = []
     hub = AIHubDialog.__new__(AIHubDialog)
     hub._open_own_key = lambda: events.append("own key")
+    hub._open_choose = None
+    hub._lite_mode = False
     hub._own_key_after_close = False
     hub._on_ok = lambda _event: events.append("saved")  # type: ignore[method-assign]
 
@@ -40,7 +44,7 @@ def test_open_use_my_own_ai_key_saves_the_hub_then_opens_it_after_closing() -> N
 
     hub.dialog = _Dialog()
     hub._show_modal = lambda _dialog, _label: events.append("shown")
-    hub._on_open_own_key(None)
+    hub._on_change_ai(None)
     hub.show()
     assert events == ["saved", "shown", "closed", "own key"]
 
@@ -49,6 +53,8 @@ def test_a_plain_close_does_not_open_it() -> None:
     opened: list[str] = []
     hub = AIHubDialog.__new__(AIHubDialog)
     hub._open_own_key = lambda: opened.append("own key")
+    hub._open_choose = None
+    hub._lite_mode = False
     hub._own_key_after_close = False
 
     class _Dialog:
@@ -86,6 +92,9 @@ def hub_page(monkeypatch: pytest.MonkeyPatch) -> Any:
     frame = wx.Frame(None)
     hub = AIHubDialog.__new__(AIHubDialog)
     hub._wx = wx
+    hub._lite_mode = False
+    hub._app_name = "QUILL"
+    hub._open_choose = None
     hub._open_own_key = lambda: None
     hub._settings = assistant_ai.load_assistant_connection_settings()
     hub._notebook = wx.Notebook(frame)
@@ -98,3 +107,29 @@ def test_the_provider_page_says_what_is_in_use(hub_page: Any) -> None:
     text = hub._provider_summary.GetValue()
     assert "In use now: Anthropic Claude, claude-x." in text
     assert "Ollama on this computer" in text
+
+
+def test_lite_provider_page_uses_lite_connection_settings(hub_page: Any) -> None:
+    pytest.importorskip("wx")
+    hub, _panel = hub_page
+    hub._lite_mode = True
+    hub._app_name = "QUILL Lite"
+    hub._settings = type(
+        "LiteSettings",
+        (),
+        {
+            "ai_connection": "copilot",
+            "ai_copilot_model": "gpt-4.1",
+            "ai_own_key_provider": "openai",
+            "ai_own_key_model": "",
+            "ai_codex_model": "",
+        },
+    )()
+    hub._open_choose = lambda: None
+    panel = hub._build_provider_tab()
+    try:
+        assert "QUILL Lite" in hub._provider_summary.GetValue()
+        assert "My GitHub Copilot, gpt-4.1" in hub._provider_summary.GetValue()
+        assert panel.GetChildren()[-1].GetLabel() == "Open Choose Your &AI..."
+    finally:
+        panel.Destroy()
