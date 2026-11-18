@@ -251,7 +251,6 @@ Ten of the eleven are fixed (checked 2026-11-18; five by #1837, five by the Word
 ###### What is heard, and what is not
 
 25. The reason a row is greyed is never heard: menu help goes to a status pane that does not exist, context menus give no reason, and every greyed row says "Not available here." Shift+F1 opens a generic list instead of the provider's real "your role and what each action needs" view.
-27. Watches are fire-and-forget: nothing is kept, one refused read silences every Watch on that site, and a round can produce a burst of separate announcements.
 29. Confusing names: "Publish or Update" never updates; "Publish a Document as a Page" and "Publish to Another Site" make drafts; "Site Check" opens Site Health; two different "Coming Up" lists; toggles ("Activate or Deactivate", "Offer to Ask the Site", "Add New Pages Automatically") do not say which way they will go.
 
 ###### Structure and consistency

@@ -393,7 +393,14 @@ A few more are there for the things that are easy to miss:
 Each site is checked no more often than every fifteen minutes. The first
 check is silent, so you only hear about what changes after it. **Go >
 Watches** (`Ctrl+5`) says when the last round ran and whether each site is
-answering.
+answering, then lists what Watches have said, newest first, so a sentence you
+missed is still there to read.
+
+When a round finds several things, you hear them as one announcement that
+starts with how many there are. If a site refuses one Watch's question (a
+plugin list an editor may not read, say), that Watch tells you once and skips
+the site; every other Watch carries on there, and you hear when it reads the
+site again.
 
 ## The REST Console
 

@@ -36,6 +36,15 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress: Watches keep what they said (2026-11-18)
+
+Review item 27: Watches were fire-and-forget. Now Go > Watches lists what they
+have said, newest first, with the time of each. A round that finds several
+things says them as one announcement, starting with how many. And a read a
+site refuses stops only that one Watch there, said once ("The Watch for plugin
+updates available could not read Radio, so it skips that site: ...") and again
+when it works; before, one refusal silenced every Watch on that site.
+
 ### WordPress: names you can hear (2026-11-18)
 
 Review item 28: what WordPress says aloud is a name, not a stored code.
