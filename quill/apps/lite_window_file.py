@@ -408,6 +408,11 @@ class DocumentFileMixin(DocumentWordMixin):
         elif as_rich:
             self._write_rtf(destination)
         else:
+            from quill.core.encoding_tools import save_encoding
+
+            # A batch file never keeps a UTF-8 byte-order mark (cmd.exe reads
+            # it as part of the first command): the same rule as QUILL's save.
+            self.encoding = save_encoding(destination, self.encoding)
             write_bytes_atomic(
                 destination,
                 encode_text(body, encoding=self.encoding, newline=self.newline),

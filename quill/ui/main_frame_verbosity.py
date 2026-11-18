@@ -83,8 +83,34 @@ class VerbosityCommandsMixin:
     # -- status queries -----------------------------------------------------
 
     def verbosity_where_am_i(self) -> None:
-        line, column, total = self._caret_position()
-        self._announce_text(self.verbosity.where_am_i(line=line, column=column, total=total))
+        line, column, total, percent = self._text_position()
+        if line is None:
+            line, column, total = self._caret_position()
+        self._announce_text(
+            self.verbosity.where_am_i(line=line, column=column, total=total, percent=percent)
+        )
+
+    def _text_position(self) -> tuple[int | None, int | None, int | None, int | None]:
+        """Line, column, line count and percent through, counted in the text.
+
+        Off the shared document mirror, the same one the status bar's Ln/Col
+        cell reads, so a paragraph the window wraps is one line, as it is in
+        the file. ``PositionToXY`` on Windows counts the wrapped screen lines.
+        """
+        editor = getattr(self, "editor", None)
+        mirror = getattr(self, "doc_text", None)
+        get_pos = getattr(editor, "GetInsertionPoint", None)
+        if mirror is None or not callable(get_pos):
+            return None, None, None, None
+        try:
+            position = int(get_pos())
+            line, column = mirror.line_column(position)
+            total = len(mirror.line_starts())
+            length = len(mirror.text)
+        except Exception:  # noqa: BLE001 - a dead control means "fall back"
+            return None, None, None, None
+        percent = round(100 * min(position, length) / length) if length else 0
+        return line, column, total, percent
 
     def verbosity_what_changed(self) -> None:
         self._announce_text(self.verbosity.what_changed())

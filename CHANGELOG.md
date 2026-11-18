@@ -620,7 +620,22 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
-### Reviews already on a pull request (2026-11-18)
+### Batch files, Replace and Where Am I, from EdSharp (2026-11-18)
+
+Three things from EdSharp's recent history, checked against QUILL:
+
+- **A batch file is saved without a byte-order mark.** Windows' command
+  interpreter reads the mark as part of the first command, so a `.cmd` or
+  `.bat` file saved as "UTF-8 with byte-order mark" failed from its first
+  line. Both editors now save those files as plain UTF-8, and the status bar
+  says so.
+- **Replace takes "$" as you typed it** unless Regex is on. It already did in
+  both editors; a test now keeps it that way.
+- **Where Am I says the percent, and counts real lines.** "Line 12 of 40,
+  column 5, 30 percent". A paragraph the window wraps is one line, as it is
+  in the file and in the status bar, where before Where Am I could count the
+  wrapped screen lines.
+
 
 **Reviews...** on a pull request in the GitHub Workbench lists its reviews
 ("sam approved on 2026-11-17: Looks good"). Choose one, then:

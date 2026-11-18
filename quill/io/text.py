@@ -4,6 +4,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from quill.core.document import Document
+from quill.core.encoding_tools import save_encoding
 from quill.core.storage import write_text_atomic
 from quill.core.text_decoding import decode_as, decode_bytes, is_utf8_family
 
@@ -125,6 +126,9 @@ def write_text_document(document: Document, path: Path | None = None) -> Path:
         return _write_brf_document(document, target_path)
 
     text = _normalize_line_endings(document.text, document.line_ending)
+    # A batch file never keeps a UTF-8 byte-order mark: cmd.exe reads it as part
+    # of the first command. The document then says what it was saved as.
+    document.encoding = save_encoding(target_path, document.encoding)
     # Write atomically (temp + os.replace) so a crash mid-save can't corrupt the
     # user's document at its real location — the previous file stays intact
     # until the new one is fully written and fsynced.
