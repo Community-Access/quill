@@ -146,6 +146,19 @@ def test_escape_clears_the_filter_then_goes_back(bench) -> None:
     assert bench.forward == [NodeRef("repository", "pulls", REPO)]
 
 
+def test_escape_in_details_returns_to_the_list_without_going_back(bench, monkeypatch) -> None:
+    _go(bench, NodeRef("repository", "runs", REPO))
+    _go(bench, NodeRef("repository", "pulls", REPO))
+    monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: bench.details))
+    focused: list[object] = []
+    monkeypatch.setattr(bench.list, "SetFocus", lambda: focused.append(bench.list))
+    event = wx.KeyEvent(wx.wxEVT_CHAR_HOOK)
+    event.SetKeyCode(wx.WXK_ESCAPE)
+    bench._on_char_hook(event)
+    assert bench.current == NodeRef("repository", "pulls", REPO)
+    assert focused == [bench.list]
+
+
 def test_milestones_load_through_the_existing_fetch(bench) -> None:
     _go(bench, NodeRef("repository", "milestones", REPO))
     assert [row.key for row in bench.rows] == ["1.0"]

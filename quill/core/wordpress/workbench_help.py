@@ -45,8 +45,7 @@ START_HERE = (
     "after a site? Your First Week, in the editor's Help > Tutorials, is one short lesson a "
     "day for seven days, each ending with something real on your own site and nothing done "
     "that you did not choose. The Practice Site lessons and Break It on Purpose are there "
-    "too, for trying things with nothing at stake.\n\nThis is an early "
-    "preview, behind a developer setting. Your Tools > WordPress windows still work."
+    "too, for trying things with nothing at stake."
 )
 
 HOW_IT_THINKS = (

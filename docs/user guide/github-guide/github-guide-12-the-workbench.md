@@ -32,7 +32,7 @@ The Workbench is a window of its own, not a dialog. The editor stays usable
 while it is open, and `Alt+Tab` moves between them. Inside the Workbench,
 `Ctrl+Shift+E` brings back the editor that opened it. `Alt+F4` closes the
 Workbench; `Escape` never does. Escape clears the filter box first, and then
-goes back to where you were.
+goes back to where you were. In Details, it returns you to the list instead.
 
 The window remembers where you were for each account: the place you had
 selected, the branches of the tree you had open, and the repositories you
