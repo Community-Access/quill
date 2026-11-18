@@ -548,7 +548,9 @@ Everything below is generated from the tables the window is built from. The GitH
 | Favorites (`:favorites`) | repositories | Favorites: issues, pull requests and other items you kept, on this computer. Ctrl+D adds or removes the selected row anywhere in the window. |
 | My Repositories (`:my_repositories`) | repositories | My Repositories: the repositories your account owns or can push to. |
 | Starred (`:starred`) | repositories | Starred: repositories you starred on GitHub. |
+| Star Lists (`:star_lists`) | repositories | Star Lists: every repository on each of your star lists, the list's name first. Ctrl+N makes a list; Star Lists on any repository chooses its lists. |
 | Watched (`:watched`) | repositories | Watched: repositories whose activity GitHub tells you about. |
+| My Packages (`:packages`) | repositories | My Packages: your container images and npm, Maven, RubyGems and NuGet packages, with Delete Package Version and Delete Package on each. |
 | Organizations (`:organizations`) | repositories | Organizations: the organizations you belong to. Enter on one opens its repositories. |
 | Search (`:search`) | the top | Search: GitHub's searches. Choose one, type in the filter box with Ctrl+E, and press Enter. |
 | Issues and Pull Requests (`:search_issues`) | search | Search Issues and Pull Requests: everything GitHub finds for the words and qualifiers in the filter box, such as is:open author:@me. Ctrl+N saves the search. |
@@ -598,6 +600,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Actions (`repository:actions`) | repository, repository | Actions: the repository's workflow runs, workflows and caches. |
 | Runs (`repository:runs`) | repository, actions | Runs: each time a workflow ran. Enter shows its jobs and logs; Ctrl+Shift+W says what failed; Ctrl+Shift+F5 re-runs the failed jobs. |
 | Workflows (`repository:workflows`) | repository, actions | Workflows: the automations defined in the repository. |
+| Runners (`repository:runners`) | repository, actions | Runners: the machines this repository runs its own jobs on, online or not, busy or idle, with their labels. Only administrators can see them. |
 | Caches (`repository:caches`) | repository, actions | Caches: files Actions kept between runs. Delete removes one. |
 | Code (`repository:code`) | repository, repository | Code: files, branches, commits, tags, and the upstream of a fork. |
 | Files (`repository:files`) | repository, code | Files: the repository's files on its default branch, a folder at a time. Enter opens a folder, or a file in the editor. |
@@ -619,6 +622,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Traffic and Contributors (`repository:traffic`) | repository, insights | Traffic and Contributors: views, clones and who contributes. |
 | Health Snapshot (`repository:health`) | repository, insights | Health Snapshot: extra activity data, loaded only when you turn it on in Workbench Options. |
 | Community Profile (`repository:community`) | repository, insights | Community Profile: the README, license and guidelines GitHub checks. |
+| Commit Activity (`repository:commit_activity`) | repository, insights | Commit Activity: GitHub's statistics graphs as rows: commits and lines each week, the busiest hours, and each contributor's lines. |
 | Deployments and Environments (`repository:deployments`) | repository, repository | Deployments and Environments: where the code was deployed. |
 | GitHub Pages (`repository:pages`) | repository, repository | GitHub Pages: the website built from this repository. |
 | Security (`repository:security`) | repository, repository | Security: alerts about vulnerable code and leaked secrets. |
@@ -787,6 +791,8 @@ Everything below is generated from the tables the window is built from. The GitH
 | Compare With Previous | Alt+Shift+B | The selected tag or release against the one before it, or a commit against its parent. |
 | Run Workflow on Branch... | Ctrl+Shift+R | Start a workflow that can be started by hand, on a branch. |
 | Repository Actions... | Ctrl+Shift+G | Everything else for this repository: star, watch, fork, clone, Codespaces, settings and administration, as a list you can run from. |
+| Export Software Bill of Materials... | Ctrl+Alt+B | Save the repository's dependency graph as an SPDX file: every package it uses. |
+| Transfer Repository... | Ctrl+Alt+T | Move the repository to another person or organization; asks for its name first. |
 
 #### Account
 
@@ -853,10 +859,12 @@ Keys the window answers that are not menu rows:
 - **release_asset**: Download, Copy Link, Delete Asset...; Properties...
 - **branch**: Commits, Compare With Default, Compare Branches..., Compare With Previous, Open in Codespaces..., Copy Name, Delete Branch...; Properties...
 - **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
-- **tag**: Open, Delete Tag..., Commit Comments..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
+- **tag**: Open, Delete Tag..., Read Tag Message, Commit Comments..., Compare With Previous, Compare With Default; More: Copy Link, Open on GitHub; Properties...
+- **package**: Show Details, Open on GitHub, Delete Package Version..., Delete Package..., Copy Link; Properties...
+- **runner**: Show Details, Open on GitHub, Copy Link; Properties...
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally; Properties...
-- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Pin, Add to or Remove from Favorites; More: Open on GitHub, Open in Codespaces...; Properties...
+- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Pin, Star Lists...; More: Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List...; Properties...
 - **person**: Open, Follow or Unfollow, Open on GitHub; Properties...
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
 - **gist**: Edit Gist..., Star or Unstar, Copy Link, Open on GitHub, Delete Gist...; Properties...
@@ -902,6 +910,7 @@ Keys the window answers that are not menu rows:
 ### GitHub words
 
 - **Actions**: GitHub's automation: workflows that run on events, such as a push.
+- **Annotated tag**: A tag that carries a message, who made it and when. Releases usually use one. A lightweight tag is only a name for a commit.
 - **Artifact**: A file a run produced and kept, to download.
 - **Assignee**: The person an issue or pull request is given to.
 - **Branch**: A line of work: a name that follows the newest commit of one set of changes. Under Code, Branches.
@@ -929,6 +938,7 @@ Keys the window answers that are not menu rows:
 - **Milestone**: A goal with a due date that issues and pull requests belong to.
 - **Notification**: GitHub telling you something happened on a thread you are part of. Under Needs My Attention.
 - **Organization**: An account many people share, which owns repositories and teams.
+- **Package**: Something a project publishes besides its code, such as a container image or an npm package, kept on GitHub Packages in versions.
 - **Pin**: A repository kept on this computer under Repositories, Pinned.
 - **Project**: A board or table for planning issues and pull requests.
 - **Pull request**: A proposed change: commits on one branch that somebody asks to merge into another, with a review. Under a repository's Pull Requests.
@@ -941,11 +951,13 @@ Keys the window answers that are not menu rows:
 - **Role**: What somebody may do: read, triage, write, maintain or admin.
 - **Ruleset**: A newer, named set of branch and tag rules that can cover many branches.
 - **Run**: One time a workflow ran, with its jobs, steps and logs. Under Actions, Runs.
+- **Runner**: A machine that runs a workflow's jobs. GitHub provides them, or a repository brings its own, called self-hosted, listed under Actions > Runners.
 - **Saved search**: A search kept on this computer, to run again. Under Saved Searches.
 - **Secret**: A value, such as a password, that workflows use and GitHub never shows.
 - **Security alert**: A warning that code, a dependency or a secret in it is at risk.
 - **Squash**: Merging a pull request as one single commit, instead of all of its commits.
 - **Star**: A bookmark on a repository, which also shows you like it.
+- **Star list**: One of your own named groups of starred repositories, such as Screen readers. A repository can be on several.
 - **Tag**: A name for one particular commit, usually a version number. Under Code, Tags.
 - **Team**: A group of people in an organization, given access together.
 - **Template**: A file that shapes new issues, pull requests or discussions, such as a bug report form. Under Templates.
