@@ -270,15 +270,15 @@ def check(
         state.answered[site] = moment
         # One Watch at a time (item 27): a read this site refuses costs only that Watch.
         for kind in [k for k in KINDS if k in wanted and k != "site_down"]:
-            said += guarded(
-                state,
-                site,
-                kind,
-                _watch_name(kind),
-                lambda k=kind, a=api, n=namespaces, s=site: (
-                    _site_round(s, a, n, state, {k}, reviews) + more_round(s, a, n, state, {k}, ctx)
-                ),
-            )
+
+            def one(
+                k: str = kind, a: WordPressApi = api, n: Sequence[str] = namespaces, s: str = site
+            ) -> list[str]:
+                return _site_round(s, a, n, state, {k}, reviews) + more_round(
+                    s, a, n, state, {k}, ctx
+                )
+
+            said += guarded(state, site, kind, _watch_name(kind), one)
     state.last_round = moment
     remember(state, said, moment)
     return said

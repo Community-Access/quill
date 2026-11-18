@@ -31,8 +31,10 @@ KEPT = 100
 
 
 def _slot(state: Any, name: str) -> dict[str, Any]:
-    slot = state.extra.get(name)
-    if not isinstance(slot, dict):
+    found = state.extra.get(name)
+    if isinstance(found, dict):
+        slot: dict[str, Any] = found
+    else:
         slot = state.extra[name] = {}
     return slot
 
