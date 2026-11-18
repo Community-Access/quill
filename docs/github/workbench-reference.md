@@ -1102,7 +1102,6 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 
 In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 In all: 722 yes, 129 planned, 287 not needed and 866 left to GitHub.
-In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
