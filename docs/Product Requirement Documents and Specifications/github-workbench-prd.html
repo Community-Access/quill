@@ -2964,7 +2964,13 @@ overwritten. Converted lines become <code>#number</code>, which GitHub
 renders as the issue and its state.</li>
 <li><strong>Merge queues as places.</strong> Repository &gt; Merge
 Queue: each queued branch’s entries in order, with their checks, Remove
-and Jump to front (admins).</li>
+and Jump to front (admins). <em>Built 2026-11-17, in part:</em>
+Repository &gt; Merge Queue lists the default branch’s queue in order,
+each entry’s state in words, who queued it and the commit
+(<code>repository.mergeQueue</code>,
+<code>quill/core/github/merge_queue.py</code>); its rows are pull
+request rows. Add to or Remove from Merge Queue… is on a pull request’s
+row. Other branches’ queues and Jump to front are not built.</li>
 <li><strong>Commit statuses</strong> (Item &gt; Set Status… on a commit)
 for people who drive their own automation, and deployment protection
 rules from apps (read).</li>
@@ -5676,8 +5682,13 @@ Request, Remove, Request Copilot Review</td>
 <td>Check Merge Policy</td>
 <td>Item &gt; Merge submenu &gt; Why Can’t I Merge?; the PR’s details
 pane</td>
-<td>Pull request &gt; Merge: every requirement, met or not, in
-words</td>
+<td>Pull request &gt; Merge: every requirement, met or not, in words.
+<em>Built 2026-11-17:</em> Why Can’t I Merge? on the pull request’s row
+(<code>quill/core/github/merge_readiness.py</code>): each blocker in
+words with what to do, for the head commit it names; Merge asks it first
+and merges only that commit (REST <code>sha</code>, 409 said as
+“somebody pushed”); Auto-Merge… and Add to or Remove from Merge Queue…
+on the row too</td>
 </tr>
 <tr>
 <td>Re-request Check…, Copy Check Details</td>

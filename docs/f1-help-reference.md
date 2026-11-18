@@ -2578,6 +2578,8 @@ Control coverage: 361 audited sites (361 helped).
 
 **repository: Discussions.** Discussions: the repository's conversations that are not issues.
 
+**repository: Merge Queue.** Merge Queue: the default branch's merge queue in order, each pull request's state.
+
 **repository: Actions.** Actions: the repository's workflow runs, workflows and caches.
 
 **repository: Runs.** Runs: each time a workflow ran. Enter shows its jobs and logs; Ctrl+Shift+W says what failed; Ctrl+Shift+F5 re-runs the failed jobs.
@@ -2995,6 +2997,12 @@ Control coverage: 361 audited sites (361 helped).
 **File Differences.** The changed files, one comparison per file.
 
 **Merge.** Merge it, with the methods the repository allows.
+
+**Why Can't I Merge?.** Whether it can merge, or each reason it cannot, for the commit it is at.
+
+**Auto-Merge.** Have it merge itself when it can, or turn that off.
+
+**Add to or Remove from Merge Queue.** Queue it to merge after the pull requests ahead of it, or take it out.
 
 **Open Patch in Editor.** Its whole change as one unified diff, every file, to read, save or apply.
 

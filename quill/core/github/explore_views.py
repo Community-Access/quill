@@ -43,6 +43,7 @@ VIEWS: tuple[tuple[str, str], ...] = (
     ("community", "Community profile checklist"),
     ("actions_caches", "Actions caches"),
     ("secrets", "Secret and variable names"),
+    ("merge_queue", "Merge queue"),
     ("billing_usage", "Billing and usage"),
     ("security_closed", "Dismissed and resolved security alerts"),
 )
@@ -64,6 +65,7 @@ REPO_VIEWS = frozenset({
     "actions_caches",
     "secrets",
     "security_closed",
+    "merge_queue",
 })
 QUERY_VIEWS = frozenset({"search", "code_search", "commit_search", "repo_search"})
 """Views that run the query typed in the search box."""
@@ -91,9 +93,14 @@ AUTH_VIEWS = frozenset({
     "actions_caches",
     "secrets",
     "billing_usage",
+    "merge_queue",
 })
 
 VIEW_NOTES: dict[str, str] = {
+    "merge_queue": (
+        "The default branch's merge queue, in order. A repository without one lists "
+        "nothing: a merge queue is turned on by a branch rule, in an organization's repository."
+    ),
     "metrics": (
         "Opt-in snapshot: loads repository health counts from GitHub. "
         "The results stay on this device and do not rank contributors."

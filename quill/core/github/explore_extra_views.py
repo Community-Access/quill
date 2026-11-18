@@ -27,7 +27,7 @@ from quill.core.github.repo_insights import fetch_community_profile, fetch_insig
 from quill.core.github.rest_transport import GitHubRestError
 from quill.core.github.search_views import SEARCH_VIEWS, run_search
 
-EXTRA_REPO_VIEWS = frozenset({"insights", "community", "actions_caches", "secrets"})
+EXTRA_REPO_VIEWS = frozenset({"insights", "community", "actions_caches", "secrets", "merge_queue"})
 #: Account views (Billing and Usage), answered without a repository.
 EXTRA_ACCOUNT_VIEWS = frozenset({"billing_usage"})
 EXTRA_VIEWS = SEARCH_VIEWS | EXTRA_REPO_VIEWS | EXTRA_ACCOUNT_VIEWS
@@ -63,6 +63,10 @@ def fetch_extra_view(
             return fetch_insights(token, repo, limit=limit, warnings=warnings)
         if view == "community":
             return fetch_community_profile(token, repo)
+        if view == "merge_queue":
+            from quill.core.github.merge_queue import fetch_merge_queue
+
+            return fetch_merge_queue(token, repo, limit=limit)
         actions = GitHubRepoActions(token)
         if view == "actions_caches":
             return actions.list_caches(repo, limit=limit, warnings=warnings)

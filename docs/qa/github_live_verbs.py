@@ -286,7 +286,10 @@ def merge_and_delete_branch(run: Any) -> str:
     pull = run.items.create_pull_request(
         run.repo, f"{TAG} merge", TAG, branch, run.ids["default_branch"]
     )
-    run.items.merge_pull_request(run.repo, int(pull.number), merge_method="squash")
+    from quill.core.github.merge_readiness import load_readiness, merge_at
+
+    ready = load_readiness(run.api, run.repo, int(pull.number))
+    merge_at(run.api, run.repo, int(pull.number), "squash", ready.head)
     _expect(bool(run.rest("GET", f"/repos/{run.repo}/pulls/{pull.number}")["merged"]), "not merged")
     admin = GitHubRepoAdminProvider(_token(run))
     admin.delete_branch(run.repo, branch)
@@ -319,6 +322,14 @@ def revert_merged(run: Any) -> str:
     run.rest("DELETE", f"/repos/{run.repo}/git/refs/heads/{revert['head']['ref']}")
     _expect(revert["base"]["ref"] == base and revert["draft"], f"not a draft into {base}")
     return f"{said} Closed it and deleted its branch."
+
+
+def why_cant_merge(run: Any) -> str:
+    from quill.core.github.merge_readiness import load_readiness
+
+    ready = load_readiness(run.api, run.repo, int(run.ids["pull"]))
+    _expect(len(ready.head) == 40 and str(ready.number) in ready.sentence, "no readiness")
+    return ready.sentence
 
 
 def open_patch(run: Any) -> str:
@@ -801,6 +812,8 @@ VERBS: dict[str, Scenario | str] = {
     "mark_read": "needs Jeff: would mark one of your real notifications read",
     "merge": merge_and_delete_branch,
     "revert_pull": revert_merged,
+    "auto_merge": "not here: needs a pull request waiting on a required check; none is required",
+    "merge_queue": "not here: a merge queue needs an organization repository's ruleset",
     "resolve_conflicts": "needs Jeff: fetches into a folder beside your checkout, in the editor",
     "milestone": "sheet:issue.milestone",
     "open_codespaces": "needs Jeff: makes a codespace, which is billed",
@@ -1031,6 +1044,7 @@ FEATURES: dict[str, Scenario | str] = {
     "The comment composer's lookups (PRD 22.4)": comment_composer,
     "Viewed files in a pull request review (PRD 22.1)": review_viewed_files,
     "Open Patch in Editor: the whole change as one diff": open_patch,
+    "Why Can't I Merge?, for the exact commit": why_cant_merge,
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

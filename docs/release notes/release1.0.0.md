@@ -2050,6 +2050,22 @@ named, not skipped. And when something merged that should not have,
 **Revert Pull Request...** opens the pull request that undoes it, as a draft
 if you like, so taking a change back is a review like any other.
 
+#### Why it will not merge, in words
+
+GitHub's merge box is a colour and a handful of icons, and "Merging is
+blocked" does not say by what. **Why Can't I Merge?** on a pull request says
+it plainly: a draft, a conflict, a branch that is behind, a review still
+needed, or the required checks that failed or are still running, each named,
+each with what to do about it, and a check that failed but is not required
+is said as not required.
+
+The answer always names the commit it is about, and Merge now holds to it.
+QUILL checks first, tells you the commit, and merges only that one: if
+someone pushes while you are typing the number to confirm, nothing goes in,
+and you hear why. What you checked is what merges. Turning on auto-merge or
+joining the merge queue is on the same row, and a repository's **Merge
+Queue** reads its queue in order: who is next, and what each is waiting for.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

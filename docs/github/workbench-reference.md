@@ -593,6 +593,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Pull Requests (`repository:pulls`) | repository, repository | Pull Requests: this repository's open pull requests. Enter opens the review; Ctrl+Shift+D lists the changed files. |
 | Issues and Pull Requests (`repository:issues_and_pulls`) | repository, repository | Issues and Pull Requests: both in one list, newest first, the way an inbox reads. |
 | Discussions (`repository:discussions`) | repository, repository | Discussions: the repository's conversations that are not issues. |
+| Merge Queue (`repository:merge_queue`) | repository, repository | Merge Queue: the default branch's merge queue in order, each pull request's state. |
 | Actions (`repository:actions`) | repository, repository | Actions: the repository's workflow runs, workflows and caches. |
 | Runs (`repository:runs`) | repository, actions | Runs: each time a workflow ran. Enter shows its jobs and logs; Ctrl+Shift+W says what failed; Ctrl+Shift+F5 re-runs the failed jobs. |
 | Workflows (`repository:workflows`) | repository, actions | Workflows: the automations defined in the repository. |
@@ -840,7 +841,7 @@ Keys the window answers that are not menu rows:
 ### Context menus, by row type
 
 - **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Set Issue Type..., Reorder Sub-issues..., Add to or Remove from Favorites; Properties...
-- **pull_request**: Review..., File Differences..., Comment..., Merge..., Open Patch in Editor, Revert Pull Request...; More: Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
+- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., View Artifacts...; More: Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Open on GitHub, Copy Link; Properties...
 - **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., Compare With Previous, Compare With Default; More: Copy Link, Open on GitHub; Properties...
@@ -2947,11 +2948,11 @@ In all: 317 yes, 1146 planned, 15 not needed and 526 left to GitHub.
 | `createPullRequest` | Planned | Pull request sheet; Item menu |
 | `deletePullRequestReview` | Planned | Pull request sheet; Item menu |
 | `deletePullRequestReviewComment` | Planned | Pull request sheet; Item menu |
-| `dequeuePullRequest` | Yes | Item > Merge... (Ctrl+Shift+Enter) |
+| `dequeuePullRequest` | Yes | context menu > Add to or Remove from Merge Queue... |
 | `disablePullRequestAutoMerge` | Yes | Properties (Alt+Enter) on Pull Request: Merge automatically when ready |
 | `dismissPullRequestReview` | Planned | Pull request sheet; Item menu |
 | `enablePullRequestAutoMerge` | Yes | Properties (Alt+Enter) on Pull Request: Merge automatically when ready |
-| `enqueuePullRequest` | Yes | Item > Merge... (Ctrl+Shift+Enter) |
+| `enqueuePullRequest` | Yes | context menu > Add to or Remove from Merge Queue... |
 | `markFileAsViewed` | Yes | context menu > Review... |
 | `markPullRequestReadyForReview` | Yes | Properties (Alt+Enter) on Pull Request: Draft |
 | `mergePullRequest` | Planned | Pull request sheet; Item menu |

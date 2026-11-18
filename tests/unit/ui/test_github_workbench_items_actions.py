@@ -127,21 +127,47 @@ def _window(monkeypatch, target: str, answer: Any = None) -> type[_Window]:
     return fake
 
 
+def _readiness(monkeypatch, bench, **changes: Any) -> None:
+    from quill.core.github import merge_readiness as mr
+
+    ready = mr.Readiness(number=2, head="abc1234def", base="main", merge_state="CLEAN")
+    ready = mr.Readiness(**{**ready.__dict__, **changes})
+    monkeypatch.setattr(mr, "load_readiness", lambda _api, repo, number: ready)
+
+    def merge_at(_api: Any, repo: str, number: int, method: str, head: str) -> str:
+        bench.items.calls.append(("merge", repo, number, method, head))
+        return "deadbeefcafe"
+
+    monkeypatch.setattr(mr, "merge_at", merge_at)
+
+
 def test_merge_asks_for_the_number_then_merges_and_says_one_result(bench, monkeypatch) -> None:
     confirm = _window(monkeypatch, "quill.ui.github_repo_admin_dialogs.TypedConfirmDialog", True)
     monkeypatch.setattr(bench.provider, "_choose", lambda *_a: 0)
+    _readiness(monkeypatch, bench)
     _select(bench, "pulls")
     assert bench.can_run(f"{_P}merge")
     bench.run(f"{_P}merge")
     assert confirm.opened[0][1]["expected"] == "2"
+    assert "as of commit abc1234" in confirm.opened[0][1]["message"]
     assert confirm.opened[0][0][0] is bench.frame
-    assert bench.items.calls == [("merge", REPO, 2, "squash")]
+    assert bench.items.calls == [("merge", REPO, 2, "squash", "abc1234def")]
     assert bench.said[-1] == "Merged #2 (deadbee)."
+
+
+def test_merge_that_cannot_says_why_and_asks_nothing(bench, monkeypatch) -> None:
+    confirm = _window(monkeypatch, "quill.ui.github_repo_admin_dialogs.TypedConfirmDialog", True)
+    _readiness(monkeypatch, bench, draft=True)
+    _select(bench, "pulls")
+    bench.run(f"{_P}merge")
+    assert confirm.opened == [] and bench.items.calls == []
+    assert bench.said[-1].startswith("#2 cannot merge yet, as of commit abc1234. It is a draft.")
 
 
 def test_merge_cancelled_at_the_typed_check_sends_nothing(bench, monkeypatch) -> None:
     _window(monkeypatch, "quill.ui.github_repo_admin_dialogs.TypedConfirmDialog", False)
     monkeypatch.setattr(bench.provider, "_choose", lambda *_a: 0)
+    _readiness(monkeypatch, bench)
     _select(bench, "pulls")
     bench.run(f"{_P}merge")
     assert bench.items.calls == []

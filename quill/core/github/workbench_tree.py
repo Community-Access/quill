@@ -281,6 +281,7 @@ _REPOSITORY: tuple[NodeSpec, ...] = (
         loader="explore:discussions",
         row_type="discussion",
     ),
+    _r("merge_queue", "Merge Queue", needs=_SIGN_IN, loader="explore:merge_queue"),
     _r("actions", "Actions"),
     _r("runs", "Runs", "actions", loader="items:runs", row_type="run"),
     _r("workflows", "Workflows", "actions", loader="items:workflows", row_type="workflow"),

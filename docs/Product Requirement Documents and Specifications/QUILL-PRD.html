@@ -29351,6 +29351,22 @@ worktree without committing, and walks the conflicted files with Tools
 &gt; Local Git’s Resolve Conflicts; the person commits and pushes.
 <code>quill/core/github/pull_tools.py</code>,
 <code>quill/ui/github_workbench_pull_tools.py</code>.</p>
+<p><strong>Merge readiness for the exact commit (GH-MR).</strong> Why
+Can’t I Merge? on a pull request’s row reads, in one GraphQL query, its
+state, draft, <code>mergeable</code>, <code>mergeStateStatus</code>,
+review decision, every check on the head commit with
+<code>isRequired</code>, auto-merge and its merge queue entry, and says
+either that it can merge or each blocker with what to do, naming the
+head commit. Merge asks the same first, refuses with the reasons, and
+merges only the commit it read (<code>PUT .../merge</code> with
+<code>sha</code>; a 409 becomes “somebody pushed after commit abc1234
+was checked, so nothing was merged”), which is GX09’s “changing HEAD
+invalidates prior readiness”. Auto-Merge… and Add to or Remove from
+Merge Queue… are on the row, reusing <code>merge_automation.py</code>,
+and Repository &gt; Merge Queue lists the default branch’s queue.
+<code>quill/core/github/merge_readiness.py</code>,
+<code>quill/core/github/merge_queue.py</code>,
+<code>quill/ui/github_workbench_merge.py</code>.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

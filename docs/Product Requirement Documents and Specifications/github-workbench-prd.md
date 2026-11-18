@@ -1930,6 +1930,11 @@ coverage gate (section 19) from day one.
   become `#number`, which GitHub renders as the issue and its state.
 - **Merge queues as places.** Repository > Merge Queue: each queued branch's
   entries in order, with their checks, Remove and Jump to front (admins).
+  *Built 2026-11-17, in part:* Repository > Merge Queue lists the default
+  branch's queue in order, each entry's state in words, who queued it and the
+  commit (`repository.mergeQueue`, `quill/core/github/merge_queue.py`); its
+  rows are pull request rows. Add to or Remove from Merge Queue... is on a
+  pull request's row. Other branches' queues and Jump to front are not built.
 - **Commit statuses** (Item > Set Status... on a commit) for people who drive
   their own automation, and deployment protection rules from apps (read).
 - **Repository creation, fully:** owner, name (checked as you type),
@@ -3416,7 +3421,7 @@ so Alt+Enter reaches every one of them.
 | Update Branch... | Item > Update Branch... | Pull request > Branches: base, head, behind by n, Update Branch (merge or rebase) |
 | Enable Auto-Merge..., Disable Auto-Merge... | Item > Merge submenu | Pull request > Merge: auto-merge and its method |
 | Add to Merge Queue..., Remove from Merge Queue... | Item > Merge submenu | Pull request > Merge: merge queue position |
-| Check Merge Policy | Item > Merge submenu > Why Can't I Merge?; the PR's details pane | Pull request > Merge: every requirement, met or not, in words |
+| Check Merge Policy | Item > Merge submenu > Why Can't I Merge?; the PR's details pane | Pull request > Merge: every requirement, met or not, in words. *Built 2026-11-17:* Why Can't I Merge? on the pull request's row (`quill/core/github/merge_readiness.py`): each blocker in words with what to do, for the head commit it names; Merge asks it first and merges only that commit (REST `sha`, 409 said as "somebody pushed"); Auto-Merge... and Add to or Remove from Merge Queue... on the row too |
 | Re-request Check..., Copy Check Details | Item > Checks submenu | Pull request > Checks: each check, state, duration, Re-run, Copy Details |
 | Next Unresolved, Reply to Thread..., Copy Thread Link | Inside PR review, unchanged | Review thread sheet: file, line, state, Resolve or Reopen, Reply |
 | Pending comment edit and delete | Inside PR review, unchanged | Comment sheet: body, Edit, Delete (pending review comments) |
