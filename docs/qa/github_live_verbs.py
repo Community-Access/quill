@@ -956,6 +956,19 @@ VERBS: dict[str, Scenario | str] = {
     "resource_new": resource_round_trip,
     "resource_edit": "with resource_new: an Actions variable changed",
     "resource_delete": "with resource_new: the variable deleted again",
+    **{
+        verb: "needs Jeff: Codespaces cost money; run on the test repository with a free-tier quota"
+        for verb in (
+            "codespace_new",
+            "codespace_start",
+            "codespace_stop",
+            "codespace_machine",
+            "codespace_export",
+            "codespace_publish",
+            "codespace_delete",
+            "pull_codespace",
+        )
+    },
     "restore_package_version": "needs Jeff: a package version deleted in the last 30 days",
     "autofix_alert": "needs Jeff: a code scanning alert on a repository with CodeQL",
     "upload_sarif": "needs Jeff: a SARIF file from a scanner, on the test repository",

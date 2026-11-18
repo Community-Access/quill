@@ -167,6 +167,13 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
             "Have it merge itself when it can, or turn that off.",
         ),
         _a(
+            "pull_codespace",
+            "Open in a Codespace",
+            _W,
+            "sign_in",
+            "Make a codespace on its branch.",
+        ),
+        _a(
             "merge_queue",
             "Add to or Remove from Merge Queue...",
             _W,

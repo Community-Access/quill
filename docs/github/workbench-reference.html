@@ -1386,6 +1386,12 @@ href="mailto:support@community-access.org">support@community-access.org</a>.
 Nothing is sent until you send it from your own email.</td>
 </tr>
 <tr>
+<td>My Codespaces (<code>:my_codespaces</code>)</td>
+<td>repositories</td>
+<td>My Codespaces: every codespace of yours. Start, Stop, Change
+Machine, Export to a Branch and Delete are on each row.</td>
+</tr>
+<tr>
 <td>My Codespaces Secrets (<code>:my_codespaces_secrets</code>)</td>
 <td>people</td>
 <td>My Codespaces Secrets: values given to your own codespaces.</td>
@@ -1700,6 +1706,12 @@ repository. Ctrl+N adds one.</td>
 <td>repository, settings</td>
 <td>Autolinks: prefixes such as BUG- that GitHub turns into links.
 Ctrl+N adds one.</td>
+</tr>
+<tr>
+<td>Codespaces (<code>repository:repo_codespaces</code>)</td>
+<td>repository, code</td>
+<td>Codespaces: your codespaces for this repository. Ctrl+N makes one on
+a branch you name, with the machine and dev container you choose.</td>
 </tr>
 <tr>
 <td>Actions Variables (<code>repository:actions_variables</code>)</td>
@@ -2921,13 +2933,13 @@ Task…, Convert Tasks to Sub-issues…, Create Branch for This Issue…,
 Unlink Branch…, Not a Duplicate…, Set Issue Type…, Reorder Sub-issues…,
 Add to or Remove from Favorites; Properties…</li>
 <li><strong>pull_request</strong>: Review…, File Differences…, Comment…,
-Merge…, Why Can’t I Merge?, Auto-Merge…; More: Add to or Remove from
-Merge Queue…, Open Patch in Editor, Revert Pull Request…, Resolve
-Conflicts in a Worktree…, Copy Link, Open on GitHub, Start in Local
-Worktree…, Open in Codespaces…, Commit Comments…, View Timeline…, Read
-as Document…, Summarize Discussion, React…, Labels…, Assignees…,
-Milestone…, Projects…, Edit Title…, Add to or Remove from Favorites;
-Properties…</li>
+Merge…, Why Can’t I Merge?, Auto-Merge…; More: Open in a Codespace, Add
+to or Remove from Merge Queue…, Open Patch in Editor, Revert Pull
+Request…, Resolve Conflicts in a Worktree…, Copy Link, Open on GitHub,
+Start in Local Worktree…, Open in Codespaces…, Commit Comments…, View
+Timeline…, Read as Document…, Summarize Discussion, React…, Labels…,
+Assignees…, Milestone…, Projects…, Edit Title…, Add to or Remove from
+Favorites; Properties…</li>
 <li><strong>run</strong>: Jobs and Logs, What Failed…, Re-run Failed
 Jobs Only, Re-run Workflow, Cancel Run…, View Artifacts…; More: Open on
 GitHub, Combined Check Status, Review Pending Deployments…, Approve Run
@@ -3013,6 +3025,9 @@ Delete Everywhere…; Properties…</li>
 Properties…</li>
 <li><strong>runner</strong>: Show Details, Runner Labels…, Remove
 Runner…, Open on GitHub, Copy Link; Properties…</li>
+<li><strong>codespace</strong>: Show Details, Start, Stop, Change
+Machine…, Export to a Branch, Publish to a New Repository…; More:
+Delete…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>package</strong>: Show Details, Open on GitHub, Show
 Versions, Restore Package Version…, Delete Package Version…, Delete
 Package…, Copy Link; Properties…</li>
@@ -3304,7 +3319,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 544 yes, 492 planned, 224 not needed and 744 left to
+<p>In all: 559 yes, 476 planned, 225 not needed and 744 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -6532,8 +6547,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="codespaces">Codespaces</h4>
-<p>48 operations: 20 yes, 16 planned, 5 not needed, 7 left to
-github.</p>
+<p>48 operations: 35 yes, 6 not needed, 7 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -6656,46 +6670,40 @@ administration on GitHub’s site.</td>
 <tr>
 <td>List codespaces in a repository for the authenticated user</td>
 <td><code>GET /repos/{owner}/{repo}/codespaces</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Codespaces</td>
 </tr>
 <tr>
 <td>Create a codespace in a repository</td>
 <td><code>POST /repos/{owner}/{repo}/codespaces</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Codespaces</td>
 </tr>
 <tr>
 <td>List devcontainer configurations in a repository for the
 authenticated user</td>
 <td><code>GET /repos/{owner}/{repo}/codespaces/devcontainers</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Codespaces</td>
 </tr>
 <tr>
 <td>List available machine types for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/codespaces/machines</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Codespaces</td>
 </tr>
 <tr>
 <td>Get default attributes for a codespace</td>
 <td><code>GET /repos/{owner}/{repo}/codespaces/new</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Codespaces</td>
 </tr>
 <tr>
 <td>Check if permissions defined by a devcontainer have been accepted by
 the authenticated user</td>
 <td><code>GET /repos/{owner}/{repo}/codespaces/permissions_check</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Codespaces</td>
 </tr>
 <tr>
 <td>List repository secrets</td>
@@ -6734,23 +6742,22 @@ Secrets</td>
 <tr>
 <td>Create a codespace from a pull request</td>
 <td><code>POST /repos/{owner}/{repo}/pulls/{pull_number}/codespaces</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Open in a Codespace</td>
 </tr>
 <tr>
 <td>List codespaces for the authenticated user</td>
 <td><code>GET /user/codespaces</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repositories &gt; My Codespaces</td>
 </tr>
 <tr>
 <td>Create a codespace for the authenticated user</td>
 <td><code>POST /user/codespaces</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Not needed</td>
+<td>Makes a codespace from a repository id or a pull request; the
+Workbench uses the repository’s and the pull request’s own routes for
+the same thing.</td>
 </tr>
 <tr>
 <td>List secrets for the authenticated user</td>
@@ -6812,9 +6819,8 @@ makes meanwhile is kept.</td>
 <tr>
 <td>Delete a codespace for the authenticated user</td>
 <td><code>DELETE /user/codespaces/{codespace_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a codespace for the authenticated user</td>
@@ -6831,44 +6837,38 @@ Codespaces; Secrets.</td>
 <tr>
 <td>Export a codespace for the authenticated user</td>
 <td><code>POST /user/codespaces/{codespace_name}/exports</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Export to a Branch</td>
 </tr>
 <tr>
 <td>Get details about a codespace export</td>
 <td><code>GET /user/codespaces/{codespace_name}/exports/{export_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Export to a Branch</td>
 </tr>
 <tr>
 <td>List machine types for a codespace</td>
 <td><code>GET /user/codespaces/{codespace_name}/machines</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Change Machine…</td>
 </tr>
 <tr>
 <td>Create a repository from an unpublished codespace</td>
 <td><code>POST /user/codespaces/{codespace_name}/publish</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Publish to a New Repository…</td>
 </tr>
 <tr>
 <td>Start a codespace for the authenticated user</td>
 <td><code>POST /user/codespaces/{codespace_name}/start</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Start</td>
 </tr>
 <tr>
 <td>Stop a codespace for the authenticated user</td>
 <td><code>POST /user/codespaces/{codespace_name}/stop</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Stop</td>
 </tr>
 </tbody>
 </table>

@@ -2,6 +2,26 @@
 
 ## 2.0.0
 
+### Codespaces: make one, start, stop, export and publish (2026-11-18)
+
+A codespace is a computer GitHub runs in the cloud for one repository and
+branch. The GitHub Workbench now has **Repositories > My Codespaces** for
+all of yours, and **Code > Codespaces** in each repository for that
+repository's.
+
+- **Ctrl+N** in a repository's Codespaces makes one on the branch you name,
+  with the machine and dev container you choose; GitHub's own default dev
+  container is picked for you when there is one. If the dev container asks for
+  permissions you have not accepted, QUILL says to accept them on GitHub first.
+- On each codespace: **Start**, **Stop** (its files are kept), **Change
+  Machine...**, **Export to a Branch** (your unpushed changes, then whether it
+  worked), **Publish to a New Repository...** for one made from a template,
+  and **Delete...**, which asks first. Properties shows and renames it.
+- **Open in a Codespace** on an open pull request makes one on its branch.
+
+Codespaces can cost money; a used-up spending limit is said plainly. Planned
+GitHub endpoints fall from 492 to 476.
+
 ### Package versions: see them, restore one, and other people's packages (2026-11-18)
 
 - **Show Versions** on any package lists every version, newest first, with

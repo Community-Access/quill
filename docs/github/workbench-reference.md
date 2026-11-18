@@ -594,6 +594,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Keys (`:help_keys`) | help | Keys: every key in the Workbench, grouped by what it does. |
 | What Changed (`:help_changes`) | help | What Changed: what is new in the GitHub Workbench in this version. |
 | Ask a Person (`:help_ask`) | help | Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email. |
+| My Codespaces (`:my_codespaces`) | repositories | My Codespaces: every codespace of yours. Start, Stop, Change Machine, Export to a Branch and Delete are on each row. |
 | My Codespaces Secrets (`:my_codespaces_secrets`) | people | My Codespaces Secrets: values given to your own codespaces. |
 | My Email Addresses (`:my_emails`) | people | My Email Addresses: the addresses on your account. Ctrl+N adds one. |
 | My Social Accounts (`:my_social_accounts`) | people | My Social Accounts: the links on your profile. |
@@ -649,6 +650,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Webhooks (`repository:webhooks`) | repository, settings | Webhooks: the addresses GitHub tells about events here. Ctrl+N adds one; Recent Deliveries on a webhook says what was sent and redelivers it. |
 | Deploy Keys (`repository:deploy_keys`) | repository, settings | Deploy Keys: SSH keys that let a server clone, pull or push this one repository. Ctrl+N adds one. |
 | Autolinks (`repository:autolinks`) | repository, settings | Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one. |
+| Codespaces (`repository:repo_codespaces`) | repository, code | Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you name, with the machine and dev container you choose. |
 | Actions Variables (`repository:actions_variables`) | repository, settings | Actions Variables: values workflows read as vars.NAME. Ctrl+N adds one. |
 | Actions Secrets (`repository:actions_secrets`) | repository, settings | Actions Secrets: values workflows read but nobody sees again. Ctrl+N adds one. |
 | Dependabot Secrets (`repository:dependabot_secrets`) | repository, settings | Dependabot Secrets: what Dependabot uses to reach private registries. |
@@ -904,7 +906,7 @@ Keys the window answers that are not menu rows:
 ### Context menus, by row type
 
 - **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Add to or Remove from Favorites; Properties...
-- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
+- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., View Artifacts...; More: Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link; Properties...
 - **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., Compare With Previous, Compare With Default; More: Copy Link, Open on GitHub; Properties...
@@ -941,6 +943,7 @@ Keys the window answers that are not menu rows:
 - **by_name**: Variants and Missing From, Make Them the Same..., Add to Missing..., Find Uses, Rename Everywhere..., Merge Into...; More: Close Everywhere..., Move Open Work To..., Promote to Organization..., Delete Everywhere...; Properties...
 - **fleet**: Open Repository, Open on GitHub, Copy Link; Properties...
 - **runner**: Show Details, Runner Labels..., Remove Runner..., Open on GitHub, Copy Link; Properties...
+- **codespace**: Show Details, Start, Stop, Change Machine..., Export to a Branch, Publish to a New Repository...; More: Delete..., Open on GitHub, Copy Link; Properties...
 - **package**: Show Details, Open on GitHub, Show Versions, Restore Package Version..., Delete Package Version..., Delete Package..., Copy Link; Properties...
 - **key**: Show Details, Delete Key..., Open on GitHub; Properties...
 - **advisory**: Show Details, Publish or Close Advisory..., Request CVE..., Open on GitHub, Copy Link; Properties...
@@ -1051,7 +1054,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 544 yes, 492 planned, 224 not needed and 744 left to GitHub.
+In all: 559 yes, 476 planned, 225 not needed and 744 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1615,7 +1618,7 @@ In all: 544 yes, 492 planned, 224 not needed and 744 left to GitHub.
 
 #### Codespaces
 
-48 operations: 20 yes, 16 planned, 5 not needed, 7 left to github.
+48 operations: 35 yes, 6 not needed, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1635,20 +1638,20 @@ In all: 544 yes, 492 planned, 224 not needed and 744 left to GitHub.
 | List codespaces for a user in organization | `GET /orgs/{org}/members/{username}/codespaces` | Left to GitHub | Who in an organization may use Codespaces, and who pays, is billing administration on GitHub's site. |
 | Delete a codespace from the organization | `DELETE /orgs/{org}/members/{username}/codespaces/{codespace_name}` | Left to GitHub | Who in an organization may use Codespaces, and who pays, is billing administration on GitHub's site. |
 | Stop a codespace for an organization user | `POST /orgs/{org}/members/{username}/codespaces/{codespace_name}/stop` | Left to GitHub | Who in an organization may use Codespaces, and who pays, is billing administration on GitHub's site. |
-| List codespaces in a repository for the authenticated user | `GET /repos/{owner}/{repo}/codespaces` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Create a codespace in a repository | `POST /repos/{owner}/{repo}/codespaces` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| List devcontainer configurations in a repository for the authenticated user | `GET /repos/{owner}/{repo}/codespaces/devcontainers` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| List available machine types for a repository | `GET /repos/{owner}/{repo}/codespaces/machines` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Get default attributes for a codespace | `GET /repos/{owner}/{repo}/codespaces/new` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Check if permissions defined by a devcontainer have been accepted by the authenticated user | `GET /repos/{owner}/{repo}/codespaces/permissions_check` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| List codespaces in a repository for the authenticated user | `GET /repos/{owner}/{repo}/codespaces` | Yes | Navigator: Repository > owner/name > Code > Codespaces |
+| Create a codespace in a repository | `POST /repos/{owner}/{repo}/codespaces` | Yes | Navigator: Repository > owner/name > Code > Codespaces |
+| List devcontainer configurations in a repository for the authenticated user | `GET /repos/{owner}/{repo}/codespaces/devcontainers` | Yes | Navigator: Repository > owner/name > Code > Codespaces |
+| List available machine types for a repository | `GET /repos/{owner}/{repo}/codespaces/machines` | Yes | Navigator: Repository > owner/name > Code > Codespaces |
+| Get default attributes for a codespace | `GET /repos/{owner}/{repo}/codespaces/new` | Yes | Navigator: Repository > owner/name > Code > Codespaces |
+| Check if permissions defined by a devcontainer have been accepted by the authenticated user | `GET /repos/{owner}/{repo}/codespaces/permissions_check` | Yes | Navigator: Repository > owner/name > Code > Codespaces |
 | List repository secrets | `GET /repos/{owner}/{repo}/codespaces/secrets` | Yes | Navigator: Repository > owner/name > Settings > Codespaces Secrets |
 | Get a repository public key | `GET /repos/{owner}/{repo}/codespaces/secrets/public-key` | Yes | Navigator: Repository > owner/name > Settings > Codespaces Secrets |
 | Delete a repository secret | `DELETE /repos/{owner}/{repo}/codespaces/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get a repository secret | `GET /repos/{owner}/{repo}/codespaces/secrets/{secret_name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Create or update a repository secret | `PUT /repos/{owner}/{repo}/codespaces/secrets/{secret_name}` | Yes | Navigator: Repository > owner/name > Settings > Codespaces Secrets |
-| Create a codespace from a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/codespaces` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| List codespaces for the authenticated user | `GET /user/codespaces` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Create a codespace for the authenticated user | `POST /user/codespaces` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| Create a codespace from a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/codespaces` | Yes | context menu > Open in a Codespace |
+| List codespaces for the authenticated user | `GET /user/codespaces` | Yes | Navigator: Repositories > My Codespaces |
+| Create a codespace for the authenticated user | `POST /user/codespaces` | Not needed | Makes a codespace from a repository id or a pull request; the Workbench uses the repository's and the pull request's own routes for the same thing. |
 | List secrets for the authenticated user | `GET /user/codespaces/secrets` | Yes | Navigator: People > My Codespaces Secrets |
 | Get public key for the authenticated user | `GET /user/codespaces/secrets/public-key` | Yes | Navigator: People > My Codespaces Secrets |
 | Delete a secret for the authenticated user | `DELETE /user/codespaces/secrets/{secret_name}` | Yes | context menu > Delete... |
@@ -1658,15 +1661,15 @@ In all: 544 yes, 492 planned, 224 not needed and 744 left to GitHub.
 | Set selected repositories for a user secret | `PUT /user/codespaces/secrets/{secret_name}/repositories` | Not needed | Replaces the whole list at once; Repositories Allowed adds and removes one repository at a time instead, so a change somebody else makes meanwhile is kept. |
 | Remove a selected repository from a user secret | `DELETE /user/codespaces/secrets/{secret_name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
 | Add a selected repository to a user secret | `PUT /user/codespaces/secrets/{secret_name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
-| Delete a codespace for the authenticated user | `DELETE /user/codespaces/{codespace_name}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| Delete a codespace for the authenticated user | `DELETE /user/codespaces/{codespace_name}` | Yes | context menu > Delete... |
 | Get a codespace for the authenticated user | `GET /user/codespaces/{codespace_name}` | Yes | Properties (Alt+Enter) on Codespace |
 | Update a codespace for the authenticated user | `PATCH /user/codespaces/{codespace_name}` | Yes | Properties (Alt+Enter) on Codespace: Display name |
-| Export a codespace for the authenticated user | `POST /user/codespaces/{codespace_name}/exports` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Get details about a codespace export | `GET /user/codespaces/{codespace_name}/exports/{export_id}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| List machine types for a codespace | `GET /user/codespaces/{codespace_name}/machines` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Create a repository from an unpublished codespace | `POST /user/codespaces/{codespace_name}/publish` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Start a codespace for the authenticated user | `POST /user/codespaces/{codespace_name}/start` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Stop a codespace for the authenticated user | `POST /user/codespaces/{codespace_name}/stop` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| Export a codespace for the authenticated user | `POST /user/codespaces/{codespace_name}/exports` | Yes | context menu > Export to a Branch |
+| Get details about a codespace export | `GET /user/codespaces/{codespace_name}/exports/{export_id}` | Yes | context menu > Export to a Branch |
+| List machine types for a codespace | `GET /user/codespaces/{codespace_name}/machines` | Yes | context menu > Change Machine... |
+| Create a repository from an unpublished codespace | `POST /user/codespaces/{codespace_name}/publish` | Yes | context menu > Publish to a New Repository... |
+| Start a codespace for the authenticated user | `POST /user/codespaces/{codespace_name}/start` | Yes | context menu > Start |
+| Stop a codespace for the authenticated user | `POST /user/codespaces/{codespace_name}/stop` | Yes | context menu > Stop |
 
 #### Collaborators
 

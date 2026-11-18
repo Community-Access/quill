@@ -24,6 +24,7 @@ COMMUNITY_VERBS: dict[str, frozenset[str]] = {
     "discussion_thread": frozenset({"discussion"}),
     "dismiss_alert": frozenset({"security"}),
     "show_details": frozenset({
+        "codespace",
         "cache",
         "runner",
         "package",

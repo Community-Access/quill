@@ -35,6 +35,11 @@ from quill.ui.github_workbench_code_scanning import (
     CODE_SCANNING_VERBS,
     GitHubWorkbenchCodeScanningMixin,
 )
+from quill.ui.github_workbench_codespaces import (
+    CODESPACE_REASONS,
+    CODESPACE_VERBS,
+    GitHubWorkbenchCodespacesMixin,
+)
 from quill.ui.github_workbench_dry_run import (
     DRY_RUN_REASONS,
     DRY_RUN_VERBS,
@@ -123,6 +128,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **RUNNER_ADMIN_VERBS,
     **RESOURCE_VERBS,
     **CODE_SCANNING_VERBS,
+    **CODESPACE_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -144,6 +150,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **RUNNER_ADMIN_REASONS,
     **RESOURCE_REASONS,
     **CODE_SCANNING_REASONS,
+    **CODESPACE_REASONS,
 }
 
 
@@ -163,6 +170,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchRunnerAdminMixin,
     GitHubWorkbenchResourcesMixin,
     GitHubWorkbenchCodeScanningMixin,
+    GitHubWorkbenchCodespacesMixin,
 ):
     items: Any
     frame: Any

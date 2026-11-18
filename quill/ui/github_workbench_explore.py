@@ -35,6 +35,7 @@ _KINDS = {
     "invitation": "invitation",
     "runner": "runner",
     "package": "package",
+    "codespace": "codespace",
     "advisory": "advisory",
     "key": "key",
     "webhook": "webhook",

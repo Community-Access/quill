@@ -55,6 +55,26 @@ ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
         _COPY_LINK,
         _PROPERTIES,
     ),
+    "codespace": (
+        _default("show_details", "Show Details", "The codespace's repository, branch and machine."),
+        _a("codespace_start", "Start", _W, "sign_in", "Start it, as it was when it stopped."),
+        _a("codespace_stop", "Stop", _W, "sign_in", "Stop it; its files are kept."),
+        _a("codespace_machine", "Change Machine...", _W, "sign_in", "A bigger or smaller machine."),
+        _a(
+            "codespace_export", "Export to a Branch", _W, "sign_in", "Unpushed changes to a branch."
+        ),
+        _a(
+            "codespace_publish",
+            "Publish to a New Repository...",
+            _W,
+            "sign_in",
+            "For a codespace made from a template.",
+        ),
+        _a("codespace_delete", "Delete...", _D, "sign_in", "Delete it, after asking."),
+        _OPEN_WEB,
+        _COPY_LINK,
+        _PROPERTIES,
+    ),
     "package": (
         _default("show_details", "Show Details", "The package's type, visibility and repository."),
         _OPEN_WEB,

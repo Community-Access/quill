@@ -2580,6 +2580,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Ask a Person.** Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email.
 
+**My Codespaces.** My Codespaces: every codespace of yours. Start, Stop, Change Machine, Export to a Branch and Delete are on each row.
+
 **My Codespaces Secrets.** My Codespaces Secrets: values given to your own codespaces.
 
 **My Email Addresses.** My Email Addresses: the addresses on your account. Ctrl+N adds one.
@@ -2689,6 +2691,8 @@ Control coverage: 365 audited sites (365 helped).
 **repository: Deploy Keys.** Deploy Keys: SSH keys that let a server clone, pull or push this one repository. Ctrl+N adds one.
 
 **repository: Autolinks.** Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one.
+
+**repository: Codespaces.** Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you name, with the machine and dev container you choose.
 
 **repository: Actions Variables.** Actions Variables: values workflows read as vars.NAME. Ctrl+N adds one.
 
@@ -3132,6 +3136,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Auto-Merge.** Have it merge itself when it can, or turn that off.
 
+**Open in a Codespace.** Make a codespace on its branch.
+
 **Add to or Remove from Merge Queue.** Queue it to merge after the pull requests ahead of it, or take it out.
 
 **Open Patch in Editor.** Its whole change as one unified diff, every file, to read, save or apply.
@@ -3341,6 +3347,18 @@ Control coverage: 365 audited sites (365 helped).
 **Runner Labels.** Add a label, or take one away.
 
 **Remove Runner.** GitHub forgets it; asks first.
+
+**Start.** Start it, as it was when it stopped.
+
+**Stop.** Stop it; its files are kept.
+
+**Change Machine.** A bigger or smaller machine.
+
+**Export to a Branch.** Unpushed changes to a branch.
+
+**Publish to a New Repository.** For a codespace made from a template.
+
+**Delete.** Delete it, after asking.
 
 **Show Versions.** Every version, newest first, with its tags.
 

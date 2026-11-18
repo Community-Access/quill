@@ -71,3 +71,5 @@ def _resource_new_here() -> dict[str, str]:
 
 NEW_HERE.update(_resource_new_here())
 NEW_HERE["code_scanning_analyses"] = "github.workbench.upload_sarif"
+NEW_HERE["repo_codespaces"] = "github.workbench.codespace_new"
+DELETE_COMMANDS["codespace"] = "github.workbench.codespace_delete"

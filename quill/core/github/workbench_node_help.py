@@ -267,6 +267,14 @@ NODE_HELP: dict[str, str] = {
     ),
     "person:person_activity": "Activity: what this person did lately on GitHub.",
     "person:person_followers": "Followers: who follows this person.",
+    ":my_codespaces": (
+        "My Codespaces: every codespace of yours. Start, Stop, Change Machine, Export to "
+        "a Branch and Delete are on each row."
+    ),
+    "repository:repo_codespaces": (
+        "Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you "
+        "name, with the machine and dev container you choose."
+    ),
     "person:person_packages": (
         "Packages: this person's public packages. Show Versions lists each one's versions."
     ),

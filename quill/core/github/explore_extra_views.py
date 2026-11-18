@@ -41,6 +41,7 @@ EXTRA_REPO_VIEWS = frozenset({
     "secrets",
     "merge_queue",
     "runners",
+    "repo_codespaces",
 })
 #: Account views (Billing and Usage), answered without a repository.
 EXTRA_ACCOUNT_VIEWS = frozenset({
@@ -54,6 +55,7 @@ EXTRA_ACCOUNT_VIEWS = frozenset({
     "org_webhooks",
     "sponsorships",
     "org_packages",
+    "my_codespaces",
 })
 #: Views of one person, answered from the login in Explore's person box.
 EXTRA_PERSON_VIEWS = frozenset({"person_profile", "person_sponsor", "person_packages"})
@@ -161,6 +163,16 @@ def fetch_extra_view(
         try:
             return fetch_packages(TokenApi(token), limit=limit, person=person.strip())
         except PackageError as exc:
+            raise GitHubExploreError(str(exc.args[0])) from exc
+    if view in ("my_codespaces", "repo_codespaces"):
+        from quill.core.github.codespaces import CodespaceError, fetch
+        from quill.core.github.workbench_api import TokenApi
+
+        if view == "repo_codespaces" and "/" not in repo:
+            raise GitHubExploreError("Enter a repository as owner/repo for this view.")
+        try:
+            return fetch(TokenApi(token), repo if view == "repo_codespaces" else "", warnings)
+        except CodespaceError as exc:
             raise GitHubExploreError(str(exc.args[0])) from exc
     if view == "my_packages":
         from quill.core.github.packages import PackageError, fetch_packages
