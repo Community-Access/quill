@@ -211,7 +211,7 @@ Reconcile these against actual code and the operation ledger. Some individual ac
 - [x] Review viewed/unviewed state, multiline/file comments, whitespace options, per-commit review, changed-since-review, suggestions and pending review drafts. *(2026-11-17: viewed and unviewed files, Show Only Files Not Viewed and file-level comments built (`review_viewed.py`, `github_pr_review_viewed.py`); multi-line comments, suggestions, changed-since-review and pending reviews were already there. 2026-11-18: Hide Whitespace Changes and Choose Commit... in the diff window (`commit_review.py`).)*
 - [ ] Merge queue as a place; required policy explanation, auto-merge and batch merges of independently eligible PRs. *(2026-11-17: Repository > Merge Queue, Why Can't I Merge? with every blocker for the exact head commit, Merge merging only the commit it checked, Auto-Merge... and Add to or Remove from Merge Queue... on the row (`merge_readiness.py`, `merge_queue.py`, `github_workbench_merge.py`). Remaining: batch merges.)*
 - [ ] Commit statuses, environments, deployment protection and release/deployment evidence. *(2026-11-18: Set Status... on a commit (`commit_status.py`).)*
-- [ ] Packages, runners, dependency graph/SBOM, insights/network/traffic/contributions as readable tables. *(2026-11-18: Runners, read-only, and Export Software Bill of Materials... (`runners_sbom.py`). Packages and traffic remain.)*
+- [ ] Packages, runners, dependency graph/SBOM, insights/network/traffic/contributions as readable tables. *(2026-11-18: Runners, read-only, and Export Software Bill of Materials... (`runners_sbom.py`); Commit Activity as tables (`repo_activity.py`). Packages remain.)*
 - [ ] Git LFS storage/locks and account/organization export or migration capabilities with correct scope dispositions.
 - [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
 - [ ] Installed/authorized Apps, repository grants, install requests, suspend/unsuspend and OIDC subject templates.
@@ -1156,7 +1156,7 @@ Source: PRD section 14. Its “today” statements describe the source audit rev
 |---|---|---|
 | Packages (GitHub Packages, container registry) | Not found; only token scopes mention it | Repository > Packages; Repositories > My Packages |
 | Teams and organization members | Out of scope by a code comment ("Organizations in, Teams out"); roadmap GX13 adds team permissions. Now in scope: section 18.3.3 | Repositories > Organizations > org > Members, Teams; People > My Teams |
-| Insights charts as tables: commit activity, code frequency, punch card | Not found | Repository > Insights (tables, never charts only) |
+| Insights charts as tables: commit activity, code frequency, punch card | **Built 2026-11-18:** Repository > Insights > Commit Activity (`repo_activity.py`): weekly commits, code frequency, the ten busiest hours, participation and contributors, as sentences | Repository > Insights (tables, never charts only) |
 | Dependency graph and software bill of materials (SBOM) export | **Built 2026-11-18:** Repository > Export Software Bill of Materials... (`Ctrl+Alt+B`), SPDX file (`runners_sbom.py`) | Repository > Security > Dependencies |
 | Tags: create and delete outside a release | **Built 2026-11-18:** New Tag... and Delete Tag... (`tags.py`); annotated tags with a message, and Read Tag Message | Repository > Code > Tags context menu |
 | Hide a comment (moderation: spam, off-topic, outdated) | Not found | Comment context in details > Hide Comment... |

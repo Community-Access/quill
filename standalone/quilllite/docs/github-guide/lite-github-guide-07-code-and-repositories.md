@@ -380,6 +380,31 @@ visited pages, and each contributor's commits. The list is the table.
 Traffic figures need push access to the repository. Without it, QUILL says so,
 and still lists the contributors.
 
+### Commit activity, as tables
+
+GitHub's Insights pages draw a repository's history as charts. **Repository >
+Insights > Commit Activity** in the GitHub Workbench (**Commit activity as
+tables** in Explore's **View:**) reads the same numbers as rows, each a whole
+sentence, newest first:
+
+- **Last 4 weeks**: "Last 4 weeks: 30 commits, 10 by the owner."
+- **Commits each week**, for the last twelve weeks, with the busiest day:
+  "Commit activity, week of 2026-11-09: 14 commits. Busiest Tuesday, 5."
+- **Lines each week**: "Code frequency, week of 2026-11-09: 1,204 lines
+  added, 310 removed."
+- **The ten busiest hours of the week**, GitHub's punch card: "Busiest hour 1:
+  Tuesdays at 14:00 UTC, 23 commits." Times are UTC (Coordinated Universal
+  Time), as GitHub counts them.
+- **Each contributor**, most commits first: "Contributor sam: 120 commits,
+  3,000 lines added, 900 removed."
+
+The first row sums it up. GitHub works these numbers out in the background,
+so the first time you open a repository's Commit Activity the first row may
+say "GitHub is still counting its statistics; refresh in a moment." Press
+`F5` a few seconds later. A repository with no commits, or with 10,000 commits
+or more, gets no statistics from GitHub at all, and QUILL Lite says that rather
+than showing an empty table. Anyone can read these for a public repository.
+
 ## Looking after a repository
 
 ### In Explore, in both apps

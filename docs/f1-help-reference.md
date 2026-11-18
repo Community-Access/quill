@@ -2632,6 +2632,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **repository: Community Profile.** Community Profile: the README, license and guidelines GitHub checks.
 
+**repository: Commit Activity.** Commit Activity: GitHub's statistics graphs as rows: commits and lines each week, the busiest hours, and each contributor's lines.
+
 **repository: Deployments and Environments.** Deployments and Environments: where the code was deployed.
 
 **repository: GitHub Pages.** GitHub Pages: the website built from this repository.

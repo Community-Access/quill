@@ -168,6 +168,9 @@ both in `runners_sbom.py`; the export is a Workbench verb in
 an annotated tag, and Read Tag Message reads one (`tags.py`). Transfer
 Repository... (`Ctrl+Alt+T`, `repo_transfer.py`) with a typed confirmation.
 
+**2026-11-18, commit activity as tables.** Repository > Insights > Commit
+Activity (`repo_activity.py`, explore view `commit_stats`).
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

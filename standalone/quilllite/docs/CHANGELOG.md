@@ -2,6 +2,14 @@
 
 ## 2.0.0
 
+### Commit activity as tables (2026-11-18)
+
+**Repository > Insights > Commit Activity** in the GitHub Workbench reads
+GitHub's Insights charts as rows: commits and lines added and removed each
+week, the ten busiest hours of the week, the last four weeks, and each
+contributor's commits and lines, every row a whole sentence. Chapter 7 of the
+GitHub Guide has the details.
+
 ### Annotated tags, and transferring a repository (2026-11-18)
 
 **New Tag...** in the GitHub Workbench's Tags view now asks for a message
