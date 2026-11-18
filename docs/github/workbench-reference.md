@@ -1047,7 +1047,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 501 yes, 545 planned, 217 not needed and 741 left to GitHub.
+In all: 529 yes, 517 planned, 217 not needed and 741 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1055,7 +1055,7 @@ In all: 501 yes, 545 planned, 217 not needed and 741 left to GitHub.
 
 #### Actions
 
-208 operations: 77 yes, 71 planned, 16 not needed, 44 left to github.
+208 operations: 95 yes, 53 planned, 16 not needed, 44 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1095,26 +1095,26 @@ In all: 501 yes, 545 planned, 217 not needed and 741 left to GitHub.
 | Set the customization template for an OIDC subject claim for an organization | `PUT /orgs/{org}/actions/oidc/customization/sub` | Left to GitHub | Cloud identity (OIDC) claim settings are one-off security plumbing for company deployments, set up on GitHub's site. |
 | Get GitHub Actions permissions for an organization | `GET /orgs/{org}/actions/permissions` | Yes | Properties (Alt+Enter) on Organization |
 | Set GitHub Actions permissions for an organization | `PUT /orgs/{org}/actions/permissions` | Yes | Properties (Alt+Enter) on Organization: Repositories that may use Actions |
-| Get artifact and log retention settings for an organization | `GET /orgs/{org}/actions/permissions/artifact-and-log-retention` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Set artifact and log retention settings for an organization | `PUT /orgs/{org}/actions/permissions/artifact-and-log-retention` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Get fork PR contributor approval permissions for an organization | `GET /orgs/{org}/actions/permissions/fork-pr-contributor-approval` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Set fork PR contributor approval permissions for an organization | `PUT /orgs/{org}/actions/permissions/fork-pr-contributor-approval` | Planned | Repository and Organization sheets > Actions (section 18.3). |
+| Get artifact and log retention settings for an organization | `GET /orgs/{org}/actions/permissions/artifact-and-log-retention` | Yes | Properties (Alt+Enter) on Organization |
+| Set artifact and log retention settings for an organization | `PUT /orgs/{org}/actions/permissions/artifact-and-log-retention` | Yes | Properties (Alt+Enter) on Organization: Keep artifacts and logs for days |
+| Get fork PR contributor approval permissions for an organization | `GET /orgs/{org}/actions/permissions/fork-pr-contributor-approval` | Yes | Properties (Alt+Enter) on Organization |
+| Set fork PR contributor approval permissions for an organization | `PUT /orgs/{org}/actions/permissions/fork-pr-contributor-approval` | Yes | Properties (Alt+Enter) on Organization: Approval needed for workflows from |
 | Get private repo fork PR workflow settings for an organization | `GET /orgs/{org}/actions/permissions/fork-pr-workflows-private-repos` | Planned | Repository and Organization sheets > Actions (section 18.3). |
 | Set private repo fork PR workflow settings for an organization | `PUT /orgs/{org}/actions/permissions/fork-pr-workflows-private-repos` | Planned | Repository and Organization sheets > Actions (section 18.3). |
 | List selected repositories enabled for GitHub Actions in an organization | `GET /orgs/{org}/actions/permissions/repositories` | Planned | Repository and Organization sheets > Actions (section 18.3). |
 | Set selected repositories enabled for GitHub Actions in an organization | `PUT /orgs/{org}/actions/permissions/repositories` | Planned | Repository and Organization sheets > Actions (section 18.3). |
 | Disable a selected repository for GitHub Actions in an organization | `DELETE /orgs/{org}/actions/permissions/repositories/{repository_id}` | Planned | Repository and Organization sheets > Actions (section 18.3). |
 | Enable a selected repository for GitHub Actions in an organization | `PUT /orgs/{org}/actions/permissions/repositories/{repository_id}` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Get allowed actions and reusable workflows for an organization | `GET /orgs/{org}/actions/permissions/selected-actions` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Set allowed actions and reusable workflows for an organization | `PUT /orgs/{org}/actions/permissions/selected-actions` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Get self-hosted runners settings for an organization | `GET /orgs/{org}/actions/permissions/self-hosted-runners` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Set self-hosted runners settings for an organization | `PUT /orgs/{org}/actions/permissions/self-hosted-runners` | Planned | Repository and Organization sheets > Actions (section 18.3). |
+| Get allowed actions and reusable workflows for an organization | `GET /orgs/{org}/actions/permissions/selected-actions` | Yes | Properties (Alt+Enter) on Organization |
+| Set allowed actions and reusable workflows for an organization | `PUT /orgs/{org}/actions/permissions/selected-actions` | Yes | Properties (Alt+Enter) on Organization: Allow actions made by GitHub |
+| Get self-hosted runners settings for an organization | `GET /orgs/{org}/actions/permissions/self-hosted-runners` | Yes | Properties (Alt+Enter) on Organization |
+| Set self-hosted runners settings for an organization | `PUT /orgs/{org}/actions/permissions/self-hosted-runners` | Yes | Properties (Alt+Enter) on Organization: Repositories that may use self-hosted runners |
 | List repositories allowed to use self-hosted runners in an organization | `GET /orgs/{org}/actions/permissions/self-hosted-runners/repositories` | Planned | Repository and Organization sheets > Actions (section 18.3). |
 | Set repositories allowed to use self-hosted runners in an organization | `PUT /orgs/{org}/actions/permissions/self-hosted-runners/repositories` | Planned | Repository and Organization sheets > Actions (section 18.3). |
 | Remove a repository from the list of repositories allowed to use self-hosted runners in an organization | `DELETE /orgs/{org}/actions/permissions/self-hosted-runners/repositories/{repository_id}` | Planned | Repository and Organization sheets > Actions (section 18.3). |
 | Add a repository to the list of repositories allowed to use self-hosted runners in an organization | `PUT /orgs/{org}/actions/permissions/self-hosted-runners/repositories/{repository_id}` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Get default workflow permissions for an organization | `GET /orgs/{org}/actions/permissions/workflow` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Set default workflow permissions for an organization | `PUT /orgs/{org}/actions/permissions/workflow` | Planned | Repository and Organization sheets > Actions (section 18.3). |
+| Get default workflow permissions for an organization | `GET /orgs/{org}/actions/permissions/workflow` | Yes | Properties (Alt+Enter) on Organization |
+| Set default workflow permissions for an organization | `PUT /orgs/{org}/actions/permissions/workflow` | Yes | Properties (Alt+Enter) on Organization: Workflow token permission |
 | List organization Actions policies | `GET /orgs/{org}/actions/policies` | Left to GitHub | Actions policy rules are company administration, set up on GitHub's site. |
 | Create an organization Actions policy | `POST /orgs/{org}/actions/policies` | Left to GitHub | Actions policy rules are company administration, set up on GitHub's site. |
 | Delete an organization Actions policy | `DELETE /orgs/{org}/actions/policies/{policy_id}` | Left to GitHub | Actions policy rules are company administration, set up on GitHub's site. |
@@ -1189,16 +1189,16 @@ In all: 501 yes, 545 planned, 217 not needed and 741 left to GitHub.
 | List repository organization variables | `GET /repos/{owner}/{repo}/actions/organization-variables` | Planned | Secret and variable sheets. |
 | Get GitHub Actions permissions for a repository | `GET /repos/{owner}/{repo}/actions/permissions` | Yes | Properties (Alt+Enter) on Repository |
 | Set GitHub Actions permissions for a repository | `PUT /repos/{owner}/{repo}/actions/permissions` | Yes | Properties (Alt+Enter) on Repository: Actions enabled |
-| Get the level of access for workflows outside of the repository | `GET /repos/{owner}/{repo}/actions/permissions/access` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Set the level of access for workflows outside of the repository | `PUT /repos/{owner}/{repo}/actions/permissions/access` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Get artifact and log retention settings for a repository | `GET /repos/{owner}/{repo}/actions/permissions/artifact-and-log-retention` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Set artifact and log retention settings for a repository | `PUT /repos/{owner}/{repo}/actions/permissions/artifact-and-log-retention` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Get fork PR contributor approval permissions for a repository | `GET /repos/{owner}/{repo}/actions/permissions/fork-pr-contributor-approval` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Set fork PR contributor approval permissions for a repository | `PUT /repos/{owner}/{repo}/actions/permissions/fork-pr-contributor-approval` | Planned | Repository and Organization sheets > Actions (section 18.3). |
+| Get the level of access for workflows outside of the repository | `GET /repos/{owner}/{repo}/actions/permissions/access` | Yes | Properties (Alt+Enter) on Repository |
+| Set the level of access for workflows outside of the repository | `PUT /repos/{owner}/{repo}/actions/permissions/access` | Yes | Properties (Alt+Enter) on Repository: Workflows here may be used by |
+| Get artifact and log retention settings for a repository | `GET /repos/{owner}/{repo}/actions/permissions/artifact-and-log-retention` | Yes | Properties (Alt+Enter) on Repository |
+| Set artifact and log retention settings for a repository | `PUT /repos/{owner}/{repo}/actions/permissions/artifact-and-log-retention` | Yes | Properties (Alt+Enter) on Repository: Keep artifacts and logs for days |
+| Get fork PR contributor approval permissions for a repository | `GET /repos/{owner}/{repo}/actions/permissions/fork-pr-contributor-approval` | Yes | Properties (Alt+Enter) on Repository |
+| Set fork PR contributor approval permissions for a repository | `PUT /repos/{owner}/{repo}/actions/permissions/fork-pr-contributor-approval` | Yes | Properties (Alt+Enter) on Repository: Approval needed for workflows from |
 | Get private repo fork PR workflow settings for a repository | `GET /repos/{owner}/{repo}/actions/permissions/fork-pr-workflows-private-repos` | Planned | Repository and Organization sheets > Actions (section 18.3). |
 | Set private repo fork PR workflow settings for a repository | `PUT /repos/{owner}/{repo}/actions/permissions/fork-pr-workflows-private-repos` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Get allowed actions and reusable workflows for a repository | `GET /repos/{owner}/{repo}/actions/permissions/selected-actions` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Set allowed actions and reusable workflows for a repository | `PUT /repos/{owner}/{repo}/actions/permissions/selected-actions` | Planned | Repository and Organization sheets > Actions (section 18.3). |
+| Get allowed actions and reusable workflows for a repository | `GET /repos/{owner}/{repo}/actions/permissions/selected-actions` | Yes | Properties (Alt+Enter) on Repository |
+| Set allowed actions and reusable workflows for a repository | `PUT /repos/{owner}/{repo}/actions/permissions/selected-actions` | Yes | Properties (Alt+Enter) on Repository: Allow actions made by GitHub |
 | Get default workflow permissions for a repository | `GET /repos/{owner}/{repo}/actions/permissions/workflow` | Yes | Properties (Alt+Enter) on Repository |
 | Set default workflow permissions for a repository | `PUT /repos/{owner}/{repo}/actions/permissions/workflow` | Yes | Properties (Alt+Enter) on Repository: Allow Actions to create and approve pull requests |
 | List repository Actions policies | `GET /repos/{owner}/{repo}/actions/policies` | Left to GitHub | Actions policy rules are company administration, set up on GitHub's site. |
@@ -1543,7 +1543,7 @@ In all: 501 yes, 545 planned, 217 not needed and 741 left to GitHub.
 
 #### Code scanning
 
-25 operations: 2 yes, 20 planned, 3 not needed.
+25 operations: 4 yes, 18 planned, 3 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1568,8 +1568,8 @@ In all: 501 yes, 545 planned, 217 not needed and 741 left to GitHub.
 | Create a CodeQL variant analysis | `POST /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
 | Get the summary of a CodeQL variant analysis | `GET /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses/{codeql_variant_analysis_id}` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
 | Get the analysis status of a repository in a CodeQL variant analysis | `GET /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses/{codeql_variant_analysis_id}/repos/{repo_owner}/{repo_name}` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
-| Get a code scanning default setup configuration | `GET /repos/{owner}/{repo}/code-scanning/default-setup` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
-| Update a code scanning default setup configuration | `PATCH /repos/{owner}/{repo}/code-scanning/default-setup` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
+| Get a code scanning default setup configuration | `GET /repos/{owner}/{repo}/code-scanning/default-setup` | Yes | Properties (Alt+Enter) on Repository |
+| Update a code scanning default setup configuration | `PATCH /repos/{owner}/{repo}/code-scanning/default-setup` | Yes | Properties (Alt+Enter) on Repository: Code scanning default setup |
 | Upload an analysis as SARIF data | `POST /repos/{owner}/{repo}/code-scanning/sarifs` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
 | Get information about a SARIF upload | `GET /repos/{owner}/{repo}/code-scanning/sarifs/{sarif_id}` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
 
@@ -1948,13 +1948,13 @@ In all: 501 yes, 545 planned, 217 not needed and 741 left to GitHub.
 
 #### Interactions
 
-16 operations: 2 yes, 14 planned.
+16 operations: 5 yes, 11 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
-| Remove interaction restrictions for an organization | `DELETE /orgs/{org}/interaction-limits` | Planned | Repository and Organization sheets > General > Interaction Limits. |
-| Get interaction restrictions for an organization | `GET /orgs/{org}/interaction-limits` | Planned | Repository and Organization sheets > General > Interaction Limits. |
-| Set interaction restrictions for an organization | `PUT /orgs/{org}/interaction-limits` | Planned | Repository and Organization sheets > General > Interaction Limits. |
+| Remove interaction restrictions for an organization | `DELETE /orgs/{org}/interaction-limits` | Yes | Properties (Alt+Enter) on Organization: Interaction limit |
+| Get interaction restrictions for an organization | `GET /orgs/{org}/interaction-limits` | Yes | Properties (Alt+Enter) on Organization |
+| Set interaction restrictions for an organization | `PUT /orgs/{org}/interaction-limits` | Yes | Properties (Alt+Enter) on Organization: Interaction limit |
 | Get pull request creation cap for an org | `GET /orgs/{org}/interaction-limits/pulls/creation-cap` | Planned | Repository and Organization sheets > General > Interaction Limits. |
 | Update pull request creation cap for an org | `PATCH /orgs/{org}/interaction-limits/pulls/creation-cap` | Planned | Repository and Organization sheets > General > Interaction Limits. |
 | Remove interaction restrictions for a repository | `DELETE /repos/{owner}/{repo}/interaction-limits` | Planned | Repository and Organization sheets > General > Interaction Limits. |
@@ -2121,7 +2121,7 @@ In all: 501 yes, 545 planned, 217 not needed and 741 left to GitHub.
 
 #### Organizations
 
-129 operations: 42 yes, 43 planned, 10 not needed, 34 left to github.
+129 operations: 44 yes, 41 planned, 10 not needed, 34 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2236,8 +2236,8 @@ In all: 501 yes, 545 planned, 217 not needed and 741 left to GitHub.
 | List security manager teams | `GET /orgs/{org}/security-managers` | Yes | Navigator: Organization > organization > Security Managers |
 | Remove a security manager team | `DELETE /orgs/{org}/security-managers/teams/{team_slug}` | Yes | context menu > Delete... |
 | Add a security manager team | `PUT /orgs/{org}/security-managers/teams/{team_slug}` | Yes | Navigator: Organization > organization > Security Managers |
-| Get immutable releases settings for an organization | `GET /orgs/{org}/settings/immutable-releases` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
-| Set immutable releases settings for an organization | `PUT /orgs/{org}/settings/immutable-releases` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
+| Get immutable releases settings for an organization | `GET /orgs/{org}/settings/immutable-releases` | Yes | Properties (Alt+Enter) on Organization |
+| Set immutable releases settings for an organization | `PUT /orgs/{org}/settings/immutable-releases` | Yes | Properties (Alt+Enter) on Organization: Immutable releases in |
 | List selected repositories for immutable releases enforcement | `GET /orgs/{org}/settings/immutable-releases/repositories` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
 | Set selected repositories for immutable releases enforcement | `PUT /orgs/{org}/settings/immutable-releases/repositories` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
 | Disable a selected repository for immutable releases in an organization | `DELETE /orgs/{org}/settings/immutable-releases/repositories/{repository_id}` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
@@ -2452,7 +2452,7 @@ In all: 501 yes, 545 planned, 217 not needed and 741 left to GitHub.
 
 #### Repositories
 
-74 operations: 48 yes, 19 planned, 5 not needed, 2 left to github.
+74 operations: 51 yes, 16 planned, 5 not needed, 2 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2492,9 +2492,9 @@ In all: 501 yes, 545 planned, 217 not needed and 741 left to GitHub.
 | Redeliver a delivery for a repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts` | Yes | context menu > Recent Deliveries... |
 | Ping a repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/pings` | Yes | context menu > Ping |
 | Test the push repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/tests` | Planned | Repository sheet > Webhooks. |
-| Disable immutable releases | `DELETE /repos/{owner}/{repo}/immutable-releases` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
-| Check if immutable releases are enabled for a repository | `GET /repos/{owner}/{repo}/immutable-releases` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
-| Enable immutable releases | `PUT /repos/{owner}/{repo}/immutable-releases` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
+| Disable immutable releases | `DELETE /repos/{owner}/{repo}/immutable-releases` | Yes | Properties (Alt+Enter) on Repository: Immutable releases |
+| Check if immutable releases are enabled for a repository | `GET /repos/{owner}/{repo}/immutable-releases` | Yes | Properties (Alt+Enter) on Repository |
+| Enable immutable releases | `PUT /repos/{owner}/{repo}/immutable-releases` | Yes | Properties (Alt+Enter) on Repository: Immutable releases |
 | List issue types for a repository | `GET /repos/{owner}/{repo}/issue-types` | Yes | Navigator: Repository > owner/name > Settings > Issue Types |
 | List repository languages | `GET /repos/{owner}/{repo}/languages` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
 | List planning statuses for a repository | `GET /repos/{owner}/{repo}/planning-statuses` | Planned | Repository > Issues > Planning statuses (issue sheet choices) |
