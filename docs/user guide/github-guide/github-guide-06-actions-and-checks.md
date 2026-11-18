@@ -189,6 +189,19 @@ asks once more, naming the environments, and then says which ones GitHub
 approved or rejected. If nothing is waiting, the window says "This run is not
 waiting on any deployment review."
 
+## An environment's rules
+
+An environment's row, under Repository > Deployments, has these on its context
+menu, beside Secrets... and Variables...:
+
+- **Branch Policies...:** which branches and tags may deploy to it, when it
+  allows chosen ones only. Add one by name or with a wildcard, such as
+  `release/*`, and say whether it names branches or tags. Change rewrites the
+  pattern; Delete removes it.
+- **Protection Rules...:** GitHub Apps that must approve each deployment to it.
+  Add one by choosing from the apps GitHub says are installed and can do this;
+  if there are none, QUILL says so. Delete removes one.
+
 ## Artifacts
 
 A run can leave files behind: a built installer, a test report. On a run,

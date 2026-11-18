@@ -19,12 +19,16 @@ _ROW = frozenset({"environment"})
 ENVIRONMENT_VERBS: dict[str, frozenset[str]] = {
     "environment_secrets": _ROW,
     "environment_variables": _ROW,
+    "environment_branch_policies": _ROW,
+    "environment_protection_rules": _ROW,
     "environment_delete": _ROW,
 }
 
 ENVIRONMENT_REASONS: dict[str, str] = {
     "environment_secrets": "Secrets is for an environment, while you are signed in.",
     "environment_variables": "Variables is for an environment, while you are signed in.",
+    "environment_branch_policies": "Branch Policies is for an environment, while signed in.",
+    "environment_protection_rules": "Protection Rules is for an environment, while signed in.",
     "environment_delete": "Delete is for an environment, while you are signed in.",
 }
 
@@ -53,6 +57,14 @@ class GitHubWorkbenchEnvironmentsMixin:
     _fits_environment_secrets = _fits_environment
     _fits_environment_variables = _fits_environment
     _fits_environment_delete = _fits_environment
+    _fits_environment_branch_policies = _fits_environment
+    _fits_environment_protection_rules = _fits_environment
+
+    def _do_environment_branch_policies(self, _ref: Any, row: object) -> None:
+        self._manage(row, "environment_branch_policies")
+
+    def _do_environment_protection_rules(self, _ref: Any, row: object) -> None:
+        self._manage(row, "environment_protection_rules")
 
     def _do_environment_secrets(self, _ref: Any, row: object) -> None:
         self._manage(row, "environment_secrets")
@@ -76,6 +88,9 @@ class GitHubWorkbenchEnvironmentsMixin:
             labels = [f"Add a {spec.noun}...", *(one.label for one in rows)]
             picked = self._choose(title, f"The {spec.noun}s of {name}:", labels)
             if picked < 0:
+                return
+            if picked == 0 and key == "environment_protection_rules":
+                self._add_protection_app(api, spec, target, name)
                 return
             if picked == 0:
                 answers = self._ask_fields(f"New {spec.noun}", spec.create)
@@ -130,4 +145,37 @@ class GitHubWorkbenchEnvironmentsMixin:
             f"delete {name}",
             lambda: delete_environment(api, repo, name),
             lambda said: (self._say(str(said)), self.frame.reload()),
+        )
+
+    def _add_protection_app(self, api: Any, spec: Any, target: str, name: str) -> None:
+        """Offer the GitHub Apps that can guard deployments, rather than ask for a number."""
+        from quill.core.github import resource_engine as engine
+        from quill.core.github.resource_specs_env_more import protection_apps
+
+        def chosen(apps: Any) -> None:
+            apps = list(apps)
+            if not apps:
+                self._say(
+                    "No GitHub App that protects deployments is installed for this repository. "
+                    "Install one from GitHub Marketplace first."
+                )
+                return
+            picked = self._choose(
+                f"{name}: Add Protection Rule",
+                "Which app must approve each deployment?",
+                [slug for _id, slug in apps],
+            )
+            if picked < 0:
+                return
+            app_id, slug = apps[picked]
+            self._background(
+                "add the protection rule",
+                lambda: engine.create(api, spec, target, {"integration_id": app_id}),
+                lambda _said: self._say(f"{slug} must now approve each deployment to {name}."),
+            )
+
+        self._background(
+            "list the apps that can protect deployments",
+            lambda: protection_apps(api, target),
+            chosen,
         )

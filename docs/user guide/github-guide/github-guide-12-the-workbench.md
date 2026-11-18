@@ -324,6 +324,62 @@ figures are on GitHub's billing page.
 - **Star or Unstar** is on the context menu.
 - **Delete Gist...** (`Delete` on a gist) asks first, because a deleted gist,
   its files and its history cannot be brought back.
+- **Gists I Starred**, under Gists, lists the gists you starred, with who
+  wrote each.
+
+## Lists of settings
+
+Many of the things GitHub keeps as lists, such as secrets, issue types or the
+repositories a setting covers, are nodes in the tree that all work the same
+way. Each row reads as a sentence. `Ctrl+N` adds one, where GitHub allows it;
+Change... on the context menu changes the selected one; `Delete` deletes it, after asking.
+Where a list can only be read, it says so when it is empty, and the context
+menu has no Add or Delete.
+
+These were added on 2026-11-18.
+
+**Under People, for your own account:**
+
+- **My Issue Fields:** values your own repositories' issues can carry, such as
+  Priority or Due date. `Ctrl+N` asks for its name, its kind (text, number,
+  date, or single select), its choices for a single select, separated by
+  commas, and a description.
+- **My Installed Apps:** the GitHub Apps installed where you can manage them,
+  and whether each reaches all repositories or chosen ones. **Repositories...**
+  on a row checks which repositories it may reach; QUILL adds and removes them
+  one at a time, so a change someone else made meanwhile is kept.
+- **My Public Email Addresses** and **Repositories I Watch:** read only.
+
+**Under an organization:**
+
+- **Issue Fields:** the organization's issue fields, the same way as yours,
+  plus who may see their values (everyone, or members only).
+- **Failed Invitations**, **Public Members** and **Installed Apps:** read only.
+- **Immutable Releases: Repositories**, **Actions: Allowed Repositories** and
+  **Self-hosted Runners: Allowed Repositories:** the repositories a setting
+  applies to when the organization chooses them one by one. `Ctrl+N` asks for a
+  repository, as its name or owner/name; `Delete` takes one off. Set the
+  setting itself to "chosen repositories" on the organization's Properties
+  first.
+- **Dependabot Alerts**, **Secret Scanning Alerts**, **Security Advisories:**
+  every repository's, in one list. A secret's value is never shown. Open a
+  repository's Alerts to dismiss or resolve one.
+- **Recent Events:** the organization's public activity, newest first.
+- **Custom Property Values:** every repository's custom properties in one list.
+
+**Under a repository:**
+
+- **Activity > All Issue Comments**, **Push Activity** (pushes, force pushes,
+  merges and branch changes) and **My Notifications Here:** read only.
+- **Code > Commit Comments:** comments on commits. Change... rewrites one of yours;
+  `Delete` deletes it.
+- **People > Watchers:** who gets notifications for it.
+- **Settings > CODEOWNERS Problems:** lines in the CODEOWNERS file GitHub could
+  not use, with its suggestion.
+- **Settings > Rule Insights:** recent pushes its rulesets passed, blocked or
+  let through on a bypass.
+- **Settings > Custom Property Values:** the organization's properties as this
+  repository has them.
 
 ## Across Repositories
 

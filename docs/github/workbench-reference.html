@@ -1431,6 +1431,35 @@ repositories.</td>
 invitations.</td>
 </tr>
 <tr>
+<td>My Issue Fields (<code>:my_issue_fields</code>)</td>
+<td>people</td>
+<td>My Issue Fields: values your own repositories’ issues can carry.
+Ctrl+N adds one.</td>
+</tr>
+<tr>
+<td>My Installed Apps (<code>:my_installations</code>)</td>
+<td>people</td>
+<td>My Installed Apps: the GitHub Apps installed where you can manage
+them. Repositories… chooses which repositories an app may reach.</td>
+</tr>
+<tr>
+<td>My Public Email Addresses (<code>:my_public_emails</code>)</td>
+<td>people</td>
+<td>My Public Email Addresses: the addresses anyone can see on your
+profile.</td>
+</tr>
+<tr>
+<td>Repositories I Watch (<code>:my_watching</code>)</td>
+<td>people</td>
+<td>Repositories I Watch: every repository you get notifications
+for.</td>
+</tr>
+<tr>
+<td>Gists I Starred (<code>:my_starred_gists</code>)</td>
+<td>gists</td>
+<td>Gists I Starred: gists you starred, newest first.</td>
+</tr>
+<tr>
 <td>owner/name (<code>repository:repository</code>)</td>
 <td>repository</td>
 <td>A repository: its issues, pull requests, actions, code, releases and
@@ -1804,6 +1833,56 @@ repository may use. Change them in the organization.</td>
 this repository may use. Change them in the organization.</td>
 </tr>
 <tr>
+<td>All Issue Comments
+(<code>repository:repo_issue_comments</code>)</td>
+<td>repository, activity</td>
+<td>All Issue Comments: every comment on the repository’s issues, newest
+changes last.</td>
+</tr>
+<tr>
+<td>Commit Comments (<code>repository:commit_comments</code>)</td>
+<td>repository, code</td>
+<td>Commit Comments: comments on the repository’s commits. Change
+rewrites your own.</td>
+</tr>
+<tr>
+<td>Watchers (<code>repository:repo_watchers</code>)</td>
+<td>repository, people</td>
+<td>Watchers: who gets notifications for this repository.</td>
+</tr>
+<tr>
+<td>Push Activity (<code>repository:repo_push_activity</code>)</td>
+<td>repository, activity</td>
+<td>Push Activity: pushes, force pushes, merges and branch changes,
+newest first.</td>
+</tr>
+<tr>
+<td>CODEOWNERS Problems (<code>repository:codeowners_errors</code>)</td>
+<td>repository, settings</td>
+<td>CODEOWNERS Problems: lines in the CODEOWNERS file GitHub could not
+use.</td>
+</tr>
+<tr>
+<td>Rule Insights (<code>repository:repo_rule_insights</code>)</td>
+<td>repository, settings</td>
+<td>Rule Insights: recent pushes the rulesets here passed, blocked or
+let through.</td>
+</tr>
+<tr>
+<td>My Notifications Here
+(<code>repository:repo_my_notifications</code>)</td>
+<td>repository, activity</td>
+<td>My Notifications Here: your notifications from this repository
+only.</td>
+</tr>
+<tr>
+<td>Custom Property Values
+(<code>repository:repo_property_values</code>)</td>
+<td>repository, settings</td>
+<td>Custom Property Values: the organization’s custom properties, as set
+here.</td>
+</tr>
+<tr>
 <td>person (<code>person:person</code>)</td>
 <td>person</td>
 <td>A person: their repositories, activity, followers and who they
@@ -1997,6 +2076,86 @@ teams.</td>
 <td>organization, organization</td>
 <td>Code Scanning Alerts: every repository’s code scanning alerts in one
 list. Open a repository’s Alerts to dismiss one.</td>
+</tr>
+<tr>
+<td>Issue Fields (<code>organization:org_issue_fields</code>)</td>
+<td>organization, organization</td>
+<td>Issue Fields: values every repository’s issues in this organization
+can carry, such as Priority or Due date. Ctrl+N adds one.</td>
+</tr>
+<tr>
+<td>Failed Invitations
+(<code>organization:org_failed_invitations</code>)</td>
+<td>organization, organization</td>
+<td>Failed Invitations: invitations that expired or could not be
+delivered.</td>
+</tr>
+<tr>
+<td>Public Members (<code>organization:org_public_members</code>)</td>
+<td>organization, organization</td>
+<td>Public Members: members who show their membership on their
+profile.</td>
+</tr>
+<tr>
+<td>Installed Apps (<code>organization:org_installations</code>)</td>
+<td>organization, organization</td>
+<td>Installed Apps: the GitHub Apps installed on this organization.</td>
+</tr>
+<tr>
+<td>Immutable Releases: Repositories
+(<code>organization:org_immutable_release_repos</code>)</td>
+<td>organization, organization</td>
+<td>Immutable Releases: Repositories: where published releases cannot be
+changed, when the organization enforces it on chosen repositories.
+Ctrl+N adds one.</td>
+</tr>
+<tr>
+<td>Actions: Allowed Repositories
+(<code>organization:org_actions_repos</code>)</td>
+<td>organization, organization</td>
+<td>Actions: Allowed Repositories: which repositories may run Actions,
+when the organization allows chosen repositories only. Ctrl+N adds
+one.</td>
+</tr>
+<tr>
+<td>Self-hosted Runners: Allowed Repositories
+(<code>organization:org_runner_repos</code>)</td>
+<td>organization, organization</td>
+<td>Self-hosted Runners: Allowed Repositories: which repositories may
+use the organization’s self-hosted runners. Ctrl+N adds one.</td>
+</tr>
+<tr>
+<td>Dependabot Alerts
+(<code>organization:org_dependabot_alerts</code>)</td>
+<td>organization, organization</td>
+<td>Dependabot Alerts: every repository’s vulnerable dependencies in one
+list.</td>
+</tr>
+<tr>
+<td>Secret Scanning Alerts
+(<code>organization:org_secret_alerts</code>)</td>
+<td>organization, organization</td>
+<td>Secret Scanning Alerts: secrets found in any repository. The secret
+itself is never shown here.</td>
+</tr>
+<tr>
+<td>Security Advisories (<code>organization:org_advisories</code>)</td>
+<td>organization, organization</td>
+<td>Security Advisories: the repository advisories across this
+organization.</td>
+</tr>
+<tr>
+<td>Recent Events (<code>organization:org_events</code>)</td>
+<td>organization, organization</td>
+<td>Recent Events: the organization’s public activity, newest
+first.</td>
+</tr>
+<tr>
+<td>Custom Property Values
+(<code>organization:org_property_values</code>)</td>
+<td>organization, organization</td>
+<td>Custom Property Values: every repository’s custom properties in one
+list. Change a repository’s on its Properties.</td>
 </tr>
 </tbody>
 </table>
@@ -3053,7 +3212,8 @@ Runner…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>pages_site</strong>: Show Details, Check Site, Rebuild, Turn
 Off Pages…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>environment</strong>: Show Details, Secrets…, Variables…,
-Delete…, Open on GitHub, Copy Link; Properties…</li>
+Branch Policies…, Protection Rules…, Delete…; More: Open on GitHub, Copy
+Link; Properties…</li>
 <li><strong>codespace</strong>: Show Details, Start, Stop, Change
 Machine…, Export to a Branch, Publish to a New Repository…; More:
 Delete…, Open on GitHub, Copy Link; Properties…</li>
@@ -3350,14 +3510,18 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
+<<<<<<< HEAD
+<p>In all: 691 yes, 176 planned, 271 not needed and 866 left to
+=======
 <p>In all: 642 yes, 228 planned, 268 not needed and 866 left to
+>>>>>>> origin/main
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
 is planned under Repository &gt; Wiki.</p>
 <h3 id="rest-operations-by-category">REST operations, by category</h3>
 <h4 id="actions">Actions</h4>
-<p>208 operations: 110 yes, 28 planned, 22 not needed, 48 left to
+<p>208 operations: 116 yes, 20 planned, 24 not needed, 48 left to
 github.</p>
 <table>
 <thead>
@@ -3673,29 +3837,33 @@ workflows from</td>
 <td>List selected repositories enabled for GitHub Actions in an
 organization</td>
 <td><code>GET /orgs/{org}/actions/permissions/repositories</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Actions: Allowed
+Repositories</td>
 </tr>
 <tr>
 <td>Set selected repositories enabled for GitHub Actions in an
 organization</td>
 <td><code>PUT /orgs/{org}/actions/permissions/repositories</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Not needed</td>
+<td>Adding and removing one repository at a time does the same, and
+keeps a change someone else made meanwhile; replacing the whole list
+would lose it.</td>
 </tr>
 <tr>
 <td>Disable a selected repository for GitHub Actions in an
 organization</td>
 <td><code>DELETE /orgs/{org}/actions/permissions/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Enable a selected repository for GitHub Actions in an
 organization</td>
 <td><code>PUT /orgs/{org}/actions/permissions/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Actions: Allowed
+Repositories</td>
 </tr>
 <tr>
 <td>Get allowed actions and reusable workflows for an organization</td>
@@ -3727,29 +3895,33 @@ self-hosted runners</td>
 <td>List repositories allowed to use self-hosted runners in an
 organization</td>
 <td><code>GET /orgs/{org}/actions/permissions/self-hosted-runners/repositories</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Self-hosted Runners:
+Allowed Repositories</td>
 </tr>
 <tr>
 <td>Set repositories allowed to use self-hosted runners in an
 organization</td>
 <td><code>PUT /orgs/{org}/actions/permissions/self-hosted-runners/repositories</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Not needed</td>
+<td>Adding and removing one repository at a time does the same, and
+keeps a change someone else made meanwhile; replacing the whole list
+would lose it.</td>
 </tr>
 <tr>
 <td>Remove a repository from the list of repositories allowed to use
 self-hosted runners in an organization</td>
 <td><code>DELETE /orgs/{org}/actions/permissions/self-hosted-runners/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Add a repository to the list of repositories allowed to use
 self-hosted runners in an organization</td>
 <td><code>PUT /orgs/{org}/actions/permissions/self-hosted-runners/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Self-hosted Runners:
+Allowed Repositories</td>
 </tr>
 <tr>
 <td>Get default workflow permissions for an organization</td>
@@ -4751,8 +4923,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="activity">Activity</h4>
-<p>34 operations: 19 yes, 11 planned, 1 not needed, 3 left to
-github.</p>
+<p>34 operations: 23 yes, 7 planned, 1 not needed, 3 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -4838,9 +5009,8 @@ lists.</td>
 <tr>
 <td>List public organization events</td>
 <td><code>GET /orgs/{org}/events</code></td>
-<td>Planned</td>
-<td>Needs My Attention &gt; My Activity Feed; Repository &gt; Activity;
-Person &gt; Activity.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Recent Events</td>
 </tr>
 <tr>
 <td>List repository events</td>
@@ -4851,8 +5021,9 @@ Person &gt; Activity.</td>
 <tr>
 <td>List repository notifications for the authenticated user</td>
 <td><code>GET /repos/{owner}/{repo}/notifications</code></td>
-<td>Planned</td>
-<td>Needs My Attention &gt; Notifications; Notification sheet.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Activity &gt; My
+Notifications Here</td>
 </tr>
 <tr>
 <td>Mark repository notifications as read</td>
@@ -4883,8 +5054,8 @@ returns.</td>
 <tr>
 <td>List watchers</td>
 <td><code>GET /repos/{owner}/{repo}/subscribers</code></td>
-<td>Planned</td>
-<td>You page: Watch level (section 16.7).</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; People &gt; Watchers</td>
 </tr>
 <tr>
 <td>Delete a repository subscription</td>
@@ -4931,8 +5102,8 @@ returns.</td>
 <tr>
 <td>List repositories watched by the authenticated user</td>
 <td><code>GET /user/subscriptions</code></td>
-<td>Planned</td>
-<td>You page: Watch level (section 16.7).</td>
+<td>Yes</td>
+<td>Navigator: People &gt; Repositories I Watch</td>
 </tr>
 <tr>
 <td>List events for the authenticated user</td>
@@ -5330,7 +5501,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="apps">Apps</h4>
-<p>37 operations: 4 planned, 33 left to github.</p>
+<p>37 operations: 4 yes, 33 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -5560,26 +5731,26 @@ this; a person has no way to.</td>
 <tr>
 <td>List app installations accessible to the user access token</td>
 <td><code>GET /user/installations</code></td>
-<td>Planned</td>
-<td>Organization and Repository sheets &gt; Apps</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Installed Apps</td>
 </tr>
 <tr>
 <td>List repositories accessible to the user access token</td>
 <td><code>GET /user/installations/{installation_id}/repositories</code></td>
-<td>Planned</td>
-<td>Organization and Repository sheets &gt; Apps</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Remove a repository from an app installation</td>
 <td><code>DELETE /user/installations/{installation_id}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Organization and Repository sheets &gt; Apps</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Add a repository to an app installation</td>
 <td><code>PUT /user/installations/{installation_id}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Organization and Repository sheets &gt; Apps</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>List subscriptions for the authenticated user</td>
@@ -7025,7 +7196,7 @@ and Team Access</td>
 </tbody>
 </table>
 <h4 id="commits">Commits</h4>
-<p>14 operations: 8 yes, 4 planned, 2 not needed.</p>
+<p>14 operations: 11 yes, 1 planned, 2 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -7039,16 +7210,15 @@ and Team Access</td>
 <tr>
 <td>List commit comments for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/comments</code></td>
-<td>Planned</td>
-<td>Commit sheet; Repository &gt; Code &gt; Commits; Commit
-comments.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Commit
+Comments</td>
 </tr>
 <tr>
 <td>Delete a commit comment</td>
 <td><code>DELETE /repos/{owner}/{repo}/comments/{comment_id}</code></td>
-<td>Planned</td>
-<td>Commit sheet; Repository &gt; Code &gt; Commits; Commit
-comments.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a commit comment</td>
@@ -7060,9 +7230,8 @@ reads the list.</td>
 <tr>
 <td>Update a commit comment</td>
 <td><code>PATCH /repos/{owner}/{repo}/comments/{comment_id}</code></td>
-<td>Planned</td>
-<td>Commit sheet; Repository &gt; Code &gt; Commits; Commit
-comments.</td>
+<td>Yes</td>
+<td>context menu &gt; Change…</td>
 </tr>
 <tr>
 <td>List commits</td>
@@ -7705,7 +7874,7 @@ people.</td>
 </tbody>
 </table>
 <h4 id="dependabot">Dependabot</h4>
-<p>27 operations: 13 yes, 4 planned, 4 not needed, 6 left to github.</p>
+<p>27 operations: 14 yes, 3 planned, 4 not needed, 6 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -7752,9 +7921,9 @@ org &gt; Enterprise (Open on GitHub).</td>
 <tr>
 <td>List Dependabot alerts for an organization</td>
 <td><code>GET /orgs/{org}/dependabot/alerts</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Dependabot
+Alerts</td>
 </tr>
 <tr>
 <td>Lists the repositories Dependabot can access in an organization</td>
@@ -7992,7 +8161,7 @@ Keys</td>
 </tbody>
 </table>
 <h4 id="deployments">Deployments</h4>
-<p>21 operations: 7 yes, 9 planned, 3 not needed, 2 left to github.</p>
+<p>21 operations: 15 yes, 1 planned, 3 not needed, 2 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -8079,20 +8248,20 @@ bypass</td>
 <tr>
 <td>List deployment branch policies</td>
 <td><code>GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies</code></td>
-<td>Planned</td>
-<td>Environment sheet &gt; Branches and Tags.</td>
+<td>Yes</td>
+<td>context menu &gt; Branch Policies…</td>
 </tr>
 <tr>
 <td>Create a deployment branch policy</td>
 <td><code>POST /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies</code></td>
-<td>Planned</td>
-<td>Environment sheet &gt; Branches and Tags.</td>
+<td>Yes</td>
+<td>context menu &gt; Branch Policies…</td>
 </tr>
 <tr>
 <td>Delete a deployment branch policy</td>
 <td><code>DELETE /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}</code></td>
-<td>Planned</td>
-<td>Environment sheet &gt; Branches and Tags.</td>
+<td>Yes</td>
+<td>context menu &gt; Branch Policies…</td>
 </tr>
 <tr>
 <td>Get a deployment branch policy</td>
@@ -8104,33 +8273,33 @@ reads the list.</td>
 <tr>
 <td>Update a deployment branch policy</td>
 <td><code>PUT /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}</code></td>
-<td>Planned</td>
-<td>Environment sheet &gt; Branches and Tags.</td>
+<td>Yes</td>
+<td>context menu &gt; Branch Policies…</td>
 </tr>
 <tr>
 <td>Get all deployment protection rules for an environment</td>
 <td><code>GET /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules</code></td>
-<td>Planned</td>
-<td>Environment sheet &gt; Protection.</td>
+<td>Yes</td>
+<td>context menu &gt; Protection Rules…</td>
 </tr>
 <tr>
 <td>Create a custom deployment protection rule on an environment</td>
 <td><code>POST /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules</code></td>
-<td>Planned</td>
-<td>Environment sheet &gt; Protection.</td>
+<td>Yes</td>
+<td>context menu &gt; Protection Rules…</td>
 </tr>
 <tr>
 <td>List custom deployment rule integrations available for an
 environment</td>
 <td><code>GET /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/apps</code></td>
-<td>Planned</td>
-<td>Environment sheet &gt; Protection.</td>
+<td>Yes</td>
+<td>context menu &gt; Protection Rules…</td>
 </tr>
 <tr>
 <td>Disable a custom protection rule for an environment</td>
 <td><code>DELETE /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/{protection_rule_id}</code></td>
-<td>Planned</td>
-<td>Environment sheet &gt; Protection.</td>
+<td>Yes</td>
+<td>context menu &gt; Protection Rules…</td>
 </tr>
 <tr>
 <td>Get a custom deployment protection rule</td>
@@ -8163,7 +8332,7 @@ Plumbing.</td>
 </tbody>
 </table>
 <h4 id="gists">Gists</h4>
-<p>20 operations: 8 yes, 9 planned, 2 not needed, 1 left to github.</p>
+<p>20 operations: 9 yes, 8 planned, 2 not needed, 1 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -8197,8 +8366,8 @@ lists.</td>
 <tr>
 <td>List starred gists</td>
 <td><code>GET /gists/starred</code></td>
-<td>Planned</td>
-<td>Gists; Gist sheet.</td>
+<td>Yes</td>
+<td>Navigator: Gists &gt; Gists I Starred</td>
 </tr>
 <tr>
 <td>Delete a gist</td>
@@ -8559,7 +8728,7 @@ Limits.</td>
 </tbody>
 </table>
 <h4 id="issues">Issues</h4>
-<p>66 operations: 37 yes, 10 planned, 12 not needed, 7 left to
+<p>66 operations: 38 yes, 9 planned, 12 not needed, 7 left to
 github.</p>
 <table>
 <thead>
@@ -8613,8 +8782,9 @@ reads the list.</td>
 <tr>
 <td>List issue comments for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/issues/comments</code></td>
-<td>Planned</td>
-<td>Comment sheet; Conversation page.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Activity &gt; All Issue
+Comments</td>
 </tr>
 <tr>
 <td>Delete an issue comment</td>
@@ -9371,7 +9541,11 @@ job done on GitHub’s site.</td>
 </tbody>
 </table>
 <h4 id="organizations">Organizations</h4>
+<<<<<<< HEAD
+<p>129 operations: 68 yes, 6 planned, 12 not needed, 43 left to
+=======
 <p>129 operations: 58 yes, 17 planned, 11 not needed, 43 left to
+>>>>>>> origin/main
 github.</p>
 <table>
 <thead>
@@ -9531,8 +9705,9 @@ reads the list.</td>
 <tr>
 <td>List failed organization invitations</td>
 <td><code>GET /orgs/{org}/failed_invitations</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Members.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Failed
+Invitations</td>
 </tr>
 <tr>
 <td>List organization webhooks</td>
@@ -9669,9 +9844,8 @@ scale, not something a person edits.</td>
 <tr>
 <td>List app installations for an organization</td>
 <td><code>GET /orgs/{org}/installations</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Installed Apps</td>
 </tr>
 <tr>
 <td>List pending organization invitations</td>
@@ -9706,23 +9880,20 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Create issue field for an organization</td>
 <td><code>POST /orgs/{org}/issue-fields</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Issue Fields</td>
 </tr>
 <tr>
 <td>Delete issue field for an organization</td>
 <td><code>DELETE /orgs/{org}/issue-fields/{issue_field_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Update issue field for an organization</td>
 <td><code>PATCH /orgs/{org}/issue-fields/{issue_field_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Yes</td>
+<td>context menu &gt; Change…</td>
 </tr>
 <tr>
 <td>List issue types for an organization</td>
@@ -10016,8 +10187,9 @@ Properties</td>
 <tr>
 <td>List custom property values for organization repositories</td>
 <td><code>GET /orgs/{org}/properties/values</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Custom Properties.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Custom Property
+Values</td>
 </tr>
 <tr>
 <td>Create or update custom property values for organization
@@ -10029,8 +10201,8 @@ repositories</td>
 <tr>
 <td>List public organization members</td>
 <td><code>GET /orgs/{org}/public_members</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Members.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Public Members</td>
 </tr>
 <tr>
 <td>Remove public organization membership for the authenticated
@@ -10144,32 +10316,32 @@ Managers</td>
 <tr>
 <td>List selected repositories for immutable releases enforcement</td>
 <td><code>GET /orgs/{org}/settings/immutable-releases/repositories</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Immutable Releases:
+Repositories</td>
 </tr>
 <tr>
 <td>Set selected repositories for immutable releases enforcement</td>
 <td><code>PUT /orgs/{org}/settings/immutable-releases/repositories</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Not needed</td>
+<td>Adding and removing one repository at a time does the same, and
+keeps a change someone else made meanwhile; replacing the whole list
+would lose it.</td>
 </tr>
 <tr>
 <td>Disable a selected repository for immutable releases in an
 organization</td>
 <td><code>DELETE /orgs/{org}/settings/immutable-releases/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Enable a selected repository for immutable releases in an
 organization</td>
 <td><code>PUT /orgs/{org}/settings/immutable-releases/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Immutable Releases:
+Repositories</td>
 </tr>
 <tr>
 <td>List hosted compute network configurations for an organization</td>
@@ -11311,8 +11483,7 @@ it returns.</td>
 </tbody>
 </table>
 <h4 id="repositories">Repositories</h4>
-<p>74 operations: 52 yes, 11 planned, 6 not needed, 5 left to
-github.</p>
+<p>74 operations: 56 yes, 7 planned, 6 not needed, 5 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -11356,9 +11527,9 @@ github.</p>
 <tr>
 <td>List repository activities</td>
 <td><code>GET /repos/{owner}/{repo}/activity</code></td>
-<td>Planned</td>
-<td>Repository sheet (General, Features, Merging, Webhooks, Autolinks,
-Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Activity &gt; Push
+Activity</td>
 </tr>
 <tr>
 <td>Create an attestation</td>
@@ -11424,9 +11595,9 @@ updates</td>
 <tr>
 <td>List CODEOWNERS errors</td>
 <td><code>GET /repos/{owner}/{repo}/codeowners/errors</code></td>
-<td>Planned</td>
-<td>Repository sheet (General, Features, Merging, Webhooks, Autolinks,
-Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; CODEOWNERS
+Problems</td>
 </tr>
 <tr>
 <td>Delete a file</td>
@@ -11620,8 +11791,9 @@ reporting</td>
 <tr>
 <td>Get all custom property values for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/properties/values</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; General: Custom Properties.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Custom
+Property Values</td>
 </tr>
 <tr>
 <td>Create or update custom property values for a repository</td>
@@ -11664,8 +11836,9 @@ Protection</td>
 <tr>
 <td>List repository rule suites</td>
 <td><code>GET /repos/{owner}/{repo}/rulesets/rule-suites</code></td>
-<td>Planned</td>
-<td>Ruleset sheet &gt; History (rule insights).</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Rule
+Insights</td>
 </tr>
 <tr>
 <td>Get a repository rule suite</td>
@@ -11857,7 +12030,7 @@ lists.</td>
 </tbody>
 </table>
 <h4 id="secret-scanning">Secret scanning</h4>
-<p>17 operations: 2 yes, 3 planned, 1 not needed, 11 left to github.</p>
+<p>17 operations: 3 yes, 2 planned, 1 not needed, 11 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -11871,9 +12044,9 @@ lists.</td>
 <tr>
 <td>List secret scanning alerts for an organization</td>
 <td><code>GET /orgs/{org}/secret-scanning/alerts</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: secret scanning); bypass
-requests (section 22.1).</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Secret Scanning
+Alerts</td>
 </tr>
 <tr>
 <td>Bulk delete organization custom patterns</td>
@@ -11983,7 +12156,7 @@ requests (section 22.1).</td>
 </tbody>
 </table>
 <h4 id="security-advisories">Security advisories</h4>
-<p>14 operations: 6 yes, 5 planned, 3 not needed.</p>
+<p>14 operations: 7 yes, 4 planned, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -12010,8 +12183,9 @@ reads the list.</td>
 <tr>
 <td>List repository security advisories for an organization</td>
 <td><code>GET /orgs/{org}/security-advisories</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Security
+Advisories</td>
 </tr>
 <tr>
 <td>List repository security advisories</td>
@@ -12325,8 +12499,7 @@ slug).</td>
 </tbody>
 </table>
 <h4 id="users">Users</h4>
-<p>55 operations: 34 yes, 10 planned, 4 not needed, 7 left to
-github.</p>
+<p>55 operations: 39 yes, 5 planned, 4 not needed, 7 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -12455,26 +12628,26 @@ reads the list.</td>
 <tr>
 <td>List issue fields</td>
 <td><code>GET /user/issue-fields</code></td>
-<td>Planned</td>
-<td>Account &gt; Issue Fields (fields for your own repositories)</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Issue Fields</td>
 </tr>
 <tr>
 <td>Create an issue field</td>
 <td><code>POST /user/issue-fields</code></td>
-<td>Planned</td>
-<td>Account &gt; Issue Fields (fields for your own repositories)</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Issue Fields</td>
 </tr>
 <tr>
 <td>Delete an issue field</td>
 <td><code>DELETE /user/issue-fields/{issue_field_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Issue Fields (fields for your own repositories)</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Update an issue field</td>
 <td><code>PATCH /user/issue-fields/{issue_field_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Issue Fields (fields for your own repositories)</td>
+<td>Yes</td>
+<td>context menu &gt; Change…</td>
 </tr>
 <tr>
 <td>List issue types</td>
@@ -12528,8 +12701,8 @@ reads the list.</td>
 <tr>
 <td>List public email addresses for the authenticated user</td>
 <td><code>GET /user/public_emails</code></td>
-<td>Planned</td>
-<td>Account &gt; Profile and Status: Emails.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Public Email Addresses</td>
 </tr>
 <tr>
 <td>Delete social accounts for the authenticated user</td>

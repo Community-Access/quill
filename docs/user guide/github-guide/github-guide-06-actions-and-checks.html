@@ -435,6 +435,19 @@ are allowed to approve start checked.</li>
 QUILL asks once more, naming the environments, and then says which ones
 GitHub approved or rejected. If nothing is waiting, the window says
 “This run is not waiting on any deployment review.”</p>
+<h2 id="an-environments-rules">An environment’s rules</h2>
+<p>An environment’s row, under Repository &gt; Deployments, has these on
+its context menu, beside Secrets… and Variables…:</p>
+<ul>
+<li><strong>Branch Policies…:</strong> which branches and tags may
+deploy to it, when it allows chosen ones only. Add one by name or with a
+wildcard, such as <code>release/*</code>, and say whether it names
+branches or tags. Change rewrites the pattern; Delete removes it.</li>
+<li><strong>Protection Rules…:</strong> GitHub Apps that must approve
+each deployment to it. Add one by choosing from the apps GitHub says are
+installed and can do this; if there are none, QUILL says so. Delete
+removes one.</li>
+</ul>
 <h2 id="artifacts">Artifacts</h2>
 <p>A run can leave files behind: a built installer, a test report. On a
 run, choose <strong>View Artifacts…</strong>. The window lists them with
