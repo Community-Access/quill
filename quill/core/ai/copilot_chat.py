@@ -51,7 +51,7 @@ import sys
 import threading
 from collections.abc import Awaitable, Callable, Sequence
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from quill.core.ai import copilot_auth, copilot_state
 from quill.core.ai.agent_workdir import AgentFolders, agent_folders
@@ -120,6 +120,7 @@ __all__ = [
 _SAFE_MODE = "Safe Mode is on, so AI is off. Nothing was sent."
 _UI_THREAD = "GitHub Copilot was asked on the window's own thread. Nothing was sent."
 T = TypeVar("T")
+TResponse = TypeVar("TResponse")
 
 
 def _safe_mode() -> bool:
@@ -214,6 +215,48 @@ class CopilotChat:
     ) -> CopilotAnswer:
         """One request, one answer (``send_and_wait``); pictures as attachments."""
         return self._turn(prompt, system=system, images=images, model=model)
+
+    def ask_typed(
+        self,
+        prompt: str,
+        response_type: type[TResponse],
+        *,
+        system: str = "",
+        images: Sequence[CopilotImage] = (),
+        model: str = "",
+    ) -> TResponse:
+        """One request validated as a Pydantic model by SDK 2's typed-output API."""
+        self._refuse_if_blocked()
+        from pydantic import BaseModel
+
+        if not isinstance(response_type, type) or not issubclass(response_type, BaseModel):
+            raise TypeError("response_type must be a Pydantic BaseModel subclass")
+        attachments = attachments_for(images)
+        listener = _Listener(None)
+        session_kwargs = self._session_kwargs(system, model, streaming=False)
+        timeout = self._send_timeout()
+
+        async def work(client: Any) -> TResponse:
+            async with await client.create_session(**session_kwargs) as session:
+                unsubscribe = session.on(listener)
+                try:
+                    return cast(
+                        TResponse,
+                        await session.send_and_wait_typed(
+                            prompt,
+                            response_type,
+                            attachments=attachments or None,
+                            timeout=timeout,
+                        ),
+                    )
+                except TimeoutError:
+                    await session.abort()
+                    raise
+                finally:
+                    if callable(unsubscribe):
+                        unsubscribe()
+
+        return self._with_client(work, listener)
 
     def stream(
         self,
@@ -315,7 +358,12 @@ class CopilotChat:
         return SEND_TIMEOUT_SECONDS
 
     def _session_kwargs(self, system: str, model: str, streaming: bool) -> dict[str, Any]:
-        from quill.ai_packs.copilot import available_tools_for, reject_class, system_message_for
+        from quill.ai_packs.copilot import (
+            available_tools_for,
+            reject_class,
+            session_safety_options,
+            system_message_for,
+        )
 
         reject = reject_class()
         refusal = "QUILL answers in text only; no tools are offered."
@@ -323,11 +371,12 @@ class CopilotChat:
         def deny(request: object, invocation: object) -> object:
             return reject(feedback=refusal)
 
-        kwargs: dict[str, Any] = {
+        kwargs: dict[str, Any] = session_safety_options()
+        kwargs.update({
             "permissions": {"on_request": deny},
             "tools": {"available_tools": available_tools_for()},
             "events": {"streaming": streaming},
-        }
+        })
         system_message = system_message_for(with_family_instruction(system))
         if system_message is not None:
             kwargs["system_message"] = system_message
