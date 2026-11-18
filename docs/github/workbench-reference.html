@@ -1144,6 +1144,12 @@ sign-in.</td>
 <td>Search Commits: commits whose message matches the filter box.</td>
 </tr>
 <tr>
+<td>Security Advisories (<code>:search_advisories</code>)</td>
+<td>search</td>
+<td>Security Advisories: search GitHub’s Advisory Database by package,
+CVE or GHSA id.</td>
+</tr>
+<tr>
 <td>Repositories (<code>:search_repositories</code>)</td>
 <td>search</td>
 <td>Search Repositories: repositories whose name or description matches
@@ -1573,6 +1579,12 @@ lines each week, the busiest hours, and each contributor’s lines.</td>
 <td>Security: alerts about vulnerable code and leaked secrets.</td>
 </tr>
 <tr>
+<td>Policy (<code>repository:security_policy</code>)</td>
+<td>repository, security</td>
+<td>Policy: where the security policy is, and whether vulnerabilities
+can be reported privately.</td>
+</tr>
+<tr>
 <td>Alerts (<code>repository:alerts</code>)</td>
 <td>repository, security</td>
 <td>Alerts: open security alerts. Enter reads one.</td>
@@ -1582,6 +1594,12 @@ lines each week, the busiest hours, and each contributor’s lines.</td>
 (<code>repository:alerts_closed</code>)</td>
 <td>repository, security</td>
 <td>Dismissed and Resolved Alerts: alerts no longer open.</td>
+</tr>
+<tr>
+<td>Advisories (<code>repository:advisories</code>)</td>
+<td>repository, security</td>
+<td>Advisories: this repository’s security advisories. New Here reports
+a vulnerability or drafts an advisory.</td>
 </tr>
 <tr>
 <td>Settings (<code>repository:settings</code>)</td>
@@ -2662,6 +2680,8 @@ Label…; Properties…</li>
 on GitHub, Delete Gist…; Properties…</li>
 <li><strong>discussion</strong>: Open Discussion Thread, Read as
 Document…, Copy Link, Open on GitHub; Properties…</li>
+<li><strong>advisory</strong>: Show Details, Publish or Close Advisory…,
+Request CVE…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>security_alert</strong>: Open, Dismiss or Reopen Alert…,
 Open on GitHub; Properties…</li>
 <li><strong>cache</strong>: Show Details, Delete Cache…;
@@ -2902,6 +2922,9 @@ self-hosted, listed under Actions &gt; Runners.</li>
 run again. Under Saved Searches.</li>
 <li><strong>Secret</strong>: A value, such as a password, that workflows
 use and GitHub never shows.</li>
+<li><strong>Security advisory</strong>: A notice that a package has a
+vulnerability: which versions, how serious, and where it is fixed. Each
+has a GHSA id, and often a CVE number too.</li>
 <li><strong>Security alert</strong>: A warning that code, a dependency
 or a secret in it is at risk.</li>
 <li><strong>Squash</strong>: Merging a pull request as one single

@@ -556,6 +556,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Issues and Pull Requests (`:search_issues`) | search | Search Issues and Pull Requests: everything GitHub finds for the words and qualifiers in the filter box, such as is:open author:@me. Ctrl+N saves the search. |
 | Code (`:search_code`) | search | Search Code: files whose text matches the filter box. Needs sign-in. |
 | Commits (`:search_commits`) | search | Search Commits: commits whose message matches the filter box. |
+| Security Advisories (`:search_advisories`) | search | Security Advisories: search GitHub's Advisory Database by package, CVE or GHSA id. |
 | Repositories (`:search_repositories`) | search | Search Repositories: repositories whose name or description matches the filter box. |
 | Saved Searches (`:saved_searches`) | search | Saved Searches: searches you kept, on this computer. Enter runs one; Delete removes it. |
 | People (`:people`) | the top | People: who you follow, who follows you, and anybody you look up. |
@@ -627,8 +628,10 @@ Everything below is generated from the tables the window is built from. The GitH
 | Deployments and Environments (`repository:deployments`) | repository, repository | Deployments and Environments: where the code was deployed. |
 | GitHub Pages (`repository:pages`) | repository, repository | GitHub Pages: the website built from this repository. |
 | Security (`repository:security`) | repository, repository | Security: alerts about vulnerable code and leaked secrets. |
+| Policy (`repository:security_policy`) | repository, security | Policy: where the security policy is, and whether vulnerabilities can be reported privately. |
 | Alerts (`repository:alerts`) | repository, security | Alerts: open security alerts. Enter reads one. |
 | Dismissed and Resolved Alerts (`repository:alerts_closed`) | repository, security | Dismissed and Resolved Alerts: alerts no longer open. |
+| Advisories (`repository:advisories`) | repository, security | Advisories: this repository's security advisories. New Here reports a vulnerability or drafts an advisory. |
 | Settings (`repository:settings`) | repository, repository | Settings: names of secrets, branch protection and general settings. |
 | Secret and Variable Names (`repository:secrets`) | repository, settings | Secret and Variable Names: the names only; GitHub never shows values. |
 | Branch Protection (`repository:branch_protection`) | repository, settings | Branch Protection: who may change a branch and what a change needs first. Enter opens the setting. |
@@ -871,6 +874,7 @@ Keys the window answers that are not menu rows:
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
 - **gist**: Edit Gist..., Star or Unstar, Copy Link, Open on GitHub, Delete Gist...; Properties...
 - **discussion**: Open Discussion Thread, Read as Document..., Copy Link, Open on GitHub; Properties...
+- **advisory**: Show Details, Publish or Close Advisory..., Request CVE..., Open on GitHub, Copy Link; Properties...
 - **security_alert**: Open, Dismiss or Reopen Alert..., Open on GitHub; Properties...
 - **cache**: Show Details, Delete Cache...; Properties...
 - **saved_search**: Run, Remove Saved Search; Properties...
@@ -956,6 +960,7 @@ Keys the window answers that are not menu rows:
 - **Runner**: A machine that runs a workflow's jobs. GitHub provides them, or a repository brings its own, called self-hosted, listed under Actions > Runners.
 - **Saved search**: A search kept on this computer, to run again. Under Saved Searches.
 - **Secret**: A value, such as a password, that workflows use and GitHub never shows.
+- **Security advisory**: A notice that a package has a vulnerability: which versions, how serious, and where it is fixed. Each has a GHSA id, and often a CVE number too.
 - **Security alert**: A warning that code, a dependency or a secret in it is at risk.
 - **Squash**: Merging a pull request as one single commit, instead of all of its commits.
 - **Star**: A bookmark on a repository, which also shows you like it.
