@@ -2,6 +2,13 @@
 
 ## 2.0.0
 
+### Forms: a Form Payments switch, as QUILL has (2026-11-18)
+
+Tools > Customize Features (Ctrl+Alt+F10) has a new area, **Form Payments**,
+off until you turn it on, as QUILL's is. While it is off, Tools > Forms has no
+payment commands. Every profile but Everything leaves it off, and it needs
+Forms on. The profiles now count 25 areas.
+
 ### WordPress: five ways the Workbench could lose your work, closed (2026-11-18)
 
 The WordPress review of 14 November listed eleven ways the Workbench could

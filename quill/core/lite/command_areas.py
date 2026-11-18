@@ -123,6 +123,11 @@ COMMAND_AREA: dict[str, str] = {
     **dict.fromkeys(wordpress_menu.direct_handlers(), "wordpress"),
     # Forms rows straight in File, Insert, View and Format (wordpress.md 17a.10).
     **dict.fromkeys(forms_menu.direct_handlers(), "forms"),
+    # Payments are their own area, off until turned on, as QUILL's Form Payments
+    # feature is (UX review item 35: QUILL Lite may never be ahead of QUILL).
+    "cmd_forms_payments_setup": "forms_payments",
+    "cmd_forms_insert_payment": "forms_payments",
+    "cmd_forms_verify_payments": "forms_payments",
     "cmd_page_setup": "printing",
     "cmd_print": "printing",
     # With the rest of the spelling submenu, which is one switchable area.
@@ -257,6 +262,10 @@ COMMAND_AREA.update({
 COMMAND_AREA.update({f"cmd_set_bookmark_{n}": "bookmarks" for n in range(1, 10)})
 
 
+#: An area whose rows also need another area on: Form Payments lives inside Forms.
+_NEEDS: dict[str, str] = {"forms_payments": "forms"}
+
+
 def area_for(menu: str, handler: str) -> str:
     """The area a row belongs to, or "" when it is always present.
 
@@ -286,6 +295,8 @@ def visible_commands(is_enabled: Callable[[str], bool]) -> list[CommandRow]:
             area = area_for(menu, handler)
             if area and not is_enabled(area):
                 continue
+            if area in _NEEDS and not is_enabled(_NEEDS[area]):
+                continue  # Form Payments' rows go with Forms, whatever their own switch
         if kind == "sep" and not is_enabled(MENU_AREA.get(menu, "")) and MENU_AREA.get(menu):
             continue
         kept.append(row)

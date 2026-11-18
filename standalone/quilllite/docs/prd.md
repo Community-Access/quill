@@ -450,11 +450,11 @@ paragraph over the top of that is what GATE-13 exists to stop.
 
 | Profile | Areas on | Ctrl+N | For |
 |---|---|---|---|
-| Recommended | 19 of 24 | unchanged | the shipped answer, and the way back from experimenting |
-| Everything | 23 of 24 | unchanged | turning things off as they annoy you rather than finding them one at a time |
-| WordPad | 6 of 24 | **rich** | letters and notes that should look like something |
-| Notepad | 3 of 24 | **plain** | config files, logs, and anything where hidden formatting would be a problem |
-| Developer | 20 of 24 | unchanged | Recommended plus Coding, for project tasks with an AI |
+| Recommended | 19 of 25 | unchanged | the shipped answer, and the way back from experimenting |
+| Everything | 24 of 25 | unchanged | turning things off as they annoy you rather than finding them one at a time |
+| WordPad | 6 of 25 | **rich** | letters and notes that should look like something |
+| Notepad | 3 of 25 | **plain** | config files, logs, and anything where hidden formatting would be a problem |
+| Developer | 20 of 25 | unchanged | Recommended plus Coding, for project tasks with an AI |
 
 Every profile keeps the Command Palette (2026-11-04): it is how a command is
 found, so a profile that removed it removed the way to find everything else.
@@ -2291,7 +2291,7 @@ so the two editors cannot do them two ways. The plan of record is
   default and off in every profile but Developer, Everything included. A
   store seeded before the area existed gets it off once, through a second
   seeding marker (`_seeded_coding`).
-- A fifth profile, **Developer**: Recommended plus Coding, 20 of 24 areas.
+- A fifth profile, **Developer**: Recommended plus Coding, 20 of 25 areas.
   Ctrl+N is unchanged.
 
 **Commands** (handlers on the shared mixin; area Coding, by handler in

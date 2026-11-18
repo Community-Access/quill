@@ -20,9 +20,7 @@ class FormsPaymentsCommands:
     host: Any
 
     def _payment_document(self, command: str) -> Any:
-        editor = self.host.ai_editor()
-        enabled = getattr(editor, "_feature_enabled", None)
-        if callable(enabled) and not enabled("core.forms_payments"):
+        if not self._payments_on():
             self.host.announce("Turn on Form Payments in Features before using this command.")
             return None
         doc = self.document(command)  # type: ignore[attr-defined]
@@ -30,6 +28,16 @@ class FormsPaymentsCommands:
             self.host.announce("Fix the form's source errors with Check This Form first.")
             return None
         return doc
+
+    def _payments_on(self) -> bool:
+        """Form Payments is switched on: QUILL's feature, or QUILL Lite's area."""
+        editor = self.host.ai_editor()
+        enabled = getattr(editor, "_feature_enabled", None)
+        if callable(enabled):
+            return bool(enabled("core.forms_payments"))
+        app = getattr(editor, "app", None)
+        area = getattr(app, "feature_enabled", None)
+        return bool(area("forms_payments")) if callable(area) else False
 
     def cmd_payments_setup(self) -> None:
         doc = self._payment_document("Form Payments Setup")

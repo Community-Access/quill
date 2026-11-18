@@ -259,6 +259,14 @@ AREAS: tuple[AppArea, ...] = (
         "Everything here runs on this computer.",
     ),
     AppArea(
+        "forms_payments",
+        "Form Payments",
+        "Tools > Forms > Form Payments Setup and Check Payment Setup: let a form "
+        "take a payment through Stripe or PayPal on your own WordPress site. Off "
+        "until you turn it on, as in QUILL; QUILL Lite never sees or keeps a card "
+        "number or a payment key.",
+    ),
+    AppArea(
         "coding",
         "Coding: project tasks with an AI",
         "Tools for writing code, in the Developer profile: Open Project Folder, "
@@ -283,6 +291,7 @@ DEFAULT_OFF: frozenset[str] = frozenset({
     "autoformat",
     "backups",
     "coding",
+    "forms_payments",
     "go_to_anything",
     "hosted_ai",
 })
@@ -292,6 +301,7 @@ DEFAULT_OFF: frozenset[str] = frozenset({
 #: the new area on, because the first seeding has already happened.
 _LATER_DEFAULT_OFF: tuple[tuple[str, frozenset[str]], ...] = (
     ("_seeded_coding", frozenset({"coding"})),
+    ("_seeded_forms_payments", frozenset({"forms_payments"})),
 )
 
 #: Named starting points, so somebody can ask for "the small one" without
@@ -317,13 +327,14 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "recommended",
         "Recommended",
-        "What a new install is: nineteen of the 24 areas on. Four of the five "
+        "What a new install is: nineteen of the 25 areas on. Four of the six "
         "left off are the ones that would be wrong on by default rather than "
         "merely unused -- autocorrect rewriting a configuration file's quotes, "
         "backups quietly filling a folder, a second 'go to' front door "
         "before anyone asked for one, and AI help, which would send what you "
         "write to a server before you had agreed to it. The fifth is coding, "
-        "which belongs to the Developer profile. Everything else is "
+        "which belongs to the Developer profile, and the sixth Form Payments, "
+        "which stays off until a form is meant to take money. Everything else is "
         "here, including rich text, spell check, the line tools and the "
         "clipboard. Choose this to get back to the shipped answer after "
         "experimenting.",
@@ -332,7 +343,7 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "everything",
         "Everything",
-        "23 of the 24 areas on: every writing area, including the four a new "
+        "24 of the 25 areas on: every writing area, including the five a new "
         "install leaves off. Coding stays off; that is the Developer profile. "
         # Not "and capitalise your sentences": the area description three
         # hundred lines up was corrected for saying so and this one was
@@ -343,7 +354,9 @@ PROFILES: tuple[AppProfile, ...] = (
         "palette and the two lists as a fourth way to jump. It also switches on "
         "AI help, which sends the passage you ask about to QUILL's servers -- "
         "the one area here that does something outside this computer, so choose "
-        "this only if that is what you meant. Choose it if you would rather turn "
+        "this only if that is what you meant. Form Payments comes on too, so a "
+        "form can take a payment through your own WordPress site. Choose it if you "
+        "would rather turn "
         "things off as they annoy you than find them one at a time.",
         # Every *writing* area: coding is the Developer profile's (code.md 6.4).
         frozenset({"coding"}),
@@ -356,7 +369,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "AI makes. Open a folder as a project and Ctrl+3 works on the whole "
         "project instead of one document. Nothing the agent proposes is written "
         "until you accept it, no command runs until you allow it, and Undo Last "
-        "Turn puts every file back. Twenty of the 24 areas: Recommended's "
+        "Turn puts every file back. Twenty of the 25 areas: Recommended's "
         "nineteen and Coding, which no other profile has.",
         frozenset(DEFAULT_OFF - {"coding"}),
     ),
@@ -368,7 +381,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "spacing -- and none of the writing tools behind them. No line "
         "operations, no clipboard history, no bookmarks, no abbreviations. "
         "Ctrl+N makes a rich text document, which is the half of this name a "
-        "list of menus cannot say. Six of the 24 areas, plus a spell checker "
+        "list of menus cannot say. Six of the 25 areas, plus a spell checker "
         "WordPad never had, and the command palette, which every profile "
         "keeps because it is how a command is found.",
         frozenset({
@@ -393,8 +406,9 @@ PROFILES: tuple[AppProfile, ...] = (
             "hosted_ai",
             # Neither program had a way to publish to a website.
             "wordpress",
-            # Neither program ever made a form.
+            # Neither program ever made a form, or took a payment through one.
             "forms",
+            "forms_payments",
             "markup",
             "matches",
             "selection",
@@ -407,7 +421,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "notepad",
         "Notepad",
         "The smallest QUILL Lite gets, and the one most people are replacing "
-        "something with. Three of the 24 areas: printing, text size and the "
+        "something with. Three of the 25 areas: printing, text size and the "
         "command palette, which every profile keeps because it is how a "
         "command is found. No "
         "Format menu, no headings, no bookmarks, no line tools, no clipboard "
@@ -433,8 +447,9 @@ PROFILES: tuple[AppProfile, ...] = (
             "hosted_ai",
             # Neither program had a way to publish to a website.
             "wordpress",
-            # Neither program ever made a form.
+            # Neither program ever made a form, or took a payment through one.
             "forms",
+            "forms_payments",
             # Markdown bold in a .md would be a genuine improvement on Notepad,
             # which is exactly why it is off here: this profile's promise is
             # "nothing Notepad does not have", and a profile that quietly keeps
