@@ -1141,7 +1141,7 @@ Source: PRD section 14. Its “today” statements describe the source audit rev
 |---|---|---|
 | Close reason: completed, not planned, or duplicate of #n | **Built:** Close or Reopen... asks the reason (2026-11-17); Not a Duplicate... takes the mark back (2026-11-18, `issue_links.py`) | Item > Close Issue... asks the reason; the details pane shows it |
 | Linked pull requests and branches for an issue ("Development"), and "create a branch for this issue" | **Built:** the issue sheet's Relationships page and Create Branch for This Issue... (2026-11-17); Unlink Branch... (2026-11-18, `issue_links.py`) | Issue details; Item > Linked Pull Requests; Item > Create Branch for Issue... (next to Start in Local Worktree) |
-| Saved replies | Roadmap GX05 and GX12, not built | Item > Insert Saved Reply in every comment box; Tools > Workbench Options > Saved Replies |
+| Saved replies | **Built 2026-11-17:** Insert Saved Reply in the comment window (`comment_compose.saved_replies`, `viewer.savedReplies`); GitHub has no API to make or edit them, so that stays on GitHub | Item > Insert Saved Reply in every comment box; Tools > Workbench Options > Saved Replies |
 | Wiki | Roadmap GX12, not built | Repository > Wiki (pages as a list, read in details, edit in the editor) |
 | Repository invitations: accept or decline | **Built 2026-11-18** (`repo_invitations.py`) | Needs My Attention > Invitations |
 | Edit description, website and features (issues, wiki, discussions, projects on or off) | **Built:** the repository sheet's Description and feature switches (`sheets_repo.py`) | Repository > Settings > General |

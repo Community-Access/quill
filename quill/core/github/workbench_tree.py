@@ -496,7 +496,6 @@ def _planned(feature: str, node: str, reference: str = "") -> CoverageRow:
 
 PLANNED = CoverageTable((
     # 14.1, worth adding: people will look for these.
-    _planned("Saved replies", "Item > Insert Saved Reply", "GX05, GX12"),
     _planned("Wiki", "Repository > Wiki", "GX12"),
     _planned("Security policy and advisories", "Repository > Security > Advisories", "GX11"),
     # 14.2, worth adding later.
