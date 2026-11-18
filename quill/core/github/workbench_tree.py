@@ -561,6 +561,9 @@ PLANNED = CoverageTable((
     # 14.2, worth adding later.
     _planned("Dependency graph and SBOM export", "Repository > Security > Dependencies"),
     _planned("Packages: one version at a time, and other people's", "Packages > a version"),
-    _planned("Self-hosted runners (registering and removing)", "Repository > Actions > Runners"),
+    _planned(
+        "Self-hosted runners: just-in-time setup and removal tokens",
+        "Repository > Actions > Runners > a token",
+    ),
 ))
 """GitHub features with a future home and no node yet (GitHub PRD 14.1, 14.2)."""

@@ -903,7 +903,7 @@ Keys the window answers that are not menu rows:
 - **repository_set**: Use This Set, Edit Repositories..., Set Filter..., New Set..., Rename Set..., Delete Set...; Properties...
 - **by_name**: Variants and Missing From, Make Them the Same..., Add to Missing..., Find Uses, Rename Everywhere..., Merge Into...; More: Close Everywhere..., Move Open Work To..., Promote to Organization..., Delete Everywhere...; Properties...
 - **fleet**: Open Repository, Open on GitHub, Copy Link; Properties...
-- **runner**: Show Details, Open on GitHub, Copy Link; Properties...
+- **runner**: Show Details, Runner Labels..., Remove Runner..., Open on GitHub, Copy Link; Properties...
 - **package**: Show Details, Open on GitHub, Delete Package Version..., Delete Package..., Copy Link; Properties...
 - **key**: Show Details, Delete Key..., Open on GitHub; Properties...
 - **advisory**: Show Details, Publish or Close Advisory..., Request CVE..., Open on GitHub, Copy Link; Properties...
@@ -1012,7 +1012,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 387 yes, 1069 planned, 15 not needed and 533 left to GitHub.
+In all: 392 yes, 1064 planned, 15 not needed and 533 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1020,7 +1020,7 @@ In all: 387 yes, 1069 planned, 15 not needed and 533 left to GitHub.
 
 #### Actions
 
-208 operations: 43 yes, 158 planned, 7 left to github.
+208 operations: 48 yes, 153 planned, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1173,17 +1173,17 @@ In all: 387 yes, 1069 planned, 15 not needed and 533 left to GitHub.
 | Update a repository Actions policy | `PUT /repos/{owner}/{repo}/actions/policies/{policy_id}` | Planned | Repository > Actions; Organization sheet > Actions; Run, Job, Workflow, Artifact, Cache, Runner, Secret and Variable sheets. |
 | List self-hosted runners for a repository | `GET /repos/{owner}/{repo}/actions/runners` | Yes | Navigator: Repository > owner/name > Actions > Runners |
 | Get runner version end-of-life schedule for a repository | `GET /repos/{owner}/{repo}/actions/runners/deprecations/{version}` | Planned | Repository > Actions > Runners |
-| List runner applications for a repository | `GET /repos/{owner}/{repo}/actions/runners/downloads` | Planned | Repository > Actions > Runners |
+| List runner applications for a repository | `GET /repos/{owner}/{repo}/actions/runners/downloads` | Yes | Navigator: Repository > owner/name > Actions > Runners |
 | Create configuration for a just-in-time runner for a repository | `POST /repos/{owner}/{repo}/actions/runners/generate-jitconfig` | Planned | Repository > Actions > Runners |
-| Create a registration token for a repository | `POST /repos/{owner}/{repo}/actions/runners/registration-token` | Planned | Repository > Actions > Runners |
+| Create a registration token for a repository | `POST /repos/{owner}/{repo}/actions/runners/registration-token` | Yes | Navigator: Repository > owner/name > Actions > Runners |
 | Create a remove token for a repository | `POST /repos/{owner}/{repo}/actions/runners/remove-token` | Planned | Repository > Actions > Runners |
-| Delete a self-hosted runner from a repository | `DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}` | Planned | Repository > Actions > Runners |
+| Delete a self-hosted runner from a repository | `DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}` | Yes | context menu > Remove Runner... |
 | Get a self-hosted runner for a repository | `GET /repos/{owner}/{repo}/actions/runners/{runner_id}` | Yes | Properties (Alt+Enter) on Runner |
 | Remove all custom labels from a self-hosted runner for a repository | `DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels` | Planned | Repository > Actions > Runners |
 | List labels for a self-hosted runner for a repository | `GET /repos/{owner}/{repo}/actions/runners/{runner_id}/labels` | Yes | Item > Properties... (Alt+Enter) |
-| Add custom labels to a self-hosted runner for a repository | `POST /repos/{owner}/{repo}/actions/runners/{runner_id}/labels` | Planned | Repository > Actions > Runners |
+| Add custom labels to a self-hosted runner for a repository | `POST /repos/{owner}/{repo}/actions/runners/{runner_id}/labels` | Yes | context menu > Runner Labels... |
 | Set custom labels for a self-hosted runner for a repository | `PUT /repos/{owner}/{repo}/actions/runners/{runner_id}/labels` | Yes | Properties (Alt+Enter) on Runner: Custom labels |
-| Remove a custom label from a self-hosted runner for a repository | `DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels/{name}` | Planned | Repository > Actions > Runners |
+| Remove a custom label from a self-hosted runner for a repository | `DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels/{name}` | Yes | context menu > Runner Labels... |
 | List workflow runs for a repository | `GET /repos/{owner}/{repo}/actions/runs` | Yes | Navigator: Repository > owner/name > Actions > Runs |
 | Delete a workflow run | `DELETE /repos/{owner}/{repo}/actions/runs/{run_id}` | Yes | context menu > Delete Run... |
 | Get a workflow run | `GET /repos/{owner}/{repo}/actions/runs/{run_id}` | Yes | Properties (Alt+Enter) on Workflow Run |

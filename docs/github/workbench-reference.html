@@ -2783,8 +2783,8 @@ More: Close Everywhere…, Move Open Work To…, Promote to Organization…,
 Delete Everywhere…; Properties…</li>
 <li><strong>fleet</strong>: Open Repository, Open on GitHub, Copy Link;
 Properties…</li>
-<li><strong>runner</strong>: Show Details, Open on GitHub, Copy Link;
-Properties…</li>
+<li><strong>runner</strong>: Show Details, Runner Labels…, Remove
+Runner…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>package</strong>: Show Details, Open on GitHub, Delete
 Package Version…, Delete Package…, Copy Link; Properties…</li>
 <li><strong>key</strong>: Show Details, Delete Key…, Open on GitHub;
@@ -3070,14 +3070,14 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 387 yes, 1069 planned, 15 not needed and 533 left to
+<p>In all: 392 yes, 1064 planned, 15 not needed and 533 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
 is planned under Repository &gt; Wiki.</p>
 <h3 id="rest-operations-by-category">REST operations, by category</h3>
 <h4 id="actions">Actions</h4>
-<p>208 operations: 43 yes, 158 planned, 7 left to github.</p>
+<p>208 operations: 48 yes, 153 planned, 7 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -4046,8 +4046,8 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>List runner applications for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/runners/downloads</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Runners</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Actions &gt; Runners</td>
 </tr>
 <tr>
 <td>Create configuration for a just-in-time runner for a repository</td>
@@ -4058,8 +4058,8 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>Create a registration token for a repository</td>
 <td><code>POST /repos/{owner}/{repo}/actions/runners/registration-token</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Runners</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Actions &gt; Runners</td>
 </tr>
 <tr>
 <td>Create a remove token for a repository</td>
@@ -4070,8 +4070,8 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>Delete a self-hosted runner from a repository</td>
 <td><code>DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Runners</td>
+<td>Yes</td>
+<td>context menu &gt; Remove Runner…</td>
 </tr>
 <tr>
 <td>Get a self-hosted runner for a repository</td>
@@ -4095,8 +4095,8 @@ repository</td>
 <tr>
 <td>Add custom labels to a self-hosted runner for a repository</td>
 <td><code>POST /repos/{owner}/{repo}/actions/runners/{runner_id}/labels</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Runners</td>
+<td>Yes</td>
+<td>context menu &gt; Runner Labels…</td>
 </tr>
 <tr>
 <td>Set custom labels for a self-hosted runner for a repository</td>
@@ -4108,8 +4108,8 @@ repository</td>
 <td>Remove a custom label from a self-hosted runner for a
 repository</td>
 <td><code>DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels/{name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Runners</td>
+<td>Yes</td>
+<td>context menu &gt; Runner Labels…</td>
 </tr>
 <tr>
 <td>List workflow runs for a repository</td>

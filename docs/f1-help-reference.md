@@ -3260,6 +3260,10 @@ Control coverage: 365 audited sites (365 helped).
 
 **Open Repository.** Select the repository's node in the tree.
 
+**Runner Labels.** Add a label, or take one away.
+
+**Remove Runner.** GitHub forgets it; asks first.
+
 **Delete Package Version.** Choose a version, newest first with its tags, and delete it after asking.
 
 **Delete Package.** Delete the package and every version, after you type its name.

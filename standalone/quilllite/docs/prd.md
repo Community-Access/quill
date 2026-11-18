@@ -2783,5 +2783,5 @@ Tag Message, Transfer Repository..., Commit Activity, My Packages, Star Lists, p
 Duplicate..., and the security policy, advisories and Advisory Database
 search, My Keys, and the Webhooks, Deploy Keys and Autolinks
 settings, an organization's webhooks too, GitHub Sponsors, and the
-Wiki node with Clone Wiki..., and an organization's
-packages
+Wiki node with Clone Wiki..., an organization's
+packages, and runner administration

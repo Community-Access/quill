@@ -1864,8 +1864,16 @@ Actions &gt; Runners
 (<code>GET /repos/{owner}/{repo}/actions/runners</code>), row type
 <code>runner</code> reading “name: online, busy, Linux” with labels in
 the details; administrators only, and anyone else is told so in the node
-note (<code>quill/core/github/runners_sbom.py</code>). Registering and
-removing a runner stay planned</td>
+note (<code>quill/core/github/runners_sbom.py</code>). New Runner…
+(Ctrl+N; <code>GET .../runners/downloads</code>,
+<code>POST .../registration-token</code>; the setup commands for the
+chosen system, with the download’s SHA-256 check, copied to the
+clipboard and the token never said, remembered for redaction), Runner
+Labels… (<code>POST</code>/<code>DELETE .../labels</code>, only custom
+labels removable) and Remove Runner…
+(<code>DELETE .../runners/{id}</code>) followed the same day in
+<code>quill/core/github/runner_admin.py</code>. Just-in-time
+configuration and removal tokens remain planned</td>
 <td>Repository &gt; Actions &gt; Runners (read-only)</td>
 </tr>
 <tr>

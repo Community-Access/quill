@@ -459,6 +459,17 @@ def autolink_round_trip(run: Any) -> str:
     return f"{said} Deleted it again."
 
 
+def runner_setup(run: Any) -> str:
+    """Build the setup commands (a real one-hour token, never printed); register nothing."""
+    from quill.core.github.runner_admin import fetch_downloads, setup_commands
+
+    downloads = fetch_downloads(run.api, run.repo)
+    _expect(bool(downloads), "GitHub listed no runner downloads")
+    commands = setup_commands(run.api, run.repo, downloads[0])
+    _expect("--token " in commands, "no token in the commands")
+    return f"setup commands built for {downloads[0].label}, {len(commands.splitlines())} lines"
+
+
 def commit_status(run: Any) -> str:
     from quill.core.github.commit_status import set_commit_status
 
@@ -958,6 +969,9 @@ VERBS: dict[str, Scenario | str] = {
     "transfer_repository": "not here: needs a second account or an organization to receive it",
     "delete_package_version": "not here: the live run publishes no package to delete",
     "delete_package": "not here: the live run publishes no package to delete",
+    "new_runner": runner_setup,
+    "runner_labels": "not here: the test repositories have no self-hosted runner",
+    "remove_runner": "not here: the test repositories have no self-hosted runner",
     "restore_package": "not here: the live run deletes no package to restore",
     "new_star_list": star_list_round_trip,
     "star_lists": "with new_star_list: the test repository put on the list",

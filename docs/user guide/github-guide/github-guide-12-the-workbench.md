@@ -469,8 +469,8 @@ own list, and `Shift+F1` reads it with the keys:
 - **A security alert:** Open, and Dismiss or Reopen Alert, with a reason.
 - **A discussion:** Open Discussion Thread, to read and reply.
 - **An Actions cache:** Show Details and Delete Cache.
-- **A runner:** Show Details, Open on GitHub (its settings page) and Copy
-  Link.
+- **A runner:** Show Details, Runner Labels, Remove Runner, Open on GitHub
+  (its settings page) and Copy Link.
 - **A package:** Show Details, Open on GitHub, Delete Package Version and
   Delete Package.
 - **A security advisory:** Show Details, Publish or Close Advisory, Request

@@ -49,6 +49,8 @@ _OPEN_WEB = _a("open_on_github", "Open on GitHub", help="Open the item in your b
 ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
     "runner": (
         _default("show_details", "Show Details", "The runner's state, system and labels."),
+        _a("runner_labels", "Runner Labels...", _O, "admin", "Add a label, or take one away."),
+        _a("remove_runner", "Remove Runner...", _D, "admin", "GitHub forgets it; asks first."),
         _OPEN_WEB,
         _COPY_LINK,
         _PROPERTIES,

@@ -17565,6 +17565,8 @@ Sponsors, with the login typed before money is spent. Repository > Wiki and
 Clone Wiki... (`Ctrl+Alt+W`, `quill/core/github/wiki.py`) reach a wiki the way
 git does, since GitHub has no wiki API. An organization's packages are under
 Organizations > org > Packages, and Ctrl+N in a packages list restores one.
+Ctrl+N in Runners copies a new runner's setup commands; Runner Labels and
+Remove Runner are on each runner (`quill/core/github/runner_admin.py`).
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

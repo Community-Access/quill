@@ -210,6 +210,10 @@ listing pages in the Workbench remains, as GitHub has no wiki API.
 **2026-11-18, an organization's packages.** Organizations > org > Packages,
 and Ctrl+N in a packages list restores a deleted package (`packages.py`).
 
+**2026-11-18, runner administration.** New Runner (setup commands to the
+clipboard), Runner Labels and Remove Runner (`runner_admin.py`,
+`github_workbench_runner_admin.py`).
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

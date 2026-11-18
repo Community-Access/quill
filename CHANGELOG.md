@@ -620,6 +620,14 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Adding, labelling and removing a self-hosted runner (2026-11-18)
+
+`Ctrl+N` in **Repository > Actions > Runners** puts the commands that set up a
+new runner on the clipboard, for the machine's system, with a one-hour token
+that is never said. **Runner Labels...** adds or removes a label, and **Remove
+Runner...** forgets a runner after asking. Chapter 6 of the GitHub Guide has
+the details.
+
 ### An organization's packages, and restoring a package (2026-11-18)
 
 **Organizations >** an organization **> Packages** in the GitHub Workbench lists

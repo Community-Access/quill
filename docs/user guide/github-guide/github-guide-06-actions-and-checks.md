@@ -241,9 +241,19 @@ hears "GitHub shows owner/name's runners only to its administrators." in the
 node's note, rather than an empty list that looks like there are none. A
 repository that uses only GitHub's own runners lists nothing.
 
-Adding and removing a self-hosted runner is done on the machine itself, with
-GitHub's own setup script, so the Workbench reads runners and does not
-register them.
+Adding and removing runners needs you to administer the repository:
+
+- **New Runner...**: press `Ctrl+N` in Runners. QUILL asks which system the
+  machine runs, such as Linux x64 or Windows x64, then puts the commands that
+  set it up on the clipboard and says so. Paste them into a terminal on that
+  machine. They download the runner, check its SHA-256 checksum, and register
+  it with a token that works for an hour. The token is never said or shown in
+  a list.
+- **Runner Labels...** on a runner adds a label, such as `gpu`, or takes away
+  one that someone added. The labels GitHub gives every runner, such as
+  `self-hosted` and `linux`, cannot be taken away.
+- **Remove Runner...**, or the Delete key, asks first, then GitHub forgets the
+  runner and the program on that machine gets no more jobs.
 
 ## Secret and variable names
 

@@ -30,6 +30,7 @@ DELETE_COMMANDS: dict[str, str] = {
     "webhook": "github.workbench.delete_webhook",
     "deploy_key": "github.workbench.delete_deploy_key",
     "autolink": "github.workbench.delete_autolink",
+    "runner": "github.workbench.remove_runner",
 }
 
 #: What Ctrl+N makes on each node (C3, "New, here"), by the node's key.
@@ -47,6 +48,7 @@ NEW_HERE: dict[str, str] = {
     "webhooks": "github.workbench.new_webhook",
     "organization_webhooks": "github.workbench.new_webhook",
     "packages": "github.workbench.restore_package",
+    "runners": "github.workbench.new_runner",
     "organization_packages": "github.workbench.restore_package",
     "deploy_keys": "github.workbench.new_deploy_key",
     "autolinks": "github.workbench.new_autolink",

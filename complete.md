@@ -1161,7 +1161,7 @@ Source: PRD section 14. Its “today” statements describe the source audit rev
 | Tags: create and delete outside a release | **Built 2026-11-18:** New Tag... and Delete Tag... (`tags.py`); annotated tags with a message, and Read Tag Message | Repository > Code > Tags context menu |
 | Hide a comment (moderation: spam, off-topic, outdated) | Not found | Comment context in details > Hide Comment... |
 | Transfer a repository | **Built 2026-11-18:** Repository > Transfer Repository... (`Ctrl+Alt+T`), typed confirmation (`repo_transfer.py`) | Repository > Settings > Transfer... |
-| Self-hosted runners | **Built 2026-11-18:** Repository > Actions > Runners, read-only (`runners_sbom.py`); registering and removing stay planned | Repository > Actions > Runners (read-only) |
+| Self-hosted runners | **Built 2026-11-18:** Repository > Actions > Runners (`runners_sbom.py`); New Runner (setup commands to the clipboard), Runner Labels and Remove Runner followed the same day (`runner_admin.py`) | Repository > Actions > Runners (read-only) |
 | Star lists | **Built 2026-11-18:** Repositories > Star Lists, New Star List..., Star Lists... on a repository, Rename or Delete Star List... (`star_lists.py`) | Repositories > Starred > each list |
 | Your profile and status | **Built 2026-11-18:** Account > Set Your Status... (`user_status.py`); People > My Profile and each person's Profile (`profile.py`) | Account > Profile and Status... |
 
