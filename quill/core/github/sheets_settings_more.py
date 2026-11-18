@@ -56,7 +56,7 @@ def _selected(data: Mapping[str, Any]) -> dict[str, Value]:
     return {
         "github_owned_allowed": bool(data.get("github_owned_allowed")),
         "verified_allowed": bool(data.get("verified_allowed")),
-        "patterns_allowed": [str(one) for one in data.get("patterns_allowed") or []],
+        "patterns_allowed": tuple(str(one) for one in data.get("patterns_allowed") or []),
     }
 
 

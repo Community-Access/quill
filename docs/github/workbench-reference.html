@@ -3276,14 +3276,14 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 501 yes, 545 planned, 217 not needed and 741 left to
+<p>In all: 529 yes, 517 planned, 217 not needed and 741 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
 is planned under Repository &gt; Wiki.</p>
 <h3 id="rest-operations-by-category">REST operations, by category</h3>
 <h4 id="actions">Actions</h4>
-<p>208 operations: 77 yes, 71 planned, 16 not needed, 44 left to
+<p>208 operations: 95 yes, 53 planned, 16 not needed, 44 left to
 github.</p>
 <table>
 <thead>
@@ -3558,28 +3558,30 @@ Actions</td>
 <tr>
 <td>Get artifact and log retention settings for an organization</td>
 <td><code>GET /orgs/{org}/actions/permissions/artifact-and-log-retention</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization</td>
 </tr>
 <tr>
 <td>Set artifact and log retention settings for an organization</td>
 <td><code>PUT /orgs/{org}/actions/permissions/artifact-and-log-retention</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization: Keep artifacts and logs for
+days</td>
 </tr>
 <tr>
 <td>Get fork PR contributor approval permissions for an
 organization</td>
 <td><code>GET /orgs/{org}/actions/permissions/fork-pr-contributor-approval</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization</td>
 </tr>
 <tr>
 <td>Set fork PR contributor approval permissions for an
 organization</td>
 <td><code>PUT /orgs/{org}/actions/permissions/fork-pr-contributor-approval</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization: Approval needed for
+workflows from</td>
 </tr>
 <tr>
 <td>Get private repo fork PR workflow settings for an organization</td>
@@ -3624,26 +3626,28 @@ organization</td>
 <tr>
 <td>Get allowed actions and reusable workflows for an organization</td>
 <td><code>GET /orgs/{org}/actions/permissions/selected-actions</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization</td>
 </tr>
 <tr>
 <td>Set allowed actions and reusable workflows for an organization</td>
 <td><code>PUT /orgs/{org}/actions/permissions/selected-actions</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization: Allow actions made by
+GitHub</td>
 </tr>
 <tr>
 <td>Get self-hosted runners settings for an organization</td>
 <td><code>GET /orgs/{org}/actions/permissions/self-hosted-runners</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization</td>
 </tr>
 <tr>
 <td>Set self-hosted runners settings for an organization</td>
 <td><code>PUT /orgs/{org}/actions/permissions/self-hosted-runners</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization: Repositories that may use
+self-hosted runners</td>
 </tr>
 <tr>
 <td>List repositories allowed to use self-hosted runners in an
@@ -3676,14 +3680,15 @@ self-hosted runners in an organization</td>
 <tr>
 <td>Get default workflow permissions for an organization</td>
 <td><code>GET /orgs/{org}/actions/permissions/workflow</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization</td>
 </tr>
 <tr>
 <td>Set default workflow permissions for an organization</td>
 <td><code>PUT /orgs/{org}/actions/permissions/workflow</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization: Workflow token
+permission</td>
 </tr>
 <tr>
 <td>List organization Actions policies</td>
@@ -4171,38 +4176,41 @@ for company deployments, set up on GitHub’s site.</td>
 <tr>
 <td>Get the level of access for workflows outside of the repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/permissions/access</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Repository</td>
 </tr>
 <tr>
 <td>Set the level of access for workflows outside of the repository</td>
 <td><code>PUT /repos/{owner}/{repo}/actions/permissions/access</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Repository: Workflows here may be used
+by</td>
 </tr>
 <tr>
 <td>Get artifact and log retention settings for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/permissions/artifact-and-log-retention</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Repository</td>
 </tr>
 <tr>
 <td>Set artifact and log retention settings for a repository</td>
 <td><code>PUT /repos/{owner}/{repo}/actions/permissions/artifact-and-log-retention</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Repository: Keep artifacts and logs for
+days</td>
 </tr>
 <tr>
 <td>Get fork PR contributor approval permissions for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/permissions/fork-pr-contributor-approval</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Repository</td>
 </tr>
 <tr>
 <td>Set fork PR contributor approval permissions for a repository</td>
 <td><code>PUT /repos/{owner}/{repo}/actions/permissions/fork-pr-contributor-approval</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Repository: Approval needed for workflows
+from</td>
 </tr>
 <tr>
 <td>Get private repo fork PR workflow settings for a repository</td>
@@ -4219,14 +4227,15 @@ for company deployments, set up on GitHub’s site.</td>
 <tr>
 <td>Get allowed actions and reusable workflows for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/permissions/selected-actions</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Repository</td>
 </tr>
 <tr>
 <td>Set allowed actions and reusable workflows for a repository</td>
 <td><code>PUT /repos/{owner}/{repo}/actions/permissions/selected-actions</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions (section 18.3).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Repository: Allow actions made by
+GitHub</td>
 </tr>
 <tr>
 <td>Get default workflow permissions for a repository</td>
@@ -6107,7 +6116,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="code-scanning">Code scanning</h4>
-<p>25 operations: 2 yes, 20 planned, 3 not needed.</p>
+<p>25 operations: 4 yes, 18 planned, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -6267,16 +6276,15 @@ sheet; Repository &gt; Security setup.</td>
 <tr>
 <td>Get a code scanning default setup configuration</td>
 <td><code>GET /repos/{owner}/{repo}/code-scanning/default-setup</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Repository</td>
 </tr>
 <tr>
 <td>Update a code scanning default setup configuration</td>
 <td><code>PATCH /repos/{owner}/{repo}/code-scanning/default-setup</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Repository: Code scanning default
+setup</td>
 </tr>
 <tr>
 <td>Upload an analysis as SARIF data</td>
@@ -8308,7 +8316,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="interactions">Interactions</h4>
-<p>16 operations: 2 yes, 14 planned.</p>
+<p>16 operations: 5 yes, 11 planned.</p>
 <table>
 <thead>
 <tr>
@@ -8322,23 +8330,20 @@ reads the list.</td>
 <tr>
 <td>Remove interaction restrictions for an organization</td>
 <td><code>DELETE /orgs/{org}/interaction-limits</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; General &gt; Interaction
-Limits.</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization: Interaction limit</td>
 </tr>
 <tr>
 <td>Get interaction restrictions for an organization</td>
 <td><code>GET /orgs/{org}/interaction-limits</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; General &gt; Interaction
-Limits.</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization</td>
 </tr>
 <tr>
 <td>Set interaction restrictions for an organization</td>
 <td><code>PUT /orgs/{org}/interaction-limits</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; General &gt; Interaction
-Limits.</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization: Interaction limit</td>
 </tr>
 <tr>
 <td>Get pull request creation cap for an org</td>
@@ -9225,7 +9230,7 @@ job done on GitHub’s site.</td>
 </tbody>
 </table>
 <h4 id="organizations">Organizations</h4>
-<p>129 operations: 42 yes, 43 planned, 10 not needed, 34 left to
+<p>129 operations: 44 yes, 41 planned, 10 not needed, 34 left to
 github.</p>
 <table>
 <thead>
@@ -9978,16 +9983,14 @@ Managers</td>
 <tr>
 <td>Get immutable releases settings for an organization</td>
 <td><code>GET /orgs/{org}/settings/immutable-releases</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization</td>
 </tr>
 <tr>
 <td>Set immutable releases settings for an organization</td>
 <td><code>PUT /orgs/{org}/settings/immutable-releases</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Organization: Immutable releases in</td>
 </tr>
 <tr>
 <td>List selected repositories for immutable releases enforcement</td>
@@ -11106,7 +11109,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="repositories">Repositories</h4>
-<p>74 operations: 48 yes, 19 planned, 5 not needed, 2 left to
+<p>74 operations: 51 yes, 16 planned, 5 not needed, 2 left to
 github.</p>
 <table>
 <thead>
@@ -11351,23 +11354,20 @@ reads the list.</td>
 <tr>
 <td>Disable immutable releases</td>
 <td><code>DELETE /repos/{owner}/{repo}/immutable-releases</code></td>
-<td>Planned</td>
-<td>Repository sheet (General, Features, Merging, Webhooks, Autolinks,
-Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Repository: Immutable releases</td>
 </tr>
 <tr>
 <td>Check if immutable releases are enabled for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/immutable-releases</code></td>
-<td>Planned</td>
-<td>Repository sheet (General, Features, Merging, Webhooks, Autolinks,
-Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Repository</td>
 </tr>
 <tr>
 <td>Enable immutable releases</td>
 <td><code>PUT /repos/{owner}/{repo}/immutable-releases</code></td>
-<td>Planned</td>
-<td>Repository sheet (General, Features, Merging, Webhooks, Autolinks,
-Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Repository: Immutable releases</td>
 </tr>
 <tr>
 <td>List issue types for a repository</td>

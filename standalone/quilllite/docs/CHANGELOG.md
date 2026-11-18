@@ -2,6 +2,27 @@
 
 ## 2.0.0
 
+### Actions rules, immutable releases and code scanning on Properties (2026-11-18)
+
+**Properties** on a repository has two new pages:
+
+- **Actions Rules:** how many days Actions keeps artifacts and logs; which
+  outside contributors need approval before their workflows run; when
+  Allowed actions is set to selected, whether actions made by GitHub and by
+  verified creators may run, and a list of other allowed actions; and, for a
+  private repository, which other repositories may use its workflows.
+- **Releases and Scanning:** immutable releases, whose tag and files can no
+  longer be changed once published, and code scanning's default setup and
+  which set of queries it runs.
+
+An organization's Properties has the organization-wide Actions Rules (the
+same choices, plus the workflow token's default permission, whether Actions
+may create and approve pull requests, and which repositories may use
+self-hosted runners) and a **Safety** page: a week-long interaction limit for
+every public repository, and which repositories must keep releases immutable.
+Choosing "none" lifts the limit. Each is saved, checked and undone like
+every other field on a sheet. Planned GitHub endpoints fall from 545 to 517.
+
 ### Choosing which repositories may use a secret, variable or runner group (2026-11-18)
 
 An organization's secrets and variables, its Copilot agent secrets and
