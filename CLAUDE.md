@@ -126,7 +126,9 @@ resolve in git history, `ear.md` was never committed and is summarised in the
 Cast PRD (section 23.25), and the open screen-reader checks moved to
 `docs/qa/screen-reader-checks-2026-10.md`. Likewise `wp_missing.md` and `complete2.md`, merged into the
 root `complete.md` on 2026-11-18 as its Parts 3 and 7 (with `how.md`'s review
-notes as Part 8): their citations resolve there, and in git history. `complete.md`
+notes as Part 8, its walkthrough moved to `docs/design/wordpress-ux-walkthrough.md`,
+and `ear.md`'s leftovers as Part 5.1): their citations resolve there, and in git
+history. `complete.md`
 is the one list of open work, GitHub Workbench first; add to it rather than
 starting a new root file. Unlike those, `codex.md <section>`
 citations (the AI plan of record: Choose Your AI, Ask, the agents) resolve on

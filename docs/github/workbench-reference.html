@@ -3048,6 +3048,8 @@ Delete Everywhere…; Properties…</li>
 Properties…</li>
 <li><strong>runner</strong>: Show Details, Runner Labels…, Remove
 Runner…, Open on GitHub, Copy Link; Properties…</li>
+<li><strong>pages_site</strong>: Show Details, Check Site, Rebuild, Turn
+Off Pages…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>environment</strong>: Show Details, Secrets…, Variables…,
 Delete…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>codespace</strong>: Show Details, Start, Stop, Change
@@ -3213,6 +3215,8 @@ alerts. Under Across Repositories, Fleet.</li>
 from which you can propose changes back. Under People, Forks.</li>
 <li><strong>Gist</strong>: A small shared file or snippet, with its own
 history.</li>
+<li><strong>GitHub Pages</strong>: A website GitHub publishes from a
+repository, from a branch or by a workflow.</li>
 <li><strong>Inbox</strong>: The Workbench’s one list of what needs you,
 made from notifications, review requests, assignments and mentions.</li>
 <li><strong>Invitation</strong>: Someone with admin access asking you to
@@ -3344,14 +3348,14 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 600 yes, 430 planned, 229 not needed and 745 left to
+<p>In all: 611 yes, 272 planned, 255 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
 is planned under Repository &gt; Wiki.</p>
 <h3 id="rest-operations-by-category">REST operations, by category</h3>
 <h4 id="actions">Actions</h4>
-<p>208 operations: 110 yes, 36 planned, 17 not needed, 45 left to
+<p>208 operations: 110 yes, 28 planned, 22 not needed, 48 left to
 github.</p>
 <table>
 <thead>
@@ -3938,20 +3942,23 @@ reads the list.</td>
 <td>Remove all custom labels from a self-hosted runner for an
 organization</td>
 <td><code>DELETE /orgs/{org}/actions/runners/{runner_id}/labels</code></td>
-<td>Planned</td>
-<td>Runner sheet.</td>
+<td>Not needed</td>
+<td>Replaces or clears every label at once; Runner Labels adds and
+removes them one at a time.</td>
 </tr>
 <tr>
 <td>List labels for a self-hosted runner for an organization</td>
 <td><code>GET /orgs/{org}/actions/runners/{runner_id}/labels</code></td>
-<td>Planned</td>
-<td>Runner sheet.</td>
+<td>Not needed</td>
+<td>Replaces or clears every label at once; Runner Labels adds and
+removes them one at a time.</td>
 </tr>
 <tr>
 <td>Add custom labels to a self-hosted runner for an organization</td>
 <td><code>POST /orgs/{org}/actions/runners/{runner_id}/labels</code></td>
-<td>Planned</td>
-<td>Runner sheet.</td>
+<td>Not needed</td>
+<td>Replaces or clears every label at once; Runner Labels adds and
+removes them one at a time.</td>
 </tr>
 <tr>
 <td>Set custom labels for a self-hosted runner for an organization</td>
@@ -4166,9 +4173,11 @@ ID)</td>
 <tr>
 <td>List concurrency groups for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/concurrency_groups</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions; Organization sheet &gt; Actions; Run, Job,
-Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Get a concurrency group for a repository</td>
@@ -4407,8 +4416,9 @@ site.</td>
 <td>Remove all custom labels from a self-hosted runner for a
 repository</td>
 <td><code>DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Runners</td>
+<td>Not needed</td>
+<td>Replaces or clears every label at once; Runner Labels adds and
+removes them one at a time.</td>
 </tr>
 <tr>
 <td>List labels for a self-hosted runner for a repository</td>
@@ -4480,8 +4490,9 @@ repository</td>
 <tr>
 <td>List jobs for a workflow run attempt</td>
 <td><code>GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs</code></td>
-<td>Planned</td>
-<td>Job sheet.</td>
+<td>Not needed</td>
+<td>Check suites and an attempt’s jobs are part of the run and check
+views, which read them by run and commit.</td>
 </tr>
 <tr>
 <td>Download workflow run attempt logs</td>
@@ -4498,9 +4509,11 @@ repository</td>
 <tr>
 <td>List concurrency groups for a workflow run</td>
 <td><code>GET /repos/{owner}/{repo}/actions/runs/{run_id}/concurrency_groups</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions; Organization sheet &gt; Actions; Run, Job,
-Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Review custom deployment protection rules for a workflow run</td>
@@ -4667,8 +4680,9 @@ workflow; one route serves both.</td>
 <tr>
 <td>Get workflow usage</td>
 <td><code>GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/timing</code></td>
-<td>Planned</td>
-<td>Workflow sheet.</td>
+<td>Left to GitHub</td>
+<td>How many billable minutes a workflow used is billing, which GitHub’s
+billing pages show.</td>
 </tr>
 <tr>
 <td>List environment secrets</td>
@@ -4735,7 +4749,8 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="activity">Activity</h4>
-<p>34 operations: 19 yes, 15 planned.</p>
+<p>34 operations: 19 yes, 11 planned, 1 not needed, 3 left to
+github.</p>
 <table>
 <thead>
 <tr>
@@ -4749,22 +4764,26 @@ reads the list.</td>
 <tr>
 <td>List public events</td>
 <td><code>GET /events</code></td>
-<td>Planned</td>
-<td>Needs My Attention &gt; My Activity Feed; Repository &gt; Activity;
-Person &gt; Activity.</td>
+<td>Left to GitHub</td>
+<td>Lists every repository, user, organization, gist or event on GitHub;
+a person works with their own and those they follow, which the Workbench
+lists.</td>
 </tr>
 <tr>
 <td>Get feeds</td>
 <td><code>GET /feeds</code></td>
-<td>Planned</td>
-<td>Needs My Attention &gt; My Activity Feed.</td>
+<td>Left to GitHub</td>
+<td>Lists every repository, user, organization, gist or event on GitHub;
+a person works with their own and those they follow, which the Workbench
+lists.</td>
 </tr>
 <tr>
 <td>List public events for a network of repositories</td>
 <td><code>GET /networks/{owner}/{repo}/events</code></td>
-<td>Planned</td>
-<td>Needs My Attention &gt; My Activity Feed; Repository &gt; Activity;
-Person &gt; Activity.</td>
+<td>Left to GitHub</td>
+<td>Lists every repository, user, organization, gist or event on GitHub;
+a person works with their own and those they follow, which the Workbench
+lists.</td>
 </tr>
 <tr>
 <td>List notifications for the authenticated user</td>
@@ -4849,8 +4868,9 @@ and People</td>
 <tr>
 <td>Get stargazer count</td>
 <td><code>GET /repos/{owner}/{repo}/stargazers/count</code></td>
-<td>Planned</td>
-<td>You page: Star (section 16.7).</td>
+<td>Not needed</td>
+<td>The star count is part of the repository, which every read of it
+returns.</td>
 </tr>
 <tr>
 <td>Get repository star history</td>
@@ -5308,7 +5328,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="apps">Apps</h4>
-<p>37 operations: 8 planned, 29 left to github.</p>
+<p>37 operations: 4 planned, 33 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -5455,8 +5475,9 @@ JWT or installation token.</td>
 <tr>
 <td>Get an app</td>
 <td><code>GET /apps/{app_slug}</code></td>
-<td>Planned</td>
-<td>Organization and Repository sheets &gt; Apps</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 <tr>
 <td>List repositories accessible to the app installation</td>
@@ -5523,14 +5544,16 @@ on GitHub: Marketplace).</td>
 <tr>
 <td>Get an organization installation for the authenticated app</td>
 <td><code>GET /orgs/{org}/installation</code></td>
-<td>Planned</td>
-<td>Organization and Repository sheets &gt; Apps</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 <tr>
 <td>Get a repository installation for the authenticated app</td>
 <td><code>GET /repos/{owner}/{repo}/installation</code></td>
-<td>Planned</td>
-<td>Organization and Repository sheets &gt; Apps</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 <tr>
 <td>List app installations accessible to the user access token</td>
@@ -5575,8 +5598,9 @@ on GitHub: Marketplace).</td>
 <tr>
 <td>Get a user installation for the authenticated app</td>
 <td><code>GET /users/{username}/installation</code></td>
-<td>Planned</td>
-<td>Organization and Repository sheets &gt; Apps</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 </tbody>
 </table>
@@ -6003,7 +6027,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="checks">Checks</h4>
-<p>12 operations: 2 yes, 6 planned, 4 left to github.</p>
+<p>12 operations: 2 yes, 3 planned, 3 not needed, 4 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -6063,14 +6087,16 @@ request &gt; Checks (read).</td>
 <tr>
 <td>Get a check suite</td>
 <td><code>GET /repos/{owner}/{repo}/check-suites/{check_suite_id}</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Checks; Commit &gt; Checks; Run sheet.</td>
+<td>Not needed</td>
+<td>Check suites and an attempt’s jobs are part of the run and check
+views, which read them by run and commit.</td>
 </tr>
 <tr>
 <td>List check runs in a check suite</td>
 <td><code>GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Checks; Commit &gt; Checks; Run sheet.</td>
+<td>Not needed</td>
+<td>Check suites and an attempt’s jobs are part of the run and check
+views, which read them by run and commit.</td>
 </tr>
 <tr>
 <td>Rerequest a check suite</td>
@@ -6087,13 +6113,14 @@ request &gt; Checks (read).</td>
 <tr>
 <td>List check suites for a Git reference</td>
 <td><code>GET /repos/{owner}/{repo}/commits/{ref}/check-suites</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Checks; Commit &gt; Checks; Run sheet.</td>
+<td>Not needed</td>
+<td>Check suites and an attempt’s jobs are part of the run and check
+views, which read them by run and commit.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="classroom">Classroom</h4>
-<p>6 operations: 5 planned, 1 not needed.</p>
+<p>6 operations: 1 not needed, 5 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -6107,30 +6134,30 @@ request &gt; Checks (read).</td>
 <tr>
 <td>Closed - Get an assignment</td>
 <td><code>GET /assignments/{assignment_id}</code></td>
-<td>Planned</td>
-<td>Organizations &gt; org &gt; Classroom (read-only assignments and
-grades, for teachers).</td>
+<td>Left to GitHub</td>
+<td>GitHub Classroom’s assignments and grades are read on
+classroom.github.com; not built, by Jeff’s choice (2026-11-18).</td>
 </tr>
 <tr>
 <td>Closed - List accepted assignments for an assignment</td>
 <td><code>GET /assignments/{assignment_id}/accepted_assignments</code></td>
-<td>Planned</td>
-<td>Organizations &gt; org &gt; Classroom (read-only assignments and
-grades, for teachers).</td>
+<td>Left to GitHub</td>
+<td>GitHub Classroom’s assignments and grades are read on
+classroom.github.com; not built, by Jeff’s choice (2026-11-18).</td>
 </tr>
 <tr>
 <td>Closed - Get assignment grades</td>
 <td><code>GET /assignments/{assignment_id}/grades</code></td>
-<td>Planned</td>
-<td>Organizations &gt; org &gt; Classroom (read-only assignments and
-grades, for teachers).</td>
+<td>Left to GitHub</td>
+<td>GitHub Classroom’s assignments and grades are read on
+classroom.github.com; not built, by Jeff’s choice (2026-11-18).</td>
 </tr>
 <tr>
 <td>Closed - List classrooms</td>
 <td><code>GET /classrooms</code></td>
-<td>Planned</td>
-<td>Organizations &gt; org &gt; Classroom (read-only assignments and
-grades, for teachers).</td>
+<td>Left to GitHub</td>
+<td>GitHub Classroom’s assignments and grades are read on
+classroom.github.com; not built, by Jeff’s choice (2026-11-18).</td>
 </tr>
 <tr>
 <td>Closed - Get a classroom</td>
@@ -6142,14 +6169,14 @@ reads the list.</td>
 <tr>
 <td>Closed - List assignments for a classroom</td>
 <td><code>GET /classrooms/{classroom_id}/assignments</code></td>
-<td>Planned</td>
-<td>Organizations &gt; org &gt; Classroom (read-only assignments and
-grades, for teachers).</td>
+<td>Left to GitHub</td>
+<td>GitHub Classroom’s assignments and grades are read on
+classroom.github.com; not built, by Jeff’s choice (2026-11-18).</td>
 </tr>
 </tbody>
 </table>
 <h4 id="code-quality">Code quality</h4>
-<p>4 operations: 3 planned, 1 not needed.</p>
+<p>4 operations: 1 not needed, 3 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -6163,8 +6190,11 @@ grades, for teachers).</td>
 <tr>
 <td>List code quality findings for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/code-quality/findings</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Code Quality.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Get a code quality finding</td>
@@ -6176,19 +6206,25 @@ reads the list.</td>
 <tr>
 <td>Get a code quality setup configuration</td>
 <td><code>GET /repos/{owner}/{repo}/code-quality/setup</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Code Quality.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Update a code quality setup configuration</td>
 <td><code>PATCH /repos/{owner}/{repo}/code-quality/setup</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Code Quality.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 </tbody>
 </table>
 <h4 id="code-scanning">Code scanning</h4>
-<p>25 operations: 15 yes, 4 planned, 3 not needed, 3 left to github.</p>
+<p>25 operations: 15 yes, 3 not needed, 7 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -6202,16 +6238,18 @@ reads the list.</td>
 <tr>
 <td>Get the AI Scan setting for an organization</td>
 <td><code>GET /orgs/{org}/code-scanning/ai-scan</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Update the AI Scan setting for an organization</td>
 <td><code>PATCH /orgs/{org}/code-scanning/ai-scan</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>List code scanning alerts for an organization</td>
@@ -6223,16 +6261,18 @@ Alerts</td>
 <tr>
 <td>Get AI Scan enablement for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/code-scanning/ai-scan</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Update AI Scan enablement for a repository</td>
 <td><code>PATCH /repos/{owner}/{repo}/code-scanning/ai-scan</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>List code scanning alerts for a repository</td>
@@ -6983,7 +7023,7 @@ and Team Access</td>
 </tbody>
 </table>
 <h4 id="commits">Commits</h4>
-<p>14 operations: 7 yes, 6 planned, 1 not needed.</p>
+<p>14 operations: 8 yes, 4 planned, 2 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -7050,9 +7090,8 @@ comments.</td>
 <tr>
 <td>List pull requests associated with a commit</td>
 <td><code>GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls</code></td>
-<td>Planned</td>
-<td>Commit sheet; Repository &gt; Code &gt; Commits; Commit
-comments.</td>
+<td>Yes</td>
+<td>editor GitHub menu &gt; Open the Pull Request for This Line</td>
 </tr>
 <tr>
 <td>Get a commit</td>
@@ -7069,9 +7108,9 @@ comments.</td>
 <tr>
 <td>List commit statuses for a reference</td>
 <td><code>GET /repos/{owner}/{repo}/commits/{ref}/statuses</code></td>
-<td>Planned</td>
-<td>Commit sheet; Repository &gt; Code &gt; Commits; Commit
-comments.</td>
+<td>Not needed</td>
+<td>A commit’s statuses are part of Combined Check Status, which already
+reads them.</td>
 </tr>
 <tr>
 <td>Compare two commits</td>
@@ -7088,7 +7127,7 @@ comments.</td>
 </tbody>
 </table>
 <h4 id="copilot">Copilot</h4>
-<p>44 operations: 8 planned, 36 left to github.</p>
+<p>44 operations: 44 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -7233,31 +7272,35 @@ companies that buy Copilot seats, managed on GitHub’s site.</td>
 <td>Get the Copilot code review runner configuration for an
 organization</td>
 <td><code>GET /orgs/{org}/copilot/code-review/runner</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Set the Copilot code review runner configuration for an
 organization</td>
 <td><code>PUT /orgs/{org}/copilot/code-review/runner</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot code review settings for an organization</td>
 <td><code>GET /orgs/{org}/copilot/code-review/settings</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Update Copilot code review settings for an organization</td>
 <td><code>PATCH /orgs/{org}/copilot/code-review/settings</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot cloud agent permissions for an organization</td>
@@ -7362,16 +7405,18 @@ companies that buy Copilot seats, managed on GitHub’s site.</td>
 <tr>
 <td>Get the Copilot code review policy for an organization</td>
 <td><code>GET /orgs/{org}/copilot/policies/code-review</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Set the Copilot code review policy for an organization</td>
 <td><code>PUT /orgs/{org}/copilot/policies/code-review</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot seat assignment details for a user</td>
@@ -7411,21 +7456,23 @@ companies that buy Copilot seats, managed on GitHub’s site.</td>
 <tr>
 <td>Get Copilot code review settings for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/copilot/code-review/settings</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Update Copilot code review settings for a repository</td>
 <td><code>PATCH /repos/{owner}/{repo}/copilot/code-review/settings</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="copilot-spaces">Copilot Spaces</h4>
-<p>28 operations: 24 planned, 4 not needed.</p>
+<p>28 operations: 4 not needed, 24 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -7439,23 +7486,23 @@ Copilot.</td>
 <tr>
 <td>List organization Copilot Spaces</td>
 <td><code>GET /orgs/{org}/copilot-spaces</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Create an organization Copilot Space</td>
 <td><code>POST /orgs/{org}/copilot-spaces</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Delete an organization Copilot Space</td>
 <td><code>DELETE /orgs/{org}/copilot-spaces/{space_number}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Get an organization Copilot Space</td>
@@ -7467,58 +7514,58 @@ reads the list.</td>
 <tr>
 <td>Set an organization Copilot Space</td>
 <td><code>PUT /orgs/{org}/copilot-spaces/{space_number}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>List collaborators for an organization Copilot Space</td>
 <td><code>GET /orgs/{org}/copilot-spaces/{space_number}/collaborators</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Add a collaborator to an organization Copilot Space</td>
 <td><code>POST /orgs/{org}/copilot-spaces/{space_number}/collaborators</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Remove a collaborator from an organization Copilot Space</td>
 <td><code>DELETE /orgs/{org}/copilot-spaces/{space_number}/collaborators/{actor_type}/{actor_identifier}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Set a collaborator role for an organization Copilot Space</td>
 <td><code>PUT /orgs/{org}/copilot-spaces/{space_number}/collaborators/{actor_type}/{actor_identifier}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>List resources for an organization Copilot Space</td>
 <td><code>GET /orgs/{org}/copilot-spaces/{space_number}/resources</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Create a resource for an organization Copilot Space</td>
 <td><code>POST /orgs/{org}/copilot-spaces/{space_number}/resources</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Delete a resource from an organization Copilot Space</td>
 <td><code>DELETE /orgs/{org}/copilot-spaces/{space_number}/resources/{space_resource_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Get a resource for an organization Copilot Space</td>
@@ -7530,30 +7577,30 @@ reads the list.</td>
 <tr>
 <td>Set a resource for an organization Copilot Space</td>
 <td><code>PUT /orgs/{org}/copilot-spaces/{space_number}/resources/{space_resource_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>List Copilot Spaces for a user</td>
 <td><code>GET /users/{username}/copilot-spaces</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Create a Copilot Space for a user</td>
 <td><code>POST /users/{username}/copilot-spaces</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Delete a Copilot Space for a user</td>
 <td><code>DELETE /users/{username}/copilot-spaces/{space_number}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Get a Copilot Space for a user</td>
@@ -7565,58 +7612,58 @@ reads the list.</td>
 <tr>
 <td>Set a Copilot Space for a user</td>
 <td><code>PUT /users/{username}/copilot-spaces/{space_number}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>List collaborators for a Copilot Space for a user</td>
 <td><code>GET /users/{username}/copilot-spaces/{space_number}/collaborators</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Add a collaborator to a Copilot Space for a user</td>
 <td><code>POST /users/{username}/copilot-spaces/{space_number}/collaborators</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Remove a collaborator from a Copilot Space for a user</td>
 <td><code>DELETE /users/{username}/copilot-spaces/{space_number}/collaborators/{actor_type}/{actor_identifier}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Set a collaborator role for a Copilot Space for a user</td>
 <td><code>PUT /users/{username}/copilot-spaces/{space_number}/collaborators/{actor_type}/{actor_identifier}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>List resources for a Copilot Space for a user</td>
 <td><code>GET /users/{username}/copilot-spaces/{space_number}/resources</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Create a resource for a Copilot Space for a user</td>
 <td><code>POST /users/{username}/copilot-spaces/{space_number}/resources</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Delete a resource from a Copilot Space for a user</td>
 <td><code>DELETE /users/{username}/copilot-spaces/{space_number}/resources/{space_resource_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 <tr>
 <td>Get a resource for a Copilot Space for a user</td>
@@ -7628,9 +7675,9 @@ reads the list.</td>
 <tr>
 <td>Set a resource for a Copilot Space for a user</td>
 <td><code>PUT /users/{username}/copilot-spaces/{space_number}/resources/{space_resource_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Left to GitHub</td>
+<td>Copilot Spaces is a preview; left until GitHub releases it (Jeff,
+2026-11-18).</td>
 </tr>
 </tbody>
 </table>
@@ -7858,7 +7905,7 @@ Secrets</td>
 </tbody>
 </table>
 <h4 id="dependency-graph">Dependency graph</h4>
-<p>5 operations: 1 yes, 4 planned.</p>
+<p>5 operations: 1 yes, 3 planned, 1 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -7897,8 +7944,9 @@ repository.</td>
 <tr>
 <td>Create a snapshot of dependencies for a repository</td>
 <td><code>POST /repos/{owner}/{repo}/dependency-graph/snapshots</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Dependencies; Export SBOM.</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 </tbody>
 </table>
@@ -7942,7 +7990,7 @@ Keys</td>
 </tbody>
 </table>
 <h4 id="deployments">Deployments</h4>
-<p>21 operations: 6 yes, 12 planned, 3 not needed.</p>
+<p>21 operations: 7 yes, 9 planned, 3 not needed, 2 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -7956,16 +8004,16 @@ Keys</td>
 <tr>
 <td>List deployments</td>
 <td><code>GET /repos/{owner}/{repo}/deployments</code></td>
-<td>Planned</td>
-<td>Repository &gt; Deployments and Environments; Environment and
-Deployment sheets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Deployments and
+Environments</td>
 </tr>
 <tr>
 <td>Create a deployment</td>
 <td><code>POST /repos/{owner}/{repo}/deployments</code></td>
-<td>Planned</td>
-<td>Repository &gt; Deployments and Environments; Environment and
-Deployment sheets.</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 <tr>
 <td>Delete a deployment</td>
@@ -7989,8 +8037,9 @@ Deployment sheets.</td>
 <tr>
 <td>Create a deployment status</td>
 <td><code>POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses</code></td>
-<td>Planned</td>
-<td>Deployment sheet &gt; Statuses.</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 <tr>
 <td>Get a deployment status</td>
@@ -8112,7 +8161,7 @@ Plumbing.</td>
 </tbody>
 </table>
 <h4 id="gists">Gists</h4>
-<p>20 operations: 8 yes, 10 planned, 2 not needed.</p>
+<p>20 operations: 8 yes, 9 planned, 2 not needed, 1 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -8138,8 +8187,10 @@ Plumbing.</td>
 <tr>
 <td>List public gists</td>
 <td><code>GET /gists/public</code></td>
-<td>Planned</td>
-<td>Gists; Gist sheet.</td>
+<td>Left to GitHub</td>
+<td>Lists every repository, user, organization, gist or event on GitHub;
+a person works with their own and those they follow, which the Workbench
+lists.</td>
 </tr>
 <tr>
 <td>List starred gists</td>
@@ -8370,7 +8421,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="interactions">Interactions</h4>
-<p>16 operations: 5 yes, 11 planned.</p>
+<p>16 operations: 6 yes, 3 planned, 7 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -8402,23 +8453,26 @@ reads the list.</td>
 <tr>
 <td>Get pull request creation cap for an org</td>
 <td><code>GET /orgs/{org}/interaction-limits/pulls/creation-cap</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; General &gt; Interaction
-Limits.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Update pull request creation cap for an org</td>
 <td><code>PATCH /orgs/{org}/interaction-limits/pulls/creation-cap</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; General &gt; Interaction
-Limits.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Remove interaction restrictions for a repository</td>
 <td><code>DELETE /repos/{owner}/{repo}/interaction-limits</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; General &gt; Interaction
-Limits.</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Repository: Interaction limit</td>
 </tr>
 <tr>
 <td>Get interaction restrictions for a repository</td>
@@ -8436,38 +8490,48 @@ Limits.</td>
 <td>Remove users from the pull request creation cap bypass list for a
 repository</td>
 <td><code>DELETE /repos/{owner}/{repo}/interaction-limits/pulls/bypass-list</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; General &gt; Interaction
-Limits.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Get pull request creation cap bypass list for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/interaction-limits/pulls/bypass-list</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; General &gt; Interaction
-Limits.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Add users to the pull request creation cap bypass list for a
 repository</td>
 <td><code>PUT /repos/{owner}/{repo}/interaction-limits/pulls/bypass-list</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; General &gt; Interaction
-Limits.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Get pull request creation cap for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/interaction-limits/pulls/creation-cap</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; General &gt; Interaction
-Limits.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Update pull request creation cap for a repository</td>
 <td><code>PATCH /repos/{owner}/{repo}/interaction-limits/pulls/creation-cap</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; General &gt; Interaction
-Limits.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Remove interaction restrictions from your public repositories</td>
@@ -8493,7 +8557,8 @@ Limits.</td>
 </tbody>
 </table>
 <h4 id="issues">Issues</h4>
-<p>66 operations: 29 yes, 34 planned, 3 not needed.</p>
+<p>66 operations: 30 yes, 17 planned, 12 not needed, 7 left to
+github.</p>
 <table>
 <thead>
 <tr>
@@ -8507,16 +8572,16 @@ Limits.</td>
 <tr>
 <td>List issues assigned to the authenticated user</td>
 <td><code>GET /issues</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Not needed</td>
+<td>Your issues across repositories; My Work already finds them with
+GitHub’s search.</td>
 </tr>
 <tr>
 <td>List organization issues assigned to the authenticated user</td>
 <td><code>GET /orgs/{org}/issues</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Not needed</td>
+<td>Your issues across repositories; My Work already finds them with
+GitHub’s search.</td>
 </tr>
 <tr>
 <td>List assignees</td>
@@ -8582,8 +8647,9 @@ reads the list.</td>
 <tr>
 <td>List issue events for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/issues/events</code></td>
-<td>Planned</td>
-<td>Issue &gt; Timeline.</td>
+<td>Not needed</td>
+<td>An issue’s events are part of its timeline, which Timeline already
+reads in full.</td>
 </tr>
 <tr>
 <td>Get an issue event</td>
@@ -8607,23 +8673,29 @@ reads the list.</td>
 <tr>
 <td>List issue artifacts</td>
 <td><code>GET /repos/{owner}/{repo}/issues/{issue_number}/artifacts</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Create an issue artifact</td>
 <td><code>POST /repos/{owner}/{repo}/issues/{issue_number}/artifacts</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Delete an issue artifact</td>
 <td><code>DELETE /repos/{owner}/{repo}/issues/{issue_number}/artifacts/{artifact_number}</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Get an issue artifact</td>
@@ -8635,9 +8707,11 @@ reads the list.</td>
 <tr>
 <td>Update an issue artifact</td>
 <td><code>PATCH /repos/{owner}/{repo}/issues/{issue_number}/artifacts/{artifact_number}</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Remove assignees from an issue</td>
@@ -8654,14 +8728,15 @@ sheets; comments; timeline.</td>
 <tr>
 <td>Check if a user can be assigned to a issue</td>
 <td><code>GET /repos/{owner}/{repo}/issues/{issue_number}/assignees/{assignee}</code></td>
-<td>Planned</td>
-<td>Issue &gt; Organize: Assignees.</td>
+<td>Not needed</td>
+<td>Whether someone can be assigned is answered by the list of
+assignees, which the assignee picker already reads.</td>
 </tr>
 <tr>
 <td>List issue comments</td>
 <td><code>GET /repos/{owner}/{repo}/issues/{issue_number}/comments</code></td>
-<td>Planned</td>
-<td>Comment sheet; Conversation page.</td>
+<td>Yes</td>
+<td>Item &gt; Read as Document… (Ctrl+Shift+I)</td>
 </tr>
 <tr>
 <td>Create an issue comment</td>
@@ -8696,8 +8771,9 @@ sheets; comments; timeline.</td>
 <tr>
 <td>List issue events</td>
 <td><code>GET /repos/{owner}/{repo}/issues/{issue_number}/events</code></td>
-<td>Planned</td>
-<td>Issue &gt; Timeline.</td>
+<td>Not needed</td>
+<td>An issue’s events are part of its timeline, which Timeline already
+reads in full.</td>
 </tr>
 <tr>
 <td>List issue field values for an issue</td>
@@ -8729,8 +8805,9 @@ sheets; comments; timeline.</td>
 <tr>
 <td>Remove all labels from an issue</td>
 <td><code>DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels</code></td>
-<td>Planned</td>
-<td>Label sheet; Issue &gt; Organize: Labels.</td>
+<td>Not needed</td>
+<td>Replaces or clears every label at once; the Workbench adds and
+removes labels one at a time, so somebody else’s change is kept.</td>
 </tr>
 <tr>
 <td>List labels for an issue</td>
@@ -8747,8 +8824,9 @@ sheets; comments; timeline.</td>
 <tr>
 <td>Set labels for an issue</td>
 <td><code>PUT /repos/{owner}/{repo}/issues/{issue_number}/labels</code></td>
-<td>Planned</td>
-<td>Label sheet; Issue &gt; Organize: Labels.</td>
+<td>Not needed</td>
+<td>Replaces or clears every label at once; the Workbench adds and
+removes labels one at a time, so somebody else’s change is kept.</td>
 </tr>
 <tr>
 <td>Remove a label from an issue</td>
@@ -8822,23 +8900,29 @@ sheets; comments; timeline.</td>
 <tr>
 <td>List issue suggestions</td>
 <td><code>GET /repos/{owner}/{repo}/issues/{issue_number}/suggestions</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Approve an issue suggestion</td>
 <td><code>POST /repos/{owner}/{repo}/issues/{issue_number}/suggestions/{suggestion_id}/approve</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Dismiss an issue suggestion</td>
 <td><code>POST /repos/{owner}/{repo}/issues/{issue_number}/suggestions/{suggestion_id}/dismiss</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>List timeline events for an issue</td>
@@ -8909,15 +8993,16 @@ sheets; comments; timeline.</td>
 <tr>
 <td>List labels for issues in a milestone</td>
 <td><code>GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels</code></td>
-<td>Planned</td>
-<td>Label sheet; Issue &gt; Organize: Labels.</td>
+<td>Not needed</td>
+<td>The labels of a milestone’s issues, which the issue lists filtered
+to that milestone already show.</td>
 </tr>
 <tr>
 <td>List user account issues assigned to the authenticated user</td>
 <td><code>GET /user/issues</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Not needed</td>
+<td>Your issues across repositories; My Work already finds them with
+GitHub’s search.</td>
 </tr>
 </tbody>
 </table>
@@ -9284,7 +9369,7 @@ job done on GitHub’s site.</td>
 </tbody>
 </table>
 <h4 id="organizations">Organizations</h4>
-<p>129 operations: 44 yes, 41 planned, 10 not needed, 34 left to
+<p>129 operations: 44 yes, 30 planned, 12 not needed, 43 left to
 github.</p>
 <table>
 <thead>
@@ -9299,16 +9384,18 @@ github.</p>
 <tr>
 <td>List organizations</td>
 <td><code>GET /organizations</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Lists every repository, user, organization, gist or event on GitHub;
+a person works with their own and those they follow, which the Workbench
+lists.</td>
 </tr>
 <tr>
 <td>Delete an organization</td>
 <td><code>DELETE /orgs/{org}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get an organization</td>
@@ -9479,8 +9566,9 @@ reads the list.</td>
 <tr>
 <td>Get a webhook configuration for an organization</td>
 <td><code>GET /orgs/{org}/hooks/{hook_id}/config</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Not needed</td>
+<td>A webhook’s settings come with the webhook, which its list and sheet
+already read; changes go through the config route.</td>
 </tr>
 <tr>
 <td>Update a webhook configuration for an organization</td>
@@ -9686,8 +9774,9 @@ reads the list.</td>
 <tr>
 <td>Get organization membership for a user</td>
 <td><code>GET /orgs/{org}/memberships/{username}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Members.</td>
+<td>Not needed</td>
+<td>Reads one member, whom the organization’s Members list already shows
+in full.</td>
 </tr>
 <tr>
 <td>Set organization membership for a user</td>
@@ -9847,42 +9936,48 @@ review token requests on the organization’s settings page.</td>
 <tr>
 <td>Get registered app installations for external custom properties</td>
 <td><code>GET /orgs/{org}/properties/installations</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Custom Properties.</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 <tr>
 <td>Register an app installation for external custom properties</td>
 <td><code>POST /orgs/{org}/properties/installations</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Custom Properties.</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 <tr>
 <td>Get all external custom properties for a GitHub App installation in
 an organization</td>
 <td><code>GET /orgs/{org}/properties/installations/schema</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Custom Properties.</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 <tr>
 <td>Create or update external custom property values for organization
 repositories</td>
 <td><code>PATCH /orgs/{org}/properties/installations/values</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Custom Properties.</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 <tr>
 <td>Remove all external custom property values for a property across all
 organization repositories</td>
 <td><code>DELETE /orgs/{org}/properties/installations/values/{property_name}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Custom Properties.</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 <tr>
 <td>Create or update external custom property values for a property
 across organization repositories</td>
 <td><code>PATCH /orgs/{org}/properties/installations/values/{property_name}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Custom Properties.</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 <tr>
 <td>Get all custom properties for an organization</td>
@@ -10125,9 +10220,10 @@ setup.</td>
 <tr>
 <td>Enable or disable a security feature for an organization</td>
 <td><code>POST /orgs/{org}/{security_product}/{enablement}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>List organization memberships for the authenticated user</td>
@@ -10162,7 +10258,7 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 </tbody>
 </table>
 <h4 id="packages">Packages</h4>
-<p>27 operations: 14 yes, 3 planned, 10 not needed.</p>
+<p>27 operations: 14 yes, 10 not needed, 3 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -10177,8 +10273,9 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <td>Get list of conflicting packages during Docker migration for
 organization</td>
 <td><code>GET /orgs/{org}/docker/conflicts</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 <tr>
 <td>List packages for an organization</td>
@@ -10234,8 +10331,9 @@ reads the list.</td>
 <td>Get list of conflicting packages during Docker migration for
 authenticated-user</td>
 <td><code>GET /user/docker/conflicts</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 <tr>
 <td>List packages for the authenticated user’s namespace</td>
@@ -10292,8 +10390,9 @@ reads the list.</td>
 <td>Get list of conflicting packages during Docker migration for
 user</td>
 <td><code>GET /users/{username}/docker/conflicts</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App, using its own app token, or a build tool can call
+this; a person has no way to.</td>
 </tr>
 <tr>
 <td>List packages for a user</td>
@@ -10352,7 +10451,7 @@ change through the /user route the Workbench already uses.</td>
 </tbody>
 </table>
 <h4 id="pages">Pages</h4>
-<p>12 operations: 3 yes, 8 planned, 1 not needed.</p>
+<p>12 operations: 8 yes, 1 not needed, 3 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -10366,8 +10465,8 @@ change through the /user route the Workbench already uses.</td>
 <tr>
 <td>Delete a GitHub Pages site</td>
 <td><code>DELETE /repos/{owner}/{repo}/pages</code></td>
-<td>Planned</td>
-<td>Repository &gt; GitHub Pages; Repository sheet &gt; Pages.</td>
+<td>Yes</td>
+<td>context menu &gt; Turn Off Pages…</td>
 </tr>
 <tr>
 <td>Get a GitHub Pages site</td>
@@ -10378,8 +10477,8 @@ change through the /user route the Workbench already uses.</td>
 <tr>
 <td>Create a GitHub Pages site</td>
 <td><code>POST /repos/{owner}/{repo}/pages</code></td>
-<td>Planned</td>
-<td>Repository &gt; GitHub Pages; Repository sheet &gt; Pages.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; GitHub Pages</td>
 </tr>
 <tr>
 <td>Update information about a GitHub Pages site</td>
@@ -10396,14 +10495,14 @@ change through the /user route the Workbench already uses.</td>
 <tr>
 <td>Request a GitHub Pages build</td>
 <td><code>POST /repos/{owner}/{repo}/pages/builds</code></td>
-<td>Planned</td>
-<td>Repository &gt; GitHub Pages; Repository sheet &gt; Pages.</td>
+<td>Yes</td>
+<td>context menu &gt; Rebuild</td>
 </tr>
 <tr>
 <td>Get latest Pages build</td>
 <td><code>GET /repos/{owner}/{repo}/pages/builds/latest</code></td>
-<td>Planned</td>
-<td>Repository &gt; GitHub Pages; Repository sheet &gt; Pages.</td>
+<td>Yes</td>
+<td>context menu &gt; Check Site</td>
 </tr>
 <tr>
 <td>Get GitHub Pages build</td>
@@ -10415,26 +10514,32 @@ reads the list.</td>
 <tr>
 <td>Create a GitHub Pages deployment</td>
 <td><code>POST /repos/{owner}/{repo}/pages/deployments</code></td>
-<td>Planned</td>
-<td>Repository &gt; GitHub Pages; Repository sheet &gt; Pages.</td>
+<td>Left to GitHub</td>
+<td>Pages deployments are made by the actions/deploy-pages workflow step
+with the workflow’s own identity token, which a person does not have; a
+workflow run’s row already shows them.</td>
 </tr>
 <tr>
 <td>Get the status of a GitHub Pages deployment</td>
 <td><code>GET /repos/{owner}/{repo}/pages/deployments/{pages_deployment_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; GitHub Pages; Repository sheet &gt; Pages.</td>
+<td>Left to GitHub</td>
+<td>Pages deployments are made by the actions/deploy-pages workflow step
+with the workflow’s own identity token, which a person does not have; a
+workflow run’s row already shows them.</td>
 </tr>
 <tr>
 <td>Cancel a GitHub Pages deployment</td>
 <td><code>POST /repos/{owner}/{repo}/pages/deployments/{pages_deployment_id}/cancel</code></td>
-<td>Planned</td>
-<td>Repository &gt; GitHub Pages; Repository sheet &gt; Pages.</td>
+<td>Left to GitHub</td>
+<td>Pages deployments are made by the actions/deploy-pages workflow step
+with the workflow’s own identity token, which a person does not have; a
+workflow run’s row already shows them.</td>
 </tr>
 <tr>
 <td>Get a DNS health check for GitHub Pages</td>
 <td><code>GET /repos/{owner}/{repo}/pages/health</code></td>
-<td>Planned</td>
-<td>Repository &gt; GitHub Pages; Repository sheet &gt; Pages.</td>
+<td>Yes</td>
+<td>context menu &gt; Check Site</td>
 </tr>
 </tbody>
 </table>
@@ -10691,7 +10796,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="pull-requests">Pull requests</h4>
-<p>39 operations: 23 yes, 10 planned, 6 not needed.</p>
+<p>39 operations: 23 yes, 5 planned, 7 not needed, 4 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -10735,8 +10840,9 @@ reads the list.</td>
 <tr>
 <td>List review comments in a repository</td>
 <td><code>GET /repos/{owner}/{repo}/pulls/comments</code></td>
-<td>Planned</td>
-<td>Review thread sheet; PR review.</td>
+<td>Not needed</td>
+<td>Every review comment in the repository at once; the Workbench reads
+each pull request’s own, where they mean something.</td>
 </tr>
 <tr>
 <td>Delete a review comment for a pull request</td>
@@ -10914,14 +11020,20 @@ reads the list.</td>
 <tr>
 <td>List pull request stacks</td>
 <td><code>GET /repos/{owner}/{repo}/stacks</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Create a pull request stack</td>
 <td><code>POST /repos/{owner}/{repo}/stacks</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Get a pull request stack</td>
@@ -10933,14 +11045,20 @@ reads the list.</td>
 <tr>
 <td>Add pull requests to a pull request stack</td>
 <td><code>POST /repos/{owner}/{repo}/stacks/{stack_number}/add</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Remove pull requests from a pull request stack</td>
 <td><code>POST /repos/{owner}/{repo}/stacks/{stack_number}/unstack</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 </tbody>
 </table>
@@ -11072,7 +11190,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="releases">Releases</h4>
-<p>13 operations: 10 yes, 3 planned.</p>
+<p>13 operations: 10 yes, 2 planned, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -11152,8 +11270,9 @@ reads the list.</td>
 <tr>
 <td>List release assets</td>
 <td><code>GET /repos/{owner}/{repo}/releases/{release_id}/assets</code></td>
-<td>Planned</td>
-<td>Repository &gt; Releases; Release and Release asset sheets.</td>
+<td>Not needed</td>
+<td>A release’s assets come with the release itself, which every read of
+it returns.</td>
 </tr>
 <tr>
 <td>Upload a release asset</td>
@@ -11164,7 +11283,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="repositories">Repositories</h4>
-<p>74 operations: 52 yes, 15 planned, 5 not needed, 2 left to
+<p>74 operations: 52 yes, 11 planned, 6 not needed, 5 left to
 github.</p>
 <table>
 <thead>
@@ -11328,9 +11447,10 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 <tr>
 <td>Get the hash algorithm for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/hash-algorithm</code></td>
-<td>Planned</td>
-<td>Repository sheet (General, Features, Merging, Webhooks, Autolinks,
-Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
+<td>Left to GitHub</td>
+<td>Lists every repository, user, organization, gist or event on GitHub;
+a person works with their own and those they follow, which the Workbench
+lists.</td>
 </tr>
 <tr>
 <td>List repository webhooks</td>
@@ -11366,8 +11486,9 @@ Webhooks</td>
 <tr>
 <td>Get a webhook configuration for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/hooks/{hook_id}/config</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Not needed</td>
+<td>A webhook’s settings come with the webhook, which its list and sheet
+already read; changes go through the config route.</td>
 </tr>
 <tr>
 <td>Update a webhook configuration for a repository</td>
@@ -11441,9 +11562,11 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 <tr>
 <td>List planning statuses for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/planning-statuses</code></td>
-<td>Planned</td>
-<td>Repository &gt; Issues &gt; Planning statuses (issue sheet
-choices)</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td>Disable private vulnerability reporting for a repository</td>
@@ -11624,9 +11747,10 @@ and Team Access</td>
 <tr>
 <td>List public repositories</td>
 <td><code>GET /repositories</code></td>
-<td>Planned</td>
-<td>Repository sheet (General, Features, Merging, Webhooks, Autolinks,
-Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
+<td>Left to GitHub</td>
+<td>Lists every repository, user, organization, gist or event on GitHub;
+a person works with their own and those they follow, which the Workbench
+lists.</td>
 </tr>
 <tr>
 <td>List repositories for the authenticated user</td>
@@ -11705,7 +11829,7 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 </tbody>
 </table>
 <h4 id="secret-scanning">Secret scanning</h4>
-<p>17 operations: 2 yes, 6 planned, 1 not needed, 8 left to github.</p>
+<p>17 operations: 2 yes, 3 planned, 1 not needed, 11 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -11750,16 +11874,18 @@ requests (section 22.1).</td>
 <tr>
 <td>List organization pattern configurations</td>
 <td><code>GET /orgs/{org}/secret-scanning/pattern-configurations</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: secret scanning); bypass
-requests (section 22.1).</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Update organization pattern configurations</td>
 <td><code>PATCH /orgs/{org}/secret-scanning/pattern-configurations</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: secret scanning); bypass
-requests (section 22.1).</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>List secret scanning alerts for a repository</td>
@@ -11814,9 +11940,10 @@ requests (section 22.1).</td>
 <tr>
 <td>Create a push protection bypass</td>
 <td><code>POST /repos/{owner}/{repo}/secret-scanning/push-protection-bypasses</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: secret scanning); bypass
-requests (section 22.1).</td>
+<td>Left to GitHub</td>
+<td>A push that secret scanning blocks is let through from git push
+itself, with the link GitHub prints there; it is not a Workbench
+step.</td>
 </tr>
 <tr>
 <td>Get secret scanning scan history for a repository</td>
@@ -12170,7 +12297,7 @@ slug).</td>
 </tbody>
 </table>
 <h4 id="users">Users</h4>
-<p>55 operations: 32 yes, 14 planned, 4 not needed, 5 left to
+<p>55 operations: 34 yes, 10 planned, 4 not needed, 7 left to
 github.</p>
 <table>
 <thead>
@@ -12251,8 +12378,8 @@ github.</p>
 <tr>
 <td>List the people the authenticated user follows</td>
 <td><code>GET /user/following</code></td>
-<td>Planned</td>
-<td>Person &gt; You: Follow (section 16.7).</td>
+<td>Yes</td>
+<td>Navigator: People &gt; People I Follow</td>
 </tr>
 <tr>
 <td>Unfollow a user</td>
@@ -12429,9 +12556,10 @@ reads the list.</td>
 <tr>
 <td>List users</td>
 <td><code>GET /users</code></td>
-<td>Planned</td>
-<td>Person sheet; Account &gt; Profile and Status, Keys, Emails; People
-branch.</td>
+<td>Left to GitHub</td>
+<td>Lists every repository, user, organization, gist or event on GitHub;
+a person works with their own and those they follow, which the Workbench
+lists.</td>
 </tr>
 <tr>
 <td>Get a user</td>
@@ -12477,8 +12605,8 @@ pipeline, not by a person.</td>
 <tr>
 <td>List followers of a user</td>
 <td><code>GET /users/{username}/followers</code></td>
-<td>Planned</td>
-<td>Person &gt; You: Follow (section 16.7).</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; Followers</td>
 </tr>
 <tr>
 <td>List the people a user follows</td>
@@ -12501,9 +12629,10 @@ pipeline, not by a person.</td>
 <tr>
 <td>Get contextual information for a user</td>
 <td><code>GET /users/{username}/hovercard</code></td>
-<td>Planned</td>
-<td>Person sheet; Account &gt; Profile and Status, Keys, Emails; People
-branch.</td>
+<td>Left to GitHub</td>
+<td>Lists every repository, user, organization, gist or event on GitHub;
+a person works with their own and those they follow, which the Workbench
+lists.</td>
 </tr>
 <tr>
 <td>List public keys for a user</td>
@@ -12528,7 +12657,7 @@ branch.</td>
 <h3 id="graphql-mutations-by-category">GraphQL mutations, by
 category</h3>
 <h4 id="graphql-activity">GraphQL: Activity</h4>
-<p>4 mutations: 1 yes, 1 planned, 2 not needed.</p>
+<p>4 mutations: 1 yes, 2 not needed, 1 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -12552,8 +12681,10 @@ the Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateNotificationRestrictionSetting</code></td>
-<td>Planned</td>
-<td>Repository &gt; You (star, watch)</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td><code>updateSubscription</code></td>
@@ -12665,7 +12796,7 @@ the Workbench uses for it (already built); one route per operation.</td>
 </tbody>
 </table>
 <h4 id="graphql-copilot">GraphQL: Copilot</h4>
-<p>5 mutations: 5 planned.</p>
+<p>5 mutations: 5 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -12677,28 +12808,38 @@ the Workbench uses for it (already built); one route per operation.</td>
 <tbody>
 <tr>
 <td><code>updateEnterpriseCopilotCodeReviewPolicy</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Copilot</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td><code>updateOrganizationCopilotCodeReviewPolicy</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Copilot</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td><code>updateOrganizationCopilotCodeReviewRunnerConfiguration</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Copilot</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td><code>updateOrganizationCopilotCodeReviewSettings</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Copilot</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td><code>updateRepositoryCopilotCodeReviewSettings</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Copilot</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 </tbody>
 </table>
@@ -13240,7 +13381,8 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tbody>
 </table>
 <h4 id="graphql-issues">GraphQL: Issues</h4>
-<p>51 mutations: 15 yes, 20 planned, 16 not needed.</p>
+<p>51 mutations: 15 yes, 16 planned, 18 not needed, 2 left to
+github.</p>
 <table>
 <thead>
 <tr>
@@ -13293,8 +13435,11 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>applyPendingIssueSuggestions</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td><code>clearLabelsFromLabelable</code></td>
@@ -13398,13 +13543,17 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>pinIssueComment</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as the REST route for pinning a comment; one route
+per operation.</td>
 </tr>
 <tr>
 <td><code>rejectPendingIssueSuggestions</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td><code>removeAssigneesFromAssignable</code></td>
@@ -13491,8 +13640,9 @@ Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>unpinIssueComment</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as the REST route for pinning a comment; one route
+per operation.</td>
 </tr>
 <tr>
 <td><code>updateIssue</code></td>
@@ -13599,7 +13749,7 @@ the gh gei extension.</td>
 </tbody>
 </table>
 <h4 id="graphql-organizations">GraphQL: Organizations</h4>
-<p>11 mutations: 9 planned, 2 not needed.</p>
+<p>11 mutations: 3 planned, 2 not needed, 6 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -13611,18 +13761,24 @@ the gh gei extension.</td>
 <tbody>
 <tr>
 <td><code>addVerifiableDomain</code></td>
-<td>Planned</td>
-<td>Organization sheet</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td><code>approveVerifiableDomain</code></td>
-<td>Planned</td>
-<td>Organization sheet</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td><code>deleteVerifiableDomain</code></td>
-<td>Planned</td>
-<td>Organization sheet</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td><code>followOrganization</code></td>
@@ -13631,8 +13787,10 @@ the gh gei extension.</td>
 </tr>
 <tr>
 <td><code>regenerateVerifiableDomainToken</code></td>
-<td>Planned</td>
-<td>Organization sheet</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td><code>removeOutsideCollaborator</code></td>
@@ -13654,8 +13812,10 @@ Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateOrganizationAllowPrivateRepositoryForkingSetting</code></td>
-<td>Planned</td>
-<td>Organization sheet</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td><code>updateOrganizationWebCommitSignoffSetting</code></td>
@@ -13664,8 +13824,10 @@ Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>verifyVerifiableDomain</code></td>
-<td>Planned</td>
-<td>Organization sheet</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 </tbody>
 </table>
@@ -13973,7 +14135,7 @@ operation.</td>
 </tbody>
 </table>
 <h4 id="graphql-pull-requests">GraphQL: Pull requests</h4>
-<p>36 mutations: 12 yes, 5 planned, 19 not needed.</p>
+<p>36 mutations: 12 yes, 19 not needed, 5 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -13985,8 +14147,11 @@ operation.</td>
 <tbody>
 <tr>
 <td><code>addPullRequestCreationCapBypassUsers</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td><code>addPullRequestReview</code></td>
@@ -14019,8 +14184,11 @@ operation.</td>
 </tr>
 <tr>
 <td><code>archivePullRequest</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td><code>closePullRequest</code></td>
@@ -14103,8 +14271,11 @@ uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>removePullRequestCreationCapBypassUsers</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td><code>reopenPullRequest</code></td>
@@ -14115,8 +14286,10 @@ operation.</td>
 </tr>
 <tr>
 <td><code>requestCopilotCodeReview</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td><code>requestReviews</code></td>
@@ -14159,8 +14332,11 @@ operation.</td>
 </tr>
 <tr>
 <td><code>unarchivePullRequest</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td><code>unmarkFileAsViewed</code></td>
@@ -14231,7 +14407,7 @@ Workbench uses for it (planned there); one route per operation.</td>
 </tbody>
 </table>
 <h4 id="graphql-repositories">GraphQL: Repositories</h4>
-<p>18 mutations: 4 planned, 14 not needed.</p>
+<p>18 mutations: 1 planned, 14 not needed, 3 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -14243,8 +14419,11 @@ Workbench uses for it (planned there); one route per operation.</td>
 <tbody>
 <tr>
 <td><code>acceptTopicSuggestion</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td><code>archiveRepository</code></td>
@@ -14280,8 +14459,11 @@ the Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>declineTopicSuggestion</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Left to GitHub</td>
+<td>A preview GitHub may still change (issue artifacts and suggestions,
+stacked pull requests, pull request creation caps, code quality,
+planning statuses, concurrency groups); not built, by Jeff’s choice
+(2026-11-18).</td>
 </tr>
 <tr>
 <td><code>deleteRepositoryCustomProperty</code></td>
@@ -14299,8 +14481,10 @@ uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>promoteRepositoryCustomProperty</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td><code>setRepositoryCustomPropertyValues</code></td>

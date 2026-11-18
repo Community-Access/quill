@@ -969,6 +969,9 @@ VERBS: dict[str, Scenario | str] = {
             "pull_codespace",
         )
     },
+    "pages_turn_on": "needs Jeff: a repository without Pages, which is then published",
+    "pages_rebuild": "needs Jeff: a repository whose Pages builds from a branch",
+    "pages_turn_off": "needs Jeff: a throwaway Pages site",
     "manage_reviews": "needs Jeff: a pull request with a review from someone else to dismiss",
     "environment_secrets": "needs Jeff: an environment on the test repository (admin)",
     "environment_variables": "needs Jeff: an environment on the test repository (admin)",
