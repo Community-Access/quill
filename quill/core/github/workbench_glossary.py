@@ -62,6 +62,10 @@ GLOSSARY: dict[str, str] = {
         "GitHub telling you something happened on a thread you are part of. Under "
         "Needs My Attention."
     ),
+    "Annotated tag": (
+        "A tag that carries a message, who made it and when. Releases usually use one. "
+        "A lightweight tag is only a name for a commit."
+    ),
     "Runner": (
         "A machine that runs a workflow's jobs. GitHub provides them, or a repository "
         "brings its own, called self-hosted, listed under Actions > Runners."

@@ -363,14 +363,19 @@ def workflow_state(run: Any) -> str:
 
 
 def tags_made_and_deleted(run: Any) -> str:
-    from quill.core.github.tags import create_tag, delete_tag
+    from quill.core.github.tags import create_tag, delete_tag, tag_message
 
     name = f"quill-live-tag-{int(time.time())}"
     said = create_tag(run.api, run.repo, name, run.ids["default_branch"])
     _expect(run.exists(f"/repos/{run.repo}/git/ref/tags/{name}") is not None, "no tag")
     delete_tag(run.api, run.repo, name)
     _expect(run.exists(f"/repos/{run.repo}/git/ref/tags/{name}") is None, "still there")
-    return f"{said} Deleted it again."
+    annotated = f"{name}-a"
+    create_tag(run.api, run.repo, annotated, run.ids["default_branch"], "by the live run")
+    heard = tag_message(run.api, run.repo, annotated)
+    delete_tag(run.api, run.repo, annotated)
+    _expect(heard.endswith(": by the live run"), f"the message read back as {heard!r}")
+    return f"{said} Deleted it again. Annotated: {heard}"
 
 
 def commit_status(run: Any) -> str:
@@ -850,6 +855,7 @@ VERBS: dict[str, Scenario | str] = {
     "workflow_state": workflow_state,
     "new_tag": tags_made_and_deleted,
     "delete_tag": "with new_tag: made, then deleted",
+    "transfer_repository": "not here: needs a second account or an organization to receive it",
     "commit_status": commit_status,
     "user_status": "needs Jeff: changes the status on your own GitHub profile",
     "accept_invitation": "not here: needs an invitation from a second GitHub account",

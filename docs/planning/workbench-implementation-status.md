@@ -164,6 +164,10 @@ Runners, read-only, and Export Software Bill of Materials... (`Ctrl+Alt+B`),
 both in `runners_sbom.py`; the export is a Workbench verb in
 `github_workbench_tier2.py`.
 
+**2026-11-18, annotated tags and transfer.** New Tag... takes a message for
+an annotated tag, and Read Tag Message reads one (`tags.py`). Transfer
+Repository... (`Ctrl+Alt+T`, `repo_transfer.py`) with a typed confirmation.
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

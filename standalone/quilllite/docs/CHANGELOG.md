@@ -2,6 +2,16 @@
 
 ## 2.0.0
 
+### Annotated tags, and transferring a repository (2026-11-18)
+
+**New Tag...** in the GitHub Workbench's Tags view now asks for a message
+too: give one and the tag is annotated, carrying the message, who made it and
+when, the way most projects tag a release. **Read Tag Message** on a tag says
+it. **Transfer Repository...** (`Ctrl+Alt+T`, on the Workbench's Repository
+menu and on Repository Actions) moves a repository to another person or
+organization after you type its full name. Chapter 7 of the GitHub Guide has
+the details.
+
 ### Self-hosted runners, and a software bill of materials (2026-11-18)
 
 **Repository > Actions > Runners** in the GitHub Workbench lists the machines

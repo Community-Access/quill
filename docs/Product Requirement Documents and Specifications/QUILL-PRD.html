@@ -29488,8 +29488,13 @@ Actions &gt; Runners lists self-hosted runners, read-only
 (<code>quill/core/github/runners_sbom.py</code>, explore view
 <code>runners</code>, row type <code>runner</code>), and Export Software
 Bill of Materials… (<code>Ctrl+Alt+B</code>, verb
-<code>export_sbom</code>) saves the dependency graph as an SPDX
-file.</p>
+<code>export_sbom</code>) saves the dependency graph as an SPDX file.
+New Tag… takes an optional message, which makes an annotated tag, and
+Read Tag Message reads one (<code>tags.py</code>,
+<code>tag_message</code>). Transfer Repository…
+(<code>Ctrl+Alt+T</code>, verb <code>transfer_repository</code>,
+<code>quill/core/github/repo_transfer.py</code>) asks the new owner and
+the typed full name.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

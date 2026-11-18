@@ -2888,7 +2888,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 326 yes, 1137 planned, 15 not needed and 526 left to
+<p>In all: 330 yes, 1133 planned, 15 not needed and 526 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -7756,7 +7756,7 @@ Plumbing.</td>
 </tbody>
 </table>
 <h4 id="git-database">Git database</h4>
-<p>13 operations: 7 yes, 3 planned, 3 not needed.</p>
+<p>13 operations: 10 yes, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -7796,8 +7796,8 @@ that write files. Plumbing under Commit Multiple Files.</td>
 <tr>
 <td>List matching references</td>
 <td><code>GET /repos/{owner}/{repo}/git/matching-refs/{ref}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Code &gt; Tags context menu</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Tags</td>
 </tr>
 <tr>
 <td>Get a reference</td>
@@ -7826,14 +7826,14 @@ that write files. Plumbing under Commit Multiple Files.</td>
 <tr>
 <td>Create a tag object</td>
 <td><code>POST /repos/{owner}/{repo}/git/tags</code></td>
-<td>Planned</td>
-<td>Repository &gt; Code &gt; Tags context menu</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Tags</td>
 </tr>
 <tr>
 <td>Get a tag</td>
 <td><code>GET /repos/{owner}/{repo}/git/tags/{tag_sha}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Code &gt; Tags context menu</td>
+<td>Yes</td>
+<td>context menu &gt; Read Tag Message</td>
 </tr>
 <tr>
 <td>Create a tree</td>
@@ -10619,7 +10619,7 @@ user</td>
 </tbody>
 </table>
 <h4 id="repositories">Repositories</h4>
-<p>74 operations: 38 yes, 36 planned.</p>
+<p>74 operations: 39 yes, 35 planned.</p>
 <table>
 <thead>
 <tr>
@@ -11036,8 +11036,8 @@ and Team Access</td>
 <tr>
 <td>Transfer a repository</td>
 <td><code>POST /repos/{owner}/{repo}/transfer</code></td>
-<td>Planned</td>
-<td>Repository &gt; Settings &gt; Transfer…</td>
+<td>Yes</td>
+<td>Repository &gt; Transfer Repository… (Ctrl+Alt+T)</td>
 </tr>
 <tr>
 <td>Disable vulnerability alerts</td>

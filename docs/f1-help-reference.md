@@ -2902,6 +2902,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Repository > Export Software Bill of Materials....** Save the repository's dependency graph as an SPDX file: every package it uses.
 
+**Repository > Transfer Repository....** Move the repository to another person or organization; asks for its name first.
+
 **Account > Manage GitHub Accounts....** Add, switch, sign in again or remove GitHub accounts.
 
 **Account > GitHub API Rate Limit.** How much of the GitHub API is left, and when it resets.
@@ -3081,6 +3083,8 @@ Control coverage: 365 audited sites (365 helped).
 **Set Status.** Report a check you ran yourself: passed, failed or still running.
 
 **Delete Tag.** Remove the tag; the commit stays.
+
+**Read Tag Message.** Who made the tag, when, and its message.
 
 **Show Details.** The runner's state, system and labels.
 

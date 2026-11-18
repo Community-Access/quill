@@ -1561,6 +1561,16 @@ file. See
 and
 [A software bill of materials](../github-guide/github-guide-08-discussions-and-security.html#a-software-bill-of-materials).
 
+#### Annotated tags and transferring a repository
+
+**New Tag...** in the GitHub Workbench's Tags view takes a message, which
+makes an annotated tag, and **Read Tag Message** reads one back. **Transfer
+Repository...** (`Ctrl+Alt+T`) moves a repository to another person or
+organization after you type its name. See
+[Tags and releases](../github-guide/github-guide-07-code-and-repositories.html#tags-and-releases)
+and
+[Transferring a repository](../github-guide/github-guide-07-code-and-repositories.html#transferring-a-repository).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

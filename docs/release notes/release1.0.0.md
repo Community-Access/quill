@@ -2157,7 +2157,10 @@ whether the machine it asked for is there at all. **Runners** under a
 repository's Actions answers it: "lab-1: online, busy, Linux", or "offline".
 And when a security review asks what the project is built from, **Export
 Software Bill of Materials...** saves every package as an SPDX (Software
-Package Data Exchange) file, the format those reviews read.
+Package Data Exchange) file, the format those reviews read. A release tag
+can carry its message, who made it and when, and **Read Tag Message** says it.
+And a personal project that has grown up can move to an organization with
+**Transfer Repository...**, after you type its name.
 
 #### Reviewing a pull request line by line
 

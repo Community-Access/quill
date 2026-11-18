@@ -118,6 +118,7 @@ REPOSITORY_ACTIONS: tuple[tuple[str, str], ...] = (
     ("Open in Codespaces: list your Codespaces...", "github.list_codespaces"),
     ("Create Codespace... (can cost money; asks first)", "github.create_codespace"),
     ("Rename Repository...", "github.rename_repository"),
+    ("Transfer Repository...", f"{_P}transfer_repository"),
     ("Change Visibility...", "github.change_repository_visibility"),
     ("Change Default Branch...", "github.change_default_branch"),
     ("Configure Branch Protection...", "github.configure_branch_protection"),

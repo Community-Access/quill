@@ -301,6 +301,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     "tag": (
         _default("open", "Open", "The tagged commit."),
         _a("delete_tag", "Delete Tag...", _D, "push", "Remove the tag; the commit stays."),
+        _a("tag_message", "Read Tag Message", help="Who made the tag, when, and its message."),
         _COMMIT_COMMENTS,
         _COMPARE_PREVIOUS,
         _COMPARE_DEFAULT,

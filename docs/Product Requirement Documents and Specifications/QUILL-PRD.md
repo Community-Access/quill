@@ -17538,7 +17538,11 @@ commit's Set Status... posts a commit status (`commit_status.py`).
 Repository > Actions > Runners lists self-hosted runners, read-only
 (`quill/core/github/runners_sbom.py`, explore view `runners`, row type
 `runner`), and Export Software Bill of Materials... (`Ctrl+Alt+B`, verb
-`export_sbom`) saves the dependency graph as an SPDX file.
+`export_sbom`) saves the dependency graph as an SPDX file. New Tag... takes an
+optional message, which makes an annotated tag, and Read Tag Message reads one
+(`tags.py`, `tag_message`). Transfer Repository... (`Ctrl+Alt+T`, verb
+`transfer_repository`, `quill/core/github/repo_transfer.py`) asks the new owner
+and the typed full name.
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

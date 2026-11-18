@@ -410,6 +410,7 @@
   "quill/ui/github_workbench_reading.py::GitHubWorkbenchReadingMixin._save_path::wx.FileDialog": "native",
   "quill/ui/github_workbench_releases.py::GitHubWorkbenchReleasesMixin._do_upload_asset::wx.FileDialog": "native",
   "quill/ui/github_workbench_results.py::show_results::wx.Dialog": "hardened_custom",
+  "quill/ui/github_workbench_tier2.py::GitHubWorkbenchTier2Mixin._ask_optional::wx.TextEntryDialog": "native",
   "quill/ui/github_workbench_tier2.py::GitHubWorkbenchTier2Mixin._do_export_sbom::wx.FileDialog": "native",
   "quill/ui/github_workbench_tools.py::GitHubWorkbenchToolsMixin._tool_change_history.save_csv::wx.FileDialog": "native",
   "quill/ui/github_workbench_view.py::GitHubWorkbenchViewMixin.choose_columns::wx.MultiChoiceDialog": "native",

@@ -25,6 +25,8 @@ TIER2_VERBS: dict[str, frozenset[str]] = {
     "decline_invitation": frozenset({"invitation"}),
     "new_tag": frozenset({"view"}),
     "delete_tag": frozenset({"tag"}),
+    "tag_message": frozenset({"tag"}),
+    "transfer_repository": frozenset({"view"}),
     "user_status": frozenset({"view"}),
     "commit_status": frozenset({"commit"}),
     "export_sbom": frozenset({"view"}),
@@ -36,6 +38,8 @@ TIER2_REASONS: dict[str, str] = {
     "decline_invitation": "Decline is for an invitation, while you are signed in.",
     "new_tag": "New Tag is for a repository's Tags, while you are signed in.",
     "delete_tag": "Delete Tag is for a tag, while you are signed in.",
+    "tag_message": "Read Tag Message is for a tag.",
+    "transfer_repository": "Transfer Repository is for a repository, while you are signed in.",
     "user_status": "Your status is for the account you are signed in with.",
     "commit_status": "Set Status is for a commit, while you are signed in.",
     "export_sbom": "Export Software Bill of Materials is for a repository.",
@@ -142,10 +146,17 @@ class GitHubWorkbenchTier2Mixin:
         at = self._ask_text("New Tag", f"Tag which branch, tag or commit as {name}?", value="main")
         if not at:
             return
+        message = self._ask_optional(
+            "New Tag",
+            f"A message for {name} makes it an annotated tag, which records who made it and "
+            "when. Leave it empty for a lightweight tag:",
+        )
+        if message is None:
+            return
         api, repository = self.github_api(), ref.instance
         self._background(
             "make the tag",
-            lambda: create_tag(api, repository, name, at),
+            lambda: create_tag(api, repository, name, at, message),
             lambda said: (self._say(str(said)), self.frame.reload()),
         )
 
@@ -286,4 +297,66 @@ class GitHubWorkbenchTier2Mixin:
         api = self.github_api()
         self._background(
             "export the bill of materials", lambda: save_sbom(api, repository, target), self._say
+        )
+
+    def _ask_optional(self, title: str, prompt: str) -> str | None:
+        """Like ``_ask_text``, but an empty answer is an answer: None only for Cancel."""
+        from quill.ui.dialog_contract import show_modal_dialog
+
+        wx = self.frame._wx
+        with wx.TextEntryDialog(self.frame.frame, prompt, title, "") as dialog:
+            dialog.SetName("Message")
+            if show_modal_dialog(dialog, title) != wx.ID_OK:
+                return None
+            return str(dialog.GetValue()).strip()
+
+    def _fits_tag_message(self, row: object) -> bool:
+        return isinstance(row, GitHubTag)
+
+    def _do_tag_message(self, ref: Any, row: object) -> None:
+        from quill.core.github.tags import tag_message
+
+        assert isinstance(row, GitHubTag)
+        api, repository, name = self.github_api(), ref.instance, row.name
+        self._background("read the tag", lambda: tag_message(api, repository, name), self._say)
+
+    # -- transferring a repository -------------------------------------------------
+
+    def _fits_transfer_repository(self, _row: object) -> bool:
+        current = getattr(self.frame, "current", None)
+        return self.signed_in and getattr(current, "template", "") == "repository"
+
+    def _do_transfer_repository(self, ref: Any, _row: object) -> None:
+        from quill.core.github.repo_transfer import transfer_repository, valid_owner
+        from quill.ui.github_repo_admin_dialogs import TypedConfirmDialog
+
+        repository = ref.instance
+        owner = self._ask_text(
+            "Transfer Repository",
+            f"Transfer {repository} to which person or organization?",
+        ).lstrip("@")
+        if not owner:
+            return
+        why = valid_owner(owner)
+        if why:
+            self._say(why)
+            return
+        if not TypedConfirmDialog(
+            self.frame.frame,
+            title="Transfer Repository",
+            message=(
+                f"Transfer {repository} to {owner}, with its issues, pull requests, wiki, "
+                "stars and watchers. You may lose access to it, and only the new owner can "
+                "transfer it back. Type the repository's full name to confirm."
+            ),
+            expected=repository,
+            confirm_label="Transfer",
+        ).show():
+            self._say("Cancelled; the repository was not transferred.")
+            return
+        api = self.github_api()
+        self._background(
+            "transfer the repository",
+            lambda: transfer_repository(api, repository, owner),
+            self._say,
         )
