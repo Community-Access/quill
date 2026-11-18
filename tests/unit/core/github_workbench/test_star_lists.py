@@ -95,3 +95,16 @@ def test_a_repository_is_put_on_exactly_the_lists_chosen() -> None:
     assert api.sent[-1][1] == {"itemId": "R_9", "listIds": ["UL_1", "UL_2"]}
     assert sl.set_lists_for(api, "o/r", []) == "o/r is on no star lists now."
     assert sl.StarListError.code == "QUILL-GITHUB-STAR-LISTS"
+
+
+def test_the_star_lists_node_reaches_its_loader(monkeypatch: Any) -> None:
+    from types import SimpleNamespace
+
+    from quill.core.github.explore_extra_views import fetch_extra_view
+
+    real = sl.fetch_lists
+    monkeypatch.setattr(sl, "fetch_lists", lambda _api: real(FakeApi()))
+    provider = SimpleNamespace(token="t", is_authenticated=True)
+    warnings: list[str] = []
+    rows = fetch_extra_view(provider, "star_lists", repo="", query="", limit=5, warnings=warnings)
+    assert rows is not None and rows[0].label == "Screen readers: nvaccess/nvda, NVDA"
