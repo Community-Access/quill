@@ -549,6 +549,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | My Repositories (`:my_repositories`) | repositories | My Repositories: the repositories your account owns or can push to. |
 | Starred (`:starred`) | repositories | Starred: repositories you starred on GitHub. |
 | Watched (`:watched`) | repositories | Watched: repositories whose activity GitHub tells you about. |
+| My Packages (`:packages`) | repositories | My Packages: your container images and npm, Maven, RubyGems and NuGet packages, with Delete Package Version and Delete Package on each. |
 | Organizations (`:organizations`) | repositories | Organizations: the organizations you belong to. Enter on one opens its repositories. |
 | Search (`:search`) | the top | Search: GitHub's searches. Choose one, type in the filter box with Ctrl+E, and press Enter. |
 | Issues and Pull Requests (`:search_issues`) | search | Search Issues and Pull Requests: everything GitHub finds for the words and qualifiers in the filter box, such as is:open author:@me. Ctrl+N saves the search. |
@@ -858,6 +859,7 @@ Keys the window answers that are not menu rows:
 - **branch**: Commits, Compare With Default, Compare Branches..., Compare With Previous, Open in Codespaces..., Copy Name, Delete Branch...; Properties...
 - **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
 - **tag**: Open, Delete Tag..., Read Tag Message, Commit Comments..., Compare With Previous, Compare With Default; More: Copy Link, Open on GitHub; Properties...
+- **package**: Show Details, Open on GitHub, Delete Package Version..., Delete Package..., Copy Link; Properties...
 - **runner**: Show Details, Open on GitHub, Copy Link; Properties...
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally; Properties...
@@ -935,6 +937,7 @@ Keys the window answers that are not menu rows:
 - **Milestone**: A goal with a due date that issues and pull requests belong to.
 - **Notification**: GitHub telling you something happened on a thread you are part of. Under Needs My Attention.
 - **Organization**: An account many people share, which owns repositories and teams.
+- **Package**: Something a project publishes besides its code, such as a container image or an npm package, kept on GitHub Packages in versions.
 - **Pin**: A repository kept on this computer under Repositories, Pinned.
 - **Project**: A board or table for planning issues and pull requests.
 - **Pull request**: A proposed change: commits on one branch that somebody asks to merge into another, with a review. Under a repository's Pull Requests.
