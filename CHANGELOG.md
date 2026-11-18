@@ -620,6 +620,20 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Choosing which repositories may use a secret, variable or runner group (2026-11-18)
+
+An organization's secrets and variables, its Copilot agent secrets and
+variables, its Codespaces and Dependabot secrets, its runner groups, and your
+own Codespaces secrets can each be limited to chosen repositories. In the
+GitHub Workbench, **Repositories Allowed...** on one of those rows opens a
+list of the organization's repositories (or yours) with the ones allowed now
+already checked. Check or uncheck, press `Enter`, and QUILL says what changed:
+"Added 1 repository and removed 1 repository for TOKEN." It adds and removes
+one repository at a time rather than replacing the list, so a change somebody
+else makes at the same moment is kept. A secret that is open to all
+repositories says to change its visibility to Selected repositories first.
+Planned GitHub endpoints fall from 577 to 545.
+
 ### What is left to build for GitHub, and what is not (2026-11-18)
 
 The GitHub Workbench keeps a table of every GitHub endpoint and what QUILL does

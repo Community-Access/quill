@@ -73,6 +73,7 @@ def _secrets(
         create_method="PUT",
         create_path="{list}/{id}",
         seal=True,
+        repositories="/repositories" if scope != "repository" else "",
     )
 
 
@@ -93,6 +94,7 @@ def _variables(
         page=page,
         create=(*_VARIABLE_NEW, _VISIBILITY) if org else _VARIABLE_NEW,
         edit=(Field("value", "The new value:"),),
+        repositories="/repositories" if org else "",
     )
 
 
@@ -284,9 +286,15 @@ RESOURCE_SPECS: tuple[ResourceSpec, ...] = (
         ),
         help="Runner Groups: which repositories may use which of the organization's runners.",
         page=f"{_ORG_SETTINGS}/actions/runner-groups",
+        repositories="/repositories",
         create=(
             Field("name", "The group's name:"),
-            Field("visibility", "Which repositories may use it?", "choice", ("all", "private")),
+            Field(
+                "visibility",
+                "Which repositories may use it?",
+                "choice",
+                ("all", "private", "selected"),
+            ),
         ),
         edit=(Field("name", "Its new name:"),),
     ),

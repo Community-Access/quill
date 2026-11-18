@@ -245,6 +245,23 @@
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="200">2.0.0</h2>
 <h3
+id="choosing-which-repositories-may-use-a-secret-variable-or-runner-group-2026-11-18">Choosing
+which repositories may use a secret, variable or runner group
+(2026-11-18)</h3>
+<p>An organization’s secrets and variables, its Copilot agent secrets
+and variables, its Codespaces and Dependabot secrets, its runner groups,
+and your own Codespaces secrets can each be limited to chosen
+repositories. In the GitHub Workbench, <strong>Repositories
+Allowed…</strong> on one of those rows opens a list of the
+organization’s repositories (or yours) with the ones allowed now already
+checked. Check or uncheck, press <code>Enter</code>, and QUILL says what
+changed: “Added 1 repository and removed 1 repository for TOKEN.” It
+adds and removes one repository at a time rather than replacing the
+list, so a change somebody else makes at the same moment is kept. A
+secret that is open to all repositories says to change its visibility to
+Selected repositories first. Planned GitHub endpoints fall from 577 to
+545.</p>
+<h3
 id="what-is-left-to-build-for-github-and-what-is-not-2026-11-18">What is
 left to build for GitHub, and what is not (2026-11-18)</h3>
 <p>The GitHub Workbench keeps a table of every GitHub endpoint and what

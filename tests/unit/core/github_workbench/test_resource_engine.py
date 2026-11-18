@@ -118,3 +118,49 @@ def test_every_list_reaches_the_engine_through_explore(monkeypatch: Any) -> None
         )
         assert rows == []
     assert len(seen) == len(RESOURCE_SPECS)
+
+
+class RepoApi(FakeApi):
+    """Answers the repository lists Repositories Allowed reads."""
+
+    def rest(self, method: str, path: str, *, body: Any = None, query: Any = None) -> Any:
+        if method == "GET" and path.endswith("/repositories"):
+            self.sent.append((method, path, body))
+            return RestResponse(200, {}, {"repositories": [{"id": 1, "full_name": "acme/one"}]})
+        if method == "GET" and path.endswith("/repos"):
+            self.sent.append((method, path, body))
+            return RestResponse(
+                200, {}, [{"id": 1, "full_name": "acme/one"}, {"id": 2, "full_name": "acme/two"}]
+            )
+        return super().rest(method, path, body=body, query=query)
+
+
+def test_repositories_allowed_adds_and_removes_one_at_a_time() -> None:
+    spec = spec_for("org_actions_secrets")
+    api = RepoApi()
+    had = engine.allowed_repositories(api, spec, "acme", "TOKEN")
+    assert [repo.name for repo in had] == ["acme/one"]
+    assert api.sent[-1][1] == "/orgs/acme/actions/secrets/TOKEN/repositories"
+    choices = engine.candidate_repositories(api, spec, "acme")
+    assert [repo.id for repo in choices] == [1, 2]
+    said = engine.set_repositories(api, spec, "acme", "TOKEN", had, [choices[1]])
+    assert said == "Added 1 repository and removed 1 repository for TOKEN."
+    assert api.sent[-2:] == [
+        ("PUT", "/orgs/acme/actions/secrets/TOKEN/repositories/2", None),
+        ("DELETE", "/orgs/acme/actions/secrets/TOKEN/repositories/1", None),
+    ]
+    assert engine.set_repositories(api, spec, "acme", "TOKEN", had, had) == "Nothing changed."
+
+
+def test_a_secret_open_to_all_says_how_to_choose_repositories() -> None:
+    with pytest.raises(engine.ResourceError, match="Selected repositories"):
+        engine.allowed_repositories(
+            FakeApi(status={"GET": 409}), spec_for("org_actions_variables"), "acme", "X"
+        )
+
+
+def test_your_own_codespaces_secret_chooses_from_your_repositories() -> None:
+    api = RepoApi()
+    engine.candidate_repositories(api, spec_for("my_codespaces_secrets"), "")
+    assert api.sent[-1][1] == "/user/repos"
+    assert spec_for("runner_groups").repositories and not spec_for("actions_secrets").repositories

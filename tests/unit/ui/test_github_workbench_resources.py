@@ -93,3 +93,34 @@ def test_yes_or_no_and_choices() -> None:
     window = _Window("org_issue_types", [1], ["Bug", ""])
     window._do_resource_new(SimpleNamespace(instance="acme"), None)
     assert window.api.sent[-1][2] == {"name": "Bug", "is_enabled": False}
+
+
+def test_repositories_allowed_checks_the_current_ones_and_saves_the_difference() -> None:
+    from tests.unit.core.github_workbench.test_resource_engine import RepoApi
+
+    window = _Window("org_actions_secrets", [], [])
+    window.api = RepoApi()
+    row = SimpleNamespace(kind="resource", key="org_actions_secrets:TOKEN", label="TOKEN")
+    seen: dict[str, Any] = {}
+
+    def choose(_title: str, _prompt: str, labels: list[str], checked: set[int]) -> list[int]:
+        seen.update(labels=labels, checked=checked)
+        return [1]
+
+    window._choose_repositories = choose  # type: ignore[method-assign]
+    window._row_spec = lambda _row: (spec_for("org_actions_secrets"), "TOKEN")  # type: ignore[method-assign]
+    assert window._fits_resource_repositories(row)
+    window._do_resource_repositories(SimpleNamespace(instance="acme"), row)
+    assert seen == {"labels": ["acme/one", "acme/two"], "checked": {0}}
+    assert window.said[0] == "Added 1 repository and removed 1 repository for TOKEN."
+
+
+def test_cancelling_repositories_allowed_changes_nothing() -> None:
+    from tests.unit.core.github_workbench.test_resource_engine import RepoApi
+
+    window = _Window("org_actions_secrets", [], [])
+    window.api = RepoApi()
+    window._choose_repositories = lambda *_a: None  # type: ignore[method-assign]
+    window._row_spec = lambda _row: (spec_for("org_actions_secrets"), "TOKEN")  # type: ignore[method-assign]
+    window._do_resource_repositories(SimpleNamespace(instance="acme"), None)
+    assert not any(method in ("PUT", "DELETE") for method, _p, _b in window.api.sent)

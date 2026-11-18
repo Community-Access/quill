@@ -956,6 +956,9 @@ VERBS: dict[str, Scenario | str] = {
     "resource_new": resource_round_trip,
     "resource_edit": "with resource_new: an Actions variable changed",
     "resource_delete": "with resource_new: the variable deleted again",
+    "resource_repositories": (
+        "needs Jeff: an organization secret set to Selected repositories, in Community-Access"
+    ),
     "new_key": "needs Jeff: adds a key to your own GitHub account",
     "delete_key": "needs Jeff: deletes a key from your own GitHub account",
     "new_advisory": "needs Jeff: a report or a draft advisory can be closed but never deleted",
