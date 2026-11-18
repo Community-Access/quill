@@ -290,6 +290,31 @@ columns you have hidden, because those are left out. It works on any list:
 issues, pull requests, runs, alerts, people, Change History. The WordPress
 Workbench's Export List is the same command.
 
+### Bringing issues in
+
+Two rows on the Workbench's File menu make many issues at once in the
+repository you are in. Neither sends anything before you have read a preview
+and pressed **Create Issues**; Cancel there sends nothing.
+
+- **Import Issues from a Spreadsheet...** (`Ctrl+Alt+I`) reads a CSV file or
+  an Excel workbook whose first row names the columns. It matches columns by
+  name: Title, Body, Labels, Assignees, Milestone and Type, and the usual other
+  names, such as Summary, Description, Tags or Owner. Labels and assignees can
+  be several, with commas between; a milestone is named by its title. The
+  preview starts with which column fills which field and which columns match
+  nothing, then has a line for each row, using the row numbers your
+  spreadsheet shows. A row with no title, a title longer than GitHub allows,
+  or a milestone the repository does not have is skipped, with the reason.
+- **New Issues from Lines...** (`Ctrl+Alt+L`) makes one issue for each line.
+  It starts with the text you have selected in the editor, in a box you can
+  change, and takes off list markers and check boxes, so a task list such as
+  `- [ ] Write the guide` becomes an issue called Write the guide. It then asks
+  whether to make them sub-issues of an issue, by number; leave it empty for
+  none.
+
+Afterwards a window lists each row or line with the issue it made, or why
+GitHub refused it, and Change History has each issue made.
+
 `Delete` always does the safe thing for the kind of row, and asks first
 whenever it cannot be undone: on a branch, a label, a release's file, a gist,
 an Actions cache or a workflow run it deletes that one thing, after asking. It

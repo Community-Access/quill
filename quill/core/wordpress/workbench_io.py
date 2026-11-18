@@ -27,8 +27,6 @@ Wx-free; requests go through the site's own client.
 
 from __future__ import annotations
 
-import csv
-import io
 import json
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
@@ -38,6 +36,8 @@ from typing import Any
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.site import kind_route
 from quill.core.workbench.export import export_rows, markdown_table  # shared since 2026-11-17
+from quill.core.workbench.spreadsheet import header_name as _header
+from quill.core.workbench.spreadsheet import read_spreadsheet
 
 __all__ = [
     "IMPORT_COLUMNS",
@@ -76,10 +76,6 @@ IMPORT_SYNONYMS: dict[str, str] = {
     "post status": "status",
 }
 DOC_SUFFIXES = (".md", ".markdown", ".txt", ".docx")
-
-
-def _header(text: str) -> str:
-    return " ".join(str(text).strip().lower().replace("_", " ").split())
 
 
 @dataclass(frozen=True)
@@ -131,31 +127,6 @@ def mapping_lines(mapping: Mapping[str, str], ignored: Sequence[str]) -> list[st
     if ignored:
         lines.append(f"Left out, matching no field: {', '.join(ignored)}.")
     return lines
-
-
-def read_spreadsheet(path: Path) -> list[dict[str, str]]:
-    """Each row of a CSV or Excel file as {column: text}, columns named by the header."""
-    if path.suffix.lower() in (".xlsx", ".xlsm"):
-        from openpyxl import load_workbook
-
-        book = load_workbook(str(path), read_only=True, data_only=True)
-        sheet = book.active
-        values = [
-            ["" if cell is None else str(cell) for cell in row]
-            for row in sheet.iter_rows(values_only=True)
-        ]
-        book.close()
-    else:
-        text = path.read_text(encoding="utf-8-sig")
-        values = [list(row) for row in csv.reader(io.StringIO(text))]
-    if not values:
-        return []
-    header = [_header(h) for h in values[0]]
-    return [
-        {header[i]: cell.strip() for i, cell in enumerate(row) if i < len(header) and header[i]}
-        for row in values[1:]
-        if any(cell.strip() for cell in row)
-    ]
 
 
 def import_plan(rows: Sequence[Mapping[str, str]]) -> list[ImportRow]:

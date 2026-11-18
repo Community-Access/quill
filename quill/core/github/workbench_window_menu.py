@@ -110,6 +110,20 @@ _FILE = MenuSpec(
             "This list as it is shown, its columns, filter and rows, as Excel, CSV or a "
             "Markdown table the editor reads as a table. The same as the WordPress Workbench's.",
         ),
+        _row(
+            "import_issues",
+            "&Import Issues from a Spreadsheet...",
+            "Ctrl+Alt+I",
+            "Make issues in this repository from a CSV file or an Excel workbook: columns "
+            "matched by name, a preview with a line per row, then a sentence per row.",
+        ),
+        _row(
+            "issues_from_lines",
+            "New Issues from &Lines...",
+            "Ctrl+Alt+L",
+            "One issue per line of the editor's selection, which you can change first, "
+            "optionally each a sub-issue of an issue you name. Previewed before anything is made.",
+        ),
         None,
         _row("close", "&Close Workbench", "Alt+F4", "Close this window. The editor stays."),
     ),

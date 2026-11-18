@@ -178,6 +178,9 @@ _NATIVE: dict[str, frozenset[str]] = {
     "undo_change": frozenset({"view"}),
     # Export List (PRD 22.7): the list as shown, whatever node it is.
     "export_list": frozenset({"view"}),
+    # Issues in (PRD 22.7, github_workbench_import.py).
+    "import_issues": frozenset({"view"}),
+    "issues_from_lines": frozenset({"view"}),
     "redo_change": frozenset({"view"}),
     # Gists (github_workbench_gists.py); Explore did these before the Workbench.
     "new_gist": frozenset({"view"}),

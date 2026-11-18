@@ -620,6 +620,19 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Many issues at once, from a spreadsheet or from lines (2026-11-17)
+
+The GitHub Workbench's File menu gains two ways to make issues in bulk, each
+with a preview before anything is sent and a sentence for each issue after.
+**Import Issues from a Spreadsheet...** (`Ctrl+Alt+I`) reads a CSV file or
+an Excel workbook, matches its columns to title, body, labels, assignees,
+milestone and type by name, and skips, with the reason, any row that GitHub
+would refuse, numbering rows as your spreadsheet does. **New Issues from
+Lines...** (`Ctrl+Alt+L`) turns each line of your editor selection into an
+issue, list markers and check boxes taken off, and can make them sub-issues of
+an issue you name. The spreadsheet reader is the WordPress Workbench's, now
+shared.
+
 ### Fixes from today's reports (2026-11-17)
 
 - **Enter saves Settings.** After Find a setting took you to a setting,
