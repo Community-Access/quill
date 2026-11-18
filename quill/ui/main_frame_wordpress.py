@@ -243,7 +243,21 @@ class WordPressMenuMixin:
         if not self._wordpress_prefix_matches(event):
             return False
         self._announce(layer.start())  # type: ignore[attr-defined]
+        self._say_when_layer_times_out(layer)
         return True
+
+    def _say_when_layer_times_out(self, layer: Any) -> None:
+        """Say so when the letter never comes, so the next key's target is known."""
+        import wx
+
+        from quill.core.wordpress import keys
+
+        def check() -> None:
+            if layer.timed_out():
+                self._announce(keys.TIMED_OUT_MESSAGE)  # type: ignore[attr-defined]
+
+        if wx.GetApp() is not None:  # no event loop, no timer (a test's fake window)
+            wx.CallLater(int(keys.TIMEOUT_SECONDS * 1000) + 100, check)
 
     def _wordpress_prefix_matches(self, event: Any) -> bool:
         """Ctrl+Alt+Shift+Grave, while WordPress is on and the QUILL key is not on it."""

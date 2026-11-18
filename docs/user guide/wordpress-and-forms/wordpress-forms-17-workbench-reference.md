@@ -16,8 +16,10 @@ below names the chapter that shows how to use it.
   and then H.
 - The site rows of Tools > WordPress and Tools > WordPress > Manage open it at
   their own place: Comments, Media Library, Categories and Tags, Menus, Site
-  Check, Site Settings, Users, Application Passwords, Plugins, Themes, Fonts,
-  Synced Patterns, Widgets, Site Map and AI Abilities.
+  Check, Site Settings, Users, Application Passwords, Plugins, Themes, Widgets,
+  Site Map and AI Abilities. Fonts and Synced Patterns open their own windows,
+  which do what the Workbench cannot yet: install fonts, and edit a synced
+  pattern's blocks.
 - **File > WordPress > This Post in the Workbench** (the WordPress key, then
   Shift+H) opens the list the post is in, with it selected (Chapter 3).
 - **Insert > Picture from the Media Library...** opens Media to pick a

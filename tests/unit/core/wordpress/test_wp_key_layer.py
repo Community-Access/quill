@@ -86,6 +86,36 @@ def test_after_the_timeout_the_key_is_the_editors_again() -> None:
     assert layer.press("O", {"O": "wordpress.open"}) == keys.Outcome(consumed=False)
 
 
+def test_a_timeout_is_said_once_and_only_when_the_letter_never_came() -> None:
+    clock = _Clock()
+    layer = keys.WordPressKeyLayer(clock=clock)
+    layer.start()
+    assert not layer.timed_out()
+    clock.now += keys.TIMEOUT_SECONDS + 0.1
+    assert layer.timed_out() and not layer.timed_out() and not layer.active
+    layer.start()
+    layer.press("O", {"O": "wordpress.open"})
+    clock.now += keys.TIMEOUT_SECONDS + 0.1
+    assert not layer.timed_out()
+
+
+def test_the_prefixs_keys_still_held_do_not_spoil_the_letter() -> None:
+    bound = {"O": "wordpress.open", "Shift+S": "wordpress.schedule"}
+    for key, command in (
+        ("Ctrl+Alt+Shift+O", "wordpress.open"),
+        ("Ctrl+Alt+Shift+S", "wordpress.schedule"),
+        ("Ctrl+Alt+O", "wordpress.open"),
+    ):
+        layer = keys.WordPressKeyLayer()
+        layer.start()
+        assert layer.press(key, bound).command == command, key
+    layer = keys.WordPressKeyLayer()
+    layer.start()
+    assert layer.press("Ctrl+Alt+Shift+Q", bound).message == "No WordPress command on Q."
+    layer.start()
+    assert layer.press("Ctrl+O", bound).message == "No WordPress command on Ctrl+O."
+
+
 def test_a_moved_key_moves_the_letter() -> None:
     bindings = {"wordpress.open": f"{LAYER_PREFIX}, Shift+Q", "file.save": "Ctrl+S"}
     assert keys.layer_from_bindings(bindings) == {"Shift+Q": "wordpress.open"}
@@ -329,3 +359,19 @@ def test_windows_ctrl_alt_shift_2_is_not_the_prefix(
     monkeypatch.setattr(grave_key, "_current_platform", lambda: "win32")
     target = _EDITORS[editor]()
     assert not _press(target, _Event(ord("2"), ctrl=True, alt=True, shift=True, raw=0x32))
+
+
+def test_with_wordpress_off_no_row_advertises_the_layers_key() -> None:
+    from quill.core.lite.command_areas import visible_commands
+
+    def rows(wordpress: bool) -> dict[str, str]:
+        return {
+            handler: key
+            for _m, _l, key, handler, kind in visible_commands(
+                lambda area: wordpress or area != "wordpress"
+            )
+            if handler == "cmd_forms_responses"
+        }
+
+    assert rows(True)["cmd_forms_responses"] == f"{LAYER_PREFIX}, F"
+    assert rows(False)["cmd_forms_responses"] == ""

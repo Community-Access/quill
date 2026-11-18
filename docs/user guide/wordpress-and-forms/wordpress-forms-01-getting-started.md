@@ -195,17 +195,13 @@ Chapter 15 has the rest, with what to do about each one.
 
 ## WordPress.com sites
 
-The Connect window offers a second kind of site, **A WordPress.com site**.
-Choosing it greys out the username and password fields, because a
-WordPress.com site is meant to be connected by signing in to WordPress.com
-in your browser, on every plan, the free one included, with nothing to
-install.
-
-That sign-in needs QUILL's own WordPress.com app registration, and this
-build does not have it yet. If you choose A WordPress.com site and press
-Connect, QUILL says: "WordPress.com sign-in is not available in this build
-yet. If your WordPress.com plan allows plugins, connect with an application
-password at your site's own address instead."
+A WordPress.com site is meant to be connected by signing in to
+WordPress.com in your browser, on every plan, the free one included, with
+nothing to install. That sign-in needs QUILL's own WordPress.com app
+registration, and this build does not have it yet, so the Connect window
+does not offer it: its **Kind of site** list has only My own WordPress site.
+When the registration arrives, a second kind, **A WordPress.com site**,
+appears there.
 
 So, for now:
 
@@ -214,7 +210,8 @@ So, for now:
   type your site's address, and connect with the browser or by pasting, as
   above. Everything in this manual then works.
 - **On a plan without plugins,** wait for the build that brings WordPress.com
-  sign-in. When it comes, you will choose A WordPress.com site, press Get
+  sign-in. When it comes, you will choose A WordPress.com site in the Kind of
+  site list, press Get
   Password with My Browser, approve QUILL on WordPress.com, and sign in once.
   QUILL will keep you signed in from then on.
 
