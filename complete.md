@@ -201,10 +201,10 @@ Reconcile these against actual code and the operation ledger. Some individual ac
 
 - [ ] Issue close reasons, development links, branch creation for an issue, task-list editing/conversion, organization issue fields. *(Done 2026-11-17 except organization issue fields: Close or Reopen asks the reason, duplicate included; Linked branches on the issue sheet; Create Branch for This Issue; Check or Uncheck a Task; Convert Tasks to Sub-issues. `issue_development.py`, `github_workbench_development.py`; tests `test_issue_development.py`, `test_github_workbench_development.py`. Unlinking a branch is not built.)*
 - [ ] Saved replies, repository invitations, wiki and cross-linked discussion → issue → PR workflows. *(2026-11-18: saved replies insert in every comment box; repository invitations listed, accepted and declined (`repo_invitations.py`). Remaining: wiki, cross-linked workflows.)*
-- [ ] Repository General/features, complete creation/template options, transfer, standalone tags, topics and star lists.
+- [ ] Repository General/features, complete creation/template options, transfer, standalone tags, topics and star lists. *(2026-11-18: standalone tags made and deleted (`tags.py`).)*
 - [ ] Rulesets/protection management, organization/member/team access, custom roles and audit logs.
 - [ ] Webhooks and deliveries/redelivery/ping; deploy keys; autolinks; organization secret/variable repository selection.
-- [ ] Account profile/status, SSH/GPG/signing keys, token-request administration, billing/usage and Sponsors where APIs permit.
+- [ ] Account profile/status, SSH/GPG/signing keys, token-request administration, billing/usage and Sponsors where APIs permit. *(2026-11-18: status set and cleared (`user_status.py`).)*
 - [ ] Workflow enable/disable and accessible workflow authoring; triggers/jobs/steps/inputs/permissions/dependency graph as linear controls. *(2026-11-18: enable and disable on the sheet and as Turn Workflow On or Off... (`workflow_state.py`). Remaining: authoring.)*
 - [ ] Dependabot configuration and PR commands; CODEOWNERS editing/ownership lookup.
 - [x] Merge conflict resolution in an isolated worktree; PR revert; exact patch review. *(2026-11-17: Resolve Conflicts in a Worktree..., Revert Pull Request... and Open Patch in Editor (`pull_tools.py`, `github_workbench_pull_tools.py`). Conflicts are QUILL's, which keeps local Git.)*

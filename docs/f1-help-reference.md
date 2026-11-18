@@ -2906,6 +2906,8 @@ Control coverage: 364 audited sites (364 helped).
 
 **Account > Change History....** Every change the Workbench made on GitHub: before and after, and Undo where GitHub allows it.
 
+**Account > Set Your Status....** Your GitHub status: a message, an emoji, busy or not, and when it clears.
+
 **Account > My Access Here....** Your effective role here, and where each part comes from.
 
 **Account > View As Role....** What a role could do here, read-only: nothing you do is sent.
@@ -3071,6 +3073,8 @@ Control coverage: 364 audited sites (364 helped).
 **Copy Name.** Copy the branch name.
 
 **Delete Branch.** Delete the branch on GitHub.
+
+**Delete Tag.** Remove the tag; the commit stays.
 
 **Accept Invitation.** Join the repository with the access offered.
 

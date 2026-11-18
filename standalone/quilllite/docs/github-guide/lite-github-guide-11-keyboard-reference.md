@@ -148,6 +148,7 @@ no AI menu, so here they belong to the Go row.
 | --- | --- |
 | `Ctrl+Shift+P` | GitHub Permissions |
 | `Ctrl+Shift+H` | Change History |
+| `Ctrl+Alt+S` | Set Your Status |
 | `Ctrl+Shift+K` | Manage GitHub Accounts |
 | `Ctrl+Shift+L` | GitHub's remaining hourly allowance |
 | `Ctrl+Shift+O` | Workbench Options |

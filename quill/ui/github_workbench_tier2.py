@@ -14,6 +14,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.github.explore_models import ExploreRow
+from quill.core.github.items_provider import GitHubTag
 from quill.core.github.workflows import GitHubWorkflow
 
 __all__ = ["TIER2_REASONS", "TIER2_VERBS", "GitHubWorkbenchTier2Mixin"]
@@ -22,12 +23,18 @@ TIER2_VERBS: dict[str, frozenset[str]] = {
     "workflow_state": frozenset({"workflow"}),
     "accept_invitation": frozenset({"invitation"}),
     "decline_invitation": frozenset({"invitation"}),
+    "new_tag": frozenset({"view"}),
+    "delete_tag": frozenset({"tag"}),
+    "user_status": frozenset({"view"}),
 }
 
 TIER2_REASONS: dict[str, str] = {
     "workflow_state": "Turning a workflow on or off is for a workflow, while you are signed in.",
     "accept_invitation": "Accept is for an invitation that has not expired.",
     "decline_invitation": "Decline is for an invitation, while you are signed in.",
+    "new_tag": "New Tag is for a repository's Tags, while you are signed in.",
+    "delete_tag": "Delete Tag is for a tag, while you are signed in.",
+    "user_status": "Your status is for the account you are signed in with.",
 }
 
 
@@ -37,6 +44,8 @@ class GitHubWorkbenchTier2Mixin:
     _say: Callable[[str], None]
     _background: Callable[[str, Callable[[], Any], Callable[[Any], None]], None]
     _confirm: Callable[[str, str], bool]
+    _ask_text: Callable[..., str]
+    _choose: Callable[[str, str, list[str]], int]
 
     def github_api(self) -> Any:
         raise NotImplementedError
@@ -109,3 +118,111 @@ class GitHubWorkbenchTier2Mixin:
 
     def _do_decline_invitation(self, _ref: Any, row: object) -> None:
         self._answer(row, accept=False)
+
+    # -- tags ----------------------------------------------------------------------
+
+    def _fits_new_tag(self, _row: object) -> bool:
+        current = getattr(self.frame, "current", None)
+        return self.signed_in and getattr(current, "key", "") == "tags"
+
+    def _do_new_tag(self, ref: Any, _row: object) -> None:
+        from quill.core.github.tags import create_tag, valid_tag_name
+
+        name = self._ask_text("New Tag", "Name of the new tag, such as v1.2.0:")
+        if not name:
+            return
+        why = valid_tag_name(name)
+        if why:
+            self._say(why)
+            return
+        at = self._ask_text("New Tag", f"Tag which branch, tag or commit as {name}?", value="main")
+        if not at:
+            return
+        api, repository = self.github_api(), ref.instance
+        self._background(
+            "make the tag",
+            lambda: create_tag(api, repository, name, at),
+            lambda said: (self._say(str(said)), self.frame.reload()),
+        )
+
+    def _fits_delete_tag(self, row: object) -> bool:
+        return self.signed_in and isinstance(row, GitHubTag)
+
+    def _do_delete_tag(self, ref: Any, row: object) -> None:
+        from quill.core.github.tags import release_for_tag
+
+        assert isinstance(row, GitHubTag)
+        api, repository, name = self.github_api(), ref.instance, row.name
+        self._background(
+            "look for a release on the tag",
+            lambda: release_for_tag(api, repository, name),
+            lambda release: self._confirm_delete_tag(repository, name, str(release)),
+        )
+
+    def _confirm_delete_tag(self, repository: str, name: str, release: str) -> None:
+        from quill.core.github.tags import delete_tag
+
+        warning = (
+            f" The release {release} is built on it and will be left without its tag."
+            if release
+            else ""
+        )
+        if not self._confirm(
+            "Delete Tag",
+            f"Delete tag {name} from {repository}?{warning} The commit stays; only the "
+            "name goes, and anyone who fetched it keeps their copy.",
+        ):
+            return
+        api = self.github_api()
+        self._background(
+            "delete the tag",
+            lambda: delete_tag(api, repository, name),
+            lambda said: (self._say(str(said)), self.frame.reload()),
+        )
+
+    # -- your status ---------------------------------------------------------------
+
+    def _fits_user_status(self, _row: object) -> bool:
+        return self.signed_in
+
+    def _do_user_status(self, _ref: Any, _row: object) -> None:
+        from quill.core.github.user_status import read_status
+
+        api = self.github_api()
+        self._background("read your status", lambda: read_status(api), self._status_read)
+
+    def _status_read(self, status: Any) -> None:
+        from quill.core.github.user_status import CLEAR_AFTER, clear_status, set_status
+
+        choices = ["Set a New Status...", "Clear Status"]
+        picked = self._choose("Your GitHub Status", f"{status.sentence} What now?", choices)
+        api = self.github_api()
+        if picked == 1:
+            self._background("clear your status", lambda: clear_status(api), self._say)
+            return
+        if picked != 0:
+            return
+        message = self._ask_text(
+            "Your GitHub Status", "Your status, as people will see it:", value=status.message
+        )
+        if not message:
+            return
+        emoji = self._ask_text(
+            "Your GitHub Status",
+            "An emoji by its GitHub name, such as palm_tree or house, or blank for none:",
+            value=status.emoji.strip(":"),
+        )
+        busy = self._confirm(
+            "Your GitHub Status",
+            "Mark yourself busy? People asking for your review are told you may answer slowly.",
+        )
+        labels = [label for label, _after in CLEAR_AFTER]
+        when = self._choose("Your GitHub Status", "Clear the status:", labels)
+        if when < 0:
+            return
+        after = CLEAR_AFTER[when][1]
+        self._background(
+            "set your status",
+            lambda: set_status(api, message, emoji=emoji, busy=busy, clear_after=after),
+            self._say,
+        )

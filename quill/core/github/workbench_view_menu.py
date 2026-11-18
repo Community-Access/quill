@@ -228,5 +228,11 @@ ACCOUNT_ROWS: tuple[MenuRow | MenuSub | None, ...] = (
         "Every change the Workbench made on GitHub: before and after, and Undo where GitHub "
         "allows it.",
     ),
+    MenuRow(
+        f"{_P}user_status",
+        "Set Your &Status...",
+        "Ctrl+Alt+S",
+        "Your GitHub status: a message, an emoji, busy or not, and when it clears.",
+    ),
     ROLES_SUB,
 )

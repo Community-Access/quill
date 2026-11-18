@@ -977,12 +977,12 @@ tree, so adding it later does not reshape anything.
 | Teams and organization members | Out of scope by a code comment ("Organizations in, Teams out"); roadmap GX13 adds team permissions. Now in scope: section 18.3.3 | Repositories > Organizations > org > Members, Teams; People > My Teams |
 | Insights charts as tables: commit activity, code frequency, punch card | Not found | Repository > Insights (tables, never charts only) |
 | Dependency graph and software bill of materials (SBOM) export | Not found | Repository > Security > Dependencies |
-| Tags: create and delete outside a release | Not found | Repository > Code > Tags context menu |
+| Tags: create and delete outside a release | **Built 2026-11-18.** New Tag... (Ctrl+N in Tags) makes a lightweight tag on a branch, tag or commit; Delete Tag... asks, naming a release built on the tag (`quill/core/github/tags.py`) | Repository > Code > Tags context menu |
 | Hide a comment (moderation: spam, off-topic, outdated) | Not found | Comment context in details > Hide Comment... |
 | Transfer a repository | Not found (only issues transfer) | Repository > Settings > Transfer... |
 | Self-hosted runners | Not found | Repository > Actions > Runners (read-only) |
 | Star lists | Not found | Repositories > Starred > each list |
-| Your profile and status | Not found | Account > Profile and Status... |
+| Your profile and status | **Status built 2026-11-18:** Account > Set Your Status... (`Ctrl+Alt+S`, `changeUserStatus`; message, emoji by name, busy, when it clears; `quill/core/github/user_status.py`). The profile itself is not built | Account > Profile and Status... |
 
 ### 14.3 Brought in after all (Jeff, 2026-11-09: "If I can do it in GitHub I should be able to do it")
 

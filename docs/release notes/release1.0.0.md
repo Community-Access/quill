@@ -2144,7 +2144,10 @@ could read and not answer. **Invitations** now sits under Needs My Attention,
 and Accept or Decline is one key away. And the nightly build that quietly
 stopped two months ago has an answer too: **Turn Workflow On or Off...** says
 in words when GitHub switched a workflow off itself after sixty days without
-activity, and turns it back on.
+activity, and turns it back on. And a tag no longer needs a release: the Tags
+view makes one on any branch or commit, and deletes one, warning first when a
+release depends on it. Going on holiday? **Set Your Status...** puts "Back
+Monday" beside your name, marks you busy and clears itself when you are back.
 
 #### Reviewing a pull request line by line
 

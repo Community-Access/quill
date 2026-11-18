@@ -103,6 +103,14 @@ GitHub confirmed it. Undo This Change reverses the selected one. You can save
 the list as a CSV file or clear it. It stays on this computer for 90 days, and
 a secret's value is never in it.
 
+**Account > Set Your Status...** (`Ctrl+Alt+S`) reads your GitHub status, the
+short message beside your name, and offers to set a new one or clear it. A new
+one asks, a question at a time, for the message ("Back Monday"), an emoji by
+its GitHub name (`palm_tree`, `house`, or none), whether to mark yourself busy,
+which tells people asking for your review that you may answer slowly, and when
+it clears itself: never, in 30 minutes, an hour, four hours, tomorrow or in a
+week. You hear the status as it is now.
+
 ## Filtering
 
 The filter box (`Ctrl+E`) takes plain words, which narrow the loaded list, and
