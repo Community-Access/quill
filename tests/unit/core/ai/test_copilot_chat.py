@@ -31,7 +31,8 @@ from typing import Any, ClassVar
 
 import pytest
 
-from quill.core.ai import connection_caps, copilot_auth, copilot_runtime, copilot_state
+import quill.ai_packs.copilot as copilot_pack
+from quill.core.ai import connection_caps, copilot_auth, copilot_state
 from quill.core.ai.connection_choice import (
     NOT_AVAILABLE_YET,
     NOT_FOR_ACCOUNT,
@@ -101,6 +102,7 @@ class Rec:
     models: list[Any] = field(default_factory=list)
     models_error: BaseException | None = None
     quota: Any = None
+    stop_error: BaseException | None = None
 
 
 def _fake_sdk(rec: Rec) -> types.ModuleType:
@@ -161,42 +163,22 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
             return rec.quota
 
     class CopilotClient:
-        def __init__(
-            self,
-            *,
-            connection: Any = None,
-            env: dict[str, str] | None = None,
-            github_token: str | None = None,
-            use_logged_in_user: bool | None = None,
-            working_directory: str | None = None,
-            base_directory: str | None = None,
-        ) -> None:
+        def __init__(self, *, mode: str, runtime: Any, github: dict[str, Any]) -> None:
+            assert mode == "empty"
             rec.clients += 1
-            rec.client_kwargs = {"github_token": github_token, "env": env}
+            rec.client_kwargs = {"mode": mode, "runtime": runtime, "github": github}
             self.rpc = types.SimpleNamespace(account=Account())
 
-        async def __aenter__(self) -> CopilotClient:
-            return self
+        async def start(self) -> None:
+            rec.calls.append("start")
 
-        async def __aexit__(self, *exc: object) -> None:
+        async def stop(self) -> None:
             rec.calls.append("stop")
+            if rec.stop_error is not None:
+                raise rec.stop_error
 
-        async def create_session(
-            self,
-            *,
-            on_permission_request: Any = None,
-            model: str | None = None,
-            system_message: dict[str, str] | None = None,
-            available_tools: list[str] | None = None,
-            streaming: bool | None = None,
-        ) -> CopilotSession:
-            rec.sessions.append({
-                "on_permission_request": on_permission_request,
-                "model": model,
-                "system_message": system_message,
-                "available_tools": available_tools,
-                "streaming": streaming,
-            })
+        async def create_session(self, **kwargs: Any) -> CopilotSession:
+            rec.sessions.append(kwargs)
             return CopilotSession()
 
         async def list_models(self) -> list[Any]:
@@ -205,14 +187,10 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
                 raise rec.models_error
             return list(rec.models)
 
-    @dataclass
-    class StdioRuntimeConnection:
-        path: str | None = None
-
     class RuntimeConnection:
         @staticmethod
-        def for_stdio(*, path: str | None = None, args: tuple[str, ...] = ()) -> Any:
-            return StdioRuntimeConnection(path=path)
+        def for_inprocess(*, base_directory: str | None = None) -> Any:
+            return types.SimpleNamespace(base_directory=base_directory)
 
     module = types.ModuleType("copilot")
     module.CopilotClient = CopilotClient  # type: ignore[attr-defined]
@@ -293,7 +271,7 @@ def rec(monkeypatch: pytest.MonkeyPatch) -> Rec:
     monkeypatch.setitem(sys.modules, "copilot.rpc", rpc)
     for name in ("QUILL_SAFE_MODE", "COPILOT_CLI_PATH", "GH_TOKEN", "GITHUB_TOKEN"):
         monkeypatch.delenv(name, raising=False)
-    monkeypatch.setattr(copilot_runtime, "find_copilot_cli", lambda: None)
+    monkeypatch.setattr(copilot_pack, "prepare_inprocess_runtime", lambda: Path("runtime.node"))
     monkeypatch.setattr(copilot_auth, "stored_token", lambda name="QUILL": "gho_test")
     monkeypatch.setattr(copilot_auth, "forget_token", lambda name="QUILL": True)
     connection_caps.clear_model_capabilities()
@@ -341,20 +319,22 @@ def test_ask_sends_a_picture_as_a_blob_attachment(rec: Rec, tmp_path: Path) -> N
             }
         ]
     ]
-    assert rec.calls == ["send_and_wait", "disconnect", "stop"]
-    assert rec.client_kwargs["github_token"] == "gho_test"  # this app's own token
-    assert "gho_test" not in (rec.client_kwargs["env"] or {}).values()
+    assert rec.calls == ["start", "send_and_wait", "disconnect", "stop"]
+    assert rec.client_kwargs["github"] == {
+        "token": "gho_test",
+        "use_logged_in_user": False,
+    }
 
 
 def test_session_offers_no_tools_and_appends_the_family_line(rec: Rec, tmp_path: Path) -> None:
     _on_worker(lambda: _chat(tmp_path).ask("Hi", system="Be brief."))
     session = rec.sessions[0]
-    assert session["available_tools"] == ["quill_text_only"]
+    assert session["tools"]["available_tools"] == ["quill_text_only"]
     assert session["system_message"]["mode"] == "append"
     content = session["system_message"]["content"]
     assert content.startswith("Be brief.") and content.endswith(FAMILY_INSTRUCTION)
-    assert session["streaming"] is None and session["model"] is None
-    decision = session["on_permission_request"](types.SimpleNamespace(kind="shell"), {})
+    assert session["events"]["streaming"] is False and "model" not in session
+    decision = session["permissions"]["on_request"](types.SimpleNamespace(kind="shell"), {})
     assert isinstance(decision, PermissionDecisionReject)
 
 
@@ -362,7 +342,7 @@ def test_chosen_model_is_passed_and_auto_lets_copilot_choose(rec: Rec, tmp_path:
     _on_worker(lambda: _chat(tmp_path, model="gpt-6").ask("Hi"))
     _on_worker(lambda: _chat(tmp_path, model=AUTO_MODEL).ask("Hi"))
     assert rec.sessions[0]["model"] == "gpt-6"
-    assert rec.sessions[1]["model"] is None
+    assert "model" not in rec.sessions[1]
 
 
 def test_a_picture_type_copilot_cannot_take_is_refused_before_anything_starts(
@@ -406,7 +386,7 @@ def test_stream_delivers_each_piece_in_order(rec: Rec, tmp_path: Path) -> None:
     answer = _on_worker(lambda: _chat(tmp_path).stream("Hi", on_delta=pieces.append))
     assert pieces == ["Hel", "lo", "."]
     assert answer.text == "Hello." and not answer.stopped
-    assert rec.sessions[0]["streaming"] is True
+    assert rec.sessions[0]["events"]["streaming"] is True
 
 
 def test_stop_aborts_the_turn_and_keeps_the_text_so_far(rec: Rec, tmp_path: Path) -> None:
@@ -426,7 +406,14 @@ def test_a_timeout_aborts_and_is_worded(rec: Rec, tmp_path: Path) -> None:
     rec.raise_on_wait = TimeoutError("Timeout after 600s")
     with pytest.raises(CopilotChatError, match="took too long"):
         _on_worker(lambda: _chat(tmp_path).ask("Hi"))
-    assert rec.calls[:2] == ["send_and_wait", "abort"]
+    assert rec.calls[:3] == ["start", "send_and_wait", "abort"]
+
+
+def test_session_folders_are_cleared_even_if_client_stop_fails(rec: Rec, tmp_path: Path) -> None:
+    rec.stop_error = RuntimeError("stop failed")
+    with pytest.raises(CopilotChatError, match="stop failed"):
+        _on_worker(lambda: _chat(tmp_path).ask("Hi"))
+    assert not (tmp_path / "ai" / "copilot" / "quill-lite").exists()
 
 
 # -- models ---------------------------------------------------------------------- #
@@ -550,12 +537,12 @@ def test_classify_failure(kwargs: dict[str, Any], outcome: str) -> None:
 
 @pytest.fixture
 def parts(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> dict[str, Any]:
-    state: dict[str, Any] = {"client_id": "Iv1.test", "cli": tmp_path / "copilot.exe"}
+    state: dict[str, Any] = {"client_id": "Iv1.test", "runtime": tmp_path / "runtime.node"}
     state["sdk"] = True
     state["token"] = "gho_test"
     monkeypatch.setitem(copilot_auth.CLIENT_IDS, "QUILL Lite", "")
     monkeypatch.setattr(copilot_auth, "client_id", lambda name="QUILL": state["client_id"])
-    monkeypatch.setattr(copilot_state, "resolve_cli_path", lambda: state["cli"])
+    monkeypatch.setattr(copilot_state, "resolve_runtime_path", lambda: state["runtime"])
     monkeypatch.setattr(copilot_state, "sdk_bundled", lambda: state["sdk"])
     monkeypatch.setattr(copilot_auth, "stored_token", lambda name="QUILL": state["token"])
     return state
@@ -575,9 +562,9 @@ def test_readiness_states(parts: dict[str, Any], tmp_path: Path) -> None:
     parts["client_id"] = ""
     assert _copilot_row(tmp_path) == NOT_AVAILABLE_YET
     parts["client_id"] = "Iv1.test"
-    parts["cli"] = None  # no bundled CLI and no developer override
+    parts["runtime"] = None  # no bundled runtime and no developer override
     assert _copilot_row(tmp_path) == NOT_AVAILABLE_YET
-    parts["cli"] = tmp_path / "copilot.exe"
+    parts["runtime"] = tmp_path / "runtime.node"
     parts["sdk"] = False
     assert _copilot_row(tmp_path) == NOT_AVAILABLE_YET
 

@@ -5,7 +5,7 @@ these. It never imports the SDK itself: the harness hands it a
 ``client_factory`` and the SDK classes it needs (:class:`SdkParts`), so tests
 drive the real code path with a fake SDK.
 
-How a task runs (codex.md 5.2, 5.3, 8; SDK 1.0.28 read from source):
+How a task runs (codex.md 5.2, 5.3, 8; SDK 2.0.1 read from source):
 
 - **Thread.** :meth:`CopilotToolSession.run` blocks on a worker thread and
   owns a private asyncio loop there -- never the UI thread's. Tool handlers
@@ -226,10 +226,14 @@ class CopilotToolSession:
             self._emit(AgentEvent(AgentEventKind.ERROR, f"{self._name} could not complete."))
             return HarnessResult(status="error", error=str(exc))
         finally:
-            self._tools.gate.end_task()
-            self._folders.clear()
-            self._loop = None
-            loop.close()
+            try:
+                self._tools.gate.end_task()
+            finally:
+                try:
+                    self._folders.clear()
+                finally:
+                    self._loop = None
+                    loop.close()
 
     async def _main(self) -> HarnessResult:
         self._emit(AgentEvent(AgentEventKind.AGENT_STARTED, f"{self._name} started."))
@@ -262,7 +266,11 @@ class CopilotToolSession:
             await self._shutdown(client, session)
 
     def _create_kwargs(self) -> dict[str, Any]:
-        from quill.ai_packs.copilot import available_tools_for, system_message_for
+        from quill.ai_packs.copilot import (
+            available_tools_for,
+            session_safety_options,
+            system_message_for,
+        )
 
         sdk_tools = to_copilot_tools(
             self._tools,
@@ -274,14 +282,14 @@ class CopilotToolSession:
         # Decision 4: Copilot's own tools only when the person turned them on.
         names.extend(sorted(getattr(self._tools, "vendor_tools", frozenset())))
         self._recorded_tools = list(names)
-        kwargs: dict[str, Any] = dict(self._session_options)
-        kwargs.update({
-            "tools": sdk_tools,
-            "available_tools": names,
-            "on_permission_request": self._on_permission,
-            "streaming": True,
-            "working_directory": getattr(self._tools, "vendor_cwd", "") or str(self._folders.work),
-        })
+        kwargs: dict[str, Any] = session_safety_options()
+        kwargs.update(self._session_options)
+        kwargs["permissions"] = {"on_request": self._on_permission}
+        kwargs["tools"] = {"definitions": sdk_tools, "available_tools": names}
+        kwargs["events"] = {"streaming": True}
+        kwargs["working_directory"] = getattr(self._tools, "vendor_cwd", "") or str(
+            self._folders.work
+        )
         system_message = system_message_for(self._agent.system_prompt)
         if system_message is not None:
             kwargs["system_message"] = system_message

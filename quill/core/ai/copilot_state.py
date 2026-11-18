@@ -6,10 +6,10 @@ missing one has its own row state in Choose Your AI:
 * **this app has a GitHub client id** (:func:`copilot_auth.is_configured`):
   without Jeff's OAuth App registration for the app there is no sign-in at
   all, so the row reads "not available yet";
-* **the engine ships in this build**: the SDK (``github-copilot-sdk``, bundled
-  in the shared runtime since Phase 2) is importable, and the Copilot CLI is
-  bundled in ``tools\\copilot`` or a developer named one with
-  ``COPILOT_CLI_PATH`` -- also "not available yet" when absent;
+* **the engine ships in this build**: the SDK (``microsoft-copilot-sdk``) is
+  importable, and the pinned in-process runtime is present in ``tools\\copilot``
+  or a developer named one with ``COPILOT_CLI_PATH`` -- also "not available
+  yet" when absent;
 * **this app holds its own token** (:func:`copilot_auth.stored_token`):
   otherwise the row reads "not set up".
 
@@ -20,9 +20,9 @@ available for your account** (an organisation or plan has Copilot switched
 off, R15). Both live in ``<app data>/ai/copilot-<slug>.json``, written with
 ``write_json_atomic``; a fresh sign-in clears them.
 
-Nothing here makes a network call, starts the CLI, or hashes the bundle (the
-SHA-256 pin is checked at launch by
-:func:`copilot_runtime.cli_path_for_launch`). wx-free and strict-typed.
+Nothing here makes a network call, starts the runtime, or hashes the bundle
+(the SHA-256 pin is checked at launch by
+:func:`copilot_runtime.runtime_path_for_launch`). wx-free and strict-typed.
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ from typing import Any
 
 from quill.core.ai import copilot_auth
 from quill.core.ai.chatgpt_state import slug_for
-from quill.core.ai.copilot_runtime import resolve_cli_path
+from quill.core.ai.copilot_runtime import resolve_runtime_path
 from quill.core.storage import read_json, write_json_atomic
 
 __all__ = [
@@ -139,14 +139,14 @@ class CopilotReadiness:
 
     client_id: bool
     sdk: bool
-    cli: bool
+    runtime: bool
     signed_in: bool
     marks: CopilotMarks = CopilotMarks()
 
     @property
     def available(self) -> bool:
         """The build and the registration allow Copilot at all."""
-        return self.client_id and self.sdk and self.cli
+        return self.client_id and self.sdk and self.runtime
 
     @property
     def ready(self) -> bool:
@@ -163,16 +163,16 @@ def readiness(
     except Exception:  # noqa: BLE001 - an unreadable store is "not signed in"
         signed_in = False
     try:
-        cli = resolve_cli_path() is not None
+        runtime = resolve_runtime_path() is not None
     except OSError:
-        cli = False
+        runtime = False
     marks = load_marks(agent_name, data_dir=data_dir)
     if signed_in and marks.ended_by_github:
         marks = CopilotMarks(policy_off=marks.policy_off)  # a newer sign-in wins
     return CopilotReadiness(
         client_id=copilot_auth.is_configured(agent_name),
         sdk=sdk_bundled(),
-        cli=cli,
+        runtime=runtime,
         signed_in=signed_in,
         marks=marks,
     )

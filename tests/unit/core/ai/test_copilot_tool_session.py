@@ -1,8 +1,8 @@
 """Phase 4a: QUILL's family tools on Copilot, against a fake SDK.
 
 No network and no real SDK. A stand-in ``copilot`` package (with
-``copilot.tools`` and ``copilot.rpc``) mirrors ``github-copilot-sdk`` 1.0.28 as
-read from its source: ``Tool(name, description, handler, parameters,
+``copilot.tools`` and ``copilot.rpc``) mirrors ``microsoft-copilot-sdk`` 2.0.1
+as read from its source: ``Tool(name, description, handler, parameters,
 skip_permission=...)``, a handler that receives a ``ToolInvocation`` and
 returns a ``ToolResult`` (``binary_results_for_llm`` for pictures),
 ``custom-tool`` permission requests carrying ``tool_name``/``args``/
@@ -31,7 +31,7 @@ import pytest
 
 import quill.ai_packs.copilot as pack
 from quill.ai_packs.copilot_tool_session import REFUSAL_FEEDBACK, CopilotToolSession
-from quill.core.ai import copilot_auth, copilot_runtime
+from quill.core.ai import copilot_auth
 from quill.core.ai.activity_log import ActivityLog
 from quill.core.ai.agent_workdir import AgentFolders, agent_folders
 from quill.core.ai.approvals import ApprovalChoice
@@ -149,8 +149,8 @@ class Rec:
 def _fake_sdk(rec: Rec) -> types.ModuleType:
     class RuntimeConnection:
         @staticmethod
-        def for_stdio(*, path: str | None = None, args: tuple[str, ...] = ()) -> Any:
-            return types.SimpleNamespace(path=path, args=args)
+        def for_inprocess(*, base_directory: str | None = None) -> Any:
+            return types.SimpleNamespace(base_directory=base_directory)
 
     class CopilotSession:
         session_id = "sess-1"
@@ -158,7 +158,8 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
         def __init__(self, kwargs: dict[str, Any]) -> None:
             self._kwargs = kwargs
             self._handlers: list[Callable[[Any], None]] = []
-            self._tools = {t.name: t for t in kwargs.get("tools") or []}
+            tool_options = kwargs.get("tools") or {}
+            self._tools = {t.name: t for t in tool_options.get("definitions", [])}
             self._turn = 0
             self._abort = asyncio.Event()
 
@@ -180,7 +181,7 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
 
         async def _play(self, script: list[tuple[Any, ...]]) -> None:
             rec.turn_started.set()
-            on_permission = self._kwargs["on_permission_request"]
+            on_permission = self._kwargs["permissions"]["on_request"]
             for step in script:
                 if step[0] == "tool":
                     _, name, args = step
@@ -241,7 +242,7 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
 
         async def create_session(self, **kwargs: Any) -> CopilotSession:
             rec.session_kwargs = kwargs
-            home = Path(rec.client_kwargs["base_directory"])
+            home = Path(rec.client_kwargs["runtime"].base_directory)
             state = home / "session-state" / "sess-1"
             state.mkdir(parents=True, exist_ok=True)
             (state / "events.jsonl").write_text("{}", encoding="utf-8")
@@ -278,7 +279,8 @@ def rec(monkeypatch: pytest.MonkeyPatch, absent_env) -> Rec:
     monkeypatch.setitem(sys.modules, "copilot.tools", tools_mod)
     monkeypatch.setitem(sys.modules, "copilot.rpc", rpc)
     absent_env("QUILL_SAFE_MODE", "COPILOT_CLI_PATH", "COPILOT_SDK_DEFAULT_CONNECTION")
-    monkeypatch.setattr(copilot_runtime, "find_copilot_cli", lambda: None)
+    monkeypatch.setattr(pack, "resolve_runtime_path", lambda: Path("runtime.node"))
+    monkeypatch.setattr(pack, "prepare_inprocess_runtime", lambda: Path("runtime.node"))
     monkeypatch.setattr(copilot_auth, "stored_token", lambda name="QUILL": None)
     return recorder
 
@@ -428,21 +430,21 @@ def test_session_options_stream_append_and_stay_in_the_app_folder(rec: Rec, tmp_
     registry, _gw = _registry(tmp_path, FakeHost())
     _session(tmp_path, registry, ScriptedApprover()).run()
     folders = _folders(tmp_path)
-    assert rec.session_kwargs["streaming"] is True
+    assert rec.session_kwargs["events"]["streaming"] is True
     assert rec.session_kwargs["system_message"]["mode"] == "append"
     assert "Be careful." in rec.session_kwargs["system_message"]["content"]
     assert rec.session_kwargs["working_directory"] == str(folders.work)
-    assert rec.client_kwargs["working_directory"] == str(folders.work)
-    assert rec.client_kwargs["base_directory"] == str(folders.home)
-    assert all(t.skip_permission is False for t in rec.session_kwargs["tools"])
+    assert "working_directory" not in rec.client_kwargs
+    assert rec.client_kwargs["runtime"].base_directory == str(folders.home)
+    assert all(t.skip_permission is False for t in rec.session_kwargs["tools"]["definitions"])
 
 
 def test_g3_the_offered_tool_list_holds_only_quill_tools(rec: Rec, tmp_path: Path) -> None:
     registry, _gw = _registry(tmp_path, FakeHost())
     session = _session(tmp_path, registry, ScriptedApprover())
     session.run()
-    offered = rec.session_kwargs["available_tools"]
-    defined = [t.name for t in rec.session_kwargs["tools"]]
+    offered = rec.session_kwargs["tools"]["available_tools"]
+    defined = [t.name for t in rec.session_kwargs["tools"]["definitions"]]
     assert offered and offered == defined == registry.wire_names()
     assert offered == session.recorded_tool_names
     assert all(name.startswith("doc_") for name in offered)
@@ -471,7 +473,7 @@ def test_a_custom_tool_that_is_not_ours_is_rejected(rec: Rec, tmp_path: Path) ->
     session = _session(tmp_path, registry, ScriptedApprover())
     rec.turns = [[("text", "x")]]
     session.run()
-    on_permission = rec.session_kwargs["on_permission_request"]
+    on_permission = rec.session_kwargs["permissions"]["on_request"]
     # The session is over; call the callback directly on a fresh loop.
     answer = asyncio.run(
         on_permission(PermissionRequestCustomTool("", "bash", {}, "c1"), {"session_id": "s"})

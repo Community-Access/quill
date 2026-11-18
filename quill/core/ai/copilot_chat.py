@@ -3,9 +3,9 @@
 The single-request side of Copilot (codex.md 10A.12), the counterpart of
 ``chatgpt_ai_help.respond_on_plan`` for the ChatGPT plan. It is a small facade
 over the Copilot pack (:mod:`quill.ai_packs.copilot`), and makes its clients
-exactly the way the pack does -- the pinned bundled CLI over explicit stdio,
-the scrubbed child environment, this app's own token passed as
-``github_token`` -- so everything said about that path holds here too.
+exactly the way the pack does -- the verified in-process runtime, this app's
+own token passed explicitly in the grouped ``github`` options, and an ephemeral
+per-app session directory -- so everything said about that path holds here too.
 
 What a request looks like:
 
@@ -54,6 +54,7 @@ from pathlib import Path
 from typing import Any, TypeVar
 
 from quill.core.ai import copilot_auth, copilot_state
+from quill.core.ai.agent_workdir import AgentFolders, agent_folders
 from quill.core.ai.connection_caps import COPILOT, PICTURES, set_model_capabilities
 from quill.core.ai.connection_choice import (
     limit_sentence,
@@ -300,11 +301,11 @@ class CopilotChat:
         if threading.current_thread() is threading.main_thread():
             raise CopilotRefused(_UI_THREAD)
 
-    def _client(self, copilot: Any) -> Any:
+    def _client(self, copilot: Any, folders: AgentFolders) -> Any:
         """A ``CopilotClient`` made exactly as the pack makes one (not started)."""
         from quill.ai_packs.copilot import client_kwargs
 
-        return copilot.CopilotClient(**client_kwargs(copilot, self.agent_name))
+        return copilot.CopilotClient(**client_kwargs(copilot, self.agent_name, str(folders.home)))
 
     def _send_timeout(self) -> float:
         if self.timeout is not None:
@@ -323,15 +324,16 @@ class CopilotChat:
             return reject(feedback=refusal)
 
         kwargs: dict[str, Any] = {
-            "available_tools": available_tools_for(),
-            "on_permission_request": deny,
-            "system_message": system_message_for(with_family_instruction(system)),
+            "permissions": {"on_request": deny},
+            "tools": {"available_tools": available_tools_for()},
+            "events": {"streaming": streaming},
         }
+        system_message = system_message_for(with_family_instruction(system))
+        if system_message is not None:
+            kwargs["system_message"] = system_message
         chosen = (model or self.model).strip()
         if chosen and chosen != AUTO_MODEL:
             kwargs["model"] = chosen
-        if streaming:
-            kwargs["streaming"] = True
         return kwargs
 
     def _turn(
@@ -400,8 +402,22 @@ class CopilotChat:
         copilot = importlib.import_module("copilot")
 
         async def run() -> T:
-            async with self._client(copilot) as client:
-                return await work(client)
+            folders = agent_folders(
+                "copilot",
+                self.agent_name,
+                base=self.data_dir / "ai" if self.data_dir is not None else None,
+            ).prepare()
+            client: Any | None = None
+            try:
+                client = self._client(copilot, folders)
+                try:
+                    await client.start()
+                    return await work(client)
+                finally:
+                    if client is not None:
+                        await client.stop()
+            finally:
+                folders.clear()
 
         try:
             value = asyncio.run(run())
