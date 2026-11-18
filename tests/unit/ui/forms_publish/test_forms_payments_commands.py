@@ -232,6 +232,8 @@ def test_quill_lite_has_the_form_payments_area_off_by_default() -> None:
     assert "forms_payments" in {area.id for area in lite_features.AREAS}
     assert "forms_payments" in lite_features.DEFAULT_OFF
     assert area_for("&Tools|Forms", "cmd_forms_payments_setup") == "forms_payments"
+
+
 def test_setup_saves_rules_and_connections_and_refuses_a_rule_it_cannot_read(
     payments, pub_host, monkeypatch
 ):
