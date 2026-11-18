@@ -58,7 +58,7 @@ _LABELS = (
 _ISSUES = (
     (
         "Practice: the greeting has a typo",
-        "The README says \"Helo\". Practise labelling this, assigning it to yourself, "
+        'The README says "Helo". Practise labelling this, assigning it to yourself, '
         "commenting, and closing it as completed.\n\n" + _MARK,
         ("practice: bug",),
     ),
@@ -168,9 +168,7 @@ def create_practice(
     say("Adding a branch and a pull request.")
     head = api.rest("GET", f"/repos/{repo}/git/ref/heads/{base}").data or {}
     sha = str((head.get("object") or {}).get("sha") or "") if isinstance(head, dict) else ""
-    api.rest(
-        "POST", f"/repos/{repo}/git/refs", body={"ref": "refs/heads/fix-greeting", "sha": sha}
-    )
+    api.rest("POST", f"/repos/{repo}/git/refs", body={"ref": "refs/heads/fix-greeting", "sha": sha})
     _put_file(
         api,
         repo,
