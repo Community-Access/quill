@@ -364,13 +364,10 @@ github = [
 # same normalized events; none edits the buffer directly. The Native harness
 # always works without any of these.
 # GitHub Copilot is the exception: its SDK ships in the shared runtime (the
-# [runtime] group below pulls this extra), beside the bundled Copilot CLI, so
-# nothing is installed at first use (codex.md 10A.12). Pinned exactly, like the
-# CLI it drives (quill/core/ai/copilot_runtime.py COPILOT_CLI_VERSION): the SDK
-# and the CLI negotiate a protocol version, and quill/ai_packs/copilot.py is
-# checked against this release's source. One pure wheel; pydantic, httpx and
-# python-dateutil come with it.
-ai-copilot = ["github-copilot-sdk==1.0.28"]  # PyPI package; imports as `copilot`
+# [runtime] group below pulls this extra), with the in-process runtime staged
+# alongside it, so nothing is installed at first use (codex.md 10A.12). Pin
+# the SDK exactly and verify its runtime assets independently.
+ai-copilot = ["microsoft-copilot-sdk==2.0.1"]  # PyPI package; imports as `copilot`
 ai-claude = ["claude-agent-sdk>=0.2.160"]
 # Phonon 31m, Gradium's offline neural voice (phononprd.md): a Rust extension,
 # abi3, about 7 MB, with numpy its only dependency. It ships in the shared
