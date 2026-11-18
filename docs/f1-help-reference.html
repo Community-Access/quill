@@ -5689,7 +5689,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="github-workbench">GitHub Workbench</h2>
-<p>Control coverage: 370 audited sites (370 helped).</p>
+<p>Control coverage: 382 audited sites (382 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>Add GitHub Token.</strong> Paste a personal access token you
@@ -5828,6 +5828,14 @@ draft is kept on this computer until you press Submit Review.</p>
 reviewer does: its outline and threads, the review summary and the
 checks, with buttons to jump to the next unresolved thread, reply,
 request reviewers or write your review.</p>
+<p><strong>Roles in.</strong> An organization’s roles and who holds each
+one. Choose a role to list its people and teams; Give to Person and Give
+to Team add one, and Take Away removes this role or every role from the
+selected one.</p>
+<p><strong>Rulesets in.</strong> An organization’s rulesets, each read
+in plain words in Details. Enforcement makes one Active, Evaluate or
+Disabled; History and Rule Insights show its changes and the pushes it
+judged; Delete asks for its name.</p>
 <p><strong>Save Command.</strong> A name for this console request, kept
 for this account on this device.</p>
 <p><strong>Save Thread As.</strong> Where to save the thread
@@ -6749,6 +6757,8 @@ after a preview of each.</p>
 members: add people, change a role, remove.</p>
 <p><strong>Open.</strong> Select the organization’s node in the
 tree.</p>
+<p><strong>Roles.</strong> Who holds each role; give or take one.</p>
+<p><strong>Rulesets.</strong> Read, enforce, review or delete.</p>
 <p><strong>Open.</strong> Open the settings dialog for this; it asks
 before saving.</p>
 <p><strong>Edit Watch.</strong> Change what the watch looks at.</p>
@@ -7417,6 +7427,45 @@ to review it until you mark it ready.</li>
 branches and text.</li>
 <li><code>cancel</code>: Close without sending. What you typed is kept
 for this session.</li>
+</ul>
+<h4 id="_orgwindow-quilluigithub_org_admin_dialogpy">_OrgWindow
+(<code>quill/ui/github_org_admin_dialog.py</code>)</h4>
+<ul>
+<li><code>close</code>: Closes this window. Every change has already
+been sent.</li>
+</ul>
+<h4 id="orgrolesdialog-quilluigithub_org_admin_dialogpy">OrgRolesDialog
+(<code>quill/ui/github_org_admin_dialog.py</code>)</h4>
+<ul>
+<li><code>self._role_list</code>: The organization’s roles. Choose one
+to hear who holds it, in the list below.</li>
+<li><code>self._holder_list</code>: The people and teams holding the
+chosen role. A person who holds it through a team says which team; take
+it from the team to take it from them.</li>
+<li><code>self._give_person</code>: Gives the chosen role to a person,
+by GitHub username.</li>
+<li><code>self._give_team</code>: Gives the chosen role to a team, by
+the team’s short name.</li>
+<li><code>self._take</code>: Takes the chosen role, or every
+organization role, from the selected person or team.</li>
+</ul>
+<h4
+id="orgrulesetsdialog-quilluigithub_org_admin_dialogpy">OrgRulesetsDialog
+(<code>quill/ui/github_org_admin_dialog.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: The organization’s rulesets, each with its
+enforcement. Choose one to read it in plain words in Details.</li>
+<li><code>self._details</code>: The chosen ruleset in plain words, or
+its history, or the pushes it judged.</li>
+<li><code>self._enforce</code>: Makes the ruleset Active, Evaluate (it
+reports what it would block and blocks nothing) or Disabled.</li>
+<li><code>self._history</code>: Lists the ruleset’s changes, newest
+first, in Details.</li>
+<li><code>self._insights</code>: Lists recent pushes the organization’s
+rulesets passed, blocked or let through on a bypass, for the day, week
+or month.</li>
+<li><code>self._delete</code>: Deletes the ruleset across every
+repository it covers. You type its name to confirm.</li>
 </ul>
 <h4
 id="pendingdeploymentsdialog-quilluigithub_pending_deployments_dialogpy">PendingDeploymentsDialog

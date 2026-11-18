@@ -399,6 +399,16 @@ SURFACE_PURPOSES: dict[str, str] = {
         "A parent issue's sub-issues in the order GitHub holds. Move Up and Move "
         "Down change that order on GitHub, and you hear where it landed."
     ),
+    "Roles in": (
+        "An organization's roles and who holds each one. Choose a role to list its people "
+        "and teams; Give to Person and Give to Team add one, and Take Away removes this role "
+        "or every role from the selected one."
+    ),
+    "Rulesets in": (
+        "An organization's rulesets, each read in plain words in Details. Enforcement makes "
+        "one Active, Evaluate or Disabled; History and Rule Insights show its changes and "
+        "the pushes it judged; Delete asks for its name."
+    ),
     "Relationships of": (
         "An issue's parent, its sub-issues, the issues blocking it and the ones it "
         "blocks. Add Sub-issue and Add Blocked By link another issue; Remove takes the "

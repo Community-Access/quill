@@ -732,6 +732,19 @@ lines the same way, with the same saved choice.
 With thanks to Kelly Ford, whose GHManage has been the measure for QUILL's
 GitHub work from the start.
 
+### GitHub: an organization's roles and rulesets (2026-11-18)
+
+An organization's row in the Workbench has two new commands. **Roles...**
+lists the organization's roles and who holds each one, people and teams,
+saying when a person holds a role through a team; it gives a role to a person
+or team and takes one, or every one, away. **Rulesets...** reads each
+organization ruleset in plain words, makes it Active, Evaluate or Disabled,
+lists its history and the pushes the rulesets judged (Rule Insights), and
+deletes one after you type its name. Both need an owner's sign-in. 13 GitHub
+endpoints are now covered; 228 remain planned. The GitHub guide's chapter on
+Properties, Filters and Permissions has both, and the keyboard reference has
+their keys.
+
 ### GitHub: an issue's relationships, and a Project's own care (2026-11-18)
 
 **Relationships...**, on any issue, shows its parent, its sub-issues, the

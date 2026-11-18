@@ -220,6 +220,51 @@ the default branch: changes need a pull request with 2 approvals including a
 code owner; checks build and test must pass; force pushes are blocked." Read
 that page first.
 
+### An organization's roles
+
+GitHub gives every organization roles that reach all its repositories at once:
+All-repository read, triage, write, maintain and admin, the security manager,
+the app manager, and any custom roles. Choose **Roles...** on an
+organization's row (in the Workbench's Organizations place) to open **Roles
+in** that organization.
+
+- **Roles** lists them, each with what it is based on and what it is for.
+  Choose one, and **Who holds it** fills with its people and teams, each row
+  starting with "Person:" or "Team:". A person who holds the role because of a
+  team says so: "Person: kim, through docs".
+- **Give to Person...** (`Alt+P`) asks for a GitHub username; **Give to
+  Team...** (`Alt+T`) asks for the team's short name, as it appears in the
+  team's address.
+- **Take Away...** (`Alt+A`) asks whether the selected person or team should
+  lose only this role or every organization role. A role that comes through a
+  team is taken from that team instead, and QUILL says which.
+
+After each change QUILL reads the list back from GitHub and says what
+happened, such as "sam now has all_repo_write." These need an owner's sign-in
+with the **admin:org** scope.
+
+### An organization's rulesets
+
+An organization ruleset applies across its repositories. Choose
+**Rulesets...** on the organization's row to open **Rulesets in** that
+organization. Each row gives its name, its enforcement and what it targets:
+"Protect main: Active, on branches".
+
+- Choosing one reads it in plain words in **Details**, the same sentences as a
+  repository's Summary page, and which repositories it covers.
+- **Enforcement...** (`Alt+E`) makes it **Active** (enforced), **Evaluate**
+  (reports what it would have blocked, blocks nothing, a safe way to try a
+  rule first) or **Disabled**.
+- **History** (`Alt+H`) lists its earlier versions, with when and by whom.
+- **Rule Insights...** (`Alt+I`) lists recent pushes across the
+  organization that its rulesets passed, blocked or let through on a bypass,
+  for the last day, week or month.
+- **Delete...** (`Alt+L`) deletes it from every repository it covers. QUILL
+  asks you to type its name exactly, because this cannot be undone.
+
+To make an organization ruleset from repositories that each have the same
+one, use **Promote to Organization** under Across Repositories.
+
 ### Repository settings from the editor
 
 With the Workbench in use, the editor's Rename Repository, Change Visibility,
