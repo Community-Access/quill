@@ -245,6 +245,34 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3 id="wordpress">WordPress</h3>
+<h3
+id="forms-square-and-more-than-one-account-per-provider-2026-11-18">Forms:
+Square, and more than one account per provider (2026-11-18)</h3>
+<ul>
+<li>Square is a third payment provider beside Stripe and PayPal. Check
+This Form knows Square’s six currencies and its 20-character statement
+descriptor, Test on Site gives Square’s sandbox card, and payments say
+“Square”.</li>
+<li>A form can name the site’s payment <strong>connections</strong>,
+such as <code>stripe:events</code> or <code>square:downtown</code>, so
+different forms (or different answers) pay into different accounts. In
+Form Payments Setup, <strong>Pay with</strong> lists them for the person
+paying to choose from, and <strong>Choose by rule</strong> picks one
+from the answers: by amount, by a choice, by currency or by a date
+window, with an <code>otherwise</code> that is always required.</li>
+<li>Check This Form finds rules that can never take a payment and says
+why, and finds rules with no otherwise. Verify Payment Setup lists each
+connection, says whether it works, and says where this form sends the
+money. The WordPress Workbench’s site Properties have a new Payments
+page.</li>
+<li>Publishing refuses a form whose connection is missing on the site,
+not finished, or in the other of test and live mode.</li>
+<li>A response’s payment says which connection took it, and CSV exports
+gain two columns when any response has one.</li>
+<li>The plugin contract is now version 2
+(<code>docs/design/forms-payments-plugin-contract.md</code>). The QAF
+plugin’s side is in QAF itself.</li>
+</ul>
 <p>Most people meet WordPress because they write something: a blog, or
 the news for their organization’s site. That is where this story starts.
 You connect a site, write a post in the editor you already use, and

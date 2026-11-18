@@ -19,7 +19,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
 
-from quill.core.forms.qaf_site import Response
+from quill.core.forms.qaf_site import PAYMENT_KEYS, Response
 
 _MONTHS = (
     "January February March April May June July August September October November December"
@@ -121,7 +121,7 @@ PAYMENT_STATUS_WORDS = {
     "partially_refunded": "partly refunded",
     "refunded": "refunded",
 }
-PAYMENT_PROVIDER_NAMES = {"stripe": "Stripe", "paypal": "PayPal"}
+PAYMENT_PROVIDER_NAMES = {"stripe": "Stripe", "paypal": "PayPal", "square": "Square"}
 
 
 def spoken_payment(payment: dict[str, str]) -> dict[str, str]:
@@ -131,6 +131,8 @@ def spoken_payment(payment: dict[str, str]) -> dict[str, str]:
         out["status"] = PAYMENT_STATUS_WORDS.get(out["status"], out["status"])
     if "provider" in out:
         out["provider"] = PAYMENT_PROVIDER_NAMES.get(out["provider"], out["provider"])
+    if out.get("connection_name"):  # "Stripe: Donations" says more than "Stripe"
+        out["provider"] = out["connection_name"]
     return out
 
 
@@ -251,7 +253,7 @@ def csv_text(responses: Iterable[Response], labels: dict[str, str]) -> str:
     out = io.StringIO()
     writer = csv.writer(out, lineterminator="\r\n")
     payment_keys = (
-        ("provider", "status", "amount", "currency", "receipt_url", "transaction_id")
+        tuple(k for k in PAYMENT_KEYS if k in PAYMENT_KEYS[:6] or any(k in r.payment for r in rows))
         if any(r.payment for r in rows)
         else ()
     )

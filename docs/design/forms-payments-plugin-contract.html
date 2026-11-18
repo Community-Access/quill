@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QAF payment plugin contract, version 1</title>
+  <title>QAF payment plugin contract, versions 1 and 2</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -307,14 +307,19 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
-<h1 id="qaf-payment-plugin-contract-version-1">QAF payment plugin
-contract, version 1</h1>
-<p>This is the interface required by QUILL’s Stripe/PayPal desktop
-integration. The PHP checkout implementation ships separately in the QAF
-WordPress plugin. An existing QAF installation is <strong>not</strong>
-assumed to implement this contract: QUILL refuses paid-form publication
-when the capability route is absent, malformed, unconfigured, or in a
-different test/live mode.</p>
+<h1 id="qaf-payment-plugin-contract-versions-1-and-2">QAF payment plugin
+contract, versions 1 and 2</h1>
+<p>This is the interface required by QUILL’s Stripe, PayPal and Square
+desktop integration. Version 1 is Stripe and PayPal with one connection
+each. Version 2 (2026-11-18) adds Square as a third provider and any
+number of named <strong>connections</strong> per provider, chosen by the
+payer or by rule; it is described under <a
+href="#version-2-square-and-connections">Version 2</a> below, and
+everything in version 1 still holds. The PHP checkout implementation
+ships separately in the QAF WordPress plugin. An existing QAF
+installation is <strong>not</strong> assumed to implement this contract:
+QUILL refuses paid-form publication when the capability route is absent,
+malformed, unconfigured, or in a different test/live mode.</p>
 <h2 id="model-and-publication">Model and publication</h2>
 <p>The existing form model stays at version 1. Payment configuration
 lives in <code>model.extensions.payments</code>, sent unchanged as
@@ -434,6 +439,95 @@ replies, logs or exports. Verify keyboard and screen reader behavior
 using the <a href="../qa/forms-payments-acceptance.md">payment
 checklist</a>. These live plugin/provider checks are separate from
 QUILL’s fake-transport tests.</p>
+<h2 id="version-2-square-and-connections">Version 2: Square and
+connections</h2>
+<h3 id="square">Square</h3>
+<p><code>square</code> joins <code>stripe</code> and <code>paypal</code>
+in <code>providers</code>. Square takes <code>usd</code>,
+<code>cad</code>, <code>gbp</code>, <code>aud</code>, <code>jpy</code>
+and <code>eur</code>, and a location charges only in its own country’s
+currency, which the plugin checks against the connection’s location at
+publication. A Square <code>statement_descriptor</code> (sent as
+<code>statement_description_identifier</code>) is at most 20 characters.
+The smallest card payment is one minor unit.</p>
+<p>The plugin renders Square’s Web Payments SDK card field, creates the
+payment with the Payments API (<code>POST /v2/payments</code>) on the
+server with an idempotency key per attempt, sets
+<code>autocomplete</code> from <code>capture</code>, confirms and
+reconciles with the <code>payment.updated</code> and
+<code>refund.updated</code> webhooks (verified with the subscription’s
+signature key over the notification URL and the exact body,
+<code>x-square-hmacsha256-signature</code>), and refunds through the
+Refunds API. The sandbox and production environments each have their own
+application id, access token, location id and signature key, kept in the
+site’s options or <code>wp-config.php</code>, never in the form.</p>
+<h3 id="connections">Connections</h3>
+<p>A connection is one set of credentials for one provider, with its own
+name, mode, currency and descriptor. A form names a connection by
+<strong>reference</strong>:</p>
+<ul>
+<li>the bare provider (<code>stripe</code>, <code>paypal</code>,
+<code>square</code>) for that provider’s default connection, which is
+what every version 1 form uses; or</li>
+<li>the provider, a colon and a slug (<code>stripe:events</code>,
+<code>square:downtown</code>): lower-case letters, digits and hyphens,
+at most 40.</li>
+</ul>
+<p>The provider is in the reference so the desktop can check currencies
+and descriptors offline.</p>
+<h3 id="choosing-a-connection">Choosing a connection</h3>
+<p><code>model.extensions.payments</code> may hold either of these,
+never both:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;connections&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;stripe:events&quot;</span><span class="ot">,</span> <span class="st">&quot;paypal&quot;</span><span class="ot">,</span> <span class="st">&quot;square:downtown&quot;</span><span class="ot">]</span><span class="fu">}</span></span></code></pre></div>
+<p>By selection: the payer chooses, in this order, only when more than
+one is offered; the first is the default. A connection that is not ready
+is not offered.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;rules&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;when&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;amount_over&quot;</span><span class="fu">:</span> <span class="st">&quot;500&quot;</span><span class="fu">},</span> <span class="dt">&quot;use&quot;</span><span class="fu">:</span> <span class="st">&quot;stripe:large-gifts&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;when&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;field&quot;</span><span class="fu">:</span> <span class="st">&quot;fund&quot;</span><span class="fu">,</span> <span class="dt">&quot;equals&quot;</span><span class="fu">:</span> <span class="st">&quot;building&quot;</span><span class="fu">},</span> <span class="dt">&quot;use&quot;</span><span class="fu">:</span> <span class="st">&quot;square:building&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;when&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;currency&quot;</span><span class="fu">:</span> <span class="st">&quot;cad&quot;</span><span class="fu">},</span> <span class="dt">&quot;use&quot;</span><span class="fu">:</span> <span class="st">&quot;stripe:canada&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;when&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;from&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-12-01&quot;</span><span class="fu">,</span> <span class="dt">&quot;until&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-12-31&quot;</span><span class="fu">},</span> <span class="dt">&quot;use&quot;</span><span class="fu">:</span> <span class="st">&quot;stripe:campaign&quot;</span><span class="fu">}</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;otherwise&quot;</span><span class="fu">:</span> <span class="st">&quot;stripe:events&quot;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>By rule: checked in order on the server against the submitted answers
+and the amount the server worked out; the first match takes the payment.
+A rule whose connection is not ready is skipped, and
+<code>otherwise</code> is required, so a payment always has somewhere to
+go. Amounts are decimal strings in major units, compared exactly.
+<code>field</code>/<code>equals</code> matches a choice’s value or
+label. Dates are the site’s local calendar day, both ends inclusive and
+either end optional.</p>
+<p><code>providers</code> is still written, as the providers those
+connections belong to, so a version 1 plugin reading a version 2 form
+falls back to each provider’s default connection. QUILL refuses to
+publish a form that names connections or rules to a version 1 site.</p>
+<h3 id="readiness-route-1">Readiness route</h3>
+<p>Version 2 returns <code>"contract_version": 2</code>,
+<code>square</code> under <code>providers</code>, and:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;connections&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;stripe:events&quot;</span><span class="fu">,</span> <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Stripe: Events&quot;</span><span class="fu">,</span> <span class="dt">&quot;test_mode&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>     <span class="dt">&quot;configured&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span> <span class="dt">&quot;webhook_ready&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">}</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>Each provider’s default connection is listed too, under its bare
+reference. No key, token, location id or signature key is ever in a row;
+QUILL keeps only these six fields from each. QUILL refuses to publish
+when a referenced connection is missing, not ready, or in a different
+mode from the form: a form never mixes test and live connections.</p>
+<h3 id="entries-refunds-and-safety">Entries, refunds and safety</h3>
+<p>The entry’s <code>payment</code> object gains <code>connection</code>
+(the reference that took the money) and <code>connection_name</code>.
+Reports group by connection, and a refund goes back through the
+connection that took the payment, never the form’s current one. The
+plugin refuses to delete a connection that a published form uses, naming
+the forms, and shows which forms a change to a connection affects before
+saving it.</p>
 </main>
 </body>
 </html>

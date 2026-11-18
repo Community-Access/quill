@@ -27,6 +27,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import replace
 from typing import Any
 
+from quill.core.forms.payment_site import site_payments_text
 from quill.core.wordpress import site_taxonomies as tx
 from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.field_plugins import (
@@ -499,6 +500,7 @@ class WorkbenchSheetCommands:
                 "form_plugins": ", ".join(forms) or "none found",
                 # QAF's part of the Spam page, editable where the site allows it.
                 **self.spam_page_values(ctx),  # type: ignore[attr-defined]
+                "form_payments": site_payments_text(ctx.api),
                 "spam_note": (
                     "Held as Spam under Needs My Attention gathers the comments and form "
                     "entries this site doubted. WordPress's REST API does not show the "

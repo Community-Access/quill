@@ -1,7 +1,7 @@
 """Payments in a form: provider-neutral configuration and validation.
 
-A form takes payment through the QAF WordPress plugin -- Stripe first, PayPal
-second -- and QUILL's side of that is configuration, never money movement
+A form takes payment through the QAF WordPress plugin -- Stripe first, then
+PayPal and Square -- and QUILL's side of that is configuration, never money movement
 (``docs/design/forms-payments-plugin-contract.md`` is the contract the plugin
 keeps). The configuration lives in the model under
 ``extensions["payments"]``: the schema's ``extensions`` block is the one
@@ -37,6 +37,8 @@ __all__ = [
     "ISO_4217_CURRENCIES",
     "PAYMENT_MODES",
     "PAYMENT_PROVIDERS",
+    "SQUARE_CURRENCIES",
+    "SQUARE_DESCRIPTOR_LIMIT",
     "STATEMENT_DESCRIPTOR_LIMIT",
     "STATEMENT_DESCRIPTOR_MINIMUM",
     "PaymentConfig",
@@ -44,16 +46,17 @@ __all__ = [
     "amount_sources",
     "clear_payment_config",
     "currency_decimals",
+    "effective_providers",
     "payment_config",
     "payment_fields",
     "semantic_errors",
     "set_payment_config",
 ]
 
-PaymentProvider = Literal["stripe", "paypal"]
+PaymentProvider = Literal["stripe", "paypal", "square"]
 
 #: In the order a new form offers them: Stripe is the favored, first provider.
-PAYMENT_PROVIDERS: tuple[PaymentProvider, ...] = ("stripe", "paypal")
+PAYMENT_PROVIDERS: tuple[PaymentProvider, ...] = ("stripe", "paypal", "square")
 DEFAULT_PROVIDER: PaymentProvider = "stripe"
 
 #: What the form collects: a one-time payment, or a donation the giver sets.
@@ -77,6 +80,13 @@ STATEMENT_DESCRIPTOR_LIMIT = 22
 #: one when the form is published, so QUILL says so first.
 STATEMENT_DESCRIPTOR_MINIMUM = 5
 _STATEMENT_FORBIDDEN = frozenset("<>\\'\"*")
+#: Square's ``statement_description_identifier`` takes at most 20 characters.
+SQUARE_DESCRIPTOR_LIMIT = 20
+#: The currencies a Square account takes, one per seller country (United
+#: States, Canada, United Kingdom, Australia, Japan, and the euro countries).
+#: A Square location charges only in its own country's currency; the plugin
+#: checks that against the connection's location when the form is published.
+SQUARE_CURRENCIES: frozenset[str] = frozenset({"usd", "cad", "gbp", "aud", "jpy", "eur"})
 
 #: Currency identifiers understood by this client; provider support is checked on site.
 ISO_4217_CURRENCIES: frozenset[str] = frozenset(
@@ -151,6 +161,17 @@ def _as_list(value: Any) -> list[Any]:
     return value if isinstance(value, list) else []
 
 
+def effective_providers(raw: Any) -> list[str]:
+    """The providers a block can send money to: its connections' providers, or ``providers``."""
+    from quill.core.forms.payment_routing import connection_provider, referenced_connections
+
+    if not isinstance(raw, dict):
+        return []
+    refs = referenced_connections(raw)
+    named = [connection_provider(r) for r in refs] if refs else _as_list(raw.get("providers"))
+    return list(dict.fromkeys(p for p in named if p in PAYMENT_PROVIDERS))
+
+
 def raw_payment_config(model: M.Model) -> Any:
     """``extensions["payments"]`` exactly as stored, or ``None``."""
     extensions = model.get("extensions")
@@ -215,7 +236,11 @@ def semantic_errors(model: M.Model) -> list[dict[str, str]]:
         err(base, "The payments block must be a JSON object.")
         raw = None
     if isinstance(raw, dict):
+        from quill.core.forms.payment_routing import routing_errors
+
         _config_errors(raw, base, err)
+        errors.extend(routing_errors(model, raw, base))
+        _square_errors(raw, base, err)
 
     found = payment_fields(model)
     for entry in found[1:]:
@@ -223,11 +248,11 @@ def semantic_errors(model: M.Model) -> list[dict[str, str]]:
             entry["path"],
             "Only one payment field is allowed per form; this is the second.",
         )
-    if found and not (isinstance(raw, dict) and _as_list(raw.get("providers"))):
+    if found and not effective_providers(raw):
         err(
             base,
             "A form with a payment field needs a payments block naming at "
-            "least one provider (Form Payments Setup writes one).",
+            "least one provider or connection (Form Payments Setup writes one).",
         )
     by_id = {e["item"]["id"]: e["item"] for e in M.items(model) if "id" in e["item"]}
     currency = raw.get("currency") if isinstance(raw, dict) else None
@@ -353,6 +378,23 @@ def _config_errors(raw: dict[str, Any], base: str, err: Any) -> None:  # noqa: C
     test_mode = raw.get("test_mode")
     if "test_mode" in raw and not isinstance(test_mode, bool):
         err(f"{base}/test_mode", "test_mode must be true or false.")
+
+
+def _square_errors(raw: dict[str, Any], base: str, err: Any) -> None:
+    """Square's own limits, when any connection the form can use is Square's."""
+    if "square" not in effective_providers(raw):
+        return
+    currency = raw.get("currency")
+    if isinstance(currency, str) and currency.lower() in ISO_4217_CURRENCIES:
+        if currency.lower() not in SQUARE_CURRENCIES:
+            known = ", ".join(sorted(SQUARE_CURRENCIES))
+            err(f"{base}/currency", f"Square does not take {currency.lower()} ({known} only).")
+    descriptor = raw.get("statement_descriptor")
+    if isinstance(descriptor, str) and len(descriptor) > SQUARE_DESCRIPTOR_LIMIT:
+        err(
+            f"{base}/statement_descriptor",
+            f"Square takes a statement descriptor of at most {SQUARE_DESCRIPTOR_LIMIT} characters.",
+        )
 
 
 def _positive_number(value: Any) -> bool:

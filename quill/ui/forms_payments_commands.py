@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.forms import payment_routing as pr
 from quill.core.forms import payment_site as ps
 from quill.core.forms import payments as pay
 from quill.core.wordpress.block_catalog import Field as Ask
@@ -36,6 +37,9 @@ class FormsPaymentsCommands:
         if doc is None:
             return
         config = pay.payment_config(doc.model) or pay.PaymentConfig()
+        raw = pay.raw_payment_config(doc.model)
+        raw = raw if isinstance(raw, dict) else {}
+        offered = raw.get("connections") if isinstance(raw.get("connections"), list) else None
         answer = wbd.ask_fields(
             self.host.parent,
             self.host.show_modal,
@@ -44,13 +48,25 @@ class FormsPaymentsCommands:
             "Set provider credentials and webhooks in WordPress, then Verify Payment Setup.",
             fields=[
                 Ask(
-                    "providers",
-                    "&Providers:",
-                    "choice",
-                    "Checkout providers, in display order.",
-                    value=",".join(config.providers),
-                    choices=["Stripe", "Stripe, then PayPal", "PayPal", "PayPal, then Stripe"],
-                    values=["stripe", "stripe,paypal", "paypal", "paypal,stripe"],
+                    "pay_with",
+                    "Pay &with:",
+                    "text",
+                    "Who takes the money, in the order the payer sees them, separated by "
+                    "commas: stripe, paypal or square for that provider's main connection on "
+                    "the site, or a named one such as stripe:events or square:downtown. "
+                    "The payer chooses only when there is more than one.",
+                    value=", ".join(offered or config.providers),
+                ),
+                Ask(
+                    "rules",
+                    "Choose by &rule:",
+                    "multiline",
+                    "Leave empty to let the payer choose. Otherwise one rule a line, checked in "
+                    "order: amount over 500: stripe:large-gifts, #fund is building: "
+                    "square:building, currency is cad: stripe:canada, from 2026-12-01 until "
+                    "2026-12-31: stripe:campaign, and last otherwise: stripe:events, which "
+                    "takes every payment no rule catches.",
+                    value=pr.format_rules(raw),
                 ),
                 Ask(
                     "currency",
@@ -92,7 +108,7 @@ class FormsPaymentsCommands:
                     "&Statement descriptor:",
                     "text",
                     "Optional text for the payer's card statement: 5 to 22 plain letters, "
-                    "digits and spaces, with at least one letter.",
+                    "digits and spaces (20 with Square), with at least one letter.",
                     value=config.statement_descriptor,
                 ),
             ],
@@ -103,12 +119,16 @@ class FormsPaymentsCommands:
         from copy import deepcopy
 
         candidate = deepcopy(doc.model)
+        routing = _routing(answer)
+        if isinstance(routing, str):
+            self.host.announce("Payment setup was not saved. " + routing)
+            return
         selected = pay.PaymentConfig.from_dict({
             **answer,
-            "providers": str(answer.get("providers", "stripe")).split(","),
+            "providers": pay.effective_providers(routing) or routing.get("providers"),
             "currency": str(answer.get("currency", "usd")).strip().lower(),
         })
-        pay.set_payment_config(candidate, selected)
+        _write(candidate, selected, routing)
         errors = pay.semantic_errors(candidate)
         if errors:
             self.host.announce("Payment setup was not saved. " + errors[0]["message"])
@@ -122,7 +142,7 @@ class FormsPaymentsCommands:
             yes_label="Use Live Mode",
         ):
             return
-        pay.set_payment_config(doc.model, selected)
+        _write(doc.model, selected, routing)
         self.apply(doc, "Payment settings saved in this form. Publish Form sends them to the site.")  # type: ignore[attr-defined]
 
     def cmd_insert_payment(self) -> None:
@@ -197,7 +217,8 @@ class FormsPaymentsCommands:
         self.apply(doc, "Inserted payment field. Check Form Payments Setup before publishing.")  # type: ignore[attr-defined]
 
     def cmd_verify_payments(self) -> None:
-        if self._payment_document("Verify Payment Setup") is None:
+        doc = self._payment_document("Verify Payment Setup")
+        if doc is None:
             return
         if self.offline_only("Verify Payment Setup"):  # type: ignore[attr-defined]
             return
@@ -229,6 +250,17 @@ class FormsPaymentsCommands:
                     + ", webhook "
                     + ("ready" if entry.get("webhook_ready") else "not ready")
                 )
+            for row in state.get("connections", []):
+                mode = {True: "test", False: "live"}.get(row["test_mode"], "mode not reported")
+                works = row["configured"] and row["webhook_ready"]
+                lines.append(
+                    f"Connection {row['name']} ({row['id']}, {mode}): "
+                    + ("works" if works else "not finished: check its keys and webhook")
+                )
+            raw = pay.raw_payment_config(doc.model)
+            if isinstance(raw, dict):
+                lines.append("This form:")
+                lines += pr.describe_routing(raw)
             dlg.show_report(
                 self.host.parent,
                 self.host.show_modal,
@@ -239,3 +271,32 @@ class FormsPaymentsCommands:
             )
 
         self.with_qaf("Verify Payment Setup", profile, "reading payment setup", ps.settings, done)  # type: ignore[attr-defined]
+
+
+_ROUTING_KEYS = ("connections", "rules", "otherwise")
+
+
+def _routing(answer: dict[str, Any]) -> dict[str, Any] | str:
+    """The Pay With and Choose by Rule answers as block keys, or what is wrong."""
+    names = [n.strip().lower() for n in str(answer.get("pay_with", "")).split(",") if n.strip()]
+    rules_text = str(answer.get("rules", "")).strip()
+    if rules_text:
+        rules, otherwise, problems = pr.parse_rules(rules_text)
+        if problems:
+            return problems[0]
+        return {"rules": rules, "otherwise": otherwise}
+    if not names:
+        return "Name at least one provider or connection in Pay With."
+    if any(":" in n for n in names):
+        return {"connections": names}
+    return {"providers": names}
+
+
+def _write(model: dict[str, Any], config: pay.PaymentConfig, routing: dict[str, Any]) -> None:
+    pay.set_payment_config(model, config)
+    block = model["extensions"][pay.EXTENSION_KEY]
+    for key in _ROUTING_KEYS:
+        block.pop(key, None)
+    if "providers" in routing:  # what the author typed, so a mistake is reported, not dropped
+        block["providers"] = routing["providers"]
+    block.update({k: v for k, v in routing.items() if k in _ROUTING_KEYS})
