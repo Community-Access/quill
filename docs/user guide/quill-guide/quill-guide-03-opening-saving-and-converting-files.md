@@ -1541,7 +1541,11 @@ edits, closes and reopens them. See
 
 The **Housekeeping** submenu on an issue locks, transfers, pins, sets the type
 of, and reorders the sub-issues of an issue. See
-[Housekeeping](../github-guide/github-guide-04-issues.html#housekeeping).
+[Housekeeping](../github-guide/github-guide-04-issues.html#housekeeping). In the
+GitHub Workbench, closing an issue asks its reason, **Create Branch for This
+Issue...** links a branch to it, and the issue's task list can be checked off
+or made into sub-issues. See
+[Closing, branches and task lists](../github-guide/github-guide-04-issues.html#closing-branches-and-task-lists).
 
 #### Managing a release
 

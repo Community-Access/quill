@@ -139,6 +139,45 @@ def close_reopen(run: Any) -> str:
     return "closed as completed, not planned and duplicate, reopened after each"
 
 
+def task_lists(run: Any) -> str:
+    """Check or Uncheck a Task, then Convert Tasks to Sub-issues, on an issue of its own."""
+    from quill.core.github.issue_development import (
+        convertible,
+        linked_body,
+        task_items,
+        toggle_task,
+    )
+
+    body = f"{TAG} tasks:\n- [ ] {TAG} task one\n- [x] {TAG} task two\n"
+    made = run.rest(
+        "POST", f"/repos/{run.repo}/issues", {"title": f"{TAG} task list", "body": body}
+    )
+    number = int(made["number"])
+    try:
+        first = task_items(body)[0]
+        run.rest("PATCH", f"/repos/{run.repo}/issues/{number}", {"body": toggle_task(body, first)})
+        now = str(_issue_state(run, run.repo, number)["body"])
+        _expect(f"- [x] {TAG} task one" in now, "the task was not checked")
+        made_subs: dict[int, int] = {}
+        for item in convertible(now):
+            issue = run.rest("POST", f"/repos/{run.repo}/issues", {"title": item.text})
+            run.rest(
+                "POST",
+                f"/repos/{run.repo}/issues/{number}/sub_issues",
+                {"sub_issue_id": int(issue["id"])},
+            )
+            made_subs[item.line] = int(issue["number"])
+        run.rest(
+            "PATCH", f"/repos/{run.repo}/issues/{number}", {"body": linked_body(now, made_subs)}
+        )
+        _expect(convertible(str(_issue_state(run, run.repo, number)["body"])) == [], "not linked")
+        for sub in made_subs.values():
+            _delete_issue(run, run.repo, sub)
+    finally:
+        _delete_issue(run, run.repo, number)
+    return "checked one task, converted both to sub-issues and linked them, then deleted"
+
+
 def create_branch(run: Any) -> str:
     from quill.core.github.issue_development import (
         branch_name_for,
@@ -705,6 +744,8 @@ VERBS: dict[str, Scenario | str] = {
     "clone": "needs Jeff: clones into a folder you choose, then opens it in the editor",
     "close_reopen": close_reopen,
     "create_branch": create_branch,
+    "edit_tasks": task_lists,
+    "convert_tasks": "with edit_tasks: checked, converted and linked",
     "comment": comment,
     "delete_asset": "with upload_asset: uploaded, then deleted",
     "delete_branch": "with merge: the merged pull request's branch is deleted",

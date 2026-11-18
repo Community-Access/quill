@@ -142,3 +142,82 @@ def test_create_branch_fits_an_issue_only_and_only_signed_in() -> None:
     assert window._fits_create_branch(ISSUE) and not window._fits_create_branch(PULL)
     window.signed_in = False
     assert not window._fits_create_branch(ISSUE)
+
+
+class _IssueApi:
+    """One issue's body on a fake GitHub; issues made get numbers from 40."""
+
+    def __init__(self, body: str, *, changed_meanwhile: bool = False) -> None:
+        self.body, self.reads, self.changed = body, 0, changed_meanwhile
+        self.sent: list[tuple[str, str, Any]] = []
+        self.next = 40
+
+    def rest(self, method: str, path: str, *, body: Any = None, query: Any = None) -> Any:
+        self.sent.append((method, path, body))
+        if method == "GET":
+            self.reads += 1
+            if self.changed and self.reads > 1:
+                return SimpleNamespace(data={"body": self.body + "\nedited by someone"})
+            return SimpleNamespace(data={"body": self.body})
+        if method == "PATCH":
+            self.body = body["body"]
+        if method == "POST" and path.endswith("/issues"):
+            self.next += 1
+            return SimpleNamespace(data={"id": 1000 + self.next, "number": self.next})
+        return SimpleNamespace(data={})
+
+
+TASKS = "Plan:\n- [ ] Write the guide\n- [x] Fix the parser\n- [ ] #12\n"
+
+
+def _task_window(api: _IssueApi, **kwargs: Any) -> _Window:
+    window = _Window(**kwargs)
+    window.api = api  # type: ignore[assignment]
+    window._choose = lambda title, prompt, labels: (  # type: ignore[method-assign]
+        window.asked.append((title, " | ".join(labels))) or window.choice
+    )
+    return window
+
+
+def test_check_or_uncheck_lists_the_tasks_and_turns_one_over() -> None:
+    api = _IssueApi(TASKS)
+    window = _task_window(api, choice=1)
+    window._do_edit_tasks(REF, ISSUE)
+    assert window.asked == [
+        ("Tasks in #7", "Not done: Write the guide | Done: Fix the parser | Not done: #12")
+    ]
+    assert api.body == "Plan:\n- [ ] Write the guide\n- [ ] Fix the parser\n- [ ] #12\n"
+    assert window.said == ["Unchecked: Fix the parser.", "(reloaded)"]
+
+
+def test_an_issue_with_no_task_list_says_so() -> None:
+    window = _task_window(_IssueApi("Just prose."))
+    window._do_edit_tasks(REF, ISSUE)
+    assert window.said == ["#7 has no task list."]
+
+
+def test_an_edit_made_on_github_meanwhile_is_never_overwritten() -> None:
+    api = _IssueApi(TASKS, changed_meanwhile=True)
+    window = _task_window(api, choice=0)
+    with pytest.raises(Exception, match="changed on GitHub while you chose"):
+        window._do_edit_tasks(REF, ISSUE)
+    assert not [call for call in api.sent if call[0] == "PATCH"]
+
+
+def test_convert_makes_sub_issues_and_links_each_line() -> None:
+    api = _IssueApi(TASKS)
+    window = _task_window(api)
+    window._do_convert_tasks(REF, ISSUE)
+    assert window.asked[0][0] == "Convert Tasks to Sub-issues"
+    assert "Make 2 sub-issues of #7: Write the guide; Fix the parser?" in window.asked[0][1]
+    assert api.body == "Plan:\n- [ ] #41\n- [x] #42\n- [ ] #12\n"
+    subs = [call[2] for call in api.sent if call[1].endswith("/sub_issues")]
+    assert subs == [{"sub_issue_id": 1041}, {"sub_issue_id": 1042}]
+    assert window.said == ["Made 2 sub-issues of #7: #41, #42.", "(reloaded)"]
+
+
+def test_convert_cancelled_sends_nothing() -> None:
+    api = _IssueApi(TASKS)
+    window = _task_window(api, confirm=False)
+    window._do_convert_tasks(REF, ISSUE)
+    assert [call[0] for call in api.sent] == ["GET"]

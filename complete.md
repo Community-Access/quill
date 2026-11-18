@@ -199,7 +199,7 @@ These are implementation claims to preserve and verify, not instructions to rebu
 
 Reconcile these against actual code and the operation ledger. Some individual actions may already exist.
 
-- [ ] Issue close reasons, development links, branch creation for an issue, task-list editing/conversion, organization issue fields.
+- [ ] Issue close reasons, development links, branch creation for an issue, task-list editing/conversion, organization issue fields. *(Done 2026-11-17 except organization issue fields: Close or Reopen asks the reason, duplicate included; Linked branches on the issue sheet; Create Branch for This Issue; Check or Uncheck a Task; Convert Tasks to Sub-issues. `issue_development.py`, `github_workbench_development.py`; tests `test_issue_development.py`, `test_github_workbench_development.py`. Unlinking a branch is not built.)*
 - [ ] Saved replies, repository invitations, wiki and cross-linked discussion → issue → PR workflows.
 - [ ] Repository General/features, complete creation/template options, transfer, standalone tags, topics and star lists.
 - [ ] Rulesets/protection management, organization/member/team access, custom roles and audit logs.

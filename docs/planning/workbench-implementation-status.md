@@ -90,6 +90,17 @@ day: Import Issues from a Spreadsheet... (Ctrl+Alt+I) and New Issues from
 Lines... (Ctrl+Alt+L), sub-issues included, with the spreadsheet reader shared
 too (`quill/core/workbench/spreadsheet.py`).
 
+**2026-11-17, GH-D: an issue's close reason, branches and task list.** Close
+or Reopen... on an open issue asks Completed, Not planned or Duplicate of
+another issue (by number, through GraphQL `closeIssue`). Create Branch for
+This Issue... makes a branch from the default branch linked to the issue
+(`createLinkedBranch`), and the issue sheet's Relationships page lists Linked
+branches. Check or Uncheck a Task... and Convert Tasks to Sub-issues... work
+the description's task list, reading it again before saving. Core:
+`quill/core/github/issue_development.py`; window:
+`quill/ui/github_workbench_development.py`. Organization issue fields and
+unlinking a branch remain.
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

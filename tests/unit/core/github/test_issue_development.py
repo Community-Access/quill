@@ -129,3 +129,52 @@ def test_an_existing_branch_or_a_missing_base_is_refused() -> None:
         dev.create_linked_branch(FakeApi(branches=("main", "7-fix")), "o/r", 7, "7-fix")
     with pytest.raises(dev.IssueDevelopmentError, match="has no branch nope"):
         dev.create_linked_branch(FakeApi(), "o/r", 7, "7-fix", base="nope")
+
+
+BODY = """Plan:
+
+- [ ] Write the guide
+- [x] Fix the parser
+* [ ] #12
+- [ ] o/r#3
+```
+- [ ] not a task, in code
+```
+- [ ]
+Some prose.
+"""
+
+
+def test_task_items_skip_code_blocks_and_empty_boxes() -> None:
+    items = dev.task_items(BODY)
+    assert [(i.line, i.checked, i.text) for i in items] == [
+        (2, False, "Write the guide"),
+        (3, True, "Fix the parser"),
+        (4, False, "#12"),
+        (5, False, "o/r#3"),
+    ]
+    assert [i.is_issue for i in items] == [False, False, True, True]
+    assert items[1].sentence == "Done: Fix the parser"
+
+
+def test_toggling_changes_only_that_line_and_keeps_line_endings() -> None:
+    crlf = BODY.replace("\n", "\r\n")
+    first, second = dev.task_items(crlf)[:2]
+    after = dev.toggle_task(crlf, first)
+    assert "- [x] Write the guide\r\n" in after and "\n" not in after.replace("\r\n", "")
+    assert dev.toggle_task(after, second).count("[x]") == 1
+    assert after.replace("- [x] Write the guide", "- [ ] Write the guide") == crlf
+
+
+def test_a_task_that_moved_is_refused_rather_than_guessed() -> None:
+    stale = dev.TaskItem(0, False, "Write the guide")
+    with pytest.raises(dev.IssueDevelopmentError, match="read it again"):
+        dev.toggle_task(BODY, stale)
+
+
+def test_conversion_takes_the_plain_items_and_links_each_to_its_issue() -> None:
+    plain = dev.convertible(BODY)
+    assert [i.text for i in plain] == ["Write the guide", "Fix the parser"]
+    linked = dev.linked_body(BODY, {plain[0].line: 40, plain[1].line: 41})
+    assert "- [ ] #40\n- [x] #41\n" in linked
+    assert dev.convertible(linked) == []

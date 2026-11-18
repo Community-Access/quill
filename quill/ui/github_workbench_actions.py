@@ -47,6 +47,7 @@ from quill.core.github.items_provider import (
     GitHubWorkflowRun,
 )
 from quill.core.github.workbench_window_menu import PLACEHOLDER_COMMANDS
+from quill.ui import github_workbench_development as _development
 from quill.ui.dialog_contract import show_modal_dialog
 from quill.ui.github_workbench_across import ACROSS_REASONS, ACROSS_VERBS
 from quill.ui.github_workbench_community import (
@@ -58,11 +59,6 @@ from quill.ui.github_workbench_compare import (
     COMPARE_REASONS,
     COMPARE_VERBS,
     GitHubWorkbenchCompareMixin,
-)
-from quill.ui.github_workbench_development import (
-    DEVELOPMENT_REASONS,
-    DEVELOPMENT_VERBS,
-    GitHubWorkbenchDevelopmentMixin,
 )
 from quill.ui.github_workbench_gists import GitHubWorkbenchGistsMixin
 from quill.ui.github_workbench_items import ITEM_REASONS, ITEM_VERBS, GitHubWorkbenchItemsMixin
@@ -188,7 +184,7 @@ _NATIVE: dict[str, frozenset[str]] = {
     "star_gist": frozenset({"gist"}),
     "delete_gist": frozenset({"gist"}),
     **ITEM_VERBS,
-    **DEVELOPMENT_VERBS,
+    **_development.DEVELOPMENT_VERBS,
     **RUN_VERBS,
     **RELEASE_VERBS,
     **COMMUNITY_VERBS,
@@ -202,7 +198,7 @@ _NATIVE: dict[str, frozenset[str]] = {
 #: Why a verb is greyed on a row of its own kind (not open, not signed in, and so on).
 _REASONS = {
     **ITEM_REASONS,
-    **DEVELOPMENT_REASONS,
+    **_development.DEVELOPMENT_REASONS,
     **RUN_REASONS,
     **RELEASE_REASONS,
     **COMMUNITY_REASONS,
@@ -226,7 +222,7 @@ class GitHubWorkbenchActionsMixin(
     GitHubWorkbenchWritesMixin,
     GitHubWorkbenchGistsMixin,
     GitHubWorkbenchItemsMixin,
-    GitHubWorkbenchDevelopmentMixin,
+    _development.GitHubWorkbenchDevelopmentMixin,
     GitHubWorkbenchRunsMixin,
     GitHubWorkbenchReleasesMixin,
     GitHubWorkbenchCommunityMixin,

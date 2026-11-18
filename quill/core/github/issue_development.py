@@ -1,4 +1,4 @@
-"""Closing an issue with its reason, and the branches that are its development (GH-D).
+"""Closing an issue with its reason, its development branches, and its task list (GH-D).
 
 GitHub closes an issue as completed, as not planned, or as a duplicate of
 another issue; only the last needs a second issue, and only GraphQL records
@@ -9,6 +9,10 @@ already writes. An issue's development is the branches linked to it
 it here is linked the way GitHub's own "Create a branch" links it
 (``createLinkedBranch``), so it shows under the issue's Development on the
 web too.
+
+An issue's task list is the ``- [ ]`` lines of its body. :func:`toggle_task`
+checks or unchecks one, and :func:`linked_body` rewrites the items made into
+sub-issues as ``#number``, which GitHub shows as the issue and its state.
 
 Every function takes the Workbench's :class:`~quill.core.github.workbench_api.GitHubApi`,
 so tests pass recorded answers. wx-free and strict-typed.
@@ -28,10 +32,15 @@ __all__ = [
     "CLOSE_REASONS",
     "CloseReason",
     "IssueDevelopmentError",
+    "TaskItem",
     "branch_name_for",
     "close_issue",
+    "convertible",
     "create_linked_branch",
+    "linked_body",
     "linked_branches",
+    "task_items",
+    "toggle_task",
     "valid_branch_name",
 ]
 
@@ -188,3 +197,72 @@ def create_linked_branch(
     repo_id, issue_id, _issue = _issue_node(api, repository, number)
     api.graphql(_CREATE_LINKED, {"issue": issue_id, "oid": oid, "name": name, "repo": repo_id})
     return f"Made branch {name} from {base}, linked to #{number}."
+
+
+# -- task lists ----------------------------------------------------------------
+
+_TASK = re.compile(r"^(?P<lead>\s*[-*+]\s+\[)(?P<mark>[ xX])(?P<close>\]\s+)(?P<text>.*?)\s*$")
+_REF_ONLY = re.compile(r"^(?:[\w.-]+/[\w.-]+)?#\d+$")
+
+
+@dataclass(frozen=True)
+class TaskItem:
+    line: int
+    """Its 0-based line in the body."""
+    checked: bool
+    text: str
+
+    @property
+    def is_issue(self) -> bool:
+        """Whether the item is already an issue reference (``#12``, ``owner/name#12``)."""
+        return bool(_REF_ONLY.match(self.text))
+
+    @property
+    def sentence(self) -> str:
+        return f"{'Done' if self.checked else 'Not done'}: {self.text}"
+
+
+def task_items(body: str) -> list[TaskItem]:
+    """Every ``- [ ]`` and ``- [x]`` line of *body*, outside fenced code."""
+    found: list[TaskItem] = []
+    fenced = False
+    for index, line in enumerate(body.replace("\r\n", "\n").split("\n")):
+        if line.lstrip().startswith(("```", "~~~")):
+            fenced = not fenced
+            continue
+        match = None if fenced else _TASK.match(line)
+        if match and match["text"]:
+            found.append(TaskItem(index, match["mark"] != " ", match["text"]))
+    return found
+
+
+def _rewrite(body: str, line: int, change: Any) -> str:
+    newline = "\r\n" if "\r\n" in body else "\n"
+    lines = body.replace("\r\n", "\n").split("\n")
+    match = _TASK.match(lines[line]) if 0 <= line < len(lines) else None
+    if match is None:
+        raise IssueDevelopmentError("That task is no longer in the issue; read it again.")
+    lines[line] = change(match)
+    return newline.join(lines)
+
+
+def toggle_task(body: str, item: TaskItem) -> str:
+    """*body* with *item* checked if it was not, and unchecked if it was."""
+    mark = " " if item.checked else "x"
+    return _rewrite(body, item.line, lambda m: f"{m['lead']}{mark}{m['close']}{m['text']}")
+
+
+def convertible(body: str) -> list[TaskItem]:
+    """The task items that are not issues yet, in order."""
+    return [item for item in task_items(body) if not item.is_issue]
+
+
+def linked_body(body: str, made: Mapping[int, int]) -> str:
+    """*body* with each converted item's text replaced by ``#number``, its mark kept.
+
+    *made* maps an item's line to the issue made from it. GitHub shows a task
+    item that is only a reference as that issue, with its state.
+    """
+    for line, number in sorted(made.items()):
+        body = _rewrite(body, line, lambda m, n=number: f"{m['lead']}{m['mark']}{m['close']}#{n}")
+    return body

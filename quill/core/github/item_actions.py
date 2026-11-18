@@ -135,6 +135,20 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a("pin", "Pin or Unpin Issue", _O, "triage", "Pin it to the top of the issues list."),
         _a("transfer", "Transfer Issue...", _W, "push", "Move it to another repository."),
         _a(
+            "edit_tasks",
+            "Check or Uncheck a Task...",
+            _W,
+            "triage",
+            "Turn over one item of its task list.",
+        ),
+        _a(
+            "convert_tasks",
+            "Convert Tasks to Sub-issues...",
+            _W,
+            "triage",
+            "Make each plain task an issue of its own, linked in place.",
+        ),
+        _a(
             "create_branch",
             "Create Branch for This Issue...",
             _W,

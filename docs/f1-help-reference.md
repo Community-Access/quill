@@ -2974,6 +2974,10 @@ Control coverage: 356 audited sites (356 helped).
 
 **Transfer Issue.** Move it to another repository.
 
+**Check or Uncheck a Task.** Turn over one item of its task list.
+
+**Convert Tasks to Sub-issues.** Make each plain task an issue of its own, linked in place.
+
 **Create Branch for This Issue.** Make a branch from the default branch, linked to it as its Development.
 
 **Set Issue Type.** Bug, feature, task and so on.

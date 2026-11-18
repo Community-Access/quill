@@ -341,6 +341,17 @@ Workbench’s command, its writer moved to the shared engine
 Issues from a Spreadsheet… (Ctrl+Alt+I) and New Issues from Lines…
 (Ctrl+Alt+L), sub-issues included, with the spreadsheet reader shared
 too (<code>quill/core/workbench/spreadsheet.py</code>).</p>
+<p><strong>2026-11-17, GH-D: an issue’s close reason, branches and task
+list.</strong> Close or Reopen… on an open issue asks Completed, Not
+planned or Duplicate of another issue (by number, through GraphQL
+<code>closeIssue</code>). Create Branch for This Issue… makes a branch
+from the default branch linked to the issue
+(<code>createLinkedBranch</code>), and the issue sheet’s Relationships
+page lists Linked branches. Check or Uncheck a Task… and Convert Tasks
+to Sub-issues… work the description’s task list, reading it again before
+saving. Core: <code>quill/core/github/issue_development.py</code>;
+window: <code>quill/ui/github_workbench_development.py</code>.
+Organization issue fields and unlinking a branch remain.</p>
 <p>What is built: the editor menu and QUILL Lite route GitHub browsing
 doors to the shared Workbench. Native Items, Explore, review,
 permissions, and repository administration features are reached through

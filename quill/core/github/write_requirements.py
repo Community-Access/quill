@@ -36,6 +36,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}assignees": ("repo:triage", _O),
     f"{_P}cancel_run": ("repo:write", _V),
     f"{_P}create_branch": ("repo:write", _V),
+    f"{_P}edit_tasks": ("viewer:viewerCanUpdate", _V),
+    f"{_P}convert_tasks": ("repo:triage", _V),
     f"{_P}clone": ("local", _O),
     f"{_P}close_reopen": ("viewer:viewerCanClose", _V),
     f"{_P}comment": ("sign_in", _V),

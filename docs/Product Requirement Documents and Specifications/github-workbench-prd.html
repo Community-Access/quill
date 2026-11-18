@@ -1669,14 +1669,19 @@ not reshape anything.</p>
 <tbody>
 <tr>
 <td>Close reason: completed, not planned, or duplicate of #n</td>
-<td>Not found: closing has no reason</td>
+<td><strong>Built 2026-11-17.</strong> Close or Reopen… asks the reason;
+a duplicate names its original through GraphQL <code>closeIssue</code>;
+the sheet’s State shows it</td>
 <td>Item &gt; Close Issue… asks the reason; the details pane shows
 it</td>
 </tr>
 <tr>
 <td>Linked pull requests and branches for an issue (“Development”), and
 “create a branch for this issue”</td>
-<td>Not found</td>
+<td><strong>Built 2026-11-17.</strong> Linked branches on the issue
+sheet’s Relationships page; Create Branch for This Issue…
+(<code>createLinkedBranch</code>). Unlinking a branch
+(<code>deleteLinkedBranch</code>) is not built yet</td>
 <td>Issue details; Item &gt; Linked Pull Requests; Item &gt; Create
 Branch for Issue… (next to Start in Local Worktree)</td>
 </tr>
@@ -2915,7 +2920,15 @@ reading; review one commit at a time; “changes since your last
 review”.</li>
 <li><strong>Task lists inside bodies.</strong> The <code>- [ ]</code>
 items in an issue’s body are a list on the issue’s sheet: check one off
-and the body is updated; convert an item to a sub-issue.</li>
+and the body is updated; convert an item to a sub-issue. <em>Built
+2026-11-17, as two context-menu commands rather than a sheet list:</em>
+Check or Uncheck a Task… and Convert Tasks to Sub-issues…
+(<code>quill/core/github/issue_development.py</code>,
+<code>quill/ui/github_workbench_development.py</code>). A command
+reaches the same items from any list without opening the sheet, and both
+read the body again before saving, so a concurrent edit is never
+overwritten. Converted lines become <code>#number</code>, which GitHub
+renders as the issue and its state.</li>
 <li><strong>Merge queues as places.</strong> Repository &gt; Merge
 Queue: each queued branch’s entries in order, with their checks, Remove
 and Jump to front (admins).</li>

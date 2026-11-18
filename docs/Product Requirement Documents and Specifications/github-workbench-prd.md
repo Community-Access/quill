@@ -958,8 +958,8 @@ tree, so adding it later does not reshape anything.
 
 | Feature | Status today | New home |
 |---|---|---|
-| Close reason: completed, not planned, or duplicate of #n | Not found: closing has no reason | Item > Close Issue... asks the reason; the details pane shows it |
-| Linked pull requests and branches for an issue ("Development"), and "create a branch for this issue" | Not found | Issue details; Item > Linked Pull Requests; Item > Create Branch for Issue... (next to Start in Local Worktree) |
+| Close reason: completed, not planned, or duplicate of #n | **Built 2026-11-17.** Close or Reopen... asks the reason; a duplicate names its original through GraphQL `closeIssue`; the sheet's State shows it | Item > Close Issue... asks the reason; the details pane shows it |
+| Linked pull requests and branches for an issue ("Development"), and "create a branch for this issue" | **Built 2026-11-17.** Linked branches on the issue sheet's Relationships page; Create Branch for This Issue... (`createLinkedBranch`). Unlinking a branch (`deleteLinkedBranch`) is not built yet | Issue details; Item > Linked Pull Requests; Item > Create Branch for Issue... (next to Start in Local Worktree) |
 | Saved replies | Roadmap GX05 and GX12, not built | Item > Insert Saved Reply in every comment box; Tools > Workbench Options > Saved Replies |
 | Wiki | Roadmap GX12, not built | Repository > Wiki (pages as a list, read in details, edit in the editor) |
 | Repository invitations: accept or decline | Seen only as a notification type | Needs My Attention > Invitations |
@@ -1897,6 +1897,13 @@ coverage gate (section 19) from day one.
 - **Task lists inside bodies.** The `- [ ]` items in an issue's body are a
   list on the issue's sheet: check one off and the body is updated; convert
   an item to a sub-issue.
+  *Built 2026-11-17, as two context-menu commands rather than a sheet list:*
+  Check or Uncheck a Task... and Convert Tasks to Sub-issues...
+  (`quill/core/github/issue_development.py`,
+  `quill/ui/github_workbench_development.py`). A command reaches the same
+  items from any list without opening the sheet, and both read the body again
+  before saving, so a concurrent edit is never overwritten. Converted lines
+  become `#number`, which GitHub renders as the issue and its state.
 - **Merge queues as places.** Repository > Merge Queue: each queued branch's
   entries in order, with their checks, Remove and Jump to front (admins).
 - **Commit statuses** (Item > Set Status... on a commit) for people who drive
