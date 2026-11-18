@@ -1386,6 +1386,45 @@ href="mailto:support@community-access.org">support@community-access.org</a>.
 Nothing is sent until you send it from your own email.</td>
 </tr>
 <tr>
+<td>My Codespaces Secrets (<code>:my_codespaces_secrets</code>)</td>
+<td>people</td>
+<td>My Codespaces Secrets: values given to your own codespaces.</td>
+</tr>
+<tr>
+<td>My Email Addresses (<code>:my_emails</code>)</td>
+<td>people</td>
+<td>My Email Addresses: the addresses on your account. Ctrl+N adds
+one.</td>
+</tr>
+<tr>
+<td>My Social Accounts (<code>:my_social_accounts</code>)</td>
+<td>people</td>
+<td>My Social Accounts: the links on your profile.</td>
+</tr>
+<tr>
+<td>Blocked People (<code>:my_blocks</code>)</td>
+<td>people</td>
+<td>Blocked People: who cannot follow you or take part in your
+repositories.</td>
+</tr>
+<tr>
+<td>My Followers (<code>:my_followers</code>)</td>
+<td>people</td>
+<td>My Followers: who follows you on GitHub.</td>
+</tr>
+<tr>
+<td>My Issue Types (<code>:my_issue_types</code>)</td>
+<td>people</td>
+<td>My Issue Types: the kinds of issue your own repositories offer.</td>
+</tr>
+<tr>
+<td>My Organizations’ Memberships
+(<code>:my_org_memberships</code>)</td>
+<td>people</td>
+<td>My Organizations’ Memberships: your role in each organization, and
+invitations.</td>
+</tr>
+<tr>
 <td>owner/name (<code>repository:repository</code>)</td>
 <td>repository</td>
 <td>A repository: its issues, pull requests, actions, code, releases and
@@ -1663,6 +1702,61 @@ repository. Ctrl+N adds one.</td>
 Ctrl+N adds one.</td>
 </tr>
 <tr>
+<td>Actions Variables (<code>repository:actions_variables</code>)</td>
+<td>repository, settings</td>
+<td>Actions Variables: values workflows read as vars.NAME. Ctrl+N adds
+one.</td>
+</tr>
+<tr>
+<td>Actions Secrets (<code>repository:actions_secrets</code>)</td>
+<td>repository, settings</td>
+<td>Actions Secrets: values workflows read but nobody sees again. Ctrl+N
+adds one.</td>
+</tr>
+<tr>
+<td>Dependabot Secrets (<code>repository:dependabot_secrets</code>)</td>
+<td>repository, settings</td>
+<td>Dependabot Secrets: what Dependabot uses to reach private
+registries.</td>
+</tr>
+<tr>
+<td>Codespaces Secrets (<code>repository:codespaces_secrets</code>)</td>
+<td>repository, settings</td>
+<td>Codespaces Secrets: values given to every codespace of this
+repository.</td>
+</tr>
+<tr>
+<td>Copilot Agent Secrets (<code>repository:agent_secrets</code>)</td>
+<td>repository, settings</td>
+<td>Copilot Agent Secrets: values the Copilot coding agent may use
+here.</td>
+</tr>
+<tr>
+<td>Copilot Agent Variables
+(<code>repository:agent_variables</code>)</td>
+<td>repository, settings</td>
+<td>Copilot Agent Variables: values the Copilot coding agent reads
+here.</td>
+</tr>
+<tr>
+<td>Artifacts (<code>repository:artifacts</code>)</td>
+<td>repository, actions</td>
+<td>Artifacts: files workflow runs kept, such as builds and test
+reports.</td>
+</tr>
+<tr>
+<td>Invitations (<code>repository:repo_invitations</code>)</td>
+<td>repository, people</td>
+<td>Invitations: people asked to join this repository who have not
+answered yet.</td>
+</tr>
+<tr>
+<td>Issue Types (<code>repository:repo_issue_types</code>)</td>
+<td>repository, settings</td>
+<td>Issue Types: the kinds of issue this repository offers, set by its
+organization.</td>
+</tr>
+<tr>
 <td>person (<code>person:person</code>)</td>
 <td>person</td>
 <td>A person: their repositories, activity, followers and who they
@@ -1736,6 +1830,113 @@ organization. Ctrl+N adds one.</td>
 <td>Templates: the defaults in the organization’s .github repository,
 which every repository without its own uses. Enter builds or edits
 one.</td>
+</tr>
+<tr>
+<td>Actions Variables
+(<code>organization:org_actions_variables</code>)</td>
+<td>organization, organization</td>
+<td>Actions Variables: values every chosen repository’s workflows
+read.</td>
+</tr>
+<tr>
+<td>Actions Secrets (<code>organization:org_actions_secrets</code>)</td>
+<td>organization, organization</td>
+<td>Actions Secrets: values the organization’s workflows read but nobody
+sees again.</td>
+</tr>
+<tr>
+<td>Dependabot Secrets
+(<code>organization:org_dependabot_secrets</code>)</td>
+<td>organization, organization</td>
+<td>Dependabot Secrets: what Dependabot uses across the
+organization.</td>
+</tr>
+<tr>
+<td>Codespaces Secrets
+(<code>organization:org_codespaces_secrets</code>)</td>
+<td>organization, organization</td>
+<td>Codespaces Secrets: values given to the organization’s
+codespaces.</td>
+</tr>
+<tr>
+<td>Copilot Agent Secrets
+(<code>organization:org_agent_secrets</code>)</td>
+<td>organization, organization</td>
+<td>Copilot Agent Secrets: values the coding agent may use in the
+organization.</td>
+</tr>
+<tr>
+<td>Copilot Agent Variables
+(<code>organization:org_agent_variables</code>)</td>
+<td>organization, organization</td>
+<td>Copilot Agent Variables: values the coding agent reads in the
+organization.</td>
+</tr>
+<tr>
+<td>Runner Groups (<code>organization:runner_groups</code>)</td>
+<td>organization, organization</td>
+<td>Runner Groups: which repositories may use which of the
+organization’s runners.</td>
+</tr>
+<tr>
+<td>Runners (<code>organization:org_runners</code>)</td>
+<td>organization, organization</td>
+<td>Runners: the organization’s own machines that run jobs.</td>
+</tr>
+<tr>
+<td>Larger Runners (<code>organization:hosted_runners</code>)</td>
+<td>organization, organization</td>
+<td>Larger Runners: GitHub’s bigger machines the organization pays
+for.</td>
+</tr>
+<tr>
+<td>Members (<code>organization:org_members</code>)</td>
+<td>organization, organization</td>
+<td>Members: the organization’s people. Ctrl+N invites someone; Delete
+removes them.</td>
+</tr>
+<tr>
+<td>Invitations (<code>organization:org_invitations</code>)</td>
+<td>organization, organization</td>
+<td>Invitations: people asked to join the organization who have not
+answered.</td>
+</tr>
+<tr>
+<td>Blocked People (<code>organization:org_blocks</code>)</td>
+<td>organization, organization</td>
+<td>Blocked People: who cannot take part in the organization’s
+repositories.</td>
+</tr>
+<tr>
+<td>Outside Collaborators
+(<code>organization:outside_collaborators</code>)</td>
+<td>organization, organization</td>
+<td>Outside Collaborators: people with access to repositories but not
+members.</td>
+</tr>
+<tr>
+<td>Security Managers (<code>organization:security_managers</code>)</td>
+<td>organization, organization</td>
+<td>Security Managers: teams that see and manage every security
+alert.</td>
+</tr>
+<tr>
+<td>Custom Properties (<code>organization:custom_properties</code>)</td>
+<td>organization, organization</td>
+<td>Custom Properties: labels the organization gives its
+repositories.</td>
+</tr>
+<tr>
+<td>Issue Types (<code>organization:org_issue_types</code>)</td>
+<td>organization, organization</td>
+<td>Issue Types: the kinds of issue, such as Bug, the organization’s
+repositories offer.</td>
+</tr>
+<tr>
+<td>Organization Roles (<code>organization:org_roles</code>)</td>
+<td>organization, organization</td>
+<td>Organization Roles: the roles that can be given to people and
+teams.</td>
 </tr>
 </tbody>
 </table>
@@ -2798,6 +2999,8 @@ Properties…</li>
 on GitHub; Properties…</li>
 <li><strong>autolink</strong>: Show Details, Delete Autolink…, Open on
 GitHub; Properties…</li>
+<li><strong>resource</strong>: Show Details, Change…, Delete…, Open on
+GitHub, Copy Link; Properties…</li>
 <li><strong>wiki</strong>: Open on GitHub, Clone Wiki…, Copy Link;
 Properties…</li>
 <li><strong>sponsorship</strong>: Show Details, Cancel Sponsorship…,
@@ -2956,6 +3159,9 @@ password; a GPG key or SSH signing key marks your commits Verified.
 GitHub keeps only the public half.</li>
 <li><strong>Label</strong>: A coloured tag on issues and pull requests,
 such as bug. Under Labels.</li>
+<li><strong>Listed setting</strong>: One of a repository’s, an
+organization’s or your own settings that GitHub keeps as a list, such as
+variables, secrets or members.</li>
 <li><strong>Mention</strong>: Your login written with an at sign, such
 as @you, which notifies you.</li>
 <li><strong>Merge</strong>: Bringing a pull request’s changes into the
@@ -3070,14 +3276,14 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 392 yes, 1064 planned, 15 not needed and 533 left to
+<p>In all: 477 yes, 904 planned, 89 not needed and 534 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
 is planned under Repository &gt; Wiki.</p>
 <h3 id="rest-operations-by-category">REST operations, by category</h3>
 <h4 id="actions">Actions</h4>
-<p>208 operations: 48 yes, 153 planned, 7 left to github.</p>
+<p>208 operations: 68 yes, 133 planned, 7 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -3184,8 +3390,8 @@ organization</td>
 <tr>
 <td>List GitHub-hosted runners for an organization</td>
 <td><code>GET /orgs/{org}/actions/hosted-runners</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Larger Runners</td>
 </tr>
 <tr>
 <td>Create a GitHub-hosted runner for an organization</td>
@@ -3264,8 +3470,8 @@ organization</td>
 <tr>
 <td>Delete a GitHub-hosted runner for an organization</td>
 <td><code>DELETE /orgs/{org}/actions/hosted-runners/{hosted_runner_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a GitHub-hosted runner for an organization</td>
@@ -3276,8 +3482,8 @@ organization</td>
 <tr>
 <td>Update a GitHub-hosted runner for an organization</td>
 <td><code>PATCH /orgs/{org}/actions/hosted-runners/{hosted_runner_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Yes</td>
+<td>context menu &gt; Change…</td>
 </tr>
 <tr>
 <td>List OIDC custom property inclusions for an organization</td>
@@ -3497,20 +3703,20 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>List self-hosted runner groups for an organization</td>
 <td><code>GET /orgs/{org}/actions/runner-groups</code></td>
-<td>Planned</td>
-<td>Runner group sheet.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Runner Groups</td>
 </tr>
 <tr>
 <td>Create a self-hosted runner group for an organization</td>
 <td><code>POST /orgs/{org}/actions/runner-groups</code></td>
-<td>Planned</td>
-<td>Runner group sheet.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Runner Groups</td>
 </tr>
 <tr>
 <td>Delete a self-hosted runner group from an organization</td>
 <td><code>DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}</code></td>
-<td>Planned</td>
-<td>Runner group sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a self-hosted runner group for an organization</td>
@@ -3521,8 +3727,8 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>Update a self-hosted runner group for an organization</td>
 <td><code>PATCH /orgs/{org}/actions/runner-groups/{runner_group_id}</code></td>
-<td>Planned</td>
-<td>Runner group sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Change…</td>
 </tr>
 <tr>
 <td>List GitHub-hosted runners in a group for an organization</td>
@@ -3585,8 +3791,8 @@ organization</td>
 <tr>
 <td>List self-hosted runners for an organization</td>
 <td><code>GET /orgs/{org}/actions/runners</code></td>
-<td>Planned</td>
-<td>Runner sheet.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Runners</td>
 </tr>
 <tr>
 <td>Get runner version end-of-life schedule for an organization</td>
@@ -3622,8 +3828,8 @@ organization</td>
 <tr>
 <td>Delete a self-hosted runner from an organization</td>
 <td><code>DELETE /orgs/{org}/actions/runners/{runner_id}</code></td>
-<td>Planned</td>
-<td>Runner sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a self-hosted runner for an organization</td>
@@ -3672,14 +3878,14 @@ organization</td>
 <tr>
 <td>Get an organization public key</td>
 <td><code>GET /orgs/{org}/actions/secrets/public-key</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Actions Secrets</td>
 </tr>
 <tr>
 <td>Delete an organization secret</td>
 <td><code>DELETE /orgs/{org}/actions/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get an organization secret</td>
@@ -3690,8 +3896,8 @@ organization</td>
 <tr>
 <td>Create or update an organization secret</td>
 <td><code>PUT /orgs/{org}/actions/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Actions Secrets</td>
 </tr>
 <tr>
 <td>List selected repositories for an organization secret</td>
@@ -3726,14 +3932,15 @@ organization</td>
 <tr>
 <td>Create an organization variable</td>
 <td><code>POST /orgs/{org}/actions/variables</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Actions
+Variables</td>
 </tr>
 <tr>
 <td>Delete an organization variable</td>
 <td><code>DELETE /orgs/{org}/actions/variables/{name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get an organization variable</td>
@@ -3744,8 +3951,8 @@ organization</td>
 <tr>
 <td>Update an organization variable</td>
 <td><code>PATCH /orgs/{org}/actions/variables/{name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Change…</td>
 </tr>
 <tr>
 <td>List selected repositories for an organization variable</td>
@@ -3774,14 +3981,15 @@ organization</td>
 <tr>
 <td>List artifacts for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/artifacts</code></td>
-<td>Planned</td>
-<td>Run &gt; Artifacts; Artifact sheet.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Actions &gt;
+Artifacts</td>
 </tr>
 <tr>
 <td>Delete an artifact</td>
 <td><code>DELETE /repos/{owner}/{repo}/actions/artifacts/{artifact_id}</code></td>
-<td>Planned</td>
-<td>Run &gt; Artifacts; Artifact sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get an artifact</td>
@@ -4254,8 +4462,8 @@ Variable Names</td>
 <tr>
 <td>Delete a repository secret</td>
 <td><code>DELETE /repos/{owner}/{repo}/actions/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a repository secret</td>
@@ -4279,14 +4487,15 @@ Variable Names</td>
 <tr>
 <td>Create a repository variable</td>
 <td><code>POST /repos/{owner}/{repo}/actions/variables</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Actions
+Variables</td>
 </tr>
 <tr>
 <td>Delete a repository variable</td>
 <td><code>DELETE /repos/{owner}/{repo}/actions/variables/{name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a repository variable</td>
@@ -4761,7 +4970,7 @@ Person &gt; Activity.</td>
 </tbody>
 </table>
 <h4 id="agents">Agents</h4>
-<p>30 operations: 30 planned.</p>
+<p>30 operations: 16 yes, 14 planned.</p>
 <table>
 <thead>
 <tr>
@@ -4775,23 +4984,22 @@ Person &gt; Activity.</td>
 <tr>
 <td>List organization secrets</td>
 <td><code>GET /orgs/{org}/agents/secrets</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Copilot Agent
+Secrets</td>
 </tr>
 <tr>
 <td>Get an organization public key</td>
 <td><code>GET /orgs/{org}/agents/secrets/public-key</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Copilot Agent
+Secrets</td>
 </tr>
 <tr>
 <td>Delete an organization secret</td>
 <td><code>DELETE /orgs/{org}/agents/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get an organization secret</td>
@@ -4803,9 +5011,9 @@ Copilot (section 22.1).</td>
 <tr>
 <td>Create or update an organization secret</td>
 <td><code>PUT /orgs/{org}/agents/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Copilot Agent
+Secrets</td>
 </tr>
 <tr>
 <td>List selected repositories for an organization secret</td>
@@ -4838,23 +5046,22 @@ Copilot (section 22.1).</td>
 <tr>
 <td>List organization variables</td>
 <td><code>GET /orgs/{org}/agents/variables</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Copilot Agent
+Variables</td>
 </tr>
 <tr>
 <td>Create an organization variable</td>
 <td><code>POST /orgs/{org}/agents/variables</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Copilot Agent
+Variables</td>
 </tr>
 <tr>
 <td>Delete an organization variable</td>
 <td><code>DELETE /orgs/{org}/agents/variables/{name}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get an organization variable</td>
@@ -4866,9 +5073,8 @@ Copilot (section 22.1).</td>
 <tr>
 <td>Update an organization variable</td>
 <td><code>PATCH /orgs/{org}/agents/variables/{name}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Change…</td>
 </tr>
 <tr>
 <td>List selected repositories for an organization variable</td>
@@ -4915,23 +5121,22 @@ Copilot (section 22.1).</td>
 <tr>
 <td>List repository secrets</td>
 <td><code>GET /repos/{owner}/{repo}/agents/secrets</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Copilot
+Agent Secrets</td>
 </tr>
 <tr>
 <td>Get a repository public key</td>
 <td><code>GET /repos/{owner}/{repo}/agents/secrets/public-key</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Copilot
+Agent Secrets</td>
 </tr>
 <tr>
 <td>Delete a repository secret</td>
 <td><code>DELETE /repos/{owner}/{repo}/agents/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a repository secret</td>
@@ -4943,30 +5148,29 @@ Copilot (section 22.1).</td>
 <tr>
 <td>Create or update a repository secret</td>
 <td><code>PUT /repos/{owner}/{repo}/agents/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Copilot
+Agent Secrets</td>
 </tr>
 <tr>
 <td>List repository variables</td>
 <td><code>GET /repos/{owner}/{repo}/agents/variables</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Copilot
+Agent Variables</td>
 </tr>
 <tr>
 <td>Create a repository variable</td>
 <td><code>POST /repos/{owner}/{repo}/agents/variables</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Copilot
+Agent Variables</td>
 </tr>
 <tr>
 <td>Delete a repository variable</td>
 <td><code>DELETE /repos/{owner}/{repo}/agents/variables/{name}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a repository variable</td>
@@ -4978,9 +5182,8 @@ Copilot (section 22.1).</td>
 <tr>
 <td>Update a repository variable</td>
 <td><code>PATCH /repos/{owner}/{repo}/agents/variables/{name}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Change…</td>
 </tr>
 </tbody>
 </table>
@@ -6244,7 +6447,7 @@ Security.</td>
 </tbody>
 </table>
 <h4 id="codespaces">Codespaces</h4>
-<p>48 operations: 2 yes, 46 planned.</p>
+<p>48 operations: 14 yes, 34 planned.</p>
 <table>
 <thead>
 <tr>
@@ -6286,23 +6489,22 @@ Codespaces; Secrets.</td>
 <tr>
 <td>List organization secrets</td>
 <td><code>GET /orgs/{org}/codespaces/secrets</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Codespaces
+Secrets</td>
 </tr>
 <tr>
 <td>Get an organization public key</td>
 <td><code>GET /orgs/{org}/codespaces/secrets/public-key</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Codespaces
+Secrets</td>
 </tr>
 <tr>
 <td>Delete an organization secret</td>
 <td><code>DELETE /orgs/{org}/codespaces/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get an organization secret</td>
@@ -6314,9 +6516,9 @@ Codespaces; Secrets.</td>
 <tr>
 <td>Create or update an organization secret</td>
 <td><code>PUT /orgs/{org}/codespaces/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Codespaces
+Secrets</td>
 </tr>
 <tr>
 <td>List selected repositories for an organization secret</td>
@@ -6414,23 +6616,22 @@ Codespaces; Secrets.</td>
 <tr>
 <td>List repository secrets</td>
 <td><code>GET /repos/{owner}/{repo}/codespaces/secrets</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Codespaces
+Secrets</td>
 </tr>
 <tr>
 <td>Get a repository public key</td>
 <td><code>GET /repos/{owner}/{repo}/codespaces/secrets/public-key</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Codespaces
+Secrets</td>
 </tr>
 <tr>
 <td>Delete a repository secret</td>
 <td><code>DELETE /repos/{owner}/{repo}/codespaces/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a repository secret</td>
@@ -6442,9 +6643,9 @@ Codespaces; Secrets.</td>
 <tr>
 <td>Create or update a repository secret</td>
 <td><code>PUT /repos/{owner}/{repo}/codespaces/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Codespaces
+Secrets</td>
 </tr>
 <tr>
 <td>Create a codespace from a pull request</td>
@@ -6470,23 +6671,20 @@ Codespaces; Secrets.</td>
 <tr>
 <td>List secrets for the authenticated user</td>
 <td><code>GET /user/codespaces/secrets</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Codespaces Secrets</td>
 </tr>
 <tr>
 <td>Get public key for the authenticated user</td>
 <td><code>GET /user/codespaces/secrets/public-key</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Codespaces Secrets</td>
 </tr>
 <tr>
 <td>Delete a secret for the authenticated user</td>
 <td><code>DELETE /user/codespaces/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a secret for the authenticated user</td>
@@ -6498,9 +6696,8 @@ Codespaces; Secrets.</td>
 <tr>
 <td>Create or update a secret for the authenticated user</td>
 <td><code>PUT /user/codespaces/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Codespaces Secrets</td>
 </tr>
 <tr>
 <td>List selected repositories for a user secret</td>
@@ -6594,7 +6791,7 @@ Codespaces; Secrets.</td>
 </tbody>
 </table>
 <h4 id="collaborators">Collaborators</h4>
-<p>11 operations: 10 yes, 1 planned.</p>
+<p>11 operations: 11 yes.</p>
 <table>
 <thead>
 <tr>
@@ -6645,8 +6842,8 @@ and Team Access</td>
 <tr>
 <td>Delete a repository invitation</td>
 <td><code>DELETE /repos/{owner}/{repo}/invitations/{invitation_id}</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Access (section 18.3).</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Update a repository invitation</td>
@@ -7348,7 +7545,7 @@ people.</td>
 </tbody>
 </table>
 <h4 id="dependabot">Dependabot</h4>
-<p>27 operations: 2 yes, 21 planned, 4 left to github.</p>
+<p>27 operations: 10 yes, 13 planned, 4 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -7423,23 +7620,22 @@ sheet; Dependabot secrets; dependabot.yml sheet.</td>
 <tr>
 <td>List organization secrets</td>
 <td><code>GET /orgs/{org}/dependabot/secrets</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Dependabot
+Secrets</td>
 </tr>
 <tr>
 <td>Get an organization public key</td>
 <td><code>GET /orgs/{org}/dependabot/secrets/public-key</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Dependabot
+Secrets</td>
 </tr>
 <tr>
 <td>Delete an organization secret</td>
 <td><code>DELETE /orgs/{org}/dependabot/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get an organization secret</td>
@@ -7451,9 +7647,9 @@ sheet; Dependabot secrets; dependabot.yml sheet.</td>
 <tr>
 <td>Create or update an organization secret</td>
 <td><code>PUT /orgs/{org}/dependabot/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Dependabot
+Secrets</td>
 </tr>
 <tr>
 <td>List selected repositories for an organization secret</td>
@@ -7519,23 +7715,22 @@ sheet; Dependabot secrets; dependabot.yml sheet.</td>
 <tr>
 <td>List repository secrets</td>
 <td><code>GET /repos/{owner}/{repo}/dependabot/secrets</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Dependabot
+Secrets</td>
 </tr>
 <tr>
 <td>Get a repository public key</td>
 <td><code>GET /repos/{owner}/{repo}/dependabot/secrets/public-key</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Dependabot
+Secrets</td>
 </tr>
 <tr>
 <td>Delete a repository secret</td>
 <td><code>DELETE /repos/{owner}/{repo}/dependabot/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a repository secret</td>
@@ -7547,9 +7742,9 @@ sheet; Dependabot secrets; dependabot.yml sheet.</td>
 <tr>
 <td>Create or update a repository secret</td>
 <td><code>PUT /repos/{owner}/{repo}/dependabot/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Dependabot
+Secrets</td>
 </tr>
 </tbody>
 </table>
@@ -8974,7 +9169,7 @@ Importer replaces it.</td>
 </tbody>
 </table>
 <h4 id="organizations">Organizations</h4>
-<p>129 operations: 27 yes, 95 planned, 7 left to github.</p>
+<p>129 operations: 42 yes, 80 planned, 7 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -9106,14 +9301,14 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>List users blocked by an organization</td>
 <td><code>GET /orgs/{org}/blocks</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Blocked Users; Person &gt; You: Block.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Blocked People</td>
 </tr>
 <tr>
 <td>Unblock a user from an organization</td>
 <td><code>DELETE /orgs/{org}/blocks/{username}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Blocked Users; Person &gt; You: Block.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Check if a user is blocked by an organization</td>
@@ -9124,8 +9319,8 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Block a user from an organization</td>
 <td><code>PUT /orgs/{org}/blocks/{username}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Blocked Users; Person &gt; You: Block.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Blocked People</td>
 </tr>
 <tr>
 <td>List failed organization invitations</td>
@@ -9269,14 +9464,14 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Create an organization invitation</td>
 <td><code>POST /orgs/{org}/invitations</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Members.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Invitations</td>
 </tr>
 <tr>
 <td>Cancel an organization invitation</td>
 <td><code>DELETE /orgs/{org}/invitations/{invitation_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Members.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>List organization invitation teams</td>
@@ -9320,14 +9515,14 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Create issue type for an organization</td>
 <td><code>POST /orgs/{org}/issue-types</code></td>
-<td>Planned</td>
-<td>Issue type sheet (organization).</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Issue Types</td>
 </tr>
 <tr>
 <td>Delete issue type for an organization</td>
 <td><code>DELETE /orgs/{org}/issue-types/{issue_type_id}</code></td>
-<td>Planned</td>
-<td>Issue type sheet (organization).</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Update issue type for an organization</td>
@@ -9344,8 +9539,8 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Remove an organization member</td>
 <td><code>DELETE /orgs/{org}/members/{username}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Members.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Check organization membership for a user</td>
@@ -9440,8 +9635,8 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Remove outside collaborator from an organization</td>
 <td><code>DELETE /orgs/{org}/outside_collaborators/{username}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Outside Collaborators.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Convert an organization member to outside collaborator</td>
@@ -9574,8 +9769,8 @@ across organization repositories</td>
 <tr>
 <td>Remove a custom property for an organization</td>
 <td><code>DELETE /orgs/{org}/properties/schema/{custom_property_name}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Custom Properties.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a custom property for an organization</td>
@@ -9586,8 +9781,9 @@ across organization repositories</td>
 <tr>
 <td>Create or update a custom property for an organization</td>
 <td><code>PUT /orgs/{org}/properties/schema/{custom_property_name}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Custom Properties.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Custom
+Properties</td>
 </tr>
 <tr>
 <td>List custom property values for organization repositories</td>
@@ -9688,20 +9884,22 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>List security manager teams</td>
 <td><code>GET /orgs/{org}/security-managers</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Security: security managers.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Security
+Managers</td>
 </tr>
 <tr>
 <td>Remove a security manager team</td>
 <td><code>DELETE /orgs/{org}/security-managers/teams/{team_slug}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Security: security managers.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Add a security manager team</td>
 <td><code>PUT /orgs/{org}/security-managers/teams/{team_slug}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Security: security managers.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Security
+Managers</td>
 </tr>
 <tr>
 <td>Get immutable releases settings for an organization</td>
@@ -9803,8 +10001,8 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>List organization memberships for the authenticated user</td>
 <td><code>GET /user/memberships/orgs</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Members.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Organizations’ Memberships</td>
 </tr>
 <tr>
 <td>Get an organization membership for the authenticated user</td>
@@ -10821,7 +11019,7 @@ user</td>
 </tbody>
 </table>
 <h4 id="repositories">Repositories</h4>
-<p>74 operations: 47 yes, 27 planned.</p>
+<p>74 operations: 48 yes, 26 planned.</p>
 <table>
 <thead>
 <tr>
@@ -11082,9 +11280,9 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 <tr>
 <td>List issue types for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/issue-types</code></td>
-<td>Planned</td>
-<td>Repository sheet (General, Features, Merging, Webhooks, Autolinks,
-Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Issue
+Types</td>
 </tr>
 <tr>
 <td>List repository languages</td>
@@ -11828,7 +12026,7 @@ slug).</td>
 </tbody>
 </table>
 <h4 id="users">Users</h4>
-<p>55 operations: 19 yes, 36 planned.</p>
+<p>55 operations: 31 yes, 24 planned.</p>
 <table>
 <thead>
 <tr>
@@ -11854,8 +12052,8 @@ slug).</td>
 <tr>
 <td>List users blocked by the authenticated user</td>
 <td><code>GET /user/blocks</code></td>
-<td>Planned</td>
-<td>Person &gt; You: Block (section 16.7).</td>
+<td>Yes</td>
+<td>Navigator: People &gt; Blocked People</td>
 </tr>
 <tr>
 <td>Unblock a user</td>
@@ -11884,26 +12082,26 @@ slug).</td>
 <tr>
 <td>Delete an email address for the authenticated user</td>
 <td><code>DELETE /user/emails</code></td>
-<td>Planned</td>
-<td>Account &gt; Profile and Status: Emails.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>List email addresses for the authenticated user</td>
 <td><code>GET /user/emails</code></td>
-<td>Planned</td>
-<td>Account &gt; Profile and Status: Emails.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Email Addresses</td>
 </tr>
 <tr>
 <td>Add an email address for the authenticated user</td>
 <td><code>POST /user/emails</code></td>
-<td>Planned</td>
-<td>Account &gt; Profile and Status: Emails.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Email Addresses</td>
 </tr>
 <tr>
 <td>List followers of the authenticated user</td>
 <td><code>GET /user/followers</code></td>
-<td>Planned</td>
-<td>Person &gt; You: Follow (section 16.7).</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Followers</td>
 </tr>
 <tr>
 <td>List the people the authenticated user follows</td>
@@ -11980,26 +12178,26 @@ slug).</td>
 <tr>
 <td>List issue types</td>
 <td><code>GET /user/issue-types</code></td>
-<td>Planned</td>
-<td>Account &gt; Issue Types (types for your own repositories)</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Issue Types</td>
 </tr>
 <tr>
 <td>Create an issue type</td>
 <td><code>POST /user/issue-types</code></td>
-<td>Planned</td>
-<td>Account &gt; Issue Types (types for your own repositories)</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Issue Types</td>
 </tr>
 <tr>
 <td>Delete an issue type</td>
 <td><code>DELETE /user/issue-types/{issue_type_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Issue Types (types for your own repositories)</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Update an issue type</td>
 <td><code>PUT /user/issue-types/{issue_type_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Issue Types (types for your own repositories)</td>
+<td>Yes</td>
+<td>context menu &gt; Change…</td>
 </tr>
 <tr>
 <td>List public SSH keys for the authenticated user</td>
@@ -12034,20 +12232,20 @@ slug).</td>
 <tr>
 <td>Delete social accounts for the authenticated user</td>
 <td><code>DELETE /user/social_accounts</code></td>
-<td>Planned</td>
-<td>Account &gt; Profile and Status: Social accounts.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>List social accounts for the authenticated user</td>
 <td><code>GET /user/social_accounts</code></td>
-<td>Planned</td>
-<td>Account &gt; Profile and Status: Social accounts.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Social Accounts</td>
 </tr>
 <tr>
 <td>Add social accounts for the authenticated user</td>
 <td><code>POST /user/social_accounts</code></td>
-<td>Planned</td>
-<td>Account &gt; Profile and Status: Social accounts.</td>
+<td>Yes</td>
+<td>Navigator: People &gt; My Social Accounts</td>
 </tr>
 <tr>
 <td>List SSH signing keys for the authenticated user</td>
@@ -12182,7 +12380,7 @@ branch.</td>
 <h3 id="graphql-mutations-by-category">GraphQL mutations, by
 category</h3>
 <h4 id="graphql-activity">GraphQL: Activity</h4>
-<p>4 mutations: 1 yes, 3 planned.</p>
+<p>4 mutations: 1 yes, 1 planned, 2 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -12194,13 +12392,15 @@ category</h3>
 <tbody>
 <tr>
 <td><code>addStar</code></td>
-<td>Planned</td>
-<td>Repository &gt; You (star, watch)</td>
+<td>Not needed</td>
+<td>The same change as PUT /user/starred/{owner}/{repo}, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>removeStar</code></td>
-<td>Planned</td>
-<td>Repository &gt; You (star, watch)</td>
+<td>Not needed</td>
+<td>The same change as DELETE /user/starred/{owner}/{repo}, the route
+the Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateNotificationRestrictionSetting</code></td>
@@ -12215,7 +12415,7 @@ category</h3>
 </tbody>
 </table>
 <h4 id="graphql-branches">GraphQL: Branches</h4>
-<p>4 mutations: 4 planned.</p>
+<p>4 mutations: 4 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -12227,28 +12427,35 @@ category</h3>
 <tbody>
 <tr>
 <td><code>createBranchProtectionRule</code></td>
-<td>Planned</td>
-<td>Branch sheet &gt; Protection</td>
+<td>Not needed</td>
+<td>The same change as PUT
+/repos/{owner}/{repo}/branches/{branch}/protection, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>deleteBranchProtectionRule</code></td>
-<td>Planned</td>
-<td>Branch sheet &gt; Protection</td>
+<td>Not needed</td>
+<td>The same change as DELETE
+/repos/{owner}/{repo}/branches/{branch}/protection, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>mergeBranch</code></td>
-<td>Planned</td>
-<td>Branch sheet &gt; Protection</td>
+<td>Not needed</td>
+<td>The same change as POST /repos/{owner}/{repo}/merges, the route the
+Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateBranchProtectionRule</code></td>
-<td>Planned</td>
-<td>Branch sheet &gt; Protection</td>
+<td>Not needed</td>
+<td>The same change as PUT
+/repos/{owner}/{repo}/branches/{branch}/protection, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="graphql-checks">GraphQL: Checks</h4>
-<p>5 mutations: 2 planned, 3 left to github.</p>
+<p>5 mutations: 1 not needed, 4 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -12272,8 +12479,10 @@ request &gt; Checks (read).</td>
 </tr>
 <tr>
 <td><code>rerequestCheckSuite</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Checks</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/check-suites/{check_suite_id}/rerequest, the route
+the Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateCheckRun</code></td>
@@ -12283,13 +12492,13 @@ request &gt; Checks (read).</td>
 </tr>
 <tr>
 <td><code>updateCheckSuitePreferences</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Checks</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App can create or update check runs and suites.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="graphql-commits">GraphQL: Commits</h4>
-<p>1 mutations: 1 planned.</p>
+<p>1 mutations: 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -12301,8 +12510,9 @@ request &gt; Checks (read).</td>
 <tbody>
 <tr>
 <td><code>createCommitOnBranch</code></td>
-<td>Planned</td>
-<td>Repository &gt; Code</td>
+<td>Not needed</td>
+<td>The same change as POST /repos/{owner}/{repo}/git/commits, the route
+the Workbench uses for it (already built); one route per operation.</td>
 </tr>
 </tbody>
 </table>
@@ -12345,7 +12555,7 @@ request &gt; Checks (read).</td>
 </tbody>
 </table>
 <h4 id="graphql-dependabot">GraphQL: Dependabot</h4>
-<p>1 mutations: 1 planned.</p>
+<p>1 mutations: 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -12357,13 +12567,15 @@ request &gt; Checks (read).</td>
 <tbody>
 <tr>
 <td><code>dismissRepositoryVulnerabilityAlert</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts</td>
+<td>Not needed</td>
+<td>The same change as PATCH
+/repos/{owner}/{repo}/dependabot/alerts/{alert_number}, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="graphql-deployments">GraphQL: Deployments</h4>
-<p>10 mutations: 10 planned.</p>
+<p>10 mutations: 2 planned, 8 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -12375,33 +12587,45 @@ request &gt; Checks (read).</td>
 <tbody>
 <tr>
 <td><code>approveDeployments</code></td>
-<td>Planned</td>
-<td>Repository &gt; Deployments; Environment sheet</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments, the
+route the Workbench uses for it (already built); one route per
+operation.</td>
 </tr>
 <tr>
 <td><code>createDeployment</code></td>
-<td>Planned</td>
-<td>Repository &gt; Deployments; Environment sheet</td>
+<td>Not needed</td>
+<td>The same change as POST /repos/{owner}/{repo}/deployments, the route
+the Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>createDeploymentStatus</code></td>
-<td>Planned</td>
-<td>Repository &gt; Deployments; Environment sheet</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/deployments/{deployment_id}/statuses, the route
+the Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>createEnvironment</code></td>
-<td>Planned</td>
-<td>Repository &gt; Deployments; Environment sheet</td>
+<td>Not needed</td>
+<td>The same change as PUT
+/repos/{owner}/{repo}/environments/{environment_name}, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>deleteDeployment</code></td>
-<td>Planned</td>
-<td>Repository &gt; Deployments; Environment sheet</td>
+<td>Not needed</td>
+<td>The same change as DELETE
+/repos/{owner}/{repo}/deployments/{deployment_id}, the route the
+Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>deleteEnvironment</code></td>
-<td>Planned</td>
-<td>Repository &gt; Deployments; Environment sheet</td>
+<td>Not needed</td>
+<td>The same change as DELETE
+/repos/{owner}/{repo}/environments/{environment_name}, the route the
+Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>pinEnvironment</code></td>
@@ -12410,8 +12634,11 @@ request &gt; Checks (read).</td>
 </tr>
 <tr>
 <td><code>rejectDeployments</code></td>
-<td>Planned</td>
-<td>Repository &gt; Deployments; Environment sheet</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments, the
+route the Workbench uses for it (already built); one route per
+operation.</td>
 </tr>
 <tr>
 <td><code>reorderEnvironment</code></td>
@@ -12420,8 +12647,10 @@ request &gt; Checks (read).</td>
 </tr>
 <tr>
 <td><code>updateEnvironment</code></td>
-<td>Planned</td>
-<td>Repository &gt; Deployments; Environment sheet</td>
+<td>Not needed</td>
+<td>The same change as PUT
+/repos/{owner}/{repo}/environments/{environment_name}, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 </tbody>
 </table>
@@ -12863,7 +13092,7 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tbody>
 </table>
 <h4 id="graphql-issues">GraphQL: Issues</h4>
-<p>51 mutations: 15 yes, 36 planned.</p>
+<p>51 mutations: 15 yes, 20 planned, 16 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -12875,8 +13104,10 @@ write files. Plumbing under Commit Multiple Files.</td>
 <tbody>
 <tr>
 <td><code>addAssigneesToAssignable</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/issues/{issue_number}/assignees, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>addBlockedBy</code></td>
@@ -12890,13 +13121,17 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>addComment</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/issues/{issue_number}/comments, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>addLabelsToLabelable</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/issues/{issue_number}/labels, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>addRelatesTo</code></td>
@@ -12915,8 +13150,10 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>clearLabelsFromLabelable</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as DELETE
+/repos/{owner}/{repo}/issues/{issue_number}/labels, the route the
+Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>closeIssue</code></td>
@@ -12925,8 +13162,9 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>createIssue</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as POST /repos/{owner}/{repo}/issues, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>createIssueField</code></td>
@@ -12945,8 +13183,9 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>createLabel</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as POST /repos/{owner}/{repo}/labels, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>createLinkedBranch</code></td>
@@ -12960,8 +13199,10 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>deleteIssueComment</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as DELETE
+/repos/{owner}/{repo}/issues/comments/{comment_id}, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>deleteIssueField</code></td>
@@ -12980,8 +13221,10 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>deleteLabel</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as DELETE /repos/{owner}/{repo}/labels/{name}, the
+route the Workbench uses for it (already built); one route per
+operation.</td>
 </tr>
 <tr>
 <td><code>deleteLinkedBranch</code></td>
@@ -12990,8 +13233,10 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>lockLockable</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as PUT
+/repos/{owner}/{repo}/issues/{issue_number}/lock, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>minimizeComment</code></td>
@@ -13015,8 +13260,10 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>removeAssigneesFromAssignable</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as DELETE
+/repos/{owner}/{repo}/issues/{issue_number}/assignees, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>removeBlockedBy</code></td>
@@ -13030,8 +13277,10 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>removeLabelsFromLabelable</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as DELETE
+/repos/{owner}/{repo}/issues/{issue_number}/labels/{name}, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>removeRelatesTo</code></td>
@@ -13045,8 +13294,10 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>reopenIssue</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as PATCH
+/repos/{owner}/{repo}/issues/{issue_number}, the route the Workbench
+uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>replaceActorsForAssignable</code></td>
@@ -13070,8 +13321,10 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>unlockLockable</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as DELETE
+/repos/{owner}/{repo}/issues/{issue_number}/lock, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>unmarkIssueAsDuplicate</code></td>
@@ -13095,13 +13348,17 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>updateIssue</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as PATCH
+/repos/{owner}/{repo}/issues/{issue_number}, the route the Workbench
+uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateIssueComment</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as PATCH
+/repos/{owner}/{repo}/issues/comments/{comment_id}, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateIssueField</code></td>
@@ -13125,8 +13382,10 @@ write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 <tr>
 <td><code>updateLabel</code></td>
-<td>Planned</td>
-<td>Issue sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as PATCH /repos/{owner}/{repo}/labels/{name}, the
+route the Workbench uses for it (already built); one route per
+operation.</td>
 </tr>
 </tbody>
 </table>
@@ -13192,7 +13451,7 @@ the gh gei extension.</td>
 </tbody>
 </table>
 <h4 id="graphql-organizations">GraphQL: Organizations</h4>
-<p>11 mutations: 11 planned.</p>
+<p>11 mutations: 9 planned, 2 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -13229,13 +13488,16 @@ the gh gei extension.</td>
 </tr>
 <tr>
 <td><code>removeOutsideCollaborator</code></td>
-<td>Planned</td>
-<td>Organization sheet</td>
+<td>Not needed</td>
+<td>The same change as DELETE
+/orgs/{org}/outside_collaborators/{username}, the route the Workbench
+uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>setOrganizationInteractionLimit</code></td>
-<td>Planned</td>
-<td>Organization sheet</td>
+<td>Not needed</td>
+<td>The same change as PUT /orgs/{org}/interaction-limits, the route the
+Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>unfollowOrganization</code></td>
@@ -13260,7 +13522,7 @@ the gh gei extension.</td>
 </tbody>
 </table>
 <h4 id="graphql-packages">GraphQL: Packages</h4>
-<p>1 mutations: 1 planned.</p>
+<p>1 mutations: 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -13272,8 +13534,11 @@ the gh gei extension.</td>
 <tbody>
 <tr>
 <td><code>deletePackageVersion</code></td>
-<td>Planned</td>
-<td>Repository &gt; Packages</td>
+<td>Not needed</td>
+<td>The same change as DELETE
+/user/packages/{package_type}/{package_name}/versions/{package_version_id},
+the route the Workbench uses for it (already built); one route per
+operation.</td>
 </tr>
 </tbody>
 </table>
@@ -13560,7 +13825,7 @@ the gh gei extension.</td>
 </tbody>
 </table>
 <h4 id="graphql-pull-requests">GraphQL: Pull requests</h4>
-<p>36 mutations: 12 yes, 24 planned.</p>
+<p>36 mutations: 12 yes, 5 planned, 19 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -13577,23 +13842,32 @@ the gh gei extension.</td>
 </tr>
 <tr>
 <td><code>addPullRequestReview</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/pulls/{pull_number}/reviews, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>addPullRequestReviewComment</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/pulls/{pull_number}/comments, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>addPullRequestReviewThread</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/pulls/{pull_number}/comments, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>addPullRequestReviewThreadReply</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies,
+the route the Workbench uses for it (planned there); one route per
+operation.</td>
 </tr>
 <tr>
 <td><code>archivePullRequest</code></td>
@@ -13602,8 +13876,10 @@ the gh gei extension.</td>
 </tr>
 <tr>
 <td><code>closePullRequest</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as PATCH /repos/{owner}/{repo}/pulls/{pull_number},
+the route the Workbench uses for it (already built); one route per
+operation.</td>
 </tr>
 <tr>
 <td><code>convertPullRequestToDraft</code></td>
@@ -13612,18 +13888,23 @@ the gh gei extension.</td>
 </tr>
 <tr>
 <td><code>createPullRequest</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as POST /repos/{owner}/{repo}/pulls, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>deletePullRequestReview</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as DELETE
+/repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}, the route
+the Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>deletePullRequestReviewComment</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as DELETE
+/repos/{owner}/{repo}/pulls/comments/{comment_id}, the route the
+Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>dequeuePullRequest</code></td>
@@ -13638,8 +13919,11 @@ ready</td>
 </tr>
 <tr>
 <td><code>dismissPullRequestReview</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as PUT
+/repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/dismissals,
+the route the Workbench uses for it (planned there); one route per
+operation.</td>
 </tr>
 <tr>
 <td><code>enablePullRequestAutoMerge</code></td>
@@ -13664,8 +13948,10 @@ ready</td>
 </tr>
 <tr>
 <td><code>mergePullRequest</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as PUT
+/repos/{owner}/{repo}/pulls/{pull_number}/merge, the route the Workbench
+uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>removePullRequestCreationCapBypassUsers</code></td>
@@ -13674,8 +13960,10 @@ ready</td>
 </tr>
 <tr>
 <td><code>reopenPullRequest</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as PATCH /repos/{owner}/{repo}/pulls/{pull_number},
+the route the Workbench uses for it (already built); one route per
+operation.</td>
 </tr>
 <tr>
 <td><code>requestCopilotCodeReview</code></td>
@@ -13684,18 +13972,24 @@ ready</td>
 </tr>
 <tr>
 <td><code>requestReviews</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers, the route
+the Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>requestReviewsByLogin</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers, the route
+the Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>rerequestReviews</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers, the route
+the Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>resolveReviewThread</code></td>
@@ -13709,8 +14003,11 @@ ready</td>
 </tr>
 <tr>
 <td><code>submitPullRequestReview</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/events,
+the route the Workbench uses for it (planned there); one route per
+operation.</td>
 </tr>
 <tr>
 <td><code>unarchivePullRequest</code></td>
@@ -13729,23 +14026,31 @@ ready</td>
 </tr>
 <tr>
 <td><code>updatePullRequest</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as PATCH /repos/{owner}/{repo}/pulls/{pull_number},
+the route the Workbench uses for it (already built); one route per
+operation.</td>
 </tr>
 <tr>
 <td><code>updatePullRequestBranch</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as PUT
+/repos/{owner}/{repo}/pulls/{pull_number}/update-branch, the route the
+Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updatePullRequestReview</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as PUT
+/repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}, the route
+the Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updatePullRequestReviewComment</code></td>
-<td>Planned</td>
-<td>Pull request sheet; Item menu</td>
+<td>Not needed</td>
+<td>The same change as PATCH
+/repos/{owner}/{repo}/pulls/comments/{comment_id}, the route the
+Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateTeamReviewAssignment</code></td>
@@ -13778,7 +14083,7 @@ ready</td>
 </tbody>
 </table>
 <h4 id="graphql-repositories">GraphQL: Repositories</h4>
-<p>18 mutations: 18 planned.</p>
+<p>18 mutations: 4 planned, 14 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -13795,28 +14100,35 @@ ready</td>
 </tr>
 <tr>
 <td><code>archiveRepository</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Not needed</td>
+<td>The same change as PATCH /repos/{owner}/{repo}, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>cloneTemplateRepository</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Not needed</td>
+<td>The same change as POST
+/repos/{template_owner}/{template_repo}/generate, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>createRepository</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Not needed</td>
+<td>The same change as POST /user/repos, the route the Workbench uses
+for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>createRepositoryCustomProperty</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Not needed</td>
+<td>The same change as PUT
+/orgs/{org}/properties/schema/{custom_property_name}, the route the
+Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>createRepositoryRuleset</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Not needed</td>
+<td>The same change as POST /repos/{owner}/{repo}/rulesets, the route
+the Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>declineTopicSuggestion</code></td>
@@ -13825,13 +14137,17 @@ ready</td>
 </tr>
 <tr>
 <td><code>deleteRepositoryCustomProperty</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Not needed</td>
+<td>The same change as DELETE
+/orgs/{org}/properties/schema/{custom_property_name}, the route the
+Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>deleteRepositoryRuleset</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Not needed</td>
+<td>The same change as DELETE
+/repos/{owner}/{repo}/rulesets/{ruleset_id}, the route the Workbench
+uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>promoteRepositoryCustomProperty</code></td>
@@ -13840,33 +14156,43 @@ ready</td>
 </tr>
 <tr>
 <td><code>setRepositoryCustomPropertyValues</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Not needed</td>
+<td>The same change as PATCH /repos/{owner}/{repo}/properties/values,
+the route the Workbench uses for it (planned there); one route per
+operation.</td>
 </tr>
 <tr>
 <td><code>setRepositoryInteractionLimit</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Not needed</td>
+<td>The same change as PUT /repos/{owner}/{repo}/interaction-limits, the
+route the Workbench uses for it (already built); one route per
+operation.</td>
 </tr>
 <tr>
 <td><code>unarchiveRepository</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Not needed</td>
+<td>The same change as PATCH /repos/{owner}/{repo}, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateRepository</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Not needed</td>
+<td>The same change as PATCH /repos/{owner}/{repo}, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateRepositoryCustomProperty</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Not needed</td>
+<td>The same change as PUT
+/orgs/{org}/properties/schema/{custom_property_name}, the route the
+Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateRepositoryRuleset</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Not needed</td>
+<td>The same change as PUT /repos/{owner}/{repo}/rulesets/{ruleset_id},
+the route the Workbench uses for it (already built); one route per
+operation.</td>
 </tr>
 <tr>
 <td><code>updateRepositoryWebCommitSignoffSetting</code></td>
@@ -13875,13 +14201,14 @@ ready</td>
 </tr>
 <tr>
 <td><code>updateTopics</code></td>
-<td>Planned</td>
-<td>Repository sheet</td>
+<td>Not needed</td>
+<td>The same change as PUT /repos/{owner}/{repo}/topics, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="graphql-sponsors">GraphQL: Sponsors</h4>
-<p>9 mutations: 2 yes, 7 planned.</p>
+<p>9 mutations: 2 yes, 6 planned, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -13913,8 +14240,9 @@ ready</td>
 </tr>
 <tr>
 <td><code>createSponsorships</code></td>
-<td>Planned</td>
-<td>People &gt; person &gt; Sponsor; Account &gt; Sponsors</td>
+<td>Not needed</td>
+<td>The same change as createSponsorship, the route the Workbench uses
+for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>publishSponsorsTier</code></td>
@@ -13939,7 +14267,7 @@ ready</td>
 </tbody>
 </table>
 <h4 id="graphql-teams">GraphQL: Teams</h4>
-<p>1 mutations: 1 planned.</p>
+<p>1 mutations: 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -13951,13 +14279,15 @@ ready</td>
 <tbody>
 <tr>
 <td><code>updateTeamsRepository</code></td>
-<td>Planned</td>
-<td>Team sheet</td>
+<td>Not needed</td>
+<td>The same change as PUT
+/orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="graphql-users">GraphQL: Users</h4>
-<p>8 mutations: 5 yes, 3 planned.</p>
+<p>8 mutations: 5 yes, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -13984,18 +14314,21 @@ ready</td>
 </tr>
 <tr>
 <td><code>followUser</code></td>
-<td>Planned</td>
-<td>Account; People &gt; person</td>
+<td>Not needed</td>
+<td>The same change as PUT /user/following/{username}, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>setUserInteractionLimit</code></td>
-<td>Planned</td>
-<td>Account; People &gt; person</td>
+<td>Not needed</td>
+<td>The same change as PUT /user/interaction-limits, the route the
+Workbench uses for it (planned there); one route per operation.</td>
 </tr>
 <tr>
 <td><code>unfollowUser</code></td>
-<td>Planned</td>
-<td>Account; People &gt; person</td>
+<td>Not needed</td>
+<td>The same change as DELETE /user/following/{username}, the route the
+Workbench uses for it (already built); one route per operation.</td>
 </tr>
 <tr>
 <td><code>updateUserList</code></td>

@@ -470,6 +470,24 @@ def runner_setup(run: Any) -> str:
     return f"setup commands built for {downloads[0].label}, {len(commands.splitlines())} lines"
 
 
+def resource_round_trip(run: Any) -> str:
+    """The resource engine end to end: add an Actions variable, change it, delete it."""
+    from quill.core.github import resource_engine as engine
+    from quill.core.github.resource_specs import spec_for
+
+    spec = spec_for("actions_variables")
+    assert spec is not None
+    name = f"QUILL_LIVE_{int(time.time()) % 100000}"
+    engine.create(run.api, spec, run.repo, {"name": name, "value": "one"})
+    try:
+        engine.edit(run.api, spec, run.repo, name, {"value": "two"})
+        rows = engine.fetch(run.api, spec, run.repo)
+        _expect(any(row.label.startswith(f"{name} is two") for row in rows), "not changed")
+    finally:
+        said = engine.delete(run.api, spec, run.repo, name)
+    return f"{name}: added, changed, listed. {said}"
+
+
 def commit_status(run: Any) -> str:
     from quill.core.github.commit_status import set_commit_status
 
@@ -935,6 +953,9 @@ VERBS: dict[str, Scenario | str] = {
     "sponsor": "needs Jeff: sponsoring charges real money",
     "clone_wiki": "needs Jeff: clones into a folder you choose, from the editor",
     "cancel_sponsorship": "needs Jeff: cancels one of your real sponsorships",
+    "resource_new": resource_round_trip,
+    "resource_edit": "with resource_new: an Actions variable changed",
+    "resource_delete": "with resource_new: the variable deleted again",
     "new_key": "needs Jeff: adds a key to your own GitHub account",
     "delete_key": "needs Jeff: deletes a key from your own GitHub account",
     "new_advisory": "needs Jeff: a report or a draft advisory can be closed but never deleted",

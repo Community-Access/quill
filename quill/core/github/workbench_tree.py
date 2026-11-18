@@ -520,9 +520,37 @@ _ORGANIZATION: tuple[NodeSpec, ...] = (
     ),
 )
 
+
+def _resource_nodes(scope: str) -> tuple[NodeSpec, ...]:
+    """The list-shaped settings of the resource engine, for one scope."""
+    from quill.core.github.resource_specs import RESOURCE_SPECS
+
+    where: dict[str, Any] = {
+        "repository": {"scope": _REPO},
+        "organization": {"scope": Scope.ORGANIZATION},
+    }
+    return tuple(
+        NodeSpec(
+            spec.key,
+            spec.label,
+            spec.parent,
+            needs=_SIGN_IN,
+            loader=f"explore:res_{spec.key}",
+            row_type="resource",
+            **where.get(scope, {}),
+        )
+        for spec in RESOURCE_SPECS
+        if spec.scope == scope
+    )
+
+
 GITHUB_TREE = TreeSpec(
-    _FIXED,
-    {"repository": _REPOSITORY, "person": _PERSON, "organization": _ORGANIZATION},
+    (*_FIXED, *_resource_nodes("user")),
+    {
+        "repository": (*_REPOSITORY, *_resource_nodes("repository")),
+        "person": _PERSON,
+        "organization": (*_ORGANIZATION, *_resource_nodes("organization")),
+    },
 )
 """The whole GitHub Navigator."""
 

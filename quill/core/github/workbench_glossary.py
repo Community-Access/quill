@@ -66,6 +66,10 @@ GLOSSARY: dict[str, str] = {
         "A tag that carries a message, who made it and when. Releases usually use one. "
         "A lightweight tag is only a name for a commit."
     ),
+    "Listed setting": (
+        "One of a repository's, an organization's or your own settings that GitHub keeps "
+        "as a list, such as variables, secrets or members."
+    ),
     "Wiki": (
         "A repository's own pages of documentation, kept by GitHub as a git repository "
         "of their own, owner/name.wiki."
@@ -181,6 +185,7 @@ ROW_TYPE_WORDS: dict[str, str] = {
     "webhook": "Webhook",
     "sponsorship": "Sponsorship",
     "wiki": "Wiki",
+    "resource": "Listed setting",
     "sponsor_tier": "Sponsorship",
     "deploy_key": "Deploy key",
     "autolink": "Autolink",

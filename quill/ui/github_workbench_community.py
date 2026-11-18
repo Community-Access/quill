@@ -34,6 +34,7 @@ COMMUNITY_VERBS: dict[str, frozenset[str]] = {
         "autolink",
         "sponsorship",
         "sponsor_tier",
+        "resource",
     }),
     "delete_cache": frozenset({"cache"}),
     "edit_label": frozenset({"label"}),

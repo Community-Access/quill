@@ -72,6 +72,8 @@ def fetch_extra_view(
     person: str = "",
 ) -> list[ExploreRow] | None:
     """Rows for a Wave 4 view, or ``None`` when *view* is not one of them."""
+    if view.startswith("res_"):
+        return _resource_view(provider, view.removeprefix("res_"), repo, warnings)
     if view not in EXTRA_VIEWS:
         return None
     token = getattr(provider, "token", None)
@@ -295,3 +297,20 @@ __all__ = [
     "explore_failure",
     "fetch_extra_view",
 ]
+
+
+def _resource_view(provider: Any, key: str, target: str, warnings: list[str]) -> list[ExploreRow]:
+    """A list-shaped setting from the resource engine (quill/core/github/resource_specs.py)."""
+    from quill.core.github.resource_engine import ResourceError, fetch
+    from quill.core.github.resource_specs import spec_for
+    from quill.core.github.workbench_api import TokenApi
+
+    spec = spec_for(key)
+    if spec is None:
+        raise GitHubExploreError(f"There is no list called {key}.")
+    if spec.scope != "user" and not target:
+        raise GitHubExploreError(f"Choose a {spec.scope} for its {spec.label}.")
+    try:
+        return fetch(TokenApi(getattr(provider, "token", None)), spec, target, warnings)
+    except ResourceError as exc:
+        raise GitHubExploreError(str(exc.args[0])) from exc

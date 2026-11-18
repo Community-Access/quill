@@ -283,6 +283,19 @@ NODE_HELP: dict[str, str] = {
     ),
 }
 
+
+def _resource_help() -> dict[str, str]:
+    """Each list of the resource engine says what it holds (quill/core/github/resource_specs.py)."""
+    from quill.core.github.resource_specs import RESOURCE_SPECS
+
+    return {
+        f"{'' if spec.scope == 'user' else spec.scope}:{spec.key}": spec.help
+        for spec in RESOURCE_SPECS
+    }
+
+
+NODE_HELP.update(_resource_help())
+
 #: What an empty list says instead (D4): why it is empty and what fills it.
 _EMPTY: dict[str, str] = {
     ":review_requests": (
