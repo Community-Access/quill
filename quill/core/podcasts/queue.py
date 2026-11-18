@@ -13,6 +13,7 @@ wx-free, strict-typed.
 
 from __future__ import annotations
 
+from quill.core.podcasts import queue_events
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow, QueueItem, now_iso
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
@@ -36,6 +37,7 @@ def add_to_queue(
     library.queue.append(
         QueueItem(show_id=show_id, episode_guid=episode_guid, added_at=now_iso(), reason=reason)
     )
+    queue_events.queued(show_id, episode_guid)
     return True
 
 
@@ -52,6 +54,8 @@ def play_next(library: PodcastLibrary, show_id: str, episode_guid: str) -> None:
     else:
         item = QueueItem(show_id=show_id, episode_guid=episode_guid, added_at=now_iso())
     library.queue.insert(0, item)
+    if existing == -1:
+        queue_events.queued(show_id, episode_guid)
 
 
 def queue_groups(library: PodcastLibrary) -> list[tuple[PodcastShow, list[int]]]:

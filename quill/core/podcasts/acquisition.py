@@ -135,6 +135,27 @@ def episodes_to_auto_download(
     return result
 
 
+def download_when_queued(
+    library: PodcastLibrary, show: PodcastShow, episode: PodcastEpisode
+) -> bool:
+    """Should an episode be fetched *now*, because it was just queued?
+
+    Download Queued Episodes, applied the moment the episode joins the queue
+    rather than at the show's next refresh, whatever the show's playback mode
+    (Chris Nova, 2026-11-18). Not when it is already here, marked stream-only,
+    the show is paused, or a metered connection or off-peak window holds
+    automatic downloads.
+    """
+    from quill.core.podcasts.show_policy import download_allowed_now
+
+    settings = library.effective_settings(show)
+    if not settings.auto_download_queued or show.paused or show.is_local:
+        return False
+    if episode.downloaded_path or episode.mode_override == "stream":
+        return False
+    return bool(episode.audio_url) and download_allowed_now(library, show)
+
+
 def route_new_episodes(
     library: PodcastLibrary, show: PodcastShow, new_episodes: list[PodcastEpisode]
 ) -> int:
@@ -174,4 +195,4 @@ def route_new_episodes(
     return queued
 
 
-__all__ = ["episodes_to_auto_download", "route_new_episodes"]
+__all__ = ["download_when_queued", "episodes_to_auto_download", "route_new_episodes"]

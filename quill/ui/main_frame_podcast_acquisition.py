@@ -258,6 +258,40 @@ class PodcastAcquisitionMixin:
         except Exception:  # noqa: BLE001 - a balloon must never break a refresh
             pass
 
+    def _podcast_on_episode_queued(self, show_id: str, episode_guid: str) -> None:
+        """An episode joined the Play Queue: fetch it now if the settings say so.
+
+        Registered with :mod:`quill.core.podcasts.queue_events`, which every
+        queue operation calls, so Auto-Queue, menus, lineups and the AI all
+        reach it. Hopped to the UI thread, because a queue can change on a
+        worker (the AI task) and the download queue's callbacks touch wx.
+        """
+        if self._safe_mode or getattr(self, "_cast_closing", False):
+            return
+        self._wx.CallAfter(self._podcast_download_queued, show_id, episode_guid)
+
+    def _podcast_download_queued(self, show_id: str, episode_guid: str) -> None:
+        from quill.core.podcasts.acquisition import download_when_queued
+        from quill.ui.podcasts.show_actions import enqueue_episode_download
+
+        show = self._podcast_library.find_show(show_id)
+        episode = show.find_episode(episode_guid) if show is not None else None
+        if show is None or episode is None:
+            return
+        if not download_when_queued(self._podcast_library, show, episode):
+            return
+        item_id = f"{show.id}:{episode.guid}"
+        if self._podcast_download_queue.get(item_id) is not None:
+            return
+        enqueue_episode_download(
+            self._podcast_download_queue,
+            self._podcast_download_root(),
+            show,
+            episode,
+            item_id=item_id,
+            library=self._podcast_library,
+        )
+
     def _podcast_apply_auto_download(self, show: PodcastShow) -> None:
         """Fetch what the acquisition policy says should be on disk.
 

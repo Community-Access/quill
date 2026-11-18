@@ -24,8 +24,16 @@ episode streamed, and so did one you had marked Download by hand. Chris Nova
 found it: he streams by default and wanted only what he queues, including
 episodes Auto-Queue adds, on his disk. Now a streaming show still downloads
 nothing on its own, but it fetches what is in the queue (with the setting
-on) and any episode marked Download. They are fetched the next time the
-show is refreshed.
+on) and any episode marked Download.
+
+- **At once, not at the next refresh.** An episode is fetched the moment it
+  joins the queue, however it got there: Add to Queue, Play Next, Auto-Queue,
+  a lineup, a watched folder or the AI. Before, it waited for the show's next
+  feed check, so the queue could reach an episode before it had arrived.
+- **One episode with nothing to play no longer stops the queue.** If the next
+  queued episode cannot start, Cast says which, and plays the one after it:
+  "Could not start Two: nothing to play yet. Playing Three instead." The one
+  passed over stays in the queue.
 
 ### Downloads say why they stopped (2026-11-18)
 

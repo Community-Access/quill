@@ -235,6 +235,11 @@ class PodcastTransfersMixin:
         #: episode can stop it.
         self._podcast_cache_item_id = ""
         self._podcast_cache_key: tuple[str, str] = ("", "")
+        # Download Queued Episodes, the moment an episode joins the queue from
+        # anywhere (Chris Nova, 2026-11-18), not at the show's next refresh.
+        from quill.core.podcasts import queue_events
+
+        queue_events.set_listener(self._podcast_on_episode_queued)  # type: ignore[attr-defined]
 
     def _podcast_manage_playback_cache(self, state: object) -> None:
         """Keep the cache pointed at whatever is playing now.

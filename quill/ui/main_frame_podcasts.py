@@ -372,7 +372,11 @@ class PodcastsMixin(
                 next_show, next_episode = step.show, step.episode
                 self._save_podcast_library()
                 start_next(
-                    self, next_show, next_episode, f"Up next from the queue: {next_episode.title}"
+                    self,
+                    next_show,
+                    next_episode,
+                    f"Up next from the queue: {next_episode.title}",
+                    from_queue=True,
                 )
                 return
             # The slot still went, even at the end of the run, so save it.
