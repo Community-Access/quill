@@ -1369,7 +1369,7 @@
   "createSponsorsTier": {"status": "planned", "home": "People > person > Sponsor; Account > Sponsors", "row": "Appendix F: sponsors"},
   "createSponsorship": {"status": "planned", "home": "People > person > Sponsor; Account > Sponsors", "row": "Appendix F: sponsors"},
   "createSponsorships": {"status": "planned", "home": "People > person > Sponsor; Account > Sponsors", "row": "Appendix F: sponsors"},
-  "createUserList": {"status": "planned", "home": "Account; People > person", "row": "Star lists"},
+  "createUserList": {"status": "covered", "home": "node::star_lists", "via": "quill/core/github/star_lists.py"},
   "declineTopicSuggestion": {"status": "planned", "home": "Repository sheet", "row": "Appendix F: repos"},
   "deleteBranchProtectionRule": {"status": "planned", "home": "Branch sheet > Protection", "row": "Appendix F: branches"},
   "deleteDeployment": {"status": "planned", "home": "Repository > Deployments; Environment sheet", "row": "Appendix F: deployments"},
@@ -1399,7 +1399,7 @@
   "deleteRef": {"status": "no_api_needed", "home": "Plumbing under Commit Multiple Files", "reason": "Refs and commits on a branch are plumbing beneath commands that write files."},
   "deleteRepositoryCustomProperty": {"status": "planned", "home": "Repository sheet", "row": "Appendix F: repos"},
   "deleteRepositoryRuleset": {"status": "planned", "home": "Repository sheet", "row": "Appendix F: repos"},
-  "deleteUserList": {"status": "planned", "home": "Account; People > person", "row": "Star lists"},
+  "deleteUserList": {"status": "covered", "home": "command:github.workbench.edit_star_list", "via": "quill/core/github/star_lists.py"},
   "deleteVerifiableDomain": {"status": "planned", "home": "Organization sheet", "row": "Appendix F: orgs"},
   "dequeuePullRequest": {"status": "covered", "home": "command:github.workbench.merge_queue", "via": "quill/core/github/merge_automation.py"},
   "disablePullRequestAutoMerge": {"status": "covered", "home": "sheet:pull_request.auto_merge", "via": "quill/core/github/merge_automation.py"},
@@ -1566,8 +1566,8 @@
   "updateTeamReviewAssignment": {"status": "covered", "home": "sheet:team.review_enabled", "via": "quill/core/github/sheets_orgs.py"},
   "updateTeamsRepository": {"status": "planned", "home": "Team sheet", "row": "Appendix F: teams"},
   "updateTopics": {"status": "planned", "home": "Repository sheet", "row": "Appendix F: repos"},
-  "updateUserList": {"status": "planned", "home": "Account; People > person", "row": "Star lists"},
-  "updateUserListsForItem": {"status": "planned", "home": "Account; People > person", "row": "Star lists"},
+  "updateUserList": {"status": "covered", "home": "command:github.workbench.edit_star_list", "via": "quill/core/github/star_lists.py"},
+  "updateUserListsForItem": {"status": "covered", "home": "command:github.workbench.star_lists", "via": "quill/core/github/star_lists.py"},
   "verifyVerifiableDomain": {"status": "planned", "home": "Organization sheet", "row": "Appendix F: orgs"}
  },
  "graphql_queries": {
@@ -1590,7 +1590,7 @@
   "contributionsCollection": {"status": "planned", "home": "Account > Profile (the contribution table, as a table)", "row": "Profile and status"},
   "fundingLinks": {"status": "planned", "home": "Repository > General (sponsor links)", "row": "Appendix F: sponsors"},
   "dependencyGraphManifests": {"status": "planned", "home": "Repository > Security > Dependencies", "row": "Dependency graph and SBOM export"},
-  "lists": {"status": "planned", "home": "Repositories > Starred > each list", "row": "Star lists"},
+  "lists": {"status": "covered", "home": "node::star_lists", "via": "quill/core/github/star_lists.py"},
   "linkedBranches": {"status": "covered", "home": "sheet:issue.branches", "via": "quill/core/github/sheets_items.py"}
  },
  "enterprise": {

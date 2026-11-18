@@ -66,6 +66,10 @@ GLOSSARY: dict[str, str] = {
         "A tag that carries a message, who made it and when. Releases usually use one. "
         "A lightweight tag is only a name for a commit."
     ),
+    "Star list": (
+        "One of your own named groups of starred repositories, such as Screen readers. "
+        "A repository can be on several."
+    ),
     "Package": (
         "Something a project publishes besides its code, such as a container image or an "
         "npm package, kept on GitHub Packages in versions."

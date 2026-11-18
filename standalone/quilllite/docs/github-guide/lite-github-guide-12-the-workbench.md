@@ -364,7 +364,8 @@ own list, and `Shift+F1` reads it with the keys:
   Snooze for One Day. Snoozing hides it in the Workbench on this computer
   until tomorrow and changes nothing on GitHub; Unsnooze Locally brings it
   back.
-- **A repository:** Open, Star or Unstar, Watch or Unwatch, Clone, and Pin.
+- **A repository:** Open, Star or Unstar, Watch or Unwatch, Clone, Pin, and
+  Star Lists; in Star Lists, Rename or Delete Star List too.
 - **A person:** Open, and Follow or Unfollow.
 
 Summarize Discussion and Start in Local Worktree are QUILL's: they use its AI

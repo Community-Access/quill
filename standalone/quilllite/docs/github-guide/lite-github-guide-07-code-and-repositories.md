@@ -483,6 +483,25 @@ On a person's row, the context menu has **Follow** or **Unfollow** and their
 username. These happen straight away, without a question: "You now follow"
 them. **Explore Person's Activity** shows what they have been doing.
 
+### Star lists
+
+GitHub lets you sort your stars into lists of your own, such as "Screen
+readers" or "Tools I use". **Repositories > Star Lists** in the GitHub
+Workbench lists every repository on every list, each row starting with its
+list: "Screen readers: nvaccess/nvda, NVDA". They are ordinary repository
+rows, so Enter opens the repository and Star, Watch and Clone work as
+anywhere else. The node's note names any list that is empty.
+
+- **New Star List...**: press `Ctrl+N` in Star Lists. QUILL Lite asks for the
+  name, up to 32 characters, a description you can leave empty, and whether
+  only you or everyone can see it.
+- **Star Lists...**, on any repository's context menu, wherever it is listed,
+  shows your lists with the ones it is on already checked. Check and uncheck,
+  then OK. You hear "nvaccess/nvda is now on: Screen readers, Tools I use."
+- **Rename or Delete Star List...**, on a row in Star Lists, works on that
+  row's list: rename it or change its description, make it private or public,
+  or delete it. Deleting a list leaves its repositories starred.
+
 ## Packages
 
 GitHub Packages holds what a project publishes besides its code: container

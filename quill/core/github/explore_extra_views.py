@@ -65,6 +65,11 @@ def fetch_extra_view(
             return fetch_invitations(TokenApi(token), limit=limit)
         except GitHubRestError as exc:
             raise GitHubExploreError(f"Could not read your invitations: {exc}") from exc
+    if view == "star_lists":
+        from quill.core.github.star_lists import fetch_lists, list_rows
+        from quill.core.github.workbench_api import TokenApi
+
+        return list_rows(fetch_lists(TokenApi(token)), warnings)
     if view == "my_packages":
         from quill.core.github.packages import PackageError, fetch_packages
         from quill.core.github.workbench_api import TokenApi

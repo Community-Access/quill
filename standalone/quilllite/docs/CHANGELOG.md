@@ -2,6 +2,14 @@
 
 ## 2.0.0
 
+### Star lists (2026-11-18)
+
+**Repositories > Star Lists** in the GitHub Workbench lists every repository
+on each of your GitHub star lists, the list's name first. `Ctrl+N` there makes
+a list, **Star Lists...** on any repository chooses which lists it is on, and
+**Rename or Delete Star List...** changes or deletes a list. Chapter 7 of the
+GitHub Guide has the details.
+
 ### My Packages, and Set Your Status that works (2026-11-18)
 
 **Repositories > My Packages** in the GitHub Workbench lists your container

@@ -970,7 +970,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 339 yes, 1124 planned, 15 not needed and 526 left to GitHub.
+In all: 344 yes, 1119 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -3041,18 +3041,18 @@ In all: 339 yes, 1124 planned, 15 not needed and 526 left to GitHub.
 
 #### GraphQL: Users
 
-8 mutations: 1 yes, 7 planned.
+8 mutations: 5 yes, 3 planned.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
 | `changeUserStatus` | Yes | Account > Set Your Status... (Ctrl+Alt+S) |
-| `createUserList` | Planned | Account; People > person |
-| `deleteUserList` | Planned | Account; People > person |
+| `createUserList` | Yes | Navigator: Repositories > Star Lists |
+| `deleteUserList` | Yes | context menu > Rename or Delete Star List... |
 | `followUser` | Planned | Account; People > person |
 | `setUserInteractionLimit` | Planned | Account; People > person |
 | `unfollowUser` | Planned | Account; People > person |
-| `updateUserList` | Planned | Account; People > person |
-| `updateUserListsForItem` | Planned | Account; People > person |
+| `updateUserList` | Yes | context menu > Rename or Delete Star List... |
+| `updateUserListsForItem` | Yes | context menu > Star Lists... |
 
 ### GraphQL reads with no REST twin
 
@@ -3068,7 +3068,7 @@ In all: 339 yes, 1124 planned, 15 not needed and 526 left to GitHub.
 | `fundingLinks` | Planned | Repository > General (sponsor links) |
 | `issueTypes` | Yes | context menu > Set Issue Type... |
 | `linkedBranches` | Yes | Properties (Alt+Enter) on Issue: Linked branches |
-| `lists` | Planned | Repositories > Starred > each list |
+| `lists` | Yes | Navigator: Repositories > Star Lists |
 | `mergeQueue` | Yes | Item > Merge... (Ctrl+Shift+Enter) |
 | `pinnedItems` | Planned | People > person > Profile; Account > Profile |
 | `projectsV2` | Yes | Navigator: Repository > owner/name > Projects |

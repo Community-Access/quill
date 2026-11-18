@@ -177,6 +177,10 @@ Version... and Delete Package... (`packages.py`,
 needs it), `read:packages` and `delete:packages`; `INSUFFICIENT_SCOPES` is
 said as sign in again.
 
+**2026-11-18, star lists.** Repositories > Star Lists, New Star List...,
+Star Lists... and Rename or Delete Star List... (`star_lists.py`,
+`github_workbench_star_lists.py`).
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

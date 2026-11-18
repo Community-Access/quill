@@ -1162,7 +1162,7 @@ Source: PRD section 14. Its “today” statements describe the source audit rev
 | Hide a comment (moderation: spam, off-topic, outdated) | Not found | Comment context in details > Hide Comment... |
 | Transfer a repository | **Built 2026-11-18:** Repository > Transfer Repository... (`Ctrl+Alt+T`), typed confirmation (`repo_transfer.py`) | Repository > Settings > Transfer... |
 | Self-hosted runners | **Built 2026-11-18:** Repository > Actions > Runners, read-only (`runners_sbom.py`); registering and removing stay planned | Repository > Actions > Runners (read-only) |
-| Star lists | Not found | Repositories > Starred > each list |
+| Star lists | **Built 2026-11-18:** Repositories > Star Lists, New Star List..., Star Lists... on a repository, Rename or Delete Star List... (`star_lists.py`) | Repositories > Starred > each list |
 | Your profile and status | Not found | Account > Profile and Status... |
 
 ### 14.3 Brought in after all (Jeff, 2026-11-09: "If I can do it in GitHub I should be able to do it")

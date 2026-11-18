@@ -32,6 +32,10 @@ NODE_HELP: dict[str, str] = {
         "Runners: the machines this repository runs its own jobs on, online or not, busy "
         "or idle, with their labels. Only administrators can see them."
     ),
+    ":star_lists": (
+        "Star Lists: every repository on each of your star lists, the list's name first. "
+        "Ctrl+N makes a list; Star Lists on any repository chooses its lists."
+    ),
     ":packages": (
         "My Packages: your container images and npm, Maven, RubyGems and NuGet packages, "
         "with Delete Package Version and Delete Package on each."

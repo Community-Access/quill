@@ -2169,7 +2169,8 @@ the project is busiest, and what each contributor has done.
 
 A project that publishes container images or npm packages can see them all
 under **My Packages**, and clear out an old version without opening a
-browser.
+browser. And the stars you have sorted into lists on GitHub are under **Star
+Lists**, where one key puts a repository on the lists you choose.
 
 #### Reviewing a pull request line by line
 

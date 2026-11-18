@@ -2488,6 +2488,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Starred.** Starred: repositories you starred on GitHub.
 
+**Star Lists.** Star Lists: every repository on each of your star lists, the list's name first. Ctrl+N makes a list; Star Lists on any repository chooses its lists.
+
 **Watched.** Watched: repositories whose activity GitHub tells you about.
 
 **My Packages.** My Packages: your container images and npm, Maven, RubyGems and NuGet packages, with Delete Package Version and Delete Package on each.
@@ -3119,6 +3121,10 @@ Control coverage: 365 audited sites (365 helped).
 **Clone.** Copy it to a folder on this computer.
 
 **Pin.** Keep it under Repositories > Pinned.
+
+**Star Lists.** Choose which of your star lists it is on.
+
+**Rename or Delete Star List.** In Star Lists: rename the list this row is on, change who sees it, or delete it.
 
 **Open.** Select the person's node in the tree.
 

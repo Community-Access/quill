@@ -115,6 +115,14 @@ _FIXED: tuple[NodeSpec, ...] = (
     ),
     _n("starred", "Starred", "repositories", loader="explore:starred", row_type="repository"),
     _n(
+        "star_lists",
+        "Star Lists",
+        "repositories",
+        needs=_SIGN_IN,
+        loader="explore:star_lists",
+        row_type="repository",
+    ),
+    _n(
         "watched",
         "Watched",
         "repositories",
@@ -488,7 +496,6 @@ PLANNED = CoverageTable((
     _planned("Packages: an organization's, and restoring", "Repositories > My Packages"),
     _planned("Dependency graph and SBOM export", "Repository > Security > Dependencies"),
     _planned("Self-hosted runners (registering and removing)", "Repository > Actions > Runners"),
-    _planned("Star lists", "Repositories > Starred > each list"),
     _planned("Profile and status", "Account > Profile and Status..."),
 ))
 """GitHub features with a future home and no node yet (GitHub PRD 14.1, 14.2)."""

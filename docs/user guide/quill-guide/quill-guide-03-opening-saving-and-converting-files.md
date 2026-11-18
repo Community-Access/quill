@@ -1585,6 +1585,13 @@ images and other packages, with Delete Package Version... and Delete
 Package... on each. See
 [Packages](../github-guide/github-guide-07-code-and-repositories.html#packages).
 
+#### Star lists
+
+**Repositories > Star Lists** in the GitHub Workbench lists your star lists'
+repositories; `Ctrl+N` there makes a list, and **Star Lists...** on any
+repository chooses its lists. See
+[Star lists](../github-guide/github-guide-07-code-and-repositories.html#star-lists).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

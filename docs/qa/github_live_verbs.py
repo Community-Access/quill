@@ -378,6 +378,23 @@ def tags_made_and_deleted(run: Any) -> str:
     return f"{said} Deleted it again. Annotated: {heard}"
 
 
+def star_list_round_trip(run: Any) -> str:
+    """Make a list, put the test repository on it, rename it, then delete it."""
+    from quill.core.github import star_lists as sl
+
+    name = f"quill-live-{int(time.time()) % 100000}"
+    sl.create_list(run.api, name, "made by the live run", private=True)
+    found = next(each for each in sl.fetch_lists(run.api) if each.name == name)
+    try:
+        sl.set_lists_for(run.api, run.repo, [found])
+        again = next(each for each in sl.fetch_lists(run.api) if each.name == name)
+        _expect(any(repo == run.repo for repo, _d in again.repositories), "not on the list")
+        said = sl.update_list(run.api, again, name=f"{name}-r", description="", private=True)
+    finally:
+        sl.delete_list(run.api, found)
+    return f"{said} Deleted it again."
+
+
 def commit_status(run: Any) -> str:
     from quill.core.github.commit_status import set_commit_status
 
@@ -858,6 +875,9 @@ VERBS: dict[str, Scenario | str] = {
     "transfer_repository": "not here: needs a second account or an organization to receive it",
     "delete_package_version": "not here: the live run publishes no package to delete",
     "delete_package": "not here: the live run publishes no package to delete",
+    "new_star_list": star_list_round_trip,
+    "star_lists": "with new_star_list: the test repository put on the list",
+    "edit_star_list": "with new_star_list: renamed, then deleted",
     "commit_status": commit_status,
     "user_status": "needs Jeff: changes the status on your own GitHub profile",
     "accept_invitation": "not here: needs an invitation from a second GitHub account",

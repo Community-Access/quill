@@ -17547,7 +17547,9 @@ and the typed full name. Repository > Insights > Commit Activity
 GitHub's statistics charts as sentences. Repositories > My Packages
 (`quill/core/github/packages.py`, `quill/ui/github_workbench_packages.py`)
 lists your packages with Delete Package Version... and Delete Package...; the
-sign-in now asks `user`, `read:packages` and `delete:packages`.
+sign-in now asks `user`, `read:packages` and `delete:packages`. Repositories >
+Star Lists (`quill/core/github/star_lists.py`) reads and edits GitHub's star
+lists.
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and
