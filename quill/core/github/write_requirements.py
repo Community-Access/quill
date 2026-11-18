@@ -167,6 +167,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}merge_queue": ("repo:write", _V),
     f"{_P}sub_issues": ("repo:triage", _O),
     f"{_P}relationships": ("repo:triage", _O),
+    f"{_P}issue_fields": ("repo:triage", _O),
+    f"{_P}delete_issue": ("repo:admin", _D),
     f"{_P}transfer": ("repo:write", _D),
     f"{_P}unsnooze": ("local", _O),
     f"{_P}unsubscribe": ("sign_in", _O),

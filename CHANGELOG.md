@@ -760,6 +760,24 @@ lines the same way, with the same saved choice.
 With thanks to Kelly Ford, whose GHManage has been the measure for QUILL's
 GitHub work from the start.
 
+### GitHub: issue fields, related issues, pinned comments and deleting an issue (2026-11-18)
+
+- **Issue Fields...** on an issue lists every field its owner defines with
+  this issue's value, and sets or clears one the way its kind needs (a choice,
+  a number, a date, or text). Only that field is sent, and Cancel never clears
+  anything.
+- **Relationships...** now shows related issues too ("Related: #47 ..."), with
+  **Add Related...** (`Alt+T`); Remove takes one away.
+- The Timeline window's **Pin or Unpin Comment...** (`Alt+P`) keeps a comment
+  at the top of the conversation for everyone.
+- **Delete Issue...** deletes an issue for good, for a repository's admins,
+  after you type its number. A pull request is refused rather than sent.
+
+22 more GitHub rows are settled: 8 covered, and 14 GraphQL changes that the
+REST routes already make. 154 remain planned. The GitHub guide's Issues
+chapter has Issue fields and Deleting an issue, and the keyboard reference
+the new keys.
+
 ### GitHub: 25 more lists, and an environment's branch policies and protection rules (2026-11-18)
 
 Twenty-five more of GitHub's lists are nodes in the Workbench's tree, working

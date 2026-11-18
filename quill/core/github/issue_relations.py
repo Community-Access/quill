@@ -61,6 +61,7 @@ class Relations:
     sub_issues: tuple[IssueRef, ...] = ()
     blocked_by: tuple[IssueRef, ...] = ()
     blocking: tuple[IssueRef, ...] = ()
+    related: tuple[IssueRef, ...] = ()
     unread: tuple[str, ...] = field(default_factory=tuple)
 
     def lines(self, here: str) -> list[str]:
@@ -70,6 +71,7 @@ class Relations:
             rows.append(f"Parent: {self.parent.label(here)}")
         rows += [f"Sub-issue: {i.label(here)}" for i in self.sub_issues]
         rows += [f"Blocked by: {i.label(here)}" for i in self.blocked_by]
+        rows += [f"Related: {i.label(here)}" for i in self.related]
         rows += [f"Blocking: {i.label(here)}" for i in self.blocking]
         rows += [f"Not read: {what}" for what in self.unread]
         return rows
@@ -82,6 +84,7 @@ class Relations:
             (len(self.sub_issues), "sub-issue", "sub-issues"),
             (len(self.blocked_by), "issue blocking it", "issues blocking it"),
             (len(self.blocking), "issue it blocks", "issues it blocks"),
+            (len(self.related), "related issue", "related issues"),
         ):
             if count:
                 parts.append(f"{count} {one if count == 1 else many}")
@@ -183,8 +186,20 @@ class GitHubIssueRelations:
             sub_issues=listed("the sub-issues", f"{base}/sub_issues"),
             blocked_by=listed("what blocks it", f"{base}/dependencies/blocked_by"),
             blocking=listed("what it blocks", f"{base}/dependencies/blocking"),
+            related=self._related(f"{base}/relates_to", repo, unread),
             unread=tuple(unread),
         )
+
+    def _related(self, path: str, repo: str, unread: list[str]) -> tuple[IssueRef, ...]:
+        """Related issues; a 404 is GitHub's answer where the feature is not offered yet."""
+        try:
+            reply = self._request(self._token, "GET", path, query={"per_page": "100"})
+        except GitHubRestError as exc:
+            if exc.status != 404:
+                unread.append(f"related issues ({rest_failure_message('read them', exc)})")
+            return ()
+        rows = reply.data if isinstance(reply.data, list) else []
+        return tuple(r for r in (_ref(raw, repo) for raw in rows) if r is not None)
 
     def add_sub_issue(self, repo: str, number: int, child: IssueRef, *, move: bool = False) -> None:
         """Make *child* a sub-issue; *move* takes it from the parent it has now."""
@@ -226,5 +241,27 @@ class GitHubIssueRelations:
             action,
             "DELETE",
             f"{repo_path(repo)}/issues/{number}/dependencies/blocked_by/{blocker.id}",
+            (200, 204),
+        )
+
+    def add_related(self, repo: str, number: int, other: IssueRef) -> None:
+        """Record that #number and *other* are related, without either waiting on the other."""
+        action = f"mark #{number} as related to #{other.number}"
+        self._write(action)
+        self._call(
+            action,
+            "POST",
+            f"{repo_path(repo)}/issues/{number}/relates_to",
+            (200, 201),
+            body={"issue_id": other.id},
+        )
+
+    def remove_related(self, repo: str, number: int, other: IssueRef) -> None:
+        action = f"stop #{number} being related to #{other.number}"
+        self._write(action)
+        self._call(
+            action,
+            "DELETE",
+            f"{repo_path(repo)}/issues/{number}/relates_to/{other.id}",
             (200, 204),
         )

@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from quill.core.github.workbench_api import GitHubApi
 
-__all__ = ["REASONS", "hide_comment", "show_comment"]
+__all__ = ["REASONS", "hide_comment", "pin_comment", "show_comment"]
 
 #: The reason as offered, and GitHub's classifier for it.
 REASONS: tuple[tuple[str, str], ...] = (
@@ -48,3 +48,16 @@ def hide_comment(api: GitHubApi, node_id: str, classifier: str) -> str:
 def show_comment(api: GitHubApi, node_id: str) -> str:
     api.graphql(_SHOW, {"id": node_id})
     return "The comment shows again."
+
+
+def pin_comment(api: GitHubApi, repo: str, comment_id: str, *, pin: bool = True) -> str:
+    """Pin an issue comment to the top of its conversation, or unpin it (GitHub keeps one)."""
+    from urllib.parse import quote
+
+    if not comment_id.isdigit():
+        raise ValueError("That line is not a comment that can be pinned.")
+    path = f"/repos/{quote(repo, safe='/')}/issues/comments/{comment_id}/pin"
+    api.rest("PUT" if pin else "DELETE", path)
+    if pin:
+        return "Pinned the comment. It shows first in the conversation, for everyone."
+    return "Unpinned the comment."

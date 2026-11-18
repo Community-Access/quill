@@ -56,6 +56,11 @@ from quill.ui.github_workbench_inbox_rules import (
     INBOX_RULE_VERBS,
     GitHubWorkbenchInboxRulesMixin,
 )
+from quill.ui.github_workbench_issue_admin import (
+    ISSUE_ADMIN_REASONS,
+    ISSUE_ADMIN_VERBS,
+    GitHubWorkbenchIssueAdminMixin,
+)
 from quill.ui.github_workbench_merge import (
     MERGE_REASONS,
     MERGE_VERBS,
@@ -165,6 +170,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **PAGES_VERBS,
     **PROJECT_ADMIN_VERBS,
     **ORG_ADMIN_VERBS,
+    **ISSUE_ADMIN_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -193,6 +199,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **PAGES_REASONS,
     **PROJECT_ADMIN_REASONS,
     **ORG_ADMIN_REASONS,
+    **ISSUE_ADMIN_REASONS,
 }
 
 
@@ -219,6 +226,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchPagesMixin,
     GitHubWorkbenchProjectAdminMixin,
     GitHubWorkbenchOrgAdminMixin,
+    GitHubWorkbenchIssueAdminMixin,
 ):
     items: Any
     frame: Any
