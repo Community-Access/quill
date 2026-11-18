@@ -158,7 +158,7 @@ key works the same way. Chapter 2 has the details.
 ## Forms and payments
 
 Payment forms use this same WordPress connection. Tools > Forms sets up
-Stripe and PayPal payments and checks the site is ready. The QUILL Accessible
+Stripe, PayPal and Square payments and checks the site is ready. The QUILL Accessible
 Forms plugin on your site must support payments, and the payment keys and
 checkout stay on the site. See [Forms](quill-guide-17-forms.html) for setup
 and testing.
