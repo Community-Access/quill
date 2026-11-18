@@ -162,15 +162,26 @@ class GitHubWorkbenchRunsMixin:
 
     def _do_rerun_failed(self, ref: Any, row: object) -> None:
         assert isinstance(row, GitHubWorkflowRun)
-        repo, words = self._repo_for(ref), _run_words(row)
+        repo, words, run_id = self._repo_for(ref), _run_words(row), row.id
+        sending: set[int] = self.__dict__.setdefault("_reruns_sending", set())
+        if run_id in sending:  # GX04: a second press never starts a second re-run
+            self._say(f"A re-run of {words} is already on its way to GitHub.")
+            return
         if not self._confirm(
             "Re-run Failed Jobs", f"Re-run only the failed jobs of {words} in {repo}?"
         ):
             return
-        run_id = row.id
+        sending.add(run_id)
+
+        def work() -> object:
+            try:
+                return self.items.rerun_failed_jobs(repo, run_id)
+            finally:
+                sending.discard(run_id)
+
         self._background(
             "re-run the failed jobs",
-            lambda: self.items.rerun_failed_jobs(repo, run_id),
+            work,
             lambda _r: self._say(f"GitHub started a re-run of the failed jobs of {words}."),
         )
 

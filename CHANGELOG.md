@@ -620,6 +620,12 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Re-run Failed Jobs, pressed twice (2026-11-18)
+
+Pressing **Re-run Failed Jobs** again before GitHub had answered the first
+press sent a second re-run. It now says the first is already on its way and
+sends nothing.
+
 ### One commit at a time, and whitespace hidden (2026-11-18)
 
 The pull request diff window has **Hide Whitespace Changes**, which leaves out

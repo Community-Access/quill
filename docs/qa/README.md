@@ -48,6 +48,9 @@ nothing looks broken.
   run by `github-live-run.py`, which writes its results into the document.
   `tests/unit/docs/test_github_live_run_coverage.py` fails when a command or
   sheet is added without a scenario or a reason in the run.
+- [github-journeys.md](github-journeys.md) -- the GitHub roadmap's journeys
+  GX01 to GX08: each as a person walks it, the failure it must survive, the
+  tests that show it, and the steps still to check with a screen reader.
 - [wordpress-regression-testing.md](wordpress-regression-testing.md) -- the
   same for WordPress and Forms, against the test site, run by
   `wordpress-live-run.py`.

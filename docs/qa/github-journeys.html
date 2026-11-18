@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>GitHub journeys GX01 to GX08: what each one is, how it fails,
+and the evidence</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="github-journeys-gx01-to-gx08-what-each-one-is-how-it-fails-and-the-evidence">GitHub
+journeys GX01 to GX08: what each one is, how it fails, and the
+evidence</h1>
+<p>This document closes the first eight rows of the GitHub roadmap’s
+journey table (<code>docs/planning/github-roadmap.md</code>, reproduced
+in <code>complete.md</code> section GH-F) the way that section asks:
+each journey as a person walks it, the failure it must survive, and the
+evidence that it does. Evidence is the automated test that walks the
+same path against recorded GitHub answers, and the live regression run
+(<code>docs/qa/github-live-run.py</code>, described in
+<code>docs/qa/github-regression-testing.md</code>) where a journey
+writes to GitHub.</p>
+<p>What no automated test can show is how each step sounds with a screen
+reader. The last column of each table says which steps still need a
+person with JAWS, NVDA or VoiceOver; those checks are listed together at
+the end.</p>
+<p>Written 2026-11-18, against <code>main</code> after pull request
+#1866.</p>
+<h2 id="gx01-open-a-github-reference">GX01: Open a GitHub reference</h2>
+<p><strong>The journey.</strong> Someone pastes a link from an email, a
+chat or a document: an issue, a pull request, a discussion, a commit, a
+branch, a file at a line, a release or a workflow run. QUILL opens the
+best native view at that exact place, even when it is not on the first
+page of its list, and anything it cannot show natively goes to the
+browser with a sentence saying why.</p>
+<p><strong>The failure it must survive.</strong> A malformed link, a
+link with a password or token in it, a link to an enterprise host, and a
+link that names an issue but is really a pull request.</p>
+<table>
+<thead>
+<tr>
+<th>Step or rule</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Every supported shape parses: repository, issue, pull request,
+discussion, commit, branch, file and line, release, workflow and
+run</td>
+<td><code>tests/unit/core/test_github_references.py::test_parses_supported_reference_shapes</code>;
+<code>test_ssh_remote_and_git_suffix_normalize_to_repository</code></td>
+</tr>
+<tr>
+<td>The native view is chosen by kind</td>
+<td><code>tests/unit/ui/test_github_reference_routing.py::test_reference_kind_selects_the_native_view</code></td>
+</tr>
+<tr>
+<td>An item outside the first page is still found</td>
+<td><code>test_direct_issue_reference_is_fetched_even_when_outside_first_page</code>;
+<code>test_release_reference_fetches_exact_tag_even_outside_recent_page</code></td>
+</tr>
+<tr>
+<td>An issue link that is a pull request opens the review</td>
+<td><code>test_issue_url_that_resolves_to_pull_request_opens_review_reader</code></td>
+</tr>
+<tr>
+<td>Exact commit, run and workflow</td>
+<td><code>test_commit_reference_fetches_the_exact_sha</code>;
+<code>test_workflow_run_reference_fetches_exact_run_id</code>;
+<code>test_workflow_definition_reference_fetches_workflow_file</code></td>
+</tr>
+<tr>
+<td>Unsupported objects fall back to the browser, safely</td>
+<td><code>test_unsupported_github_object_retains_a_safe_browser_fallback</code>;
+<code>test_discussions_are_native_and_comparisons_use_browser_fallback</code></td>
+</tr>
+<tr>
+<td>Malformed and credential-bearing links never send anything</td>
+<td><code>test_rejects_malformed_line_anchors</code>;
+<code>test_rejects_malformed_or_credential_bearing_references</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Still needs a person:</strong> that the place the view lands
+on is the place the screen reader announces first.</p>
+<h2 id="gx02-the-personal-attention-queue">GX02: The personal attention
+queue</h2>
+<p><strong>The journey.</strong> Needs My Attention &gt; Inbox brings
+together review requests, mentions, assignments and pull requests with
+failing checks, across the repositories the person chose, once each,
+saying where each came from and what changed since the last visit. Rows
+can be snoozed here without touching GitHub. Notifications sits beside
+it, with Done, Unsubscribe, Mark All Read and, since 2026-11-18, inbox
+rules.</p>
+<p><strong>The failure it must survive.</strong> A partial load must
+never look like an empty inbox, and loading must never mark anything
+read.</p>
+<table>
+<thead>
+<tr>
+<th>Step or rule</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sources combined and deduplicated, scoped to chosen
+repositories</td>
+<td><code>tests/unit/core/test_github_attention_queue.py::test_repository_scope_rejects_invalid_names_and_too_many_repositories</code>;
+<code>tests/unit/core/test_github_notification_triage.py::test_inbox_reads_pages_poll_interval_and_dedupes</code></td>
+</tr>
+<tr>
+<td>Saved filters and preferences per account</td>
+<td><code>test_queue_preferences_and_saved_filters_are_account_scoped</code></td>
+</tr>
+<tr>
+<td>Local snooze, expiring</td>
+<td><code>test_snoozes_expire_and_can_be_cleared_locally</code></td>
+</tr>
+<tr>
+<td>Since the last visit</td>
+<td><code>test_last_visit_only_marks_items_updated_after_the_previous_visit</code>;
+<code>tests/unit/ui/test_github_attention_queue_dialog.py::test_complete_queue_load_advances_last_visit</code></td>
+</tr>
+<tr>
+<td>A partial load keeps the previous visit and says it is partial</td>
+<td><code>test_partial_queue_load_hides_local_snoozes_and_keeps_previous_visit</code>;
+<code>tests/unit/ui/test_github_workbench_explore_nodes.py::test_a_first_page_that_is_not_everything_says_so</code></td>
+</tr>
+<tr>
+<td>Loading reads nothing as read; GitHub’s poll interval is kept</td>
+<td><code>test_poll_gate_waits_per_query</code>;
+<code>test_inbox_conditional_request_returns_not_modified</code></td>
+</tr>
+<tr>
+<td>Triage uses the documented endpoints and says what really
+happened</td>
+<td><code>test_done_unsubscribe_and_read_all_use_the_documented_endpoints</code>;
+<code>test_read_all_accepted_in_background_is_not_claimed_as_done</code></td>
+</tr>
+<tr>
+<td>Inbox rules act only as the person set them, and say what they
+did</td>
+<td><code>tests/unit/core/github_workbench/test_inbox_rules.py</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Still needs a person:</strong> the reason being read before
+the title on each row, at a natural speed.</p>
+<h2 id="gx03-context-preserving-navigation">GX03: Context-preserving
+navigation</h2>
+<p><strong>The journey.</strong> Moving around the Workbench never loses
+one’s place: Back and Forward (Alt+Left, Alt+Right) restore the view,
+its filter, grouping and the selected row; the Workbench reopens where
+it was left, per account; a drafted issue or review comes back after a
+crash; and every greyed command says what it needs.</p>
+<p><strong>The failure it must survive.</strong> Returning to a list
+after the results have changed, a different account, and a draft written
+against an older version of a pull request.</p>
+<table>
+<thead>
+<tr>
+<th>Step or rule</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Back and Forward restore the view and its filter</td>
+<td><code>test_back_and_forward_restore_repository_view_and_filters</code>;
+<code>test_back_forward_navigation_controls_are_named_and_stateful</code></td>
+</tr>
+<tr>
+<td>The selection comes back after a reload</td>
+<td><code>test_saved_selection_is_restored_after_results_load</code></td>
+</tr>
+<tr>
+<td>The place is remembered per account</td>
+<td><code>tests/unit/ui/test_github_workbench_phase3.py::test_the_place_is_remembered_per_account</code>;
+<code>test_restore_navigation_uses_the_same_account_and_repository</code></td>
+</tr>
+<tr>
+<td>Across Repositories: Enter then Back returns to the same row</td>
+<td><code>test_category_rows_keep_every_repository_and_enter_then_back_returns</code></td>
+</tr>
+<tr>
+<td>Drafts are recovered, and a review draft on an older head asks
+first</td>
+<td><code>test_issue_dialog_recovers_edits_and_discards_local_draft</code>;
+<code>test_review_draft_recovers_and_requires_confirmation_after_head_changes</code></td>
+</tr>
+<tr>
+<td>Every greyed command says why</td>
+<td><code>test_placeholders_explain_themselves_and_are_greyed</code>;
+the reasons tables in <code>quill/ui/github_workbench_*.py</code>,
+checked by
+<code>tests/unit/ui/test_github_workbench_merge.py::test_verbs_and_reasons_are_registered</code>
+and its neighbours</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Still needs a person:</strong> that returning from the
+browser or a nested window puts focus on the same row and the reader
+says it once.</p>
+<h2 id="gx04-ci-diagnosis">GX04: CI diagnosis</h2>
+<p><strong>The journey.</strong> A failed run: What Failed gives the
+failing steps, their annotations and the end of each log as one text;
+the jobs window has every attempt, every job and its full log; Re-run
+Failed Jobs runs only what failed; and since 2026-11-18 Follow This Job
+says each step of a running job as it happens.</p>
+<p><strong>The failure it must survive.</strong> A truncated or failed
+log read, an older result arriving after a newer one, and pressing
+Re-run twice.</p>
+<table>
+<thead>
+<tr>
+<th>Step or rule</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What Failed opens the digest for the run</td>
+<td><code>test_what_failed_opens_the_digest_for_the_selected_run</code>;
+<code>test_digest_dialog_shows_text_and_summary</code></td>
+</tr>
+<tr>
+<td>Source and truncation are said</td>
+<td><code>test_summary_presents_its_github_source_and_truncation_status</code></td>
+</tr>
+<tr>
+<td>Stale results are dropped</td>
+<td><code>test_workflow_jobs_ignores_older_list_and_log_results</code>;
+<code>test_a_stale_failure_is_dropped_too</code></td>
+</tr>
+<tr>
+<td>Re-run asks, reports what GitHub did, and is not claimed when it
+fails</td>
+<td><code>test_rerun_failed_cancel_and_approve_confirm_then_report_what_github_did</code>;
+<code>test_failure_is_reported_not_claimed_as_success</code></td>
+</tr>
+<tr>
+<td>A running job is followed step by step</td>
+<td><code>tests/unit/ui/test_github_workflow_job_follow.py</code>;
+<code>tests/unit/core/github_workbench/test_job_follow.py</code></td>
+</tr>
+<tr>
+<td>Live: re-run failed jobs, then delete the run</td>
+<td><code>docs/qa/github_live_verbs.py</code>,
+<code>rerun_failed_and_delete</code></td>
+</tr>
+<tr>
+<td>Re-run Failed Jobs pressed twice before GitHub answers sends one
+request</td>
+<td><code>tests/unit/ui/test_github_workbench_items_actions.py::test_a_second_rerun_while_the_first_is_on_its_way_sends_nothing</code></td>
+</tr>
+</tbody>
+</table>
+<p>Writing this journey down found that gap: a second press while the
+first request was still on its way sent a second re-run. It now says “A
+re-run of run #41, CI is already on its way to GitHub.” and sends
+nothing (<code>quill/ui/github_workbench_runs.py</code>,
+2026-11-18).</p>
+<h2 id="gx05-issue-intake-and-triage">GX05: Issue intake and triage</h2>
+<p><strong>The journey.</strong> New Issue offers the repository’s
+templates and forms, with required fields named as required; triage
+closes for a reason (completed, not planned, a duplicate of a numbered
+issue), labels, assigns, comments through the comment window with saved
+replies, and acts on many at once with a preview and a result per
+item.</p>
+<p><strong>The failure it must survive.</strong> A draft must never
+publish by itself, a duplicate suggestion must never close anything, and
+every batch item reports its own result.</p>
+<table>
+<thead>
+<tr>
+<th>Step or rule</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Templates and forms, required fields named</td>
+<td><code>test_new_issue_uses_the_selected_repository_template</code>;
+<code>test_required_fields_say_so_in_their_names</code>;
+<code>test_new_issue_submits_edited_template_metadata</code></td>
+</tr>
+<tr>
+<td>A form the builder cannot read is kept, not lost</td>
+<td><code>test_a_broken_form_opens_as_source_without_losing_it</code></td>
+</tr>
+<tr>
+<td>Close as a duplicate needs the original, and nothing is sent without
+it</td>
+<td><code>test_a_duplicate_asks_for_the_original_by_number</code>;
+<code>test_a_duplicate_without_a_number_sends_nothing</code></td>
+</tr>
+<tr>
+<td>Saved replies and the rest of the comment window</td>
+<td><code>tests/unit/ui/test_github_comment_composer.py</code></td>
+</tr>
+<tr>
+<td>Batch results per item</td>
+<td><code>tests/unit/ui/test_github_workbench_import.py</code>; the
+Across Repositories batch tests</td>
+</tr>
+<tr>
+<td>Live: close for each reason, labels, assignees, comments</td>
+<td><code>docs/qa/github_live_verbs.py</code>,
+<code>close_reopen</code>, <code>labels</code>, <code>assignees</code>,
+<code>comment</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Still needs a person:</strong> the issue form read field by
+field, and the duplicate question’s wording.</p>
+<h2 id="gx06-projects-and-dependencies">GX06: Projects and
+dependencies</h2>
+<p><strong>The journey.</strong> An issue’s sheet shows every project it
+is in and every field there, editable; sub-issues are listed in order
+and can be reordered; blocked and blocking are on the Relationships
+page; task-list lines become sub-issues; and Next Unblocked goes to the
+next thing that can be started.</p>
+<p><strong>The failure it must survive.</strong> Fields a token cannot
+edit, and a board read in a linear order a screen reader can follow.</p>
+<table>
+<thead>
+<tr>
+<th>Step or rule</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Projects on the sheet, added and removed with GraphQL</td>
+<td><code>test_projects_on_the_sheet_add_and_remove_with_the_graphql_mutations</code></td>
+</tr>
+<tr>
+<td>Dependencies and progress explained on the row</td>
+<td><code>test_project_item_label_and_details_explain_dependencies_and_progress</code></td>
+</tr>
+<tr>
+<td>Sub-issues reordered, and the order read back</td>
+<td><code>test_sub_issue_dialog_moves_and_says_where_it_landed</code>;
+<code>test_sub_issue_moves_and_the_order_is_read_back</code></td>
+</tr>
+<tr>
+<td>Task lines become sub-issues</td>
+<td><code>test_convert_makes_sub_issues_and_links_each_line</code>;
+<code>test_issues_from_lines_makes_sub_issues</code></td>
+</tr>
+<tr>
+<td>Live: sub-issues</td>
+<td><code>docs/qa/github_live_verbs.py</code>, <code>sub_issues</code>,
+<code>task_lists</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Still needs a person:</strong> a project board of fifty items
+read in order.</p>
+<h2 id="gx07-local-repository-continuity">GX07: Local repository
+continuity</h2>
+<p><strong>The journey.</strong> From an issue, Start in Local Worktree
+makes a named branch in a folder of its own after checking the checkout;
+a fork’s upstream is known; ahead and behind are said for branches; and
+since 2026-11-17 a pull request’s conflicts can be resolved in a
+worktree of their own.</p>
+<p><strong>The failure it must survive.</strong> Dirty files are never
+overwritten, a checkout of another repository is refused, and nothing
+from remote content is run as a command.</p>
+<table>
+<thead>
+<tr>
+<th>Step or rule</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The worktree hand-off keeps dirty changes where they are</td>
+<td><code>tests/unit/ui/test_github_issue_worktree_handoff.py::test_issue_handoff_uses_matching_upstream_and_keeps_dirty_changes_in_place</code></td>
+</tr>
+<tr>
+<td>A checkout of another repository is refused</td>
+<td><code>test_issue_handoff_refuses_a_checkout_for_an_unrelated_repository</code>;
+<code>test_resolve_conflicts_needs_a_checkout_of_that_repository</code></td>
+</tr>
+<tr>
+<td>Conflicts are merged in a new folder, nothing committed</td>
+<td><code>test_resolve_conflicts_merges_in_a_new_folder_and_walks_each_file</code>;
+<code>tests/unit/core/github_workbench/test_pull_tools.py::test_conflicts_land_in_a_new_worktree_and_are_listed</code></td>
+</tr>
+<tr>
+<td>A branch name that could be a git option is refused</td>
+<td><code>test_branch_names_that_could_be_options_are_refused</code></td>
+</tr>
+<tr>
+<td>Upstream and ahead and behind</td>
+<td><code>test_upstream_button_enabled_for_a_fork_and_announces</code>;
+<code>test_the_compare_direction_is_swapped_into_ahead_and_behind</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Still needs a person:</strong> the worktree confirmation read
+in full, and the Resolve Conflicts walk on a real conflict.</p>
+<h2 id="gx08-deep-accessible-review">GX08: Deep accessible review</h2>
+<p><strong>The journey.</strong> The review window’s outline of files,
+threads and checks; Next Unresolved; changes since my last review; files
+marked viewed; pending line comments and a review draft; suggestions;
+and in the diff window, Changed Lines Only, the line sounds, Hide
+Whitespace Changes and one commit at a time.</p>
+<p><strong>The failure it must survive.</strong> Renamed, deleted,
+binary and very large files, outdated threads, and a patch GitHub does
+not send.</p>
+<table>
+<thead>
+<tr>
+<th>Step or rule</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Next Unresolved</td>
+<td><code>test_next_unresolved_selects_the_next_known_unresolved_thread</code></td>
+</tr>
+<tr>
+<td>Outdated threads are marked</td>
+<td><code>test_thread_header_carries_place_author_replies_and_outdated</code>;
+<code>test_fetch_review_threads_maps_outdated_from_missing_position</code></td>
+</tr>
+<tr>
+<td>Binary content is refused clearly, and the patch is the
+fallback</td>
+<td><code>test_fetch_file_text_rejects_binary_clearly</code>;
+<code>test_selecting_a_file_falls_back_to_patch_on_fetch_error</code></td>
+</tr>
+<tr>
+<td>Viewed files</td>
+<td><code>tests/unit/core/github_workbench/test_review_viewed.py</code></td>
+</tr>
+<tr>
+<td>Changed lines only, line sounds, whitespace, one commit</td>
+<td><code>tests/unit/ui/test_github_wave2_review_ui.py</code></td>
+</tr>
+<tr>
+<td>The whole patch names files with no text</td>
+<td><code>tests/unit/core/github_workbench/test_pull_tools.py::test_patch_is_one_unified_diff_with_every_kind_of_file</code></td>
+</tr>
+<tr>
+<td>A review draft on an older head asks before it is used</td>
+<td><code>test_review_draft_recovers_and_requires_confirmation_after_head_changes</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Still needs a person:</strong> the line sounds at speed, and
+the outline with a large pull request.</p>
+<h2 id="the-checks-that-need-a-screen-reader">The checks that need a
+screen reader</h2>
+<p>These are added to
+<code>docs/qa/screen-reader-checks-2026-10.md</code>’s way of working:
+one person, one reader, the steps above, and a note of anything said
+twice, said late or not said.</p>
+<ol type="1">
+<li>GX01: the first thing announced after opening a pasted link.</li>
+<li>GX02: an Inbox row read at normal speed, reason before title.</li>
+<li>GX03: focus and announcement after returning from the browser.</li>
+<li>GX04: Follow This Job while a real job runs, and the end of the
+job.</li>
+<li>GX05: an issue form, field by field; the duplicate question.</li>
+<li>GX06: a project board of fifty items in reading order.</li>
+<li>GX07: the worktree and conflict confirmations read in full.</li>
+<li>GX08: the line sounds while arrowing quickly; a large outline.</li>
+</ol>
+</main>
+</body>
+</html>

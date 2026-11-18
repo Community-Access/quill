@@ -17513,6 +17513,13 @@ and `pull_commits` and `commit_diff` (a `GitHubPullDiff` of one commit against
 its first parent), read off the UI thread with a `TokenApi` from the
 provider's token.
 
+**GitHub journeys GX01 to GX08 (2026-11-18).** `docs/qa/github-journeys.md`
+writes each journey down as a person walks it, with its failure case and the
+tests that show both, and lists the screen-reader checks still owed. Writing
+GX04 down found that Re-run Failed Jobs pressed twice before GitHub answered
+sent two requests; `_do_rerun_failed` now keeps the runs it is sending and
+says the second press is already on its way.
+
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and
 `tests/unit/docs/test_github_live_run_coverage.py` fails when a write command
