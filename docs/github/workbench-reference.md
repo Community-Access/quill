@@ -943,7 +943,7 @@ Keys the window answers that are not menu rows:
 - **webhook**: Show Details, Ping, Recent Deliveries..., Change Address or Secret..., Delete Webhook..., Open on GitHub; Properties...
 - **deploy_key**: Show Details, Delete Deploy Key..., Open on GitHub; Properties...
 - **autolink**: Show Details, Delete Autolink..., Open on GitHub; Properties...
-- **resource**: Show Details, Change..., Delete..., Open on GitHub, Copy Link; Properties...
+- **resource**: Show Details, Change..., Repositories Allowed..., Delete..., Open on GitHub, Copy Link; Properties...
 - **wiki**: Open on GitHub, Clone Wiki..., Copy Link; Properties...
 - **sponsorship**: Show Details, Cancel Sponsorship..., Open on GitHub; Properties...
 - **sponsor_tier**: Show Details, Sponsor at This Tier..., Open on GitHub; Properties...
@@ -1047,7 +1047,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 477 yes, 583 planned, 209 not needed and 735 left to GitHub.
+In all: 501 yes, 551 planned, 217 not needed and 735 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1055,7 +1055,7 @@ In all: 477 yes, 583 planned, 209 not needed and 735 left to GitHub.
 
 #### Actions
 
-208 operations: 68 yes, 83 planned, 13 not needed, 44 left to github.
+208 operations: 77 yes, 71 planned, 16 not needed, 44 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1126,10 +1126,10 @@ In all: 477 yes, 583 planned, 209 not needed and 735 left to GitHub.
 | Get a self-hosted runner group for an organization | `GET /orgs/{org}/actions/runner-groups/{runner_group_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Update a self-hosted runner group for an organization | `PATCH /orgs/{org}/actions/runner-groups/{runner_group_id}` | Yes | context menu > Change... |
 | List GitHub-hosted runners in a group for an organization | `GET /orgs/{org}/actions/runner-groups/{runner_group_id}/hosted-runners` | Planned | Runner group sheet. |
-| List repository access to a self-hosted runner group in an organization | `GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories` | Planned | Runner group sheet. |
-| Set repository access for a self-hosted runner group in an organization | `PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories` | Planned | Runner group sheet. |
-| Remove repository access to a self-hosted runner group in an organization | `DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories/{repository_id}` | Planned | Runner group sheet. |
-| Add repository access to a self-hosted runner group in an organization | `PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories/{repository_id}` | Planned | Runner group sheet. |
+| List repository access to a self-hosted runner group in an organization | `GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories` | Yes | context menu > Repositories Allowed... |
+| Set repository access for a self-hosted runner group in an organization | `PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories` | Not needed | Replaces the whole list at once; Repositories Allowed adds and removes one repository at a time instead, so a change somebody else makes meanwhile is kept. |
+| Remove repository access to a self-hosted runner group in an organization | `DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
+| Add repository access to a self-hosted runner group in an organization | `PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
 | List self-hosted runners in a group for an organization | `GET /orgs/{org}/actions/runner-groups/{runner_group_id}/runners` | Planned | Runner group sheet. |
 | Set self-hosted runners in a group for an organization | `PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/runners` | Planned | Runner group sheet. |
 | Remove a self-hosted runner from a group for an organization | `DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}/runners/{runner_id}` | Planned | Runner group sheet. |
@@ -1152,19 +1152,19 @@ In all: 477 yes, 583 planned, 209 not needed and 735 left to GitHub.
 | Delete an organization secret | `DELETE /orgs/{org}/actions/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get an organization secret | `GET /orgs/{org}/actions/secrets/{secret_name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Create or update an organization secret | `PUT /orgs/{org}/actions/secrets/{secret_name}` | Yes | Navigator: Organization > organization > Actions Secrets |
-| List selected repositories for an organization secret | `GET /orgs/{org}/actions/secrets/{secret_name}/repositories` | Planned | Secret and variable sheets (write-only values). |
-| Set selected repositories for an organization secret | `PUT /orgs/{org}/actions/secrets/{secret_name}/repositories` | Planned | Secret and variable sheets (write-only values). |
-| Remove selected repository from an organization secret | `DELETE /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}` | Planned | Secret and variable sheets (write-only values). |
-| Add selected repository to an organization secret | `PUT /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}` | Planned | Secret and variable sheets (write-only values). |
+| List selected repositories for an organization secret | `GET /orgs/{org}/actions/secrets/{secret_name}/repositories` | Yes | context menu > Repositories Allowed... |
+| Set selected repositories for an organization secret | `PUT /orgs/{org}/actions/secrets/{secret_name}/repositories` | Not needed | Replaces the whole list at once; Repositories Allowed adds and removes one repository at a time instead, so a change somebody else makes meanwhile is kept. |
+| Remove selected repository from an organization secret | `DELETE /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
+| Add selected repository to an organization secret | `PUT /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
 | List organization variables | `GET /orgs/{org}/actions/variables` | Yes | Properties (Alt+Enter) on Organization |
 | Create an organization variable | `POST /orgs/{org}/actions/variables` | Yes | Navigator: Organization > organization > Actions Variables |
 | Delete an organization variable | `DELETE /orgs/{org}/actions/variables/{name}` | Yes | context menu > Delete... |
 | Get an organization variable | `GET /orgs/{org}/actions/variables/{name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Update an organization variable | `PATCH /orgs/{org}/actions/variables/{name}` | Yes | context menu > Change... |
-| List selected repositories for an organization variable | `GET /orgs/{org}/actions/variables/{name}/repositories` | Planned | Secret and variable sheets. |
-| Set selected repositories for an organization variable | `PUT /orgs/{org}/actions/variables/{name}/repositories` | Planned | Secret and variable sheets. |
-| Remove selected repository from an organization variable | `DELETE /orgs/{org}/actions/variables/{name}/repositories/{repository_id}` | Planned | Secret and variable sheets. |
-| Add selected repository to an organization variable | `PUT /orgs/{org}/actions/variables/{name}/repositories/{repository_id}` | Planned | Secret and variable sheets. |
+| List selected repositories for an organization variable | `GET /orgs/{org}/actions/variables/{name}/repositories` | Yes | context menu > Repositories Allowed... |
+| Set selected repositories for an organization variable | `PUT /orgs/{org}/actions/variables/{name}/repositories` | Not needed | Replaces the whole list at once; Repositories Allowed adds and removes one repository at a time instead, so a change somebody else makes meanwhile is kept. |
+| Remove selected repository from an organization variable | `DELETE /orgs/{org}/actions/variables/{name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
+| Add selected repository to an organization variable | `PUT /orgs/{org}/actions/variables/{name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
 | List artifacts for a repository | `GET /repos/{owner}/{repo}/actions/artifacts` | Yes | Navigator: Repository > owner/name > Actions > Artifacts |
 | Delete an artifact | `DELETE /repos/{owner}/{repo}/actions/artifacts/{artifact_id}` | Yes | context menu > Delete... |
 | Get an artifact | `GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}` | Yes | Properties (Alt+Enter) on Artifact |
@@ -1342,7 +1342,7 @@ In all: 477 yes, 583 planned, 209 not needed and 735 left to GitHub.
 
 #### Agents
 
-30 operations: 16 yes, 10 planned, 4 not needed.
+30 operations: 22 yes, 2 planned, 6 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1351,19 +1351,19 @@ In all: 477 yes, 583 planned, 209 not needed and 735 left to GitHub.
 | Delete an organization secret | `DELETE /orgs/{org}/agents/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get an organization secret | `GET /orgs/{org}/agents/secrets/{secret_name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Create or update an organization secret | `PUT /orgs/{org}/agents/secrets/{secret_name}` | Yes | Navigator: Organization > organization > Copilot Agent Secrets |
-| List selected repositories for an organization secret | `GET /orgs/{org}/agents/secrets/{secret_name}/repositories` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Set selected repositories for an organization secret | `PUT /orgs/{org}/agents/secrets/{secret_name}/repositories` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Remove selected repository from an organization secret | `DELETE /orgs/{org}/agents/secrets/{secret_name}/repositories/{repository_id}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Add selected repository to an organization secret | `PUT /orgs/{org}/agents/secrets/{secret_name}/repositories/{repository_id}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
+| List selected repositories for an organization secret | `GET /orgs/{org}/agents/secrets/{secret_name}/repositories` | Yes | context menu > Repositories Allowed... |
+| Set selected repositories for an organization secret | `PUT /orgs/{org}/agents/secrets/{secret_name}/repositories` | Not needed | Replaces the whole list at once; Repositories Allowed adds and removes one repository at a time instead, so a change somebody else makes meanwhile is kept. |
+| Remove selected repository from an organization secret | `DELETE /orgs/{org}/agents/secrets/{secret_name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
+| Add selected repository to an organization secret | `PUT /orgs/{org}/agents/secrets/{secret_name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
 | List organization variables | `GET /orgs/{org}/agents/variables` | Yes | Navigator: Organization > organization > Copilot Agent Variables |
 | Create an organization variable | `POST /orgs/{org}/agents/variables` | Yes | Navigator: Organization > organization > Copilot Agent Variables |
 | Delete an organization variable | `DELETE /orgs/{org}/agents/variables/{name}` | Yes | context menu > Delete... |
 | Get an organization variable | `GET /orgs/{org}/agents/variables/{name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Update an organization variable | `PATCH /orgs/{org}/agents/variables/{name}` | Yes | context menu > Change... |
-| List selected repositories for an organization variable | `GET /orgs/{org}/agents/variables/{name}/repositories` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Set selected repositories for an organization variable | `PUT /orgs/{org}/agents/variables/{name}/repositories` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Remove selected repository from an organization variable | `DELETE /orgs/{org}/agents/variables/{name}/repositories/{repository_id}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Add selected repository to an organization variable | `PUT /orgs/{org}/agents/variables/{name}/repositories/{repository_id}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
+| List selected repositories for an organization variable | `GET /orgs/{org}/agents/variables/{name}/repositories` | Yes | context menu > Repositories Allowed... |
+| Set selected repositories for an organization variable | `PUT /orgs/{org}/agents/variables/{name}/repositories` | Not needed | Replaces the whole list at once; Repositories Allowed adds and removes one repository at a time instead, so a change somebody else makes meanwhile is kept. |
+| Remove selected repository from an organization variable | `DELETE /orgs/{org}/agents/variables/{name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
+| Add selected repository to an organization variable | `PUT /orgs/{org}/agents/variables/{name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
 | List repository organization secrets | `GET /repos/{owner}/{repo}/agents/organization-secrets` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
 | List repository organization variables | `GET /repos/{owner}/{repo}/agents/organization-variables` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
 | List repository secrets | `GET /repos/{owner}/{repo}/agents/secrets` | Yes | Navigator: Repository > owner/name > Settings > Copilot Agent Secrets |
@@ -1611,7 +1611,7 @@ In all: 477 yes, 583 planned, 209 not needed and 735 left to GitHub.
 
 #### Codespaces
 
-48 operations: 14 yes, 24 planned, 3 not needed, 7 left to github.
+48 operations: 20 yes, 16 planned, 5 not needed, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1624,10 +1624,10 @@ In all: 477 yes, 583 planned, 209 not needed and 735 left to GitHub.
 | Delete an organization secret | `DELETE /orgs/{org}/codespaces/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get an organization secret | `GET /orgs/{org}/codespaces/secrets/{secret_name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Create or update an organization secret | `PUT /orgs/{org}/codespaces/secrets/{secret_name}` | Yes | Navigator: Organization > organization > Codespaces Secrets |
-| List selected repositories for an organization secret | `GET /orgs/{org}/codespaces/secrets/{secret_name}/repositories` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Set selected repositories for an organization secret | `PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Remove selected repository from an organization secret | `DELETE /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Add selected repository to an organization secret | `PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| List selected repositories for an organization secret | `GET /orgs/{org}/codespaces/secrets/{secret_name}/repositories` | Yes | context menu > Repositories Allowed... |
+| Set selected repositories for an organization secret | `PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories` | Not needed | Replaces the whole list at once; Repositories Allowed adds and removes one repository at a time instead, so a change somebody else makes meanwhile is kept. |
+| Remove selected repository from an organization secret | `DELETE /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
+| Add selected repository to an organization secret | `PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
 | List codespaces for a user in organization | `GET /orgs/{org}/members/{username}/codespaces` | Left to GitHub | Who in an organization may use Codespaces, and who pays, is billing administration on GitHub's site. |
 | Delete a codespace from the organization | `DELETE /orgs/{org}/members/{username}/codespaces/{codespace_name}` | Left to GitHub | Who in an organization may use Codespaces, and who pays, is billing administration on GitHub's site. |
 | Stop a codespace for an organization user | `POST /orgs/{org}/members/{username}/codespaces/{codespace_name}/stop` | Left to GitHub | Who in an organization may use Codespaces, and who pays, is billing administration on GitHub's site. |
@@ -1650,10 +1650,10 @@ In all: 477 yes, 583 planned, 209 not needed and 735 left to GitHub.
 | Delete a secret for the authenticated user | `DELETE /user/codespaces/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get a secret for the authenticated user | `GET /user/codespaces/secrets/{secret_name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Create or update a secret for the authenticated user | `PUT /user/codespaces/secrets/{secret_name}` | Yes | Navigator: People > My Codespaces Secrets |
-| List selected repositories for a user secret | `GET /user/codespaces/secrets/{secret_name}/repositories` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Set selected repositories for a user secret | `PUT /user/codespaces/secrets/{secret_name}/repositories` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Remove a selected repository from a user secret | `DELETE /user/codespaces/secrets/{secret_name}/repositories/{repository_id}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Add a selected repository to a user secret | `PUT /user/codespaces/secrets/{secret_name}/repositories/{repository_id}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| List selected repositories for a user secret | `GET /user/codespaces/secrets/{secret_name}/repositories` | Yes | context menu > Repositories Allowed... |
+| Set selected repositories for a user secret | `PUT /user/codespaces/secrets/{secret_name}/repositories` | Not needed | Replaces the whole list at once; Repositories Allowed adds and removes one repository at a time instead, so a change somebody else makes meanwhile is kept. |
+| Remove a selected repository from a user secret | `DELETE /user/codespaces/secrets/{secret_name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
+| Add a selected repository to a user secret | `PUT /user/codespaces/secrets/{secret_name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
 | Delete a codespace for the authenticated user | `DELETE /user/codespaces/{codespace_name}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
 | Get a codespace for the authenticated user | `GET /user/codespaces/{codespace_name}` | Yes | Properties (Alt+Enter) on Codespace |
 | Update a codespace for the authenticated user | `PATCH /user/codespaces/{codespace_name}` | Yes | Properties (Alt+Enter) on Codespace: Display name |
@@ -1799,7 +1799,7 @@ In all: 477 yes, 583 planned, 209 not needed and 735 left to GitHub.
 
 #### Dependabot
 
-27 operations: 10 yes, 8 planned, 3 not needed, 6 left to github.
+27 operations: 13 yes, 4 planned, 4 not needed, 6 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1816,10 +1816,10 @@ In all: 477 yes, 583 planned, 209 not needed and 735 left to GitHub.
 | Delete an organization secret | `DELETE /orgs/{org}/dependabot/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get an organization secret | `GET /orgs/{org}/dependabot/secrets/{secret_name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Create or update an organization secret | `PUT /orgs/{org}/dependabot/secrets/{secret_name}` | Yes | Navigator: Organization > organization > Dependabot Secrets |
-| List selected repositories for an organization secret | `GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
-| Set selected repositories for an organization secret | `PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
-| Remove selected repository from an organization secret | `DELETE /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
-| Add selected repository to an organization secret | `PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
+| List selected repositories for an organization secret | `GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories` | Yes | context menu > Repositories Allowed... |
+| Set selected repositories for an organization secret | `PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories` | Not needed | Replaces the whole list at once; Repositories Allowed adds and removes one repository at a time instead, so a change somebody else makes meanwhile is kept. |
+| Remove selected repository from an organization secret | `DELETE /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
+| Add selected repository to an organization secret | `PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
 | List Dependabot alerts for a repository | `GET /repos/{owner}/{repo}/dependabot/alerts` | Yes | Navigator: Repository > owner/name > Security > Alerts |
 | Get a Dependabot alert | `GET /repos/{owner}/{repo}/dependabot/alerts/{alert_number}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Update a Dependabot alert | `PATCH /repos/{owner}/{repo}/dependabot/alerts/{alert_number}` | Yes | context menu > Dismiss or Reopen Alert... |

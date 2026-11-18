@@ -19,12 +19,17 @@ RESOURCE_VERBS: dict[str, frozenset[str]] = {
     "resource_new": frozenset({"view"}),
     "resource_edit": frozenset({"resource"}),
     "resource_delete": frozenset({"resource"}),
+    "resource_repositories": frozenset({"resource"}),
 }
 
 RESOURCE_REASONS: dict[str, str] = {
     "resource_new": "New Here adds to this list, while you are signed in.",
     "resource_edit": "Change is for a row GitHub lets you change.",
     "resource_delete": "Delete is for a row GitHub lets you delete.",
+    "resource_repositories": (
+        "Repositories Allowed is for an organization's secret, variable or runner group, "
+        "or one of your Codespaces secrets."
+    ),
 }
 
 
@@ -68,6 +73,10 @@ class GitHubWorkbenchResourcesMixin:
     def _fits_resource_delete(self, row: object) -> bool:
         spec, _item = self._row_spec(row)
         return self.signed_in and spec is not None and spec.delete
+
+    def _fits_resource_repositories(self, row: object) -> bool:
+        spec, _item = self._row_spec(row)
+        return self.signed_in and spec is not None and bool(spec.repositories)
 
     # -- asking ----------------------------------------------------------------------------
 
@@ -157,3 +166,60 @@ class GitHubWorkbenchResourcesMixin:
             lambda: delete(api, spec, target, item_id),
             self._then_reload_said,
         )
+
+    # -- which repositories may use it -------------------------------------------------------
+
+    def _choose_repositories(
+        self, title: str, prompt: str, labels: list[str], checked: set[int]
+    ) -> list[int] | None:
+        """The checked rows' positions, or None when cancelled (unchecking all is an answer)."""
+        from quill.ui.dialog_contract import show_modal_dialog
+
+        wx = self.frame._wx
+        with wx.MultiChoiceDialog(self.frame.frame, prompt, title, labels) as box:
+            box.SetName(title)
+            box.SetSelections(sorted(checked))
+            if show_modal_dialog(box, title) != wx.ID_OK:
+                return None
+            return [int(i) for i in box.GetSelections()]
+
+    def _do_resource_repositories(self, ref: Any, row: object) -> None:
+        from quill.core.github.resource_engine import (
+            allowed_repositories,
+            candidate_repositories,
+            set_repositories,
+        )
+
+        spec, item_id = self._row_spec(row)
+        if spec is None:
+            return
+        api, target = self.github_api(), ref.instance
+
+        def read() -> Any:
+            return allowed_repositories(api, spec, target, item_id), candidate_repositories(
+                api, spec, target
+            )
+
+        def chosen(found: Any) -> None:
+            had, choices = found
+            known = {repo.id for repo in choices}
+            choices = choices + [repo for repo in had if repo.id not in known]
+            labels = [repo.name for repo in choices]
+            ids = {repo.id for repo in had}
+            title = f"Repositories Allowed: {item_id}"
+            picked = self._choose_repositories(
+                title,
+                f"Check each repository that may use the {spec.noun} {item_id}:",
+                labels,
+                {i for i, repo in enumerate(choices) if repo.id in ids},
+            )
+            if picked is None:
+                return
+            wanted = [choices[i] for i in picked]
+            self._background(
+                f"change which repositories may use {item_id}",
+                lambda: set_repositories(api, spec, target, item_id, had, wanted),
+                self._then_reload_said,
+            )
+
+        self._background(f"read which repositories may use {item_id}", read, chosen)

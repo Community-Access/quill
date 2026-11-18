@@ -3354,6 +3354,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Change.** Change what GitHub lets you change.
 
+**Repositories Allowed.** Choose which repositories may use it.
+
 **Delete.** Remove it; asks first.
 
 **Clone Wiki.** Copy its pages to a folder, to edit them.

@@ -119,6 +119,13 @@ ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
     "resource": (
         _default("show_details", "Show Details", "Everything GitHub says about it."),
         _a("resource_edit", "Change...", _W, "sign_in", "Change what GitHub lets you change."),
+        _a(
+            "resource_repositories",
+            "Repositories Allowed...",
+            _W,
+            "sign_in",
+            "Choose which repositories may use it.",
+        ),
         _a("resource_delete", "Delete...", _D, "sign_in", "Remove it; asks first."),
         _OPEN_WEB,
         _COPY_LINK,

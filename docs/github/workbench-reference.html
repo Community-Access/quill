@@ -2999,8 +2999,8 @@ Properties…</li>
 on GitHub; Properties…</li>
 <li><strong>autolink</strong>: Show Details, Delete Autolink…, Open on
 GitHub; Properties…</li>
-<li><strong>resource</strong>: Show Details, Change…, Delete…, Open on
-GitHub, Copy Link; Properties…</li>
+<li><strong>resource</strong>: Show Details, Change…, Repositories
+Allowed…, Delete…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>wiki</strong>: Open on GitHub, Clone Wiki…, Copy Link;
 Properties…</li>
 <li><strong>sponsorship</strong>: Show Details, Cancel Sponsorship…,
@@ -3276,14 +3276,14 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 477 yes, 583 planned, 209 not needed and 735 left to
+<p>In all: 501 yes, 551 planned, 217 not needed and 735 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
 is planned under Repository &gt; Wiki.</p>
 <h3 id="rest-operations-by-category">REST operations, by category</h3>
 <h4 id="actions">Actions</h4>
-<p>208 operations: 68 yes, 83 planned, 13 not needed, 44 left to
+<p>208 operations: 77 yes, 71 planned, 16 not needed, 44 left to
 github.</p>
 <table>
 <thead>
@@ -3761,29 +3761,31 @@ reads the list.</td>
 <td>List repository access to a self-hosted runner group in an
 organization</td>
 <td><code>GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories</code></td>
-<td>Planned</td>
-<td>Runner group sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Set repository access for a self-hosted runner group in an
 organization</td>
 <td><code>PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories</code></td>
-<td>Planned</td>
-<td>Runner group sheet.</td>
+<td>Not needed</td>
+<td>Replaces the whole list at once; Repositories Allowed adds and
+removes one repository at a time instead, so a change somebody else
+makes meanwhile is kept.</td>
 </tr>
 <tr>
 <td>Remove repository access to a self-hosted runner group in an
 organization</td>
 <td><code>DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Runner group sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Add repository access to a self-hosted runner group in an
 organization</td>
 <td><code>PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Runner group sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>List self-hosted runners in a group for an organization</td>
@@ -3925,26 +3927,28 @@ reads the list.</td>
 <tr>
 <td>List selected repositories for an organization secret</td>
 <td><code>GET /orgs/{org}/actions/secrets/{secret_name}/repositories</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Set selected repositories for an organization secret</td>
 <td><code>PUT /orgs/{org}/actions/secrets/{secret_name}/repositories</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Not needed</td>
+<td>Replaces the whole list at once; Repositories Allowed adds and
+removes one repository at a time instead, so a change somebody else
+makes meanwhile is kept.</td>
 </tr>
 <tr>
 <td>Remove selected repository from an organization secret</td>
 <td><code>DELETE /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Add selected repository to an organization secret</td>
 <td><code>PUT /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>List organization variables</td>
@@ -3981,26 +3985,28 @@ reads the list.</td>
 <tr>
 <td>List selected repositories for an organization variable</td>
 <td><code>GET /orgs/{org}/actions/variables/{name}/repositories</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Set selected repositories for an organization variable</td>
 <td><code>PUT /orgs/{org}/actions/variables/{name}/repositories</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Not needed</td>
+<td>Replaces the whole list at once; Repositories Allowed adds and
+removes one repository at a time instead, so a change somebody else
+makes meanwhile is kept.</td>
 </tr>
 <tr>
 <td>Remove selected repository from an organization variable</td>
 <td><code>DELETE /orgs/{org}/actions/variables/{name}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Add selected repository to an organization variable</td>
 <td><code>PUT /orgs/{org}/actions/variables/{name}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>List artifacts for a repository</td>
@@ -5007,7 +5013,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="agents">Agents</h4>
-<p>30 operations: 16 yes, 10 planned, 4 not needed.</p>
+<p>30 operations: 22 yes, 2 planned, 6 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -5055,30 +5061,28 @@ Secrets</td>
 <tr>
 <td>List selected repositories for an organization secret</td>
 <td><code>GET /orgs/{org}/agents/secrets/{secret_name}/repositories</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Set selected repositories for an organization secret</td>
 <td><code>PUT /orgs/{org}/agents/secrets/{secret_name}/repositories</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Not needed</td>
+<td>Replaces the whole list at once; Repositories Allowed adds and
+removes one repository at a time instead, so a change somebody else
+makes meanwhile is kept.</td>
 </tr>
 <tr>
 <td>Remove selected repository from an organization secret</td>
 <td><code>DELETE /orgs/{org}/agents/secrets/{secret_name}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Add selected repository to an organization secret</td>
 <td><code>PUT /orgs/{org}/agents/secrets/{secret_name}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>List organization variables</td>
@@ -5116,30 +5120,28 @@ reads the list.</td>
 <tr>
 <td>List selected repositories for an organization variable</td>
 <td><code>GET /orgs/{org}/agents/variables/{name}/repositories</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Set selected repositories for an organization variable</td>
 <td><code>PUT /orgs/{org}/agents/variables/{name}/repositories</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Not needed</td>
+<td>Replaces the whole list at once; Repositories Allowed adds and
+removes one repository at a time instead, so a change somebody else
+makes meanwhile is kept.</td>
 </tr>
 <tr>
 <td>Remove selected repository from an organization variable</td>
 <td><code>DELETE /orgs/{org}/agents/variables/{name}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Add selected repository to an organization variable</td>
 <td><code>PUT /orgs/{org}/agents/variables/{name}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>List repository organization secrets</td>
@@ -6497,7 +6499,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="codespaces">Codespaces</h4>
-<p>48 operations: 14 yes, 24 planned, 3 not needed, 7 left to
+<p>48 operations: 20 yes, 16 planned, 5 not needed, 7 left to
 github.</p>
 <table>
 <thead>
@@ -6574,30 +6576,28 @@ Secrets</td>
 <tr>
 <td>List selected repositories for an organization secret</td>
 <td><code>GET /orgs/{org}/codespaces/secrets/{secret_name}/repositories</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Set selected repositories for an organization secret</td>
 <td><code>PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Not needed</td>
+<td>Replaces the whole list at once; Repositories Allowed adds and
+removes one repository at a time instead, so a change somebody else
+makes meanwhile is kept.</td>
 </tr>
 <tr>
 <td>Remove selected repository from an organization secret</td>
 <td><code>DELETE /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Add selected repository to an organization secret</td>
 <td><code>PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>List codespaces for a user in organization</td>
@@ -6753,30 +6753,28 @@ reads the list.</td>
 <tr>
 <td>List selected repositories for a user secret</td>
 <td><code>GET /user/codespaces/secrets/{secret_name}/repositories</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Set selected repositories for a user secret</td>
 <td><code>PUT /user/codespaces/secrets/{secret_name}/repositories</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Not needed</td>
+<td>Replaces the whole list at once; Repositories Allowed adds and
+removes one repository at a time instead, so a change somebody else
+makes meanwhile is kept.</td>
 </tr>
 <tr>
 <td>Remove a selected repository from a user secret</td>
 <td><code>DELETE /user/codespaces/secrets/{secret_name}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Add a selected repository to a user secret</td>
 <td><code>PUT /user/codespaces/secrets/{secret_name}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Delete a codespace for the authenticated user</td>
@@ -7596,7 +7594,7 @@ people.</td>
 </tbody>
 </table>
 <h4 id="dependabot">Dependabot</h4>
-<p>27 operations: 10 yes, 8 planned, 3 not needed, 6 left to github.</p>
+<p>27 operations: 13 yes, 4 planned, 4 not needed, 6 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -7705,30 +7703,28 @@ Secrets</td>
 <tr>
 <td>List selected repositories for an organization secret</td>
 <td><code>GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Set selected repositories for an organization secret</td>
 <td><code>PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Not needed</td>
+<td>Replaces the whole list at once; Repositories Allowed adds and
+removes one repository at a time instead, so a change somebody else
+makes meanwhile is kept.</td>
 </tr>
 <tr>
 <td>Remove selected repository from an organization secret</td>
 <td><code>DELETE /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>Add selected repository to an organization secret</td>
 <td><code>PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Repositories Allowed…</td>
 </tr>
 <tr>
 <td>List Dependabot alerts for a repository</td>

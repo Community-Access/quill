@@ -23,7 +23,7 @@ them. wx-free and strict-typed.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 from urllib.parse import quote
@@ -94,6 +94,7 @@ class ResourceSpec:
     delete: bool = True
     delete_body: str = ""  # delete sends {delete_body: [id]} to the list itself
     extra: tuple[str, ...] = field(default=())  # further "METHOD path" rows it covers
+    repositories: str = ""  # "/repositories": which repositories may use an item
 
     def base(self, target: str) -> str:
         return BASES[self.scope][0].replace("{target}", target)
@@ -132,6 +133,12 @@ class ResourceSpec:
         if self.delete:
             gone = listed if self.delete_body else item
             rows[f"DELETE {gone}"] = "command:github.workbench.resource_delete"
+        if self.repositories:
+            chosen = f"{item}{self.repositories}"
+            command = "command:github.workbench.resource_repositories"
+            rows[f"GET {chosen}"] = command
+            rows[f"PUT {chosen}/{{repository_id}}"] = command
+            rows[f"DELETE {chosen}/{{repository_id}}"] = command
         for extra in self.extra:
             rows[extra] = node
         return rows
@@ -262,3 +269,90 @@ def delete(api: GitHubApi, spec: ResourceSpec, target: str, item_id: str) -> str
     except GitHubRestError as exc:
         raise _refused(exc, f"delete the {spec.noun}") from exc
     return f"Deleted the {spec.noun} {item_id}."
+
+
+# -- which repositories may use an item ---------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class Repo:
+    id: int
+    name: str
+
+
+def _repos(data: Any) -> list[Repo]:
+    items = data.get("repositories", []) if isinstance(data, Mapping) else data
+    return [
+        Repo(int(one["id"]), str(one.get("full_name") or one.get("name") or one["id"]))
+        for one in items or []
+        if isinstance(one, Mapping) and one.get("id") is not None
+    ]
+
+
+def allowed_repositories(
+    api: GitHubApi, spec: ResourceSpec, target: str, item_id: str
+) -> list[Repo]:
+    """The repositories that may use one item now, by name."""
+    try:
+        reply = api.rest(
+            "GET", spec.item(target, item_id) + spec.repositories, query={"per_page": "100"}
+        )
+    except GitHubRestError as exc:
+        if exc.status == 409:
+            raise ResourceError(
+                f"This {spec.noun} is available to all or to private repositories, not to a "
+                "chosen few. Change its visibility to Selected repositories first."
+            ) from exc
+        raise _refused(exc, f"read which repositories may use the {spec.noun}") from exc
+    return sorted(_repos(reply.data), key=lambda repo: repo.name.lower())
+
+
+def candidate_repositories(api: GitHubApi, spec: ResourceSpec, target: str) -> list[Repo]:
+    """The repositories that could be chosen: the organization's, or your own."""
+    path = "/user/repos" if spec.scope == "user" else f"/orgs/{target}/repos"
+    found: list[Repo] = []
+    for page in range(1, 11):
+        try:
+            reply = api.rest("GET", path, query={"per_page": "100", "page": str(page)})
+        except GitHubRestError as exc:
+            raise _refused(exc, "list the repositories to choose from") from exc
+        batch = _repos(reply.data)
+        found.extend(batch)
+        if len(batch) < 100:
+            break
+    return sorted(found, key=lambda repo: repo.name.lower())
+
+
+def set_repositories(
+    api: GitHubApi,
+    spec: ResourceSpec,
+    target: str,
+    item_id: str,
+    had: Sequence[Repo],
+    wanted: Sequence[Repo],
+) -> str:
+    """Add and remove repositories one at a time, so somebody else's change is kept."""
+    before = {repo.id for repo in had}
+    after = {repo.id for repo in wanted}
+    base = spec.item(target, item_id) + spec.repositories
+    added = [repo for repo in wanted if repo.id not in before]
+    removed = [repo for repo in had if repo.id not in after]
+    try:
+        for repo in added:
+            api.rest("PUT", f"{base}/{repo.id}")
+        for repo in removed:
+            api.rest("DELETE", f"{base}/{repo.id}")
+    except GitHubRestError as exc:
+        raise _refused(exc, f"change which repositories may use the {spec.noun}") from exc
+    if not added and not removed:
+        return "Nothing changed."
+    parts = []
+    if added:
+        parts.append(f"added {_count(len(added), 'repository', 'repositories')}")
+    if removed:
+        parts.append(f"removed {_count(len(removed), 'repository', 'repositories')}")
+    return f"{' and '.join(parts).capitalize()} for {item_id}."
+
+
+def _count(n: int, one: str, many: str) -> str:
+    return f"{n} {one if n == 1 else many}"
