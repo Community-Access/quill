@@ -82,7 +82,10 @@ ENVIRONMENT_SPECS: tuple[ResourceSpec, ...] = (
 
 
 def environment_spec(key: str) -> ResourceSpec | None:
-    return next((spec for spec in ENVIRONMENT_SPECS if spec.key == key), None)
+    from quill.core.github.resource_specs_env_more import MORE_ENVIRONMENT_SPECS
+
+    every = (*ENVIRONMENT_SPECS, *MORE_ENVIRONMENT_SPECS)
+    return next((spec for spec in every if spec.key == key), None)
 
 
 REPO_ORG_SPECS: tuple[ResourceSpec, ...] = (

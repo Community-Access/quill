@@ -987,6 +987,8 @@ VERBS: dict[str, Scenario | str] = {
     "manage_reviews": "needs Jeff: a pull request with a review from someone else to dismiss",
     "environment_secrets": "needs Jeff: an environment on the test repository (admin)",
     "environment_variables": "needs Jeff: an environment on the test repository (admin)",
+    "environment_branch_policies": "needs Jeff: an environment set to chosen branches",
+    "environment_protection_rules": "needs Jeff: an environment and a deployment protection app",
     "environment_delete": "needs Jeff: a throwaway environment on the test repository",
     "rerun_job": "needs Jeff: a finished run on the test repository (it starts Actions minutes)",
     "force_cancel_run": "needs Jeff: a run stuck cancelling, which cannot be made on purpose",

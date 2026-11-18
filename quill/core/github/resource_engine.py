@@ -67,7 +67,9 @@ class Field:
 
     key: str
     prompt: str
-    kind: str = "text"  # text, multiline, secret, choice, bool, list (comma separated)
+    # text, multiline, secret, choice, bool, number, list (comma separated), names (comma
+    # separated, sent as [{"name": ...}]), repository (owner/name, sent as its id)
+    kind: str = "text"
     choices: tuple[str, ...] = ()
     optional: bool = False
     is_id: bool = False  # the answer names the new item in its path (a secret's name)
@@ -193,9 +195,29 @@ def fetch(
 def _value(answer: str, one: Field) -> object:
     if one.kind == "list":
         return [part.strip() for part in answer.split(",") if part.strip()]
+    if one.kind == "names":
+        return [{"name": part.strip()} for part in answer.split(",") if part.strip()]
     if one.kind == "bool":
         return answer == "true"
+    if one.kind == "number":
+        try:
+            return int(answer.strip())
+        except ValueError:
+            raise ResourceError(f"{one.prompt.rstrip(':?')} needs a number.") from None
     return answer
+
+
+def _repository_id(api: GitHubApi, target: str, answer: str) -> tuple[str, str]:
+    """``(id, owner/name)`` for a repository typed as owner/name, or a bare name in *target*."""
+    name = answer.strip().removeprefix("https://github.com/").strip("/")
+    full = name if "/" in name else f"{target.split('/', 1)[0]}/{name}"
+    try:
+        data = api.rest("GET", f"/repos/{quote(full, safe='/')}").data
+    except GitHubRestError as exc:
+        raise _refused(exc, f"find the repository {full}") from exc
+    if not isinstance(data, Mapping) or data.get("id") is None:
+        raise ResourceError(f"GitHub sent nothing for {full}.")
+    return str(data["id"]), str(data.get("full_name") or full)
 
 
 def _sealed(api: GitHubApi, spec: ResourceSpec, target: str, value: str) -> dict[str, object]:
@@ -238,13 +260,16 @@ def create(api: GitHubApi, spec: ResourceSpec, target: str, answers: Mapping[str
         if not one.optional and not answers.get(one.key, "").strip():
             raise ResourceError(f"{one.prompt.rstrip(':')} is needed.")
     named = next((answers[one.key].strip() for one in spec.create if one.is_id), "")
+    said_name = named
+    if any(one.is_id and one.kind == "repository" for one in spec.create):
+        named, said_name = _repository_id(api, target, named)
     path = spec.made(target, named)
     body = _body(api, spec, target, spec.create, answers)
     try:
         api.rest(spec.create_method, path, body=body)
     except GitHubRestError as exc:
         raise _refused(exc, f"add the {spec.noun}") from exc
-    first = named or next(
+    first = said_name or next(
         (answers.get(one.key, "") for one in spec.create if one.kind != "secret"), ""
     )
     return f"Added the {spec.noun} {first}.".replace("  ", " ").replace(" .", ".")

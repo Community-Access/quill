@@ -2602,6 +2602,16 @@ Control coverage: 382 audited sites (382 helped).
 
 **My Organizations' Memberships.** My Organizations' Memberships: your role in each organization, and invitations.
 
+**My Issue Fields.** My Issue Fields: values your own repositories' issues can carry. Ctrl+N adds one.
+
+**My Installed Apps.** My Installed Apps: the GitHub Apps installed where you can manage them. Repositories... chooses which repositories an app may reach.
+
+**My Public Email Addresses.** My Public Email Addresses: the addresses anyone can see on your profile.
+
+**Repositories I Watch.** Repositories I Watch: every repository you get notifications for.
+
+**Gists I Starred.** Gists I Starred: gists you starred, newest first.
+
 **repository: owner/name.** A repository: its issues, pull requests, actions, code, releases and settings, each a node below. Ctrl+Shift+1 to Ctrl+Shift+0 jump to them.
 
 **repository: Overview.** Overview: the repository's README, description and community profile.
@@ -2728,6 +2738,22 @@ Control coverage: 382 audited sites (382 helped).
 
 **repository: Organization Variables Here.** Organization Variables Here: the organization's Actions variables this repository may use. Change them in the organization.
 
+**repository: All Issue Comments.** All Issue Comments: every comment on the repository's issues, newest changes last.
+
+**repository: Commit Comments.** Commit Comments: comments on the repository's commits. Change rewrites your own.
+
+**repository: Watchers.** Watchers: who gets notifications for this repository.
+
+**repository: Push Activity.** Push Activity: pushes, force pushes, merges and branch changes, newest first.
+
+**repository: CODEOWNERS Problems.** CODEOWNERS Problems: lines in the CODEOWNERS file GitHub could not use.
+
+**repository: Rule Insights.** Rule Insights: recent pushes the rulesets here passed, blocked or let through.
+
+**repository: My Notifications Here.** My Notifications Here: your notifications from this repository only.
+
+**repository: Custom Property Values.** Custom Property Values: the organization's custom properties, as set here.
+
 **person: person.** A person: their repositories, activity, followers and who they follow.
 
 **person: Profile.** Profile: who this person is, their year of contributions as numbers, and what they pinned.
@@ -2791,6 +2817,30 @@ Control coverage: 382 audited sites (382 helped).
 **organization: Organization Roles.** Organization Roles: the roles that can be given to people and teams.
 
 **organization: Code Scanning Alerts.** Code Scanning Alerts: every repository's code scanning alerts in one list. Open a repository's Alerts to dismiss one.
+
+**organization: Issue Fields.** Issue Fields: values every repository's issues in this organization can carry, such as Priority or Due date. Ctrl+N adds one.
+
+**organization: Failed Invitations.** Failed Invitations: invitations that expired or could not be delivered.
+
+**organization: Public Members.** Public Members: members who show their membership on their profile.
+
+**organization: Installed Apps.** Installed Apps: the GitHub Apps installed on this organization.
+
+**organization: Immutable Releases: Repositories.** Immutable Releases: Repositories: where published releases cannot be changed, when the organization enforces it on chosen repositories. Ctrl+N adds one.
+
+**organization: Actions: Allowed Repositories.** Actions: Allowed Repositories: which repositories may run Actions, when the organization allows chosen repositories only. Ctrl+N adds one.
+
+**organization: Self-hosted Runners: Allowed Repositories.** Self-hosted Runners: Allowed Repositories: which repositories may use the organization's self-hosted runners. Ctrl+N adds one.
+
+**organization: Dependabot Alerts.** Dependabot Alerts: every repository's vulnerable dependencies in one list.
+
+**organization: Secret Scanning Alerts.** Secret Scanning Alerts: secrets found in any repository. The secret itself is never shown here.
+
+**organization: Security Advisories.** Security Advisories: the repository advisories across this organization.
+
+**organization: Recent Events.** Recent Events: the organization's public activity, newest first.
+
+**organization: Custom Property Values.** Custom Property Values: every repository's custom properties in one list. Change a repository's on its Properties.
 
 ### Every menu row
 
@@ -3409,6 +3459,10 @@ Control coverage: 382 audited sites (382 helped).
 **Secrets.** Add, change or delete its secrets.
 
 **Variables.** Add, change or delete them.
+
+**Branch Policies.** Which branches and tags may deploy.
+
+**Protection Rules.** Apps that must approve a deployment.
 
 **Delete.** Delete it, after asking.
 

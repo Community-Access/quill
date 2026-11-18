@@ -732,6 +732,23 @@ lines the same way, with the same saved choice.
 With thanks to Kelly Ford, whose GHManage has been the measure for QUILL's
 GitHub work from the start.
 
+### GitHub: 25 more lists, and an environment's branch policies and protection rules (2026-11-18)
+
+Twenty-five more of GitHub's lists are nodes in the Workbench's tree, working
+like the others: rows read as sentences, `Ctrl+N` adds, Change... changes
+and `Delete` deletes where GitHub allows. They include your own and an
+organization's **Issue Fields** (text, number, date or single select with
+choices), **My Installed Apps** with which repositories each may reach, the
+repositories an organization's immutable releases, Actions and self-hosted
+runners are limited to (added by name), the organization's Dependabot alerts,
+secret scanning alerts and advisories in one list each, and a repository's
+commit comments, watchers, push activity, CODEOWNERS problems and rule
+insights. An environment's row gains **Branch Policies...** and **Protection
+Rules...**, where adding a rule offers the apps that can do it rather than
+asking for a number. 50 GitHub endpoints are now covered and 3 need nothing;
+176 remain planned. The GitHub guide's Workbench chapter has a new Lists of
+settings section, and the Actions chapter has An environment's rules.
+
 ### GitHub: an organization's roles and rulesets (2026-11-18)
 
 An organization's row in the Workbench has two new commands. **Roles...**

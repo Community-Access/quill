@@ -71,6 +71,20 @@ ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
             "environment_secrets", "Secrets...", _W, "sign_in", "Add, change or delete its secrets."
         ),
         _a("environment_variables", "Variables...", _W, "sign_in", "Add, change or delete them."),
+        _a(
+            "environment_branch_policies",
+            "Branch Policies...",
+            _W,
+            "sign_in",
+            "Which branches and tags may deploy.",
+        ),
+        _a(
+            "environment_protection_rules",
+            "Protection Rules...",
+            _W,
+            "sign_in",
+            "Apps that must approve a deployment.",
+        ),
         _a("environment_delete", "Delete...", _D, "sign_in", "Delete it, after asking."),
         _OPEN_WEB,
         _COPY_LINK,

@@ -615,6 +615,71 @@ sent.</li>
 <li><strong>Delete Gist…</strong> (<code>Delete</code> on a gist) asks
 first, because a deleted gist, its files and its history cannot be
 brought back.</li>
+<li><strong>Gists I Starred</strong>, under Gists, lists the gists you
+starred, with who wrote each.</li>
+</ul>
+<h2 id="lists-of-settings">Lists of settings</h2>
+<p>Many of the things GitHub keeps as lists, such as secrets, issue
+types or the repositories a setting covers, are nodes in the tree that
+all work the same way. Each row reads as a sentence. <code>Ctrl+N</code>
+adds one, where GitHub allows it; Change… on the context menu changes
+the selected one; <code>Delete</code> deletes it, after asking. Where a
+list can only be read, it says so when it is empty, and the context menu
+has no Add or Delete.</p>
+<p>These were added on 2026-11-18.</p>
+<p><strong>Under People, for your own account:</strong></p>
+<ul>
+<li><strong>My Issue Fields:</strong> values your own repositories’
+issues can carry, such as Priority or Due date. <code>Ctrl+N</code> asks
+for its name, its kind (text, number, date, or single select), its
+choices for a single select, separated by commas, and a
+description.</li>
+<li><strong>My Installed Apps:</strong> the GitHub Apps installed where
+you can manage them, and whether each reaches all repositories or chosen
+ones. <strong>Repositories…</strong> on a row checks which repositories
+it may reach; QUILL adds and removes them one at a time, so a change
+someone else made meanwhile is kept.</li>
+<li><strong>My Public Email Addresses</strong> and <strong>Repositories
+I Watch:</strong> read only.</li>
+</ul>
+<p><strong>Under an organization:</strong></p>
+<ul>
+<li><strong>Issue Fields:</strong> the organization’s issue fields, the
+same way as yours, plus who may see their values (everyone, or members
+only).</li>
+<li><strong>Failed Invitations</strong>, <strong>Public Members</strong>
+and <strong>Installed Apps:</strong> read only.</li>
+<li><strong>Immutable Releases: Repositories</strong>, <strong>Actions:
+Allowed Repositories</strong> and <strong>Self-hosted Runners: Allowed
+Repositories:</strong> the repositories a setting applies to when the
+organization chooses them one by one. <code>Ctrl+N</code> asks for a
+repository, as its name or owner/name; <code>Delete</code> takes one
+off. Set the setting itself to “chosen repositories” on the
+organization’s Properties first.</li>
+<li><strong>Dependabot Alerts</strong>, <strong>Secret Scanning
+Alerts</strong>, <strong>Security Advisories:</strong> every
+repository’s, in one list. A secret’s value is never shown. Open a
+repository’s Alerts to dismiss or resolve one.</li>
+<li><strong>Recent Events:</strong> the organization’s public activity,
+newest first.</li>
+<li><strong>Custom Property Values:</strong> every repository’s custom
+properties in one list.</li>
+</ul>
+<p><strong>Under a repository:</strong></p>
+<ul>
+<li><strong>Activity &gt; All Issue Comments</strong>, <strong>Push
+Activity</strong> (pushes, force pushes, merges and branch changes) and
+<strong>My Notifications Here:</strong> read only.</li>
+<li><strong>Code &gt; Commit Comments:</strong> comments on commits.
+Change… rewrites one of yours; <code>Delete</code> deletes it.</li>
+<li><strong>People &gt; Watchers:</strong> who gets notifications for
+it.</li>
+<li><strong>Settings &gt; CODEOWNERS Problems:</strong> lines in the
+CODEOWNERS file GitHub could not use, with its suggestion.</li>
+<li><strong>Settings &gt; Rule Insights:</strong> recent pushes its
+rulesets passed, blocked or let through on a bypass.</li>
+<li><strong>Settings &gt; Custom Property Values:</strong> the
+organization’s properties as this repository has them.</li>
 </ul>
 <h2 id="across-repositories">Across Repositories</h2>
 <p><code>Ctrl+0</code> goes to Across Repositories: one kind of thing

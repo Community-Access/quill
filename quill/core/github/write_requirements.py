@@ -154,6 +154,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}pages_turn_off": ("repo:admin", _D),
     f"{_P}environment_secrets": ("repo:admin", _V),
     f"{_P}environment_variables": ("repo:admin", _V),
+    f"{_P}environment_branch_policies": ("repo:admin", _D),
+    f"{_P}environment_protection_rules": ("repo:admin", _D),
     f"{_P}environment_delete": ("repo:admin", _D),
     f"{_P}force_cancel_run": ("repo:write", _V),
     f"{_P}delete_run_logs": ("repo:write", _D),
