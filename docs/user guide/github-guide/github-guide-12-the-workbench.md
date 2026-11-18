@@ -426,6 +426,16 @@ allowance, the filter, what is loading, and your account. `F9` says the last
 result again, and `Shift+F9` explains it: what it means, and what you might do
 next.
 
+### Emoji by name
+
+People write emoji on GitHub as shortcodes, `:tada:` or `:+1:`, which the
+website shows as pictures and a screen reader would otherwise spell out,
+colons and all. In the details pane, and in **Read as Document...**, QUILL
+reads each one by its name instead: "Shipped :tada:" is "Shipped party
+popper", and `:+1:` is "thumbs up". A shortcode inside code, between
+backticks or in a code block, is left as typed, since there it is code, and
+so is one QUILL does not know.
+
 ## Help and Learning
 
 The last place in the tree is help you can walk through like any other list.

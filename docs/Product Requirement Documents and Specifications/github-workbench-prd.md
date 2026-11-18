@@ -2282,6 +2282,15 @@ visible row would make JAWS repeat the row.
   requests done after they merge", "move mentions from this repository to the
   top", each a rule with a condition and an action, previewed on today's
   Inbox before it is saved.
+  *Built 2026-11-18,* on Notifications (the inbox of GitHub notifications;
+  the Inbox node is the attention queue): Item > Inbox Rules... (`Ctrl+Alt+N`)
+  lists the rules as sentences and makes one a question at a time
+  (repository with `*`, reason, subject type, title words; at least one), then
+  previews it on the notifications loaded today. Rules run on every load on
+  the worker thread, first match decides; done and read are sent, to the top
+  is local, and the result is said. "After they merge" needs the subject's
+  state, which a notification does not carry, so it is not a condition yet.
+  `quill/core/github/inbox_rules.py`, `quill/ui/github_workbench_inbox_rules.py`.
 - **The maintainer's batch merges:** merge every passing Dependabot pull
   request in a set of repositories, with the preview and a result per pull
   request.
@@ -2309,6 +2318,10 @@ visible row would make JAWS repeat the row.
   (`diff_lines.line_sound`), with Ink clips and VS Code Signals'
   `diffLineInserted` and `diffLineDeleted`.
 - **Emoji shortcodes** (`:rocket:`) read by name everywhere.
+  *Built 2026-11-18* for the Workbench's details pane and Read as Document
+  (`quill/core/github/emoji_names.py`): names from QUILL's emoji catalogue plus
+  GitHub's own aliases (`:+1:`, `:tada:`, `:shipit:`); code spans and fenced
+  blocks are left as typed. The review window's thread text is next.
 - **Least privilege advisor:** the token health check (`token_health.py`)
   extended to say which scopes the account has but the Workbench never used,
   and how to narrow them.

@@ -29387,6 +29387,27 @@ selected job every 10 seconds (<code>job_follow.FOLLOW_SECONDS</code>, a
 end, after which it stops. Alt+8, a char hook on the window, says
 <code>progress_sentence</code>. GitHub’s REST job log exists only once a
 job ends, so the steps are what can be followed.</p>
+<p><strong>Inbox rules (GitHub PRD 22.12).</strong>
+<code>quill/core/github/inbox_rules.py</code>: <code>InboxRule</code>
+(action <code>mark_done</code>, <code>mark_read</code> or
+<code>to_top</code>; repository glob, reason, subject type and title
+words, every one named must hold, at least one required),
+<code>apply_rules</code> (first match decides; nothing sent),
+<code>preview</code> and <code>github_inbox_rules.json</code> through
+<code>write_json_atomic</code>.
+<code>ExploreNotificationsMixin._run_inbox_rules</code> runs them on
+each Notifications load on the worker thread, sends done and read one at
+a time (a refusal keeps the notification and is counted), and leaves a
+sentence the Workbench shows as the list’s note. Item &gt; Inbox Rules…
+(<code>Ctrl+Alt+N</code>,
+<code>quill/ui/github_workbench_inbox_rules.py</code>) makes, previews
+and deletes them.</p>
+<p><strong>Emoji by name (GitHub PRD 22.12).</strong>
+<code>quill/core/github/emoji_names.py</code> replaces each known
+shortcode outside code with its name, from
+<code>emoji_catalog.json</code> (a catalogue name with underscores) and
+<code>GITHUB_ALIASES</code> for GitHub’s own; used by the Workbench
+details pane and <code>thread_markdown</code>.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

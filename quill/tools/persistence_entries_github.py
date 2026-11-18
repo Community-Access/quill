@@ -54,4 +54,7 @@ GITHUB_ENTRIES: dict[str, str] = {
     # stamped; names, owner/name lists and filter text only, never a token or
     # fetched content. Losing it costs choosing the repositories again.
     "core/github/repository_sets.py::save": "versioned",
+    # Inbox rules (PRD 22.12): conditions and an action per rule, version
+    # stamped; no token, no notification content. Losing it loses the rules.
+    "core/github/inbox_rules.py::save_rules": "versioned",
 }

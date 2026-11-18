@@ -1505,6 +1505,19 @@ branch in a new folder beside your checkout and walks each conflicted file,
 without changing the folder you are in. See
 [The whole patch, a revert, and conflicts](../github-guide/github-guide-05-pull-requests-and-review.html#the-whole-patch-a-revert-and-conflicts).
 
+#### Emoji by name
+
+In the GitHub Workbench's details pane and in Read as Document, emoji
+shortcodes like `:tada:` are read by name, "party popper", except inside code.
+See [Emoji by name](../github-guide/github-guide-12-the-workbench.html#emoji-by-name).
+
+#### Inbox rules
+
+In the GitHub Workbench, **Item > Inbox Rules...** makes rules that mark
+notifications done or read, or move them to the top, as they arrive; each is
+tried on today's notifications before it is saved. See
+[Inbox rules](../github-guide/github-guide-03-inbox-and-your-work.html#inbox-rules).
+
 #### Following a running job
 
 In a run's jobs window, **Follow This Job** says each step of a running job

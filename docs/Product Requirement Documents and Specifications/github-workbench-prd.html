@@ -3458,7 +3458,18 @@ tokens.</li>
 <li><strong>Inbox rules,</strong> Outlook’s idea for notifications:
 “mark Dependabot pull requests done after they merge”, “move mentions
 from this repository to the top”, each a rule with a condition and an
-action, previewed on today’s Inbox before it is saved.</li>
+action, previewed on today’s Inbox before it is saved. <em>Built
+2026-11-18,</em> on Notifications (the inbox of GitHub notifications;
+the Inbox node is the attention queue): Item &gt; Inbox Rules…
+(<code>Ctrl+Alt+N</code>) lists the rules as sentences and makes one a
+question at a time (repository with <code>*</code>, reason, subject
+type, title words; at least one), then previews it on the notifications
+loaded today. Rules run on every load on the worker thread, first match
+decides; done and read are sent, to the top is local, and the result is
+said. “After they merge” needs the subject’s state, which a notification
+does not carry, so it is not a condition yet.
+<code>quill/core/github/inbox_rules.py</code>,
+<code>quill/ui/github_workbench_inbox_rules.py</code>.</li>
 <li><strong>The maintainer’s batch merges:</strong> merge every passing
 Dependabot pull request in a set of repositories, with the preview and a
 result per pull request.</li>
@@ -3489,7 +3500,12 @@ arriving at a single line (<code>diff_lines.line_sound</code>), with Ink
 clips and VS Code Signals’ <code>diffLineInserted</code> and
 <code>diffLineDeleted</code>.</li>
 <li><strong>Emoji shortcodes</strong> (<code>:rocket:</code>) read by
-name everywhere.</li>
+name everywhere. <em>Built 2026-11-18</em> for the Workbench’s details
+pane and Read as Document
+(<code>quill/core/github/emoji_names.py</code>): names from QUILL’s
+emoji catalogue plus GitHub’s own aliases (<code>:+1:</code>,
+<code>:tada:</code>, <code>:shipit:</code>); code spans and fenced
+blocks are left as typed. The review window’s thread text is next.</li>
 <li><strong>Least privilege advisor:</strong> the token health check
 (<code>token_health.py</code>) extended to say which scopes the account
 has but the Workbench never used, and how to narrow them.</li>

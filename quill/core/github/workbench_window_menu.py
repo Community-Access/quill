@@ -328,6 +328,13 @@ _ITEM = MenuSpec(
             "Ctrl+Shift+Q",
             "Mark every notification in this view read. Asks first when there are many.",
         ),
+        _row(
+            "inbox_rules",
+            "In&box Rules...",
+            "Ctrl+Alt+N",
+            "Rules that mark notifications done or read, or move them to the top, as they "
+            "arrive. Each is tried on today's notifications before it is saved.",
+        ),
         None,
         _row(
             "favorite",

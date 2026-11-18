@@ -133,6 +133,11 @@ the `diff_line_added` and `diff_line_removed` sounds on arriving at a line.
 Follow This Job and Alt+8 in the jobs window (`job_follow.py`,
 `github_workflow_job_follow.py`).
 
+**2026-11-18, inbox rules.** Item > Inbox Rules... makes, previews and deletes
+rules that run on every Notifications load (`inbox_rules.py`,
+`github_workbench_inbox_rules.py`). Emoji shortcodes read by name in the
+details pane and Read as Document (`emoji_names.py`).
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

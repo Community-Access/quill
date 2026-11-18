@@ -2882,6 +2882,8 @@ Control coverage: 361 audited sites (361 helped).
 
 **Item > Mark All Read in View.** Mark every notification in this view read. Asks first when there are many.
 
+**Item > Inbox Rules....** Rules that mark notifications done or read, or move them to the top, as they arrive. Each is tried on today's notifications before it is saved.
+
 **Item > Add to or Remove from Favorites.** Keep the selected row under Repositories, Favorites.
 
 **Repository > Compare Branches....** Commits ahead and behind between two branches, and the changed files.

@@ -1027,6 +1027,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+F | Filter Builder... | `github.workbench.filter_builder` |
 | Ctrl+Alt+I | Import Issues from a Spreadsheet... | `github.workbench.import_issues` |
 | Ctrl+Alt+L | New Issues from Lines... | `github.workbench.issues_from_lines` |
+| Ctrl+Alt+N | Inbox Rules... | `github.workbench.inbox_rules` |
 | Ctrl+B | Compare With Default | `github.workbench.compare_default` |
 | Ctrl+C | Copy | `github.workbench.copy` |
 | Ctrl+Cancel | Cancel Run... (Ctrl+Break, in the list) | `github.workbench.cancel_run` |

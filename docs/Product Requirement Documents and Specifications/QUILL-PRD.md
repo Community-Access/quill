@@ -17459,6 +17459,22 @@ starting and finishing, and the job's end, after which it stops. Alt+8, a
 char hook on the window, says `progress_sentence`. GitHub's REST job log
 exists only once a job ends, so the steps are what can be followed.
 
+**Inbox rules (GitHub PRD 22.12).** `quill/core/github/inbox_rules.py`:
+`InboxRule` (action `mark_done`, `mark_read` or `to_top`; repository glob,
+reason, subject type and title words, every one named must hold, at least one
+required), `apply_rules` (first match decides; nothing sent), `preview` and
+`github_inbox_rules.json` through `write_json_atomic`.
+`ExploreNotificationsMixin._run_inbox_rules` runs them on each Notifications
+load on the worker thread, sends done and read one at a time (a refusal keeps
+the notification and is counted), and leaves a sentence the Workbench shows as
+the list's note. Item > Inbox Rules... (`Ctrl+Alt+N`,
+`quill/ui/github_workbench_inbox_rules.py`) makes, previews and deletes them.
+
+**Emoji by name (GitHub PRD 22.12).** `quill/core/github/emoji_names.py`
+replaces each known shortcode outside code with its name, from
+`emoji_catalog.json` (a catalogue name with underscores) and `GITHUB_ALIASES`
+for GitHub's own; used by the Workbench details pane and `thread_markdown`.
+
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and
 `tests/unit/docs/test_github_live_run_coverage.py` fails when a write command
