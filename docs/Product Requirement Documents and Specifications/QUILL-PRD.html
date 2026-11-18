@@ -29455,6 +29455,13 @@ window’s Hide Whitespace Changes (<code>Alt+W</code>) and Choose Commit…
 <code>GitHubPullDiff</code> of one commit against its first parent),
 read off the UI thread with a <code>TokenApi</code> from the provider’s
 token.</p>
+<p><strong>GitHub journeys GX01 to GX08 (2026-11-18).</strong>
+<code>docs/qa/github-journeys.md</code> writes each journey down as a
+person walks it, with its failure case and the tests that show both, and
+lists the screen-reader checks still owed. Writing GX04 down found that
+Re-run Failed Jobs pressed twice before GitHub answered sent two
+requests; <code>_do_rerun_failed</code> now keeps the runs it is sending
+and says the second press is already on its way.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

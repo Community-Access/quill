@@ -312,3 +312,22 @@ def test_start_worktree_uses_the_editors_hook(bench) -> None:
     _select(bench, "issues")
     bench.run(f"{_P}start_worktree")
     assert started == [(bench.frame, REPO, 1, "Crash on start", False)]
+
+
+def test_a_second_rerun_while_the_first_is_on_its_way_sends_nothing(bench, monkeypatch) -> None:
+    """GX04: duplicate activation cannot start duplicate work."""
+    sent: list[int] = []
+    bench.items.rerun_failed_jobs = lambda _repo, run_id: sent.append(run_id)
+    monkeypatch.setattr(bench.provider, "_confirm", lambda *_a: True)
+    _select(bench, "runs")
+    waiting: list[Any] = []
+    bench._run_background = lambda _name, work, done, _failed: waiting.append((work, done))
+    bench.run(f"{_P}rerun_failed")
+    bench.run(f"{_P}rerun_failed")
+    assert len(waiting) == 1
+    assert bench.said[-1] == "A re-run of run #41, CI is already on its way to GitHub."
+    work, done = waiting[0]
+    done(work())
+    assert sent == [9]
+    bench.run(f"{_P}rerun_failed")  # once it has gone, it can be asked again
+    assert len(waiting) == 2

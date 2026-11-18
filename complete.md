@@ -246,8 +246,8 @@ Reconcile these against actual code and the operation ledger. Some individual ac
 
 The accepted roadmap table is reproduced in the coverage appendices. Close each row with a real journey, failure case and evidence:
 
-- [ ] GX01 reference routing; GX02 attention queue; GX03 context-preserving navigation; GX04 CI diagnosis.
-- [ ] GX05 intake/triage; GX06 Projects/dependencies; GX07 local repository continuity; GX08 deep review.
+- [ ] GX01 reference routing; GX02 attention queue; GX03 context-preserving navigation; GX04 CI diagnosis. *(2026-11-18: journeys, failure cases and test evidence in [docs/qa/github-journeys.md](./docs/qa/github-journeys.md). Open: a screen-reader pass of each. Writing GX04 down found a second Re-run Failed Jobs press sent a second request; fixed and tested.)*
+- [ ] GX05 intake/triage; GX06 Projects/dependencies; GX07 local repository continuity; GX08 deep review. *(2026-11-18: the same document. Open: the screen-reader pass listed at its end.)*
 - [ ] GX09 policy-aware merging; GX10 release/deployment evidence.
 - [ ] GX11 security/dependencies; GX12 collaboration/knowledge; GX13 administration.
 - [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance; GX16 category-first cross-repository browsing.
