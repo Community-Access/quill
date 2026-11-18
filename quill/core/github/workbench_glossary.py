@@ -138,6 +138,7 @@ GLOSSARY: dict[str, str] = {
     "Gist": "A small shared file or snippet, with its own history.",
     "Discussion": "A conversation in a repository that is not an issue.",
     "Project": "A board or table for planning issues and pull requests.",
+    "GitHub Pages": "A website GitHub publishes from a repository, from a branch or by a workflow.",
     "Codespace": "A computer in the cloud with the repository ready to work on. It can cost money.",
     "Security alert": "A warning that code, a dependency or a secret in it is at risk.",
     "Rate limit": (
@@ -188,6 +189,7 @@ ROW_TYPE_WORDS: dict[str, str] = {
     "resource": "Listed setting",
     "codespace": "Codespace",
     "environment": "Environment",
+    "pages_site": "GitHub Pages",
     "sponsor_tier": "Sponsorship",
     "deploy_key": "Deploy key",
     "autolink": "Autolink",

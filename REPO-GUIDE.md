@@ -177,10 +177,10 @@ the human sign-off phase is what the acceptance run completes.
 - `complete.md` — everything left to do, in one list, in Jeff's order: the
   GitHub Workbench first, then diff features, WordPress, the EdSharp review
   and other queued work, then the detailed checklists behind them. Since
-  2026-11-18 it holds what `complete2.md`, `wp_missing.md` and `how.md`'s
-  review notes held; a new work list goes in it, not in a new root file.
-- `how.md` — a walkthrough of every WordPress feature as a person meets it
-  (2026-11-14), kept for reference; its review notes are now in `complete.md`.
+  2026-11-18 it holds what `complete2.md`, `wp_missing.md`, `how.md`'s review
+  notes and `ear.md`'s leftovers held; a new work list goes in it, not in a new
+  root file. `how.md`'s WordPress walkthrough is now
+  `docs/design/wordpress-ux-walkthrough.md`.
 - `LICENSE`, `NOTICE` — licensing.
 - `pyproject.toml`, `requirements.txt`, `uv.lock`, `.quill-reqs.sha256` —
   Python packaging and dependency pinning.

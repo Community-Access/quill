@@ -37,6 +37,7 @@ _KINDS = {
     "package": "package",
     "codespace": "codespace",
     "environment": "environment",
+    "pages": "pages_site",
     "advisory": "advisory",
     "key": "key",
     "webhook": "webhook",
