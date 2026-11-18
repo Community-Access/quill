@@ -1032,6 +1032,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+N | Inbox Rules... | `github.workbench.inbox_rules` |
 | Ctrl+Alt+P | Practice on GitHub... | `github.workbench.practice` |
 | Ctrl+Alt+S | Set Your Status... | `github.workbench.user_status` |
+| Ctrl+Alt+T | Transfer Repository... | `github.workbench.transfer_repository` |
 | Ctrl+B | Compare With Default | `github.workbench.compare_default` |
 | Ctrl+C | Copy | `github.workbench.copy` |
 | Ctrl+Cancel | Cancel Run... (Ctrl+Break, in the list) | `github.workbench.cancel_run` |

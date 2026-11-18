@@ -2345,6 +2345,12 @@ from.</td>
 <td>Save the repository’s dependency graph as an SPDX file: every
 package it uses.</td>
 </tr>
+<tr>
+<td>Transfer Repository…</td>
+<td>Ctrl+Alt+T</td>
+<td>Move the repository to another person or organization; asks for its
+name first.</td>
+</tr>
 </tbody>
 </table>
 <h4 id="account">Account</h4>
@@ -2600,9 +2606,9 @@ Branch…; Properties…</li>
 <li><strong>commit</strong>: Open, Commit Comments…, Set Status…,
 Compare With Previous, Compare With Default, Copy Link, Open on GitHub;
 Properties…</li>
-<li><strong>tag</strong>: Open, Delete Tag…, Commit Comments…, Compare
-With Previous, Compare With Default, Copy Link, Open on GitHub;
-Properties…</li>
+<li><strong>tag</strong>: Open, Delete Tag…, Read Tag Message, Commit
+Comments…, Compare With Previous, Compare With Default; More: Copy Link,
+Open on GitHub; Properties…</li>
 <li><strong>runner</strong>: Show Details, Open on GitHub, Copy Link;
 Properties…</li>
 <li><strong>invitation</strong>: Accept Invitation…, Decline
@@ -2763,6 +2769,9 @@ short paragraph on what it is for.</td>
 <ul>
 <li><strong>Actions</strong>: GitHub’s automation: workflows that run on
 events, such as a push.</li>
+<li><strong>Annotated tag</strong>: A tag that carries a message, who
+made it and when. Releases usually use one. A lightweight tag is only a
+name for a commit.</li>
 <li><strong>Artifact</strong>: A file a run produced and kept, to
 download.</li>
 <li><strong>Assignee</strong>: The person an issue or pull request is
@@ -2906,7 +2915,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 326 yes, 1137 planned, 15 not needed and 526 left to
+<p>In all: 330 yes, 1133 planned, 15 not needed and 526 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -7774,7 +7783,7 @@ Plumbing.</td>
 </tbody>
 </table>
 <h4 id="git-database">Git database</h4>
-<p>13 operations: 7 yes, 3 planned, 3 not needed.</p>
+<p>13 operations: 10 yes, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -7814,8 +7823,8 @@ that write files. Plumbing under Commit Multiple Files.</td>
 <tr>
 <td>List matching references</td>
 <td><code>GET /repos/{owner}/{repo}/git/matching-refs/{ref}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Code &gt; Tags context menu</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Tags</td>
 </tr>
 <tr>
 <td>Get a reference</td>
@@ -7844,14 +7853,14 @@ that write files. Plumbing under Commit Multiple Files.</td>
 <tr>
 <td>Create a tag object</td>
 <td><code>POST /repos/{owner}/{repo}/git/tags</code></td>
-<td>Planned</td>
-<td>Repository &gt; Code &gt; Tags context menu</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Tags</td>
 </tr>
 <tr>
 <td>Get a tag</td>
 <td><code>GET /repos/{owner}/{repo}/git/tags/{tag_sha}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Code &gt; Tags context menu</td>
+<td>Yes</td>
+<td>context menu &gt; Read Tag Message</td>
 </tr>
 <tr>
 <td>Create a tree</td>
@@ -10637,7 +10646,7 @@ user</td>
 </tbody>
 </table>
 <h4 id="repositories">Repositories</h4>
-<p>74 operations: 38 yes, 36 planned.</p>
+<p>74 operations: 39 yes, 35 planned.</p>
 <table>
 <thead>
 <tr>
@@ -11054,8 +11063,8 @@ and Team Access</td>
 <tr>
 <td>Transfer a repository</td>
 <td><code>POST /repos/{owner}/{repo}/transfer</code></td>
-<td>Planned</td>
-<td>Repository &gt; Settings &gt; Transfer…</td>
+<td>Yes</td>
+<td>Repository &gt; Transfer Repository… (Ctrl+Alt+T)</td>
 </tr>
 <tr>
 <td>Disable vulnerability alerts</td>

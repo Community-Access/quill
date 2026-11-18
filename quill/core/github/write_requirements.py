@@ -84,6 +84,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}workflow_state": ("repo:write", _V),
     f"{_P}new_tag": ("repo:write", _V),
     f"{_P}delete_tag": ("repo:write", _D),
+    f"{_P}transfer_repository": ("repo:admin", _D),
     f"{_P}user_status": ("sign_in", _V),
     f"{_P}commit_status": ("repo:write", _V),
     f"{_P}merge_queue": ("repo:write", _V),

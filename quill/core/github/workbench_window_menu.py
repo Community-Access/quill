@@ -386,6 +386,12 @@ _REPOSITORY = MenuSpec(
             "Ctrl+Alt+B",
             "Save the repository's dependency graph as an SPDX file: every package it uses.",
         ),
+        _row(
+            "transfer_repository",
+            "&Transfer Repository...",
+            "Ctrl+Alt+T",
+            "Move the repository to another person or organization; asks for its name first.",
+        ),
     ),
 )
 

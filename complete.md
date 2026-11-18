@@ -1158,9 +1158,9 @@ Source: PRD section 14. Its “today” statements describe the source audit rev
 | Teams and organization members | Out of scope by a code comment ("Organizations in, Teams out"); roadmap GX13 adds team permissions. Now in scope: section 18.3.3 | Repositories > Organizations > org > Members, Teams; People > My Teams |
 | Insights charts as tables: commit activity, code frequency, punch card | Not found | Repository > Insights (tables, never charts only) |
 | Dependency graph and software bill of materials (SBOM) export | **Built 2026-11-18:** Repository > Export Software Bill of Materials... (`Ctrl+Alt+B`), SPDX file (`runners_sbom.py`) | Repository > Security > Dependencies |
-| Tags: create and delete outside a release | Not found | Repository > Code > Tags context menu |
+| Tags: create and delete outside a release | **Built 2026-11-18:** New Tag... and Delete Tag... (`tags.py`); annotated tags with a message, and Read Tag Message | Repository > Code > Tags context menu |
 | Hide a comment (moderation: spam, off-topic, outdated) | Not found | Comment context in details > Hide Comment... |
-| Transfer a repository | Not found (only issues transfer) | Repository > Settings > Transfer... |
+| Transfer a repository | **Built 2026-11-18:** Repository > Transfer Repository... (`Ctrl+Alt+T`), typed confirmation (`repo_transfer.py`) | Repository > Settings > Transfer... |
 | Self-hosted runners | **Built 2026-11-18:** Repository > Actions > Runners, read-only (`runners_sbom.py`); registering and removing stay planned | Repository > Actions > Runners (read-only) |
 | Star lists | Not found | Repositories > Starred > each list |
 | Your profile and status | Not found | Account > Profile and Status... |

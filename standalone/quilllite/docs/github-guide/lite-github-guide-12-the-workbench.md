@@ -351,6 +351,7 @@ own list, and `Shift+F1` reads it with the keys:
   Branch, which asks you to type the branch name.
 - **A commit or a tag:** Open, and Commit Comments, to read and write comments
   on the commit and its lines.
+- **A tag**, besides: Read Tag Message, and Delete Tag.
 - **A label:** Find Issues with Label (Enter), Edit Label and Delete Label.
 - **A security alert:** Open, and Dismiss or Reopen Alert, with a reason.
 - **A discussion:** Open Discussion Thread, to read and reply.

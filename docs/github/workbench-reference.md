@@ -789,6 +789,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Run Workflow on Branch... | Ctrl+Shift+R | Start a workflow that can be started by hand, on a branch. |
 | Repository Actions... | Ctrl+Shift+G | Everything else for this repository: star, watch, fork, clone, Codespaces, settings and administration, as a list you can run from. |
 | Export Software Bill of Materials... | Ctrl+Alt+B | Save the repository's dependency graph as an SPDX file: every package it uses. |
+| Transfer Repository... | Ctrl+Alt+T | Move the repository to another person or organization; asks for its name first. |
 
 #### Account
 
@@ -855,7 +856,7 @@ Keys the window answers that are not menu rows:
 - **release_asset**: Download, Copy Link, Delete Asset...; Properties...
 - **branch**: Commits, Compare With Default, Compare Branches..., Compare With Previous, Open in Codespaces..., Copy Name, Delete Branch...; Properties...
 - **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
-- **tag**: Open, Delete Tag..., Commit Comments..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
+- **tag**: Open, Delete Tag..., Read Tag Message, Commit Comments..., Compare With Previous, Compare With Default; More: Copy Link, Open on GitHub; Properties...
 - **runner**: Show Details, Open on GitHub, Copy Link; Properties...
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally; Properties...
@@ -905,6 +906,7 @@ Keys the window answers that are not menu rows:
 ### GitHub words
 
 - **Actions**: GitHub's automation: workflows that run on events, such as a push.
+- **Annotated tag**: A tag that carries a message, who made it and when. Releases usually use one. A lightweight tag is only a name for a commit.
 - **Artifact**: A file a run produced and kept, to download.
 - **Assignee**: The person an issue or pull request is given to.
 - **Branch**: A line of work: a name that follows the newest commit of one set of changes. Under Code, Branches.
@@ -974,7 +976,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 326 yes, 1137 planned, 15 not needed and 526 left to GitHub.
+In all: 330 yes, 1133 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1846,7 +1848,7 @@ In all: 326 yes, 1137 planned, 15 not needed and 526 left to GitHub.
 
 #### Git database
 
-13 operations: 7 yes, 3 planned, 3 not needed.
+13 operations: 10 yes, 3 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1854,13 +1856,13 @@ In all: 326 yes, 1137 planned, 15 not needed and 526 left to GitHub.
 | Get a blob | `GET /repos/{owner}/{repo}/git/blobs/{file_sha}` | Not needed | Git objects (blobs, trees, commits) are plumbing beneath commands that write files. Plumbing under Commit Multiple Files. |
 | Create a commit | `POST /repos/{owner}/{repo}/git/commits` | Yes | editor GitHub menu > Commit Multiple Files... |
 | Get a commit object | `GET /repos/{owner}/{repo}/git/commits/{commit_sha}` | Yes | editor GitHub menu > Commit Multiple Files... |
-| List matching references | `GET /repos/{owner}/{repo}/git/matching-refs/{ref}` | Planned | Repository > Code > Tags context menu |
+| List matching references | `GET /repos/{owner}/{repo}/git/matching-refs/{ref}` | Yes | Navigator: Repository > owner/name > Code > Tags |
 | Get a reference | `GET /repos/{owner}/{repo}/git/ref/{ref}` | Yes | editor GitHub menu > Commit Multiple Files... |
 | Create a reference | `POST /repos/{owner}/{repo}/git/refs` | Yes | context menu > Open Template... |
 | Delete a reference | `DELETE /repos/{owner}/{repo}/git/refs/{ref}` | Yes | editor GitHub menu > Delete Branch... |
 | Update a reference | `PATCH /repos/{owner}/{repo}/git/refs/{ref}` | Yes | editor GitHub menu > Commit Multiple Files... |
-| Create a tag object | `POST /repos/{owner}/{repo}/git/tags` | Planned | Repository > Code > Tags context menu |
-| Get a tag | `GET /repos/{owner}/{repo}/git/tags/{tag_sha}` | Planned | Repository > Code > Tags context menu |
+| Create a tag object | `POST /repos/{owner}/{repo}/git/tags` | Yes | Navigator: Repository > owner/name > Code > Tags |
+| Get a tag | `GET /repos/{owner}/{repo}/git/tags/{tag_sha}` | Yes | context menu > Read Tag Message |
 | Create a tree | `POST /repos/{owner}/{repo}/git/trees` | Yes | editor GitHub menu > Commit Multiple Files... |
 | Get a tree | `GET /repos/{owner}/{repo}/git/trees/{tree_sha}` | Not needed | Git objects (blobs, trees, commits) are plumbing beneath commands that write files. Plumbing under Commit Multiple Files. |
 
@@ -2379,7 +2381,7 @@ In all: 326 yes, 1137 planned, 15 not needed and 526 left to GitHub.
 
 #### Repositories
 
-74 operations: 38 yes, 36 planned.
+74 operations: 39 yes, 35 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2447,7 +2449,7 @@ In all: 326 yes, 1137 planned, 15 not needed and 526 left to GitHub.
 | List repository teams | `GET /repos/{owner}/{repo}/teams` | Yes | Navigator: Repository > owner/name > People > Collaborators and Team Access |
 | Get all repository topics | `GET /repos/{owner}/{repo}/topics` | Yes | Properties (Alt+Enter) on Repository: Topics |
 | Replace all repository topics | `PUT /repos/{owner}/{repo}/topics` | Yes | Properties (Alt+Enter) on Repository: Topics |
-| Transfer a repository | `POST /repos/{owner}/{repo}/transfer` | Planned | Repository > Settings > Transfer... |
+| Transfer a repository | `POST /repos/{owner}/{repo}/transfer` | Yes | Repository > Transfer Repository... (Ctrl+Alt+T) |
 | Disable vulnerability alerts | `DELETE /repos/{owner}/{repo}/vulnerability-alerts` | Yes | Properties (Alt+Enter) on Repository: Dependabot alerts |
 | Check if vulnerability alerts are enabled for a repository | `GET /repos/{owner}/{repo}/vulnerability-alerts` | Yes | Properties (Alt+Enter) on Repository |
 | Enable vulnerability alerts | `PUT /repos/{owner}/{repo}/vulnerability-alerts` | Yes | Properties (Alt+Enter) on Repository: Dependabot alerts |

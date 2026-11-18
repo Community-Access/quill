@@ -257,6 +257,16 @@ such as `v1.2.0`, and which branch, tag or commit to put it on, starting with
 `main`. QUILL refuses a name git would refuse, and a tag that already exists,
 before sending anything, and says "Made tag v1.2.0 on main, commit 3f9a2c1."
 
+Then QUILL asks for a message. Leave it empty for a lightweight tag, which is
+only a name for the commit. Type a message, such as "First beta", and the tag
+is annotated: git keeps the message with who made it and when, the way most
+projects tag a release. You hear "Made annotated tag v1.2.0 on main, commit
+3f9a2c1." Cancel at any of the three questions and nothing is made.
+
+**Read Tag Message**, on a tag's context menu, says who made an annotated tag,
+when, and its message: "v1.2.0, tagged by Jeff Bishop on 2026-11-18: First
+beta". For a lightweight tag it says there is no message.
+
 **Delete Tag...** on a tag's context menu (or `Delete`) asks first. If a
 release is built on the tag, the question says so, because deleting the tag
 leaves the release without one. The commit itself stays; only the name goes.
@@ -418,6 +428,21 @@ signed in, and offer to sign you in if you are not.
 The four riskiest commands, renaming, changing visibility, deleting a branch
 and merging a pull request, all make you type a name or number. A stray Enter
 on one of these is much harder to put right than most things.
+
+### Transferring a repository
+
+**Transfer Repository...** moves a repository to another person or to an
+organization, with its issues, pull requests, wiki, stars and watchers. It is
+on the GitHub Workbench's Repository menu (`Ctrl+Alt+T`) and on
+Repository Actions (`Ctrl+Shift+G`). QUILL asks for the new owner, then asks you to type the
+repository's full name, because you may lose access to it and only the new
+owner can move it back.
+
+Moving it to an organization you can create repositories in happens at once,
+and you hear the new name, such as "Transferred jeff/notes; it is now
+community-access/notes. The old address redirects." Moving it to a person
+sends them a request they have a day to accept, and QUILL says so. Only an
+owner or administrator of the repository can transfer it.
 
 ## Watching, starring and following
 

@@ -38,7 +38,13 @@ class _Window(GitHubWorkbenchTier2Mixin):
 
 
 def test_registered() -> None:
-    for verb in ("workflow_state", "accept_invitation", "decline_invitation"):
+    for verb in (
+        "workflow_state",
+        "accept_invitation",
+        "decline_invitation",
+        "tag_message",
+        "transfer_repository",
+    ):
         assert verb in DEVELOPMENT_VERBS
 
 
@@ -87,10 +93,84 @@ def test_new_tag_asks_name_and_target_then_makes_it(monkeypatch) -> None:
     window.api = TagApi()
     answers = ["v1.2.0", "main"]
     window._ask_text = lambda *_a, **_k: answers.pop(0)
+    window._ask_optional = lambda *_a, **_k: ""
     window.frame.current = SimpleNamespace(key="tags")
     assert window._fits_new_tag(None)
     window._do_new_tag(REF, None)
     assert window.said[0] == "Made tag v1.2.0 on main, commit abc1234."
+
+
+def test_new_tag_with_a_message_is_annotated_and_cancel_at_the_message_sends_nothing() -> None:
+    from tests.unit.core.github_workbench.test_tags import FakeApi as TagApi
+
+    window = _Window()
+    window.api = TagApi()
+    answers = ["v2", "main", "v3", "main"]
+    window._ask_text = lambda *_a, **_k: answers.pop(0)
+    window._ask_optional = lambda *_a, **_k: "Second beta"
+    window._do_new_tag(REF, None)
+    assert window.said[0] == "Made annotated tag v2 on main, commit abc1234."
+    window.api = TagApi()
+    window._ask_optional = lambda *_a, **_k: None
+    window._do_new_tag(REF, None)
+    assert not any(method == "POST" for method, _p, _b in window.api.sent)
+
+
+def test_read_tag_message_says_who_when_and_what() -> None:
+    from quill.core.github.items_provider import GitHubTag
+    from tests.unit.core.github_workbench.test_tags import FakeApi as TagApi
+
+    window = _Window()
+    window.api = TagApi()
+    assert window._fits_tag_message(GitHubTag("v9"))
+    window._do_tag_message(REF, GitHubTag("v9"))
+    assert window.said == ["v9, tagged by Jeff Bishop on 2026-11-18: First beta"]
+
+
+# -- transferring a repository -------------------------------------------------------
+
+
+def _typed(monkeypatch, answer: bool) -> list[str]:
+    seen: list[str] = []
+
+    class Typed:
+        def __init__(self, _parent: Any, **kw: Any) -> None:
+            seen.append(kw["expected"])
+
+        def show(self) -> bool:
+            return answer
+
+    monkeypatch.setattr("quill.ui.github_repo_admin_dialogs.TypedConfirmDialog", Typed)
+    return seen
+
+
+def test_transfer_asks_the_owner_then_the_typed_name(monkeypatch) -> None:
+    from tests.unit.core.github_workbench.test_repo_transfer import FakeApi as TransferApi
+
+    seen = _typed(monkeypatch, True)
+    window = _Window()
+    window.api = TransferApi({"full_name": "team/r"})
+    window._ask_text = lambda *_a, **_k: "@team"
+    window.frame.frame = None
+    window.frame.current = SimpleNamespace(template="repository")
+    assert window._fits_transfer_repository(None)
+    window._do_transfer_repository(REF, None)
+    assert seen == ["o/r"]
+    assert window.api.sent == [("POST", "/repos/o/r/transfer", {"new_owner": "team"})]
+    assert window.said == ["Transferred o/r; it is now team/r. The old address redirects."]
+
+
+def test_transfer_cancelled_at_the_typed_name_sends_nothing(monkeypatch) -> None:
+    from tests.unit.core.github_workbench.test_repo_transfer import FakeApi as TransferApi
+
+    _typed(monkeypatch, False)
+    window = _Window()
+    window.api = TransferApi()
+    window._ask_text = lambda *_a, **_k: "team"
+    window.frame.frame = None
+    window._do_transfer_repository(REF, None)
+    assert window.api.sent == []
+    assert window.said == ["Cancelled; the repository was not transferred."]
 
 
 def test_delete_tag_names_the_release_built_on_it_first() -> None:

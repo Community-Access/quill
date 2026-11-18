@@ -1787,7 +1787,11 @@ on (<code>quill/core/github/runners_sbom.py</code>)</td>
 <td>Tags: create and delete outside a release</td>
 <td><strong>Built 2026-11-18.</strong> New Tag… (Ctrl+N in Tags) makes a
 lightweight tag on a branch, tag or commit; Delete Tag… asks, naming a
-release built on the tag (<code>quill/core/github/tags.py</code>)</td>
+release built on the tag (<code>quill/core/github/tags.py</code>). A
+message makes the tag annotated (<code>POST .../git/tags</code>, then
+the ref points at the tag object); Read Tag Message says tagger, date
+and message (<code>GET .../git/tags/{sha}</code>); a taken name is found
+with <code>GET .../git/matching-refs</code></td>
 <td>Repository &gt; Code &gt; Tags context menu</td>
 </tr>
 <tr>
@@ -1800,7 +1804,12 @@ Comment… on the comment at the cursor, for a reason
 </tr>
 <tr>
 <td>Transfer a repository</td>
-<td>Not found (only issues transfer)</td>
+<td><strong>Built 2026-11-18:</strong> Repository &gt; Transfer
+Repository… (<code>Ctrl+Alt+T</code>, also on Repository Actions;
+<code>POST /repos/{owner}/{repo}/transfer</code>). Asks the new owner,
+then the typed full name (tier 3, needs administration); says whether it
+moved at once or waits for a person to accept; 403 and 422 said in words
+(<code>quill/core/github/repo_transfer.py</code>)</td>
 <td>Repository &gt; Settings &gt; Transfer…</td>
 </tr>
 <tr>
