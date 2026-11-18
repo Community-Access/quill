@@ -3276,7 +3276,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 501 yes, 551 planned, 217 not needed and 735 left to
+<p>In all: 477 yes, 577 planned, 209 not needed and 741 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -14896,8 +14896,9 @@ org &gt; Enterprise (Open on GitHub).</td>
 <td>Remove a SAML SSO authorization for an organization</td>
 <td><code>DELETE /orgs/{org}/credential-authorizations/{credential_id}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organizations &gt; org &gt; Single Sign-On</td>
+<td>Left to GitHub</td>
+<td>Credential authorizations are for organizations that sign in with
+SAML single sign-on, which needs GitHub Enterprise Cloud.</td>
 </tr>
 <tr>
 <td>Delete a custom repository role</td>
@@ -16002,8 +16003,9 @@ replaces it. Organization sheet &gt; Roles.</td>
 <td>List SAML SSO authorizations for an organization</td>
 <td><code>GET /orgs/{org}/credential-authorizations</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organizations &gt; org &gt; Single Sign-On</td>
+<td>Left to GitHub</td>
+<td>Credential authorizations are for organizations that sign in with
+SAML single sign-on, which needs GitHub Enterprise Cloud.</td>
 </tr>
 <tr>
 <td>List custom repository roles in an organization</td>
@@ -16889,29 +16891,33 @@ org &gt; Enterprise (Open on GitHub).</td>
 <td>Revoke all credential authorizations for an organization</td>
 <td><code>POST /orgs/{org}/credential-authorizations/revoke-all</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organizations &gt; org &gt; Single Sign-On</td>
+<td>Left to GitHub</td>
+<td>Credential authorizations are for organizations that sign in with
+SAML single sign-on, which needs GitHub Enterprise Cloud.</td>
 </tr>
 <tr>
 <td>Revoke a single credential type for an organization</td>
 <td><code>POST /orgs/{org}/credential-authorizations/revoke-credential-type</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organizations &gt; org &gt; Single Sign-On</td>
+<td>Left to GitHub</td>
+<td>Credential authorizations are for organizations that sign in with
+SAML single sign-on, which needs GitHub Enterprise Cloud.</td>
 </tr>
 <tr>
 <td>Revoke credential authorizations for a user in an organization</td>
 <td><code>POST /orgs/{org}/credential-authorizations/{username}/revoke</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organizations &gt; org &gt; Single Sign-On</td>
+<td>Left to GitHub</td>
+<td>Credential authorizations are for organizations that sign in with
+SAML single sign-on, which needs GitHub Enterprise Cloud.</td>
 </tr>
 <tr>
 <td>Revoke a single credential type for a user in an organization</td>
 <td><code>POST /orgs/{org}/credential-authorizations/{username}/revoke-credential-type</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organizations &gt; org &gt; Single Sign-On</td>
+<td>Left to GitHub</td>
+<td>Credential authorizations are for organizations that sign in with
+SAML single sign-on, which needs GitHub Enterprise Cloud.</td>
 </tr>
 <tr>
 <td>Create a custom repository role</td>
