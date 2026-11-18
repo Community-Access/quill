@@ -23,7 +23,10 @@ def _install_fake_pygithub() -> None:
     succeed.  The Content stubs we pass in are plain SimpleNamespace objects,
     so no API surface is needed here.
     """
-    if "github" in sys.modules:
+    # Only a real PyGithub counts: a folder that happens to be called "github"
+    # on sys.path imports as an empty namespace package, which once hid this
+    # stub and failed the provider tests in whichever shard ran it after one.
+    if hasattr(sys.modules.get("github"), "Github"):
         return
     fake = types.ModuleType("github")
     fake.Github = MagicMock()
