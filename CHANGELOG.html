@@ -947,6 +947,167 @@ Lite’s): what you need, test mode, the three kinds of amount, providers,
 publishing and what each refusal means, what the person paying hears
 with a screen reader, receipts, refunds, reporting and going live.</li>
 </ul>
+<h3 id="reviews-already-on-a-pull-request-2026-11-18">Reviews already on
+a pull request (2026-11-18)</h3>
+<p><strong>Reviews…</strong> on a pull request in the GitHub Workbench
+lists its reviews (“sam approved on 2026-11-17: Looks good”). Choose
+one, then:</p>
+<ul>
+<li><strong>Read its comments…</strong>: each line comment, to read in a
+window, change or delete (your own).</li>
+<li><strong>Change its summary…</strong> of your review.</li>
+<li><strong>Dismiss it…</strong> for an approval or a request for
+changes, with the reason GitHub asks for.</li>
+<li><strong>Submit it…</strong> for your pending review: as a comment,
+an approval or a request for changes, with an optional summary; or
+<strong>Delete it…</strong>.</li>
+</ul>
+<p>A pull request’s commits, which File Differences already reads, are
+counted now. Merging with GitHub’s background merge route is left to
+Merge…, which does the same. Planned GitHub endpoints fall from 441 to
+430.</p>
+<h3
+id="environments-their-secrets-and-variables-and-some-routes-counted-2026-11-18">Environments,
+their secrets and variables, and some routes counted (2026-11-18)</h3>
+<ul>
+<li><strong>Settings &gt; Environments</strong> in each repository lists
+where its workflows deploy, each with its protection rules (“production:
+needs a reviewer, waits 5 minutes.”). On each one,
+<strong>Secrets…</strong> and <strong>Variables…</strong> list that
+environment’s own, with “Add a secret…” first; choosing one offers
+Change (for a variable) or Delete. A secret is typed into a password box
+and sealed with the environment’s own key. <strong>Delete…</strong> asks
+first, and says that its secrets, variables and rules go with it.
+Properties opens the Environment sheet.</li>
+<li><strong>Settings &gt; Organization Secrets Here</strong> and
+<strong>Organization Variables Here</strong> list what the organization
+shares with this repository.</li>
+<li>Several routes QUILL already used were never counted, and now are:
+your starred repositories, your activity feed, a repository’s
+stargazers, and, in the review window, the review comments, replying to
+one, and updating a pull request’s branch.</li>
+</ul>
+<p>Planned GitHub endpoints fall from 456 to 441.</p>
+<h3 id="more-on-a-workflow-run-2026-11-18">More on a workflow run
+(2026-11-18)</h3>
+<p>A workflow run’s row in the GitHub Workbench has six more
+commands:</p>
+<ul>
+<li><strong>Re-run One Job…</strong> picks one job, then re-runs it as
+it was or with debug logging.</li>
+<li><strong>Force Cancel…</strong>, after asking, for a run that Cancel
+did not stop. Its cleanup steps are skipped, which the question
+says.</li>
+<li><strong>Download Logs…</strong> saves every log of the run as a zip
+file.</li>
+<li><strong>Delete Logs…</strong>, after asking; the run itself is
+kept.</li>
+<li><strong>Approvals</strong> says who approved or rejected each of its
+deployments, and what they wrote.</li>
+<li><strong>Earlier Attempts…</strong>, on a run that was re-run, says
+how an earlier attempt went or downloads its logs.</li>
+</ul>
+<p>Planned GitHub endpoints fall from 467 to 456.</p>
+<h3 id="reacting-to-a-release-2026-11-18">Reacting to a release
+(2026-11-18)</h3>
+<p><strong>React…</strong> on a release in the GitHub Workbench adds or
+removes your reaction, from the same list of reactions as an issue’s,
+and says which. The reactions already offered in the GitHub Items window
+and the review window (on issues, pull requests and their comments) are
+now counted as built, which they were. Planned GitHub endpoints fall
+from 476 to 467.</p>
+<h3
+id="codespaces-make-one-start-stop-export-and-publish-2026-11-18">Codespaces:
+make one, start, stop, export and publish (2026-11-18)</h3>
+<p>A codespace is a computer GitHub runs in the cloud for one repository
+and branch. The GitHub Workbench now has <strong>Repositories &gt; My
+Codespaces</strong> for all of yours, and <strong>Code &gt;
+Codespaces</strong> in each repository for that repository’s.</p>
+<ul>
+<li><strong>Ctrl+N</strong> in a repository’s Codespaces makes one on
+the branch you name, with the machine and dev container you choose;
+GitHub’s own default dev container is picked for you when there is one.
+If the dev container asks for permissions you have not accepted, QUILL
+says to accept them on GitHub first.</li>
+<li>On each codespace: <strong>Start</strong>, <strong>Stop</strong>
+(its files are kept), <strong>Change Machine…</strong>, <strong>Export
+to a Branch</strong> (your unpushed changes, then whether it worked),
+<strong>Publish to a New Repository…</strong> for one made from a
+template, and <strong>Delete…</strong>, which asks first. Properties
+shows and renames it.</li>
+<li><strong>Open in a Codespace</strong> on an open pull request makes
+one on its branch.</li>
+</ul>
+<p>Codespaces can cost money; a used-up spending limit is said plainly.
+Planned GitHub endpoints fall from 492 to 476.</p>
+<h3
+id="package-versions-see-them-restore-one-and-other-peoples-packages-2026-11-18">Package
+versions: see them, restore one, and other people’s packages
+(2026-11-18)</h3>
+<ul>
+<li><strong>Show Versions</strong> on any package lists every version,
+newest first, with its tags, in a window you can read through.</li>
+<li><strong>Restore Package Version…</strong> on your own or your
+organization’s package lists the versions deleted in the last 30 days
+and brings back the one you choose.</li>
+<li><strong>People &gt;</strong> a person <strong>&gt; Packages</strong>
+lists that person’s public packages. Show Versions works on them;
+deleting and restoring do not, since only a package’s owner may change
+it.</li>
+</ul>
+<p>Planned GitHub endpoints fall from 503 to 492.</p>
+<h3
+id="copilot-autofix-every-place-an-alert-was-found-and-sarif-uploads-2026-11-18">Copilot
+Autofix, every place an alert was found, and SARIF uploads
+(2026-11-18)</h3>
+<p>Three more things to do with code scanning in the GitHub Workbench,
+beyond dismissing an alert:</p>
+<ul>
+<li><strong>Copilot Autofix…</strong> on a code scanning alert asks
+Copilot for a fix, says when one is still being made, and, once it is
+ready, commits it to the branch you name, with your message if you give
+one.</li>
+<li><strong>Show Every Place</strong> on a code scanning alert opens a
+window listing each place it was found: the file, the line, the branch,
+whether it is still open, and GitHub’s message.</li>
+<li><strong>Ctrl+N in Code Scanning Analyses</strong> uploads a SARIF
+file, the results file another scanning tool writes. QUILL compresses it
+as GitHub asks, sends it against the newest commit on the branch you
+name, and then says whether GitHub has processed it.</li>
+</ul>
+<p>Each repository also has <strong>Code Scanning Analyses</strong>
+(every upload of results, with Delete) and <strong>CodeQL
+Databases</strong> (one per language, with Delete), and each
+organization has <strong>Code Scanning Alerts</strong> across all its
+repositories. Planned GitHub endpoints fall from 517 to 503. Running
+CodeQL’s variant analysis across many repositories is left to VS Code
+and the CodeQL command-line tool, which build the query packs it
+needs.</p>
+<h3
+id="actions-rules-immutable-releases-and-code-scanning-on-properties-2026-11-18">Actions
+rules, immutable releases and code scanning on Properties
+(2026-11-18)</h3>
+<p><strong>Properties</strong> (<code>Alt+Enter</code>) on a repository
+has two new pages:</p>
+<ul>
+<li><strong>Actions Rules:</strong> how many days Actions keeps
+artifacts and logs; which outside contributors need approval before
+their workflows run; when Allowed actions is set to selected, whether
+actions made by GitHub and by verified creators may run, and a list of
+other allowed actions; and, for a private repository, which other
+repositories may use its workflows.</li>
+<li><strong>Releases and Scanning:</strong> immutable releases, whose
+tag and files can no longer be changed once published, and code
+scanning’s default setup and which set of queries it runs.</li>
+</ul>
+<p>An organization’s Properties has the organization-wide Actions Rules
+(the same choices, plus the workflow token’s default permission, whether
+Actions may create and approve pull requests, and which repositories may
+use self-hosted runners) and a <strong>Safety</strong> page: a week-long
+interaction limit for every public repository, and which repositories
+must keep releases immutable. Choosing “none” lifts the limit. Each is
+saved, checked and undone like every other field on a sheet. Planned
+GitHub endpoints fall from 545 to 517.</p>
 <h3
 id="copilot-autofix-every-place-an-alert-was-found-and-sarif-uploads-2026-11-18">Copilot
 Autofix, every place an alert was found, and SARIF uploads

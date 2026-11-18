@@ -55,9 +55,54 @@ ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
         _COPY_LINK,
         _PROPERTIES,
     ),
+    "environment": (
+        _default("show_details", "Show Details", "The environment's protection rules."),
+        _a(
+            "environment_secrets", "Secrets...", _W, "sign_in", "Add, change or delete its secrets."
+        ),
+        _a("environment_variables", "Variables...", _W, "sign_in", "Add, change or delete them."),
+        _a("environment_delete", "Delete...", _D, "sign_in", "Delete it, after asking."),
+        _OPEN_WEB,
+        _COPY_LINK,
+        _PROPERTIES,
+    ),
+    "codespace": (
+        _default("show_details", "Show Details", "The codespace's repository, branch and machine."),
+        _a("codespace_start", "Start", _W, "sign_in", "Start it, as it was when it stopped."),
+        _a("codespace_stop", "Stop", _W, "sign_in", "Stop it; its files are kept."),
+        _a("codespace_machine", "Change Machine...", _W, "sign_in", "A bigger or smaller machine."),
+        _a(
+            "codespace_export", "Export to a Branch", _W, "sign_in", "Unpushed changes to a branch."
+        ),
+        _a(
+            "codespace_publish",
+            "Publish to a New Repository...",
+            _W,
+            "sign_in",
+            "For a codespace made from a template.",
+        ),
+        _a("codespace_delete", "Delete...", _D, "sign_in", "Delete it, after asking."),
+        _OPEN_WEB,
+        _COPY_LINK,
+        _PROPERTIES,
+    ),
     "package": (
         _default("show_details", "Show Details", "The package's type, visibility and repository."),
         _OPEN_WEB,
+        _a(
+            "show_package_versions",
+            "Show Versions",
+            _R,
+            "sign_in",
+            "Every version, newest first, with its tags.",
+        ),
+        _a(
+            "restore_package_version",
+            "Restore Package Version...",
+            _W,
+            "sign_in",
+            "Bring back a version deleted in the last 30 days.",
+        ),
         _a(
             "delete_package_version",
             "Delete Package Version...",

@@ -167,6 +167,20 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
             "Have it merge itself when it can, or turn that off.",
         ),
         _a(
+            "manage_reviews",
+            "Reviews...",
+            _W,
+            "push",
+            "Read, change, dismiss, submit or delete a review.",
+        ),
+        _a(
+            "pull_codespace",
+            "Open in a Codespace",
+            _W,
+            "sign_in",
+            "Make a codespace on its branch.",
+        ),
+        _a(
             "merge_queue",
             "Add to or Remove from Merge Queue...",
             _W,
@@ -215,6 +229,14 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a("rerun_failed", "Re-run Failed Jobs Only", _W, "push", "Run only what failed again."),
         _a("rerun", "Re-run Workflow", _W, "push", "Run the whole workflow again."),
         _a("cancel_run", "Cancel Run...", _W, "push", "Stop the run. QUILL asks first."),
+        _a(
+            "rerun_job", "Re-run One Job...", _W, "push", "One job again, with debug logs if asked."
+        ),
+        _a("force_cancel_run", "Force Cancel...", _W, "push", "When Cancel has not stopped it."),
+        _a("download_run_logs", "Download Logs...", help="Every log of the run, as a zip file."),
+        _a("delete_run_logs", "Delete Logs...", _D, "push", "Delete its logs; the run stays."),
+        _a("run_approvals", "Approvals", help="Who approved or rejected its deployments."),
+        _a("run_attempts", "Earlier Attempts...", help="How an earlier attempt went, or its logs."),
         _a("artifacts", "View Artifacts...", help="Files the run produced, to download."),
         _OPEN_WEB,
         _a("check_status", "Combined Check Status", help="Every check on the commit, at once."),
@@ -249,6 +271,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a("edit_release", "Edit Release...", _W, "push", "Change its notes, name and flags."),
         _a("release_notes", "Draft Release Notes...", help="Notes drafted from the changes."),
         _a("upload_asset", "Upload Asset...", _W, "push", "Add a file to the release."),
+        _a("react_release", "React...", _O, "sign_in", "Add or remove a reaction."),
         _COMPARE_PREVIOUS,
         _COMPARE_DEFAULT,
         _COPY_LINK,

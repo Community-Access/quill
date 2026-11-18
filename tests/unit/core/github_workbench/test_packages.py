@@ -132,3 +132,28 @@ def test_an_organizations_packages_and_restoring(monkeypatch: Any) -> None:
     assert fetch_extra_view(provider, "org_packages", repo="community-access", **ask) == [
         "community-access"
     ]
+
+
+def test_another_persons_packages_and_their_versions() -> None:
+    api = FakeApi()
+    rows = pk.fetch_packages(api, person="octocat")
+    assert rows[0].key == "~octocat/container/quill-engine"
+    assert api.sent[0][1] == "/users/octocat/packages"
+    assert pk.row_owner(rows[0].key) == ("", "octocat", "container", "quill-engine")
+    assert pk.row_parts("@acme/npm/kit") == ("acme", "npm", "kit")
+    versions = pk.fetch_versions(api, "container", "quill-engine", person="octocat")
+    assert api.sent[-1][1] == "/users/octocat/packages/container/quill-engine/versions"
+    text = pk.versions_text("quill-engine", versions)
+    assert text.splitlines()[0] == "quill-engine has 2 versions, newest first."
+    assert "sha256:bbb, tagged latest, 1.2, updated 2026-11-12." in text
+
+
+def test_deleted_versions_are_listed_and_one_is_restored() -> None:
+    api = FakeApi()
+    versions = pk.fetch_versions(api, "container", "quill-engine", state="deleted")
+    assert api.sent[-1][2]["state"] == "deleted"
+    said = pk.restore_version(api, "container", "quill-engine", versions[0])
+    assert said == "Restored version sha256:bbb of quill-engine."
+    assert api.sent[-1][:2] == ("POST", "/user/packages/container/quill-engine/versions/2/restore")
+    with pytest.raises(pk.PackageError, match="write:packages"):
+        pk.restore_version(FakeApi({"restore": 403}), "container", "quill-engine", versions[0])

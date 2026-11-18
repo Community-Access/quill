@@ -49,6 +49,9 @@ BASES = {
     "repository": ("/repos/{target}", "/repos/{owner}/{repo}"),
     "organization": ("/orgs/{target}", "/orgs/{org}"),
     "user": ("/user", "/user"),
+    # An environment's target is "owner/repo/environments/name"; it has no tree node of
+    # its own, and is reached from an environment's row (Secrets..., Variables...).
+    "environment": ("/repos/{target}", "/repos/{owner}/{repo}/environments/{environment_name}"),
 }
 
 

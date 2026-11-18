@@ -594,6 +594,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Keys (`:help_keys`) | help | Keys: every key in the Workbench, grouped by what it does. |
 | What Changed (`:help_changes`) | help | What Changed: what is new in the GitHub Workbench in this version. |
 | Ask a Person (`:help_ask`) | help | Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email. |
+| My Codespaces (`:my_codespaces`) | repositories | My Codespaces: every codespace of yours. Start, Stop, Change Machine, Export to a Branch and Delete are on each row. |
 | My Codespaces Secrets (`:my_codespaces_secrets`) | people | My Codespaces Secrets: values given to your own codespaces. |
 | My Email Addresses (`:my_emails`) | people | My Email Addresses: the addresses on your account. Ctrl+N adds one. |
 | My Social Accounts (`:my_social_accounts`) | people | My Social Accounts: the links on your profile. |
@@ -649,6 +650,8 @@ Everything below is generated from the tables the window is built from. The GitH
 | Webhooks (`repository:webhooks`) | repository, settings | Webhooks: the addresses GitHub tells about events here. Ctrl+N adds one; Recent Deliveries on a webhook says what was sent and redelivers it. |
 | Deploy Keys (`repository:deploy_keys`) | repository, settings | Deploy Keys: SSH keys that let a server clone, pull or push this one repository. Ctrl+N adds one. |
 | Autolinks (`repository:autolinks`) | repository, settings | Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one. |
+| Environments (`repository:environments`) | repository, settings | Environments: where this repository's workflows deploy, each with its protection rules. Secrets... and Variables... on a row are that environment's own. |
+| Codespaces (`repository:repo_codespaces`) | repository, code | Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you name, with the machine and dev container you choose. |
 | Actions Variables (`repository:actions_variables`) | repository, settings | Actions Variables: values workflows read as vars.NAME. Ctrl+N adds one. |
 | Actions Secrets (`repository:actions_secrets`) | repository, settings | Actions Secrets: values workflows read but nobody sees again. Ctrl+N adds one. |
 | Dependabot Secrets (`repository:dependabot_secrets`) | repository, settings | Dependabot Secrets: what Dependabot uses to reach private registries. |
@@ -660,6 +663,8 @@ Everything below is generated from the tables the window is built from. The GitH
 | Issue Types (`repository:repo_issue_types`) | repository, settings | Issue Types: the kinds of issue this repository offers, set by its organization. |
 | Code Scanning Analyses (`repository:code_scanning_analyses`) | repository, security | Code Scanning Analyses: each upload of results, newest first. Deleting one removes its results; GitHub refuses the last analysis of a tool unless asked. |
 | CodeQL Databases (`repository:codeql_databases`) | repository, security | CodeQL Databases: the databases code scanning built, one per language. |
+| Organization Secrets Here (`repository:repo_org_secrets`) | repository, settings | Organization Secrets Here: the organization's Actions secrets this repository may use. Change them in the organization. |
+| Organization Variables Here (`repository:repo_org_variables`) | repository, settings | Organization Variables Here: the organization's Actions variables this repository may use. Change them in the organization. |
 | person (`person:person`) | person | A person: their repositories, activity, followers and who they follow. |
 | Profile (`person:person_profile`) | person, person | Profile: who this person is, their year of contributions as numbers, and what they pinned. |
 | Sponsor (`person:person_sponsor`) | person, person | Sponsor: whether this person takes sponsorships, and each tier with its price. |
@@ -667,6 +672,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Activity (`person:person_activity`) | person, person | Activity: what this person did lately on GitHub. |
 | Followers (`person:person_followers`) | person, person | Followers: who follows this person. |
 | Following (`person:person_following`) | person, person | Following: who this person follows. |
+| Packages (`person:person_packages`) | person, person | Packages: this person's public packages. Show Versions lists each one's versions. |
 | organization (`organization:organization`) | organization | An organization: its repositories. |
 | Repositories (`organization:organization_repositories`) | organization, organization | Repositories: the organization's repositories you can see. |
 | Teams (`organization:organization_teams`) | organization, organization | Teams: the organization's teams, as GitHub nests them. Alt+Enter opens a team's sheet: its members and maintainers, repositories and roles, child teams and code review assignment. |
@@ -903,10 +909,10 @@ Keys the window answers that are not menu rows:
 ### Context menus, by row type
 
 - **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Add to or Remove from Favorites; Properties...
-- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
-- **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., View Artifacts...; More: Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
+- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
+- **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., Re-run One Job...; More: Force Cancel..., Download Logs..., Delete Logs..., Approvals, Earlier Attempts..., View Artifacts..., Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link; Properties...
-- **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., Compare With Previous, Compare With Default; More: Copy Link, Open on GitHub; Properties...
+- **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., React..., Compare With Previous; More: Compare With Default, Copy Link, Open on GitHub; Properties...
 - **release_asset**: Download, Copy Link, Delete Asset...; Properties...
 - **branch**: Commits, Compare With Default, Compare Branches..., Compare With Previous, Open in Codespaces..., Copy Name, Delete Branch...; Properties...
 - **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
@@ -940,7 +946,9 @@ Keys the window answers that are not menu rows:
 - **by_name**: Variants and Missing From, Make Them the Same..., Add to Missing..., Find Uses, Rename Everywhere..., Merge Into...; More: Close Everywhere..., Move Open Work To..., Promote to Organization..., Delete Everywhere...; Properties...
 - **fleet**: Open Repository, Open on GitHub, Copy Link; Properties...
 - **runner**: Show Details, Runner Labels..., Remove Runner..., Open on GitHub, Copy Link; Properties...
-- **package**: Show Details, Open on GitHub, Delete Package Version..., Delete Package..., Copy Link; Properties...
+- **environment**: Show Details, Secrets..., Variables..., Delete..., Open on GitHub, Copy Link; Properties...
+- **codespace**: Show Details, Start, Stop, Change Machine..., Export to a Branch, Publish to a New Repository...; More: Delete..., Open on GitHub, Copy Link; Properties...
+- **package**: Show Details, Open on GitHub, Show Versions, Restore Package Version..., Delete Package Version..., Delete Package..., Copy Link; Properties...
 - **key**: Show Details, Delete Key..., Open on GitHub; Properties...
 - **advisory**: Show Details, Publish or Close Advisory..., Request CVE..., Open on GitHub, Copy Link; Properties...
 - **webhook**: Show Details, Ping, Recent Deliveries..., Change Address or Secret..., Delete Webhook..., Open on GitHub; Properties...
@@ -1050,7 +1058,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
+In all: 600 yes, 430 planned, 229 not needed and 745 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1058,7 +1066,7 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 
 #### Actions
 
-208 operations: 95 yes, 53 planned, 16 not needed, 44 left to github.
+208 operations: 110 yes, 36 planned, 17 not needed, 45 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1184,12 +1192,12 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 | Get a concurrency group for a repository | `GET /repos/{owner}/{repo}/actions/concurrency_groups/{concurrency_group_name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Get a job for a workflow run | `GET /repos/{owner}/{repo}/actions/jobs/{job_id}` | Yes | Properties (Alt+Enter) on Job |
 | Download job logs for a workflow run | `GET /repos/{owner}/{repo}/actions/jobs/{job_id}/logs` | Yes | Item > What Failed... (Ctrl+Shift+W) |
-| Re-run a job from a workflow run | `POST /repos/{owner}/{repo}/actions/jobs/{job_id}/rerun` | Planned | Run sheet. |
+| Re-run a job from a workflow run | `POST /repos/{owner}/{repo}/actions/jobs/{job_id}/rerun` | Yes | context menu > Re-run One Job... |
 | Download step logs for a workflow run job | `GET /repos/{owner}/{repo}/actions/jobs/{job_id}/steps/{step_number}/logs` | Planned | Job sheet. |
 | Get the customization template for an OIDC subject claim for a repository | `GET /repos/{owner}/{repo}/actions/oidc/customization/sub` | Left to GitHub | Cloud identity (OIDC) claim settings are one-off security plumbing for company deployments, set up on GitHub's site. |
 | Set the customization template for an OIDC subject claim for a repository | `PUT /repos/{owner}/{repo}/actions/oidc/customization/sub` | Left to GitHub | Cloud identity (OIDC) claim settings are one-off security plumbing for company deployments, set up on GitHub's site. |
-| List repository organization secrets | `GET /repos/{owner}/{repo}/actions/organization-secrets` | Planned | Secret and variable sheets (write-only values). |
-| List repository organization variables | `GET /repos/{owner}/{repo}/actions/organization-variables` | Planned | Secret and variable sheets. |
+| List repository organization secrets | `GET /repos/{owner}/{repo}/actions/organization-secrets` | Yes | Navigator: Repository > owner/name > Settings > Organization Secrets Here |
+| List repository organization variables | `GET /repos/{owner}/{repo}/actions/organization-variables` | Yes | Navigator: Repository > owner/name > Settings > Organization Variables Here |
 | Get GitHub Actions permissions for a repository | `GET /repos/{owner}/{repo}/actions/permissions` | Yes | Properties (Alt+Enter) on Repository |
 | Set GitHub Actions permissions for a repository | `PUT /repos/{owner}/{repo}/actions/permissions` | Yes | Properties (Alt+Enter) on Repository: Actions enabled |
 | Get the level of access for workflows outside of the repository | `GET /repos/{owner}/{repo}/actions/permissions/access` | Yes | Properties (Alt+Enter) on Repository |
@@ -1225,19 +1233,19 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 | List workflow runs for a repository | `GET /repos/{owner}/{repo}/actions/runs` | Yes | Navigator: Repository > owner/name > Actions > Runs |
 | Delete a workflow run | `DELETE /repos/{owner}/{repo}/actions/runs/{run_id}` | Yes | context menu > Delete Run... |
 | Get a workflow run | `GET /repos/{owner}/{repo}/actions/runs/{run_id}` | Yes | Properties (Alt+Enter) on Workflow Run |
-| Get the review history for a workflow run | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/approvals` | Planned | Run sheet. |
+| Get the review history for a workflow run | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/approvals` | Yes | context menu > Approvals |
 | Approve a workflow run for a fork pull request | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/approve` | Yes | context menu > Approve Run from a Fork... |
 | List workflow run artifacts | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts` | Yes | context menu > View Artifacts... |
-| Get a workflow run attempt | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}` | Planned | Run sheet. |
+| Get a workflow run attempt | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}` | Yes | context menu > Earlier Attempts... |
 | List jobs for a workflow run attempt | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs` | Planned | Job sheet. |
-| Download workflow run attempt logs | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/logs` | Planned | Run sheet. |
+| Download workflow run attempt logs | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/logs` | Yes | context menu > Earlier Attempts... |
 | Cancel a workflow run | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/cancel` | Yes | context menu > Cancel Run... (Ctrl+Cancel) |
 | List concurrency groups for a workflow run | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/concurrency_groups` | Planned | Repository > Actions; Organization sheet > Actions; Run, Job, Workflow, Artifact, Cache, Runner, Secret and Variable sheets. |
-| Review custom deployment protection rules for a workflow run | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/deployment_protection_rule` | Planned | Run sheet. |
-| Force cancel a workflow run | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/force-cancel` | Planned | Run sheet. |
+| Review custom deployment protection rules for a workflow run | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/deployment_protection_rule` | Left to GitHub | Only a GitHub App acting as a custom deployment protection rule answers this; a person approves through Review Pending Deployments. |
+| Force cancel a workflow run | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/force-cancel` | Yes | context menu > Force Cancel... |
 | List jobs for a workflow run | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs` | Yes | Properties (Alt+Enter) on Workflow Run |
-| Delete workflow run logs | `DELETE /repos/{owner}/{repo}/actions/runs/{run_id}/logs` | Planned | Run sheet. |
-| Download workflow run logs | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs` | Planned | Run sheet. |
+| Delete workflow run logs | `DELETE /repos/{owner}/{repo}/actions/runs/{run_id}/logs` | Yes | context menu > Delete Logs... |
+| Download workflow run logs | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs` | Yes | context menu > Download Logs... |
 | Get pending deployments for a workflow run | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments` | Yes | context menu > Review Pending Deployments... |
 | Review pending deployments for a workflow run | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments` | Yes | context menu > Review Pending Deployments... |
 | Re-run a workflow | `POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun` | Yes | context menu > Re-run Workflow |
@@ -1258,22 +1266,22 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 | Disable a workflow | `PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/disable` | Yes | context menu > Turn Workflow On or Off... |
 | Create a workflow dispatch event | `POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches` | Yes | Repository > Run Workflow on Branch... (Ctrl+Shift+R) |
 | Enable a workflow | `PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable` | Yes | context menu > Turn Workflow On or Off... |
-| List workflow runs for a workflow | `GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs` | Planned | Run sheet. |
+| List workflow runs for a workflow | `GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs` | Not needed | A workflow's Runs shows the repository's runs filtered to that workflow; one route serves both. |
 | Get workflow usage | `GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/timing` | Planned | Workflow sheet. |
 | List environment secrets | `GET /repos/{owner}/{repo}/environments/{environment_name}/secrets` | Yes | Properties (Alt+Enter) on Environment |
-| Get an environment public key | `GET /repos/{owner}/{repo}/environments/{environment_name}/secrets/public-key` | Planned | Secret and variable sheets (write-only values). |
-| Delete an environment secret | `DELETE /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}` | Planned | Secret and variable sheets (write-only values). |
+| Get an environment public key | `GET /repos/{owner}/{repo}/environments/{environment_name}/secrets/public-key` | Yes | context menu > Secrets... |
+| Delete an environment secret | `DELETE /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}` | Yes | context menu > Secrets... |
 | Get an environment secret | `GET /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Create or update an environment secret | `PUT /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}` | Planned | Secret and variable sheets (write-only values). |
+| Create or update an environment secret | `PUT /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}` | Yes | context menu > Secrets... |
 | List environment variables | `GET /repos/{owner}/{repo}/environments/{environment_name}/variables` | Yes | Properties (Alt+Enter) on Environment |
-| Create an environment variable | `POST /repos/{owner}/{repo}/environments/{environment_name}/variables` | Planned | Secret and variable sheets. |
-| Delete an environment variable | `DELETE /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}` | Planned | Secret and variable sheets. |
+| Create an environment variable | `POST /repos/{owner}/{repo}/environments/{environment_name}/variables` | Yes | context menu > Variables... |
+| Delete an environment variable | `DELETE /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}` | Yes | context menu > Variables... |
 | Get an environment variable | `GET /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Update an environment variable | `PATCH /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}` | Planned | Secret and variable sheets. |
+| Update an environment variable | `PATCH /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}` | Yes | context menu > Variables... |
 
 #### Activity
 
-34 operations: 16 yes, 18 planned.
+34 operations: 19 yes, 15 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1292,14 +1300,14 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 | List repository events | `GET /repos/{owner}/{repo}/events` | Yes | Navigator: Repository > owner/name > Activity |
 | List repository notifications for the authenticated user | `GET /repos/{owner}/{repo}/notifications` | Planned | Needs My Attention > Notifications; Notification sheet. |
 | Mark repository notifications as read | `PUT /repos/{owner}/{repo}/notifications` | Planned | Needs My Attention > Notifications; Notification sheet. |
-| List stargazers | `GET /repos/{owner}/{repo}/stargazers` | Planned | You page: Star (section 16.7). |
+| List stargazers | `GET /repos/{owner}/{repo}/stargazers` | Yes | Navigator: Repository > owner/name > People > Contributors and People |
 | Get stargazer count | `GET /repos/{owner}/{repo}/stargazers/count` | Planned | You page: Star (section 16.7). |
 | Get repository star history | `GET /repos/{owner}/{repo}/stargazers/history` | Planned | You page: Star (section 16.7). |
 | List watchers | `GET /repos/{owner}/{repo}/subscribers` | Planned | You page: Watch level (section 16.7). |
 | Delete a repository subscription | `DELETE /repos/{owner}/{repo}/subscription` | Yes | context menu > Watch or Unwatch |
 | Get a repository subscription | `GET /repos/{owner}/{repo}/subscription` | Yes | context menu > Watch or Unwatch |
 | Set a repository subscription | `PUT /repos/{owner}/{repo}/subscription` | Yes | context menu > Watch or Unwatch |
-| List repositories starred by the authenticated user | `GET /user/starred` | Planned | You page: Star (section 16.7). |
+| List repositories starred by the authenticated user | `GET /user/starred` | Yes | Navigator: Repositories > Starred |
 | Unstar a repository for the authenticated user | `DELETE /user/starred/{owner}/{repo}` | Yes | Properties (Alt+Enter) on Repository: Starred |
 | Check if a repository is starred by the authenticated user | `GET /user/starred/{owner}/{repo}` | Yes | Item > Properties... (Alt+Enter) |
 | Star a repository for the authenticated user | `PUT /user/starred/{owner}/{repo}` | Yes | Properties (Alt+Enter) on Repository: Starred |
@@ -1307,7 +1315,7 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 | List events for the authenticated user | `GET /users/{username}/events` | Planned | Needs My Attention > My Activity Feed; Repository > Activity; Person > Activity. |
 | List organization events for the authenticated user | `GET /users/{username}/events/orgs/{org}` | Planned | Needs My Attention > My Activity Feed; Repository > Activity; Person > Activity. |
 | List public events for a user | `GET /users/{username}/events/public` | Yes | Navigator: Person > person > Activity |
-| List events received by the authenticated user | `GET /users/{username}/received_events` | Planned | Needs My Attention > My Activity Feed; Repository > Activity; Person > Activity. |
+| List events received by the authenticated user | `GET /users/{username}/received_events` | Yes | Navigator: Needs My Attention > My Activity Feed |
 | List public events received by a user | `GET /users/{username}/received_events/public` | Planned | Needs My Attention > My Activity Feed; Repository > Activity; Person > Activity. |
 | List repositories starred by a user | `GET /users/{username}/starred` | Planned | You page: Star (section 16.7). |
 | List repositories watched by a user | `GET /users/{username}/subscriptions` | Planned | You page: Watch level (section 16.7). |
@@ -1614,7 +1622,7 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 
 #### Codespaces
 
-48 operations: 20 yes, 16 planned, 5 not needed, 7 left to github.
+48 operations: 35 yes, 6 not needed, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1634,20 +1642,20 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 | List codespaces for a user in organization | `GET /orgs/{org}/members/{username}/codespaces` | Left to GitHub | Who in an organization may use Codespaces, and who pays, is billing administration on GitHub's site. |
 | Delete a codespace from the organization | `DELETE /orgs/{org}/members/{username}/codespaces/{codespace_name}` | Left to GitHub | Who in an organization may use Codespaces, and who pays, is billing administration on GitHub's site. |
 | Stop a codespace for an organization user | `POST /orgs/{org}/members/{username}/codespaces/{codespace_name}/stop` | Left to GitHub | Who in an organization may use Codespaces, and who pays, is billing administration on GitHub's site. |
-| List codespaces in a repository for the authenticated user | `GET /repos/{owner}/{repo}/codespaces` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Create a codespace in a repository | `POST /repos/{owner}/{repo}/codespaces` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| List devcontainer configurations in a repository for the authenticated user | `GET /repos/{owner}/{repo}/codespaces/devcontainers` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| List available machine types for a repository | `GET /repos/{owner}/{repo}/codespaces/machines` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Get default attributes for a codespace | `GET /repos/{owner}/{repo}/codespaces/new` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Check if permissions defined by a devcontainer have been accepted by the authenticated user | `GET /repos/{owner}/{repo}/codespaces/permissions_check` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| List codespaces in a repository for the authenticated user | `GET /repos/{owner}/{repo}/codespaces` | Yes | Navigator: Repository > owner/name > Code > Codespaces |
+| Create a codespace in a repository | `POST /repos/{owner}/{repo}/codespaces` | Yes | Navigator: Repository > owner/name > Code > Codespaces |
+| List devcontainer configurations in a repository for the authenticated user | `GET /repos/{owner}/{repo}/codespaces/devcontainers` | Yes | Navigator: Repository > owner/name > Code > Codespaces |
+| List available machine types for a repository | `GET /repos/{owner}/{repo}/codespaces/machines` | Yes | Navigator: Repository > owner/name > Code > Codespaces |
+| Get default attributes for a codespace | `GET /repos/{owner}/{repo}/codespaces/new` | Yes | Navigator: Repository > owner/name > Code > Codespaces |
+| Check if permissions defined by a devcontainer have been accepted by the authenticated user | `GET /repos/{owner}/{repo}/codespaces/permissions_check` | Yes | Navigator: Repository > owner/name > Code > Codespaces |
 | List repository secrets | `GET /repos/{owner}/{repo}/codespaces/secrets` | Yes | Navigator: Repository > owner/name > Settings > Codespaces Secrets |
 | Get a repository public key | `GET /repos/{owner}/{repo}/codespaces/secrets/public-key` | Yes | Navigator: Repository > owner/name > Settings > Codespaces Secrets |
 | Delete a repository secret | `DELETE /repos/{owner}/{repo}/codespaces/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get a repository secret | `GET /repos/{owner}/{repo}/codespaces/secrets/{secret_name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Create or update a repository secret | `PUT /repos/{owner}/{repo}/codespaces/secrets/{secret_name}` | Yes | Navigator: Repository > owner/name > Settings > Codespaces Secrets |
-| Create a codespace from a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/codespaces` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| List codespaces for the authenticated user | `GET /user/codespaces` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Create a codespace for the authenticated user | `POST /user/codespaces` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| Create a codespace from a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/codespaces` | Yes | context menu > Open in a Codespace |
+| List codespaces for the authenticated user | `GET /user/codespaces` | Yes | Navigator: Repositories > My Codespaces |
+| Create a codespace for the authenticated user | `POST /user/codespaces` | Not needed | Makes a codespace from a repository id or a pull request; the Workbench uses the repository's and the pull request's own routes for the same thing. |
 | List secrets for the authenticated user | `GET /user/codespaces/secrets` | Yes | Navigator: People > My Codespaces Secrets |
 | Get public key for the authenticated user | `GET /user/codespaces/secrets/public-key` | Yes | Navigator: People > My Codespaces Secrets |
 | Delete a secret for the authenticated user | `DELETE /user/codespaces/secrets/{secret_name}` | Yes | context menu > Delete... |
@@ -1657,15 +1665,15 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 | Set selected repositories for a user secret | `PUT /user/codespaces/secrets/{secret_name}/repositories` | Not needed | Replaces the whole list at once; Repositories Allowed adds and removes one repository at a time instead, so a change somebody else makes meanwhile is kept. |
 | Remove a selected repository from a user secret | `DELETE /user/codespaces/secrets/{secret_name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
 | Add a selected repository to a user secret | `PUT /user/codespaces/secrets/{secret_name}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
-| Delete a codespace for the authenticated user | `DELETE /user/codespaces/{codespace_name}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| Delete a codespace for the authenticated user | `DELETE /user/codespaces/{codespace_name}` | Yes | context menu > Delete... |
 | Get a codespace for the authenticated user | `GET /user/codespaces/{codespace_name}` | Yes | Properties (Alt+Enter) on Codespace |
 | Update a codespace for the authenticated user | `PATCH /user/codespaces/{codespace_name}` | Yes | Properties (Alt+Enter) on Codespace: Display name |
-| Export a codespace for the authenticated user | `POST /user/codespaces/{codespace_name}/exports` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Get details about a codespace export | `GET /user/codespaces/{codespace_name}/exports/{export_id}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| List machine types for a codespace | `GET /user/codespaces/{codespace_name}/machines` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Create a repository from an unpublished codespace | `POST /user/codespaces/{codespace_name}/publish` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Start a codespace for the authenticated user | `POST /user/codespaces/{codespace_name}/start` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Stop a codespace for the authenticated user | `POST /user/codespaces/{codespace_name}/stop` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| Export a codespace for the authenticated user | `POST /user/codespaces/{codespace_name}/exports` | Yes | context menu > Export to a Branch |
+| Get details about a codespace export | `GET /user/codespaces/{codespace_name}/exports/{export_id}` | Yes | context menu > Export to a Branch |
+| List machine types for a codespace | `GET /user/codespaces/{codespace_name}/machines` | Yes | context menu > Change Machine... |
+| Create a repository from an unpublished codespace | `POST /user/codespaces/{codespace_name}/publish` | Yes | context menu > Publish to a New Repository... |
+| Start a codespace for the authenticated user | `POST /user/codespaces/{codespace_name}/start` | Yes | context menu > Start |
+| Stop a codespace for the authenticated user | `POST /user/codespaces/{codespace_name}/stop` | Yes | context menu > Stop |
 
 #### Collaborators
 
@@ -1859,7 +1867,7 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 
 #### Deployments
 
-21 operations: 5 yes, 13 planned, 3 not needed.
+21 operations: 6 yes, 12 planned, 3 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1871,7 +1879,7 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 | Create a deployment status | `POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses` | Planned | Deployment sheet > Statuses. |
 | Get a deployment status | `GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses/{status_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | List environments | `GET /repos/{owner}/{repo}/environments` | Yes | Navigator: Repository > owner/name > Settings > Secret and Variable Names |
-| Delete an environment | `DELETE /repos/{owner}/{repo}/environments/{environment_name}` | Planned | Environment sheet. |
+| Delete an environment | `DELETE /repos/{owner}/{repo}/environments/{environment_name}` | Yes | context menu > Delete... |
 | Get an environment | `GET /repos/{owner}/{repo}/environments/{environment_name}` | Yes | Properties (Alt+Enter) on Environment |
 | Create or update an environment | `PUT /repos/{owner}/{repo}/environments/{environment_name}` | Yes | Properties (Alt+Enter) on Environment: Allow administrators to bypass |
 | List deployment branch policies | `GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies` | Planned | Environment sheet > Branches and Tags. |
@@ -2260,37 +2268,37 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 
 #### Packages
 
-27 operations: 10 yes, 14 planned, 3 not needed.
+27 operations: 14 yes, 3 planned, 10 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | Get list of conflicting packages during Docker migration for organization | `GET /orgs/{org}/docker/conflicts` | Planned | Repositories > My Packages; Package sheet. |
 | List packages for an organization | `GET /orgs/{org}/packages` | Yes | Navigator: Organization > organization > Packages |
 | Delete a package for an organization | `DELETE /orgs/{org}/packages/{package_type}/{package_name}` | Yes | context menu > Delete Package... |
-| Get a package for an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
+| Get a package for an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}` | Not needed | Reads one package, which its list already shows in full; the Workbench reads the list. |
 | Restore a package for an organization | `POST /orgs/{org}/packages/{package_type}/{package_name}/restore` | Yes | Navigator: Organization > organization > Packages |
 | List package versions for a package owned by an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}/versions` | Yes | context menu > Delete Package Version... |
 | Delete package version for an organization | `DELETE /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Yes | context menu > Delete Package Version... |
 | Get a package version for an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Restore package version for an organization | `POST /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Planned | Repositories > My Packages; Package sheet. |
+| Restore package version for an organization | `POST /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Yes | context menu > Restore Package Version... |
 | Get list of conflicting packages during Docker migration for authenticated-user | `GET /user/docker/conflicts` | Planned | Repositories > My Packages; Package sheet. |
 | List packages for the authenticated user's namespace | `GET /user/packages` | Yes | Navigator: Repositories > My Packages |
 | Delete a package for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}` | Yes | context menu > Delete Package... |
-| Get a package for the authenticated user | `GET /user/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
+| Get a package for the authenticated user | `GET /user/packages/{package_type}/{package_name}` | Not needed | Reads one package, which its list already shows in full; the Workbench reads the list. |
 | Restore a package for the authenticated user | `POST /user/packages/{package_type}/{package_name}/restore` | Yes | Navigator: Repositories > My Packages |
 | List package versions for a package owned by the authenticated user | `GET /user/packages/{package_type}/{package_name}/versions` | Yes | context menu > Delete Package Version... |
 | Delete a package version for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}/versions/{package_version_id}` | Yes | context menu > Delete Package Version... |
 | Get a package version for the authenticated user | `GET /user/packages/{package_type}/{package_name}/versions/{package_version_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Restore a package version for the authenticated user | `POST /user/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Planned | Repositories > My Packages; Package sheet. |
+| Restore a package version for the authenticated user | `POST /user/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Yes | context menu > Restore Package Version... |
 | Get list of conflicting packages during Docker migration for user | `GET /users/{username}/docker/conflicts` | Planned | Repositories > My Packages; Package sheet. |
-| List packages for a user | `GET /users/{username}/packages` | Planned | Repositories > My Packages; Package sheet. |
-| Delete a package for a user | `DELETE /users/{username}/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
-| Get a package for a user | `GET /users/{username}/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
-| Restore a package for a user | `POST /users/{username}/packages/{package_type}/{package_name}/restore` | Planned | Repositories > My Packages; Package sheet. |
-| List package versions for a package owned by a user | `GET /users/{username}/packages/{package_type}/{package_name}/versions` | Planned | Repositories > My Packages; Package sheet. |
-| Delete package version for a user | `DELETE /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Planned | Repositories > My Packages; Package sheet. |
+| List packages for a user | `GET /users/{username}/packages` | Yes | Navigator: Person > person > Packages |
+| Delete a package for a user | `DELETE /users/{username}/packages/{package_type}/{package_name}` | Not needed | Only a package's owner may change it, and the owner reaches the same change through the /user route the Workbench already uses. |
+| Get a package for a user | `GET /users/{username}/packages/{package_type}/{package_name}` | Not needed | Reads one package, which its list already shows in full; the Workbench reads the list. |
+| Restore a package for a user | `POST /users/{username}/packages/{package_type}/{package_name}/restore` | Not needed | Only a package's owner may change it, and the owner reaches the same change through the /user route the Workbench already uses. |
+| List package versions for a package owned by a user | `GET /users/{username}/packages/{package_type}/{package_name}/versions` | Yes | context menu > Show Versions |
+| Delete package version for a user | `DELETE /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Not needed | Only a package's owner may change it, and the owner reaches the same change through the /user route the Workbench already uses. |
 | Get a package version for a user | `GET /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Restore package version for a user | `POST /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Planned | Repositories > My Packages; Package sheet. |
+| Restore package version for a user | `POST /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Not needed | Only a package's owner may change it, and the owner reaches the same change through the /user route the Workbench already uses. |
 
 #### Pages
 
@@ -2359,7 +2367,7 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 
 #### Pull requests
 
-39 operations: 12 yes, 24 planned, 3 not needed.
+39 operations: 23 yes, 10 planned, 6 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2369,34 +2377,34 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 | List pull requests | `GET /repos/{owner}/{repo}/pulls` | Yes | Navigator: Repository > owner/name > Pull Requests |
 | Create a pull request | `POST /repos/{owner}/{repo}/pulls` | Yes | File > New Here... (Ctrl+N) |
 | List review comments in a repository | `GET /repos/{owner}/{repo}/pulls/comments` | Planned | Review thread sheet; PR review. |
-| Delete a review comment for a pull request | `DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}` | Planned | Review thread sheet; PR review. |
+| Delete a review comment for a pull request | `DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}` | Yes | context menu > Reviews... |
 | Get a review comment for a pull request | `GET /repos/{owner}/{repo}/pulls/comments/{comment_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Update a review comment for a pull request | `PATCH /repos/{owner}/{repo}/pulls/comments/{comment_id}` | Planned | Review thread sheet; PR review. |
+| Update a review comment for a pull request | `PATCH /repos/{owner}/{repo}/pulls/comments/{comment_id}` | Yes | context menu > Reviews... |
 | Get a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}` | Yes | Properties (Alt+Enter) on Pull Request |
 | Update a pull request | `PATCH /repos/{owner}/{repo}/pulls/{pull_number}` | Yes | Properties (Alt+Enter) on Pull Request: Into branch |
-| List review comments on a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/comments` | Planned | Review thread sheet; PR review. |
+| List review comments on a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/comments` | Yes | context menu > Review... |
 | Create a review comment for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/comments` | Yes | context menu > Review... |
-| Create a reply for a review comment | `POST /repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies` | Planned | Review thread sheet; PR review. |
-| List commits on a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/commits` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
+| Create a reply for a review comment | `POST /repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies` | Yes | context menu > Review... |
+| List commits on a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/commits` | Yes | Item > File Differences... (Ctrl+Shift+D) |
 | Request a Copilot code review for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/copilot-code-review` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
 | List pull requests files | `GET /repos/{owner}/{repo}/pulls/{pull_number}/files` | Yes | Item > File Differences... (Ctrl+Shift+D) |
-| Check if a pull request has been merged | `GET /repos/{owner}/{repo}/pulls/{pull_number}/merge` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
+| Check if a pull request has been merged | `GET /repos/{owner}/{repo}/pulls/{pull_number}/merge` | Not needed | Whether a pull request is merged is part of the pull request itself, which every list and sheet already reads. |
 | Merge a pull request | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge` | Yes | Item > Merge... (Ctrl+Shift+Enter) |
-| Merge a pull request asynchronously | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge-async` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
-| Get the result of an asynchronous merge | `GET /repos/{owner}/{repo}/pulls/{pull_number}/merge-async/{uuid}` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
+| Merge a pull request asynchronously | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge-async` | Not needed | Merges the same way as Merge..., which waits for GitHub's answer; one route per operation. |
+| Get the result of an asynchronous merge | `GET /repos/{owner}/{repo}/pulls/{pull_number}/merge-async/{uuid}` | Not needed | Only follows a merge-async request, which the Workbench does not make. |
 | Remove requested reviewers from a pull request | `DELETE /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers` | Yes | Item > Assign to Copilot... (Ctrl+Shift+A) |
 | Get all requested reviewers for a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers` | Yes | Item > Assign to Copilot... (Ctrl+Shift+A) |
 | Request reviewers for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers` | Yes | Item > Assign to Copilot... (Ctrl+Shift+A) |
 | Rerequest reviewers for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers/rerequest` | Planned | Pull request > Reviews: reviewers. |
 | List reviews for a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews` | Yes | context menu > Review... |
 | Create a review for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews` | Yes | context menu > Review... |
-| Delete a pending review for a pull request | `DELETE /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}` | Planned | Pull request > Reviews; Review sheet. |
+| Delete a pending review for a pull request | `DELETE /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}` | Yes | context menu > Reviews... |
 | Get a review for a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Update a review for a pull request | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}` | Planned | Pull request > Reviews; Review sheet. |
-| List comments for a pull request review | `GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments` | Planned | Pull request > Reviews; Review sheet. |
-| Dismiss a review for a pull request | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/dismissals` | Planned | Pull request > Reviews; Review sheet. |
-| Submit a review for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/events` | Planned | Pull request > Reviews; Review sheet. |
-| Update a pull request branch | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
+| Update a review for a pull request | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}` | Yes | context menu > Reviews... |
+| List comments for a pull request review | `GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments` | Yes | context menu > Reviews... |
+| Dismiss a review for a pull request | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/dismissals` | Yes | context menu > Reviews... |
+| Submit a review for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/events` | Yes | context menu > Reviews... |
+| Update a pull request branch | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch` | Yes | context menu > Review... |
 | List pull request stacks | `GET /repos/{owner}/{repo}/stacks` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
 | Create a pull request stack | `POST /repos/{owner}/{repo}/stacks` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
 | Get a pull request stack | `GET /repos/{owner}/{repo}/stacks/{stack_number}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
@@ -2413,7 +2421,7 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 
 #### Reactions
 
-15 operations: 3 yes, 12 planned.
+15 operations: 12 yes, 3 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2421,17 +2429,17 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 | Create reaction for a commit comment | `POST /repos/{owner}/{repo}/comments/{comment_id}/reactions` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
 | Delete a commit comment reaction | `DELETE /repos/{owner}/{repo}/comments/{comment_id}/reactions/{reaction_id}` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
 | List reactions for an issue comment | `GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions` | Yes | context menu > React... |
-| Create reaction for an issue comment | `POST /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
-| Delete an issue comment reaction | `DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions/{reaction_id}` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
+| Create reaction for an issue comment | `POST /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions` | Yes | context menu > React... |
+| Delete an issue comment reaction | `DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions/{reaction_id}` | Yes | context menu > React... |
 | List reactions for an issue | `GET /repos/{owner}/{repo}/issues/{issue_number}/reactions` | Yes | context menu > React... |
-| Create reaction for an issue | `POST /repos/{owner}/{repo}/issues/{issue_number}/reactions` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
-| Delete an issue reaction | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/reactions/{reaction_id}` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
+| Create reaction for an issue | `POST /repos/{owner}/{repo}/issues/{issue_number}/reactions` | Yes | context menu > React... |
+| Delete an issue reaction | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/reactions/{reaction_id}` | Yes | context menu > React... |
 | List reactions for a pull request review comment | `GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions` | Yes | context menu > React... |
-| Create reaction for a pull request review comment | `POST /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
-| Delete a pull request comment reaction | `DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions/{reaction_id}` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
-| List reactions for a release | `GET /repos/{owner}/{repo}/releases/{release_id}/reactions` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
-| Create reaction for a release | `POST /repos/{owner}/{repo}/releases/{release_id}/reactions` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
-| Delete a release reaction | `DELETE /repos/{owner}/{repo}/releases/{release_id}/reactions/{reaction_id}` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
+| Create reaction for a pull request review comment | `POST /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions` | Yes | context menu > React... |
+| Delete a pull request comment reaction | `DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions/{reaction_id}` | Yes | context menu > React... |
+| List reactions for a release | `GET /repos/{owner}/{repo}/releases/{release_id}/reactions` | Yes | context menu > React... |
+| Create reaction for a release | `POST /repos/{owner}/{repo}/releases/{release_id}/reactions` | Yes | context menu > React... |
+| Delete a release reaction | `DELETE /repos/{owner}/{repo}/releases/{release_id}/reactions/{reaction_id}` | Yes | context menu > React... |
 
 #### Releases
 
@@ -2455,7 +2463,7 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 
 #### Repositories
 
-74 operations: 51 yes, 16 planned, 5 not needed, 2 left to github.
+74 operations: 52 yes, 15 planned, 5 not needed, 2 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2532,7 +2540,7 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 | List public repositories | `GET /repositories` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
 | List repositories for the authenticated user | `GET /user/repos` | Yes | Navigator: Repositories > My Repositories |
 | Create a repository for the authenticated user | `POST /user/repos` | Yes | editor GitHub menu > Create Repository... |
-| List repositories for a user | `GET /users/{username}/repos` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
+| List repositories for a user | `GET /users/{username}/repos` | Yes | Navigator: Person > person > Repositories |
 
 #### Search
 
@@ -2634,7 +2642,7 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 
 #### Users
 
-55 operations: 31 yes, 15 planned, 4 not needed, 5 left to github.
+55 operations: 32 yes, 14 planned, 4 not needed, 5 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2686,7 +2694,7 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 | Delete attestations by ID | `DELETE /users/{username}/attestations/{attestation_id}` | Left to GitHub | Build provenance (attestations) is read by tools in a release pipeline, not by a person. |
 | List attestations | `GET /users/{username}/attestations/{subject_digest}` | Left to GitHub | Build provenance (attestations) is read by tools in a release pipeline, not by a person. |
 | List followers of a user | `GET /users/{username}/followers` | Planned | Person > You: Follow (section 16.7). |
-| List the people a user follows | `GET /users/{username}/following` | Planned | Person > You: Follow (section 16.7). |
+| List the people a user follows | `GET /users/{username}/following` | Yes | Navigator: Person > person > Following |
 | Check if a user follows another user | `GET /users/{username}/following/{target_user}` | Yes | Properties (Alt+Enter) on Person |
 | List GPG keys for a user | `GET /users/{username}/gpg_keys` | Planned | Account > Keys. |
 | Get contextual information for a user | `GET /users/{username}/hovercard` | Planned | Person sheet; Account > Profile and Status, Keys, Emails; People branch. |

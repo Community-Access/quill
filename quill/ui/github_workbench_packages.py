@@ -20,12 +20,18 @@ PACKAGE_VERBS: dict[str, frozenset[str]] = {
     "restore_package": frozenset({"view"}),
     "delete_package_version": frozenset({"package"}),
     "delete_package": frozenset({"package"}),
+    "show_package_versions": frozenset({"package"}),
+    "restore_package_version": frozenset({"package"}),
 }
 
 PACKAGE_REASONS: dict[str, str] = {
     "restore_package": "Restore Package is Ctrl+N in a list of packages, while you are signed in.",
     "delete_package_version": "Delete Package Version is for a package, while you are signed in.",
     "delete_package": "Delete Package is for a package, while you are signed in.",
+    "show_package_versions": "Show Versions is for a package, while you are signed in.",
+    "restore_package_version": (
+        "Restore Package Version is for your own or your organization's package."
+    ),
 }
 
 
@@ -37,6 +43,7 @@ class GitHubWorkbenchPackagesMixin:
     _choose: Callable[[str, str, list[str]], int]
     _confirm: Callable[[str, str], bool]
     _ask_text: Callable[..., str]
+    _show_text: Callable[[str, str], None]
 
     def github_api(self) -> Any:
         raise NotImplementedError
@@ -47,7 +54,18 @@ class GitHubWorkbenchPackagesMixin:
         from quill.core.github.packages import row_parts
 
         if isinstance(row, ExploreRow) and row.kind == "package" and "/" in row.key:
+            if row.key.startswith("~"):  # another person's: only they may change it
+                return None
             return row_parts(row.key)
+        return None
+
+    @staticmethod
+    def _any_package(row: object) -> tuple[str, str, str, str] | None:
+        """(organization, person, type, name) for any package row, another person's too."""
+        from quill.core.github.packages import row_owner
+
+        if isinstance(row, ExploreRow) and row.kind == "package" and "/" in row.key:
+            return row_owner(row.key)
         return None
 
     def _fits_delete_package_version(self, row: object) -> bool:
@@ -55,6 +73,62 @@ class GitHubWorkbenchPackagesMixin:
 
     def _fits_delete_package(self, row: object) -> bool:
         return self.signed_in and self._package(row) is not None
+
+    def _fits_show_package_versions(self, row: object) -> bool:
+        return self.signed_in and self._any_package(row) is not None
+
+    def _fits_restore_package_version(self, row: object) -> bool:
+        return self.signed_in and self._package(row) is not None
+
+    def _do_show_package_versions(self, _ref: Any, row: object) -> None:
+        from quill.core.github.packages import fetch_versions, versions_text
+
+        found = self._any_package(row)
+        if found is None:
+            return
+        org, person, kind, name = found
+        api = self.github_api()
+        self._background(
+            f"list the versions of {name}",
+            lambda: fetch_versions(api, kind, name, org, person=person),
+            lambda versions: self._show_text(
+                f"Versions: {name}", versions_text(name, list(versions))
+            ),
+        )
+
+    def _do_restore_package_version(self, _ref: Any, row: object) -> None:
+        from quill.core.github.packages import fetch_versions, restore_version
+
+        found = self._package(row)
+        if found is None:
+            return
+        org, kind, name = found
+        api = self.github_api()
+
+        def chosen(versions: Any) -> None:
+            versions = list(versions)
+            if not versions:
+                self._say(f"{name} has no deleted versions to restore.")
+                return
+            picked = self._choose(
+                "Restore Package Version",
+                f"Which deleted version of {name} to bring back? Newest first.",
+                [version.label for version in versions],
+            )
+            if picked < 0:
+                return
+            version = versions[picked]
+            self._background(
+                "restore the version",
+                lambda: restore_version(api, kind, name, version, org),
+                lambda said: (self._say(str(said)), self.frame.reload()),
+            )
+
+        self._background(
+            f"list the deleted versions of {name}",
+            lambda: fetch_versions(api, kind, name, org, state="deleted"),
+            chosen,
+        )
 
     def _do_delete_package_version(self, _ref: Any, row: object) -> None:
         from quill.core.github.packages import fetch_versions

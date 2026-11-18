@@ -468,6 +468,7 @@ _PERSON: tuple[NodeSpec, ...] = (
             ("person_activity", "Activity", "person_activity", "event"),
             ("person_followers", "Followers", "person_followers", "person"),
             ("person_following", "Following", "person_following", "person"),
+            ("person_packages", "Packages", "person_packages", "package"),
         )
     ),
 )
@@ -544,10 +545,12 @@ def _resource_nodes(scope: str) -> tuple[NodeSpec, ...]:
     )
 
 
+from quill.core.github.workbench_tree_more import MORE_FIXED, MORE_REPOSITORY  # noqa: E402
+
 GITHUB_TREE = TreeSpec(
-    (*_FIXED, *_resource_nodes("user")),
+    (*_FIXED, *MORE_FIXED, *_resource_nodes("user")),
     {
-        "repository": (*_REPOSITORY, *_resource_nodes("repository")),
+        "repository": (*_REPOSITORY, *MORE_REPOSITORY, *_resource_nodes("repository")),
         "person": _PERSON,
         "organization": (*_ORGANIZATION, *_resource_nodes("organization")),
     },

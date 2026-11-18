@@ -1386,6 +1386,12 @@ href="mailto:support@community-access.org">support@community-access.org</a>.
 Nothing is sent until you send it from your own email.</td>
 </tr>
 <tr>
+<td>My Codespaces (<code>:my_codespaces</code>)</td>
+<td>repositories</td>
+<td>My Codespaces: every codespace of yours. Start, Stop, Change
+Machine, Export to a Branch and Delete are on each row.</td>
+</tr>
+<tr>
 <td>My Codespaces Secrets (<code>:my_codespaces_secrets</code>)</td>
 <td>people</td>
 <td>My Codespaces Secrets: values given to your own codespaces.</td>
@@ -1702,6 +1708,19 @@ repository. Ctrl+N adds one.</td>
 Ctrl+N adds one.</td>
 </tr>
 <tr>
+<td>Environments (<code>repository:environments</code>)</td>
+<td>repository, settings</td>
+<td>Environments: where this repository’s workflows deploy, each with
+its protection rules. Secrets… and Variables… on a row are that
+environment’s own.</td>
+</tr>
+<tr>
+<td>Codespaces (<code>repository:repo_codespaces</code>)</td>
+<td>repository, code</td>
+<td>Codespaces: your codespaces for this repository. Ctrl+N makes one on
+a branch you name, with the machine and dev container you choose.</td>
+</tr>
+<tr>
 <td>Actions Variables (<code>repository:actions_variables</code>)</td>
 <td>repository, settings</td>
 <td>Actions Variables: values workflows read as vars.NAME. Ctrl+N adds
@@ -1771,6 +1790,20 @@ tool unless asked.</td>
 language.</td>
 </tr>
 <tr>
+<td>Organization Secrets Here
+(<code>repository:repo_org_secrets</code>)</td>
+<td>repository, settings</td>
+<td>Organization Secrets Here: the organization’s Actions secrets this
+repository may use. Change them in the organization.</td>
+</tr>
+<tr>
+<td>Organization Variables Here
+(<code>repository:repo_org_variables</code>)</td>
+<td>repository, settings</td>
+<td>Organization Variables Here: the organization’s Actions variables
+this repository may use. Change them in the organization.</td>
+</tr>
+<tr>
 <td>person (<code>person:person</code>)</td>
 <td>person</td>
 <td>A person: their repositories, activity, followers and who they
@@ -1807,6 +1840,12 @@ its price.</td>
 <td>Following (<code>person:person_following</code>)</td>
 <td>person, person</td>
 <td>Following: who this person follows.</td>
+</tr>
+<tr>
+<td>Packages (<code>person:person_packages</code>)</td>
+<td>person, person</td>
+<td>Packages: this person’s public packages. Show Versions lists each
+one’s versions.</td>
 </tr>
 <tr>
 <td>organization (<code>organization:organization</code>)</td>
@@ -2915,22 +2954,24 @@ Task…, Convert Tasks to Sub-issues…, Create Branch for This Issue…,
 Unlink Branch…, Not a Duplicate…, Set Issue Type…, Reorder Sub-issues…,
 Add to or Remove from Favorites; Properties…</li>
 <li><strong>pull_request</strong>: Review…, File Differences…, Comment…,
-Merge…, Why Can’t I Merge?, Auto-Merge…; More: Add to or Remove from
-Merge Queue…, Open Patch in Editor, Revert Pull Request…, Resolve
-Conflicts in a Worktree…, Copy Link, Open on GitHub, Start in Local
-Worktree…, Open in Codespaces…, Commit Comments…, View Timeline…, Read
-as Document…, Summarize Discussion, React…, Labels…, Assignees…,
-Milestone…, Projects…, Edit Title…, Add to or Remove from Favorites;
-Properties…</li>
+Merge…, Why Can’t I Merge?, Auto-Merge…; More: Reviews…, Open in a
+Codespace, Add to or Remove from Merge Queue…, Open Patch in Editor,
+Revert Pull Request…, Resolve Conflicts in a Worktree…, Copy Link, Open
+on GitHub, Start in Local Worktree…, Open in Codespaces…, Commit
+Comments…, View Timeline…, Read as Document…, Summarize Discussion,
+React…, Labels…, Assignees…, Milestone…, Projects…, Edit Title…, Add to
+or Remove from Favorites; Properties…</li>
 <li><strong>run</strong>: Jobs and Logs, What Failed…, Re-run Failed
-Jobs Only, Re-run Workflow, Cancel Run…, View Artifacts…; More: Open on
-GitHub, Combined Check Status, Review Pending Deployments…, Approve Run
-from a Fork…, Delete Run…, Copy Link; Properties…</li>
+Jobs Only, Re-run Workflow, Cancel Run…, Re-run One Job…; More: Force
+Cancel…, Download Logs…, Delete Logs…, Approvals, Earlier Attempts…,
+View Artifacts…, Open on GitHub, Combined Check Status, Review Pending
+Deployments…, Approve Run from a Fork…, Delete Run…, Copy Link;
+Properties…</li>
 <li><strong>workflow</strong>: Runs, Run Workflow on Branch…, Turn
 Workflow On or Off…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>release</strong>: Assets, Edit Release…, Draft Release
-Notes…, Upload Asset…, Compare With Previous, Compare With Default;
-More: Copy Link, Open on GitHub; Properties…</li>
+Notes…, Upload Asset…, React…, Compare With Previous; More: Compare With
+Default, Copy Link, Open on GitHub; Properties…</li>
 <li><strong>release_asset</strong>: Download, Copy Link, Delete Asset…;
 Properties…</li>
 <li><strong>branch</strong>: Commits, Compare With Default, Compare
@@ -3007,8 +3048,14 @@ Delete Everywhere…; Properties…</li>
 Properties…</li>
 <li><strong>runner</strong>: Show Details, Runner Labels…, Remove
 Runner…, Open on GitHub, Copy Link; Properties…</li>
-<li><strong>package</strong>: Show Details, Open on GitHub, Delete
-Package Version…, Delete Package…, Copy Link; Properties…</li>
+<li><strong>environment</strong>: Show Details, Secrets…, Variables…,
+Delete…, Open on GitHub, Copy Link; Properties…</li>
+<li><strong>codespace</strong>: Show Details, Start, Stop, Change
+Machine…, Export to a Branch, Publish to a New Repository…; More:
+Delete…, Open on GitHub, Copy Link; Properties…</li>
+<li><strong>package</strong>: Show Details, Open on GitHub, Show
+Versions, Restore Package Version…, Delete Package Version…, Delete
+Package…, Copy Link; Properties…</li>
 <li><strong>key</strong>: Show Details, Delete Key…, Open on GitHub;
 Properties…</li>
 <li><strong>advisory</strong>: Show Details, Publish or Close Advisory…,
@@ -3297,14 +3344,14 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 540 yes, 503 planned, 217 not needed and 744 left to
+<p>In all: 600 yes, 430 planned, 229 not needed and 745 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
 is planned under Repository &gt; Wiki.</p>
 <h3 id="rest-operations-by-category">REST operations, by category</h3>
 <h4 id="actions">Actions</h4>
-<p>208 operations: 95 yes, 53 planned, 16 not needed, 44 left to
+<p>208 operations: 110 yes, 36 planned, 17 not needed, 45 left to
 github.</p>
 <table>
 <thead>
@@ -4145,8 +4192,8 @@ reads the list.</td>
 <tr>
 <td>Re-run a job from a workflow run</td>
 <td><code>POST /repos/{owner}/{repo}/actions/jobs/{job_id}/rerun</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Re-run One Job…</td>
 </tr>
 <tr>
 <td>Download step logs for a workflow run job</td>
@@ -4173,14 +4220,16 @@ for company deployments, set up on GitHub’s site.</td>
 <tr>
 <td>List repository organization secrets</td>
 <td><code>GET /repos/{owner}/{repo}/actions/organization-secrets</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt;
+Organization Secrets Here</td>
 </tr>
 <tr>
 <td>List repository organization variables</td>
 <td><code>GET /repos/{owner}/{repo}/actions/organization-variables</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt;
+Organization Variables Here</td>
 </tr>
 <tr>
 <td>Get GitHub Actions permissions for a repository</td>
@@ -4407,8 +4456,8 @@ repository</td>
 <tr>
 <td>Get the review history for a workflow run</td>
 <td><code>GET /repos/{owner}/{repo}/actions/runs/{run_id}/approvals</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Approvals</td>
 </tr>
 <tr>
 <td>Approve a workflow run for a fork pull request</td>
@@ -4425,8 +4474,8 @@ repository</td>
 <tr>
 <td>Get a workflow run attempt</td>
 <td><code>GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Earlier Attempts…</td>
 </tr>
 <tr>
 <td>List jobs for a workflow run attempt</td>
@@ -4437,8 +4486,8 @@ repository</td>
 <tr>
 <td>Download workflow run attempt logs</td>
 <td><code>GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/logs</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Earlier Attempts…</td>
 </tr>
 <tr>
 <td>Cancel a workflow run</td>
@@ -4456,14 +4505,15 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>Review custom deployment protection rules for a workflow run</td>
 <td><code>POST /repos/{owner}/{repo}/actions/runs/{run_id}/deployment_protection_rule</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Left to GitHub</td>
+<td>Only a GitHub App acting as a custom deployment protection rule
+answers this; a person approves through Review Pending Deployments.</td>
 </tr>
 <tr>
 <td>Force cancel a workflow run</td>
 <td><code>POST /repos/{owner}/{repo}/actions/runs/{run_id}/force-cancel</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Force Cancel…</td>
 </tr>
 <tr>
 <td>List jobs for a workflow run</td>
@@ -4474,14 +4524,14 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>Delete workflow run logs</td>
 <td><code>DELETE /repos/{owner}/{repo}/actions/runs/{run_id}/logs</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Logs…</td>
 </tr>
 <tr>
 <td>Download workflow run logs</td>
 <td><code>GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Download Logs…</td>
 </tr>
 <tr>
 <td>Get pending deployments for a workflow run</td>
@@ -4610,8 +4660,9 @@ Workflows</td>
 <tr>
 <td>List workflow runs for a workflow</td>
 <td><code>GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs</code></td>
-<td>Planned</td>
-<td>Run sheet.</td>
+<td>Not needed</td>
+<td>A workflow’s Runs shows the repository’s runs filtered to that
+workflow; one route serves both.</td>
 </tr>
 <tr>
 <td>Get workflow usage</td>
@@ -4628,14 +4679,14 @@ Workflows</td>
 <tr>
 <td>Get an environment public key</td>
 <td><code>GET /repos/{owner}/{repo}/environments/{environment_name}/secrets/public-key</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>context menu &gt; Secrets…</td>
 </tr>
 <tr>
 <td>Delete an environment secret</td>
 <td><code>DELETE /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>context menu &gt; Secrets…</td>
 </tr>
 <tr>
 <td>Get an environment secret</td>
@@ -4647,8 +4698,8 @@ reads the list.</td>
 <tr>
 <td>Create or update an environment secret</td>
 <td><code>PUT /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>context menu &gt; Secrets…</td>
 </tr>
 <tr>
 <td>List environment variables</td>
@@ -4659,14 +4710,14 @@ reads the list.</td>
 <tr>
 <td>Create an environment variable</td>
 <td><code>POST /repos/{owner}/{repo}/environments/{environment_name}/variables</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Variables…</td>
 </tr>
 <tr>
 <td>Delete an environment variable</td>
 <td><code>DELETE /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Variables…</td>
 </tr>
 <tr>
 <td>Get an environment variable</td>
@@ -4678,13 +4729,13 @@ reads the list.</td>
 <tr>
 <td>Update an environment variable</td>
 <td><code>PATCH /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Variables…</td>
 </tr>
 </tbody>
 </table>
 <h4 id="activity">Activity</h4>
-<p>34 operations: 16 yes, 18 planned.</p>
+<p>34 operations: 19 yes, 15 planned.</p>
 <table>
 <thead>
 <tr>
@@ -4791,8 +4842,9 @@ Person &gt; Activity.</td>
 <tr>
 <td>List stargazers</td>
 <td><code>GET /repos/{owner}/{repo}/stargazers</code></td>
-<td>Planned</td>
-<td>You page: Star (section 16.7).</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; People &gt; Contributors
+and People</td>
 </tr>
 <tr>
 <td>Get stargazer count</td>
@@ -4833,8 +4885,8 @@ Person &gt; Activity.</td>
 <tr>
 <td>List repositories starred by the authenticated user</td>
 <td><code>GET /user/starred</code></td>
-<td>Planned</td>
-<td>You page: Star (section 16.7).</td>
+<td>Yes</td>
+<td>Navigator: Repositories &gt; Starred</td>
 </tr>
 <tr>
 <td>Unstar a repository for the authenticated user</td>
@@ -4883,9 +4935,8 @@ Person &gt; Activity.</td>
 <tr>
 <td>List events received by the authenticated user</td>
 <td><code>GET /users/{username}/received_events</code></td>
-<td>Planned</td>
-<td>Needs My Attention &gt; My Activity Feed; Repository &gt; Activity;
-Person &gt; Activity.</td>
+<td>Yes</td>
+<td>Navigator: Needs My Attention &gt; My Activity Feed</td>
 </tr>
 <tr>
 <td>List public events received by a user</td>
@@ -6525,8 +6576,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="codespaces">Codespaces</h4>
-<p>48 operations: 20 yes, 16 planned, 5 not needed, 7 left to
-github.</p>
+<p>48 operations: 35 yes, 6 not needed, 7 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -6649,46 +6699,40 @@ administration on GitHub’s site.</td>
 <tr>
 <td>List codespaces in a repository for the authenticated user</td>
 <td><code>GET /repos/{owner}/{repo}/codespaces</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Codespaces</td>
 </tr>
 <tr>
 <td>Create a codespace in a repository</td>
 <td><code>POST /repos/{owner}/{repo}/codespaces</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Codespaces</td>
 </tr>
 <tr>
 <td>List devcontainer configurations in a repository for the
 authenticated user</td>
 <td><code>GET /repos/{owner}/{repo}/codespaces/devcontainers</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Codespaces</td>
 </tr>
 <tr>
 <td>List available machine types for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/codespaces/machines</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Codespaces</td>
 </tr>
 <tr>
 <td>Get default attributes for a codespace</td>
 <td><code>GET /repos/{owner}/{repo}/codespaces/new</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Codespaces</td>
 </tr>
 <tr>
 <td>Check if permissions defined by a devcontainer have been accepted by
 the authenticated user</td>
 <td><code>GET /repos/{owner}/{repo}/codespaces/permissions_check</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Codespaces</td>
 </tr>
 <tr>
 <td>List repository secrets</td>
@@ -6727,23 +6771,22 @@ Secrets</td>
 <tr>
 <td>Create a codespace from a pull request</td>
 <td><code>POST /repos/{owner}/{repo}/pulls/{pull_number}/codespaces</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Open in a Codespace</td>
 </tr>
 <tr>
 <td>List codespaces for the authenticated user</td>
 <td><code>GET /user/codespaces</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>Navigator: Repositories &gt; My Codespaces</td>
 </tr>
 <tr>
 <td>Create a codespace for the authenticated user</td>
 <td><code>POST /user/codespaces</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Not needed</td>
+<td>Makes a codespace from a repository id or a pull request; the
+Workbench uses the repository’s and the pull request’s own routes for
+the same thing.</td>
 </tr>
 <tr>
 <td>List secrets for the authenticated user</td>
@@ -6805,9 +6848,8 @@ makes meanwhile is kept.</td>
 <tr>
 <td>Delete a codespace for the authenticated user</td>
 <td><code>DELETE /user/codespaces/{codespace_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a codespace for the authenticated user</td>
@@ -6824,44 +6866,38 @@ Codespaces; Secrets.</td>
 <tr>
 <td>Export a codespace for the authenticated user</td>
 <td><code>POST /user/codespaces/{codespace_name}/exports</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Export to a Branch</td>
 </tr>
 <tr>
 <td>Get details about a codespace export</td>
 <td><code>GET /user/codespaces/{codespace_name}/exports/{export_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Export to a Branch</td>
 </tr>
 <tr>
 <td>List machine types for a codespace</td>
 <td><code>GET /user/codespaces/{codespace_name}/machines</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Change Machine…</td>
 </tr>
 <tr>
 <td>Create a repository from an unpublished codespace</td>
 <td><code>POST /user/codespaces/{codespace_name}/publish</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Publish to a New Repository…</td>
 </tr>
 <tr>
 <td>Start a codespace for the authenticated user</td>
 <td><code>POST /user/codespaces/{codespace_name}/start</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Start</td>
 </tr>
 <tr>
 <td>Stop a codespace for the authenticated user</td>
 <td><code>POST /user/codespaces/{codespace_name}/stop</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Yes</td>
+<td>context menu &gt; Stop</td>
 </tr>
 </tbody>
 </table>
@@ -7906,7 +7942,7 @@ Keys</td>
 </tbody>
 </table>
 <h4 id="deployments">Deployments</h4>
-<p>21 operations: 5 yes, 13 planned, 3 not needed.</p>
+<p>21 operations: 6 yes, 12 planned, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -7973,8 +8009,8 @@ Variable Names</td>
 <tr>
 <td>Delete an environment</td>
 <td><code>DELETE /repos/{owner}/{repo}/environments/{environment_name}</code></td>
-<td>Planned</td>
-<td>Environment sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get an environment</td>
@@ -10126,7 +10162,7 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 </tbody>
 </table>
 <h4 id="packages">Packages</h4>
-<p>27 operations: 10 yes, 14 planned, 3 not needed.</p>
+<p>27 operations: 14 yes, 3 planned, 10 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -10159,8 +10195,9 @@ organization</td>
 <tr>
 <td>Get a package for an organization</td>
 <td><code>GET /orgs/{org}/packages/{package_type}/{package_name}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Reads one package, which its list already shows in full; the
+Workbench reads the list.</td>
 </tr>
 <tr>
 <td>Restore a package for an organization</td>
@@ -10190,8 +10227,8 @@ reads the list.</td>
 <tr>
 <td>Restore package version for an organization</td>
 <td><code>POST /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Restore Package Version…</td>
 </tr>
 <tr>
 <td>Get list of conflicting packages during Docker migration for
@@ -10215,8 +10252,9 @@ authenticated-user</td>
 <tr>
 <td>Get a package for the authenticated user</td>
 <td><code>GET /user/packages/{package_type}/{package_name}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Reads one package, which its list already shows in full; the
+Workbench reads the list.</td>
 </tr>
 <tr>
 <td>Restore a package for the authenticated user</td>
@@ -10247,8 +10285,8 @@ reads the list.</td>
 <tr>
 <td>Restore a package version for the authenticated user</td>
 <td><code>POST /user/packages/{package_type}/{package_name}/versions/{package_version_id}/restore</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Restore Package Version…</td>
 </tr>
 <tr>
 <td>Get list of conflicting packages during Docker migration for
@@ -10260,38 +10298,42 @@ user</td>
 <tr>
 <td>List packages for a user</td>
 <td><code>GET /users/{username}/packages</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; Packages</td>
 </tr>
 <tr>
 <td>Delete a package for a user</td>
 <td><code>DELETE /users/{username}/packages/{package_type}/{package_name}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Only a package’s owner may change it, and the owner reaches the same
+change through the /user route the Workbench already uses.</td>
 </tr>
 <tr>
 <td>Get a package for a user</td>
 <td><code>GET /users/{username}/packages/{package_type}/{package_name}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Reads one package, which its list already shows in full; the
+Workbench reads the list.</td>
 </tr>
 <tr>
 <td>Restore a package for a user</td>
 <td><code>POST /users/{username}/packages/{package_type}/{package_name}/restore</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Only a package’s owner may change it, and the owner reaches the same
+change through the /user route the Workbench already uses.</td>
 </tr>
 <tr>
 <td>List package versions for a package owned by a user</td>
 <td><code>GET /users/{username}/packages/{package_type}/{package_name}/versions</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Show Versions</td>
 </tr>
 <tr>
 <td>Delete package version for a user</td>
 <td><code>DELETE /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Only a package’s owner may change it, and the owner reaches the same
+change through the /user route the Workbench already uses.</td>
 </tr>
 <tr>
 <td>Get a package version for a user</td>
@@ -10303,8 +10345,9 @@ reads the list.</td>
 <tr>
 <td>Restore package version for a user</td>
 <td><code>POST /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Only a package’s owner may change it, and the owner reaches the same
+change through the /user route the Workbench already uses.</td>
 </tr>
 </tbody>
 </table>
@@ -10648,7 +10691,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="pull-requests">Pull requests</h4>
-<p>39 operations: 12 yes, 24 planned, 3 not needed.</p>
+<p>39 operations: 23 yes, 10 planned, 6 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -10698,8 +10741,8 @@ reads the list.</td>
 <tr>
 <td>Delete a review comment for a pull request</td>
 <td><code>DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}</code></td>
-<td>Planned</td>
-<td>Review thread sheet; PR review.</td>
+<td>Yes</td>
+<td>context menu &gt; Reviews…</td>
 </tr>
 <tr>
 <td>Get a review comment for a pull request</td>
@@ -10711,8 +10754,8 @@ reads the list.</td>
 <tr>
 <td>Update a review comment for a pull request</td>
 <td><code>PATCH /repos/{owner}/{repo}/pulls/comments/{comment_id}</code></td>
-<td>Planned</td>
-<td>Review thread sheet; PR review.</td>
+<td>Yes</td>
+<td>context menu &gt; Reviews…</td>
 </tr>
 <tr>
 <td>Get a pull request</td>
@@ -10729,8 +10772,8 @@ reads the list.</td>
 <tr>
 <td>List review comments on a pull request</td>
 <td><code>GET /repos/{owner}/{repo}/pulls/{pull_number}/comments</code></td>
-<td>Planned</td>
-<td>Review thread sheet; PR review.</td>
+<td>Yes</td>
+<td>context menu &gt; Review…</td>
 </tr>
 <tr>
 <td>Create a review comment for a pull request</td>
@@ -10741,14 +10784,14 @@ reads the list.</td>
 <tr>
 <td>Create a reply for a review comment</td>
 <td><code>POST /repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies</code></td>
-<td>Planned</td>
-<td>Review thread sheet; PR review.</td>
+<td>Yes</td>
+<td>context menu &gt; Review…</td>
 </tr>
 <tr>
 <td>List commits on a pull request</td>
 <td><code>GET /repos/{owner}/{repo}/pulls/{pull_number}/commits</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Yes</td>
+<td>Item &gt; File Differences… (Ctrl+Shift+D)</td>
 </tr>
 <tr>
 <td>Request a Copilot code review for a pull request</td>
@@ -10765,8 +10808,9 @@ reads the list.</td>
 <tr>
 <td>Check if a pull request has been merged</td>
 <td><code>GET /repos/{owner}/{repo}/pulls/{pull_number}/merge</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Not needed</td>
+<td>Whether a pull request is merged is part of the pull request itself,
+which every list and sheet already reads.</td>
 </tr>
 <tr>
 <td>Merge a pull request</td>
@@ -10777,14 +10821,16 @@ reads the list.</td>
 <tr>
 <td>Merge a pull request asynchronously</td>
 <td><code>PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge-async</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Not needed</td>
+<td>Merges the same way as Merge…, which waits for GitHub’s answer; one
+route per operation.</td>
 </tr>
 <tr>
 <td>Get the result of an asynchronous merge</td>
 <td><code>GET /repos/{owner}/{repo}/pulls/{pull_number}/merge-async/{uuid}</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Not needed</td>
+<td>Only follows a merge-async request, which the Workbench does not
+make.</td>
 </tr>
 <tr>
 <td>Remove requested reviewers from a pull request</td>
@@ -10825,8 +10871,8 @@ reads the list.</td>
 <tr>
 <td>Delete a pending review for a pull request</td>
 <td><code>DELETE /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Reviews; Review sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Reviews…</td>
 </tr>
 <tr>
 <td>Get a review for a pull request</td>
@@ -10838,32 +10884,32 @@ reads the list.</td>
 <tr>
 <td>Update a review for a pull request</td>
 <td><code>PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Reviews; Review sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Reviews…</td>
 </tr>
 <tr>
 <td>List comments for a pull request review</td>
 <td><code>GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Reviews; Review sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Reviews…</td>
 </tr>
 <tr>
 <td>Dismiss a review for a pull request</td>
 <td><code>PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/dismissals</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Reviews; Review sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Reviews…</td>
 </tr>
 <tr>
 <td>Submit a review for a pull request</td>
 <td><code>POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/events</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Reviews; Review sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Reviews…</td>
 </tr>
 <tr>
 <td>Update a pull request branch</td>
 <td><code>PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Review…</td>
 </tr>
 <tr>
 <td>List pull request stacks</td>
@@ -10919,7 +10965,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="reactions">Reactions</h4>
-<p>15 operations: 3 yes, 12 planned.</p>
+<p>15 operations: 12 yes, 3 planned.</p>
 <table>
 <thead>
 <tr>
@@ -10960,16 +11006,14 @@ reads the list.</td>
 <tr>
 <td>Create reaction for an issue comment</td>
 <td><code>POST /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>Delete an issue comment reaction</td>
 <td><code>DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions/{reaction_id}</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>List reactions for an issue</td>
@@ -10980,16 +11024,14 @@ reads the list.</td>
 <tr>
 <td>Create reaction for an issue</td>
 <td><code>POST /repos/{owner}/{repo}/issues/{issue_number}/reactions</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>Delete an issue reaction</td>
 <td><code>DELETE /repos/{owner}/{repo}/issues/{issue_number}/reactions/{reaction_id}</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>List reactions for a pull request review comment</td>
@@ -11000,37 +11042,32 @@ reads the list.</td>
 <tr>
 <td>Create reaction for a pull request review comment</td>
 <td><code>POST /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>Delete a pull request comment reaction</td>
 <td><code>DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions/{reaction_id}</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>List reactions for a release</td>
 <td><code>GET /repos/{owner}/{repo}/releases/{release_id}/reactions</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>Create reaction for a release</td>
 <td><code>POST /repos/{owner}/{repo}/releases/{release_id}/reactions</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>Delete a release reaction</td>
 <td><code>DELETE /repos/{owner}/{repo}/releases/{release_id}/reactions/{reaction_id}</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 </tbody>
 </table>
@@ -11127,7 +11164,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="repositories">Repositories</h4>
-<p>74 operations: 51 yes, 16 planned, 5 not needed, 2 left to
+<p>74 operations: 52 yes, 15 planned, 5 not needed, 2 left to
 github.</p>
 <table>
 <thead>
@@ -11606,9 +11643,8 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 <tr>
 <td>List repositories for a user</td>
 <td><code>GET /users/{username}/repos</code></td>
-<td>Planned</td>
-<td>Repository sheet (General, Features, Merging, Webhooks, Autolinks,
-Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; Repositories</td>
 </tr>
 </tbody>
 </table>
@@ -12134,7 +12170,7 @@ slug).</td>
 </tbody>
 </table>
 <h4 id="users">Users</h4>
-<p>55 operations: 31 yes, 15 planned, 4 not needed, 5 left to
+<p>55 operations: 32 yes, 14 planned, 4 not needed, 5 left to
 github.</p>
 <table>
 <thead>
@@ -12447,8 +12483,8 @@ pipeline, not by a person.</td>
 <tr>
 <td>List the people a user follows</td>
 <td><code>GET /users/{username}/following</code></td>
-<td>Planned</td>
-<td>Person &gt; You: Follow (section 16.7).</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; Following</td>
 </tr>
 <tr>
 <td>Check if a user follows another user</td>

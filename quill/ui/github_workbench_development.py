@@ -35,11 +35,21 @@ from quill.ui.github_workbench_code_scanning import (
     CODE_SCANNING_VERBS,
     GitHubWorkbenchCodeScanningMixin,
 )
+from quill.ui.github_workbench_codespaces import (
+    CODESPACE_REASONS,
+    CODESPACE_VERBS,
+    GitHubWorkbenchCodespacesMixin,
+)
 from quill.ui.github_workbench_dry_run import (
     DRY_RUN_REASONS,
     DRY_RUN_VERBS,
     GitHubWorkbenchDryRunMixin,
     failure_sentence,
+)
+from quill.ui.github_workbench_environments import (
+    ENVIRONMENT_REASONS,
+    ENVIRONMENT_VERBS,
+    GitHubWorkbenchEnvironmentsMixin,
 )
 from quill.ui.github_workbench_inbox_rules import (
     INBOX_RULE_REASONS,
@@ -61,6 +71,11 @@ from quill.ui.github_workbench_practice import (
     PRACTICE_VERBS,
     GitHubWorkbenchPracticeMixin,
 )
+from quill.ui.github_workbench_pull_reviews import (
+    PULL_REVIEW_REASONS,
+    PULL_REVIEW_VERBS,
+    GitHubWorkbenchPullReviewsMixin,
+)
 from quill.ui.github_workbench_pull_tools import (
     PULL_TOOL_REASONS,
     PULL_TOOL_VERBS,
@@ -70,6 +85,11 @@ from quill.ui.github_workbench_resources import (
     RESOURCE_REASONS,
     RESOURCE_VERBS,
     GitHubWorkbenchResourcesMixin,
+)
+from quill.ui.github_workbench_run_more import (
+    RUN_MORE_REASONS,
+    RUN_MORE_VERBS,
+    GitHubWorkbenchRunMoreMixin,
 )
 from quill.ui.github_workbench_runner_admin import (
     RUNNER_ADMIN_REASONS,
@@ -123,6 +143,10 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **RUNNER_ADMIN_VERBS,
     **RESOURCE_VERBS,
     **CODE_SCANNING_VERBS,
+    **CODESPACE_VERBS,
+    **RUN_MORE_VERBS,
+    **ENVIRONMENT_VERBS,
+    **PULL_REVIEW_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -144,6 +168,10 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **RUNNER_ADMIN_REASONS,
     **RESOURCE_REASONS,
     **CODE_SCANNING_REASONS,
+    **CODESPACE_REASONS,
+    **RUN_MORE_REASONS,
+    **ENVIRONMENT_REASONS,
+    **PULL_REVIEW_REASONS,
 }
 
 
@@ -163,6 +191,10 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchRunnerAdminMixin,
     GitHubWorkbenchResourcesMixin,
     GitHubWorkbenchCodeScanningMixin,
+    GitHubWorkbenchCodespacesMixin,
+    GitHubWorkbenchRunMoreMixin,
+    GitHubWorkbenchEnvironmentsMixin,
+    GitHubWorkbenchPullReviewsMixin,
 ):
     items: Any
     frame: Any

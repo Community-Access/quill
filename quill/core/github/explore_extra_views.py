@@ -41,6 +41,8 @@ EXTRA_REPO_VIEWS = frozenset({
     "secrets",
     "merge_queue",
     "runners",
+    "repo_codespaces",
+    "repo_environments",
 })
 #: Account views (Billing and Usage), answered without a repository.
 EXTRA_ACCOUNT_VIEWS = frozenset({
@@ -54,9 +56,10 @@ EXTRA_ACCOUNT_VIEWS = frozenset({
     "org_webhooks",
     "sponsorships",
     "org_packages",
+    "my_codespaces",
 })
 #: Views of one person, answered from the login in Explore's person box.
-EXTRA_PERSON_VIEWS = frozenset({"person_profile", "person_sponsor"})
+EXTRA_PERSON_VIEWS = frozenset({"person_profile", "person_sponsor", "person_packages"})
 EXTRA_VIEWS = SEARCH_VIEWS | EXTRA_REPO_VIEWS | EXTRA_ACCOUNT_VIEWS | EXTRA_PERSON_VIEWS
 _REDIRECTS = (301, 302, 303, 307, 308)
 
@@ -151,6 +154,39 @@ def fetch_extra_view(
         try:
             return fetch_packages(TokenApi(token), limit=limit, org=repo)
         except PackageError as exc:
+            raise GitHubExploreError(str(exc.args[0])) from exc
+    if view == "person_packages":
+        from quill.core.github.packages import PackageError, fetch_packages
+        from quill.core.github.workbench_api import TokenApi
+
+        if not person.strip():
+            raise GitHubExploreError("Enter a GitHub username for this people view.")
+        try:
+            return fetch_packages(TokenApi(token), limit=limit, person=person.strip())
+        except PackageError as exc:
+            raise GitHubExploreError(str(exc.args[0])) from exc
+    if view == "repo_environments":
+        from quill.core.github.environments import EnvironmentRefused, fetch_environments
+        from quill.core.github.workbench_api import TokenApi
+
+        if "/" not in repo:
+            raise GitHubExploreError("Enter a repository as owner/repo for this view.")
+        try:
+            return fetch_environments(TokenApi(token), repo, warnings)
+        except EnvironmentRefused as exc:
+            raise GitHubExploreError(str(exc.args[0])) from exc
+    if view in ("my_codespaces", "repo_codespaces"):
+        from quill.core.github.codespaces import CodespaceError
+        from quill.core.github.codespaces import fetch as fetch_codespaces
+        from quill.core.github.workbench_api import TokenApi
+
+        if view == "repo_codespaces" and "/" not in repo:
+            raise GitHubExploreError("Enter a repository as owner/repo for this view.")
+        try:
+            return fetch_codespaces(
+                TokenApi(token), repo if view == "repo_codespaces" else "", warnings
+            )
+        except CodespaceError as exc:
             raise GitHubExploreError(str(exc.args[0])) from exc
     if view == "my_packages":
         from quill.core.github.packages import PackageError, fetch_packages

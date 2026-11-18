@@ -252,6 +252,14 @@ def _install_finders() -> None:
         ),
     )
     add_finder(
+        kind="environment",
+        finder=lambda r, repo: Target("environment", {"repo": repo, "name": attr(r, "key")}),
+    )
+    add_finder(
+        kind="codespace",
+        finder=lambda r, _repo: Target("codespace", {"name": attr(r, "key")}),
+    )
+    add_finder(
         kind="person",
         finder=lambda r, _repo: Target("person", {"login": attr(r, "key") or attr(r, "label")}),
     )

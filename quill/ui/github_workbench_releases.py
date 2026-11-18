@@ -28,6 +28,7 @@ RELEASE_VERBS: dict[str, frozenset[str]] = {
     "release_notes": frozenset({"release"}),
     "upload_asset": frozenset({"release"}),
     "delete_asset": frozenset({"release"}),
+    "react_release": frozenset({"release"}),
     "milestones_window": frozenset({"view"}),
     "projects_window": frozenset({"view"}),
     "files_window": frozenset({"view"}),
@@ -38,6 +39,7 @@ RELEASE_REASONS: dict[str, str] = {
         "Delete an asset from its release: select the release, then Delete Asset, "
         "or Assets and its Delete button."
     ),
+    "react_release": "React is for a release, while you are signed in.",
     "milestones_window": "Open a repository first. Ctrl+L opens one by name or link.",
     "projects_window": "Sign in to GitHub and open a repository first.",
     "files_window": "Open a repository first. Ctrl+L opens one by name or link.",
@@ -74,6 +76,37 @@ class GitHubWorkbenchReleasesMixin:
 
     _fits_edit_release = _fits_release_write
     _fits_upload_asset = _fits_release_write
+    _fits_react_release = _fits_release_write
+
+    def _do_react_release(self, ref: Any, row: object) -> None:
+        """Add or remove your reaction on a release, found by its tag."""
+        assert isinstance(row, GitHubRelease)
+        repo, tag = self._repo_for(ref), row.tag
+        token = getattr(self.items, "token", None)
+
+        def find_id() -> int:
+            from quill.core.github.workbench_api import TokenApi
+
+            data = TokenApi(token).rest("GET", f"/repos/{repo}/releases/tags/{tag}").data
+            return int(data.get("id") or 0) if isinstance(data, dict) else 0
+
+        def react(release_id: int) -> None:
+            from quill.ui.github_reactions_ui import start_reaction_flow
+
+            if not release_id:
+                self._say(f"GitHub has no release tagged {tag} to react to.")
+                return
+            start_reaction_flow(
+                self._parent(),
+                self.items,
+                repo,
+                "release",
+                release_id,
+                what=f"release {tag}",
+                announce=self._say,
+            )
+
+        self._background(f"find release {tag}", find_id, react)
 
     def _fits_delete_asset(self, row: object) -> bool:
         return self._fits_release_write(row) and bool(getattr(row, "assets", ()))

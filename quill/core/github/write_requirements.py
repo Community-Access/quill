@@ -116,6 +116,28 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}remove_runner": ("repo:admin", _D),
     f"{_P}delete_package_version": ("sign_in+scope:delete:packages", _D),
     f"{_P}delete_package": ("sign_in+scope:delete:packages", _D),
+    f"{_P}restore_package_version": ("sign_in+scope:write:packages", _V),
+    **{
+        f"{_P}{verb}": ("sign_in+scope:codespace", _V)
+        for verb in (
+            "codespace_new",
+            "codespace_start",
+            "codespace_stop",
+            "codespace_machine",
+            "codespace_export",
+            "codespace_publish",
+            "pull_codespace",
+        )
+    },
+    f"{_P}codespace_delete": ("sign_in+scope:codespace", _D),
+    f"{_P}react_release": ("sign_in", _O),
+    f"{_P}rerun_job": ("repo:write", _V),
+    f"{_P}manage_reviews": ("repo:write", _V),
+    f"{_P}environment_secrets": ("repo:admin", _V),
+    f"{_P}environment_variables": ("repo:admin", _V),
+    f"{_P}environment_delete": ("repo:admin", _D),
+    f"{_P}force_cancel_run": ("repo:write", _V),
+    f"{_P}delete_run_logs": ("repo:write", _D),
     f"{_P}new_star_list": ("sign_in+scope:user", _O),
     f"{_P}star_lists": ("sign_in+scope:user", _O),
     f"{_P}edit_star_list": ("sign_in+scope:user", _V),

@@ -111,3 +111,23 @@ def test_ctrl_n_restores_a_deleted_package() -> None:
     assert window._fits_restore_package(None)
     window._do_restore_package(SimpleNamespace(instance=""), None)
     assert window.api.sent[-1][:2] == ("POST", "/user/packages/npm/left-pad/restore")
+
+
+def test_another_persons_package_shows_versions_but_cannot_be_changed() -> None:
+    theirs = package_row(ENGINE, person="octocat")
+    window = _Window()
+    shown: list[tuple[str, str]] = []
+    window._show_text = lambda title, text: shown.append((title, text))  # type: ignore[method-assign]
+    assert window._fits_show_package_versions(theirs)
+    assert not window._fits_delete_package(theirs)
+    assert not window._fits_restore_package_version(theirs)
+    window._do_show_package_versions(None, theirs)
+    assert shown[0][0] == "Versions: quill-engine"
+    assert {"show_package_versions", "restore_package_version"} <= set(DEVELOPMENT_VERBS)
+
+
+def test_restore_package_version_picks_from_the_deleted_ones() -> None:
+    window = _Window(pick=1)
+    window._do_restore_package_version(None, ROW)
+    assert window.api.sent[-2][2]["state"] == "deleted"
+    assert window.said[0] == "Restored version sha256:aaa of quill-engine."

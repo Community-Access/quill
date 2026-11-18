@@ -2580,6 +2580,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Ask a Person.** Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email.
 
+**My Codespaces.** My Codespaces: every codespace of yours. Start, Stop, Change Machine, Export to a Branch and Delete are on each row.
+
 **My Codespaces Secrets.** My Codespaces Secrets: values given to your own codespaces.
 
 **My Email Addresses.** My Email Addresses: the addresses on your account. Ctrl+N adds one.
@@ -2690,6 +2692,10 @@ Control coverage: 365 audited sites (365 helped).
 
 **repository: Autolinks.** Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one.
 
+**repository: Environments.** Environments: where this repository's workflows deploy, each with its protection rules. Secrets... and Variables... on a row are that environment's own.
+
+**repository: Codespaces.** Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you name, with the machine and dev container you choose.
+
 **repository: Actions Variables.** Actions Variables: values workflows read as vars.NAME. Ctrl+N adds one.
 
 **repository: Actions Secrets.** Actions Secrets: values workflows read but nobody sees again. Ctrl+N adds one.
@@ -2712,6 +2718,10 @@ Control coverage: 365 audited sites (365 helped).
 
 **repository: CodeQL Databases.** CodeQL Databases: the databases code scanning built, one per language.
 
+**repository: Organization Secrets Here.** Organization Secrets Here: the organization's Actions secrets this repository may use. Change them in the organization.
+
+**repository: Organization Variables Here.** Organization Variables Here: the organization's Actions variables this repository may use. Change them in the organization.
+
 **person: person.** A person: their repositories, activity, followers and who they follow.
 
 **person: Profile.** Profile: who this person is, their year of contributions as numbers, and what they pinned.
@@ -2725,6 +2735,8 @@ Control coverage: 365 audited sites (365 helped).
 **person: Followers.** Followers: who follows this person.
 
 **person: Following.** Following: who this person follows.
+
+**person: Packages.** Packages: this person's public packages. Show Versions lists each one's versions.
 
 **organization: organization.** An organization: its repositories.
 
@@ -3130,6 +3142,10 @@ Control coverage: 365 audited sites (365 helped).
 
 **Auto-Merge.** Have it merge itself when it can, or turn that off.
 
+**Reviews.** Read, change, dismiss, submit or delete a review.
+
+**Open in a Codespace.** Make a codespace on its branch.
+
 **Add to or Remove from Merge Queue.** Queue it to merge after the pull requests ahead of it, or take it out.
 
 **Open Patch in Editor.** Its whole change as one unified diff, every file, to read, save or apply.
@@ -3151,6 +3167,18 @@ Control coverage: 365 audited sites (365 helped).
 **Re-run Workflow.** Run the whole workflow again.
 
 **Cancel Run.** Stop the run. QUILL asks first.
+
+**Re-run One Job.** One job again, with debug logs if asked.
+
+**Force Cancel.** When Cancel has not stopped it.
+
+**Download Logs.** Every log of the run, as a zip file.
+
+**Delete Logs.** Delete its logs; the run stays.
+
+**Approvals.** Who approved or rejected its deployments.
+
+**Earlier Attempts.** How an earlier attempt went, or its logs.
 
 **View Artifacts.** Files the run produced, to download.
 
@@ -3175,6 +3203,8 @@ Control coverage: 365 audited sites (365 helped).
 **Draft Release Notes.** Notes drafted from the changes.
 
 **Upload Asset.** Add a file to the release.
+
+**React.** Add or remove a reaction.
 
 **Compare With Previous.** Compare it with the one before: the previous tag or release, or a commit's parent.
 
@@ -3339,6 +3369,28 @@ Control coverage: 365 audited sites (365 helped).
 **Runner Labels.** Add a label, or take one away.
 
 **Remove Runner.** GitHub forgets it; asks first.
+
+**Secrets.** Add, change or delete its secrets.
+
+**Variables.** Add, change or delete them.
+
+**Delete.** Delete it, after asking.
+
+**Start.** Start it, as it was when it stopped.
+
+**Stop.** Stop it; its files are kept.
+
+**Change Machine.** A bigger or smaller machine.
+
+**Export to a Branch.** Unpushed changes to a branch.
+
+**Publish to a New Repository.** For a codespace made from a template.
+
+**Delete.** Delete it, after asking.
+
+**Show Versions.** Every version, newest first, with its tags.
+
+**Restore Package Version.** Bring back a version deleted in the last 30 days.
 
 **Delete Package Version.** Choose a version, newest first with its tags, and delete it after asking.
 

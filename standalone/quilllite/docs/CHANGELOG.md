@@ -2,6 +2,100 @@
 
 ## 2.0.0
 
+### Reviews already on a pull request (2026-11-18)
+
+**Reviews...** on a pull request in the GitHub Workbench lists its reviews
+("sam approved on 2026-11-17: Looks good"). Choose one, then:
+
+- **Read its comments...**: each line comment, to read in a window, change or
+  delete (your own).
+- **Change its summary...** of your review.
+- **Dismiss it...** for an approval or a request for changes, with the reason
+  GitHub asks for.
+- **Submit it...** for your pending review: as a comment, an approval or a
+  request for changes, with an optional summary; or **Delete it...**.
+
+A pull request's commits, which File Differences already reads, are counted
+now. Merging with GitHub's background merge route is left to Merge..., which
+does the same. Planned GitHub endpoints fall from 441 to 430.
+
+### Environments, their secrets and variables, and some routes counted (2026-11-18)
+
+- **Settings > Environments** in each repository lists where its workflows
+  deploy, each with its protection rules ("production: needs a reviewer,
+  waits 5 minutes."). On each one, **Secrets...** and **Variables...** list
+  that environment's own, with "Add a secret..." first; choosing one offers
+  Change (for a variable) or Delete. A secret is typed into a password box
+  and sealed with the environment's own key. **Delete...** asks first, and
+  says that its secrets, variables and rules go with it. Properties opens the
+  Environment sheet.
+- **Settings > Organization Secrets Here** and **Organization Variables
+  Here** list what the organization shares with this repository.
+- Several routes QUILL already used were never counted, and now are: your
+  starred repositories, your activity feed, a repository's stargazers, and,
+  in the review window, the review comments, replying to one, and updating a
+  pull request's branch.
+
+Planned GitHub endpoints fall from 456 to 441.
+
+### More on a workflow run (2026-11-18)
+
+A workflow run's row in the GitHub Workbench has six more commands:
+
+- **Re-run One Job...** picks one job, then re-runs it as it was or with
+  debug logging.
+- **Force Cancel...**, after asking, for a run that Cancel did not stop. Its
+  cleanup steps are skipped, which the question says.
+- **Download Logs...** saves every log of the run as a zip file.
+- **Delete Logs...**, after asking; the run itself is kept.
+- **Approvals** says who approved or rejected each of its deployments, and
+  what they wrote.
+- **Earlier Attempts...**, on a run that was re-run, says how an earlier
+  attempt went or downloads its logs.
+
+Planned GitHub endpoints fall from 467 to 456.
+
+### Reacting to a release (2026-11-18)
+
+**React...** on a release in the GitHub Workbench adds or removes your
+reaction, from the same list of reactions as an issue's, and says which. The
+reactions already offered in the GitHub Items window and the review window
+(on issues, pull requests and their comments) are now counted as built, which
+they were. Planned GitHub endpoints fall from 476 to 467.
+
+### Codespaces: make one, start, stop, export and publish (2026-11-18)
+
+A codespace is a computer GitHub runs in the cloud for one repository and
+branch. The GitHub Workbench now has **Repositories > My Codespaces** for
+all of yours, and **Code > Codespaces** in each repository for that
+repository's.
+
+- **Ctrl+N** in a repository's Codespaces makes one on the branch you name,
+  with the machine and dev container you choose; GitHub's own default dev
+  container is picked for you when there is one. If the dev container asks for
+  permissions you have not accepted, QUILL says to accept them on GitHub first.
+- On each codespace: **Start**, **Stop** (its files are kept), **Change
+  Machine...**, **Export to a Branch** (your unpushed changes, then whether it
+  worked), **Publish to a New Repository...** for one made from a template,
+  and **Delete...**, which asks first. Properties shows and renames it.
+- **Open in a Codespace** on an open pull request makes one on its branch.
+
+Codespaces can cost money; a used-up spending limit is said plainly. Planned
+GitHub endpoints fall from 492 to 476.
+
+### Package versions: see them, restore one, and other people's packages (2026-11-18)
+
+- **Show Versions** on any package lists every version, newest first, with
+  its tags, in a window you can read through.
+- **Restore Package Version...** on your own or your organization's package
+  lists the versions deleted in the last 30 days and brings back the one you
+  choose.
+- **People >** a person **> Packages** lists that person's public packages.
+  Show Versions works on them; deleting and restoring do not, since only a
+  package's owner may change it.
+
+Planned GitHub endpoints fall from 503 to 492.
+
 ### Copilot Autofix, every place an alert was found, and SARIF uploads (2026-11-18)
 
 Three more things to do with code scanning in the GitHub Workbench, beyond
