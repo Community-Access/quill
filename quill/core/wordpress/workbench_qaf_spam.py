@@ -27,6 +27,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any
 
+from quill.core.counted import plural
 from quill.core.wordpress.api import WordPressApiError
 
 if TYPE_CHECKING:
@@ -147,7 +148,12 @@ def spam_state_text(state: Mapping[str, Any] | None) -> str:
             + (f", using {', '.join(on)}" if on else "")
             + f"; {questions.get('site_questions', 0)} are the site's own; Send Anyway is "
             f"offered after {questions.get('send_anyway_after', '?')} wrong answers."
-            + (f" {len(per_form)} forms choose their own." if per_form else "")
+            + (
+                f" {plural(len(per_form), 'form')} "
+                f"{'chooses its' if len(per_form) == 1 else 'choose their'} own."
+                if per_form
+                else ""
+            )
         )
         week = questions.get("this_week")
         if isinstance(week, Mapping):

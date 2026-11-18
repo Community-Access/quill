@@ -34,6 +34,7 @@ import re
 from collections.abc import Iterable, Mapping, Sequence
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress.workbench_by_name import Edit, _content, _item_edit, _title
 
 __all__ = [
@@ -286,7 +287,7 @@ def pattern_update_edit(
     if content == old:
         return None
     title = _title(pattern)
-    places = f"the {uses} pages placing it" if uses != 1 else "the page placing it"
+    places = f"the {plural(uses, 'page')} placing it" if uses != 1 else "the page placing it"
     return Edit(
         site,
         f"wp/v2/blocks/{pattern.get('id')}",

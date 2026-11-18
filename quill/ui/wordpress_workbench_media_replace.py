@@ -23,6 +23,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import media_replace as mr
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.workbench.history import Change
@@ -193,7 +194,8 @@ class WorkbenchMediaReplace:
             return
         lines = [
             *mr.preview_lines(facts, new, old_url, in_place=False),
-            f"{len(plan.items)} items use it, and each is pointed at the new file:",
+            f"{plural(len(plan.items), 'item')} {'uses' if len(plan.items) == 1 else 'use'} "
+            f"it, and each is pointed at the new file:",
             *plan.lines(),
             "Ctrl+Z puts every item back; the new file stays in the library."
             if fate == 0

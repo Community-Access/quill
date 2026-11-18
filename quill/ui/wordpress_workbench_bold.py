@@ -30,6 +30,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import sites as st
 from quill.core.wordpress.workbench_bold import (
     calendar_days,
@@ -311,7 +312,7 @@ class WorkbenchBoldCommands(
                 self.parent,
                 self.show_modal,
                 title=f"Put Back {chosen.name}",
-                summary=f"{len(lines)} changes on {site}. {RESTORE_TERMS}",
+                summary=f"{plural(len(lines), 'change')} on {site}. {RESTORE_TERMS}",
                 lines=[line.sentence for line in lines],
                 yes="Put Back",
             ):

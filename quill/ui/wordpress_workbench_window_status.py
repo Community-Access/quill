@@ -11,6 +11,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress.workbench_actions import PREFIX
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.workbench.filters import describe
@@ -68,7 +69,7 @@ class WorkbenchStatusCells:
 
         def waiting() -> str:
             count = sum(self._waiting.values())
-            return f"{count} comments waiting" if count else ""
+            return f"{plural(count, 'comment')} waiting" if count else ""
 
         def access() -> str:
             site = self.site_of(frame.current)

@@ -260,14 +260,14 @@ def test_import_asks_the_author_previews_skips_files_and_ctrl_z_trashes(
     assert files == [("Import WXR as Drafts", False)]
     assert asked[0] == ("&Give unmatched authors' items to:", ["Jeff", "Ann"])
     assert asked[1][0] == "&Files:" and "old.example" in asked[1][1][0]
-    assert previews[0][0].startswith("Make 1 items from old.xml on Community Radio")
+    assert previews[0][0].startswith("Make 1 item from old.xml on Community Radio")
     assert "Author dave is not on this site; given to Ann." in previews[0][1]  # as chosen
     (draft,) = _drafts(bench.api)
     assert draft["status"] == "draft" and draft["author"] == 4 and draft["title"] == "Morning"
     assert PIC in draft["content"] and "featured_media" not in draft
     assert not bench.api.uploads
     assert bench.said[-1] == (
-        "Imported 1 of 1 items from old.xml into Community Radio as drafts, with 0 files. "
+        "Imported 1 of 1 item from old.xml into Community Radio as drafts, with 0 files. "
         "Ctrl+Z moves the drafts to the Trash."
     )
     assert "Made post Morning as a draft, number 1001." in reports[0]

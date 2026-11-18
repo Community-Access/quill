@@ -39,6 +39,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress.api import WordPressApiError
 
 __all__ = ["MORE_KINDS", "WatchContext", "more_round"]
@@ -313,9 +314,9 @@ def _statement(site: str, api: Any, state: Any, ctx: WatchContext) -> list[str]:
     if str(page.get("modified_gmt", ""))[:19] >= str(entry.date)[:19]:
         return []  # saved since that check
     found = (
-        f"found {entry.problems} things to fix across {entry.pages} pages"
+        f"found {entry.problems} things to fix across {plural(entry.pages, 'page')}"
         if entry.problems
-        else f"found no problems on {entry.pages} pages"
+        else f"found no problems on {plural(entry.pages, 'page')}"
     )
     return [
         f"The accessibility statement on {site} is out of date: Check the Whole Site, in "

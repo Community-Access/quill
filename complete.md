@@ -251,9 +251,8 @@ Ten of the eleven are fixed (checked 2026-11-18; five by #1837, five by the Word
 ###### What is heard, and what is not
 
 25. The reason a row is greyed is never heard: menu help goes to a status pane that does not exist, context menus give no reason, and every greyed row says "Not available here." Shift+F1 opens a generic list instead of the provider's real "your role and what each action needs" view.
-26. Long operations announce their start but not their end (Load More, Load All, Refresh, filters), and an empty list says nothing.
 27. Watches are fire-and-forget: nothing is kept, one refused read silences every Watch on that site, and a round can produce a burst of separate announcements.
-28. Names by ear: widget areas, menus and sheets are spoken by id ("Add a Widget to sidebar-1", "12 Properties"); Gravity entries have no number; settings and Gravity values are raw stored values ("left_label (was top_label)", 0 to 6); list values print as Python tuples ("('News',)"); grammar slips such as "1 items" and "a event".
+28. Names by ear: widget areas, menus and sheets are spoken by id ("Add a Widget to sidebar-1", "12 Properties"); Gravity entries have no number; settings and Gravity values are raw stored values ("left_label (was top_label)", 0 to 6); list values print as Python tuples ("('News',)"); grammar slips such as "a event" (the Workbench's "1 items" counts were fixed with item 26; other modules still have some).
 29. Confusing names: "Publish or Update" never updates; "Publish a Document as a Page" and "Publish to Another Site" make drafts; "Site Check" opens Site Health; two different "Coming Up" lists; toggles ("Activate or Deactivate", "Offer to Ask the Site", "Add New Pages Automatically") do not say which way they will go.
 
 ###### Structure and consistency

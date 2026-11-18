@@ -265,3 +265,26 @@ def test_an_ability_runs_after_its_sheet_and_preview(bench, monkeypatch) -> None
     assert previews and previews[0]["lines"] == ["limit: 9"]
     assert ran and ran[0][1] == "wp-abilities/v1/abilities/acme/count/run"
     assert reports
+
+
+def test_long_loads_say_how_they_ended(bench) -> None:
+    """Item 26: Load More, Load All, Refresh and a site filter say their end."""
+    _posts(bench)
+    for verb in ("load_more", "load_all", "refresh"):
+        bench.said.clear()
+        bench.run(command(verb))
+        assert bench.said[-1] == f"{len(bench.rows)} rows shown.", verb
+    bench.said.clear()
+    bench.filter.ChangeValue("status:draft")
+    bench.apply_filter()
+    assert bench.said[0] == "Filtering."
+    assert bench.said[-1] == "1 row shown."
+
+
+def test_an_empty_list_says_so(bench) -> None:
+    _posts(bench)
+    bench.said.clear()
+    bench.filter.ChangeValue("status:pending")
+    bench.apply_filter()
+    assert bench.said[-1] and bench.said[-1] != "Filtering."
+    assert not bench.rows

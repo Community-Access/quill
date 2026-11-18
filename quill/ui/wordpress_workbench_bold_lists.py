@@ -22,6 +22,7 @@ from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress.workbench_carry import (
     SPREADSHEET_LEFT_OUT,
     export_left_out,
@@ -109,7 +110,7 @@ class WorkbenchListCommands:
         count = export_rows(path, [column_title(c) for c in columns], rows)
         every = [column_title(c) for c in (getattr(node, "columns", ()) or ())]
         left_out = export_left_out([column_title(c) for c in columns], every)
-        self.say(f"Exported {count} rows to {path.name}. {left_out}")
+        self.say(f"Exported {plural(count, 'row')} to {path.name}. {left_out}")
 
     def _kind_here(self, ref: Any) -> str:
         return "page" if ref is not None and ref.key.startswith("pages") else "post"

@@ -29,6 +29,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.workbench.history import Change
 from quill.ui import wordpress_dialogs as dlg
@@ -325,7 +326,8 @@ class WorkbenchWxrCommands:
             self.show_modal,
             title=title,
             summary=(
-                f"Make {len(plan.items)} items from {path.name} on {site}, all as drafts? "
+                f"Make {plural(len(plan.items), 'item')} from "
+                f"{path.name} on {site}, all as drafts? "
                 "Ctrl+Z moves them to the Trash afterwards."
             ),
             lines=plan.lines() if head is None else head,
@@ -377,7 +379,8 @@ class WorkbenchWxrCommands:
             from quill.core.wordpress.wxr_import import undo_import
 
             said = (
-                f"Imported {result.count} of {len(plan.items)} items from {path.name} into "
+                f"Imported {result.count} of "
+                f"{plural(len(plan.items), 'item')} from {path.name} into "
                 f"{site} as drafts, with {result.uploaded} files. Ctrl+Z moves the drafts to "
                 "the Trash."
             )

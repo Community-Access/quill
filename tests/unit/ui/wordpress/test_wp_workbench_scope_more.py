@@ -131,7 +131,7 @@ def test_pages_using_a_plugins_blocks_are_listed_from_its_row(bench, monkeypatch
         raw={"plugin": "jetpack/jetpack", "textdomain": "jetpack"},
     )
     bench.provider.do_plugin_block_uses(None, row)
-    assert bench.said[-1] == f"1 pages on {SITE} use blocks from jetpack."
+    assert bench.said[-1] == f"1 page on {SITE} uses blocks from jetpack."
     assert "Hello: jetpack/slideshow" in seen[0]["text"]
     bench.provider.do_plugin_block_uses(None, _value("blocks", "paragraph block"))
     assert "core block" in bench.said[-1]

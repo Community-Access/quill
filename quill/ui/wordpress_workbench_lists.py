@@ -27,6 +27,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import site_admin as admin
 from quill.core.wordpress.workbench_create import (
     ROLES_CANNOT_CHANGE,
@@ -157,7 +158,7 @@ class WorkbenchListCommands:
         self._lists_state()
         pages = self.paging.more(self.page_key(ref))
         self.say(f"Reading up to {pages * 100} rows.")
-        self.refresh()
+        self.frame.reload(report=True)
 
     def do_load_all(self, _ref: Any, _row: WbRow | None) -> None:
         ref = self._list_ref()
@@ -166,7 +167,7 @@ class WorkbenchListCommands:
         self._lists_state()
         self.paging.all(self.page_key(ref))
         self.say("Reading every row. A big site takes a while.")
-        self.refresh()
+        self.frame.reload(report=True)
 
     def _available_columns(self, node: Any) -> list[str]:
         own = list(node.columns or ("name",))
@@ -365,7 +366,8 @@ class WorkbenchListCommands:
             def done(failed: list[int]) -> None:
                 if failed:
                     self.say(
-                        f"{len(failed)} items could not be moved, so {row.title} was kept. "
+                        f"{plural(len(failed), 'item')} could "
+                        f"not be moved, so {row.title} was kept. "
                         "Try again in a moment."
                     )
                 else:
@@ -410,7 +412,9 @@ class WorkbenchListCommands:
         def done(result: tuple[int, list[int]]) -> None:
             _new, failed = result
             if failed:
-                self.say(f"{len(failed)} posts could not be moved, so {row.title} was kept.")
+                self.say(
+                    f"{plural(len(failed), 'post')} could not be moved, so {row.title} was kept."
+                )
             else:
                 self.say(f"{row.title} is now a {word}.")
             self.refresh()
@@ -466,8 +470,11 @@ class WorkbenchListCommands:
                 self.parent,
                 self.show_modal,
                 title="Empty Spam",
-                message=f"Delete all {len(ids)} comments held as spam on {site} permanently? "
-                "This cannot be undone.",
+                message=(
+                    f"Delete all {plural(len(ids), 'comment')} "
+                    f"held as spam on {site} permanently? "
+                    "This cannot be undone."
+                ),
                 yes_label="Delete All",
             ):
                 return

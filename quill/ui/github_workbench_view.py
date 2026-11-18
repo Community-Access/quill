@@ -297,7 +297,7 @@ class GitHubWorkbenchViewMixin:
     def load_all(self) -> None:
         frame = self.frame
         self._load_all_for = frame.current
-        frame.reload()
+        frame.reload(report=True)
 
     def load_more(self) -> None:
         """Load More: one more page of this view, up to Load All's thousand."""
@@ -310,7 +310,7 @@ class GitHubWorkbenchViewMixin:
             self._say("Every page this view can hold is already loaded.")
             return
         pages[ref] = pages.get(ref, 1) + 1
-        frame.reload()
+        frame.reload(report=True)
 
     def page_limit(self, ref: Any, default: int) -> int:
         """Rows to ask for: a page, a page more for each Load More, or Load All's thousand."""

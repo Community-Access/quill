@@ -35,6 +35,7 @@ from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 from urllib.parse import urlparse
 
+from quill.core.counted import plural
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.site import raw_text, rendered
 from quill.core.wordpress.workbench_by_name import Edit, Outcome
@@ -401,7 +402,7 @@ def menu_copy(
     except WordPressApiError as exc:
         return Outcome(site, name, False, exc.plain or str(exc))
     count = len(winner.get("items") or [])
-    return Outcome(site, name, True, f"now has the winner's {count} items, as links")
+    return Outcome(site, name, True, f"now has the winner's {plural(count, 'item')}, as links")
 
 
 # -- global styles ------------------------------------------------------------------

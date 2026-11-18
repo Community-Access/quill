@@ -22,6 +22,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import looks_history as lh
 from quill.core.wordpress import navigation as nav
 from quill.core.wordpress import site_structure as ss
@@ -476,7 +477,10 @@ class WorkbenchWidgetCommands:
             self.parent,
             self.show_modal,
             title=f"Bring Back Items to {menu.name}",
-            summary=f"Add back the {len(gone)} items {menu.name} has lost since then, at its end?",
+            summary=(
+                f"Add back the {plural(len(gone), 'item')} "
+                f"{menu.name} has lost since then, at its end?"
+            ),
             lines=[f"Added back: {title}" for title, *_rest in gone],
             yes="Bring Back",
         ):
@@ -491,13 +495,13 @@ class WorkbenchWidgetCommands:
             ]
 
         def done(added: list[nav.MenuNode]) -> None:
-            summary = f"Brought back {len(added)} items to {menu.name}."
+            summary = f"Brought back {plural(len(added), 'item')} to {menu.name}."
 
             def undo() -> str:
                 for node in added:
                     if node.item_id:
                         api.delete(f"wp/v2/menu-items/{node.item_id}", force=True)
-                return f"Took the {len(added)} items out of {menu.name} again."
+                return f"Took the {plural(len(added), 'item')} out of {menu.name} again."
 
             self._widget_undo(summary, undo)
             self.say(summary)
