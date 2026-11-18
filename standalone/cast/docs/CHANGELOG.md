@@ -4,6 +4,18 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+### Downloading an episode no longer stalls Cast (2026-11-18)
+
+Chris Nova reported (2026-11-18) that while an episode downloaded, the
+computer seemed to pause until the "downloaded" sound. The download itself ran
+in the background, but it reported its progress after every 64 KB it read,
+about a thousand times for an hour-long episode, and each report made Cast
+refresh its status bar and the Podcast Manager. On a fast connection those
+reports came faster than the window could answer them, so keys and the screen
+reader waited behind them. Progress is now reported at most twice a second,
+and always at the last byte, so the readout still moves and the window stays
+free. QUILL's own podcast downloads use the same code and get the same fix.
+
 ### When the next queued episode cannot start, Cast says so (2026-11-18)
 
 Chris Nova reported (2026-11-17) that with two episodes in the Play Queue, the

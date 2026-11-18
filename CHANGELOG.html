@@ -244,6 +244,13 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="podcast-downloads-no-longer-stall-the-window-2026-11-18">Podcast
+downloads no longer stall the window (2026-11-18)</h3>
+<p>From Chris Nova: while a podcast episode downloaded, QUILL Cast (and
+QUILL’s own podcasts) seemed to pause until the “downloaded” sound,
+because every 64 KB read was a progress report the window had to handle.
+Progress now reaches the window at most twice a second, and always at
+the last byte.</p>
 <h3 id="wordpress">WordPress</h3>
 <h3
 id="wordpress-properties-keeps-your-edits-when-a-save-fails-2026-11-18">WordPress:
