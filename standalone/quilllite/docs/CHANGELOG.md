@@ -2,6 +2,17 @@
 
 ## 2.0.0
 
+### Why a pull request cannot merge, and merging the commit you checked (2026-11-17)
+
+**Why Can't I Merge?** on a pull request in the GitHub Workbench says whether
+it can merge, or each reason it cannot (draft, conflicts, behind its base, a
+review needed, required checks failed or running, a branch rule) with what
+to do, always naming the commit it is about. **Merge...** asks the same
+first, and merges only that commit: if somebody pushes in between, nothing is
+merged and you hear why. **Auto-Merge...** and **Add to or Remove from Merge
+Queue...** are on the pull request's row, and a repository's **Merge Queue**
+lists its queue in order. Chapter 5 of the GitHub Guide has the details.
+
 ### A pull request's patch, revert and conflicts (2026-11-17)
 
 Three new rows on a pull request in the GitHub Workbench. **Open Patch in

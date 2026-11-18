@@ -112,11 +112,26 @@ class GitHubWorkbenchItemsMixin:
     # -- pull requests -------------------------------------------------------------
 
     def _do_merge(self, ref: Any, row: object) -> None:
+        """Merge: read why it can or cannot, then merge only the commit that was read (GH-MR)."""
+        from quill.core.github.merge_readiness import load_readiness
+
         assert isinstance(row, GitHubItem)
-        repo = self._repo_for(ref)
+        repo, api = self._repo_for(ref), self.github_api()  # type: ignore[attr-defined]
+        self._background(
+            f"check #{row.number} can merge",
+            lambda: load_readiness(api, repo, row.number),
+            lambda ready: self._merge_checked(repo, row, ready),
+        )
+
+    def _merge_checked(self, repo: str, row: GitHubItem, ready: Any) -> None:
+        from quill.core.github.merge_readiness import merge_at
+
+        if not ready.can_merge:
+            self._say(ready.sentence)
+            return
         index = self._choose(
             "Merge Pull Request",
-            f"How to merge #{row.number} into {row.base_branch or 'its base branch'}:",
+            f"How to merge #{row.number} into {ready.base or 'its base branch'}:",
             [label for label, _method in _MERGE_METHODS],
         )
         if index < 0:
@@ -128,14 +143,15 @@ class GitHubWorkbenchItemsMixin:
             title="Confirm Merge",
             message=(
                 f"Merge pull request #{row.number} ({row.title!r}) into "
-                f"{row.base_branch or 'its base branch'!r} in {repo}? This changes the "
-                "target branch for everyone and cannot be undone from QUILL. "
-                "Type the number to confirm."
+                f"{ready.base or 'its base branch'!r} in {repo}, as of commit "
+                f"{ready.short_head}? If anyone pushes before it goes in, nothing is merged. "
+                "This changes the target branch for everyone and cannot be undone from "
+                "QUILL. Type the number to confirm."
             ),
             expected=str(row.number),
         ).show():
             return
-        method, number = _MERGE_METHODS[index][1], row.number
+        method, number, api = _MERGE_METHODS[index][1], row.number, self.github_api()  # type: ignore[attr-defined]
 
         def merged(sha: str) -> None:
             self._say(f"Merged #{number} ({str(sha)[:7]}).")
@@ -143,7 +159,7 @@ class GitHubWorkbenchItemsMixin:
 
         self._background(
             "merge the pull request",
-            lambda: self.items.merge_pull_request(repo, number, merge_method=method),
+            lambda: merge_at(api, repo, number, method, ready.head),
             merged,
         )
 

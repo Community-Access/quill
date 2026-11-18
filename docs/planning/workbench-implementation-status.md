@@ -121,6 +121,13 @@ Patch in Editor (the whole change as one unified diff), Revert Pull Request...
 new worktree, merge without committing, walk the conflicts).
 `quill/core/github/pull_tools.py`, `quill/ui/github_workbench_pull_tools.py`.
 
+**2026-11-17, GH-MR: merge readiness for the exact commit.** Why Can't I
+Merge? (each blocker in words, for the head commit it names), Merge checking
+first and merging only that commit, Auto-Merge... and Add to or Remove from
+Merge Queue... on the row, and Repository > Merge Queue.
+`quill/core/github/merge_readiness.py`, `quill/core/github/merge_queue.py`,
+`quill/ui/github_workbench_merge.py`. Batch merges remain.
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

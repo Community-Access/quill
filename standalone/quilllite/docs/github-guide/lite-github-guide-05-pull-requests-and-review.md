@@ -308,15 +308,56 @@ review comments, like anyone else's, and the outline shows them after a refresh.
 Merging is in the Workbench, not the review window, because it is the one
 thing here that changes the base branch for everyone. Select the pull request
 and press `Ctrl+Shift+Enter`, or choose **Merge...** from its context menu.
-QUILL Lite asks how to merge: Squash and merge, Merge commit, or Rebase. Then it asks
-you to type the pull request's number to confirm, not just press Yes, and
-says what will happen: that it merges into the base branch and that this
-changes the branch for everyone. You hear "Merged #42" and the start of the
-new commit.
+
+QUILL Lite first asks GitHub whether the pull request can merge. If it cannot, you
+hear why, the same answer as **Why Can't I Merge?** below, and nothing else
+happens. If it can, QUILL Lite asks how to merge: Squash and merge, Merge commit,
+or Rebase. Then it asks you to type the pull request's number to confirm, not
+just press Yes, and says what will happen: that it merges into the base
+branch, as of the commit QUILL Lite checked, for example "as of commit 3f9a2c1",
+and that this changes the branch for everyone. You hear "Merged #42" and the
+start of the new commit.
+
+That commit is the one that merges. If somebody pushes to the pull request
+between the check and your typing the number, GitHub refuses, nothing is
+merged, and QUILL Lite says so: "Somebody pushed to #42 after commit 3f9a2c1 was
+checked, so nothing was merged." Check again and you are merging what you
+have actually read.
+
+### Why Can't I Merge?
+
+**Why Can't I Merge?** on a pull request's context menu in the Workbench
+answers the question GitHub's merge box answers with colours and icons. You
+hear either that it can merge, "#42 can merge into main, as of commit
+3f9a2c1.", or each reason it cannot, each with what to do:
+
+- It is a draft: mark it ready for review first.
+- It conflicts with its base: in QUILL, **Resolve Conflicts in a
+  Worktree...** takes the conflicts to your computer.
+- It is behind its base, and the branch's rules want it up to date: update
+  the branch.
+- A reviewer requested changes, or it needs an approving review.
+- A required check failed, or has not finished, named: "Required checks test
+  and lint failed. Re-run or fix it." A check that failed but is not
+  required is mentioned as not required, and does not stop the merge.
+- A rule on the base branch blocks it for another reason: **Check Merge
+  Policy** in the review window names the rules.
+
+It also says when auto-merge is on, and its place when the pull request is
+in the merge queue. The answer is always for one commit, which it names, so
+you know a push after you asked may change it.
 
 ### Auto-merge and the merge queue
 
-**Auto-Merge and Queue...** (`Alt+A`) opens a menu:
+On a pull request's row in the Workbench, **Auto-Merge...** turns auto-merge
+on, after telling you what it would be waiting for and asking how to merge,
+or offers to turn it off when it is on. A pull request that can merge now has
+nothing to wait for, and QUILL Lite says so rather than switching it on. **Add to
+or Remove from Merge Queue...** adds the pull request to its branch's queue,
+naming the commit, or offers to take it out when it is in, saying its place.
+The repository's **Merge Queue** node lists the whole queue in order.
+
+In the review window, **Auto-Merge and Queue...** (`Alt+A`) opens a menu:
 
 - **Enable Auto-Merge...** tells GitHub to merge the pull request by itself as
   soon as its required reviews and checks pass. QUILL asks how: Create a merge

@@ -1505,6 +1505,16 @@ branch in a new folder beside your checkout and walks each conflicted file,
 without changing the folder you are in. See
 [The whole patch, a revert, and conflicts](../github-guide/github-guide-05-pull-requests-and-review.html#the-whole-patch-a-revert-and-conflicts).
 
+#### Why a pull request cannot merge
+
+**Why Can't I Merge?** on a pull request's row in the GitHub Workbench says
+whether it can merge, or each reason it cannot with what to do, for the
+commit it names. **Merge...** asks the same first and merges only that
+commit, so a push in between merges nothing. **Auto-Merge...** and **Add to
+or Remove from Merge Queue...** are on the row too, and a repository's
+**Merge Queue** lists its queue. See
+[Why Can't I Merge?](../github-guide/github-guide-05-pull-requests-and-review.html#why-cant-i-merge).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

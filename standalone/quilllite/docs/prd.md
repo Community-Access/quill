@@ -2764,4 +2764,7 @@ Workbench's own rows, so QUILL Lite has them too
 (`quill/ui/github_workbench_pull_tools.py`). Resolve Conflicts in a
 Worktree... needs local Git, which only QUILL keeps, so in QUILL Lite it is
 greyed with that reason. QUILL being ahead is allowed; QUILL Lite being
-ahead is not.
+ahead is not. Why Can't I Merge?, Auto-Merge..., Add to or Remove from Merge
+Queue..., the Merge Queue node and Merge's check of the exact commit are the
+Workbench's, so they are the same in both editors
+(`quill/ui/github_workbench_merge.py`).

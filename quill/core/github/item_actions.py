@@ -166,6 +166,25 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _COMMENT,
         _a("merge", "Merge...", _W, "push", "Merge it, with the methods the repository allows."),
         _a(
+            "why_cant_merge",
+            "Why Can't I Merge?",
+            help="Whether it can merge, or each reason it cannot, for the commit it is at.",
+        ),
+        _a(
+            "auto_merge",
+            "Auto-Merge...",
+            _W,
+            "push",
+            "Have it merge itself when it can, or turn that off.",
+        ),
+        _a(
+            "merge_queue",
+            "Add to or Remove from Merge Queue...",
+            _W,
+            "push",
+            "Queue it to merge after the pull requests ahead of it, or take it out.",
+        ),
+        _a(
             "open_patch",
             "Open Patch in Editor",
             help="Its whole change as one unified diff, every file, to read, save or apply.",

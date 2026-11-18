@@ -167,6 +167,9 @@ NODE_HELP: dict[str, str] = {
         "owner's .github repository. Enter builds or edits one; Ctrl+N starts a new one."
     ),
     "repository:repo_projects": "Projects: this repository's Project boards.",
+    "repository:merge_queue": (
+        "Merge Queue: the default branch's merge queue in order, each pull request's state."
+    ),
     "repository:activity": "Activity: what happened in the repository lately.",
     "repository:people": "People: contributors, forks, and who has access.",
     "repository:contributors": "Contributors and People: who has worked on the repository.",
