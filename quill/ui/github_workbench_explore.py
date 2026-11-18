@@ -43,6 +43,7 @@ _KINDS = {
     "sponsorship": "sponsorship",
     "sponsor_tier": "sponsor_tier",
     "wiki": "wiki",
+    "resource": "resource",
     "issue": "issue",
     "pr": "pull_request",
     "label": "label",

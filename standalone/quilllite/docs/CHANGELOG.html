@@ -245,6 +245,35 @@
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="200">2.0.0</h2>
 <h3
+id="thirty-four-lists-of-settings-in-one-place-each-2026-11-18">Thirty-four
+lists of settings, in one place each (2026-11-18)</h3>
+<p>Much of what GitHub keeps for a repository, an organization or your
+own account is a plain list: variables, secrets, members, invitations,
+blocked people, email addresses. The GitHub Workbench now has a node for
+each of 34 such lists, and every one works the same way. Rows read as
+sentences (“CHANNEL is beta, changed 2026-11-17.”), <code>Ctrl+N</code>
+adds one by asking a question at a time, <strong>Change…</strong> edits
+a row where GitHub allows it, and <strong>Delete…</strong> asks first. A
+secret is typed into a password box and sealed with GitHub’s key before
+it leaves your computer; it is never said, shown or kept.</p>
+<ul>
+<li><strong>A repository:</strong> Actions variables and secrets,
+Dependabot, Codespaces and agent secrets, agent variables, artifacts,
+invitations and issue types.</li>
+<li><strong>An organization:</strong> the same variables and secrets,
+runner groups, runners and GitHub-hosted runners, members, invitations,
+blocked people, outside collaborators, security managers, custom
+properties, issue types and roles.</li>
+<li><strong>Your account:</strong> Codespaces secrets, email addresses,
+social accounts, blocked people, followers, issue types and organization
+memberships.</li>
+</ul>
+<p>Behind this, the Workbench’s count of planned GitHub endpoints fell
+from 1,064 to 904. Eighty-five came from these lists. The other 75 were
+GraphQL twins of routes the Workbench already uses or has already ruled
+out, so they need no second route. F1 on each new node explains its
+list.</p>
+<h3
 id="adding-labelling-and-removing-a-self-hosted-runner-2026-11-18">Adding,
 labelling and removing a self-hosted runner (2026-11-18)</h3>
 <p><code>Ctrl+N</code> in <strong>Repository &gt; Actions &gt;

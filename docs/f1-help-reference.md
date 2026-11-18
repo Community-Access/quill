@@ -2580,6 +2580,20 @@ Control coverage: 365 audited sites (365 helped).
 
 **Ask a Person.** Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email.
 
+**My Codespaces Secrets.** My Codespaces Secrets: values given to your own codespaces.
+
+**My Email Addresses.** My Email Addresses: the addresses on your account. Ctrl+N adds one.
+
+**My Social Accounts.** My Social Accounts: the links on your profile.
+
+**Blocked People.** Blocked People: who cannot follow you or take part in your repositories.
+
+**My Followers.** My Followers: who follows you on GitHub.
+
+**My Issue Types.** My Issue Types: the kinds of issue your own repositories offer.
+
+**My Organizations' Memberships.** My Organizations' Memberships: your role in each organization, and invitations.
+
 **repository: owner/name.** A repository: its issues, pull requests, actions, code, releases and settings, each a node below. Ctrl+Shift+1 to Ctrl+Shift+0 jump to them.
 
 **repository: Overview.** Overview: the repository's README, description and community profile.
@@ -2676,6 +2690,24 @@ Control coverage: 365 audited sites (365 helped).
 
 **repository: Autolinks.** Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one.
 
+**repository: Actions Variables.** Actions Variables: values workflows read as vars.NAME. Ctrl+N adds one.
+
+**repository: Actions Secrets.** Actions Secrets: values workflows read but nobody sees again. Ctrl+N adds one.
+
+**repository: Dependabot Secrets.** Dependabot Secrets: what Dependabot uses to reach private registries.
+
+**repository: Codespaces Secrets.** Codespaces Secrets: values given to every codespace of this repository.
+
+**repository: Copilot Agent Secrets.** Copilot Agent Secrets: values the Copilot coding agent may use here.
+
+**repository: Copilot Agent Variables.** Copilot Agent Variables: values the Copilot coding agent reads here.
+
+**repository: Artifacts.** Artifacts: files workflow runs kept, such as builds and test reports.
+
+**repository: Invitations.** Invitations: people asked to join this repository who have not answered yet.
+
+**repository: Issue Types.** Issue Types: the kinds of issue this repository offers, set by its organization.
+
 **person: person.** A person: their repositories, activity, followers and who they follow.
 
 **person: Profile.** Profile: who this person is, their year of contributions as numbers, and what they pinned.
@@ -2701,6 +2733,40 @@ Control coverage: 365 audited sites (365 helped).
 **organization: Webhooks.** Webhooks: the addresses GitHub tells about events across this organization. Ctrl+N adds one.
 
 **organization: Templates.** Templates: the defaults in the organization's .github repository, which every repository without its own uses. Enter builds or edits one.
+
+**organization: Actions Variables.** Actions Variables: values every chosen repository's workflows read.
+
+**organization: Actions Secrets.** Actions Secrets: values the organization's workflows read but nobody sees again.
+
+**organization: Dependabot Secrets.** Dependabot Secrets: what Dependabot uses across the organization.
+
+**organization: Codespaces Secrets.** Codespaces Secrets: values given to the organization's codespaces.
+
+**organization: Copilot Agent Secrets.** Copilot Agent Secrets: values the coding agent may use in the organization.
+
+**organization: Copilot Agent Variables.** Copilot Agent Variables: values the coding agent reads in the organization.
+
+**organization: Runner Groups.** Runner Groups: which repositories may use which of the organization's runners.
+
+**organization: Runners.** Runners: the organization's own machines that run jobs.
+
+**organization: Larger Runners.** Larger Runners: GitHub's bigger machines the organization pays for.
+
+**organization: Members.** Members: the organization's people. Ctrl+N invites someone; Delete removes them.
+
+**organization: Invitations.** Invitations: people asked to join the organization who have not answered.
+
+**organization: Blocked People.** Blocked People: who cannot take part in the organization's repositories.
+
+**organization: Outside Collaborators.** Outside Collaborators: people with access to repositories but not members.
+
+**organization: Security Managers.** Security Managers: teams that see and manage every security alert.
+
+**organization: Custom Properties.** Custom Properties: labels the organization gives its repositories.
+
+**organization: Issue Types.** Issue Types: the kinds of issue, such as Bug, the organization's repositories offer.
+
+**organization: Organization Roles.** Organization Roles: the roles that can be given to people and teams.
 
 ### Every menu row
 
@@ -3285,6 +3351,10 @@ Control coverage: 365 audited sites (365 helped).
 **Delete Deploy Key.** Remove it; asks first.
 
 **Delete Autolink.** Remove it; asks first.
+
+**Change.** Change what GitHub lets you change.
+
+**Delete.** Remove it; asks first.
 
 **Clone Wiki.** Copy its pages to a folder, to edit them.
 

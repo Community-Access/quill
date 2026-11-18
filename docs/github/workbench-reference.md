@@ -594,6 +594,13 @@ Everything below is generated from the tables the window is built from. The GitH
 | Keys (`:help_keys`) | help | Keys: every key in the Workbench, grouped by what it does. |
 | What Changed (`:help_changes`) | help | What Changed: what is new in the GitHub Workbench in this version. |
 | Ask a Person (`:help_ask`) | help | Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email. |
+| My Codespaces Secrets (`:my_codespaces_secrets`) | people | My Codespaces Secrets: values given to your own codespaces. |
+| My Email Addresses (`:my_emails`) | people | My Email Addresses: the addresses on your account. Ctrl+N adds one. |
+| My Social Accounts (`:my_social_accounts`) | people | My Social Accounts: the links on your profile. |
+| Blocked People (`:my_blocks`) | people | Blocked People: who cannot follow you or take part in your repositories. |
+| My Followers (`:my_followers`) | people | My Followers: who follows you on GitHub. |
+| My Issue Types (`:my_issue_types`) | people | My Issue Types: the kinds of issue your own repositories offer. |
+| My Organizations' Memberships (`:my_org_memberships`) | people | My Organizations' Memberships: your role in each organization, and invitations. |
 | owner/name (`repository:repository`) | repository | A repository: its issues, pull requests, actions, code, releases and settings, each a node below. Ctrl+Shift+1 to Ctrl+Shift+0 jump to them. |
 | Overview (`repository:overview`) | repository, repository | Overview: the repository's README, description and community profile. |
 | Issues (`repository:issues`) | repository, repository | Issues: this repository's open issues. Ctrl+N files a new one; Delete closes the selected one after asking. |
@@ -642,6 +649,15 @@ Everything below is generated from the tables the window is built from. The GitH
 | Webhooks (`repository:webhooks`) | repository, settings | Webhooks: the addresses GitHub tells about events here. Ctrl+N adds one; Recent Deliveries on a webhook says what was sent and redelivers it. |
 | Deploy Keys (`repository:deploy_keys`) | repository, settings | Deploy Keys: SSH keys that let a server clone, pull or push this one repository. Ctrl+N adds one. |
 | Autolinks (`repository:autolinks`) | repository, settings | Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one. |
+| Actions Variables (`repository:actions_variables`) | repository, settings | Actions Variables: values workflows read as vars.NAME. Ctrl+N adds one. |
+| Actions Secrets (`repository:actions_secrets`) | repository, settings | Actions Secrets: values workflows read but nobody sees again. Ctrl+N adds one. |
+| Dependabot Secrets (`repository:dependabot_secrets`) | repository, settings | Dependabot Secrets: what Dependabot uses to reach private registries. |
+| Codespaces Secrets (`repository:codespaces_secrets`) | repository, settings | Codespaces Secrets: values given to every codespace of this repository. |
+| Copilot Agent Secrets (`repository:agent_secrets`) | repository, settings | Copilot Agent Secrets: values the Copilot coding agent may use here. |
+| Copilot Agent Variables (`repository:agent_variables`) | repository, settings | Copilot Agent Variables: values the Copilot coding agent reads here. |
+| Artifacts (`repository:artifacts`) | repository, actions | Artifacts: files workflow runs kept, such as builds and test reports. |
+| Invitations (`repository:repo_invitations`) | repository, people | Invitations: people asked to join this repository who have not answered yet. |
+| Issue Types (`repository:repo_issue_types`) | repository, settings | Issue Types: the kinds of issue this repository offers, set by its organization. |
 | person (`person:person`) | person | A person: their repositories, activity, followers and who they follow. |
 | Profile (`person:person_profile`) | person, person | Profile: who this person is, their year of contributions as numbers, and what they pinned. |
 | Sponsor (`person:person_sponsor`) | person, person | Sponsor: whether this person takes sponsorships, and each tier with its price. |
@@ -655,6 +671,23 @@ Everything below is generated from the tables the window is built from. The GitH
 | Packages (`organization:organization_packages`) | organization, organization | Packages: this organization's container images and other packages. Ctrl+N restores one deleted in the last 30 days. |
 | Webhooks (`organization:organization_webhooks`) | organization, organization | Webhooks: the addresses GitHub tells about events across this organization. Ctrl+N adds one. |
 | Templates (`organization:organization_templates`) | organization, organization | Templates: the defaults in the organization's .github repository, which every repository without its own uses. Enter builds or edits one. |
+| Actions Variables (`organization:org_actions_variables`) | organization, organization | Actions Variables: values every chosen repository's workflows read. |
+| Actions Secrets (`organization:org_actions_secrets`) | organization, organization | Actions Secrets: values the organization's workflows read but nobody sees again. |
+| Dependabot Secrets (`organization:org_dependabot_secrets`) | organization, organization | Dependabot Secrets: what Dependabot uses across the organization. |
+| Codespaces Secrets (`organization:org_codespaces_secrets`) | organization, organization | Codespaces Secrets: values given to the organization's codespaces. |
+| Copilot Agent Secrets (`organization:org_agent_secrets`) | organization, organization | Copilot Agent Secrets: values the coding agent may use in the organization. |
+| Copilot Agent Variables (`organization:org_agent_variables`) | organization, organization | Copilot Agent Variables: values the coding agent reads in the organization. |
+| Runner Groups (`organization:runner_groups`) | organization, organization | Runner Groups: which repositories may use which of the organization's runners. |
+| Runners (`organization:org_runners`) | organization, organization | Runners: the organization's own machines that run jobs. |
+| Larger Runners (`organization:hosted_runners`) | organization, organization | Larger Runners: GitHub's bigger machines the organization pays for. |
+| Members (`organization:org_members`) | organization, organization | Members: the organization's people. Ctrl+N invites someone; Delete removes them. |
+| Invitations (`organization:org_invitations`) | organization, organization | Invitations: people asked to join the organization who have not answered. |
+| Blocked People (`organization:org_blocks`) | organization, organization | Blocked People: who cannot take part in the organization's repositories. |
+| Outside Collaborators (`organization:outside_collaborators`) | organization, organization | Outside Collaborators: people with access to repositories but not members. |
+| Security Managers (`organization:security_managers`) | organization, organization | Security Managers: teams that see and manage every security alert. |
+| Custom Properties (`organization:custom_properties`) | organization, organization | Custom Properties: labels the organization gives its repositories. |
+| Issue Types (`organization:org_issue_types`) | organization, organization | Issue Types: the kinds of issue, such as Bug, the organization's repositories offer. |
+| Organization Roles (`organization:org_roles`) | organization, organization | Organization Roles: the roles that can be given to people and teams. |
 
 ### The menu bar and its keys
 
@@ -910,6 +943,7 @@ Keys the window answers that are not menu rows:
 - **webhook**: Show Details, Ping, Recent Deliveries..., Change Address or Secret..., Delete Webhook..., Open on GitHub; Properties...
 - **deploy_key**: Show Details, Delete Deploy Key..., Open on GitHub; Properties...
 - **autolink**: Show Details, Delete Autolink..., Open on GitHub; Properties...
+- **resource**: Show Details, Change..., Delete..., Open on GitHub, Copy Link; Properties...
 - **wiki**: Open on GitHub, Clone Wiki..., Copy Link; Properties...
 - **sponsorship**: Show Details, Cancel Sponsorship..., Open on GitHub; Properties...
 - **sponsor_tier**: Show Details, Sponsor at This Tier..., Open on GitHub; Properties...
@@ -959,6 +993,7 @@ Keys the window answers that are not menu rows:
 - **Job**: One part of a run, on one machine, made of steps.
 - **Key**: An SSH key lets git push and pull without a password; a GPG key or SSH signing key marks your commits Verified. GitHub keeps only the public half.
 - **Label**: A coloured tag on issues and pull requests, such as bug. Under Labels.
+- **Listed setting**: One of a repository's, an organization's or your own settings that GitHub keeps as a list, such as variables, secrets or members.
 - **Mention**: Your login written with an at sign, such as @you, which notifies you.
 - **Merge**: Bringing a pull request's changes into the branch it targets. Item, Merge, Ctrl+Shift+Enter.
 - **Milestone**: A goal with a due date that issues and pull requests belong to.
@@ -1012,7 +1047,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
+In all: 477 yes, 904 planned, 89 not needed and 534 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1020,7 +1055,7 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 
 #### Actions
 
-208 operations: 48 yes, 153 planned, 7 left to github.
+208 operations: 68 yes, 133 planned, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1037,7 +1072,7 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Set GitHub Actions cache storage limit for an organization | `PUT /organizations/{org}/actions/cache/storage-limit` | Planned | Repository > Actions > Caches; Cache sheet. |
 | Get GitHub Actions cache usage for an organization | `GET /orgs/{org}/actions/cache/usage` | Planned | Repository > Actions > Caches; Cache sheet. |
 | List repositories with GitHub Actions cache usage for an organization | `GET /orgs/{org}/actions/cache/usage-by-repository` | Planned | Repository > Actions > Caches; Cache sheet. |
-| List GitHub-hosted runners for an organization | `GET /orgs/{org}/actions/hosted-runners` | Planned | Organization sheet > Actions > Hosted runners. |
+| List GitHub-hosted runners for an organization | `GET /orgs/{org}/actions/hosted-runners` | Yes | Navigator: Organization > organization > Larger Runners |
 | Create a GitHub-hosted runner for an organization | `POST /orgs/{org}/actions/hosted-runners` | Planned | Organization sheet > Actions > Hosted runners. |
 | List custom images for an organization | `GET /orgs/{org}/actions/hosted-runners/images/custom` | Planned | Organization sheet > Actions > Hosted runners. |
 | Delete a custom image from the organization | `DELETE /orgs/{org}/actions/hosted-runners/images/custom/{image_definition_id}` | Planned | Organization sheet > Actions > Hosted runners. |
@@ -1050,9 +1085,9 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Get limits on GitHub-hosted runners for an organization | `GET /orgs/{org}/actions/hosted-runners/limits` | Planned | Organization sheet > Actions > Hosted runners. |
 | Get GitHub-hosted runners machine specs for an organization | `GET /orgs/{org}/actions/hosted-runners/machine-sizes` | Planned | Organization sheet > Actions > Hosted runners. |
 | Get platforms for GitHub-hosted runners in an organization | `GET /orgs/{org}/actions/hosted-runners/platforms` | Planned | Organization sheet > Actions > Hosted runners. |
-| Delete a GitHub-hosted runner for an organization | `DELETE /orgs/{org}/actions/hosted-runners/{hosted_runner_id}` | Planned | Organization sheet > Actions > Hosted runners. |
+| Delete a GitHub-hosted runner for an organization | `DELETE /orgs/{org}/actions/hosted-runners/{hosted_runner_id}` | Yes | context menu > Delete... |
 | Get a GitHub-hosted runner for an organization | `GET /orgs/{org}/actions/hosted-runners/{hosted_runner_id}` | Planned | Organization sheet > Actions > Hosted runners. |
-| Update a GitHub-hosted runner for an organization | `PATCH /orgs/{org}/actions/hosted-runners/{hosted_runner_id}` | Planned | Organization sheet > Actions > Hosted runners. |
+| Update a GitHub-hosted runner for an organization | `PATCH /orgs/{org}/actions/hosted-runners/{hosted_runner_id}` | Yes | context menu > Change... |
 | List OIDC custom property inclusions for an organization | `GET /orgs/{org}/actions/oidc/customization/properties/repo` | Planned | Repository and Organization sheets > Actions > OpenID Connect. |
 | Create an OIDC custom property inclusion for an organization | `POST /orgs/{org}/actions/oidc/customization/properties/repo` | Planned | Repository and Organization sheets > Actions > OpenID Connect. |
 | Delete an OIDC custom property inclusion for an organization | `DELETE /orgs/{org}/actions/oidc/customization/properties/repo/{custom_property_name}` | Planned | Repository and Organization sheets > Actions > OpenID Connect. |
@@ -1085,11 +1120,11 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Delete an organization Actions policy | `DELETE /orgs/{org}/actions/policies/{policy_id}` | Planned | Repository > Actions; Organization sheet > Actions; Run, Job, Workflow, Artifact, Cache, Runner, Secret and Variable sheets. |
 | Get an organization Actions policy | `GET /orgs/{org}/actions/policies/{policy_id}` | Planned | Repository > Actions; Organization sheet > Actions; Run, Job, Workflow, Artifact, Cache, Runner, Secret and Variable sheets. |
 | Update an organization Actions policy | `PUT /orgs/{org}/actions/policies/{policy_id}` | Planned | Repository > Actions; Organization sheet > Actions; Run, Job, Workflow, Artifact, Cache, Runner, Secret and Variable sheets. |
-| List self-hosted runner groups for an organization | `GET /orgs/{org}/actions/runner-groups` | Planned | Runner group sheet. |
-| Create a self-hosted runner group for an organization | `POST /orgs/{org}/actions/runner-groups` | Planned | Runner group sheet. |
-| Delete a self-hosted runner group from an organization | `DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}` | Planned | Runner group sheet. |
+| List self-hosted runner groups for an organization | `GET /orgs/{org}/actions/runner-groups` | Yes | Navigator: Organization > organization > Runner Groups |
+| Create a self-hosted runner group for an organization | `POST /orgs/{org}/actions/runner-groups` | Yes | Navigator: Organization > organization > Runner Groups |
+| Delete a self-hosted runner group from an organization | `DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}` | Yes | context menu > Delete... |
 | Get a self-hosted runner group for an organization | `GET /orgs/{org}/actions/runner-groups/{runner_group_id}` | Planned | Runner group sheet. |
-| Update a self-hosted runner group for an organization | `PATCH /orgs/{org}/actions/runner-groups/{runner_group_id}` | Planned | Runner group sheet. |
+| Update a self-hosted runner group for an organization | `PATCH /orgs/{org}/actions/runner-groups/{runner_group_id}` | Yes | context menu > Change... |
 | List GitHub-hosted runners in a group for an organization | `GET /orgs/{org}/actions/runner-groups/{runner_group_id}/hosted-runners` | Planned | Runner group sheet. |
 | List repository access to a self-hosted runner group in an organization | `GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories` | Planned | Runner group sheet. |
 | Set repository access for a self-hosted runner group in an organization | `PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories` | Planned | Runner group sheet. |
@@ -1099,13 +1134,13 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Set self-hosted runners in a group for an organization | `PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/runners` | Planned | Runner group sheet. |
 | Remove a self-hosted runner from a group for an organization | `DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}/runners/{runner_id}` | Planned | Runner group sheet. |
 | Add a self-hosted runner to a group for an organization | `PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/runners/{runner_id}` | Planned | Runner group sheet. |
-| List self-hosted runners for an organization | `GET /orgs/{org}/actions/runners` | Planned | Runner sheet. |
+| List self-hosted runners for an organization | `GET /orgs/{org}/actions/runners` | Yes | Navigator: Organization > organization > Runners |
 | Get runner version end-of-life schedule for an organization | `GET /orgs/{org}/actions/runners/deprecations/{version}` | Planned | Runner sheet. |
 | List runner applications for an organization | `GET /orgs/{org}/actions/runners/downloads` | Planned | Runner sheet. |
 | Create configuration for a just-in-time runner for an organization | `POST /orgs/{org}/actions/runners/generate-jitconfig` | Planned | Runner sheet. |
 | Create a registration token for an organization | `POST /orgs/{org}/actions/runners/registration-token` | Planned | Runner sheet. |
 | Create a remove token for an organization | `POST /orgs/{org}/actions/runners/remove-token` | Planned | Runner sheet. |
-| Delete a self-hosted runner from an organization | `DELETE /orgs/{org}/actions/runners/{runner_id}` | Planned | Runner sheet. |
+| Delete a self-hosted runner from an organization | `DELETE /orgs/{org}/actions/runners/{runner_id}` | Yes | context menu > Delete... |
 | Get a self-hosted runner for an organization | `GET /orgs/{org}/actions/runners/{runner_id}` | Planned | Runner sheet. |
 | Remove all custom labels from a self-hosted runner for an organization | `DELETE /orgs/{org}/actions/runners/{runner_id}/labels` | Planned | Runner sheet. |
 | List labels for a self-hosted runner for an organization | `GET /orgs/{org}/actions/runners/{runner_id}/labels` | Planned | Runner sheet. |
@@ -1113,25 +1148,25 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Set custom labels for a self-hosted runner for an organization | `PUT /orgs/{org}/actions/runners/{runner_id}/labels` | Planned | Runner sheet. |
 | Remove a custom label from a self-hosted runner for an organization | `DELETE /orgs/{org}/actions/runners/{runner_id}/labels/{name}` | Planned | Runner sheet. |
 | List organization secrets | `GET /orgs/{org}/actions/secrets` | Yes | Properties (Alt+Enter) on Organization |
-| Get an organization public key | `GET /orgs/{org}/actions/secrets/public-key` | Planned | Secret and variable sheets (write-only values). |
-| Delete an organization secret | `DELETE /orgs/{org}/actions/secrets/{secret_name}` | Planned | Secret and variable sheets (write-only values). |
+| Get an organization public key | `GET /orgs/{org}/actions/secrets/public-key` | Yes | Navigator: Organization > organization > Actions Secrets |
+| Delete an organization secret | `DELETE /orgs/{org}/actions/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get an organization secret | `GET /orgs/{org}/actions/secrets/{secret_name}` | Planned | Secret and variable sheets (write-only values). |
-| Create or update an organization secret | `PUT /orgs/{org}/actions/secrets/{secret_name}` | Planned | Secret and variable sheets (write-only values). |
+| Create or update an organization secret | `PUT /orgs/{org}/actions/secrets/{secret_name}` | Yes | Navigator: Organization > organization > Actions Secrets |
 | List selected repositories for an organization secret | `GET /orgs/{org}/actions/secrets/{secret_name}/repositories` | Planned | Secret and variable sheets (write-only values). |
 | Set selected repositories for an organization secret | `PUT /orgs/{org}/actions/secrets/{secret_name}/repositories` | Planned | Secret and variable sheets (write-only values). |
 | Remove selected repository from an organization secret | `DELETE /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}` | Planned | Secret and variable sheets (write-only values). |
 | Add selected repository to an organization secret | `PUT /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}` | Planned | Secret and variable sheets (write-only values). |
 | List organization variables | `GET /orgs/{org}/actions/variables` | Yes | Properties (Alt+Enter) on Organization |
-| Create an organization variable | `POST /orgs/{org}/actions/variables` | Planned | Secret and variable sheets. |
-| Delete an organization variable | `DELETE /orgs/{org}/actions/variables/{name}` | Planned | Secret and variable sheets. |
+| Create an organization variable | `POST /orgs/{org}/actions/variables` | Yes | Navigator: Organization > organization > Actions Variables |
+| Delete an organization variable | `DELETE /orgs/{org}/actions/variables/{name}` | Yes | context menu > Delete... |
 | Get an organization variable | `GET /orgs/{org}/actions/variables/{name}` | Planned | Secret and variable sheets. |
-| Update an organization variable | `PATCH /orgs/{org}/actions/variables/{name}` | Planned | Secret and variable sheets. |
+| Update an organization variable | `PATCH /orgs/{org}/actions/variables/{name}` | Yes | context menu > Change... |
 | List selected repositories for an organization variable | `GET /orgs/{org}/actions/variables/{name}/repositories` | Planned | Secret and variable sheets. |
 | Set selected repositories for an organization variable | `PUT /orgs/{org}/actions/variables/{name}/repositories` | Planned | Secret and variable sheets. |
 | Remove selected repository from an organization variable | `DELETE /orgs/{org}/actions/variables/{name}/repositories/{repository_id}` | Planned | Secret and variable sheets. |
 | Add selected repository to an organization variable | `PUT /orgs/{org}/actions/variables/{name}/repositories/{repository_id}` | Planned | Secret and variable sheets. |
-| List artifacts for a repository | `GET /repos/{owner}/{repo}/actions/artifacts` | Planned | Run > Artifacts; Artifact sheet. |
-| Delete an artifact | `DELETE /repos/{owner}/{repo}/actions/artifacts/{artifact_id}` | Planned | Run > Artifacts; Artifact sheet. |
+| List artifacts for a repository | `GET /repos/{owner}/{repo}/actions/artifacts` | Yes | Navigator: Repository > owner/name > Actions > Artifacts |
+| Delete an artifact | `DELETE /repos/{owner}/{repo}/actions/artifacts/{artifact_id}` | Yes | context menu > Delete... |
 | Get an artifact | `GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}` | Yes | Properties (Alt+Enter) on Artifact |
 | Download an artifact | `GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}` | Planned | Run > Artifacts; Artifact sheet. |
 | Get GitHub Actions cache retention limit for a repository | `GET /repos/{owner}/{repo}/actions/cache/retention-limit` | Planned | Repository > Actions > Caches; Cache sheet. |
@@ -1207,12 +1242,12 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Get workflow run usage | `GET /repos/{owner}/{repo}/actions/runs/{run_id}/timing` | Yes | Properties (Alt+Enter) on Workflow Run |
 | List repository secrets | `GET /repos/{owner}/{repo}/actions/secrets` | Yes | Navigator: Repository > owner/name > Settings > Secret and Variable Names |
 | Get a repository public key | `GET /repos/{owner}/{repo}/actions/secrets/public-key` | Yes | Properties (Alt+Enter) on Secret |
-| Delete a repository secret | `DELETE /repos/{owner}/{repo}/actions/secrets/{secret_name}` | Planned | Secret and variable sheets (write-only values). |
+| Delete a repository secret | `DELETE /repos/{owner}/{repo}/actions/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get a repository secret | `GET /repos/{owner}/{repo}/actions/secrets/{secret_name}` | Yes | Properties (Alt+Enter) on Secret |
 | Create or update a repository secret | `PUT /repos/{owner}/{repo}/actions/secrets/{secret_name}` | Yes | Properties (Alt+Enter) on Secret: New value |
 | List repository variables | `GET /repos/{owner}/{repo}/actions/variables` | Yes | Navigator: Repository > owner/name > Settings > Secret and Variable Names |
-| Create a repository variable | `POST /repos/{owner}/{repo}/actions/variables` | Planned | Secret and variable sheets. |
-| Delete a repository variable | `DELETE /repos/{owner}/{repo}/actions/variables/{name}` | Planned | Secret and variable sheets. |
+| Create a repository variable | `POST /repos/{owner}/{repo}/actions/variables` | Yes | Navigator: Repository > owner/name > Settings > Actions Variables |
+| Delete a repository variable | `DELETE /repos/{owner}/{repo}/actions/variables/{name}` | Yes | context menu > Delete... |
 | Get a repository variable | `GET /repos/{owner}/{repo}/actions/variables/{name}` | Yes | Properties (Alt+Enter) on Variable |
 | Update a repository variable | `PATCH /repos/{owner}/{repo}/actions/variables/{name}` | Yes | Properties (Alt+Enter) on Variable: Value |
 | List repository workflows | `GET /repos/{owner}/{repo}/actions/workflows` | Yes | Navigator: Repository > owner/name > Actions > Workflows |
@@ -1307,40 +1342,40 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 
 #### Agents
 
-30 operations: 30 planned.
+30 operations: 16 yes, 14 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
-| List organization secrets | `GET /orgs/{org}/agents/secrets` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Get an organization public key | `GET /orgs/{org}/agents/secrets/public-key` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Delete an organization secret | `DELETE /orgs/{org}/agents/secrets/{secret_name}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
+| List organization secrets | `GET /orgs/{org}/agents/secrets` | Yes | Navigator: Organization > organization > Copilot Agent Secrets |
+| Get an organization public key | `GET /orgs/{org}/agents/secrets/public-key` | Yes | Navigator: Organization > organization > Copilot Agent Secrets |
+| Delete an organization secret | `DELETE /orgs/{org}/agents/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get an organization secret | `GET /orgs/{org}/agents/secrets/{secret_name}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Create or update an organization secret | `PUT /orgs/{org}/agents/secrets/{secret_name}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
+| Create or update an organization secret | `PUT /orgs/{org}/agents/secrets/{secret_name}` | Yes | Navigator: Organization > organization > Copilot Agent Secrets |
 | List selected repositories for an organization secret | `GET /orgs/{org}/agents/secrets/{secret_name}/repositories` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
 | Set selected repositories for an organization secret | `PUT /orgs/{org}/agents/secrets/{secret_name}/repositories` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
 | Remove selected repository from an organization secret | `DELETE /orgs/{org}/agents/secrets/{secret_name}/repositories/{repository_id}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
 | Add selected repository to an organization secret | `PUT /orgs/{org}/agents/secrets/{secret_name}/repositories/{repository_id}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| List organization variables | `GET /orgs/{org}/agents/variables` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Create an organization variable | `POST /orgs/{org}/agents/variables` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Delete an organization variable | `DELETE /orgs/{org}/agents/variables/{name}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
+| List organization variables | `GET /orgs/{org}/agents/variables` | Yes | Navigator: Organization > organization > Copilot Agent Variables |
+| Create an organization variable | `POST /orgs/{org}/agents/variables` | Yes | Navigator: Organization > organization > Copilot Agent Variables |
+| Delete an organization variable | `DELETE /orgs/{org}/agents/variables/{name}` | Yes | context menu > Delete... |
 | Get an organization variable | `GET /orgs/{org}/agents/variables/{name}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Update an organization variable | `PATCH /orgs/{org}/agents/variables/{name}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
+| Update an organization variable | `PATCH /orgs/{org}/agents/variables/{name}` | Yes | context menu > Change... |
 | List selected repositories for an organization variable | `GET /orgs/{org}/agents/variables/{name}/repositories` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
 | Set selected repositories for an organization variable | `PUT /orgs/{org}/agents/variables/{name}/repositories` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
 | Remove selected repository from an organization variable | `DELETE /orgs/{org}/agents/variables/{name}/repositories/{repository_id}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
 | Add selected repository to an organization variable | `PUT /orgs/{org}/agents/variables/{name}/repositories/{repository_id}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
 | List repository organization secrets | `GET /repos/{owner}/{repo}/agents/organization-secrets` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
 | List repository organization variables | `GET /repos/{owner}/{repo}/agents/organization-variables` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| List repository secrets | `GET /repos/{owner}/{repo}/agents/secrets` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Get a repository public key | `GET /repos/{owner}/{repo}/agents/secrets/public-key` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Delete a repository secret | `DELETE /repos/{owner}/{repo}/agents/secrets/{secret_name}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
+| List repository secrets | `GET /repos/{owner}/{repo}/agents/secrets` | Yes | Navigator: Repository > owner/name > Settings > Copilot Agent Secrets |
+| Get a repository public key | `GET /repos/{owner}/{repo}/agents/secrets/public-key` | Yes | Navigator: Repository > owner/name > Settings > Copilot Agent Secrets |
+| Delete a repository secret | `DELETE /repos/{owner}/{repo}/agents/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get a repository secret | `GET /repos/{owner}/{repo}/agents/secrets/{secret_name}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Create or update a repository secret | `PUT /repos/{owner}/{repo}/agents/secrets/{secret_name}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| List repository variables | `GET /repos/{owner}/{repo}/agents/variables` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Create a repository variable | `POST /repos/{owner}/{repo}/agents/variables` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Delete a repository variable | `DELETE /repos/{owner}/{repo}/agents/variables/{name}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
+| Create or update a repository secret | `PUT /repos/{owner}/{repo}/agents/secrets/{secret_name}` | Yes | Navigator: Repository > owner/name > Settings > Copilot Agent Secrets |
+| List repository variables | `GET /repos/{owner}/{repo}/agents/variables` | Yes | Navigator: Repository > owner/name > Settings > Copilot Agent Variables |
+| Create a repository variable | `POST /repos/{owner}/{repo}/agents/variables` | Yes | Navigator: Repository > owner/name > Settings > Copilot Agent Variables |
+| Delete a repository variable | `DELETE /repos/{owner}/{repo}/agents/variables/{name}` | Yes | context menu > Delete... |
 | Get a repository variable | `GET /repos/{owner}/{repo}/agents/variables/{name}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
-| Update a repository variable | `PATCH /repos/{owner}/{repo}/agents/variables/{name}` | Planned | Item > Copilot; Repository > Copilot; Organization > Copilot (section 22.1). |
+| Update a repository variable | `PATCH /repos/{owner}/{repo}/agents/variables/{name}` | Yes | context menu > Change... |
 
 #### Apps
 
@@ -1576,7 +1611,7 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 
 #### Codespaces
 
-48 operations: 2 yes, 46 planned.
+48 operations: 14 yes, 34 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1584,11 +1619,11 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Manage access control for organization codespaces | `PUT /orgs/{org}/codespaces/access` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
 | Remove users from Codespaces access for an organization | `DELETE /orgs/{org}/codespaces/access/selected_users` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
 | Add users to Codespaces access for an organization | `POST /orgs/{org}/codespaces/access/selected_users` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| List organization secrets | `GET /orgs/{org}/codespaces/secrets` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Get an organization public key | `GET /orgs/{org}/codespaces/secrets/public-key` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Delete an organization secret | `DELETE /orgs/{org}/codespaces/secrets/{secret_name}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| List organization secrets | `GET /orgs/{org}/codespaces/secrets` | Yes | Navigator: Organization > organization > Codespaces Secrets |
+| Get an organization public key | `GET /orgs/{org}/codespaces/secrets/public-key` | Yes | Navigator: Organization > organization > Codespaces Secrets |
+| Delete an organization secret | `DELETE /orgs/{org}/codespaces/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get an organization secret | `GET /orgs/{org}/codespaces/secrets/{secret_name}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Create or update an organization secret | `PUT /orgs/{org}/codespaces/secrets/{secret_name}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| Create or update an organization secret | `PUT /orgs/{org}/codespaces/secrets/{secret_name}` | Yes | Navigator: Organization > organization > Codespaces Secrets |
 | List selected repositories for an organization secret | `GET /orgs/{org}/codespaces/secrets/{secret_name}/repositories` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
 | Set selected repositories for an organization secret | `PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
 | Remove selected repository from an organization secret | `DELETE /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
@@ -1602,19 +1637,19 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | List available machine types for a repository | `GET /repos/{owner}/{repo}/codespaces/machines` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
 | Get default attributes for a codespace | `GET /repos/{owner}/{repo}/codespaces/new` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
 | Check if permissions defined by a devcontainer have been accepted by the authenticated user | `GET /repos/{owner}/{repo}/codespaces/permissions_check` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| List repository secrets | `GET /repos/{owner}/{repo}/codespaces/secrets` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Get a repository public key | `GET /repos/{owner}/{repo}/codespaces/secrets/public-key` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Delete a repository secret | `DELETE /repos/{owner}/{repo}/codespaces/secrets/{secret_name}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| List repository secrets | `GET /repos/{owner}/{repo}/codespaces/secrets` | Yes | Navigator: Repository > owner/name > Settings > Codespaces Secrets |
+| Get a repository public key | `GET /repos/{owner}/{repo}/codespaces/secrets/public-key` | Yes | Navigator: Repository > owner/name > Settings > Codespaces Secrets |
+| Delete a repository secret | `DELETE /repos/{owner}/{repo}/codespaces/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get a repository secret | `GET /repos/{owner}/{repo}/codespaces/secrets/{secret_name}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Create or update a repository secret | `PUT /repos/{owner}/{repo}/codespaces/secrets/{secret_name}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| Create or update a repository secret | `PUT /repos/{owner}/{repo}/codespaces/secrets/{secret_name}` | Yes | Navigator: Repository > owner/name > Settings > Codespaces Secrets |
 | Create a codespace from a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/codespaces` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
 | List codespaces for the authenticated user | `GET /user/codespaces` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
 | Create a codespace for the authenticated user | `POST /user/codespaces` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| List secrets for the authenticated user | `GET /user/codespaces/secrets` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Get public key for the authenticated user | `GET /user/codespaces/secrets/public-key` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Delete a secret for the authenticated user | `DELETE /user/codespaces/secrets/{secret_name}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| List secrets for the authenticated user | `GET /user/codespaces/secrets` | Yes | Navigator: People > My Codespaces Secrets |
+| Get public key for the authenticated user | `GET /user/codespaces/secrets/public-key` | Yes | Navigator: People > My Codespaces Secrets |
+| Delete a secret for the authenticated user | `DELETE /user/codespaces/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get a secret for the authenticated user | `GET /user/codespaces/secrets/{secret_name}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
-| Create or update a secret for the authenticated user | `PUT /user/codespaces/secrets/{secret_name}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
+| Create or update a secret for the authenticated user | `PUT /user/codespaces/secrets/{secret_name}` | Yes | Navigator: People > My Codespaces Secrets |
 | List selected repositories for a user secret | `GET /user/codespaces/secrets/{secret_name}/repositories` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
 | Set selected repositories for a user secret | `PUT /user/codespaces/secrets/{secret_name}/repositories` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
 | Remove a selected repository from a user secret | `DELETE /user/codespaces/secrets/{secret_name}/repositories/{repository_id}` | Planned | Repository > Codespaces; Codespace sheet; Organization > Codespaces; Secrets. |
@@ -1631,7 +1666,7 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 
 #### Collaborators
 
-11 operations: 10 yes, 1 planned.
+11 operations: 11 yes.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1641,7 +1676,7 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Add a repository collaborator | `PUT /repos/{owner}/{repo}/collaborators/{username}` | Yes | Account > Roles and Access > Bulk Access Changes... |
 | Get repository permissions for a user | `GET /repos/{owner}/{repo}/collaborators/{username}/permission` | Yes | Account > Roles and Access > Bulk Access Changes... |
 | List repository invitations | `GET /repos/{owner}/{repo}/invitations` | Yes | Properties (Alt+Enter) on Invitation |
-| Delete a repository invitation | `DELETE /repos/{owner}/{repo}/invitations/{invitation_id}` | Planned | Repository sheet > Access (section 18.3). |
+| Delete a repository invitation | `DELETE /repos/{owner}/{repo}/invitations/{invitation_id}` | Yes | context menu > Delete... |
 | Update a repository invitation | `PATCH /repos/{owner}/{repo}/invitations/{invitation_id}` | Yes | Properties (Alt+Enter) on Invitation: Role |
 | List repository invitations for the authenticated user | `GET /user/repository_invitations` | Yes | Navigator: Needs My Attention > Invitations |
 | Decline a repository invitation | `DELETE /user/repository_invitations/{invitation_id}` | Yes | context menu > Decline Invitation... |
@@ -1764,7 +1799,7 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 
 #### Dependabot
 
-27 operations: 2 yes, 21 planned, 4 left to github.
+27 operations: 10 yes, 13 planned, 4 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1776,11 +1811,11 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Lists the repositories Dependabot can access in an organization | `GET /orgs/{org}/dependabot/repository-access` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
 | Updates Dependabot's repository access list for an organization | `PATCH /orgs/{org}/dependabot/repository-access` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
 | Set the default repository access level for Dependabot | `PUT /orgs/{org}/dependabot/repository-access/default-level` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
-| List organization secrets | `GET /orgs/{org}/dependabot/secrets` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
-| Get an organization public key | `GET /orgs/{org}/dependabot/secrets/public-key` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
-| Delete an organization secret | `DELETE /orgs/{org}/dependabot/secrets/{secret_name}` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
+| List organization secrets | `GET /orgs/{org}/dependabot/secrets` | Yes | Navigator: Organization > organization > Dependabot Secrets |
+| Get an organization public key | `GET /orgs/{org}/dependabot/secrets/public-key` | Yes | Navigator: Organization > organization > Dependabot Secrets |
+| Delete an organization secret | `DELETE /orgs/{org}/dependabot/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get an organization secret | `GET /orgs/{org}/dependabot/secrets/{secret_name}` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
-| Create or update an organization secret | `PUT /orgs/{org}/dependabot/secrets/{secret_name}` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
+| Create or update an organization secret | `PUT /orgs/{org}/dependabot/secrets/{secret_name}` | Yes | Navigator: Organization > organization > Dependabot Secrets |
 | List selected repositories for an organization secret | `GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
 | Set selected repositories for an organization secret | `PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
 | Remove selected repository from an organization secret | `DELETE /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
@@ -1790,11 +1825,11 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Update a Dependabot alert | `PATCH /repos/{owner}/{repo}/dependabot/alerts/{alert_number}` | Yes | context menu > Dismiss or Reopen Alert... |
 | Get repository Dependabot runner settings | `GET /repos/{owner}/{repo}/dependabot/runner-settings` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
 | Set repository Dependabot runner settings | `PUT /repos/{owner}/{repo}/dependabot/runner-settings` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
-| List repository secrets | `GET /repos/{owner}/{repo}/dependabot/secrets` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
-| Get a repository public key | `GET /repos/{owner}/{repo}/dependabot/secrets/public-key` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
-| Delete a repository secret | `DELETE /repos/{owner}/{repo}/dependabot/secrets/{secret_name}` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
+| List repository secrets | `GET /repos/{owner}/{repo}/dependabot/secrets` | Yes | Navigator: Repository > owner/name > Settings > Dependabot Secrets |
+| Get a repository public key | `GET /repos/{owner}/{repo}/dependabot/secrets/public-key` | Yes | Navigator: Repository > owner/name > Settings > Dependabot Secrets |
+| Delete a repository secret | `DELETE /repos/{owner}/{repo}/dependabot/secrets/{secret_name}` | Yes | context menu > Delete... |
 | Get a repository secret | `GET /repos/{owner}/{repo}/dependabot/secrets/{secret_name}` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
-| Create or update a repository secret | `PUT /repos/{owner}/{repo}/dependabot/secrets/{secret_name}` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
+| Create or update a repository secret | `PUT /repos/{owner}/{repo}/dependabot/secrets/{secret_name}` | Yes | Navigator: Repository > owner/name > Settings > Dependabot Secrets |
 
 #### Dependency graph
 
@@ -2086,7 +2121,7 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 
 #### Organizations
 
-129 operations: 27 yes, 95 planned, 7 left to github.
+129 operations: 42 yes, 80 planned, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2107,10 +2142,10 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | List attestation repositories | `GET /orgs/{org}/attestations/repositories` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
 | Delete attestations by ID | `DELETE /orgs/{org}/attestations/{attestation_id}` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
 | List attestations | `GET /orgs/{org}/attestations/{subject_digest}` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
-| List users blocked by an organization | `GET /orgs/{org}/blocks` | Planned | Organization sheet > Blocked Users; Person > You: Block. |
-| Unblock a user from an organization | `DELETE /orgs/{org}/blocks/{username}` | Planned | Organization sheet > Blocked Users; Person > You: Block. |
+| List users blocked by an organization | `GET /orgs/{org}/blocks` | Yes | Navigator: Organization > organization > Blocked People |
+| Unblock a user from an organization | `DELETE /orgs/{org}/blocks/{username}` | Yes | context menu > Delete... |
 | Check if a user is blocked by an organization | `GET /orgs/{org}/blocks/{username}` | Planned | Organization sheet > Blocked Users; Person > You: Block. |
-| Block a user from an organization | `PUT /orgs/{org}/blocks/{username}` | Planned | Organization sheet > Blocked Users; Person > You: Block. |
+| Block a user from an organization | `PUT /orgs/{org}/blocks/{username}` | Yes | Navigator: Organization > organization > Blocked People |
 | List failed organization invitations | `GET /orgs/{org}/failed_invitations` | Planned | Organization sheet > Members. |
 | List organization webhooks | `GET /orgs/{org}/hooks` | Yes | Properties (Alt+Enter) on Organization |
 | Create an organization webhook | `POST /orgs/{org}/hooks` | Yes | Navigator: Organization > organization > Webhooks |
@@ -2134,19 +2169,19 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Get user stats | `GET /orgs/{org}/insights/api/user-stats/{user_id}` | Planned | Organization > Insights > API usage (read). |
 | List app installations for an organization | `GET /orgs/{org}/installations` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
 | List pending organization invitations | `GET /orgs/{org}/invitations` | Yes | Properties (Alt+Enter) on Organization |
-| Create an organization invitation | `POST /orgs/{org}/invitations` | Planned | Organization sheet > Members. |
-| Cancel an organization invitation | `DELETE /orgs/{org}/invitations/{invitation_id}` | Planned | Organization sheet > Members. |
+| Create an organization invitation | `POST /orgs/{org}/invitations` | Yes | Navigator: Organization > organization > Invitations |
+| Cancel an organization invitation | `DELETE /orgs/{org}/invitations/{invitation_id}` | Yes | context menu > Delete... |
 | List organization invitation teams | `GET /orgs/{org}/invitations/{invitation_id}/teams` | Planned | Organization sheet > Members. |
 | List issue fields for an organization | `GET /orgs/{org}/issue-fields` | Yes | context menu > Read Issue Type and Fields |
 | Create issue field for an organization | `POST /orgs/{org}/issue-fields` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
 | Delete issue field for an organization | `DELETE /orgs/{org}/issue-fields/{issue_field_id}` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
 | Update issue field for an organization | `PATCH /orgs/{org}/issue-fields/{issue_field_id}` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
 | List issue types for an organization | `GET /orgs/{org}/issue-types` | Yes | Properties (Alt+Enter) on Issue Type |
-| Create issue type for an organization | `POST /orgs/{org}/issue-types` | Planned | Issue type sheet (organization). |
-| Delete issue type for an organization | `DELETE /orgs/{org}/issue-types/{issue_type_id}` | Planned | Issue type sheet (organization). |
+| Create issue type for an organization | `POST /orgs/{org}/issue-types` | Yes | Navigator: Organization > organization > Issue Types |
+| Delete issue type for an organization | `DELETE /orgs/{org}/issue-types/{issue_type_id}` | Yes | context menu > Delete... |
 | Update issue type for an organization | `PUT /orgs/{org}/issue-types/{issue_type_id}` | Yes | Properties (Alt+Enter) on Issue Type: Colour |
 | List organization members | `GET /orgs/{org}/members` | Yes | Properties (Alt+Enter) on Organization |
-| Remove an organization member | `DELETE /orgs/{org}/members/{username}` | Planned | Organization sheet > Members. |
+| Remove an organization member | `DELETE /orgs/{org}/members/{username}` | Yes | context menu > Delete... |
 | Check organization membership for a user | `GET /orgs/{org}/members/{username}` | Planned | Organization sheet > Members. |
 | Remove organization membership for a user | `DELETE /orgs/{org}/memberships/{username}` | Yes | Account > Roles and Access > Bulk Access Changes... |
 | Get organization membership for a user | `GET /orgs/{org}/memberships/{username}` | Planned | Organization sheet > Members. |
@@ -2162,7 +2197,7 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | List teams that are assigned to an organization role | `GET /orgs/{org}/organization-roles/{role_id}/teams` | Planned | Organization sheet > Roles. |
 | List users that are assigned to an organization role | `GET /orgs/{org}/organization-roles/{role_id}/users` | Planned | Organization sheet > Roles. |
 | List outside collaborators for an organization | `GET /orgs/{org}/outside_collaborators` | Yes | Properties (Alt+Enter) on Organization |
-| Remove outside collaborator from an organization | `DELETE /orgs/{org}/outside_collaborators/{username}` | Planned | Organization sheet > Outside Collaborators. |
+| Remove outside collaborator from an organization | `DELETE /orgs/{org}/outside_collaborators/{username}` | Yes | context menu > Delete... |
 | Convert an organization member to outside collaborator | `PUT /orgs/{org}/outside_collaborators/{username}` | Planned | Organization sheet > Outside Collaborators. |
 | List requests to access organization resources with fine-grained personal access tokens | `GET /orgs/{org}/personal-access-token-requests` | Yes | Properties (Alt+Enter) on Organization |
 | Review requests to access organization resources with fine-grained personal access tokens | `POST /orgs/{org}/personal-access-token-requests` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
@@ -2180,9 +2215,9 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Create or update external custom property values for a property across organization repositories | `PATCH /orgs/{org}/properties/installations/values/{property_name}` | Planned | Organization sheet > Custom Properties. |
 | Get all custom properties for an organization | `GET /orgs/{org}/properties/schema` | Yes | Properties (Alt+Enter) on Organization |
 | Create or update custom properties for an organization | `PATCH /orgs/{org}/properties/schema` | Planned | Organization sheet > Custom Properties. |
-| Remove a custom property for an organization | `DELETE /orgs/{org}/properties/schema/{custom_property_name}` | Planned | Organization sheet > Custom Properties. |
+| Remove a custom property for an organization | `DELETE /orgs/{org}/properties/schema/{custom_property_name}` | Yes | context menu > Delete... |
 | Get a custom property for an organization | `GET /orgs/{org}/properties/schema/{custom_property_name}` | Planned | Organization sheet > Custom Properties. |
-| Create or update a custom property for an organization | `PUT /orgs/{org}/properties/schema/{custom_property_name}` | Planned | Organization sheet > Custom Properties. |
+| Create or update a custom property for an organization | `PUT /orgs/{org}/properties/schema/{custom_property_name}` | Yes | Navigator: Organization > organization > Custom Properties |
 | List custom property values for organization repositories | `GET /orgs/{org}/properties/values` | Planned | Organization sheet > Custom Properties. |
 | Create or update custom property values for organization repositories | `PATCH /orgs/{org}/properties/values` | Planned | Organization sheet > Custom Properties. |
 | List public organization members | `GET /orgs/{org}/public_members` | Planned | Organization sheet > Members. |
@@ -2198,9 +2233,9 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Update an organization repository ruleset | `PUT /orgs/{org}/rulesets/{ruleset_id}` | Planned | Organization rulesets (section 18.3.1). |
 | Get organization ruleset history | `GET /orgs/{org}/rulesets/{ruleset_id}/history` | Planned | Organization rulesets (section 18.3.1). |
 | Get organization ruleset version | `GET /orgs/{org}/rulesets/{ruleset_id}/history/{version_id}` | Planned | Organization rulesets (section 18.3.1). |
-| List security manager teams | `GET /orgs/{org}/security-managers` | Planned | Organization sheet > Security: security managers. |
-| Remove a security manager team | `DELETE /orgs/{org}/security-managers/teams/{team_slug}` | Planned | Organization sheet > Security: security managers. |
-| Add a security manager team | `PUT /orgs/{org}/security-managers/teams/{team_slug}` | Planned | Organization sheet > Security: security managers. |
+| List security manager teams | `GET /orgs/{org}/security-managers` | Yes | Navigator: Organization > organization > Security Managers |
+| Remove a security manager team | `DELETE /orgs/{org}/security-managers/teams/{team_slug}` | Yes | context menu > Delete... |
+| Add a security manager team | `PUT /orgs/{org}/security-managers/teams/{team_slug}` | Yes | Navigator: Organization > organization > Security Managers |
 | Get immutable releases settings for an organization | `GET /orgs/{org}/settings/immutable-releases` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
 | Set immutable releases settings for an organization | `PUT /orgs/{org}/settings/immutable-releases` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
 | List selected repositories for immutable releases enforcement | `GET /orgs/{org}/settings/immutable-releases/repositories` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
@@ -2214,7 +2249,7 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Update a hosted compute network configuration for an organization | `PATCH /orgs/{org}/settings/network-configurations/{network_configuration_id}` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
 | Get a hosted compute network settings resource for an organization | `GET /orgs/{org}/settings/network-settings/{network_settings_id}` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
 | Enable or disable a security feature for an organization | `POST /orgs/{org}/{security_product}/{enablement}` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
-| List organization memberships for the authenticated user | `GET /user/memberships/orgs` | Planned | Organization sheet > Members. |
+| List organization memberships for the authenticated user | `GET /user/memberships/orgs` | Yes | Navigator: People > My Organizations' Memberships |
 | Get an organization membership for the authenticated user | `GET /user/memberships/orgs/{org}` | Yes | Properties (Alt+Enter) on Organization |
 | Update an organization membership for the authenticated user | `PATCH /user/memberships/orgs/{org}` | Planned | Organization sheet > Members. |
 | List organizations for the authenticated user | `GET /user/orgs` | Yes | Navigator: Repositories > Organizations |
@@ -2417,7 +2452,7 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 
 #### Repositories
 
-74 operations: 47 yes, 27 planned.
+74 operations: 48 yes, 26 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2460,7 +2495,7 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Disable immutable releases | `DELETE /repos/{owner}/{repo}/immutable-releases` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
 | Check if immutable releases are enabled for a repository | `GET /repos/{owner}/{repo}/immutable-releases` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
 | Enable immutable releases | `PUT /repos/{owner}/{repo}/immutable-releases` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
-| List issue types for a repository | `GET /repos/{owner}/{repo}/issue-types` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
+| List issue types for a repository | `GET /repos/{owner}/{repo}/issue-types` | Yes | Navigator: Repository > owner/name > Settings > Issue Types |
 | List repository languages | `GET /repos/{owner}/{repo}/languages` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
 | List planning statuses for a repository | `GET /repos/{owner}/{repo}/planning-statuses` | Planned | Repository > Issues > Planning statuses (issue sheet choices) |
 | Disable private vulnerability reporting for a repository | `DELETE /repos/{owner}/{repo}/private-vulnerability-reporting` | Yes | Properties (Alt+Enter) on Repository: Private vulnerability reporting |
@@ -2596,21 +2631,21 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 
 #### Users
 
-55 operations: 19 yes, 36 planned.
+55 operations: 31 yes, 24 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | Get the authenticated user | `GET /user` | Yes | View > Say Account (Alt+9) |
 | Update the authenticated user | `PATCH /user` | Yes | Properties (Alt+Enter) on Person: Bio |
-| List users blocked by the authenticated user | `GET /user/blocks` | Planned | Person > You: Block (section 16.7). |
+| List users blocked by the authenticated user | `GET /user/blocks` | Yes | Navigator: People > Blocked People |
 | Unblock a user | `DELETE /user/blocks/{username}` | Yes | Properties (Alt+Enter) on Person: Blocked |
 | Check if a user is blocked by the authenticated user | `GET /user/blocks/{username}` | Yes | Properties (Alt+Enter) on Person |
 | Block a user | `PUT /user/blocks/{username}` | Yes | Properties (Alt+Enter) on Person: Blocked |
 | Set primary email visibility for the authenticated user | `PATCH /user/email/visibility` | Planned | Account > Profile and Status: Emails. |
-| Delete an email address for the authenticated user | `DELETE /user/emails` | Planned | Account > Profile and Status: Emails. |
-| List email addresses for the authenticated user | `GET /user/emails` | Planned | Account > Profile and Status: Emails. |
-| Add an email address for the authenticated user | `POST /user/emails` | Planned | Account > Profile and Status: Emails. |
-| List followers of the authenticated user | `GET /user/followers` | Planned | Person > You: Follow (section 16.7). |
+| Delete an email address for the authenticated user | `DELETE /user/emails` | Yes | context menu > Delete... |
+| List email addresses for the authenticated user | `GET /user/emails` | Yes | Navigator: People > My Email Addresses |
+| Add an email address for the authenticated user | `POST /user/emails` | Yes | Navigator: People > My Email Addresses |
+| List followers of the authenticated user | `GET /user/followers` | Yes | Navigator: People > My Followers |
 | List the people the authenticated user follows | `GET /user/following` | Planned | Person > You: Follow (section 16.7). |
 | Unfollow a user | `DELETE /user/following/{username}` | Yes | context menu > Follow or Unfollow |
 | Check if a person is followed by the authenticated user | `GET /user/following/{username}` | Yes | context menu > Follow or Unfollow |
@@ -2623,18 +2658,18 @@ In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 | Create an issue field | `POST /user/issue-fields` | Planned | Account > Issue Fields (fields for your own repositories) |
 | Delete an issue field | `DELETE /user/issue-fields/{issue_field_id}` | Planned | Account > Issue Fields (fields for your own repositories) |
 | Update an issue field | `PATCH /user/issue-fields/{issue_field_id}` | Planned | Account > Issue Fields (fields for your own repositories) |
-| List issue types | `GET /user/issue-types` | Planned | Account > Issue Types (types for your own repositories) |
-| Create an issue type | `POST /user/issue-types` | Planned | Account > Issue Types (types for your own repositories) |
-| Delete an issue type | `DELETE /user/issue-types/{issue_type_id}` | Planned | Account > Issue Types (types for your own repositories) |
-| Update an issue type | `PUT /user/issue-types/{issue_type_id}` | Planned | Account > Issue Types (types for your own repositories) |
+| List issue types | `GET /user/issue-types` | Yes | Navigator: People > My Issue Types |
+| Create an issue type | `POST /user/issue-types` | Yes | Navigator: People > My Issue Types |
+| Delete an issue type | `DELETE /user/issue-types/{issue_type_id}` | Yes | context menu > Delete... |
+| Update an issue type | `PUT /user/issue-types/{issue_type_id}` | Yes | context menu > Change... |
 | List public SSH keys for the authenticated user | `GET /user/keys` | Yes | Navigator: People > My Keys |
 | Create a public SSH key for the authenticated user | `POST /user/keys` | Yes | Navigator: People > My Keys |
 | Delete a public SSH key for the authenticated user | `DELETE /user/keys/{key_id}` | Yes | context menu > Delete Key... |
 | Get a public SSH key for the authenticated user | `GET /user/keys/{key_id}` | Planned | Account > Keys. |
 | List public email addresses for the authenticated user | `GET /user/public_emails` | Planned | Account > Profile and Status: Emails. |
-| Delete social accounts for the authenticated user | `DELETE /user/social_accounts` | Planned | Account > Profile and Status: Social accounts. |
-| List social accounts for the authenticated user | `GET /user/social_accounts` | Planned | Account > Profile and Status: Social accounts. |
-| Add social accounts for the authenticated user | `POST /user/social_accounts` | Planned | Account > Profile and Status: Social accounts. |
+| Delete social accounts for the authenticated user | `DELETE /user/social_accounts` | Yes | context menu > Delete... |
+| List social accounts for the authenticated user | `GET /user/social_accounts` | Yes | Navigator: People > My Social Accounts |
+| Add social accounts for the authenticated user | `POST /user/social_accounts` | Yes | Navigator: People > My Social Accounts |
 | List SSH signing keys for the authenticated user | `GET /user/ssh_signing_keys` | Yes | Navigator: People > My Keys |
 | Create a SSH signing key for the authenticated user | `POST /user/ssh_signing_keys` | Yes | Navigator: People > My Keys |
 | Delete an SSH signing key for the authenticated user | `DELETE /user/ssh_signing_keys/{ssh_signing_key_id}` | Yes | context menu > Delete Key... |

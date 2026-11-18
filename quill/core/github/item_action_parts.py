@@ -116,6 +116,14 @@ ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
         _OPEN_WEB,
         _PROPERTIES,
     ),
+    "resource": (
+        _default("show_details", "Show Details", "Everything GitHub says about it."),
+        _a("resource_edit", "Change...", _W, "sign_in", "Change what GitHub lets you change."),
+        _a("resource_delete", "Delete...", _D, "sign_in", "Remove it; asks first."),
+        _OPEN_WEB,
+        _COPY_LINK,
+        _PROPERTIES,
+    ),
     "wiki": (
         _default("open_on_github", "Open on GitHub", "Read the wiki in your browser."),
         _a("clone_wiki", "Clone Wiki...", _O, "", "Copy its pages to a folder, to edit them."),

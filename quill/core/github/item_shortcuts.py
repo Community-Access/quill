@@ -31,6 +31,7 @@ DELETE_COMMANDS: dict[str, str] = {
     "deploy_key": "github.workbench.delete_deploy_key",
     "autolink": "github.workbench.delete_autolink",
     "runner": "github.workbench.remove_runner",
+    "resource": "github.workbench.resource_delete",
 }
 
 #: What Ctrl+N makes on each node (C3, "New, here"), by the node's key.
@@ -60,3 +61,12 @@ NEW_HERE: dict[str, str] = {
     "templates": "github.workbench.new_template",
     "discussions": "github.workbench.new_discussion",
 }
+
+
+def _resource_new_here() -> dict[str, str]:
+    from quill.core.github.resource_specs import RESOURCE_SPECS
+
+    return {spec.key: "github.workbench.resource_new" for spec in RESOURCE_SPECS if spec.create}
+
+
+NEW_HERE.update(_resource_new_here())

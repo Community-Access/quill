@@ -6019,6 +6019,20 @@ GitHub Workbench in this version.</p>
 <p><strong>Ask a Person.</strong> Ask a Person: write to <a
 href="mailto:support@community-access.org">support@community-access.org</a>.
 Nothing is sent until you send it from your own email.</p>
+<p><strong>My Codespaces Secrets.</strong> My Codespaces Secrets: values
+given to your own codespaces.</p>
+<p><strong>My Email Addresses.</strong> My Email Addresses: the
+addresses on your account. Ctrl+N adds one.</p>
+<p><strong>My Social Accounts.</strong> My Social Accounts: the links on
+your profile.</p>
+<p><strong>Blocked People.</strong> Blocked People: who cannot follow
+you or take part in your repositories.</p>
+<p><strong>My Followers.</strong> My Followers: who follows you on
+GitHub.</p>
+<p><strong>My Issue Types.</strong> My Issue Types: the kinds of issue
+your own repositories offer.</p>
+<p><strong>My Organizations’ Memberships.</strong> My Organizations’
+Memberships: your role in each organization, and invitations.</p>
 <p><strong>repository: owner/name.</strong> A repository: its issues,
 pull requests, actions, code, releases and settings, each a node below.
 Ctrl+Shift+1 to Ctrl+Shift+0 jump to them.</p>
@@ -6131,6 +6145,24 @@ let a server clone, pull or push this one repository. Ctrl+N adds
 one.</p>
 <p><strong>repository: Autolinks.</strong> Autolinks: prefixes such as
 BUG- that GitHub turns into links. Ctrl+N adds one.</p>
+<p><strong>repository: Actions Variables.</strong> Actions Variables:
+values workflows read as vars.NAME. Ctrl+N adds one.</p>
+<p><strong>repository: Actions Secrets.</strong> Actions Secrets: values
+workflows read but nobody sees again. Ctrl+N adds one.</p>
+<p><strong>repository: Dependabot Secrets.</strong> Dependabot Secrets:
+what Dependabot uses to reach private registries.</p>
+<p><strong>repository: Codespaces Secrets.</strong> Codespaces Secrets:
+values given to every codespace of this repository.</p>
+<p><strong>repository: Copilot Agent Secrets.</strong> Copilot Agent
+Secrets: values the Copilot coding agent may use here.</p>
+<p><strong>repository: Copilot Agent Variables.</strong> Copilot Agent
+Variables: values the Copilot coding agent reads here.</p>
+<p><strong>repository: Artifacts.</strong> Artifacts: files workflow
+runs kept, such as builds and test reports.</p>
+<p><strong>repository: Invitations.</strong> Invitations: people asked
+to join this repository who have not answered yet.</p>
+<p><strong>repository: Issue Types.</strong> Issue Types: the kinds of
+issue this repository offers, set by its organization.</p>
 <p><strong>person: person.</strong> A person: their repositories,
 activity, followers and who they follow.</p>
 <p><strong>person: Profile.</strong> Profile: who this person is, their
@@ -6161,6 +6193,40 @@ GitHub tells about events across this organization. Ctrl+N adds one.</p>
 <p><strong>organization: Templates.</strong> Templates: the defaults in
 the organization’s .github repository, which every repository without
 its own uses. Enter builds or edits one.</p>
+<p><strong>organization: Actions Variables.</strong> Actions Variables:
+values every chosen repository’s workflows read.</p>
+<p><strong>organization: Actions Secrets.</strong> Actions Secrets:
+values the organization’s workflows read but nobody sees again.</p>
+<p><strong>organization: Dependabot Secrets.</strong> Dependabot
+Secrets: what Dependabot uses across the organization.</p>
+<p><strong>organization: Codespaces Secrets.</strong> Codespaces
+Secrets: values given to the organization’s codespaces.</p>
+<p><strong>organization: Copilot Agent Secrets.</strong> Copilot Agent
+Secrets: values the coding agent may use in the organization.</p>
+<p><strong>organization: Copilot Agent Variables.</strong> Copilot Agent
+Variables: values the coding agent reads in the organization.</p>
+<p><strong>organization: Runner Groups.</strong> Runner Groups: which
+repositories may use which of the organization’s runners.</p>
+<p><strong>organization: Runners.</strong> Runners: the organization’s
+own machines that run jobs.</p>
+<p><strong>organization: Larger Runners.</strong> Larger Runners:
+GitHub’s bigger machines the organization pays for.</p>
+<p><strong>organization: Members.</strong> Members: the organization’s
+people. Ctrl+N invites someone; Delete removes them.</p>
+<p><strong>organization: Invitations.</strong> Invitations: people asked
+to join the organization who have not answered.</p>
+<p><strong>organization: Blocked People.</strong> Blocked People: who
+cannot take part in the organization’s repositories.</p>
+<p><strong>organization: Outside Collaborators.</strong> Outside
+Collaborators: people with access to repositories but not members.</p>
+<p><strong>organization: Security Managers.</strong> Security Managers:
+teams that see and manage every security alert.</p>
+<p><strong>organization: Custom Properties.</strong> Custom Properties:
+labels the organization gives its repositories.</p>
+<p><strong>organization: Issue Types.</strong> Issue Types: the kinds of
+issue, such as Bug, the organization’s repositories offer.</p>
+<p><strong>organization: Organization Roles.</strong> Organization
+Roles: the roles that can be given to people and teams.</p>
 <h3 id="every-menu-row">Every menu row</h3>
 <p><strong>File &gt; New Here….</strong> Something new where you are: an
 issue in Issues, a saved search in Saved Searches.</p>
@@ -6706,6 +6772,8 @@ write-only.</p>
 <p><strong>Delete Webhook.</strong> Stop sending it anything.</p>
 <p><strong>Delete Deploy Key.</strong> Remove it; asks first.</p>
 <p><strong>Delete Autolink.</strong> Remove it; asks first.</p>
+<p><strong>Change.</strong> Change what GitHub lets you change.</p>
+<p><strong>Delete.</strong> Remove it; asks first.</p>
 <p><strong>Clone Wiki.</strong> Copy its pages to a folder, to edit
 them.</p>
 <p><strong>Cancel Sponsorship.</strong> Stop it; asks first.</p>

@@ -620,6 +620,31 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Thirty-four lists of settings, in one place each (2026-11-18)
+
+Much of what GitHub keeps for a repository, an organization or your own
+account is a plain list: variables, secrets, members, invitations, blocked
+people, email addresses. The GitHub Workbench now has a node for each of 34
+such lists, and every one works the same way. Rows read as sentences
+("CHANNEL is beta, changed 2026-11-17."), `Ctrl+N` adds one by asking a
+question at a time, **Change...** edits a row where GitHub allows it, and
+**Delete...** asks first. A secret is typed into a password box and sealed
+with GitHub's key before it leaves your computer; it is never said, shown or
+kept.
+
+- **A repository:** Actions variables and secrets, Dependabot, Codespaces and
+  agent secrets, agent variables, artifacts, invitations and issue types.
+- **An organization:** the same variables and secrets, runner groups, runners
+  and GitHub-hosted runners, members, invitations, blocked people, outside
+  collaborators, security managers, custom properties, issue types and roles.
+- **Your account:** Codespaces secrets, email addresses, social accounts,
+  blocked people, followers, issue types and organization memberships.
+
+Behind this, the Workbench's count of planned GitHub endpoints fell from 1,064
+to 904. Eighty-five came from these lists. The other 75 were GraphQL twins of
+routes the Workbench already uses or has already ruled out, so they need no
+second route. F1 on each new node explains its list.
+
 ### Adding, labelling and removing a self-hosted runner (2026-11-18)
 
 `Ctrl+N` in **Repository > Actions > Runners** puts the commands that set up a

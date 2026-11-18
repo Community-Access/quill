@@ -148,3 +148,21 @@ VIEW_NOTES: dict[str, str] = {
     "secrets": "Names only. QUILL never reads a secret's or variable's value.",
 }
 """The line shown under the view chooser for views that need explaining."""
+
+
+def _resource_views() -> tuple[tuple[tuple[str, str], ...], frozenset[str]]:
+    """The resource engine's lists (resource_specs.py), and which need a repository."""
+    from quill.core.github.resource_specs import RESOURCE_SPECS
+
+    owner = {"repository": "Repository", "organization": "Organization", "user": "My"}
+    views = tuple(
+        (f"res_{spec.key}", f"{owner[spec.scope]} {spec.noun}s") for spec in RESOURCE_SPECS
+    )
+    repo = frozenset(f"res_{spec.key}" for spec in RESOURCE_SPECS if spec.scope == "repository")
+    return views, repo
+
+
+_RESOURCE_VIEWS, _RESOURCE_REPO_VIEWS = _resource_views()
+VIEWS = VIEWS + _RESOURCE_VIEWS
+REPO_VIEWS = REPO_VIEWS | _RESOURCE_REPO_VIEWS
+AUTH_VIEWS = AUTH_VIEWS | {key for key, _title in _RESOURCE_VIEWS}
