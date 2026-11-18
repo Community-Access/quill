@@ -55,6 +55,15 @@ ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
         _COPY_LINK,
         _PROPERTIES,
     ),
+    "pages_site": (
+        _default("show_details", "Show Details", "The site's address, status and source."),
+        _a("pages_check", "Check Site", help="The latest build, then the custom domain's health."),
+        _a("pages_rebuild", "Rebuild", _W, "sign_in", "Ask GitHub for a fresh build."),
+        _a("pages_turn_off", "Turn Off Pages...", _D, "sign_in", "Stop publishing, after asking."),
+        _OPEN_WEB,
+        _COPY_LINK,
+        _PROPERTIES,
+    ),
     "environment": (
         _default("show_details", "Show Details", "The environment's protection rules."),
         _a(

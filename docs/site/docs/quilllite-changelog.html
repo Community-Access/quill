@@ -257,6 +257,49 @@ GHManage and The Chat Place (words, short words, diff symbols, or diff
 symbols with changed lines), the same saved choice QUILL uses everywhere
 it shows a difference; it is chosen in QUILL’s Compare Files or the
 GitHub Workbench. Before, the lines read “Site:” and “Yours:”.</p>
+<h3 id="what-is-left-for-github-settled-a-second-time-2026-11-18">What
+is left for GitHub, settled a second time (2026-11-18)</h3>
+<p>Every one of the 422 GitHub endpoints still planned was read again,
+by Jeff’s request, to ask whether it needs building at all.</p>
+<ul>
+<li><strong>6 were built and never counted:</strong> the pull request
+behind a line in the editor, the deployments list, clearing a
+repository’s interaction limit, an issue’s comments in Read as Document,
+your Following list and a person’s Followers.</li>
+<li><strong>26 need nothing:</strong> they read what QUILL already reads
+another way (a release’s assets come with the release), or replace a
+whole list QUILL changes one item at a time, so somebody else’s change
+is kept.</li>
+<li><strong>81 are out of scope, each with its reason:</strong> lists of
+everything on GitHub, routes only a GitHub App or a build tool can call,
+company administration and paid features, and Copilot Spaces, a preview
+Jeff chose to leave for now.</li>
+</ul>
+<p>Jeff then chose to build the Copilot coding agent and Sponsors as the
+one sponsored, and to leave GitHub Classroom and 32 preview features
+(issue artifacts and suggestions, stacked pull requests, pull request
+creation caps, code quality, planning statuses, concurrency groups) out
+of scope. That leaves 272, every one to build: Projects, issue relations
+and fields, organization roles, rulesets, teams and runners, the coding
+agent, Sponsors, Discussions, gists, commit comments, environment rules
+and more.</p>
+<h3 id="github-pages-turn-it-on-or-off-rebuild-check-2026-11-18">GitHub
+Pages: turn it on or off, rebuild, check (2026-11-18)</h3>
+<p>In a repository’s <strong>GitHub Pages</strong> in the GitHub
+Workbench:</p>
+<ul>
+<li><strong>Ctrl+N</strong> turns Pages on, publishing from a branch you
+name (from the top of it or its /docs folder) or by a GitHub Actions
+workflow, and says the site’s address.</li>
+<li>On the site’s row: <strong>Check Site</strong> says how the latest
+build went and whether the custom domain points at GitHub Pages and
+resolves; <strong>Rebuild</strong> asks for a fresh build; <strong>Turn
+Off Pages…</strong> stops publishing, after asking, and leaves the
+repository as it is.</li>
+</ul>
+<p>Pages deployments themselves are made by the actions/deploy-pages
+workflow step, which has its own identity token, so QUILL leaves them to
+it. Planned GitHub endpoints fall from 430 to 422.</p>
 <h3 id="reviews-already-on-a-pull-request-2026-11-18">Reviews already on
 a pull request (2026-11-18)</h3>
 <p><strong>Reviews…</strong> on a pull request in the GitHub Workbench

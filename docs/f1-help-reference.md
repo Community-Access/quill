@@ -3370,6 +3370,12 @@ Control coverage: 365 audited sites (365 helped).
 
 **Remove Runner.** GitHub forgets it; asks first.
 
+**Check Site.** The latest build, then the custom domain's health.
+
+**Rebuild.** Ask GitHub for a fresh build.
+
+**Turn Off Pages.** Stop publishing, after asking.
+
 **Secrets.** Add, change or delete its secrets.
 
 **Variables.** Add, change or delete them.

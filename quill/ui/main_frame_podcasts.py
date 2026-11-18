@@ -345,7 +345,7 @@ class PodcastsMixin(
         from quill.core.podcasts import run_end
         from quill.core.podcasts.queue_steps import step_after_finishing
         from quill.core.podcasts.sorting import sort_episodes
-        from quill.ui.podcasts.show_actions import start_episode_playback
+        from quill.ui.podcasts.queue_advance import start_next
 
         settings = (
             self._podcast_library.effective_settings(finished_show)
@@ -371,10 +371,9 @@ class PodcastsMixin(
             if step.kind == "play":
                 next_show, next_episode = step.show, step.episode
                 self._save_podcast_library()
-                start_episode_playback(
-                    self._podcast_controller, self._podcast_library, next_show, next_episode
+                start_next(
+                    self, next_show, next_episode, f"Up next from the queue: {next_episode.title}"
                 )
-                self._announce(f"Up next from the queue: {next_episode.title}")
                 return
             # The slot still went, even at the end of the run, so save it.
             self._save_podcast_library()
@@ -388,10 +387,12 @@ class PodcastsMixin(
                 None,
             )
             if following is not None:
-                start_episode_playback(
-                    self._podcast_controller, self._podcast_library, finished_show, following
+                start_next(
+                    self,
+                    finished_show,
+                    following,
+                    f"Up next from {finished_show.title}: {following.title}",
                 )
-                self._announce(f"Up next from {finished_show.title}: {following.title}")
 
     def _refresh_podcast_tray_tooltip(self) -> None:
         tray_icon = getattr(self, "_tray_icon", None)

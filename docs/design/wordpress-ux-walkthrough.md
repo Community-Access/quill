@@ -6671,4 +6671,4 @@ QUILL has no multisite network administration. WordPress's REST API has no netwo
 
 ## Review notes
 
-The review notes moved to Part 8 of `complete.md` on 2026-11-18, so all open work is tracked in one place.
+The review notes moved to Part 8 of the root `complete.md` on 2026-11-18, so all open work is tracked in one place. This walkthrough moved here from the root `how.md` the same day.

@@ -29,8 +29,6 @@ _SANCTIONED_ROOT_MARKDOWN = frozenset({
     "CLAUDE.md",
     "README.md",
     "REPO-GUIDE.md",
-    # Jeff's UX review walkthrough of every WordPress feature, 2026-11-14.
-    "how.md",
     # Everything left to do, in one list (2026-11-18): it took in complete2.md,
     # wp_missing.md and how.md's review notes. A new work list goes in it, not
     # in a new root file; graduate it under docs/planning when it is spent.
