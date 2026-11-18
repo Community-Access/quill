@@ -44,7 +44,7 @@ in words. It has three places:
 
 ## Site Health
 
-**Tools > WordPress > Site Check** opens the Workbench at the site's **Site
+**Tools > WordPress > Site Health Check** opens the Workbench at the site's **Site
 Health**. It lists what the site says about its own health, critical things
 first: the WordPress version, HTTPS, the time zone, readable addresses, and
 every Site Health test the site runs, each in one line. **Needs My Attention
@@ -132,8 +132,8 @@ WordPress.org, so QUILL asks you first, naming the address and what is sent.
 **Tools > WordPress > Manage > Plugins...** opens the Workbench at the site's
 **Plugins**: every plugin, whether it is active, and its version.
 
-- **Activate or Deactivate** turns the selected plugin on or off, after a
-  preview. Before you turn one off, QUILL asks the site what depends on it
+- **Activate**, or **Deactivate** on a plugin that is on, turns the selected
+  plugin on or off, after a preview. The menu names the one it will do. Before you turn one off, QUILL asks the site what depends on it
   and puts the answer in the question: other plugins that need it, pages and
   posts that use its blocks or shortcodes, and the QUILL features that use
   it. A plugin QUILL itself relies on, such as QUILL Accessible Forms, also
@@ -326,7 +326,8 @@ WordPress 6.9 lets a site offer actions to AI, called abilities, such as
 - **Tools > WordPress > Manage > AI Abilities...** opens the Workbench at the
   site's **Abilities**, each by name. **Run...** asks for what it needs, shows
   a preview, then runs it. **Offer to Ask the Site**, on the same context
-  menu, turns an ability on or off for Ask the Site. An ability that can
+  menu, turns an ability on for Ask the Site; on an ability already offered
+  the row reads **Stop Offering to Ask the Site**. An ability that can
   change the site asks you first. Your choice is kept on this computer.
 - **Tools > WordPress > Manage > Ask the Site...** sends your question to the
   AI you chose in Choose Your AI. It only offers the AI the abilities you have
@@ -432,7 +433,7 @@ application password on the site, as Chapter 1 describes.
 These are in **Tools > WordPress > Your Sites**, and look at every site you
 have connected:
 
-- **Coming Up...** lists everything scheduled on all your sites, soonest
+- **Coming Up on All Sites...** lists everything scheduled on all your sites, soonest
   first.
 - **What Changed on My Sites...** lists new comments, posts other people
   published, and health warnings since you last looked. It only appears when

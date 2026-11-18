@@ -26,7 +26,16 @@ from __future__ import annotations
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 
-__all__ = ["MenuRow", "MenuSpec", "MenuSub", "access_letter", "all_rows", "problems", "rows"]
+__all__ = [
+    "MenuRow",
+    "MenuSpec",
+    "MenuSub",
+    "access_letter",
+    "all_rows",
+    "keep_access_key",
+    "problems",
+    "rows",
+]
 
 
 @dataclass(frozen=True)
@@ -135,3 +144,14 @@ def problems(bar: Sequence[MenuSpec]) -> list[str]:
             found.append(f"{row.command_id} appears twice on the bar.")
         seen_ids.add(row.command_id)
     return found
+
+
+def keep_access_key(original: str, new: str) -> str:
+    """*new* with the access letter *original* had, wherever that letter now falls."""
+    at = original.find("&")
+    if at < 0 or at + 1 >= len(original):
+        return new
+    letter = original[at + 1].lower()
+    plain = new.replace("&", "")
+    spot = plain.lower().find(letter)
+    return plain if spot < 0 else f"{plain[:spot]}&{plain[spot:]}"

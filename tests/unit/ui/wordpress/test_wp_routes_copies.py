@@ -1,4 +1,4 @@
-"""9.16, behaviourally: Send This Document, Publish to Another Site, Duplicate,
+"""9.16, behaviourally: Send This Document, Copy to Another Site as a Draft, Duplicate,
 Download My Writing, Send a Folder as Drafts, Coming Up, What Changed."""
 
 from __future__ import annotations
@@ -147,7 +147,7 @@ def test_send_document_to_a_site_without_posts(wpr, wp_site, wp_dialogs, tmp_pat
 
 
 # --------------------------------------------------------------------------- #
-# Publish to Another Site, and Duplicate
+# Copy to Another Site as a Draft, and Duplicate
 
 
 def open_post(wpr, text="Hello\n", categories=(5,)):

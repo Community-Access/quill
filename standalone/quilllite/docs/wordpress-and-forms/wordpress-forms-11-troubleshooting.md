@@ -53,8 +53,8 @@ administrator can allow it, usually for signed-in users only, which is all
 QUILL needs.
 
 **It connects, then everything says the sign-in was not accepted.** Run
-**Tools > WordPress > Site Check**. If the authorization header test fails,
-your host is stripping the header that carries the password. Site Check
+**Tools > WordPress > Site Health Check**. If the authorization header test fails,
+your host is stripping the header that carries the password. Site Health Check
 says so; your host can fix it, and many hosts have a help page for exactly
 this.
 

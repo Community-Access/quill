@@ -1907,7 +1907,7 @@ Hear Site Health name a conflict between two plugins, switch one of them off, an
    - Keys: Ctrl+Shift+6
    - You should hear: Practice Countdown Plus, active.
 
-6. **Switch it off.** Press Shift+F10 and choose Activate or Deactivate. The Workbench asks first and says what depends on the plugin; answer Deactivate.
+6. **Switch it off.** Press Shift+F10 and choose Deactivate. The Workbench asks first and says what depends on the plugin; answer Deactivate.
    - Keys: Shift+F10
    - You should hear: Practice Countdown Plus, inactive.
 

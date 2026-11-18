@@ -1,4 +1,4 @@
-"""Running a site: settings, the Site Check, people, passwords, plugins and themes.
+"""Running a site: settings, the Site Health Check, people, passwords, plugins and themes.
 
 wordpress.md 9.2, 9.10 and 9.13. Wx-free; every request goes through
 :class:`~quill.core.wordpress.api.WordPressApi`. Each function returns plain
@@ -159,7 +159,7 @@ def save_setting(api: WordPressApi, key: str, value: Any) -> dict[str, Any]:
 
 
 # --------------------------------------------------------------------------- #
-# The Site Check (9.10)
+# The Site Health Check (9.10)
 
 
 @dataclass(frozen=True)
@@ -270,7 +270,7 @@ def _settings_lines(api: WordPressApi) -> list[CheckLine]:
 def check_text(site_name: str, lines: list[CheckLine]) -> str:
     critical = sum(1 for line in lines if line.status == "critical")
     recommended = sum(1 for line in lines if line.status == "recommended")
-    head = f"Site Check for {site_name}: {critical} critical, {recommended} recommended."
+    head = f"Site Health Check for {site_name}: {critical} critical, {recommended} recommended."
     words = {"critical": "Critical", "recommended": "Recommended", "good": "Good", "info": "Note"}
     return head + "\n\n" + "\n".join(f"{words.get(x.status, 'Note')}: {x.text}" for x in lines)
 

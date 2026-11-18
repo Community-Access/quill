@@ -92,7 +92,8 @@ class WorkbenchActionsMixin:
 
         def fill(target: Any, rows: Sequence[ActionRow]) -> None:
             for row in rows:
-                item = target.Append(wx.ID_ANY, row.label, row.help)
+                label = self.toggle_words(row.command_id, row.label)  # item 29
+                item = target.Append(wx.ID_ANY, label, row.help)
                 item.Enable(self.can_run(row.command_id))
                 target.Bind(wx.EVT_MENU, lambda _e, c=row.command_id: self.run(c), item)
 

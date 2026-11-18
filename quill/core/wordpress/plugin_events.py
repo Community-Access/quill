@@ -2,7 +2,7 @@
 
 When a site has The Events Calendar (``tribe/events/v1``), QUILL adds three
 small things, sized to be useful in a sentence: an event's start, end and
-venue in Properties, New Event, and a plain Coming Up list. The event itself
+venue in Properties, New Event, and a plain Upcoming Events list. The event itself
 is an ordinary post of the ``tribe_events`` type, so Open, Save and Publish
 need nothing new.
 

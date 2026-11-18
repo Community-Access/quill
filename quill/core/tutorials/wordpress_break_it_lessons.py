@@ -292,7 +292,7 @@ def break_it_lessons(
                 Step(
                     title="Switch it off",
                     body=(
-                        "Press Shift+F10 and choose Activate or Deactivate. The Workbench asks "
+                        "Press Shift+F10 and choose Deactivate. The Workbench asks "
                         "first and says what depends on the plugin; answer Deactivate."
                     ),
                     keys=("Shift+F10",),

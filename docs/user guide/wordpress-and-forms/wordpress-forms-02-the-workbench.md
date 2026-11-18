@@ -21,7 +21,7 @@ There are three ways in:
 - Press the WordPress key, Ctrl+Alt+Shift+Grave, then H.
 - Choose any of the site rows of Tools > WordPress, such as **Comments...**,
   **Media Library...**, **Categories and Tags...**, **Menus...**, **Site
-  Settings...** or **Site Check**. Each opens the Workbench at its own place.
+  Settings...** or **Site Health Check**. Each opens the Workbench at its own place.
   The same goes for Users, Application Passwords, Plugins, Themes, Widgets,
   Site Map and AI Abilities in Tools > WordPress > Manage. Fonts and Synced
   Patterns open their own windows instead, because installing a font and

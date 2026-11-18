@@ -275,7 +275,7 @@ def event_preview(
     if spec.cost.strip():
         lines.append(f"Cost: {spec.cost.strip()}.")
     if new:
-        lines.append("It is made as a draft; Publish or Update makes it public.")
+        lines.append("It is made as a draft; Publish on its row makes it public.")
     else:
         changed = ", ".join(k.replace("_", " ") for k in body if k != "organizer") or "nothing"
         lines.append(f"What changes: {changed}. Anyone already told the old time is not told.")

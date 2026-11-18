@@ -534,7 +534,7 @@ APPENDIX_B = {
     "Categories and Tags": "categories",
     "Menus": "menus",
     "Site Map": "pages",
-    "Site Check and Settings": "settings",
+    "Site Health Check and Settings": "settings",
     "Manage: users": "users",
     "Manage: plugins": "plugins",
     "Manage: themes, fonts, synced patterns": "themes",

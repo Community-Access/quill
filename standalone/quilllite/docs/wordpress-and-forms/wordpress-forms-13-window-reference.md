@@ -235,7 +235,7 @@ All in File > WordPress > Send and Copy:
 - **Send This Document to WordPress...** **Make it a**: post or page. Then
   the site. The draft is made, its pictures uploaded. Who: Contributor and
   up (Author and up with pictures, which need uploading).
-- **Publish to Another Site...** Dimmed outside a WordPress page. **Copy
+- **Copy to Another Site as a Draft...** Dimmed outside a WordPress page. **Copy
   to**: the other site. If that site lacks some categories or tags, a
   confirmation, **Create Them**, or Cancel to copy without them. Arrives as
   a draft.
@@ -418,7 +418,7 @@ All in Tools > WordPress > More Media. Uploading needs Author and up.
 - **Make a Listening Version...:** dimmed outside a WordPress page. When one
   exists, a confirmation, **Make Again**.
 - **Name Embeds:** dimmed outside a WordPress page. A report.
-- **Publish a Document as a Page...:** a file chooser; a question, **Page
+- **Make a Page from a Document...:** a file chooser; a question, **Page
   title**; for a scanned file, a confirmation, **Read the Pages**. Editor
   and up, for the page.
 
@@ -442,7 +442,7 @@ All in Tools > WordPress > More Media. Uploading needs Author and up.
 - **Menu History...:** a choice, **Menu**; the list window, **Versions**,
   with **Bring Back Removed Items...** and **Restore This Version...**.
   Administrator.
-- **Site Check:** a report. Administrator.
+- **Site Health Check:** a report. Administrator.
 - **Site Settings...:** the list window, **Settings**, with **Change...**:
   Site title, Tagline, Site language, Time zone, Date format, Time format,
   First day of the week, Administrator email, Front page shows, Front page,
@@ -463,7 +463,7 @@ Block themes only. Administrator.
 
 Only with the plugin on the site.
 
-- **Events Coming Up...:** the list window, **Events**, with **Open** and
+- **Upcoming Events...:** the list window, **Events**, with **Open** and
   **Open on Site**.
 - **New Event...:** **Name**, **Starts**, **Ends**, **Venue**, and **Make
   Draft**.
@@ -521,7 +521,7 @@ Only with the plugin on the site.
 
 Across every connected site.
 
-- **Coming Up...:** the list window, **Scheduled**, with **Open**.
+- **Coming Up on All Sites...:** the list window, **Scheduled**, with **Open**.
 - **What Changed on My Sites...:** the list window, **Changes**, with **Open
   in Browser**.
 

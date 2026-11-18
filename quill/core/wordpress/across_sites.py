@@ -1,6 +1,6 @@
-"""Coming Up, and What Changed on My Sites, across every connected site (wordpress.md 9.16).
+"""Coming Up on All Sites, and What Changed on My Sites (wordpress.md 9.16).
 
-* **Coming Up:** everything scheduled on every site, by date. It answers "what
+* **Coming Up on All Sites:** everything scheduled on every site, by date. It answers "what
   goes out next week?" in one place.
 * **What Changed on My Sites:** since the person last looked, per site: new
   comments, posts other people published, and Site Health warnings. One list,

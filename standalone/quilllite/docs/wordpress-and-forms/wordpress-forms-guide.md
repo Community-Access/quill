@@ -143,7 +143,7 @@ Site health and settings, users and passwords, plugins, themes and fonts,
 patterns and widgets, the site's look, the plugins QUILL works with, and AI
 abilities.
 
-- [Site Check](wordpress-forms-07-running-your-site.html#site-check)
+- [Site Health Check](wordpress-forms-07-running-your-site.html#site-check)
 - [Site Settings](wordpress-forms-07-running-your-site.html#site-settings)
 - [Users and passwords](wordpress-forms-07-running-your-site.html#users-and-passwords)
 - [Plugins, themes and fonts](wordpress-forms-07-running-your-site.html#plugins-themes-and-fonts)

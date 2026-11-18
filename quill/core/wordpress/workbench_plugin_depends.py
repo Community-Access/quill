@@ -43,7 +43,7 @@ _SHORTCODES: Mapping[str, tuple[str, ...]] = {
 #: REST namespaces a plugin brings, and what QUILL does with each.
 _NAMESPACES: Mapping[str, tuple[tuple[str, str], ...]] = {
     "woocommerce": (("wc/v3", "Shop: products, orders, customers and coupons"),),
-    "the-events-calendar": (("tribe/events/v1", "Events: New Event and Coming Up"),),
+    "the-events-calendar": (("tribe/events/v1", "Events: New Event and Upcoming Events"),),
     "wordpress-seo": (("yoast/v1", "the SEO title and description in Properties"),),
     "seo-by-rank-math": (("rankmath/v1", "the SEO title and description in Properties"),),
     "gravityforms": (("gf/v2", "Gravity Forms forms, responses and feeds"),),

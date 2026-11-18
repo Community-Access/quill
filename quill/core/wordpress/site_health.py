@@ -1,6 +1,6 @@
-"""Site Check, every test, and the plugins QUILL recognises (wordpress.md 9.15).
+"""Site Health Check, every test, and the plugins QUILL recognises (wordpress.md 9.15).
 
-Two things Site Check says that it could not say before:
+Two things Site Health Check says that it could not say before:
 
 * **Every Site Health test the site offers**, one line each. The tests are
   read from the site's own REST index (each is a route under
@@ -132,7 +132,7 @@ RECOGNISED: tuple[tuple[str, str, str], ...] = (
     (
         "tribe/events/v1",
         "The Events Calendar",
-        "events with their start, end and venue in Properties, New Event, and Coming Up",
+        "events with their start, end and venue in Properties, New Event, and Upcoming Events",
     ),
     (
         "wc/v3",

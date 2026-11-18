@@ -18,17 +18,17 @@ site does not have, or your role cannot use, says why in one sentence, such
 as "Community Radio does not offer this. It may be turned off, or the site
 may need a newer WordPress." Nothing is sent.
 
-## Site Check
+## Site Health Check
 
-**Tools > WordPress > Site Check** lists what the site says about its own
+**Tools > WordPress > Site Health Check** lists what the site says about its own
 health, critical things first: the WordPress version, HTTPS, the time zone,
 readable addresses, and every Site Health test the site lists, each read as
 one line.
 
-Site Check also names the plugins QUILL recognises, such as The Events
+Site Health Check also names the plugins QUILL recognises, such as The Events
 Calendar, WooCommerce, Yoast SEO, Rank Math and QUILL Accessible Forms.
 
-If the authorization header test fails, Site Check explains that application
+If the authorization header test fails, Site Health Check explains that application
 passwords cannot work on that site until the host fixes it. That one line
 has saved many people an afternoon.
 
@@ -138,7 +138,7 @@ these, QUILL makes use of it. The commands are in **Tools > WordPress >
 Plugin Extras**, and the fields are in Properties and **File > WordPress >
 Plugin Fields...**.
 
-- **The Events Calendar.** **Events Coming Up...** lists every event from
+- **The Events Calendar.** **Upcoming Events...** lists every event from
   today, with when and where. **New Event...** makes a draft event and opens
   it. An event's start, end and venue show in Properties and can be changed
   in Plugin Fields.
@@ -168,7 +168,7 @@ WordPress 6.9 lets a site offer actions to AI, called abilities, such as
 These are in **Tools > WordPress > Your Sites**, and look at every site you
 have connected:
 
-- **Coming Up...** lists everything scheduled on all your sites, soonest
+- **Coming Up on All Sites...** lists everything scheduled on all your sites, soonest
   first.
 - **What Changed on My Sites...** lists new comments, posts other people
   published, and health warnings since you last looked, across every site.

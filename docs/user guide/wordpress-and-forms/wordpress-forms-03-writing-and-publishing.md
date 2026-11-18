@@ -221,7 +221,7 @@ The page then shows as scheduled in Open. To move it, or publish it straight
 away, open it and choose Schedule Publish again. You get two choices:
 **Change the schedule** or **Publish now**.
 
-**Tools > WordPress > Your Sites > Coming Up...** lists everything scheduled
+**Tools > WordPress > Your Sites > Coming Up on All Sites...** lists everything scheduled
 on all your sites, soonest first.
 
 ## Autosaves, and when the connection drops
@@ -337,8 +337,8 @@ including any extra statuses the site adds.
 On a post or page:
 
 - **Enter** opens it in the editor, as Open Page or Post would.
-- **Item > Publish or Update...** (`Ctrl+Shift+P` in the Workbench) publishes
-  the selection after a preview. In the editor the same keys open the Command
+- **Item > Publish...** (`Ctrl+Shift+P` in the Workbench) publishes the
+  selection after a preview; a row already published is left as it is. In the editor the same keys open the Command
   Palette.
 - **File > New Here...** (`Ctrl+N`) makes a new post, page or item of the kind
   you are looking at, as a draft.
@@ -401,7 +401,7 @@ and your sites:
 - **Send This Document to WordPress...** turns any document open in QUILL
   into a new draft. Its first heading becomes the title, its headings stay
   headings, and its pictures go to the Media Library.
-- **Publish to Another Site...** copies the page you are editing to another
+- **Copy to Another Site as a Draft...** copies the page you are editing to another
   of your sites, as a draft there. Pictures are uploaded again. Categories
   and tags are matched by name, and QUILL asks before creating any that are
   missing.

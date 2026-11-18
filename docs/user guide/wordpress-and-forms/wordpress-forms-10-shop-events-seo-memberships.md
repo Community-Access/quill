@@ -152,7 +152,7 @@ An event that repeats, from Events Calendar Pro, says so. Its series is
 changed in wp-admin, because the plugin does not share the rule that makes
 it repeat.
 
-In the editor, **Tools > WordPress > Plugin Extras > Events Coming Up...**
+In the editor, **Tools > WordPress > Plugin Extras > Upcoming Events...**
 lists every event from today, and **New Event...** makes a draft event and
 opens it.
 

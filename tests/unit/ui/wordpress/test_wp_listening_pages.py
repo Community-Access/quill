@@ -240,7 +240,7 @@ def test_every_embed_already_captioned_is_said(wp, engines) -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Publish a Document as a Page
+# Make a Page from a Document
 
 PDF_URL = "https://radio.example/wp-content/uploads/annual-report.pdf"
 
@@ -507,7 +507,7 @@ def test_the_first_listening_version_asks_before_it_records_or_uploads(
 def test_a_document_asks_before_it_is_uploaded(
     wp, wp_site, wp_dialogs, engines, report_pdf
 ) -> None:
-    """UX review item 33: Publish a Document as a Page uploaded without a first yes."""
+    """UX review item 33: Make a Page from a Document uploaded without a first yes."""
     wp_dialogs.answer("ask_text", "Report")
     wp.cmd_document_as_page()
     assert f"Upload {report_pdf.name}" in wp_dialogs.asked("confirm")[-1]["message"]

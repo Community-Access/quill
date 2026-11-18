@@ -228,7 +228,9 @@ WordPress can add each new top-level page to a menu by itself, the moment it
 is published.
 
 1. Arrow to the menu in **Menus and Navigation**.
-2. Press the Applications key and choose **Add New Pages Automatically...**.
+2. Press the Applications key and choose **Add New Pages Automatically...**
+   (on a menu that already does, the row reads **Stop Adding New Pages
+   Automatically...**).
 3. The preview says whether it is on or off now, and what changes. Press
    **Turn On**, or **Turn Off**.
 
