@@ -25,6 +25,7 @@ VIEWS: tuple[tuple[str, str], ...] = (
     ("notifications", "GitHub notifications"),
     ("chooser", "Repository chooser"),
     ("person_profile", "Person's profile"),
+    ("person_sponsor", "Sponsor a person"),
     ("person_repos", "Person's repositories"),
     ("person_activity", "Person's public activity"),
     ("person_followers", "Person's followers"),
@@ -58,6 +59,7 @@ VIEWS: tuple[tuple[str, str], ...] = (
     ("star_lists", "Star lists"),
     ("my_profile", "My profile"),
     ("my_keys", "My SSH and GPG keys"),
+    ("sponsorships", "My sponsorships"),
     ("runners", "Self-hosted runners"),
     ("billing_usage", "Billing and usage"),
     ("security_closed", "Dismissed and resolved security alerts"),
@@ -93,6 +95,7 @@ QUERY_VIEWS = frozenset({"search", "code_search", "commit_search", "repo_search"
 """Views that run the query typed in the search box."""
 PERSON_VIEWS = frozenset({
     "person_profile",
+    "person_sponsor",
     "person_repos",
     "person_activity",
     "person_followers",
@@ -123,6 +126,7 @@ AUTH_VIEWS = frozenset({
     "star_lists",
     "my_profile",
     "my_keys",
+    "sponsorships",
 })
 
 VIEW_NOTES: dict[str, str] = {

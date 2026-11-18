@@ -32,6 +32,8 @@ COMMUNITY_VERBS: dict[str, frozenset[str]] = {
         "webhook",
         "deploy_key",
         "autolink",
+        "sponsorship",
+        "sponsor_tier",
     }),
     "delete_cache": frozenset({"cache"}),
     "edit_label": frozenset({"label"}),

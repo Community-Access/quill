@@ -200,6 +200,14 @@ _FIXED: tuple[NodeSpec, ...] = (
     ),
     _n("my_keys", "My Keys", "people", needs=_SIGN_IN, loader="explore:my_keys", row_type="key"),
     _n(
+        "sponsorships",
+        "Sponsorships",
+        "people",
+        needs=_SIGN_IN,
+        loader="explore:sponsorships",
+        row_type="sponsorship",
+    ),
+    _n(
         "following",
         "People I Follow",
         "people",
@@ -454,6 +462,7 @@ _PERSON: tuple[NodeSpec, ...] = (
         NodeSpec(key, label, "person", scope=Scope.PERSON, loader=f"explore:{view}", row_type=row)
         for key, label, view, row in (
             ("person_profile", "Profile", "person_profile", "mixed"),
+            ("person_sponsor", "Sponsor", "person_sponsor", "sponsor_tier"),
             ("person_repositories", "Repositories", "person_repos", "repository"),
             ("person_activity", "Activity", "person_activity", "event"),
             ("person_followers", "Followers", "person_followers", "person"),

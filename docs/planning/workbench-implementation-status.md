@@ -200,6 +200,10 @@ redeliver, address and secret), Deploy Keys and Autolinks
 (`repo_settings_lists.py`, `github_workbench_settings_lists.py`). An
 organization's webhooks the same way (Organizations > org > Webhooks).
 
+**2026-11-18, sponsors.** People > Sponsorships and each person's Sponsor,
+Sponsor at This Tier... and Cancel Sponsorship... (`sponsors.py`,
+`github_workbench_sponsors.py`).
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

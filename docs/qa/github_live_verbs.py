@@ -921,6 +921,8 @@ VERBS: dict[str, Scenario | str] = {
     "delete_deploy_key": "with new_deploy_key: deleted again",
     "new_autolink": autolink_round_trip,
     "delete_autolink": "with new_autolink: deleted again",
+    "sponsor": "needs Jeff: sponsoring charges real money",
+    "cancel_sponsorship": "needs Jeff: cancels one of your real sponsorships",
     "new_key": "needs Jeff: adds a key to your own GitHub account",
     "delete_key": "needs Jeff: deletes a key from your own GitHub account",
     "new_advisory": "needs Jeff: a report or a draft advisory can be closed but never deleted",
@@ -1245,6 +1247,14 @@ def my_keys(run: Any) -> str:
     return said + (f" Refused, in words: {warnings[0]}" if warnings else "")
 
 
+def sponsorships(run: Any) -> str:
+    from quill.core.github.sponsors import fetch_sponsor_page, fetch_sponsorships
+
+    rows = fetch_sponsorships(run.api, [])
+    page = fetch_sponsor_page(run.api, "nvaccess")
+    return f"{len(rows)} sponsorships. {page[0].label}"
+
+
 def check_with_git(run: Any) -> str:
     done = subprocess.run(["git", "--version"], capture_output=True, text=True, check=False)
     _expect(done.returncode == 0, "git is not installed")
@@ -1264,6 +1274,7 @@ FEATURES: dict[str, Scenario | str] = {
     "My Packages, or the permission it needs said in words (PRD 14.2)": my_packages,
     "My Profile, with the contribution calendar as numbers (PRD 14.2)": my_profile,
     "My Keys: SSH, GPG and signing keys with fingerprints (PRD 14.3)": my_keys,
+    "Sponsorships, and a person's tiers (PRD 14.3)": sponsorships,
     "Security policy, private reporting, and the Advisory Database (GX11)": (
         security_policy_and_database
     ),

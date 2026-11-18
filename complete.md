@@ -1204,7 +1204,10 @@ a home and a Properties sheet:
   and token-grant endpoints to GitHub Apps only, so a person's sign-in is
   refused; the coverage table marks them out of scope with that reason.)*
 - **Sponsors:** People > person > Sponsor, and Account > Sponsors for your
-  own sponsorships and sponsors, read and manage what the API allows.
+  own sponsorships and sponsors, read and manage what the API allows. *(Built
+  2026-11-18: People > Sponsorships and each person's Sponsor, sponsoring at a
+  tier with the login typed, and cancelling; `sponsors.py`. Running a
+  sponsors listing of your own, its tiers, stays on GitHub.)*
 
 What is left on github.com is only what GitHub offers no API for, and the
 coverage table says so row by row (section 19): Marketplace purchases,

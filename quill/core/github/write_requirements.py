@@ -101,6 +101,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}delete_deploy_key": ("repo:admin", _D),
     f"{_P}new_autolink": ("repo:admin", _V),
     f"{_P}delete_autolink": ("repo:admin", _D),
+    f"{_P}sponsor": ("sign_in+scope:user", _D),
+    f"{_P}cancel_sponsorship": ("sign_in+scope:user", _V),
     f"{_P}delete_package_version": ("sign_in+scope:delete:packages", _D),
     f"{_P}delete_package": ("sign_in+scope:delete:packages", _D),
     f"{_P}new_star_list": ("sign_in+scope:user", _O),

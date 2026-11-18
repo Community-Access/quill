@@ -1180,6 +1180,12 @@ contributions as numbers, and what you pinned.</td>
 fingerprint. Ctrl+N adds one.</td>
 </tr>
 <tr>
+<td>Sponsorships (<code>:sponsorships</code>)</td>
+<td>people</td>
+<td>Sponsorships: who you sponsor on GitHub Sponsors, and who sponsors
+you.</td>
+</tr>
+<tr>
 <td>People I Follow (<code>:following</code>)</td>
 <td>people</td>
 <td>People I Follow: accounts you follow. Enter opens a person’s
@@ -1661,6 +1667,12 @@ follow.</td>
 <td>person, person</td>
 <td>Profile: who this person is, their year of contributions as numbers,
 and what they pinned.</td>
+</tr>
+<tr>
+<td>Sponsor (<code>person:person_sponsor</code>)</td>
+<td>person, person</td>
+<td>Sponsor: whether this person takes sponsorships, and each tier with
+its price.</td>
 </tr>
 <tr>
 <td>Repositories (<code>person:person_repositories</code>)</td>
@@ -2690,10 +2702,6 @@ Properties…</li>
 <li><strong>tag</strong>: Open, Delete Tag…, Read Tag Message, Commit
 Comments…, Compare With Previous, Compare With Default; More: Copy Link,
 Open on GitHub; Properties…</li>
-<li><strong>package</strong>: Show Details, Open on GitHub, Delete
-Package Version…, Delete Package…, Copy Link; Properties…</li>
-<li><strong>runner</strong>: Show Details, Open on GitHub, Copy Link;
-Properties…</li>
 <li><strong>invitation</strong>: Accept Invitation…, Decline
 Invitation…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>notification</strong>: Open, Mark Read, Mark Done, Snooze
@@ -2711,17 +2719,6 @@ Label…; Properties…</li>
 on GitHub, Delete Gist…; Properties…</li>
 <li><strong>discussion</strong>: Open Discussion Thread, Read as
 Document…, Copy Link, Open on GitHub; Properties…</li>
-<li><strong>webhook</strong>: Show Details, Ping, Recent Deliveries…,
-Change Address or Secret…, Delete Webhook…, Open on GitHub;
-Properties…</li>
-<li><strong>deploy_key</strong>: Show Details, Delete Deploy Key…, Open
-on GitHub; Properties…</li>
-<li><strong>autolink</strong>: Show Details, Delete Autolink…, Open on
-GitHub; Properties…</li>
-<li><strong>key</strong>: Show Details, Delete Key…, Open on GitHub;
-Properties…</li>
-<li><strong>advisory</strong>: Show Details, Publish or Close Advisory…,
-Request CVE…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>security_alert</strong>: Open, Dismiss or Reopen Alert…,
 Open on GitHub; Properties…</li>
 <li><strong>cache</strong>: Show Details, Delete Cache…;
@@ -2768,6 +2765,25 @@ More: Close Everywhere…, Move Open Work To…, Promote to Organization…,
 Delete Everywhere…; Properties…</li>
 <li><strong>fleet</strong>: Open Repository, Open on GitHub, Copy Link;
 Properties…</li>
+<li><strong>runner</strong>: Show Details, Open on GitHub, Copy Link;
+Properties…</li>
+<li><strong>package</strong>: Show Details, Open on GitHub, Delete
+Package Version…, Delete Package…, Copy Link; Properties…</li>
+<li><strong>key</strong>: Show Details, Delete Key…, Open on GitHub;
+Properties…</li>
+<li><strong>advisory</strong>: Show Details, Publish or Close Advisory…,
+Request CVE…, Open on GitHub, Copy Link; Properties…</li>
+<li><strong>webhook</strong>: Show Details, Ping, Recent Deliveries…,
+Change Address or Secret…, Delete Webhook…, Open on GitHub;
+Properties…</li>
+<li><strong>deploy_key</strong>: Show Details, Delete Deploy Key…, Open
+on GitHub; Properties…</li>
+<li><strong>autolink</strong>: Show Details, Delete Autolink…, Open on
+GitHub; Properties…</li>
+<li><strong>sponsorship</strong>: Show Details, Cancel Sponsorship…,
+Open on GitHub; Properties…</li>
+<li><strong>sponsor_tier</strong>: Show Details, Sponsor at This Tier…,
+Open on GitHub; Properties…</li>
 </ul>
 <h3 id="workbench-options">Workbench Options</h3>
 <table>
@@ -2974,6 +2990,9 @@ vulnerability: which versions, how serious, and where it is fixed. Each
 has a GHSA id, and often a CVE number too.</li>
 <li><strong>Security alert</strong>: A warning that code, a dependency
 or a secret in it is at risk.</li>
+<li><strong>Sponsorship</strong>: Money you pay someone through GitHub
+Sponsors for their open-source work, each month or once, at one of the
+tiers they offer.</li>
 <li><strong>Squash</strong>: Merging a pull request as one single
 commit, instead of all of its commits.</li>
 <li><strong>Star</strong>: A bookmark on a repository, which also shows
@@ -3029,7 +3048,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 379 yes, 1077 planned, 15 not needed and 533 left to
+<p>In all: 381 yes, 1075 planned, 15 not needed and 533 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -13840,7 +13859,7 @@ ready</td>
 </tbody>
 </table>
 <h4 id="graphql-sponsors">GraphQL: Sponsors</h4>
-<p>9 mutations: 9 planned.</p>
+<p>9 mutations: 2 yes, 7 planned.</p>
 <table>
 <thead>
 <tr>
@@ -13852,8 +13871,8 @@ ready</td>
 <tbody>
 <tr>
 <td><code>cancelSponsorship</code></td>
-<td>Planned</td>
-<td>People &gt; person &gt; Sponsor; Account &gt; Sponsors</td>
+<td>Yes</td>
+<td>context menu &gt; Cancel Sponsorship…</td>
 </tr>
 <tr>
 <td><code>createSponsorsListing</code></td>
@@ -13867,8 +13886,8 @@ ready</td>
 </tr>
 <tr>
 <td><code>createSponsorship</code></td>
-<td>Planned</td>
-<td>People &gt; person &gt; Sponsor; Account &gt; Sponsors</td>
+<td>Yes</td>
+<td>context menu &gt; Sponsor at This Tier…</td>
 </tr>
 <tr>
 <td><code>createSponsorships</code></td>

@@ -1050,6 +1050,18 @@ a home and a Properties sheet:
   settings page on GitHub.
 - **Sponsors:** People > person > Sponsor, and Account > Sponsors for your
   own sponsorships and sponsors, read and manage what the API allows.
+  **Built 2026-11-18:** People > Sponsorships (`sponsorshipsAsSponsor`,
+  `sponsorshipsAsMaintainer`; who sponsors you as person rows) and Sponsor
+  under every person (`repositoryOwner ... on Sponsorable`: listing, whether
+  you sponsor them, each tier with its price; the custom-amount tier left to
+  GitHub). Sponsor at This Tier... (`createSponsorship` with `tierId` and
+  `privacyLevel`) says the price and recurrence and wants the login typed;
+  Cancel Sponsorship... (`cancelSponsorship`) asks first
+  (`quill/core/github/sponsors.py`, `quill/ui/github_workbench_sponsors.py`).
+  Creating and running your own listing and tiers remain on GitHub. The
+  newer row types (runners through sponsorships) live in
+  `quill/core/github/item_action_parts.py`, merged into the Workbench's
+  table, to keep `item_actions.py` under its size budget.
 
 What is left on github.com is only what GitHub offers no API for, and the
 coverage table says so row by row (section 19): Marketplace purchases,

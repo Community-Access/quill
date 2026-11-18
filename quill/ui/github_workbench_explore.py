@@ -40,6 +40,8 @@ _KINDS = {
     "webhook": "webhook",
     "deploy_key": "deploy_key",
     "autolink": "autolink",
+    "sponsorship": "sponsorship",
+    "sponsor_tier": "sponsor_tier",
     "issue": "issue",
     "pr": "pull_request",
     "label": "label",

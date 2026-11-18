@@ -17559,7 +17559,9 @@ People > My Keys (`quill/core/github/account_keys.py`) lists, adds and
 deletes your SSH, GPG and signing keys. Settings > Webhooks, Deploy Keys and
 Autolinks (`quill/core/github/repo_settings_lists.py`) list, add and delete
 each; a webhook secret is write-only and never said. An organization's
-webhooks are under Organizations > org > Webhooks.
+webhooks are under Organizations > org > Webhooks. People > Sponsorships and
+each person's Sponsor (`quill/core/github/sponsors.py`) read and change GitHub
+Sponsors, with the login typed before money is spent.
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

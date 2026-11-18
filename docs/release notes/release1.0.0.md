@@ -2203,6 +2203,10 @@ delivery failed (502)", lets you read the recent deliveries and send one
 again, and keeps a webhook's secret out of sight and out of speech. Deploy
 keys and autolinks are beside it.
 
+And for the projects you depend on, **Sponsor** under any maintainer lists
+what they ask for, tier by tier, and supports them after you type their name,
+so a stray Enter can never spend your money.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

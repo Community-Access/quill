@@ -1626,6 +1626,13 @@ Workbench list, add and delete each, and a webhook can be pinged and its
 deliveries read and sent again. See
 [Webhooks, deploy keys and autolinks](../github-guide/github-guide-07-code-and-repositories.html#webhooks-deploy-keys-and-autolinks).
 
+#### GitHub Sponsors
+
+**People > Sponsorships** and **Sponsor** under any person, in the GitHub
+Workbench, read and change your GitHub Sponsors sponsorships, with the
+person's login typed before anything is charged. See
+[Sponsorships](../github-guide/github-guide-12-the-workbench.html#sponsorships).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

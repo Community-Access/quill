@@ -620,6 +620,14 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### GitHub Sponsors (2026-11-18)
+
+**People > Sponsorships** in the GitHub Workbench lists who you sponsor and
+who sponsors you, and **Sponsor** under any person lists their tiers with
+prices. **Sponsor at This Tier...** says the price and has you type their
+login before GitHub charges anything; **Cancel Sponsorship...** asks first.
+Chapter 12 of the GitHub Guide has the details.
+
 ### An organization's webhooks (2026-11-18)
 
 **Organizations >** an organization **> Webhooks** in the GitHub Workbench

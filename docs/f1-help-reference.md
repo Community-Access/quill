@@ -2516,6 +2516,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **My Keys.** My Keys: your SSH keys, GPG keys and SSH signing keys, each with its fingerprint. Ctrl+N adds one.
 
+**Sponsorships.** Sponsorships: who you sponsor on GitHub Sponsors, and who sponsors you.
+
 **People I Follow.** People I Follow: accounts you follow. Enter opens a person's node.
 
 **My Followers.** My Followers: accounts that follow you.
@@ -2675,6 +2677,8 @@ Control coverage: 365 audited sites (365 helped).
 **person: person.** A person: their repositories, activity, followers and who they follow.
 
 **person: Profile.** Profile: who this person is, their year of contributions as numbers, and what they pinned.
+
+**person: Sponsor.** Sponsor: whether this person takes sponsorships, and each tier with its price.
 
 **person: Repositories.** Repositories: this person's public repositories.
 
@@ -3116,12 +3120,6 @@ Control coverage: 365 audited sites (365 helped).
 
 **Read Tag Message.** Who made the tag, when, and its message.
 
-**Show Details.** The package's type, visibility and repository.
-
-**Delete Package Version.** Choose a version, newest first with its tags, and delete it after asking.
-
-**Delete Package.** Delete the package and every version, after you type its name.
-
 **Accept Invitation.** Join the repository with the access offered.
 
 **Decline Invitation.** Say no to it.
@@ -3168,25 +3166,9 @@ Control coverage: 365 audited sites (365 helped).
 
 **Open Discussion Thread.** Read the whole thread.
 
-**Ping.** Send it a test message.
-
-**Recent Deliveries.** Read and redeliver.
-
-**Change Address or Secret.** The secret is write-only.
-
-**Delete Webhook.** Stop sending it anything.
-
-**Delete Deploy Key.** Remove it; asks first.
-
-**Delete Autolink.** Remove it; asks first.
-
-**Delete Key.** Remove it; asks first.
-
-**Publish or Close Advisory.** Change its state.
-
-**Request CVE.** Ask GitHub for a CVE number.
-
 **Dismiss or Reopen Alert.** Dismiss with a reason.
+
+**Show Details.** The cache's key, size and last use.
 
 **Delete Cache.** Delete this Actions cache.
 
@@ -3271,6 +3253,32 @@ Control coverage: 365 audited sites (365 helped).
 **Delete Everywhere.** Delete the label, or remove the topic, in every repository, after the preview.
 
 **Open Repository.** Select the repository's node in the tree.
+
+**Delete Package Version.** Choose a version, newest first with its tags, and delete it after asking.
+
+**Delete Package.** Delete the package and every version, after you type its name.
+
+**Delete Key.** Remove it; asks first.
+
+**Publish or Close Advisory.** Change its state.
+
+**Request CVE.** Ask GitHub for a CVE number.
+
+**Ping.** Send it a test message.
+
+**Recent Deliveries.** Read and redeliver.
+
+**Change Address or Secret.** The secret is write-only.
+
+**Delete Webhook.** Stop sending it anything.
+
+**Delete Deploy Key.** Remove it; asks first.
+
+**Delete Autolink.** Remove it; asks first.
+
+**Cancel Sponsorship.** Stop it; asks first.
+
+**Sponsor at This Tier.** Pay; you type their login.
 
 ### Every Workbench option
 

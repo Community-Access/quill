@@ -274,6 +274,28 @@ Laptop" and its fingerprint.
 **Delete Key...** on a key's row, or the Delete key, asks first and says what
 stops working without it: pushing over SSH, or commits showing as Verified.
 
+### Sponsorships
+
+GitHub Sponsors lets you pay someone for their open-source work, each month or
+once. **People > Sponsorships** lists both directions: "You sponsor sam: $5 a
+month, since 2025-02-01." and "jo sponsors you: $25 once, since 2026-03-04."
+
+Every person's place in the tree has **Sponsor**. Its first row says whether
+they take sponsorships, whether you sponsor them already, and what they say
+about it; each row after it is one of their tiers, with its price: "$5 a
+month: Coffee. Keeps the lights on."
+
+Sponsoring spends real money, so QUILL is careful:
+
+- **Sponsor at This Tier...** on a tier asks whether everyone may see it or
+  only them, then says the price again, and that GitHub charges the payment
+  method on your account now and each month until you cancel, and has you
+  type their login. Only then is anything sent. You hear "You now sponsor sam
+  privately, $5 a month." GitHub's own custom-amount tier is not offered here;
+  open their page on GitHub for that.
+- **Cancel Sponsorship...** on someone you sponsor asks first, then stops it.
+  Nothing more is charged for it.
+
 ### My Billing and Usage
 
 **People > My Billing and Usage** reads this month's metered use of your
@@ -457,6 +479,8 @@ own list, and `Shift+F1` reads it with the keys:
 - **A webhook:** Show Details, Ping, Recent Deliveries, Change Address or
   Secret, and Delete Webhook.
 - **A deploy key or an autolink:** Show Details, Delete, and Open on GitHub.
+- **A sponsorship:** Show Details and Cancel Sponsorship. **A sponsor tier:**
+  Show Details and Sponsor at This Tier.
 - **A notification:** Open, Mark Read, Mark Done, Unsubscribe from Thread, and
   Snooze for One Day. Snoozing hides it in the Workbench on this computer
   until tomorrow and changes nothing on GitHub; Unsnooze Locally brings it

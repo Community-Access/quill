@@ -51,9 +51,10 @@ EXTRA_ACCOUNT_VIEWS = frozenset({
     "advisory_search",
     "my_keys",
     "org_webhooks",
+    "sponsorships",
 })
 #: Views of one person, answered from the login in Explore's person box.
-EXTRA_PERSON_VIEWS = frozenset({"person_profile"})
+EXTRA_PERSON_VIEWS = frozenset({"person_profile", "person_sponsor"})
 EXTRA_VIEWS = SEARCH_VIEWS | EXTRA_REPO_VIEWS | EXTRA_ACCOUNT_VIEWS | EXTRA_PERSON_VIEWS
 _REDIRECTS = (301, 302, 303, 307, 308)
 
@@ -82,6 +83,22 @@ def fetch_extra_view(
             return fetch_invitations(TokenApi(token), limit=limit)
         except GitHubRestError as exc:
             raise GitHubExploreError(f"Could not read your invitations: {exc}") from exc
+    if view in ("sponsorships", "person_sponsor"):
+        from quill.core.github.sponsors import (
+            SponsorError,
+            fetch_sponsor_page,
+            fetch_sponsorships,
+        )
+        from quill.core.github.workbench_api import TokenApi
+
+        try:
+            if view == "sponsorships":
+                return fetch_sponsorships(TokenApi(token), warnings)
+            if not person.strip():
+                raise GitHubExploreError("Enter a GitHub username for this people view.")
+            return fetch_sponsor_page(TokenApi(token), person.strip().lstrip("@"))
+        except SponsorError as exc:
+            raise GitHubExploreError(str(exc.args[0])) from exc
     if view == "org_webhooks":
         from quill.core.github import repo_settings_lists as lists
         from quill.core.github.workbench_api import TokenApi

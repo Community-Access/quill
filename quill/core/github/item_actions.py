@@ -15,8 +15,21 @@ deletes, because Enter must never destroy anything.
 from __future__ import annotations
 
 from quill.core.github.across_actions import ACROSS_ROWS
+from quill.core.github.item_action_parts import (
+    _COPY_LINK,
+    _D,
+    _O,
+    _OPEN_WEB,
+    _PROPERTIES,
+    _R,
+    _W,
+    ACCOUNT_ROWS,
+    PROPERTIES_COMMAND,
+    _a,
+    _default,
+)
 from quill.core.github.item_shortcuts import DELETE_COMMANDS, NEW_HERE
-from quill.core.workbench.actions import ActionRow, ActionTable, Tier
+from quill.core.workbench.actions import ActionRow, ActionTable
 
 __all__ = [
     "CODESPACES_COMMAND",
@@ -28,37 +41,10 @@ __all__ = [
     "RATE_LIMIT_COMMAND",
 ]
 
-PROPERTIES_COMMAND = "github.workbench.properties"
 CODESPACES_COMMAND = "github.workbench.open_codespaces"
 RATE_LIMIT_COMMAND = "github.workbench.rate_limit"
 CODESPACES_ROW_TYPES = frozenset({"repository", "branch", "pull_request"})
 
-_R, _O, _W, _D = Tier.READ, Tier.ORGANIZE, Tier.WRITE, Tier.DESTRUCTIVE
-
-
-def _a(
-    verb: str,
-    label: str,
-    tier: Tier = _R,
-    requirement: str = "",
-    help: str = "",  # noqa: A002 - the field's name
-    *,
-    default: bool = False,
-) -> ActionRow:
-    return ActionRow(f"github.workbench.{verb}", label, tier, requirement, help, default)
-
-
-def _default(verb: str, label: str, help: str) -> ActionRow:  # noqa: A002
-    return _a(verb, label, _R, "", help, default=True)
-
-
-_PROPERTIES = ActionRow(
-    PROPERTIES_COMMAND,
-    "Properties...",
-    help="Everything about this item on one sheet. Alt+Enter opens it from anywhere.",
-)
-_COPY_LINK = _a("copy_link", "Copy Link", help="Copy the item's GitHub address.")
-_OPEN_WEB = _a("open_on_github", "Open on GitHub", help="Open the item in your browser.")
 _CODESPACES = ActionRow(
     CODESPACES_COMMAND,
     "Open in Codespaces...",
@@ -312,32 +298,6 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _OPEN_WEB,
         _PROPERTIES,
     ),
-    "package": (
-        _default("show_details", "Show Details", "The package's type, visibility and repository."),
-        _OPEN_WEB,
-        _a(
-            "delete_package_version",
-            "Delete Package Version...",
-            _D,
-            "sign_in",
-            "Choose a version, newest first with its tags, and delete it after asking.",
-        ),
-        _a(
-            "delete_package",
-            "Delete Package...",
-            _D,
-            "sign_in",
-            "Delete the package and every version, after you type its name.",
-        ),
-        _COPY_LINK,
-        _PROPERTIES,
-    ),
-    "runner": (
-        _default("show_details", "Show Details", "The runner's state, system and labels."),
-        _OPEN_WEB,
-        _COPY_LINK,
-        _PROPERTIES,
-    ),
     "invitation": (
         _a(
             "accept_invitation",
@@ -412,47 +372,6 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _READ_DOC,
         _COPY_LINK,
         _OPEN_WEB,
-        _PROPERTIES,
-    ),
-    "webhook": (
-        _default("show_details", "Show Details", "Its address, events and last delivery."),
-        _a("ping_webhook", "Ping", _O, "admin", "Send it a test message."),
-        _a("webhook_deliveries", "Recent Deliveries...", _W, "admin", "Read and redeliver."),
-        _a(
-            "change_webhook",
-            "Change Address or Secret...",
-            _W,
-            "admin",
-            "The secret is write-only.",
-        ),
-        _a("delete_webhook", "Delete Webhook...", _D, "admin", "Stop sending it anything."),
-        _OPEN_WEB,
-        _PROPERTIES,
-    ),
-    "deploy_key": (
-        _default("show_details", "Show Details", "The key, its fingerprint and access."),
-        _a("delete_deploy_key", "Delete Deploy Key...", _D, "admin", "Remove it; asks first."),
-        _OPEN_WEB,
-        _PROPERTIES,
-    ),
-    "autolink": (
-        _default("show_details", "Show Details", "The prefix and the address it links to."),
-        _a("delete_autolink", "Delete Autolink...", _D, "admin", "Remove it; asks first."),
-        _OPEN_WEB,
-        _PROPERTIES,
-    ),
-    "key": (
-        _default("show_details", "Show Details", "The key, its fingerprint, and when it was used."),
-        _a("delete_key", "Delete Key...", _D, "sign_in", "Remove it; asks first."),
-        _OPEN_WEB,
-        _PROPERTIES,
-    ),
-    "advisory": (
-        _default("show_details", "Show Details", "Its severity, state, packages and credits."),
-        _a("advisory_state", "Publish or Close Advisory...", _D, "admin", "Change its state."),
-        _a("request_cve", "Request CVE...", _W, "admin", "Ask GitHub for a CVE number."),
-        _OPEN_WEB,
-        _COPY_LINK,
         _PROPERTIES,
     ),
     "security_alert": (
@@ -587,6 +506,8 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     # Across Repositories (PRD 22.11, GX16): quill/core/github/across_actions.py.
     **ACROSS_ROWS,
 }
+
+_ROWS.update(ACCOUNT_ROWS)
 
 GITHUB_ACTIONS = ActionTable(_ROWS, properties_command=PROPERTIES_COMMAND)
 """Every GitHub row type's menu, checked against the shared rules on import."""

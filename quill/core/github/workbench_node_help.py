@@ -245,6 +245,10 @@ NODE_HELP: dict[str, str] = {
         "Profile: who this person is, their year of contributions as numbers, and what they pinned."
     ),
     "person:person_repositories": "Repositories: this person's public repositories.",
+    ":sponsorships": ("Sponsorships: who you sponsor on GitHub Sponsors, and who sponsors you."),
+    "person:person_sponsor": (
+        "Sponsor: whether this person takes sponsorships, and each tier with its price."
+    ),
     ":my_keys": (
         "My Keys: your SSH keys, GPG keys and SSH signing keys, each with its fingerprint. "
         "Ctrl+N adds one."

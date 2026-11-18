@@ -1971,7 +1971,23 @@ so the Workbench cannot do this; the seven rows are
 organization’s settings page on GitHub.</li>
 <li><strong>Sponsors:</strong> People &gt; person &gt; Sponsor, and
 Account &gt; Sponsors for your own sponsorships and sponsors, read and
-manage what the API allows.</li>
+manage what the API allows. <strong>Built 2026-11-18:</strong> People
+&gt; Sponsorships (<code>sponsorshipsAsSponsor</code>,
+<code>sponsorshipsAsMaintainer</code>; who sponsors you as person rows)
+and Sponsor under every person
+(<code>repositoryOwner ... on Sponsorable</code>: listing, whether you
+sponsor them, each tier with its price; the custom-amount tier left to
+GitHub). Sponsor at This Tier… (<code>createSponsorship</code> with
+<code>tierId</code> and <code>privacyLevel</code>) says the price and
+recurrence and wants the login typed; Cancel Sponsorship…
+(<code>cancelSponsorship</code>) asks first
+(<code>quill/core/github/sponsors.py</code>,
+<code>quill/ui/github_workbench_sponsors.py</code>). Creating and
+running your own listing and tiers remain on GitHub. The newer row types
+(runners through sponsorships) live in
+<code>quill/core/github/item_action_parts.py</code>, merged into the
+Workbench’s table, to keep <code>item_actions.py</code> under its size
+budget.</li>
 </ul>
 <p>What is left on github.com is only what GitHub offers no API for, and
 the coverage table says so row by row (section 19): Marketplace

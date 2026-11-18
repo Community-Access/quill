@@ -66,6 +66,11 @@ from quill.ui.github_workbench_settings_lists import (
     SETTINGS_LIST_VERBS,
     GitHubWorkbenchSettingsListsMixin,
 )
+from quill.ui.github_workbench_sponsors import (
+    SPONSOR_REASONS,
+    SPONSOR_VERBS,
+    GitHubWorkbenchSponsorsMixin,
+)
 from quill.ui.github_workbench_star_lists import (
     STAR_LIST_REASONS,
     STAR_LIST_VERBS,
@@ -99,6 +104,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **ADVISORY_VERBS,
     **ACCOUNT_KEY_VERBS,
     **SETTINGS_LIST_VERBS,
+    **SPONSOR_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -116,6 +122,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **ADVISORY_REASONS,
     **ACCOUNT_KEY_REASONS,
     **SETTINGS_LIST_REASONS,
+    **SPONSOR_REASONS,
 }
 
 
@@ -131,6 +138,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchAdvisoriesMixin,
     GitHubWorkbenchAccountKeysMixin,
     GitHubWorkbenchSettingsListsMixin,
+    GitHubWorkbenchSponsorsMixin,
 ):
     items: Any
     frame: Any
