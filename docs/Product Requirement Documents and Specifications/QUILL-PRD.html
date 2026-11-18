@@ -29429,6 +29429,32 @@ practice repository” track, six lessons
 step carrying its key from <code>WORKBENCH_KEYS</code>;
 <code>docs/user guide/tutorials.md</code> is regenerated from the
 catalogue.</p>
+<p><strong>Load More and an honest first page (GitHub PRD
+17.3).</strong> <code>page_limit</code> counts Load More presses per
+node (a page more each, up to Load All’s 1,000) and applies to
+Explore-backed nodes as well as items; <code>load_explore</code> passes
+the limit and returns the fetch’s incomplete-read sentence, which
+becomes the Items cell’s note. Load More had been a menu row with no
+handler.</p>
+<p><strong>One comment window (GH-C).</strong>
+<code>compose_with_provider</code> opens the composer from windows that
+hold a GitHub Items provider (a <code>TokenApi</code> from its token and
+a thread-and-CallAfter background); <code>ok_label</code> “Use This
+Text” hands text back. Discussion replies and Reply to Thread use it,
+and the line comment and review message dialogs have Comment Window…
+(<code>Alt+W</code>). The Properties check list
+(<code>workbench_check_group.py</code>) is now covered by tests: one
+check box per choice, three-state over several items with “on 3 of 5”,
+and a delta of only what changed.</p>
+<p><strong>Whitespace and one commit at a time (GH-D).</strong> The diff
+window’s Hide Whitespace Changes (<code>Alt+W</code>) and Choose Commit…
+(<code>Alt+T</code>), from
+<code>quill/core/github/commit_review.py</code>:
+<code>whitespace_only</code> over the patch lines, and
+<code>pull_commits</code> and <code>commit_diff</code> (a
+<code>GitHubPullDiff</code> of one commit against its first parent),
+read off the UI thread with a <code>TokenApi</code> from the provider’s
+token.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

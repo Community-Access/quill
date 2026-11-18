@@ -47,6 +47,8 @@ class GitHubLineCommentDialog:
         body: str = "",
         can_post_now: bool = True,
         announce_cb: Callable[[str], None] | None = None,
+        provider: object = None,
+        repository: str = "",
     ) -> None:
         import wx
 
@@ -54,6 +56,7 @@ class GitHubLineCommentDialog:
         self._lines = tuple(lines)
         self._announce = announce_cb or (lambda _message: None)
         self._result: LineCommentChoice | None = None
+        self._provider, self._repository = provider, repository
         where = anchor.describe()
         self.dialog = wx.Dialog(
             parent,
@@ -107,8 +110,15 @@ class GitHubLineCommentDialog:
         self._post_btn.Enable(can_post_now)
         cancel_btn = wx.Button(panel, wx.ID_CANCEL, label="Cancel")
         cancel_btn.SetHelpText("Close without keeping this comment.")
+        self._window_btn = wx.Button(panel, wx.ID_ANY, label="Comment &Window...")
+        self._window_btn.SetHelpText(
+            "Write the comment in the comment window: mentions, references, emoji, saved "
+            "replies, a preview and a check. Its text comes back here."
+        )
+        self._window_btn.Enable(provider is not None)
         buttons.Add(self._add_btn, 0, wx.RIGHT, 6)
         buttons.Add(self._post_btn, 0, wx.RIGHT, 6)
+        buttons.Add(self._window_btn, 0, wx.RIGHT, 6)
         buttons.AddStretchSpacer()
         buttons.Add(cancel_btn)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
@@ -120,6 +130,23 @@ class GitHubLineCommentDialog:
         self._suggest.Bind(wx.EVT_CHECKBOX, self._on_suggest)
         self._add_btn.Bind(wx.EVT_BUTTON, lambda _event: self._finish(ADD_TO_REVIEW))
         self._post_btn.Bind(wx.EVT_BUTTON, lambda _event: self._finish(POST_NOW))
+        self._window_btn.Bind(wx.EVT_BUTTON, lambda _event: self._open_comment_window())
+
+    def _open_comment_window(self) -> None:
+        from quill.ui.github_comment_composer import compose_with_provider
+
+        text = compose_with_provider(
+            self.dialog,
+            self._provider,
+            title=self.dialog.GetTitle(),
+            repository=self._repository,
+            say=self._announce,
+            text=self._body.GetValue(),
+            ok_label="Use This Text",
+        )
+        if text:
+            self._body.SetValue(text)
+        self._body.SetFocus()
 
     def _say(self, message: str) -> None:
         # The status line is not focused, so the reader would not say it (GATE-12).

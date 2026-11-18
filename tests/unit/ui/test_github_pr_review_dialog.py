@@ -201,8 +201,17 @@ def test_review_submission_clears_the_local_draft_only_after_submit(
 
     class _Composer:
         def __init__(
-            self, _parent, *, draft_store, repository, number, current_head_sha, announce_cb
+            self,
+            _parent,
+            *,
+            draft_store,
+            repository,
+            number,
+            current_head_sha,
+            announce_cb,
+            provider=None,
         ) -> None:
+            assert provider is not None  # the review message can open the comment window
             assert callable(announce_cb)
             assert draft_store is store
             assert repository == "owner/repo" and number == 7
@@ -289,7 +298,11 @@ def test_selected_thread_can_be_replied_to(review_dialog, monkeypatch) -> None:
     review_dialog._select_node(None)
     assert review_dialog._reply_btn.IsEnabled()
     calls: list[tuple[str, int, int, str]] = []
-    monkeypatch.setattr(review_dialog, "_text_entry", lambda *_args: "Thanks, updated.")
+    opened: list[dict[str, object]] = []
+    monkeypatch.setattr(
+        "quill.ui.github_comment_composer.compose_with_provider",
+        lambda *_a, **kw: (opened.append(kw), "Thanks, updated.")[1],
+    )
     monkeypatch.setattr(
         review_dialog._client,
         "reply_to_thread",
@@ -300,6 +313,7 @@ def test_selected_thread_can_be_replied_to(review_dialog, monkeypatch) -> None:
     review_dialog._reply_to_thread(None)
 
     assert calls == [("owner/repo", 7, 11, "Thanks, updated.")]
+    assert opened[0]["title"] == "Reply to Review Thread"  # the one comment window
 
 
 def test_closed_pull_request_disables_review_actions(review_dialog) -> None:

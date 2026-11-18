@@ -2,6 +2,32 @@
 
 ## 2.0.0
 
+### One commit at a time, and whitespace hidden (2026-11-18)
+
+The pull request diff window has **Hide Whitespace Changes**, which leaves out
+lines that changed only their spaces, tabs or blank lines, and **Choose
+Commit...**, which shows one commit of the pull request at a time, against the
+commit before it, with the whole pull request one choice away. Chapter 5 of the
+GitHub Guide has the details.
+
+### One comment window everywhere (2026-11-18)
+
+A reply to a discussion, and Reply to Thread in a pull request review, now
+open the same comment window as a comment in the GitHub Workbench, with mentions, references, emoji, saved replies, a preview
+and the check before posting. A line comment and the review message each have
+**Comment Window...** (`Alt+W`), which opens it with what you have written so
+far and brings the text back. Chapters 5 and 8 of the GitHub Guide have the
+details.
+
+### Load More, on every list (2026-11-18)
+
+**Load More**, on the GitHub Workbench's View menu, now reads one more page of
+any list, and **Load All** reaches every list too: Notifications, My Work,
+discussions, labels, the merge queue and the rest, which used to stop at their
+first 50 rows whatever you asked. When a list holds only part of what GitHub
+has, the status bar says so and says how to read the rest. Chapter 13 of the
+GitHub Guide has the details.
+
 ### Dry Run and a practice repository (2026-11-18)
 
 **Dry Run**, on the GitHub Workbench's Tools menu, lets every command

@@ -1341,6 +1341,12 @@ Search > Saved Searches, and Pin makes it a node under Needs My Attention.
   run's duration, a release asset's size) are filtered over the loaded rows,
   and the status bar says so: "Filtered locally: 40 loaded. Load All to be
   sure." Load All fetches every page first.
+  *2026-11-18:* Load More (`Alt+PageDown`) works on every node, a page more
+  each time, and Load All reaches the Explore-backed nodes too (Notifications,
+  My Work, discussions, labels, merge queue), which had been fixed at 50 rows;
+  the Explore cap rose from 100 to 1,000 (`explore.MOST_ROWS`). A view that
+  holds part of GitHub's list puts that sentence, with "Load More or Load All
+  reads the rest", in the Items cell (`load_explore(notes=...)`).
 - **The attribute lists per row type are in Appendix C,** in the Filter
   column. The highlights for issues and pull requests: state and state
   reason, type, labels, milestone, assignee, author, mentions, commenter,
@@ -1918,6 +1924,18 @@ coverage gate (section 19) from day one.
   joined them (`quill/core/github/review_viewed.py`,
   `quill/ui/github_pr_review_viewed.py`). Still to come: hiding whitespace,
   side-by-side reading and one commit at a time.
+  *Comment boxes, 2026-11-18:* the discussion reply and the review window's
+  Reply to Thread open the comment composer; the line comment and the review message have Comment Window...
+  (`Alt+W`), which opens it on the text so far with an OK button reading Use
+  This Text (`compose_with_provider`, `quill/ui/github_comment_composer.py`).
+  *Whitespace and one commit, 2026-11-18,* in the diff window rather than the
+  review window, where the patch lines are: Hide Whitespace Changes (`Alt+W`;
+  `commit_review.whitespace_only` pairs a removed and an added line equal
+  once spaces and tabs go, and drops blank changed lines) and Choose Commit...
+  (`Alt+T`; `pull_commits`, `commit_diff` against the first parent, in the
+  diff window's own model, so comments and the compare walk work unchanged).
+  Ctrl+Shift+H and Ctrl+Shift+K in the key table above are not bound. Still to
+  come: side-by-side reading.
 - **Task lists inside bodies.** The `- [ ]` items in an issue's body are a
   list on the issue's sheet: check one off and the body is updated; convert
   an item to a sub-issue.

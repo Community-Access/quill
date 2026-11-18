@@ -323,3 +323,62 @@ def test_arriving_on_an_added_or_removed_line_plays_its_sound(diff_dialog, monke
     diff_dialog._patch_list.SetSelection(0)
     diff_dialog._on_patch_line(None)
     assert len(played) == before
+
+
+# -- hiding whitespace and one commit at a time ---------------------------------
+
+
+def test_hide_whitespace_changes_leaves_out_only_whitespace(diff_dialog) -> None:
+    from quill.core.github.diff_lines import parse_diff_lines
+
+    diff_dialog._patch_lines = parse_diff_lines("@@ -1,2 +1,2 @@\n-  a\n-b\n+    a\n+c\n")
+    diff_dialog._render_patch_lines()
+    assert diff_dialog._patch_list.GetCount() == 5
+    diff_dialog._hide_ws.SetValue(True)
+    diff_dialog._on_hide_whitespace(None)
+    shown = [
+        diff_dialog._patch_list.GetString(i) for i in range(diff_dialog._patch_list.GetCount())
+    ]
+    assert shown[1:] == ["Removed line 2: b", "Added line 2: c"]
+    assert diff_dialog.spoken[-1] == "2 changed lines that only change whitespace left out."
+
+
+def test_choose_commit_shows_one_commit_and_back(diff_dialog, monkeypatch) -> None:
+    from quill.core.github import commit_review
+    from quill.core.github.items_provider import GitHubPullDiff, GitHubPullFile
+
+    monkeypatch.setattr("quill.ui.github_pr_diff_comments.threading.Thread", _SyncThread)
+    commits = [commit_review.PullCommit("c" * 40, "One step", "ann")]
+    monkeypatch.setattr(commit_review, "pull_commits", lambda *_a: commits)
+    only = (GitHubPullFile("only.py", "modified", 1, 0, patch=PATCH),)
+    one = GitHubPullDiff(7, "x", "commit ppp", "p" * 40, "commit ccccccc", "c" * 40, only)
+    monkeypatch.setattr(commit_review, "commit_diff", lambda *_a: one)
+    answers = [1, 0]
+
+    class _Choice:
+        def __init__(self, *_a, **_k) -> None:
+            self.labels = _a[3]
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_a) -> None:
+            pass
+
+        def SetName(self, _n) -> None:  # noqa: N802
+            pass
+
+        def GetSelection(self) -> int:  # noqa: N802
+            return answers.pop(0)
+
+    monkeypatch.setattr(wx, "SingleChoiceDialog", _Choice)
+    monkeypatch.setattr(
+        "quill.ui.github_pr_diff_comments.show_modal_dialog", lambda *_a, **_k: wx.ID_OK
+    )
+    diff_dialog._choose_commit()
+    assert "only.py" in diff_dialog._files.GetString(0)
+    assert "Commit ccccccc. 1 changed file." in diff_dialog.spoken
+    assert "commit ccccccc into commit ppp" in diff_dialog._header.GetLabel()
+    diff_dialog._choose_commit()
+    assert diff_dialog._diff is diff_dialog._whole_diff
+    assert diff_dialog._files.GetCount() == 2

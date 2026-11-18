@@ -37,6 +37,7 @@ from quill.core.github.line_comment_drafts import LineCommentDraftStore
 from quill.core.github.review_errors import GitHubReviewError
 from quill.core.github.review_preferences import load_line_marks, save_line_marks
 from quill.ui.dialog_contract import apply_listbox_activation, dialog_alive, show_modal_dialog
+from quill.ui.github_items_view import pull_diff_file_label
 
 
 class GitHubPullDiffCommentsMixin:
@@ -70,6 +71,19 @@ class GitHubPullDiffCommentsMixin:
             "change to change. Hunk headings stay, so each change still says where it is."
         )
         marks_row.Add(self._changed_only, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 12)
+        self._hide_ws = wx.CheckBox(panel, label="Hide &Whitespace Changes")
+        self._hide_ws.SetName("Hide whitespace changes")
+        self._hide_ws.SetHelpText(
+            "Leave out changed lines that differ only in spaces, tabs or blank lines, such "
+            "as a reindent, so what is left is what really changed."
+        )
+        marks_row.Add(self._hide_ws, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 12)
+        self._commit_btn = wx.Button(panel, label="Choose Commi&t...")
+        self._commit_btn.SetHelpText(
+            "Review one commit of the pull request at a time, or go back to all of them."
+        )
+        marks_row.Add(self._commit_btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 12)
+        self._whole_diff = self._diff
         root.Add(marks_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         self._marks_note = wx.StaticText(
             panel, label=SYMBOLS_NOTE if self._line_style == LINE_MARKS_SYMBOLS else ""
@@ -121,6 +135,8 @@ class GitHubPullDiffCommentsMixin:
 
         self._marks_choice.Bind(wx.EVT_CHOICE, self._on_marks_changed)
         self._changed_only.Bind(wx.EVT_CHECKBOX, self._on_changed_only)
+        self._hide_ws.Bind(wx.EVT_CHECKBOX, self._on_hide_whitespace)
+        self._commit_btn.Bind(wx.EVT_BUTTON, lambda _event: self._choose_commit())
         self._patch_list.Bind(wx.EVT_LISTBOX, self._on_patch_line)
         self._comment_line_btn.Bind(wx.EVT_BUTTON, self._comment_on_line)
         self._comment_lines_btn.Bind(wx.EVT_BUTTON, self._comment_on_lines)
@@ -168,6 +184,11 @@ class GitHubPullDiffCommentsMixin:
             self._visible = changed_only(self._patch_lines)
         else:
             self._visible = tuple(range(len(self._patch_lines)))
+        if self._hide_ws.GetValue():
+            from quill.core.github.commit_review import whitespace_only
+
+            gone = whitespace_only(self._patch_lines)
+            self._visible = tuple(index for index in self._visible if index not in gone)
         rows = [render_line(self._patch_lines[index], self._line_style) for index in self._visible]
         self._patch_list.Set(rows or ["GitHub sent no patch lines for this file."])
         for position, index in enumerate(self._visible):
@@ -182,6 +203,87 @@ class GitHubPullDiffCommentsMixin:
                 f"{changes} changed line{'s' if changes != 1 else ''}, without the "
                 f"{len(self._patch_lines) - len(self._visible)} unchanged around them."
             )
+
+    def _on_hide_whitespace(self, _event: object) -> None:
+        from quill.core.github.commit_review import whitespace_only
+
+        self._render_patch_lines()
+        if self._hide_ws.GetValue():
+            gone = len(whitespace_only(self._patch_lines))
+            self._announce(
+                f"{gone} changed line{'s' if gone != 1 else ''} that only change whitespace "
+                "left out."
+                if gone
+                else "No change here is only whitespace."
+            )
+
+    # -- one commit at a time ------------------------------------------------
+
+    def _api(self) -> object:
+        from quill.core.github.workbench_api import TokenApi
+
+        return TokenApi(getattr(self._provider, "token", None))
+
+    def _off_thread(self, work: object, done: object) -> None:
+        wx = self._wx
+
+        def worker() -> None:
+            try:
+                result = work()  # type: ignore[operator]
+            except Exception as exc:  # noqa: BLE001 - said, never raised into wx
+                reason = str(exc.args[0]) if exc.args else str(exc)
+                wx.CallAfter(self._announce, f"Could not read the commits: {reason}")
+                return
+            wx.CallAfter(done, result)
+
+        threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: commit reads.
+
+    def _choose_commit(self) -> None:
+        from quill.core.github.commit_review import pull_commits
+
+        api, repo, number = self._api(), self._repo, self._whole_diff.number
+        self._off_thread(lambda: pull_commits(api, repo, number), self._commits_listed)
+
+    def _commits_listed(self, commits: list[object]) -> None:
+        if not dialog_alive(self.dialog):
+            return
+        wx = self._wx
+        whole = f"All {len(commits)} commits: the whole pull request"
+        labels = [whole] + [str(getattr(c, "label", "")) for c in commits]
+        with wx.SingleChoiceDialog(
+            self.dialog, "Review which commit?", "Choose Commit", labels
+        ) as box:
+            box.SetName("Choose commit")
+            if show_modal_dialog(box, "Choose Commit", announce=self._announce) != wx.ID_OK:
+                return
+            picked = box.GetSelection()
+        if picked <= 0:
+            self._switch_diff(self._whole_diff, "The whole pull request.")
+            return
+        from quill.core.github.commit_review import commit_diff
+
+        sha = str(getattr(commits[picked - 1], "sha", ""))
+        api, repo, whole_diff = self._api(), self._repo, self._whole_diff
+        self._off_thread(
+            lambda: commit_diff(api, repo, whole_diff.number, whole_diff.title, sha),
+            lambda diff: self._switch_diff(diff, f"Commit {sha[:7]}."),
+        )
+
+    def _switch_diff(self, diff: object, said: str) -> None:
+        if not dialog_alive(self.dialog):
+            return
+        self._diff = diff
+        files = getattr(diff, "files", ())
+        self._files.Set([pull_diff_file_label(f) for f in files])
+        count = len(files)
+        head = getattr(diff, "head_ref", "") or "head"
+        base = getattr(diff, "base_ref", "") or "base"
+        noun = "file" if count == 1 else "files"
+        self._header.SetLabel(f"{count} changed {noun}, {head} into {base}")
+        self._announce(f"{said} {count} changed file{'s' if count != 1 else ''}.")
+        if files:
+            self._files.SetSelection(0)
+            self._on_select(None)
 
     def _on_patch_line(self, _event: object) -> None:
         """Arriving on an added or removed line plays its sound (Sound Scheme, optional)."""
@@ -293,6 +395,8 @@ class GitHubPullDiffCommentsMixin:
             body=body,
             can_post_now=not self._posting,
             announce_cb=self._announce,
+            provider=self._provider,
+            repository=self._repo,
         ).show()
         if choice is None:
             return

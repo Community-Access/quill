@@ -265,7 +265,17 @@ class GitHubDiscussionDialog:
         entry = self._selected_entry()
         parent = (entry.parent_id or entry.id) if entry is not None else ""
         target = f"{entry.author}'s comment" if entry is not None else "the discussion"
-        body = ask_text(self.dialog, f"Your reply to {target}:", "Reply", self._announce)
+        from quill.ui.github_comment_composer import compose_with_provider
+
+        people = [entry.author] if entry is not None and entry.author else []
+        body = compose_with_provider(
+            self.dialog,
+            self._provider,
+            title=f"Reply to {target}",
+            repository=self._repo,
+            say=self._announce,
+            people=people,
+        )
         if not body.strip():
             self._announce("Nothing was sent.")
             return

@@ -159,3 +159,70 @@ def test_every_control_has_help_and_no_access_key_is_used_twice(frame: wx.Frame)
             assert child.GetHelpText(), label or child.GetName()
     assert len(letters) == len(set(letters)), letters
     composer.Destroy()
+
+
+# -- every comment box opens the same window (GH-C, 2026-11-18) -------------------
+
+
+def test_the_ok_button_can_hand_the_text_back(frame: wx.Frame) -> None:
+    host = _Host()
+    composer = CommentComposer(
+        frame,
+        title="Review message for #7",
+        api=FakeApi(),
+        repository="o/r",
+        background=host.background,
+        show_modal=host.show_modal,
+        say=host.said.append,
+        ok_label="Use This Text",
+    )
+    try:
+        labels = [child.GetLabel() for child in composer.GetChildren()]
+        assert "Use This Text" in labels and "Post" not in labels
+    finally:
+        composer.Destroy()
+
+
+def test_compose_with_provider_uses_the_providers_token(monkeypatch) -> None:
+    from quill.ui import github_comment_composer as module
+
+    seen: dict[str, Any] = {}
+
+    def fake(parent: Any, show_modal: Any, **kw: Any) -> str:
+        seen.update(kw)
+        return "words"
+
+    monkeypatch.setattr(module, "compose_comment", fake)
+    provider = type("P", (), {"token": "t0k"})()
+    said = module.compose_with_provider(
+        None, provider, title="Reply", repository="o/r", say=print, ok_label="Use This Text"
+    )
+    assert said == "words" and seen["api"]._token == "t0k"
+    assert seen["ok_label"] == "Use This Text" and seen["repository"] == "o/r"
+
+
+def test_the_line_comment_and_review_windows_offer_the_comment_window(
+    frame: wx.Frame, monkeypatch
+) -> None:
+    from quill.core.github.diff_lines import LineCommentAnchor
+    from quill.ui.github_line_comment_dialog import GitHubLineCommentDialog
+
+    monkeypatch.setattr(
+        "quill.ui.github_comment_composer.compose_with_provider",
+        lambda *_a, **kw: kw["text"] + " with a mention @ada",
+    )
+    anchor = LineCommentAnchor("src/a.py", 3, "RIGHT")
+    line = GitHubLineCommentDialog(
+        frame, anchor=anchor, lines=[], style="words", body="Use a constant", provider=object()
+    )
+    try:
+        assert line._window_btn.IsEnabled()
+        line._open_comment_window()
+        assert line._body.GetValue() == "Use a constant with a mention @ada"
+    finally:
+        line.dialog.Destroy()
+    alone = GitHubLineCommentDialog(frame, anchor=anchor, lines=[], style="words")
+    try:
+        assert not alone._window_btn.IsEnabled()
+    finally:
+        alone.dialog.Destroy()

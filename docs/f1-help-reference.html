@@ -5689,7 +5689,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="github-workbench">GitHub Workbench</h2>
-<p>Control coverage: 361 audited sites (361 helped).</p>
+<p>Control coverage: 364 audited sites (364 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>Add GitHub Token.</strong> Paste a personal access token you
@@ -6724,8 +6724,6 @@ capitals and emoji-only comments, and asks.</li>
 <li><code>self.preview_box</code>: The comment as GitHub will show it,
 one line each, saying what every line is. Press Preview again after a
 change.</li>
-<li><code>post</code>: Send the comment to GitHub. Ctrl+Enter in the
-comment does the same.</li>
 <li><code>cancel</code>: Leave without sending anything. Escape does the
 same.</li>
 </ul>
@@ -7092,6 +7090,9 @@ Review.</li>
 <li><code>self._post_btn</code>: Post this one comment to GitHub now,
 outside a review.</li>
 <li><code>cancel_btn</code>: Close without keeping this comment.</li>
+<li><code>self._window_btn</code>: Write the comment in the comment
+window: mentions, references, emoji, saved replies, a preview and a
+check. Its text comes back here.</li>
 </ul>
 <h4
 id="milestoneformdialog-quilluigithub_milestones_dialogpy">MilestoneFormDialog
@@ -7190,6 +7191,11 @@ your screen reader to read punctuation.</li>
 <li><code>self._changed_only</code>: Leave out the unchanged lines
 around each change, so the arrows move from change to change. Hunk
 headings stay, so each change still says where it is.</li>
+<li><code>self._hide_ws</code>: Leave out changed lines that differ only
+in spaces, tabs or blank lines, such as a reindent, so what is left is
+what really changed.</li>
+<li><code>self._commit_btn</code>: Review one commit of the pull request
+at a time, or go back to all of them.</li>
 <li><code>self._marks_note</code>: Reminds you that symbols are spoken
 only with punctuation.</li>
 <li><code>self._patch_list</code>: The selected file’s changes, one line
@@ -7466,6 +7472,9 @@ is not sent until Submit Review is activated.</li>
 checking the current diff.</li>
 <li><code>self._body</code>: Required for Comment and Request Changes.
 Saved locally until submitted.</li>
+<li><code>self._window_btn</code>: Write the review message in the
+comment window: mentions, references, emoji, saved replies, a preview
+and a check. Its text comes back here.</li>
 <li><code>self._stale_confirm</code>: The saved review was created for a
 different pull request head commit.</li>
 <li><code>self._discard_btn</code>: Remove the review draft from this

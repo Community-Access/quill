@@ -2336,7 +2336,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## GitHub Workbench
 
-Control coverage: 361 audited sites (361 helped).
+Control coverage: 364 audited sites (364 helped).
 
 ### Every window, and what it is for
 
@@ -3251,7 +3251,6 @@ Control coverage: 361 audited sites (361 helped).
 - `self.box`: The comment, in Markdown. Enter starts a new line; Ctrl+Enter posts it.
 - `self.check`: When on, Post first checks for images without a description, vague links, skipped heading levels, long capitals and emoji-only comments, and asks.
 - `self.preview_box`: The comment as GitHub will show it, one line each, saying what every line is. Press Preview again after a change.
-- `post`: Send the comment to GitHub. Ctrl+Enter in the comment does the same.
 - `cancel`: Leave without sending anything. Escape does the same.
 #### GitHubCommitCommentsDialog (`quill/ui/github_commit_comments_dialog.py`)
 
@@ -3428,6 +3427,7 @@ Control coverage: 361 audited sites (361 helped).
 - `self._add_btn`: Keep this comment on this device. It goes to GitHub with your review when you submit it from Compose Review.
 - `self._post_btn`: Post this one comment to GitHub now, outside a review.
 - `cancel_btn`: Close without keeping this comment.
+- `self._window_btn`: Write the comment in the comment window: mentions, references, emoji, saved replies, a preview and a check. Its text comes back here.
 #### MilestoneFormDialog (`quill/ui/github_milestones_dialog.py`)
 
 - `name_label`: The milestone's name, as GitHub shows it.
@@ -3477,6 +3477,8 @@ Control coverage: 361 audited sites (361 helped).
 
 - `self._marks_choice`: How patch lines are marked: words (Added line, Removed line) or symbols (plus and minus). Symbols need your screen reader to read punctuation.
 - `self._changed_only`: Leave out the unchanged lines around each change, so the arrows move from change to change. Hunk headings stay, so each change still says where it is.
+- `self._hide_ws`: Leave out changed lines that differ only in spaces, tabs or blank lines, such as a reindent, so what is left is what really changed.
+- `self._commit_btn`: Review one commit of the pull request at a time, or go back to all of them.
 - `self._marks_note`: Reminds you that symbols are spoken only with punctuation.
 - `self._patch_list`: The selected file's changes, one line per row. Shift with the arrows selects a run of lines. Enter comments on the selected lines.
 - `self._comment_line_btn`: Write a comment on the selected patch line, for your review or to post now.
@@ -3604,6 +3606,7 @@ Control coverage: 361 audited sites (361 helped).
 - `self._notice`: This review is saved on this device and is not sent until Submit Review is activated.
 - `self._event`: Select the review decision to submit after checking the current diff.
 - `self._body`: Required for Comment and Request Changes. Saved locally until submitted.
+- `self._window_btn`: Write the review message in the comment window: mentions, references, emoji, saved replies, a preview and a check. Its text comes back here.
 - `self._stale_confirm`: The saved review was created for a different pull request head commit.
 - `self._discard_btn`: Remove the review draft from this device without submitting it.
 - `submit_btn`: Send the selected review action to GitHub now.

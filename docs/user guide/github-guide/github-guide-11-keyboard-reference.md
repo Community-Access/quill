@@ -234,6 +234,8 @@ Review action and Submit Review have no access key; reach them with Tab.
 | --- | --- |
 | `Alt+M` | Line marks: words or symbols |
 | `Alt+H` | Changed Lines Only |
+| `Alt+W` | Hide Whitespace Changes |
+| `Alt+T` | Choose Commit |
 | `Alt+P` | Patch lines |
 | Shift with the arrows | Select a run of patch lines |
 | Enter | Comment on the line, or on the selected lines |

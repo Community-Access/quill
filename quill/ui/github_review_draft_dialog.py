@@ -34,6 +34,7 @@ class GitHubReviewDraftDialog:
         current_head_sha: str,
         announce_cb: Callable[[str], None] | None = None,
         pending_comment_count: int = 0,
+        provider: object = None,
     ) -> None:
         import wx
 
@@ -44,6 +45,7 @@ class GitHubReviewDraftDialog:
         self._number = number
         self._current_head_sha = current_head_sha
         self._pending = max(pending_comment_count, 0)
+        self._provider = provider
         self._save_timer = None
         self._draft_suppressed = False
         self._result: GitHubReviewDraft | None = None
@@ -112,6 +114,14 @@ class GitHubReviewDraftDialog:
             "Required for Comment and Request Changes. Saved locally until submitted."
         )
         root.Add(self._body, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        self._window_btn = wx.Button(panel, wx.ID_ANY, label="Comment &Window...")
+        self._window_btn.SetHelpText(
+            "Write the review message in the comment window: mentions, references, emoji, "
+            "saved replies, a preview and a check. Its text comes back here."
+        )
+        self._window_btn.Enable(provider is not None)
+        self._window_btn.Bind(wx.EVT_BUTTON, lambda _event: self._open_comment_window())
+        root.Add(self._window_btn, 0, wx.LEFT | wx.BOTTOM, 10)
 
         self._stale_confirm = wx.CheckBox(
             panel,
@@ -161,6 +171,22 @@ class GitHubReviewDraftDialog:
         self._event.Bind(wx.EVT_CHOICE, self._schedule_save)
         self._discard_btn.Bind(wx.EVT_BUTTON, self._discard)
         submit_btn.Bind(wx.EVT_BUTTON, self._submit)
+
+    def _open_comment_window(self) -> None:
+        from quill.ui.github_comment_composer import compose_with_provider
+
+        text = compose_with_provider(
+            self.dialog,
+            self._provider,
+            title=f"Review message for #{self._number}",
+            repository=self._repository,
+            say=self._announce,
+            text=self._body.GetValue(),
+            ok_label="Use This Text",
+        )
+        if text:
+            self._body.SetValue(text)
+        self._body.SetFocus()
 
     def _notice_text(self, saved: GitHubReviewDraftData | None) -> str:
         if self._stale and saved is not None:

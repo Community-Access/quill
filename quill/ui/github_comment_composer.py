@@ -35,7 +35,7 @@ from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 
-__all__ = ["CommentComposer", "compose_comment"]
+__all__ = ["CommentComposer", "compose_comment", "compose_with_provider", "thread_background"]
 
 ShowModal = Callable[[Any, str], int]
 Background = Callable[[str, Callable[[], Any], Callable[[Any], None]], None]
@@ -54,6 +54,7 @@ class CommentComposer(wx.Dialog):
         background: Background,
         show_modal: ShowModal,
         say: Callable[[str], None],
+        ok_label: str = "Post",
     ) -> None:
         super().__init__(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self.api, self.repository, self.people = api, repository, list(people)
@@ -129,8 +130,12 @@ class CommentComposer(wx.Dialog):
         sizer.Add(self.preview_box, 1, wx.EXPAND | wx.ALL, 8)
 
         buttons = wx.StdDialogButtonSizer()
-        post = wx.Button(self, wx.ID_OK, "Post")
-        post.SetHelpText("Send the comment to GitHub. Ctrl+Enter in the comment does the same.")
+        post = wx.Button(self, wx.ID_OK, ok_label)
+        post.SetHelpText(
+            "Send the comment to GitHub. Ctrl+Enter in the comment does the same."
+            if ok_label == "Post"
+            else "Put this text back in the box you came from. Ctrl+Enter does the same."
+        )
         post.SetDefault()
         cancel = wx.Button(self, wx.ID_CANCEL, "Cancel")
         cancel.SetHelpText("Leave without sending anything. Escape does the same.")
@@ -295,6 +300,7 @@ def compose_comment(
     say: Callable[[str], None],
     people: Sequence[str] = (),
     text: str = "",
+    ok_label: str = "Post",
 ) -> str:
     """The comment to post, or "" when the person leaves without posting."""
     dialog = CommentComposer(
@@ -307,6 +313,7 @@ def compose_comment(
         background=background,
         show_modal=show_modal,
         say=say,
+        ok_label=ok_label,
     )
     try:
         if show_modal(dialog, title) != wx.ID_OK:
@@ -314,3 +321,56 @@ def compose_comment(
         return dialog.text().strip()
     finally:
         dialog.Destroy()
+
+
+def thread_background(say: Callable[[str], None]) -> Background:
+    """A background runner for windows that have none: a thread, then back on the UI thread."""
+    import threading
+
+    def run(name: str, work: Callable[[], Any], done: Callable[[Any], None]) -> None:
+        def worker() -> None:
+            try:
+                result = work()
+            except Exception as exc:  # noqa: BLE001 - said, never raised into wx
+                reason = str(exc.args[0]) if exc.args else str(exc)
+                wx.CallAfter(say, f"Could not {name}: {reason}")
+                return
+            wx.CallAfter(done, result)
+
+        threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: composer lookups.
+
+    return run
+
+
+def compose_with_provider(
+    parent: wx.Window,
+    provider: Any,
+    *,
+    title: str,
+    repository: str,
+    say: Callable[[str], None],
+    text: str = "",
+    people: Sequence[str] = (),
+    ok_label: str = "Post",
+) -> str:
+    """The comment window for a window that holds a GitHub Items provider, not a Workbench.
+
+    Used by the review message, a line comment and a discussion reply, so every
+    comment box in the family has the same mentions, references, emoji, saved
+    replies, preview and check. *ok_label* "Use This Text" hands the text back.
+    """
+    from quill.core.github.workbench_api import TokenApi
+    from quill.ui.dialog_contract import show_modal_dialog
+
+    return compose_comment(
+        parent,
+        show_modal_dialog,
+        title=title,
+        api=TokenApi(getattr(provider, "token", None)),
+        repository=repository,
+        background=thread_background(say),
+        say=say,
+        people=people,
+        text=text,
+        ok_label=ok_label,
+    )

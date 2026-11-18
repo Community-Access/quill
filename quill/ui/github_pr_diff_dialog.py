@@ -84,7 +84,7 @@ class GitHubPullDiffDialog(GitHubPullDiffCommentsMixin):
             f"{len(diff.files)} changed file{'s' if len(diff.files) != 1 else ''}, "
             f"{diff.head_ref or 'head'} into {diff.base_ref or 'base'}"
         )
-        header = wx.StaticText(panel, label=summary)
+        header = self._header = wx.StaticText(panel, label=summary)
         header.SetName("Pull request summary")
         root.Add(header, 0, wx.ALL, 8)
 
