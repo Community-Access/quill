@@ -76,7 +76,7 @@ def fetch_extra_view(
 ) -> list[ExploreRow] | None:
     """Rows for a Wave 4 view, or ``None`` when *view* is not one of them."""
     if view.startswith("res_"):
-        return _resource_view(provider, view.removeprefix("res_"), repo, warnings)
+        return _resource_view(provider, view.removeprefix("res_"), repo or person, warnings)
     if view not in EXTRA_VIEWS:
         return None
     token = getattr(provider, "token", None)

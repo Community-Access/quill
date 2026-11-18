@@ -119,6 +119,14 @@ NODE_HELP: dict[str, str] = {
     ":search_repositories": (
         "Search Repositories: repositories whose name or description matches the filter box."
     ),
+    ":search_people": (
+        "Search People and Organizations: accounts whose name or login matches the filter "
+        "box, such as jeff or type:org location:Tucson. Enter opens one."
+    ),
+    ":search_topics": (
+        "Search Topics: GitHub topics matching the filter box, with what each is about. "
+        "Add one to a repository on its Properties."
+    ),
     ":saved_searches": (
         "Saved Searches: searches you kept, on this computer. Enter runs one; Delete removes it."
     ),

@@ -49,6 +49,10 @@ BASES = {
     "repository": ("/repos/{target}", "/repos/{owner}/{repo}"),
     "organization": ("/orgs/{target}", "/orgs/{org}"),
     "user": ("/user", "/user"),
+    # One gist's comments, history and forks, reached from the gist's row.
+    "gist": ("/gists/{target}", "/gists/{gist_id}"),
+    # Someone else's public lists, under People > a person.
+    "person": ("/users/{target}", "/users/{username}"),
     # An environment's target is "owner/repo/environments/name"; it has no tree node of
     # its own, and is reached from an environment's row (Secrets..., Variables...).
     "environment": ("/repos/{target}", "/repos/{owner}/{repo}/environments/{environment_name}"),
@@ -178,6 +182,8 @@ def fetch(
     page = spec.page.replace("{target}", target)
     rows = []
     for raw in items or ():
+        if isinstance(raw, str):
+            raw = {"name": raw}  # lists of plain names, such as .gitignore templates
         if not isinstance(raw, Mapping):
             continue
         label = spec.sentence(raw)

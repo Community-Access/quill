@@ -6031,6 +6031,12 @@ GitHub Workbench in this version.</p>
 <p><strong>Ask a Person.</strong> Ask a Person: write to <a
 href="mailto:support@community-access.org">support@community-access.org</a>.
 Nothing is sent until you send it from your own email.</p>
+<p><strong>People and Organizations.</strong> Search People and
+Organizations: accounts whose name or login matches the filter box, such
+as jeff or type:org location:Tucson. Enter opens one.</p>
+<p><strong>Topics.</strong> Search Topics: GitHub topics matching the
+filter box, with what each is about. Add one to a repository on its
+Properties.</p>
 <p><strong>My Codespaces.</strong> My Codespaces: every codespace of
 yours. Start, Stop, Change Machine, Export to a Branch and Delete are on
 each row.</p>
@@ -6059,6 +6065,12 @@ Addresses: the addresses anyone can see on your profile.</p>
 repository you get notifications for.</p>
 <p><strong>Gists I Starred.</strong> Gists I Starred: gists you starred,
 newest first.</p>
+<p><strong>Licences.</strong> Licences: the open source licences GitHub
+offers a new repository.</p>
+<p><strong>.gitignore Templates.</strong> .gitignore Templates: lists of
+files to leave out, offered to a new repository.</p>
+<p><strong>Codes of Conduct.</strong> Codes of Conduct: the codes of
+conduct GitHub offers a repository.</p>
 <p><strong>repository: owner/name.</strong> A repository: its issues,
 pull requests, actions, code, releases and settings, each a node below.
 Ctrl+Shift+1 to Ctrl+Shift+0 jump to them.</p>
@@ -6238,6 +6250,26 @@ person.</p>
 follows.</p>
 <p><strong>person: Packages.</strong> Packages: this person’s public
 packages. Show Versions lists each one’s versions.</p>
+<p><strong>person: SSH Keys.</strong> SSH Keys: the public keys this
+person signs in to Git with; useful to check one before giving them
+access to a server.</p>
+<p><strong>person: GPG Keys.</strong> GPG Keys: the keys GitHub checks
+this person’s signed commits against.</p>
+<p><strong>person: SSH Signing Keys.</strong> SSH Signing Keys: SSH keys
+this person signs commits with.</p>
+<p><strong>person: Social Accounts.</strong> Social Accounts: the links
+on this person’s profile.</p>
+<p><strong>person: Gists.</strong> Gists: this person’s public gists,
+newest first.</p>
+<p><strong>person: Starred.</strong> Starred: the repositories this
+person starred, newest first.</p>
+<p><strong>person: Watching.</strong> Watching: the repositories this
+person watches.</p>
+<p><strong>person: Projects.</strong> Projects: this person’s public
+Projects.</p>
+<p><strong>person: People They Follow: Activity.</strong> People They
+Follow: Activity: public activity of the accounts this person
+follows.</p>
 <p><strong>organization: organization.</strong> An organization: its
 repositories.</p>
 <p><strong>organization: Repositories.</strong> Repositories: the
@@ -6675,6 +6707,10 @@ read, add and remove.</p>
 <p><strong>Delete Issue.</strong> Delete it for good; asks first.</p>
 <p><strong>Add to or Remove from Favorites.</strong> Keep it in
 Favorites.</p>
+<p><strong>Link a Pull Request That Closes It.</strong> Say which pull
+requests close this issue when they merge.</p>
+<p><strong>Unlink a Pull Request.</strong> Take a pull request off the
+ones that close this issue.</p>
 <p><strong>Properties.</strong> Everything about this item on one sheet.
 Alt+Enter opens it from anywhere.</p>
 <p><strong>Review.</strong> Read the review threads and checks, and
@@ -6703,6 +6739,16 @@ its branch in a folder of its own, and resolve each conflict.</p>
 for this. Starting a Codespace can cost money, so QUILL asks first.</p>
 <p><strong>Commit Comments.</strong> Comments on the commit and its
 lines.</p>
+<p><strong>Re-request Review.</strong> Ask reviewers who already
+reviewed to look again.</p>
+<p><strong>Ask Copilot to Review.</strong> Ask Copilot for a code review
+of this pull request.</p>
+<p><strong>Agent Merge.</strong> Whether Copilot merges this pull
+request itself once it is ready, and how.</p>
+<p><strong>Turn On Agent Merge.</strong> Let Copilot merge this pull
+request once its checks and reviews allow.</p>
+<p><strong>Turn Off Agent Merge.</strong> Stop Copilot merging this pull
+request.</p>
 <p><strong>Jobs and Logs.</strong> The run’s jobs, steps and logs.</p>
 <p><strong>What Failed.</strong> The failing steps and their log
 lines.</p>
@@ -6728,6 +6774,8 @@ once.</p>
 deployments waiting on you.</p>
 <p><strong>Approve Run from a Fork.</strong> Let a fork’s run start.</p>
 <p><strong>Delete Run.</strong> Delete the run and its logs.</p>
+<p><strong>Read a Step’s Log.</strong> One step’s log, to read without
+downloading the whole run’s.</p>
 <p><strong>Runs.</strong> This workflow’s runs.</p>
 <p><strong>Run Workflow on Branch.</strong> Start it on a branch.</p>
 <p><strong>Turn Workflow On or Off.</strong> Turn it off so nothing
@@ -6745,6 +6793,8 @@ say.</p>
 before: the previous tag or release, or a commit’s parent.</p>
 <p><strong>Compare With Default.</strong> Compare it with the default
 branch: commits each way, files, any open pull request.</p>
+<p><strong>GitHub’s Release Notes.</strong> The notes GitHub writes from
+the changes since another tag.</p>
 <p><strong>Download.</strong> Download the file in your browser.</p>
 <p><strong>Delete Asset.</strong> Remove the file from the release.</p>
 <p><strong>Commits.</strong> The branch’s commits.</p>
@@ -6757,6 +6807,18 @@ GitHub.</p>
 <p><strong>Delete Branch.</strong> Delete the branch on GitHub.</p>
 <p><strong>Set Status.</strong> Report a check you ran yourself: passed,
 failed or still running.</p>
+<p><strong>Check Run Details.</strong> One check’s result, its summary
+and every annotation it left.</p>
+<p><strong>Re-run a Check Suite.</strong> Ask an app to run its checks
+on this commit again.</p>
+<p><strong>Branches at This Commit.</strong> Which branches end at this
+commit.</p>
+<p><strong>Reactions on a Commit Comment.</strong> Who reacted to a
+comment on this commit, and how.</p>
+<p><strong>React to a Commit Comment.</strong> Add a reaction to a
+comment on this commit.</p>
+<p><strong>Remove My Reaction from a Commit Comment.</strong> Take back
+a reaction you gave a comment on this commit.</p>
 <p><strong>Delete Tag.</strong> Remove the tag; the commit stays.</p>
 <p><strong>Read Tag Message.</strong> Who made the tag, when, and its
 message.</p>
@@ -6782,6 +6844,61 @@ listen for repository_dispatch.</p>
 on.</p>
 <p><strong>Rename or Delete Star List.</strong> In Star Lists: rename
 the list this row is on, change who sees it, or delete it.</p>
+<p><strong>Fork Workflow Settings.</strong> How workflows run for pull
+requests from forks of private repositories.</p>
+<p><strong>Fork Workflows from Private Repositories.</strong> Choose
+whether fork pull requests run workflows, and with what.</p>
+<p><strong>Languages.</strong> How much of the code is in each language,
+as GitHub counts it.</p>
+<p><strong>License.</strong> The licence GitHub found, and the file it
+is in.</p>
+<p><strong>Star History.</strong> How many people starred it over
+time.</p>
+<p><strong>Mark Its Notifications Read.</strong> Mark every notification
+about this repository as read.</p>
+<p><strong>Set a Custom Property.</strong> Give one of the
+organization’s custom properties a value here.</p>
+<p><strong>Compare Dependencies.</strong> Which dependencies changed
+between two branches, tags or commits, and their known
+vulnerabilities.</p>
+<p><strong>SBOM Report.</strong> Ask GitHub to build a software bill of
+materials report, and read it.</p>
+<p><strong>Ruleset History.</strong> Each change to one of this
+repository’s rulesets, and who made it.</p>
+<p><strong>Secret Scanning History.</strong> When GitHub last scanned
+this repository for secrets, and how.</p>
+<p><strong>Require Sign-off on Web Commits.</strong> Whether commits
+made on GitHub’s site must carry a sign-off.</p>
+<p><strong>Sponsor Links.</strong> Where people can sponsor this
+repository, from its FUNDING.yml.</p>
+<p><strong>Dependency Manifests.</strong> Each manifest file GitHub
+reads dependencies from, and how many it found.</p>
+<p><strong>Start an Agent Task.</strong> Give Copilot’s cloud agent a
+job here; it works on a branch of its own.</p>
+<p><strong>Agent Tasks.</strong> Copilot’s cloud agent tasks in this
+repository, and how each is going.</p>
+<p><strong>An Agent Task’s Progress.</strong> Everything GitHub says
+about one agent task.</p>
+<p><strong>Automations.</strong> This repository’s Copilot
+automations.</p>
+<p><strong>New Automation.</strong> An automation: a prompt Copilot runs
+whenever its trigger fires.</p>
+<p><strong>Run an Automation.</strong> Run one of this repository’s
+automations now.</p>
+<p><strong>Rename an Automation.</strong> Give one of this repository’s
+automations another name.</p>
+<p><strong>Delete an Automation.</strong> Delete one of this
+repository’s automations; tasks it ran stay.</p>
+<p><strong>An Automation’s History.</strong> Each change to one
+automation, newest first.</p>
+<p><strong>An Automation’s Tasks.</strong> The tasks one automation has
+run.</p>
+<p><strong>Automation Tools and Triggers.</strong> What an automation
+here may do, and what may start it.</p>
+<p><strong>Agent Secrets from the Organization.</strong> The
+organization’s agent secrets this repository may use (names only).</p>
+<p><strong>Agent Variables from the Organization.</strong> The
+organization’s agent variables this repository may use.</p>
 <p><strong>Open.</strong> Select the person’s node in the tree.</p>
 <p><strong>Follow or Unfollow.</strong> Follow them, or stop.</p>
 <p><strong>Find Issues with Label.</strong> Issues and pull requests
@@ -6792,11 +6909,33 @@ description.</p>
 <p><strong>Edit Gist.</strong> Change the gist’s files and
 description.</p>
 <p><strong>Star or Unstar.</strong> Star it, or take the star away.</p>
+<p><strong>Comments.</strong> Read its comments; add, change or
+delete.</p>
+<p><strong>History.</strong> Every saved version, with how much
+changed.</p>
+<p><strong>Forks.</strong> Who forked it, and when.</p>
+<p><strong>Fork Gist.</strong> Copy it to your own gists.</p>
 <p><strong>Delete Gist.</strong> Delete the gist.</p>
 <p><strong>Open Discussion Thread.</strong> Read the whole thread.</p>
+<p><strong>Close Discussion.</strong> Close it as resolved, outdated or
+a duplicate.</p>
+<p><strong>Reopen Discussion.</strong> Open a closed discussion
+again.</p>
+<p><strong>Delete Discussion.</strong> Delete it and every comment in
+it, for good.</p>
+<p><strong>Upvote.</strong> Add your upvote, which helps it rise in the
+list.</p>
+<p><strong>Remove Upvote.</strong> Take your upvote back.</p>
+<p><strong>Vote in the Poll.</strong> Choose an answer in this
+discussion’s poll.</p>
+<p><strong>Edit a Comment.</strong> Change a comment you may edit.</p>
+<p><strong>Delete a Comment.</strong> Delete a comment you may
+delete.</p>
 <p><strong>Dismiss or Reopen Alert.</strong> Dismiss with a reason.</p>
 <p><strong>Copilot Autofix.</strong> Ask for a fix, or commit it.</p>
 <p><strong>Show Every Place.</strong> Each place it was found.</p>
+<p><strong>Where It Was Found.</strong> Every file, commit, issue or
+comment the secret is in.</p>
 <p><strong>Show Details.</strong> The cache’s key, size and last
 use.</p>
 <p><strong>Delete Cache.</strong> Delete this Actions cache.</p>
@@ -6823,12 +6962,75 @@ after a preview of each.</p>
 <p><strong>Template.</strong> Offer it, or stop, as a template.</p>
 <p><strong>Copy Project.</strong> Fields and views, not its items.</p>
 <p><strong>Delete Project.</strong> Asks for its title typed out.</p>
+<p><strong>New View.</strong> Add a view to this Project: a table, a
+board or a roadmap.</p>
+<p><strong>Items in a View.</strong> What one of this Project’s views
+shows, in its order and with its filter.</p>
+<p><strong>Rename a View.</strong> Give one of this Project’s views
+another name.</p>
+<p><strong>Delete a View.</strong> Delete one of this Project’s views;
+its items stay.</p>
+<p><strong>Rename a Field.</strong> Give one of this Project’s fields
+another name.</p>
+<p><strong>Add an Issue Field.</strong> Add one of the organization’s
+issue fields to this Project.</p>
+<p><strong>Edit a Draft.</strong> Change a draft’s title and text.</p>
+<p><strong>Make a Draft an Issue.</strong> Turn a draft into a real
+issue in a repository; it stays in the Project.</p>
+<p><strong>Move an Item.</strong> Put an item in another place in the
+Project’s own order.</p>
+<p><strong>Edit a Status Update.</strong> Change a status update’s
+status or text.</p>
+<p><strong>Delete a Status Update.</strong> Delete one of this Project’s
+status updates.</p>
+<p><strong>Delete a Workflow.</strong> Delete one of this Project’s
+automatic workflows.</p>
+<p><strong>Share the Project.</strong> Give a person a role in this
+Project, or take it away.</p>
+<p><strong>Link a Team.</strong> Show this Project on a team’s
+Projects.</p>
+<p><strong>Unlink a Team.</strong> Take this Project off a team’s
+Projects.</p>
 <p><strong>Members and Access.</strong> Open the team’s sheet at its
 members: add people, change a role, remove.</p>
+<p><strong>Delete Team.</strong> Delete this team, and its child
+teams.</p>
+<p><strong>Pending Invitations.</strong> People invited to this team who
+have not joined yet.</p>
 <p><strong>Open.</strong> Select the organization’s node in the
 tree.</p>
 <p><strong>Roles.</strong> Who holds each role; give or take one.</p>
 <p><strong>Rulesets.</strong> Read, enforce, review or delete.</p>
+<p><strong>Fork Workflow Settings.</strong> How workflows run for pull
+requests from forks of private repositories.</p>
+<p><strong>Fork Workflows from Private Repositories.</strong> Choose
+whether fork pull requests run workflows, and with what.</p>
+<p><strong>Dependabot Repository Access.</strong> Which private
+repositories Dependabot may read to update dependencies.</p>
+<p><strong>Give Dependabot a Repository.</strong> Let Dependabot read
+one more private repository.</p>
+<p><strong>Take a Repository from Dependabot.</strong> Stop Dependabot
+reading a private repository.</p>
+<p><strong>Dependabot’s Default Access.</strong> Which new repositories
+Dependabot may read without being given them.</p>
+<p><strong>Make Someone an Outside Collaborator.</strong> Take someone
+out of the organization’s members but keep their repository access.</p>
+<p><strong>Define a Custom Property.</strong> Add or change a property
+every repository here can be given.</p>
+<p><strong>Set Repositories’ Custom Property.</strong> Give a custom
+property one value in several repositories.</p>
+<p><strong>New Team.</strong> Make a team in this organization.</p>
+<p><strong>Accept Membership.</strong> Join this organization, when it
+has invited you.</p>
+<p><strong>My Activity Here.</strong> What you have done lately in this
+organization’s repositories.</p>
+<p><strong>Require Sign-off on Web Commits.</strong> Whether commits
+made on GitHub’s site, in every repository here, must carry a
+sign-off.</p>
+<p><strong>Follow Organization.</strong> See this organization’s public
+activity in your feed.</p>
+<p><strong>Unfollow Organization.</strong> Stop seeing this organization
+in your feed.</p>
 <p><strong>Open.</strong> Open the settings dialog for this; it asks
 before saving.</p>
 <p><strong>Edit Watch.</strong> Change what the watch looks at.</p>
@@ -6845,6 +7047,34 @@ about.</p>
 <p><strong>Refresh.</strong> Load this view again. F5 does the same.</p>
 <p><strong>Help for This View.</strong> What this view shows. F1 does
 the same.</p>
+<p><strong>New Organization Runner.</strong> Copy the commands that set
+up a runner every allowed repository may use.</p>
+<p><strong>Just-in-Time Runner.</strong> A runner that takes one job and
+then goes: its configuration, on the clipboard.</p>
+<p><strong>Just-in-Time Runner.</strong> A runner that takes one job and
+then goes: its configuration, on the clipboard.</p>
+<p><strong>Is a Runner Version Retiring?.</strong> Whether GitHub is
+retiring a version of the runner program, and when.</p>
+<p><strong>Is a Runner Version Retiring?.</strong> Whether GitHub is
+retiring a version of the runner program, and when.</p>
+<p><strong>Email Visibility.</strong> Whether your primary email address
+shows on your profile and in your commits.</p>
+<p><strong>Interaction Limits.</strong> Whether you have limited who may
+comment in your repositories, and until when.</p>
+<p><strong>Limit Interactions.</strong> For a while, let only some
+people comment and open issues in all your repositories.</p>
+<p><strong>Lift Interaction Limits.</strong> Let everyone take part in
+your repositories again.</p>
+<p><strong>Set Up a Sponsors Profile.</strong> Start taking
+sponsorships: GitHub reviews the profile before it shows.</p>
+<p><strong>New Sponsor Tier.</strong> Add a tier to your Sponsors
+profile, as a draft or published.</p>
+<p><strong>Patreon Sponsorships.</strong> Let sponsors pay through
+Patreon as well as GitHub.</p>
+<p><strong>My Agent Tasks.</strong> Every cloud agent task you started,
+in any repository.</p>
+<p><strong>My Automations.</strong> Every Copilot automation you
+made.</p>
 <p><strong>Open in Its Repository.</strong> Go to the item in its own
 repository, where every action for it is. Back returns to this row,
 filter and page.</p>
@@ -6895,6 +7125,8 @@ topic, in every repository, after the preview.</p>
 tree.</p>
 <p><strong>Runner Labels.</strong> Add a label, or take one away.</p>
 <p><strong>Remove Runner.</strong> GitHub forgets it; asks first.</p>
+<p><strong>Removal Commands.</strong> Copy the commands that take this
+runner off its machine.</p>
 <p><strong>Check Site.</strong> The latest build, then the custom
 domain’s health.</p>
 <p><strong>Rebuild.</strong> Ask GitHub for a fresh build.</p>
@@ -6906,6 +7138,12 @@ deploy.</p>
 <p><strong>Protection Rules.</strong> Apps that must approve a
 deployment.</p>
 <p><strong>Delete.</strong> Delete it, after asking.</p>
+<p><strong>Pin Environment.</strong> Keep this environment at the top of
+the repository’s Deployments.</p>
+<p><strong>Unpin Environment.</strong> Let this environment take its
+usual place again.</p>
+<p><strong>Move Environment.</strong> Put this pinned environment at
+another place among the pinned ones.</p>
 <p><strong>Start.</strong> Start it, as it was when it stopped.</p>
 <p><strong>Stop.</strong> Stop it; its files are kept.</p>
 <p><strong>Change Machine.</strong> A bigger or smaller machine.</p>
@@ -6925,6 +7163,14 @@ version, after you type its name.</p>
 <p><strong>Delete Key.</strong> Remove it; asks first.</p>
 <p><strong>Publish or Close Advisory.</strong> Change its state.</p>
 <p><strong>Request CVE.</strong> Ask GitHub for a CVE number.</p>
+<p><strong>Advisory Comments.</strong> The private discussion on this
+draft advisory.</p>
+<p><strong>Comment on Advisory.</strong> Write in the advisory’s private
+discussion.</p>
+<p><strong>Edit an Advisory Comment.</strong> Change something you wrote
+in the advisory’s discussion.</p>
+<p><strong>Make a Private Fork for the Fix.</strong> A temporary private
+fork where collaborators can work on the fix.</p>
 <p><strong>Ping.</strong> Send it a test message.</p>
 <p><strong>Send Test Push.</strong> A push event, if it listens.</p>
 <p><strong>Turn On or Off.</strong> Stop or start its events.</p>
@@ -6938,10 +7184,31 @@ write-only.</p>
 <p><strong>Repositories Allowed.</strong> Choose which repositories may
 use it.</p>
 <p><strong>Delete.</strong> Remove it; asks first.</p>
+<p><strong>Removal Commands.</strong> Copy the commands that take this
+runner off its machine.</p>
+<p><strong>Add Runner Label.</strong> Give this runner a label workflows
+can ask for.</p>
+<p><strong>Remove Runner Label.</strong> Take away a label someone gave
+this runner; GitHub’s own labels stay.</p>
+<p><strong>Runners in This Group.</strong> The self-hosted runners in
+this group.</p>
+<p><strong>Hosted Runners in This Group.</strong> The larger
+GitHub-hosted runners in this group.</p>
+<p><strong>Add a Runner to This Group.</strong> Move one of the
+organization’s runners into this group.</p>
+<p><strong>Remove a Runner from This Group.</strong> Take a runner out
+of this group; it goes back to the Default group.</p>
+<p><strong>Teams It Adds To.</strong> The teams this invitation puts the
+person in when they accept.</p>
 <p><strong>Clone Wiki.</strong> Copy its pages to a folder, to edit
 them.</p>
 <p><strong>Cancel Sponsorship.</strong> Stop it; asks first.</p>
+<p><strong>Sponsorship Preferences.</strong> Whether people see this
+sponsorship, and whether you get the maintainer’s emails.</p>
 <p><strong>Sponsor at This Tier.</strong> Pay; you type their login.</p>
+<p><strong>Publish Tier.</strong> Publish one of your draft tiers.</p>
+<p><strong>Retire Tier.</strong> Stop offering one of your tiers;
+sponsors on it stay.</p>
 <h3 id="every-workbench-option">Every Workbench option</h3>
 <p><strong>General: Open the Workbench on.</strong> Where the window
 opens when no menu row asks for a place: Inbox (Start Here until you

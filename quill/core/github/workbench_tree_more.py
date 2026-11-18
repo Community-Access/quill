@@ -15,6 +15,15 @@ _SIGN_IN = frozenset({Need.SIGN_IN})
 
 MORE_FIXED: tuple[NodeSpec, ...] = (
     NodeSpec(
+        "search_people",
+        "People and Organizations",
+        "search",
+        scope=Scope.QUERY,
+        loader="explore:user_search",
+        row_type="person",
+    ),
+    NodeSpec("search_topics", "Topics", "search", scope=Scope.QUERY, loader="explore:topic_search"),
+    NodeSpec(
         "my_codespaces",
         "My Codespaces",
         "repositories",

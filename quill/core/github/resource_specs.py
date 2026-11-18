@@ -15,6 +15,7 @@ from typing import Any
 from quill.core.github.resource_engine import Field, ResourceSpec
 from quill.core.github.resource_specs_env import REPO_ORG_SPECS
 from quill.core.github.resource_specs_more import MORE_SPECS
+from quill.core.github.resource_specs_people import PEOPLE_SPECS
 from quill.core.github.resource_specs_security import SECURITY_SPECS
 from quill.core.github.resource_specs_user import USER_SPECS
 
@@ -520,6 +521,7 @@ RESOURCE_SPECS: tuple[ResourceSpec, ...] = (
     *REPO_ORG_SPECS,
     *USER_SPECS,
     *MORE_SPECS,
+    *PEOPLE_SPECS,
 )
 
 _BY_KEY = {spec.key: spec for spec in RESOURCE_SPECS}

@@ -974,6 +974,8 @@ VERBS: dict[str, Scenario | str] = {
     "pages_turn_off": "needs Jeff: a throwaway Pages site",
     "relationships": "needs Jeff: two throwaway issues in one repository, linked and unlinked",
     "project_draft": "needs Jeff: a throwaway Project",
+    "gist_comments": "needs Jeff: a throwaway gist to comment on",
+    "fork_gist": "needs Jeff: someone else's public gist",
     "delete_release": "needs Jeff: a throwaway release on the test repository",
     "delete_milestone": "needs Jeff: a throwaway milestone on the test repository",
     "delete_deployment": "needs Jeff: an inactive deployment on the test repository",
@@ -1225,6 +1227,10 @@ def issues_from_lines(run: Any) -> str:
 
 #: The import commands (PRD 22.7), whose scenarios are defined just above.
 VERBS["import_issues"] = import_issues
+# The quick commands carry their own reasons (quill/core/github/quick_tables.py).
+from quill.core.github.quick_tables import QUICK_LIVE  # noqa: E402
+
+VERBS.update({verb: why for verb, why in QUICK_LIVE.items() if verb not in VERBS})
 VERBS["issues_from_lines"] = issues_from_lines
 
 

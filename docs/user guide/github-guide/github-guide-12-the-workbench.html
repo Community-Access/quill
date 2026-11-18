@@ -518,12 +518,30 @@ type, and press Enter. Plain words narrow the list you are looking at;
 GitHub’s own words, such as <code>is:open author:@me label:bug</code>,
 ask GitHub. <code>Ctrl+8</code> goes to Saved Searches, and
 <code>Ctrl+N</code> in a search keeps it there.</p>
+<p>Besides issues, code, commits, advisories and repositories, Search
+has:</p>
+<ul>
+<li><strong>People and Organizations:</strong> accounts whose name or
+login matches, such as <code>jeff</code>, or with GitHub’s words,
+<code>type:org location:Tucson</code>. Each row says whether it is a
+person or an organization; Enter opens one.</li>
+<li><strong>Topics:</strong> GitHub topics, with what each is about and
+whether GitHub features it, such as “Accessibility: For everyone
+(featured)”.</li>
+</ul>
 <h2 id="people-gists-and-projects">People, Gists and Projects</h2>
 <p><code>Ctrl+4</code> goes to People: who you follow and who follows
 you. Enter on a person gives them a place in the tree, with their
 repositories and activity. Follow or Unfollow is on a person’s context
-menu. <code>Ctrl+6</code> goes to Projects; each repository’s own
-Projects are under it.</p>
+menu.</p>
+<p>A person’s place also lists what GitHub shows of them publicly, read
+only: <strong>SSH Keys</strong>, <strong>GPG Keys</strong> and
+<strong>SSH Signing Keys</strong> (check one before giving them access
+to a server: “SSH key 4, ending abcdefgh.”), <strong>Social
+Accounts</strong>, <strong>Gists</strong>, <strong>Starred</strong>,
+<strong>Watching</strong>, <strong>Projects</strong>, and <strong>People
+They Follow: Activity</strong>. <code>Ctrl+6</code> goes to Projects;
+each repository’s own Projects are under it.</p>
 <h3 id="profiles">Profiles</h3>
 <p><strong>People &gt; My Profile</strong> is your own profile, and
 every person’s place in the tree starts with <strong>Profile</strong>,
@@ -613,6 +631,14 @@ is sent.</li>
 gist and opens it in the same window. If you change nothing, nothing is
 sent.</li>
 <li><strong>Star or Unstar</strong> is on the context menu.</li>
+<li><strong>Comments…</strong> lists the gist’s comments, oldest first,
+with “Add a comment…” at the top; choose one of yours to change or
+delete it.</li>
+<li><strong>History…</strong> lists every saved version, newest first:
+“2026-11-02 by jeff: 3 lines added, 1 removed.”</li>
+<li><strong>Forks…</strong> lists who copied it, and <strong>Fork
+Gist</strong> copies someone else’s gist to your own, where you can
+change it.</li>
 <li><strong>Delete Gist…</strong> (<code>Delete</code> on a gist) asks
 first, because a deleted gist, its files and its history cannot be
 brought back.</li>
@@ -643,6 +669,10 @@ someone else made meanwhile is kept.</li>
 <li><strong>My Public Email Addresses</strong> and <strong>Repositories
 I Watch:</strong> read only.</li>
 </ul>
+<p><strong>Under Repositories</strong>, three of GitHub’s own lists,
+read only: <strong>Licences</strong>, <strong>.gitignore
+Templates</strong> and <strong>Codes of Conduct</strong>, the choices a
+new repository offers.</p>
 <p><strong>Under an organization:</strong></p>
 <ul>
 <li><strong>Issue Fields:</strong> the organization’s issue fields, the
@@ -1019,6 +1049,89 @@ lessons that use it, “GitHub, on a practice repository”: make it and
 look round; label, comment on and close an issue; try a command with Dry
 Run; review and merge a pull request; read a failed run; and delete the
 repository. Each step says what to press and what you should hear.</p>
+<h2 id="more-commands-on-rows">More commands on rows</h2>
+<p>Many rows have commands that make one call to GitHub and say what
+came back, or show a longer answer in a window to read and copy. They
+are on the row’s context menu (<code>Shift+F10</code>, under More when
+the menu is long) and on the Item menu. Each asks before it changes
+anything, and anything that holds a token (a runner’s setup or removal
+commands) goes to the clipboard and is never said or shown.</p>
+<ul>
+<li><strong>A repository:</strong> Languages, License, Star History,
+Mark Its Notifications Read, Set a Custom Property…, Compare
+Dependencies… (between two branches, tags or commits, with known
+vulnerabilities), SBOM Report, Ruleset History…, Secret Scanning
+History, Fork Workflow Settings and Fork Workflows from Private
+Repositories….</li>
+<li><strong>A commit:</strong> Branches at This Commit, Check Run
+Details… (a check’s summary and every annotation), Re-run a Check
+Suite…, and the reactions on its comments: Reactions on a Commit
+Comment…, React to a Commit Comment…, Remove My Reaction from a Commit
+Comment….</li>
+<li><strong>A workflow run:</strong> Read a Step’s Log…, one step at a
+time.</li>
+<li><strong>A pull request:</strong> Re-request Review…. <strong>A
+release:</strong> GitHub’s Release Notes…, the notes GitHub writes from
+the changes since another tag.</li>
+<li><strong>A secret scanning alert:</strong> Where It Was Found.
+<strong>A security advisory:</strong> Advisory Comments, Comment on
+Advisory…, Edit an Advisory Comment…, Make a Private Fork for the
+Fix.</li>
+<li><strong>Runners:</strong> in a repository’s Runners or an
+organization’s, Just-in-Time Runner… (a runner that takes one job) and
+Is a Runner Version Retiring?…; in an organization’s, New Organization
+Runner…; on a runner, Removal Commands…, and on an organization’s runner
+Add Runner Label… and Remove Runner Label…. <strong>A runner
+group:</strong> Runners in This Group, Hosted Runners in This Group, Add
+a Runner to This Group…, Remove a Runner from This Group….</li>
+<li><strong>An organization:</strong> Dependabot Repository Access, Give
+Dependabot a Repository…, Take a Repository from Dependabot…,
+Dependabot’s Default Access…, Make Someone an Outside Collaborator…,
+Define a Custom Property…, Set Repositories’ Custom Property…, New
+Team…, Accept Membership and My Activity Here.</li>
+<li><strong>A team:</strong> Pending Invitations and Delete Team….
+<strong>An invitation to an organization:</strong> Teams It Adds
+To.</li>
+<li><strong>A Project:</strong> New View… and Items in a View….</li>
+<li><strong>A discussion:</strong> Close Discussion… (resolved, outdated
+or a duplicate), Reopen Discussion, Delete Discussion…, Upvote, Remove
+Upvote, Vote in the Poll…, Edit a Comment… and Delete a Comment….</li>
+<li><strong>An issue:</strong> Link a Pull Request That Closes It… and
+Unlink a Pull Request….</li>
+<li><strong>An environment:</strong> Pin Environment, Unpin Environment
+and Move Environment….</li>
+<li><strong>A repository or an organization:</strong> Require Sign-off
+on Web Commits…. <strong>An organization:</strong> Follow Organization
+and Unfollow Organization. <strong>A repository:</strong> Sponsor Links
+(its FUNDING.yml) and Dependency Manifests.</li>
+<li><strong>A Project, inside:</strong> Rename a View…, Delete a View…,
+Rename a Field…, Add an Issue Field…, Edit a Draft…, Make a Draft an
+Issue…, Move an Item…, Edit a Status Update…, Delete a Status Update…,
+Delete a Workflow…, Share the Project…, Link a Team… and Unlink a
+Team….</li>
+<li><strong>Your sponsorships:</strong> Set Up a Sponsors Profile…, New
+Sponsor Tier… and Patreon Sponsorships…; on a sponsorship, Sponsorship
+Preferences…; on one of your tiers, Publish Tier and Retire Tier….</li>
+<li><strong>Copilot’s cloud agent, on a repository:</strong> Start an
+Agent Task…, Agent Tasks, An Agent Task’s Progress…, Automations, New
+Automation…, Run an Automation…, Rename an Automation…, Delete an
+Automation…, An Automation’s History…, An Automation’s Tasks…,
+Automation Tools and Triggers, Agent Secrets from the Organization and
+Agent Variables from the Organization. <strong>On a pull
+request:</strong> Ask Copilot to Review, Agent Merge, Turn On Agent
+Merge and Turn Off Agent Merge…. <strong>On your profile:</strong> My
+Agent Tasks and My Automations. These need a Copilot plan with the cloud
+agent, and GitHub calls them a preview: QUILL sends only what GitHub
+documents and reads you GitHub’s own answer.</li>
+<li><strong>Your emails:</strong> Email Visibility…. <strong>Your
+profile:</strong> Interaction Limits, Limit Interactions… and Lift
+Interaction Limits.</li>
+</ul>
+<p>A few of these use parts of GitHub newer than the description QUILL
+was built against (closing references, a Project’s views and issue
+fields). Those first read from GitHub what the change needs, and if
+GitHub has changed it, they send nothing and say to use Open on GitHub
+instead.</p>
 <h2 id="workbench-options">Workbench Options</h2>
 <p>GitHub’s preferences live in the Workbench, not in the editor’s
 Options: <strong>Tools &gt; Workbench Options…</strong>,
