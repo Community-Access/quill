@@ -299,6 +299,10 @@ def visible_commands(is_enabled: Callable[[str], bool]) -> list[CommandRow]:
                 continue  # Form Payments' rows go with Forms, whatever their own switch
         if kind == "sep" and not is_enabled(MENU_AREA.get(menu, "")) and MENU_AREA.get(menu):
             continue
+        if _key.startswith(wordpress_menu.LAYER_PREFIX) and not is_enabled("wordpress"):
+            # The layer's prefix is refused with WordPress off, so a Forms row on it
+            # keeps its menu path and drops a key that would do nothing (UX item 18).
+            row = (menu, _label, "", handler, kind)
         kept.append(row)
     # Two passes, because a submenu's title lives in its parent and its rows do
     # not: the first tidy is what decides whether the submenu has anything left,
