@@ -1465,7 +1465,7 @@
   "rerequestReviews": {"status": "planned", "home": "Pull request sheet; Item menu", "row": "Appendix F: pulls"},
   "resolveReviewThread": {"status": "covered", "home": "command:github.workbench.review", "via": "quill/core/github/review_graphql.py"},
   "retireSponsorsTier": {"status": "planned", "home": "People > person > Sponsor; Account > Sponsors", "row": "Appendix F: sponsors"},
-  "revertPullRequest": {"status": "planned", "home": "Pull request sheet; Item menu", "row": "Revert a merged pull request"},
+  "revertPullRequest": {"status": "covered", "home": "command:github.workbench.revert_pull", "via": "quill/core/github/pull_tools.py"},
   "revokeEnterpriseOrganizationsMigratorRole": {"status": "out_of_scope", "home": "Organizations > org > Enterprise (Open on GitHub)", "reason": "Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings."},
   "revokeMigratorRole": {"status": "out_of_scope", "home": "None", "reason": "GitHub Enterprise Importer migrations, run by administrators with the gh gei extension."},
   "setEnterpriseIdentityProvider": {"status": "out_of_scope", "home": "Organizations > org > Enterprise (Open on GitHub)", "reason": "Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings."},

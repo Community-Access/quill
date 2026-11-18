@@ -10,7 +10,8 @@ Uncheck a Task turns over one ``- [ ]`` item of the issue's body, and Convert
 Tasks to Sub-issues makes each plain item an issue, a sub-issue of this one,
 and links its line to it. Both read the body again before writing and save
 nothing if somebody changed it meanwhile. The work is
-:mod:`quill.core.github.issue_development`.
+:mod:`quill.core.github.issue_development`. A pull request's patch, revert and
+conflicts come in through :class:`GitHubWorkbenchPullToolsMixin`.
 """
 
 from __future__ import annotations
@@ -19,6 +20,11 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.github.items_provider import GitHubItem
+from quill.ui.github_workbench_pull_tools import (
+    PULL_TOOL_REASONS,
+    PULL_TOOL_VERBS,
+    GitHubWorkbenchPullToolsMixin,
+)
 
 __all__ = ["DEVELOPMENT_REASONS", "DEVELOPMENT_VERBS", "GitHubWorkbenchDevelopmentMixin"]
 
@@ -26,16 +32,18 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     "create_branch": frozenset({"item"}),
     "edit_tasks": frozenset({"item"}),
     "convert_tasks": frozenset({"item"}),
+    **PULL_TOOL_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
     "create_branch": "Create Branch is for an issue, while you are signed in.",
     "edit_tasks": "Task lists are for an issue, while you are signed in.",
     "convert_tasks": "Task lists are for an issue, while you are signed in.",
+    **PULL_TOOL_REASONS,
 }
 
 
-class GitHubWorkbenchDevelopmentMixin:
+class GitHubWorkbenchDevelopmentMixin(GitHubWorkbenchPullToolsMixin):
     items: Any
     frame: Any
     signed_in: bool

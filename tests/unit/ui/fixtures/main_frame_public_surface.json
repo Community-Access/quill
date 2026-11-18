@@ -752,6 +752,7 @@
   "reset_structure_announcer",
   "reset_text_size",
   "resolve_embed_inline",
+  "resolve_github_pull_conflicts",
   "restart_typescript_worker",
   "restore_backup",
   "restore_deletion",

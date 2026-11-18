@@ -1495,6 +1495,16 @@ Only Files Not Viewed** leaves only what is left, and **Comment on This
 File...** comments on the whole file. See
 [Files you have viewed](../github-guide/github-guide-05-pull-requests-and-review.html#files-you-have-viewed).
 
+#### A pull request's patch, revert and conflicts
+
+On a pull request's row in the GitHub Workbench, **Open Patch in Editor**
+opens its whole change as one diff to read with Find, **Revert Pull
+Request...** opens a pull request that undoes a merged one, and **Resolve
+Conflicts in a Worktree...** merges the base branch into the pull request's
+branch in a new folder beside your checkout and walks each conflicted file,
+without changing the folder you are in. See
+[The whole patch, a revert, and conflicts](../github-guide/github-guide-05-pull-requests-and-review.html#the-whole-patch-a-revert-and-conflicts).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

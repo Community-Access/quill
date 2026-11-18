@@ -294,6 +294,41 @@ def merge_and_delete_branch(run: Any) -> str:
     return f"merged #{pull.number}, deleted {branch}"
 
 
+def revert_merged(run: Any) -> str:
+    """Revert Pull Request on a freshly merged pull request, then close the revert."""
+    import base64
+
+    from quill.core.github.pull_tools import revert_pull
+
+    branch = f"quill-live-revert-{int(time.time())}"
+    base = run.ids["default_branch"]
+    sha = run.rest("GET", f"/repos/{run.repo}/git/ref/heads/{base}")["object"]["sha"]
+    run.rest("POST", f"/repos/{run.repo}/git/refs", {"ref": f"refs/heads/{branch}", "sha": sha})
+    run.rest(
+        "PUT",
+        f"/repos/{run.repo}/contents/reverted/{branch}.md",
+        {"message": TAG, "content": base64.b64encode(TAG.encode()).decode(), "branch": branch},
+    )
+    pull = run.items.create_pull_request(run.repo, f"{TAG} revert", TAG, branch, base)
+    run.items.merge_pull_request(run.repo, int(pull.number), merge_method="squash")
+    run.rest("DELETE", f"/repos/{run.repo}/git/refs/heads/{branch}")
+    said = revert_pull(run.api, run.repo, int(pull.number), draft=True)
+    made = int(said.split("#", 1)[1].split(",", 1)[0])
+    revert = run.rest("GET", f"/repos/{run.repo}/pulls/{made}")
+    run.rest("PATCH", f"/repos/{run.repo}/pulls/{made}", {"state": "closed"})
+    run.rest("DELETE", f"/repos/{run.repo}/git/refs/heads/{revert['head']['ref']}")
+    _expect(revert["base"]["ref"] == base and revert["draft"], f"not a draft into {base}")
+    return f"{said} Closed it and deleted its branch."
+
+
+def open_patch(run: Any) -> str:
+    from quill.core.github.pull_tools import patch_text
+
+    patch = patch_text(run.api, run.repo, int(run.ids["pull"]))
+    _expect(patch.files > 0 and patch.text.startswith("diff --git "), "no patch")
+    return patch.sentence
+
+
 # -- Actions -------------------------------------------------------------------------
 
 
@@ -765,6 +800,8 @@ VERBS: dict[str, Scenario | str] = {
     "mark_done": "needs Jeff: would mark one of your real notifications done",
     "mark_read": "needs Jeff: would mark one of your real notifications read",
     "merge": merge_and_delete_branch,
+    "revert_pull": revert_merged,
+    "resolve_conflicts": "needs Jeff: fetches into a folder beside your checkout, in the editor",
     "milestone": "sheet:issue.milestone",
     "open_codespaces": "needs Jeff: makes a codespace, which is billed",
     "pending_deployments": "not here: needs an environment with reviewers, and a run waiting",
@@ -993,6 +1030,7 @@ FEATURES: dict[str, Scenario | str] = {
     "Export List: CSV, Markdown and Excel (PRD 22.7)": export_list,
     "The comment composer's lookups (PRD 22.4)": comment_composer,
     "Viewed files in a pull request review (PRD 22.1)": review_viewed_files,
+    "Open Patch in Editor: the whole change as one diff": open_patch,
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

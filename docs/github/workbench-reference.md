@@ -840,7 +840,7 @@ Keys the window answers that are not menu rows:
 ### Context menus, by row type
 
 - **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Set Issue Type..., Reorder Sub-issues..., Add to or Remove from Favorites; Properties...
-- **pull_request**: Review..., File Differences..., Comment..., Merge..., Copy Link, Open on GitHub; More: Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
+- **pull_request**: Review..., File Differences..., Comment..., Merge..., Open Patch in Editor, Revert Pull Request...; More: Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., View Artifacts...; More: Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Open on GitHub, Copy Link; Properties...
 - **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., Compare With Previous, Compare With Default; More: Copy Link, Open on GitHub; Properties...
@@ -962,7 +962,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 316 yes, 1147 planned, 15 not needed and 526 left to GitHub.
+In all: 317 yes, 1146 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2932,7 +2932,7 @@ In all: 316 yes, 1147 planned, 15 not needed and 526 left to GitHub.
 
 #### GraphQL: Pull requests
 
-36 mutations: 11 yes, 25 planned.
+36 mutations: 12 yes, 24 planned.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
@@ -2962,7 +2962,7 @@ In all: 316 yes, 1147 planned, 15 not needed and 526 left to GitHub.
 | `requestReviewsByLogin` | Planned | Pull request sheet; Item menu |
 | `rerequestReviews` | Planned | Pull request sheet; Item menu |
 | `resolveReviewThread` | Yes | context menu > Review... |
-| `revertPullRequest` | Planned | Pull request sheet; Item menu |
+| `revertPullRequest` | Yes | context menu > Revert Pull Request... |
 | `submitPullRequestReview` | Planned | Pull request sheet; Item menu |
 | `unarchivePullRequest` | Planned | Pull request sheet; Item menu |
 | `unmarkFileAsViewed` | Yes | context menu > Review... |

@@ -2759,3 +2759,9 @@ Comment... opens the comment composer too
 (`quill/ui/github_comment_composer.py`), the same window in both editors.
 The pull request review window shows viewed files, Show Only Files Not
 Viewed and Comment on This File... too (`quill/ui/github_pr_review_viewed.py`).
+A pull request's Open Patch in Editor and Revert Pull Request... are the
+Workbench's own rows, so QUILL Lite has them too
+(`quill/ui/github_workbench_pull_tools.py`). Resolve Conflicts in a
+Worktree... needs local Git, which only QUILL keeps, so in QUILL Lite it is
+greyed with that reason. QUILL being ahead is allowed; QUILL Lite being
+ahead is not.

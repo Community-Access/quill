@@ -2,6 +2,16 @@
 
 ## 2.0.0
 
+### A pull request's patch, revert and conflicts (2026-11-17)
+
+Three new rows on a pull request in the GitHub Workbench. **Open Patch in
+Editor** opens its whole change as one unified diff, every file in turn, with
+any file GitHub sends no text for (an image, a very large file) named on a
+line of its own. **Revert Pull Request...** opens a new pull request that
+undoes a merged one, asking its title and whether it is a draft.
+Resolving conflicts on your own computer needs local Git, so that one is in
+QUILL. Chapter 5 of the GitHub Guide has the details.
+
 ### Files you have viewed, in a pull request review (2026-11-17)
 
 The pull request review window now shows, for each changed file, whether you

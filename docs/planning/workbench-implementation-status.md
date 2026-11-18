@@ -115,6 +115,12 @@ the composer). `quill/core/github/review_viewed.py`,
 `quill/ui/github_pr_review_viewed.py`. Whitespace options and one commit at a
 time remain.
 
+**2026-11-17, GH-PT: a pull request's patch, revert and conflicts.** Open
+Patch in Editor (the whole change as one unified diff), Revert Pull Request...
+(`revertPullRequest`) and, in QUILL, Resolve Conflicts in a Worktree... (fetch,
+new worktree, merge without committing, walk the conflicts).
+`quill/core/github/pull_tools.py`, `quill/ui/github_workbench_pull_tools.py`.
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

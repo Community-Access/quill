@@ -2996,6 +2996,12 @@ Control coverage: 361 audited sites (361 helped).
 
 **Merge.** Merge it, with the methods the repository allows.
 
+**Open Patch in Editor.** Its whole change as one unified diff, every file, to read, save or apply.
+
+**Revert Pull Request.** Open a pull request that undoes this merged one, as the web's Revert does.
+
+**Resolve Conflicts in a Worktree.** Merge its base into its branch in a folder of its own, and resolve each conflict.
+
 **Open in Codespaces.** Open GitHub's Codespaces page for this. Starting a Codespace can cost money, so QUILL asks first.
 
 **Commit Comments.** Comments on the commit and its lines.
