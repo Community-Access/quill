@@ -2,6 +2,19 @@
 
 All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the first release most people will meet, so its release notes (`docs/release-notes-2.0.md`, Help > Release Notes in the app) are written as a welcome for new users rather than a list of changes; this file keeps the engineering record. The 1.x release notes were retired on 2026-10-03.
 
+## Unreleased
+
+### When the next queued episode cannot start, Cast says so (2026-11-18)
+
+Chris Nova reported (2026-11-17) that with two episodes in the Play Queue, the
+first played to its end and the second did not start until he started it.
+Cast now checks that the next episode really started. If it has nothing to
+play yet (not downloaded, not in the playback cache, no working address),
+Cast says "Could not start the next episode", with its title, instead of
+announcing "Up next" over silence. Every engine reports the end of an episode
+and the queue finds the next one correctly, so if this is not the cause, the
+session log from the next time it happens will show what is.
+
 ## 2.0.0 -- 2026-10-03
 
 QUILL Cast 2.0. The main window, Find in

@@ -1,7 +1,7 @@
 # Everything left to do for QUILL, in one list
 
 **Owner:** Jeff Bishop / Community Access
-**Made one file:** 2026-11-18, from `complete.md` (2026-11-10), `complete2.md` (2026-11-10), `wp_missing.md` (2026-11-14), the review notes at the end of `how.md` (2026-11-14), the EdSharp review, and the work queued in conversation on 2026-11-18.
+**Made one file:** 2026-11-18, from `complete.md` (2026-11-10), `complete2.md` (2026-11-10), `wp_missing.md` (2026-11-14), the review notes at the end of `how.md` (2026-11-14, whose walkthrough is now `docs/design/wordpress-ux-walkthrough.md`), what `ear.md` left (Part 5.1), the EdSharp review, and the work queued in conversation on 2026-11-18.
 **Rule:** this is the one place to track what is still to do. A new list goes in here, not in a new file at the root. When an item is built, mark it done here, with its pull request.
 
 ## Start here
@@ -20,132 +20,98 @@ Jeff set this order on 2026-11-18. The GitHub Workbench comes first, above every
 ### How to read this file
 
 - Parts 1 to 5 are written for this file. Parts 6 to 8 are the old files, each under one heading, with every heading moved down a level and nothing else changed. Their own section numbers ("section 6", "section 10B") still mean their sections inside that part.
-- Code comments and commit messages that cite `wp_missing.md`, `complete2.md` or `how.md` now point to Part 3, Part 7 and Part 8 here. The old files are in git history.
+- Code comments and commit messages that cite `wp_missing.md`, `complete2.md`, `how.md` or `ear.md` now point to Part 3, Part 7, Part 8 (or `docs/design/wordpress-ux-walkthrough.md`) and Part 5.1 here. The old files are in git history.
 - "Planned" counts come from `quill/core/github/api_coverage.json`, the table the coverage gate checks. `python -m quill.tools.github_api_coverage_audit` prints the current numbers.
 
 ## Part 1. The GitHub Workbench (top priority)
 
 ### 1.1 Where it stands, 2026-11-18
 
-- GitHub's API has 2,004 rows in the coverage table. After the pull requests open on 2026-11-18 merge (#1879 Repositories Allowed, #1880 more settings on Properties, #1881 code scanning), 540 are covered, 217 need no route of their own, 744 are out of scope with a reason written down, and **503 are still planned**.
+- GitHub's API has 2,004 rows in the coverage table. Late on 2026-11-18, with #1887 and the Pages batch merged, 611 are covered, 255 need no route of their own, 866 are out of scope with a reason written down, and **272 are still planned**.
 - Done on 2026-11-18: one resource engine for 34 lists of settings (#1877); 327 planned rows settled as needing nothing or out of scope, Enterprise Cloud among them (#1878); Repositories Allowed for secrets, variables and runner groups (#1879); Actions rules, immutable releases, code scanning setup and safety on Properties (#1880); Copilot Autofix, every place an alert was found, and SARIF upload (#1881).
 - Out of scope by Jeff's decision on 2026-11-18: everything that needs GitHub Enterprise Cloud, and company administration such as billing, Copilot seat management, private runner networking, migrations and paid Advanced Security. What a small organization such as Community-Access uses stays in.
 
 ### 1.2 Endpoints still to build, by area
 
-Not done until this table is empty.
+Settled a second time on 2026-11-18, at Jeff's request: of 422 then planned, 6 were built and only needed counting, 26 need nothing, and 81 are out of scope with their reasons in `api_coverage.json` (Copilot Spaces by Jeff's choice). Jeff then chose to build the Copilot coding agent (17) and Sponsors as the one sponsored (7), and to leave GitHub Classroom (5) and the preview features (32: issue artifacts and suggestions, stacked pull requests, pull request creation caps, code quality, planning statuses, concurrency groups) out of scope. Every one of the 272 left is to build.
+
+**Order:** organization (roles, rulesets, teams, runners and runner groups, which repositories may use Actions, immutable releases, property values, members), issues (relations, blocked-by, issue fields and types, pinned comments, deleting an issue), Projects (items, fields, views, drafts), the Copilot coding agent, Sponsors, then the repository and account rest (Discussions, gists, commit comments, environment rules, dispatches, merges, release and deployment deletes, re-requests, secret locations, advisory comments, SBOM and dependency compare, source downloads, templates, email visibility, installed apps).
 
 | Area | Endpoints still planned |
 |---|---|
-| Packages: one version at a time, and other people's | 14 |
-| codespaces/codespaces | 14 |
 | actions/permissions | 12 |
-| reactions/reactions | 12 |
-| actions/self-hosted-runners | 10 |
 | agent-automations/agent-automations | 10 |
 | projects/items | 10 |
-| actions/workflow-runs | 9 |
-| issues/issues | 9 |
-| orgs/custom-properties | 9 |
-| apps/installations | 8 |
-| copilot-spaces/collaborators | 8 |
-| copilot-spaces/copilot-spaces | 8 |
-| copilot-spaces/resources | 8 |
-| copilot/copilot-code-review | 8 |
 | orgs/organization-roles | 8 |
-| orgs/orgs | 8 |
-| pages/pages | 8 |
-| activity/events | 7 |
-| repos/repos | 7 |
-| gists/gists | 6 |
-| interactions/repos | 6 |
+| actions/self-hosted-runners | 7 |
 | Security advisories: comments, private forks, an organization's | 5 |
 | actions/self-hosted-runner-groups | 5 |
-| activity/starring | 5 |
-| classroom/classroom | 5 |
-| orgs/members | 5 |
-| pulls/comments | 5 |
-| pulls/pulls | 5 |
-| pulls/reviews | 5 |
-| Dependency graph and SBOM export | 4 |
-| Self-hosted runners: just-in-time setup and removal tokens | 4 |
-| actions/secrets | 4 |
-| actions/variables | 4 |
-| code-scanning/code-scanning | 4 |
+| gists/gists | 5 |
+| orgs/orgs | 5 |
+| activity/events | 4 |
+| apps/installations | 4 |
 | deployments/branch-policies | 4 |
 | deployments/protection-rules | 4 |
 | gists/comments | 4 |
-| issues/artifacts | 4 |
-| issues/comments | 4 |
 | issues/issue-dependencies | 4 |
+| orgs/members | 4 |
 | orgs/rules | 4 |
 | projects/fields | 4 |
-| pulls/stacks | 4 |
-| secret-scanning/secret-scanning | 4 |
+| repos/repos | 4 |
 | section 21.8 | 4 |
 | users/issue-fields | 4 |
+| Dependency graph and SBOM export | 3 |
+| Self-hosted runners: just-in-time setup and removal tokens | 3 |
 | activity/watching | 3 |
 | agent-tasks/agent-tasks | 3 |
-| checks/runs | 3 |
-| checks/suites | 3 |
-| code-quality/code-quality | 3 |
 | commits/comments | 3 |
 | dependabot/repository-access | 3 |
-| deployments/deployments | 3 |
 | interactions/user | 3 |
+| issues/comments | 3 |
 | issues/issue-field-values | 3 |
-| issues/labels | 3 |
+| issues/issues | 3 |
 | issues/sub-issues | 3 |
+| orgs/custom-properties | 3 |
 | orgs/issue-fields | 3 |
 | pulls/agent-merge | 3 |
+| reactions/reactions | 3 |
 | search/search | 3 |
-| users/followers | 3 |
-| actions/concurrency-groups | 2 |
-| actions/workflow-jobs | 2 |
+| secret-scanning/secret-scanning | 3 |
 | activity/notifications | 2 |
-| codespaces/machines | 2 |
-| commits/commits | 2 |
-| interactions/orgs | 2 |
-| issues/events | 2 |
-| orgs/webhooks | 2 |
+| activity/starring | 2 |
+| checks/runs | 2 |
 | projects/drafts | 2 |
 | projects/projects | 2 |
 | projects/views | 2 |
 | releases/releases | 2 |
 | repos/contents | 2 |
 | repos/custom-properties | 2 |
-| repos/webhooks | 2 |
-| secret-scanning/push-protection | 2 |
 | teams/teams | 2 |
 | users/emails | 2 |
-| users/users | 2 |
-| actions/workflows | 1 |
-| activity/feeds | 1 |
+| actions/workflow-jobs | 1 |
 | agents/secrets | 1 |
 | agents/variables | 1 |
 | branches/branches | 1 |
-| commits/statuses | 1 |
+| checks/suites | 1 |
+| commits/commits | 1 |
 | dependabot/alerts | 1 |
-| deployments/environments | 1 |
-| deployments/statuses | 1 |
-| issues/assignees | 1 |
+| deployments/deployments | 1 |
 | issues/milestones | 1 |
 | orgs/outside-collaborators | 1 |
 | orgs/rule-suites | 1 |
+| orgs/webhooks | 1 |
 | pulls/copilot-code-review | 1 |
 | pulls/review-requests | 1 |
-| releases/assets | 1 |
-| repos/planning-statuses | 1 |
 | repos/rule-suites | 1 |
 | repos/rules | 1 |
+| repos/webhooks | 1 |
 | teams/members | 1 |
 | users/gpg-keys | 1 |
 | users/keys | 1 |
 | users/social-accounts | 1 |
 | users/ssh-signing-keys | 1 |
-| GraphQL-only changes (Projects, Discussions, Sponsors tiers, issue fields and types, and others) | 86 |
-| **Total** | **503** |
-
+| GraphQL-only changes | 62 |
+| **Total** | **272** |
 
 ### 1.3 Then: documentation as good as WordPress's
 
@@ -456,6 +422,15 @@ From EdSharp's `help/History.md`, 9 October to 17 November 2026 (D:\code\jamal\E
 
 - [ ] **Microsoft Copilot SDK 2.0** (Ignite 2026, https://www.thurrott.com/a-i/microsoft-copilot-a-i/344006/ignite-2026-microsoft-copilot-sdk-2-0-is-now-available): read it and say what it means for QUILL's AI (`docs/design/codex.md`, Choose Your AI, the Copilot chat code).
 - [ ] **Quill Cast queue, from Chris Nova (2026-11-17):** with two items in the queue, the first finished and the second did not start until he started it. Find why and fix it.
+
+### 5.1 Earshot parity, what is left (from `ear.md` and `docs/design/earshot.md` section 8)
+
+`ear.md`, the Earshot round-two review of 2026-11-15, was built in full (#1845, #1846) and its plan of record is `docs/design/earshot.md`. What it left:
+
+- [ ] **Screen-reader acceptance** with NVDA and JAWS: the spoken counts for Ctrl+A and Alt+Shift+I, the ", played" row in the Play Queue, the Folder choice in Listening Statistics, and the Episode description field in Preview. Add them to `docs/qa/screen-reader-checks-2026-10.md` when run.
+- [ ] **Listen to the three compression levels** on quiet and loud speech, and decide whether turning compression on should keep starting at Light (a little gentler than the old fixed -18 dB, 3:1).
+- [ ] **Sound Enhancements window:** a strength choice in the window itself, which means changing the editor Quill Radio shares; waits for a reason.
+- [ ] **Round three** starts from Earshot `c11dda93`: when Earshot's Listening Places starts reading other devices' files, check the records Cast writes against what it expects.
 
 ## Part 6. The Workbench delivery checklist
 
@@ -2624,7 +2599,7 @@ These are prioritization decisions for later; they do not block producing this d
 
 ## Part 8. WordPress UX review notes
 
-Below are the review notes from the end of `how.md` (2026-11-14), as they were. The walkthrough above them stays in `how.md`.
+Below are the review notes from the end of `how.md` (2026-11-14), as they were. The walkthrough they followed is now `docs/design/wordpress-ux-walkthrough.md`.
 
 ### Review notes, all in one place
 
