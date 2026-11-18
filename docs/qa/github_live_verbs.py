@@ -956,6 +956,7 @@ VERBS: dict[str, Scenario | str] = {
     "resource_new": resource_round_trip,
     "resource_edit": "with resource_new: an Actions variable changed",
     "resource_delete": "with resource_new: the variable deleted again",
+    "restore_package_version": "needs Jeff: a package version deleted in the last 30 days",
     "autofix_alert": "needs Jeff: a code scanning alert on a repository with CodeQL",
     "upload_sarif": "needs Jeff: a SARIF file from a scanner, on the test repository",
     "resource_repositories": (

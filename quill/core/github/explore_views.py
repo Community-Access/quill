@@ -30,6 +30,7 @@ VIEWS: tuple[tuple[str, str], ...] = (
     ("person_activity", "Person's public activity"),
     ("person_followers", "Person's followers"),
     ("person_following", "People followed by person"),
+    ("person_packages", "Person's packages"),
     ("repo_overview", "Repository overview"),
     ("repo_activity", "Repository activity"),
     ("repo_people", "Repository people"),
@@ -103,8 +104,10 @@ PERSON_VIEWS = frozenset({
     "person_activity",
     "person_followers",
     "person_following",
+    "person_packages",
 })
 AUTH_VIEWS = frozenset({
+    "person_packages",
     "my_work",
     "activity",
     "repositories",

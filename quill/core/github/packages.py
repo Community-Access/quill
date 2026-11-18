@@ -69,22 +69,32 @@ class PackageVersion:
         return f"{self.name}{tags}{when}"
 
 
-def _base(org: str = "") -> str:
-    """Your packages, or an organization's."""
+def _base(org: str = "", person: str = "") -> str:
+    """Your packages, an organization's, or another person's."""
+    if person:
+        return f"/users/{quote(person, safe='')}/packages"
     return f"/orgs/{quote(org, safe='')}/packages" if org else "/user/packages"
 
 
-def _path(kind: str, name: str, org: str = "") -> str:
-    return f"{_base(org)}/{quote(kind, safe='')}/{quote(name, safe='')}"
+def _path(kind: str, name: str, org: str = "", person: str = "") -> str:
+    return f"{_base(org, person)}/{quote(kind, safe='')}/{quote(name, safe='')}"
 
 
 def row_parts(key: str) -> tuple[str, str, str]:
     """(organization or "", type, name) from a package row's key."""
-    org = ""
+    org, _person, kind, name = row_owner(key)
+    return org, kind, name
+
+
+def row_owner(key: str) -> tuple[str, str, str, str]:
+    """(organization or "", person or "", type, name): ``@org/``, ``~person/`` or yours."""
+    org = person = ""
     if key.startswith("@"):
         org, _, key = key[1:].partition("/")
+    elif key.startswith("~"):
+        person, _, key = key[1:].partition("/")
     kind, _, name = key.partition("/")
-    return org, kind, name
+    return org, person, kind, name
 
 
 def _refused(exc: GitHubRestError, doing: str, scope: str) -> PackageError:
@@ -98,7 +108,7 @@ def _refused(exc: GitHubRestError, doing: str, scope: str) -> PackageError:
     return PackageError(f"Could not {doing}: {exc}")
 
 
-def package_row(raw: Mapping[str, Any], org: str = "") -> ExploreRow:
+def package_row(raw: Mapping[str, Any], org: str = "", person: str = "") -> ExploreRow:
     kind = str(raw.get("package_type") or "")
     name = str(raw.get("name") or "")
     visibility = str(raw.get("visibility") or "")
@@ -120,32 +130,47 @@ def package_row(raw: Mapping[str, Any], org: str = "") -> ExploreRow:
         url,
         repo,
         "package",
-        (f"@{org}/" if org else "") + f"{kind}/{name}",
+        (f"@{org}/" if org else f"~{person}/" if person else "") + f"{kind}/{name}",
     )
 
 
-def fetch_packages(api: GitHubApi, *, limit: int = 100, org: str = "") -> list[ExploreRow]:
-    """Every package of yours, or of *org*, each type asked for in turn."""
+def fetch_packages(
+    api: GitHubApi, *, limit: int = 100, org: str = "", person: str = ""
+) -> list[ExploreRow]:
+    """Every package of yours, of *org*, or *person*'s public ones, each type in turn."""
     rows: list[ExploreRow] = []
     for kind in PACKAGE_TYPES:
         try:
             data = api.rest(
                 "GET",
-                _base(org),
+                _base(org, person),
                 query={"package_type": kind, "per_page": str(max(1, min(limit, 100)))},
             ).data
         except GitHubRestError as exc:
             if exc.status in (400, 422):  # a type this account cannot hold
                 continue
             raise _refused(exc, "list your packages", "read:packages") from exc
-        rows += [package_row(raw, org) for raw in data or () if isinstance(raw, Mapping)]
+        rows += [package_row(raw, org, person) for raw in data or () if isinstance(raw, Mapping)]
     rows.sort(key=lambda row: row.label.lower())
     return rows[:limit]
 
 
-def fetch_versions(api: GitHubApi, kind: str, name: str, org: str = "") -> list[PackageVersion]:
+def fetch_versions(
+    api: GitHubApi,
+    kind: str,
+    name: str,
+    org: str = "",
+    *,
+    person: str = "",
+    state: str = "active",
+) -> list[PackageVersion]:
+    """A package's versions, newest first; *state* ``deleted`` lists the restorable ones."""
     try:
-        data = api.rest("GET", f"{_path(kind, name, org)}/versions", query={"per_page": "100"}).data
+        data = api.rest(
+            "GET",
+            f"{_path(kind, name, org, person)}/versions",
+            query={"per_page": "100", "state": state},
+        ).data
     except GitHubRestError as exc:
         raise _refused(exc, f"list the versions of {name}", "read:packages") from exc
     versions = []
@@ -205,3 +230,23 @@ def restore_package(api: GitHubApi, kind: str, name: str, org: str = "") -> str:
             ) from exc
         raise _refused(exc, f"restore {name.strip()}", "delete:packages") from exc
     return f"Restored the {kind} package {name.strip()}."
+
+
+def restore_version(
+    api: GitHubApi, kind: str, name: str, version: PackageVersion, org: str = ""
+) -> str:
+    """Bring back a version deleted in the last 30 days."""
+    try:
+        api.rest("POST", f"{_path(kind, name, org)}/versions/{version.id}/restore")
+    except GitHubRestError as exc:
+        raise _refused(exc, f"restore a version of {name}", "write:packages") from exc
+    return f"Restored version {version.name} of {name}."
+
+
+def versions_text(name: str, versions: list[PackageVersion]) -> str:
+    """Every version, one per line, for a window to read."""
+    if not versions:
+        return f"{name} has no versions."
+    count = len(versions)
+    heading = f"{name} has {count:,} version{'' if count == 1 else 's'}, newest first."
+    return "\n".join([heading, "", *(version.label + "." for version in versions)])

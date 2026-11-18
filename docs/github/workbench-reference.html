@@ -1809,6 +1809,12 @@ its price.</td>
 <td>Following: who this person follows.</td>
 </tr>
 <tr>
+<td>Packages (<code>person:person_packages</code>)</td>
+<td>person, person</td>
+<td>Packages: this person’s public packages. Show Versions lists each
+one’s versions.</td>
+</tr>
+<tr>
 <td>organization (<code>organization:organization</code>)</td>
 <td>organization</td>
 <td>An organization: its repositories.</td>
@@ -3007,8 +3013,9 @@ Delete Everywhere…; Properties…</li>
 Properties…</li>
 <li><strong>runner</strong>: Show Details, Runner Labels…, Remove
 Runner…, Open on GitHub, Copy Link; Properties…</li>
-<li><strong>package</strong>: Show Details, Open on GitHub, Delete
-Package Version…, Delete Package…, Copy Link; Properties…</li>
+<li><strong>package</strong>: Show Details, Open on GitHub, Show
+Versions, Restore Package Version…, Delete Package Version…, Delete
+Package…, Copy Link; Properties…</li>
 <li><strong>key</strong>: Show Details, Delete Key…, Open on GitHub;
 Properties…</li>
 <li><strong>advisory</strong>: Show Details, Publish or Close Advisory…,
@@ -3297,7 +3304,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 540 yes, 503 planned, 217 not needed and 744 left to
+<p>In all: 544 yes, 492 planned, 224 not needed and 744 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -10126,7 +10133,7 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 </tbody>
 </table>
 <h4 id="packages">Packages</h4>
-<p>27 operations: 10 yes, 14 planned, 3 not needed.</p>
+<p>27 operations: 14 yes, 3 planned, 10 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -10159,8 +10166,9 @@ organization</td>
 <tr>
 <td>Get a package for an organization</td>
 <td><code>GET /orgs/{org}/packages/{package_type}/{package_name}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Reads one package, which its list already shows in full; the
+Workbench reads the list.</td>
 </tr>
 <tr>
 <td>Restore a package for an organization</td>
@@ -10190,8 +10198,8 @@ reads the list.</td>
 <tr>
 <td>Restore package version for an organization</td>
 <td><code>POST /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Restore Package Version…</td>
 </tr>
 <tr>
 <td>Get list of conflicting packages during Docker migration for
@@ -10215,8 +10223,9 @@ authenticated-user</td>
 <tr>
 <td>Get a package for the authenticated user</td>
 <td><code>GET /user/packages/{package_type}/{package_name}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Reads one package, which its list already shows in full; the
+Workbench reads the list.</td>
 </tr>
 <tr>
 <td>Restore a package for the authenticated user</td>
@@ -10247,8 +10256,8 @@ reads the list.</td>
 <tr>
 <td>Restore a package version for the authenticated user</td>
 <td><code>POST /user/packages/{package_type}/{package_name}/versions/{package_version_id}/restore</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Restore Package Version…</td>
 </tr>
 <tr>
 <td>Get list of conflicting packages during Docker migration for
@@ -10260,38 +10269,42 @@ user</td>
 <tr>
 <td>List packages for a user</td>
 <td><code>GET /users/{username}/packages</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; Packages</td>
 </tr>
 <tr>
 <td>Delete a package for a user</td>
 <td><code>DELETE /users/{username}/packages/{package_type}/{package_name}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Only a package’s owner may change it, and the owner reaches the same
+change through the /user route the Workbench already uses.</td>
 </tr>
 <tr>
 <td>Get a package for a user</td>
 <td><code>GET /users/{username}/packages/{package_type}/{package_name}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Reads one package, which its list already shows in full; the
+Workbench reads the list.</td>
 </tr>
 <tr>
 <td>Restore a package for a user</td>
 <td><code>POST /users/{username}/packages/{package_type}/{package_name}/restore</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Only a package’s owner may change it, and the owner reaches the same
+change through the /user route the Workbench already uses.</td>
 </tr>
 <tr>
 <td>List package versions for a package owned by a user</td>
 <td><code>GET /users/{username}/packages/{package_type}/{package_name}/versions</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Show Versions</td>
 </tr>
 <tr>
 <td>Delete package version for a user</td>
 <td><code>DELETE /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Only a package’s owner may change it, and the owner reaches the same
+change through the /user route the Workbench already uses.</td>
 </tr>
 <tr>
 <td>Get a package version for a user</td>
@@ -10303,8 +10316,9 @@ reads the list.</td>
 <tr>
 <td>Restore package version for a user</td>
 <td><code>POST /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Only a package’s owner may change it, and the owner reaches the same
+change through the /user route the Workbench already uses.</td>
 </tr>
 </tbody>
 </table>

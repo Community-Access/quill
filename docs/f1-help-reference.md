@@ -2726,6 +2726,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **person: Following.** Following: who this person follows.
 
+**person: Packages.** Packages: this person's public packages. Show Versions lists each one's versions.
+
 **organization: organization.** An organization: its repositories.
 
 **organization: Repositories.** Repositories: the organization's repositories you can see.
@@ -3339,6 +3341,10 @@ Control coverage: 365 audited sites (365 helped).
 **Runner Labels.** Add a label, or take one away.
 
 **Remove Runner.** GitHub forgets it; asks first.
+
+**Show Versions.** Every version, newest first, with its tags.
+
+**Restore Package Version.** Bring back a version deleted in the last 30 days.
 
 **Delete Package Version.** Choose a version, newest first with its tags, and delete it after asking.
 

@@ -59,6 +59,20 @@ ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
         _default("show_details", "Show Details", "The package's type, visibility and repository."),
         _OPEN_WEB,
         _a(
+            "show_package_versions",
+            "Show Versions",
+            _R,
+            "sign_in",
+            "Every version, newest first, with its tags.",
+        ),
+        _a(
+            "restore_package_version",
+            "Restore Package Version...",
+            _W,
+            "sign_in",
+            "Bring back a version deleted in the last 30 days.",
+        ),
+        _a(
             "delete_package_version",
             "Delete Package Version...",
             _D,

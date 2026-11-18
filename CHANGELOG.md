@@ -620,6 +620,19 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Package versions: see them, restore one, and other people's packages (2026-11-18)
+
+- **Show Versions** on any package lists every version, newest first, with
+  its tags, in a window you can read through.
+- **Restore Package Version...** on your own or your organization's package
+  lists the versions deleted in the last 30 days and brings back the one you
+  choose.
+- **People >** a person **> Packages** lists that person's public packages.
+  Show Versions works on them; deleting and restoring do not, since only a
+  package's owner may change it.
+
+Planned GitHub endpoints fall from 503 to 492.
+
 ### Copilot Autofix, every place an alert was found, and SARIF uploads (2026-11-18)
 
 Three more things to do with code scanning in the GitHub Workbench, beyond

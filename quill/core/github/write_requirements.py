@@ -116,6 +116,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}remove_runner": ("repo:admin", _D),
     f"{_P}delete_package_version": ("sign_in+scope:delete:packages", _D),
     f"{_P}delete_package": ("sign_in+scope:delete:packages", _D),
+    f"{_P}restore_package_version": ("sign_in+scope:write:packages", _V),
     f"{_P}new_star_list": ("sign_in+scope:user", _O),
     f"{_P}star_lists": ("sign_in+scope:user", _O),
     f"{_P}edit_star_list": ("sign_in+scope:user", _V),

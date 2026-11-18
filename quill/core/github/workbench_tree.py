@@ -468,6 +468,7 @@ _PERSON: tuple[NodeSpec, ...] = (
             ("person_activity", "Activity", "person_activity", "event"),
             ("person_followers", "Followers", "person_followers", "person"),
             ("person_following", "Following", "person_following", "person"),
+            ("person_packages", "Packages", "person_packages", "package"),
         )
     ),
 )

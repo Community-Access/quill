@@ -267,6 +267,9 @@ NODE_HELP: dict[str, str] = {
     ),
     "person:person_activity": "Activity: what this person did lately on GitHub.",
     "person:person_followers": "Followers: who follows this person.",
+    "person:person_packages": (
+        "Packages: this person's public packages. Show Versions lists each one's versions."
+    ),
     "person:person_following": "Following: who this person follows.",
     "organization:organization": "An organization: its repositories.",
     "organization:organization_templates": (

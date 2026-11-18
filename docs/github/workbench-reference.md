@@ -667,6 +667,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Activity (`person:person_activity`) | person, person | Activity: what this person did lately on GitHub. |
 | Followers (`person:person_followers`) | person, person | Followers: who follows this person. |
 | Following (`person:person_following`) | person, person | Following: who this person follows. |
+| Packages (`person:person_packages`) | person, person | Packages: this person's public packages. Show Versions lists each one's versions. |
 | organization (`organization:organization`) | organization | An organization: its repositories. |
 | Repositories (`organization:organization_repositories`) | organization, organization | Repositories: the organization's repositories you can see. |
 | Teams (`organization:organization_teams`) | organization, organization | Teams: the organization's teams, as GitHub nests them. Alt+Enter opens a team's sheet: its members and maintainers, repositories and roles, child teams and code review assignment. |
@@ -940,7 +941,7 @@ Keys the window answers that are not menu rows:
 - **by_name**: Variants and Missing From, Make Them the Same..., Add to Missing..., Find Uses, Rename Everywhere..., Merge Into...; More: Close Everywhere..., Move Open Work To..., Promote to Organization..., Delete Everywhere...; Properties...
 - **fleet**: Open Repository, Open on GitHub, Copy Link; Properties...
 - **runner**: Show Details, Runner Labels..., Remove Runner..., Open on GitHub, Copy Link; Properties...
-- **package**: Show Details, Open on GitHub, Delete Package Version..., Delete Package..., Copy Link; Properties...
+- **package**: Show Details, Open on GitHub, Show Versions, Restore Package Version..., Delete Package Version..., Delete Package..., Copy Link; Properties...
 - **key**: Show Details, Delete Key..., Open on GitHub; Properties...
 - **advisory**: Show Details, Publish or Close Advisory..., Request CVE..., Open on GitHub, Copy Link; Properties...
 - **webhook**: Show Details, Ping, Recent Deliveries..., Change Address or Secret..., Delete Webhook..., Open on GitHub; Properties...
@@ -1050,7 +1051,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
+In all: 544 yes, 492 planned, 224 not needed and 744 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2260,37 +2261,37 @@ In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 
 #### Packages
 
-27 operations: 10 yes, 14 planned, 3 not needed.
+27 operations: 14 yes, 3 planned, 10 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | Get list of conflicting packages during Docker migration for organization | `GET /orgs/{org}/docker/conflicts` | Planned | Repositories > My Packages; Package sheet. |
 | List packages for an organization | `GET /orgs/{org}/packages` | Yes | Navigator: Organization > organization > Packages |
 | Delete a package for an organization | `DELETE /orgs/{org}/packages/{package_type}/{package_name}` | Yes | context menu > Delete Package... |
-| Get a package for an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
+| Get a package for an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}` | Not needed | Reads one package, which its list already shows in full; the Workbench reads the list. |
 | Restore a package for an organization | `POST /orgs/{org}/packages/{package_type}/{package_name}/restore` | Yes | Navigator: Organization > organization > Packages |
 | List package versions for a package owned by an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}/versions` | Yes | context menu > Delete Package Version... |
 | Delete package version for an organization | `DELETE /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Yes | context menu > Delete Package Version... |
 | Get a package version for an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Restore package version for an organization | `POST /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Planned | Repositories > My Packages; Package sheet. |
+| Restore package version for an organization | `POST /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Yes | context menu > Restore Package Version... |
 | Get list of conflicting packages during Docker migration for authenticated-user | `GET /user/docker/conflicts` | Planned | Repositories > My Packages; Package sheet. |
 | List packages for the authenticated user's namespace | `GET /user/packages` | Yes | Navigator: Repositories > My Packages |
 | Delete a package for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}` | Yes | context menu > Delete Package... |
-| Get a package for the authenticated user | `GET /user/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
+| Get a package for the authenticated user | `GET /user/packages/{package_type}/{package_name}` | Not needed | Reads one package, which its list already shows in full; the Workbench reads the list. |
 | Restore a package for the authenticated user | `POST /user/packages/{package_type}/{package_name}/restore` | Yes | Navigator: Repositories > My Packages |
 | List package versions for a package owned by the authenticated user | `GET /user/packages/{package_type}/{package_name}/versions` | Yes | context menu > Delete Package Version... |
 | Delete a package version for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}/versions/{package_version_id}` | Yes | context menu > Delete Package Version... |
 | Get a package version for the authenticated user | `GET /user/packages/{package_type}/{package_name}/versions/{package_version_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Restore a package version for the authenticated user | `POST /user/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Planned | Repositories > My Packages; Package sheet. |
+| Restore a package version for the authenticated user | `POST /user/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Yes | context menu > Restore Package Version... |
 | Get list of conflicting packages during Docker migration for user | `GET /users/{username}/docker/conflicts` | Planned | Repositories > My Packages; Package sheet. |
-| List packages for a user | `GET /users/{username}/packages` | Planned | Repositories > My Packages; Package sheet. |
-| Delete a package for a user | `DELETE /users/{username}/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
-| Get a package for a user | `GET /users/{username}/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
-| Restore a package for a user | `POST /users/{username}/packages/{package_type}/{package_name}/restore` | Planned | Repositories > My Packages; Package sheet. |
-| List package versions for a package owned by a user | `GET /users/{username}/packages/{package_type}/{package_name}/versions` | Planned | Repositories > My Packages; Package sheet. |
-| Delete package version for a user | `DELETE /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Planned | Repositories > My Packages; Package sheet. |
+| List packages for a user | `GET /users/{username}/packages` | Yes | Navigator: Person > person > Packages |
+| Delete a package for a user | `DELETE /users/{username}/packages/{package_type}/{package_name}` | Not needed | Only a package's owner may change it, and the owner reaches the same change through the /user route the Workbench already uses. |
+| Get a package for a user | `GET /users/{username}/packages/{package_type}/{package_name}` | Not needed | Reads one package, which its list already shows in full; the Workbench reads the list. |
+| Restore a package for a user | `POST /users/{username}/packages/{package_type}/{package_name}/restore` | Not needed | Only a package's owner may change it, and the owner reaches the same change through the /user route the Workbench already uses. |
+| List package versions for a package owned by a user | `GET /users/{username}/packages/{package_type}/{package_name}/versions` | Yes | context menu > Show Versions |
+| Delete package version for a user | `DELETE /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Not needed | Only a package's owner may change it, and the owner reaches the same change through the /user route the Workbench already uses. |
 | Get a package version for a user | `GET /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Restore package version for a user | `POST /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Planned | Repositories > My Packages; Package sheet. |
+| Restore package version for a user | `POST /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Not needed | Only a package's owner may change it, and the owner reaches the same change through the /user route the Workbench already uses. |
 
 #### Pages
 
