@@ -1100,6 +1100,13 @@ to.</td>
 <td>Watched: repositories whose activity GitHub tells you about.</td>
 </tr>
 <tr>
+<td>My Packages (<code>:packages</code>)</td>
+<td>repositories</td>
+<td>My Packages: your container images and npm, Maven, RubyGems and
+NuGet packages, with Delete Package Version and Delete Package on
+each.</td>
+</tr>
+<tr>
 <td>Organizations (<code>:organizations</code>)</td>
 <td>repositories</td>
 <td>Organizations: the organizations you belong to. Enter on one opens
@@ -1409,6 +1416,13 @@ jobs.</td>
 <td>Workflows: the automations defined in the repository.</td>
 </tr>
 <tr>
+<td>Runners (<code>repository:runners</code>)</td>
+<td>repository, actions</td>
+<td>Runners: the machines this repository runs its own jobs on, online
+or not, busy or idle, with their labels. Only administrators can see
+them.</td>
+</tr>
+<tr>
 <td>Caches (<code>repository:caches</code>)</td>
 <td>repository, actions</td>
 <td>Caches: files Actions kept between runs. Delete removes one.</td>
@@ -1522,6 +1536,12 @@ on in Workbench Options.</td>
 <td>repository, insights</td>
 <td>Community Profile: the README, license and guidelines GitHub
 checks.</td>
+</tr>
+<tr>
+<td>Commit Activity (<code>repository:commit_activity</code>)</td>
+<td>repository, insights</td>
+<td>Commit Activity: GitHub’s statistics graphs as rows: commits and
+lines each week, the busiest hours, and each contributor’s lines.</td>
 </tr>
 <tr>
 <td>Deployments and Environments
@@ -2332,6 +2352,18 @@ against its parent.</td>
 Codespaces, settings and administration, as a list you can run
 from.</td>
 </tr>
+<tr>
+<td>Export Software Bill of Materials…</td>
+<td>Ctrl+Alt+B</td>
+<td>Save the repository’s dependency graph as an SPDX file: every
+package it uses.</td>
+</tr>
+<tr>
+<td>Transfer Repository…</td>
+<td>Ctrl+Alt+T</td>
+<td>Move the repository to another person or organization; asks for its
+name first.</td>
+</tr>
 </tbody>
 </table>
 <h4 id="account">Account</h4>
@@ -2587,8 +2619,12 @@ Branch…; Properties…</li>
 <li><strong>commit</strong>: Open, Commit Comments…, Set Status…,
 Compare With Previous, Compare With Default, Copy Link, Open on GitHub;
 Properties…</li>
-<li><strong>tag</strong>: Open, Delete Tag…, Commit Comments…, Compare
-With Previous, Compare With Default, Copy Link, Open on GitHub;
+<li><strong>tag</strong>: Open, Delete Tag…, Read Tag Message, Commit
+Comments…, Compare With Previous, Compare With Default; More: Copy Link,
+Open on GitHub; Properties…</li>
+<li><strong>package</strong>: Show Details, Open on GitHub, Delete
+Package Version…, Delete Package…, Copy Link; Properties…</li>
+<li><strong>runner</strong>: Show Details, Open on GitHub, Copy Link;
 Properties…</li>
 <li><strong>invitation</strong>: Accept Invitation…, Decline
 Invitation…, Open on GitHub, Copy Link; Properties…</li>
@@ -2748,6 +2784,9 @@ short paragraph on what it is for.</td>
 <ul>
 <li><strong>Actions</strong>: GitHub’s automation: workflows that run on
 events, such as a push.</li>
+<li><strong>Annotated tag</strong>: A tag that carries a message, who
+made it and when. Releases usually use one. A lightweight tag is only a
+name for a commit.</li>
 <li><strong>Artifact</strong>: A file a run produced and kept, to
 download.</li>
 <li><strong>Assignee</strong>: The person an issue or pull request is
@@ -2804,6 +2843,9 @@ pull requests belong to.</li>
 on a thread you are part of. Under Needs My Attention.</li>
 <li><strong>Organization</strong>: An account many people share, which
 owns repositories and teams.</li>
+<li><strong>Package</strong>: Something a project publishes besides its
+code, such as a container image or an npm package, kept on GitHub
+Packages in versions.</li>
 <li><strong>Pin</strong>: A repository kept on this computer under
 Repositories, Pinned.</li>
 <li><strong>Project</strong>: A board or table for planning issues and
@@ -2833,6 +2875,9 @@ maintain or admin.</li>
 that can cover many branches.</li>
 <li><strong>Run</strong>: One time a workflow ran, with its jobs, steps
 and logs. Under Actions, Runs.</li>
+<li><strong>Runner</strong>: A machine that runs a workflow’s jobs.
+GitHub provides them, or a repository brings its own, called
+self-hosted, listed under Actions &gt; Runners.</li>
 <li><strong>Saved search</strong>: A search kept on this computer, to
 run again. Under Saved Searches.</li>
 <li><strong>Secret</strong>: A value, such as a password, that workflows
