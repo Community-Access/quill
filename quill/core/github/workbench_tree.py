@@ -431,6 +431,21 @@ _REPOSITORY: tuple[NodeSpec, ...] = (
         needs=frozenset({Need.SIGN_IN, Need.ADMIN}),
         loader="admin:general",
     ),
+    *(
+        _r(
+            key,
+            label,
+            "settings",
+            needs=frozenset({Need.SIGN_IN, Need.ADMIN}),
+            loader=f"explore:{key}",
+            row_type=row,
+        )
+        for key, label, row in (
+            ("webhooks", "Webhooks", "webhook"),
+            ("deploy_keys", "Deploy Keys", "deploy_key"),
+            ("autolinks", "Autolinks", "autolink"),
+        )
+    ),
 )
 
 _PERSON: tuple[NodeSpec, ...] = (

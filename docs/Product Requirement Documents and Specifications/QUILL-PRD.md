@@ -17556,7 +17556,9 @@ as sentences. Unlink Branch... and Not a Duplicate... on an issue
 Security > Policy and Advisories, private reports and drafts, and Search >
 Security Advisories (`quill/core/github/security_advisories.py`) cover GX11.
 People > My Keys (`quill/core/github/account_keys.py`) lists, adds and
-deletes your SSH, GPG and signing keys.
+deletes your SSH, GPG and signing keys. Settings > Webhooks, Deploy Keys and
+Autolinks (`quill/core/github/repo_settings_lists.py`) list, add and delete
+each; a webhook secret is write-only and never said.
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

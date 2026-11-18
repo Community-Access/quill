@@ -1632,6 +1632,25 @@ first. Enter opens the setting.</td>
 one.</td>
 </tr>
 <tr>
+<td>Webhooks (<code>repository:webhooks</code>)</td>
+<td>repository, settings</td>
+<td>Webhooks: the addresses GitHub tells about events here. Ctrl+N adds
+one; Recent Deliveries on a webhook says what was sent and redelivers
+it.</td>
+</tr>
+<tr>
+<td>Deploy Keys (<code>repository:deploy_keys</code>)</td>
+<td>repository, settings</td>
+<td>Deploy Keys: SSH keys that let a server clone, pull or push this one
+repository. Ctrl+N adds one.</td>
+</tr>
+<tr>
+<td>Autolinks (<code>repository:autolinks</code>)</td>
+<td>repository, settings</td>
+<td>Autolinks: prefixes such as BUG- that GitHub turns into links.
+Ctrl+N adds one.</td>
+</tr>
+<tr>
 <td>person (<code>person:person</code>)</td>
 <td>person</td>
 <td>A person: their repositories, activity, followers and who they
@@ -2686,6 +2705,13 @@ Label…; Properties…</li>
 on GitHub, Delete Gist…; Properties…</li>
 <li><strong>discussion</strong>: Open Discussion Thread, Read as
 Document…, Copy Link, Open on GitHub; Properties…</li>
+<li><strong>webhook</strong>: Show Details, Ping, Recent Deliveries…,
+Change Address or Secret…, Delete Webhook…, Open on GitHub;
+Properties…</li>
+<li><strong>deploy_key</strong>: Show Details, Delete Deploy Key…, Open
+on GitHub; Properties…</li>
+<li><strong>autolink</strong>: Show Details, Delete Autolink…, Open on
+GitHub; Properties…</li>
 <li><strong>key</strong>: Show Details, Delete Key…, Open on GitHub;
 Properties…</li>
 <li><strong>advisory</strong>: Show Details, Publish or Close Advisory…,
@@ -2839,6 +2865,8 @@ name for a commit.</li>
 download.</li>
 <li><strong>Assignee</strong>: The person an issue or pull request is
 given to.</li>
+<li><strong>Autolink</strong>: A prefix, such as BUG-, that GitHub turns
+into a link to another system.</li>
 <li><strong>Branch</strong>: A line of work: a name that follows the
 newest commit of one set of changes. Under Code, Branches.</li>
 <li><strong>Branch protection</strong>: Rules that decide who may change
@@ -2853,6 +2881,8 @@ repository ready to work on. It can cost money.</li>
 repository.</li>
 <li><strong>Commit</strong>: A saved change, with a message saying why.
 Under Code, Commits.</li>
+<li><strong>Deploy key</strong>: An SSH key that reaches one repository
+only, for a server to clone, pull or push.</li>
 <li><strong>Deployment</strong>: Code sent to an environment, such as a
 website.</li>
 <li><strong>Discussion</strong>: A conversation in a repository that is
@@ -2964,6 +2994,9 @@ repository’s activity.</li>
 you when something happens on GitHub: a run finishes, a review arrives,
 a release or a comment. Under Watches. Not the same as watching a
 repository on GitHub, which sends notifications.</li>
+<li><strong>Webhook</strong>: An address GitHub sends a message to when
+something happens in a repository, such as a push. Continuous
+integration and chat bots use them.</li>
 <li><strong>Workflow</strong>: One automation, defined in a file in the
 repository. Under Actions, Workflows.</li>
 <li><strong>Workflow dispatch</strong>: Starting a workflow by hand, on
@@ -2990,7 +3023,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 363 yes, 1100 planned, 15 not needed and 526 left to
+<p>In all: 373 yes, 1090 planned, 15 not needed and 526 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -7519,7 +7552,7 @@ repository.</td>
 </tbody>
 </table>
 <h4 id="deploy-keys">Deploy keys</h4>
-<p>4 operations: 2 yes, 2 planned.</p>
+<p>4 operations: 4 yes.</p>
 <table>
 <thead>
 <tr>
@@ -7539,14 +7572,15 @@ repository.</td>
 <tr>
 <td>Create a deploy key</td>
 <td><code>POST /repos/{owner}/{repo}/keys</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Deploy Keys.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Deploy
+Keys</td>
 </tr>
 <tr>
 <td>Delete a deploy key</td>
 <td><code>DELETE /repos/{owner}/{repo}/keys/{key_id}</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Deploy Keys.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Deploy Key…</td>
 </tr>
 <tr>
 <td>Get a deploy key</td>
@@ -10726,7 +10760,7 @@ user</td>
 </tbody>
 </table>
 <h4 id="repositories">Repositories</h4>
-<p>74 operations: 39 yes, 35 planned.</p>
+<p>74 operations: 47 yes, 27 planned.</p>
 <table>
 <thead>
 <tr>
@@ -10795,14 +10829,15 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 <tr>
 <td>Create an autolink reference for a repository</td>
 <td><code>POST /repos/{owner}/{repo}/autolinks</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Autolinks.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt;
+Autolinks</td>
 </tr>
 <tr>
 <td>Delete an autolink reference from a repository</td>
 <td><code>DELETE /repos/{owner}/{repo}/autolinks/{autolink_id}</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Autolinks.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Autolink…</td>
 </tr>
 <tr>
 <td>Get an autolink reference of a repository</td>
@@ -10898,14 +10933,15 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 <tr>
 <td>Create a repository webhook</td>
 <td><code>POST /repos/{owner}/{repo}/hooks</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt;
+Webhooks</td>
 </tr>
 <tr>
 <td>Delete a repository webhook</td>
 <td><code>DELETE /repos/{owner}/{repo}/hooks/{hook_id}</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Webhook…</td>
 </tr>
 <tr>
 <td>Get a repository webhook</td>
@@ -10928,14 +10964,14 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 <tr>
 <td>Update a webhook configuration for a repository</td>
 <td><code>PATCH /repos/{owner}/{repo}/hooks/{hook_id}/config</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Change Address or Secret…</td>
 </tr>
 <tr>
 <td>List deliveries for a repository webhook</td>
 <td><code>GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Recent Deliveries…</td>
 </tr>
 <tr>
 <td>Get a delivery for a repository webhook</td>
@@ -10946,14 +10982,14 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 <tr>
 <td>Redeliver a delivery for a repository webhook</td>
 <td><code>POST /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Recent Deliveries…</td>
 </tr>
 <tr>
 <td>Ping a repository webhook</td>
 <td><code>POST /repos/{owner}/{repo}/hooks/{hook_id}/pings</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Yes</td>
+<td>context menu &gt; Ping</td>
 </tr>
 <tr>
 <td>Test the push repository webhook</td>

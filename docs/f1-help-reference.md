@@ -2666,6 +2666,12 @@ Control coverage: 365 audited sites (365 helped).
 
 **repository: General.** General: the name, visibility and default branch. Enter opens one.
 
+**repository: Webhooks.** Webhooks: the addresses GitHub tells about events here. Ctrl+N adds one; Recent Deliveries on a webhook says what was sent and redelivers it.
+
+**repository: Deploy Keys.** Deploy Keys: SSH keys that let a server clone, pull or push this one repository. Ctrl+N adds one.
+
+**repository: Autolinks.** Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one.
+
 **person: person.** A person: their repositories, activity, followers and who they follow.
 
 **person: Profile.** Profile: who this person is, their year of contributions as numbers, and what they pinned.
@@ -3159,6 +3165,18 @@ Control coverage: 365 audited sites (365 helped).
 **Delete Gist.** Delete the gist.
 
 **Open Discussion Thread.** Read the whole thread.
+
+**Ping.** Send it a test message.
+
+**Recent Deliveries.** Read and redeliver.
+
+**Change Address or Secret.** The secret is write-only.
+
+**Delete Webhook.** Stop sending it anything.
+
+**Delete Deploy Key.** Remove it; asks first.
+
+**Delete Autolink.** Remove it; asks first.
 
 **Delete Key.** Remove it; asks first.
 

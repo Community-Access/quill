@@ -1176,11 +1176,14 @@ a home and a Properties sheet:
   organization. Create, edit the address, content type and events (every
   event GitHub offers, as a check list), turn on or off, see recent
   deliveries and their responses, redeliver, ping. The webhook secret is
-  write-only: you can set a new one, never read the old one.
+  write-only: you can set a new one, never read the old one. *(Repository
+  webhooks built 2026-11-18, `repo_settings_lists.py`; an organization's
+  remain.)*
 - **Deploy keys:** Repository > Settings > Deploy Keys. Add (title, key,
   read-only or read-write), delete. The key text is shown as GitHub shows it.
+  *(Built 2026-11-18.)*
 - **Autolink references:** Repository > Settings > Autolinks. Add a prefix and
-  URL template (alphanumeric or numeric), delete.
+  URL template (alphanumeric or numeric), delete. *(Built 2026-11-18.)*
 - **Secret and variable values:** variables are read and written in full.
   Secrets stay write-only, as GitHub itself keeps them: Set Value... encrypts
   the new value with the repository's or environment's or organization's

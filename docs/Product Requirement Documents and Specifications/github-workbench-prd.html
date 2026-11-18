@@ -1909,6 +1909,21 @@ shown as GitHub shows it.</li>
 <li><strong>Autolink references:</strong> Repository &gt; Settings &gt;
 Autolinks. Add a prefix and URL template (alphanumeric or numeric),
 delete.</li>
+<li><strong>Built 2026-11-18, for a repository:</strong> Settings &gt;
+Webhooks, Deploy Keys and Autolinks (explore views
+<code>webhooks</code>, <code>deploy_keys</code>, <code>autolinks</code>;
+row types <code>webhook</code>, <code>deploy_key</code>,
+<code>autolink</code>;
+<code>quill/core/github/repo_settings_lists.py</code>,
+<code>quill/ui/github_workbench_settings_lists.py</code>). New Here adds
+each; a webhook’s events are push, everything, or a check list of the
+common ones, and its secret goes through a
+<code>wx.PasswordEntryDialog</code>, sent once and never said, shown or
+kept. Ping, Recent Deliveries… with redelivery, Change Address or
+Secret… (<code>PATCH .../config</code>), and Delete on each; Delete is
+the key’s action on all three. Turning a webhook on or off stays on its
+sheet. An organization’s webhooks and editing a webhook’s events remain
+planned.</li>
 <li><strong>Secret and variable values:</strong> variables are read and
 written in full. Secrets stay write-only, as GitHub itself keeps them:
 Set Value… encrypts the new value with the repository’s or environment’s

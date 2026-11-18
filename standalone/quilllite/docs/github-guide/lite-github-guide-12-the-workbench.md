@@ -406,6 +406,9 @@ own list, and `Shift+F1` reads it with the keys:
 - **A security advisory:** Show Details, Publish or Close Advisory, Request
   CVE, Open on GitHub and Copy Link.
 - **A key:** Show Details, Delete Key and Open on GitHub.
+- **A webhook:** Show Details, Ping, Recent Deliveries, Change Address or
+  Secret, and Delete Webhook.
+- **A deploy key or an autolink:** Show Details, Delete, and Open on GitHub.
 - **A notification:** Open, Mark Read, Mark Done, Unsubscribe from Thread, and
   Snooze for One Day. Snoozing hides it in the Workbench on this computer
   until tomorrow and changes nothing on GitHub; Unsnooze Locally brings it

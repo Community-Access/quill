@@ -414,6 +414,33 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _OPEN_WEB,
         _PROPERTIES,
     ),
+    "webhook": (
+        _default("show_details", "Show Details", "Its address, events and last delivery."),
+        _a("ping_webhook", "Ping", _O, "admin", "Send it a test message."),
+        _a("webhook_deliveries", "Recent Deliveries...", _W, "admin", "Read and redeliver."),
+        _a(
+            "change_webhook",
+            "Change Address or Secret...",
+            _W,
+            "admin",
+            "The secret is write-only.",
+        ),
+        _a("delete_webhook", "Delete Webhook...", _D, "admin", "Stop sending it anything."),
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
+    "deploy_key": (
+        _default("show_details", "Show Details", "The key, its fingerprint and access."),
+        _a("delete_deploy_key", "Delete Deploy Key...", _D, "admin", "Remove it; asks first."),
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
+    "autolink": (
+        _default("show_details", "Show Details", "The prefix and the address it links to."),
+        _a("delete_autolink", "Delete Autolink...", _D, "admin", "Remove it; asks first."),
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
     "key": (
         _default("show_details", "Show Details", "The key, its fingerprint, and when it was used."),
         _a("delete_key", "Delete Key...", _D, "sign_in", "Remove it; asks first."),

@@ -66,6 +66,14 @@ GLOSSARY: dict[str, str] = {
         "A tag that carries a message, who made it and when. Releases usually use one. "
         "A lightweight tag is only a name for a commit."
     ),
+    "Webhook": (
+        "An address GitHub sends a message to when something happens in a repository, "
+        "such as a push. Continuous integration and chat bots use them."
+    ),
+    "Deploy key": (
+        "An SSH key that reaches one repository only, for a server to clone, pull or push."
+    ),
+    "Autolink": ("A prefix, such as BUG-, that GitHub turns into a link to another system."),
     "Key": (
         "An SSH key lets git push and pull without a password; a GPG key or SSH signing "
         "key marks your commits Verified. GitHub keeps only the public half."
@@ -162,6 +170,9 @@ ROW_TYPE_WORDS: dict[str, str] = {
     "package": "Package",
     "advisory": "Security advisory",
     "key": "Key",
+    "webhook": "Webhook",
+    "deploy_key": "Deploy key",
+    "autolink": "Autolink",
     "repository": "Repository",
     "person": "Mention",
     "label": "Label",

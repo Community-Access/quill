@@ -195,6 +195,10 @@ CVE..., and Search > Security Advisories (`security_advisories.py`,
 **2026-11-18, keys.** People > My Keys: SSH, GPG and signing keys, add and
 delete (`account_keys.py`, `github_workbench_account_keys.py`).
 
+**2026-11-18, settings lists.** Settings > Webhooks (ping, deliveries,
+redeliver, address and secret), Deploy Keys and Autolinks
+(`repo_settings_lists.py`, `github_workbench_settings_lists.py`).
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

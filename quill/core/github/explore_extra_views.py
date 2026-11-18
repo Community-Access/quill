@@ -33,6 +33,9 @@ EXTRA_REPO_VIEWS = frozenset({
     "commit_stats",
     "advisories",
     "security_policy",
+    "webhooks",
+    "deploy_keys",
+    "autolinks",
     "actions_caches",
     "secrets",
     "merge_queue",
@@ -129,6 +132,19 @@ def fetch_extra_view(
             return fetch_insights(token, repo, limit=limit, warnings=warnings)
         if view == "community":
             return fetch_community_profile(token, repo)
+        if view in ("webhooks", "deploy_keys", "autolinks"):
+            from quill.core.github import repo_settings_lists as lists
+            from quill.core.github.workbench_api import TokenApi
+
+            fetch = {
+                "webhooks": lists.fetch_webhooks,
+                "deploy_keys": lists.fetch_deploy_keys,
+                "autolinks": lists.fetch_autolinks,
+            }[view]
+            try:
+                return fetch(TokenApi(token), repo)
+            except lists.SettingsListError as exc:
+                raise GitHubExploreError(str(exc.args[0])) from exc
         if view in ("advisories", "security_policy"):
             from quill.core.github.security_advisories import (
                 AdvisoryError,

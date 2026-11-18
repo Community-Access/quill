@@ -620,6 +620,15 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Webhooks, deploy keys and autolinks (2026-11-18)
+
+**Repository > Settings** in the GitHub Workbench now has **Webhooks**,
+**Deploy Keys** and **Autolinks**, each a list of sentences with `Ctrl+N` to
+add one and Delete to remove one. A webhook also has Ping, Recent Deliveries
+with redelivery, and Change Address or Secret; its secret is typed in a
+password box and never shown, said or kept. Chapter 7 of the GitHub Guide has
+the details.
+
 ### Your SSH, GPG and signing keys (2026-11-18)
 
 **People > My Keys** in the GitHub Workbench lists your SSH keys, GPG keys and

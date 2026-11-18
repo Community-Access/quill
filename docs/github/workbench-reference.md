@@ -637,6 +637,9 @@ Everything below is generated from the tables the window is built from. The GitH
 | Secret and Variable Names (`repository:secrets`) | repository, settings | Secret and Variable Names: the names only; GitHub never shows values. |
 | Branch Protection (`repository:branch_protection`) | repository, settings | Branch Protection: who may change a branch and what a change needs first. Enter opens the setting. |
 | General (`repository:general`) | repository, settings | General: the name, visibility and default branch. Enter opens one. |
+| Webhooks (`repository:webhooks`) | repository, settings | Webhooks: the addresses GitHub tells about events here. Ctrl+N adds one; Recent Deliveries on a webhook says what was sent and redelivers it. |
+| Deploy Keys (`repository:deploy_keys`) | repository, settings | Deploy Keys: SSH keys that let a server clone, pull or push this one repository. Ctrl+N adds one. |
+| Autolinks (`repository:autolinks`) | repository, settings | Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one. |
 | person (`person:person`) | person | A person: their repositories, activity, followers and who they follow. |
 | Profile (`person:person_profile`) | person, person | Profile: who this person is, their year of contributions as numbers, and what they pinned. |
 | Repositories (`person:person_repositories`) | person, person | Repositories: this person's public repositories. |
@@ -875,6 +878,9 @@ Keys the window answers that are not menu rows:
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
 - **gist**: Edit Gist..., Star or Unstar, Copy Link, Open on GitHub, Delete Gist...; Properties...
 - **discussion**: Open Discussion Thread, Read as Document..., Copy Link, Open on GitHub; Properties...
+- **webhook**: Show Details, Ping, Recent Deliveries..., Change Address or Secret..., Delete Webhook..., Open on GitHub; Properties...
+- **deploy_key**: Show Details, Delete Deploy Key..., Open on GitHub; Properties...
+- **autolink**: Show Details, Delete Autolink..., Open on GitHub; Properties...
 - **key**: Show Details, Delete Key..., Open on GitHub; Properties...
 - **advisory**: Show Details, Publish or Close Advisory..., Request CVE..., Open on GitHub, Copy Link; Properties...
 - **security_alert**: Open, Dismiss or Reopen Alert..., Open on GitHub; Properties...
@@ -921,6 +927,7 @@ Keys the window answers that are not menu rows:
 - **Annotated tag**: A tag that carries a message, who made it and when. Releases usually use one. A lightweight tag is only a name for a commit.
 - **Artifact**: A file a run produced and kept, to download.
 - **Assignee**: The person an issue or pull request is given to.
+- **Autolink**: A prefix, such as BUG-, that GitHub turns into a link to another system.
 - **Branch**: A line of work: a name that follows the newest commit of one set of changes. Under Code, Branches.
 - **Branch protection**: Rules that decide who may change a branch and what a change needs.
 - **Cache**: Files Actions keeps between runs to make them faster. Under Actions, Caches.
@@ -928,6 +935,7 @@ Keys the window answers that are not menu rows:
 - **Codespace**: A computer in the cloud with the repository ready to work on. It can cost money.
 - **Collaborator**: Somebody given access to one repository.
 - **Commit**: A saved change, with a message saying why. Under Code, Commits.
+- **Deploy key**: An SSH key that reaches one repository only, for a server to clone, pull or push.
 - **Deployment**: Code sent to an environment, such as a website.
 - **Discussion**: A conversation in a repository that is not an issue.
 - **Draft**: A pull request that is not ready for review yet.
@@ -976,6 +984,7 @@ Keys the window answers that are not menu rows:
 - **Variable**: A value workflows use that is not secret.
 - **Watch**: Asking GitHub to tell you about a repository's activity.
 - **Watch rule**: A rule kept on this computer that tells you when something happens on GitHub: a run finishes, a review arrives, a release or a comment. Under Watches. Not the same as watching a repository on GitHub, which sends notifications.
+- **Webhook**: An address GitHub sends a message to when something happens in a repository, such as a push. Continuous integration and chat bots use them.
 - **Workflow**: One automation, defined in a file in the repository. Under Actions, Workflows.
 - **Workflow dispatch**: Starting a workflow by hand, on a branch you choose.
 
@@ -992,7 +1001,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 363 yes, 1100 planned, 15 not needed and 526 left to GitHub.
+In all: 373 yes, 1090 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1790,13 +1799,13 @@ In all: 363 yes, 1100 planned, 15 not needed and 526 left to GitHub.
 
 #### Deploy keys
 
-4 operations: 2 yes, 2 planned.
+4 operations: 4 yes.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | List deploy keys | `GET /repos/{owner}/{repo}/keys` | Yes | Properties (Alt+Enter) on Repository |
-| Create a deploy key | `POST /repos/{owner}/{repo}/keys` | Planned | Repository sheet > Deploy Keys. |
-| Delete a deploy key | `DELETE /repos/{owner}/{repo}/keys/{key_id}` | Planned | Repository sheet > Deploy Keys. |
+| Create a deploy key | `POST /repos/{owner}/{repo}/keys` | Yes | Navigator: Repository > owner/name > Settings > Deploy Keys |
+| Delete a deploy key | `DELETE /repos/{owner}/{repo}/keys/{key_id}` | Yes | context menu > Delete Deploy Key... |
 | Get a deploy key | `GET /repos/{owner}/{repo}/keys/{key_id}` | Yes | Properties (Alt+Enter) on Deploy Key |
 
 #### Deployments
@@ -2397,7 +2406,7 @@ In all: 363 yes, 1100 planned, 15 not needed and 526 left to GitHub.
 
 #### Repositories
 
-74 operations: 39 yes, 35 planned.
+74 operations: 47 yes, 27 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2410,8 +2419,8 @@ In all: 363 yes, 1100 planned, 15 not needed and 526 left to GitHub.
 | Create an attestation | `POST /repos/{owner}/{repo}/attestations` | Planned | Repository > Security > Attestations (read). |
 | List attestations | `GET /repos/{owner}/{repo}/attestations/{subject_digest}` | Planned | Repository > Security > Attestations (read). |
 | Get all autolinks of a repository | `GET /repos/{owner}/{repo}/autolinks` | Yes | Properties (Alt+Enter) on Repository |
-| Create an autolink reference for a repository | `POST /repos/{owner}/{repo}/autolinks` | Planned | Repository sheet > Autolinks. |
-| Delete an autolink reference from a repository | `DELETE /repos/{owner}/{repo}/autolinks/{autolink_id}` | Planned | Repository sheet > Autolinks. |
+| Create an autolink reference for a repository | `POST /repos/{owner}/{repo}/autolinks` | Yes | Navigator: Repository > owner/name > Settings > Autolinks |
+| Delete an autolink reference from a repository | `DELETE /repos/{owner}/{repo}/autolinks/{autolink_id}` | Yes | context menu > Delete Autolink... |
 | Get an autolink reference of a repository | `GET /repos/{owner}/{repo}/autolinks/{autolink_id}` | Planned | Repository sheet > Autolinks. |
 | Disable Dependabot security updates | `DELETE /repos/{owner}/{repo}/automated-security-fixes` | Yes | Properties (Alt+Enter) on Repository: Dependabot security updates |
 | Check if Dependabot security updates are enabled for a repository | `GET /repos/{owner}/{repo}/automated-security-fixes` | Yes | Properties (Alt+Enter) on Repository |
@@ -2426,16 +2435,16 @@ In all: 363 yes, 1100 planned, 15 not needed and 526 left to GitHub.
 | Create a fork | `POST /repos/{owner}/{repo}/forks` | Yes | editor GitHub menu > Fork Repository... |
 | Get the hash algorithm for a repository | `GET /repos/{owner}/{repo}/hash-algorithm` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
 | List repository webhooks | `GET /repos/{owner}/{repo}/hooks` | Yes | Properties (Alt+Enter) on Repository |
-| Create a repository webhook | `POST /repos/{owner}/{repo}/hooks` | Planned | Repository sheet > Webhooks. |
-| Delete a repository webhook | `DELETE /repos/{owner}/{repo}/hooks/{hook_id}` | Planned | Repository sheet > Webhooks. |
+| Create a repository webhook | `POST /repos/{owner}/{repo}/hooks` | Yes | Navigator: Repository > owner/name > Settings > Webhooks |
+| Delete a repository webhook | `DELETE /repos/{owner}/{repo}/hooks/{hook_id}` | Yes | context menu > Delete Webhook... |
 | Get a repository webhook | `GET /repos/{owner}/{repo}/hooks/{hook_id}` | Yes | Properties (Alt+Enter) on Webhook |
 | Update a repository webhook | `PATCH /repos/{owner}/{repo}/hooks/{hook_id}` | Yes | Properties (Alt+Enter) on Webhook: Active |
 | Get a webhook configuration for a repository | `GET /repos/{owner}/{repo}/hooks/{hook_id}/config` | Planned | Repository sheet > Webhooks. |
-| Update a webhook configuration for a repository | `PATCH /repos/{owner}/{repo}/hooks/{hook_id}/config` | Planned | Repository sheet > Webhooks. |
-| List deliveries for a repository webhook | `GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries` | Planned | Repository sheet > Webhooks. |
+| Update a webhook configuration for a repository | `PATCH /repos/{owner}/{repo}/hooks/{hook_id}/config` | Yes | context menu > Change Address or Secret... |
+| List deliveries for a repository webhook | `GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries` | Yes | context menu > Recent Deliveries... |
 | Get a delivery for a repository webhook | `GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}` | Planned | Repository sheet > Webhooks. |
-| Redeliver a delivery for a repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts` | Planned | Repository sheet > Webhooks. |
-| Ping a repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/pings` | Planned | Repository sheet > Webhooks. |
+| Redeliver a delivery for a repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts` | Yes | context menu > Recent Deliveries... |
+| Ping a repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/pings` | Yes | context menu > Ping |
 | Test the push repository webhook | `POST /repos/{owner}/{repo}/hooks/{hook_id}/tests` | Planned | Repository sheet > Webhooks. |
 | Disable immutable releases | `DELETE /repos/{owner}/{repo}/immutable-releases` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
 | Check if immutable releases are enabled for a repository | `GET /repos/{owner}/{repo}/immutable-releases` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |

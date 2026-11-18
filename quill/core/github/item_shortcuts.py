@@ -27,6 +27,9 @@ DELETE_COMMANDS: dict[str, str] = {
     "repository_set": "github.workbench.across_delete_set",
     "tag": "github.workbench.delete_tag",
     "key": "github.workbench.delete_key",
+    "webhook": "github.workbench.delete_webhook",
+    "deploy_key": "github.workbench.delete_deploy_key",
+    "autolink": "github.workbench.delete_autolink",
 }
 
 #: What Ctrl+N makes on each node (C3, "New, here"), by the node's key.
@@ -41,6 +44,9 @@ NEW_HERE: dict[str, str] = {
     "star_lists": "github.workbench.new_star_list",
     "advisories": "github.workbench.new_advisory",
     "my_keys": "github.workbench.new_key",
+    "webhooks": "github.workbench.new_webhook",
+    "deploy_keys": "github.workbench.new_deploy_key",
+    "autolinks": "github.workbench.new_autolink",
     "my_gists": "github.workbench.new_gist",
     "across": "github.workbench.choose_repositories",
     "across_sets": "github.workbench.across_new_set",

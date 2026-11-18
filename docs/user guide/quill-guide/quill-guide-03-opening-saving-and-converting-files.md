@@ -1619,6 +1619,13 @@ GitHub's Advisory Database. See
 GPG and signing keys, each with its fingerprint. See
 [My Keys](../github-guide/github-guide-12-the-workbench.html#my-keys).
 
+#### Webhooks, deploy keys and autolinks
+
+**Repository > Settings > Webhooks, Deploy Keys and Autolinks** in the GitHub
+Workbench list, add and delete each, and a webhook can be pinged and its
+deliveries read and sent again. See
+[Webhooks, deploy keys and autolinks](../github-guide/github-guide-07-code-and-repositories.html#webhooks-deploy-keys-and-autolinks).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

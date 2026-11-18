@@ -2197,6 +2197,12 @@ Keys** reads the key straight from your `.ssh` folder, says its fingerprint so
 you know it is the right one, and refuses a private key before it can leave
 the machine. Your GPG and signing keys are listed with it.
 
+When the build server stops hearing about pushes, the answer is usually in a
+webhook's last delivery. **Settings > Webhooks** says it in the list, "last
+delivery failed (502)", lets you read the recent deliveries and send one
+again, and keeps a webhook's secret out of sight and out of speech. Deploy
+keys and autolinks are beside it.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

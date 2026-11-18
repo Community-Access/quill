@@ -404,6 +404,61 @@ def star_list_round_trip(run: Any) -> str:
     return f"{said} Deleted it again."
 
 
+def webhook_round_trip(run: Any) -> str:
+    """Add a webhook to an address that answers nothing, ping it, read its deliveries, delete."""
+    from quill.core.github import repo_settings_lists as sl
+
+    before = {row.key for row in sl.fetch_webhooks(run.api, run.repo)}
+    sl.add_webhook(run.api, run.repo, "https://example.invalid/quill-live", events=["push"])
+    made = [row for row in sl.fetch_webhooks(run.api, run.repo) if row.key not in before]
+    _expect(len(made) == 1, f"expected one new webhook, found {len(made)}")
+    hook = made[0].key
+    try:
+        sl.ping_webhook(run.api, run.repo, hook)
+        time.sleep(3)
+        deliveries = sl.fetch_deliveries(run.api, run.repo, hook)
+    finally:
+        sl.delete_webhook(run.api, run.repo, hook)
+    return f"{made[0].label} {len(deliveries)} deliveries read. Deleted it again."
+
+
+def deploy_key_round_trip(run: Any) -> str:
+    import shutil
+
+    from quill.core.github import repo_settings_lists as sl
+
+    keygen = shutil.which("ssh-keygen")
+    if keygen is None:
+        return "ssh-keygen is not on this computer, so no key was made to add"
+    with tempfile.TemporaryDirectory() as folder:
+        path = Path(folder) / "quill-live"
+        subprocess.run(
+            [keygen, "-t", "ed25519", "-N", "", "-C", "quill-live", "-f", str(path)],
+            capture_output=True,
+            check=True,
+        )
+        said = sl.add_deploy_key(
+            run.api, run.repo, "quill-live", (path.with_suffix(".pub")).read_text("utf-8")
+        )
+    made = next(row for row in sl.fetch_deploy_keys(run.api, run.repo) if "quill-live" in row.label)
+    sl.delete_deploy_key(run.api, run.repo, made.key)
+    return f"{said} Deleted it again."
+
+
+def autolink_round_trip(run: Any) -> str:
+    from quill.core.github import repo_settings_lists as sl
+
+    prefix = f"QL{int(time.time()) % 10000}-"
+    said = sl.add_autolink(
+        run.api, run.repo, prefix, "https://example.org/ticket/<num>", alphanumeric=False
+    )
+    made = next(
+        row for row in sl.fetch_autolinks(run.api, run.repo) if row.label.startswith(prefix)
+    )
+    sl.delete_autolink(run.api, run.repo, made.key)
+    return f"{said} Deleted it again."
+
+
 def commit_status(run: Any) -> str:
     from quill.core.github.commit_status import set_commit_status
 
@@ -857,6 +912,15 @@ VERBS: dict[str, Scenario | str] = {
     "close_reopen": close_reopen,
     "create_branch": create_branch,
     "unlink_branch": "with create_branch: linked, unlinked, then deleted",
+    "new_webhook": webhook_round_trip,
+    "ping_webhook": "with new_webhook: pinged",
+    "webhook_deliveries": "with new_webhook: its deliveries read",
+    "change_webhook": "needs Jeff: changing a real webhook's address or secret",
+    "delete_webhook": "with new_webhook: deleted again",
+    "new_deploy_key": deploy_key_round_trip,
+    "delete_deploy_key": "with new_deploy_key: deleted again",
+    "new_autolink": autolink_round_trip,
+    "delete_autolink": "with new_autolink: deleted again",
     "new_key": "needs Jeff: adds a key to your own GitHub account",
     "delete_key": "needs Jeff: deletes a key from your own GitHub account",
     "new_advisory": "needs Jeff: a report or a draft advisory can be closed but never deleted",

@@ -29512,7 +29512,10 @@ linked branch and a duplicate mark. Security &gt; Policy and Advisories,
 private reports and drafts, and Search &gt; Security Advisories
 (<code>quill/core/github/security_advisories.py</code>) cover GX11.
 People &gt; My Keys (<code>quill/core/github/account_keys.py</code>)
-lists, adds and deletes your SSH, GPG and signing keys.</p>
+lists, adds and deletes your SSH, GPG and signing keys. Settings &gt;
+Webhooks, Deploy Keys and Autolinks
+(<code>quill/core/github/repo_settings_lists.py</code>) list, add and
+delete each; a webhook secret is write-only and never said.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

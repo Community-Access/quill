@@ -32,6 +32,17 @@ NODE_HELP: dict[str, str] = {
         "Runners: the machines this repository runs its own jobs on, online or not, busy "
         "or idle, with their labels. Only administrators can see them."
     ),
+    "repository:webhooks": (
+        "Webhooks: the addresses GitHub tells about events here. Ctrl+N adds one; Recent "
+        "Deliveries on a webhook says what was sent and redelivers it."
+    ),
+    "repository:deploy_keys": (
+        "Deploy Keys: SSH keys that let a server clone, pull or push this one repository. "
+        "Ctrl+N adds one."
+    ),
+    "repository:autolinks": (
+        "Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one."
+    ),
     "repository:security_policy": (
         "Policy: where the security policy is, and whether vulnerabilities can be reported "
         "privately."

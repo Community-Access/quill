@@ -61,6 +61,11 @@ from quill.ui.github_workbench_pull_tools import (
     PULL_TOOL_VERBS,
     GitHubWorkbenchPullToolsMixin,
 )
+from quill.ui.github_workbench_settings_lists import (
+    SETTINGS_LIST_REASONS,
+    SETTINGS_LIST_VERBS,
+    GitHubWorkbenchSettingsListsMixin,
+)
 from quill.ui.github_workbench_star_lists import (
     STAR_LIST_REASONS,
     STAR_LIST_VERBS,
@@ -93,6 +98,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **STAR_LIST_VERBS,
     **ADVISORY_VERBS,
     **ACCOUNT_KEY_VERBS,
+    **SETTINGS_LIST_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -109,6 +115,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **STAR_LIST_REASONS,
     **ADVISORY_REASONS,
     **ACCOUNT_KEY_REASONS,
+    **SETTINGS_LIST_REASONS,
 }
 
 
@@ -123,6 +130,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchStarListsMixin,
     GitHubWorkbenchAdvisoriesMixin,
     GitHubWorkbenchAccountKeysMixin,
+    GitHubWorkbenchSettingsListsMixin,
 ):
     items: Any
     frame: Any

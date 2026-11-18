@@ -1000,6 +1000,16 @@ a home and a Properties sheet:
   read-only or read-write), delete. The key text is shown as GitHub shows it.
 - **Autolink references:** Repository > Settings > Autolinks. Add a prefix and
   URL template (alphanumeric or numeric), delete.
+- **Built 2026-11-18, for a repository:** Settings > Webhooks, Deploy Keys and
+  Autolinks (explore views `webhooks`, `deploy_keys`, `autolinks`; row types
+  `webhook`, `deploy_key`, `autolink`; `quill/core/github/repo_settings_lists.py`,
+  `quill/ui/github_workbench_settings_lists.py`). New Here adds each; a
+  webhook's events are push, everything, or a check list of the common ones,
+  and its secret goes through a `wx.PasswordEntryDialog`, sent once and never
+  said, shown or kept. Ping, Recent Deliveries... with redelivery, Change
+  Address or Secret... (`PATCH .../config`), and Delete on each; Delete is the
+  key's action on all three. Turning a webhook on or off stays on its sheet.
+  An organization's webhooks and editing a webhook's events remain planned.
 - **Secret and variable values:** variables are read and written in full.
   Secrets stay write-only, as GitHub itself keeps them: Set Value... encrypts
   the new value with the repository's or environment's or organization's

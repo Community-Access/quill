@@ -466,6 +466,57 @@ community-access/notes. The old address redirects." Moving it to a person
 sends them a request they have a day to accept, and QUILL Lite says so. Only an
 owner or administrator of the repository can transfer it.
 
+## Webhooks, deploy keys and autolinks
+
+Three of a repository's settings are lists, under **Repository > Settings**
+in the GitHub Workbench. Each needs you to administer the repository; anyone
+else hears that instead of an empty list.
+
+### Webhooks
+
+A webhook is an address GitHub sends a message to when something happens: a
+continuous integration server, a chat bot, a deployment script. **Webhooks**
+lists them, one sentence each: "https://ci.example.org/hook: on, JSON, push
+and pull_request, last delivery succeeded (200)." A webhook whose last
+delivery failed says so, with GitHub's reason, which is usually the first
+thing to check when a build stopped starting.
+
+`Ctrl+N` there adds one: the address, JSON or form, which events (just push,
+everything, or a check list of the common ones), and a secret GitHub signs
+each message with. The secret is typed in a password box. QUILL Lite sends it once
+and never shows, says or keeps it; GitHub never gives it back either, so to
+change it you set a new one. GitHub sends a new webhook a ping straight away.
+
+On a webhook:
+
+- **Ping** sends it a test message.
+- **Recent Deliveries...** lists what GitHub sent, newest first: "push at
+  2026-11-18 09:30: succeeded (200)", or failed with the code it got back.
+  Choose one to deliver it again, after a question.
+- **Change Address or Secret...** offers the address to edit and a password
+  box for a new secret; leave either as it is to keep it.
+- **Delete Webhook...**, or the Delete key, asks first. Its delivery history
+  goes with it.
+
+### Deploy keys
+
+A deploy key is an SSH key that reaches this one repository only, so a server
+can clone or pull it without anyone's account. **Deploy Keys** lists them:
+"Deploy key CI, read only, ED25519, SHA256:ZkAs..., added 2026-01-02, last
+used 2026-11-17." `Ctrl+N` adds one from a `.pub` file or a paste, then asks
+for a name and whether it may only read, or push too. A private key, or
+anything that is not an SSH public key, is refused before anything is sent.
+**Delete Deploy Key...** asks first.
+
+### Autolinks
+
+An autolink turns a prefix into a link to another system, so `TICKET-123` in
+an issue links to your tracker. **Autolinks** lists them: "TICKET- links to
+https://jira.example.org/browse/TICKET-<num>, numbers only." `Ctrl+N` asks for
+the prefix, the address with `<num>` where the reference goes, and whether
+letters may follow the prefix or only numbers. **Delete Autolink...** asks
+first; text already written keeps its words, without the link.
+
 ## Watching, starring and following
 
 On a repository row in Explore, signed in, the context menu has
