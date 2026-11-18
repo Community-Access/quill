@@ -946,6 +946,22 @@ def comment_composer(run: Any) -> str:
     return f"{len(people)} people, issue #{refs[0].number} found, {len(replies)} saved replies"
 
 
+def review_viewed_files(run: Any) -> str:
+    """Mark a file of the test pull request viewed, read it back, and put it back."""
+    from quill.core.github.review_viewed import load_viewed, set_viewed
+
+    number = int(run.ids["pull"])
+    viewed = load_viewed(run.api, run.repo, number)
+    _expect(bool(viewed.states), "the pull request listed no files")
+    path = next(iter(viewed.states))
+    was = viewed.is_viewed(path)
+    set_viewed(run.api, viewed, path, not was)
+    again = load_viewed(run.api, run.repo, number)
+    _expect(again.is_viewed(path) is (not was), f"GitHub kept {path} as it was")
+    set_viewed(run.api, again, path, was)
+    return f"{path}: marked, read back, put back; {again.sentence()}"
+
+
 def export_list(run: Any) -> str:
     from quill.core.workbench.export import export_rows
 
@@ -976,6 +992,7 @@ FEATURES: dict[str, Scenario | str] = {
     "From This Line: link, blame, pull for the commit, references (PRD 22.3)": line_commands,
     "Export List: CSV, Markdown and Excel (PRD 22.7)": export_list,
     "The comment composer's lookups (PRD 22.4)": comment_composer,
+    "Viewed files in a pull request review (PRD 22.1)": review_viewed_files,
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

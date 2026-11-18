@@ -108,6 +108,13 @@ Preview and an optional Check before posting
 `quill/ui/github_comment_composer.py`). Review, discussion and line-comment
 boxes are next.
 
+**2026-11-17, GH-D: viewed files in review.** Each changed file in the review
+outline carries its viewed state; Mark as Viewed or Not Viewed, Show Only
+Files Not Viewed, and Comment on This File... (`subject_type: file`, through
+the composer). `quill/core/github/review_viewed.py`,
+`quill/ui/github_pr_review_viewed.py`. Whitespace options and one commit at a
+time remain.
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

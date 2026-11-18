@@ -363,6 +363,27 @@ every loaded review thread in this session.”</li>
 </ul>
 <p>Neither of these tells GitHub anything. “Visited” lives only in this
 window.</p>
+<h2 id="files-you-have-viewed">Files you have viewed</h2>
+<p>GitHub remembers, for you alone, which of a pull request’s files you
+have viewed, so a long review can be done in sittings. Signed in, the
+review window reads that after the review loads, and each row under
+<strong>Changed files</strong> ends with its state: “src/status.py,
+viewed”, “src/status.py, not viewed”, or “src/status.py, changed since
+you viewed it” when someone pushed to it after you looked. The status
+line says how many you have viewed, such as “3 of 12 files viewed.”</p>
+<p>Shift+F10 on a file has:</p>
+<ul>
+<li><strong>Mark as Viewed</strong>, or <strong>Mark as Not
+Viewed</strong> on one you have viewed. It is the same mark GitHub’s
+Files tab shows, and you hear the new count.</li>
+<li><strong>Show Only Files Not Viewed</strong> hides the files you have
+viewed, so the outline holds only what is left; <strong>Show All
+Files</strong> brings them back. You hear how many are left.</li>
+<li><strong>Comment on This File…</strong> opens the comment window for
+a comment on the whole file rather than a line: for a file that should
+not be there, or one to rename. It posts at once, outside any review you
+have pending.</li>
+</ul>
 <h2 id="changed-since-my-last-review">Changed since my last review</h2>
 <p>When someone pushes more commits after you have reviewed, you do not
 want to read every file again. Check <strong>Changed since my last

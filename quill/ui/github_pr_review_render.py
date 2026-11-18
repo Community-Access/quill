@@ -5,6 +5,7 @@ from __future__ import annotations
 from quill.core.github.items_provider import GitHubPullDiff
 from quill.core.github.pr_review import GitHubPullReviewState, GitHubReviewThread
 from quill.core.github.pr_summary import PullSummary
+from quill.core.github.review_viewed import file_label
 from quill.ui.dialog_contract import dialog_alive
 
 
@@ -91,9 +92,12 @@ class GitHubPullReviewRenderMixin:
         )
         if since is not None:
             file_names = [path for path in file_names if path in since]
+        file_names = [path for path in file_names if self._keep_file(path)]
+        self._file_paths = file_names
+        viewed = getattr(self, "_viewed", None)
         selected = None
         for file_index, path in enumerate(file_names):
-            file_node = self._outline.AppendItem(files_root, path)
+            file_node = self._outline.AppendItem(files_root, file_label(path, viewed))
             self._nodes[int(file_node.GetID())] = ("file", file_index)
             for index, thread in enumerate(threads):
                 if thread.root.path != path:

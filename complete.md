@@ -208,7 +208,7 @@ Reconcile these against actual code and the operation ledger. Some individual ac
 - [ ] Workflow enable/disable and accessible workflow authoring; triggers/jobs/steps/inputs/permissions/dependency graph as linear controls.
 - [ ] Dependabot configuration and PR commands; CODEOWNERS editing/ownership lookup.
 - [ ] Merge conflict resolution in an isolated worktree; PR revert; exact patch review.
-- [ ] Review viewed/unviewed state, multiline/file comments, whitespace options, per-commit review, changed-since-review, suggestions and pending review drafts.
+- [ ] Review viewed/unviewed state, multiline/file comments, whitespace options, per-commit review, changed-since-review, suggestions and pending review drafts. *(2026-11-17: viewed and unviewed files, Show Only Files Not Viewed and file-level comments built (`review_viewed.py`, `github_pr_review_viewed.py`); multi-line comments, suggestions, changed-since-review and pending reviews were already there. Remaining: whitespace options and per-commit review.)*
 - [ ] Merge queue as a place; required policy explanation, auto-merge and batch merges of independently eligible PRs.
 - [ ] Commit statuses, environments, deployment protection and release/deployment evidence.
 - [ ] Packages, runners, dependency graph/SBOM, insights/network/traffic/contributions as readable tables.

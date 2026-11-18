@@ -2019,6 +2019,17 @@ later: an image with no description, a link that says "click here", a
 heading that skips a level. And where GitHub allows no attachment from outside
 its website, the window says so instead of offering a button that cannot work.
 
+#### A long review, in sittings
+
+A big pull request is rarely read in one go. The review window now remembers
+with GitHub which files you have viewed, and says so in each file's name:
+viewed, not viewed, or changed since you viewed it, when someone pushed to it
+after you looked. Mark a file viewed from its context menu, then **Show Only
+Files Not Viewed**, and the outline holds only what is left; come back
+tomorrow and it still does, on any computer, and on github.com too. A comment
+on a whole file, rather than a line, opens in the same comment window as any
+other.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

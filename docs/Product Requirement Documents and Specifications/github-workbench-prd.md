@@ -1894,6 +1894,14 @@ coverage gate (section 19) from day one.
   filter to unviewed files; multi-line and file-level comments; hide
   whitespace changes; split or unified diff as two ways of reading; review
   one commit at a time; "changes since your last review".
+  *Built by 2026-11-17:* multi-line comments, suggestions and "changes since
+  your last review" were already in the review window; on 2026-11-17 viewed
+  files (`markFileAsViewed`, `unmarkFileAsViewed`, each file's
+  `viewerViewedState` in its outline name), Show Only Files Not Viewed and
+  file-level comments (`subject_type: file`, through the comment composer)
+  joined them (`quill/core/github/review_viewed.py`,
+  `quill/ui/github_pr_review_viewed.py`). Still to come: hiding whitespace,
+  side-by-side reading and one commit at a time.
 - **Task lists inside bodies.** The `- [ ]` items in an issue's body are a
   list on the issue's sheet: check one off and the body is updated; convert
   an item to a sub-issue.
