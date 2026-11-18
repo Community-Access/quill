@@ -92,26 +92,15 @@ def setups(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Path]:
     (payload / "QuillVilleRuntime.exe").write_bytes(b"not a program")
     # The two AI engines are named one by one with no skipifsourcedoesntexist
     # (installer/shared-runtime.iss: neither may ship without its licence), so
-    # the probe payload carries a stand-in for each named file.
+    # the probe payload carries a stand-in for each required file.
     for engine, names in {
-        "copilot": (
-            "copilot.exe",
-            "copilot-runtime.exe",
-            "runtime.node",
-            ".hostless-runtime-assets-v2",
-            "COPILOT-CLI-LICENSE.txt",
-        ),
+        "copilot": ("runtime.node", "COPILOT-CLI-LICENSE.txt"),
         "codex": ("codex-app-server.exe", "CODEX-LICENSE.txt", "CODEX-NOTICE.txt"),
     }.items():
         folder = payload / "tools" / engine
         folder.mkdir(parents=True)
         for file_name in names:
             (folder / file_name).write_bytes(b"stand-in")
-    # The rest of the Copilot bundle rides one recursive wildcard that
-    # excludes the five named files, and ISCC refuses a wildcard that matches
-    # nothing, so one runtime asset stands in for that rest.
-    (payload / "tools" / "copilot" / "assets").mkdir()
-    (payload / "tools" / "copilot" / "assets" / "stand-in.txt").write_bytes(b"stand-in")
     built: dict[str, Path] = {}
     for name, version in {
         "final": "3.2.0",

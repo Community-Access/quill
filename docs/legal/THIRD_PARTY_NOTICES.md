@@ -363,9 +363,9 @@ Python itself and libraries shipped in the shared runtime or an app's own depend
 
 ### GitHub Copilot SDK (copilot)
 
-- **What it is:** The Python side of the My GitHub Copilot connection: it starts the bundled Copilot CLI in tools\copilot and talks to it. Ships in the shared runtime unmodified; its licence text is the repository's LICENSE at tag v1.0.28 (SHA-256 2510b446bc1f0cf9702453075d20cd88631e20e5642658edb7325d9c1eb534f7), the MIT text with GitHub's copyright.
+- **What it is:** The Python SDK for My GitHub Copilot, using the SDK 2 in-process native runtime. Ships in the shared runtime; licensed under MIT with GitHub's copyright.
 - **Included in:** Every product in the family.
-- **Version:** 1.0.28
+- **Version:** 2.0.1
 - **Licence:** MIT
 - **Copyright:** Copyright GitHub, Inc.
 - **Upstream:** https://github.com/github/copilot-sdk
@@ -1166,20 +1166,20 @@ Python itself and libraries shipped in the shared runtime or an app's own depend
 - **How it reaches you:** Bundled: it is inside the installer or the portable zip.
 - **What the licence asks of us:** None. Keep the copyright notice and the permission notice with every copy. Keep the copyright notice and the permission notice.
 
-### GitHub Copilot CLI runtime (copilot-runtime.exe, runtime.node)
+### GitHub Copilot SDK native runtime (runtime.node)
 
-- **What it is:** The engine behind the My GitHub Copilot connection, run as a separate program: the runtime bundle the GitHub Copilot SDK installs for itself, taken from GitHub's github-copilot-1.0.105-win32-x64 package. Ships unmodified in the shared runtime's tools\copilot with its licence as COPILOT-CLI-LICENSE.txt. The bundle also carries components GitHub ships inside it -- Microsoft's sign-in libraries (OneAuthInterop.dll, with its licence as OneAuthInterop.LICENSE.txt, and msalruntime.dll), and Microsoft's tgrep -- each signed by GitHub or Microsoft and covered by that licence -- and ripgrep, which has its own entry.
+- **What it is:** The pinned native runtime library loaded by microsoft-copilot-sdk 2.0.1 in-process. Ships byte-for-byte unchanged as tools\copilot\runtime.node with the GitHub Copilot CLI redistribution licence beside it; the SDK does not ship or launch a CLI executable.
 - **Included in:** The QuillVille Runtime and installed app editions that include it. Standalone portable editions are scoped by their own dependency inventories.
-- **Version:** 1.0.105
+- **Version:** 1.0.114
 - **Licence:** GitHub Copilot CLI License (proprietary; redistribution of unmodified copies permitted)
 - **Copyright:** Copyright (c) GitHub, Inc.
-- **Upstream:** https://github.com/github/copilot-cli
+- **Upstream:** https://github.com/github/copilot-sdk
 - **How it reaches you:** Bundled in the QuillVille Runtime used by installed app editions. A standalone portable includes it only when that app's declared dependencies require it.
 - **What the licence asks of us:** Redistribute only unmodified copies, only as part of an application that does more than the CLI itself and never on a standalone basis, with a copy of this licence included and GitHub's copyright, trademark and attribution notices kept.
 
 ### ripgrep (rg.exe)
 
-- **What it is:** A fast text search program the GitHub Copilot CLI runtime carries in tools\copilot\ripgrep, shipped inside GitHub's package unmodified. Its licence texts are LICENSE-MIT (SHA-256 0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f) and UNLICENSE (SHA-256 7e12e5df4bae12cb21581ba157ced20e1986a0508dd10d0e8a4ab9a4cf94e85c) at ripgrep tag 15.0.0, the version the bundled rg.exe reports.
+- **What it is:** A fast text search program used by QUILL's IntelliSense layer. Ships as tools\ripgrep\rg.exe with its upstream MIT or Unlicense text beside it; it is not part of the Copilot SDK runtime.
 - **Included in:** The QuillVille Runtime and installed app editions that include it. Standalone portable editions are scoped by their own dependency inventories.
 - **Version:** 15.0.0 (rev 3a612f88b8)
 - **Licence:** Unlicense or MIT (your choice)
@@ -3184,7 +3184,7 @@ The availability of this Exception does not imply any general presumption that t
 
 ### GitHub Copilot CLI License (proprietary)
 
-Used by: GitHub Copilot CLI runtime (copilot-runtime.exe, runtime.node).
+Used by: GitHub Copilot SDK native runtime (runtime.node).
 
 What it asks of us: Redistribute only unmodified copies, only as part of an application that does more than the CLI itself and never on a standalone basis, with a copy of this licence included and GitHub's copyright, trademark and attribution notices kept.
 
