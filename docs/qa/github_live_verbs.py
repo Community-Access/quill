@@ -857,6 +857,9 @@ VERBS: dict[str, Scenario | str] = {
     "close_reopen": close_reopen,
     "create_branch": create_branch,
     "unlink_branch": "with create_branch: linked, unlinked, then deleted",
+    "new_advisory": "needs Jeff: a report or a draft advisory can be closed but never deleted",
+    "advisory_state": "needs Jeff: needs a draft advisory to close; publishing is public for good",
+    "request_cve": "needs Jeff: GitHub reviews every CVE request by hand",
     "not_duplicate": "needs Jeff: the duplicate mark needs a second issue closed as a duplicate",
     "edit_tasks": task_lists,
     "convert_tasks": "with edit_tasks: checked, converted and linked",
@@ -1158,6 +1161,15 @@ def my_profile(run: Any) -> str:
     return f"{rows[0].label} {year}"
 
 
+def security_policy_and_database(run: Any) -> str:
+    from quill.core.github.security_advisories import fetch_policy, search_advisories
+
+    policy = fetch_policy(run.api, run.repo)
+    found = search_advisories(run.api, "lodash", limit=5)
+    _expect(bool(found), "the Advisory Database found nothing for lodash")
+    return f"{policy[0].label} {policy[-1].label} Database: {found[0].label}"
+
+
 def check_with_git(run: Any) -> str:
     done = subprocess.run(["git", "--version"], capture_output=True, text=True, check=False)
     _expect(done.returncode == 0, "git is not installed")
@@ -1176,6 +1188,9 @@ FEATURES: dict[str, Scenario | str] = {
     "Commit Activity as tables (PRD 14.2)": commit_activity,
     "My Packages, or the permission it needs said in words (PRD 14.2)": my_packages,
     "My Profile, with the contribution calendar as numbers (PRD 14.2)": my_profile,
+    "Security policy, private reporting, and the Advisory Database (GX11)": (
+        security_policy_and_database
+    ),
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

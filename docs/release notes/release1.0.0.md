@@ -2181,6 +2181,17 @@ Two small mistakes can now be put right where they were made: a branch linked
 to the wrong issue is unlinked with **Unlink Branch...**, and an issue closed
 as a duplicate of the wrong one is put straight with **Not a Duplicate...**.
 
+#### Security, the responsible way
+
+When you find a security hole in a project, the right first step is a private
+word with its maintainers, not a public issue. **Security > Policy** tells you
+how a project wants to hear about it, and when it takes private reports, New
+Here in **Advisories** sends one, four questions and done. Maintainers can
+draft the advisory, ask GitHub for a CVE number, and publish when the fix is
+out, with the GHSA id typed first because publishing cannot be taken back.
+And **Search > Security Advisories** answers "is this package I depend on
+known to be vulnerable?" from GitHub's Advisory Database.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

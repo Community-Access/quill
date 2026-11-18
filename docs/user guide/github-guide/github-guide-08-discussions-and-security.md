@@ -6,8 +6,10 @@ Two kinds of conversation that are not issues. Discussions are a repository's
 forum: questions, ideas and announcements, with threaded replies, answers and
 polls. Security alerts are GitHub telling a repository about a vulnerable
 package, a weakness in the code, or a secret committed by mistake. This
-chapter covers reading and taking part in both, and saving a repository's
-software bill of materials for a security review.
+chapter covers reading and taking part in both, a repository's security
+policy and advisories, reporting a vulnerability privately, searching GitHub's
+Advisory Database, and saving a software bill of materials for a security
+review.
 
 ## Discussions
 
@@ -120,6 +122,59 @@ GitHub sends the alert back in its new state.
 Dismissed and fixed alerts have their own view, **Dismissed and resolved
 security alerts**. There, **Reopen Alert...** on the context menu asks first,
 then reopens the alert.
+
+## Security policy and reporting
+
+Found a security hole in someone's project? Do not open a public issue: tell
+the maintainers privately first. **Repository > Security > Policy** in the
+GitHub Workbench says how. Its first row is the repository's security policy,
+"Security policy: SECURITY.md. Enter opens it.", found in the root, `.github`
+or `docs`, or says the repository has none. The second says whether private
+vulnerability reporting is on. When it is, anyone signed in can report there,
+below.
+
+## Security advisories
+
+A security advisory is a project's notice of a vulnerability: which package
+and versions, how serious, and where it is fixed. Each has a GHSA (GitHub
+Security Advisory) id, and often a CVE (Common Vulnerabilities and Exposures)
+number too.
+
+**Repository > Security > Advisories** lists a repository's advisories, one
+sentence each: "GHSA-q4hm-2345-wxyz: high severity, draft: Path traversal in
+the importer." Published advisories are listed for everyone; drafts and
+private reports only for the repository's administrators and security
+managers, and anyone else hears that rather than an empty list. The details
+pane says which packages and versions are affected, which version fixes it,
+who is credited, and the full description.
+
+**New Here** in Advisories (`Ctrl+N`) asks which you want:
+
+- **Report a vulnerability privately to the maintainers**, for anyone, when
+  private reporting is on. QUILL asks for a one-line summary, then what it is,
+  how to reproduce it and what it lets an attacker do, then how severe it is,
+  with "Not sure" as a choice. Only the maintainers see the report.
+- **Draft an advisory**, for maintainers. The same three questions, then the
+  affected package and its ecosystem, such as npm or pip, which you can leave
+  for later. A draft is private until it is published.
+
+On an advisory's context menu:
+
+- **Publish or Close Advisory...** publishes it, closes it, or makes it a
+  draft again. Publishing makes it public for good, puts it in GitHub's
+  Advisory Database and alerts the projects that depend on the package, so
+  QUILL asks you to type its GHSA id first.
+- **Request CVE...** asks GitHub for a CVE number for a draft. GitHub reviews
+  each request, so the number comes later.
+
+Comments on a draft advisory, and the temporary private fork GitHub offers for
+working on the fix, are still on GitHub's own page: **Open on GitHub**.
+
+## Searching the Advisory Database
+
+**Search > Security Advisories** searches GitHub's Advisory Database, every
+published advisory for every package. Type a package name, such as `lodash`,
+a CVE number, or a GHSA id, then Enter. Each row reads like the ones above.
 
 ## A software bill of materials
 

@@ -32,6 +32,17 @@ NODE_HELP: dict[str, str] = {
         "Runners: the machines this repository runs its own jobs on, online or not, busy "
         "or idle, with their labels. Only administrators can see them."
     ),
+    "repository:security_policy": (
+        "Policy: where the security policy is, and whether vulnerabilities can be reported "
+        "privately."
+    ),
+    "repository:advisories": (
+        "Advisories: this repository's security advisories. New Here reports a vulnerability "
+        "or drafts an advisory."
+    ),
+    ":search_advisories": (
+        "Security Advisories: search GitHub's Advisory Database by package, CVE or GHSA id."
+    ),
     ":star_lists": (
         "Star Lists: every repository on each of your star lists, the list's name first. "
         "Ctrl+N makes a list; Star Lists on any repository chooses its lists."

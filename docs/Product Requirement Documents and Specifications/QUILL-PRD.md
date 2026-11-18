@@ -17553,6 +17553,8 @@ lists. People > My Profile and each person's Profile
 (`quill/core/github/profile.py`) read a profile and its contribution calendar
 as sentences. Unlink Branch... and Not a Duplicate... on an issue
 (`quill/core/github/issue_links.py`) undo a linked branch and a duplicate mark.
+Security > Policy and Advisories, private reports and drafts, and Search >
+Security Advisories (`quill/core/github/security_advisories.py`) cover GX11.
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

@@ -187,6 +187,11 @@ Star Lists... and Rename or Delete Star List... (`star_lists.py`,
 **2026-11-18, issue links.** Unlink Branch... and Not a Duplicate... on an
 issue (`issue_links.py`).
 
+**2026-11-18, security policy and advisories (GX11).** Security > Policy and
+Advisories, New Here to report or draft, Publish or Close Advisory..., Request
+CVE..., and Search > Security Advisories (`security_advisories.py`,
+`github_workbench_advisories.py`).
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

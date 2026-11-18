@@ -23,7 +23,7 @@ __all__ = ["COMMUNITY_REASONS", "COMMUNITY_VERBS", "GitHubWorkbenchCommunityMixi
 COMMUNITY_VERBS: dict[str, frozenset[str]] = {
     "discussion_thread": frozenset({"discussion"}),
     "dismiss_alert": frozenset({"security"}),
-    "show_details": frozenset({"cache", "runner", "package"}),
+    "show_details": frozenset({"cache", "runner", "package", "advisory"}),
     "delete_cache": frozenset({"cache"}),
     "edit_label": frozenset({"label"}),
     "delete_label": frozenset({"label"}),

@@ -20,6 +20,11 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.github.items_provider import GitHubItem
+from quill.ui.github_workbench_advisories import (
+    ADVISORY_REASONS,
+    ADVISORY_VERBS,
+    GitHubWorkbenchAdvisoriesMixin,
+)
 from quill.ui.github_workbench_dry_run import (
     DRY_RUN_REASONS,
     DRY_RUN_VERBS,
@@ -81,6 +86,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **TIER2_VERBS,
     **PACKAGE_VERBS,
     **STAR_LIST_VERBS,
+    **ADVISORY_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -95,6 +101,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **TIER2_REASONS,
     **PACKAGE_REASONS,
     **STAR_LIST_REASONS,
+    **ADVISORY_REASONS,
 }
 
 
@@ -107,6 +114,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchTier2Mixin,
     GitHubWorkbenchPackagesMixin,
     GitHubWorkbenchStarListsMixin,
+    GitHubWorkbenchAdvisoriesMixin,
 ):
     items: Any
     frame: Any

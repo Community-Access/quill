@@ -2888,7 +2888,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 348 yes, 1115 planned, 15 not needed and 526 left to
+<p>In all: 354 yes, 1109 planned, 15 not needed and 526 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -11290,7 +11290,7 @@ requests (section 22.1).</td>
 </tbody>
 </table>
 <h4 id="security-advisories">Security advisories</h4>
-<p>14 operations: 14 planned.</p>
+<p>14 operations: 6 yes, 8 planned.</p>
 <table>
 <thead>
 <tr>
@@ -11304,8 +11304,8 @@ requests (section 22.1).</td>
 <tr>
 <td>List global security advisories</td>
 <td><code>GET /advisories</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Yes</td>
+<td>Navigator: Search &gt; Security Advisories</td>
 </tr>
 <tr>
 <td>Get a global security advisory</td>
@@ -11322,20 +11322,23 @@ requests (section 22.1).</td>
 <tr>
 <td>List repository security advisories</td>
 <td><code>GET /repos/{owner}/{repo}/security-advisories</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Security &gt;
+Advisories</td>
 </tr>
 <tr>
 <td>Create a repository security advisory</td>
 <td><code>POST /repos/{owner}/{repo}/security-advisories</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Security &gt;
+Advisories</td>
 </tr>
 <tr>
 <td>Privately report a security vulnerability</td>
 <td><code>POST /repos/{owner}/{repo}/security-advisories/reports</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Security &gt;
+Advisories</td>
 </tr>
 <tr>
 <td>Get a repository security advisory</td>
@@ -11346,8 +11349,8 @@ requests (section 22.1).</td>
 <tr>
 <td>Update a repository security advisory</td>
 <td><code>PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Publish or Close Advisory…</td>
 </tr>
 <tr>
 <td>List repository security advisory comments</td>
@@ -11376,8 +11379,8 @@ requests (section 22.1).</td>
 <tr>
 <td>Request a CVE for a repository security advisory</td>
 <td><code>POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/cve</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Request CVE…</td>
 </tr>
 <tr>
 <td>Create a temporary private fork</td>

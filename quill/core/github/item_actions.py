@@ -413,6 +413,14 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _OPEN_WEB,
         _PROPERTIES,
     ),
+    "advisory": (
+        _default("show_details", "Show Details", "Its severity, state, packages and credits."),
+        _a("advisory_state", "Publish or Close Advisory...", _D, "admin", "Change its state."),
+        _a("request_cve", "Request CVE...", _W, "admin", "Ask GitHub for a CVE number."),
+        _OPEN_WEB,
+        _COPY_LINK,
+        _PROPERTIES,
+    ),
     "security_alert": (
         _default("open", "Open", "The alert's details and where it was found."),
         _a("dismiss_alert", "Dismiss or Reopen Alert...", _W, "push", "Dismiss with a reason."),
@@ -578,6 +586,7 @@ NEW_HERE: dict[str, str] = {
     "releases": "github.workbench.new_release",
     "tags": "github.workbench.new_tag",
     "star_lists": "github.workbench.new_star_list",
+    "advisories": "github.workbench.new_advisory",
     "my_gists": "github.workbench.new_gist",
     "across": "github.workbench.choose_repositories",
     "across_sets": "github.workbench.across_new_set",

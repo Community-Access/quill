@@ -1741,8 +1741,21 @@ draft</td>
 <tr>
 <td>Security policy, private vulnerability reports, repository security
 advisories</td>
-<td>Not found (an advisory credit appears only as a notification
-reason)</td>
+<td><strong>Built 2026-11-18:</strong> Security &gt; Policy (explore
+view <code>security_policy</code>: SECURITY.md in the root,
+<code>.github</code> or <code>docs</code>, opened in the editor, and
+whether private reporting is on), Security &gt; Advisories
+(<code>security_advisories</code>, row type <code>advisory</code>;
+drafts for administrators and security managers, refusal said), New
+Here: report privately (<code>POST .../reports</code>) or draft
+(<code>POST .../security-advisories</code>, optional package), Publish
+or Close Advisory… (<code>PATCH</code>, publishing wants the GHSA id
+typed), Request CVE… (<code>POST .../cve</code>), and Search &gt;
+Security Advisories (<code>GET /advisories</code> by package, CVE or
+GHSA id); <code>quill/core/github/security_advisories.py</code>,
+<code>quill/ui/github_workbench_advisories.py</code>. Advisory comments,
+temporary private forks and an organization’s advisories remain
+planned</td>
 <td>Repository &gt; Security &gt; Policy; Security &gt; Advisories
 (roadmap GX11)</td>
 </tr>

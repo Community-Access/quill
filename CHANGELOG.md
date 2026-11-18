@@ -620,6 +620,16 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Security policy, advisories, and reporting a vulnerability privately (2026-11-18)
+
+**Repository > Security > Policy** in the GitHub Workbench says where a
+repository's security policy is and whether vulnerabilities can be reported
+privately. **Advisories** lists its security advisories as sentences, and New
+Here there reports a vulnerability privately or drafts an advisory;
+**Publish or Close Advisory...** and **Request CVE...** are on each. **Search >
+Security Advisories** searches GitHub's Advisory Database by package, CVE or
+GHSA id. Chapter 8 of the GitHub Guide has the details.
+
 ### Unlinking a branch, and taking back "duplicate of" (2026-11-18)
 
 **Unlink Branch...** on an issue takes a linked branch off its Development,

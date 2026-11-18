@@ -377,6 +377,8 @@ own list, and `Shift+F1` reads it with the keys:
   Link.
 - **A package:** Show Details, Open on GitHub, Delete Package Version and
   Delete Package.
+- **A security advisory:** Show Details, Publish or Close Advisory, Request
+  CVE, Open on GitHub and Copy Link.
 - **A notification:** Open, Mark Read, Mark Done, Unsubscribe from Thread, and
   Snooze for One Day. Snoozing hides it in the Workbench on this computer
   until tomorrow and changes nothing on GitHub; Unsnooze Locally brings it

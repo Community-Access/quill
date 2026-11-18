@@ -167,6 +167,14 @@ _FIXED: tuple[NodeSpec, ...] = (
     ),
     _n("search_commits", "Commits", "search", scope=_Q, loader="explore:commit_search"),
     _n(
+        "search_advisories",
+        "Security Advisories",
+        "search",
+        scope=_Q,
+        loader="explore:advisory_search",
+        row_type="advisory",
+    ),
+    _n(
         "search_repositories",
         "Repositories",
         "search",
@@ -390,6 +398,7 @@ _REPOSITORY: tuple[NodeSpec, ...] = (
     ),
     _r("pages", "GitHub Pages", loader="explore:pages"),
     _r("security", "Security"),
+    _r("security_policy", "Policy", "security", loader="explore:security_policy", row_type="mixed"),
     _r("alerts", "Alerts", "security", loader="explore:security", row_type="security_alert"),
     _r(
         "alerts_closed",
@@ -398,6 +407,7 @@ _REPOSITORY: tuple[NodeSpec, ...] = (
         loader="explore:security_closed",
         row_type="security_alert",
     ),
+    _r("advisories", "Advisories", "security", loader="explore:advisories", row_type="advisory"),
     _r("settings", "Settings"),
     _r(
         "secrets",
@@ -497,7 +507,11 @@ def _planned(feature: str, node: str, reference: str = "") -> CoverageRow:
 PLANNED = CoverageTable((
     # 14.1, worth adding: people will look for these.
     _planned("Wiki", "Repository > Wiki", "GX12"),
-    _planned("Security policy and advisories", "Repository > Security > Advisories", "GX11"),
+    _planned(
+        "Security advisories: comments, private forks, an organization's",
+        "Repository > Security > Advisories",
+        "GX11",
+    ),
     # 14.2, worth adding later.
     _planned("Packages: an organization's, and restoring", "Repositories > My Packages"),
     _planned("Dependency graph and SBOM export", "Repository > Security > Dependencies"),

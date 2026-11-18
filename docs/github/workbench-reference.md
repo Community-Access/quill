@@ -970,7 +970,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
+In all: 354 yes, 1109 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2494,23 +2494,23 @@ In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 
 #### Security advisories
 
-14 operations: 14 planned.
+14 operations: 6 yes, 8 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
-| List global security advisories | `GET /advisories` | Planned | Repository > Security > Advisories; Advisory sheet. |
+| List global security advisories | `GET /advisories` | Yes | Navigator: Search > Security Advisories |
 | Get a global security advisory | `GET /advisories/{ghsa_id}` | Planned | Repository > Security > Advisories; Advisory sheet. |
 | List repository security advisories for an organization | `GET /orgs/{org}/security-advisories` | Planned | Repository > Security > Advisories; Advisory sheet. |
-| List repository security advisories | `GET /repos/{owner}/{repo}/security-advisories` | Planned | Repository > Security > Advisories; Advisory sheet. |
-| Create a repository security advisory | `POST /repos/{owner}/{repo}/security-advisories` | Planned | Repository > Security > Advisories; Advisory sheet. |
-| Privately report a security vulnerability | `POST /repos/{owner}/{repo}/security-advisories/reports` | Planned | Repository > Security > Advisories; Advisory sheet. |
+| List repository security advisories | `GET /repos/{owner}/{repo}/security-advisories` | Yes | Navigator: Repository > owner/name > Security > Advisories |
+| Create a repository security advisory | `POST /repos/{owner}/{repo}/security-advisories` | Yes | Navigator: Repository > owner/name > Security > Advisories |
+| Privately report a security vulnerability | `POST /repos/{owner}/{repo}/security-advisories/reports` | Yes | Navigator: Repository > owner/name > Security > Advisories |
 | Get a repository security advisory | `GET /repos/{owner}/{repo}/security-advisories/{ghsa_id}` | Planned | Repository > Security > Advisories; Advisory sheet. |
-| Update a repository security advisory | `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id}` | Planned | Repository > Security > Advisories; Advisory sheet. |
+| Update a repository security advisory | `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id}` | Yes | context menu > Publish or Close Advisory... |
 | List repository security advisory comments | `GET /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments` | Planned | Repository > Security > Advisories; Advisory sheet. |
 | Create a repository advisory comment | `POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments` | Planned | Repository > Security > Advisories; Advisory sheet. |
 | Get a repository advisory comment | `GET /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments/{comment_id}` | Planned | Repository > Security > Advisories; Advisory sheet. |
 | Update a repository advisory comment | `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments/{comment_id}` | Planned | Repository > Security > Advisories; Advisory sheet. |
-| Request a CVE for a repository security advisory | `POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/cve` | Planned | Repository > Security > Advisories; Advisory sheet. |
+| Request a CVE for a repository security advisory | `POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/cve` | Yes | context menu > Request CVE... |
 | Create a temporary private fork | `POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/forks` | Planned | Repository > Security > Advisories; Advisory sheet. |
 
 #### Teams

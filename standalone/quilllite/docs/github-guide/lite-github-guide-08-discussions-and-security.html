@@ -250,8 +250,9 @@ repository’s forum: questions, ideas and announcements, with threaded
 replies, answers and polls. Security alerts are GitHub telling a
 repository about a vulnerable package, a weakness in the code, or a
 secret committed by mistake. This chapter covers reading and taking part
-in both, and saving a repository’s software bill of materials for a
-security review.</p>
+in both, a repository’s security policy and advisories, reporting a
+vulnerability privately, searching GitHub’s Advisory Database, and
+saving a software bill of materials for a security review.</p>
 <h2 id="discussions">Discussions</h2>
 <h3 id="finding-them">Finding them</h3>
 <p>In Explore, choose <strong>Repository Discussions</strong> in
@@ -362,6 +363,60 @@ only when GitHub sends the alert back in its new state.</p>
 <p>Dismissed and fixed alerts have their own view, <strong>Dismissed and
 resolved security alerts</strong>. There, <strong>Reopen Alert…</strong>
 on the context menu asks first, then reopens the alert.</p>
+<h2 id="security-policy-and-reporting">Security policy and
+reporting</h2>
+<p>Found a security hole in someone’s project? Do not open a public
+issue: tell the maintainers privately first. <strong>Repository &gt;
+Security &gt; Policy</strong> in the GitHub Workbench says how. Its
+first row is the repository’s security policy, “Security policy:
+SECURITY.md. Enter opens it.”, found in the root, <code>.github</code>
+or <code>docs</code>, or says the repository has none. The second says
+whether private vulnerability reporting is on. When it is, anyone signed
+in can report there, below.</p>
+<h2 id="security-advisories">Security advisories</h2>
+<p>A security advisory is a project’s notice of a vulnerability: which
+package and versions, how serious, and where it is fixed. Each has a
+GHSA (GitHub Security Advisory) id, and often a CVE (Common
+Vulnerabilities and Exposures) number too.</p>
+<p><strong>Repository &gt; Security &gt; Advisories</strong> lists a
+repository’s advisories, one sentence each: “GHSA-q4hm-2345-wxyz: high
+severity, draft: Path traversal in the importer.” Published advisories
+are listed for everyone; drafts and private reports only for the
+repository’s administrators and security managers, and anyone else hears
+that rather than an empty list. The details pane says which packages and
+versions are affected, which version fixes it, who is credited, and the
+full description.</p>
+<p><strong>New Here</strong> in Advisories (<code>Ctrl+N</code>) asks
+which you want:</p>
+<ul>
+<li><strong>Report a vulnerability privately to the
+maintainers</strong>, for anyone, when private reporting is on. QUILL
+Lite asks for a one-line summary, then what it is, how to reproduce it
+and what it lets an attacker do, then how severe it is, with “Not sure”
+as a choice. Only the maintainers see the report.</li>
+<li><strong>Draft an advisory</strong>, for maintainers. The same three
+questions, then the affected package and its ecosystem, such as npm or
+pip, which you can leave for later. A draft is private until it is
+published.</li>
+</ul>
+<p>On an advisory’s context menu:</p>
+<ul>
+<li><strong>Publish or Close Advisory…</strong> publishes it, closes it,
+or makes it a draft again. Publishing makes it public for good, puts it
+in GitHub’s Advisory Database and alerts the projects that depend on the
+package, so QUILL Lite asks you to type its GHSA id first.</li>
+<li><strong>Request CVE…</strong> asks GitHub for a CVE number for a
+draft. GitHub reviews each request, so the number comes later.</li>
+</ul>
+<p>Comments on a draft advisory, and the temporary private fork GitHub
+offers for working on the fix, are still on GitHub’s own page:
+<strong>Open on GitHub</strong>.</p>
+<h2 id="searching-the-advisory-database">Searching the Advisory
+Database</h2>
+<p><strong>Search &gt; Security Advisories</strong> searches GitHub’s
+Advisory Database, every published advisory for every package. Type a
+package name, such as <code>lodash</code>, a CVE number, or a GHSA id,
+then Enter. Each row reads like the ones above.</p>
 <h2 id="a-software-bill-of-materials">A software bill of materials</h2>
 <p>A software bill of materials, or SBOM, is the list of every package a
 repository depends on, with versions and licences. Security reviews,

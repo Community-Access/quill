@@ -1148,7 +1148,7 @@ Source: PRD section 14. Its “today” statements describe the source audit rev
 | Rulesets: read them | **Built:** the ruleset sheet (`sheets_code.py`, `rulesets.py`) | Repository > Settings > Rulesets (read-only list; editing stays on github.com) |
 | Enable or disable a workflow | **Built 2026-11-18:** Turn Workflow On or Off... (`workflow_state.py`) | Workflow context menu; Item menu |
 | Revert a merged pull request | **Built:** Revert... on a merged pull request (`revert_pull`) | PR context menu > More > Revert... |
-| Security policy, private vulnerability reports, repository security advisories | Not found (an advisory credit appears only as a notification reason) | Repository > Security > Policy; Security > Advisories (roadmap GX11) |
+| Security policy, private vulnerability reports, repository security advisories | **Built 2026-11-18:** Security > Policy and Advisories, private reports and drafts, publish, close, request a CVE, and the Advisory Database search (`security_advisories.py`); comments and private forks remain | Repository > Security > Policy; Security > Advisories (roadmap GX11) |
 
 ### 14.2 Worth adding later (useful, less often)
 

@@ -1605,6 +1605,14 @@ numbers. See
 Workbench undo a linked branch and a "duplicate of" mark. See
 [Closing, branches and task lists](../github-guide/github-guide-04-issues.html#closing-branches-and-task-lists).
 
+#### Security policy and advisories
+
+**Repository > Security > Policy** and **Advisories** in the GitHub Workbench
+say how to report a vulnerability, report one privately, and list and manage
+a repository's security advisories; **Search > Security Advisories** searches
+GitHub's Advisory Database. See
+[Security advisories](../github-guide/github-guide-08-discussions-and-security.html#security-advisories).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

@@ -66,6 +66,10 @@ GLOSSARY: dict[str, str] = {
         "A tag that carries a message, who made it and when. Releases usually use one. "
         "A lightweight tag is only a name for a commit."
     ),
+    "Security advisory": (
+        "A notice that a package has a vulnerability: which versions, how serious, and "
+        "where it is fixed. Each has a GHSA id, and often a CVE number too."
+    ),
     "Star list": (
         "One of your own named groups of starred repositories, such as Screen readers. "
         "A repository can be on several."
@@ -152,6 +156,7 @@ ROW_TYPE_WORDS: dict[str, str] = {
     "invitation": "Invitation",
     "runner": "Runner",
     "package": "Package",
+    "advisory": "Security advisory",
     "repository": "Repository",
     "person": "Mention",
     "label": "Label",

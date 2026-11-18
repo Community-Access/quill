@@ -2504,6 +2504,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Commits.** Search Commits: commits whose message matches the filter box.
 
+**Security Advisories.** Security Advisories: search GitHub's Advisory Database by package, CVE or GHSA id.
+
 **Repositories.** Search Repositories: repositories whose name or description matches the filter box.
 
 **Saved Searches.** Saved Searches: searches you kept, on this computer. Enter runs one; Delete removes it.
@@ -2646,9 +2648,13 @@ Control coverage: 365 audited sites (365 helped).
 
 **repository: Security.** Security: alerts about vulnerable code and leaked secrets.
 
+**repository: Policy.** Policy: where the security policy is, and whether vulnerabilities can be reported privately.
+
 **repository: Alerts.** Alerts: open security alerts. Enter reads one.
 
 **repository: Dismissed and Resolved Alerts.** Dismissed and Resolved Alerts: alerts no longer open.
+
+**repository: Advisories.** Advisories: this repository's security advisories. New Here reports a vulnerability or drafts an advisory.
 
 **repository: Settings.** Settings: names of secrets, branch protection and general settings.
 
@@ -3151,6 +3157,10 @@ Control coverage: 365 audited sites (365 helped).
 **Delete Gist.** Delete the gist.
 
 **Open Discussion Thread.** Read the whole thread.
+
+**Publish or Close Advisory.** Change its state.
+
+**Request CVE.** Ask GitHub for a CVE number.
 
 **Dismiss or Reopen Alert.** Dismiss with a reason.
 

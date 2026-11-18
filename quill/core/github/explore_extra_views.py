@@ -31,6 +31,8 @@ EXTRA_REPO_VIEWS = frozenset({
     "insights",
     "community",
     "commit_stats",
+    "advisories",
+    "security_policy",
     "actions_caches",
     "secrets",
     "merge_queue",
@@ -43,6 +45,7 @@ EXTRA_ACCOUNT_VIEWS = frozenset({
     "my_packages",
     "star_lists",
     "my_profile",
+    "advisory_search",
 })
 #: Views of one person, answered from the login in Explore's person box.
 EXTRA_PERSON_VIEWS = frozenset({"person_profile"})
@@ -74,6 +77,14 @@ def fetch_extra_view(
             return fetch_invitations(TokenApi(token), limit=limit)
         except GitHubRestError as exc:
             raise GitHubExploreError(f"Could not read your invitations: {exc}") from exc
+    if view == "advisory_search":
+        from quill.core.github.security_advisories import AdvisoryError, search_advisories
+        from quill.core.github.workbench_api import TokenApi
+
+        try:
+            return search_advisories(TokenApi(token), query, limit=limit)
+        except AdvisoryError as exc:
+            raise GitHubExploreError(str(exc.args[0])) from exc
     if view in ("my_profile", "person_profile"):
         from quill.core.github.profile import ProfileError, fetch_profile
         from quill.core.github.workbench_api import TokenApi
@@ -112,6 +123,20 @@ def fetch_extra_view(
             return fetch_insights(token, repo, limit=limit, warnings=warnings)
         if view == "community":
             return fetch_community_profile(token, repo)
+        if view in ("advisories", "security_policy"):
+            from quill.core.github.security_advisories import (
+                AdvisoryError,
+                fetch_advisories,
+                fetch_policy,
+            )
+            from quill.core.github.workbench_api import TokenApi
+
+            try:
+                if view == "advisories":
+                    return fetch_advisories(TokenApi(token), repo, limit=limit)
+                return fetch_policy(TokenApi(token), repo)
+            except AdvisoryError as exc:
+                raise GitHubExploreError(str(exc.args[0])) from exc
         if view == "commit_stats":
             from quill.core.github.repo_activity import fetch_activity
 
