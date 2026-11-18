@@ -29,21 +29,12 @@ _SANCTIONED_ROOT_MARKDOWN = frozenset({
     "CLAUDE.md",
     "README.md",
     "REPO-GUIDE.md",
-    # The ranked platform-review worklist (2026-08-17), kept at the root by
-    # explicit request so it stays in view while its items are worked off;
-    # graduate it under docs/ when the list is spent.
-    "polish.md",
-    # Jeff's review lists of what is still missing, 2026-11-14: WordPress,
-    # then GitHub. Trimmed as items are built; deleted when spent.
-    "wp_missing.md",
     # Jeff's UX review walkthrough of every WordPress feature, 2026-11-14.
     "how.md",
-    "gh_missing.md",
-    # The GitHub and WordPress Workbench delivery checklist and its design
-    # companion (2026-11-10), the plan of record while that work is open;
-    # graduate them under docs/planning when the lists are spent.
+    # Everything left to do, in one list (2026-11-18): it took in complete2.md,
+    # wp_missing.md and how.md's review notes. A new work list goes in it, not
+    # in a new root file; graduate it under docs/planning when it is spent.
     "complete.md",
-    "complete2.md",
 })
 
 
