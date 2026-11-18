@@ -1571,6 +1571,13 @@ organization after you type its name. See
 and
 [Transferring a repository](../github-guide/github-guide-07-code-and-repositories.html#transferring-a-repository).
 
+#### Commit activity as tables
+
+**Repository > Insights > Commit Activity** in the GitHub Workbench reads
+GitHub's statistics charts as sentences: commits and lines each week, the
+busiest hours and each contributor. See
+[Commit activity, as tables](../github-guide/github-guide-07-code-and-repositories.html#commit-activity-as-tables).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

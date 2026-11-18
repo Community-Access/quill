@@ -30,6 +30,7 @@ from quill.core.github.search_views import SEARCH_VIEWS, run_search
 EXTRA_REPO_VIEWS = frozenset({
     "insights",
     "community",
+    "commit_stats",
     "actions_caches",
     "secrets",
     "merge_queue",
@@ -78,6 +79,10 @@ def fetch_extra_view(
             return fetch_insights(token, repo, limit=limit, warnings=warnings)
         if view == "community":
             return fetch_community_profile(token, repo)
+        if view == "commit_stats":
+            from quill.core.github.repo_activity import fetch_activity
+
+            return fetch_activity(token, repo, limit=limit, warnings=warnings)
         if view == "runners":
             from quill.core.github.runners_sbom import RunnersError, fetch_runners
             from quill.core.github.workbench_api import TokenApi

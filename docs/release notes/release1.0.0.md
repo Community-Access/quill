@@ -2162,6 +2162,11 @@ can carry its message, who made it and when, and **Read Tag Message** says it.
 And a personal project that has grown up can move to an organization with
 **Transfer Repository...**, after you type its name.
 
+GitHub draws a project's history as charts. **Commit Activity**, under a
+repository's Insights, reads the same numbers aloud: how many commits each
+week and which day was busiest, lines added and removed, the hours of the week
+the project is busiest, and what each contributor has done.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

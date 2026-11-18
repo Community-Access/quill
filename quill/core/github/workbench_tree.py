@@ -356,6 +356,7 @@ _REPOSITORY: tuple[NodeSpec, ...] = (
         loader="explore:metrics",
     ),
     _r("community", "Community Profile", "insights", loader="explore:community"),
+    _r("commit_activity", "Commit Activity", "insights", loader="explore:commit_stats"),
     _r(
         "deployments",
         "Deployments and Environments",
@@ -477,7 +478,6 @@ PLANNED = CoverageTable((
     _planned("Security policy and advisories", "Repository > Security > Advisories", "GX11"),
     # 14.2, worth adding later.
     _planned("Packages", "Repository > Packages"),
-    _planned("Insights tables: commit activity, code frequency", "Repository > Insights"),
     _planned("Dependency graph and SBOM export", "Repository > Security > Dependencies"),
     _planned("Self-hosted runners (registering and removing)", "Repository > Actions > Runners"),
     _planned("Star lists", "Repositories > Starred > each list"),

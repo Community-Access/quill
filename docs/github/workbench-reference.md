@@ -970,7 +970,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 330 yes, 1133 planned, 15 not needed and 526 left to GitHub.
+In all: 335 yes, 1128 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1998,16 +1998,16 @@ In all: 330 yes, 1133 planned, 15 not needed and 526 left to GitHub.
 
 #### Metrics
 
-10 operations: 5 yes, 5 planned.
+10 operations: 10 yes.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | Get community profile metrics | `GET /repos/{owner}/{repo}/community/profile` | Yes | Navigator: Repository > owner/name > Insights > Community Profile |
-| Get the weekly commit activity | `GET /repos/{owner}/{repo}/stats/code_frequency` | Planned | Repository > Insights (tables) |
-| Get the last year of commit activity | `GET /repos/{owner}/{repo}/stats/commit_activity` | Planned | Repository > Insights (tables) |
-| Get all contributor commit activity | `GET /repos/{owner}/{repo}/stats/contributors` | Planned | Repository > Insights (tables) |
-| Get the weekly commit count | `GET /repos/{owner}/{repo}/stats/participation` | Planned | Repository > Insights (tables) |
-| Get the hourly commit count for each day | `GET /repos/{owner}/{repo}/stats/punch_card` | Planned | Repository > Insights (tables) |
+| Get the weekly commit activity | `GET /repos/{owner}/{repo}/stats/code_frequency` | Yes | Navigator: Repository > owner/name > Insights > Commit Activity |
+| Get the last year of commit activity | `GET /repos/{owner}/{repo}/stats/commit_activity` | Yes | Navigator: Repository > owner/name > Insights > Commit Activity |
+| Get all contributor commit activity | `GET /repos/{owner}/{repo}/stats/contributors` | Yes | Navigator: Repository > owner/name > Insights > Commit Activity |
+| Get the weekly commit count | `GET /repos/{owner}/{repo}/stats/participation` | Yes | Navigator: Repository > owner/name > Insights > Commit Activity |
+| Get the hourly commit count for each day | `GET /repos/{owner}/{repo}/stats/punch_card` | Yes | Navigator: Repository > owner/name > Insights > Commit Activity |
 | Get repository clones | `GET /repos/{owner}/{repo}/traffic/clones` | Yes | Navigator: Repository > owner/name > Insights > Traffic and Contributors |
 | Get top referral paths | `GET /repos/{owner}/{repo}/traffic/popular/paths` | Yes | Navigator: Repository > owner/name > Insights > Traffic and Contributors |
 | Get top referral sources | `GET /repos/{owner}/{repo}/traffic/popular/referrers` | Yes | Navigator: Repository > owner/name > Insights > Traffic and Contributors |

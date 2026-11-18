@@ -190,6 +190,10 @@ NODE_HELP: dict[str, str] = {
         "Workbench Options."
     ),
     "repository:community": "Community Profile: the README, license and guidelines GitHub checks.",
+    "repository:commit_activity": (
+        "Commit Activity: GitHub's statistics graphs as rows: commits and lines each week, "
+        "the busiest hours, and each contributor's lines."
+    ),
     "repository:deployments": "Deployments and Environments: where the code was deployed.",
     "repository:pages": "GitHub Pages: the website built from this repository.",
     "repository:security": "Security: alerts about vulnerable code and leaked secrets.",

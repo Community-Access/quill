@@ -1096,6 +1096,16 @@ def runners_and_sbom(run: Any) -> str:
     return f"{len(runners)} self-hosted runners; {said}"
 
 
+def commit_activity(run: Any) -> str:
+    from quill.core.github.repo_activity import fetch_activity
+
+    warnings: list[str] = []
+    token = getattr(run.api, "_token", None)
+    rows = fetch_activity(token, run.repo, limit=20, warnings=warnings)
+    _expect(not warnings, "; ".join(warnings))
+    return rows[0].label
+
+
 def check_with_git(run: Any) -> str:
     done = subprocess.run(["git", "--version"], capture_output=True, text=True, check=False)
     _expect(done.returncode == 0, "git is not installed")
@@ -1111,6 +1121,7 @@ FEATURES: dict[str, Scenario | str] = {
     "Open Patch in Editor: the whole change as one diff": open_patch,
     "Why Can't I Merge?, for the exact commit": why_cant_merge,
     "Runners and Export Software Bill of Materials (PRD 14.2)": runners_and_sbom,
+    "Commit Activity as tables (PRD 14.2)": commit_activity,
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

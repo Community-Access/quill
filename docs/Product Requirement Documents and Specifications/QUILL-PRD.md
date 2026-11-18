@@ -17542,7 +17542,9 @@ Repository > Actions > Runners lists self-hosted runners, read-only
 optional message, which makes an annotated tag, and Read Tag Message reads one
 (`tags.py`, `tag_message`). Transfer Repository... (`Ctrl+Alt+T`, verb
 `transfer_repository`, `quill/core/github/repo_transfer.py`) asks the new owner
-and the typed full name.
+and the typed full name. Repository > Insights > Commit Activity
+(`quill/core/github/repo_activity.py`, explore view `commit_stats`) reads
+GitHub's statistics charts as sentences.
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and
