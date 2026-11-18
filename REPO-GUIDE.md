@@ -174,9 +174,13 @@ the human sign-off phase is what the acceptance run completes.
 - `README.md` — project front page. `CHANGELOG.md` — release history (read
   by release tooling; stays at root). `CLAUDE.md` — engineering invariants
   for AI-assisted work. `REPO-GUIDE.md` — this guide.
-- `polish.md` — the ranked platform-review worklist (2026-08-17), at the root
-  by request so it stays in view while its items are worked off; its header is
-  the execution ledger. Graduates under `docs/` when the list is spent.
+- `complete.md` — everything left to do, in one list, in Jeff's order: the
+  GitHub Workbench first, then diff features, WordPress, the EdSharp review
+  and other queued work, then the detailed checklists behind them. Since
+  2026-11-18 it holds what `complete2.md`, `wp_missing.md` and `how.md`'s
+  review notes held; a new work list goes in it, not in a new root file.
+- `how.md` — a walkthrough of every WordPress feature as a person meets it
+  (2026-11-14), kept for reference; its review notes are now in `complete.md`.
 - `LICENSE`, `NOTICE` — licensing.
 - `pyproject.toml`, `requirements.txt`, `uv.lock`, `.quill-reqs.sha256` —
   Python packaging and dependency pinning.
