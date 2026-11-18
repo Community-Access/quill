@@ -732,6 +732,13 @@ lines the same way, with the same saved choice.
 With thanks to Kelly Ford, whose GHManage has been the measure for QUILL's
 GitHub work from the start.
 
+### GitHub: a gist's comments, history and forks (2026-11-18)
+
+A gist's context menu in the Workbench gains **Comments...** (read, add,
+change and delete), **History...** (each saved version and how much changed),
+**Forks...** and **Fork Gist**. 7 more GitHub endpoints are covered; 122
+remain planned. In the GitHub guide's Workbench chapter, under Gists.
+
 ### GitHub: a person's public lists, GitHub's templates, and People and Topics search (2026-11-18)
 
 A person's place in the Workbench's tree now lists their SSH keys, GPG keys,

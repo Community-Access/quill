@@ -121,6 +121,11 @@ from quill.ui.github_workbench_runner_admin import (
     RUNNER_ADMIN_VERBS,
     GitHubWorkbenchRunnerAdminMixin,
 )
+from quill.ui.github_workbench_scoped import (
+    SCOPED_REASONS,
+    SCOPED_VERBS,
+    GitHubWorkbenchScopedListsMixin,
+)
 from quill.ui.github_workbench_settings_lists import (
     SETTINGS_LIST_REASONS,
     SETTINGS_LIST_VERBS,
@@ -177,6 +182,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **ORG_ADMIN_VERBS,
     **ISSUE_ADMIN_VERBS,
     **ROW_ADMIN_VERBS,
+    **SCOPED_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -207,6 +213,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **ORG_ADMIN_REASONS,
     **ISSUE_ADMIN_REASONS,
     **ROW_ADMIN_REASONS,
+    **SCOPED_REASONS,
 }
 
 
@@ -235,6 +242,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchOrgAdminMixin,
     GitHubWorkbenchIssueAdminMixin,
     GitHubWorkbenchRowAdminMixin,
+    GitHubWorkbenchScopedListsMixin,
 ):
     items: Any
     frame: Any

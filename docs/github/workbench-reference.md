@@ -961,7 +961,7 @@ Keys the window answers that are not menu rows:
 - **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Send Repository Dispatch..., Pin; More: Star Lists..., Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List...; Properties...
 - **person**: Open, Follow or Unfollow, Open on GitHub; Properties...
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
-- **gist**: Edit Gist..., Star or Unstar, Copy Link, Open on GitHub, Delete Gist...; Properties...
+- **gist**: Edit Gist..., Star or Unstar, Comments..., History..., Forks..., Fork Gist; More: Copy Link, Open on GitHub, Delete Gist...; Properties...
 - **discussion**: Open Discussion Thread, Read as Document..., Copy Link, Open on GitHub; Properties...
 - **security_alert**: Open, Dismiss or Reopen Alert..., Copilot Autofix..., Show Every Place, Open on GitHub; Properties...
 - **cache**: Show Details, Delete Cache...; Properties...
@@ -1100,7 +1100,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 722 yes, 129 planned, 287 not needed and 866 left to GitHub.
+In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1945,7 +1945,7 @@ In all: 722 yes, 129 planned, 287 not needed and 866 left to GitHub.
 
 #### Gists
 
-20 operations: 10 yes, 7 planned, 2 not needed, 1 left to github.
+20 operations: 17 yes, 2 not needed, 1 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1956,14 +1956,14 @@ In all: 722 yes, 129 planned, 287 not needed and 866 left to GitHub.
 | Delete a gist | `DELETE /gists/{gist_id}` | Yes | context menu > Delete Gist... |
 | Get a gist | `GET /gists/{gist_id}` | Yes | Properties (Alt+Enter) on Gist |
 | Update a gist | `PATCH /gists/{gist_id}` | Yes | context menu > Edit Gist... |
-| List gist comments | `GET /gists/{gist_id}/comments` | Planned | Gists; Gist sheet. |
-| Create a gist comment | `POST /gists/{gist_id}/comments` | Planned | Gists; Gist sheet. |
-| Delete a gist comment | `DELETE /gists/{gist_id}/comments/{comment_id}` | Planned | Gists; Gist sheet. |
+| List gist comments | `GET /gists/{gist_id}/comments` | Yes | context menu > Comments... |
+| Create a gist comment | `POST /gists/{gist_id}/comments` | Yes | context menu > Comments... |
+| Delete a gist comment | `DELETE /gists/{gist_id}/comments/{comment_id}` | Yes | context menu > Comments... |
 | Get a gist comment | `GET /gists/{gist_id}/comments/{comment_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Update a gist comment | `PATCH /gists/{gist_id}/comments/{comment_id}` | Planned | Gists; Gist sheet. |
-| List gist commits | `GET /gists/{gist_id}/commits` | Planned | Gists; Gist sheet. |
-| List gist forks | `GET /gists/{gist_id}/forks` | Planned | Gists; Gist sheet. |
-| Fork a gist | `POST /gists/{gist_id}/forks` | Planned | Gists; Gist sheet. |
+| Update a gist comment | `PATCH /gists/{gist_id}/comments/{comment_id}` | Yes | context menu > Comments... |
+| List gist commits | `GET /gists/{gist_id}/commits` | Yes | context menu > History... |
+| List gist forks | `GET /gists/{gist_id}/forks` | Yes | context menu > Forks... |
+| Fork a gist | `POST /gists/{gist_id}/forks` | Yes | context menu > Fork Gist |
 | Unstar a gist | `DELETE /gists/{gist_id}/star` | Yes | context menu > Star or Unstar |
 | Check if a gist is starred | `GET /gists/{gist_id}/star` | Yes | context menu > Star or Unstar |
 | Star a gist | `PUT /gists/{gist_id}/star` | Yes | context menu > Star or Unstar |

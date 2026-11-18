@@ -3368,6 +3368,14 @@ Control coverage: 384 audited sites (384 helped).
 
 **Star or Unstar.** Star it, or take the star away.
 
+**Comments.** Read its comments; add, change or delete.
+
+**History.** Every saved version, with how much changed.
+
+**Forks.** Who forked it, and when.
+
+**Fork Gist.** Copy it to your own gists.
+
 **Delete Gist.** Delete the gist.
 
 **Open Discussion Thread.** Read the whole thread.

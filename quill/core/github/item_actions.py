@@ -406,6 +406,10 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     "gist": (
         _default("edit_gist", "Edit Gist...", "Change the gist's files and description."),
         _a("star_gist", "Star or Unstar", _O, "sign_in", "Star it, or take the star away."),
+        _a("gist_comments", "Comments...", help="Read its comments; add, change or delete."),
+        _a("gist_history", "History...", help="Every saved version, with how much changed."),
+        _a("gist_forks", "Forks...", help="Who forked it, and when."),
+        _a("fork_gist", "Fork Gist", _O, "sign_in", "Copy it to your own gists."),
         _COPY_LINK,
         _OPEN_WEB,
         _a("delete_gist", "Delete Gist...", _D, "sign_in", "Delete the gist."),

@@ -169,6 +169,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}relationships": ("repo:triage", _O),
     f"{_P}issue_fields": ("repo:triage", _O),
     f"{_P}delete_release": ("repo:push", _D),
+    f"{_P}gist_comments": ("sign_in+scope:gist", _V),
+    f"{_P}fork_gist": ("sign_in+scope:gist", _V),
     f"{_P}delete_milestone": ("repo:triage", _D),
     f"{_P}delete_deployment": ("repo:push", _D),
     f"{_P}webhook_test_push": ("repo:admin", _O),

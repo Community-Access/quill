@@ -3236,8 +3236,9 @@ Delete Star List…; Properties…</li>
 Properties…</li>
 <li><strong>label</strong>: Find Issues with Label, Edit Label…, Delete
 Label…; Properties…</li>
-<li><strong>gist</strong>: Edit Gist…, Star or Unstar, Copy Link, Open
-on GitHub, Delete Gist…; Properties…</li>
+<li><strong>gist</strong>: Edit Gist…, Star or Unstar, Comments…,
+History…, Forks…, Fork Gist; More: Copy Link, Open on GitHub, Delete
+Gist…; Properties…</li>
 <li><strong>discussion</strong>: Open Discussion Thread, Read as
 Document…, Copy Link, Open on GitHub; Properties…</li>
 <li><strong>security_alert</strong>: Open, Dismiss or Reopen Alert…,
@@ -3593,7 +3594,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 722 yes, 129 planned, 287 not needed and 866 left to
+<p>In all: 729 yes, 122 planned, 287 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -8409,7 +8410,7 @@ Plumbing.</td>
 </tbody>
 </table>
 <h4 id="gists">Gists</h4>
-<p>20 operations: 10 yes, 7 planned, 2 not needed, 1 left to github.</p>
+<p>20 operations: 17 yes, 2 not needed, 1 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -8467,20 +8468,20 @@ lists.</td>
 <tr>
 <td>List gist comments</td>
 <td><code>GET /gists/{gist_id}/comments</code></td>
-<td>Planned</td>
-<td>Gists; Gist sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Comments…</td>
 </tr>
 <tr>
 <td>Create a gist comment</td>
 <td><code>POST /gists/{gist_id}/comments</code></td>
-<td>Planned</td>
-<td>Gists; Gist sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Comments…</td>
 </tr>
 <tr>
 <td>Delete a gist comment</td>
 <td><code>DELETE /gists/{gist_id}/comments/{comment_id}</code></td>
-<td>Planned</td>
-<td>Gists; Gist sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Comments…</td>
 </tr>
 <tr>
 <td>Get a gist comment</td>
@@ -8492,26 +8493,26 @@ reads the list.</td>
 <tr>
 <td>Update a gist comment</td>
 <td><code>PATCH /gists/{gist_id}/comments/{comment_id}</code></td>
-<td>Planned</td>
-<td>Gists; Gist sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Comments…</td>
 </tr>
 <tr>
 <td>List gist commits</td>
 <td><code>GET /gists/{gist_id}/commits</code></td>
-<td>Planned</td>
-<td>Gists; Gist sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; History…</td>
 </tr>
 <tr>
 <td>List gist forks</td>
 <td><code>GET /gists/{gist_id}/forks</code></td>
-<td>Planned</td>
-<td>Gists; Gist sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Forks…</td>
 </tr>
 <tr>
 <td>Fork a gist</td>
 <td><code>POST /gists/{gist_id}/forks</code></td>
-<td>Planned</td>
-<td>Gists; Gist sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Fork Gist</td>
 </tr>
 <tr>
 <td>Unstar a gist</td>

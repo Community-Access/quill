@@ -336,6 +336,12 @@ figures are on GitHub's billing page.
 - **Edit Gist** (`Enter` on a gist) reads the gist and opens it in the same
   window. If you change nothing, nothing is sent.
 - **Star or Unstar** is on the context menu.
+- **Comments...** lists the gist's comments, oldest first, with "Add a
+  comment..." at the top; choose one of yours to change or delete it.
+- **History...** lists every saved version, newest first: "2026-11-02 by
+  jeff: 3 lines added, 1 removed."
+- **Forks...** lists who copied it, and **Fork Gist** copies someone else's
+  gist to your own, where you can change it.
 - **Delete Gist...** (`Delete` on a gist) asks first, because a deleted gist,
   its files and its history cannot be brought back.
 - **Gists I Starred**, under Gists, lists the gists you starred, with who
