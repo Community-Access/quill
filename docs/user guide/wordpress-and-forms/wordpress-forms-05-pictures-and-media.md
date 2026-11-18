@@ -375,8 +375,10 @@ this computer, and nothing reaches your site until you have reviewed it.
 the transcript, choose whether it goes under the player folded away as
 "Read the transcript", or in full.
 
-**Make a Listening Version...** reads your page aloud with your Read Aloud
-voice, saves it as an MP3, uploads it, and puts a player at the top
+**Make a Listening Version...** asks first, because the MP3 can be reached on
+the site as soon as it is uploaded, even before the page is published. Then
+it reads your page aloud with your Read Aloud voice, saves it as an MP3,
+uploads it, and puts a player at the top
 labelled, for example, "Listen to this post (6 minutes)". Run it again after
 you change the page: QUILL tells you the recording is out of date and offers
 to make it again, and the new recording replaces the old one.
@@ -387,7 +389,8 @@ nobody meets an unnamed frame. A report says what each one turned out to
 be.
 
 **Publish a Document as a Page...** Choose a PDF or Word file. QUILL
-converts it on this computer, uploads the original to the Media Library, and
+converts it on this computer, asks before it uploads anything, uploads the
+original to the Media Library, and
 opens the text as a new page draft with a link to the original at the top.
 Many people find a page easier to read than a PDF. A scanned PDF is only
 read with OCR after you say yes.

@@ -51,6 +51,21 @@ def reading_level_line(text: str, *, is_html: bool | None = None) -> str:
     return rd.describe(rd.reading_level(text, is_html=html))
 
 
+def ai_name(editor: Any) -> str:
+    """The AI connection in use, as Which AI Am I Using says it; else a plain stand-in."""
+    service_of = getattr(editor, "_ai_service", None)
+    service = service_of() if callable(service_of) else None
+    which = getattr(service, "which_ai", None)
+    if callable(which):
+        try:
+            said = str(which() or "").strip()
+        except Exception:  # noqa: BLE001 - only a label; the request itself reports its own
+            said = ""
+        if said:
+            return f"the AI you chose ({said.rstrip('.')})"
+    return "the AI you chose in Choose Your AI"
+
+
 def ask_text_ai(
     editor: Any,
     prompt: str,
@@ -466,6 +481,26 @@ class WordPressCheckCommands(WordPressFindReplaceCommands):
             self.host.announce("There is nothing to summarise yet.")
             return
         prompt = rpt.in_short_prompt(copy.title, words[:_AI_TEXT_LIMIT])
+        count = len(words[:_AI_TEXT_LIMIT].split())
+        ready = getattr(editor, "_ai_ready", None)
+        capable = getattr(editor, "_ai_capable", None)
+        if not callable(ready) or not callable(capable):
+            self.host.announce("AI help is not available in this window.")
+            return
+        if not ready() or not capable("text"):
+            return  # its own gates said why
+        if not dlg.confirm(
+            self.host.parent,
+            self.host.show_modal,
+            title="In Short",
+            message=(
+                f"Send the text of this page ({count} words) to {ai_name(editor)} to write a "
+                "short summary for its top?"
+            ),
+            yes_label="Send",
+        ):
+            self.host.announce("Nothing was sent.")
+            return
 
         def answered(summary: str) -> None:
             if not summary.strip():
@@ -494,4 +529,11 @@ def _readable(colours: list[tuple[str, str]]) -> list[tuple[str, str]]:
     return kept
 
 
-__all__ = ["WordPressCheckCommands", "active_theme", "ask_text_ai", "plain", "reading_level_line"]
+__all__ = [
+    "WordPressCheckCommands",
+    "active_theme",
+    "ai_name",
+    "ask_text_ai",
+    "plain",
+    "reading_level_line",
+]

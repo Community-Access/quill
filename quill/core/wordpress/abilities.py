@@ -218,7 +218,9 @@ def parse_plan(answer: str, abilities: list[Ability]) -> tuple[Ability, dict[str
     return ability, given
 
 
-def approval_message(site_name: str, ability: Ability, given: dict[str, Any]) -> str:
+def approval_message(
+    site_name: str, ability: Ability, given: dict[str, Any], ai: str = "your chosen AI"
+) -> str:
     what = json.dumps(given, ensure_ascii=False) if given else "nothing"
     effect = (
         "It only reads."
@@ -229,7 +231,7 @@ def approval_message(site_name: str, ability: Ability, given: dict[str, Any]) ->
     )
     return (
         f"The AI asks to run {ability.label} ({ability.name}) on {site_name}, given {what}. "
-        f"{effect} Run it this once?"
+        f"{effect} What it returns is sent to {ai} to answer you. Run it this once?"
     )
 
 

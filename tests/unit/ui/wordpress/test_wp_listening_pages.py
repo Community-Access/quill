@@ -110,10 +110,14 @@ def test_listening_version_outside_a_document_says_so(wp, engines) -> None:
     assert "This is not a WordPress document" in wp.host.said
 
 
-def test_listening_version_is_recorded_uploaded_and_put_at_the_top(wp, wp_site, engines):
+def test_listening_version_is_recorded_uploaded_and_put_at_the_top(
+    wp, wp_site, wp_dialogs, engines
+):
     open_document(wp, PARAGRAPH)
     serve_upload(wp_site, media(40, MP3_URL, "audio/mpeg", "Listen"))
+    wp_dialogs.answer("confirm", True)
     wp.cmd_listening_version()
+    assert "upload the MP3 to Community Radio" in wp_dialogs.asked("confirm")[0]["message"]
     assert engines.spoken[0][0] == "Spring Fair"
     assert "The fair is on Saturday." in engines.spoken[0][1]
     upload = wp_site.sent("POST", f"{API}/media")[0]
@@ -134,10 +138,11 @@ def test_asking_again_when_up_to_date_offers_to_remake_and_cancel_keeps_it(
 ) -> None:
     open_document(wp, PARAGRAPH)
     serve_upload(wp_site, media(40, MP3_URL, "audio/mpeg", "Listen"))
+    wp_dialogs.answer("confirm", True)
     wp.cmd_listening_version()
     before = wp.host.text
     wp.cmd_listening_version()
-    assert "up to date" in wp_dialogs.asked("confirm")[0]["message"]
+    assert "up to date" in wp_dialogs.asked("confirm")[1]["message"]
     assert wp.host.text == before
     assert len(engines.spoken) == 1
 
@@ -147,19 +152,22 @@ def test_a_changed_post_is_out_of_date_and_the_new_recording_replaces_the_old(
 ) -> None:
     open_document(wp, PARAGRAPH)
     serve_upload(wp_site, media(40, MP3_URL, "audio/mpeg", "Listen"))
+    wp_dialogs.answer("confirm", True, True)
     wp.cmd_listening_version()
     wp.host.text = wp.host.text.replace("Saturday", "Sunday")
-    wp_dialogs.answer("confirm", True)
     wp.cmd_listening_version()
-    assert "out of date" in wp_dialogs.asked("confirm")[0]["message"]
+    assert "out of date" in wp_dialogs.asked("confirm")[1]["message"]
     assert wp.host.text.count("wp:audio {") == 1
     assert "Sunday" in engines.spoken[1][1]
     assert "quill-listening-version" not in engines.spoken[1][1]
 
 
-def test_a_markdown_listening_version_is_an_island_at_the_top(wp, wp_site, engines) -> None:
+def test_a_markdown_listening_version_is_an_island_at_the_top(
+    wp, wp_site, wp_dialogs, engines
+) -> None:
     open_document(wp, "The fair is on Saturday.\n", text_format="markdown")
     serve_upload(wp_site, media(40, MP3_URL, "audio/mpeg", "Listen"))
+    wp_dialogs.answer("confirm", True)
     wp.cmd_listening_version()
     assert wp.host.text.startswith("::: block core/audio listen listen-1\n\nThe fair")
     assert "quill-listening-version" in working(wp).properties["islands"]["listen-1"]
@@ -255,7 +263,7 @@ def test_a_document_becomes_a_page_draft_linked_to_its_upload(
     wp, wp_site, wp_dialogs, engines, report_pdf
 ) -> None:
     serve_upload(wp_site, media(50, PDF_URL, "application/pdf", "Annual report", 15))
-    wp_dialogs.answer("ask_text", lambda **kw: kw["value"])
+    wp_dialogs.answer("ask_text", lambda **kw: kw["value"]).answer("confirm", True)
     wp.cmd_document_as_page()
     assert wp_dialogs.asked("ask_text")[0]["value"] == "Annual report"
     upload = wp_site.sent("POST", f"{API}/media")[0]
@@ -274,7 +282,7 @@ def test_a_scanned_document_is_read_by_ocr_after_a_yes(
 ) -> None:
     engines.convert_answer = Converted("", needs_ocr=True)
     serve_upload(wp_site, media(50, PDF_URL, "application/pdf", "Annual report"))
-    wp_dialogs.answer("ask_text", "Report").answer("confirm", True)
+    wp_dialogs.answer("ask_text", "Report").answer("confirm", True, True)
     wp.cmd_document_as_page()
     assert engines.converted == ["text", "ocr"]
     assert "Scanned words." in wp.host.text
@@ -292,7 +300,7 @@ def test_a_document_already_in_the_library_can_be_reused(
     wp, wp_site, wp_dialogs, engines, report_pdf
 ) -> None:
     wp_site.on("GET", f"{API}/media", [media(51, PDF_URL, "application/pdf", "Old", 15)])
-    wp_dialogs.answer("ask_text", "Report").answer("confirm", True)
+    wp_dialogs.answer("ask_text", "Report").answer("confirm", True, True)
     wp.cmd_document_as_page()
     assert wp_site.sent("POST", f"{API}/media") == []
     assert working(wp).properties["source_document"] == 51
@@ -483,3 +491,25 @@ def test_commands_for_builds_the_shared_commands_once() -> None:
     first = fam.commands_for(app)
     assert fam.commands_for(app) is first
     assert isinstance(first.host, fam.FamilyWordPressHost)
+
+
+def test_the_first_listening_version_asks_before_it_records_or_uploads(
+    wp, wp_site, wp_dialogs, engines
+) -> None:
+    """UX review item 33: it uploaded without asking first."""
+    open_document(wp, PARAGRAPH)
+    wp.cmd_listening_version()
+    assert engines.spoken == []
+    assert wp_site.sent("POST", f"{API}/media") == []
+    assert wp.host.announced[-1] == "Nothing was recorded or uploaded."
+
+
+def test_a_document_asks_before_it_is_uploaded(
+    wp, wp_site, wp_dialogs, engines, report_pdf
+) -> None:
+    """UX review item 33: Publish a Document as a Page uploaded without a first yes."""
+    wp_dialogs.answer("ask_text", "Report")
+    wp.cmd_document_as_page()
+    assert f"Upload {report_pdf.name}" in wp_dialogs.asked("confirm")[-1]["message"]
+    assert wp_site.sent("POST", f"{API}/media") == []
+    assert wp.host.announced[-1] == "Nothing was uploaded."
