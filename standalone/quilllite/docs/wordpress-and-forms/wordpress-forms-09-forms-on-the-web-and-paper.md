@@ -241,17 +241,21 @@ have read the proposal and said yes. Undo takes it all out in one step.
 6. **Tools > Forms > Responses...**. Your test response is at the top. Read
    it, then Mark it and Delete it.
 
-## Payments: Stripe and PayPal
+## Payments: Stripe, PayPal and Square
 
 Payment collection requires a QAF WordPress plugin implementing payment
 contract version 1. An older plugin can still host ordinary forms; paid-form
 publication will ask you to update it. QUILL configures the form and reads
 entry status. The site handles checkout and keeps provider credentials.
 
+Payments are off until you turn them on: the **Form Payments** area in
+**Tools > Customize Features** (Ctrl+Alt+F10), which also needs Forms on.
+Until then Tools > Forms has none of its three payment commands.
+
 1. Open a form and choose **Tools > Forms > Insert Payment Field...**.
    Enter a positive amount, `#id` of a total or amount field, or `donation`.
    Donation minimum and maximum are optional. One payment field is allowed.
-2. Choose **Form Payments Setup...**. Select Stripe, PayPal, or both in your
+2. Choose **Form Payments Setup...**. Name Stripe, PayPal, Square, or several of them, in your
    preferred order, currency, payment/donation mode and automatic/manual capture.
    Keep **Test mode** checked. Saving changes only the document, as one undo step.
 3. In your site's WordPress administration, configure provider sandbox

@@ -132,6 +132,7 @@ _AREA_IN_PROSE: dict[str, str] = {
     "dictionary": "thesaurus",
     "wordpress": "WordPress",
     "forms": "Forms",
+    "forms_payments": "Form Payments",
     "coding": "coding",
 }
 

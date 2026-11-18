@@ -280,7 +280,7 @@ forms in from other builders, AI help, and payments.
 - [AI help with forms](wordpress-forms-12-forms-on-the-web-and-paper.html#ai-help-with-forms)
 - [Privacy and Safe Mode](wordpress-forms-12-forms-on-the-web-and-paper.html#privacy-and-safe-mode)
 - [A walk-through: from your computer to your site](wordpress-forms-12-forms-on-the-web-and-paper.html#a-walk-through-from-your-computer-to-your-site)
-- [Payments: Stripe and PayPal](wordpress-forms-12-forms-on-the-web-and-paper.html#payments-stripe-and-paypal)
+- [Payments: Stripe, PayPal and Square](wordpress-forms-12-forms-on-the-web-and-paper.html#payments-stripe-paypal-and-square)
 
 ### [Chapter 13: Forms in the Workbench, and Gravity Forms](wordpress-forms-13-forms-in-the-workbench.html)
 

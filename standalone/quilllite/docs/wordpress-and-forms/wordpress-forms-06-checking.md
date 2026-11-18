@@ -186,7 +186,9 @@ Settings** (Chapter 7).
 **Tools > WordPress > In Short...** asks your AI for a two- or
 three-sentence summary and puts it at the top of the page as an "In short"
 paragraph for you to edit. Readers who find long pages hard, and readers in
-a hurry, both thank you for it. Ctrl+Z takes it out.
+a hurry, both thank you for it. Ctrl+Z takes it out. It asks first, naming
+your AI and how many words of the page it would send; nothing goes until
+you choose Send.
 
 ## An accessibility statement
 

@@ -35,7 +35,7 @@ are dimmed until a form is open.
 
 ## Payments and donations
 
-A form can take a fee, an order total or a donation through Stripe or PayPal,
+A form can take a fee, an order total or a donation through Stripe, PayPal or Square,
 with the QUILL Accessible Forms plugin on your site doing the charging.
 **Tools > Forms** has Insert Payment Field, Form Payments Setup and Verify
 Payment Setup. Everything starts in test mode, and QUILL never sees a card

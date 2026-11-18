@@ -86,6 +86,19 @@ class WordPressListenPages:
                 yes_label="Make Again",
             ):
                 return
+        elif not dlg.confirm(
+            self.host.parent,
+            self.host.show_modal,
+            title="Make a Listening Version",
+            message=(
+                f"Record this {noun} with your Read Aloud voice, on this computer, and upload "
+                f"the MP3 to {profile.name}'s Media Library? The file can be reached by its "
+                f"address as soon as it is uploaded, before the {noun} is published."
+            ),
+            yes_label="Record and Upload",
+        ):
+            self.host.announce("Nothing was recorded or uploaded.")
+            return
         self.host.announce(
             "Recording the listening version on this computer with your Read Aloud voice. "
             "This can take a few minutes."
@@ -305,6 +318,19 @@ class WordPressListenPages:
                 f"{path.name} has no text QUILL could read, so there is nothing to make a page "
                 "from. Nothing was uploaded."
             )
+            return
+        if not dlg.confirm(
+            self.host.parent,
+            self.host.show_modal,
+            title="Publish a Document as a Page",
+            message=(
+                f"Upload {path.name} to {profile.name}'s Media Library, then open its text as a "
+                "new page draft? The file can be reached by its address as soon as it is "
+                "uploaded, before the page is published."
+            ),
+            yes_label="Upload",
+        ):
+            self.host.announce("Nothing was uploaded.")
             return
         self.upload_with_reuse(
             profile,

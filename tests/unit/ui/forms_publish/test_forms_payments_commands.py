@@ -67,7 +67,7 @@ def test_setup_cancel_and_live_confirmation(payments, pub_host, pub_dialogs, mon
     setup(monkeypatch, None)
     payments.cmd_payments_setup()
     assert pub_host.replaced == 0
-    setup(monkeypatch, {"providers": "paypal", "test_mode": False, "currency": "eur"})
+    setup(monkeypatch, {"pay_with": "paypal", "test_mode": False, "currency": "eur"})
     payments.cmd_payments_setup()
     assert pub_host.replaced == 0
     pub_dialogs.answer("confirm", True)
@@ -194,3 +194,102 @@ def test_an_amount_finer_than_cents_is_refused_before_the_site_sees_it(
     payments.cmd_insert_payment()
     assert pub_host.text == before
     assert "decimal places" in pub_host.said
+
+
+def test_with_form_payments_off_nothing_runs_in_either_editor(
+    payments, pub_host, pub_site, monkeypatch
+):
+    """UX review item 35: QUILL Lite ran payment commands with the switch off."""
+    setup(monkeypatch, {"label": "Fee", "amount": "25"})
+    pub_host.ai.features["core.forms_payments"] = False
+    payments.cmd_insert_payment()
+    assert pub_host.replaced == 0 and "Turn on Form Payments" in pub_host.said
+
+    class _LiteApp:
+        def __init__(self, on: bool) -> None:
+            self.on = on
+
+        def feature_enabled(self, area: str) -> bool:
+            return self.on if area == "forms_payments" else True
+
+    class _LiteWindow:  # QUILL Lite's window: no _feature_enabled, an app with areas
+        def __init__(self, on: bool) -> None:
+            self.app = _LiteApp(on)
+
+    pub_host.announced.clear()
+    pub_host.ai = _LiteWindow(False)
+    payments.cmd_insert_payment()
+    assert pub_host.replaced == 0 and "Turn on Form Payments" in pub_host.said
+    pub_host.ai = _LiteWindow(True)
+    payments.cmd_insert_payment()
+    assert pub_host.replaced == 1
+
+
+def test_quill_lite_has_the_form_payments_area_off_by_default() -> None:
+    from quill.core.lite import features as lite_features
+    from quill.core.lite.command_areas import area_for
+
+    assert "forms_payments" in {area.id for area in lite_features.AREAS}
+    assert "forms_payments" in lite_features.DEFAULT_OFF
+    assert area_for("&Tools|Forms", "cmd_forms_payments_setup") == "forms_payments"
+
+
+def test_setup_saves_rules_and_connections_and_refuses_a_rule_it_cannot_read(
+    payments, pub_host, monkeypatch
+):
+    """complete.md Payments: choosing the connection by rule, and by selection."""
+    add_payment(pub_host)
+    rules = "amount under 50: stripe:small\notherwise: square:downtown"
+    setup(monkeypatch, {"pay_with": "stripe", "rules": rules, "test_mode": True, "currency": "usd"})
+    payments.cmd_payments_setup()
+    block = fd.read(pub_host.text).model["extensions"]["payments"]
+    assert block["rules"] == [{"when": {"amount_under": "50"}, "use": "stripe:small"}]
+    assert block["otherwise"] == "square:downtown"
+    assert block["providers"] == ["stripe", "square"] and "connections" not in block
+
+    choose = {
+        "pay_with": "stripe:events, paypal",
+        "rules": "",
+        "test_mode": True,
+        "currency": "usd",
+    }
+    setup(monkeypatch, choose)
+    payments.cmd_payments_setup()
+    block = fd.read(pub_host.text).model["extensions"]["payments"]
+    assert block["connections"] == ["stripe:events", "paypal"]
+    assert "rules" not in block and "otherwise" not in block
+
+    before = pub_host.text
+    setup(monkeypatch, {**choose, "rules": "amount about 5: stripe"})
+    payments.cmd_payments_setup()
+    assert pub_host.text == before
+    assert 'Line 1: "amount about 5"' in pub_host.said
+
+
+def test_verify_lists_each_connection_and_where_this_form_sends_money(
+    payments, pub_site, pub_dialogs, pub_host
+):
+    model = add_payment(pub_host)
+    model["extensions"]["payments"].update({"connections": ["stripe:events", "square:downtown"]})
+    pub_host.text = fd.canonical(model)
+    pub_site.on(
+        "GET",
+        f"{QAF}/payments/settings",
+        {
+            "contract_version": 2,
+            "test_mode": True,
+            "providers": {"stripe": {"configured": True, "webhook_ready": True}},
+            "connections": [
+                {"id": "stripe:events", "name": "Stripe: Events", "test_mode": True,
+                 "configured": True, "webhook_ready": True},
+                {"id": "square:downtown", "name": "Square: Downtown", "test_mode": True,
+                 "configured": True, "webhook_ready": False},
+            ],
+        },
+    )  # fmt: skip
+    pub_dialogs.answer("confirm", True)
+    payments.cmd_verify_payments()
+    text = pub_dialogs.reports[-1]["text"]
+    assert "Connection Stripe: Events (stripe:events, test): works" in text
+    assert "Connection Square: Downtown (square:downtown, test): not finished" in text
+    assert "The payer chooses: stripe:events, square:downtown" in text

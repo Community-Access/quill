@@ -149,21 +149,28 @@ Gravity Forms' own settings, add-ons and licence are wp-admin only.
 
 ###### Payments in QUILL Accessible Forms (QAF)
 
-QAF takes payments through Stripe and PayPal today (`quill/core/forms/payments.py`, `docs/design/forms-payments-plugin-contract.md`): one provider list per form, credentials only on the WordPress site, nothing moved by QUILL. Two additions, each in both editors and in the QAF plugin's contract, with the same care as Stripe and PayPal.
+Square and more than one payment connection per provider are built in both
+editors (#1906) and in the QAF plugin (quill-accessible-forms #1, contract
+version 2): Square through its Web Payments SDK and Payments API, named
+connections chosen by the payer or by rule with a required otherwise, Check
+This Form finding rules that can never fire, publishing refusing a missing,
+unfinished or wrong-mode connection, and refunds through the connection that
+took the money. What is left needs the test site and a person:
 
-- **Square as a third payment provider.**
-  - **Why:** many small organizations, churches and clubs already take card payments in person with Square, and want online forms to land in the same account and reports.
-  - **QUILL side:** add `square` to `PAYMENT_PROVIDERS`, its checks in `semantic_errors` (currencies Square supports for the account's country, its minimum amount, its statement-descriptor rules), the provider in the form editor's Payment settings, Check This Form, the BFL (QUILL's plain-text form language) round trip, the payment help and both guides' "Taking payments with your forms" chapters.
-  - **Plugin side:** the QAF payment contract gains a Square adapter: Square's Web Payments SDK for the card field (its accessible card entry, checked with a screen reader before release), the Payments API for the charge, an idempotency key on every request, webhooks (`payment.updated`, `refund.updated`) to confirm and reconcile, refunds through the Refunds API, sandbox and production modes, and the access token and location id kept in the site's options, never in the form.
-  - **Done when:** a test-mode payment, a declined card, a refund and a webhook replay all work on the test site, and the receipt and the entry show the same amount and status.
-- **More than one connection per provider, and choosing between them.**
-  - **Why:** one site often takes money for different purposes into different accounts: event fees to one Stripe account, donations to another; a chapter's own Square location; PayPal kept only for people who ask for it.
-  - **Connections:** the QAF plugin stores any number of named connections for each provider ("Stripe: Events", "Stripe: Donations", "Square: Downtown location"), each with its own mode (test or live), credentials, currency and descriptor. QUILL's Payments settings in the WordPress Workbench lists them (names, provider, mode and whether they work; no secret is ever shown, spoken or logged) and checks each with the provider.
-  - **Choosing by selection:** a form names the connections it offers, in order, and which is the default. The person paying sees the choices only when there is more than one, as a plain labelled list ("Pay with: Card (Stripe), PayPal, Card (Square)").
-  - **Choosing by rule:** a form can pick the connection from its answers, with rules in the same plain style as the form's conditions: by amount ("over $500: Stripe: Large gifts"), by a choice field ("Fund: Building, then Square: Building fund"), by currency, by date (a campaign window), or by fallback when a connection is down. Rules are checked in order and a form always has a fallback, so a payment never has nowhere to go.
-  - **Seen and checked:** Check This Form says which connection each rule leads to and finds rules that can never fire or leave a gap; the entry and the receipt record which connection took the money; reports and refunds go to that connection.
-  - **Safety:** test and live connections are never mixed on one form without a warning; deleting a connection that a published form uses is refused, naming the forms; changing one is previewed with the forms it affects.
-  - **Done when:** a form with two Stripe connections, a PayPal and a Square routes test payments by each kind of rule, and refunds return to the account that took them.
+- **Square and connections on a real site.** On the test site's sandbox: a
+  Square payment, a declined card (4000 0000 0000 0002), a refund, and a
+  webhook replay, with the receipt and the entry showing the same amount and
+  status; then a form with two Stripe connections, a PayPal and a Square
+  routing a test payment by each kind of rule, and each refund returning to
+  the account that took it.
+- **Square's card field with a screen reader**, before any live use: NVDA
+  and JAWS on Windows, VoiceOver on macOS and iOS (the field is Square's
+  iframe, so this is a check of Square's markup, with QAF's group label and
+  status messages around it).
+- **Per-connection test or live mode.** Today the site's one mode covers all
+  its connections, which is what keeps a form from mixing them. If a site
+  needs a live connection beside a test one, the contract already reports
+  `test_mode` per connection.
 
 ##### Shop (WooCommerce)
 
@@ -253,7 +260,9 @@ Ten of the eleven are fixed (checked 2026-11-18; five by #1837, five by the Word
 30. The site tree gives every site every plugin's branch whether installed or not (over 100 nodes per site), each selection reads the network, and discovery rebuilds the tree and collapses what you expanded.
 31. The Item menu leaves out rows the context menu has (Earlier Versions, Duplicate, Change Role, Remove, Set New Password, Replace File, Edit Picture), breaking the engine's promise that More never hides anything only a right-click can reach.
 33. Consent is uneven: In Short and Ask the Site send text to an AI without asking while Visual Review asks; Make a Listening Version and Publish a Document as a Page upload without a first confirmation.
+32. The Properties sheet closes on OK before the save finishes, so a failure or a conflict Cancel loses the edits.
 34. Shop, event and membership rows mostly name no capability, so they are never greyed and an Editor answers several dialogs before WooCommerce or PMPro refuses; choosers in those dialogs do not start on the current value.
+36. Escape outside the filter box goes Back to another node from any pane, so pressing Escape to leave Details jumps the tree.
 35. QUILL Lite ignores the Form Payments switch, so payment commands run in Lite where QUILL would refuse: Lite ahead of QUILL, which the family rules forbid.
 37. Dozens of editor WordPress commands have no key and no written reason; the rule 8 gate cannot see them because they are not in DEFAULT_KEYMAP.
 

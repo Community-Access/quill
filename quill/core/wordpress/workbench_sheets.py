@@ -469,6 +469,7 @@ SITE_SHEET = SheetSpec(
             _ro("form_spam", "Form spam checks (QUILL Accessible Forms)", _M),
             _ro("spam_note", "About spam here", _M),
         ),
+        _page("payments", "Payments", _ro("form_payments", "Payment connections", _M)),
     ),
 )
 """The site's own sheet (Appendix A, Site; 13a.5's Spam page, read only)."""

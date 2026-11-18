@@ -130,6 +130,12 @@ class FakeAiEditor:
         self.service = FakeAiService()
         self._safe_mode = False
         self.ready = True
+        #: QUILL's features; Form Payments is on here, so the payment tests reach
+        #: their commands (it is off in a real install until turned on).
+        self.features: dict[str, bool] = {"core.forms_payments": True}
+
+    def _feature_enabled(self, feature_id: str) -> bool:
+        return self.features.get(feature_id, True)
 
     def _ai_ready(self) -> bool:
         return self.ready

@@ -234,7 +234,7 @@ working:
 | Overwrite mode, Tab key behaviour, the status bar | **View** |
 | App sounds on or off | **Tools > App Sounds** (**Alt+Shift+M**) |
 | Which sound each event makes | **Tools > Sound Scheme** (**Ctrl+Alt+Shift+O**) |
-| Which of the 24 areas exist at all | **Tools > Customize Features** (**Ctrl+Alt+F10**) |
+| Which of the 25 areas exist at all | **Tools > Customize Features** (**Ctrl+Alt+F10**) |
 | What any key does | **Tools > Keyboard Manager** (**Ctrl+Alt+Shift+Space**) |
 | The twelve spelling announcement settings | **Tools > Spelling > Announcements** (**Ctrl+Alt+Shift+F7**) |
 | Whether you are asked about last session | The **Reopen Last Session** window itself (**Alt+Shift+F12**) |
@@ -292,7 +292,7 @@ ones it removes, and anything else it changes. Notepad, for example, also makes
 the same thing.
 
 When you choose a profile, QUILL Lite says a short version, like this: "Notepad
-profile: 3 of 24 features on. New documents will be plain text. Nothing is saved
+profile: 3 of 25 features on. New documents will be plain text. Nothing is saved
 until you press Save." Your screen reader already reads the profile's name, and
 the longer description is there for you to read at your own pace.
 
@@ -323,22 +323,23 @@ Here is each one at a glance, and then in more detail.
 
 | Profile | Areas on | Ctrl+N makes |
 |---|---|---|
-| **Recommended** | 19 of 24 | plain text (unchanged) |
-| **Everything** | 23 of 24 | plain text (unchanged) |
-| **Developer** | 20 of 24 | plain text (unchanged) |
-| **WordPad** | 6 of 24 | **rich text** |
-| **Notepad** | 3 of 24 | **plain text** |
+| **Recommended** | 19 of 25 | plain text (unchanged) |
+| **Everything** | 24 of 25 | plain text (unchanged) |
+| **Developer** | 20 of 25 | plain text (unchanged) |
+| **WordPad** | 6 of 25 | **rich text** |
+| **Notepad** | 3 of 25 | **plain text** |
 
 #### Recommended
 
 **This is what you get when you first install QUILL Lite.** It keeps nineteen
-of the 24 areas: rich text, headings, Markdown and HTML, bookmarks, the line
+of the 25 areas: rich text, headings, Markdown and HTML, bookmarks, the line
 tools, the clipboard history, printing, abbreviations, the Selection submenu,
 spell check, the dictionary and thesaurus, Matches, Go Back and Go Forward, the
 Command Palette, Describe Character, text size, dictation, WordPress and
 Forms.
 
-**Off:** autocorrect, timestamped backups, Go To Anything, AI (artificial intelligence) help and coding.
+**Off:** autocorrect, timestamped backups, Go To Anything, AI (artificial intelligence) help, coding
+and Form Payments.
 The first four are not switched off because they are poor. They are off
 because you should choose them yourself:
 
@@ -349,14 +350,16 @@ because you should choose them yourself:
 - AI help sends the text you ask about over the internet, and only you should
   decide to do that.
 
-Coding, the fifth, belongs to the Developer profile below.
+Coding, the fifth, belongs to the Developer profile below. Form Payments,
+the sixth, lets a form take money through your own WordPress site, so it
+waits until you mean a form to do that, as it does in QUILL.
 
 **Choose this** when you have been experimenting and want to get back to where
 you started.
 
 #### Everything
 
-**23 of the 24 areas on**: every writing area, including the four above.
+**24 of the 25 areas on**: every writing area, including the five above.
 Coding stays off, because coding is what the Developer profile is for. That includes **AI help**, which
 is the one area that sends anything off your computer, so only choose this
 profile if you are happy with that.
@@ -367,21 +370,22 @@ With Everything on:
   It does nothing else. It never capitalises sentences.
 - Every save keeps a dated copy in your data folder.
 - Go To Anything joins the command palette and the two lists.
+- Form Payments' two commands appear in Tools > Forms.
 
 **Choose this** if you would rather have it all and switch things off as they
 get in your way.
 
 #### Developer
 
-**Everything in Recommended, plus Coding.** Twenty of the 24 areas: the
-seventeen Recommended keeps and the Coding area, which no other profile has.
+**Everything in Recommended, plus Coding.** Twenty of the 25 areas: the
+nineteen Recommended keeps and the Coding area, which no other profile has.
 Coding gives you project tasks with an AI, reviewed changes across files,
 commands and tests that ask first, Undo Last Agent Turn and coach mode. See
 [Coding: project tasks, in the Developer profile](lite-guide-10-ai-help.html#coding-project-tasks-in-the-developer-profile)
 in Chapter 10.
 
-**Off:** autocorrect, timestamped backups, Go To Anything and AI help, as in
-Recommended. Project tasks need an AI connection, so turn on AI help too when
+**Off:** autocorrect, timestamped backups, Go To Anything, AI help and Form
+Payments, as in Recommended. Project tasks need an AI connection, so turn on AI help too when
 you want to use them.
 
 **Ctrl+N** is unchanged.
@@ -396,7 +400,7 @@ check: bold, italic, underline, headings, alignment, bullets, indenting and line
 spacing, plus Find and Replace, printing and text size, and the Command
 Palette. Six of the 24 areas.
 
-**Off**, all eighteen of the others. These are the writing tools around the
+**Off**, all nineteen of the others. These are the writing tools around the
 formatting, and coding:
 
 - No line tools (Edit > Lines) and no Change Case.
@@ -410,7 +414,7 @@ formatting, and coding:
 - **No Markdown or HTML.** Ctrl+B in a `.md` file goes back to meaning rich text
   bold, and QUILL Lite tells you so.
 - **No AI help** and no coding.
-- **No WordPress** and **no Forms**.
+- **No WordPress**, **no Forms**, and so no Form Payments.
 
 **Ctrl+N makes a rich text document.** So choosing WordPad changes a setting as
 well as the checkboxes: new documents start as rich text.
@@ -426,13 +430,13 @@ word processor without one would just be a nuisance.
 Notepad, and this is the profile for them. It keeps three of the 24 areas:
 **printing**, **text size** and the **Command Palette**.
 
-**Off**, all twenty of the others: the Format menu and everything under it,
+**Off**, all twenty-two of the others: the Format menu and everything under it,
 headings, Markdown and HTML, bookmarks, the line tools, Change Case, the
 clipboard history, abbreviations, the Selection submenu, spell check, the
 dictionary and thesaurus, Matches (and with it Find in Open Documents and
 Search in Files), Back and Forward, Go To Anything,
 Describe Character, dictation, autocorrect, backups, AI help, WordPress,
-Forms and coding.
+Forms, Form Payments and coding.
 Nothing that Notepad does not have, apart from the palette.
 
 **Why every profile keeps the Command Palette:** it is how you find a

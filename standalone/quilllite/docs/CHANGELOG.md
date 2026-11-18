@@ -10,6 +10,45 @@ lost every edit on it (review item 32). Now OK and Apply grey out while the
 save is on its way, and the sheet closes only once the site has taken it; a
 failure, or declining to replace someone else's change, leaves the sheet open
 with your edits.
+### Forms: a Form Payments switch, as QUILL has (2026-11-18)
+
+Tools > Customize Features (Ctrl+Alt+F10) has a new area, **Form Payments**,
+off until you turn it on, as QUILL's is. While it is off, Tools > Forms has no
+payment commands. Every profile but Everything leaves it off, and it needs
+Forms on. The profiles now count 25 areas.
+### Forms: Square, and more than one account per provider (2026-11-18)
+
+- Square is a third payment provider beside Stripe and PayPal. Check This
+  Form knows Square's six currencies and its 20-character statement
+  descriptor, Test on Site gives Square's sandbox card, and payments say
+  "Square".
+- A form can name the site's payment **connections**, such as
+  `stripe:events` or `square:downtown`, so different forms (or different
+  answers) pay into different accounts. In Form Payments Setup, **Pay with**
+  lists them for the person paying to choose from, and **Choose by rule**
+  picks one from the answers: by amount, by a choice, by currency or by a
+  date window, with an `otherwise` that is always required.
+- Check This Form finds rules that can never take a payment and says why,
+  and finds rules with no otherwise. Verify Payment Setup lists each
+  connection, says whether it works, and says where this form sends the
+  money. The WordPress Workbench's site Properties have a new Payments page.
+- Publishing refuses a form whose connection is missing on the site, not
+  finished, or in the other of test and live mode.
+- A response's payment says which connection took it, and CSV exports gain
+  two columns when any response has one.
+- The plugin contract is now version 2
+  (`docs/design/forms-payments-plugin-contract.md`). The QAF plugin's side
+  is in QAF itself.
+### WordPress: it asks before anything leaves for an AI or the Media Library (2026-11-18)
+
+In Short now asks before it sends the page's text to your AI, naming the AI
+and the number of words, as Visual Review always did. Ask the Site says,
+before an ability runs, that what it returns goes to your AI too. Make a
+Listening Version asks before it records and uploads the first time, and
+Publish a Document as a Page asks before it uploads the original: an
+uploaded file can be reached on the site before the page is published
+(review item 33).
+
 ### WordPress: the WordPress key says when it times out (2026-11-18)
 
 - The WordPress key's four-second wait now ends out loud: "WordPress keys
