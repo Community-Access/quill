@@ -4,6 +4,8 @@
 **Written:** 2026-11-18, after Microsoft's Ignite 2026 announcement (17 November 2026).
 **Status:** planning only. Nothing here is built. Open work is tracked in `complete.md`.
 
+**Decision (Jeff, 2026-11-18): 2.0 replaces 1.x completely.** There is no side-by-side period, no fallback to 1.x and no second pack. The change removes `github-copilot-sdk` from the build, the bundled 1.x Copilot CLI, and every 1.x code path, in the same pull request that brings 2.0 in.
+
 ## What changed
 
 Microsoft Copilot SDK 2.0 is the renamed GitHub Copilot SDK, the library QUILL's
@@ -78,7 +80,7 @@ the licence is MIT.
 ## Risks
 
 - **The 1.x line will fall behind.** It is at 1.0.34 and QUILL is on 1.0.28.
-  Fixes from here on will land in 2.x.
+  Fixes from here on will land in 2.x, which is why QUILL moves outright.
 - **A renamed package and a rewritten runtime** can break every fact the pack
   pins. The tests that pin them are the guard; each must be re-checked, not
   assumed.
@@ -111,8 +113,8 @@ Read from the 2.0.1 package's own README (`microsoft-copilot-sdk`, MIT, Python
    start faster and use less memory. The trade-off is stated plainly in the
    README: no crash isolation and no sandbox. QUILL already offers the agent
    no file or shell tools of its own, which is what makes this acceptable,
-   but a crash in the runtime would take QUILL down, so it needs a fallback to
-   the separate-process transport.
+   but a crash in the runtime would take QUILL down, so 2.0 should be able to switch to its own separate-process transport if
+   testing shows the in-process one unstable (1.x is gone either way).
 4. **Any AI through one engine (custom providers, BYOK).** A session can use
    an OpenAI-compatible service, Azure, Anthropic, Google or a local Ollama,
    with the person's own key. Choose Your AI could run every connection
@@ -148,7 +150,7 @@ Read from the 2.0.1 package's own README (`microsoft-copilot-sdk`, MIT, Python
      history.
    - Telemetry: an optional extra; leave it out.
 
-Suggested order: 3 and 2 with the switch to 2.0 (they change how it runs and
+Suggested order: 3 and 2 with the replacement (they change how it runs and
 what is heard), then 1, then 5, then 4 and 6 (they reshape Choose Your AI and
 need Jeff's yes), and 7 only after the persistence decision.
 
@@ -159,25 +161,31 @@ Each step is one pull request.
 1. **Read and pin (no behaviour change).**
    - Read the 2.0 Python binding, and record answers to the "not yet known"
      list above in this file.
-   - Move the 1.x pin from 1.0.28 to 1.0.34 meanwhile, if its changelog shows
-     only fixes.
-2. **A 2.0 pack beside the 1.x one.**
-   - Add `quill/ai_packs/copilot2.py` behind the extra `ai-copilot2`
-     (`microsoft-copilot-sdk==2.0.x`), with the same contract: text only or
-     QUILL's family tools, every other permission refused, the system prompt
-     appended, the token passed explicitly, Safe Mode respected.
+2. **Replace 1.x with 2.0, in place.**
+   - Change the extra `ai-copilot` to `microsoft-copilot-sdk==2.0.x` and
+     delete `github-copilot-sdk`. Rewrite `quill/ai_packs/copilot.py`,
+     `copilot_tool_session.py` and `quill/core/ai/copilot_*.py` against 2.0,
+     keeping the same contract: text only or QUILL's family tools, every
+     other permission refused, the system prompt kept with the safety
+     sections, the token passed explicitly, Safe Mode respected.
+   - Remove the bundled 1.x CLI (`tools\copilot`) from the installers and
+     the build scripts, and stage the 2.0 runtime instead
+     (`python -m copilot download-runtime --in-process`, checked against its
+     SHA-256 sums), so it is never downloaded on a listener's computer.
    - Choose the "no sandbox" architecture, with no SDK file or shell actions,
      because QUILL's Safe Editor Tool Gateway already does that job.
    - Turn off session persistence, or delete each session when its turn
      ends, and test that nothing is left behind.
-3. **Measure.** Time to first token, memory with three apps asking, and
-   install size, 1.x against 2.0, on Jeff's PC and on a low-end device.
-4. **Switch.**
-   - Make 2.0 the default for My GitHub Copilot, and keep 1.x one release as
-     a fallback.
-   - Update `components.json`, the third-party notices, the network egress
-     audit, the Choose Your AI help, and `docs/design/codex.md`.
-   - Remove 1.x the release after.
+3. **Prove it before merging.** Every test that pinned a 1.x fact is
+   rewritten against 2.0 and passes. Time to first token, memory with three
+   apps asking, and install size are measured and written down here, as the
+   record of what the switch bought. There is no 1.x to fall back to, so the
+   in-process transport's crash risk is handled by using 2.0's
+   separate-process transport if testing shows the in-process one unstable.
+4. **Finish in the same release.** Update `components.json`, the third-party
+   notices (the new package, MIT), the network egress audit (the runtime
+   download, if any remains), the Choose Your AI help, `docs/design/codex.md`
+   and both changelogs. Nothing named 1.x remains in the tree.
 5. **Decide (Jeff).** Whether to offer resumable agent sessions at all, and if
    so, only for the coding agent (`docs/design/code.md`) with a visible list
    of kept sessions and a way to delete each.
