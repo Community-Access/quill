@@ -1012,7 +1012,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 392 yes, 1064 planned, 15 not needed and 533 left to GitHub.
+In all: 392 yes, 989 planned, 89 not needed and 534 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2660,45 +2660,45 @@ In all: 392 yes, 1064 planned, 15 not needed and 533 left to GitHub.
 
 #### GraphQL: Activity
 
-4 mutations: 1 yes, 3 planned.
+4 mutations: 1 yes, 1 planned, 2 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
-| `addStar` | Planned | Repository > You (star, watch) |
-| `removeStar` | Planned | Repository > You (star, watch) |
+| `addStar` | Not needed | The same change as PUT /user/starred/{owner}/{repo}, the route the Workbench uses for it (already built); one route per operation. |
+| `removeStar` | Not needed | The same change as DELETE /user/starred/{owner}/{repo}, the route the Workbench uses for it (already built); one route per operation. |
 | `updateNotificationRestrictionSetting` | Planned | Repository > You (star, watch) |
 | `updateSubscription` | Yes | Properties (Alt+Enter) on Issue: Subscribed |
 
 #### GraphQL: Branches
 
-4 mutations: 4 planned.
+4 mutations: 4 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
-| `createBranchProtectionRule` | Planned | Branch sheet > Protection |
-| `deleteBranchProtectionRule` | Planned | Branch sheet > Protection |
-| `mergeBranch` | Planned | Branch sheet > Protection |
-| `updateBranchProtectionRule` | Planned | Branch sheet > Protection |
+| `createBranchProtectionRule` | Not needed | The same change as PUT /repos/{owner}/{repo}/branches/{branch}/protection, the route the Workbench uses for it (already built); one route per operation. |
+| `deleteBranchProtectionRule` | Not needed | The same change as DELETE /repos/{owner}/{repo}/branches/{branch}/protection, the route the Workbench uses for it (already built); one route per operation. |
+| `mergeBranch` | Not needed | The same change as POST /repos/{owner}/{repo}/merges, the route the Workbench uses for it (planned there); one route per operation. |
+| `updateBranchProtectionRule` | Not needed | The same change as PUT /repos/{owner}/{repo}/branches/{branch}/protection, the route the Workbench uses for it (already built); one route per operation. |
 
 #### GraphQL: Checks
 
-5 mutations: 2 planned, 3 left to github.
+5 mutations: 1 not needed, 4 left to github.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
 | `createCheckRun` | Left to GitHub | Only a GitHub App can create or update check runs and suites. Pull request > Checks (read). |
 | `createCheckSuite` | Left to GitHub | Only a GitHub App can create or update check runs and suites. Pull request > Checks (read). |
-| `rerequestCheckSuite` | Planned | Pull request > Checks |
+| `rerequestCheckSuite` | Not needed | The same change as POST /repos/{owner}/{repo}/check-suites/{check_suite_id}/rerequest, the route the Workbench uses for it (planned there); one route per operation. |
 | `updateCheckRun` | Left to GitHub | Only a GitHub App can create or update check runs and suites. Pull request > Checks (read). |
-| `updateCheckSuitePreferences` | Planned | Pull request > Checks |
+| `updateCheckSuitePreferences` | Left to GitHub | Only a GitHub App can create or update check runs and suites. |
 
 #### GraphQL: Commits
 
-1 mutations: 1 planned.
+1 mutations: 1 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
-| `createCommitOnBranch` | Planned | Repository > Code |
+| `createCommitOnBranch` | Not needed | The same change as POST /repos/{owner}/{repo}/git/commits, the route the Workbench uses for it (already built); one route per operation. |
 
 #### GraphQL: Copilot
 
@@ -2714,28 +2714,28 @@ In all: 392 yes, 1064 planned, 15 not needed and 533 left to GitHub.
 
 #### GraphQL: Dependabot
 
-1 mutations: 1 planned.
+1 mutations: 1 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
-| `dismissRepositoryVulnerabilityAlert` | Planned | Repository > Security > Alerts |
+| `dismissRepositoryVulnerabilityAlert` | Not needed | The same change as PATCH /repos/{owner}/{repo}/dependabot/alerts/{alert_number}, the route the Workbench uses for it (already built); one route per operation. |
 
 #### GraphQL: Deployments
 
-10 mutations: 10 planned.
+10 mutations: 2 planned, 8 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
-| `approveDeployments` | Planned | Repository > Deployments; Environment sheet |
-| `createDeployment` | Planned | Repository > Deployments; Environment sheet |
-| `createDeploymentStatus` | Planned | Repository > Deployments; Environment sheet |
-| `createEnvironment` | Planned | Repository > Deployments; Environment sheet |
-| `deleteDeployment` | Planned | Repository > Deployments; Environment sheet |
-| `deleteEnvironment` | Planned | Repository > Deployments; Environment sheet |
+| `approveDeployments` | Not needed | The same change as POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments, the route the Workbench uses for it (already built); one route per operation. |
+| `createDeployment` | Not needed | The same change as POST /repos/{owner}/{repo}/deployments, the route the Workbench uses for it (planned there); one route per operation. |
+| `createDeploymentStatus` | Not needed | The same change as POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses, the route the Workbench uses for it (planned there); one route per operation. |
+| `createEnvironment` | Not needed | The same change as PUT /repos/{owner}/{repo}/environments/{environment_name}, the route the Workbench uses for it (already built); one route per operation. |
+| `deleteDeployment` | Not needed | The same change as DELETE /repos/{owner}/{repo}/deployments/{deployment_id}, the route the Workbench uses for it (planned there); one route per operation. |
+| `deleteEnvironment` | Not needed | The same change as DELETE /repos/{owner}/{repo}/environments/{environment_name}, the route the Workbench uses for it (planned there); one route per operation. |
 | `pinEnvironment` | Planned | Repository > Deployments; Environment sheet |
-| `rejectDeployments` | Planned | Repository > Deployments; Environment sheet |
+| `rejectDeployments` | Not needed | The same change as POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments, the route the Workbench uses for it (already built); one route per operation. |
 | `reorderEnvironment` | Planned | Repository > Deployments; Environment sheet |
-| `updateEnvironment` | Planned | Repository > Deployments; Environment sheet |
+| `updateEnvironment` | Not needed | The same change as PUT /repos/{owner}/{repo}/environments/{environment_name}, the route the Workbench uses for it (already built); one route per operation. |
 
 #### GraphQL: Discussions
 
@@ -2821,61 +2821,61 @@ In all: 392 yes, 1064 planned, 15 not needed and 533 left to GitHub.
 
 #### GraphQL: Issues
 
-51 mutations: 15 yes, 36 planned.
+51 mutations: 15 yes, 20 planned, 16 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
-| `addAssigneesToAssignable` | Planned | Issue sheet; Item menu |
+| `addAssigneesToAssignable` | Not needed | The same change as POST /repos/{owner}/{repo}/issues/{issue_number}/assignees, the route the Workbench uses for it (already built); one route per operation. |
 | `addBlockedBy` | Yes | context menu > Reorder Sub-issues... |
 | `addCloseIssueReferences` | Planned | Issue sheet; Item menu |
-| `addComment` | Planned | Issue sheet; Item menu |
-| `addLabelsToLabelable` | Planned | Issue sheet; Item menu |
+| `addComment` | Not needed | The same change as POST /repos/{owner}/{repo}/issues/{issue_number}/comments, the route the Workbench uses for it (already built); one route per operation. |
+| `addLabelsToLabelable` | Not needed | The same change as POST /repos/{owner}/{repo}/issues/{issue_number}/labels, the route the Workbench uses for it (already built); one route per operation. |
 | `addRelatesTo` | Planned | Issue sheet; Item menu |
 | `addSubIssue` | Yes | context menu > Reorder Sub-issues... |
 | `applyPendingIssueSuggestions` | Planned | Issue sheet; Item menu |
-| `clearLabelsFromLabelable` | Planned | Issue sheet; Item menu |
+| `clearLabelsFromLabelable` | Not needed | The same change as DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels, the route the Workbench uses for it (planned there); one route per operation. |
 | `closeIssue` | Yes | context menu > Close or Reopen... |
-| `createIssue` | Planned | Issue sheet; Item menu |
+| `createIssue` | Not needed | The same change as POST /repos/{owner}/{repo}/issues, the route the Workbench uses for it (already built); one route per operation. |
 | `createIssueField` | Planned | Issue sheet; Item menu |
 | `createIssueFieldValue` | Planned | Issue sheet; Item menu |
 | `createIssueType` | Planned | Issue sheet; Item menu |
-| `createLabel` | Planned | Issue sheet; Item menu |
+| `createLabel` | Not needed | The same change as POST /repos/{owner}/{repo}/labels, the route the Workbench uses for it (already built); one route per operation. |
 | `createLinkedBranch` | Yes | context menu > Create Branch for This Issue... |
 | `deleteIssue` | Planned | Issue sheet; Item menu |
-| `deleteIssueComment` | Planned | Issue sheet; Item menu |
+| `deleteIssueComment` | Not needed | The same change as DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}, the route the Workbench uses for it (already built); one route per operation. |
 | `deleteIssueField` | Planned | Issue sheet; Item menu |
 | `deleteIssueFieldValue` | Planned | Issue sheet; Item menu |
 | `deleteIssueType` | Planned | Issue sheet; Item menu |
-| `deleteLabel` | Planned | Issue sheet; Item menu |
+| `deleteLabel` | Not needed | The same change as DELETE /repos/{owner}/{repo}/labels/{name}, the route the Workbench uses for it (already built); one route per operation. |
 | `deleteLinkedBranch` | Yes | context menu > Unlink Branch... |
-| `lockLockable` | Planned | Issue sheet; Item menu |
+| `lockLockable` | Not needed | The same change as PUT /repos/{owner}/{repo}/issues/{issue_number}/lock, the route the Workbench uses for it (already built); one route per operation. |
 | `minimizeComment` | Yes | context menu > View Timeline... |
 | `pinIssue` | Yes | context menu > Pin or Unpin Issue |
 | `pinIssueComment` | Planned | Issue sheet; Item menu |
 | `rejectPendingIssueSuggestions` | Planned | Issue sheet; Item menu |
-| `removeAssigneesFromAssignable` | Planned | Issue sheet; Item menu |
+| `removeAssigneesFromAssignable` | Not needed | The same change as DELETE /repos/{owner}/{repo}/issues/{issue_number}/assignees, the route the Workbench uses for it (already built); one route per operation. |
 | `removeBlockedBy` | Yes | context menu > Reorder Sub-issues... |
 | `removeCloseIssueReferences` | Planned | Issue sheet; Item menu |
-| `removeLabelsFromLabelable` | Planned | Issue sheet; Item menu |
+| `removeLabelsFromLabelable` | Not needed | The same change as DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}, the route the Workbench uses for it (already built); one route per operation. |
 | `removeRelatesTo` | Planned | Issue sheet; Item menu |
 | `removeSubIssue` | Yes | context menu > Reorder Sub-issues... |
-| `reopenIssue` | Planned | Issue sheet; Item menu |
+| `reopenIssue` | Not needed | The same change as PATCH /repos/{owner}/{repo}/issues/{issue_number}, the route the Workbench uses for it (already built); one route per operation. |
 | `replaceActorsForAssignable` | Yes | Item > Assign to Copilot... (Ctrl+Shift+A) |
 | `reprioritizeSubIssue` | Planned | Issue sheet; Item menu |
 | `setIssueFieldValue` | Planned | Issue sheet; Item menu |
 | `transferIssue` | Yes | context menu > Transfer Issue... |
-| `unlockLockable` | Planned | Issue sheet; Item menu |
+| `unlockLockable` | Not needed | The same change as DELETE /repos/{owner}/{repo}/issues/{issue_number}/lock, the route the Workbench uses for it (already built); one route per operation. |
 | `unmarkIssueAsDuplicate` | Yes | context menu > Not a Duplicate... |
 | `unminimizeComment` | Yes | context menu > View Timeline... |
 | `unpinIssue` | Yes | context menu > Pin or Unpin Issue |
 | `unpinIssueComment` | Planned | Issue sheet; Item menu |
-| `updateIssue` | Planned | Issue sheet; Item menu |
-| `updateIssueComment` | Planned | Issue sheet; Item menu |
+| `updateIssue` | Not needed | The same change as PATCH /repos/{owner}/{repo}/issues/{issue_number}, the route the Workbench uses for it (already built); one route per operation. |
+| `updateIssueComment` | Not needed | The same change as PATCH /repos/{owner}/{repo}/issues/comments/{comment_id}, the route the Workbench uses for it (already built); one route per operation. |
 | `updateIssueField` | Planned | Issue sheet; Item menu |
 | `updateIssueFieldValue` | Planned | Issue sheet; Item menu |
 | `updateIssueIssueType` | Yes | context menu > Set Issue Type... |
 | `updateIssueType` | Planned | Issue sheet; Item menu |
-| `updateLabel` | Planned | Issue sheet; Item menu |
+| `updateLabel` | Not needed | The same change as PATCH /repos/{owner}/{repo}/labels/{name}, the route the Workbench uses for it (already built); one route per operation. |
 
 #### GraphQL: Migrations
 
@@ -2894,7 +2894,7 @@ In all: 392 yes, 1064 planned, 15 not needed and 533 left to GitHub.
 
 #### GraphQL: Organizations
 
-11 mutations: 11 planned.
+11 mutations: 9 planned, 2 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
@@ -2903,8 +2903,8 @@ In all: 392 yes, 1064 planned, 15 not needed and 533 left to GitHub.
 | `deleteVerifiableDomain` | Planned | Organization sheet |
 | `followOrganization` | Planned | Organization sheet |
 | `regenerateVerifiableDomainToken` | Planned | Organization sheet |
-| `removeOutsideCollaborator` | Planned | Organization sheet |
-| `setOrganizationInteractionLimit` | Planned | Organization sheet |
+| `removeOutsideCollaborator` | Not needed | The same change as DELETE /orgs/{org}/outside_collaborators/{username}, the route the Workbench uses for it (planned there); one route per operation. |
+| `setOrganizationInteractionLimit` | Not needed | The same change as PUT /orgs/{org}/interaction-limits, the route the Workbench uses for it (planned there); one route per operation. |
 | `unfollowOrganization` | Planned | Organization sheet |
 | `updateOrganizationAllowPrivateRepositoryForkingSetting` | Planned | Organization sheet |
 | `updateOrganizationWebCommitSignoffSetting` | Planned | Organization sheet |
@@ -2912,11 +2912,11 @@ In all: 392 yes, 1064 planned, 15 not needed and 533 left to GitHub.
 
 #### GraphQL: Packages
 
-1 mutations: 1 planned.
+1 mutations: 1 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
-| `deletePackageVersion` | Planned | Repository > Packages |
+| `deletePackageVersion` | Not needed | The same change as DELETE /user/packages/{package_type}/{package_name}/versions/{package_version_id}, the route the Workbench uses for it (already built); one route per operation. |
 
 #### GraphQL: Projects
 
@@ -2982,45 +2982,45 @@ In all: 392 yes, 1064 planned, 15 not needed and 533 left to GitHub.
 
 #### GraphQL: Pull requests
 
-36 mutations: 12 yes, 24 planned.
+36 mutations: 12 yes, 5 planned, 19 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
 | `addPullRequestCreationCapBypassUsers` | Planned | Pull request sheet; Item menu |
-| `addPullRequestReview` | Planned | Pull request sheet; Item menu |
-| `addPullRequestReviewComment` | Planned | Pull request sheet; Item menu |
-| `addPullRequestReviewThread` | Planned | Pull request sheet; Item menu |
-| `addPullRequestReviewThreadReply` | Planned | Pull request sheet; Item menu |
+| `addPullRequestReview` | Not needed | The same change as POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews, the route the Workbench uses for it (already built); one route per operation. |
+| `addPullRequestReviewComment` | Not needed | The same change as POST /repos/{owner}/{repo}/pulls/{pull_number}/comments, the route the Workbench uses for it (already built); one route per operation. |
+| `addPullRequestReviewThread` | Not needed | The same change as POST /repos/{owner}/{repo}/pulls/{pull_number}/comments, the route the Workbench uses for it (already built); one route per operation. |
+| `addPullRequestReviewThreadReply` | Not needed | The same change as POST /repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies, the route the Workbench uses for it (planned there); one route per operation. |
 | `archivePullRequest` | Planned | Pull request sheet; Item menu |
-| `closePullRequest` | Planned | Pull request sheet; Item menu |
+| `closePullRequest` | Not needed | The same change as PATCH /repos/{owner}/{repo}/pulls/{pull_number}, the route the Workbench uses for it (already built); one route per operation. |
 | `convertPullRequestToDraft` | Yes | Properties (Alt+Enter) on Pull Request: Draft |
-| `createPullRequest` | Planned | Pull request sheet; Item menu |
-| `deletePullRequestReview` | Planned | Pull request sheet; Item menu |
-| `deletePullRequestReviewComment` | Planned | Pull request sheet; Item menu |
+| `createPullRequest` | Not needed | The same change as POST /repos/{owner}/{repo}/pulls, the route the Workbench uses for it (already built); one route per operation. |
+| `deletePullRequestReview` | Not needed | The same change as DELETE /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}, the route the Workbench uses for it (planned there); one route per operation. |
+| `deletePullRequestReviewComment` | Not needed | The same change as DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}, the route the Workbench uses for it (planned there); one route per operation. |
 | `dequeuePullRequest` | Yes | context menu > Add to or Remove from Merge Queue... |
 | `disablePullRequestAutoMerge` | Yes | Properties (Alt+Enter) on Pull Request: Merge automatically when ready |
-| `dismissPullRequestReview` | Planned | Pull request sheet; Item menu |
+| `dismissPullRequestReview` | Not needed | The same change as PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/dismissals, the route the Workbench uses for it (planned there); one route per operation. |
 | `enablePullRequestAutoMerge` | Yes | Properties (Alt+Enter) on Pull Request: Merge automatically when ready |
 | `enqueuePullRequest` | Yes | context menu > Add to or Remove from Merge Queue... |
 | `markFileAsViewed` | Yes | context menu > Review... |
 | `markPullRequestReadyForReview` | Yes | Properties (Alt+Enter) on Pull Request: Draft |
-| `mergePullRequest` | Planned | Pull request sheet; Item menu |
+| `mergePullRequest` | Not needed | The same change as PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge, the route the Workbench uses for it (already built); one route per operation. |
 | `removePullRequestCreationCapBypassUsers` | Planned | Pull request sheet; Item menu |
-| `reopenPullRequest` | Planned | Pull request sheet; Item menu |
+| `reopenPullRequest` | Not needed | The same change as PATCH /repos/{owner}/{repo}/pulls/{pull_number}, the route the Workbench uses for it (already built); one route per operation. |
 | `requestCopilotCodeReview` | Planned | Pull request sheet; Item menu |
-| `requestReviews` | Planned | Pull request sheet; Item menu |
-| `requestReviewsByLogin` | Planned | Pull request sheet; Item menu |
-| `rerequestReviews` | Planned | Pull request sheet; Item menu |
+| `requestReviews` | Not needed | The same change as POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers, the route the Workbench uses for it (already built); one route per operation. |
+| `requestReviewsByLogin` | Not needed | The same change as POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers, the route the Workbench uses for it (already built); one route per operation. |
+| `rerequestReviews` | Not needed | The same change as POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers, the route the Workbench uses for it (already built); one route per operation. |
 | `resolveReviewThread` | Yes | context menu > Review... |
 | `revertPullRequest` | Yes | context menu > Revert Pull Request... |
-| `submitPullRequestReview` | Planned | Pull request sheet; Item menu |
+| `submitPullRequestReview` | Not needed | The same change as POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/events, the route the Workbench uses for it (planned there); one route per operation. |
 | `unarchivePullRequest` | Planned | Pull request sheet; Item menu |
 | `unmarkFileAsViewed` | Yes | context menu > Review... |
 | `unresolveReviewThread` | Yes | context menu > Review... |
-| `updatePullRequest` | Planned | Pull request sheet; Item menu |
-| `updatePullRequestBranch` | Planned | Pull request sheet; Item menu |
-| `updatePullRequestReview` | Planned | Pull request sheet; Item menu |
-| `updatePullRequestReviewComment` | Planned | Pull request sheet; Item menu |
+| `updatePullRequest` | Not needed | The same change as PATCH /repos/{owner}/{repo}/pulls/{pull_number}, the route the Workbench uses for it (already built); one route per operation. |
+| `updatePullRequestBranch` | Not needed | The same change as PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch, the route the Workbench uses for it (planned there); one route per operation. |
+| `updatePullRequestReview` | Not needed | The same change as PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}, the route the Workbench uses for it (planned there); one route per operation. |
+| `updatePullRequestReviewComment` | Not needed | The same change as PATCH /repos/{owner}/{repo}/pulls/comments/{comment_id}, the route the Workbench uses for it (planned there); one route per operation. |
 | `updateTeamReviewAssignment` | Yes | Properties (Alt+Enter) on Team: Assign reviews automatically |
 
 #### GraphQL: Reactions
@@ -3034,32 +3034,32 @@ In all: 392 yes, 1064 planned, 15 not needed and 533 left to GitHub.
 
 #### GraphQL: Repositories
 
-18 mutations: 18 planned.
+18 mutations: 4 planned, 14 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
 | `acceptTopicSuggestion` | Planned | Repository sheet |
-| `archiveRepository` | Planned | Repository sheet |
-| `cloneTemplateRepository` | Planned | Repository sheet |
-| `createRepository` | Planned | Repository sheet |
-| `createRepositoryCustomProperty` | Planned | Repository sheet |
-| `createRepositoryRuleset` | Planned | Repository sheet |
+| `archiveRepository` | Not needed | The same change as PATCH /repos/{owner}/{repo}, the route the Workbench uses for it (already built); one route per operation. |
+| `cloneTemplateRepository` | Not needed | The same change as POST /repos/{template_owner}/{template_repo}/generate, the route the Workbench uses for it (already built); one route per operation. |
+| `createRepository` | Not needed | The same change as POST /user/repos, the route the Workbench uses for it (already built); one route per operation. |
+| `createRepositoryCustomProperty` | Not needed | The same change as PUT /orgs/{org}/properties/schema/{custom_property_name}, the route the Workbench uses for it (planned there); one route per operation. |
+| `createRepositoryRuleset` | Not needed | The same change as POST /repos/{owner}/{repo}/rulesets, the route the Workbench uses for it (already built); one route per operation. |
 | `declineTopicSuggestion` | Planned | Repository sheet |
-| `deleteRepositoryCustomProperty` | Planned | Repository sheet |
-| `deleteRepositoryRuleset` | Planned | Repository sheet |
+| `deleteRepositoryCustomProperty` | Not needed | The same change as DELETE /orgs/{org}/properties/schema/{custom_property_name}, the route the Workbench uses for it (planned there); one route per operation. |
+| `deleteRepositoryRuleset` | Not needed | The same change as DELETE /repos/{owner}/{repo}/rulesets/{ruleset_id}, the route the Workbench uses for it (already built); one route per operation. |
 | `promoteRepositoryCustomProperty` | Planned | Repository sheet |
-| `setRepositoryCustomPropertyValues` | Planned | Repository sheet |
-| `setRepositoryInteractionLimit` | Planned | Repository sheet |
-| `unarchiveRepository` | Planned | Repository sheet |
-| `updateRepository` | Planned | Repository sheet |
-| `updateRepositoryCustomProperty` | Planned | Repository sheet |
-| `updateRepositoryRuleset` | Planned | Repository sheet |
+| `setRepositoryCustomPropertyValues` | Not needed | The same change as PATCH /repos/{owner}/{repo}/properties/values, the route the Workbench uses for it (planned there); one route per operation. |
+| `setRepositoryInteractionLimit` | Not needed | The same change as PUT /repos/{owner}/{repo}/interaction-limits, the route the Workbench uses for it (already built); one route per operation. |
+| `unarchiveRepository` | Not needed | The same change as PATCH /repos/{owner}/{repo}, the route the Workbench uses for it (already built); one route per operation. |
+| `updateRepository` | Not needed | The same change as PATCH /repos/{owner}/{repo}, the route the Workbench uses for it (already built); one route per operation. |
+| `updateRepositoryCustomProperty` | Not needed | The same change as PUT /orgs/{org}/properties/schema/{custom_property_name}, the route the Workbench uses for it (planned there); one route per operation. |
+| `updateRepositoryRuleset` | Not needed | The same change as PUT /repos/{owner}/{repo}/rulesets/{ruleset_id}, the route the Workbench uses for it (already built); one route per operation. |
 | `updateRepositoryWebCommitSignoffSetting` | Planned | Repository sheet |
-| `updateTopics` | Planned | Repository sheet |
+| `updateTopics` | Not needed | The same change as PUT /repos/{owner}/{repo}/topics, the route the Workbench uses for it (already built); one route per operation. |
 
 #### GraphQL: Sponsors
 
-9 mutations: 2 yes, 7 planned.
+9 mutations: 2 yes, 6 planned, 1 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
@@ -3067,7 +3067,7 @@ In all: 392 yes, 1064 planned, 15 not needed and 533 left to GitHub.
 | `createSponsorsListing` | Planned | People > person > Sponsor; Account > Sponsors |
 | `createSponsorsTier` | Planned | People > person > Sponsor; Account > Sponsors |
 | `createSponsorship` | Yes | context menu > Sponsor at This Tier... |
-| `createSponsorships` | Planned | People > person > Sponsor; Account > Sponsors |
+| `createSponsorships` | Not needed | The same change as createSponsorship, the route the Workbench uses for it (already built); one route per operation. |
 | `publishSponsorsTier` | Planned | People > person > Sponsor; Account > Sponsors |
 | `retireSponsorsTier` | Planned | People > person > Sponsor; Account > Sponsors |
 | `updatePatreonSponsorability` | Planned | People > person > Sponsor; Account > Sponsors |
@@ -3075,24 +3075,24 @@ In all: 392 yes, 1064 planned, 15 not needed and 533 left to GitHub.
 
 #### GraphQL: Teams
 
-1 mutations: 1 planned.
+1 mutations: 1 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
-| `updateTeamsRepository` | Planned | Team sheet |
+| `updateTeamsRepository` | Not needed | The same change as PUT /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}, the route the Workbench uses for it (already built); one route per operation. |
 
 #### GraphQL: Users
 
-8 mutations: 5 yes, 3 planned.
+8 mutations: 5 yes, 3 not needed.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
 | `changeUserStatus` | Yes | Account > Set Your Status... (Ctrl+Alt+S) |
 | `createUserList` | Yes | Navigator: Repositories > Star Lists |
 | `deleteUserList` | Yes | context menu > Rename or Delete Star List... |
-| `followUser` | Planned | Account; People > person |
-| `setUserInteractionLimit` | Planned | Account; People > person |
-| `unfollowUser` | Planned | Account; People > person |
+| `followUser` | Not needed | The same change as PUT /user/following/{username}, the route the Workbench uses for it (already built); one route per operation. |
+| `setUserInteractionLimit` | Not needed | The same change as PUT /user/interaction-limits, the route the Workbench uses for it (planned there); one route per operation. |
+| `unfollowUser` | Not needed | The same change as DELETE /user/following/{username}, the route the Workbench uses for it (already built); one route per operation. |
 | `updateUserList` | Yes | context menu > Rename or Delete Star List... |
 | `updateUserListsForItem` | Yes | context menu > Star Lists... |
 
