@@ -46,6 +46,11 @@ from quill.ui.github_workbench_pull_tools import (
     PULL_TOOL_VERBS,
     GitHubWorkbenchPullToolsMixin,
 )
+from quill.ui.github_workbench_tier2 import (
+    TIER2_REASONS,
+    TIER2_VERBS,
+    GitHubWorkbenchTier2Mixin,
+)
 
 __all__ = [
     "DEVELOPMENT_REASONS",
@@ -63,6 +68,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **INBOX_RULE_VERBS,
     **DRY_RUN_VERBS,
     **PRACTICE_VERBS,
+    **TIER2_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -74,6 +80,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **INBOX_RULE_REASONS,
     **DRY_RUN_REASONS,
     **PRACTICE_REASONS,
+    **TIER2_REASONS,
 }
 
 
@@ -83,6 +90,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchInboxRulesMixin,
     GitHubWorkbenchDryRunMixin,
     GitHubWorkbenchPracticeMixin,
+    GitHubWorkbenchTier2Mixin,
 ):
     items: Any
     frame: Any

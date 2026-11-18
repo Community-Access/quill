@@ -153,6 +153,10 @@ requests only.
 review message reach the comment composer. Hide Whitespace Changes and Choose
 Commit... in the diff window (`commit_review.py`).
 
+**2026-11-18, invitations and workflow state.** Needs My Attention >
+Invitations with Accept and Decline (`repo_invitations.py`); Turn Workflow On
+or Off... (`workflow_state.py`).
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

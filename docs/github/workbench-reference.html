@@ -1024,6 +1024,12 @@ marks one read, Delete marks it done, and Ctrl+Shift+Q marks the whole
 view read.</td>
 </tr>
 <tr>
+<td>Invitations (<code>:invitations</code>)</td>
+<td>attention</td>
+<td>Invitations: repositories you have been invited to, who invited you
+and with what access. Accept or Decline from a row’s context menu.</td>
+</tr>
+<tr>
 <td>Review Requests (<code>:review_requests</code>)</td>
 <td>attention</td>
 <td>Review Requests: pull requests somebody asked you to review. Enter
@@ -2562,8 +2568,8 @@ Properties…</li>
 Jobs Only, Re-run Workflow, Cancel Run…, View Artifacts…; More: Open on
 GitHub, Combined Check Status, Review Pending Deployments…, Approve Run
 from a Fork…, Delete Run…, Copy Link; Properties…</li>
-<li><strong>workflow</strong>: Runs, Run Workflow on Branch…, Open on
-GitHub, Copy Link; Properties…</li>
+<li><strong>workflow</strong>: Runs, Run Workflow on Branch…, Turn
+Workflow On or Off…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>release</strong>: Assets, Edit Release…, Draft Release
 Notes…, Upload Asset…, Compare With Previous, Compare With Default;
 More: Copy Link, Open on GitHub; Properties…</li>
@@ -2577,6 +2583,8 @@ Previous, Compare With Default, Copy Link, Open on GitHub;
 Properties…</li>
 <li><strong>tag</strong>: Open, Commit Comments…, Compare With Previous,
 Compare With Default, Copy Link, Open on GitHub; Properties…</li>
+<li><strong>invitation</strong>: Accept Invitation…, Decline
+Invitation…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>notification</strong>: Open, Mark Read, Mark Done, Snooze
 for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally;
 Properties…</li>
@@ -2770,6 +2778,9 @@ from which you can propose changes back. Under People, Forks.</li>
 history.</li>
 <li><strong>Inbox</strong>: The Workbench’s one list of what needs you,
 made from notifications, review requests, assignments and mentions.</li>
+<li><strong>Invitation</strong>: Someone with admin access asking you to
+join their repository, with the access they chose. It waits under Needs
+My Attention &gt; Invitations and expires after a week.</li>
 <li><strong>Issue</strong>: A note about a bug, an idea or a task, with
 a conversation under it. Under a repository’s Issues.</li>
 <li><strong>Job</strong>: One part of a run, on one machine, made of
@@ -2870,7 +2881,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 317 yes, 1146 planned, 15 not needed and 526 left to
+<p>In all: 320 yes, 1143 planned, 15 not needed and 526 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -4117,7 +4128,7 @@ Workflows</td>
 <td>Disable a workflow</td>
 <td><code>PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/disable</code></td>
 <td>Yes</td>
-<td>Properties (Alt+Enter) on Workflow: Enabled</td>
+<td>context menu &gt; Turn Workflow On or Off…</td>
 </tr>
 <tr>
 <td>Create a workflow dispatch event</td>
@@ -4129,7 +4140,7 @@ Workflows</td>
 <td>Enable a workflow</td>
 <td><code>PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable</code></td>
 <td>Yes</td>
-<td>Properties (Alt+Enter) on Workflow: Enabled</td>
+<td>context menu &gt; Turn Workflow On or Off…</td>
 </tr>
 <tr>
 <td>List workflow runs for a workflow</td>
@@ -6394,7 +6405,7 @@ Codespaces; Secrets.</td>
 </tbody>
 </table>
 <h4 id="collaborators">Collaborators</h4>
-<p>11 operations: 7 yes, 4 planned.</p>
+<p>11 operations: 10 yes, 1 planned.</p>
 <table>
 <thead>
 <tr>
@@ -6457,20 +6468,20 @@ and Team Access</td>
 <tr>
 <td>List repository invitations for the authenticated user</td>
 <td><code>GET /user/repository_invitations</code></td>
-<td>Planned</td>
-<td>Needs My Attention &gt; Invitations</td>
+<td>Yes</td>
+<td>Navigator: Needs My Attention &gt; Invitations</td>
 </tr>
 <tr>
 <td>Decline a repository invitation</td>
 <td><code>DELETE /user/repository_invitations/{invitation_id}</code></td>
-<td>Planned</td>
-<td>Needs My Attention &gt; Invitations</td>
+<td>Yes</td>
+<td>context menu &gt; Decline Invitation…</td>
 </tr>
 <tr>
 <td>Accept a repository invitation</td>
 <td><code>PATCH /user/repository_invitations/{invitation_id}</code></td>
-<td>Planned</td>
-<td>Needs My Attention &gt; Invitations</td>
+<td>Yes</td>
+<td>context menu &gt; Accept Invitation…</td>
 </tr>
 </tbody>
 </table>

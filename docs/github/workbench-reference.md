@@ -536,6 +536,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Needs My Attention (`:attention`) | the top | Needs My Attention: everything waiting on you, across GitHub. Inbox first, then notifications, review requests and your own open work. |
 | Inbox (`:inbox`) | attention | Inbox: one list of what needs you, from notifications, review requests, assignments and mentions. Enter opens a row; Delete marks it done. |
 | Notifications (`:notifications`) | attention | Notifications: what GitHub has told you about, unread first. Ctrl+Q marks one read, Delete marks it done, and Ctrl+Shift+Q marks the whole view read. |
+| Invitations (`:invitations`) | attention | Invitations: repositories you have been invited to, who invited you and with what access. Accept or Decline from a row's context menu. |
 | Review Requests (`:review_requests`) | attention | Review Requests: pull requests somebody asked you to review. Enter opens the review. |
 | Assigned to Me (`:assigned`) | attention | Assigned to Me: issues and pull requests assigned to you, anywhere. |
 | Mentions (`:mentions`) | attention | Mentions: issues and pull requests where somebody wrote your name. |
@@ -846,12 +847,13 @@ Keys the window answers that are not menu rows:
 - **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Set Issue Type..., Reorder Sub-issues..., Add to or Remove from Favorites; Properties...
 - **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., View Artifacts...; More: Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
-- **workflow**: Runs, Run Workflow on Branch..., Open on GitHub, Copy Link; Properties...
+- **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link; Properties...
 - **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., Compare With Previous, Compare With Default; More: Copy Link, Open on GitHub; Properties...
 - **release_asset**: Download, Copy Link, Delete Asset...; Properties...
 - **branch**: Commits, Compare With Default, Compare Branches..., Compare With Previous, Open in Codespaces..., Copy Name, Delete Branch...; Properties...
 - **commit**: Open, Commit Comments..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
 - **tag**: Open, Commit Comments..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
+- **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally; Properties...
 - **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Pin, Add to or Remove from Favorites; More: Open on GitHub, Open in Codespaces...; Properties...
 - **person**: Open, Follow or Unfollow, Open on GitHub; Properties...
@@ -917,6 +919,7 @@ Keys the window answers that are not menu rows:
 - **Fork**: Your own copy of somebody else's repository, from which you can propose changes back. Under People, Forks.
 - **Gist**: A small shared file or snippet, with its own history.
 - **Inbox**: The Workbench's one list of what needs you, made from notifications, review requests, assignments and mentions.
+- **Invitation**: Someone with admin access asking you to join their repository, with the access they chose. It waits under Needs My Attention > Invitations and expires after a week.
 - **Issue**: A note about a bug, an idea or a task, with a conversation under it. Under a repository's Issues.
 - **Job**: One part of a run, on one machine, made of steps.
 - **Label**: A coloured tag on issues and pull requests, such as bug. Under Labels.
@@ -966,7 +969,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 317 yes, 1146 planned, 15 not needed and 526 left to GitHub.
+In all: 320 yes, 1143 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1171,9 +1174,9 @@ In all: 317 yes, 1146 planned, 15 not needed and 526 left to GitHub.
 | Update a repository variable | `PATCH /repos/{owner}/{repo}/actions/variables/{name}` | Yes | Properties (Alt+Enter) on Variable: Value |
 | List repository workflows | `GET /repos/{owner}/{repo}/actions/workflows` | Yes | Navigator: Repository > owner/name > Actions > Workflows |
 | Get a workflow | `GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}` | Yes | Properties (Alt+Enter) on Workflow |
-| Disable a workflow | `PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/disable` | Yes | Properties (Alt+Enter) on Workflow: Enabled |
+| Disable a workflow | `PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/disable` | Yes | context menu > Turn Workflow On or Off... |
 | Create a workflow dispatch event | `POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches` | Yes | Repository > Run Workflow on Branch... (Ctrl+Shift+R) |
-| Enable a workflow | `PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable` | Yes | Properties (Alt+Enter) on Workflow: Enabled |
+| Enable a workflow | `PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable` | Yes | context menu > Turn Workflow On or Off... |
 | List workflow runs for a workflow | `GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs` | Planned | Run sheet. |
 | Get workflow usage | `GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/timing` | Planned | Workflow sheet. |
 | List environment secrets | `GET /repos/{owner}/{repo}/environments/{environment_name}/secrets` | Yes | Properties (Alt+Enter) on Environment |
@@ -1585,7 +1588,7 @@ In all: 317 yes, 1146 planned, 15 not needed and 526 left to GitHub.
 
 #### Collaborators
 
-11 operations: 7 yes, 4 planned.
+11 operations: 10 yes, 1 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1597,9 +1600,9 @@ In all: 317 yes, 1146 planned, 15 not needed and 526 left to GitHub.
 | List repository invitations | `GET /repos/{owner}/{repo}/invitations` | Yes | Properties (Alt+Enter) on Invitation |
 | Delete a repository invitation | `DELETE /repos/{owner}/{repo}/invitations/{invitation_id}` | Planned | Repository sheet > Access (section 18.3). |
 | Update a repository invitation | `PATCH /repos/{owner}/{repo}/invitations/{invitation_id}` | Yes | Properties (Alt+Enter) on Invitation: Role |
-| List repository invitations for the authenticated user | `GET /user/repository_invitations` | Planned | Needs My Attention > Invitations |
-| Decline a repository invitation | `DELETE /user/repository_invitations/{invitation_id}` | Planned | Needs My Attention > Invitations |
-| Accept a repository invitation | `PATCH /user/repository_invitations/{invitation_id}` | Planned | Needs My Attention > Invitations |
+| List repository invitations for the authenticated user | `GET /user/repository_invitations` | Yes | Navigator: Needs My Attention > Invitations |
+| Decline a repository invitation | `DELETE /user/repository_invitations/{invitation_id}` | Yes | context menu > Decline Invitation... |
+| Accept a repository invitation | `PATCH /user/repository_invitations/{invitation_id}` | Yes | context menu > Accept Invitation... |
 
 #### Commits
 

@@ -29462,6 +29462,17 @@ lists the screen-reader checks still owed. Writing GX04 down found that
 Re-run Failed Jobs pressed twice before GitHub answered sent two
 requests; <code>_do_rerun_failed</code> now keeps the runs it is sending
 and says the second press is already on its way.</p>
+<p><strong>Invitations and workflow state (GitHub PRD 14.1).</strong>
+Needs My Attention &gt; Invitations is the Explore account view
+<code>invitations</code>
+(<code>quill/core/github/repo_invitations.py</code>:
+<code>fetch_invitations</code>, <code>accept</code>,
+<code>decline</code>), row type <code>invitation</code>, Accept (Enter)
+and Decline each asking first, an expired invitation not acceptable.
+Turn Workflow On or Off… on a workflow
+(<code>quill/core/github/workflow_state.py</code>) says GitHub’s state
+in words, including <code>disabled_inactivity</code>, and asks. Both are
+<code>quill/ui/github_workbench_tier2.py</code>.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

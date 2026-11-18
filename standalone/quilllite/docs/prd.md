@@ -2775,4 +2775,5 @@ emoji shortcodes read by name (`quill/core/github/emoji_names.py`), Dry
 Run and Practice on GitHub, and Load More and Load All on every Workbench
 list. The comment window in a discussion reply, a line comment and the review
 message is the shared one, as are Hide Whitespace Changes and Choose Commit...
-in the diff window.
+in the diff window. Invitations and Turn Workflow On or Off... are the
+Workbench's too.

@@ -244,6 +244,13 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     "workflow": (
         _default("workflow_runs", "Runs", "This workflow's runs."),
         _a("run_workflow", "Run Workflow on Branch...", _W, "push", "Start it on a branch."),
+        _a(
+            "workflow_state",
+            "Turn Workflow On or Off...",
+            _W,
+            "push",
+            "Turn it off so nothing starts it, or back on.",
+        ),
         _OPEN_WEB,
         _COPY_LINK,
         _PROPERTIES,
@@ -291,6 +298,20 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _COMPARE_DEFAULT,
         _COPY_LINK,
         _OPEN_WEB,
+        _PROPERTIES,
+    ),
+    "invitation": (
+        _a(
+            "accept_invitation",
+            "Accept Invitation...",
+            _W,
+            "sign_in",
+            "Join the repository with the access offered.",
+            default=True,
+        ),
+        _a("decline_invitation", "Decline Invitation...", _W, "sign_in", "Say no to it."),
+        _OPEN_WEB,
+        _COPY_LINK,
         _PROPERTIES,
     ),
     "notification": (

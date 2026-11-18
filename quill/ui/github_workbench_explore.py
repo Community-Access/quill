@@ -32,6 +32,7 @@ _KINDS = {
     "repo": "repository",
     "person": "person",
     "notification": "notification",
+    "invitation": "invitation",
     "issue": "issue",
     "pr": "pull_request",
     "label": "label",

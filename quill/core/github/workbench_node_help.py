@@ -28,6 +28,10 @@ NODE_HELP: dict[str, str] = {
         "Notifications: what GitHub has told you about, unread first. Ctrl+Q marks "
         "one read, Delete marks it done, and Ctrl+Shift+Q marks the whole view read."
     ),
+    ":invitations": (
+        "Invitations: repositories you have been invited to, who invited you and with what "
+        "access. Accept or Decline from a row's context menu."
+    ),
     ":review_requests": (
         "Review Requests: pull requests somebody asked you to review. Enter opens the review."
     ),
@@ -222,6 +226,7 @@ _EMPTY: dict[str, str] = {
     ),
     ":inbox": "Nothing needs you right now. New notifications, reviews and mentions land here.",
     ":notifications": "No notifications. GitHub's new ones arrive here as they come.",
+    ":invitations": "No invitations. When someone invites you to a repository, it is here.",
     ":saved_searches": (
         "No saved searches yet. Run a search under Search, then press Ctrl+N to keep it."
     ),
