@@ -71,6 +71,10 @@ class PodcastTransfersMixin:
         self._podcast_cue_download_started(item)
         if item.status == "failed":
             self._record_podcast_download_problem(item)
+            if getattr(item, "error_kind", "") == "disk":
+                # Never retried and never "connection dropped": the listener has
+                # to free space, so this one is said, not only logged.
+                self._announce(item.error_message.split("] ", 1)[-1])
             from quill.ui.podcasts import download_run
 
             download_run.step(self, item.episode_guid, failed_title=str(item.episode_guid))
