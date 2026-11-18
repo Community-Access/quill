@@ -40,7 +40,7 @@ class PullCommit:
 
     @property
     def label(self) -> str:
-        """"3f9a2c1 Fix the parser, by ann": what the commit chooser shows."""
+        """ "3f9a2c1 Fix the parser, by ann": what the commit chooser shows."""
         by = f", by {self.author}" if self.author else ""
         return f"{self.sha[:7]} {self.headline}{by}"
 
