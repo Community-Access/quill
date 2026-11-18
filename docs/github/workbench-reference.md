@@ -650,6 +650,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Webhooks (`repository:webhooks`) | repository, settings | Webhooks: the addresses GitHub tells about events here. Ctrl+N adds one; Recent Deliveries on a webhook says what was sent and redelivers it. |
 | Deploy Keys (`repository:deploy_keys`) | repository, settings | Deploy Keys: SSH keys that let a server clone, pull or push this one repository. Ctrl+N adds one. |
 | Autolinks (`repository:autolinks`) | repository, settings | Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one. |
+| Environments (`repository:environments`) | repository, settings | Environments: where this repository's workflows deploy, each with its protection rules. Secrets... and Variables... on a row are that environment's own. |
 | Codespaces (`repository:repo_codespaces`) | repository, code | Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you name, with the machine and dev container you choose. |
 | Actions Variables (`repository:actions_variables`) | repository, settings | Actions Variables: values workflows read as vars.NAME. Ctrl+N adds one. |
 | Actions Secrets (`repository:actions_secrets`) | repository, settings | Actions Secrets: values workflows read but nobody sees again. Ctrl+N adds one. |
@@ -662,6 +663,8 @@ Everything below is generated from the tables the window is built from. The GitH
 | Issue Types (`repository:repo_issue_types`) | repository, settings | Issue Types: the kinds of issue this repository offers, set by its organization. |
 | Code Scanning Analyses (`repository:code_scanning_analyses`) | repository, security | Code Scanning Analyses: each upload of results, newest first. Deleting one removes its results; GitHub refuses the last analysis of a tool unless asked. |
 | CodeQL Databases (`repository:codeql_databases`) | repository, security | CodeQL Databases: the databases code scanning built, one per language. |
+| Organization Secrets Here (`repository:repo_org_secrets`) | repository, settings | Organization Secrets Here: the organization's Actions secrets this repository may use. Change them in the organization. |
+| Organization Variables Here (`repository:repo_org_variables`) | repository, settings | Organization Variables Here: the organization's Actions variables this repository may use. Change them in the organization. |
 | person (`person:person`) | person | A person: their repositories, activity, followers and who they follow. |
 | Profile (`person:person_profile`) | person, person | Profile: who this person is, their year of contributions as numbers, and what they pinned. |
 | Sponsor (`person:person_sponsor`) | person, person | Sponsor: whether this person takes sponsorships, and each tier with its price. |
@@ -943,6 +946,7 @@ Keys the window answers that are not menu rows:
 - **by_name**: Variants and Missing From, Make Them the Same..., Add to Missing..., Find Uses, Rename Everywhere..., Merge Into...; More: Close Everywhere..., Move Open Work To..., Promote to Organization..., Delete Everywhere...; Properties...
 - **fleet**: Open Repository, Open on GitHub, Copy Link; Properties...
 - **runner**: Show Details, Runner Labels..., Remove Runner..., Open on GitHub, Copy Link; Properties...
+- **environment**: Show Details, Secrets..., Variables..., Delete..., Open on GitHub, Copy Link; Properties...
 - **codespace**: Show Details, Start, Stop, Change Machine..., Export to a Branch, Publish to a New Repository...; More: Delete..., Open on GitHub, Copy Link; Properties...
 - **package**: Show Details, Open on GitHub, Show Versions, Restore Package Version..., Delete Package Version..., Delete Package..., Copy Link; Properties...
 - **key**: Show Details, Delete Key..., Open on GitHub; Properties...
@@ -1054,7 +1058,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 577 yes, 456 planned, 226 not needed and 745 left to GitHub.
+In all: 592 yes, 441 planned, 226 not needed and 745 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1062,7 +1066,7 @@ In all: 577 yes, 456 planned, 226 not needed and 745 left to GitHub.
 
 #### Actions
 
-208 operations: 102 yes, 44 planned, 17 not needed, 45 left to github.
+208 operations: 110 yes, 36 planned, 17 not needed, 45 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1192,8 +1196,8 @@ In all: 577 yes, 456 planned, 226 not needed and 745 left to GitHub.
 | Download step logs for a workflow run job | `GET /repos/{owner}/{repo}/actions/jobs/{job_id}/steps/{step_number}/logs` | Planned | Job sheet. |
 | Get the customization template for an OIDC subject claim for a repository | `GET /repos/{owner}/{repo}/actions/oidc/customization/sub` | Left to GitHub | Cloud identity (OIDC) claim settings are one-off security plumbing for company deployments, set up on GitHub's site. |
 | Set the customization template for an OIDC subject claim for a repository | `PUT /repos/{owner}/{repo}/actions/oidc/customization/sub` | Left to GitHub | Cloud identity (OIDC) claim settings are one-off security plumbing for company deployments, set up on GitHub's site. |
-| List repository organization secrets | `GET /repos/{owner}/{repo}/actions/organization-secrets` | Planned | Secret and variable sheets (write-only values). |
-| List repository organization variables | `GET /repos/{owner}/{repo}/actions/organization-variables` | Planned | Secret and variable sheets. |
+| List repository organization secrets | `GET /repos/{owner}/{repo}/actions/organization-secrets` | Yes | Navigator: Repository > owner/name > Settings > Organization Secrets Here |
+| List repository organization variables | `GET /repos/{owner}/{repo}/actions/organization-variables` | Yes | Navigator: Repository > owner/name > Settings > Organization Variables Here |
 | Get GitHub Actions permissions for a repository | `GET /repos/{owner}/{repo}/actions/permissions` | Yes | Properties (Alt+Enter) on Repository |
 | Set GitHub Actions permissions for a repository | `PUT /repos/{owner}/{repo}/actions/permissions` | Yes | Properties (Alt+Enter) on Repository: Actions enabled |
 | Get the level of access for workflows outside of the repository | `GET /repos/{owner}/{repo}/actions/permissions/access` | Yes | Properties (Alt+Enter) on Repository |
@@ -1265,19 +1269,19 @@ In all: 577 yes, 456 planned, 226 not needed and 745 left to GitHub.
 | List workflow runs for a workflow | `GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs` | Not needed | A workflow's Runs shows the repository's runs filtered to that workflow; one route serves both. |
 | Get workflow usage | `GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/timing` | Planned | Workflow sheet. |
 | List environment secrets | `GET /repos/{owner}/{repo}/environments/{environment_name}/secrets` | Yes | Properties (Alt+Enter) on Environment |
-| Get an environment public key | `GET /repos/{owner}/{repo}/environments/{environment_name}/secrets/public-key` | Planned | Secret and variable sheets (write-only values). |
-| Delete an environment secret | `DELETE /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}` | Planned | Secret and variable sheets (write-only values). |
+| Get an environment public key | `GET /repos/{owner}/{repo}/environments/{environment_name}/secrets/public-key` | Yes | context menu > Secrets... |
+| Delete an environment secret | `DELETE /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}` | Yes | context menu > Secrets... |
 | Get an environment secret | `GET /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Create or update an environment secret | `PUT /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}` | Planned | Secret and variable sheets (write-only values). |
+| Create or update an environment secret | `PUT /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}` | Yes | context menu > Secrets... |
 | List environment variables | `GET /repos/{owner}/{repo}/environments/{environment_name}/variables` | Yes | Properties (Alt+Enter) on Environment |
-| Create an environment variable | `POST /repos/{owner}/{repo}/environments/{environment_name}/variables` | Planned | Secret and variable sheets. |
-| Delete an environment variable | `DELETE /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}` | Planned | Secret and variable sheets. |
+| Create an environment variable | `POST /repos/{owner}/{repo}/environments/{environment_name}/variables` | Yes | context menu > Variables... |
+| Delete an environment variable | `DELETE /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}` | Yes | context menu > Variables... |
 | Get an environment variable | `GET /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Update an environment variable | `PATCH /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}` | Planned | Secret and variable sheets. |
+| Update an environment variable | `PATCH /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}` | Yes | context menu > Variables... |
 
 #### Activity
 
-34 operations: 16 yes, 18 planned.
+34 operations: 19 yes, 15 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1296,14 +1300,14 @@ In all: 577 yes, 456 planned, 226 not needed and 745 left to GitHub.
 | List repository events | `GET /repos/{owner}/{repo}/events` | Yes | Navigator: Repository > owner/name > Activity |
 | List repository notifications for the authenticated user | `GET /repos/{owner}/{repo}/notifications` | Planned | Needs My Attention > Notifications; Notification sheet. |
 | Mark repository notifications as read | `PUT /repos/{owner}/{repo}/notifications` | Planned | Needs My Attention > Notifications; Notification sheet. |
-| List stargazers | `GET /repos/{owner}/{repo}/stargazers` | Planned | You page: Star (section 16.7). |
+| List stargazers | `GET /repos/{owner}/{repo}/stargazers` | Yes | Navigator: Repository > owner/name > People > Contributors and People |
 | Get stargazer count | `GET /repos/{owner}/{repo}/stargazers/count` | Planned | You page: Star (section 16.7). |
 | Get repository star history | `GET /repos/{owner}/{repo}/stargazers/history` | Planned | You page: Star (section 16.7). |
 | List watchers | `GET /repos/{owner}/{repo}/subscribers` | Planned | You page: Watch level (section 16.7). |
 | Delete a repository subscription | `DELETE /repos/{owner}/{repo}/subscription` | Yes | context menu > Watch or Unwatch |
 | Get a repository subscription | `GET /repos/{owner}/{repo}/subscription` | Yes | context menu > Watch or Unwatch |
 | Set a repository subscription | `PUT /repos/{owner}/{repo}/subscription` | Yes | context menu > Watch or Unwatch |
-| List repositories starred by the authenticated user | `GET /user/starred` | Planned | You page: Star (section 16.7). |
+| List repositories starred by the authenticated user | `GET /user/starred` | Yes | Navigator: Repositories > Starred |
 | Unstar a repository for the authenticated user | `DELETE /user/starred/{owner}/{repo}` | Yes | Properties (Alt+Enter) on Repository: Starred |
 | Check if a repository is starred by the authenticated user | `GET /user/starred/{owner}/{repo}` | Yes | Item > Properties... (Alt+Enter) |
 | Star a repository for the authenticated user | `PUT /user/starred/{owner}/{repo}` | Yes | Properties (Alt+Enter) on Repository: Starred |
@@ -1311,7 +1315,7 @@ In all: 577 yes, 456 planned, 226 not needed and 745 left to GitHub.
 | List events for the authenticated user | `GET /users/{username}/events` | Planned | Needs My Attention > My Activity Feed; Repository > Activity; Person > Activity. |
 | List organization events for the authenticated user | `GET /users/{username}/events/orgs/{org}` | Planned | Needs My Attention > My Activity Feed; Repository > Activity; Person > Activity. |
 | List public events for a user | `GET /users/{username}/events/public` | Yes | Navigator: Person > person > Activity |
-| List events received by the authenticated user | `GET /users/{username}/received_events` | Planned | Needs My Attention > My Activity Feed; Repository > Activity; Person > Activity. |
+| List events received by the authenticated user | `GET /users/{username}/received_events` | Yes | Navigator: Needs My Attention > My Activity Feed |
 | List public events received by a user | `GET /users/{username}/received_events/public` | Planned | Needs My Attention > My Activity Feed; Repository > Activity; Person > Activity. |
 | List repositories starred by a user | `GET /users/{username}/starred` | Planned | You page: Star (section 16.7). |
 | List repositories watched by a user | `GET /users/{username}/subscriptions` | Planned | You page: Watch level (section 16.7). |
@@ -1863,7 +1867,7 @@ In all: 577 yes, 456 planned, 226 not needed and 745 left to GitHub.
 
 #### Deployments
 
-21 operations: 5 yes, 13 planned, 3 not needed.
+21 operations: 6 yes, 12 planned, 3 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1875,7 +1879,7 @@ In all: 577 yes, 456 planned, 226 not needed and 745 left to GitHub.
 | Create a deployment status | `POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses` | Planned | Deployment sheet > Statuses. |
 | Get a deployment status | `GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses/{status_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | List environments | `GET /repos/{owner}/{repo}/environments` | Yes | Navigator: Repository > owner/name > Settings > Secret and Variable Names |
-| Delete an environment | `DELETE /repos/{owner}/{repo}/environments/{environment_name}` | Planned | Environment sheet. |
+| Delete an environment | `DELETE /repos/{owner}/{repo}/environments/{environment_name}` | Yes | context menu > Delete... |
 | Get an environment | `GET /repos/{owner}/{repo}/environments/{environment_name}` | Yes | Properties (Alt+Enter) on Environment |
 | Create or update an environment | `PUT /repos/{owner}/{repo}/environments/{environment_name}` | Yes | Properties (Alt+Enter) on Environment: Allow administrators to bypass |
 | List deployment branch policies | `GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies` | Planned | Environment sheet > Branches and Tags. |
@@ -2363,7 +2367,7 @@ In all: 577 yes, 456 planned, 226 not needed and 745 left to GitHub.
 
 #### Pull requests
 
-39 operations: 12 yes, 24 planned, 3 not needed.
+39 operations: 15 yes, 21 planned, 3 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2378,9 +2382,9 @@ In all: 577 yes, 456 planned, 226 not needed and 745 left to GitHub.
 | Update a review comment for a pull request | `PATCH /repos/{owner}/{repo}/pulls/comments/{comment_id}` | Planned | Review thread sheet; PR review. |
 | Get a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}` | Yes | Properties (Alt+Enter) on Pull Request |
 | Update a pull request | `PATCH /repos/{owner}/{repo}/pulls/{pull_number}` | Yes | Properties (Alt+Enter) on Pull Request: Into branch |
-| List review comments on a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/comments` | Planned | Review thread sheet; PR review. |
+| List review comments on a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/comments` | Yes | context menu > Review... |
 | Create a review comment for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/comments` | Yes | context menu > Review... |
-| Create a reply for a review comment | `POST /repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies` | Planned | Review thread sheet; PR review. |
+| Create a reply for a review comment | `POST /repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies` | Yes | context menu > Review... |
 | List commits on a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/commits` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
 | Request a Copilot code review for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/copilot-code-review` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
 | List pull requests files | `GET /repos/{owner}/{repo}/pulls/{pull_number}/files` | Yes | Item > File Differences... (Ctrl+Shift+D) |
@@ -2400,7 +2404,7 @@ In all: 577 yes, 456 planned, 226 not needed and 745 left to GitHub.
 | List comments for a pull request review | `GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments` | Planned | Pull request > Reviews; Review sheet. |
 | Dismiss a review for a pull request | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/dismissals` | Planned | Pull request > Reviews; Review sheet. |
 | Submit a review for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/events` | Planned | Pull request > Reviews; Review sheet. |
-| Update a pull request branch | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
+| Update a pull request branch | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch` | Yes | context menu > Review... |
 | List pull request stacks | `GET /repos/{owner}/{repo}/stacks` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
 | Create a pull request stack | `POST /repos/{owner}/{repo}/stacks` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
 | Get a pull request stack | `GET /repos/{owner}/{repo}/stacks/{stack_number}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |

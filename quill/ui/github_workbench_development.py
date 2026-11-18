@@ -46,6 +46,11 @@ from quill.ui.github_workbench_dry_run import (
     GitHubWorkbenchDryRunMixin,
     failure_sentence,
 )
+from quill.ui.github_workbench_environments import (
+    ENVIRONMENT_REASONS,
+    ENVIRONMENT_VERBS,
+    GitHubWorkbenchEnvironmentsMixin,
+)
 from quill.ui.github_workbench_inbox_rules import (
     INBOX_RULE_REASONS,
     INBOX_RULE_VERBS,
@@ -135,6 +140,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **CODE_SCANNING_VERBS,
     **CODESPACE_VERBS,
     **RUN_MORE_VERBS,
+    **ENVIRONMENT_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -158,6 +164,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **CODE_SCANNING_REASONS,
     **CODESPACE_REASONS,
     **RUN_MORE_REASONS,
+    **ENVIRONMENT_REASONS,
 }
 
 
@@ -179,6 +186,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchCodeScanningMixin,
     GitHubWorkbenchCodespacesMixin,
     GitHubWorkbenchRunMoreMixin,
+    GitHubWorkbenchEnvironmentsMixin,
 ):
     items: Any
     frame: Any

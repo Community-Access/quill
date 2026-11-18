@@ -26,6 +26,15 @@ MORE_FIXED: tuple[NodeSpec, ...] = (
 
 MORE_REPOSITORY: tuple[NodeSpec, ...] = (
     NodeSpec(
+        "environments",
+        "Environments",
+        "settings",
+        scope=Scope.REPOSITORY,
+        needs=frozenset({Need.SIGN_IN, Need.ADMIN}),
+        loader="explore:repo_environments",
+        row_type="environment",
+    ),
+    NodeSpec(
         "repo_codespaces",
         "Codespaces",
         "code",

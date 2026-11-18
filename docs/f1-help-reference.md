@@ -2692,6 +2692,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **repository: Autolinks.** Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one.
 
+**repository: Environments.** Environments: where this repository's workflows deploy, each with its protection rules. Secrets... and Variables... on a row are that environment's own.
+
 **repository: Codespaces.** Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you name, with the machine and dev container you choose.
 
 **repository: Actions Variables.** Actions Variables: values workflows read as vars.NAME. Ctrl+N adds one.
@@ -2715,6 +2717,10 @@ Control coverage: 365 audited sites (365 helped).
 **repository: Code Scanning Analyses.** Code Scanning Analyses: each upload of results, newest first. Deleting one removes its results; GitHub refuses the last analysis of a tool unless asked.
 
 **repository: CodeQL Databases.** CodeQL Databases: the databases code scanning built, one per language.
+
+**repository: Organization Secrets Here.** Organization Secrets Here: the organization's Actions secrets this repository may use. Change them in the organization.
+
+**repository: Organization Variables Here.** Organization Variables Here: the organization's Actions variables this repository may use. Change them in the organization.
 
 **person: person.** A person: their repositories, activity, followers and who they follow.
 
@@ -3361,6 +3367,12 @@ Control coverage: 365 audited sites (365 helped).
 **Runner Labels.** Add a label, or take one away.
 
 **Remove Runner.** GitHub forgets it; asks first.
+
+**Secrets.** Add, change or delete its secrets.
+
+**Variables.** Add, change or delete them.
+
+**Delete.** Delete it, after asking.
 
 **Start.** Start it, as it was when it stopped.
 

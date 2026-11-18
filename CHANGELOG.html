@@ -947,6 +947,28 @@ Lite’s): what you need, test mode, the three kinds of amount, providers,
 publishing and what each refusal means, what the person paying hears
 with a screen reader, receipts, refunds, reporting and going live.</li>
 </ul>
+<h3
+id="environments-their-secrets-and-variables-and-some-routes-counted-2026-11-18">Environments,
+their secrets and variables, and some routes counted (2026-11-18)</h3>
+<ul>
+<li><strong>Settings &gt; Environments</strong> in each repository lists
+where its workflows deploy, each with its protection rules (“production:
+needs a reviewer, waits 5 minutes.”). On each one,
+<strong>Secrets…</strong> and <strong>Variables…</strong> list that
+environment’s own, with “Add a secret…” first; choosing one offers
+Change (for a variable) or Delete. A secret is typed into a password box
+and sealed with the environment’s own key. <strong>Delete…</strong> asks
+first, and says that its secrets, variables and rules go with it.
+Properties opens the Environment sheet.</li>
+<li><strong>Settings &gt; Organization Secrets Here</strong> and
+<strong>Organization Variables Here</strong> list what the organization
+shares with this repository.</li>
+<li>Several routes QUILL already used were never counted, and now are:
+your starred repositories, your activity feed, a repository’s
+stargazers, and, in the review window, the review comments, replying to
+one, and updating a pull request’s branch.</li>
+</ul>
+<p>Planned GitHub endpoints fall from 456 to 441.</p>
 <h3 id="more-on-a-workflow-run-2026-11-18">More on a workflow run
 (2026-11-18)</h3>
 <p>A workflow run’s row in the GitHub Workbench has six more

@@ -271,6 +271,10 @@ NODE_HELP: dict[str, str] = {
         "My Codespaces: every codespace of yours. Start, Stop, Change Machine, Export to "
         "a Branch and Delete are on each row."
     ),
+    "repository:environments": (
+        "Environments: where this repository's workflows deploy, each with its protection "
+        "rules. Secrets... and Variables... on a row are that environment's own."
+    ),
     "repository:repo_codespaces": (
         "Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you "
         "name, with the machine and dev container you choose."

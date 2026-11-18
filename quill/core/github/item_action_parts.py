@@ -55,6 +55,17 @@ ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
         _COPY_LINK,
         _PROPERTIES,
     ),
+    "environment": (
+        _default("show_details", "Show Details", "The environment's protection rules."),
+        _a(
+            "environment_secrets", "Secrets...", _W, "sign_in", "Add, change or delete its secrets."
+        ),
+        _a("environment_variables", "Variables...", _W, "sign_in", "Add, change or delete them."),
+        _a("environment_delete", "Delete...", _D, "sign_in", "Delete it, after asking."),
+        _OPEN_WEB,
+        _COPY_LINK,
+        _PROPERTIES,
+    ),
     "codespace": (
         _default("show_details", "Show Details", "The codespace's repository, branch and machine."),
         _a("codespace_start", "Start", _W, "sign_in", "Start it, as it was when it stopped."),

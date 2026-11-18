@@ -1708,6 +1708,13 @@ repository. Ctrl+N adds one.</td>
 Ctrl+N adds one.</td>
 </tr>
 <tr>
+<td>Environments (<code>repository:environments</code>)</td>
+<td>repository, settings</td>
+<td>Environments: where this repository’s workflows deploy, each with
+its protection rules. Secrets… and Variables… on a row are that
+environment’s own.</td>
+</tr>
+<tr>
 <td>Codespaces (<code>repository:repo_codespaces</code>)</td>
 <td>repository, code</td>
 <td>Codespaces: your codespaces for this repository. Ctrl+N makes one on
@@ -1781,6 +1788,20 @@ tool unless asked.</td>
 <td>repository, security</td>
 <td>CodeQL Databases: the databases code scanning built, one per
 language.</td>
+</tr>
+<tr>
+<td>Organization Secrets Here
+(<code>repository:repo_org_secrets</code>)</td>
+<td>repository, settings</td>
+<td>Organization Secrets Here: the organization’s Actions secrets this
+repository may use. Change them in the organization.</td>
+</tr>
+<tr>
+<td>Organization Variables Here
+(<code>repository:repo_org_variables</code>)</td>
+<td>repository, settings</td>
+<td>Organization Variables Here: the organization’s Actions variables
+this repository may use. Change them in the organization.</td>
 </tr>
 <tr>
 <td>person (<code>person:person</code>)</td>
@@ -3027,6 +3048,8 @@ Delete Everywhere…; Properties…</li>
 Properties…</li>
 <li><strong>runner</strong>: Show Details, Runner Labels…, Remove
 Runner…, Open on GitHub, Copy Link; Properties…</li>
+<li><strong>environment</strong>: Show Details, Secrets…, Variables…,
+Delete…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>codespace</strong>: Show Details, Start, Stop, Change
 Machine…, Export to a Branch, Publish to a New Repository…; More:
 Delete…, Open on GitHub, Copy Link; Properties…</li>
@@ -3321,14 +3344,14 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 577 yes, 456 planned, 226 not needed and 745 left to
+<p>In all: 592 yes, 441 planned, 226 not needed and 745 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
 is planned under Repository &gt; Wiki.</p>
 <h3 id="rest-operations-by-category">REST operations, by category</h3>
 <h4 id="actions">Actions</h4>
-<p>208 operations: 102 yes, 44 planned, 17 not needed, 45 left to
+<p>208 operations: 110 yes, 36 planned, 17 not needed, 45 left to
 github.</p>
 <table>
 <thead>
@@ -4197,14 +4220,16 @@ for company deployments, set up on GitHub’s site.</td>
 <tr>
 <td>List repository organization secrets</td>
 <td><code>GET /repos/{owner}/{repo}/actions/organization-secrets</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt;
+Organization Secrets Here</td>
 </tr>
 <tr>
 <td>List repository organization variables</td>
 <td><code>GET /repos/{owner}/{repo}/actions/organization-variables</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt;
+Organization Variables Here</td>
 </tr>
 <tr>
 <td>Get GitHub Actions permissions for a repository</td>
@@ -4654,14 +4679,14 @@ workflow; one route serves both.</td>
 <tr>
 <td>Get an environment public key</td>
 <td><code>GET /repos/{owner}/{repo}/environments/{environment_name}/secrets/public-key</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>context menu &gt; Secrets…</td>
 </tr>
 <tr>
 <td>Delete an environment secret</td>
 <td><code>DELETE /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>context menu &gt; Secrets…</td>
 </tr>
 <tr>
 <td>Get an environment secret</td>
@@ -4673,8 +4698,8 @@ reads the list.</td>
 <tr>
 <td>Create or update an environment secret</td>
 <td><code>PUT /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Yes</td>
+<td>context menu &gt; Secrets…</td>
 </tr>
 <tr>
 <td>List environment variables</td>
@@ -4685,14 +4710,14 @@ reads the list.</td>
 <tr>
 <td>Create an environment variable</td>
 <td><code>POST /repos/{owner}/{repo}/environments/{environment_name}/variables</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Variables…</td>
 </tr>
 <tr>
 <td>Delete an environment variable</td>
 <td><code>DELETE /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Variables…</td>
 </tr>
 <tr>
 <td>Get an environment variable</td>
@@ -4704,13 +4729,13 @@ reads the list.</td>
 <tr>
 <td>Update an environment variable</td>
 <td><code>PATCH /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Variables…</td>
 </tr>
 </tbody>
 </table>
 <h4 id="activity">Activity</h4>
-<p>34 operations: 16 yes, 18 planned.</p>
+<p>34 operations: 19 yes, 15 planned.</p>
 <table>
 <thead>
 <tr>
@@ -4817,8 +4842,9 @@ Person &gt; Activity.</td>
 <tr>
 <td>List stargazers</td>
 <td><code>GET /repos/{owner}/{repo}/stargazers</code></td>
-<td>Planned</td>
-<td>You page: Star (section 16.7).</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; People &gt; Contributors
+and People</td>
 </tr>
 <tr>
 <td>Get stargazer count</td>
@@ -4859,8 +4885,8 @@ Person &gt; Activity.</td>
 <tr>
 <td>List repositories starred by the authenticated user</td>
 <td><code>GET /user/starred</code></td>
-<td>Planned</td>
-<td>You page: Star (section 16.7).</td>
+<td>Yes</td>
+<td>Navigator: Repositories &gt; Starred</td>
 </tr>
 <tr>
 <td>Unstar a repository for the authenticated user</td>
@@ -4909,9 +4935,8 @@ Person &gt; Activity.</td>
 <tr>
 <td>List events received by the authenticated user</td>
 <td><code>GET /users/{username}/received_events</code></td>
-<td>Planned</td>
-<td>Needs My Attention &gt; My Activity Feed; Repository &gt; Activity;
-Person &gt; Activity.</td>
+<td>Yes</td>
+<td>Navigator: Needs My Attention &gt; My Activity Feed</td>
 </tr>
 <tr>
 <td>List public events received by a user</td>
@@ -7917,7 +7942,7 @@ Keys</td>
 </tbody>
 </table>
 <h4 id="deployments">Deployments</h4>
-<p>21 operations: 5 yes, 13 planned, 3 not needed.</p>
+<p>21 operations: 6 yes, 12 planned, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -7984,8 +8009,8 @@ Variable Names</td>
 <tr>
 <td>Delete an environment</td>
 <td><code>DELETE /repos/{owner}/{repo}/environments/{environment_name}</code></td>
-<td>Planned</td>
-<td>Environment sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get an environment</td>
@@ -10666,7 +10691,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="pull-requests">Pull requests</h4>
-<p>39 operations: 12 yes, 24 planned, 3 not needed.</p>
+<p>39 operations: 15 yes, 21 planned, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -10747,8 +10772,8 @@ reads the list.</td>
 <tr>
 <td>List review comments on a pull request</td>
 <td><code>GET /repos/{owner}/{repo}/pulls/{pull_number}/comments</code></td>
-<td>Planned</td>
-<td>Review thread sheet; PR review.</td>
+<td>Yes</td>
+<td>context menu &gt; Review…</td>
 </tr>
 <tr>
 <td>Create a review comment for a pull request</td>
@@ -10759,8 +10784,8 @@ reads the list.</td>
 <tr>
 <td>Create a reply for a review comment</td>
 <td><code>POST /repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies</code></td>
-<td>Planned</td>
-<td>Review thread sheet; PR review.</td>
+<td>Yes</td>
+<td>context menu &gt; Review…</td>
 </tr>
 <tr>
 <td>List commits on a pull request</td>
@@ -10880,8 +10905,8 @@ reads the list.</td>
 <tr>
 <td>Update a pull request branch</td>
 <td><code>PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Yes</td>
+<td>context menu &gt; Review…</td>
 </tr>
 <tr>
 <td>List pull request stacks</td>

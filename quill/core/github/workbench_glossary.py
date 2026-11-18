@@ -187,6 +187,7 @@ ROW_TYPE_WORDS: dict[str, str] = {
     "wiki": "Wiki",
     "resource": "Listed setting",
     "codespace": "Codespace",
+    "environment": "Environment",
     "sponsor_tier": "Sponsorship",
     "deploy_key": "Deploy key",
     "autolink": "Autolink",

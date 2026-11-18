@@ -620,6 +620,25 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Environments, their secrets and variables, and some routes counted (2026-11-18)
+
+- **Settings > Environments** in each repository lists where its workflows
+  deploy, each with its protection rules ("production: needs a reviewer,
+  waits 5 minutes."). On each one, **Secrets...** and **Variables...** list
+  that environment's own, with "Add a secret..." first; choosing one offers
+  Change (for a variable) or Delete. A secret is typed into a password box
+  and sealed with the environment's own key. **Delete...** asks first, and
+  says that its secrets, variables and rules go with it. Properties opens the
+  Environment sheet.
+- **Settings > Organization Secrets Here** and **Organization Variables
+  Here** list what the organization shares with this repository.
+- Several routes QUILL already used were never counted, and now are: your
+  starred repositories, your activity feed, a repository's stargazers, and,
+  in the review window, the review comments, replying to one, and updating a
+  pull request's branch.
+
+Planned GitHub endpoints fall from 456 to 441.
+
 ### More on a workflow run (2026-11-18)
 
 A workflow run's row in the GitHub Workbench has six more commands:

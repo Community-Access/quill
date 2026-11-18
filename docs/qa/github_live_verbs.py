@@ -969,6 +969,9 @@ VERBS: dict[str, Scenario | str] = {
             "pull_codespace",
         )
     },
+    "environment_secrets": "needs Jeff: an environment on the test repository (admin)",
+    "environment_variables": "needs Jeff: an environment on the test repository (admin)",
+    "environment_delete": "needs Jeff: a throwaway environment on the test repository",
     "rerun_job": "needs Jeff: a finished run on the test repository (it starts Actions minutes)",
     "force_cancel_run": "needs Jeff: a run stuck cancelling, which cannot be made on purpose",
     "delete_run_logs": "needs Jeff: a run whose logs may be lost",
