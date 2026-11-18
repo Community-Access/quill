@@ -251,6 +251,18 @@ QUILL’s own podcasts) seemed to pause until the “downloaded” sound,
 because every 64 KB read was a progress report the window had to handle.
 Progress now reaches the window at most twice a second, and always at
 the last byte.</p>
+<h3
+id="forms-quill-lite-follows-the-form-payments-switch-2026-11-18">Forms:
+QUILL Lite follows the Form Payments switch (2026-11-18)</h3>
+<p>QUILL keeps Form Payments off until it is turned on in Features, but
+QUILL Lite had no such switch, so its payment commands always ran: QUILL
+Lite ahead of QUILL, which the family rules forbid (WordPress review
+item 35). QUILL Lite now has a <strong>Form Payments</strong> area, off
+on a new install and on every profile but Everything, and needing Forms
+on too. Insert Payment Field, Form Payments Setup and Verify Payment
+Setup are in Tools &gt; Forms only while it is on, and the shared
+command refuses in either editor when the switch is off, rather than
+running when it cannot tell.</p>
 <h3 id="wordpress">WordPress</h3>
 <h3
 id="wordpress-properties-keeps-your-edits-when-a-save-fails-2026-11-18">WordPress:
@@ -261,6 +273,45 @@ the Site”, lost every edit on it (review item 32). Now OK and Apply grey
 out while the save is on its way, and the sheet closes only once the
 site has taken it; a failure, or declining to replace someone else’s
 change, leaves the sheet open with your edits.</p>
+<h3
+id="forms-square-and-more-than-one-account-per-provider-2026-11-18">Forms:
+Square, and more than one account per provider (2026-11-18)</h3>
+<ul>
+<li>Square is a third payment provider beside Stripe and PayPal. Check
+This Form knows Square’s six currencies and its 20-character statement
+descriptor, Test on Site gives Square’s sandbox card, and payments say
+“Square”.</li>
+<li>A form can name the site’s payment <strong>connections</strong>,
+such as <code>stripe:events</code> or <code>square:downtown</code>, so
+different forms (or different answers) pay into different accounts. In
+Form Payments Setup, <strong>Pay with</strong> lists them for the person
+paying to choose from, and <strong>Choose by rule</strong> picks one
+from the answers: by amount, by a choice, by currency or by a date
+window, with an <code>otherwise</code> that is always required.</li>
+<li>Check This Form finds rules that can never take a payment and says
+why, and finds rules with no otherwise. Verify Payment Setup lists each
+connection, says whether it works, and says where this form sends the
+money. The WordPress Workbench’s site Properties have a new Payments
+page.</li>
+<li>Publishing refuses a form whose connection is missing on the site,
+not finished, or in the other of test and live mode.</li>
+<li>A response’s payment says which connection took it, and CSV exports
+gain two columns when any response has one.</li>
+<li>The plugin contract is now version 2
+(<code>docs/design/forms-payments-plugin-contract.md</code>). The QAF
+plugin’s side is in QAF itself.</li>
+</ul>
+<h3
+id="wordpress-it-asks-before-anything-leaves-for-an-ai-or-the-media-library-2026-11-18">WordPress:
+it asks before anything leaves for an AI or the Media Library
+(2026-11-18)</h3>
+<p>In Short now asks before it sends the page’s text to your AI, naming
+the AI and the number of words, as Visual Review always did. Ask the
+Site says, before an ability runs, that what it returns goes to your AI
+too. Make a Listening Version asks before it records and uploads the
+first time, and Publish a Document as a Page asks before it uploads the
+original: an uploaded file can be reached on the site before the page is
+published (review item 33).</p>
 <h3
 id="wordpress-keys-escape-and-words-that-were-no-longer-true-2026-11-18">WordPress:
 keys, Escape, and words that were no longer true (2026-11-18)</h3>
