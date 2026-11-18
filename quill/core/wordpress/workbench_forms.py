@@ -470,7 +470,12 @@ def set_entry_spam(ctx: SiteContext, rows: Sequence[WbRow], spam: bool) -> list[
     for row in rows:
         try:
             if row.subkind == "gravity":
-                body = {**row.raw, "status": "spam" if spam else "active"}
+                # Gravity Forms' PUT takes the whole entry, so it is read fresh
+                # here, not taken from when the list loaded: sending the old
+                # copy overwrote answers changed since (how.md review, safety 9).
+                fresh = ctx.api.get(row.route)
+                current = fresh if isinstance(fresh, dict) and fresh else dict(row.raw)
+                body = {**current, "status": "spam" if spam else "active"}
                 ctx.api.request("PUT", row.route, json_body=body)
             else:
                 mark_entry(ctx.api, row, spam)

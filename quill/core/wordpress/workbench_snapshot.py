@@ -54,9 +54,11 @@ COMPARE_OMITS = (
 )
 RESTORE_TERMS = (
     "Posts, pages, patterns, categories and tags changed since the snapshot are set back to "
-    "it; WordPress keeps a revision of each post and page it changes, so this can be undone "
-    "from Revisions. Ones deleted since are made again as drafts, at new addresses. Menus, "
-    "settings, people, plugins and media files are not put back."
+    "it: their text, status, address, categories and tags, featured image, parent and order. "
+    "WordPress keeps a revision of each post and page it changes, so this can be undone "
+    "from Revisions. Ones deleted since are made again as drafts, with the rest as it was "
+    "(an address already taken gets a number added). Menus, settings, people, plugins and "
+    "media files are not put back."
 )
 _ROUTES = {
     "pattern": "wp/v2/blocks",
@@ -303,12 +305,40 @@ class RestoreLine:
         return f"Put back the {self.kind} {self.title}: it changed since the snapshot."
 
 
+#: What Put Back sets on a post or page besides its text, when the snapshot
+#: has it: before 2026-11-18 only title, content and excerpt came back, so a
+#: restored post kept the wrong address, categories, picture and parent
+#: (how.md review, safety 6).
+_ITEM_FIELDS = (
+    "status",
+    "slug",
+    "categories",
+    "tags",
+    "featured_media",
+    "parent",
+    "menu_order",
+    "comment_status",
+    "template",
+)
+
+
 def _body(kind: str, raw: Mapping[str, Any]) -> dict[str, Any]:
     if kind in ("category", "tag"):
-        return {"name": str(raw.get("name", "")), "description": str(raw.get("description", ""))}
+        body: dict[str, Any] = {
+            "name": str(raw.get("name", "")),
+            "description": str(raw.get("description", "")),
+        }
+        if raw.get("slug"):
+            body["slug"] = str(raw["slug"])
+        if kind == "category" and "parent" in raw:
+            body["parent"] = raw.get("parent")
+        return body
     body = {"title": raw_text(raw.get("title")), "content": raw_text(raw.get("content"))}
     if kind != "pattern":
         body["excerpt"] = raw_text(raw.get("excerpt"))
+    for field_name in _ITEM_FIELDS:
+        if field_name in raw:
+            body[field_name] = raw[field_name]
     return body
 
 
@@ -333,6 +363,8 @@ def restore_plan(api: WordPressApi, snapshot: Path) -> list[RestoreLine]:
             body = _body(kind, raw)
             current = now.get(ident)
             if current is None:
+                # Made again as a draft whatever it was, so nothing deleted goes
+                # live unseen; everything else about it comes back.
                 lines.append(
                     RestoreLine("make again", kind, _title(raw), route, {**body, "status": "draft"})
                 )

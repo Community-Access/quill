@@ -370,9 +370,13 @@ every site. The Queue column says where each one stands, such as "2 of 5
 waiting". On a post:
 
 - **Item > Approve and Schedule...** (`Ctrl+Shift+D`) publishes it now, or at a
-  time you give, on the site's clock;
+  time you give, on the site's clock. If any of the posts is already
+  published, the preview warns that it will be off the site until the new
+  time;
 - **Item > Send Back with a Note...** (`Ctrl+Shift+B`) returns it to draft,
-  with a note for its writer;
+  with a note for its writer. A preview lists the posts first, and warns if
+  any is published, because sending it back takes it off the site. Ctrl+Z
+  puts each post back as it was; the note stays;
 - **Item > Assign a Reviewer...** (`Ctrl+Shift+J`) names one of the site's
   editors, with a note.
 
