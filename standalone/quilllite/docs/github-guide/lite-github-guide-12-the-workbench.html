@@ -486,6 +486,31 @@ contribution yet does not end the current streak.</li>
 <li>What they pinned: “Pinned: community-access/quill, An editor, 12
 stars.” These are repository rows, so Enter opens the repository.</li>
 </ul>
+<h3 id="my-keys">My Keys</h3>
+<p><strong>People &gt; My Keys</strong> lists the keys GitHub keeps for
+you, all three kinds together, one sentence each:</p>
+<ul>
+<li>“SSH key Laptop, ED25519, SHA256:ZkAs…, added 2025-01-02, last used
+2026-11-17.” An SSH key lets git push and pull without a password.</li>
+<li>“GPG key 3AA5C34371567BD2, for <a
+href="mailto:jeff@example.org">jeff@example.org</a>, signs commits,
+expires 2027-01-01.” A GPG key marks your commits Verified.</li>
+<li>“SSH signing key Laptop, ED25519, SHA256:ZkAs…, added 2025-01-02.”
+So does an SSH signing key.</li>
+</ul>
+<p>The SHA256 fingerprint is the same one <code>ssh-keygen -lf</code>
+prints for the key on your computer, so you can tell which key is which
+without reading the key itself.</p>
+<p><code>Ctrl+N</code> there adds a key. QUILL Lite asks which kind,
+then whether to read it from a file, starting in your <code>.ssh</code>
+folder, or paste it, then a name, suggesting the name written at the end
+of the key. It checks the key before sending: an SSH key where a GPG key
+belongs, or anything that is a private key, is refused with a sentence
+saying so, and nothing is sent. You hear “Added SSH key Laptop” and its
+fingerprint.</p>
+<p><strong>Delete Key…</strong> on a key’s row, or the Delete key, asks
+first and says what stops working without it: pushing over SSH, or
+commits showing as Verified.</p>
 <h3 id="my-billing-and-usage">My Billing and Usage</h3>
 <p><strong>People &gt; My Billing and Usage</strong> reads this month’s
 metered use of your account from GitHub’s billing report: one row per
@@ -713,6 +738,8 @@ settings page) and Copy Link.</li>
 Package Version and Delete Package.</li>
 <li><strong>A security advisory:</strong> Show Details, Publish or Close
 Advisory, Request CVE, Open on GitHub and Copy Link.</li>
+<li><strong>A key:</strong> Show Details, Delete Key and Open on
+GitHub.</li>
 <li><strong>A notification:</strong> Open, Mark Read, Mark Done,
 Unsubscribe from Thread, and Snooze for One Day. Snoozing hides it in
 the Workbench on this computer until tomorrow and changes nothing on

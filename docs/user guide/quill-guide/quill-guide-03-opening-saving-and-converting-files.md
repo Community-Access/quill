@@ -1613,6 +1613,12 @@ a repository's security advisories; **Search > Security Advisories** searches
 GitHub's Advisory Database. See
 [Security advisories](../github-guide/github-guide-08-discussions-and-security.html#security-advisories).
 
+#### Your keys
+
+**People > My Keys** in the GitHub Workbench lists, adds and deletes your SSH,
+GPG and signing keys, each with its fingerprint. See
+[My Keys](../github-guide/github-guide-12-the-workbench.html#my-keys).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

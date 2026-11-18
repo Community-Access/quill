@@ -2514,6 +2514,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **My Profile.** My Profile: your profile as GitHub shows it, your year of contributions as numbers, and what you pinned.
 
+**My Keys.** My Keys: your SSH keys, GPG keys and SSH signing keys, each with its fingerprint. Ctrl+N adds one.
+
 **People I Follow.** People I Follow: accounts you follow. Enter opens a person's node.
 
 **My Followers.** My Followers: accounts that follow you.
@@ -3157,6 +3159,8 @@ Control coverage: 365 audited sites (365 helped).
 **Delete Gist.** Delete the gist.
 
 **Open Discussion Thread.** Read the whole thread.
+
+**Delete Key.** Remove it; asks first.
 
 **Publish or Close Advisory.** Change its state.
 

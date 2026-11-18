@@ -2781,4 +2781,4 @@ timeline's Hide or Show Comment... are the Workbench's too, as are the
 Runners node, Export Software Bill of Materials..., annotated tags, Read
 Tag Message, Transfer Repository..., Commit Activity, My Packages, Star Lists, profiles, Unlink Branch..., Not a
 Duplicate..., and the security policy, advisories and Advisory Database
-search
+search, and My Keys

@@ -192,6 +192,9 @@ Advisories, New Here to report or draft, Publish or Close Advisory..., Request
 CVE..., and Search > Security Advisories (`security_advisories.py`,
 `github_workbench_advisories.py`).
 
+**2026-11-18, keys.** People > My Keys: SSH, GPG and signing keys, add and
+delete (`account_keys.py`, `github_workbench_account_keys.py`).
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

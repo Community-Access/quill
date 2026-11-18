@@ -2192,6 +2192,11 @@ out, with the GHSA id typed first because publishing cannot be taken back.
 And **Search > Security Advisories** answers "is this package I depend on
 known to be vulnerable?" from GitHub's Advisory Database.
 
+Setting up a new computer means giving GitHub its SSH key. **People > My
+Keys** reads the key straight from your `.ssh` folder, says its fingerprint so
+you know it is the right one, and refuses a private key before it can leave
+the machine. Your GPG and signing keys are listed with it.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

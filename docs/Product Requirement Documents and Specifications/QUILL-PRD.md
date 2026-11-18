@@ -17555,6 +17555,8 @@ as sentences. Unlink Branch... and Not a Duplicate... on an issue
 (`quill/core/github/issue_links.py`) undo a linked branch and a duplicate mark.
 Security > Policy and Advisories, private reports and drafts, and Search >
 Security Advisories (`quill/core/github/security_advisories.py`) cover GX11.
+People > My Keys (`quill/core/github/account_keys.py`) lists, adds and
+deletes your SSH, GPG and signing keys.
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

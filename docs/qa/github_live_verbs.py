@@ -857,6 +857,8 @@ VERBS: dict[str, Scenario | str] = {
     "close_reopen": close_reopen,
     "create_branch": create_branch,
     "unlink_branch": "with create_branch: linked, unlinked, then deleted",
+    "new_key": "needs Jeff: adds a key to your own GitHub account",
+    "delete_key": "needs Jeff: deletes a key from your own GitHub account",
     "new_advisory": "needs Jeff: a report or a draft advisory can be closed but never deleted",
     "advisory_state": "needs Jeff: needs a draft advisory to close; publishing is public for good",
     "request_cve": "needs Jeff: GitHub reviews every CVE request by hand",
@@ -1170,6 +1172,15 @@ def security_policy_and_database(run: Any) -> str:
     return f"{policy[0].label} {policy[-1].label} Database: {found[0].label}"
 
 
+def my_keys(run: Any) -> str:
+    from quill.core.github.account_keys import fetch_keys
+
+    warnings: list[str] = []
+    rows = fetch_keys(run.api, warnings)
+    said = f"{len(rows)} keys" + (f"; first: {rows[0].label}" if rows else "")
+    return said + (f" Refused, in words: {warnings[0]}" if warnings else "")
+
+
 def check_with_git(run: Any) -> str:
     done = subprocess.run(["git", "--version"], capture_output=True, text=True, check=False)
     _expect(done.returncode == 0, "git is not installed")
@@ -1188,6 +1199,7 @@ FEATURES: dict[str, Scenario | str] = {
     "Commit Activity as tables (PRD 14.2)": commit_activity,
     "My Packages, or the permission it needs said in words (PRD 14.2)": my_packages,
     "My Profile, with the contribution calendar as numbers (PRD 14.2)": my_profile,
+    "My Keys: SSH, GPG and signing keys with fingerprints (PRD 14.3)": my_keys,
     "Security policy, private reporting, and the Advisory Database (GX11)": (
         security_policy_and_database
     ),

@@ -15,6 +15,7 @@ deletes, because Enter must never destroy anything.
 from __future__ import annotations
 
 from quill.core.github.across_actions import ACROSS_ROWS
+from quill.core.github.item_shortcuts import DELETE_COMMANDS, NEW_HERE
 from quill.core.workbench.actions import ActionRow, ActionTable, Tier
 
 __all__ = [
@@ -413,6 +414,12 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _OPEN_WEB,
         _PROPERTIES,
     ),
+    "key": (
+        _default("show_details", "Show Details", "The key, its fingerprint, and when it was used."),
+        _a("delete_key", "Delete Key...", _D, "sign_in", "Remove it; asks first."),
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
     "advisory": (
         _default("show_details", "Show Details", "Its severity, state, packages and credits."),
         _a("advisory_state", "Publish or Close Advisory...", _D, "admin", "Change its state."),
@@ -556,42 +563,3 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
 
 GITHUB_ACTIONS = ActionTable(_ROWS, properties_command=PROPERTIES_COMMAND)
 """Every GitHub row type's menu, checked against the shared rules on import."""
-
-#: What Delete does on each row type (Part C, C3): always a safe removal, an
-#: undoable one or one that asks first, and never on a type that has none.
-DELETE_COMMANDS: dict[str, str] = {
-    "notification": "github.workbench.mark_done",
-    "saved_search": "github.workbench.remove_search",
-    "favorite": "github.workbench.favorite",
-    "issue": "github.workbench.close_reopen",
-    "pull_request": "github.workbench.close_reopen",
-    "branch": "github.workbench.delete_branch",
-    "label": "github.workbench.delete_label",
-    "release_asset": "github.workbench.delete_asset",
-    "gist": "github.workbench.delete_gist",
-    "cache": "github.workbench.delete_cache",
-    "run": "github.workbench.delete_run",
-    "watch": "github.workbench.remove_watch",
-    "repository_set": "github.workbench.across_delete_set",
-    "tag": "github.workbench.delete_tag",
-}
-
-#: What Ctrl+N makes on each node (C3, "New, here"), by the node's key.
-NEW_HERE: dict[str, str] = {
-    "issues": "github.workbench.new_issue",
-    "issues_and_pulls": "github.workbench.new_issue",
-    "pulls": "github.workbench.new_pull",
-    "saved_searches": "github.workbench.save_search",
-    "search_issues": "github.workbench.save_search",
-    "releases": "github.workbench.new_release",
-    "tags": "github.workbench.new_tag",
-    "star_lists": "github.workbench.new_star_list",
-    "advisories": "github.workbench.new_advisory",
-    "my_gists": "github.workbench.new_gist",
-    "across": "github.workbench.choose_repositories",
-    "across_sets": "github.workbench.across_new_set",
-    "pinned": "github.workbench.pin_repository",
-    "watches": "github.workbench.add_watch",
-    "templates": "github.workbench.new_template",
-    "discussions": "github.workbench.new_discussion",
-}

@@ -230,6 +230,10 @@ NODE_HELP: dict[str, str] = {
         "Profile: who this person is, their year of contributions as numbers, and what they pinned."
     ),
     "person:person_repositories": "Repositories: this person's public repositories.",
+    ":my_keys": (
+        "My Keys: your SSH keys, GPG keys and SSH signing keys, each with its fingerprint. "
+        "Ctrl+N adds one."
+    ),
     ":my_profile": (
         "My Profile: your profile as GitHub shows it, your year of contributions as numbers, "
         "and what you pinned."

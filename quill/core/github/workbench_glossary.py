@@ -66,6 +66,10 @@ GLOSSARY: dict[str, str] = {
         "A tag that carries a message, who made it and when. Releases usually use one. "
         "A lightweight tag is only a name for a commit."
     ),
+    "Key": (
+        "An SSH key lets git push and pull without a password; a GPG key or SSH signing "
+        "key marks your commits Verified. GitHub keeps only the public half."
+    ),
     "Security advisory": (
         "A notice that a package has a vulnerability: which versions, how serious, and "
         "where it is fixed. Each has a GHSA id, and often a CVE number too."
@@ -157,6 +161,7 @@ ROW_TYPE_WORDS: dict[str, str] = {
     "runner": "Runner",
     "package": "Package",
     "advisory": "Security advisory",
+    "key": "Key",
     "repository": "Repository",
     "person": "Mention",
     "label": "Label",

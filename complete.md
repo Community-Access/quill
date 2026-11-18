@@ -1192,7 +1192,7 @@ a home and a Properties sheet:
 - **Organization audit log:** Organizations > org > Audit Log, read-only and
   filterable by actor, action, repository and date (needs `read:audit_log`
   and an organization plan that offers the API).
-- **SSH and GPG keys, SSH signing keys:** Account > Keys. List, add, delete.
+- **SSH and GPG keys, SSH signing keys:** Account > Keys. List, add, delete. *(Built 2026-11-18 as People > My Keys, `account_keys.py`.)*
 - **Personal access tokens:** an organization owner can review, approve and
   deny fine-grained token requests, and revoke access, under Organizations >
   org > Token Requests. Creating a token has no API, so Account > Tokens

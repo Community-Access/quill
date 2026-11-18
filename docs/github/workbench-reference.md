@@ -970,7 +970,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 354 yes, 1109 planned, 15 not needed and 526 left to GitHub.
+In all: 363 yes, 1100 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2554,7 +2554,7 @@ In all: 354 yes, 1109 planned, 15 not needed and 526 left to GitHub.
 
 #### Users
 
-55 operations: 10 yes, 45 planned.
+55 operations: 19 yes, 36 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2573,9 +2573,9 @@ In all: 354 yes, 1109 planned, 15 not needed and 526 left to GitHub.
 | Unfollow a user | `DELETE /user/following/{username}` | Yes | context menu > Follow or Unfollow |
 | Check if a person is followed by the authenticated user | `GET /user/following/{username}` | Yes | context menu > Follow or Unfollow |
 | Follow a user | `PUT /user/following/{username}` | Yes | context menu > Follow or Unfollow |
-| List GPG keys for the authenticated user | `GET /user/gpg_keys` | Planned | Account > Keys. |
-| Create a GPG key for the authenticated user | `POST /user/gpg_keys` | Planned | Account > Keys. |
-| Delete a GPG key for the authenticated user | `DELETE /user/gpg_keys/{gpg_key_id}` | Planned | Account > Keys. |
+| List GPG keys for the authenticated user | `GET /user/gpg_keys` | Yes | Navigator: People > My Keys |
+| Create a GPG key for the authenticated user | `POST /user/gpg_keys` | Yes | Navigator: People > My Keys |
+| Delete a GPG key for the authenticated user | `DELETE /user/gpg_keys/{gpg_key_id}` | Yes | context menu > Delete Key... |
 | Get a GPG key for the authenticated user | `GET /user/gpg_keys/{gpg_key_id}` | Planned | Account > Keys. |
 | List issue fields | `GET /user/issue-fields` | Planned | Account > Issue Fields (fields for your own repositories) |
 | Create an issue field | `POST /user/issue-fields` | Planned | Account > Issue Fields (fields for your own repositories) |
@@ -2585,17 +2585,17 @@ In all: 354 yes, 1109 planned, 15 not needed and 526 left to GitHub.
 | Create an issue type | `POST /user/issue-types` | Planned | Account > Issue Types (types for your own repositories) |
 | Delete an issue type | `DELETE /user/issue-types/{issue_type_id}` | Planned | Account > Issue Types (types for your own repositories) |
 | Update an issue type | `PUT /user/issue-types/{issue_type_id}` | Planned | Account > Issue Types (types for your own repositories) |
-| List public SSH keys for the authenticated user | `GET /user/keys` | Planned | Account > Keys. |
-| Create a public SSH key for the authenticated user | `POST /user/keys` | Planned | Account > Keys. |
-| Delete a public SSH key for the authenticated user | `DELETE /user/keys/{key_id}` | Planned | Account > Keys. |
+| List public SSH keys for the authenticated user | `GET /user/keys` | Yes | Navigator: People > My Keys |
+| Create a public SSH key for the authenticated user | `POST /user/keys` | Yes | Navigator: People > My Keys |
+| Delete a public SSH key for the authenticated user | `DELETE /user/keys/{key_id}` | Yes | context menu > Delete Key... |
 | Get a public SSH key for the authenticated user | `GET /user/keys/{key_id}` | Planned | Account > Keys. |
 | List public email addresses for the authenticated user | `GET /user/public_emails` | Planned | Account > Profile and Status: Emails. |
 | Delete social accounts for the authenticated user | `DELETE /user/social_accounts` | Planned | Account > Profile and Status: Social accounts. |
 | List social accounts for the authenticated user | `GET /user/social_accounts` | Planned | Account > Profile and Status: Social accounts. |
 | Add social accounts for the authenticated user | `POST /user/social_accounts` | Planned | Account > Profile and Status: Social accounts. |
-| List SSH signing keys for the authenticated user | `GET /user/ssh_signing_keys` | Planned | Account > Keys. |
-| Create a SSH signing key for the authenticated user | `POST /user/ssh_signing_keys` | Planned | Account > Keys. |
-| Delete an SSH signing key for the authenticated user | `DELETE /user/ssh_signing_keys/{ssh_signing_key_id}` | Planned | Account > Keys. |
+| List SSH signing keys for the authenticated user | `GET /user/ssh_signing_keys` | Yes | Navigator: People > My Keys |
+| Create a SSH signing key for the authenticated user | `POST /user/ssh_signing_keys` | Yes | Navigator: People > My Keys |
+| Delete an SSH signing key for the authenticated user | `DELETE /user/ssh_signing_keys/{ssh_signing_key_id}` | Yes | context menu > Delete Key... |
 | Get an SSH signing key for the authenticated user | `GET /user/ssh_signing_keys/{ssh_signing_key_id}` | Planned | Account > Keys. |
 | Get a user using their ID | `GET /user/{account_id}` | Planned | Person sheet; Account > Profile and Status, Keys, Emails; People branch. |
 | List users | `GET /users` | Planned | Person sheet; Account > Profile and Status, Keys, Emails; People branch. |

@@ -36,6 +36,7 @@ _KINDS = {
     "runner": "runner",
     "package": "package",
     "advisory": "advisory",
+    "key": "key",
     "issue": "issue",
     "pr": "pull_request",
     "label": "label",

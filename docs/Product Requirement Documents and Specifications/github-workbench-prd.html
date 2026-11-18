@@ -1923,7 +1923,21 @@ Audit Log, read-only and filterable by actor, action, repository and
 date (needs <code>read:audit_log</code> and an organization plan that
 offers the API).</li>
 <li><strong>SSH and GPG keys, SSH signing keys:</strong> Account &gt;
-Keys. List, add, delete.</li>
+Keys. List, add, delete. <strong>Built 2026-11-18</strong> as People
+&gt; My Keys (explore view <code>my_keys</code>, row type
+<code>key</code>; <code>/user/keys</code>, <code>/user/gpg_keys</code>,
+<code>/user/ssh_signing_keys</code>): each key a sentence with its
+OpenSSH SHA256 fingerprint, New Here reading a <code>.pub</code> or
+<code>.asc</code> file or a paste and refusing a private key or the
+wrong kind before sending, Delete Key… saying what stops working. A kind
+GitHub refuses is a node note, not a failure of the list. Sign In with
+GitHub asks <code>admin:public_key</code>, <code>admin:gpg_key</code>
+and <code>admin:ssh_signing_key</code>
+(<code>quill/core/github/account_keys.py</code>,
+<code>quill/ui/github_workbench_account_keys.py</code>). Delete and
+Ctrl+N’s tables moved to
+<code>quill/core/github/item_shortcuts.py</code> to keep
+<code>item_actions.py</code> under its size budget.</li>
 <li><strong>Personal access tokens:</strong> an organization owner can
 review, approve and deny fine-grained token requests, and revoke access,
 under Organizations &gt; org &gt; Token Requests. Creating a token has

@@ -173,6 +173,8 @@ What QUILL asks GitHub to allow, and why:
 - `user`: **Set Your Status**, and following and unfollowing people.
 - `read:packages` and `delete:packages`: **My Packages**, and deleting a
   package or one of its versions, which asks first.
+- `admin:public_key`, `admin:gpg_key` and `admin:ssh_signing_key`: **My
+  Keys**, your SSH, GPG and signing keys.
 - `delete_repo`: **Delete Repository**. It still makes you type the
   repository's full name before it deletes anything.
 

@@ -1012,6 +1012,17 @@ a home and a Properties sheet:
   filterable by actor, action, repository and date (needs `read:audit_log`
   and an organization plan that offers the API).
 - **SSH and GPG keys, SSH signing keys:** Account > Keys. List, add, delete.
+  **Built 2026-11-18** as People > My Keys (explore view `my_keys`, row type
+  `key`; `/user/keys`, `/user/gpg_keys`, `/user/ssh_signing_keys`): each key a
+  sentence with its OpenSSH SHA256 fingerprint, New Here reading a `.pub` or
+  `.asc` file or a paste and refusing a private key or the wrong kind before
+  sending, Delete Key... saying what stops working. A kind GitHub refuses is a
+  node note, not a failure of the list. Sign In with GitHub asks
+  `admin:public_key`, `admin:gpg_key` and `admin:ssh_signing_key`
+  (`quill/core/github/account_keys.py`,
+  `quill/ui/github_workbench_account_keys.py`). Delete and Ctrl+N's tables
+  moved to `quill/core/github/item_shortcuts.py` to keep `item_actions.py`
+  under its size budget.
 - **Personal access tokens:** an organization owner can review, approve and
   deny fine-grained token requests, and revoke access, under Organizations >
   org > Token Requests. Creating a token has no API, so Account > Tokens

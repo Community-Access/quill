@@ -248,6 +248,32 @@ a calendar of green squares; here it is rows, each whole on its own:
 - What they pinned: "Pinned: community-access/quill, An editor, 12 stars."
   These are repository rows, so Enter opens the repository.
 
+### My Keys
+
+**People > My Keys** lists the keys GitHub keeps for you, all three kinds
+together, one sentence each:
+
+- "SSH key Laptop, ED25519, SHA256:ZkAs..., added 2025-01-02, last used
+  2026-11-17." An SSH key lets git push and pull without a password.
+- "GPG key 3AA5C34371567BD2, for jeff@example.org, signs commits, expires
+  2027-01-01." A GPG key marks your commits Verified.
+- "SSH signing key Laptop, ED25519, SHA256:ZkAs..., added 2025-01-02." So
+  does an SSH signing key.
+
+The SHA256 fingerprint is the same one `ssh-keygen -lf` prints for the key on
+your computer, so you can tell which key is which without reading the key
+itself.
+
+`Ctrl+N` there adds a key. QUILL asks which kind, then whether to read it from
+a file, starting in your `.ssh` folder, or paste it, then a name, suggesting
+the name written at the end of the key. It checks the key before sending: an
+SSH key where a GPG key belongs, or anything that is a private key, is refused
+with a sentence saying so, and nothing is sent. You hear "Added SSH key
+Laptop" and its fingerprint.
+
+**Delete Key...** on a key's row, or the Delete key, asks first and says what
+stops working without it: pushing over SSH, or commits showing as Verified.
+
 ### My Billing and Usage
 
 **People > My Billing and Usage** reads this month's metered use of your
@@ -427,6 +453,7 @@ own list, and `Shift+F1` reads it with the keys:
   Delete Package.
 - **A security advisory:** Show Details, Publish or Close Advisory, Request
   CVE, Open on GitHub and Copy Link.
+- **A key:** Show Details, Delete Key and Open on GitHub.
 - **A notification:** Open, Mark Read, Mark Done, Unsubscribe from Thread, and
   Snooze for One Day. Snoozing hides it in the Workbench on this computer
   until tomorrow and changes nothing on GitHub; Unsnooze Locally brings it

@@ -90,6 +90,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}new_advisory": ("sign_in", _V),
     f"{_P}advisory_state": ("repo:admin", _D),
     f"{_P}request_cve": ("repo:admin", _V),
+    f"{_P}new_key": ("sign_in", _V),
+    f"{_P}delete_key": ("sign_in", _D),
     f"{_P}delete_package_version": ("sign_in+scope:delete:packages", _D),
     f"{_P}delete_package": ("sign_in+scope:delete:packages", _D),
     f"{_P}new_star_list": ("sign_in+scope:user", _O),

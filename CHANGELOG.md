@@ -620,6 +620,15 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Your SSH, GPG and signing keys (2026-11-18)
+
+**People > My Keys** in the GitHub Workbench lists your SSH keys, GPG keys and
+SSH signing keys, each with the fingerprint `ssh-keygen -lf` prints, so you
+can tell which key is which. `Ctrl+N` adds one, read from a file or pasted,
+and refuses a private key before anything is sent; **Delete Key...** says what
+stops working first. Sign In with GitHub now asks for the three key
+permissions. Chapter 12 of the GitHub Guide has the details.
+
 ### Security policy, advisories, and reporting a vulnerability privately (2026-11-18)
 
 **Repository > Security > Policy** in the GitHub Workbench says where a

@@ -46,6 +46,7 @@ EXTRA_ACCOUNT_VIEWS = frozenset({
     "star_lists",
     "my_profile",
     "advisory_search",
+    "my_keys",
 })
 #: Views of one person, answered from the login in Explore's person box.
 EXTRA_PERSON_VIEWS = frozenset({"person_profile"})
@@ -77,6 +78,11 @@ def fetch_extra_view(
             return fetch_invitations(TokenApi(token), limit=limit)
         except GitHubRestError as exc:
             raise GitHubExploreError(f"Could not read your invitations: {exc}") from exc
+    if view == "my_keys":
+        from quill.core.github.account_keys import fetch_keys
+        from quill.core.github.workbench_api import TokenApi
+
+        return fetch_keys(TokenApi(token), warnings)
     if view == "advisory_search":
         from quill.core.github.security_advisories import AdvisoryError, search_advisories
         from quill.core.github.workbench_api import TokenApi

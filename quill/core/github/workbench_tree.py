@@ -198,6 +198,7 @@ _FIXED: tuple[NodeSpec, ...] = (
         loader="explore:my_profile",
         row_type="mixed",
     ),
+    _n("my_keys", "My Keys", "people", needs=_SIGN_IN, loader="explore:my_keys", row_type="key"),
     _n(
         "following",
         "People I Follow",
