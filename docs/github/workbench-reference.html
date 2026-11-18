@@ -3276,14 +3276,15 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 477 yes, 904 planned, 89 not needed and 534 left to
+<p>In all: 477 yes, 583 planned, 209 not needed and 735 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
 is planned under Repository &gt; Wiki.</p>
 <h3 id="rest-operations-by-category">REST operations, by category</h3>
 <h4 id="actions">Actions</h4>
-<p>208 operations: 68 yes, 133 planned, 7 left to github.</p>
+<p>208 operations: 68 yes, 83 planned, 13 not needed, 44 left to
+github.</p>
 <table>
 <thead>
 <tr>
@@ -3353,39 +3354,45 @@ org &gt; Enterprise (Open on GitHub).</td>
 <tr>
 <td>Get GitHub Actions cache retention limit for an organization</td>
 <td><code>GET /organizations/{org}/actions/cache/retention-limit</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Caches; Cache sheet.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide cache storage and retention limits are company
+administration; a repository’s caches are already in the Workbench.</td>
 </tr>
 <tr>
 <td>Set GitHub Actions cache retention limit for an organization</td>
 <td><code>PUT /organizations/{org}/actions/cache/retention-limit</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Caches; Cache sheet.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide cache storage and retention limits are company
+administration; a repository’s caches are already in the Workbench.</td>
 </tr>
 <tr>
 <td>Get GitHub Actions cache storage limit for an organization</td>
 <td><code>GET /organizations/{org}/actions/cache/storage-limit</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Caches; Cache sheet.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide cache storage and retention limits are company
+administration; a repository’s caches are already in the Workbench.</td>
 </tr>
 <tr>
 <td>Set GitHub Actions cache storage limit for an organization</td>
 <td><code>PUT /organizations/{org}/actions/cache/storage-limit</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Caches; Cache sheet.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide cache storage and retention limits are company
+administration; a repository’s caches are already in the Workbench.</td>
 </tr>
 <tr>
 <td>Get GitHub Actions cache usage for an organization</td>
 <td><code>GET /orgs/{org}/actions/cache/usage</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Caches; Cache sheet.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide cache storage and retention limits are company
+administration; a repository’s caches are already in the Workbench.</td>
 </tr>
 <tr>
 <td>List repositories with GitHub Actions cache usage for an
 organization</td>
 <td><code>GET /orgs/{org}/actions/cache/usage-by-repository</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Caches; Cache sheet.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide cache storage and retention limits are company
+administration; a repository’s caches are already in the Workbench.</td>
 </tr>
 <tr>
 <td>List GitHub-hosted runners for an organization</td>
@@ -3396,76 +3403,88 @@ organization</td>
 <tr>
 <td>Create a GitHub-hosted runner for an organization</td>
 <td><code>POST /orgs/{org}/actions/hosted-runners</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Left to GitHub</td>
+<td>Larger GitHub-hosted runners and their custom images are a paid
+company feature, set up once on GitHub’s site.</td>
 </tr>
 <tr>
 <td>List custom images for an organization</td>
 <td><code>GET /orgs/{org}/actions/hosted-runners/images/custom</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Left to GitHub</td>
+<td>Larger GitHub-hosted runners and their custom images are a paid
+company feature, set up once on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Delete a custom image from the organization</td>
 <td><code>DELETE /orgs/{org}/actions/hosted-runners/images/custom/{image_definition_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Left to GitHub</td>
+<td>Larger GitHub-hosted runners and their custom images are a paid
+company feature, set up once on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get a custom image definition for GitHub Actions Hosted Runners</td>
 <td><code>GET /orgs/{org}/actions/hosted-runners/images/custom/{image_definition_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List image versions of a custom image for an organization</td>
 <td><code>GET /orgs/{org}/actions/hosted-runners/images/custom/{image_definition_id}/versions</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Left to GitHub</td>
+<td>Larger GitHub-hosted runners and their custom images are a paid
+company feature, set up once on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Delete an image version of custom image from the organization</td>
 <td><code>DELETE /orgs/{org}/actions/hosted-runners/images/custom/{image_definition_id}/versions/{version}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Left to GitHub</td>
+<td>Larger GitHub-hosted runners and their custom images are a paid
+company feature, set up once on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get an image version of a custom image for GitHub Actions Hosted
 Runners</td>
 <td><code>GET /orgs/{org}/actions/hosted-runners/images/custom/{image_definition_id}/versions/{version}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Get GitHub-owned images for GitHub-hosted runners in an
 organization</td>
 <td><code>GET /orgs/{org}/actions/hosted-runners/images/github-owned</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Left to GitHub</td>
+<td>Larger GitHub-hosted runners and their custom images are a paid
+company feature, set up once on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get partner images for GitHub-hosted runners in an organization</td>
 <td><code>GET /orgs/{org}/actions/hosted-runners/images/partner</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Left to GitHub</td>
+<td>Larger GitHub-hosted runners and their custom images are a paid
+company feature, set up once on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get limits on GitHub-hosted runners for an organization</td>
 <td><code>GET /orgs/{org}/actions/hosted-runners/limits</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Left to GitHub</td>
+<td>Larger GitHub-hosted runners and their custom images are a paid
+company feature, set up once on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get GitHub-hosted runners machine specs for an organization</td>
 <td><code>GET /orgs/{org}/actions/hosted-runners/machine-sizes</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Left to GitHub</td>
+<td>Larger GitHub-hosted runners and their custom images are a paid
+company feature, set up once on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get platforms for GitHub-hosted runners in an organization</td>
 <td><code>GET /orgs/{org}/actions/hosted-runners/platforms</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Left to GitHub</td>
+<td>Larger GitHub-hosted runners and their custom images are a paid
+company feature, set up once on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Delete a GitHub-hosted runner for an organization</td>
@@ -3476,8 +3495,9 @@ organization</td>
 <tr>
 <td>Get a GitHub-hosted runner for an organization</td>
 <td><code>GET /orgs/{org}/actions/hosted-runners/{hosted_runner_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Actions &gt; Hosted runners.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a GitHub-hosted runner for an organization</td>
@@ -3488,39 +3508,39 @@ organization</td>
 <tr>
 <td>List OIDC custom property inclusions for an organization</td>
 <td><code>GET /orgs/{org}/actions/oidc/customization/properties/repo</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions &gt; OpenID
-Connect.</td>
+<td>Left to GitHub</td>
+<td>Cloud identity (OIDC) claim settings are one-off security plumbing
+for company deployments, set up on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Create an OIDC custom property inclusion for an organization</td>
 <td><code>POST /orgs/{org}/actions/oidc/customization/properties/repo</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions &gt; OpenID
-Connect.</td>
+<td>Left to GitHub</td>
+<td>Cloud identity (OIDC) claim settings are one-off security plumbing
+for company deployments, set up on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Delete an OIDC custom property inclusion for an organization</td>
 <td><code>DELETE /orgs/{org}/actions/oidc/customization/properties/repo/{custom_property_name}</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions &gt; OpenID
-Connect.</td>
+<td>Left to GitHub</td>
+<td>Cloud identity (OIDC) claim settings are one-off security plumbing
+for company deployments, set up on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get the customization template for an OIDC subject claim for an
 organization</td>
 <td><code>GET /orgs/{org}/actions/oidc/customization/sub</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions &gt; OpenID
-Connect.</td>
+<td>Left to GitHub</td>
+<td>Cloud identity (OIDC) claim settings are one-off security plumbing
+for company deployments, set up on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Set the customization template for an OIDC subject claim for an
 organization</td>
 <td><code>PUT /orgs/{org}/actions/oidc/customization/sub</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions &gt; OpenID
-Connect.</td>
+<td>Left to GitHub</td>
+<td>Cloud identity (OIDC) claim settings are one-off security plumbing
+for company deployments, set up on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get GitHub Actions permissions for an organization</td>
@@ -3668,37 +3688,37 @@ self-hosted runners in an organization</td>
 <tr>
 <td>List organization Actions policies</td>
 <td><code>GET /orgs/{org}/actions/policies</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions; Organization sheet &gt; Actions; Run, Job,
-Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
+<td>Left to GitHub</td>
+<td>Actions policy rules are company administration, set up on GitHub’s
+site.</td>
 </tr>
 <tr>
 <td>Create an organization Actions policy</td>
 <td><code>POST /orgs/{org}/actions/policies</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions; Organization sheet &gt; Actions; Run, Job,
-Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
+<td>Left to GitHub</td>
+<td>Actions policy rules are company administration, set up on GitHub’s
+site.</td>
 </tr>
 <tr>
 <td>Delete an organization Actions policy</td>
 <td><code>DELETE /orgs/{org}/actions/policies/{policy_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions; Organization sheet &gt; Actions; Run, Job,
-Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
+<td>Left to GitHub</td>
+<td>Actions policy rules are company administration, set up on GitHub’s
+site.</td>
 </tr>
 <tr>
 <td>Get an organization Actions policy</td>
 <td><code>GET /orgs/{org}/actions/policies/{policy_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions; Organization sheet &gt; Actions; Run, Job,
-Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update an organization Actions policy</td>
 <td><code>PUT /orgs/{org}/actions/policies/{policy_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions; Organization sheet &gt; Actions; Run, Job,
-Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
+<td>Left to GitHub</td>
+<td>Actions policy rules are company administration, set up on GitHub’s
+site.</td>
 </tr>
 <tr>
 <td>List self-hosted runner groups for an organization</td>
@@ -3721,8 +3741,9 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>Get a self-hosted runner group for an organization</td>
 <td><code>GET /orgs/{org}/actions/runner-groups/{runner_group_id}</code></td>
-<td>Planned</td>
-<td>Runner group sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a self-hosted runner group for an organization</td>
@@ -3834,8 +3855,9 @@ organization</td>
 <tr>
 <td>Get a self-hosted runner for an organization</td>
 <td><code>GET /orgs/{org}/actions/runners/{runner_id}</code></td>
-<td>Planned</td>
-<td>Runner sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Remove all custom labels from a self-hosted runner for an
@@ -3890,8 +3912,9 @@ organization</td>
 <tr>
 <td>Get an organization secret</td>
 <td><code>GET /orgs/{org}/actions/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Create or update an organization secret</td>
@@ -3945,8 +3968,9 @@ Variables</td>
 <tr>
 <td>Get an organization variable</td>
 <td><code>GET /orgs/{org}/actions/variables/{name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update an organization variable</td>
@@ -4000,45 +4024,52 @@ Artifacts</td>
 <tr>
 <td>Download an artifact</td>
 <td><code>GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}</code></td>
-<td>Planned</td>
-<td>Run &gt; Artifacts; Artifact sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Get GitHub Actions cache retention limit for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/cache/retention-limit</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Caches; Cache sheet.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide cache storage and retention limits are company
+administration; a repository’s caches are already in the Workbench.</td>
 </tr>
 <tr>
 <td>Set GitHub Actions cache retention limit for a repository</td>
 <td><code>PUT /repos/{owner}/{repo}/actions/cache/retention-limit</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Caches; Cache sheet.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide cache storage and retention limits are company
+administration; a repository’s caches are already in the Workbench.</td>
 </tr>
 <tr>
 <td>Get GitHub Actions cache storage limit for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/cache/storage-limit</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Caches; Cache sheet.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide cache storage and retention limits are company
+administration; a repository’s caches are already in the Workbench.</td>
 </tr>
 <tr>
 <td>Set GitHub Actions cache storage limit for a repository</td>
 <td><code>PUT /repos/{owner}/{repo}/actions/cache/storage-limit</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Caches; Cache sheet.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide cache storage and retention limits are company
+administration; a repository’s caches are already in the Workbench.</td>
 </tr>
 <tr>
 <td>Get GitHub Actions cache usage for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/cache/usage</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Caches; Cache sheet.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide cache storage and retention limits are company
+administration; a repository’s caches are already in the Workbench.</td>
 </tr>
 <tr>
 <td>Delete GitHub Actions caches for a repository (using a cache
 key)</td>
 <td><code>DELETE /repos/{owner}/{repo}/actions/caches</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions &gt; Caches; Cache sheet.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide cache storage and retention limits are company
+administration; a repository’s caches are already in the Workbench.</td>
 </tr>
 <tr>
 <td>List GitHub Actions caches for a repository</td>
@@ -4063,9 +4094,9 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <tr>
 <td>Get a concurrency group for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/concurrency_groups/{concurrency_group_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions; Organization sheet &gt; Actions; Run, Job,
-Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Get a job for a workflow run</td>
@@ -4095,17 +4126,17 @@ Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
 <td>Get the customization template for an OIDC subject claim for a
 repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/oidc/customization/sub</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions &gt; OpenID
-Connect.</td>
+<td>Left to GitHub</td>
+<td>Cloud identity (OIDC) claim settings are one-off security plumbing
+for company deployments, set up on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Set the customization template for an OIDC subject claim for a
 repository</td>
 <td><code>PUT /repos/{owner}/{repo}/actions/oidc/customization/sub</code></td>
-<td>Planned</td>
-<td>Repository and Organization sheets &gt; Actions &gt; OpenID
-Connect.</td>
+<td>Left to GitHub</td>
+<td>Cloud identity (OIDC) claim settings are one-off security plumbing
+for company deployments, set up on GitHub’s site.</td>
 </tr>
 <tr>
 <td>List repository organization secrets</td>
@@ -4207,37 +4238,37 @@ approve pull requests</td>
 <tr>
 <td>List repository Actions policies</td>
 <td><code>GET /repos/{owner}/{repo}/actions/policies</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions; Organization sheet &gt; Actions; Run, Job,
-Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
+<td>Left to GitHub</td>
+<td>Actions policy rules are company administration, set up on GitHub’s
+site.</td>
 </tr>
 <tr>
 <td>Create a repository Actions policy</td>
 <td><code>POST /repos/{owner}/{repo}/actions/policies</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions; Organization sheet &gt; Actions; Run, Job,
-Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
+<td>Left to GitHub</td>
+<td>Actions policy rules are company administration, set up on GitHub’s
+site.</td>
 </tr>
 <tr>
 <td>Delete a repository Actions policy</td>
 <td><code>DELETE /repos/{owner}/{repo}/actions/policies/{policy_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions; Organization sheet &gt; Actions; Run, Job,
-Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
+<td>Left to GitHub</td>
+<td>Actions policy rules are company administration, set up on GitHub’s
+site.</td>
 </tr>
 <tr>
 <td>Get a repository Actions policy</td>
 <td><code>GET /repos/{owner}/{repo}/actions/policies/{policy_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions; Organization sheet &gt; Actions; Run, Job,
-Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a repository Actions policy</td>
 <td><code>PUT /repos/{owner}/{repo}/actions/policies/{policy_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Actions; Organization sheet &gt; Actions; Run, Job,
-Workflow, Artifact, Cache, Runner, Secret and Variable sheets.</td>
+<td>Left to GitHub</td>
+<td>Actions policy rules are company administration, set up on GitHub’s
+site.</td>
 </tr>
 <tr>
 <td>List self-hosted runners for a repository</td>
@@ -4573,8 +4604,9 @@ Workflows</td>
 <tr>
 <td>Get an environment secret</td>
 <td><code>GET /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets (write-only values).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Create or update an environment secret</td>
@@ -4603,8 +4635,9 @@ Workflows</td>
 <tr>
 <td>Get an environment variable</td>
 <td><code>GET /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}</code></td>
-<td>Planned</td>
-<td>Secret and variable sheets.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update an environment variable</td>
@@ -4840,7 +4873,7 @@ Person &gt; Activity.</td>
 </tbody>
 </table>
 <h4 id="agent-automations">Agent automations</h4>
-<p>12 operations: 12 planned.</p>
+<p>12 operations: 10 planned, 2 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -4890,8 +4923,9 @@ Person &gt; Activity.</td>
 <tr>
 <td>Get an automation</td>
 <td><code>GET /agents/repos/{owner}/{repo}/automations/{automation_id}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot (section 22.1).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update an automation</td>
@@ -4908,8 +4942,9 @@ Person &gt; Activity.</td>
 <tr>
 <td>Get an automation revision</td>
 <td><code>GET /agents/repos/{owner}/{repo}/automations/{automation_id}/revisions/{revision_id}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot (section 22.1).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List tasks for an automation in a repository</td>
@@ -4926,7 +4961,7 @@ Person &gt; Activity.</td>
 </tbody>
 </table>
 <h4 id="agent-tasks">Agent tasks</h4>
-<p>5 operations: 5 planned.</p>
+<p>5 operations: 3 planned, 2 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -4952,8 +4987,9 @@ Person &gt; Activity.</td>
 <tr>
 <td>Get a task by repo</td>
 <td><code>GET /agents/repos/{owner}/{repo}/tasks/{task_id}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot &gt; Agent Sessions (section 22.1).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List tasks</td>
@@ -4964,13 +5000,14 @@ Person &gt; Activity.</td>
 <tr>
 <td>Get a task by ID</td>
 <td><code>GET /agents/tasks/{task_id}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot &gt; Agent Sessions (section 22.1).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="agents">Agents</h4>
-<p>30 operations: 16 yes, 14 planned.</p>
+<p>30 operations: 16 yes, 10 planned, 4 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -5004,9 +5041,9 @@ Secrets</td>
 <tr>
 <td>Get an organization secret</td>
 <td><code>GET /orgs/{org}/agents/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Create or update an organization secret</td>
@@ -5066,9 +5103,9 @@ Variables</td>
 <tr>
 <td>Get an organization variable</td>
 <td><code>GET /orgs/{org}/agents/variables/{name}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update an organization variable</td>
@@ -5141,9 +5178,9 @@ Agent Secrets</td>
 <tr>
 <td>Get a repository secret</td>
 <td><code>GET /repos/{owner}/{repo}/agents/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Create or update a repository secret</td>
@@ -5175,9 +5212,9 @@ Agent Variables</td>
 <tr>
 <td>Get a repository variable</td>
 <td><code>GET /repos/{owner}/{repo}/agents/variables/{name}</code></td>
-<td>Planned</td>
-<td>Item &gt; Copilot; Repository &gt; Copilot; Organization &gt;
-Copilot (section 22.1).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a repository variable</td>
@@ -5461,7 +5498,7 @@ on GitHub: Marketplace).</td>
 </tbody>
 </table>
 <h4 id="billing">Billing</h4>
-<p>13 operations: 1 yes, 12 planned.</p>
+<p>13 operations: 1 yes, 1 not needed, 11 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -5475,79 +5512,79 @@ on GitHub: Marketplace).</td>
 <tr>
 <td>Get billing AI credit usage report for an organization</td>
 <td><code>GET /organizations/{org}/settings/billing/ai_credit/usage</code></td>
-<td>Planned</td>
-<td>Account &gt; Billing and Usage; Organization sheet &gt; Billing
-(read-only).</td>
+<td>Left to GitHub</td>
+<td>Billing budgets and cost reports belong to GitHub’s billing pages;
+QUILL is a writing and coding tool, not an accounts console.</td>
 </tr>
 <tr>
 <td>Get all budgets for an organization</td>
 <td><code>GET /organizations/{org}/settings/billing/budgets</code></td>
-<td>Planned</td>
-<td>Account &gt; Billing and Usage; Organization sheet &gt; Billing
-(read-only).</td>
+<td>Left to GitHub</td>
+<td>Billing budgets and cost reports belong to GitHub’s billing pages;
+QUILL is a writing and coding tool, not an accounts console.</td>
 </tr>
 <tr>
 <td>Create a budget for an organization</td>
 <td><code>POST /organizations/{org}/settings/billing/budgets</code></td>
-<td>Planned</td>
-<td>Account &gt; Billing and Usage; Organization sheet &gt; Billing
-(read-only).</td>
+<td>Left to GitHub</td>
+<td>Billing budgets and cost reports belong to GitHub’s billing pages;
+QUILL is a writing and coding tool, not an accounts console.</td>
 </tr>
 <tr>
 <td>Delete a budget for an organization</td>
 <td><code>DELETE /organizations/{org}/settings/billing/budgets/{budget_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Billing and Usage; Organization sheet &gt; Billing
-(read-only).</td>
+<td>Left to GitHub</td>
+<td>Billing budgets and cost reports belong to GitHub’s billing pages;
+QUILL is a writing and coding tool, not an accounts console.</td>
 </tr>
 <tr>
 <td>Get a budget by ID for an organization</td>
 <td><code>GET /organizations/{org}/settings/billing/budgets/{budget_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Billing and Usage; Organization sheet &gt; Billing
-(read-only).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a budget for an organization</td>
 <td><code>PATCH /organizations/{org}/settings/billing/budgets/{budget_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Billing and Usage; Organization sheet &gt; Billing
-(read-only).</td>
+<td>Left to GitHub</td>
+<td>Billing budgets and cost reports belong to GitHub’s billing pages;
+QUILL is a writing and coding tool, not an accounts console.</td>
 </tr>
 <tr>
 <td>Get billing premium request usage report for an organization</td>
 <td><code>GET /organizations/{org}/settings/billing/premium_request/usage</code></td>
-<td>Planned</td>
-<td>Account &gt; Billing and Usage; Organization sheet &gt; Billing
-(read-only).</td>
+<td>Left to GitHub</td>
+<td>Billing budgets and cost reports belong to GitHub’s billing pages;
+QUILL is a writing and coding tool, not an accounts console.</td>
 </tr>
 <tr>
 <td>Get billing usage report for an organization</td>
 <td><code>GET /organizations/{org}/settings/billing/usage</code></td>
-<td>Planned</td>
-<td>Account &gt; Billing and Usage; Organization sheet &gt; Billing
-(read-only).</td>
+<td>Left to GitHub</td>
+<td>Billing budgets and cost reports belong to GitHub’s billing pages;
+QUILL is a writing and coding tool, not an accounts console.</td>
 </tr>
 <tr>
 <td>Get billing usage summary for an organization</td>
 <td><code>GET /organizations/{org}/settings/billing/usage/summary</code></td>
-<td>Planned</td>
-<td>Account &gt; Billing and Usage; Organization sheet &gt; Billing
-(read-only).</td>
+<td>Left to GitHub</td>
+<td>Billing budgets and cost reports belong to GitHub’s billing pages;
+QUILL is a writing and coding tool, not an accounts console.</td>
 </tr>
 <tr>
 <td>Get billing AI credit usage report for a user</td>
 <td><code>GET /users/{username}/settings/billing/ai_credit/usage</code></td>
-<td>Planned</td>
-<td>Account &gt; Billing and Usage; Organization sheet &gt; Billing
-(read-only).</td>
+<td>Left to GitHub</td>
+<td>Billing budgets and cost reports belong to GitHub’s billing pages;
+QUILL is a writing and coding tool, not an accounts console.</td>
 </tr>
 <tr>
 <td>Get billing premium request usage report for a user</td>
 <td><code>GET /users/{username}/settings/billing/premium_request/usage</code></td>
-<td>Planned</td>
-<td>Account &gt; Billing and Usage; Organization sheet &gt; Billing
-(read-only).</td>
+<td>Left to GitHub</td>
+<td>Billing budgets and cost reports belong to GitHub’s billing pages;
+QUILL is a writing and coding tool, not an accounts console.</td>
 </tr>
 <tr>
 <td>Get billing usage report for a user</td>
@@ -5558,14 +5595,14 @@ on GitHub: Marketplace).</td>
 <tr>
 <td>Get billing usage summary for a user</td>
 <td><code>GET /users/{username}/settings/billing/usage/summary</code></td>
-<td>Planned</td>
-<td>Account &gt; Billing and Usage; Organization sheet &gt; Billing
-(read-only).</td>
+<td>Left to GitHub</td>
+<td>Billing budgets and cost reports belong to GitHub’s billing pages;
+QUILL is a writing and coding tool, not an accounts console.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="branches">Branches</h4>
-<p>38 operations: 7 yes, 31 planned.</p>
+<p>38 operations: 7 yes, 1 planned, 30 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -5609,212 +5646,212 @@ on GitHub: Marketplace).</td>
 <tr>
 <td>Delete admin branch protection</td>
 <td><code>DELETE /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Get admin branch protection</td>
 <td><code>GET /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Set admin branch protection</td>
 <td><code>POST /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Delete pull request review protection</td>
 <td><code>DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Get pull request review protection</td>
 <td><code>GET /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Update pull request review protection</td>
 <td><code>PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Delete commit signature protection</td>
 <td><code>DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Get commit signature protection</td>
 <td><code>GET /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Create commit signature protection</td>
 <td><code>POST /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Remove status check protection</td>
 <td><code>DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Get status checks protection</td>
 <td><code>GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Update status check protection</td>
 <td><code>PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Remove status check contexts</td>
 <td><code>DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Get all status check contexts</td>
 <td><code>GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Add status check contexts</td>
 <td><code>POST /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Set status check contexts</td>
 <td><code>PUT /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Delete access restrictions</td>
 <td><code>DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Get access restrictions</td>
 <td><code>GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Remove app access restrictions</td>
 <td><code>DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Get apps with access to the protected branch</td>
 <td><code>GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Add app access restrictions</td>
 <td><code>POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Set app access restrictions</td>
 <td><code>PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Remove team access restrictions</td>
 <td><code>DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Get teams with access to the protected branch</td>
 <td><code>GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Add team access restrictions</td>
 <td><code>POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Set team access restrictions</td>
 <td><code>PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Remove user access restrictions</td>
 <td><code>DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Get users with access to the protected branch</td>
 <td><code>GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Add user access restrictions</td>
 <td><code>POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Set user access restrictions</td>
 <td><code>PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users</code></td>
-<td>Planned</td>
-<td>Branch sheet; Branch sheet &gt; Protection; Ruleset sheet (section
-18.3.1).</td>
+<td>Not needed</td>
+<td>Changes one part of branch protection; the Workbench reads and sets
+the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 </tr>
 <tr>
 <td>Rename a branch</td>
@@ -5838,7 +5875,7 @@ on GitHub: Marketplace).</td>
 </tbody>
 </table>
 <h4 id="campaigns">Campaigns</h4>
-<p>5 operations: 5 planned.</p>
+<p>5 operations: 1 not needed, 4 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -5852,32 +5889,33 @@ on GitHub: Marketplace).</td>
 <tr>
 <td>List campaigns for an organization</td>
 <td><code>GET /orgs/{org}/campaigns</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Campaigns (security campaigns).</td>
+<td>Left to GitHub</td>
+<td>Security campaigns need paid GitHub Advanced Security.</td>
 </tr>
 <tr>
 <td>Create a campaign for an organization</td>
 <td><code>POST /orgs/{org}/campaigns</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Campaigns (security campaigns).</td>
+<td>Left to GitHub</td>
+<td>Security campaigns need paid GitHub Advanced Security.</td>
 </tr>
 <tr>
 <td>Delete a campaign for an organization</td>
 <td><code>DELETE /orgs/{org}/campaigns/{campaign_number}</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Campaigns (security campaigns).</td>
+<td>Left to GitHub</td>
+<td>Security campaigns need paid GitHub Advanced Security.</td>
 </tr>
 <tr>
 <td>Get a campaign for an organization</td>
 <td><code>GET /orgs/{org}/campaigns/{campaign_number}</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Campaigns (security campaigns).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a campaign</td>
 <td><code>PATCH /orgs/{org}/campaigns/{campaign_number}</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Campaigns (security campaigns).</td>
+<td>Left to GitHub</td>
+<td>Security campaigns need paid GitHub Advanced Security.</td>
 </tr>
 </tbody>
 </table>
@@ -5972,7 +6010,7 @@ request &gt; Checks (read).</td>
 </tbody>
 </table>
 <h4 id="classroom">Classroom</h4>
-<p>6 operations: 6 planned.</p>
+<p>6 operations: 5 planned, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -6014,9 +6052,9 @@ grades, for teachers).</td>
 <tr>
 <td>Closed - Get a classroom</td>
 <td><code>GET /classrooms/{classroom_id}</code></td>
-<td>Planned</td>
-<td>Organizations &gt; org &gt; Classroom (read-only assignments and
-grades, for teachers).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Closed - List assignments for a classroom</td>
@@ -6028,7 +6066,7 @@ grades, for teachers).</td>
 </tbody>
 </table>
 <h4 id="code-quality">Code quality</h4>
-<p>4 operations: 4 planned.</p>
+<p>4 operations: 3 planned, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -6048,8 +6086,9 @@ grades, for teachers).</td>
 <tr>
 <td>Get a code quality finding</td>
 <td><code>GET /repos/{owner}/{repo}/code-quality/findings/{finding_number}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Code Quality.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Get a code quality setup configuration</td>
@@ -6066,7 +6105,7 @@ grades, for teachers).</td>
 </tbody>
 </table>
 <h4 id="code-scanning">Code scanning</h4>
-<p>25 operations: 2 yes, 23 planned.</p>
+<p>25 operations: 2 yes, 20 planned, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -6121,9 +6160,9 @@ sheet; Repository &gt; Security setup.</td>
 <tr>
 <td>Get a code scanning alert</td>
 <td><code>GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a code scanning alert</td>
@@ -6176,9 +6215,9 @@ sheet; Repository &gt; Security setup.</td>
 <tr>
 <td>Get a code scanning analysis for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List CodeQL databases for a repository</td>
@@ -6197,9 +6236,9 @@ sheet; Repository &gt; Security setup.</td>
 <tr>
 <td>Get a CodeQL database for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/code-scanning/codeql/databases/{language}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Create a CodeQL variant analysis</td>
@@ -6254,7 +6293,7 @@ sheet; Repository &gt; Security setup.</td>
 </tbody>
 </table>
 <h4 id="code-security">Code security</h4>
-<p>20 operations: 11 planned, 9 left to github.</p>
+<p>20 operations: 1 not needed, 19 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -6342,86 +6381,96 @@ org &gt; Enterprise (Open on GitHub).</td>
 <tr>
 <td>Get code security configurations for an organization</td>
 <td><code>GET /orgs/{org}/code-security/configurations</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Configurations; Repository &gt;
-Security.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide code-security configurations are company
+administration; a repository’s own security settings are in the
+Workbench.</td>
 </tr>
 <tr>
 <td>Create a code security configuration</td>
 <td><code>POST /orgs/{org}/code-security/configurations</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Configurations; Repository &gt;
-Security.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide code-security configurations are company
+administration; a repository’s own security settings are in the
+Workbench.</td>
 </tr>
 <tr>
 <td>Get default code security configurations</td>
 <td><code>GET /orgs/{org}/code-security/configurations/defaults</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Configurations; Repository &gt;
-Security.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide code-security configurations are company
+administration; a repository’s own security settings are in the
+Workbench.</td>
 </tr>
 <tr>
 <td>Detach configurations from repositories</td>
 <td><code>DELETE /orgs/{org}/code-security/configurations/detach</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Configurations; Repository &gt;
-Security.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide code-security configurations are company
+administration; a repository’s own security settings are in the
+Workbench.</td>
 </tr>
 <tr>
 <td>Delete a code security configuration</td>
 <td><code>DELETE /orgs/{org}/code-security/configurations/{configuration_id}</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Configurations; Repository &gt;
-Security.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide code-security configurations are company
+administration; a repository’s own security settings are in the
+Workbench.</td>
 </tr>
 <tr>
 <td>Get a code security configuration</td>
 <td><code>GET /orgs/{org}/code-security/configurations/{configuration_id}</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Configurations; Repository &gt;
-Security.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a code security configuration</td>
 <td><code>PATCH /orgs/{org}/code-security/configurations/{configuration_id}</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Configurations; Repository &gt;
-Security.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide code-security configurations are company
+administration; a repository’s own security settings are in the
+Workbench.</td>
 </tr>
 <tr>
 <td>Attach a configuration to repositories</td>
 <td><code>POST /orgs/{org}/code-security/configurations/{configuration_id}/attach</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Configurations; Repository &gt;
-Security.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide code-security configurations are company
+administration; a repository’s own security settings are in the
+Workbench.</td>
 </tr>
 <tr>
 <td>Set a code security configuration as a default for an
 organization</td>
 <td><code>PUT /orgs/{org}/code-security/configurations/{configuration_id}/defaults</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Configurations; Repository &gt;
-Security.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide code-security configurations are company
+administration; a repository’s own security settings are in the
+Workbench.</td>
 </tr>
 <tr>
 <td>Get repositories associated with a code security configuration</td>
 <td><code>GET /orgs/{org}/code-security/configurations/{configuration_id}/repositories</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Configurations; Repository &gt;
-Security.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide code-security configurations are company
+administration; a repository’s own security settings are in the
+Workbench.</td>
 </tr>
 <tr>
 <td>Get the code security configuration associated with a
 repository</td>
 <td><code>GET /repos/{owner}/{repo}/code-security-configuration</code></td>
-<td>Planned</td>
-<td>Organization &gt; Security &gt; Configurations; Repository &gt;
-Security.</td>
+<td>Left to GitHub</td>
+<td>Organization-wide code-security configurations are company
+administration; a repository’s own security settings are in the
+Workbench.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="codes-of-conduct">Codes of conduct</h4>
-<p>2 operations: 2 planned.</p>
+<p>2 operations: 1 planned, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -6441,13 +6490,15 @@ Security.</td>
 <tr>
 <td>Get a code of conduct</td>
 <td><code>GET /codes_of_conduct/{key}</code></td>
-<td>Planned</td>
-<td>Templates node; New Repository’s licence and .gitignore choices</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="codespaces">Codespaces</h4>
-<p>48 operations: 14 yes, 34 planned.</p>
+<p>48 operations: 14 yes, 24 planned, 3 not needed, 7 left to
+github.</p>
 <table>
 <thead>
 <tr>
@@ -6461,30 +6512,30 @@ Security.</td>
 <tr>
 <td>List codespaces for the organization</td>
 <td><code>GET /orgs/{org}/codespaces</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Left to GitHub</td>
+<td>Who in an organization may use Codespaces, and who pays, is billing
+administration on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Manage access control for organization codespaces</td>
 <td><code>PUT /orgs/{org}/codespaces/access</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Left to GitHub</td>
+<td>Who in an organization may use Codespaces, and who pays, is billing
+administration on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Remove users from Codespaces access for an organization</td>
 <td><code>DELETE /orgs/{org}/codespaces/access/selected_users</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Left to GitHub</td>
+<td>Who in an organization may use Codespaces, and who pays, is billing
+administration on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Add users to Codespaces access for an organization</td>
 <td><code>POST /orgs/{org}/codespaces/access/selected_users</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Left to GitHub</td>
+<td>Who in an organization may use Codespaces, and who pays, is billing
+administration on GitHub’s site.</td>
 </tr>
 <tr>
 <td>List organization secrets</td>
@@ -6509,9 +6560,9 @@ Secrets</td>
 <tr>
 <td>Get an organization secret</td>
 <td><code>GET /orgs/{org}/codespaces/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Create or update an organization secret</td>
@@ -6551,23 +6602,23 @@ Codespaces; Secrets.</td>
 <tr>
 <td>List codespaces for a user in organization</td>
 <td><code>GET /orgs/{org}/members/{username}/codespaces</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Left to GitHub</td>
+<td>Who in an organization may use Codespaces, and who pays, is billing
+administration on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Delete a codespace from the organization</td>
 <td><code>DELETE /orgs/{org}/members/{username}/codespaces/{codespace_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Left to GitHub</td>
+<td>Who in an organization may use Codespaces, and who pays, is billing
+administration on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Stop a codespace for an organization user</td>
 <td><code>POST /orgs/{org}/members/{username}/codespaces/{codespace_name}/stop</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Left to GitHub</td>
+<td>Who in an organization may use Codespaces, and who pays, is billing
+administration on GitHub’s site.</td>
 </tr>
 <tr>
 <td>List codespaces in a repository for the authenticated user</td>
@@ -6636,9 +6687,9 @@ Secrets</td>
 <tr>
 <td>Get a repository secret</td>
 <td><code>GET /repos/{owner}/{repo}/codespaces/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Create or update a repository secret</td>
@@ -6689,9 +6740,9 @@ Codespaces; Secrets.</td>
 <tr>
 <td>Get a secret for the authenticated user</td>
 <td><code>GET /user/codespaces/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Codespaces; Codespace sheet; Organization &gt;
-Codespaces; Secrets.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Create or update a secret for the authenticated user</td>
@@ -6872,7 +6923,7 @@ and Team Access</td>
 </tbody>
 </table>
 <h4 id="commits">Commits</h4>
-<p>14 operations: 7 yes, 7 planned.</p>
+<p>14 operations: 7 yes, 6 planned, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -6900,9 +6951,9 @@ comments.</td>
 <tr>
 <td>Get a commit comment</td>
 <td><code>GET /repos/{owner}/{repo}/comments/{comment_id}</code></td>
-<td>Planned</td>
-<td>Commit sheet; Repository &gt; Code &gt; Commits; Commit
-comments.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a commit comment</td>
@@ -6977,7 +7028,7 @@ comments.</td>
 </tbody>
 </table>
 <h4 id="copilot">Copilot</h4>
-<p>44 operations: 33 planned, 11 left to github.</p>
+<p>44 operations: 8 planned, 36 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -7079,44 +7130,44 @@ org &gt; Enterprise (Open on GitHub).</td>
 <tr>
 <td>Get Copilot seat information and settings for an organization</td>
 <td><code>GET /orgs/{org}/copilot/billing</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>List all Copilot seat assignments for an organization</td>
 <td><code>GET /orgs/{org}/copilot/billing/seats</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Remove teams from the Copilot subscription for an organization</td>
 <td><code>DELETE /orgs/{org}/copilot/billing/selected_teams</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Add teams to the Copilot subscription for an organization</td>
 <td><code>POST /orgs/{org}/copilot/billing/selected_teams</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Remove users from the Copilot subscription for an organization</td>
 <td><code>DELETE /orgs/{org}/copilot/billing/selected_users</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Add users to the Copilot subscription for an organization</td>
 <td><code>POST /orgs/{org}/copilot/billing/selected_users</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get the Copilot code review runner configuration for an
@@ -7151,102 +7202,102 @@ Copilot.</td>
 <tr>
 <td>Get Copilot cloud agent permissions for an organization</td>
 <td><code>GET /orgs/{org}/copilot/coding-agent/permissions</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Set Copilot cloud agent permissions for an organization</td>
 <td><code>PUT /orgs/{org}/copilot/coding-agent/permissions</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>List repositories enabled for Copilot cloud agent in an
 organization</td>
 <td><code>GET /orgs/{org}/copilot/coding-agent/permissions/repositories</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Set selected repositories for Copilot cloud agent in an
 organization</td>
 <td><code>PUT /orgs/{org}/copilot/coding-agent/permissions/repositories</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Disable a repository for Copilot cloud agent in an organization</td>
 <td><code>DELETE /orgs/{org}/copilot/coding-agent/permissions/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Enable a repository for Copilot cloud agent in an organization</td>
 <td><code>PUT /orgs/{org}/copilot/coding-agent/permissions/repositories/{repository_id}</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot content exclusion rules for an organization</td>
 <td><code>GET /orgs/{org}/copilot/content_exclusion</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Set Copilot content exclusion rules for an organization</td>
 <td><code>PUT /orgs/{org}/copilot/content_exclusion</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot organization usage metrics for a specific day</td>
 <td><code>GET /orgs/{org}/copilot/metrics/reports/organization-1-day</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot organization usage metrics</td>
 <td><code>GET /orgs/{org}/copilot/metrics/reports/organization-28-day/latest</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot organization repository report for a specific day</td>
 <td><code>GET /orgs/{org}/copilot/metrics/reports/repos-1-day</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot organization user-teams report for a specific day</td>
 <td><code>GET /orgs/{org}/copilot/metrics/reports/user-teams-1-day</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot organization users usage metrics for a specific day</td>
 <td><code>GET /orgs/{org}/copilot/metrics/reports/users-1-day</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot organization users usage metrics</td>
 <td><code>GET /orgs/{org}/copilot/metrics/reports/users-28-day/latest</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get the Copilot code review policy for an organization</td>
@@ -7265,37 +7316,37 @@ Copilot.</td>
 <tr>
 <td>Get Copilot seat assignment details for a user</td>
 <td><code>GET /orgs/{org}/members/{username}/copilot</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Delete Copilot customizations for a team</td>
 <td><code>DELETE /orgs/{org}/teams/{team_slug}/copilot/customizations</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot customizations for a team</td>
 <td><code>GET /orgs/{org}/teams/{team_slug}/copilot/customizations</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Set Copilot customizations for a team</td>
 <td><code>PUT /orgs/{org}/teams/{team_slug}/copilot/customizations</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot cloud agent configuration for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/copilot/cloud-agent/configuration</code></td>
-<td>Planned</td>
-<td>Organization &gt; Copilot (seats, policies, usage); Account &gt;
-Copilot.</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot code review settings for a repository</td>
@@ -7314,7 +7365,7 @@ Copilot.</td>
 </tbody>
 </table>
 <h4 id="copilot-spaces">Copilot Spaces</h4>
-<p>28 operations: 28 planned.</p>
+<p>28 operations: 24 planned, 4 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -7349,9 +7400,9 @@ Spaces.</td>
 <tr>
 <td>Get an organization Copilot Space</td>
 <td><code>GET /orgs/{org}/copilot-spaces/{space_number}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Set an organization Copilot Space</td>
@@ -7412,9 +7463,9 @@ Spaces.</td>
 <tr>
 <td>Get a resource for an organization Copilot Space</td>
 <td><code>GET /orgs/{org}/copilot-spaces/{space_number}/resources/{space_resource_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Set a resource for an organization Copilot Space</td>
@@ -7447,9 +7498,9 @@ Spaces.</td>
 <tr>
 <td>Get a Copilot Space for a user</td>
 <td><code>GET /users/{username}/copilot-spaces/{space_number}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Set a Copilot Space for a user</td>
@@ -7510,9 +7561,9 @@ Spaces.</td>
 <tr>
 <td>Get a resource for a Copilot Space for a user</td>
 <td><code>GET /users/{username}/copilot-spaces/{space_number}/resources/{space_resource_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Copilot &gt; Spaces; Organization &gt; Copilot &gt;
-Spaces.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Set a resource for a Copilot Space for a user</td>
@@ -7545,7 +7596,7 @@ people.</td>
 </tbody>
 </table>
 <h4 id="dependabot">Dependabot</h4>
-<p>27 operations: 10 yes, 13 planned, 4 left to github.</p>
+<p>27 operations: 10 yes, 8 planned, 3 not needed, 6 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -7640,9 +7691,9 @@ Secrets</td>
 <tr>
 <td>Get an organization secret</td>
 <td><code>GET /orgs/{org}/dependabot/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Create or update an organization secret</td>
@@ -7688,9 +7739,9 @@ sheet; Dependabot secrets; dependabot.yml sheet.</td>
 <tr>
 <td>Get a Dependabot alert</td>
 <td><code>GET /repos/{owner}/{repo}/dependabot/alerts/{alert_number}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a Dependabot alert</td>
@@ -7701,16 +7752,16 @@ sheet; Dependabot secrets; dependabot.yml sheet.</td>
 <tr>
 <td>Get repository Dependabot runner settings</td>
 <td><code>GET /repos/{owner}/{repo}/dependabot/runner-settings</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Left to GitHub</td>
+<td>Where Dependabot runs is company infrastructure, set up once on
+GitHub’s site.</td>
 </tr>
 <tr>
 <td>Set repository Dependabot runner settings</td>
 <td><code>PUT /repos/{owner}/{repo}/dependabot/runner-settings</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Left to GitHub</td>
+<td>Where Dependabot runs is company infrastructure, set up once on
+GitHub’s site.</td>
 </tr>
 <tr>
 <td>List repository secrets</td>
@@ -7735,9 +7786,9 @@ Secrets</td>
 <tr>
 <td>Get a repository secret</td>
 <td><code>GET /repos/{owner}/{repo}/dependabot/secrets/{secret_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: Dependabot); Alert
-sheet; Dependabot secrets; dependabot.yml sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Create or update a repository secret</td>
@@ -7833,7 +7884,7 @@ Keys</td>
 </tbody>
 </table>
 <h4 id="deployments">Deployments</h4>
-<p>21 operations: 5 yes, 16 planned.</p>
+<p>21 operations: 5 yes, 13 planned, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -7886,8 +7937,9 @@ Deployment sheets.</td>
 <tr>
 <td>Get a deployment status</td>
 <td><code>GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses/{status_id}</code></td>
-<td>Planned</td>
-<td>Deployment sheet &gt; Statuses.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List environments</td>
@@ -7936,8 +7988,9 @@ bypass</td>
 <tr>
 <td>Get a deployment branch policy</td>
 <td><code>GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}</code></td>
-<td>Planned</td>
-<td>Environment sheet &gt; Branches and Tags.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a deployment branch policy</td>
@@ -7973,8 +8026,9 @@ environment</td>
 <tr>
 <td>Get a custom deployment protection rule</td>
 <td><code>GET /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/{protection_rule_id}</code></td>
-<td>Planned</td>
-<td>Environment sheet &gt; Protection.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 </tbody>
 </table>
@@ -8000,7 +8054,7 @@ Plumbing.</td>
 </tbody>
 </table>
 <h4 id="gists">Gists</h4>
-<p>20 operations: 8 yes, 12 planned.</p>
+<p>20 operations: 8 yes, 10 planned, 2 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -8074,8 +8128,9 @@ Plumbing.</td>
 <tr>
 <td>Get a gist comment</td>
 <td><code>GET /gists/{gist_id}/comments/{comment_id}</code></td>
-<td>Planned</td>
-<td>Gists; Gist sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a gist comment</td>
@@ -8122,8 +8177,9 @@ Plumbing.</td>
 <tr>
 <td>Get a gist revision</td>
 <td><code>GET /gists/{gist_id}/{sha}</code></td>
-<td>Planned</td>
-<td>Gists; Gist sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List gists for a user</td>
@@ -8229,7 +8285,7 @@ that write files. Plumbing under Commit Multiple Files.</td>
 </tbody>
 </table>
 <h4 id="gitignore">Gitignore</h4>
-<p>2 operations: 2 planned.</p>
+<p>2 operations: 1 planned, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -8249,8 +8305,9 @@ that write files. Plumbing under Commit Multiple Files.</td>
 <tr>
 <td>Get a gitignore template</td>
 <td><code>GET /gitignore/templates/{name}</code></td>
-<td>Planned</td>
-<td>Templates node; New Repository’s licence and .gitignore choices</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 </tbody>
 </table>
@@ -8381,7 +8438,7 @@ Limits.</td>
 </tbody>
 </table>
 <h4 id="issues">Issues</h4>
-<p>66 operations: 29 yes, 37 planned.</p>
+<p>66 operations: 29 yes, 34 planned, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -8415,8 +8472,9 @@ sheets; comments; timeline.</td>
 <tr>
 <td>Check if a user can be assigned</td>
 <td><code>GET /repos/{owner}/{repo}/assignees/{assignee}</code></td>
-<td>Planned</td>
-<td>Issue &gt; Organize: Assignees.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List repository issues</td>
@@ -8475,8 +8533,9 @@ sheets; comments; timeline.</td>
 <tr>
 <td>Get an issue event</td>
 <td><code>GET /repos/{owner}/{repo}/issues/events/{event_id}</code></td>
-<td>Planned</td>
-<td>Issue &gt; Timeline.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Get an issue</td>
@@ -8514,9 +8573,9 @@ sheets; comments; timeline.</td>
 <tr>
 <td>Get an issue artifact</td>
 <td><code>GET /repos/{owner}/{repo}/issues/{issue_number}/artifacts/{artifact_number}</code></td>
-<td>Planned</td>
-<td>Issue and Pull request sheets; Label, Milestone and Issue type
-sheets; comments; timeline.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update an issue artifact</td>
@@ -8808,7 +8867,7 @@ sheets; comments; timeline.</td>
 </tbody>
 </table>
 <h4 id="licenses">Licenses</h4>
-<p>3 operations: 3 planned.</p>
+<p>3 operations: 2 planned, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -8828,8 +8887,9 @@ sheets; comments; timeline.</td>
 <tr>
 <td>Get a license</td>
 <td><code>GET /licenses/{license}</code></td>
-<td>Planned</td>
-<td>Templates node; New Repository’s licence and .gitignore choices</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Get the license for a repository</td>
@@ -9001,7 +9061,7 @@ Contributors</td>
 </tbody>
 </table>
 <h4 id="migrations">Migrations</h4>
-<p>22 operations: 14 planned, 8 left to github.</p>
+<p>22 operations: 2 not needed, 20 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -9015,51 +9075,51 @@ Contributors</td>
 <tr>
 <td>List organization migrations</td>
 <td><code>GET /orgs/{org}/migrations</code></td>
-<td>Planned</td>
-<td>Account &gt; Export My Data; Organization &gt; Migrations
-(archives).</td>
+<td>Left to GitHub</td>
+<td>Exporting or migrating a whole account or organization is a one-time
+job done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Start an organization migration</td>
 <td><code>POST /orgs/{org}/migrations</code></td>
-<td>Planned</td>
-<td>Account &gt; Export My Data; Organization &gt; Migrations
-(archives).</td>
+<td>Left to GitHub</td>
+<td>Exporting or migrating a whole account or organization is a one-time
+job done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get an organization migration status</td>
 <td><code>GET /orgs/{org}/migrations/{migration_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Export My Data; Organization &gt; Migrations
-(archives).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Delete an organization migration archive</td>
 <td><code>DELETE /orgs/{org}/migrations/{migration_id}/archive</code></td>
-<td>Planned</td>
-<td>Account &gt; Export My Data; Organization &gt; Migrations
-(archives).</td>
+<td>Left to GitHub</td>
+<td>Exporting or migrating a whole account or organization is a one-time
+job done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Download an organization migration archive</td>
 <td><code>GET /orgs/{org}/migrations/{migration_id}/archive</code></td>
-<td>Planned</td>
-<td>Account &gt; Export My Data; Organization &gt; Migrations
-(archives).</td>
+<td>Left to GitHub</td>
+<td>Exporting or migrating a whole account or organization is a one-time
+job done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Unlock an organization repository</td>
 <td><code>DELETE /orgs/{org}/migrations/{migration_id}/repos/{repo_name}/lock</code></td>
-<td>Planned</td>
-<td>Account &gt; Export My Data; Organization &gt; Migrations
-(archives).</td>
+<td>Left to GitHub</td>
+<td>Exporting or migrating a whole account or organization is a one-time
+job done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>List repositories in an organization migration</td>
 <td><code>GET /orgs/{org}/migrations/{migration_id}/repositories</code></td>
-<td>Planned</td>
-<td>Account &gt; Export My Data; Organization &gt; Migrations
-(archives).</td>
+<td>Left to GitHub</td>
+<td>Exporting or migrating a whole account or organization is a one-time
+job done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Cancel an import</td>
@@ -9120,56 +9180,57 @@ Importer replaces it.</td>
 <tr>
 <td>List user migrations</td>
 <td><code>GET /user/migrations</code></td>
-<td>Planned</td>
-<td>Account &gt; Export My Data; Organization &gt; Migrations
-(archives).</td>
+<td>Left to GitHub</td>
+<td>Exporting or migrating a whole account or organization is a one-time
+job done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Start a user migration</td>
 <td><code>POST /user/migrations</code></td>
-<td>Planned</td>
-<td>Account &gt; Export My Data; Organization &gt; Migrations
-(archives).</td>
+<td>Left to GitHub</td>
+<td>Exporting or migrating a whole account or organization is a one-time
+job done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get a user migration status</td>
 <td><code>GET /user/migrations/{migration_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Export My Data; Organization &gt; Migrations
-(archives).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Delete a user migration archive</td>
 <td><code>DELETE /user/migrations/{migration_id}/archive</code></td>
-<td>Planned</td>
-<td>Account &gt; Export My Data; Organization &gt; Migrations
-(archives).</td>
+<td>Left to GitHub</td>
+<td>Exporting or migrating a whole account or organization is a one-time
+job done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Download a user migration archive</td>
 <td><code>GET /user/migrations/{migration_id}/archive</code></td>
-<td>Planned</td>
-<td>Account &gt; Export My Data; Organization &gt; Migrations
-(archives).</td>
+<td>Left to GitHub</td>
+<td>Exporting or migrating a whole account or organization is a one-time
+job done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Unlock a user repository</td>
 <td><code>DELETE /user/migrations/{migration_id}/repos/{repo_name}/lock</code></td>
-<td>Planned</td>
-<td>Account &gt; Export My Data; Organization &gt; Migrations
-(archives).</td>
+<td>Left to GitHub</td>
+<td>Exporting or migrating a whole account or organization is a one-time
+job done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>List repositories for a user migration</td>
 <td><code>GET /user/migrations/{migration_id}/repositories</code></td>
-<td>Planned</td>
-<td>Account &gt; Export My Data; Organization &gt; Migrations
-(archives).</td>
+<td>Left to GitHub</td>
+<td>Exporting or migrating a whole account or organization is a one-time
+job done on GitHub’s site.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="organizations">Organizations</h4>
-<p>129 operations: 42 yes, 80 planned, 7 left to github.</p>
+<p>129 operations: 42 yes, 43 planned, 10 not needed, 34 left to
+github.</p>
 <table>
 <thead>
 <tr>
@@ -9210,93 +9271,93 @@ permission</td>
 <tr>
 <td>Create an artifact deployment record</td>
 <td><code>POST /orgs/{org}/artifacts/metadata/deployment-record</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Build provenance and deployment records are read by tools in a
+release pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>Set cluster deployment records</td>
 <td><code>POST /orgs/{org}/artifacts/metadata/deployment-record/cluster/{cluster}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Build provenance and deployment records are read by tools in a
+release pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>Create a cluster deployment records job</td>
 <td><code>POST /orgs/{org}/artifacts/metadata/deployment-record/cluster/{cluster}/jobs</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Build provenance and deployment records are read by tools in a
+release pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>Get cluster deployment records job status</td>
 <td><code>GET /orgs/{org}/artifacts/metadata/deployment-record/cluster/{cluster}/jobs/{job_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Build provenance and deployment records are read by tools in a
+release pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>Create artifact metadata storage record</td>
 <td><code>POST /orgs/{org}/artifacts/metadata/storage-record</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Build provenance and deployment records are read by tools in a
+release pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>List artifact deployment records</td>
 <td><code>GET /orgs/{org}/artifacts/{subject_digest}/metadata/deployment-records</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Build provenance and deployment records are read by tools in a
+release pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>List artifact storage records</td>
 <td><code>GET /orgs/{org}/artifacts/{subject_digest}/metadata/storage-records</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Build provenance and deployment records are read by tools in a
+release pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>List attestations by bulk subject digests</td>
 <td><code>POST /orgs/{org}/attestations/bulk-list</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Build provenance (attestations) is read by tools in a release
+pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>Delete attestations in bulk</td>
 <td><code>POST /orgs/{org}/attestations/delete-request</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Build provenance (attestations) is read by tools in a release
+pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>Delete attestations by subject digest</td>
 <td><code>DELETE /orgs/{org}/attestations/digest/{subject_digest}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Build provenance (attestations) is read by tools in a release
+pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>List attestation repositories</td>
 <td><code>GET /orgs/{org}/attestations/repositories</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Build provenance (attestations) is read by tools in a release
+pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>Delete attestations by ID</td>
 <td><code>DELETE /orgs/{org}/attestations/{attestation_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Build provenance (attestations) is read by tools in a release
+pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>List attestations</td>
 <td><code>GET /orgs/{org}/attestations/{subject_digest}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Build provenance (attestations) is read by tools in a release
+pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>List users blocked by an organization</td>
@@ -9313,8 +9374,9 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Check if a user is blocked by an organization</td>
 <td><code>GET /orgs/{org}/blocks/{username}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Blocked Users; Person &gt; You: Block.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Block a user from an organization</td>
@@ -9349,8 +9411,9 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Get an organization webhook</td>
 <td><code>GET /orgs/{org}/hooks/{hook_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update an organization webhook</td>
@@ -9379,8 +9442,9 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Get a webhook delivery for an organization webhook</td>
 <td><code>GET /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Webhooks.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Redeliver a delivery for an organization webhook</td>
@@ -9397,56 +9461,65 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Get route stats by actor</td>
 <td><code>GET /orgs/{org}/insights/api/route-stats/{actor_type}/{actor_id}</code></td>
-<td>Planned</td>
-<td>Organization &gt; Insights &gt; API usage (read).</td>
+<td>Left to GitHub</td>
+<td>API usage statistics are for organizations that run integrations at
+scale, not something a person edits.</td>
 </tr>
 <tr>
 <td>Get subject stats</td>
 <td><code>GET /orgs/{org}/insights/api/subject-stats</code></td>
-<td>Planned</td>
-<td>Organization &gt; Insights &gt; API usage (read).</td>
+<td>Left to GitHub</td>
+<td>API usage statistics are for organizations that run integrations at
+scale, not something a person edits.</td>
 </tr>
 <tr>
 <td>Get summary stats</td>
 <td><code>GET /orgs/{org}/insights/api/summary-stats</code></td>
-<td>Planned</td>
-<td>Organization &gt; Insights &gt; API usage (read).</td>
+<td>Left to GitHub</td>
+<td>API usage statistics are for organizations that run integrations at
+scale, not something a person edits.</td>
 </tr>
 <tr>
 <td>Get summary stats by user</td>
 <td><code>GET /orgs/{org}/insights/api/summary-stats/users/{user_id}</code></td>
-<td>Planned</td>
-<td>Organization &gt; Insights &gt; API usage (read).</td>
+<td>Left to GitHub</td>
+<td>API usage statistics are for organizations that run integrations at
+scale, not something a person edits.</td>
 </tr>
 <tr>
 <td>Get summary stats by actor</td>
 <td><code>GET /orgs/{org}/insights/api/summary-stats/{actor_type}/{actor_id}</code></td>
-<td>Planned</td>
-<td>Organization &gt; Insights &gt; API usage (read).</td>
+<td>Left to GitHub</td>
+<td>API usage statistics are for organizations that run integrations at
+scale, not something a person edits.</td>
 </tr>
 <tr>
 <td>Get time stats</td>
 <td><code>GET /orgs/{org}/insights/api/time-stats</code></td>
-<td>Planned</td>
-<td>Organization &gt; Insights &gt; API usage (read).</td>
+<td>Left to GitHub</td>
+<td>API usage statistics are for organizations that run integrations at
+scale, not something a person edits.</td>
 </tr>
 <tr>
 <td>Get time stats by user</td>
 <td><code>GET /orgs/{org}/insights/api/time-stats/users/{user_id}</code></td>
-<td>Planned</td>
-<td>Organization &gt; Insights &gt; API usage (read).</td>
+<td>Left to GitHub</td>
+<td>API usage statistics are for organizations that run integrations at
+scale, not something a person edits.</td>
 </tr>
 <tr>
 <td>Get time stats by actor</td>
 <td><code>GET /orgs/{org}/insights/api/time-stats/{actor_type}/{actor_id}</code></td>
-<td>Planned</td>
-<td>Organization &gt; Insights &gt; API usage (read).</td>
+<td>Left to GitHub</td>
+<td>API usage statistics are for organizations that run integrations at
+scale, not something a person edits.</td>
 </tr>
 <tr>
 <td>Get user stats</td>
 <td><code>GET /orgs/{org}/insights/api/user-stats/{user_id}</code></td>
-<td>Planned</td>
-<td>Organization &gt; Insights &gt; API usage (read).</td>
+<td>Left to GitHub</td>
+<td>API usage statistics are for organizations that run integrations at
+scale, not something a person edits.</td>
 </tr>
 <tr>
 <td>List app installations for an organization</td>
@@ -9545,8 +9618,9 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Check organization membership for a user</td>
 <td><code>GET /orgs/{org}/members/{username}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Members.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Remove organization membership for a user</td>
@@ -9611,8 +9685,9 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Get an organization role</td>
 <td><code>GET /orgs/{org}/organization-roles/{role_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List teams that are assigned to an organization role</td>
@@ -9775,8 +9850,9 @@ across organization repositories</td>
 <tr>
 <td>Get a custom property for an organization</td>
 <td><code>GET /orgs/{org}/properties/schema/{custom_property_name}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Custom Properties.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Create or update a custom property for an organization</td>
@@ -9847,9 +9923,9 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Get an organization rule suite</td>
 <td><code>GET /orgs/{org}/rulesets/rule-suites/{rule_suite_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Delete an organization repository ruleset</td>
@@ -9860,8 +9936,9 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Get an organization repository ruleset</td>
 <td><code>GET /orgs/{org}/rulesets/{ruleset_id}</code></td>
-<td>Planned</td>
-<td>Organization rulesets (section 18.3.1).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update an organization repository ruleset</td>
@@ -9878,8 +9955,9 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>Get organization ruleset version</td>
 <td><code>GET /orgs/{org}/rulesets/{ruleset_id}/history/{version_id}</code></td>
-<td>Planned</td>
-<td>Organization rulesets (section 18.3.1).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List security manager teams</td>
@@ -9948,48 +10026,48 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 <tr>
 <td>List hosted compute network configurations for an organization</td>
 <td><code>GET /orgs/{org}/settings/network-configurations</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Private networking for hosted runners needs a company Azure
+setup.</td>
 </tr>
 <tr>
 <td>Create a hosted compute network configuration for an
 organization</td>
 <td><code>POST /orgs/{org}/settings/network-configurations</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Private networking for hosted runners needs a company Azure
+setup.</td>
 </tr>
 <tr>
 <td>Delete a hosted compute network configuration from an
 organization</td>
 <td><code>DELETE /orgs/{org}/settings/network-configurations/{network_configuration_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Private networking for hosted runners needs a company Azure
+setup.</td>
 </tr>
 <tr>
 <td>Get a hosted compute network configuration for an organization</td>
 <td><code>GET /orgs/{org}/settings/network-configurations/{network_configuration_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a hosted compute network configuration for an
 organization</td>
 <td><code>PATCH /orgs/{org}/settings/network-configurations/{network_configuration_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Private networking for hosted runners needs a company Azure
+setup.</td>
 </tr>
 <tr>
 <td>Get a hosted compute network settings resource for an
 organization</td>
 <td><code>GET /orgs/{org}/settings/network-settings/{network_settings_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Left to GitHub</td>
+<td>Private networking for hosted runners needs a company Azure
+setup.</td>
 </tr>
 <tr>
 <td>Enable or disable a security feature for an organization</td>
@@ -10031,7 +10109,7 @@ Custom Properties, Token Requests, Security managers, Rulesets.</td>
 </tbody>
 </table>
 <h4 id="packages">Packages</h4>
-<p>27 operations: 10 yes, 17 planned.</p>
+<p>27 operations: 10 yes, 14 planned, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -10088,8 +10166,9 @@ organization</td>
 <tr>
 <td>Get a package version for an organization</td>
 <td><code>GET /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Restore package version for an organization</td>
@@ -10144,8 +10223,9 @@ user</td>
 <tr>
 <td>Get a package version for the authenticated user</td>
 <td><code>GET /user/packages/{package_type}/{package_name}/versions/{package_version_id}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Restore a package version for the authenticated user</td>
@@ -10199,8 +10279,9 @@ user</td>
 <tr>
 <td>Get a package version for a user</td>
 <td><code>GET /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}</code></td>
-<td>Planned</td>
-<td>Repositories &gt; My Packages; Package sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Restore package version for a user</td>
@@ -10211,7 +10292,7 @@ user</td>
 </tbody>
 </table>
 <h4 id="pages">Pages</h4>
-<p>12 operations: 3 yes, 9 planned.</p>
+<p>12 operations: 3 yes, 8 planned, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -10267,8 +10348,9 @@ user</td>
 <tr>
 <td>Get GitHub Pages build</td>
 <td><code>GET /repos/{owner}/{repo}/pages/builds/{build_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; GitHub Pages; Repository sheet &gt; Pages.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Create a GitHub Pages deployment</td>
@@ -10297,7 +10379,7 @@ user</td>
 </tbody>
 </table>
 <h4 id="private-registries">Private registries</h4>
-<p>6 operations: 6 planned.</p>
+<p>6 operations: 1 not needed, 5 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -10311,43 +10393,49 @@ user</td>
 <tr>
 <td>List private registries for an organization</td>
 <td><code>GET /orgs/{org}/private-registries</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Private Registries (for Dependabot).</td>
+<td>Left to GitHub</td>
+<td>Private package registries for Dependabot are company
+infrastructure, set up once on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Create a private registry for an organization</td>
 <td><code>POST /orgs/{org}/private-registries</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Private Registries (for Dependabot).</td>
+<td>Left to GitHub</td>
+<td>Private package registries for Dependabot are company
+infrastructure, set up once on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get private registries public key for an organization</td>
 <td><code>GET /orgs/{org}/private-registries/public-key</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Private Registries (for Dependabot).</td>
+<td>Left to GitHub</td>
+<td>Private package registries for Dependabot are company
+infrastructure, set up once on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Delete a private registry for an organization</td>
 <td><code>DELETE /orgs/{org}/private-registries/{secret_name}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Private Registries (for Dependabot).</td>
+<td>Left to GitHub</td>
+<td>Private package registries for Dependabot are company
+infrastructure, set up once on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get a private registry for an organization</td>
 <td><code>GET /orgs/{org}/private-registries/{secret_name}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Private Registries (for Dependabot).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a private registry for an organization</td>
 <td><code>PATCH /orgs/{org}/private-registries/{secret_name}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Private Registries (for Dependabot).</td>
+<td>Left to GitHub</td>
+<td>Private package registries for Dependabot are company
+infrastructure, set up once on GitHub’s site.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="projects">Projects</h4>
-<p>26 operations: 26 planned.</p>
+<p>26 operations: 20 planned, 6 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -10368,9 +10456,9 @@ user</td>
 <tr>
 <td>Get project for organization</td>
 <td><code>GET /orgs/{org}/projectsV2/{project_number}</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Create draft item for organization owned project</td>
@@ -10396,9 +10484,9 @@ user</td>
 <tr>
 <td>Get project field for organization</td>
 <td><code>GET /orgs/{org}/projectsV2/{project_number}/fields/{field_id}</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List items for an organization owned project</td>
@@ -10424,9 +10512,9 @@ user</td>
 <tr>
 <td>Get an item for an organization owned project</td>
 <td><code>GET /orgs/{org}/projectsV2/{project_number}/items/{item_id}</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update project item for organization</td>
@@ -10473,9 +10561,9 @@ user</td>
 <tr>
 <td>Get project for user</td>
 <td><code>GET /users/{username}/projectsV2/{project_number}</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List project fields for user</td>
@@ -10494,9 +10582,9 @@ user</td>
 <tr>
 <td>Get project field for user</td>
 <td><code>GET /users/{username}/projectsV2/{project_number}/fields/{field_id}</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List items for a user owned project</td>
@@ -10522,9 +10610,9 @@ user</td>
 <tr>
 <td>Get an item for a user owned project</td>
 <td><code>GET /users/{username}/projectsV2/{project_number}/items/{item_id}</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update project item for user</td>
@@ -10543,7 +10631,7 @@ user</td>
 </tbody>
 </table>
 <h4 id="pull-requests">Pull requests</h4>
-<p>39 operations: 12 yes, 27 planned.</p>
+<p>39 operations: 12 yes, 24 planned, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -10599,8 +10687,9 @@ user</td>
 <tr>
 <td>Get a review comment for a pull request</td>
 <td><code>GET /repos/{owner}/{repo}/pulls/comments/{comment_id}</code></td>
-<td>Planned</td>
-<td>Review thread sheet; PR review.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a review comment for a pull request</td>
@@ -10725,8 +10814,9 @@ user</td>
 <tr>
 <td>Get a review for a pull request</td>
 <td><code>GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Reviews; Review sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a review for a pull request</td>
@@ -10773,8 +10863,9 @@ user</td>
 <tr>
 <td>Get a pull request stack</td>
 <td><code>GET /repos/{owner}/{repo}/stacks/{stack_number}</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Add pull requests to a pull request stack</td>
@@ -11019,7 +11110,8 @@ user</td>
 </tbody>
 </table>
 <h4 id="repositories">Repositories</h4>
-<p>74 operations: 48 yes, 26 planned.</p>
+<p>74 operations: 48 yes, 19 planned, 5 not needed, 2 left to
+github.</p>
 <table>
 <thead>
 <tr>
@@ -11070,14 +11162,16 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 <tr>
 <td>Create an attestation</td>
 <td><code>POST /repos/{owner}/{repo}/attestations</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Attestations (read).</td>
+<td>Left to GitHub</td>
+<td>Build provenance (attestations) is read by tools in a release
+pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>List attestations</td>
 <td><code>GET /repos/{owner}/{repo}/attestations/{subject_digest}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Attestations (read).</td>
+<td>Left to GitHub</td>
+<td>Build provenance (attestations) is read by tools in a release
+pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>Get all autolinks of a repository</td>
@@ -11101,8 +11195,9 @@ Autolinks</td>
 <tr>
 <td>Get an autolink reference of a repository</td>
 <td><code>GET /repos/{owner}/{repo}/autolinks/{autolink_id}</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Autolinks.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Disable Dependabot security updates</td>
@@ -11235,8 +11330,9 @@ Webhooks</td>
 <tr>
 <td>Get a delivery for a repository webhook</td>
 <td><code>GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}</code></td>
-<td>Planned</td>
-<td>Repository sheet &gt; Webhooks.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Redeliver a delivery for a repository webhook</td>
@@ -11340,8 +11436,9 @@ reporting</td>
 <tr>
 <td>Get a repository README for a directory</td>
 <td><code>GET /repos/{owner}/{repo}/readme/{dir}</code></td>
-<td>Planned</td>
-<td>File and folder sheets; Commit to GitHub.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Get rules for a branch</td>
@@ -11371,8 +11468,9 @@ Protection</td>
 <tr>
 <td>Get a repository rule suite</td>
 <td><code>GET /repos/{owner}/{repo}/rulesets/rule-suites/{rule_suite_id}</code></td>
-<td>Planned</td>
-<td>Ruleset sheet &gt; History (rule insights).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Delete a repository ruleset</td>
@@ -11401,8 +11499,9 @@ Protection</td>
 <tr>
 <td>Get repository ruleset version</td>
 <td><code>GET /repos/{owner}/{repo}/rulesets/{ruleset_id}/history/{version_id}</code></td>
-<td>Planned</td>
-<td>Ruleset sheet (section 18.3.1).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List repository tags</td>
@@ -11556,7 +11655,7 @@ Rules, Pages, Security, Danger Zone); File and folder sheets.</td>
 </tbody>
 </table>
 <h4 id="secret-scanning">Secret scanning</h4>
-<p>17 operations: 2 yes, 15 planned.</p>
+<p>17 operations: 2 yes, 6 planned, 1 not needed, 8 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -11577,30 +11676,26 @@ requests (section 22.1).</td>
 <tr>
 <td>Bulk delete organization custom patterns</td>
 <td><code>DELETE /orgs/{org}/secret-scanning/custom-patterns</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: secret scanning); bypass
-requests (section 22.1).</td>
+<td>Left to GitHub</td>
+<td>Custom secret patterns need paid GitHub Advanced Security.</td>
 </tr>
 <tr>
 <td>List organization custom patterns</td>
 <td><code>GET /orgs/{org}/secret-scanning/custom-patterns</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: secret scanning); bypass
-requests (section 22.1).</td>
+<td>Left to GitHub</td>
+<td>Custom secret patterns need paid GitHub Advanced Security.</td>
 </tr>
 <tr>
 <td>Bulk create organization custom patterns</td>
 <td><code>POST /orgs/{org}/secret-scanning/custom-patterns</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: secret scanning); bypass
-requests (section 22.1).</td>
+<td>Left to GitHub</td>
+<td>Custom secret patterns need paid GitHub Advanced Security.</td>
 </tr>
 <tr>
 <td>Update an organization custom pattern</td>
 <td><code>PATCH /orgs/{org}/secret-scanning/custom-patterns/{pattern_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: secret scanning); bypass
-requests (section 22.1).</td>
+<td>Left to GitHub</td>
+<td>Custom secret patterns need paid GitHub Advanced Security.</td>
 </tr>
 <tr>
 <td>List organization pattern configurations</td>
@@ -11625,9 +11720,9 @@ requests (section 22.1).</td>
 <tr>
 <td>Get a secret scanning alert</td>
 <td><code>GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: secret scanning); bypass
-requests (section 22.1).</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a secret scanning alert</td>
@@ -11645,30 +11740,26 @@ requests (section 22.1).</td>
 <tr>
 <td>Bulk delete repository custom patterns</td>
 <td><code>DELETE /repos/{owner}/{repo}/secret-scanning/custom-patterns</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: secret scanning); bypass
-requests (section 22.1).</td>
+<td>Left to GitHub</td>
+<td>Custom secret patterns need paid GitHub Advanced Security.</td>
 </tr>
 <tr>
 <td>List repository custom patterns</td>
 <td><code>GET /repos/{owner}/{repo}/secret-scanning/custom-patterns</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: secret scanning); bypass
-requests (section 22.1).</td>
+<td>Left to GitHub</td>
+<td>Custom secret patterns need paid GitHub Advanced Security.</td>
 </tr>
 <tr>
 <td>Bulk create repository custom patterns</td>
 <td><code>POST /repos/{owner}/{repo}/secret-scanning/custom-patterns</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: secret scanning); bypass
-requests (section 22.1).</td>
+<td>Left to GitHub</td>
+<td>Custom secret patterns need paid GitHub Advanced Security.</td>
 </tr>
 <tr>
 <td>Update a repository custom pattern</td>
 <td><code>PATCH /repos/{owner}/{repo}/secret-scanning/custom-patterns/{pattern_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: secret scanning); bypass
-requests (section 22.1).</td>
+<td>Left to GitHub</td>
+<td>Custom secret patterns need paid GitHub Advanced Security.</td>
 </tr>
 <tr>
 <td>Create a push protection bypass</td>
@@ -11687,7 +11778,7 @@ requests (section 22.1).</td>
 </tbody>
 </table>
 <h4 id="security-advisories">Security advisories</h4>
-<p>14 operations: 6 yes, 8 planned.</p>
+<p>14 operations: 6 yes, 5 planned, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -11707,8 +11798,9 @@ requests (section 22.1).</td>
 <tr>
 <td>Get a global security advisory</td>
 <td><code>GET /advisories/{ghsa_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List repository security advisories for an organization</td>
@@ -11740,8 +11832,9 @@ Advisories</td>
 <tr>
 <td>Get a repository security advisory</td>
 <td><code>GET /repos/{owner}/{repo}/security-advisories/{ghsa_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a repository security advisory</td>
@@ -11764,8 +11857,9 @@ Advisories</td>
 <tr>
 <td>Get a repository advisory comment</td>
 <td><code>GET /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments/{comment_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Advisories; Advisory sheet.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Update a repository advisory comment</td>
@@ -12026,7 +12120,8 @@ slug).</td>
 </tbody>
 </table>
 <h4 id="users">Users</h4>
-<p>55 operations: 31 yes, 24 planned.</p>
+<p>55 operations: 31 yes, 15 planned, 4 not needed, 5 left to
+github.</p>
 <table>
 <thead>
 <tr>
@@ -12148,8 +12243,9 @@ slug).</td>
 <tr>
 <td>Get a GPG key for the authenticated user</td>
 <td><code>GET /user/gpg_keys/{gpg_key_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List issue fields</td>
@@ -12220,8 +12316,9 @@ slug).</td>
 <tr>
 <td>Get a public SSH key for the authenticated user</td>
 <td><code>GET /user/keys/{key_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List public email addresses for the authenticated user</td>
@@ -12268,15 +12365,16 @@ slug).</td>
 <tr>
 <td>Get an SSH signing key for the authenticated user</td>
 <td><code>GET /user/ssh_signing_keys/{ssh_signing_key_id}</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>Get a user using their ID</td>
 <td><code>GET /user/{account_id}</code></td>
-<td>Planned</td>
-<td>Person sheet; Account &gt; Profile and Status, Keys, Emails; People
-branch.</td>
+<td>Not needed</td>
+<td>Reads one item that its list already shows in full; the Workbench
+reads the list.</td>
 </tr>
 <tr>
 <td>List users</td>
@@ -12294,37 +12392,37 @@ branch.</td>
 <tr>
 <td>List attestations by bulk subject digests</td>
 <td><code>POST /users/{username}/attestations/bulk-list</code></td>
-<td>Planned</td>
-<td>Person sheet; Account &gt; Profile and Status, Keys, Emails; People
-branch.</td>
+<td>Left to GitHub</td>
+<td>Build provenance (attestations) is read by tools in a release
+pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>Delete attestations in bulk</td>
 <td><code>POST /users/{username}/attestations/delete-request</code></td>
-<td>Planned</td>
-<td>Person sheet; Account &gt; Profile and Status, Keys, Emails; People
-branch.</td>
+<td>Left to GitHub</td>
+<td>Build provenance (attestations) is read by tools in a release
+pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>Delete attestations by subject digest</td>
 <td><code>DELETE /users/{username}/attestations/digest/{subject_digest}</code></td>
-<td>Planned</td>
-<td>Person sheet; Account &gt; Profile and Status, Keys, Emails; People
-branch.</td>
+<td>Left to GitHub</td>
+<td>Build provenance (attestations) is read by tools in a release
+pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>Delete attestations by ID</td>
 <td><code>DELETE /users/{username}/attestations/{attestation_id}</code></td>
-<td>Planned</td>
-<td>Person sheet; Account &gt; Profile and Status, Keys, Emails; People
-branch.</td>
+<td>Left to GitHub</td>
+<td>Build provenance (attestations) is read by tools in a release
+pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>List attestations</td>
 <td><code>GET /users/{username}/attestations/{subject_digest}</code></td>
-<td>Planned</td>
-<td>Person sheet; Account &gt; Profile and Status, Keys, Emails; People
-branch.</td>
+<td>Left to GitHub</td>
+<td>Build provenance (attestations) is read by tools in a release
+pipeline, not by a person.</td>
 </tr>
 <tr>
 <td>List followers of a user</td>
@@ -14795,8 +14893,8 @@ org &gt; Enterprise (Open on GitHub).</td>
 <td>Remove announcement banner from organization</td>
 <td><code>DELETE /orgs/{org}/announcement</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Announcement banner</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Remove a SAML SSO authorization for an organization</td>
@@ -14809,8 +14907,8 @@ org &gt; Enterprise (Open on GitHub).</td>
 <td>Delete a custom repository role</td>
 <td><code>DELETE /orgs/{org}/custom-repository-roles/{role_id}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Closing down - Delete a custom role</td>
@@ -14824,8 +14922,8 @@ replaces it. Organization sheet &gt; Roles.</td>
 <td>Delete a custom organization role.</td>
 <td><code>DELETE /orgs/{org}/organization-roles/{role_id}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Remove the connection between an external group and a team</td>
@@ -14840,23 +14938,23 @@ GitHub: identity provider groups).</td>
 <td>Dismiss a response on a bypass request for secret scanning</td>
 <td><code>DELETE /repos/{owner}/{repo}/bypass-responses/secret-scanning/{bypass_response_id}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Bypass requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Cancel a dismissal request for a Dependabot alert for a
 repository</td>
 <td><code>DELETE /repos/{owner}/{repo}/dismissal-requests/dependabot/{alert_number}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts &gt; Dismissal requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Disable Git LFS for a repository</td>
 <td><code>DELETE /repos/{owner}/{repo}/lfs</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository sheet &gt; General (Git LFS)</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Delete a SCIM group from an enterprise</td>
@@ -15859,50 +15957,50 @@ replaces it. Organization sheet &gt; Roles.</td>
 <td>Get all custom property values for an organization</td>
 <td><code>GET /organizations/{org}/org-properties/values</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Custom properties</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Get announcement banner for organization</td>
 <td><code>GET /orgs/{org}/announcement</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Announcement banner</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Get the audit log for an organization</td>
 <td><code>GET /orgs/{org}/audit-log</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organizations &gt; org &gt; Audit Log</td>
+<td>Left to GitHub</td>
+<td>The organization audit log API needs GitHub Enterprise Cloud.</td>
 </tr>
 <tr>
 <td>List push rule bypass requests within an organization</td>
 <td><code>GET /orgs/{org}/bypass-requests/push-rules</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Bypass requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>List bypass requests for secret scanning for an org</td>
 <td><code>GET /orgs/{org}/bypass-requests/secret-scanning</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Bypass requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Get feature policies for an organization</td>
 <td><code>GET /orgs/{org}/copilot/feature-policies</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Copilot</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Get model policies for an organization</td>
 <td><code>GET /orgs/{org}/copilot/model-policies</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Copilot</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>List SAML SSO authorizations for an organization</td>
@@ -15915,15 +16013,15 @@ replaces it. Organization sheet &gt; Roles.</td>
 <td>List custom repository roles in an organization</td>
 <td><code>GET /orgs/{org}/custom-repository-roles</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Get a custom repository role</td>
 <td><code>GET /orgs/{org}/custom-repository-roles/{role_id}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Closing down - Get a custom role</td>
@@ -15938,23 +16036,23 @@ replaces it. Organization sheet &gt; Roles.</td>
 organization</td>
 <td><code>GET /orgs/{org}/dismissal-requests/code-scanning</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts &gt; Dismissal requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>List dismissal requests for Dependabot alerts for an
 organization</td>
 <td><code>GET /orgs/{org}/dismissal-requests/dependabot</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts &gt; Dismissal requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>List alert dismissal requests for secret scanning for an org</td>
 <td><code>GET /orgs/{org}/dismissal-requests/secret-scanning</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts &gt; Dismissal requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Get an external group</td>
@@ -15987,23 +16085,23 @@ replaces it. Organization sheet &gt; Roles.</td>
 <td>List organization fine-grained permissions for an organization</td>
 <td><code>GET /orgs/{org}/organization-fine-grained-permissions</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>List repository fine-grained permissions for an organization</td>
 <td><code>GET /orgs/{org}/repository-fine-grained-permissions</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Get GitHub Advanced Security active committers for an
 organization</td>
 <td><code>GET /orgs/{org}/settings/billing/advanced-security</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Billing (read-only)</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>List IdP groups for an organization</td>
@@ -16036,74 +16134,74 @@ GitHub: identity provider groups).</td>
 <td>List repository push rule bypass requests</td>
 <td><code>GET /repos/{owner}/{repo}/bypass-requests/push-rules</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Bypass requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Get a repository push bypass request</td>
 <td><code>GET /repos/{owner}/{repo}/bypass-requests/push-rules/{bypass_request_number}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Bypass requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>List bypass requests for secret scanning for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/bypass-requests/secret-scanning</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Bypass requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Get a bypass request for secret scanning</td>
 <td><code>GET /repos/{owner}/{repo}/bypass-requests/secret-scanning/{bypass_request_number}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Bypass requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>List dismissal requests for code scanning alerts for a
 repository</td>
 <td><code>GET /repos/{owner}/{repo}/dismissal-requests/code-scanning</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts &gt; Dismissal requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Get a dismissal request for a code scanning alert for a
 repository</td>
 <td><code>GET /repos/{owner}/{repo}/dismissal-requests/code-scanning/{alert_number}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts &gt; Dismissal requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>List dismissal requests for Dependabot alerts for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/dismissal-requests/dependabot</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts &gt; Dismissal requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Get a dismissal request for a Dependabot alert for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/dismissal-requests/dependabot/{alert_number}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts &gt; Dismissal requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>List alert dismissal requests for secret scanning for a
 repository</td>
 <td><code>GET /repos/{owner}/{repo}/dismissal-requests/secret-scanning</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts &gt; Dismissal requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Get an alert dismissal request for secret scanning</td>
 <td><code>GET /repos/{owner}/{repo}/dismissal-requests/secret-scanning/{alert_number}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts &gt; Dismissal requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>List provisioned SCIM groups for an enterprise</td>
@@ -16366,36 +16464,36 @@ org &gt; Enterprise (Open on GitHub).</td>
 <td>Create or update custom property values for an organization</td>
 <td><code>PATCH /organizations/{org}/org-properties/values</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Custom properties</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Set announcement banner for organization</td>
 <td><code>PATCH /orgs/{org}/announcement</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Announcement banner</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Update feature policies for an organization</td>
 <td><code>PATCH /orgs/{org}/copilot/feature-policies</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Copilot</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Update model policies for an organization</td>
 <td><code>PATCH /orgs/{org}/copilot/model-policies</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Copilot</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Update a custom repository role</td>
 <td><code>PATCH /orgs/{org}/custom-repository-roles/{role_id}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Closing down - Update a custom role</td>
@@ -16409,8 +16507,8 @@ replaces it. Organization sheet &gt; Roles.</td>
 <td>Update a custom organization role</td>
 <td><code>PATCH /orgs/{org}/organization-roles/{role_id}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Update the connection between an external group and a team</td>
@@ -16434,31 +16532,31 @@ GitHub: identity provider groups).</td>
 <td>Review a bypass request for secret scanning</td>
 <td><code>PATCH /repos/{owner}/{repo}/bypass-requests/secret-scanning/{bypass_request_number}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Bypass requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Review a dismissal request for a code scanning alert for a
 repository</td>
 <td><code>PATCH /repos/{owner}/{repo}/dismissal-requests/code-scanning/{alert_number}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts &gt; Dismissal requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Review a dismissal request for a Dependabot alert for a
 repository</td>
 <td><code>PATCH /repos/{owner}/{repo}/dismissal-requests/dependabot/{alert_number}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts &gt; Dismissal requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Review an alert dismissal request for secret scanning</td>
 <td><code>PATCH /repos/{owner}/{repo}/dismissal-requests/secret-scanning/{alert_number}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts &gt; Dismissal requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Update an attribute for a SCIM enterprise group</td>
@@ -16823,8 +16921,8 @@ org &gt; Enterprise (Open on GitHub).</td>
 <td>Create a custom repository role</td>
 <td><code>POST /orgs/{org}/custom-repository-roles</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Closing down - Create a custom role</td>
@@ -16838,23 +16936,23 @@ replaces it. Organization sheet &gt; Roles.</td>
 <td>Create a custom organization role</td>
 <td><code>POST /orgs/{org}/organization-roles</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Create a dismissal request for a Dependabot alert for a
 repository</td>
 <td><code>POST /repos/{owner}/{repo}/dismissal-requests/dependabot/{alert_number}</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts &gt; Dismissal requests</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Check license compliance for packages</td>
 <td><code>POST /repos/{owner}/{repo}/license-compliance/package-checks</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Dependencies</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Provision a SCIM enterprise group</td>
@@ -17151,8 +17249,8 @@ org &gt; Enterprise (Open on GitHub).</td>
 <td>Enable Git LFS for a repository</td>
 <td><code>PUT /repos/{owner}/{repo}/lfs</code></td>
 <td>Cloud</td>
-<td>Planned</td>
-<td>Repository sheet &gt; General (Git LFS)</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Set SCIM information for a provisioned enterprise group</td>
