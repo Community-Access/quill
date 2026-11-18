@@ -2336,7 +2336,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## GitHub Workbench
 
-Control coverage: 365 audited sites (365 helped).
+Control coverage: 370 audited sites (370 helped).
 
 ### Every window, and what it is for
 
@@ -2417,6 +2417,8 @@ Control coverage: 365 audited sites (365 helped).
 **Properties of.** One sheet for several objects. A field the same on all shows its value; one that differs says Mixed and is left alone unless you change it; a check box on some of them is in its third state.
 
 **Read as Document.** The whole thread as one document, a heading per post with its author and date: open it in the editor, or save it as Markdown or HTML.
+
+**Relationships of.** An issue's parent, its sub-issues, the issues blocking it and the ones it blocks. Add Sub-issue and Add Blocked By link another issue; Remove takes the selected link away, and both issues stay.
 
 **Reorder Sub-issues.** A parent issue's sub-issues in the order GitHub holds. Move Up and Move Down change that order on GitHub, and you hear where it landed.
 
@@ -3128,6 +3130,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Reorder Sub-issues.** Change the order of sub-issues.
 
+**Relationships.** Parent, sub-issues, and blocked by: read, add and remove.
+
 **Add to or Remove from Favorites.** Keep it in Favorites.
 
 **Properties.** Everything about this item on one sheet. Alt+Enter opens it from anywhere.
@@ -3297,6 +3301,24 @@ Control coverage: 365 audited sites (365 helped).
 **Convert Form or Template.** A Markdown template to an issue form, or a form to Markdown (it asks first).
 
 **Copy to Repositories.** Copy it to other repositories, after a preview of each.
+
+**Add Draft Issue.** A quick note on the board.
+
+**New Field.** Text, number, date or choices.
+
+**Delete Field.** And every value in it.
+
+**Post Status Update.** On track, at risk and so on.
+
+**Link to Repository.** Show it in the repository.
+
+**Unlink from Repository.** Take it out of one.
+
+**Template.** Offer it, or stop, as a template.
+
+**Copy Project.** Fields and views, not its items.
+
+**Delete Project.** Asks for its title typed out.
 
 **Members and Access.** Open the team's sheet at its members: add people, change a role, remove.
 
@@ -3620,6 +3642,13 @@ Control coverage: 365 audited sites (365 helped).
 - `self._issue_title`: What it is about, in a line.
 - `cancel`: Close without sending anything.
 - `text`: Text from the form's authors; read it, nothing to fill in.
+#### IssueRelationsDialog (`quill/ui/github_issue_relations_dialog.py`)
+
+- `self._list`: This issue's parent, sub-issues, the issues blocking it and the issues it blocks, each row starting with which. Enter opens the selected issue.
+- `self._add_sub`: Makes another issue a sub-issue of this one. Type it as #12, owner/repo#12, or paste its address. An issue with a parent already is moved here, after you say so.
+- `self._add_blocked`: Records that another issue must be finished before this one can be.
+- `self._remove`: Removes the selected sub-issue or blocked-by link. The issues themselves stay. A parent or an issue this one blocks is changed from that other issue.
+- `close`: Closes this window. Every change has already been sent.
 #### GitHubItemsDialog (`quill/ui/github_items_dialog.py`)
 
 - `self._repo_ctrl`: Type owner/name, or paste a GitHub link, then press Enter to load it.

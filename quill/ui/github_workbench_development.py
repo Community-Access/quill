@@ -76,6 +76,11 @@ from quill.ui.github_workbench_practice import (
     PRACTICE_VERBS,
     GitHubWorkbenchPracticeMixin,
 )
+from quill.ui.github_workbench_project_admin import (
+    PROJECT_ADMIN_REASONS,
+    PROJECT_ADMIN_VERBS,
+    GitHubWorkbenchProjectAdminMixin,
+)
 from quill.ui.github_workbench_pull_reviews import (
     PULL_REVIEW_REASONS,
     PULL_REVIEW_VERBS,
@@ -153,6 +158,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **ENVIRONMENT_VERBS,
     **PULL_REVIEW_VERBS,
     **PAGES_VERBS,
+    **PROJECT_ADMIN_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -179,6 +185,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **ENVIRONMENT_REASONS,
     **PULL_REVIEW_REASONS,
     **PAGES_REASONS,
+    **PROJECT_ADMIN_REASONS,
 }
 
 
@@ -203,6 +210,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchEnvironmentsMixin,
     GitHubWorkbenchPullReviewsMixin,
     GitHubWorkbenchPagesMixin,
+    GitHubWorkbenchProjectAdminMixin,
 ):
     items: Any
     frame: Any

@@ -908,7 +908,7 @@ Keys the window answers that are not menu rows:
 
 ### Context menus, by row type
 
-- **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Add to or Remove from Favorites; Properties...
+- **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Relationships..., Add to or Remove from Favorites; Properties...
 - **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., Re-run One Job...; More: Force Cancel..., Download Logs..., Delete Logs..., Approvals, Earlier Attempts..., View Artifacts..., Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link; Properties...
@@ -932,7 +932,7 @@ Keys the window answers that are not menu rows:
 - **folder**: Open Folder, Open on GitHub; Properties...
 - **milestone**: Find Issues in Milestone, Copy Link, Open on GitHub; Properties...
 - **template**: Open Template..., Convert Form or Template..., Copy to Repositories..., Copy Link, Open on GitHub; Properties...
-- **project**: Open on GitHub, Copy Link; Properties...
+- **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link; Properties...
 - **team**: Members and Access..., Copy Link, Open on GitHub; Properties...
 - **organization**: Open, Open on GitHub; Properties...
 - **favorite**: Open, Copy Link, Open on GitHub, Add to or Remove from Favorites; Properties...
@@ -1060,7 +1060,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 611 yes, 272 planned, 255 not needed and 866 left to GitHub.
+In all: 628 yes, 241 planned, 269 not needed and 866 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1984,7 +1984,7 @@ In all: 611 yes, 272 planned, 255 not needed and 866 left to GitHub.
 
 #### Issues
 
-66 operations: 30 yes, 17 planned, 12 not needed, 7 left to github.
+66 operations: 37 yes, 10 planned, 12 not needed, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2014,10 +2014,10 @@ In all: 611 yes, 272 planned, 255 not needed and 866 left to GitHub.
 | Check if a user can be assigned to a issue | `GET /repos/{owner}/{repo}/issues/{issue_number}/assignees/{assignee}` | Not needed | Whether someone can be assigned is answered by the list of assignees, which the assignee picker already reads. |
 | List issue comments | `GET /repos/{owner}/{repo}/issues/{issue_number}/comments` | Yes | Item > Read as Document... (Ctrl+Shift+I) |
 | Create an issue comment | `POST /repos/{owner}/{repo}/issues/{issue_number}/comments` | Yes | Item > Comment... (Ctrl+Shift+M) |
-| List dependencies an issue is blocked by | `GET /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by` | Planned | Issue > Relationships: blocked by, blocking. |
-| Add a dependency an issue is blocked by | `POST /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by` | Planned | Issue > Relationships: blocked by, blocking. |
-| Remove dependency an issue is blocked by | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by/{issue_id}` | Planned | Issue > Relationships: blocked by, blocking. |
-| List dependencies an issue is blocking | `GET /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocking` | Planned | Issue > Relationships: blocked by, blocking. |
+| List dependencies an issue is blocked by | `GET /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by` | Yes | context menu > Relationships... |
+| Add a dependency an issue is blocked by | `POST /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by` | Yes | context menu > Relationships... |
+| Remove dependency an issue is blocked by | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by/{issue_id}` | Yes | context menu > Relationships... |
+| List dependencies an issue is blocking | `GET /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocking` | Yes | context menu > Relationships... |
 | List issue events | `GET /repos/{owner}/{repo}/issues/{issue_number}/events` | Not needed | An issue's events are part of its timeline, which Timeline already reads in full. |
 | List issue field values for an issue | `GET /repos/{owner}/{repo}/issues/{issue_number}/issue-field-values` | Yes | context menu > Read Issue Type and Fields |
 | Add issue field values to an issue | `POST /repos/{owner}/{repo}/issues/{issue_number}/issue-field-values` | Planned | Issue and Pull request sheets; Label, Milestone and Issue type sheets; comments; timeline. |
@@ -2030,13 +2030,13 @@ In all: 611 yes, 272 planned, 255 not needed and 866 left to GitHub.
 | Remove a label from an issue | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}` | Yes | context menu > Labels... |
 | Unlock an issue | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/lock` | Yes | context menu > Lock or Unlock Conversation... |
 | Lock an issue | `PUT /repos/{owner}/{repo}/issues/{issue_number}/lock` | Yes | context menu > Lock or Unlock Conversation... |
-| Get parent issue | `GET /repos/{owner}/{repo}/issues/{issue_number}/parent` | Planned | Issue > Relationships: sub-issues. |
+| Get parent issue | `GET /repos/{owner}/{repo}/issues/{issue_number}/parent` | Yes | context menu > Relationships... |
 | List issues related to an issue | `GET /repos/{owner}/{repo}/issues/{issue_number}/relates_to` | Planned | Issue and Pull request sheets; Label, Milestone and Issue type sheets; comments; timeline. |
 | Add a related issue | `POST /repos/{owner}/{repo}/issues/{issue_number}/relates_to` | Planned | Issue and Pull request sheets; Label, Milestone and Issue type sheets; comments; timeline. |
 | Remove a related issue | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/relates_to/{issue_id}` | Planned | Issue and Pull request sheets; Label, Milestone and Issue type sheets; comments; timeline. |
-| Remove sub-issue | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/sub_issue` | Planned | Issue > Relationships: sub-issues. |
+| Remove sub-issue | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/sub_issue` | Yes | context menu > Relationships... |
 | List sub-issues | `GET /repos/{owner}/{repo}/issues/{issue_number}/sub_issues` | Yes | context menu > Reorder Sub-issues... |
-| Add sub-issue | `POST /repos/{owner}/{repo}/issues/{issue_number}/sub_issues` | Planned | Issue > Relationships: sub-issues. |
+| Add sub-issue | `POST /repos/{owner}/{repo}/issues/{issue_number}/sub_issues` | Yes | context menu > Relationships... |
 | Reprioritize sub-issue | `PATCH /repos/{owner}/{repo}/issues/{issue_number}/sub_issues/priority` | Yes | context menu > Reorder Sub-issues... |
 | List issue suggestions | `GET /repos/{owner}/{repo}/issues/{issue_number}/suggestions` | Left to GitHub | A preview GitHub may still change (issue artifacts and suggestions, stacked pull requests, pull request creation caps, code quality, planning statuses, concurrency groups); not built, by Jeff's choice (2026-11-18). |
 | Approve an issue suggestion | `POST /repos/{owner}/{repo}/issues/{issue_number}/suggestions/{suggestion_id}/approve` | Left to GitHub | A preview GitHub may still change (issue artifacts and suggestions, stacked pull requests, pull request creation caps, code quality, planning statuses, concurrency groups); not built, by Jeff's choice (2026-11-18). |
@@ -2336,35 +2336,35 @@ In all: 611 yes, 272 planned, 255 not needed and 866 left to GitHub.
 
 #### Projects
 
-26 operations: 20 planned, 6 not needed.
+26 operations: 6 planned, 20 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | List projects for organization | `GET /orgs/{org}/projectsV2` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
 | Get project for organization | `GET /orgs/{org}/projectsV2/{project_number}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Create draft item for organization owned project | `POST /orgs/{org}/projectsV2/{project_number}/drafts` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
-| List project fields for organization | `GET /orgs/{org}/projectsV2/{project_number}/fields` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
-| Add a field to an organization-owned project. | `POST /orgs/{org}/projectsV2/{project_number}/fields` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
+| Create draft item for organization owned project | `POST /orgs/{org}/projectsV2/{project_number}/drafts` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
+| List project fields for organization | `GET /orgs/{org}/projectsV2/{project_number}/fields` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
+| Add a field to an organization-owned project. | `POST /orgs/{org}/projectsV2/{project_number}/fields` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
 | Get project field for organization | `GET /orgs/{org}/projectsV2/{project_number}/fields/{field_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| List items for an organization owned project | `GET /orgs/{org}/projectsV2/{project_number}/items` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
-| Add item to organization owned project | `POST /orgs/{org}/projectsV2/{project_number}/items` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
-| Delete project item for organization | `DELETE /orgs/{org}/projectsV2/{project_number}/items/{item_id}` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
+| List items for an organization owned project | `GET /orgs/{org}/projectsV2/{project_number}/items` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
+| Add item to organization owned project | `POST /orgs/{org}/projectsV2/{project_number}/items` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
+| Delete project item for organization | `DELETE /orgs/{org}/projectsV2/{project_number}/items/{item_id}` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
 | Get an item for an organization owned project | `GET /orgs/{org}/projectsV2/{project_number}/items/{item_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Update project item for organization | `PATCH /orgs/{org}/projectsV2/{project_number}/items/{item_id}` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
+| Update project item for organization | `PATCH /orgs/{org}/projectsV2/{project_number}/items/{item_id}` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
 | Create a view for an organization-owned project | `POST /orgs/{org}/projectsV2/{project_number}/views` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
 | List items for an organization project view | `GET /orgs/{org}/projectsV2/{project_number}/views/{view_number}/items` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
-| Create draft item for user owned project | `POST /user/{user_id}/projectsV2/{project_number}/drafts` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
+| Create draft item for user owned project | `POST /user/{user_id}/projectsV2/{project_number}/drafts` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
 | Create a view for a user-owned project | `POST /users/{user_id}/projectsV2/{project_number}/views` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
 | List projects for user | `GET /users/{username}/projectsV2` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
 | Get project for user | `GET /users/{username}/projectsV2/{project_number}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| List project fields for user | `GET /users/{username}/projectsV2/{project_number}/fields` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
-| Add field to user owned project | `POST /users/{username}/projectsV2/{project_number}/fields` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
+| List project fields for user | `GET /users/{username}/projectsV2/{project_number}/fields` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
+| Add field to user owned project | `POST /users/{username}/projectsV2/{project_number}/fields` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
 | Get project field for user | `GET /users/{username}/projectsV2/{project_number}/fields/{field_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| List items for a user owned project | `GET /users/{username}/projectsV2/{project_number}/items` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
-| Add item to user owned project | `POST /users/{username}/projectsV2/{project_number}/items` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
-| Delete project item for user | `DELETE /users/{username}/projectsV2/{project_number}/items/{item_id}` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
+| List items for a user owned project | `GET /users/{username}/projectsV2/{project_number}/items` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
+| Add item to user owned project | `POST /users/{username}/projectsV2/{project_number}/items` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
+| Delete project item for user | `DELETE /users/{username}/projectsV2/{project_number}/items/{item_id}` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
 | Get an item for a user owned project | `GET /users/{username}/projectsV2/{project_number}/items/{item_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Update project item for user | `PATCH /users/{username}/projectsV2/{project_number}/items/{item_id}` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
+| Update project item for user | `PATCH /users/{username}/projectsV2/{project_number}/items/{item_id}` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
 | List items for a user project view | `GET /users/{username}/projectsV2/{project_number}/views/{view_number}/items` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
 
 #### Pull requests
@@ -2968,34 +2968,34 @@ In all: 611 yes, 272 planned, 255 not needed and 866 left to GitHub.
 
 #### GraphQL: Projects
 
-32 mutations: 8 yes, 24 planned.
+32 mutations: 18 yes, 14 planned.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
-| `addProjectV2DraftIssue` | Planned | Projects; Project sheet |
+| `addProjectV2DraftIssue` | Yes | context menu > Add Draft Issue... |
 | `addProjectV2ItemById` | Yes | Properties (Alt+Enter) on Issue: Projects |
 | `archiveProjectV2Item` | Yes | Properties (Alt+Enter) on Project |
 | `clearProjectV2ItemFieldValue` | Yes | Properties (Alt+Enter) on Project |
 | `convertProjectV2DraftIssueItemToIssue` | Planned | Projects; Project sheet |
-| `copyProjectV2` | Planned | Projects; Project sheet |
+| `copyProjectV2` | Yes | context menu > Copy Project... |
 | `createProjectV2` | Yes | Properties (Alt+Enter) on Issue: Projects |
-| `createProjectV2Field` | Planned | Projects; Project sheet |
+| `createProjectV2Field` | Yes | context menu > New Field... |
 | `createProjectV2IssueField` | Planned | Projects; Project sheet |
-| `createProjectV2StatusUpdate` | Planned | Projects; Project sheet |
+| `createProjectV2StatusUpdate` | Yes | context menu > Post Status Update... |
 | `createProjectV2View` | Planned | Projects; Project sheet |
-| `deleteProjectV2` | Planned | Projects; Project sheet |
-| `deleteProjectV2Field` | Planned | Projects; Project sheet |
+| `deleteProjectV2` | Yes | context menu > Delete Project... |
+| `deleteProjectV2Field` | Yes | context menu > Delete Field... |
 | `deleteProjectV2Item` | Yes | Properties (Alt+Enter) on Issue: Projects |
 | `deleteProjectV2StatusUpdate` | Planned | Projects; Project sheet |
 | `deleteProjectV2View` | Planned | Projects; Project sheet |
 | `deleteProjectV2Workflow` | Planned | Projects; Project sheet |
-| `linkProjectV2ToRepository` | Planned | Projects; Project sheet |
+| `linkProjectV2ToRepository` | Yes | context menu > Link to Repository... |
 | `linkProjectV2ToTeam` | Planned | Projects; Project sheet |
-| `markProjectV2AsTemplate` | Planned | Projects; Project sheet |
+| `markProjectV2AsTemplate` | Yes | context menu > Template... |
 | `unarchiveProjectV2Item` | Yes | Properties (Alt+Enter) on Project |
-| `unlinkProjectV2FromRepository` | Planned | Projects; Project sheet |
+| `unlinkProjectV2FromRepository` | Yes | context menu > Unlink from Repository... |
 | `unlinkProjectV2FromTeam` | Planned | Projects; Project sheet |
-| `unmarkProjectV2AsTemplate` | Planned | Projects; Project sheet |
+| `unmarkProjectV2AsTemplate` | Yes | context menu > Template... |
 | `updateProjectV2` | Yes | Properties (Alt+Enter) on Project: Title |
 | `updateProjectV2Collaborators` | Planned | Projects; Project sheet |
 | `updateProjectV2DraftIssue` | Planned | Projects; Project sheet |
