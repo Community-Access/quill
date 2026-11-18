@@ -194,3 +194,41 @@ def test_an_amount_finer_than_cents_is_refused_before_the_site_sees_it(
     payments.cmd_insert_payment()
     assert pub_host.text == before
     assert "decimal places" in pub_host.said
+
+
+def test_with_form_payments_off_nothing_runs_in_either_editor(
+    payments, pub_host, pub_site, monkeypatch
+):
+    """UX review item 35: QUILL Lite ran payment commands with the switch off."""
+    setup(monkeypatch, {"label": "Fee", "amount": "25"})
+    pub_host.ai.features["core.forms_payments"] = False
+    payments.cmd_insert_payment()
+    assert pub_host.replaced == 0 and "Turn on Form Payments" in pub_host.said
+
+    class _LiteApp:
+        def __init__(self, on: bool) -> None:
+            self.on = on
+
+        def feature_enabled(self, area: str) -> bool:
+            return self.on if area == "forms_payments" else True
+
+    class _LiteWindow:  # QUILL Lite's window: no _feature_enabled, an app with areas
+        def __init__(self, on: bool) -> None:
+            self.app = _LiteApp(on)
+
+    pub_host.announced.clear()
+    pub_host.ai = _LiteWindow(False)
+    payments.cmd_insert_payment()
+    assert pub_host.replaced == 0 and "Turn on Form Payments" in pub_host.said
+    pub_host.ai = _LiteWindow(True)
+    payments.cmd_insert_payment()
+    assert pub_host.replaced == 1
+
+
+def test_quill_lite_has_the_form_payments_area_off_by_default() -> None:
+    from quill.core.lite import features as lite_features
+    from quill.core.lite.command_areas import area_for
+
+    assert "forms_payments" in {area.id for area in lite_features.AREAS}
+    assert "forms_payments" in lite_features.DEFAULT_OFF
+    assert area_for("&Tools|Forms", "cmd_forms_payments_setup") == "forms_payments"

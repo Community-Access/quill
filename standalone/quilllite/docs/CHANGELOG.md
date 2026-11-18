@@ -10,6 +10,12 @@ lost every edit on it (review item 32). Now OK and Apply grey out while the
 save is on its way, and the sheet closes only once the site has taken it; a
 failure, or declining to replace someone else's change, leaves the sheet open
 with your edits.
+### Forms: a Form Payments switch, as QUILL has (2026-11-18)
+
+Tools > Customize Features (Ctrl+Alt+F10) has a new area, **Form Payments**,
+off until you turn it on, as QUILL's is. While it is off, Tools > Forms has no
+payment commands. Every profile but Everything leaves it off, and it needs
+Forms on. The profiles now count 25 areas.
 ### WordPress: the WordPress key says when it times out (2026-11-18)
 
 - The WordPress key's four-second wait now ends out loud: "WordPress keys

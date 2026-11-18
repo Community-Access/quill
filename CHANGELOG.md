@@ -8,6 +8,16 @@ From Chris Nova: while a podcast episode downloaded, QUILL Cast (and QUILL's
 own podcasts) seemed to pause until the "downloaded" sound, because every
 64 KB read was a progress report the window had to handle. Progress now
 reaches the window at most twice a second, and always at the last byte.
+### Forms: QUILL Lite follows the Form Payments switch (2026-11-18)
+
+QUILL keeps Form Payments off until it is turned on in Features, but QUILL
+Lite had no such switch, so its payment commands always ran: QUILL Lite ahead
+of QUILL, which the family rules forbid (WordPress review item 35). QUILL Lite
+now has a **Form Payments** area, off on a new install and on every profile
+but Everything, and needing Forms on too. Insert Payment Field, Form Payments
+Setup and Verify Payment Setup are in Tools > Forms only while it is on, and
+the shared command refuses in either editor when the switch is off, rather
+than running when it cannot tell.
 
 ### WordPress
 
