@@ -255,7 +255,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 588.</p>
+<p>Editor commands with default bindings: 595.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -2422,6 +2422,11 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>(unbound by default)</td>
+<td>Comment on line</td>
+<td><code>github.comment_on_line</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
 <td>GitHub: Commit Multiple Files…</td>
 <td><code>github.commit_multiple_files</code></td>
 </tr>
@@ -2429,6 +2434,11 @@ your own customised keymap.</p>
 <td>(unbound by default)</td>
 <td>GitHub: Configure Branch Protection…</td>
 <td><code>github.configure_branch_protection</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Copy line link</td>
+<td><code>github.copy_line_link</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
@@ -2462,8 +2472,33 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>(unbound by default)</td>
+<td>Issue from selection</td>
+<td><code>github.issue_from_selection</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Issues mentioning file</td>
+<td><code>github.issues_mentioning_file</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
 <td>GitHub: Codespaces…</td>
 <td><code>github.list_codespaces</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Open line</td>
+<td><code>github.open_line</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Open line pull</td>
+<td><code>github.open_line_pull</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Open reference at cursor</td>
+<td><code>github.open_reference_at_cursor</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
@@ -2527,7 +2562,7 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>(unbound by default)</td>
-<td>Local Git: Who Wrote This Line…</td>
+<td>Who Changed This Line?</td>
 <td><code>localgit.blame_at_cursor</code></td>
 </tr>
 <tr>
@@ -5179,6 +5214,11 @@ never inside the QUILL editor.</p>
 <td>Ctrl+Shift+W</td>
 <td>What Failed…</td>
 <td><code>github.workbench.what_failed</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+X</td>
+<td>Export List…</td>
+<td><code>github.workbench.export_list</code></td>
 </tr>
 <tr>
 <td>Ctrl+Y</td>

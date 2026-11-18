@@ -214,6 +214,7 @@
   "quill.ui.main_frame_github_admin": "reachable",
   "quill.ui.main_frame_github_extras": "reachable",
   "quill.ui.main_frame_github_items": "reachable",
+  "quill.ui.main_frame_github_line": "reachable",
   "quill.ui.main_frame_github_menu": "reachable",
   "quill.ui.main_frame_glow": "reachable",
   "quill.ui.main_frame_hotkeys": "reachable",

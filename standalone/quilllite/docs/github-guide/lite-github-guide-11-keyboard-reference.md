@@ -27,6 +27,7 @@ QUILL Lite's menu.
 | `S` | This Repository's Issues |
 | `P` | This Repository's Pull Requests |
 | `A` | Actions Runs |
+| `R` | From This Line submenu (in QUILL Lite, its rows are in the menu itself) |
 | `D` | Open GitHub Address... (QUILL only) |
 | `C` | Clone Repository... |
 | `M` | Commit to GitHub... (QUILL only) |
@@ -37,6 +38,23 @@ QUILL Lite's menu.
 
 None of these rows, and not the mode itself, has a key out of the box. A key
 you give one in the Keymap Editor works in both modes.
+
+### From This Line
+
+The line or lines you are on, on GitHub (Chapter 7). In QUILL it is a submenu
+of the GitHub menu (`R`), and of **Tools > Git and GitHub > GitHub** (`L`) when
+workbench mode is off; in QUILL Lite its rows are in the GitHub menu itself.
+
+| Letter | Row |
+| --- | --- |
+| `K` | Copy GitHub Link to This Line |
+| `O` | Who Changed This Line? (twice: its pull request) |
+| `E` | Open the Pull Request for This Line |
+| `U` | Open This Line on GitHub |
+| `N` | New Issue from Selection... |
+| `F` | Issues Mentioning This File |
+| `T` | Comment on This Line in the Open Pull Request... |
+| `R` | Open the GitHub Reference at the Cursor |
 
 ### Clone Repository
 
@@ -118,6 +136,7 @@ no AI menu, so here they belong to the Go row.
 | `Ctrl+F5` | Refresh, reading everything from GitHub again |
 | `Alt+Page Down` | Load more |
 | `Ctrl+Shift+Page Down` | Load all |
+| `Ctrl+Shift+X` | Export List: the list as shown, as Excel, CSV or a Markdown table |
 | Escape | Clear the filter box, then go back |
 
 ### Account and tools

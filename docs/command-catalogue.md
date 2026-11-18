@@ -6,7 +6,7 @@ Each command has a name, its key when it has one, what it does, and some of the 
 
 ## QUILL
 
-55 commands can be asked for in a sentence here.
+63 commands can be asked for in a sentence here.
 
 ### QUILL: Edit
 
@@ -66,6 +66,25 @@ Each command has a name, its key when it has one, what it does, and some of the 
   Say: "make this title case"; "capitalise each word"; "turn it into a title".
 - **Upper Case (Ctrl+Shift+U).** Change the selection to capital letters.
   Say: "make this all capitals"; "change it to upper case"; "shout this part".
+
+### QUILL: GitHub
+
+- **Comment on This Line in the Open Pull Request.** Leave a review comment on this line in the pull request for this branch. It asks before it does it.
+  Say: "comment on this line in the pull request"; "leave a review comment on these lines"; "add a pr comment here".
+- **Copy GitHub Link to This Line.** Copy a link to this line on GitHub that keeps pointing at the same text.
+  Say: "copy the github link to this line"; "give me a permalink for these lines"; "copy a link to this line on github".
+- **GitHub Issues Mentioning This File.** List the GitHub issues that mention this file.
+  Say: "which issues mention this file"; "show github issues about this file"; "find issues that talk about this file".
+- **New GitHub Issue from Selection.** Start a GitHub issue that quotes the selected text and links to it.
+  Say: "file an issue about the selected code"; "make a github issue from this selection"; "open an issue quoting these lines".
+- **Open the GitHub Reference at the Cursor.** Open the issue, pull request, person or commit written where the cursor is.
+  Say: "open the issue the cursor is on"; "open this github reference"; "go to the pull request mentioned here".
+- **Open the Pull Request for This Line.** Open the pull request that brought this line's last change.
+  Say: "open the pull request that changed this line"; "which pull request brought this line"; "show the pr for this line".
+- **Open This Line on GitHub.** Open this line on GitHub in your browser.
+  Say: "open this line on github"; "show me this line on github"; "view these lines on the github website".
+- **Who Changed This Line?.** Say who last changed this line, when, and why.
+  Say: "who changed this line"; "who last edited this line and when"; "blame this line".
 
 ### QUILL: Help
 
@@ -165,7 +184,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 ## QUILL Lite
 
-46 commands can be asked for in a sentence here.
+54 commands can be asked for in a sentence here.
 
 ### QUILL Lite: Edit
 
@@ -217,6 +236,25 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "make this title case"; "capitalise each word"; "turn it into a title".
 - **Upper Case (Ctrl+Shift+U).** Change the selection to capital letters.
   Say: "make this all capitals"; "change it to upper case"; "shout this part".
+
+### QUILL Lite: GitHub
+
+- **Comment on This Line in the Open Pull Request.** Leave a review comment on this line in the pull request for this branch. It asks before it does it.
+  Say: "comment on this line in the pull request"; "leave a review comment on these lines"; "add a pr comment here".
+- **Copy GitHub Link to This Line.** Copy a link to this line on GitHub that keeps pointing at the same text.
+  Say: "copy the github link to this line"; "give me a permalink for these lines"; "copy a link to this line on github".
+- **GitHub Issues Mentioning This File.** List the GitHub issues that mention this file.
+  Say: "which issues mention this file"; "show github issues about this file"; "find issues that talk about this file".
+- **New GitHub Issue from Selection.** Start a GitHub issue that quotes the selected text and links to it.
+  Say: "file an issue about the selected code"; "make a github issue from this selection"; "open an issue quoting these lines".
+- **Open the GitHub Reference at the Cursor.** Open the issue, pull request, person or commit written where the cursor is.
+  Say: "open the issue the cursor is on"; "open this github reference"; "go to the pull request mentioned here".
+- **Open the Pull Request for This Line.** Open the pull request that brought this line's last change.
+  Say: "open the pull request that changed this line"; "which pull request brought this line"; "show the pr for this line".
+- **Open This Line on GitHub.** Open this line on GitHub in your browser.
+  Say: "open this line on github"; "show me this line on github"; "view these lines on the github website".
+- **Who Changed This Line?.** Say who last changed this line, when, and why.
+  Say: "who changed this line"; "who last edited this line and when"; "blame this line".
 
 ### QUILL Lite: Help
 

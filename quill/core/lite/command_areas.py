@@ -108,6 +108,16 @@ COMMAND_AREA: dict[str, str] = {
     "cmd_github_pulls": "",
     "cmd_github_actions_runs": "",
     "cmd_github_releases": "",
+    # GitHub > From This Line (PRD 22.3): wherever GitHub is, all eight. The
+    # Coding area is QUILL's project.* commands and nothing else.
+    "cmd_github_copy_line_link": "",
+    "cmd_github_who_changed_line": "",
+    "cmd_github_open_line_pull": "",
+    "cmd_github_open_line": "",
+    "cmd_github_issue_from_selection": "",
+    "cmd_github_issues_mentioning_file": "",
+    "cmd_github_comment_on_line": "",
+    "cmd_github_open_reference_at_cursor": "",
     "cmd_github_explore": "",
     # WordPress rows straight in Insert and View, not in a submenu of their own.
     **dict.fromkeys(wordpress_menu.direct_handlers(), "wordpress"),

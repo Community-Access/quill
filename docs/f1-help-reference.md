@@ -2674,6 +2674,8 @@ Control coverage: 356 audited sites (356 helped).
 
 **File > Open in Editor.** Open the selected file in the editor that opened this window.
 
+**File > Export List....** This list as it is shown, its columns, filter and rows, as Excel, CSV or a Markdown table the editor reads as a table. The same as the WordPress Workbench's.
+
 **File > Close Workbench.** Close this window. The editor stays.
 
 **Edit > Undo GitHub Change.** Reverse your last change on GitHub, where GitHub allows it. In a text box, Ctrl+Z undoes your typing instead.

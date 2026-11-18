@@ -648,6 +648,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Go to Number... | Ctrl+G | Go to an issue or pull request in this repository by its number. |
 | Open on GitHub | Shift+Enter | Open the selected row, or the node, in your browser. |
 | Open in Editor | Ctrl+Enter | Open the selected file in the editor that opened this window. |
+| Export List... | Ctrl+Shift+X | This list as it is shown, its columns, filter and rows, as Excel, CSV or a Markdown table the editor reads as a table. The same as the WordPress Workbench's. |
 | Close Workbench | Alt+F4 | Close this window. The editor stays. |
 
 #### Edit

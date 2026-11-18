@@ -17,6 +17,7 @@ is reachable from a sentence until somebody has written its row.
 from __future__ import annotations
 
 from quill.core.command_catalogue.editor_agents import AGENT_ROWS
+from quill.core.command_catalogue.editor_github_line import GITHUB_LINE_ROWS
 from quill.core.command_catalogue.editor_never import NEVER_ROWS
 from quill.core.command_catalogue.spec import Arg, ArgKind, CommandSpec, Kind, Risk
 
@@ -382,4 +383,4 @@ _REVIEWED: tuple[CommandSpec, ...] = (
 )
 
 #: Every QUILL row: the agents' list first, in its old order, then the rest.
-EDITOR_ROWS: tuple[CommandSpec, ...] = AGENT_ROWS + _REVIEWED + NEVER_ROWS
+EDITOR_ROWS: tuple[CommandSpec, ...] = AGENT_ROWS + _REVIEWED + GITHUB_LINE_ROWS + NEVER_ROWS

@@ -29,6 +29,38 @@
         "criterion": "Read the responses people sent to a form on your WordPress site. For example: \"show my form responses\".",
         "stepped": false
       },
+      "lite.cmd_github_comment_on_line": {
+        "criterion": "Leave a review comment on this line in the pull request for this branch. For example: \"comment on this line in the pull request\".",
+        "stepped": false
+      },
+      "lite.cmd_github_copy_line_link": {
+        "criterion": "Copy a link to this line on GitHub that keeps pointing at the same text. For example: \"copy the github link to this line\".",
+        "stepped": false
+      },
+      "lite.cmd_github_issue_from_selection": {
+        "criterion": "Start a GitHub issue that quotes the selected text and links to it. For example: \"file an issue about the selected code\".",
+        "stepped": false
+      },
+      "lite.cmd_github_issues_mentioning_file": {
+        "criterion": "List the GitHub issues that mention this file. For example: \"which issues mention this file\".",
+        "stepped": false
+      },
+      "lite.cmd_github_open_line": {
+        "criterion": "Open this line on GitHub in your browser. For example: \"open this line on github\".",
+        "stepped": false
+      },
+      "lite.cmd_github_open_line_pull": {
+        "criterion": "Open the pull request that brought this line's last change. For example: \"open the pull request that changed this line\".",
+        "stepped": false
+      },
+      "lite.cmd_github_open_reference_at_cursor": {
+        "criterion": "Open the issue, pull request, person or commit written where the cursor is. For example: \"open the issue the cursor is on\".",
+        "stepped": false
+      },
+      "lite.cmd_github_who_changed_line": {
+        "criterion": "Say who last changed this line, when, and why. For example: \"who changed this line\".",
+        "stepped": false
+      },
       "lite.cmd_go_to_anything": {
         "criterion": "Move to a heading, bookmark or line by name. For example: \"go to anything\".",
         "stepped": false
@@ -295,8 +327,40 @@
         "criterion": "Read the responses people sent to a form on your WordPress site. For example: \"show my form responses\".",
         "stepped": false
       },
+      "github.comment_on_line": {
+        "criterion": "Leave a review comment on this line in the pull request for this branch. For example: \"comment on this line in the pull request\".",
+        "stepped": false
+      },
+      "github.copy_line_link": {
+        "criterion": "Copy a link to this line on GitHub that keeps pointing at the same text. For example: \"copy the github link to this line\".",
+        "stepped": false
+      },
+      "github.issue_from_selection": {
+        "criterion": "Start a GitHub issue that quotes the selected text and links to it. For example: \"file an issue about the selected code\".",
+        "stepped": false
+      },
+      "github.issues_mentioning_file": {
+        "criterion": "List the GitHub issues that mention this file. For example: \"which issues mention this file\".",
+        "stepped": false
+      },
+      "github.open_line": {
+        "criterion": "Open this line on GitHub in your browser. For example: \"open this line on github\".",
+        "stepped": false
+      },
+      "github.open_line_pull": {
+        "criterion": "Open the pull request that brought this line's last change. For example: \"open the pull request that changed this line\".",
+        "stepped": false
+      },
+      "github.open_reference_at_cursor": {
+        "criterion": "Open the issue, pull request, person or commit written where the cursor is. For example: \"open the issue the cursor is on\".",
+        "stepped": false
+      },
       "help.what_can_i_do_here": {
         "criterion": "List what you can say or do in this window. For example: \"what can I do in this window\".",
+        "stepped": false
+      },
+      "localgit.blame_at_cursor": {
+        "criterion": "Say who last changed this line, when, and why. For example: \"who changed this line\".",
         "stepped": false
       },
       "navigate.clear_numbered_bookmarks": {

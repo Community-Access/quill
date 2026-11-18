@@ -174,8 +174,12 @@ class GitHubItemsMixin:
         full_name: str,
         *,
         initial_reference: GitHubReference | None = None,
+        then: str = "",
     ) -> None:
-        """Open the Workbench at the matching place in a selected repository."""
+        """Open the Workbench at the matching place in a selected repository.
+
+        *then* runs once it is open (``filter:#42`` narrows to one item).
+        """
         node = "overview"
         if initial_reference is not None:
             node = {
@@ -187,7 +191,7 @@ class GitHubItemsMixin:
                 "tag": "tags",
                 "commit": "commits",
             }.get(initial_reference.kind, "overview")
-        self.open_github_items_viewer(node=node, repository=full_name)
+        self.open_github_items_viewer(node=node, repository=full_name, then=then)
         return
 
     def _github_gist_source(self) -> tuple[str, str]:

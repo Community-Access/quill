@@ -58,6 +58,11 @@ From the top:
 - **This Repository's Issues** (`S`), **This Repository's Pull Requests**
   (`P`) and **Actions Runs** (`A`): the Workbench, on that part of the
   repository the document you have open belongs to.
+- **From This Line** (`R`): what GitHub knows about the line you are on, or
+  the lines you have selected: a link to them, who changed them, the pull
+  request that brought them, a new issue quoting them, and more. Chapter 7
+  covers it. In QUILL Lite its eight rows are in the menu itself, between
+  separators.
 - **Clone Repository...** (`C`) and, in QUILL, **Open GitHub Address...**
   (`D`), which takes a link, `owner/name` or `owner/name#42`.
 - In QUILL only: **Commit to GitHub...** (`M`), **Sync Folder with GitHub...**
@@ -75,7 +80,9 @@ Palette, and a key you gave one still works too; each opens the Workbench at
 the matching place.
 
 QUILL Lite's GitHub menu is the same menu with QUILL's own rows left out, so
-the letters are the same in both apps.
+the letters are the same in both apps. From This Line's rows are the one
+difference in shape: a submenu in QUILL, straight in the menu in QUILL Lite,
+with the same letters either way.
 
 To leave, choose **GitHub > Leave Workbench Mode** (`Alt+G`, then `V`), or
 uncheck **View > GitHub Workbench Mode**. QUILL says "Workbench mode off."

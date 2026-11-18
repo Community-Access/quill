@@ -89,8 +89,9 @@ These are on only in Developer and Full Quill:
   Project, and Engine Tools for This Project. Chapters 2 to 10 are about
   these.
 - **Local Git.** Everything under **Tools > Git and GitHub > Local Git**:
-  Uncommitted Changes, Switch Branch, stashes, Who Wrote This Line, bisect,
-  Resolve Conflicts, Interactive Rebase, and Worktrees.
+  Uncommitted Changes, Switch Branch, stashes, bisect, Resolve Conflicts,
+  Interactive Rebase, and Worktrees. Who Changed This Line? needs the profile
+  too; it is on **GitHub > From This Line**.
 - **GitHub.** Opening and saving files on GitHub, the GitHub Items viewer,
   the repository administration commands under **Tools > Git and GitHub >
   GitHub**, and Codespaces. These need **GitHub Remote Access**, which

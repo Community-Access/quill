@@ -27,6 +27,7 @@ from typing import Any
 from quill.core.github import workbench_menu as table
 from quill.core.i18n import _
 from quill.ui.main_frame_github_doors import GitHubAdminDoorsMixin
+from quill.ui.main_frame_github_line import LINE_TITLES, GitHubLineCommandsMixin
 
 #: The existing GitHub rows' menu ids, by command id (created in
 #: ``main_frame_menu.py`` and bound in ``main_frame_menu_bindings.py`` and
@@ -83,7 +84,7 @@ _NEW_TITLES: dict[str, str] = {
 }
 
 
-class GitHubWorkbenchMenuMixin(GitHubAdminDoorsMixin):
+class GitHubWorkbenchMenuMixin(GitHubAdminDoorsMixin, GitHubLineCommandsMixin):
     """The mode switch, the GitHub menu, and the rows' normal homes."""
 
     _github_workbench_mode: bool = False
@@ -101,6 +102,16 @@ class GitHubWorkbenchMenuMixin(GitHubAdminDoorsMixin):
                 lambda cid=command_id: self._github_workbench_commands().run(cid)
             )
             self.commands.register(command_id, title, handler, self._binding_for(command_id))
+        # From This Line (PRD 22.3). Who Changed This Line? is registered with
+        # Local Git, under its old id (main_frame_local_git.py).
+        for command_id, title in LINE_TITLES.items():
+            if command_id.startswith("github."):
+                self.commands.register(
+                    command_id,
+                    title,
+                    lambda cid=command_id: self.run_github_line_command(cid),
+                    self._binding_for(command_id),
+                )
 
     def _github_workbench_commands(self) -> Any:
         from quill.ui.github_workbench_commands import GitHubWorkbenchCommands

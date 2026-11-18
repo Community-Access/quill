@@ -620,6 +620,76 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Fixes from today's reports (2026-11-17)
+
+- **Enter saves Settings.** After Find a setting took you to a setting,
+  pressing Enter on it did nothing, because Settings had no default button.
+  Enter now does what OK does, as in any Windows dialog.
+- **OK in Settings no longer offers to move your data.** Pressing OK compared
+  the "Store QUILL's data" choice with the folder QUILL was using, even when
+  you had not touched it. Where the two differed, as in a copy of QUILL run
+  with its own data folder, OK set your whole data folder to move and asked
+  you to restart, before it saved the change you had made. Only a choice you
+  change counts now.
+- **Crash reports keep your Windows user name out.** A report already replaced
+  `C:\Users\<your name>` with `[PATH]`, but missed the same path written with
+  doubled backslashes or forward slashes, which is how a report's settings and
+  some error messages write it. All three are replaced now. Found in two
+  crash reports sent from an older build (#1838, #1841).
+- **Saving a GitHub secret no longer fails one time in 64.** In the GitHub
+  Workbench, saving a repository secret could stop with "characters a GitHub
+  path cannot hold". The key GitHub gives QUILL to seal the secret sometimes
+  starts with a slash, and QUILL checked it as if it were part of the address.
+- **QUILL run from source on a Mac no longer restarts in a loop.** Dictation
+  looked for the editor whenever the window became active, which on macOS
+  happens before the first document opens (#1836, reported by Marco Zehe).
+- **The nightly keyboard run checks Ctrl+Alt+F2 properly.** It now opens Get
+  Help from Support there, so the test no longer expects it to fail (#1703).
+
+### GitHub from the line you are on (2026-11-17)
+
+Most GitHub questions start in a file. Put your cursor on a line, or select a
+few, and **GitHub > From This Line** answers without leaving the editor (with
+workbench mode off, **Tools > Git and GitHub > GitHub > From This Line**).
+QUILL Lite has the same eight rows, straight in its GitHub menu.
+
+- **Copy GitHub Link to This Line** copies a link to these lines in the
+  commit you have checked out, so it keeps showing the same text after the
+  file changes. **Open This Line on GitHub** opens it in your browser. Both say
+  when the commit is not on GitHub yet, or the file has uncommitted changes.
+- **Who Changed This Line?** says who last changed the line, when and why;
+  press it again within ten seconds to open the pull request that brought it,
+  or use **Open the Pull Request for This Line**. It was Local Git's **Who
+  Wrote This Line...**, which always answered for line 1 wherever the cursor
+  was; it now answers for your line. It keeps its command id, any key you gave
+  it, and its need for the Developer profile.
+- **New Issue from Selection...** opens the Workbench's New Issue window with
+  the selection quoted as code under a link to it, and a preview before
+  anything is sent.
+- **Issues Mentioning This File** opens the Workbench's search on the file's
+  path.
+- **Comment on This Line in the Open Pull Request...** posts a review comment
+  on these lines of the pull request for the branch you have checked out. It
+  stops first, saying why, if your copy and the pull request are at different
+  commits or the file has changes you have not committed.
+- **Open the GitHub Reference at the Cursor** opens the `#42`, `GH-42`,
+  `owner/name#42` or commit hash you are on in the Workbench, narrowed to it,
+  or an `@person`'s profile in your browser.
+
+All eight are refused in Safe Mode, need git, have no key out of the box, and
+can be reached from Say or Type a Command. The GitHub Guide's Chapter 7 has
+the details.
+
+### Export any GitHub Workbench list (2026-11-17)
+
+**Export List...** (`Ctrl+Shift+X`), on the GitHub Workbench's own File menu,
+saves the list in front of you as it is shown, its columns, filter and rows, as an Excel
+workbook, a CSV file or a Markdown table. A Markdown table opens in the editor
+as a table if you like, where the table keys move cell by cell. It works on
+issues, pull requests, runs, alerts, people, Change History or any other list,
+and says how many rows it wrote and which hidden columns it left out. It is
+the WordPress Workbench's Export List, now one command shared by both.
+
 ### GitHub issue forms, written as plain text (2026-11-16)
 
 A GitHub issue form is the form people fill in when they open an issue. In

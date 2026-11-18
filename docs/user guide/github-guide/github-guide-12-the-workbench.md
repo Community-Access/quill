@@ -326,6 +326,17 @@ The keys you will use most:
 | `Shift+Enter` | Open it on GitHub, in your browser |
 | `Delete` | Remove it safely: mark a notification done, close an issue after asking |
 
+### Taking a list with you
+
+**Export List...** (`Ctrl+Shift+X`), on the Workbench's File menu, saves the
+list you are looking at, as it is shown: its columns, its filter and its rows. Choose an Excel workbook,
+a CSV file or a Markdown table in the Save window. A Markdown table is the kind
+the editor reads as a table, so the Workbench offers to open it there, where the table
+keys move cell by cell. It then says how many rows it wrote, and names any
+columns you have hidden, because those are left out. It works on any list:
+issues, pull requests, runs, alerts, people, Change History. The WordPress
+Workbench's Export List is the same command.
+
 `Delete` always does the safe thing for the kind of row, and asks first
 whenever it cannot be undone: on a branch, a label, a release's file, a gist,
 an Actions cache or a workflow run it deletes that one thing, after asking. It

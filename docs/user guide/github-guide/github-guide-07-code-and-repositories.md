@@ -71,6 +71,58 @@ ends you hear "Last one." or "First one." Enter opens the commit on GitHub.
 In the Blame window, `Alt+R` belongs to the **Runs** list, so reach **Refresh**
 with Tab.
 
+## From the line you are on
+
+When a file you have open lives in a GitHub repository on your computer, one
+you cloned or a worktree, **GitHub > From This Line** (`R`) answers questions
+about the line your cursor is on, or the lines you have selected. It opens the
+Workbench only when it must. With workbench mode off, the same submenu is at
+**Tools > Git and GitHub > GitHub > From This Line** (`L`).
+
+- **Copy GitHub Link to This Line** (`K`) puts a link on the clipboard to
+  these lines in the commit you have checked out, so it keeps showing the same
+  text after the file changes: "Copied the link to lines 12 to 15."
+- **Who Changed This Line?** (`O`) says the last commit that touched the line:
+  "Changed by alice on 4 November 2026: Fix the status bar (1a2b3c4)." Press
+  it again within ten seconds to open the pull request that brought that
+  commit. Until November 2026 it was Local Git's **Who Wrote This Line...**,
+  and it answered for line 1 wherever your cursor was; it now answers for the
+  line you are on. Like the rest of Local Git, it needs the Developer profile
+  or Developer Tools turned on.
+- **Open the Pull Request for This Line** (`E`) opens that pull request
+  straight away, in the Workbench's Pull Requests list narrowed to its number.
+  If the commit went straight to its branch, QUILL says so.
+- **Open This Line on GitHub** (`U`) opens the same link in your browser.
+- **New Issue from Selection...** (`N`) starts an issue that quotes what you
+  selected, as a code block, under a link to those lines. It opens the
+  Workbench's own New Issue window with the title and body filled in, so you
+  can change them, and nothing is sent until you have read the preview and
+  said yes. Select some text first.
+- **Issues Mentioning This File** (`F`) opens the Workbench's **Search >
+  Issues and Pull Requests** on the file's path.
+- **Comment on This Line in the Open Pull Request...** (`T`) is for a branch
+  you have checked out that has an open pull request. It asks for your
+  comment, in Markdown, then posts it on these lines of that pull request.
+  If your copy and the pull request are at different commits, or the file has
+  changes you have not committed, it says so and stops, because the line
+  numbers would not match.
+- **Open the GitHub Reference at the Cursor** (`R`) opens what is written
+  where your cursor is: `#42` or `GH-42` in this repository, `owner/name#42`
+  in another, or a commit hash, each in the Workbench with the list narrowed
+  to it; or `@person`, whose profile opens in your browser.
+
+The link points at the commit you have checked out. If that commit is not on
+GitHub yet, QUILL says the link will not open until you push; if the file has
+changes you have not committed, it says the line on GitHub may differ. All of
+these need git, and **Help > Download Optional Components** has a portable
+copy. Safe Mode turns them off. A private repository needs a signed-in account
+to open its pull requests or to comment. None of the rows has a key out of the
+box; give the ones you use a key in the Keymap Editor.
+
+**In QUILL Lite** the eight rows sit straight in the GitHub menu, between
+separators, with the same letters, because QUILL Lite's GitHub menu has no
+submenus. With workbench mode off, they are in the Command Palette.
+
 ## Opening and saving files in QUILL
 
 QUILL has three more ways in, on **File > Open from Remote**. These are QUILL's

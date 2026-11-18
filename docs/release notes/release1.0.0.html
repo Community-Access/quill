@@ -2266,6 +2266,23 @@ And <strong>Save to GitHub…</strong> is now called <strong>Commit to
 GitHub…</strong>, because that is what it does. GitHub no longer needs
 the Developer profile, so the workbench is there in most profiles, as it
 always has been in QUILL Lite.</p>
+<h4 id="from-the-line-you-are-on">From the line you are on</h4>
+<p>Most GitHub questions start in a file: who changed this, which pull
+request brought it, is there already an issue about it? Put your cursor
+on a line, or select a few, and <strong>GitHub &gt; From This
+Line</strong> answers without leaving the editor. <strong>Copy GitHub
+Link to This Line</strong> puts a link on the clipboard that keeps
+pointing at the same text after the file changes. <strong>Who Changed
+This Line?</strong> says who, when and why, and pressed twice opens the
+pull request that brought it. <strong>New Issue from Selection…</strong>
+starts an issue quoting your selection under a link to it, with a
+preview before anything is sent. <strong>Issues Mentioning This
+File</strong>, <strong>Open This Line on GitHub</strong> and
+<strong>Comment on This Line in the Open Pull Request…</strong> do what
+they say, and <strong>Open the GitHub Reference at the Cursor</strong>
+opens the <code>#42</code>, <code>owner/name#42</code>, commit or
+<code>@person</code> you are on. QUILL Lite has all eight, in its GitHub
+menu.</p>
 <h4 id="files-on-github">Files on GitHub</h4>
 <p>QUILL opens files straight from a GitHub repository, lets you browse
 the repository’s tree, and saves a file back. Your token is kept in the
@@ -2531,8 +2548,10 @@ comparison you can listen to, not a raw diff.</li>
 you to the other branch by surprise.</li>
 <li><strong>Stash Changes</strong> and <strong>Manage Stashes</strong>
 guide you through stashing.</li>
-<li><strong>Who Wrote This Line</strong> is <code>git blame</code> for
-the line you are on, spoken.</li>
+<li><strong>Who Changed This Line?</strong> is <code>git blame</code>
+for the line you are on, spoken. Press it twice to open the pull request
+that brought the line. It lives with the other From This Line commands,
+described under GitHub, from the editor.</li>
 <li><strong>Start Bisect</strong> and <strong>End Bisect</strong> turn
 <code>git bisect</code> into a plain conversation: is this version good
 or bad?</li>
@@ -4257,7 +4276,8 @@ of what would come back, before you restore it.</li>
 lines that led to the offer, so whoever reads one can see what happened.
 They never include your document text. Before they are written, they are
 cleaned of GitHub tokens, OpenAI keys, AWS credentials, Slack tokens and
-long strings that look like secrets.</li>
+long strings that look like secrets, and your Windows user name is taken
+out of every file path, however the path is written.</li>
 <li><strong>Every kind of internal error has a short support
 code</strong>, in the form <code>[QUILL-...]</code>. It goes into crash
 reports and turns “it said something went wrong” into something specific
@@ -4582,6 +4602,25 @@ as the Open and Save As dialogs always did.</li>
 <p><strong>Try this:</strong> double-click a document in File Explorer
 to open it in QUILL, then press Ctrl+O. The dialog is already in that
 document’s folder.</p>
+<h3 id="four-fixes-from-the-last-reports">Four fixes from the last
+reports</h3>
+<ul>
+<li><strong>Enter saves Settings.</strong> Find a setting takes you
+straight to the setting you asked for. Change it, press Enter, and
+Settings saves and closes, just as OK does. Until now Enter did nothing
+there.</li>
+<li><strong>OK never moves your data by surprise.</strong> Pressing OK
+in Settings could offer to move your whole data folder and restart, in a
+copy of QUILL that keeps its data somewhere of its own, even though you
+had not touched “Store QUILL’s data”. Now only a change you make there
+moves anything.</li>
+<li><strong>A GitHub secret saves every time.</strong> In the GitHub
+Workbench, saving a repository secret failed about once in 64 tries with
+“characters a GitHub path cannot hold”. It no longer does.</li>
+<li><strong>QUILL starts on a Mac.</strong> Run from source on macOS,
+QUILL restarted in a loop before the first document opened. Thanks to
+Marco Zehe for the report.</li>
+</ul>
 <h3 id="late-changes-somafm-dectalk-and-windows-ocr">Late changes:
 SomaFM, DECtalk and Windows OCR</h3>
 <p><strong>Unreleased correction:</strong> The shared Radio code retires

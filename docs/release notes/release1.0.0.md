@@ -1862,6 +1862,21 @@ computer, private ones included, without writing your token anywhere. And
 what it does. GitHub no longer needs the Developer profile, so the workbench is
 there in most profiles, as it always has been in QUILL Lite.
 
+#### From the line you are on
+
+Most GitHub questions start in a file: who changed this, which pull request
+brought it, is there already an issue about it? Put your cursor on a line, or
+select a few, and **GitHub > From This Line** answers without leaving the
+editor. **Copy GitHub Link to This Line** puts a link on the clipboard that
+keeps pointing at the same text after the file changes. **Who Changed This
+Line?** says who, when and why, and pressed twice opens the pull request that
+brought it. **New Issue from Selection...** starts an issue quoting your
+selection under a link to it, with a preview before anything is sent.
+**Issues Mentioning This File**, **Open This Line on GitHub** and **Comment on
+This Line in the Open Pull Request...** do what they say, and **Open the GitHub
+Reference at the Cursor** opens the `#42`, `owner/name#42`, commit or
+`@person` you are on. QUILL Lite has all eight, in its GitHub menu.
+
 #### Files on GitHub
 
 QUILL opens files straight from a GitHub repository, lets you browse the
@@ -2123,7 +2138,10 @@ itself, and the rebase carries on afterwards.
 - **Switch Branch** stops uncommitted work from following you to the other
   branch by surprise.
 - **Stash Changes** and **Manage Stashes** guide you through stashing.
-- **Who Wrote This Line** is `git blame` for the line you are on, spoken.
+- **Who Changed This Line?** is `git blame` for the line you are on, spoken.
+  Press it twice to open the pull request that brought the line. It lives
+  with the other From This Line commands, described under GitHub, from the
+  editor.
 - **Start Bisect** and **End Bisect** turn `git bisect` into a plain
   conversation: is this version good or bad?
 
@@ -3765,7 +3783,8 @@ happen.
   offer, so whoever reads one can see what happened. They never include your
   document text. Before they are written, they are cleaned of GitHub tokens,
   OpenAI keys, AWS credentials, Slack tokens and long strings that look like
-  secrets.
+  secrets, and your Windows user name is taken out of every file path, however
+  the path is written.
 - **Every kind of internal error has a short support code**, in the form
   `[QUILL-...]`. It goes into crash reports and turns "it said something went
   wrong" into something specific that support can look up. Every new kind of
@@ -4059,6 +4078,21 @@ out.
 
 **Try this:** double-click a document in File Explorer to open it in QUILL,
 then press Ctrl+O. The dialog is already in that document's folder.
+
+### Four fixes from the last reports
+
+- **Enter saves Settings.** Find a setting takes you straight to the setting
+  you asked for. Change it, press Enter, and Settings saves and closes, just as
+  OK does. Until now Enter did nothing there.
+- **OK never moves your data by surprise.** Pressing OK in Settings could offer
+  to move your whole data folder and restart, in a copy of QUILL that keeps its
+  data somewhere of its own, even though you had not touched "Store QUILL's
+  data". Now only a change you make there moves anything.
+- **A GitHub secret saves every time.** In the GitHub Workbench, saving a
+  repository secret failed about once in 64 tries with "characters a GitHub
+  path cannot hold". It no longer does.
+- **QUILL starts on a Mac.** Run from source on macOS, QUILL restarted in a
+  loop before the first document opened. Thanks to Marco Zehe for the report.
 
 ### Late changes: SomaFM, DECtalk and Windows OCR
 

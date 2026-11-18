@@ -4164,6 +4164,76 @@ once, and fall to the next tier. Nothing is sent in Safe Mode.</p>
 2,883 requests, no errors, median 176 ms; 211 of 232 hand-written
 requests right against tier 2’s 154; 2,183 of 2,184 corpus rows
 (<code>docs/release/jev-live-test-2026-11-09.md</code>).</p>
+<h2 id="github-from-the-editor-2026-11-17">GitHub from the editor
+(2026-11-17)</h2>
+<p>GitHub PRD 22.3, in both editors from one table
+(<code>LINE_ROWS</code> in
+<code>quill/core/github/workbench_menu.py</code>) and one implementation
+(<code>quill/ui/github_editor_line.py</code>, wx-free core in
+<code>quill/core/github/editor_line.py</code>). QUILL Lite’s adapter is
+<code>quill/apps/lite_github_line.py</code>, mixed into
+<code>DocumentToolsMixin</code>, so only a document window has the rows.
+They sit flat in the GitHub menu, between separators, while workbench
+mode is on (QUILL Lite’s GitHub menu has no submenus;
+<code>lite_arrange</code> flattens QUILL’s From This Line submenu), and
+are in the Command Palette always. No chords (the <code>github.</code>
+family, rule 7).</p>
+<table>
+<thead>
+<tr>
+<th>Row</th>
+<th>Handler</th>
+<th>QUILL command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Copy GitHub Lin&amp;k to This Line</td>
+<td><code>cmd_github_copy_line_link</code></td>
+<td><code>github.copy_line_link</code></td>
+</tr>
+<tr>
+<td>Wh&amp;o Changed This Line?</td>
+<td><code>cmd_github_who_changed_line</code> (Coding area)</td>
+<td><code>localgit.blame_at_cursor</code></td>
+</tr>
+<tr>
+<td>Open the Pull Re&amp;quest for This Line</td>
+<td><code>cmd_github_open_line_pull</code></td>
+<td><code>github.open_line_pull</code></td>
+</tr>
+<tr>
+<td>Open This Line on GitH&amp;ub</td>
+<td><code>cmd_github_open_line</code></td>
+<td><code>github.open_line</code></td>
+</tr>
+<tr>
+<td>New Issue from Se&amp;lection…</td>
+<td><code>cmd_github_issue_from_selection</code></td>
+<td><code>github.issue_from_selection</code></td>
+</tr>
+<tr>
+<td>Issues Mentioning This &amp;File</td>
+<td><code>cmd_github_issues_mentioning_file</code></td>
+<td><code>github.issues_mentioning_file</code></td>
+</tr>
+<tr>
+<td>Commen&amp;t on This Line in the Open Pull Request…</td>
+<td><code>cmd_github_comment_on_line</code></td>
+<td><code>github.comment_on_line</code></td>
+</tr>
+<tr>
+<td>Open the GitHub &amp;Reference at the Cursor</td>
+<td><code>cmd_github_open_reference_at_cursor</code></td>
+<td><code>github.open_reference_at_cursor</code></td>
+</tr>
+</tbody>
+</table>
+<p>All eight have catalogue rows
+(<code>quill/core/command_catalogue/editor_github_line.py</code>), so a
+sentence reaches them; commenting is CONFIRM. Each reads the working
+copy with git in the background, says one sentence, and is refused in
+Safe Mode.</p>
 </main>
 </body>
 </html>
