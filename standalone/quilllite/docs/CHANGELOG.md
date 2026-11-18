@@ -10,6 +10,15 @@ lost every edit on it (review item 32). Now OK and Apply grey out while the
 save is on its way, and the sheet closes only once the site has taken it; a
 failure, or declining to replace someone else's change, leaves the sheet open
 with your edits.
+### WordPress: the WordPress key says when it times out (2026-11-18)
+
+- The WordPress key's four-second wait now ends out loud: "WordPress keys
+  timed out", so you know the next key types into the document.
+- Ctrl, Alt and Shift still held from the WordPress key no longer spoil the
+  letter: Ctrl+Alt+Shift+O runs O's command.
+- With the WordPress area switched off, Tools > Forms > Responses no longer
+  shows the WordPress key, which cannot work then.
+- The Connect window offers WordPress.com only once QUILL can sign in to it.
 
 ### WordPress: five ways the Workbench could lose your work, closed (2026-11-18)
 

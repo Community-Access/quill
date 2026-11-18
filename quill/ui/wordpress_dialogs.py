@@ -105,15 +105,23 @@ class ConnectSiteDialog(wx.Dialog):
             )
             self.error.SetHelpText("Why the last attempt to connect did not work, and what to try.")
             labelled_row(sizer, self, "&Problem:", self.error)
-        self.kind = wx.Choice(
-            self, choices=["My own WordPress site (self-hosted)", "A WordPress.com site"]
-        )
+        from quill.ui.wordpress_connect import WPCOM_CLIENT_ID
+
+        # WordPress.com is offered only once QUILL's WordPress.com app is registered;
+        # offering it to refuse it afterwards was a dead end (UX review item 21).
+        kinds = ["My own WordPress site (self-hosted)"]
+        if WPCOM_CLIENT_ID:
+            kinds.append("A WordPress.com site")
+        self.kind = wx.Choice(self, choices=kinds)
         self.kind.SetHelpText(
             "Self-hosted means the site runs on its own web address and hosting. Choose "
-            "WordPress.com "
-            "for a site hosted by WordPress.com; you will sign in with your browser."
+            "WordPress.com for a site hosted by WordPress.com; you will sign in with your browser."
+            if WPCOM_CLIENT_ID
+            else "Self-hosted means the site runs on its own web address and hosting. A "
+            "WordPress.com site whose plan allows plugins connects the same way, at its own "
+            "address, with an application password."
         )
-        self.kind.SetSelection(1 if answer and answer.kind == "wpcom" else 0)
+        self.kind.SetSelection(1 if answer and answer.kind == "wpcom" and WPCOM_CLIENT_ID else 0)
         labelled_row(sizer, self, "&Kind of site:", self.kind)
         self.site_url = wx.TextCtrl(self, value=answer.site_url if answer else "")
         self.site_url.SetHelpText(

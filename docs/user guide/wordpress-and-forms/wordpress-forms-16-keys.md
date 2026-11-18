@@ -34,8 +34,13 @@ The six you will use every day:
   keys".
 - A letter with no command says so, for example "No WordPress command on
   Q.", and types nothing.
-- If you wait more than about four seconds, the WordPress key lets go, and
-  your next key types as normal.
+- If you wait more than about four seconds, the WordPress key lets go and
+  says "WordPress keys timed out", so you know your next key types as normal.
+- You do not have to let go of Ctrl, Alt and Shift before the letter: if
+  they are still down, QUILL reads Ctrl+Alt+Shift+O as O, and
+  Ctrl+Alt+Shift+S as Shift+S when that is a key, otherwise as S.
+- With WordPress switched off, the WordPress key is not QUILL's, and no row
+  shows it; the Forms row Responses keeps its menu path.
 - The command then speaks for itself, as it does from the menu.
 - The menus show each key beside its row, in brackets, such as
   "(Ctrl+Alt+Shift+Grave, O)".

@@ -22,9 +22,10 @@ There are three ways in:
 - Choose any of the site rows of Tools > WordPress, such as **Comments...**,
   **Media Library...**, **Categories and Tags...**, **Menus...**, **Site
   Settings...** or **Site Check**. Each opens the Workbench at its own place.
-  The same goes for Users, Application Passwords, Plugins, Themes, Fonts,
-  Synced Patterns, Widgets, Site Map and AI Abilities in Tools > WordPress >
-  Manage.
+  The same goes for Users, Application Passwords, Plugins, Themes, Widgets,
+  Site Map and AI Abilities in Tools > WordPress > Manage. Fonts and Synced
+  Patterns open their own windows instead, because installing a font and
+  editing a synced pattern's blocks are not in the Workbench yet.
 
 Two more start from the page you are writing:
 
@@ -122,7 +123,8 @@ there.
 Type words and press Enter to search the whole site, not only the rows you
 can see. You can also type qualifiers, such as `status:draft`,
 `category:news`, `-tag:old`, `after:2026-01-01` or `modified:>2026-10-01`.
-Escape clears the filter.
+Escape clears the filter. In Details, Escape goes back to the list; in the
+tree or the list, it goes Back to where you were before.
 
 Some help if you would rather not type them:
 
