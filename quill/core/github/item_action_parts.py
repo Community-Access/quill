@@ -13,6 +13,7 @@ from quill.core.workbench.actions import ActionRow, Tier
 
 __all__ = [
     "ACCOUNT_ROWS",
+    "PROJECT_ROWS",
     "PROPERTIES_COMMAND",
 ]
 
@@ -204,3 +205,17 @@ ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
         _PROPERTIES,
     ),
 }
+
+
+#: A Project's own care, on its row (quill/ui/github_workbench_project_admin.py).
+PROJECT_ROWS: tuple[ActionRow, ...] = (
+    _a("project_draft", "Add Draft Issue...", _W, "sign_in", "A quick note on the board."),
+    _a("project_field", "New Field...", _W, "sign_in", "Text, number, date or choices."),
+    _a("project_field_delete", "Delete Field...", _D, "sign_in", "And every value in it."),
+    _a("project_status", "Post Status Update...", _W, "sign_in", "On track, at risk and so on."),
+    _a("project_link_repo", "Link to Repository...", _O, "sign_in", "Show it in the repository."),
+    _a("project_unlink_repo", "Unlink from Repository...", _O, "sign_in", "Take it out of one."),
+    _a("project_template", "Template...", _O, "sign_in", "Offer it, or stop, as a template."),
+    _a("project_copy", "Copy Project...", _W, "sign_in", "Fields and views, not its items."),
+    _a("project_delete", "Delete Project...", _D, "sign_in", "Asks for its title typed out."),
+)

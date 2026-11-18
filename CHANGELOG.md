@@ -701,6 +701,32 @@ lines the same way, with the same saved choice.
 With thanks to Kelly Ford, whose GHManage has been the measure for QUILL's
 GitHub work from the start.
 
+### GitHub: an issue's relationships, and a Project's own care (2026-11-18)
+
+**Relationships...**, on any issue, shows its parent, its sub-issues, the
+issues blocking it and the ones it blocks, in one list where each row says
+first what it is ("Blocked by: #38 Fix the parser (closed)"). From there you
+can add a sub-issue, add an issue that blocks this one, or remove either
+link, and QUILL reads the relationships back from GitHub to say what changed.
+An issue is named as `#12`, `owner/repo#12` or its address. If the new
+sub-issue already has a parent, QUILL asks before moving it. Removing a link
+never closes or deletes either issue.
+
+A Project's row gains nine commands: **Add Draft Issue...**, **New Field...**
+(Text, Number, Date or Single select with its choices), **Delete Field...**,
+**Post Status Update...** (On track, At risk, Off track, Complete or
+Inactive, with a note and target date), **Link to Repository...**,
+**Unlink from Repository...**, **Template...**, **Copy Project...** (to any
+user or organization, drafts included if you choose) and **Delete
+Project...**, which asks you to type the project's title exactly before it
+deletes anything.
+
+GitHub's REST routes for Projects (fields, items and drafts) were marked as
+reached already, through the GraphQL calls the Workbench has always used for
+the same boards. GitHub endpoints still to build went from 265 to 241. The
+GitHub guide's Issues chapter has both, and the keyboard reference has the
+Relationships window's keys.
+
 ### What is left for GitHub, settled a second time (2026-11-18)
 
 Every one of the 422 GitHub endpoints still planned was read again, by

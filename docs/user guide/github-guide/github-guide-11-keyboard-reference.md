@@ -373,6 +373,9 @@ Review action and Submit Review have no access key; reach them with Tab.
 | Timeline | `Alt+C` | Hide or Show Comment |
 | Reorder Sub-issues | `Alt+U` | Move Up |
 | Reorder Sub-issues | `Alt+D` | Move Down |
+| Relationships | `Alt+S` | Add Sub-issue... |
+| Relationships | `Alt+B` | Add Blocked By... |
+| Relationships | `Alt+R` | Remove |
 | Edit Release | `Alt+N` | Release name |
 | Edit Release | `Alt+O` | Release notes |
 | Edit Release | `Alt+D` | Draft (not published yet) |

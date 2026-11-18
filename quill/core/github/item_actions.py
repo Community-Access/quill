@@ -24,6 +24,7 @@ from quill.core.github.item_action_parts import (
     _R,
     _W,
     ACCOUNT_ROWS,
+    PROJECT_ROWS,
     PROPERTIES_COMMAND,
     _a,
     _default,
@@ -146,6 +147,13 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a("not_duplicate", "Not a Duplicate...", _W, "triage", "Take back 'duplicate of #n'."),
         _a("issue_type", "Set Issue Type...", _W, "triage", "Bug, feature, task and so on."),
         _a("sub_issues", "Reorder Sub-issues...", _W, "triage", "Change the order of sub-issues."),
+        _a(
+            "relationships",
+            "Relationships...",
+            _W,
+            "triage",
+            "Parent, sub-issues, and blocked by: read, add and remove.",
+        ),
         _FAVORITE,
         _PROPERTIES,
     ),
@@ -468,6 +476,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a(
             "open_on_github", "Open on GitHub", help="Open the board in your browser.", default=True
         ),
+        *PROJECT_ROWS,
         _COPY_LINK,
         _PROPERTIES,
     ),

@@ -399,6 +399,11 @@ SURFACE_PURPOSES: dict[str, str] = {
         "A parent issue's sub-issues in the order GitHub holds. Move Up and Move "
         "Down change that order on GitHub, and you hear where it landed."
     ),
+    "Relationships of": (
+        "An issue's parent, its sub-issues, the issues blocking it and the ones it "
+        "blocks. Add Sub-issue and Add Blocked By link another issue; Remove takes the "
+        "selected link away, and both issues stay."
+    ),
     "Repositories in": (
         "Choose the repositories in this Repository Set: one check box per repository, "
         "by owner and name. Space checks or unchecks one; Add puts in one you type; "

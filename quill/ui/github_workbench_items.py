@@ -30,6 +30,7 @@ ITEM_VERBS: dict[str, frozenset[str]] = {
     "assign_copilot": frozenset({"item"}),
     "transfer": frozenset({"item"}),
     "sub_issues": frozenset({"item"}),
+    "relationships": frozenset({"item"}),
     "start_worktree": frozenset({"item"}),
     "commit_comments": frozenset({"commit", "tag"}),
 }
@@ -41,6 +42,7 @@ ITEM_REASONS: dict[str, str] = {
     "assign_copilot": "Assign to Copilot is for an issue.",
     "transfer": "Transfer is for an issue; a pull request cannot move.",
     "sub_issues": "Sub-issues belong to an issue.",
+    "relationships": "Parents, sub-issues and blocking links belong to an issue.",
     "commit_comments": "Commit Comments is for a commit or a tag.",
     "summarize": (
         "The editor that opened this window has not given it an AI connection, "
@@ -95,6 +97,7 @@ class GitHubWorkbenchItemsMixin:
     _fits_assign_copilot = _fits_issue_write
     _fits_transfer = _fits_issue_write
     _fits_sub_issues = _fits_issue_write
+    _fits_relationships = _fits_issue_write
 
     def _fits_summarize(self, row: object) -> bool:
         return isinstance(row, GitHubItem) and self.ai_summarizer is not None
@@ -320,6 +323,29 @@ class GitHubWorkbenchItemsMixin:
         self._background(
             "read the sub-issues", lambda: housekeeping.sub_issues(repo, number), open_order
         )
+
+    def _do_relationships(self, ref: Any, row: object) -> None:
+        """An issue's parent, sub-issues, and what blocks it, to read and change."""
+        assert isinstance(row, GitHubItem)
+        from quill.core.github.issue_relations import GitHubIssueRelations
+
+        repo, number = self._repo_for(ref), row.number
+        api = GitHubIssueRelations(getattr(self.items, "token", None))
+
+        def open_window(relations: Any) -> None:
+            from quill.ui.github_issue_relations_dialog import IssueRelationsDialog
+
+            self._say(f"#{number} has {relations.summary()}.")
+            IssueRelationsDialog(
+                self._parent(),
+                api,
+                repo=repo,
+                number=number,
+                relations=relations,
+                announce_cb=self._say,
+            ).show()
+
+        self._background("read the relationships", lambda: api.relations(repo, number), open_window)
 
     def _do_start_worktree(self, ref: Any, row: object) -> None:
         assert isinstance(row, GitHubItem)

@@ -115,6 +115,7 @@
   "quill.ui.github_gist_editor_dialog": "reachable",
   "quill.ui.github_issue_draft_dialog": "reachable",
   "quill.ui.github_issue_form_dialog": "reachable",
+  "quill.ui.github_issue_relations_dialog": "reachable",
   "quill.ui.github_issue_worktree": "reachable",
   "quill.ui.github_items_dialog": "parked",
   "quill.ui.github_line_comment_dialog": "reachable",

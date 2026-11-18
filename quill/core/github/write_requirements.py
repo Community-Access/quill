@@ -133,6 +133,20 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}react_release": ("sign_in", _O),
     f"{_P}rerun_job": ("repo:write", _V),
     f"{_P}manage_reviews": ("repo:write", _V),
+    **{
+        f"{_P}{verb}": ("scope:project", _V)
+        for verb in (
+            "project_draft",
+            "project_field",
+            "project_status",
+            "project_link_repo",
+            "project_unlink_repo",
+            "project_template",
+            "project_copy",
+        )
+    },
+    f"{_P}project_field_delete": ("scope:project", _D),
+    f"{_P}project_delete": ("scope:project", _D),
     f"{_P}pages_turn_on": ("repo:admin", _V),
     f"{_P}pages_rebuild": ("repo:admin", _V),
     f"{_P}pages_turn_off": ("repo:admin", _D),
@@ -148,6 +162,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}commit_status": ("repo:write", _V),
     f"{_P}merge_queue": ("repo:write", _V),
     f"{_P}sub_issues": ("repo:triage", _O),
+    f"{_P}relationships": ("repo:triage", _O),
     f"{_P}transfer": ("repo:write", _D),
     f"{_P}unsnooze": ("local", _O),
     f"{_P}unsubscribe": ("sign_in", _O),

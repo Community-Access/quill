@@ -2952,7 +2952,7 @@ Start in Local Worktree…, Assign to Copilot…, Lock or Unlock
 Conversation…, Pin or Unpin Issue, Transfer Issue…, Check or Uncheck a
 Task…, Convert Tasks to Sub-issues…, Create Branch for This Issue…,
 Unlink Branch…, Not a Duplicate…, Set Issue Type…, Reorder Sub-issues…,
-Add to or Remove from Favorites; Properties…</li>
+Relationships…, Add to or Remove from Favorites; Properties…</li>
 <li><strong>pull_request</strong>: Review…, File Differences…, Comment…,
 Merge…, Why Can’t I Merge?, Auto-Merge…; More: Reviews…, Open in a
 Codespace, Add to or Remove from Merge Queue…, Open Patch in Editor,
@@ -3017,8 +3017,10 @@ Open on GitHub; Properties…</li>
 <li><strong>template</strong>: Open Template…, Convert Form or
 Template…, Copy to Repositories…, Copy Link, Open on GitHub;
 Properties…</li>
-<li><strong>project</strong>: Open on GitHub, Copy Link;
-Properties…</li>
+<li><strong>project</strong>: Open on GitHub, Add Draft Issue…, New
+Field…, Delete Field…, Post Status Update…, Link to Repository…; More:
+Unlink from Repository…, Template…, Copy Project…, Delete Project…, Copy
+Link; Properties…</li>
 <li><strong>team</strong>: Members and Access…, Copy Link, Open on
 GitHub; Properties…</li>
 <li><strong>organization</strong>: Open, Open on GitHub;
@@ -3348,7 +3350,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 611 yes, 272 planned, 255 not needed and 866 left to
+<p>In all: 628 yes, 241 planned, 269 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -8557,7 +8559,7 @@ Limits.</td>
 </tbody>
 </table>
 <h4 id="issues">Issues</h4>
-<p>66 operations: 30 yes, 17 planned, 12 not needed, 7 left to
+<p>66 operations: 37 yes, 10 planned, 12 not needed, 7 left to
 github.</p>
 <table>
 <thead>
@@ -8747,26 +8749,26 @@ assignees, which the assignee picker already reads.</td>
 <tr>
 <td>List dependencies an issue is blocked by</td>
 <td><code>GET /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by</code></td>
-<td>Planned</td>
-<td>Issue &gt; Relationships: blocked by, blocking.</td>
+<td>Yes</td>
+<td>context menu &gt; Relationships…</td>
 </tr>
 <tr>
 <td>Add a dependency an issue is blocked by</td>
 <td><code>POST /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by</code></td>
-<td>Planned</td>
-<td>Issue &gt; Relationships: blocked by, blocking.</td>
+<td>Yes</td>
+<td>context menu &gt; Relationships…</td>
 </tr>
 <tr>
 <td>Remove dependency an issue is blocked by</td>
 <td><code>DELETE /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by/{issue_id}</code></td>
-<td>Planned</td>
-<td>Issue &gt; Relationships: blocked by, blocking.</td>
+<td>Yes</td>
+<td>context menu &gt; Relationships…</td>
 </tr>
 <tr>
 <td>List dependencies an issue is blocking</td>
 <td><code>GET /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocking</code></td>
-<td>Planned</td>
-<td>Issue &gt; Relationships: blocked by, blocking.</td>
+<td>Yes</td>
+<td>context menu &gt; Relationships…</td>
 </tr>
 <tr>
 <td>List issue events</td>
@@ -8849,8 +8851,8 @@ removes labels one at a time, so somebody else’s change is kept.</td>
 <tr>
 <td>Get parent issue</td>
 <td><code>GET /repos/{owner}/{repo}/issues/{issue_number}/parent</code></td>
-<td>Planned</td>
-<td>Issue &gt; Relationships: sub-issues.</td>
+<td>Yes</td>
+<td>context menu &gt; Relationships…</td>
 </tr>
 <tr>
 <td>List issues related to an issue</td>
@@ -8876,8 +8878,8 @@ sheets; comments; timeline.</td>
 <tr>
 <td>Remove sub-issue</td>
 <td><code>DELETE /repos/{owner}/{repo}/issues/{issue_number}/sub_issue</code></td>
-<td>Planned</td>
-<td>Issue &gt; Relationships: sub-issues.</td>
+<td>Yes</td>
+<td>context menu &gt; Relationships…</td>
 </tr>
 <tr>
 <td>List sub-issues</td>
@@ -8888,8 +8890,8 @@ sheets; comments; timeline.</td>
 <tr>
 <td>Add sub-issue</td>
 <td><code>POST /repos/{owner}/{repo}/issues/{issue_number}/sub_issues</code></td>
-<td>Planned</td>
-<td>Issue &gt; Relationships: sub-issues.</td>
+<td>Yes</td>
+<td>context menu &gt; Relationships…</td>
 </tr>
 <tr>
 <td>Reprioritize sub-issue</td>
@@ -10600,7 +10602,7 @@ infrastructure, set up once on GitHub’s site.</td>
 </tbody>
 </table>
 <h4 id="projects">Projects</h4>
-<p>26 operations: 20 planned, 6 not needed.</p>
+<p>26 operations: 6 planned, 20 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -10628,23 +10630,29 @@ reads the list.</td>
 <tr>
 <td>Create draft item for organization owned project</td>
 <td><code>POST /orgs/{org}/projectsV2/{project_number}/drafts</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s GraphQL API
+(quill/core/github/projects.py and project_admin.py), which covers the
+same project, item and field; a REST route for it would be a second way
+to one place.</td>
 </tr>
 <tr>
 <td>List project fields for organization</td>
 <td><code>GET /orgs/{org}/projectsV2/{project_number}/fields</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s GraphQL API
+(quill/core/github/projects.py and project_admin.py), which covers the
+same project, item and field; a REST route for it would be a second way
+to one place.</td>
 </tr>
 <tr>
 <td>Add a field to an organization-owned project.</td>
 <td><code>POST /orgs/{org}/projectsV2/{project_number}/fields</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s GraphQL API
+(quill/core/github/projects.py and project_admin.py), which covers the
+same project, item and field; a REST route for it would be a second way
+to one place.</td>
 </tr>
 <tr>
 <td>Get project field for organization</td>
@@ -10656,23 +10664,29 @@ reads the list.</td>
 <tr>
 <td>List items for an organization owned project</td>
 <td><code>GET /orgs/{org}/projectsV2/{project_number}/items</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s GraphQL API
+(quill/core/github/projects.py and project_admin.py), which covers the
+same project, item and field; a REST route for it would be a second way
+to one place.</td>
 </tr>
 <tr>
 <td>Add item to organization owned project</td>
 <td><code>POST /orgs/{org}/projectsV2/{project_number}/items</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s GraphQL API
+(quill/core/github/projects.py and project_admin.py), which covers the
+same project, item and field; a REST route for it would be a second way
+to one place.</td>
 </tr>
 <tr>
 <td>Delete project item for organization</td>
 <td><code>DELETE /orgs/{org}/projectsV2/{project_number}/items/{item_id}</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s GraphQL API
+(quill/core/github/projects.py and project_admin.py), which covers the
+same project, item and field; a REST route for it would be a second way
+to one place.</td>
 </tr>
 <tr>
 <td>Get an item for an organization owned project</td>
@@ -10684,9 +10698,11 @@ reads the list.</td>
 <tr>
 <td>Update project item for organization</td>
 <td><code>PATCH /orgs/{org}/projectsV2/{project_number}/items/{item_id}</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s GraphQL API
+(quill/core/github/projects.py and project_admin.py), which covers the
+same project, item and field; a REST route for it would be a second way
+to one place.</td>
 </tr>
 <tr>
 <td>Create a view for an organization-owned project</td>
@@ -10705,9 +10721,11 @@ reads the list.</td>
 <tr>
 <td>Create draft item for user owned project</td>
 <td><code>POST /user/{user_id}/projectsV2/{project_number}/drafts</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s GraphQL API
+(quill/core/github/projects.py and project_admin.py), which covers the
+same project, item and field; a REST route for it would be a second way
+to one place.</td>
 </tr>
 <tr>
 <td>Create a view for a user-owned project</td>
@@ -10733,16 +10751,20 @@ reads the list.</td>
 <tr>
 <td>List project fields for user</td>
 <td><code>GET /users/{username}/projectsV2/{project_number}/fields</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s GraphQL API
+(quill/core/github/projects.py and project_admin.py), which covers the
+same project, item and field; a REST route for it would be a second way
+to one place.</td>
 </tr>
 <tr>
 <td>Add field to user owned project</td>
 <td><code>POST /users/{username}/projectsV2/{project_number}/fields</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s GraphQL API
+(quill/core/github/projects.py and project_admin.py), which covers the
+same project, item and field; a REST route for it would be a second way
+to one place.</td>
 </tr>
 <tr>
 <td>Get project field for user</td>
@@ -10754,23 +10776,29 @@ reads the list.</td>
 <tr>
 <td>List items for a user owned project</td>
 <td><code>GET /users/{username}/projectsV2/{project_number}/items</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s GraphQL API
+(quill/core/github/projects.py and project_admin.py), which covers the
+same project, item and field; a REST route for it would be a second way
+to one place.</td>
 </tr>
 <tr>
 <td>Add item to user owned project</td>
 <td><code>POST /users/{username}/projectsV2/{project_number}/items</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s GraphQL API
+(quill/core/github/projects.py and project_admin.py), which covers the
+same project, item and field; a REST route for it would be a second way
+to one place.</td>
 </tr>
 <tr>
 <td>Delete project item for user</td>
 <td><code>DELETE /users/{username}/projectsV2/{project_number}/items/{item_id}</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s GraphQL API
+(quill/core/github/projects.py and project_admin.py), which covers the
+same project, item and field; a REST route for it would be a second way
+to one place.</td>
 </tr>
 <tr>
 <td>Get an item for a user owned project</td>
@@ -10782,9 +10810,11 @@ reads the list.</td>
 <tr>
 <td>Update project item for user</td>
 <td><code>PATCH /users/{username}/projectsV2/{project_number}/items/{item_id}</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Not needed</td>
+<td>The Workbench does this through GitHub’s GraphQL API
+(quill/core/github/projects.py and project_admin.py), which covers the
+same project, item and field; a REST route for it would be a second way
+to one place.</td>
 </tr>
 <tr>
 <td>List items for a user project view</td>
@@ -13853,7 +13883,7 @@ operation.</td>
 </tbody>
 </table>
 <h4 id="graphql-projects">GraphQL: Projects</h4>
-<p>32 mutations: 8 yes, 24 planned.</p>
+<p>32 mutations: 18 yes, 14 planned.</p>
 <table>
 <thead>
 <tr>
@@ -13865,8 +13895,8 @@ operation.</td>
 <tbody>
 <tr>
 <td><code>addProjectV2DraftIssue</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Add Draft Issue…</td>
 </tr>
 <tr>
 <td><code>addProjectV2ItemById</code></td>
@@ -13890,8 +13920,8 @@ operation.</td>
 </tr>
 <tr>
 <td><code>copyProjectV2</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Copy Project…</td>
 </tr>
 <tr>
 <td><code>createProjectV2</code></td>
@@ -13900,8 +13930,8 @@ operation.</td>
 </tr>
 <tr>
 <td><code>createProjectV2Field</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; New Field…</td>
 </tr>
 <tr>
 <td><code>createProjectV2IssueField</code></td>
@@ -13910,8 +13940,8 @@ operation.</td>
 </tr>
 <tr>
 <td><code>createProjectV2StatusUpdate</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Post Status Update…</td>
 </tr>
 <tr>
 <td><code>createProjectV2View</code></td>
@@ -13920,13 +13950,13 @@ operation.</td>
 </tr>
 <tr>
 <td><code>deleteProjectV2</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Project…</td>
 </tr>
 <tr>
 <td><code>deleteProjectV2Field</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Delete Field…</td>
 </tr>
 <tr>
 <td><code>deleteProjectV2Item</code></td>
@@ -13950,8 +13980,8 @@ operation.</td>
 </tr>
 <tr>
 <td><code>linkProjectV2ToRepository</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Link to Repository…</td>
 </tr>
 <tr>
 <td><code>linkProjectV2ToTeam</code></td>
@@ -13960,8 +13990,8 @@ operation.</td>
 </tr>
 <tr>
 <td><code>markProjectV2AsTemplate</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Template…</td>
 </tr>
 <tr>
 <td><code>unarchiveProjectV2Item</code></td>
@@ -13970,8 +14000,8 @@ operation.</td>
 </tr>
 <tr>
 <td><code>unlinkProjectV2FromRepository</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Unlink from Repository…</td>
 </tr>
 <tr>
 <td><code>unlinkProjectV2FromTeam</code></td>
@@ -13980,8 +14010,8 @@ operation.</td>
 </tr>
 <tr>
 <td><code>unmarkProjectV2AsTemplate</code></td>
-<td>Planned</td>
-<td>Projects; Project sheet</td>
+<td>Yes</td>
+<td>context menu &gt; Template…</td>
 </tr>
 <tr>
 <td><code>updateProjectV2</code></td>

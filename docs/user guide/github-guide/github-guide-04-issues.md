@@ -316,15 +316,73 @@ Both read the description again just before saving. If somebody changed it on
 GitHub while you were choosing, nothing is saved and you are told to try
 again, so nobody's edit is lost.
 
-## Projects and dependencies
+## Relationships: parents, sub-issues and what blocks what
+
+An issue can be part of a bigger one (its **parent**), have smaller ones
+under it (its **sub-issues**), and wait on other issues (it is **blocked
+by** them). Choose **Relationships...** on an issue's context menu (or the
+Item menu) to see all of it in one list. You first hear a summary, such as
+"#41 has a parent, #12, 3 sub-issues, 1 issue blocking it". Each row then
+starts with what it is, so the kind comes first:
+
+- "Parent: #12 Spring release (open)"
+- "Sub-issue: #44 Write the help (open)"
+- "Blocked by: #38 Fix the parser (closed)"
+- "Blocking: #50 Publish (open)", an issue that waits on this one.
+
+An issue in another repository is named with it, such as "acme/tools#7".
+Enter opens the selected issue in your browser.
+
+- **Add Sub-issue...** (`Alt+S`) asks for the issue to add. Type it as
+  `#44`, as `owner/repo#44` for another repository, or paste its address
+  from GitHub. If that issue is already a sub-issue of something else,
+  QUILL asks before moving it here.
+- **Add Blocked By...** (`Alt+B`) records that another issue must be
+  finished first.
+- **Remove** (`Alt+R`) takes away the selected sub-issue or blocked-by
+  link, after asking. Both issues stay; only the link goes, and you can add
+  it again. A parent row and a "Blocking" row are the other end of another
+  issue's link, so you change them from that issue.
+
+After each change QUILL reads the relationships back from GitHub and says
+what happened, such as "#41 is now blocked by #38." **Reorder
+Sub-issues...** is still there for changing their order.
+
+## Projects
 
 GitHub Projects are boards that track issues and pull requests across one or
 more repositories, with fields of their own such as Status, Priority or
 Iteration. Open the Workbench's **Projects** place or **Repository >
-Projects** node to see the projects available to your account. Select a
-project and choose **Open on GitHub** to visit its board. Editing project
-fields, blockers and sub-issues from the Workbench remains on the
-implementation backlog.
+Projects** node to see the projects available to your account. Open a
+board to read and change its items and their fields.
+
+A project's own row has these commands too, on its context menu:
+
+- **Add Draft Issue...**: a quick note on the board, with a title and an
+  optional body, before it is a real issue.
+- **New Field...**: a field of your own. Choose Text, Number, Date, or
+  Single select; a single select asks for its choices, separated by commas
+  ("Small, Medium, Large").
+- **Delete Field...**: choose one of the fields you or your team made, and
+  confirm. Every item's value in it goes too. Fields GitHub provides, such
+  as Title, Assignees and Labels, are not offered.
+- **Post Status Update...**: how the project is going (On track, At risk,
+  Off track, Complete or Inactive), with a note and an optional target
+  date, the way GitHub shows it at the top of the board.
+- **Link to Repository...** and **Unlink from Repository...**: a linked
+  project shows in that repository's Projects. Type the repository as
+  owner/name.
+- **Template...**: make the project a template, or stop. GitHub allows
+  templates only in an organization, and offers them when someone there
+  makes a new project.
+- **Copy Project...**: a copy for another user or organization, with a new
+  title. Its fields, views and workflows come with it, and its draft
+  issues if you say so; its issues and pull requests do not.
+- **Delete Project...**: deletes the board for good. Its issues and pull
+  requests stay. QUILL asks you to type the project's title, exactly, so a
+  slip of the Enter key cannot delete it.
+
+All of these need your GitHub sign-in to include the **project** scope.
 
 ## Starting an issue in its own folder
 

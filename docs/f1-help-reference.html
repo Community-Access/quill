@@ -5689,7 +5689,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="github-workbench">GitHub Workbench</h2>
-<p>Control coverage: 365 audited sites (365 helped).</p>
+<p>Control coverage: 370 audited sites (370 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>Add GitHub Token.</strong> Paste a personal access token you
@@ -5808,6 +5808,10 @@ its third state.</p>
 <p><strong>Read as Document.</strong> The whole thread as one document,
 a heading per post with its author and date: open it in the editor, or
 save it as Markdown or HTML.</p>
+<p><strong>Relationships of.</strong> An issue’s parent, its sub-issues,
+the issues blocking it and the ones it blocks. Add Sub-issue and Add
+Blocked By link another issue; Remove takes the selected link away, and
+both issues stay.</p>
 <p><strong>Reorder Sub-issues.</strong> A parent issue’s sub-issues in
 the order GitHub holds. Move Up and Move Down change that order on
 GitHub, and you hear where it landed.</p>
@@ -6598,6 +6602,8 @@ stays.</p>
 <p><strong>Set Issue Type.</strong> Bug, feature, task and so on.</p>
 <p><strong>Reorder Sub-issues.</strong> Change the order of
 sub-issues.</p>
+<p><strong>Relationships.</strong> Parent, sub-issues, and blocked by:
+read, add and remove.</p>
 <p><strong>Add to or Remove from Favorites.</strong> Keep it in
 Favorites.</p>
 <p><strong>Properties.</strong> Everything about this item on one sheet.
@@ -6730,6 +6736,15 @@ it; a missing file starts from a starter.</p>
 issue form, or a form to Markdown (it asks first).</p>
 <p><strong>Copy to Repositories.</strong> Copy it to other repositories,
 after a preview of each.</p>
+<p><strong>Add Draft Issue.</strong> A quick note on the board.</p>
+<p><strong>New Field.</strong> Text, number, date or choices.</p>
+<p><strong>Delete Field.</strong> And every value in it.</p>
+<p><strong>Post Status Update.</strong> On track, at risk and so on.</p>
+<p><strong>Link to Repository.</strong> Show it in the repository.</p>
+<p><strong>Unlink from Repository.</strong> Take it out of one.</p>
+<p><strong>Template.</strong> Offer it, or stop, as a template.</p>
+<p><strong>Copy Project.</strong> Fields and views, not its items.</p>
+<p><strong>Delete Project.</strong> Asks for its title typed out.</p>
 <p><strong>Members and Access.</strong> Open the team’s sheet at its
 members: add people, change a role, remove.</p>
 <p><strong>Open.</strong> Select the organization’s node in the
@@ -7223,6 +7238,24 @@ id="issueformdialog-quilluigithub_issue_form_dialogpy">IssueFormDialog
 <li><code>cancel</code>: Close without sending anything.</li>
 <li><code>text</code>: Text from the form’s authors; read it, nothing to
 fill in.</li>
+</ul>
+<h4
+id="issuerelationsdialog-quilluigithub_issue_relations_dialogpy">IssueRelationsDialog
+(<code>quill/ui/github_issue_relations_dialog.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: This issue’s parent, sub-issues, the issues
+blocking it and the issues it blocks, each row starting with which.
+Enter opens the selected issue.</li>
+<li><code>self._add_sub</code>: Makes another issue a sub-issue of this
+one. Type it as #12, owner/repo#12, or paste its address. An issue with
+a parent already is moved here, after you say so.</li>
+<li><code>self._add_blocked</code>: Records that another issue must be
+finished before this one can be.</li>
+<li><code>self._remove</code>: Removes the selected sub-issue or
+blocked-by link. The issues themselves stay. A parent or an issue this
+one blocks is changed from that other issue.</li>
+<li><code>close</code>: Closes this window. Every change has already
+been sent.</li>
 </ul>
 <h4
 id="githubitemsdialog-quilluigithub_items_dialogpy">GitHubItemsDialog
