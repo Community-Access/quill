@@ -548,7 +548,9 @@ Everything below is generated from the tables the window is built from. The GitH
 | Favorites (`:favorites`) | repositories | Favorites: issues, pull requests and other items you kept, on this computer. Ctrl+D adds or removes the selected row anywhere in the window. |
 | My Repositories (`:my_repositories`) | repositories | My Repositories: the repositories your account owns or can push to. |
 | Starred (`:starred`) | repositories | Starred: repositories you starred on GitHub. |
+| Star Lists (`:star_lists`) | repositories | Star Lists: every repository on each of your star lists, the list's name first. Ctrl+N makes a list; Star Lists on any repository chooses its lists. |
 | Watched (`:watched`) | repositories | Watched: repositories whose activity GitHub tells you about. |
+| My Packages (`:packages`) | repositories | My Packages: your container images and npm, Maven, RubyGems and NuGet packages, with Delete Package Version and Delete Package on each. |
 | Organizations (`:organizations`) | repositories | Organizations: the organizations you belong to. Enter on one opens its repositories. |
 | Search (`:search`) | the top | Search: GitHub's searches. Choose one, type in the filter box with Ctrl+E, and press Enter. |
 | Issues and Pull Requests (`:search_issues`) | search | Search Issues and Pull Requests: everything GitHub finds for the words and qualifiers in the filter box, such as is:open author:@me. Ctrl+N saves the search. |
@@ -557,6 +559,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Repositories (`:search_repositories`) | search | Search Repositories: repositories whose name or description matches the filter box. |
 | Saved Searches (`:saved_searches`) | search | Saved Searches: searches you kept, on this computer. Enter runs one; Delete removes it. |
 | People (`:people`) | the top | People: who you follow, who follows you, and anybody you look up. |
+| My Profile (`:my_profile`) | people | My Profile: your profile as GitHub shows it, your year of contributions as numbers, and what you pinned. |
 | People I Follow (`:following`) | people | People I Follow: accounts you follow. Enter opens a person's node. |
 | My Followers (`:followers`) | people | My Followers: accounts that follow you. |
 | My Teams (`:my_teams`) | people | My Teams: every team you belong to, across your organizations. Alt+Enter opens a team's sheet. |
@@ -631,6 +634,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Branch Protection (`repository:branch_protection`) | repository, settings | Branch Protection: who may change a branch and what a change needs first. Enter opens the setting. |
 | General (`repository:general`) | repository, settings | General: the name, visibility and default branch. Enter opens one. |
 | person (`person:person`) | person | A person: their repositories, activity, followers and who they follow. |
+| Profile (`person:person_profile`) | person, person | Profile: who this person is, their year of contributions as numbers, and what they pinned. |
 | Repositories (`person:person_repositories`) | person, person | Repositories: this person's public repositories. |
 | Activity (`person:person_activity`) | person, person | Activity: what this person did lately on GitHub. |
 | Followers (`person:person_followers`) | person, person | Followers: who follows this person. |
@@ -849,7 +853,7 @@ Keys the window answers that are not menu rows:
 
 ### Context menus, by row type
 
-- **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Set Issue Type..., Reorder Sub-issues..., Add to or Remove from Favorites; Properties...
+- **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Add to or Remove from Favorites; Properties...
 - **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., View Artifacts...; More: Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link; Properties...
@@ -858,10 +862,11 @@ Keys the window answers that are not menu rows:
 - **branch**: Commits, Compare With Default, Compare Branches..., Compare With Previous, Open in Codespaces..., Copy Name, Delete Branch...; Properties...
 - **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
 - **tag**: Open, Delete Tag..., Read Tag Message, Commit Comments..., Compare With Previous, Compare With Default; More: Copy Link, Open on GitHub; Properties...
+- **package**: Show Details, Open on GitHub, Delete Package Version..., Delete Package..., Copy Link; Properties...
 - **runner**: Show Details, Open on GitHub, Copy Link; Properties...
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally; Properties...
-- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Pin, Add to or Remove from Favorites; More: Open on GitHub, Open in Codespaces...; Properties...
+- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Pin, Star Lists...; More: Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List...; Properties...
 - **person**: Open, Follow or Unfollow, Open on GitHub; Properties...
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
 - **gist**: Edit Gist..., Star or Unstar, Copy Link, Open on GitHub, Delete Gist...; Properties...
@@ -935,6 +940,7 @@ Keys the window answers that are not menu rows:
 - **Milestone**: A goal with a due date that issues and pull requests belong to.
 - **Notification**: GitHub telling you something happened on a thread you are part of. Under Needs My Attention.
 - **Organization**: An account many people share, which owns repositories and teams.
+- **Package**: Something a project publishes besides its code, such as a container image or an npm package, kept on GitHub Packages in versions.
 - **Pin**: A repository kept on this computer under Repositories, Pinned.
 - **Project**: A board or table for planning issues and pull requests.
 - **Pull request**: A proposed change: commits on one branch that somebody asks to merge into another, with a review. Under a repository's Pull Requests.
@@ -953,6 +959,7 @@ Keys the window answers that are not menu rows:
 - **Security alert**: A warning that code, a dependency or a secret in it is at risk.
 - **Squash**: Merging a pull request as one single commit, instead of all of its commits.
 - **Star**: A bookmark on a repository, which also shows you like it.
+- **Star list**: One of your own named groups of starred repositories, such as Screen readers. A repository can be on several.
 - **Tag**: A name for one particular commit, usually a version number. Under Code, Tags.
 - **Team**: A group of people in an organization, given access together.
 - **Template**: A file that shapes new issues, pull requests or discussions, such as a bug report form. Under Templates.
@@ -977,7 +984,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 335 yes, 1128 planned, 15 not needed and 526 left to GitHub.
+In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2187,7 +2194,7 @@ In all: 335 yes, 1128 planned, 15 not needed and 526 left to GitHub.
 
 #### Packages
 
-27 operations: 27 planned.
+27 operations: 4 yes, 23 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2201,12 +2208,12 @@ In all: 335 yes, 1128 planned, 15 not needed and 526 left to GitHub.
 | Get a package version for an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Planned | Repositories > My Packages; Package sheet. |
 | Restore package version for an organization | `POST /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Planned | Repositories > My Packages; Package sheet. |
 | Get list of conflicting packages during Docker migration for authenticated-user | `GET /user/docker/conflicts` | Planned | Repositories > My Packages; Package sheet. |
-| List packages for the authenticated user's namespace | `GET /user/packages` | Planned | Repositories > My Packages; Package sheet. |
-| Delete a package for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
+| List packages for the authenticated user's namespace | `GET /user/packages` | Yes | Navigator: Repositories > My Packages |
+| Delete a package for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}` | Yes | context menu > Delete Package... |
 | Get a package for the authenticated user | `GET /user/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
 | Restore a package for the authenticated user | `POST /user/packages/{package_type}/{package_name}/restore` | Planned | Repositories > My Packages; Package sheet. |
-| List package versions for a package owned by the authenticated user | `GET /user/packages/{package_type}/{package_name}/versions` | Planned | Repositories > My Packages; Package sheet. |
-| Delete a package version for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}/versions/{package_version_id}` | Planned | Repositories > My Packages; Package sheet. |
+| List package versions for a package owned by the authenticated user | `GET /user/packages/{package_type}/{package_name}/versions` | Yes | context menu > Delete Package Version... |
+| Delete a package version for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}/versions/{package_version_id}` | Yes | context menu > Delete Package Version... |
 | Get a package version for the authenticated user | `GET /user/packages/{package_type}/{package_name}/versions/{package_version_id}` | Planned | Repositories > My Packages; Package sheet. |
 | Restore a package version for the authenticated user | `POST /user/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Planned | Repositories > My Packages; Package sheet. |
 | Get list of conflicting packages during Docker migration for user | `GET /users/{username}/docker/conflicts` | Planned | Repositories > My Packages; Package sheet. |
@@ -2786,7 +2793,7 @@ In all: 335 yes, 1128 planned, 15 not needed and 526 left to GitHub.
 
 #### GraphQL: Issues
 
-51 mutations: 13 yes, 38 planned.
+51 mutations: 15 yes, 36 planned.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
@@ -2812,7 +2819,7 @@ In all: 335 yes, 1128 planned, 15 not needed and 526 left to GitHub.
 | `deleteIssueFieldValue` | Planned | Issue sheet; Item menu |
 | `deleteIssueType` | Planned | Issue sheet; Item menu |
 | `deleteLabel` | Planned | Issue sheet; Item menu |
-| `deleteLinkedBranch` | Planned | Issue sheet; Item menu |
+| `deleteLinkedBranch` | Yes | context menu > Unlink Branch... |
 | `lockLockable` | Planned | Issue sheet; Item menu |
 | `minimizeComment` | Yes | context menu > View Timeline... |
 | `pinIssue` | Yes | context menu > Pin or Unpin Issue |
@@ -2830,7 +2837,7 @@ In all: 335 yes, 1128 planned, 15 not needed and 526 left to GitHub.
 | `setIssueFieldValue` | Planned | Issue sheet; Item menu |
 | `transferIssue` | Yes | context menu > Transfer Issue... |
 | `unlockLockable` | Planned | Issue sheet; Item menu |
-| `unmarkIssueAsDuplicate` | Planned | Issue sheet; Item menu |
+| `unmarkIssueAsDuplicate` | Yes | context menu > Not a Duplicate... |
 | `unminimizeComment` | Yes | context menu > View Timeline... |
 | `unpinIssue` | Yes | context menu > Pin or Unpin Issue |
 | `unpinIssueComment` | Planned | Issue sheet; Item menu |
@@ -3048,18 +3055,18 @@ In all: 335 yes, 1128 planned, 15 not needed and 526 left to GitHub.
 
 #### GraphQL: Users
 
-8 mutations: 1 yes, 7 planned.
+8 mutations: 5 yes, 3 planned.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
 | `changeUserStatus` | Yes | Account > Set Your Status... (Ctrl+Alt+S) |
-| `createUserList` | Planned | Account; People > person |
-| `deleteUserList` | Planned | Account; People > person |
+| `createUserList` | Yes | Navigator: Repositories > Star Lists |
+| `deleteUserList` | Yes | context menu > Rename or Delete Star List... |
 | `followUser` | Planned | Account; People > person |
 | `setUserInteractionLimit` | Planned | Account; People > person |
 | `unfollowUser` | Planned | Account; People > person |
-| `updateUserList` | Planned | Account; People > person |
-| `updateUserListsForItem` | Planned | Account; People > person |
+| `updateUserList` | Yes | context menu > Rename or Delete Star List... |
+| `updateUserListsForItem` | Yes | context menu > Star Lists... |
 
 ### GraphQL reads with no REST twin
 
@@ -3068,16 +3075,16 @@ In all: 335 yes, 1128 planned, 15 not needed and 526 left to GitHub.
 | `blockedBy` | Yes | context menu > Reorder Sub-issues... |
 | `closingIssuesReferences` | Yes | Properties (Alt+Enter) on Pull Request |
 | `compare` | Yes | Navigator: Repository > owner/name > Code > Branches |
-| `contributionsCollection` | Planned | Account > Profile (the contribution table, as a table) |
+| `contributionsCollection` | Yes | Navigator: People > My Profile |
 | `dependencyGraphManifests` | Planned | Repository > Security > Dependencies |
 | `discussionCategories` | Yes | Navigator: Repository > owner/name > Discussions |
 | `discussions` | Yes | Navigator: Repository > owner/name > Discussions |
 | `fundingLinks` | Planned | Repository > General (sponsor links) |
 | `issueTypes` | Yes | context menu > Set Issue Type... |
 | `linkedBranches` | Yes | Properties (Alt+Enter) on Issue: Linked branches |
-| `lists` | Planned | Repositories > Starred > each list |
+| `lists` | Yes | Navigator: Repositories > Star Lists |
 | `mergeQueue` | Yes | Item > Merge... (Ctrl+Shift+Enter) |
-| `pinnedItems` | Planned | People > person > Profile; Account > Profile |
+| `pinnedItems` | Yes | Navigator: People > My Profile |
 | `projectsV2` | Yes | Navigator: Repository > owner/name > Projects |
 | `rateLimit` | Yes | Account > GitHub API Rate Limit (Ctrl+Shift+L) |
 | `reviewDecision` | Yes | Navigator: Repository > owner/name > Pull Requests |

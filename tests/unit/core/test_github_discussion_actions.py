@@ -177,6 +177,17 @@ def test_graphql_errors_and_rate_limits_become_messages(gql: _GraphQL) -> None:
     gql.reply = {"errors": [{"type": "RATE_LIMITED", "message": "API rate limit exceeded"}]}
     with pytest.raises(GitHubItemsError, match="rate-limited"):
         _Provider().fetch_discussion_thread("o/r", 4)
+    gql.reply = {
+        "errors": [
+            {
+                "type": "INSUFFICIENT_SCOPES",
+                "message": "The 'changeUserStatus' field requires one of: ['user']",
+            }
+        ]
+    }
+    with pytest.raises(GitHubItemsError, match="Sign in with GitHub again") as caught:
+        _Provider().fetch_discussion_thread("o/r", 4)
+    assert "requires one of: ['user']" in str(caught.value)
 
 
 def test_writes_need_sign_in(gql: _GraphQL) -> None:

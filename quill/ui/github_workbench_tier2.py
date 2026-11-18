@@ -27,6 +27,8 @@ TIER2_VERBS: dict[str, frozenset[str]] = {
     "delete_tag": frozenset({"tag"}),
     "tag_message": frozenset({"tag"}),
     "transfer_repository": frozenset({"view"}),
+    "unlink_branch": frozenset({"item"}),
+    "not_duplicate": frozenset({"item"}),
     "user_status": frozenset({"view"}),
     "commit_status": frozenset({"commit"}),
     "export_sbom": frozenset({"view"}),
@@ -40,6 +42,8 @@ TIER2_REASONS: dict[str, str] = {
     "delete_tag": "Delete Tag is for a tag, while you are signed in.",
     "tag_message": "Read Tag Message is for a tag.",
     "transfer_repository": "Transfer Repository is for a repository, while you are signed in.",
+    "unlink_branch": "Unlink Branch is for an issue, while you are signed in.",
+    "not_duplicate": "Not a Duplicate is for an issue, while you are signed in.",
     "user_status": "Your status is for the account you are signed in with.",
     "commit_status": "Set Status is for a commit, while you are signed in.",
     "export_sbom": "Export Software Bill of Materials is for a repository.",
@@ -358,5 +362,65 @@ class GitHubWorkbenchTier2Mixin:
         self._background(
             "transfer the repository",
             lambda: transfer_repository(api, repository, owner),
+            self._say,
+        )
+
+    # -- links an issue carries ----------------------------------------------------
+
+    def _fits_unlink_branch(self, row: object) -> bool:
+        from quill.core.github.items_provider import GitHubItem
+
+        return self.signed_in and isinstance(row, GitHubItem) and not row.is_pr
+
+    _fits_not_duplicate = _fits_unlink_branch
+
+    def _do_unlink_branch(self, ref: Any, row: object) -> None:
+        from quill.core.github.issue_links import linked_branch_ids
+
+        api, repository, number = self.github_api(), ref.instance, int(getattr(row, "number", 0))
+        self._background(
+            "read the linked branches",
+            lambda: linked_branch_ids(api, repository, number),
+            lambda found: self._pick_unlink(number, list(found)),
+        )
+
+    def _pick_unlink(self, number: int, found: list[Any]) -> None:
+        from quill.core.github.issue_links import unlink_branch
+
+        if not found:
+            self._say(f"#{number} has no linked branches.")
+            return
+        picked = self._choose(
+            "Unlink Branch",
+            f"Which branch to unlink from #{number}?",
+            [branch.name for branch in found],
+        )
+        if picked < 0:
+            return
+        branch = found[picked]
+        if not self._confirm(
+            "Unlink Branch",
+            f"Unlink {branch.name} from #{number}? The branch stays; only the link goes.",
+        ):
+            return
+        api = self.github_api()
+        self._background("unlink the branch", lambda: unlink_branch(api, number, branch), self._say)
+
+    def _do_not_duplicate(self, ref: Any, row: object) -> None:
+        from quill.core.github.issue_links import not_a_duplicate
+
+        number = int(getattr(row, "number", 0))
+        typed = self._ask_text(
+            "Not a Duplicate", f"#{number} is not a duplicate of which issue number?"
+        ).lstrip("#")
+        if not typed:
+            return
+        if not typed.isdigit():
+            self._say(f"{typed} is not an issue number.")
+            return
+        api, repository = self.github_api(), ref.instance
+        self._background(
+            "take back the duplicate mark",
+            lambda: not_a_duplicate(api, repository, number, int(typed)),
             self._say,
         )

@@ -2488,7 +2488,11 @@ Control coverage: 365 audited sites (365 helped).
 
 **Starred.** Starred: repositories you starred on GitHub.
 
+**Star Lists.** Star Lists: every repository on each of your star lists, the list's name first. Ctrl+N makes a list; Star Lists on any repository chooses its lists.
+
 **Watched.** Watched: repositories whose activity GitHub tells you about.
+
+**My Packages.** My Packages: your container images and npm, Maven, RubyGems and NuGet packages, with Delete Package Version and Delete Package on each.
 
 **Organizations.** Organizations: the organizations you belong to. Enter on one opens its repositories.
 
@@ -2505,6 +2509,8 @@ Control coverage: 365 audited sites (365 helped).
 **Saved Searches.** Saved Searches: searches you kept, on this computer. Enter runs one; Delete removes it.
 
 **People.** People: who you follow, who follows you, and anybody you look up.
+
+**My Profile.** My Profile: your profile as GitHub shows it, your year of contributions as numbers, and what you pinned.
 
 **People I Follow.** People I Follow: accounts you follow. Enter opens a person's node.
 
@@ -2653,6 +2659,8 @@ Control coverage: 365 audited sites (365 helped).
 **repository: General.** General: the name, visibility and default branch. Enter opens one.
 
 **person: person.** A person: their repositories, activity, followers and who they follow.
+
+**person: Profile.** Profile: who this person is, their year of contributions as numbers, and what they pinned.
 
 **person: Repositories.** Repositories: this person's public repositories.
 
@@ -3002,6 +3010,10 @@ Control coverage: 365 audited sites (365 helped).
 
 **Create Branch for This Issue.** Make a branch from the default branch, linked to it as its Development.
 
+**Unlink Branch.** Unlink a branch; the branch stays.
+
+**Not a Duplicate.** Take back 'duplicate of #n'.
+
 **Set Issue Type.** Bug, feature, task and so on.
 
 **Reorder Sub-issues.** Change the order of sub-issues.
@@ -3088,7 +3100,11 @@ Control coverage: 365 audited sites (365 helped).
 
 **Read Tag Message.** Who made the tag, when, and its message.
 
-**Show Details.** The runner's state, system and labels.
+**Show Details.** The package's type, visibility and repository.
+
+**Delete Package Version.** Choose a version, newest first with its tags, and delete it after asking.
+
+**Delete Package.** Delete the package and every version, after you type its name.
 
 **Accept Invitation.** Join the repository with the access offered.
 
@@ -3113,6 +3129,10 @@ Control coverage: 365 audited sites (365 helped).
 **Clone.** Copy it to a folder on this computer.
 
 **Pin.** Keep it under Repositories > Pinned.
+
+**Star Lists.** Choose which of your star lists it is on.
+
+**Rename or Delete Star List.** In Star Lists: rename the list this row is on, change who sees it, or delete it.
 
 **Open.** Select the person's node in the tree.
 

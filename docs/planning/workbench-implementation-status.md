@@ -171,6 +171,22 @@ Repository... (`Ctrl+Alt+T`, `repo_transfer.py`) with a typed confirmation.
 **2026-11-18, commit activity as tables.** Repository > Insights > Commit
 Activity (`repo_activity.py`, explore view `commit_stats`).
 
+**2026-11-18, My Packages.** Repositories > My Packages with Delete Package
+Version... and Delete Package... (`packages.py`,
+`github_workbench_packages.py`). The sign-in asks `user` (Set Your Status
+needs it), `read:packages` and `delete:packages`; `INSUFFICIENT_SCOPES` is
+said as sign in again.
+
+**2026-11-18, star lists.** Repositories > Star Lists, New Star List...,
+Star Lists... and Rename or Delete Star List... (`star_lists.py`,
+`github_workbench_star_lists.py`).
+
+**2026-11-18, profiles.** People > My Profile and each person's Profile
+(`profile.py`, explore views `my_profile` and `person_profile`).
+
+**2026-11-18, issue links.** Unlink Branch... and Not a Duplicate... on an
+issue (`issue_links.py`).
+
 What is built: the editor menu and QUILL Lite route GitHub browsing doors to
 the shared Workbench. Native Items, Explore, review, permissions, and
 repository administration features are reached through their Workbench

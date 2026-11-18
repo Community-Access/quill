@@ -32,6 +32,14 @@ NODE_HELP: dict[str, str] = {
         "Runners: the machines this repository runs its own jobs on, online or not, busy "
         "or idle, with their labels. Only administrators can see them."
     ),
+    ":star_lists": (
+        "Star Lists: every repository on each of your star lists, the list's name first. "
+        "Ctrl+N makes a list; Star Lists on any repository chooses its lists."
+    ),
+    ":packages": (
+        "My Packages: your container images and npm, Maven, RubyGems and NuGet packages, "
+        "with Delete Package Version and Delete Package on each."
+    ),
     ":invitations": (
         "Invitations: repositories you have been invited to, who invited you and with what "
         "access. Accept or Decline from a row's context menu."
@@ -207,7 +215,14 @@ NODE_HELP: dict[str, str] = {
     ),
     "repository:general": "General: the name, visibility and default branch. Enter opens one.",
     "person:person": "A person: their repositories, activity, followers and who they follow.",
+    "person:person_profile": (
+        "Profile: who this person is, their year of contributions as numbers, and what they pinned."
+    ),
     "person:person_repositories": "Repositories: this person's public repositories.",
+    ":my_profile": (
+        "My Profile: your profile as GitHub shows it, your year of contributions as numbers, "
+        "and what you pinned."
+    ),
     "person:person_activity": "Activity: what this person did lately on GitHub.",
     "person:person_followers": "Followers: who follows this person.",
     "person:person_following": "Following: who this person follows.",

@@ -958,8 +958,8 @@ tree, so adding it later does not reshape anything.
 
 | Feature | Status today | New home |
 |---|---|---|
-| Close reason: completed, not planned, or duplicate of #n | **Built 2026-11-17.** Close or Reopen... asks the reason; a duplicate names its original through GraphQL `closeIssue`; the sheet's State shows it | Item > Close Issue... asks the reason; the details pane shows it |
-| Linked pull requests and branches for an issue ("Development"), and "create a branch for this issue" | **Built 2026-11-17.** Linked branches on the issue sheet's Relationships page; Create Branch for This Issue... (`createLinkedBranch`). Unlinking a branch (`deleteLinkedBranch`) is not built yet | Issue details; Item > Linked Pull Requests; Item > Create Branch for Issue... (next to Start in Local Worktree) |
+| Close reason: completed, not planned, or duplicate of #n | **Built 2026-11-17.** Close or Reopen... asks the reason; a duplicate names its original through GraphQL `closeIssue`; the sheet's State shows it. Not a Duplicate... (2026-11-18, `unmarkIssueAsDuplicate`, `quill/core/github/issue_links.py`) takes the mark back | Item > Close Issue... asks the reason; the details pane shows it |
+| Linked pull requests and branches for an issue ("Development"), and "create a branch for this issue" | **Built 2026-11-17.** Linked branches on the issue sheet's Relationships page; Create Branch for This Issue... (`createLinkedBranch`). Unlink Branch... (2026-11-18, `deleteLinkedBranch`, `quill/core/github/issue_links.py`) lists the linked branches and unlinks one after asking; the branch stays | Issue details; Item > Linked Pull Requests; Item > Create Branch for Issue... (next to Start in Local Worktree) |
 | Saved replies | **Inserting built 2026-11-17** (the comment composer's Insert Saved Reply); managing them stays on GitHub | Item > Insert Saved Reply in every comment box; Tools > Workbench Options > Saved Replies |
 | Wiki | Roadmap GX12, not built | Repository > Wiki (pages as a list, read in details, edit in the editor) |
 | Repository invitations: accept or decline | **Built 2026-11-18.** Needs My Attention > Invitations lists them (who invited you, the access, expired or not); Accept Invitation... (Enter) and Decline Invitation... ask first (`quill/core/github/repo_invitations.py`) | Needs My Attention > Invitations |
@@ -973,7 +973,7 @@ tree, so adding it later does not reshape anything.
 
 | Feature | Status today | New home |
 |---|---|---|
-| Packages (GitHub Packages, container registry) | Not found; only token scopes mention it | Repository > Packages; Repositories > My Packages |
+| Packages (GitHub Packages, container registry) | **Built 2026-11-18:** Repositories > My Packages (explore view `my_packages`, row type `package`; `GET /user/packages` once per package type), Delete Package Version... (versions newest first with container tags; a 400 for the only or a heavily downloaded version is said) and Delete Package... (typed name), in `quill/core/github/packages.py` and `quill/ui/github_workbench_packages.py`. An organization's packages and restoring remain planned | Repository > Packages; Repositories > My Packages |
 | Teams and organization members | Out of scope by a code comment ("Organizations in, Teams out"); roadmap GX13 adds team permissions. Now in scope: section 18.3.3 | Repositories > Organizations > org > Members, Teams; People > My Teams |
 | Insights charts as tables: commit activity, code frequency, punch card | **Built 2026-11-18:** Repository > Insights > Commit Activity (explore view `commit_stats`, `quill/core/github/repo_activity.py`): `/stats/participation`, `/stats/commit_activity` (twelve weeks, busiest day), `/stats/code_frequency`, `/stats/punch_card` (ten busiest hours, UTC) and `/stats/contributors` (commits, lines added and removed), each row a sentence; a 202 says "still counting", and no statistics says why | Repository > Insights (tables, never charts only) |
 | Dependency graph and software bill of materials (SBOM) export | **Built 2026-11-18:** Repository > Export Software Bill of Materials... (`Ctrl+Alt+B`, also on Repository Actions) saves `GET /repos/{owner}/{repo}/dependency-graph/sbom` as an SPDX (Software Package Data Exchange) JSON file and says the package count; a repository without a dependency graph is told where to turn it on (`quill/core/github/runners_sbom.py`) | Repository > Security > Dependencies |
@@ -981,8 +981,8 @@ tree, so adding it later does not reshape anything.
 | Hide a comment | **Built 2026-11-18** in the timeline: Hide or Show Comment... on the comment at the cursor, for a reason (`minimizeComment`, `unminimizeComment`; `quill/core/github/comment_moderation.py`) | Details > Hide Comment... |
 | Transfer a repository | **Built 2026-11-18:** Repository > Transfer Repository... (`Ctrl+Alt+T`, also on Repository Actions; `POST /repos/{owner}/{repo}/transfer`). Asks the new owner, then the typed full name (tier 3, needs administration); says whether it moved at once or waits for a person to accept; 403 and 422 said in words (`quill/core/github/repo_transfer.py`) | Repository > Settings > Transfer... |
 | Self-hosted runners | **Built 2026-11-18,** read-only: Repository > Actions > Runners (`GET /repos/{owner}/{repo}/actions/runners`), row type `runner` reading "name: online, busy, Linux" with labels in the details; administrators only, and anyone else is told so in the node note (`quill/core/github/runners_sbom.py`). Registering and removing a runner stay planned | Repository > Actions > Runners (read-only) |
-| Star lists | Not found | Repositories > Starred > each list |
-| Your profile and status | **Status built 2026-11-18:** Account > Set Your Status... (`Ctrl+Alt+S`, `changeUserStatus`; message, emoji by name, busy, when it clears; `quill/core/github/user_status.py`). The profile itself is not built | Account > Profile and Status... |
+| Star lists | **Built 2026-11-18:** Repositories > Star Lists (explore view `star_lists`, `viewer.lists`): every repository on every list as an ordinary repository row, the list's name first, empty lists named in the node note. New Star List... (`Ctrl+N`, `createUserList`), Star Lists... on any repository row (`updateUserListsForItem`, current lists checked), Rename or Delete Star List... on a Star Lists row (`updateUserList`, `deleteUserList`). Needs the `user` scope (`quill/core/github/star_lists.py`, `quill/ui/github_workbench_star_lists.py`) | Repositories > Starred > each list |
+| Your profile and status | **Status built 2026-11-18:** Account > Set Your Status... (`Ctrl+Alt+S`, `changeUserStatus`; message, emoji by name, busy, when it clears; `quill/core/github/user_status.py`). **Profile built 2026-11-18:** People > My Profile (`viewer`) and Profile first under every person (`user(login)`; explore views `my_profile`, `person_profile`): who they are, bio, status, website, the year's contributions by kind (`contributionsCollection`), the calendar as the busiest day, longest and current streak and a row per month, and `pinnedItems` as repository rows (`quill/core/github/profile.py`). Editing the profile stays on GitHub | Account > Profile and Status... |
 
 ### 14.3 Brought in after all (Jeff, 2026-11-09: "If I can do it in GitHub I should be able to do it")
 
@@ -1389,6 +1389,13 @@ is missing. The Workbench does the same and goes further.
   `admin:ssh_signing_key`, `security_events`, `codespace`, `copilot`,
   `read:audit_log`. Optional, risky ones (`delete_repo`, `delete:packages`,
   `admin:org`) are unchecked by default and each says why you might want it.
+  Sign In with GitHub itself asks for `delete_repo` and, since 2026-11-18,
+  `delete:packages`, following Jeff's 2026-11-08 choice of one sign-in that
+  covers every Workbench command; both commands still ask first, and Delete
+  Package and Delete Repository make you type the name. The same day `user`
+  replaced `user:follow` in the sign-in, because `changeUserStatus` (Set Your
+  Status) needs `user`, and a GraphQL `INSUFFICIENT_SCOPES` error is now said
+  as "sign in with GitHub again" with GitHub's own words after it.
 - **One step adds every missing one.** For the OAuth device sign-in (PR 1794),
   Add Permissions... runs the device flow again asking for the old scopes plus
   the new ones, and you approve once on GitHub. For a classic token, it opens

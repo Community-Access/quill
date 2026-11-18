@@ -2,6 +2,41 @@
 
 ## 2.0.0
 
+### Unlinking a branch, and taking back "duplicate of" (2026-11-18)
+
+**Unlink Branch...** on an issue takes a linked branch off its Development,
+leaving the branch, and **Not a Duplicate...** takes back "duplicate of #n"
+when an issue was closed against the wrong one. Chapter 4 of the GitHub Guide
+has the details.
+
+### Profiles as sentences (2026-11-18)
+
+**People > My Profile** in the GitHub Workbench, and **Profile** under any
+person, read a GitHub profile as rows: who they are, their bio and status,
+the year's contributions by kind, the contribution calendar as numbers (the
+busiest day, the longest and current streak, and each month), and what they
+pinned. Chapter 12 of the GitHub Guide has the details.
+
+### Star lists (2026-11-18)
+
+**Repositories > Star Lists** in the GitHub Workbench lists every repository
+on each of your GitHub star lists, the list's name first. `Ctrl+N` there makes
+a list, **Star Lists...** on any repository chooses which lists it is on, and
+**Rename or Delete Star List...** changes or deletes a list. Chapter 7 of the
+GitHub Guide has the details.
+
+### My Packages, and Set Your Status that works (2026-11-18)
+
+**Repositories > My Packages** in the GitHub Workbench lists your container
+images and npm, Maven, RubyGems and NuGet packages, each as one sentence, with
+**Delete Package Version...** and **Delete Package...** on each, both asking
+first. Sign In with GitHub now asks for the `user` permission instead of
+`user:follow`, because GitHub lets **Set Your Status...** change your status
+only with `user`, and for `read:packages` and `delete:packages`. If an account
+is missing a permission a command needs, QUILL now says to sign in again
+rather than repeating GitHub's message alone. Chapters 1 and 7 of the GitHub
+Guide have the details.
+
 ### Commit activity as tables (2026-11-18)
 
 **Repository > Insights > Commit Activity** in the GitHub Workbench reads

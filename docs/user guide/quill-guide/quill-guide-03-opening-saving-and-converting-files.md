@@ -1578,6 +1578,33 @@ GitHub's statistics charts as sentences: commits and lines each week, the
 busiest hours and each contributor. See
 [Commit activity, as tables](../github-guide/github-guide-07-code-and-repositories.html#commit-activity-as-tables).
 
+#### Your packages
+
+**Repositories > My Packages** in the GitHub Workbench lists your container
+images and other packages, with Delete Package Version... and Delete
+Package... on each. See
+[Packages](../github-guide/github-guide-07-code-and-repositories.html#packages).
+
+#### Star lists
+
+**Repositories > Star Lists** in the GitHub Workbench lists your star lists'
+repositories; `Ctrl+N` there makes a list, and **Star Lists...** on any
+repository chooses its lists. See
+[Star lists](../github-guide/github-guide-07-code-and-repositories.html#star-lists).
+
+#### Profiles
+
+**People > My Profile** in the GitHub Workbench, and **Profile** under any
+person, read a profile as sentences, with the contribution calendar as
+numbers. See
+[Profiles](../github-guide/github-guide-12-the-workbench.html#profiles).
+
+#### Undoing an issue's links
+
+**Unlink Branch...** and **Not a Duplicate...** on an issue in the GitHub
+Workbench undo a linked branch and a "duplicate of" mark. See
+[Closing, branches and task lists](../github-guide/github-guide-04-issues.html#closing-branches-and-task-lists).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

@@ -99,6 +99,7 @@ def test_every_declared_command_is_a_real_row() -> None:
         "save_search",
         "new_issue",
         "new_tag",  # New Here (Ctrl+N) in Tags, like new_issue in Issues
+        "new_star_list",  # New Here in Star Lists
     }
     for command_id in COMMAND_REQUIREMENTS:
         verb = command_id.removeprefix("github.workbench.")

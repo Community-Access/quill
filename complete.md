@@ -211,7 +211,7 @@ Reconcile these against actual code and the operation ledger. Some individual ac
 - [x] Review viewed/unviewed state, multiline/file comments, whitespace options, per-commit review, changed-since-review, suggestions and pending review drafts. *(2026-11-17: viewed and unviewed files, Show Only Files Not Viewed and file-level comments built (`review_viewed.py`, `github_pr_review_viewed.py`); multi-line comments, suggestions, changed-since-review and pending reviews were already there. 2026-11-18: Hide Whitespace Changes and Choose Commit... in the diff window (`commit_review.py`).)*
 - [ ] Merge queue as a place; required policy explanation, auto-merge and batch merges of independently eligible PRs. *(2026-11-17: Repository > Merge Queue, Why Can't I Merge? with every blocker for the exact head commit, Merge merging only the commit it checked, Auto-Merge... and Add to or Remove from Merge Queue... on the row (`merge_readiness.py`, `merge_queue.py`, `github_workbench_merge.py`). Remaining: batch merges.)*
 - [ ] Commit statuses, environments, deployment protection and release/deployment evidence. *(2026-11-18: Set Status... on a commit (`commit_status.py`).)*
-- [ ] Packages, runners, dependency graph/SBOM, insights/network/traffic/contributions as readable tables. *(2026-11-18: Runners, read-only, and Export Software Bill of Materials... (`runners_sbom.py`); Commit Activity as tables (`repo_activity.py`). Packages remain.)*
+- [ ] Packages, runners, dependency graph/SBOM, insights/network/traffic/contributions as readable tables. *(2026-11-18: Runners, read-only, and Export Software Bill of Materials... (`runners_sbom.py`); Commit Activity as tables (`repo_activity.py`); My Packages (`packages.py`).)*
 - [ ] Git LFS storage/locks and account/organization export or migration capabilities with correct scope dispositions.
 - [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
 - [ ] Installed/authorized Apps, repository grants, install requests, suspend/unsuspend and OIDC subject templates.
@@ -1139,22 +1139,22 @@ Source: PRD section 14. Its “today” statements describe the source audit rev
 
 | Feature | Status today | New home |
 |---|---|---|
-| Close reason: completed, not planned, or duplicate of #n | Not found: closing has no reason | Item > Close Issue... asks the reason; the details pane shows it |
-| Linked pull requests and branches for an issue ("Development"), and "create a branch for this issue" | Not found | Issue details; Item > Linked Pull Requests; Item > Create Branch for Issue... (next to Start in Local Worktree) |
+| Close reason: completed, not planned, or duplicate of #n | **Built:** Close or Reopen... asks the reason (2026-11-17); Not a Duplicate... takes the mark back (2026-11-18, `issue_links.py`) | Item > Close Issue... asks the reason; the details pane shows it |
+| Linked pull requests and branches for an issue ("Development"), and "create a branch for this issue" | **Built:** the issue sheet's Relationships page and Create Branch for This Issue... (2026-11-17); Unlink Branch... (2026-11-18, `issue_links.py`) | Issue details; Item > Linked Pull Requests; Item > Create Branch for Issue... (next to Start in Local Worktree) |
 | Saved replies | Roadmap GX05 and GX12, not built | Item > Insert Saved Reply in every comment box; Tools > Workbench Options > Saved Replies |
 | Wiki | Roadmap GX12, not built | Repository > Wiki (pages as a list, read in details, edit in the editor) |
-| Repository invitations: accept or decline | Seen only as a notification type | Needs My Attention > Invitations |
-| Edit description, website and features (issues, wiki, discussions, projects on or off) | Rename, visibility, default branch and topics only | Repository > Settings > General |
-| Rulesets: read them | Read only inside merge readiness, with a link out | Repository > Settings > Rulesets (read-only list; editing stays on github.com) |
-| Enable or disable a workflow | Not found | Workflow context menu; Item menu |
-| Revert a merged pull request | Not found | PR context menu > More > Revert... |
+| Repository invitations: accept or decline | **Built 2026-11-18** (`repo_invitations.py`) | Needs My Attention > Invitations |
+| Edit description, website and features (issues, wiki, discussions, projects on or off) | **Built:** the repository sheet's Description and feature switches (`sheets_repo.py`) | Repository > Settings > General |
+| Rulesets: read them | **Built:** the ruleset sheet (`sheets_code.py`, `rulesets.py`) | Repository > Settings > Rulesets (read-only list; editing stays on github.com) |
+| Enable or disable a workflow | **Built 2026-11-18:** Turn Workflow On or Off... (`workflow_state.py`) | Workflow context menu; Item menu |
+| Revert a merged pull request | **Built:** Revert... on a merged pull request (`revert_pull`) | PR context menu > More > Revert... |
 | Security policy, private vulnerability reports, repository security advisories | Not found (an advisory credit appears only as a notification reason) | Repository > Security > Policy; Security > Advisories (roadmap GX11) |
 
 ### 14.2 Worth adding later (useful, less often)
 
 | Feature | Status today | New home |
 |---|---|---|
-| Packages (GitHub Packages, container registry) | Not found; only token scopes mention it | Repository > Packages; Repositories > My Packages |
+| Packages (GitHub Packages, container registry) | **Built 2026-11-18:** Repositories > My Packages, with Delete Package Version... and Delete Package... (`packages.py`); an organization's packages and restoring remain | Repository > Packages; Repositories > My Packages |
 | Teams and organization members | Out of scope by a code comment ("Organizations in, Teams out"); roadmap GX13 adds team permissions. Now in scope: section 18.3.3 | Repositories > Organizations > org > Members, Teams; People > My Teams |
 | Insights charts as tables: commit activity, code frequency, punch card | **Built 2026-11-18:** Repository > Insights > Commit Activity (`repo_activity.py`): weekly commits, code frequency, the ten busiest hours, participation and contributors, as sentences | Repository > Insights (tables, never charts only) |
 | Dependency graph and software bill of materials (SBOM) export | **Built 2026-11-18:** Repository > Export Software Bill of Materials... (`Ctrl+Alt+B`), SPDX file (`runners_sbom.py`) | Repository > Security > Dependencies |
@@ -1162,8 +1162,8 @@ Source: PRD section 14. Its “today” statements describe the source audit rev
 | Hide a comment (moderation: spam, off-topic, outdated) | Not found | Comment context in details > Hide Comment... |
 | Transfer a repository | **Built 2026-11-18:** Repository > Transfer Repository... (`Ctrl+Alt+T`), typed confirmation (`repo_transfer.py`) | Repository > Settings > Transfer... |
 | Self-hosted runners | **Built 2026-11-18:** Repository > Actions > Runners, read-only (`runners_sbom.py`); registering and removing stay planned | Repository > Actions > Runners (read-only) |
-| Star lists | Not found | Repositories > Starred > each list |
-| Your profile and status | Not found | Account > Profile and Status... |
+| Star lists | **Built 2026-11-18:** Repositories > Star Lists, New Star List..., Star Lists... on a repository, Rename or Delete Star List... (`star_lists.py`) | Repositories > Starred > each list |
+| Your profile and status | **Built 2026-11-18:** Account > Set Your Status... (`user_status.py`); People > My Profile and each person's Profile (`profile.py`) | Account > Profile and Status... |
 
 ### 14.3 Brought in after all (Jeff, 2026-11-09: "If I can do it in GitHub I should be able to do it")
 

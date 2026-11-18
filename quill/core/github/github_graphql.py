@@ -72,6 +72,12 @@ def graphql_data(
                 f"Could not {action}. GitHub rate-limited this request. Wait before retrying."
             )
         messages = [str(row.get("message", "")) for row in errors if isinstance(row, dict)]
+        if "INSUFFICIENT_SCOPES" in kinds:
+            raise GitHubItemsError(
+                f"Could not {action}. Your GitHub sign-in is missing a permission this needs. "
+                "Sign in with GitHub again, from Manage GitHub Accounts, to grant it. "
+                f"GitHub said: {'; '.join(m for m in messages if m)}"
+            )
         detail = "; ".join(message for message in messages if message) or "the request was refused"
         raise GitHubItemsError(f"Could not {action}. GitHub said: {detail}")
     data = payload.get("data")

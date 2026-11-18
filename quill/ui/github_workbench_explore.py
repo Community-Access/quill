@@ -34,6 +34,7 @@ _KINDS = {
     "notification": "notification",
     "invitation": "invitation",
     "runner": "runner",
+    "package": "package",
     "issue": "issue",
     "pr": "pull_request",
     "label": "label",

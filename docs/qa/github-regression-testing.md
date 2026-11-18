@@ -92,7 +92,7 @@ and exits with 1 when anything failed.
 Some results depend on what the token may do:
 
 - Projects need the `project` scope (`gh auth refresh -s project`).
-- Following someone needs `user:follow`; the run follows and unfollows
+- Following someone needs `user:follow`, which `user` includes; the run follows and unfollows
   `octocat`, and leaves alone whether you followed them before.
 - Reading an organization uses `--org` (Community-Access by default) and never
   changes it.

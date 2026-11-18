@@ -170,7 +170,9 @@ What QUILL asks GitHub to allow, and why:
   repositories and creating or forking into them.
 - `project`: Projects boards.
 - `security_events`: code-scanning and Dependabot alerts.
-- `user:follow`: following and unfollowing people.
+- `user`: **Set Your Status**, and following and unfollowing people.
+- `read:packages` and `delete:packages`: **My Packages**, and deleting a
+  package or one of its versions, which asks first.
 - `delete_repo`: **Delete Repository**. It still makes you type the
   repository's full name before it deletes anything.
 

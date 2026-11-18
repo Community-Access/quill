@@ -115,12 +115,28 @@ _FIXED: tuple[NodeSpec, ...] = (
     ),
     _n("starred", "Starred", "repositories", loader="explore:starred", row_type="repository"),
     _n(
+        "star_lists",
+        "Star Lists",
+        "repositories",
+        needs=_SIGN_IN,
+        loader="explore:star_lists",
+        row_type="repository",
+    ),
+    _n(
         "watched",
         "Watched",
         "repositories",
         needs=_SIGN_IN,
         loader="explore:watched",
         row_type="repository",
+    ),
+    _n(
+        "packages",
+        "My Packages",
+        "repositories",
+        needs=_SIGN_IN,
+        loader="explore:my_packages",
+        row_type="package",
     ),
     _n(
         "organizations",
@@ -166,6 +182,14 @@ _FIXED: tuple[NodeSpec, ...] = (
         row_type="saved_search",
     ),
     _n("people", "People"),
+    _n(
+        "my_profile",
+        "My Profile",
+        "people",
+        needs=_SIGN_IN,
+        loader="explore:my_profile",
+        row_type="mixed",
+    ),
     _n(
         "following",
         "People I Follow",
@@ -403,6 +427,7 @@ _PERSON: tuple[NodeSpec, ...] = (
     *(
         NodeSpec(key, label, "person", scope=Scope.PERSON, loader=f"explore:{view}", row_type=row)
         for key, label, view, row in (
+            ("person_profile", "Profile", "person_profile", "mixed"),
             ("person_repositories", "Repositories", "person_repos", "repository"),
             ("person_activity", "Activity", "person_activity", "event"),
             ("person_followers", "Followers", "person_followers", "person"),
@@ -471,16 +496,12 @@ def _planned(feature: str, node: str, reference: str = "") -> CoverageRow:
 
 PLANNED = CoverageTable((
     # 14.1, worth adding: people will look for these.
-    _planned("Close reason: completed, not planned, duplicate", "Item > Close Issue..."),
-    _planned("Linked pull requests and branches for an issue", "Item > Linked Pull Requests"),
     _planned("Saved replies", "Item > Insert Saved Reply", "GX05, GX12"),
     _planned("Wiki", "Repository > Wiki", "GX12"),
     _planned("Security policy and advisories", "Repository > Security > Advisories", "GX11"),
     # 14.2, worth adding later.
-    _planned("Packages", "Repository > Packages"),
+    _planned("Packages: an organization's, and restoring", "Repositories > My Packages"),
     _planned("Dependency graph and SBOM export", "Repository > Security > Dependencies"),
     _planned("Self-hosted runners (registering and removing)", "Repository > Actions > Runners"),
-    _planned("Star lists", "Repositories > Starred > each list"),
-    _planned("Profile and status", "Account > Profile and Status..."),
 ))
 """GitHub features with a future home and no node yet (GitHub PRD 14.1, 14.2)."""

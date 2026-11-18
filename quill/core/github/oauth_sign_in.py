@@ -108,7 +108,20 @@ WORKBENCH_SCOPES: tuple[tuple[str, str], ...] = (
         "security_events",
         "Code-scanning and Dependabot alerts: listing, dismissing and reopening them.",
     ),
-    ("user:follow", "Follow and Unfollow on a person's profile."),
+    (
+        "user",
+        "Set Your Status, which GitHub allows only with user, and Follow and Unfollow "
+        "on a person's profile, which user:follow alone would cover.",
+    ),
+    (
+        "read:packages",
+        "Repositories > My Packages: your packages and their versions, private ones too.",
+    ),
+    (
+        "delete:packages",
+        "Delete Package... and Delete Package Version..., which ask first, and type the "
+        "name for a whole package.",
+    ),
     (
         "delete_repo",
         "Delete Repository. Jeff chose one sign-in that covers every Workbench "

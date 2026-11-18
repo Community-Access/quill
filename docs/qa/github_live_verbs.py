@@ -189,9 +189,18 @@ def create_branch(run: Any) -> str:
     name = f"{branch_name_for(number, TAG)}-{int(time.time())}"
     said = create_linked_branch(run.api, run.repo, number, name)
     linked = linked_branches(run.api, run.repo, number)
+    from quill.core.github.issue_links import linked_branch_ids, unlink_branch
+
+    link = next(
+        (each for each in linked_branch_ids(run.api, run.repo, number) if each.name == name), None
+    )
+    if link is not None:
+        unlink_branch(run.api, number, link)
+    still = linked_branches(run.api, run.repo, number)
     run.rest("DELETE", f"/repos/{run.repo}/git/refs/heads/{name}")
     _expect(name in linked, f"not linked: {linked}")
-    return f"{said} It was listed as linked, then deleted."
+    _expect(name not in still, "still linked after Unlink Branch")
+    return f"{said} It was listed as linked, unlinked, then deleted."
 
 
 def labels(run: Any) -> str:
@@ -376,6 +385,23 @@ def tags_made_and_deleted(run: Any) -> str:
     delete_tag(run.api, run.repo, annotated)
     _expect(heard.endswith(": by the live run"), f"the message read back as {heard!r}")
     return f"{said} Deleted it again. Annotated: {heard}"
+
+
+def star_list_round_trip(run: Any) -> str:
+    """Make a list, put the test repository on it, rename it, then delete it."""
+    from quill.core.github import star_lists as sl
+
+    name = f"quill-live-{int(time.time()) % 100000}"
+    sl.create_list(run.api, name, "made by the live run", private=True)
+    found = next(each for each in sl.fetch_lists(run.api) if each.name == name)
+    try:
+        sl.set_lists_for(run.api, run.repo, [found])
+        again = next(each for each in sl.fetch_lists(run.api) if each.name == name)
+        _expect(any(repo == run.repo for repo, _d in again.repositories), "not on the list")
+        said = sl.update_list(run.api, again, name=f"{name}-r", description="", private=True)
+    finally:
+        sl.delete_list(run.api, found)
+    return f"{said} Deleted it again."
 
 
 def commit_status(run: Any) -> str:
@@ -830,6 +856,8 @@ VERBS: dict[str, Scenario | str] = {
     "clone": "needs Jeff: clones into a folder you choose, then opens it in the editor",
     "close_reopen": close_reopen,
     "create_branch": create_branch,
+    "unlink_branch": "with create_branch: linked, unlinked, then deleted",
+    "not_duplicate": "needs Jeff: the duplicate mark needs a second issue closed as a duplicate",
     "edit_tasks": task_lists,
     "convert_tasks": "with edit_tasks: checked, converted and linked",
     "comment": comment,
@@ -856,6 +884,11 @@ VERBS: dict[str, Scenario | str] = {
     "new_tag": tags_made_and_deleted,
     "delete_tag": "with new_tag: made, then deleted",
     "transfer_repository": "not here: needs a second account or an organization to receive it",
+    "delete_package_version": "not here: the live run publishes no package to delete",
+    "delete_package": "not here: the live run publishes no package to delete",
+    "new_star_list": star_list_round_trip,
+    "star_lists": "with new_star_list: the test repository put on the list",
+    "edit_star_list": "with new_star_list: renamed, then deleted",
     "commit_status": commit_status,
     "user_status": "needs Jeff: changes the status on your own GitHub profile",
     "accept_invitation": "not here: needs an invitation from a second GitHub account",
@@ -1106,6 +1139,25 @@ def commit_activity(run: Any) -> str:
     return rows[0].label
 
 
+def my_packages(run: Any) -> str:
+    from quill.core.github.packages import PackageError, fetch_packages
+
+    try:
+        rows = fetch_packages(run.api)
+    except PackageError as exc:
+        return f"refused, in words: {exc}"
+    return f"{len(rows)} packages" + (f"; first: {rows[0].label}" if rows else "")
+
+
+def my_profile(run: Any) -> str:
+    from quill.core.github.profile import fetch_profile
+
+    rows = fetch_profile(run.api, "")
+    _expect(bool(rows), "no profile rows")
+    year = next((row.label for row in rows if "in the last year" in row.label), "no year row")
+    return f"{rows[0].label} {year}"
+
+
 def check_with_git(run: Any) -> str:
     done = subprocess.run(["git", "--version"], capture_output=True, text=True, check=False)
     _expect(done.returncode == 0, "git is not installed")
@@ -1122,6 +1174,8 @@ FEATURES: dict[str, Scenario | str] = {
     "Why Can't I Merge?, for the exact commit": why_cant_merge,
     "Runners and Export Software Bill of Materials (PRD 14.2)": runners_and_sbom,
     "Commit Activity as tables (PRD 14.2)": commit_activity,
+    "My Packages, or the permission it needs said in words (PRD 14.2)": my_packages,
+    "My Profile, with the contribution calendar as numbers (PRD 14.2)": my_profile,
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

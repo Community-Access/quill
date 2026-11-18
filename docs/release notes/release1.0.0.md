@@ -2167,6 +2167,20 @@ repository's Insights, reads the same numbers aloud: how many commits each
 week and which day was busiest, lines added and removed, the hours of the week
 the project is busiest, and what each contributor has done.
 
+A project that publishes container images or npm packages can see them all
+under **My Packages**, and clear out an old version without opening a
+browser. And the stars you have sorted into lists on GitHub are under **Star
+Lists**, where one key puts a repository on the lists you choose.
+
+A GitHub profile's calendar of green squares has never said anything to a
+screen reader. **My Profile**, and **Profile** under anyone you look up, say
+it in numbers instead: the year's contributions, the busiest day, the longest
+streak and the current one, and each month in turn.
+
+Two small mistakes can now be put right where they were made: a branch linked
+to the wrong issue is unlinked with **Unlink Branch...**, and an issue closed
+as a duplicate of the wrong one is put straight with **Not a Duplicate...**.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

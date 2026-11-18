@@ -36,6 +36,11 @@ from quill.ui.github_workbench_merge import (
     MERGE_VERBS,
     GitHubWorkbenchMergeMixin,
 )
+from quill.ui.github_workbench_packages import (
+    PACKAGE_REASONS,
+    PACKAGE_VERBS,
+    GitHubWorkbenchPackagesMixin,
+)
 from quill.ui.github_workbench_practice import (
     PRACTICE_REASONS,
     PRACTICE_VERBS,
@@ -45,6 +50,11 @@ from quill.ui.github_workbench_pull_tools import (
     PULL_TOOL_REASONS,
     PULL_TOOL_VERBS,
     GitHubWorkbenchPullToolsMixin,
+)
+from quill.ui.github_workbench_star_lists import (
+    STAR_LIST_REASONS,
+    STAR_LIST_VERBS,
+    GitHubWorkbenchStarListsMixin,
 )
 from quill.ui.github_workbench_tier2 import (
     TIER2_REASONS,
@@ -69,6 +79,8 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **DRY_RUN_VERBS,
     **PRACTICE_VERBS,
     **TIER2_VERBS,
+    **PACKAGE_VERBS,
+    **STAR_LIST_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -81,6 +93,8 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **DRY_RUN_REASONS,
     **PRACTICE_REASONS,
     **TIER2_REASONS,
+    **PACKAGE_REASONS,
+    **STAR_LIST_REASONS,
 }
 
 
@@ -91,6 +105,8 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchDryRunMixin,
     GitHubWorkbenchPracticeMixin,
     GitHubWorkbenchTier2Mixin,
+    GitHubWorkbenchPackagesMixin,
+    GitHubWorkbenchStarListsMixin,
 ):
     items: Any
     frame: Any
