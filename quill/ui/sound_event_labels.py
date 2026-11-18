@@ -97,6 +97,8 @@ EVENT_GROUPS: tuple[tuple[str, tuple[str, ...]], ...] = (
             "compare_next_difference",
             "compare_previous_difference",
             "compare_no_more_differences",
+            "diff_line_added",
+            "diff_line_removed",
         ),
     ),
     (
@@ -245,6 +247,8 @@ LABELS: dict[str, str] = {
     "compare_enter_mode": "Compare mode on",
     "compare_exit_mode": "Compare mode off",
     "compare_next_difference": "Next difference",
+    "diff_line_added": "Arrived on an added line of a diff",
+    "diff_line_removed": "Arrived on a removed line of a diff",
     "compare_previous_difference": "Previous difference",
     "compare_no_more_differences": "No more differences",
     # The assistant

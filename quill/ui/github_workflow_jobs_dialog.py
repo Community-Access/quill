@@ -19,6 +19,7 @@ from quill.ui.dialog_contract import (
     show_modal_dialog,
 )
 from quill.ui.dpi import dip_size
+from quill.ui.github_workflow_job_follow import WorkflowJobFollowMixin
 from quill.ui.spoken_name import set_spoken_name
 
 if TYPE_CHECKING:
@@ -27,7 +28,7 @@ if TYPE_CHECKING:
     from quill.core.github.items_provider import GitHubItemsProvider
 
 
-class WorkflowJobsDialog:
+class WorkflowJobsDialog(WorkflowJobFollowMixin):
     """One run's jobs and readable logs, shared by QUILL and Lite."""
 
     def __init__(
@@ -149,6 +150,7 @@ class WorkflowJobsDialog:
         actions.Add(self._open_run_btn, 0, wx.RIGHT, 6)
         actions.Add(self._digest_btn, 0, wx.RIGHT, 6)
         actions.Add(self._rerequest_btn, 0, wx.RIGHT, 6)
+        self._build_follow(panel, actions)
         actions.AddStretchSpacer()
         actions.Add(close_btn)
         root.Add(actions, 0, wx.EXPAND | wx.ALL, 8)

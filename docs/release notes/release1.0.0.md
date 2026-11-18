@@ -2066,6 +2066,27 @@ and you hear why. What you checked is what merges. Turning on auto-merge or
 joining the merge queue is on the same row, and a repository's **Merge
 Queue** reads its queue in order: who is next, and what each is waiting for.
 
+#### Hearing the shape of a change
+
+A sighted reviewer sees a diff's shape before reading a word of it: a wall of
+green, a single red line. Arrowing through a pull request's patch lines in
+QUILL now has a shape too. An added line and a removed line each make a short
+sound as you arrive, so a run of additions or a lone deletion is heard at
+once, and **Changed Lines Only** takes the unchanged lines out altogether, so
+the arrows go from one change to the next. Both sounds are in the Sound Scheme
+window, to preview, change or turn off, and VS Code's own diff sounds are
+there for anyone who already knows them.
+
+#### A build you can listen to
+
+Waiting on a build used to mean going back to it every minute to see whether
+anything had changed. In the jobs window, check **Follow This Job** and get on
+with something else: QUILL says each step as it starts and as it finishes,
+"Step 4, Run tests, failed.", and the job's end, then stops by itself. `Alt+8`
+answers "how far along is it?" whenever you ask. GitHub keeps a running job's
+log to its own web page, so the full log still arrives when the job is done,
+and QUILL says so, rather than pretending otherwise.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

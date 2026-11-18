@@ -29367,6 +29367,26 @@ and Repository &gt; Merge Queue lists the default branch’s queue.
 <code>quill/core/github/merge_readiness.py</code>,
 <code>quill/core/github/merge_queue.py</code>,
 <code>quill/ui/github_workbench_merge.py</code>.</p>
+<p><strong>Hearing a diff (GitHub PRD 22.12).</strong> The pull request
+diff window’s patch list has Changed Lines Only (<code>Alt+H</code>),
+which drops context lines and keeps hunk headings, the list mapping each
+row back to its patch line (<code>diff_lines.changed_only</code>).
+Arriving on one added or removed line posts <code>diff_line_added</code>
+or <code>diff_line_removed</code> (<code>SoundEvent</code>, Comparing
+group in the Sound Scheme window); Ink has
+<code>diff_line_added.wav</code> and <code>diff_line_removed.wav</code>
+(<code>scripts/gen_ink_sounds.py --diff-lines</code>), and VS Code
+Signals maps them to <code>diffLineInserted.wav</code> and
+<code>diffLineDeleted.wav</code>.</p>
+<p><strong>Following a running job (GitHub PRD 22.12).</strong> The
+workflow jobs window’s Follow This Job (<code>Alt+W</code>) polls the
+selected job every 10 seconds (<code>job_follow.FOLLOW_SECONDS</code>, a
+<code>wx.Timer</code>, the read on a worker thread and back through
+<code>wx.CallAfter</code>) and says what changed
+(<code>step_changes</code>): steps starting and finishing, and the job’s
+end, after which it stops. Alt+8, a char hook on the window, says
+<code>progress_sentence</code>. GitHub’s REST job log exists only once a
+job ends, so the steps are what can be followed.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

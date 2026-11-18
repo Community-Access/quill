@@ -280,3 +280,46 @@ def test_timeline_dialog_shows_the_history(wx_app) -> None:
     finally:
         dialog.dialog.Destroy()
         frame.Destroy()
+
+
+# -- hearing a diff (GitHub PRD 22.12) --------------------------------------------
+
+
+def test_changed_lines_only_leaves_out_the_unchanged_and_keeps_the_mapping(diff_dialog) -> None:
+    every = [
+        diff_dialog._patch_list.GetString(i) for i in range(diff_dialog._patch_list.GetCount())
+    ]
+    diff_dialog._changed_only.SetValue(True)
+    diff_dialog._on_changed_only(None)
+    shown = [
+        diff_dialog._patch_list.GetString(i) for i in range(diff_dialog._patch_list.GetCount())
+    ]
+    assert len(shown) < len(every)
+    assert not any(row.startswith("Unchanged") for row in shown)
+    assert shown[0] == every[0]  # the hunk heading stays
+    assert "changed line" in diff_dialog.spoken[-1] and "unchanged" in diff_dialog.spoken[-1]
+    added = next(i for i, row in enumerate(shown) if row.startswith("Added"))
+    diff_dialog._patch_list.SetSelection(added)
+    assert [line.kind for line in diff_dialog._selected_patch_lines()] == ["added"]
+    diff_dialog._changed_only.SetValue(False)
+    diff_dialog._on_changed_only(None)
+    assert diff_dialog._patch_list.GetCount() == len(every)
+    assert [line.kind for line in diff_dialog._selected_patch_lines()] == ["added"]
+
+
+def test_arriving_on_an_added_or_removed_line_plays_its_sound(diff_dialog, monkeypatch) -> None:
+    played: list[str] = []
+    monkeypatch.setattr("quill.ui.sound_manager.post_sound", played.append)
+    kinds = [line.kind for line in diff_dialog._patch_lines]
+    for kind, sound in (("added", "diff_line_added"), ("removed", "diff_line_removed")):
+        if kind not in kinds:
+            continue
+        diff_dialog._patch_list.SetSelection(wx.NOT_FOUND)
+        diff_dialog._patch_list.SetSelection(kinds.index(kind))
+        diff_dialog._on_patch_line(None)
+        assert played[-1] == sound
+    before = len(played)
+    diff_dialog._patch_list.SetSelection(wx.NOT_FOUND)
+    diff_dialog._patch_list.SetSelection(0)
+    diff_dialog._on_patch_line(None)
+    assert len(played) == before

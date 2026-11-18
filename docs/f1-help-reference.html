@@ -7178,6 +7178,9 @@ id="githubpulldiffcommentsmixin-quilluigithub_pr_diff_commentspy">GitHubPullDiff
 <li><code>self._marks_choice</code>: How patch lines are marked: words
 (Added line, Removed line) or symbols (plus and minus). Symbols need
 your screen reader to read punctuation.</li>
+<li><code>self._changed_only</code>: Leave out the unchanged lines
+around each change, so the arrows move from change to change. Hunk
+headings stay, so each change still says where it is.</li>
 <li><code>self._marks_note</code>: Reminds you that symbols are spoken
 only with punctuation.</li>
 <li><code>self._patch_list</code>: The selected file’s changes, one line
@@ -7601,6 +7604,15 @@ same.</li>
 <li><code>close</code>: Close the results.</li>
 <li><code>again</code>: Run the failed items again. F8 does the
 same.</li>
+</ul>
+<h4
+id="workflowjobfollowmixin-quilluigithub_workflow_job_followpy">WorkflowJobFollowMixin
+(<code>quill/ui/github_workflow_job_follow.py</code>)</h4>
+<ul>
+<li><code>self._follow_box</code>: While checked, QUILL reads the
+selected job again every few seconds and says each step as it starts and
+finishes, and the job’s end. Alt+8 says how far along it is at any
+time.</li>
 </ul>
 <h4
 id="workflowjobsdialog-quilluigithub_workflow_jobs_dialogpy">WorkflowJobsDialog

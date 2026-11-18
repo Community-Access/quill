@@ -201,6 +201,9 @@ class SoundEvent(StrEnum):
     COMPARE_NEXT_DIFFERENCE = "compare_next_difference"
     COMPARE_PREVIOUS_DIFFERENCE = "compare_previous_difference"
     COMPARE_NO_MORE_DIFFERENCES = "compare_no_more_differences"
+    # Hearing a diff (GitHub PRD 22.12): arriving on an added or a removed line.
+    DIFF_LINE_ADDED = "diff_line_added"
+    DIFF_LINE_REMOVED = "diff_line_removed"
 
     # Voice preview (Voice Browser + Download Optional Components hub)
     VOICE_PREVIEW_GENERATING = "voice_preview_generating"

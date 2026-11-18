@@ -3470,10 +3470,24 @@ release and alerts in one list, read row by row (“quill: checks passing,
 on issues (the schema’s <code>viewerCanSeeIssueFields</code>), on the
 Issue sheet and in filters.</li>
 <li><strong>Follow a running job’s log live,</strong> new lines read as
-they arrive on request, with Alt+8 for how far along it is.</li>
+they arrive on request, with Alt+8 for how far along it is. <em>Built
+2026-11-18, with one departure:</em> the REST job log exists only once a
+job ends (GitHub streams a running log only to its own page), so Follow
+This Job (<code>Alt+W</code>, jobs window) follows the job’s
+<strong>steps</strong> instead: it polls every 10 seconds off the UI
+thread and says each step starting and finishing and the job’s end, then
+stops; Alt+8 says the step it is on, how many are done and which failed.
+<code>quill/core/github/job_follow.py</code>,
+<code>quill/ui/github_workflow_job_follow.py</code>.</li>
 <li><strong>Hearing a diff:</strong> a short sound for added and removed
 lines (through the family’s sound scheme, optional), and Read Changes
-Only, which skips unchanged context.</li>
+Only, which skips unchanged context. <em>Built 2026-11-18</em> in the
+diff window: Changed Lines Only (<code>Alt+H</code>, hunk headings kept,
+<code>diff_lines.changed_only</code>) and the sound events
+<code>diff_line_added</code> and <code>diff_line_removed</code> on
+arriving at a single line (<code>diff_lines.line_sound</code>), with Ink
+clips and VS Code Signals’ <code>diffLineInserted</code> and
+<code>diffLineDeleted</code>.</li>
 <li><strong>Emoji shortcodes</strong> (<code>:rocket:</code>) read by
 name everywhere.</li>
 <li><strong>Least privilege advisor:</strong> the token health check

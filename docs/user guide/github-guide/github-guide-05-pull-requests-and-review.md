@@ -171,6 +171,11 @@ and the title.
   **Symbols** (plus and minus). Symbols are shorter, but your screen reader
   says them only when it reads punctuation, and QUILL reminds you of that when
   you choose them. Your choice is kept.
+- **Changed Lines Only** (`Alt+H`), beside it, leaves the unchanged lines
+  around each change out of the patch list, so the arrows go from change to
+  change. The hunk headings stay, so each change still says where it is. You
+  hear how many changed lines there are and how many unchanged ones were left
+  out; uncheck it to see them again.
 - **Patch lines:** (`Alt+P`), the patch one line to a row. This is where you
   comment.
 - **Comment on This Line...** (`Alt+L`), **Comment on Lines...** (`Alt+S`),
@@ -184,6 +189,13 @@ it says so and suggests the thread may be outdated.
 **Open Diff in Default App** saves the diff as a `.diff` file and opens it in
 whatever program your computer uses for those, and tells you where the file
 is.
+
+As you arrow through the patch lines, an added line and a removed line each
+have a short sound of their own, so you can hear the shape of a change before
+the words arrive. They are the sounds **Arrived on an added line of a diff**
+and **Arrived on a removed line of a diff** in the Sound Scheme window, where
+either can be previewed, changed or switched off, and they follow your sound
+setting like every other QUILL sound. Unchanged lines and headings are silent.
 
 ## Commenting on a line or a range
 

@@ -99,10 +99,25 @@ For the whole picture, choose **View Jobs and Logs...** on a run. The window
   - **What Failed...** (`Alt+F`), the digest above, for the attempt you
     chose.
   - **Re-request Check** (`Alt+C`), see below.
+  - **Follow This Job** (`Alt+W`), see below.
   - **Close**. Escape closes too.
 
 A log over 4 MB is cut off there, with a line saying so and suggesting the job
 page on GitHub. Annotations stop at 100, also with a line saying so.
+
+### Following a job while it runs
+
+GitHub shows a running job's log only on its own web page; the log QUILL Lite can
+load arrives when the job has finished. What QUILL Lite can follow while it runs is
+its steps. Select a running job and check **Follow This Job** (`Alt+W`): you
+hear where it is, for example "build: On step 3 of 9, Run tests; 2 done", and
+from then on, every few seconds, each step as it starts and as it finishes,
+"Step 3, Run tests, failed.", without your having to look. When the job ends
+you hear how, "build failed. Load Log reads its whole log.", and following
+stops by itself. Uncheck the box to stop sooner.
+
+At any moment, `Alt+8` says how far along the selected job is: the step it is
+on, how many are done, and any that have failed so far.
 
 ## Doing something about a run
 
