@@ -969,6 +969,7 @@ VERBS: dict[str, Scenario | str] = {
             "pull_codespace",
         )
     },
+    "react_release": "needs Jeff: a release on the test repository; add and remove a rocket",
     "restore_package_version": "needs Jeff: a package version deleted in the last 30 days",
     "autofix_alert": "needs Jeff: a code scanning alert on a repository with CodeQL",
     "upload_sarif": "needs Jeff: a SARIF file from a scanner, on the test repository",

@@ -46,6 +46,8 @@ REACTION_TARGETS: dict[str, str] = {
     "issue": "issues/{id}/reactions",  # an issue or a pull request itself
     "issue_comment": "issues/comments/{id}/reactions",
     "review_comment": "pulls/comments/{id}/reactions",
+    "commit_comment": "comments/{id}/reactions",
+    "release": "releases/{id}/reactions",
 }
 
 _MAX_REACTION_PAGES = 10

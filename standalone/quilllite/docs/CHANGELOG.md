@@ -2,6 +2,14 @@
 
 ## 2.0.0
 
+### Reacting to a release (2026-11-18)
+
+**React...** on a release in the GitHub Workbench adds or removes your
+reaction, from the same list of reactions as an issue's, and says which. The
+reactions already offered in the GitHub Items window and the review window
+(on issues, pull requests and their comments) are now counted as built, which
+they were. Planned GitHub endpoints fall from 476 to 467.
+
 ### Codespaces: make one, start, stop, export and publish (2026-11-18)
 
 A codespace is a computer GitHub runs in the cloud for one repository and

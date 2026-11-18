@@ -2947,8 +2947,8 @@ from a Fork…, Delete Run…, Copy Link; Properties…</li>
 <li><strong>workflow</strong>: Runs, Run Workflow on Branch…, Turn
 Workflow On or Off…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>release</strong>: Assets, Edit Release…, Draft Release
-Notes…, Upload Asset…, Compare With Previous, Compare With Default;
-More: Copy Link, Open on GitHub; Properties…</li>
+Notes…, Upload Asset…, React…, Compare With Previous; More: Compare With
+Default, Copy Link, Open on GitHub; Properties…</li>
 <li><strong>release_asset</strong>: Download, Copy Link, Delete Asset…;
 Properties…</li>
 <li><strong>branch</strong>: Commits, Compare With Default, Compare
@@ -3319,7 +3319,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 559 yes, 476 planned, 225 not needed and 744 left to
+<p>In all: 568 yes, 467 planned, 225 not needed and 744 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -10933,7 +10933,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="reactions">Reactions</h4>
-<p>15 operations: 3 yes, 12 planned.</p>
+<p>15 operations: 12 yes, 3 planned.</p>
 <table>
 <thead>
 <tr>
@@ -10974,16 +10974,14 @@ reads the list.</td>
 <tr>
 <td>Create reaction for an issue comment</td>
 <td><code>POST /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>Delete an issue comment reaction</td>
 <td><code>DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions/{reaction_id}</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>List reactions for an issue</td>
@@ -10994,16 +10992,14 @@ reads the list.</td>
 <tr>
 <td>Create reaction for an issue</td>
 <td><code>POST /repos/{owner}/{repo}/issues/{issue_number}/reactions</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>Delete an issue reaction</td>
 <td><code>DELETE /repos/{owner}/{repo}/issues/{issue_number}/reactions/{reaction_id}</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>List reactions for a pull request review comment</td>
@@ -11014,37 +11010,32 @@ reads the list.</td>
 <tr>
 <td>Create reaction for a pull request review comment</td>
 <td><code>POST /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>Delete a pull request comment reaction</td>
 <td><code>DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions/{reaction_id}</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>List reactions for a release</td>
 <td><code>GET /repos/{owner}/{repo}/releases/{release_id}/reactions</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>Create reaction for a release</td>
 <td><code>POST /repos/{owner}/{repo}/releases/{release_id}/reactions</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 <tr>
 <td>Delete a release reaction</td>
 <td><code>DELETE /repos/{owner}/{repo}/releases/{release_id}/reactions/{reaction_id}</code></td>
-<td>Planned</td>
-<td>You page on issues, pull requests, comments, discussions, releases
-(section 16.7).</td>
+<td>Yes</td>
+<td>context menu &gt; React…</td>
 </tr>
 </tbody>
 </table>

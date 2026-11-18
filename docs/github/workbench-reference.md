@@ -909,7 +909,7 @@ Keys the window answers that are not menu rows:
 - **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., View Artifacts...; More: Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link; Properties...
-- **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., Compare With Previous, Compare With Default; More: Copy Link, Open on GitHub; Properties...
+- **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., React..., Compare With Previous; More: Compare With Default, Copy Link, Open on GitHub; Properties...
 - **release_asset**: Download, Copy Link, Delete Asset...; Properties...
 - **branch**: Commits, Compare With Default, Compare Branches..., Compare With Previous, Open in Codespaces..., Copy Name, Delete Branch...; Properties...
 - **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
@@ -1054,7 +1054,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 559 yes, 476 planned, 225 not needed and 744 left to GitHub.
+In all: 568 yes, 467 planned, 225 not needed and 744 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2417,7 +2417,7 @@ In all: 559 yes, 476 planned, 225 not needed and 744 left to GitHub.
 
 #### Reactions
 
-15 operations: 3 yes, 12 planned.
+15 operations: 12 yes, 3 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2425,17 +2425,17 @@ In all: 559 yes, 476 planned, 225 not needed and 744 left to GitHub.
 | Create reaction for a commit comment | `POST /repos/{owner}/{repo}/comments/{comment_id}/reactions` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
 | Delete a commit comment reaction | `DELETE /repos/{owner}/{repo}/comments/{comment_id}/reactions/{reaction_id}` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
 | List reactions for an issue comment | `GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions` | Yes | context menu > React... |
-| Create reaction for an issue comment | `POST /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
-| Delete an issue comment reaction | `DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions/{reaction_id}` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
+| Create reaction for an issue comment | `POST /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions` | Yes | context menu > React... |
+| Delete an issue comment reaction | `DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions/{reaction_id}` | Yes | context menu > React... |
 | List reactions for an issue | `GET /repos/{owner}/{repo}/issues/{issue_number}/reactions` | Yes | context menu > React... |
-| Create reaction for an issue | `POST /repos/{owner}/{repo}/issues/{issue_number}/reactions` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
-| Delete an issue reaction | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/reactions/{reaction_id}` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
+| Create reaction for an issue | `POST /repos/{owner}/{repo}/issues/{issue_number}/reactions` | Yes | context menu > React... |
+| Delete an issue reaction | `DELETE /repos/{owner}/{repo}/issues/{issue_number}/reactions/{reaction_id}` | Yes | context menu > React... |
 | List reactions for a pull request review comment | `GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions` | Yes | context menu > React... |
-| Create reaction for a pull request review comment | `POST /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
-| Delete a pull request comment reaction | `DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions/{reaction_id}` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
-| List reactions for a release | `GET /repos/{owner}/{repo}/releases/{release_id}/reactions` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
-| Create reaction for a release | `POST /repos/{owner}/{repo}/releases/{release_id}/reactions` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
-| Delete a release reaction | `DELETE /repos/{owner}/{repo}/releases/{release_id}/reactions/{reaction_id}` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
+| Create reaction for a pull request review comment | `POST /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions` | Yes | context menu > React... |
+| Delete a pull request comment reaction | `DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions/{reaction_id}` | Yes | context menu > React... |
+| List reactions for a release | `GET /repos/{owner}/{repo}/releases/{release_id}/reactions` | Yes | context menu > React... |
+| Create reaction for a release | `POST /repos/{owner}/{repo}/releases/{release_id}/reactions` | Yes | context menu > React... |
+| Delete a release reaction | `DELETE /repos/{owner}/{repo}/releases/{release_id}/reactions/{reaction_id}` | Yes | context menu > React... |
 
 #### Releases
 

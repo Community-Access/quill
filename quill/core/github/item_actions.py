@@ -256,6 +256,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a("edit_release", "Edit Release...", _W, "push", "Change its notes, name and flags."),
         _a("release_notes", "Draft Release Notes...", help="Notes drafted from the changes."),
         _a("upload_asset", "Upload Asset...", _W, "push", "Add a file to the release."),
+        _a("react_release", "React...", _O, "sign_in", "Add or remove a reaction."),
         _COMPARE_PREVIOUS,
         _COMPARE_DEFAULT,
         _COPY_LINK,

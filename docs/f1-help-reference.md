@@ -3184,6 +3184,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Upload Asset.** Add a file to the release.
 
+**React.** Add or remove a reaction.
+
 **Compare With Previous.** Compare it with the one before: the previous tag or release, or a commit's parent.
 
 **Compare With Default.** Compare it with the default branch: commits each way, files, any open pull request.

@@ -130,6 +130,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
         )
     },
     f"{_P}codespace_delete": ("sign_in+scope:codespace", _D),
+    f"{_P}react_release": ("sign_in", _O),
     f"{_P}new_star_list": ("sign_in+scope:user", _O),
     f"{_P}star_lists": ("sign_in+scope:user", _O),
     f"{_P}edit_star_list": ("sign_in+scope:user", _V),
