@@ -2,6 +2,18 @@
 
 ## 1.0.0
 
+### GitHub Workbench: 59 more commands on rows (2026-11-18)
+
+Repositories, commits, runs, pull requests, releases, alerts, advisories,
+runners, runner groups, organizations, teams, invitations, Projects and
+your own account gain commands that each make one call to GitHub: from a
+repository's languages and star history to an organization's Dependabot
+access, a team's pending invitations, a Project's new view and a runner
+that takes one job. They are one table (`quill/core/github/quick_tables.py`),
+so menus, permissions, the live run and the API coverage table agree. The
+GitHub guide's Workbench chapter lists them under "More commands on rows".
+65 planned GitHub operations are now covered or classified.
+
 ### WordPress
 
 ### WordPress: keys, Escape, and words that were no longer true (2026-11-18)

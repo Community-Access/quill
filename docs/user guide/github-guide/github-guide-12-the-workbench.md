@@ -661,6 +661,48 @@ and close an issue; try a command with Dry Run; review and merge a pull
 request; read a failed run; and delete the repository. Each step says what to
 press and what you should hear.
 
+## More commands on rows
+
+Many rows have commands that make one call to GitHub and say what came
+back, or show a longer answer in a window to read and copy. They are on the
+row's context menu (`Shift+F10`, under More when the menu is long) and on
+the Item menu. Each asks before it changes anything, and anything that
+holds a token (a runner's setup or removal commands) goes to the clipboard
+and is never said or shown.
+
+- **A repository:** Languages, License, Star History, Mark Its Notifications
+  Read, Set a Custom Property..., Compare Dependencies... (between two
+  branches, tags or commits, with known vulnerabilities), SBOM Report,
+  Ruleset History..., Secret Scanning History, Fork Workflow Settings and
+  Fork Workflows from Private Repositories....
+- **A commit:** Branches at This Commit, Check Run Details... (a check's
+  summary and every annotation), Re-run a Check Suite..., and the reactions
+  on its comments: Reactions on a Commit Comment..., React to a Commit
+  Comment..., Remove My Reaction from a Commit Comment....
+- **A workflow run:** Read a Step's Log..., one step at a time.
+- **A pull request:** Re-request Review.... **A release:** GitHub's Release
+  Notes..., the notes GitHub writes from the changes since another tag.
+- **A secret scanning alert:** Where It Was Found. **A security advisory:**
+  Advisory Comments, Comment on Advisory..., Edit an Advisory Comment...,
+  Make a Private Fork for the Fix.
+- **Runners:** in a repository's Runners or an organization's, Just-in-Time
+  Runner... (a runner that takes one job) and Is a Runner Version
+  Retiring?...; in an organization's, New Organization Runner...; on a
+  runner, Removal Commands..., and on an organization's runner Add Runner
+  Label... and Remove Runner Label.... **A runner group:** Runners in This
+  Group, Hosted Runners in This Group, Add a Runner to This Group...,
+  Remove a Runner from This Group....
+- **An organization:** Dependabot Repository Access, Give Dependabot a
+  Repository..., Take a Repository from Dependabot..., Dependabot's Default
+  Access..., Make Someone an Outside Collaborator..., Define a Custom
+  Property..., Set Repositories' Custom Property..., New Team..., Accept
+  Membership and My Activity Here.
+- **A team:** Pending Invitations and Delete Team.... **An invitation to an
+  organization:** Teams It Adds To.
+- **A Project:** New View... and Items in a View....
+- **Your emails:** Email Visibility.... **Your profile:** Interaction
+  Limits, Limit Interactions... and Lift Interaction Limits.
+
 ## Workbench Options
 
 GitHub's preferences live in the Workbench, not in the editor's Options:

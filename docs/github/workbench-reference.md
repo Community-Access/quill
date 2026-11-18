@@ -948,22 +948,22 @@ Keys the window answers that are not menu rows:
 ### Context menus, by row type
 
 - **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Relationships..., Issue Fields..., Delete Issue..., Add to or Remove from Favorites; Properties...
-- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
-- **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., Re-run One Job...; More: Force Cancel..., Download Logs..., Delete Logs..., Approvals, Earlier Attempts..., View Artifacts..., Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
+- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites, Re-request Review...; Properties...
+- **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., Re-run One Job...; More: Force Cancel..., Download Logs..., Delete Logs..., Approvals, Earlier Attempts..., View Artifacts..., Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link, Read a Step's Log...; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link; Properties...
-- **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., React..., Delete Release...; More: Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
+- **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., React..., Delete Release...; More: Compare With Previous, Compare With Default, Copy Link, Open on GitHub, GitHub's Release Notes...; Properties...
 - **release_asset**: Download, Copy Link, Delete Asset...; Properties...
 - **branch**: Commits, Compare With Default, Compare Branches..., Merge Into..., Download Source..., Compare With Previous; More: Open in Codespaces..., Copy Name, Delete Branch...; Properties...
-- **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub; Properties...
+- **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link; More: Open on GitHub, Check Run Details..., Re-run a Check Suite..., Branches at This Commit, Reactions on a Commit Comment..., React to a Commit Comment..., Remove My Reaction from a Commit Comment...; Properties...
 - **tag**: Open, Delete Tag..., Read Tag Message, Download Source..., Commit Comments..., Compare With Previous; More: Compare With Default, Copy Link, Open on GitHub; Properties...
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub, Unsnooze Locally; Properties...
-- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Send Repository Dispatch..., Pin; More: Star Lists..., Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List...; Properties...
+- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Send Repository Dispatch..., Pin; More: Star Lists..., Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List..., Fork Workflow Settings, Fork Workflows from Private Repositories..., Languages, License, Star History, Mark Its Notifications Read, Set a Custom Property..., Compare Dependencies..., SBOM Report, Ruleset History..., Secret Scanning History; Properties...
 - **person**: Open, Follow or Unfollow, Open on GitHub; Properties...
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
 - **gist**: Edit Gist..., Star or Unstar, Comments..., History..., Forks..., Fork Gist; More: Copy Link, Open on GitHub, Delete Gist...; Properties...
 - **discussion**: Open Discussion Thread, Read as Document..., Copy Link, Open on GitHub; Properties...
-- **security_alert**: Open, Dismiss or Reopen Alert..., Copilot Autofix..., Show Every Place, Open on GitHub; Properties...
+- **security_alert**: Open, Dismiss or Reopen Alert..., Copilot Autofix..., Show Every Place, Open on GitHub, Where It Was Found; Properties...
 - **cache**: Show Details, Delete Cache...; Properties...
 - **saved_search**: Run, Remove Saved Search; Properties...
 - **deployment**: Open, Delete Deployment..., Copy Link, Open on GitHub; Properties...
@@ -972,30 +972,30 @@ Keys the window answers that are not menu rows:
 - **folder**: Open Folder, Open on GitHub; Properties...
 - **milestone**: Find Issues in Milestone, Delete Milestone..., Copy Link, Open on GitHub; Properties...
 - **template**: Open Template..., Convert Form or Template..., Copy to Repositories..., Copy Link, Open on GitHub; Properties...
-- **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link; Properties...
-- **team**: Members and Access..., Copy Link, Open on GitHub; Properties...
-- **organization**: Open, Roles..., Rulesets..., Open on GitHub; Properties...
+- **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link, New View..., Items in a View...; Properties...
+- **team**: Members and Access..., Copy Link, Open on GitHub, Delete Team..., Pending Invitations; Properties...
+- **organization**: Open, Roles..., Rulesets..., Open on GitHub, Fork Workflow Settings, Fork Workflows from Private Repositories...; More: Dependabot Repository Access, Give Dependabot a Repository..., Take a Repository from Dependabot..., Dependabot's Default Access..., Make Someone an Outside Collaborator..., Define a Custom Property..., Set Repositories' Custom Property..., New Team..., Accept Membership, My Activity Here; Properties...
 - **favorite**: Open, Copy Link, Open on GitHub, Add to or Remove from Favorites; Properties...
 - **admin_action**: Open; Properties...
 - **watch**: Edit Watch..., Pause or Resume Watch, Check Watches Now, Remove Watch, Open on GitHub; Properties...
 - **help_topic**: Open, Take Me There; Properties...
-- **node**: Refresh, Open on GitHub, Help for This View; Properties...
+- **node**: Refresh, Open on GitHub, Help for This View, New Organization Runner..., Just-in-Time Runner..., Just-in-Time Runner...; More: Is a Runner Version Retiring?..., Is a Runner Version Retiring?..., Email Visibility..., Interaction Limits, Limit Interactions..., Lift Interaction Limits; Properties...
 - **across_item**: Open in Its Repository, Next Repository, Previous Repository, View More from This Repository, Read Issue Type and Fields, Every Release or Latest Only; More: Open on GitHub, Copy Link; Properties...
 - **across_status**: Open, Next Repository, Previous Repository, View More from This Repository, Open on GitHub; Properties...
 - **repository_set**: Use This Set, Edit Repositories..., Set Filter..., New Set..., Rename Set..., Delete Set...; Properties...
 - **by_name**: Variants and Missing From, Make Them the Same..., Add to Missing..., Find Uses, Rename Everywhere..., Merge Into...; More: Close Everywhere..., Move Open Work To..., Promote to Organization..., Delete Everywhere...; Properties...
 - **fleet**: Open Repository, Open on GitHub, Copy Link; Properties...
-- **runner**: Show Details, Runner Labels..., Remove Runner..., Open on GitHub, Copy Link; Properties...
+- **runner**: Show Details, Runner Labels..., Remove Runner..., Open on GitHub, Copy Link, Removal Commands...; Properties...
 - **pages_site**: Show Details, Check Site, Rebuild, Turn Off Pages..., Open on GitHub, Copy Link; Properties...
 - **environment**: Show Details, Secrets..., Variables..., Branch Policies..., Protection Rules..., Delete...; More: Open on GitHub, Copy Link; Properties...
 - **codespace**: Show Details, Start, Stop, Change Machine..., Export to a Branch, Publish to a New Repository...; More: Delete..., Open on GitHub, Copy Link; Properties...
 - **package**: Show Details, Open on GitHub, Show Versions, Restore Package Version..., Delete Package Version..., Delete Package..., Copy Link; Properties...
 - **key**: Show Details, Delete Key..., Open on GitHub; Properties...
-- **advisory**: Show Details, Publish or Close Advisory..., Request CVE..., Open on GitHub, Copy Link; Properties...
+- **advisory**: Show Details, Publish or Close Advisory..., Request CVE..., Open on GitHub, Copy Link, Advisory Comments; More: Comment on Advisory..., Edit an Advisory Comment..., Make a Private Fork for the Fix; Properties...
 - **webhook**: Show Details, Ping, Send Test Push, Turn On or Off..., Recent Deliveries..., Change Address or Secret...; More: Delete Webhook..., Open on GitHub; Properties...
 - **deploy_key**: Show Details, Delete Deploy Key..., Open on GitHub; Properties...
 - **autolink**: Show Details, Delete Autolink..., Open on GitHub; Properties...
-- **resource**: Show Details, Change..., Repositories Allowed..., Delete..., Open on GitHub, Copy Link; Properties...
+- **resource**: Show Details, Change..., Repositories Allowed..., Delete..., Open on GitHub, Copy Link; More: Removal Commands..., Add Runner Label..., Remove Runner Label..., Runners in This Group, Hosted Runners in This Group, Add a Runner to This Group..., Remove a Runner from This Group..., Teams It Adds To; Properties...
 - **wiki**: Open on GitHub, Clone Wiki..., Copy Link; Properties...
 - **sponsorship**: Show Details, Cancel Sponsorship..., Open on GitHub; Properties...
 - **sponsor_tier**: Show Details, Sponsor at This Tier..., Open on GitHub; Properties...
@@ -1100,7 +1100,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
+In all: 792 yes, 57 planned, 289 not needed and 866 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1108,7 +1108,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Actions
 
-208 operations: 116 yes, 20 planned, 24 not needed, 48 left to github.
+208 operations: 135 yes, 25 not needed, 48 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1152,8 +1152,8 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Set artifact and log retention settings for an organization | `PUT /orgs/{org}/actions/permissions/artifact-and-log-retention` | Yes | Properties (Alt+Enter) on Organization: Keep artifacts and logs for days |
 | Get fork PR contributor approval permissions for an organization | `GET /orgs/{org}/actions/permissions/fork-pr-contributor-approval` | Yes | Properties (Alt+Enter) on Organization |
 | Set fork PR contributor approval permissions for an organization | `PUT /orgs/{org}/actions/permissions/fork-pr-contributor-approval` | Yes | Properties (Alt+Enter) on Organization: Approval needed for workflows from |
-| Get private repo fork PR workflow settings for an organization | `GET /orgs/{org}/actions/permissions/fork-pr-workflows-private-repos` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Set private repo fork PR workflow settings for an organization | `PUT /orgs/{org}/actions/permissions/fork-pr-workflows-private-repos` | Planned | Repository and Organization sheets > Actions (section 18.3). |
+| Get private repo fork PR workflow settings for an organization | `GET /orgs/{org}/actions/permissions/fork-pr-workflows-private-repos` | Yes | context menu > Fork Workflow Settings |
+| Set private repo fork PR workflow settings for an organization | `PUT /orgs/{org}/actions/permissions/fork-pr-workflows-private-repos` | Yes | context menu > Fork Workflows from Private Repositories... |
 | List selected repositories enabled for GitHub Actions in an organization | `GET /orgs/{org}/actions/permissions/repositories` | Yes | Navigator: Organization > organization > Actions: Allowed Repositories |
 | Set selected repositories enabled for GitHub Actions in an organization | `PUT /orgs/{org}/actions/permissions/repositories` | Not needed | Adding and removing one repository at a time does the same, and keeps a change someone else made meanwhile; replacing the whole list would lose it. |
 | Disable a selected repository for GitHub Actions in an organization | `DELETE /orgs/{org}/actions/permissions/repositories/{repository_id}` | Yes | context menu > Delete... |
@@ -1178,28 +1178,28 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Delete a self-hosted runner group from an organization | `DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}` | Yes | context menu > Delete... |
 | Get a self-hosted runner group for an organization | `GET /orgs/{org}/actions/runner-groups/{runner_group_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Update a self-hosted runner group for an organization | `PATCH /orgs/{org}/actions/runner-groups/{runner_group_id}` | Yes | context menu > Change... |
-| List GitHub-hosted runners in a group for an organization | `GET /orgs/{org}/actions/runner-groups/{runner_group_id}/hosted-runners` | Planned | Runner group sheet. |
+| List GitHub-hosted runners in a group for an organization | `GET /orgs/{org}/actions/runner-groups/{runner_group_id}/hosted-runners` | Yes | context menu > Hosted Runners in This Group |
 | List repository access to a self-hosted runner group in an organization | `GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories` | Yes | context menu > Repositories Allowed... |
 | Set repository access for a self-hosted runner group in an organization | `PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories` | Not needed | Replaces the whole list at once; Repositories Allowed adds and removes one repository at a time instead, so a change somebody else makes meanwhile is kept. |
 | Remove repository access to a self-hosted runner group in an organization | `DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
 | Add repository access to a self-hosted runner group in an organization | `PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories/{repository_id}` | Yes | context menu > Repositories Allowed... |
-| List self-hosted runners in a group for an organization | `GET /orgs/{org}/actions/runner-groups/{runner_group_id}/runners` | Planned | Runner group sheet. |
-| Set self-hosted runners in a group for an organization | `PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/runners` | Planned | Runner group sheet. |
-| Remove a self-hosted runner from a group for an organization | `DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}/runners/{runner_id}` | Planned | Runner group sheet. |
-| Add a self-hosted runner to a group for an organization | `PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/runners/{runner_id}` | Planned | Runner group sheet. |
+| List self-hosted runners in a group for an organization | `GET /orgs/{org}/actions/runner-groups/{runner_group_id}/runners` | Yes | context menu > Runners in This Group |
+| Set self-hosted runners in a group for an organization | `PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/runners` | Not needed | Replaces the whole list at once; Add a Runner to This Group and Remove a Runner from This Group change one runner at a time, and keep a change someone else made meanwhile. |
+| Remove a self-hosted runner from a group for an organization | `DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}/runners/{runner_id}` | Yes | context menu > Remove a Runner from This Group... |
+| Add a self-hosted runner to a group for an organization | `PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/runners/{runner_id}` | Yes | context menu > Add a Runner to This Group... |
 | List self-hosted runners for an organization | `GET /orgs/{org}/actions/runners` | Yes | Navigator: Organization > organization > Runners |
-| Get runner version end-of-life schedule for an organization | `GET /orgs/{org}/actions/runners/deprecations/{version}` | Planned | Runner sheet. |
-| List runner applications for an organization | `GET /orgs/{org}/actions/runners/downloads` | Planned | Runner sheet. |
-| Create configuration for a just-in-time runner for an organization | `POST /orgs/{org}/actions/runners/generate-jitconfig` | Planned | Runner sheet. |
-| Create a registration token for an organization | `POST /orgs/{org}/actions/runners/registration-token` | Planned | Runner sheet. |
-| Create a remove token for an organization | `POST /orgs/{org}/actions/runners/remove-token` | Planned | Runner sheet. |
+| Get runner version end-of-life schedule for an organization | `GET /orgs/{org}/actions/runners/deprecations/{version}` | Yes | context menu > Is a Runner Version Retiring?... |
+| List runner applications for an organization | `GET /orgs/{org}/actions/runners/downloads` | Yes | context menu > New Organization Runner... |
+| Create configuration for a just-in-time runner for an organization | `POST /orgs/{org}/actions/runners/generate-jitconfig` | Yes | context menu > Just-in-Time Runner... |
+| Create a registration token for an organization | `POST /orgs/{org}/actions/runners/registration-token` | Yes | context menu > New Organization Runner... |
+| Create a remove token for an organization | `POST /orgs/{org}/actions/runners/remove-token` | Yes | context menu > Removal Commands... |
 | Delete a self-hosted runner from an organization | `DELETE /orgs/{org}/actions/runners/{runner_id}` | Yes | context menu > Delete... |
 | Get a self-hosted runner for an organization | `GET /orgs/{org}/actions/runners/{runner_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Remove all custom labels from a self-hosted runner for an organization | `DELETE /orgs/{org}/actions/runners/{runner_id}/labels` | Not needed | Replaces or clears every label at once; Runner Labels adds and removes them one at a time. |
 | List labels for a self-hosted runner for an organization | `GET /orgs/{org}/actions/runners/{runner_id}/labels` | Not needed | Replaces or clears every label at once; Runner Labels adds and removes them one at a time. |
-| Add custom labels to a self-hosted runner for an organization | `POST /orgs/{org}/actions/runners/{runner_id}/labels` | Not needed | Replaces or clears every label at once; Runner Labels adds and removes them one at a time. |
-| Set custom labels for a self-hosted runner for an organization | `PUT /orgs/{org}/actions/runners/{runner_id}/labels` | Planned | Runner sheet. |
-| Remove a custom label from a self-hosted runner for an organization | `DELETE /orgs/{org}/actions/runners/{runner_id}/labels/{name}` | Planned | Runner sheet. |
+| Add custom labels to a self-hosted runner for an organization | `POST /orgs/{org}/actions/runners/{runner_id}/labels` | Yes | context menu > Add Runner Label... |
+| Set custom labels for a self-hosted runner for an organization | `PUT /orgs/{org}/actions/runners/{runner_id}/labels` | Not needed | Replaces or clears every label at once; Add Runner Label and Remove Runner Label change them one at a time. |
+| Remove a custom label from a self-hosted runner for an organization | `DELETE /orgs/{org}/actions/runners/{runner_id}/labels/{name}` | Yes | context menu > Remove Runner Label... |
 | List organization secrets | `GET /orgs/{org}/actions/secrets` | Yes | Properties (Alt+Enter) on Organization |
 | Get an organization public key | `GET /orgs/{org}/actions/secrets/public-key` | Yes | Navigator: Organization > organization > Actions Secrets |
 | Delete an organization secret | `DELETE /orgs/{org}/actions/secrets/{secret_name}` | Yes | context menu > Delete... |
@@ -1235,7 +1235,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Get a job for a workflow run | `GET /repos/{owner}/{repo}/actions/jobs/{job_id}` | Yes | Properties (Alt+Enter) on Job |
 | Download job logs for a workflow run | `GET /repos/{owner}/{repo}/actions/jobs/{job_id}/logs` | Yes | Item > What Failed... (Ctrl+Shift+W) |
 | Re-run a job from a workflow run | `POST /repos/{owner}/{repo}/actions/jobs/{job_id}/rerun` | Yes | context menu > Re-run One Job... |
-| Download step logs for a workflow run job | `GET /repos/{owner}/{repo}/actions/jobs/{job_id}/steps/{step_number}/logs` | Planned | Job sheet. |
+| Download step logs for a workflow run job | `GET /repos/{owner}/{repo}/actions/jobs/{job_id}/steps/{step_number}/logs` | Yes | context menu > Read a Step's Log... |
 | Get the customization template for an OIDC subject claim for a repository | `GET /repos/{owner}/{repo}/actions/oidc/customization/sub` | Left to GitHub | Cloud identity (OIDC) claim settings are one-off security plumbing for company deployments, set up on GitHub's site. |
 | Set the customization template for an OIDC subject claim for a repository | `PUT /repos/{owner}/{repo}/actions/oidc/customization/sub` | Left to GitHub | Cloud identity (OIDC) claim settings are one-off security plumbing for company deployments, set up on GitHub's site. |
 | List repository organization secrets | `GET /repos/{owner}/{repo}/actions/organization-secrets` | Yes | Navigator: Repository > owner/name > Settings > Organization Secrets Here |
@@ -1248,8 +1248,8 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Set artifact and log retention settings for a repository | `PUT /repos/{owner}/{repo}/actions/permissions/artifact-and-log-retention` | Yes | Properties (Alt+Enter) on Repository: Keep artifacts and logs for days |
 | Get fork PR contributor approval permissions for a repository | `GET /repos/{owner}/{repo}/actions/permissions/fork-pr-contributor-approval` | Yes | Properties (Alt+Enter) on Repository |
 | Set fork PR contributor approval permissions for a repository | `PUT /repos/{owner}/{repo}/actions/permissions/fork-pr-contributor-approval` | Yes | Properties (Alt+Enter) on Repository: Approval needed for workflows from |
-| Get private repo fork PR workflow settings for a repository | `GET /repos/{owner}/{repo}/actions/permissions/fork-pr-workflows-private-repos` | Planned | Repository and Organization sheets > Actions (section 18.3). |
-| Set private repo fork PR workflow settings for a repository | `PUT /repos/{owner}/{repo}/actions/permissions/fork-pr-workflows-private-repos` | Planned | Repository and Organization sheets > Actions (section 18.3). |
+| Get private repo fork PR workflow settings for a repository | `GET /repos/{owner}/{repo}/actions/permissions/fork-pr-workflows-private-repos` | Yes | context menu > Fork Workflow Settings |
+| Set private repo fork PR workflow settings for a repository | `PUT /repos/{owner}/{repo}/actions/permissions/fork-pr-workflows-private-repos` | Yes | context menu > Fork Workflows from Private Repositories... |
 | Get allowed actions and reusable workflows for a repository | `GET /repos/{owner}/{repo}/actions/permissions/selected-actions` | Yes | Properties (Alt+Enter) on Repository |
 | Set allowed actions and reusable workflows for a repository | `PUT /repos/{owner}/{repo}/actions/permissions/selected-actions` | Yes | Properties (Alt+Enter) on Repository: Allow actions made by GitHub |
 | Get default workflow permissions for a repository | `GET /repos/{owner}/{repo}/actions/permissions/workflow` | Yes | Properties (Alt+Enter) on Repository |
@@ -1260,11 +1260,11 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Get a repository Actions policy | `GET /repos/{owner}/{repo}/actions/policies/{policy_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Update a repository Actions policy | `PUT /repos/{owner}/{repo}/actions/policies/{policy_id}` | Left to GitHub | Actions policy rules are company administration, set up on GitHub's site. |
 | List self-hosted runners for a repository | `GET /repos/{owner}/{repo}/actions/runners` | Yes | Navigator: Repository > owner/name > Actions > Runners |
-| Get runner version end-of-life schedule for a repository | `GET /repos/{owner}/{repo}/actions/runners/deprecations/{version}` | Planned | Repository > Actions > Runners |
+| Get runner version end-of-life schedule for a repository | `GET /repos/{owner}/{repo}/actions/runners/deprecations/{version}` | Yes | context menu > Is a Runner Version Retiring?... |
 | List runner applications for a repository | `GET /repos/{owner}/{repo}/actions/runners/downloads` | Yes | Navigator: Repository > owner/name > Actions > Runners |
-| Create configuration for a just-in-time runner for a repository | `POST /repos/{owner}/{repo}/actions/runners/generate-jitconfig` | Planned | Repository > Actions > Runners |
+| Create configuration for a just-in-time runner for a repository | `POST /repos/{owner}/{repo}/actions/runners/generate-jitconfig` | Yes | context menu > Just-in-Time Runner... |
 | Create a registration token for a repository | `POST /repos/{owner}/{repo}/actions/runners/registration-token` | Yes | Navigator: Repository > owner/name > Actions > Runners |
-| Create a remove token for a repository | `POST /repos/{owner}/{repo}/actions/runners/remove-token` | Planned | Repository > Actions > Runners |
+| Create a remove token for a repository | `POST /repos/{owner}/{repo}/actions/runners/remove-token` | Yes | context menu > Removal Commands... |
 | Delete a self-hosted runner from a repository | `DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}` | Yes | context menu > Remove Runner... |
 | Get a self-hosted runner for a repository | `GET /repos/{owner}/{repo}/actions/runners/{runner_id}` | Yes | Properties (Alt+Enter) on Runner |
 | Remove all custom labels from a self-hosted runner for a repository | `DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels` | Not needed | Replaces or clears every label at once; Runner Labels adds and removes them one at a time. |
@@ -1323,7 +1323,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Activity
 
-34 operations: 26 yes, 3 planned, 2 not needed, 3 left to github.
+34 operations: 29 yes, 2 not needed, 3 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1341,10 +1341,10 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | List public organization events | `GET /orgs/{org}/events` | Yes | Navigator: Organization > organization > Recent Events |
 | List repository events | `GET /repos/{owner}/{repo}/events` | Yes | Navigator: Repository > owner/name > Activity |
 | List repository notifications for the authenticated user | `GET /repos/{owner}/{repo}/notifications` | Yes | Navigator: Repository > owner/name > Activity > My Notifications Here |
-| Mark repository notifications as read | `PUT /repos/{owner}/{repo}/notifications` | Planned | Needs My Attention > Notifications; Notification sheet. |
+| Mark repository notifications as read | `PUT /repos/{owner}/{repo}/notifications` | Yes | context menu > Mark Its Notifications Read |
 | List stargazers | `GET /repos/{owner}/{repo}/stargazers` | Yes | Navigator: Repository > owner/name > People > Contributors and People |
 | Get stargazer count | `GET /repos/{owner}/{repo}/stargazers/count` | Not needed | The star count is part of the repository, which every read of it returns. |
-| Get repository star history | `GET /repos/{owner}/{repo}/stargazers/history` | Planned | You page: Star (section 16.7). |
+| Get repository star history | `GET /repos/{owner}/{repo}/stargazers/history` | Yes | context menu > Star History |
 | List watchers | `GET /repos/{owner}/{repo}/subscribers` | Yes | Navigator: Repository > owner/name > People > Watchers |
 | Delete a repository subscription | `DELETE /repos/{owner}/{repo}/subscription` | Yes | context menu > Watch or Unwatch |
 | Get a repository subscription | `GET /repos/{owner}/{repo}/subscription` | Yes | context menu > Watch or Unwatch |
@@ -1355,7 +1355,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Star a repository for the authenticated user | `PUT /user/starred/{owner}/{repo}` | Yes | Properties (Alt+Enter) on Repository: Starred |
 | List repositories watched by the authenticated user | `GET /user/subscriptions` | Yes | Navigator: People > Repositories I Watch |
 | List events for the authenticated user | `GET /users/{username}/events` | Not needed | A person's Activity node reads their public events (/users/{username}/events/public); this route differs only for yourself, whose whole activity My Activity Feed already reads. |
-| List organization events for the authenticated user | `GET /users/{username}/events/orgs/{org}` | Planned | Needs My Attention > My Activity Feed; Repository > Activity; Person > Activity. |
+| List organization events for the authenticated user | `GET /users/{username}/events/orgs/{org}` | Yes | context menu > My Activity Here |
 | List public events for a user | `GET /users/{username}/events/public` | Yes | Navigator: Person > person > Activity |
 | List events received by the authenticated user | `GET /users/{username}/received_events` | Yes | Navigator: Needs My Attention > My Activity Feed |
 | List public events received by a user | `GET /users/{username}/received_events/public` | Yes | Navigator: Person > person > People They Follow: Activity |
@@ -1553,20 +1553,20 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Checks
 
-12 operations: 2 yes, 3 planned, 3 not needed, 4 left to github.
+12 operations: 5 yes, 3 not needed, 4 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | Create a check run | `POST /repos/{owner}/{repo}/check-runs` | Left to GitHub | Only a GitHub App can create or update check runs and suites. Pull request > Checks (read). |
-| Get a check run | `GET /repos/{owner}/{repo}/check-runs/{check_run_id}` | Planned | Pull request > Checks; Commit > Checks; Run sheet. |
+| Get a check run | `GET /repos/{owner}/{repo}/check-runs/{check_run_id}` | Yes | context menu > Check Run Details... |
 | Update a check run | `PATCH /repos/{owner}/{repo}/check-runs/{check_run_id}` | Left to GitHub | Only a GitHub App can create or update check runs and suites. Pull request > Checks (read). |
-| List check run annotations | `GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations` | Planned | Pull request > Checks; Commit > Checks; Run sheet. |
+| List check run annotations | `GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations` | Yes | context menu > Check Run Details... |
 | Rerequest a check run | `POST /repos/{owner}/{repo}/check-runs/{check_run_id}/rerequest` | Yes | context menu > Combined Check Status |
 | Create a check suite | `POST /repos/{owner}/{repo}/check-suites` | Left to GitHub | Only a GitHub App can create or update check runs and suites. Pull request > Checks (read). |
 | Update repository preferences for check suites | `PATCH /repos/{owner}/{repo}/check-suites/preferences` | Left to GitHub | Only a GitHub App can create or update check runs and suites. Pull request > Checks (read). |
 | Get a check suite | `GET /repos/{owner}/{repo}/check-suites/{check_suite_id}` | Not needed | Check suites and an attempt's jobs are part of the run and check views, which read them by run and commit. |
 | List check runs in a check suite | `GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs` | Not needed | Check suites and an attempt's jobs are part of the run and check views, which read them by run and commit. |
-| Rerequest a check suite | `POST /repos/{owner}/{repo}/check-suites/{check_suite_id}/rerequest` | Planned | Pull request > Checks; Commit > Checks; Run sheet. |
+| Rerequest a check suite | `POST /repos/{owner}/{repo}/check-suites/{check_suite_id}/rerequest` | Yes | context menu > Re-run a Check Suite... |
 | List check runs for a Git reference | `GET /repos/{owner}/{repo}/commits/{ref}/check-runs` | Yes | Properties (Alt+Enter) on Commit |
 | List check suites for a Git reference | `GET /repos/{owner}/{repo}/commits/{ref}/check-suites` | Not needed | Check suites and an attempt's jobs are part of the run and check views, which read them by run and commit. |
 
@@ -1737,7 +1737,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Commits
 
-14 operations: 11 yes, 1 planned, 2 not needed.
+14 operations: 12 yes, 2 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1746,7 +1746,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Get a commit comment | `GET /repos/{owner}/{repo}/comments/{comment_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Update a commit comment | `PATCH /repos/{owner}/{repo}/comments/{comment_id}` | Yes | context menu > Change... |
 | List commits | `GET /repos/{owner}/{repo}/commits` | Yes | Navigator: Repository > owner/name > Code > Commits |
-| List branches for HEAD commit | `GET /repos/{owner}/{repo}/commits/{commit_sha}/branches-where-head` | Planned | Commit sheet; Repository > Code > Commits; Commit comments. |
+| List branches for HEAD commit | `GET /repos/{owner}/{repo}/commits/{commit_sha}/branches-where-head` | Yes | context menu > Branches at This Commit |
 | List commit comments | `GET /repos/{owner}/{repo}/commits/{commit_sha}/comments` | Yes | context menu > Commit Comments... |
 | Create a commit comment | `POST /repos/{owner}/{repo}/commits/{commit_sha}/comments` | Yes | context menu > Commit Comments... |
 | List pull requests associated with a commit | `GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls` | Yes | editor GitHub menu > Open the Pull Request for This Line |
@@ -1852,7 +1852,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Dependabot
 
-27 operations: 14 yes, 3 planned, 4 not needed, 6 left to github.
+27 operations: 17 yes, 4 not needed, 6 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1861,9 +1861,9 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Updates Dependabot's repository access list for an enterprise | `PATCH /enterprises/{enterprise}/dependabot/repository-access` | Left to GitHub | Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings. Organizations > org > Enterprise (Open on GitHub). |
 | Set the default repository access level for Dependabot in an enterprise | `PUT /enterprises/{enterprise}/dependabot/repository-access/default-level` | Left to GitHub | Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings. Organizations > org > Enterprise (Open on GitHub). |
 | List Dependabot alerts for an organization | `GET /orgs/{org}/dependabot/alerts` | Yes | Navigator: Organization > organization > Dependabot Alerts |
-| Lists the repositories Dependabot can access in an organization | `GET /orgs/{org}/dependabot/repository-access` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
-| Updates Dependabot's repository access list for an organization | `PATCH /orgs/{org}/dependabot/repository-access` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
-| Set the default repository access level for Dependabot | `PUT /orgs/{org}/dependabot/repository-access/default-level` | Planned | Repository > Security > Alerts (Kind: Dependabot); Alert sheet; Dependabot secrets; dependabot.yml sheet. |
+| Lists the repositories Dependabot can access in an organization | `GET /orgs/{org}/dependabot/repository-access` | Yes | context menu > Dependabot Repository Access |
+| Updates Dependabot's repository access list for an organization | `PATCH /orgs/{org}/dependabot/repository-access` | Yes | context menu > Take a Repository from Dependabot... |
+| Set the default repository access level for Dependabot | `PUT /orgs/{org}/dependabot/repository-access/default-level` | Yes | context menu > Dependabot's Default Access... |
 | List organization secrets | `GET /orgs/{org}/dependabot/secrets` | Yes | Navigator: Organization > organization > Dependabot Secrets |
 | Get an organization public key | `GET /orgs/{org}/dependabot/secrets/public-key` | Yes | Navigator: Organization > organization > Dependabot Secrets |
 | Delete an organization secret | `DELETE /orgs/{org}/dependabot/secrets/{secret_name}` | Yes | context menu > Delete... |
@@ -1886,14 +1886,14 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Dependency graph
 
-5 operations: 1 yes, 3 planned, 1 left to github.
+5 operations: 4 yes, 1 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
-| Get a diff of the dependencies between commits | `GET /repos/{owner}/{repo}/dependency-graph/compare/{basehead}` | Planned | Repository > Security > Dependencies; Export SBOM. |
+| Get a diff of the dependencies between commits | `GET /repos/{owner}/{repo}/dependency-graph/compare/{basehead}` | Yes | context menu > Compare Dependencies... |
 | Export a software bill of materials (SBOM) for a repository. | `GET /repos/{owner}/{repo}/dependency-graph/sbom` | Yes | Repository > Export Software Bill of Materials... (Ctrl+Alt+B) |
-| Fetch a software bill of materials (SBOM) for a repository. | `GET /repos/{owner}/{repo}/dependency-graph/sbom/fetch-report/{sbom_uuid}` | Planned | Repository > Security > Dependencies; Export SBOM. |
-| Request generation of a software bill of materials (SBOM) for a repository. | `GET /repos/{owner}/{repo}/dependency-graph/sbom/generate-report` | Planned | Repository > Security > Dependencies; Export SBOM. |
+| Fetch a software bill of materials (SBOM) for a repository. | `GET /repos/{owner}/{repo}/dependency-graph/sbom/fetch-report/{sbom_uuid}` | Yes | context menu > SBOM Report |
+| Request generation of a software bill of materials (SBOM) for a repository. | `GET /repos/{owner}/{repo}/dependency-graph/sbom/generate-report` | Yes | context menu > SBOM Report |
 | Create a snapshot of dependencies for a repository | `POST /repos/{owner}/{repo}/dependency-graph/snapshots` | Left to GitHub | Only a GitHub App, using its own app token, or a build tool can call this; a person has no way to. |
 
 #### Deploy keys
@@ -2001,7 +2001,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Interactions
 
-16 operations: 6 yes, 3 planned, 7 left to github.
+16 operations: 9 yes, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2018,9 +2018,9 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Add users to the pull request creation cap bypass list for a repository | `PUT /repos/{owner}/{repo}/interaction-limits/pulls/bypass-list` | Left to GitHub | A preview GitHub may still change (issue artifacts and suggestions, stacked pull requests, pull request creation caps, code quality, planning statuses, concurrency groups); not built, by Jeff's choice (2026-11-18). |
 | Get pull request creation cap for a repository | `GET /repos/{owner}/{repo}/interaction-limits/pulls/creation-cap` | Left to GitHub | A preview GitHub may still change (issue artifacts and suggestions, stacked pull requests, pull request creation caps, code quality, planning statuses, concurrency groups); not built, by Jeff's choice (2026-11-18). |
 | Update pull request creation cap for a repository | `PATCH /repos/{owner}/{repo}/interaction-limits/pulls/creation-cap` | Left to GitHub | A preview GitHub may still change (issue artifacts and suggestions, stacked pull requests, pull request creation caps, code quality, planning statuses, concurrency groups); not built, by Jeff's choice (2026-11-18). |
-| Remove interaction restrictions from your public repositories | `DELETE /user/interaction-limits` | Planned | Repository and Organization sheets > General > Interaction Limits. |
-| Get interaction restrictions for your public repositories | `GET /user/interaction-limits` | Planned | Repository and Organization sheets > General > Interaction Limits. |
-| Set interaction restrictions for your public repositories | `PUT /user/interaction-limits` | Planned | Repository and Organization sheets > General > Interaction Limits. |
+| Remove interaction restrictions from your public repositories | `DELETE /user/interaction-limits` | Yes | context menu > Lift Interaction Limits |
+| Get interaction restrictions for your public repositories | `GET /user/interaction-limits` | Yes | context menu > Interaction Limits |
+| Set interaction restrictions for your public repositories | `PUT /user/interaction-limits` | Yes | context menu > Limit Interactions... |
 
 #### Issues
 
@@ -2097,13 +2097,13 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Licenses
 
-3 operations: 1 yes, 1 planned, 1 not needed.
+3 operations: 2 yes, 1 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | Get all commonly used licenses | `GET /licenses` | Yes | Navigator: Repositories > Licences |
 | Get a license | `GET /licenses/{license}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Get the license for a repository | `GET /repos/{owner}/{repo}/license` | Planned | Templates node; New Repository's licence and .gitignore choices |
+| Get the license for a repository | `GET /repos/{owner}/{repo}/license` | Yes | context menu > License |
 
 #### Markdown
 
@@ -2174,7 +2174,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Organizations
 
-129 operations: 69 yes, 5 planned, 12 not needed, 43 left to github.
+129 operations: 74 yes, 12 not needed, 43 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2224,7 +2224,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | List pending organization invitations | `GET /orgs/{org}/invitations` | Yes | Properties (Alt+Enter) on Organization |
 | Create an organization invitation | `POST /orgs/{org}/invitations` | Yes | Navigator: Organization > organization > Invitations |
 | Cancel an organization invitation | `DELETE /orgs/{org}/invitations/{invitation_id}` | Yes | context menu > Delete... |
-| List organization invitation teams | `GET /orgs/{org}/invitations/{invitation_id}/teams` | Planned | Organization sheet > Members. |
+| List organization invitation teams | `GET /orgs/{org}/invitations/{invitation_id}/teams` | Yes | context menu > Teams It Adds To |
 | List issue fields for an organization | `GET /orgs/{org}/issue-fields` | Yes | context menu > Read Issue Type and Fields |
 | Create issue field for an organization | `POST /orgs/{org}/issue-fields` | Yes | Navigator: Organization > organization > Issue Fields |
 | Delete issue field for an organization | `DELETE /orgs/{org}/issue-fields/{issue_field_id}` | Yes | context menu > Delete... |
@@ -2251,7 +2251,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | List users that are assigned to an organization role | `GET /orgs/{org}/organization-roles/{role_id}/users` | Yes | context menu > Roles... |
 | List outside collaborators for an organization | `GET /orgs/{org}/outside_collaborators` | Yes | Properties (Alt+Enter) on Organization |
 | Remove outside collaborator from an organization | `DELETE /orgs/{org}/outside_collaborators/{username}` | Yes | context menu > Delete... |
-| Convert an organization member to outside collaborator | `PUT /orgs/{org}/outside_collaborators/{username}` | Planned | Organization sheet > Outside Collaborators. |
+| Convert an organization member to outside collaborator | `PUT /orgs/{org}/outside_collaborators/{username}` | Yes | context menu > Make Someone an Outside Collaborator... |
 | List requests to access organization resources with fine-grained personal access tokens | `GET /orgs/{org}/personal-access-token-requests` | Yes | Properties (Alt+Enter) on Organization |
 | Review requests to access organization resources with fine-grained personal access tokens | `POST /orgs/{org}/personal-access-token-requests` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
 | Review a request to access organization resources with a fine-grained personal access token | `POST /orgs/{org}/personal-access-token-requests/{pat_request_id}` | Left to GitHub | GitHub serves this to GitHub Apps only (its reference: Only GitHub Apps can use this endpoint), so a person's sign-in is refused; owners review token requests on the organization's settings page. |
@@ -2267,12 +2267,12 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Remove all external custom property values for a property across all organization repositories | `DELETE /orgs/{org}/properties/installations/values/{property_name}` | Left to GitHub | Only a GitHub App, using its own app token, or a build tool can call this; a person has no way to. |
 | Create or update external custom property values for a property across organization repositories | `PATCH /orgs/{org}/properties/installations/values/{property_name}` | Left to GitHub | Only a GitHub App, using its own app token, or a build tool can call this; a person has no way to. |
 | Get all custom properties for an organization | `GET /orgs/{org}/properties/schema` | Yes | Properties (Alt+Enter) on Organization |
-| Create or update custom properties for an organization | `PATCH /orgs/{org}/properties/schema` | Planned | Organization sheet > Custom Properties. |
+| Create or update custom properties for an organization | `PATCH /orgs/{org}/properties/schema` | Yes | context menu > Define a Custom Property... |
 | Remove a custom property for an organization | `DELETE /orgs/{org}/properties/schema/{custom_property_name}` | Yes | context menu > Delete... |
 | Get a custom property for an organization | `GET /orgs/{org}/properties/schema/{custom_property_name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Create or update a custom property for an organization | `PUT /orgs/{org}/properties/schema/{custom_property_name}` | Yes | Navigator: Organization > organization > Custom Properties |
 | List custom property values for organization repositories | `GET /orgs/{org}/properties/values` | Yes | Navigator: Organization > organization > Custom Property Values |
-| Create or update custom property values for organization repositories | `PATCH /orgs/{org}/properties/values` | Planned | Organization sheet > Custom Properties. |
+| Create or update custom property values for organization repositories | `PATCH /orgs/{org}/properties/values` | Yes | context menu > Set Repositories' Custom Property... |
 | List public organization members | `GET /orgs/{org}/public_members` | Yes | Navigator: Organization > organization > Public Members |
 | Remove public organization membership for the authenticated user | `DELETE /orgs/{org}/public_members/{username}` | Yes | Properties (Alt+Enter) on Organization: Show my membership publicly |
 | Check public organization membership for a user | `GET /orgs/{org}/public_members/{username}` | Yes | Properties (Alt+Enter) on Organization |
@@ -2304,7 +2304,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Enable or disable a security feature for an organization | `POST /orgs/{org}/{security_product}/{enablement}` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 | List organization memberships for the authenticated user | `GET /user/memberships/orgs` | Yes | Navigator: People > My Organizations' Memberships |
 | Get an organization membership for the authenticated user | `GET /user/memberships/orgs/{org}` | Yes | Properties (Alt+Enter) on Organization |
-| Update an organization membership for the authenticated user | `PATCH /user/memberships/orgs/{org}` | Planned | Organization sheet > Members. |
+| Update an organization membership for the authenticated user | `PATCH /user/memberships/orgs/{org}` | Yes | context menu > Accept Membership |
 | List organizations for the authenticated user | `GET /user/orgs` | Yes | Navigator: Repositories > Organizations |
 | List organizations for a user | `GET /users/{username}/orgs` | Yes | Properties (Alt+Enter) on Person |
 
@@ -2376,11 +2376,11 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Projects
 
-26 operations: 1 yes, 5 planned, 20 not needed.
+26 operations: 5 yes, 21 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
-| List projects for organization | `GET /orgs/{org}/projectsV2` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
+| List projects for organization | `GET /orgs/{org}/projectsV2` | Not needed | Projects are listed through GraphQL, which also gives each Project the node id its commands need. |
 | Get project for organization | `GET /orgs/{org}/projectsV2/{project_number}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Create draft item for organization owned project | `POST /orgs/{org}/projectsV2/{project_number}/drafts` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
 | List project fields for organization | `GET /orgs/{org}/projectsV2/{project_number}/fields` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
@@ -2391,10 +2391,10 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Delete project item for organization | `DELETE /orgs/{org}/projectsV2/{project_number}/items/{item_id}` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
 | Get an item for an organization owned project | `GET /orgs/{org}/projectsV2/{project_number}/items/{item_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Update project item for organization | `PATCH /orgs/{org}/projectsV2/{project_number}/items/{item_id}` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
-| Create a view for an organization-owned project | `POST /orgs/{org}/projectsV2/{project_number}/views` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
-| List items for an organization project view | `GET /orgs/{org}/projectsV2/{project_number}/views/{view_number}/items` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
+| Create a view for an organization-owned project | `POST /orgs/{org}/projectsV2/{project_number}/views` | Yes | context menu > New View... |
+| List items for an organization project view | `GET /orgs/{org}/projectsV2/{project_number}/views/{view_number}/items` | Yes | context menu > Items in a View... |
 | Create draft item for user owned project | `POST /user/{user_id}/projectsV2/{project_number}/drafts` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
-| Create a view for a user-owned project | `POST /users/{user_id}/projectsV2/{project_number}/views` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
+| Create a view for a user-owned project | `POST /users/{user_id}/projectsV2/{project_number}/views` | Yes | context menu > New View... |
 | List projects for user | `GET /users/{username}/projectsV2` | Yes | Navigator: Person > person > Projects |
 | Get project for user | `GET /users/{username}/projectsV2/{project_number}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | List project fields for user | `GET /users/{username}/projectsV2/{project_number}/fields` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
@@ -2405,11 +2405,11 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Delete project item for user | `DELETE /users/{username}/projectsV2/{project_number}/items/{item_id}` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
 | Get an item for a user owned project | `GET /users/{username}/projectsV2/{project_number}/items/{item_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Update project item for user | `PATCH /users/{username}/projectsV2/{project_number}/items/{item_id}` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
-| List items for a user project view | `GET /users/{username}/projectsV2/{project_number}/views/{view_number}/items` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
+| List items for a user project view | `GET /users/{username}/projectsV2/{project_number}/views/{view_number}/items` | Yes | context menu > Items in a View... |
 
 #### Pull requests
 
-39 operations: 23 yes, 5 planned, 7 not needed, 4 left to github.
+39 operations: 24 yes, 4 planned, 7 not needed, 4 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2437,7 +2437,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Remove requested reviewers from a pull request | `DELETE /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers` | Yes | Item > Assign to Copilot... (Ctrl+Shift+A) |
 | Get all requested reviewers for a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers` | Yes | Item > Assign to Copilot... (Ctrl+Shift+A) |
 | Request reviewers for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers` | Yes | Item > Assign to Copilot... (Ctrl+Shift+A) |
-| Rerequest reviewers for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers/rerequest` | Planned | Pull request > Reviews: reviewers. |
+| Rerequest reviewers for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers/rerequest` | Yes | context menu > Re-request Review... |
 | List reviews for a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews` | Yes | context menu > Review... |
 | Create a review for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews` | Yes | context menu > Review... |
 | Delete a pending review for a pull request | `DELETE /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}` | Yes | context menu > Reviews... |
@@ -2463,13 +2463,13 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Reactions
 
-15 operations: 12 yes, 3 planned.
+15 operations: 15 yes.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
-| List reactions for a commit comment | `GET /repos/{owner}/{repo}/comments/{comment_id}/reactions` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
-| Create reaction for a commit comment | `POST /repos/{owner}/{repo}/comments/{comment_id}/reactions` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
-| Delete a commit comment reaction | `DELETE /repos/{owner}/{repo}/comments/{comment_id}/reactions/{reaction_id}` | Planned | You page on issues, pull requests, comments, discussions, releases (section 16.7). |
+| List reactions for a commit comment | `GET /repos/{owner}/{repo}/comments/{comment_id}/reactions` | Yes | context menu > Reactions on a Commit Comment... |
+| Create reaction for a commit comment | `POST /repos/{owner}/{repo}/comments/{comment_id}/reactions` | Yes | context menu > React to a Commit Comment... |
+| Delete a commit comment reaction | `DELETE /repos/{owner}/{repo}/comments/{comment_id}/reactions/{reaction_id}` | Yes | context menu > Remove My Reaction from a Commit Comment... |
 | List reactions for an issue comment | `GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions` | Yes | context menu > React... |
 | Create reaction for an issue comment | `POST /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions` | Yes | context menu > React... |
 | Delete an issue comment reaction | `DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions/{reaction_id}` | Yes | context menu > React... |
@@ -2485,7 +2485,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Releases
 
-13 operations: 11 yes, 1 planned, 1 not needed.
+13 operations: 12 yes, 1 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2494,7 +2494,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Delete a release asset | `DELETE /repos/{owner}/{repo}/releases/assets/{asset_id}` | Yes | context menu > Delete Asset... |
 | Get a release asset | `GET /repos/{owner}/{repo}/releases/assets/{asset_id}` | Yes | context menu > Edit Release... |
 | Update a release asset | `PATCH /repos/{owner}/{repo}/releases/assets/{asset_id}` | Yes | context menu > Edit Release... |
-| Generate release notes content for a release | `POST /repos/{owner}/{repo}/releases/generate-notes` | Planned | Repository > Releases; Release and Release asset sheets. |
+| Generate release notes content for a release | `POST /repos/{owner}/{repo}/releases/generate-notes` | Yes | context menu > GitHub's Release Notes... |
 | Get the latest release | `GET /repos/{owner}/{repo}/releases/latest` | Yes | context menu > Edit Release... |
 | Get a release by tag name | `GET /repos/{owner}/{repo}/releases/tags/{tag}` | Yes | context menu > Edit Release... |
 | Delete a release | `DELETE /repos/{owner}/{repo}/releases/{release_id}` | Yes | context menu > Delete Release... |
@@ -2505,7 +2505,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Repositories
 
-74 operations: 60 yes, 3 planned, 6 not needed, 5 left to github.
+74 operations: 63 yes, 6 not needed, 5 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2549,13 +2549,13 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Check if immutable releases are enabled for a repository | `GET /repos/{owner}/{repo}/immutable-releases` | Yes | Properties (Alt+Enter) on Repository |
 | Enable immutable releases | `PUT /repos/{owner}/{repo}/immutable-releases` | Yes | Properties (Alt+Enter) on Repository: Immutable releases |
 | List issue types for a repository | `GET /repos/{owner}/{repo}/issue-types` | Yes | Navigator: Repository > owner/name > Settings > Issue Types |
-| List repository languages | `GET /repos/{owner}/{repo}/languages` | Planned | Repository sheet (General, Features, Merging, Webhooks, Autolinks, Rules, Pages, Security, Danger Zone); File and folder sheets. |
+| List repository languages | `GET /repos/{owner}/{repo}/languages` | Yes | context menu > Languages |
 | List planning statuses for a repository | `GET /repos/{owner}/{repo}/planning-statuses` | Left to GitHub | A preview GitHub may still change (issue artifacts and suggestions, stacked pull requests, pull request creation caps, code quality, planning statuses, concurrency groups); not built, by Jeff's choice (2026-11-18). |
 | Disable private vulnerability reporting for a repository | `DELETE /repos/{owner}/{repo}/private-vulnerability-reporting` | Yes | Properties (Alt+Enter) on Repository: Private vulnerability reporting |
 | Check if private vulnerability reporting is enabled for a repository | `GET /repos/{owner}/{repo}/private-vulnerability-reporting` | Yes | Properties (Alt+Enter) on Repository |
 | Enable private vulnerability reporting for a repository | `PUT /repos/{owner}/{repo}/private-vulnerability-reporting` | Yes | Properties (Alt+Enter) on Repository: Private vulnerability reporting |
 | Get all custom property values for a repository | `GET /repos/{owner}/{repo}/properties/values` | Yes | Navigator: Repository > owner/name > Settings > Custom Property Values |
-| Create or update custom property values for a repository | `PATCH /repos/{owner}/{repo}/properties/values` | Planned | Repository sheet > General: Custom Properties. |
+| Create or update custom property values for a repository | `PATCH /repos/{owner}/{repo}/properties/values` | Yes | context menu > Set a Custom Property... |
 | Get a repository README | `GET /repos/{owner}/{repo}/readme` | Yes | Navigator: Repository > owner/name > Overview |
 | Get a repository README for a directory | `GET /repos/{owner}/{repo}/readme/{dir}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Get rules for a branch | `GET /repos/{owner}/{repo}/rules/branches/{branch}` | Yes | Properties (Alt+Enter) on Branch |
@@ -2566,7 +2566,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Delete a repository ruleset | `DELETE /repos/{owner}/{repo}/rulesets/{ruleset_id}` | Yes | context menu > Promote to Organization... |
 | Get a repository ruleset | `GET /repos/{owner}/{repo}/rulesets/{ruleset_id}` | Yes | Properties (Alt+Enter) on Ruleset |
 | Update a repository ruleset | `PUT /repos/{owner}/{repo}/rulesets/{ruleset_id}` | Yes | Properties (Alt+Enter) on Ruleset: Approvals needed |
-| Get repository ruleset history | `GET /repos/{owner}/{repo}/rulesets/{ruleset_id}/history` | Planned | Ruleset sheet (section 18.3.1). |
+| Get repository ruleset history | `GET /repos/{owner}/{repo}/rulesets/{ruleset_id}/history` | Yes | context menu > Ruleset History... |
 | Get repository ruleset version | `GET /repos/{owner}/{repo}/rulesets/{ruleset_id}/history/{version_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | List repository tags | `GET /repos/{owner}/{repo}/tags` | Yes | Navigator: Repository > owner/name > Code > Tags |
 | Download a repository archive (tar) | `GET /repos/{owner}/{repo}/tarball/{ref}` | Yes | context menu > Download Source... |
@@ -2600,7 +2600,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Secret scanning
 
-17 operations: 3 yes, 2 planned, 1 not needed, 11 left to github.
+17 operations: 5 yes, 1 not needed, 11 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2614,17 +2614,17 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | List secret scanning alerts for a repository | `GET /repos/{owner}/{repo}/secret-scanning/alerts` | Yes | Navigator: Repository > owner/name > Security > Alerts |
 | Get a secret scanning alert | `GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Update a secret scanning alert | `PATCH /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}` | Yes | context menu > Dismiss or Reopen Alert... |
-| List locations for a secret scanning alert | `GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations` | Planned | Repository > Security > Alerts (Kind: secret scanning); bypass requests (section 22.1). |
+| List locations for a secret scanning alert | `GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations` | Yes | context menu > Where It Was Found |
 | Bulk delete repository custom patterns | `DELETE /repos/{owner}/{repo}/secret-scanning/custom-patterns` | Left to GitHub | Custom secret patterns need paid GitHub Advanced Security. |
 | List repository custom patterns | `GET /repos/{owner}/{repo}/secret-scanning/custom-patterns` | Left to GitHub | Custom secret patterns need paid GitHub Advanced Security. |
 | Bulk create repository custom patterns | `POST /repos/{owner}/{repo}/secret-scanning/custom-patterns` | Left to GitHub | Custom secret patterns need paid GitHub Advanced Security. |
 | Update a repository custom pattern | `PATCH /repos/{owner}/{repo}/secret-scanning/custom-patterns/{pattern_id}` | Left to GitHub | Custom secret patterns need paid GitHub Advanced Security. |
 | Create a push protection bypass | `POST /repos/{owner}/{repo}/secret-scanning/push-protection-bypasses` | Left to GitHub | A push that secret scanning blocks is let through from git push itself, with the link GitHub prints there; it is not a Workbench step. |
-| Get secret scanning scan history for a repository | `GET /repos/{owner}/{repo}/secret-scanning/scan-history` | Planned | Repository > Security > Alerts (Kind: secret scanning); bypass requests (section 22.1). |
+| Get secret scanning scan history for a repository | `GET /repos/{owner}/{repo}/secret-scanning/scan-history` | Yes | context menu > Secret Scanning History |
 
 #### Security advisories
 
-14 operations: 7 yes, 4 planned, 3 not needed.
+14 operations: 11 yes, 3 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2636,25 +2636,25 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Privately report a security vulnerability | `POST /repos/{owner}/{repo}/security-advisories/reports` | Yes | Navigator: Repository > owner/name > Security > Advisories |
 | Get a repository security advisory | `GET /repos/{owner}/{repo}/security-advisories/{ghsa_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Update a repository security advisory | `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id}` | Yes | context menu > Publish or Close Advisory... |
-| List repository security advisory comments | `GET /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments` | Planned | Repository > Security > Advisories; Advisory sheet. |
-| Create a repository advisory comment | `POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments` | Planned | Repository > Security > Advisories; Advisory sheet. |
+| List repository security advisory comments | `GET /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments` | Yes | context menu > Advisory Comments |
+| Create a repository advisory comment | `POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments` | Yes | context menu > Comment on Advisory... |
 | Get a repository advisory comment | `GET /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments/{comment_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Update a repository advisory comment | `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments/{comment_id}` | Planned | Repository > Security > Advisories; Advisory sheet. |
+| Update a repository advisory comment | `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id}/comments/{comment_id}` | Yes | context menu > Edit an Advisory Comment... |
 | Request a CVE for a repository security advisory | `POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/cve` | Yes | context menu > Request CVE... |
-| Create a temporary private fork | `POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/forks` | Planned | Repository > Security > Advisories; Advisory sheet. |
+| Create a temporary private fork | `POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/forks` | Yes | context menu > Make a Private Fork for the Fix |
 
 #### Teams
 
-32 operations: 13 yes, 3 planned, 16 left to github.
+32 operations: 16 yes, 16 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | List teams | `GET /orgs/{org}/teams` | Yes | Navigator: Organization > organization > Teams |
-| Create a team | `POST /orgs/{org}/teams` | Planned | Team sheet; Organization sheet > Teams. |
-| Delete a team | `DELETE /orgs/{org}/teams/{team_slug}` | Planned | Team sheet; Organization sheet > Teams. |
+| Create a team | `POST /orgs/{org}/teams` | Yes | context menu > New Team... |
+| Delete a team | `DELETE /orgs/{org}/teams/{team_slug}` | Yes | context menu > Delete Team... |
 | Get a team by name | `GET /orgs/{org}/teams/{team_slug}` | Yes | Properties (Alt+Enter) on Team |
 | Update a team | `PATCH /orgs/{org}/teams/{team_slug}` | Yes | Properties (Alt+Enter) on Team: Description |
-| List pending team invitations | `GET /orgs/{org}/teams/{team_slug}/invitations` | Planned | Team sheet > Members. |
+| List pending team invitations | `GET /orgs/{org}/teams/{team_slug}/invitations` | Yes | context menu > Pending Invitations |
 | List team members | `GET /orgs/{org}/teams/{team_slug}/members` | Yes | Properties (Alt+Enter) on Team |
 | Remove team membership for a user | `DELETE /orgs/{org}/teams/{team_slug}/memberships/{username}` | Yes | Account > Roles and Access > Bulk Access Changes... |
 | Get team membership for a user | `GET /orgs/{org}/teams/{team_slug}/memberships/{username}` | Yes | Properties (Alt+Enter) on Team |
@@ -2684,7 +2684,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 
 #### Users
 
-55 operations: 43 yes, 1 planned, 4 not needed, 7 left to github.
+55 operations: 44 yes, 4 not needed, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2694,7 +2694,7 @@ In all: 729 yes, 122 planned, 287 not needed and 866 left to GitHub.
 | Unblock a user | `DELETE /user/blocks/{username}` | Yes | Properties (Alt+Enter) on Person: Blocked |
 | Check if a user is blocked by the authenticated user | `GET /user/blocks/{username}` | Yes | Properties (Alt+Enter) on Person |
 | Block a user | `PUT /user/blocks/{username}` | Yes | Properties (Alt+Enter) on Person: Blocked |
-| Set primary email visibility for the authenticated user | `PATCH /user/email/visibility` | Planned | Account > Profile and Status: Emails. |
+| Set primary email visibility for the authenticated user | `PATCH /user/email/visibility` | Yes | context menu > Email Visibility... |
 | Delete an email address for the authenticated user | `DELETE /user/emails` | Yes | context menu > Delete... |
 | List email addresses for the authenticated user | `GET /user/emails` | Yes | Navigator: People > My Email Addresses |
 | Add an email address for the authenticated user | `POST /user/emails` | Yes | Navigator: People > My Email Addresses |

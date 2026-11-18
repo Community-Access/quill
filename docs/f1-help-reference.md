@@ -3248,6 +3248,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Commit Comments.** Comments on the commit and its lines.
 
+**Re-request Review.** Ask reviewers who already reviewed to look again.
+
 **Jobs and Logs.** The run's jobs, steps and logs.
 
 **What Failed.** The failing steps and their log lines.
@@ -3280,6 +3282,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Delete Run.** Delete the run and its logs.
 
+**Read a Step's Log.** One step's log, to read without downloading the whole run's.
+
 **Runs.** This workflow's runs.
 
 **Run Workflow on Branch.** Start it on a branch.
@@ -3302,6 +3306,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Compare With Default.** Compare it with the default branch: commits each way, files, any open pull request.
 
+**GitHub's Release Notes.** The notes GitHub writes from the changes since another tag.
+
 **Download.** Download the file in your browser.
 
 **Delete Asset.** Remove the file from the release.
@@ -3319,6 +3325,18 @@ Control coverage: 384 audited sites (384 helped).
 **Delete Branch.** Delete the branch on GitHub.
 
 **Set Status.** Report a check you ran yourself: passed, failed or still running.
+
+**Check Run Details.** One check's result, its summary and every annotation it left.
+
+**Re-run a Check Suite.** Ask an app to run its checks on this commit again.
+
+**Branches at This Commit.** Which branches end at this commit.
+
+**Reactions on a Commit Comment.** Who reacted to a comment on this commit, and how.
+
+**React to a Commit Comment.** Add a reaction to a comment on this commit.
+
+**Remove My Reaction from a Commit Comment.** Take back a reaction you gave a comment on this commit.
 
 **Delete Tag.** Remove the tag; the commit stays.
 
@@ -3354,6 +3372,28 @@ Control coverage: 384 audited sites (384 helped).
 
 **Rename or Delete Star List.** In Star Lists: rename the list this row is on, change who sees it, or delete it.
 
+**Fork Workflow Settings.** How workflows run for pull requests from forks of private repositories.
+
+**Fork Workflows from Private Repositories.** Choose whether fork pull requests run workflows, and with what.
+
+**Languages.** How much of the code is in each language, as GitHub counts it.
+
+**License.** The licence GitHub found, and the file it is in.
+
+**Star History.** How many people starred it over time.
+
+**Mark Its Notifications Read.** Mark every notification about this repository as read.
+
+**Set a Custom Property.** Give one of the organization's custom properties a value here.
+
+**Compare Dependencies.** Which dependencies changed between two branches, tags or commits, and their known vulnerabilities.
+
+**SBOM Report.** Ask GitHub to build a software bill of materials report, and read it.
+
+**Ruleset History.** Each change to one of this repository's rulesets, and who made it.
+
+**Secret Scanning History.** When GitHub last scanned this repository for secrets, and how.
+
 **Open.** Select the person's node in the tree.
 
 **Follow or Unfollow.** Follow them, or stop.
@@ -3385,6 +3425,8 @@ Control coverage: 384 audited sites (384 helped).
 **Copilot Autofix.** Ask for a fix, or commit it.
 
 **Show Every Place.** Each place it was found.
+
+**Where It Was Found.** Every file, commit, issue or comment the secret is in.
 
 **Show Details.** The cache's key, size and last use.
 
@@ -3426,13 +3468,45 @@ Control coverage: 384 audited sites (384 helped).
 
 **Delete Project.** Asks for its title typed out.
 
+**New View.** Add a view to this Project: a table, a board or a roadmap.
+
+**Items in a View.** What one of this Project's views shows, in its order and with its filter.
+
 **Members and Access.** Open the team's sheet at its members: add people, change a role, remove.
+
+**Delete Team.** Delete this team, and its child teams.
+
+**Pending Invitations.** People invited to this team who have not joined yet.
 
 **Open.** Select the organization's node in the tree.
 
 **Roles.** Who holds each role; give or take one.
 
 **Rulesets.** Read, enforce, review or delete.
+
+**Fork Workflow Settings.** How workflows run for pull requests from forks of private repositories.
+
+**Fork Workflows from Private Repositories.** Choose whether fork pull requests run workflows, and with what.
+
+**Dependabot Repository Access.** Which private repositories Dependabot may read to update dependencies.
+
+**Give Dependabot a Repository.** Let Dependabot read one more private repository.
+
+**Take a Repository from Dependabot.** Stop Dependabot reading a private repository.
+
+**Dependabot's Default Access.** Which new repositories Dependabot may read without being given them.
+
+**Make Someone an Outside Collaborator.** Take someone out of the organization's members but keep their repository access.
+
+**Define a Custom Property.** Add or change a property every repository here can be given.
+
+**Set Repositories' Custom Property.** Give a custom property one value in several repositories.
+
+**New Team.** Make a team in this organization.
+
+**Accept Membership.** Join this organization, when it has invited you.
+
+**My Activity Here.** What you have done lately in this organization's repositories.
 
 **Open.** Open the settings dialog for this; it asks before saving.
 
@@ -3451,6 +3525,24 @@ Control coverage: 384 audited sites (384 helped).
 **Refresh.** Load this view again. F5 does the same.
 
 **Help for This View.** What this view shows. F1 does the same.
+
+**New Organization Runner.** Copy the commands that set up a runner every allowed repository may use.
+
+**Just-in-Time Runner.** A runner that takes one job and then goes: its configuration, on the clipboard.
+
+**Just-in-Time Runner.** A runner that takes one job and then goes: its configuration, on the clipboard.
+
+**Is a Runner Version Retiring?.** Whether GitHub is retiring a version of the runner program, and when.
+
+**Is a Runner Version Retiring?.** Whether GitHub is retiring a version of the runner program, and when.
+
+**Email Visibility.** Whether your primary email address shows on your profile and in your commits.
+
+**Interaction Limits.** Whether you have limited who may comment in your repositories, and until when.
+
+**Limit Interactions.** For a while, let only some people comment and open issues in all your repositories.
+
+**Lift Interaction Limits.** Let everyone take part in your repositories again.
 
 **Open in Its Repository.** Go to the item in its own repository, where every action for it is. Back returns to this row, filter and page.
 
@@ -3502,6 +3594,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Remove Runner.** GitHub forgets it; asks first.
 
+**Removal Commands.** Copy the commands that take this runner off its machine.
+
 **Check Site.** The latest build, then the custom domain's health.
 
 **Rebuild.** Ask GitHub for a fresh build.
@@ -3544,6 +3638,14 @@ Control coverage: 384 audited sites (384 helped).
 
 **Request CVE.** Ask GitHub for a CVE number.
 
+**Advisory Comments.** The private discussion on this draft advisory.
+
+**Comment on Advisory.** Write in the advisory's private discussion.
+
+**Edit an Advisory Comment.** Change something you wrote in the advisory's discussion.
+
+**Make a Private Fork for the Fix.** A temporary private fork where collaborators can work on the fix.
+
 **Ping.** Send it a test message.
 
 **Send Test Push.** A push event, if it listens.
@@ -3565,6 +3667,22 @@ Control coverage: 384 audited sites (384 helped).
 **Repositories Allowed.** Choose which repositories may use it.
 
 **Delete.** Remove it; asks first.
+
+**Removal Commands.** Copy the commands that take this runner off its machine.
+
+**Add Runner Label.** Give this runner a label workflows can ask for.
+
+**Remove Runner Label.** Take away a label someone gave this runner; GitHub's own labels stay.
+
+**Runners in This Group.** The self-hosted runners in this group.
+
+**Hosted Runners in This Group.** The larger GitHub-hosted runners in this group.
+
+**Add a Runner to This Group.** Move one of the organization's runners into this group.
+
+**Remove a Runner from This Group.** Take a runner out of this group; it goes back to the Default group.
+
+**Teams It Adds To.** The teams this invitation puts the person in when they accept.
 
 **Clone Wiki.** Copy its pages to a folder, to edit them.
 

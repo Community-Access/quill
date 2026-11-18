@@ -1227,6 +1227,10 @@ def issues_from_lines(run: Any) -> str:
 
 #: The import commands (PRD 22.7), whose scenarios are defined just above.
 VERBS["import_issues"] = import_issues
+# The quick commands carry their own reasons (quill/core/github/quick_tables.py).
+from quill.core.github.quick_tables import QUICK_LIVE  # noqa: E402
+
+VERBS.update({verb: why for verb, why in QUICK_LIVE.items() if verb not in VERBS})
 VERBS["issues_from_lines"] = issues_from_lines
 
 

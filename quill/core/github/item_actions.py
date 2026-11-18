@@ -30,6 +30,7 @@ from quill.core.github.item_action_parts import (
     _default,
 )
 from quill.core.github.item_shortcuts import DELETE_COMMANDS, NEW_HERE
+from quill.core.github.quick_tables import QUICK_ROWS
 from quill.core.workbench.actions import ActionRow, ActionTable
 
 __all__ = [
@@ -569,6 +570,10 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
 }
 
 _ROWS.update(ACCOUNT_ROWS)
+# The quick commands (quill/core/github/quick_tables.py): each goes before Properties.
+for _type, _extra in QUICK_ROWS.items():
+    _have = _ROWS.get(_type, (_PROPERTIES,))
+    _ROWS[_type] = (*_have[:-1], *_extra, _have[-1])
 
 GITHUB_ACTIONS = ActionTable(_ROWS, properties_command=PROPERTIES_COMMAND)
 """Every GitHub row type's menu, checked against the shared rules on import."""

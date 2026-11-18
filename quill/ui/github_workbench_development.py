@@ -101,6 +101,11 @@ from quill.ui.github_workbench_pull_tools import (
     PULL_TOOL_VERBS,
     GitHubWorkbenchPullToolsMixin,
 )
+from quill.ui.github_workbench_quick import (
+    QUICK_REASONS,
+    QUICK_VERBS,
+    GitHubWorkbenchQuickMixin,
+)
 from quill.ui.github_workbench_resources import (
     RESOURCE_REASONS,
     RESOURCE_VERBS,
@@ -183,6 +188,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **ISSUE_ADMIN_VERBS,
     **ROW_ADMIN_VERBS,
     **SCOPED_VERBS,
+    **QUICK_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -214,6 +220,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **ISSUE_ADMIN_REASONS,
     **ROW_ADMIN_REASONS,
     **SCOPED_REASONS,
+    **QUICK_REASONS,
 }
 
 
@@ -243,6 +250,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchIssueAdminMixin,
     GitHubWorkbenchRowAdminMixin,
     GitHubWorkbenchScopedListsMixin,
+    GitHubWorkbenchQuickMixin,
 ):
     items: Any
     frame: Any
