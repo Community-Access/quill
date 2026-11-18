@@ -413,7 +413,8 @@ The help keys work everywhere in the window:
 
 ## Dry Run
 
-**Tools > Dry Run** (`Ctrl+Alt+D`) is a switch for the whole Workbench.
+**Dry Run**, on the Workbench's Tools menu, is a switch for the whole Workbench
+(its key there is Ctrl+Alt+D).
 While it is on, every command still asks its questions and shows its preview
 exactly as usual, and then, at the moment it would change something on
 GitHub, it stops and says what it would have sent: "Dry run: QUILL would send
@@ -423,12 +424,13 @@ Lists, sheets, previews and everything else that only reads keep working.
 It is for learning a command without consequences, and for checking a big
 batch twice before you send it for real. The Account cell of the status bar
 says "Dry Run: nothing is sent" while it is on, and it stays on until you
-press `Ctrl+Alt+D` again or close QUILL Lite. Local Git work, such as making a
+turn it off again or close QUILL Lite. Local Git work, such as making a
 worktree, does not touch GitHub and is not stopped.
 
 ## Practice on GitHub
 
-**Help > Practice on GitHub...** (`Ctrl+Alt+P`) makes a private repository
+**Practice on GitHub...**, on the Workbench's Help menu (Ctrl+Alt+P there),
+makes a private repository
 in your own account, `quill-practice`, to learn the writes on, where nothing
 matters. After asking, QUILL Lite fills it with:
 

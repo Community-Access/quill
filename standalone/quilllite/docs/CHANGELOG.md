@@ -4,10 +4,10 @@
 
 ### Dry Run and a practice repository (2026-11-18)
 
-**Tools > Dry Run** (`Ctrl+Alt+D`) in the GitHub Workbench lets every command
+**Dry Run**, on the GitHub Workbench's Tools menu, lets every command
 ask and preview as usual and then stop before sending anything to GitHub,
-saying exactly what it would have sent. **Help > Practice on GitHub...**
-(`Ctrl+Alt+P`) makes `quill-practice`, a private repository in your account
+saying exactly what it would have sent. **Practice on GitHub...**, on its
+Help menu, makes `quill-practice`, a private repository in your account
 with issues, labels, a pull request and a failing run to learn on, and
 deletes it or starts it over when you finish. Failures in the Workbench are
 now said without the support code in brackets. Chapter 12 of the GitHub Guide
