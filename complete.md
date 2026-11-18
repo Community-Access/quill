@@ -8,7 +8,7 @@
 
 For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claude.log`. The commands and gates are in `CLAUDE.md`.
 
-- **Done on 2026-11-18:** five WordPress data-loss fixes (Send Back, Approve and Schedule, plugin Status, Gravity spam, Replace File, Put Back), Kelly Ford's diff marks (#1890), the Cast queue and download fixes for Chris Nova and Jessica Dail (#1889, #1892), every EdSharp item (#1891), and the Copilot SDK 2.0 plan (#1893, `docs/design/copilot.md`; 2.0 replaces 1.x outright).
+- **Done on 2026-11-18:** five WordPress data-loss fixes (Send Back, Approve and Schedule, plugin Status, Gravity spam, Replace File, Put Back), Kelly Ford's diff marks (#1890), the Cast queue and download fixes for Chris Nova and Jessica Dail (#1889, #1892), every EdSharp item (#1891), and the Copilot SDK 2.0 migration and requested feature work (#1893, including opt-in Auto routing; maintained design record in `docs/design/codex.md`).
 - **Screen-reader testing** is done by Jeff's testers and is not tracked here.
 - **Next:** Part 1 below, the GitHub Workbench: the endpoints are done (1.1); next the open features and checks (1.3), then the documentation pass (1.4).
 - **How to work here:**
@@ -21,7 +21,7 @@ For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claud
 
 1. **The GitHub Workbench (Part 1)**, above everything else.
 2. **WordPress (Part 2).**
-3. **Other work (Part 3):** Copilot SDK 2.0, Earshot parity.
+3. **Other work (Part 3):** Earshot parity.
 
 ## Part 1. The GitHub Workbench
 
@@ -235,7 +235,6 @@ Every item from the review of 2026-11-14 is fixed (the walkthrough is `docs/desi
 
 ## Part 3. Other work
 
-- [ ] **Microsoft Copilot SDK 2.0:** reviewed 2026-11-18. The plan and the features worth bringing in are in `docs/design/copilot.md`; its five steps are the work.
 
 ### 3.1 Earshot parity, what is left
 

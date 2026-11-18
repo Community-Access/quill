@@ -58,11 +58,13 @@ Some plain advice:
 
 ## Every engine behaves the same in front of you
 
-QUILL gives every engine the same project tools, and keeps the engine's own
-file and shell tools off. That is what makes the promises in this manual hold
-whichever one you choose:
+By default, QUILL gives every engine the same project tools and keeps the
+engine's own file and shell tools off. You can enable selected vendor tools for
+one project in **Engine Tools for This Project...**; each use still needs
+approval. This changes how some safety guarantees work:
 
-- every change waits in Review Changes before it reaches your disk;
+- every change made with QUILL's tools waits in Review Changes before it
+  reaches your disk; a vendor edit tool writes directly to disk;
 - every command asks first, in the same window, with the same warnings;
 - the plan, the result sentences and the closing summary are worded by QUILL,
   not by the engine;
@@ -73,8 +75,10 @@ from what the model says it did.
 
 ## How each engine is held
 
-- **Copilot** sees only QUILL's tools. Every other kind of permission it asks
-  for is refused and logged.
+- **Copilot** sees QUILL's tools by default. Its file, shell and web tools are
+  off until you enable them for this project; each use still asks first.
+  Vendor edits bypass Review Changes, and the shell can do anything your
+  account can. MCP and unsupported permissions are refused and logged.
 - **Codex** runs with a read-only sandbox, asks for approval of anything
   untrusted, and has its built-in tools off. Its file changes arrive as a
   unified diff, which goes to Review Changes like any other.

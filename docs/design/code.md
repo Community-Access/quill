@@ -9,27 +9,42 @@ docstrings are the record.
 
 Research and plan, 2026-11-02. Read-only research; this file is the only thing written. It builds on `codex.md` (the AI family plan of record) and does not change any decision in it.
 
+**Current Copilot status, 2026-11-18:** QUILL and QUILL Lite use
+`microsoft-copilot-sdk==2.0.1` with its SDK-pinned `runtime.node` in the
+shared runtime. QUILL does not launch or bundle `copilot.exe`. Tasks use
+QUILL's tools by default; the user's own Copilot tools can be enabled per
+project and still require approval. Copilot access and billing belong to the
+user's GitHub account. My own key and local-model routes are separate choices.
+See `codex.md` sections 2B.8 and 3.7 for the maintained implementation
+record; this file's earlier SDK/CLI research and proposal text is historical
+unless noted otherwise.
+
 ## The short version
 
 **The question.** Could QUILL and QUILL Lite let a blind person work with an AI coding agent: give it a task in plain words, hear its plan, review every change it proposes across several files, approve the commands it wants to run, hear the test results in a sentence, and undo a whole turn with one key? And could that be approachable, rather than another VS Code?
 
 **What we have today.** More than you might think, and less than coding needs.
 
-- Both editors already run a real agent. Do a Document Task (Ctrl+3) opens the agent window, and My GitHub Copilot or Codex works through a task with QUILL's own tools. Every change is shown first in Review AI Changes, word by word, and every applied change is one Ctrl+Z. Approvals use one small dialog: Allow once, Allow for this task, Don't allow. Stop ends a task within a second. Only the closing summary is spoken, and it is brailled too.
-- Both engines are bundled and hash-pinned in the shared runtime. The vendors' own shell, file and web tools are switched off; the model sees only QUILL's tools. The twelve apps' GitHub client ids landed in #1737, so Copilot sign-in can work from inside the app.
+- Both editors already run a real agent. Do a Document Task (Ctrl+3) opens the agent window, and GitHub Copilot, Codex or a supported provider selected in My own key works through a task with QUILL's tools. QUILL edits are shown first in Review AI Changes, word by word, and every applied change is one Ctrl+Z. Approvals use one small dialog: Allow once, Allow for this task, Don't allow. Stop ends a task within a second. Only the closing summary is spoken, and it is brailled too.
+- Both runtimes are bundled and hash-pinned in the shared runtime. The vendors' own tools are off by default; users may enable selected tools per project, with an approval before each use. The twelve apps' GitHub client ids landed in #1737, so Copilot sign-in can work from inside the app.
 - QUILL already has strong developer bones: an accessible local git engine (uncommitted changes with a spoken diff, merge conflicts hunk by hunk, blame, stash, bisect, worktrees), GitHub items and PR diffs, Search and Replace in Files, SSH editing, restore points, a sandboxed Python console and code folding as spoken state.
 
-**The gap.** The agent's world is one open document. It cannot list a folder, open a second file, create a file, or run a command or a test. There is no idea of a project, no multi-file review, no undo for a turn that spans files, and no place for command output to land.
+**The original gap (before the project-task work shipped).** The agent's world
+was one open document. The project-task tools, multi-file review, checkpoints,
+command output, and QUILL Lite support described later in this document have
+since shipped.
 
-**The recommendation.**
+**The design that shipped.**
 
 1. **Same window, wider world.** Grow Do a Document Task into Do a Project Task. One window, one conversation, the same approval dialog, the same engines. A project is just a folder.
-2. **QUILL's own tools, not the vendor's.** The agent reads, searches and edits through new `project.*` family tools, and runs commands through one QUILL `project.run` tool. That keeps every approval, every review and every undo in QUILL's accessible UI, the same under Copilot and Codex.
-3. **Copilot first, Codex second,** exactly as `codex.md` decided. Claude through the Agent SDK only on the person's own key, later. Local models through Ollama as a labelled practice mode. Not the free AI: an agent burns many requests a task, and that would cost Jeff money.
+2. **QUILL's own tools by default.** The agent reads, searches and edits through new `project.*` family tools, and runs commands through one QUILL `project.run` tool. These calls use QUILL's approval, review and undo UI. Copilot's own tools are a separate project opt-in; vendor edits bypass Review Changes and vendor shell runs with the user's account permissions.
+3. **The user chooses the engine.** Copilot, Codex and supported own-key providers run tasks through their appropriate harnesses. OpenAI-compatible and Gemini connections use SDK BYOK; Claude uses the Agent SDK; local Ollama is a separate, clearly labelled route. Copilot access and any usage cost belong to the user's GitHub account; QUILL does not provide free Copilot usage.
 4. **A safety net under every turn.** QUILL keeps a private checkpoint of the project before each turn, outside the person's own git history. Undo Last Turn puts every file back. The person's repository is never committed to, pushed or rewritten unless they ask.
 5. **Accessibility is the design, not a layer.** One window. Focus never jumps. Nothing streams at the reader. A turn's record is a document with headings. Test results arrive as one sentence. A coach mode explains what the agent did and why, for people learning.
 
-**The phases.** Read-only project questions first (medium), then reviewed multi-file edits with checkpoints (large), then commands and test summaries (medium to large), then the headed transcript and coach mode (medium), then Codex and the other engines on the same tools (medium), then QUILL Lite if Jeff wants it there (decision 1).
+**The original phases.** These phases describe the historical plan, not an
+open work queue. For current Copilot SDK status and remaining verification, see
+`codex.md` sections 2B.8, 3.7, and 11.
 
 **Decisions for Jeff** are at the end, fourteen of them, each with a recommended answer.
 
@@ -46,9 +61,9 @@ Everything here was read in the tree on 2026-11-02, at `295788cf0` on `fix/porta
 | `quill/core/ai/document_task.py` | `DocumentTaskRunner`: start, follow-up, end, cancel, and a plain-text closing summary built from what actually happened |
 | `quill/core/ai/family_tools.py` | `FamilyToolRegistry`: one tool list, translated for Copilot and for Codex; every call goes through the broker and the activity log |
 | `quill/core/ai/approvals.py` | `Approver`, `ApprovalGate` (once, this task, deny; nothing carries over between tasks) and the UI-thread bridges |
-| `quill/ai_packs/copilot_tool_session.py` | Copilot SDK session: only our tools in `available_tools`, every other permission kind rejected and logged, streaming, Stop |
+| `quill/ai_packs/copilot_tool_session.py` | Copilot SDK session: QUILL tools plus explicitly enabled per-project vendor tools, all permissions gated, streaming, Stop |
 | `quill/core/ai/harness/codex.py`, `codex_app_server.py`, `codex_binary.py` | Codex app-server child, hash-pinned, `sandbox: read-only`, `approvalPolicy: untrusted`, built-in tools off |
-| `quill/core/ai/copilot_runtime.py` | the bundled Copilot runtime in `tools\copilot`, hash-pinned, never from PATH |
+| `quill/core/ai/copilot_runtime.py` | resolves and verifies the SDK-pinned in-process runtime; no CLI executable or first-use download |
 | `quill/core/ai/agent_workdir.py` | per-app engine folders, emptied after every task |
 | `quill/ui/agent_window.py` | the one agent window, shared by both editors and reused by the apps |
 | `quill/ui/hosted_ai_task_commands.py` | the Do a Document Task command, Ctrl+3 in both editors, capability-gated |
@@ -146,19 +161,21 @@ These are the promises a blind learner can rely on. Each one becomes a test or a
 
 Same marking as `codex.md`: **Confirmed** means read on the cited page on 2026-11-02 (or confirmed in `codex.md` on 2026-10-31 and still current), **Inferred** means it follows from what was read, **Unknown** means no primary source.
 
-### 3.1 GitHub Copilot (SDK and CLI): the primary path
+### 3.1 GitHub Copilot SDK: the primary path
 
-What matters for coding:
+Current implementation:
 
-- **Confirmed (codex.md 2B):** the Python SDK `github-copilot-sdk` drives the same agent runtime as Copilot CLI. Custom tools are plain Python handlers. `available_tools` is an allowlist. A permission callback receives every request by kind: shell, write, read, url, mcp, custom-tool, memory, hook. Hooks run before and after tool use. It is GA with semver, and it is changing owner to Microsoft. Copilot Free is included. Usage is reported per call and per account.
-- **Confirmed:** the CLI's own controls are two layers: `--available-tools` and `--excluded-tools` decide which tools the model sees; `--allow-tool` and `--deny-tool` decide which run, with patterns such as `shell(git:*)` and `write(path)`, and "Deny rules always take precedence over allow rules". `--allow-all` (also called `--yolo`) turns on everything including all paths and URLs. Source: https://docs.github.com/en/copilot/how-tos/copilot-cli/allowing-tools
-- **Confirmed:** Copilot CLI can run as an Agent Client Protocol server (`copilot --acp --stdio`), in public preview; options are fixed at server start. Source: https://docs.github.com/en/copilot/reference/copilot-cli-reference/acp-server
-- **In the tree:** the bundled runtime, the pin, the per-app sign-in with real client ids, the tool session with Stop.
+- **Package and runtime:** `microsoft-copilot-sdk==2.0.1` is loaded from the shared runtime. Its pinned `runtime.node` runs in-process; no Copilot CLI executable is bundled, launched, or downloaded on first use.
+- **Account and cost:** device-flow sign-in uses the user's own GitHub Copilot account. GitHub determines eligibility, models, limits, and billing; QUILL does not provide or subsidize Copilot usage. OpenAI-compatible and Gemini connections selected in Use My Own AI Key can use SDK BYOK for agent tasks; those requests follow the selected provider's terms and billing and do not borrow GitHub sign-in.
+- **Provider choice:** My GitHub Copilot is distinct from My own key and local models. The user selects a provider explicitly; the application does not silently route or fall back.
+- **Agent tools:** QUILL's registered tools are available by default. Copilot's own file, shell, and web tools are off until enabled per project, and every use requires QUILL approval. Vendor edits bypass Review Changes; QUILL's permission broker and undo checkpoint remain in control.
+- **Privacy and accessibility:** session retention, long-task compaction and AI Library skill sharing are opt-in. Compaction requires retention and may use additional account usage. The AI Hub Sessions tab lists local session IDs and update times, supports one-task resumption, and requires explicit confirmation to delete. Config discovery, memory, cross-session storage, and telemetry stay disabled. User-input requests use native accessible prompts; Cancel returns cancellation, and sanitized progress is announced.
+- **Routing and network:** the balanced Auto tier applies only when Copilot Auto is selected and never switches providers. Credential-free system proxy settings are honored without collecting proxy credentials. Event-history summaries contain event types and counts, not conversation or tool payloads.
+- **Historical CLI research:** the CLI's own tool flags and ACP server were investigated while planning, but QUILL does not use either interface.
 
 Why it is the primary path:
 
-- It is already built and bundled. Project tools are new registry entries, not a new engine.
-- It costs the user nothing on Copilot Free, and it does not cost Jeff anything.
+- It is built into the shared runtime and uses the user's existing GitHub account.
 - Tool handlers run in our own Python, so review, checkpoints and command running are QUILL code we can test.
 - Copilot's models are strong at code, and the person can choose among them where their plan allows.
 
@@ -202,7 +219,7 @@ The free gateway is paid for by Jeff. A coding task makes many model calls a tur
 
 | Engine | Billing | Tools in QUILL | Status | Role |
 |---|---|---|---|---|
-| Copilot SDK | Copilot plan, Free included | ours, Python handlers | GA, bundled | primary |
+| Copilot SDK | User's own GitHub plan and allowance | QUILL's Python handlers only | SDK 2.0.1, bundled runtime | primary |
 | Codex app-server | ChatGPT plan | ours, dynamicTools | preview, bundled | second |
 | Claude Agent SDK | own API key | ours, as in-process MCP | GA | later |
 | Ollama, native loop | none | ours | shipped loop | practice |
@@ -826,16 +843,11 @@ Committed and pushed on `feat/agentic-coding` as `e24dc1db7`.
   key. `project.` is a rule-7 family in the bound-command gate. QUILL puts
   Stop Agent and Undo Last Agent Turn on the leader (K and U), with Key
   Describer titles. Lite's rows have written reasons in its keyless table.
-- **Engine tools (decision 4).** `quill/core/ai/vendor_tools.py` lists each
-  engine's own tools: Copilot's `view`, `grep`, `glob`, `edit`, `bash`,
-  `web_fetch` and `web_search` (from GitHub's allowing-tools page); Codex's
-  command execution and file changes; Claude's. All are off until checked,
-  kept per project in app data. A turn with any on says so in the
-  conversation and under the transcript's Plan heading, and takes its
-  checkpoint first. `FamilyToolRegistry.authorize_vendor` refuses a kind
-  that is not on, logging a defect, and asks the person every time for one
-  that is. Copilot adds them to `available_tools` and works in the project
-  folder; Codex answers its built-in approvals through the same question.
+- **Engine tools (decision 4, shipped).** `quill/core/ai/vendor_tools.py`
+  lists Copilot's own file, shell, and web tools. They are off by default and
+  enabled only per project. QUILL asks before each use; the engine's own edit
+  bypasses Review Changes and its shell runs with the user's account
+  permissions. MCP and unsupported permission requests remain refused.
 - **Run Commands Without Asking (decision 7).** Stored with the allow list,
   off by default, confirmed when turned on, shown in the status line, and
   every command it runs is noted in the conversation. The never-list still

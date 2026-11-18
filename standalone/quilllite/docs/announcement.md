@@ -517,9 +517,17 @@ Codex, or your own key. Copilot signs in with a short code that your screen
 reader spells out and that is already on the clipboard. Which AI Am I Using
 (Ctrl+8) tells you where your words are going, Usage (Ctrl+Alt+Shift+F9)
 tells you how much you have used in plain sentences, and Do a Document Task
-(Ctrl+3) lets Copilot or Codex take on a job with several steps, asking you
-before it changes anything. Your own key can now be a Google Gemini,
+(Ctrl+3) lets Copilot, Codex or a supported provider you chose in My own key
+take on a job with several steps, asking you before it changes anything. Your
+own key can now be a Google Gemini,
 Anthropic Claude or OpenRouter key, or Ollama on your own computer.
+
+OpenAI-compatible and Gemini keys can use the Copilot SDK task harness without
+GitHub sign-in; your selected provider's key and billing apply. In AI Hub >
+Sessions, you can separately opt into keeping sessions on this computer,
+resuming or deleting them, sharing enabled AI Library skills, or summarizing
+older context for a longer Copilot task. These choices start off, and the
+provider never switches automatically.
 
 ### Say what you want, in your own words
 

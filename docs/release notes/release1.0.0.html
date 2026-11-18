@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL 1.0</title>
   <style>
@@ -11,10 +11,7 @@
     */
     html {
       color: #1a1a1a;
-      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
-      background-color: light-dark(#fdfdfd, #1a1a1a);
-      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -39,16 +36,11 @@
     }
     @media print {
       html {
-        color-scheme: light only;
+        background-color: white;
       }
-      html, body, pre, code {
+      body {
         background-color: transparent;
-      }
-      body, a, a:visited, blockquote {
         color: black;
-      }
-      pre, code {
-        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -61,8 +53,11 @@
     p {
       margin: 1em 0;
     }
-    a, a:visited {
-      color: inherit;
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
     }
     img {
       max-width: 100%;
@@ -91,11 +86,8 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid;
-      border-color: #e6e6e6;
-      border-color: light-dark(#e6e6e6, #4c4c4c);
+      border-left: 2px solid #e6e6e6;
       color: #606060;
-      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -119,7 +111,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -136,11 +128,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid currentColor;
-      border-bottom: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
     }
     th {
-      border-top: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -179,6 +171,7 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -1413,10 +1406,11 @@ that instead, and one window, <strong>Choose Your AI</strong>
 <li><strong>QUILL’s free AI</strong>, within its monthly allowance.</li>
 <li><strong>My ChatGPT plan</strong>, signed in once in your browser,
 with no key and no bill per request.</li>
-<li><strong>My GitHub Copilot</strong>, Copilot Free included, signed in
-with GitHub’s short code, spaced out for your screen reader and already
-on the clipboard. It says “not available yet” until a build carries
-QUILL’s own GitHub registration.</li>
+<li><strong>My GitHub Copilot</strong>, signed in with GitHub’s short
+code, spaced out for your screen reader and already on the clipboard.
+Copilot access, available models, allowances and billing belong to your
+GitHub account; QUILL does not provide free Copilot usage. The SDK
+runtime is included, but not a Copilot subscription.</li>
 <li><strong>Codex, for tasks</strong>, one key once your ChatGPT plan is
 signed in.</li>
 <li><strong>My own key</strong>: OpenAI, Google Gemini, Anthropic
@@ -1441,12 +1435,28 @@ connection that sees)”, and pressing it offers to switch. Every answer
 is text; nothing in QUILL’s AI draws a chart, a diagram or a
 picture.</p>
 <p><strong>Do a Document Task</strong> (<strong>Ctrl+3</strong>) hands a
-job with several steps to GitHub Copilot or Codex: “Fix the heading
-levels, then build a table of contents, then list broken links.” It
-works only with QUILL’s own document tools. Every step that changes
-something asks first (Allow once, Allow for this task, Don’t allow),
-every edit opens the review you already know and undoes with Ctrl+Z,
-Stop ends it at once, and you hear a plain summary at the end.</p>
+job with several steps to GitHub Copilot, Codex or a supported provider
+you chose in My own key: “Fix the heading levels, then build a table of
+contents, then list broken links.” It works only with QUILL’s own
+document tools. Every step that changes something asks first (Allow
+once, Allow for this task, Don’t allow), every edit opens the review you
+already know and undoes with Ctrl+Z, Stop ends it at once, and you hear
+a plain summary at the end.</p>
+<p>Copilot’s own file, shell and web tools stay off unless you enable
+them for a project. Each use still asks first, but a vendor edit writes
+directly to disk without Review AI Changes, and the vendor shell runs
+with your account permissions. MCP and unsupported permission requests
+are refused. QUILL’s own edits remain reviewed. The Copilot SDK also
+powers multi-step tasks for OpenAI-compatible and Gemini connections you
+choose in My own key, without GitHub sign-in; your selected provider’s
+key and billing apply.</p>
+<p>In <strong>AI Hub &gt; Sessions</strong>, you can opt into keeping
+sessions on this computer, resume or delete one, share enabled AI
+Library skills, or let Copilot summarize older context for a longer
+task. These choices start off, and long-task summaries may use
+additional Copilot account usage. The provider you chose never changes
+on its own. GitHub controls Copilot access and billing; QUILL does not
+provide or subsidize it.</p>
 <p>QUILL Lite has all of this, on the same keys, from the same code.
 Your saved prompts are one list for the whole family, shared with QUILL
 Lite.</p>

@@ -181,8 +181,9 @@ ChatGPT or GitHub Copilot, or have your own key, you can use that instead. One
 window, **Choose Your AI** (Ctrl+4), lists them all, and **Which AI Am I
 Using** (Ctrl+8) tells you in one line which one is answering. Sign out of the
 one in use and nothing quietly takes its place: QUILL waits for you to choose.
-On Copilot or Codex, **Do a Document Task** (Ctrl+3) works through a job with
-several steps, asking before each change. Every answer is text, never a chart.
+On Copilot, Codex or a supported provider you chose in My own key, **Do a
+Document Task** (Ctrl+3) works through a job with several steps, asking before
+each change. Every answer is text, never a chart.
 
 One rule runs through every AI feature: **the AI proposes, you dispose.** Every
 suggested edit stops at a review dialog you can judge by ear. Each change is
@@ -194,7 +195,15 @@ own computer.
 
 Copilot signs in with a short code your screen reader spells out, already on
 the clipboard, and the Copilot engine comes with QUILL, so there is nothing else
-to install.
+to install. Access and usage still come from your own GitHub Copilot account;
+QUILL does not provide or subsidize a Copilot plan.
+
+For multi-step tasks, My own key can use the same Copilot SDK harness with
+OpenAI-compatible or Gemini providers. Your selected provider's key and billing
+apply. AI Hub > Sessions gives you optional local session retention, session
+resumption and deletion, skill sharing, and long-task context summaries.
+Nothing is retained or shared until you opt in, and QUILL never switches
+providers automatically.
 
 ## For people who write code
 

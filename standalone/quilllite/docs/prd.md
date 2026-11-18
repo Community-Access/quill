@@ -1121,7 +1121,8 @@ build, the row is "not available yet".
 
 **Do a Document Task** (Ctrl+3; `tools.hosted_ai_task`, Lite `cmd_ai_task`;
 `quill/ui/agent_window.py`, `quill/core/ai/document_task.py`) needs agent
-tools, which only Copilot and Codex have. Controls: Conversation, Status,
+tools, available on Copilot, Codex, and supported providers selected in My own
+key. Controls: Conversation, Status,
 Instruction (focus starts here; Enter sends; text sent while a task runs is a
 follow-up), Send, Stop, Close. Tools are limited to `DOCUMENT_TASK_TOOLS`
 (read outline, section, selection and document; apply_patch; the
@@ -2113,9 +2114,9 @@ for tasks.
 **Capability gating.** `quill/core/ai/connection_caps.py` records what each
 connection can do. A command the connection in use cannot serve keeps its
 menu row and chord (rule 8), its label says what it needs, such as "(needs
-Copilot or Codex)", and invoking it sends nothing and offers to switch, with
-Yes as the default. The user can only do what the service supports, and is
-never left at a silent failure.
+an AI that runs tasks)", and invoking it sends nothing and offers to switch,
+with Yes as the default. The user can only do what the service supports, and
+is never left at a silent failure.
 
 **Which AI Am I Using** (**Ctrl+8**, `cmd_ai_which`) says the connection, the
 model and one usage fact in one line; a double press opens Choose Your AI.
@@ -2125,7 +2126,8 @@ The status bar's AI cell carries the short form and opens the window on Enter.
 (`quill/core/ai/connection_usage.py`).
 
 **Do a Document Task** (**Ctrl+3**, `cmd_ai_task`) hands a multi-step job to
-Copilot or Codex (`quill/core/ai/document_task.py`, shared mixin
+Copilot, Codex or a supported My own key provider
+(`quill/core/ai/document_task.py`, shared mixin
 `quill/ui/hosted_ai_task_commands.py`). Every step that changes something is
 asked first (Allow once, Allow for this task, Don't allow), every edit goes
 through Review AI Changes and undoes with Ctrl+Z, and only the final summary

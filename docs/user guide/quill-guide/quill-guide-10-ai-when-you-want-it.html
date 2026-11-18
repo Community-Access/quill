@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Chapter 10: AI, when you want it</title>
   <style>
@@ -11,10 +11,7 @@
     */
     html {
       color: #1a1a1a;
-      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
-      background-color: light-dark(#fdfdfd, #1a1a1a);
-      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -39,16 +36,11 @@
     }
     @media print {
       html {
-        color-scheme: light only;
+        background-color: white;
       }
-      html, body, pre, code {
+      body {
         background-color: transparent;
-      }
-      body, a, a:visited, blockquote {
         color: black;
-      }
-      pre, code {
-        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -61,8 +53,11 @@
     p {
       margin: 1em 0;
     }
-    a, a:visited {
-      color: inherit;
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
     }
     img {
       max-width: 100%;
@@ -91,11 +86,8 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid;
-      border-color: #e6e6e6;
-      border-color: light-dark(#e6e6e6, #4c4c4c);
+      border-left: 2px solid #e6e6e6;
       color: #606060;
-      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -119,7 +111,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -136,11 +128,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid currentColor;
-      border-bottom: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
     }
     th {
-      border-top: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -179,6 +171,7 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
     /* CSS for syntax highlighting */
     html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
@@ -318,10 +311,10 @@ ChatGPT or GitHub Copilot, or have your own key, you can use those
 instead: <strong>Choose Your AI</strong> (<code>Ctrl+4</code>) is the
 one place to pick, and <strong>Which AI Am I Using</strong>
 (<code>Ctrl+8</code>) tells you which one answers. Further on you will
-find document tasks, which hand a job with several steps to Copilot or
-Codex, and the library where you can save your own prompts, skills and
-agents. Every answer is text: no AI in QUILL draws charts, diagrams or
-pictures.</p>
+find document tasks, which hand a job with several steps to Copilot,
+Codex or a supported provider you chose in My own key, and the library
+where you can save your own prompts, skills and agents. Every answer is
+text: no AI in QUILL draws charts, diagrams or pictures.</p>
 <h2 id="quills-own-free-ai">QUILL’s own free AI</h2>
 <p>You do not need an account, a key, or a decision about which company
 sees your writing. QUILL runs its own AI service, it is free, and it is
@@ -384,7 +377,7 @@ use</td>
 <tr>
 <td><code>Ctrl+3</code></td>
 <td>Do a Document Task…</td>
-<td>Tell GitHub Copilot or Codex what to do to this document</td>
+<td>Tell a task-capable AI what to do to this document</td>
 </tr>
 <tr>
 <td></td>
@@ -1312,22 +1305,41 @@ screen reader reads one character at a time, says it once, and puts it
 on the clipboard. <strong>Open the Page</strong> takes you to GitHub’s
 page, where you paste or type the code and approve QUILL. The step
 closes by itself and you hear “Signed in to My GitHub Copilot. It is now
-in use.” <strong>Cancel</strong> stops waiting straight away. Copilot
-Free works too; its model list has one entry, “Auto (Copilot Free
-chooses)”. QUILL signs in to GitHub on its own, separately from QUILL
-Lite and from the GitHub sign-in QUILL uses for your repositories.</p>
-<p>Signing in to GitHub from inside QUILL needs QUILL’s own registration
-with GitHub. Until a build carries it, the row says “not available yet”,
-<strong>About this connection</strong> says “Not available yet: GitHub
-sign-in for QUILL has not been registered, so it comes in a later
-update.”, and <strong>Sign In…</strong> tells you the same thing instead
-of opening the step. Nothing about Copilot is sent anywhere until
-then.</p>
+in use.” <strong>Cancel</strong> stops waiting straight away. GitHub
+determines which Copilot models and usage allowance are available to
+your account, and bills any usage under that account. QUILL does not
+provide free Copilot access. The model list comes from GitHub and may
+differ by account or plan.</p>
+<p>QUILL includes the Copilot SDK runtime, but that does not include a
+Copilot subscription or allowance. If GitHub sign-in is unavailable or
+the bundled runtime cannot start, QUILL reports that and leaves your
+other AI choices available. Your Copilot sign-in is separate from QUILL
+Lite and from the GitHub sign-in QUILL uses for repository features.</p>
+<p><strong>Copilot options are in AI Hub &gt; Sessions.</strong> Auto
+priority is Efficiency, Balanced or Intelligence, and applies only when
+you choose Copilot Auto; it never changes which AI provider is in use.
+Session retention, long-task context summaries and sharing enabled AI
+Library skills are all off until you opt in. Long-task summaries require
+retention and may use additional Copilot account usage. With retention
+on, Refresh lists saved local session IDs and update times. Choose
+<strong>Use selected session for the next task</strong>, save the AI Hub
+settings with <strong>OK</strong>, and the next Copilot task continues
+that conversation. Permanent deletion requires an explicit confirmation
+check box. Conversation content is not displayed in the list. Temporary
+work files are still cleared. You can turn retention off and start
+another Copilot task to remove retained session data. Credential-free
+system proxy settings are honored; QUILL does not collect proxy
+credentials.</p>
 <p>Once you are signed in and Copilot is in use, the pad, Ask, the
 Prompt Library and Ask About an Image (on a Copilot model that can see)
 all go to Copilot on your plan. If Copilot answers with an error, you
 hear it once; QUILL does not try again and does not switch to another
 AI.</p>
+<p>For multi-step tasks, choosing <strong>My own key</strong> can use
+the Copilot SDK with OpenAI-compatible or Gemini providers. Your
+selected provider’s key, terms and billing apply; this does not use or
+require GitHub Copilot sign-in. Copilot Auto priority never chooses or
+switches providers for you.</p>
 <p><strong>Codex, for tasks</strong> runs on your ChatGPT plan, with the
 same sign-in. Once you are signed in to your plan, <strong>Use
 This</strong> on the Codex row is the only key to press. Codex is there
@@ -1412,10 +1424,10 @@ Task…</strong> (<code>Ctrl+3</code>) hands a job like that to
 <strong>GitHub Copilot</strong> or <strong>Codex</strong>, whichever is
 in use, and it works through the steps with QUILL’s own editing
 tools.</p>
-<p>Only those two can do tasks. On any other AI the menu says <strong>Do
-a Document Task (needs Copilot or Codex)…</strong>, and pressing it
-sends nothing and offers to switch, the same way as any other AI
-command.</p>
+<p>GitHub Copilot, Codex, and supported providers in My own key can do
+tasks. On another AI the menu says <strong>Do a Document Task (needs an
+AI that runs tasks)…</strong>, and pressing it sends nothing and offers
+to switch, the same way as any other AI command.</p>
 <p>The window has six things in it, in Tab order:</p>
 <ul>
 <li><strong>Conversation</strong>, a read-only record of the task: what
@@ -1450,21 +1462,26 @@ you stop starts “Stopped.”; one that could not finish starts “The task
 could not finish.” The AI’s own short summary follows in the
 conversation. The conversation and status fill in quietly;
 <code>Shift+Tab</code> takes you to them.</p>
-<p><strong>What a task can use.</strong> Only QUILL’s own document
-tools: reading the outline, a section, the selection or the whole
-document, checking accessibility, proposing an edit, and running a short
-list of QUILL commands that are safe to run. It cannot use the web, your
-files, a command window or anything outside the document, and the
-engine’s own tools for those are switched off. It is told to answer in
-plain text and never to draw charts or diagrams.</p>
-<p><strong>When there is no engine.</strong> If GitHub Copilot or Codex
-is in use but this copy of QUILL cannot start it, you hear “Document
-tasks need My GitHub Copilot or Codex. Press Ctrl+4 to choose one.” In
-Safe Mode, document tasks are off with the rest of AI.</p>
-<p><strong>What is kept.</strong> Nothing about a task outlives it: what
-the engine keeps while it works is deleted when the task ends, when you
-press Stop, and again before the next task starts, so even a crash
-leaves nothing behind. The changes you allowed stay in your document,
+<p><strong>What a task can use.</strong> By default, QUILL’s own
+document tools: reading the outline, a section, the selection or the
+whole document, checking accessibility, proposing an edit, and running a
+short list of QUILL commands that are safe to run. The engine’s own
+file, shell and web tools are off by default. You can enable selected
+tools for one project; QUILL still asks before each use. A vendor edit
+writes directly to disk without Review AI Changes, and the vendor shell
+can do anything your account can. MCP and unsupported requests are
+refused. QUILL’s own edits remain reviewed. The engine is told to answer
+in plain text and never to draw charts or diagrams.</p>
+<p><strong>When there is no engine.</strong> If the selected engine
+cannot start, QUILL says so and leaves your other AI choices available.
+In Safe Mode, document tasks are off with the rest of AI.</p>
+<p><strong>What is kept.</strong> By default, the SDK session and its
+temporary work folder are deleted when the task ends, when you press
+Stop, and again before the next task starts. If you opt into session
+retention in <strong>AI Hub &gt; Sessions</strong>, Copilot history
+stays in this app’s local data until you delete it; the Hub lets you
+list, resume and permanently delete saved sessions. Temporary task work
+files are still cleared. The changes you allowed stay in your document,
 where <code>Ctrl+Z</code> takes each one back.</p>
 <h2 id="propose-alt-text">Propose Alt Text</h2>
 <p><strong>AI &gt; Propose Alt Text…</strong> opens the same window as

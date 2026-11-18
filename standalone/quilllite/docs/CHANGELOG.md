@@ -90,6 +90,21 @@ Still open: some Workbench changes (Reply, Merge Into, the Empty commands,
 shop and event edits, among others) are not yet written to Change History,
 so Ctrl+Z straight after one undoes an older change instead.
 
+### GitHub Copilot SDK 2.0.1 and optional agent features (2026-11-18)
+
+- QUILL Lite now uses the Microsoft Copilot SDK 2.0.1 in-process runtime.
+  GitHub still controls Copilot eligibility, models, limits and billing;
+  QUILL Lite does not provide or subsidize Copilot access.
+- OpenAI-compatible and Gemini connections chosen in My own key can use the
+  SDK harness for multi-step tasks without GitHub sign-in. The selected
+  provider's terms and billing apply.
+- AI Hub > Sessions lets you opt into keeping local sessions, listing and
+  resuming one for a task, or deleting it. Skill sharing and long-task context
+  summaries are also explicit opt-ins. All are off by default.
+- Copilot's own file, shell and web tools are off until enabled per project.
+  Each use still asks first; vendor edits bypass Review Changes, and shell
+  commands run with your account permissions.
+
 ### Compare with Site marks each changed line, from Kelly Ford (2026-11-18)
 
 **File > WordPress > Compare with Site** now starts with a summary ("Comparing

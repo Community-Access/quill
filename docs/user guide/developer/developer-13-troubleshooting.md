@@ -54,11 +54,11 @@ off; see the start of this chapter.
 
 ## The task will not start, or says your AI cannot run tasks
 
-Project tasks need My GitHub Copilot, Codex, or My own key with Anthropic
-Claude or Ollama on this computer. If you hear "Document tasks need My GitHub
-Copilot or Codex. Press Ctrl+4 to choose one.", or QUILL offers to switch,
-press `Ctrl+4` and choose one of those. QUILL's free AI and the other own-key
-providers answer in text only.
+Project tasks need My GitHub Copilot, Codex, or a supported provider selected
+in My own key: OpenAI, Gemini, Claude, OpenRouter, Ollama Cloud, a custom
+OpenAI-compatible service, or Ollama on this computer. If the menu says
+"(needs an AI that runs tasks)", press `Ctrl+4` and choose one. QUILL's free
+AI does not run tasks.
 
 When a task cannot start for another reason, such as a sign-in that has
 expired, the conversation says why, and so does what you hear.
