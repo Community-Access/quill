@@ -40,7 +40,12 @@ from typing import Any
 import wx
 
 from quill.core.ai import agent_task_words as words
-from quill.core.ai.approvals import ApprovalChoice, ApprovalRequest, UiApprovalBridge
+from quill.core.ai.approvals import (
+    ApprovalChoice,
+    ApprovalRequest,
+    UiApprovalBridge,
+    UserInputAnswer,
+)
 from quill.core.ai.events import AgentEvent, AgentEventKind
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
@@ -51,6 +56,9 @@ __all__ = ["AgentTaskHooks", "AgentWindow", "ApprovalDialog", "ask_approval"]
 
 #: Events whose summary belongs in the transcript as a line of its own.
 _STEP_EVENTS = frozenset({
+    AgentEventKind.AGENT_THINKING_SUMMARY,
+    AgentEventKind.TOOL_CALL_REQUESTED,
+    AgentEventKind.TOOL_CALL_COMPLETED,
     AgentEventKind.TOOL_CALL_DENIED,
     AgentEventKind.PATCH_APPLIED,
     AgentEventKind.WARNING,
@@ -152,7 +160,11 @@ class AgentWindow(wx.Frame):
         if hooks.title and hooks.title != words.TITLE:
             self.SetTitle(hooks.title)  # an app task names its own (codex.md Phase 4c)
         self._hooks = hooks
-        self._approval = UiApprovalBridge(post=wx.CallAfter, present=self._present)
+        self._approval = UiApprovalBridge(
+            post=wx.CallAfter,
+            present=self._present,
+            present_user_input=self._present_user_input,
+        )
         self._runner: Any = None
         self._host_bridge: Any = None
         self._running = False
@@ -283,6 +295,8 @@ class AgentWindow(wx.Frame):
         elif event.kind in _STEP_EVENTS and event.summary:
             self._flush_reply()
             self._write(event.summary)
+            if event.detail.get("announce") == "true":
+                self._hooks.announce(event.summary)
 
     def _flush_reply(self) -> None:
         text = "".join(self._reply).strip()
@@ -329,6 +343,78 @@ class AgentWindow(wx.Frame):
                 choice = ask_approval(self, request.summary)
         finally:
             request.answer(choice)
+
+    def _present_user_input(
+        self, question: str, choices: tuple[str, ...], allow_freeform: bool
+    ) -> UserInputAnswer | None:
+        """Use native wx prompts for agent questions; never guess on dismissal."""
+        title = "Copilot needs your answer"
+        launcher = self.instruction
+        try:
+            if choices:
+                options = list(choices)
+                other_index = len(options) if allow_freeform else None
+                if allow_freeform:
+                    options.append("Enter a different answer")
+                dialog = wx.SingleChoiceDialog(self, question, title, options)
+                answer: UserInputAnswer | None = None
+                choose_freeform = False
+                try:
+                    apply_modal_ids(
+                        dialog,
+                        affirmative_id=wx.ID_OK,
+                        affirmative_label="Choose answer",
+                        cancel_id=wx.ID_CANCEL,
+                        cancel_label="Cancel",
+                    )
+                    ok_button = dialog.FindWindow(wx.ID_OK)
+                    if ok_button is not None:
+                        ok_button.SetDefault()
+                    result = show_modal_dialog(dialog, title, announce=self._hooks.announce)
+                    if result != wx.ID_OK:
+                        return None
+                    selection = dialog.GetSelection()
+                    if selection < 0:
+                        raise RuntimeError("The Copilot answer choice was not selected.")
+                    if selection == other_index:
+                        choose_freeform = True
+                    else:
+                        answer = UserInputAnswer(options[selection], was_freeform=False)
+                finally:
+                    dialog.Destroy()
+                if choose_freeform:
+                    return self._present_text_answer(question, title)
+                return answer
+            if not allow_freeform:
+                raise ValueError("Copilot requested input without choices or freeform answers.")
+            return self._present_text_answer(question, title)
+        finally:
+            if self and not self.IsBeingDeleted():
+                focus_on(self, launcher)
+
+    def _present_text_answer(self, question: str, title: str) -> UserInputAnswer | None:
+        dialog = wx.TextEntryDialog(self, question, title)
+        try:
+            apply_modal_ids(
+                dialog,
+                affirmative_id=wx.ID_OK,
+                affirmative_label="Submit answer",
+                cancel_id=wx.ID_CANCEL,
+                cancel_label="Cancel",
+            )
+            text = dialog.GetTextCtrl()
+            if text is not None:
+                text.SetHelpText("Type your answer. Cancel tells Copilot you chose not to answer.")
+                text.SetFocus()
+            ok_button = dialog.FindWindow(wx.ID_OK)
+            if ok_button is not None:
+                ok_button.SetDefault()
+            result = show_modal_dialog(dialog, title, announce=self._hooks.announce)
+            if result != wx.ID_OK:
+                return None
+            return UserInputAnswer(dialog.GetValue(), was_freeform=True)
+        finally:
+            dialog.Destroy()
 
     # -- plumbing ---------------------------------------------------------------- #
 

@@ -287,6 +287,16 @@ class CopilotToolSession:
         kwargs["permissions"] = {"on_request": self._on_permission}
         kwargs["tools"] = {"definitions": sdk_tools, "available_tools": names}
         kwargs["events"] = {"streaming": True}
+        kwargs["interaction"] = {"on_user_input_request": self._on_user_input_request}
+        kwargs["hooks"] = {
+            "handlers": {
+                "on_pre_tool_use": self._on_pre_tool_use,
+                "on_post_tool_use": self._on_post_tool_use,
+                "on_post_tool_use_failure": self._on_post_tool_use_failure,
+                "on_subagent_start": self._on_subagent_start,
+                "on_subagent_stop": self._on_subagent_stop,
+            }
+        }
         kwargs["working_directory"] = getattr(self._tools, "vendor_cwd", "") or str(
             self._folders.work
         )
@@ -321,6 +331,68 @@ class CopilotToolSession:
                 f"Copilot asked for a {kind or 'unknown'} permission; refused."
             )
         return self._sdk.reject_cls(feedback=REFUSAL_FEEDBACK)
+
+    async def _on_user_input_request(self, request: Any, _context: Any) -> dict[str, Any]:
+        question = str(request.get("question", "")).strip()
+        if not question:
+            raise ValueError("Copilot requested user input without a question.")
+        raw_choices = request.get("choices", [])
+        if not isinstance(raw_choices, list) or not all(
+            isinstance(choice, str) for choice in raw_choices
+        ):
+            raise ValueError("Copilot requested user input with invalid choices.")
+        allow_freeform = request.get("allowFreeform", True)
+        if not isinstance(allow_freeform, bool):
+            raise ValueError("Copilot requested user input with an invalid freeform flag.")
+        ask_user = getattr(self._approver, "ask_user", None)
+        if not callable(ask_user):
+            raise RuntimeError("This task has no accessible user-input dialog.")
+        answer = await asyncio.to_thread(ask_user, question, tuple(raw_choices), allow_freeform)
+        if answer is None:
+            return {"answer": "The user chose not to answer.", "wasFreeform": False}
+        return {"answer": answer.answer, "wasFreeform": answer.was_freeform}
+
+    def _on_pre_tool_use(self, request: Any, _context: Any) -> None:
+        self._emit_progress("Copilot is starting", request)
+
+    def _on_post_tool_use(self, request: Any, _context: Any) -> None:
+        self._emit_progress("Copilot finished", request, completed=True)
+
+    def _on_post_tool_use_failure(self, request: Any, _context: Any) -> None:
+        self._emit_progress("Copilot could not complete", request, failed=True)
+
+    def _on_subagent_start(self, request: Any, _context: Any) -> None:
+        self._emit_progress("Copilot started a helper agent", request, agent=True)
+
+    def _on_subagent_stop(self, request: Any, _context: Any) -> None:
+        self._emit_progress("Copilot finished a helper agent", request, agent=True)
+
+    def _emit_progress(
+        self,
+        prefix: str,
+        request: Any,
+        *,
+        completed: bool = False,
+        failed: bool = False,
+        agent: bool = False,
+    ) -> None:
+        name = request.get("toolName", "") if isinstance(request, dict) else ""
+        if agent:
+            name = request.get("agentDisplayName", "") or request.get("agentName", "")
+        safe_name = " ".join(
+            part for part in str(name).replace("_", " ").replace(".", " ").split() if part.isalnum()
+        )[:60]
+        summary = f"{prefix} {safe_name}." if safe_name else f"{prefix} a step."
+        kind = (
+            AgentEventKind.WARNING
+            if failed
+            else AgentEventKind.AGENT_THINKING_SUMMARY
+            if agent
+            else AgentEventKind.TOOL_CALL_COMPLETED
+            if completed
+            else AgentEventKind.TOOL_CALL_REQUESTED
+        )
+        self._emit(AgentEvent(kind, summary, {"announce": "true"}))
 
     def _on_event(self, event: Any) -> None:
         kind = _event_type(event)

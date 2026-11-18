@@ -33,7 +33,7 @@ from __future__ import annotations
 
 import threading
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from concurrent.futures import Future
 from dataclasses import dataclass, field
 from enum import StrEnum
@@ -47,6 +47,7 @@ if TYPE_CHECKING:
 __all__ = [
     "ApprovalChoice",
     "Approver",
+    "UserInputAnswer",
     "ApprovalRequest",
     "ApprovalGate",
     "ApprovingEditorHost",
@@ -85,6 +86,14 @@ class Approver(Protocol):
     """
 
     def ask(self, tool: FamilyTool, summary: str) -> ApprovalChoice: ...
+
+
+@dataclass(frozen=True, slots=True)
+class UserInputAnswer:
+    """One user-provided answer, or a distinguishable cancellation."""
+
+    answer: str
+    was_freeform: bool
 
 
 def is_read_tool(tool: FamilyTool) -> bool:
@@ -339,9 +348,13 @@ class UiApprovalBridge:
         self,
         post: Callable[[Callable[[], None]], None],
         present: Callable[[ApprovalRequest], None],
+        present_user_input: (
+            Callable[[str, tuple[str, ...], bool], UserInputAnswer | None] | None
+        ) = None,
     ) -> None:
         self._bridge = UiThreadBridge(post)
         self._present = present
+        self._present_user_input = present_user_input
 
     @property
     def thread_bridge(self) -> UiThreadBridge:
@@ -353,6 +366,17 @@ class UiApprovalBridge:
             self._present(request)
 
         return self._bridge.call_with_answer(_present, default=ApprovalChoice.DENY)
+
+    def ask_user(
+        self, question: str, choices: Sequence[str], allow_freeform: bool
+    ) -> UserInputAnswer | None:
+        """Ask an agent's question on the UI thread; ``None`` means cancelled."""
+        if self._present_user_input is None:
+            raise RuntimeError("This task has no accessible user-input dialog.")
+        return self._bridge.call(
+            lambda: self._present_user_input(question, tuple(choices), allow_freeform),
+            default=None,
+        )
 
     def cancel(self) -> None:
         self._bridge.cancel()

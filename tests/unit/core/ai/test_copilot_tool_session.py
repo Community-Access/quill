@@ -34,7 +34,7 @@ from quill.ai_packs.copilot_tool_session import REFUSAL_FEEDBACK, CopilotToolSes
 from quill.core.ai import copilot_auth
 from quill.core.ai.activity_log import ActivityLog
 from quill.core.ai.agent_workdir import AgentFolders, agent_folders
-from quill.core.ai.approvals import ApprovalChoice
+from quill.core.ai.approvals import ApprovalChoice, UserInputAnswer
 from quill.core.ai.diff_review import DiffReview
 from quill.core.ai.document_task import DocumentTaskRunner, build_document_tools
 from quill.core.ai.events import AgentEvent, AgentEventKind
@@ -352,6 +352,24 @@ class ScriptedApprover:
         self.cancelled += 1
 
 
+class InputApprover(ScriptedApprover):
+    def __init__(self, answer: UserInputAnswer | None) -> None:
+        super().__init__()
+        self.answer = answer
+        self.requests: list[tuple[str, tuple[str, ...], bool]] = []
+
+    def ask_user(
+        self, question: str, choices: tuple[str, ...], allow_freeform: bool
+    ) -> UserInputAnswer | None:
+        self.requests.append((question, choices, allow_freeform))
+        return self.answer
+
+
+class ApprovalOnly:
+    def ask(self, _tool: FamilyTool, _summary: str) -> ApprovalChoice:
+        return ApprovalChoice.DENY
+
+
 def _agent() -> AgentSpec:
     return AgentSpec(id="doc-agent", display_name="Doc", system_prompt="Be careful.")
 
@@ -437,6 +455,107 @@ def test_session_options_stream_append_and_stay_in_the_app_folder(rec: Rec, tmp_
     assert "working_directory" not in rec.client_kwargs
     assert rec.client_kwargs["runtime"].base_directory == str(folders.home)
     assert all(t.skip_permission is False for t in rec.session_kwargs["tools"]["definitions"])
+
+
+def test_hooks_emit_safe_accessible_progress_without_changing_tool_permissions(
+    rec: Rec, tmp_path: Path
+) -> None:
+    registry, _gw = _registry(tmp_path, FakeHost())
+    events: list[AgentEvent] = []
+    _session(tmp_path, registry, ScriptedApprover(), events).run()
+    handlers = rec.session_kwargs["hooks"]["handlers"]
+    request = {
+        "toolName": "doc_read_document",
+        "toolArgs": {"document": "private document text"},
+    }
+
+    assert handlers["on_pre_tool_use"](request, {}) is None
+    assert handlers["on_post_tool_use"](request, {}) is None
+    assert handlers["on_post_tool_use_failure"](request, {}) is None
+    assert handlers["on_subagent_start"]({"agentDisplayName": "Repository helper"}, {}) is None
+    assert handlers["on_subagent_stop"]({"agentDisplayName": "Repository helper"}, {}) is None
+
+    assert [event.kind for event in events[-5:]] == [
+        AgentEventKind.TOOL_CALL_REQUESTED,
+        AgentEventKind.TOOL_CALL_COMPLETED,
+        AgentEventKind.WARNING,
+        AgentEventKind.AGENT_THINKING_SUMMARY,
+        AgentEventKind.AGENT_THINKING_SUMMARY,
+    ]
+    assert [event.summary for event in events[-5:]] == [
+        "Copilot is starting doc read document.",
+        "Copilot finished doc read document.",
+        "Copilot could not complete doc read document.",
+        "Copilot started a helper agent Repository helper.",
+        "Copilot finished a helper agent Repository helper.",
+    ]
+    assert all(event.detail == {"announce": "true"} for event in events[-5:])
+    assert "private document text" not in repr(events[-5:])
+
+
+def test_user_input_request_uses_the_approver_and_returns_the_answer(
+    rec: Rec, tmp_path: Path
+) -> None:
+    registry, _gw = _registry(tmp_path, FakeHost())
+    approver = InputApprover(UserInputAnswer("Use the shorter title.", was_freeform=False))
+    _session(tmp_path, registry, approver).run()
+    handler = rec.session_kwargs["interaction"]["on_user_input_request"]
+    response = asyncio.run(
+        handler(
+            {
+                "question": "Which title should I use?",
+                "choices": ["Short", "Long"],
+                "allowFreeform": False,
+            },
+            {"session_id": "session"},
+        )
+    )
+
+    assert response == {"answer": "Use the shorter title.", "wasFreeform": False}
+    assert approver.requests == [("Which title should I use?", ("Short", "Long"), False)]
+
+
+def test_cancelling_user_input_is_explicit_and_never_becomes_a_guess(
+    rec: Rec, tmp_path: Path
+) -> None:
+    registry, _gw = _registry(tmp_path, FakeHost())
+    _session(tmp_path, registry, InputApprover(None)).run()
+    handler = rec.session_kwargs["interaction"]["on_user_input_request"]
+    response = asyncio.run(handler({"question": "Which one?"}, {"session_id": "session"}))
+
+    assert response == {
+        "answer": "The user chose not to answer.",
+        "wasFreeform": False,
+    }
+
+
+def test_user_input_fails_explicitly_when_no_interaction_bridge_exists(
+    rec: Rec, tmp_path: Path
+) -> None:
+    registry, _gw = _registry(tmp_path, FakeHost())
+    _session(tmp_path, registry, ApprovalOnly()).run()
+    handler = rec.session_kwargs["interaction"]["on_user_input_request"]
+    with pytest.raises(RuntimeError, match="accessible user-input dialog"):
+        asyncio.run(handler({"question": "Which one?"}, {"session_id": "session"}))
+
+
+@pytest.mark.parametrize(
+    ("payload", "message"),
+    [
+        ({}, "without a question"),
+        ({"question": "Pick", "choices": "not a list"}, "invalid choices"),
+        ({"question": "Pick", "allowFreeform": "yes"}, "invalid freeform flag"),
+    ],
+)
+def test_user_input_rejects_malformed_requests(
+    rec: Rec, tmp_path: Path, payload: dict[str, Any], message: str
+) -> None:
+    registry, _gw = _registry(tmp_path, FakeHost())
+    _session(tmp_path, registry, InputApprover(None)).run()
+    handler = rec.session_kwargs["interaction"]["on_user_input_request"]
+
+    with pytest.raises(ValueError, match=message):
+        asyncio.run(handler(payload, {"session_id": "session"}))
 
 
 def test_g3_the_offered_tool_list_holds_only_quill_tools(rec: Rec, tmp_path: Path) -> None:
@@ -646,7 +765,7 @@ def test_document_task_runner_ends_with_a_text_summary(rec: Rec, tmp_path: Path)
         activity=ActivityLog(tmp_path / "activity.json"),
     )
     with pytest.MonkeyPatch.context() as mp:
-        mp.setattr(pack, "agent_folders", lambda engine, name: _folders(tmp_path))
+        mp.setattr(pack, "agent_folders", lambda engine, name, **_kwargs: _folders(tmp_path))
         outcome = runner.run("Tidy it.")
     assert outcome.ok
     assert outcome.summary.startswith("Done. 1 change applied: Changed the document.")

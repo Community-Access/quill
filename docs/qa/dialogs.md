@@ -361,6 +361,10 @@ parent first.
 - [ ] Export profile (from Profiles and Features)
 - [ ] Import profile (from Profiles and Features)
 - [ ] Review AI Changes (from Ask Quill Chat, when approving an AI replacement that differs from the selection)
+- [ ] Copilot answer choice (from Do a Document Task, when Copilot asks a
+      question with choices)
+- [ ] Copilot custom answer (from Copilot answer choice, Enter a different
+      answer; or a freeform-only question)
 - [ ] Add custom prompt (from Prompt Studio)
 - [ ] Run Python (from Tools, Python sandbox)
 - [ ] Confirm download model (from AI Model Settings)
