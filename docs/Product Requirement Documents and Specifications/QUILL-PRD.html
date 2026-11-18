@@ -29307,6 +29307,19 @@ preview’s Create Issues; a result window gives a sentence per issue and
 Change History records each. The spreadsheet reader is shared with
 WordPress (<code>quill/core/workbench/spreadsheet.py</code>). Project
 fields are not mapped yet.</p>
+<p><strong>An issue’s reason, branch and task list (GH-D).</strong>
+Close or Reopen… on an open issue asks Completed, Not planned or
+Duplicate of another issue; the first two go through REST
+<code>state_reason</code>, a duplicate through GraphQL
+<code>closeIssue</code> with <code>duplicateIssueId</code>. Create
+Branch for This Issue… (<code>createLinkedBranch</code>, from the
+default branch’s head, the name checked against git’s rules first) and
+Linked branches on the issue sheet (<code>linkedBranches</code>). Check
+or Uncheck a Task… and Convert Tasks to Sub-issues… rewrite the body’s
+<code>- [ ]</code> lines, outside fenced code, only when a fresh read
+still matches what was shown.
+<code>quill/core/github/issue_development.py</code>,
+<code>quill/ui/github_workbench_development.py</code>.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

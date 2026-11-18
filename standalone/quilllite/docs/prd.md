@@ -2748,3 +2748,10 @@ New Issues from Lines starts from the selection of the document window that
 opened the Workbench. The keys are the Workbench window's own
 (`WORKBENCH_KEYS`), not editor chords, so they take nothing from QUILL Lite's
 keymap.
+
+The same window brings, also on 2026-11-17, Close or Reopen... with GitHub's
+reason (completed, not planned, duplicate of another issue), Create Branch for
+This Issue..., Linked branches on the issue sheet, and Check or Uncheck a
+Task... and Convert Tasks to Sub-issues... (`quill/core/github/issue_development.py`,
+`quill/ui/github_workbench_development.py`). They are Workbench context-menu
+commands, so QUILL Lite has them without rows of its own.
