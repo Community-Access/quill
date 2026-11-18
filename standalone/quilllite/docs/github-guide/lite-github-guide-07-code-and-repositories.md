@@ -237,6 +237,16 @@ posting needs a signed-in account.
 
 The **Tags** view lists each tag and the commit it points at.
 
+A tag can be made on its own, without a release. In the Tags view, New Here
+on the Workbench's File menu asks for the tag's name, such as `v1.2.0`, and
+which branch, tag or commit to put it on, starting with `main`. QUILL Lite
+refuses a name git would refuse, and a tag that already exists, before
+sending anything, and says "Made tag v1.2.0 on main, commit 3f9a2c1."
+
+**Delete Tag...** on a tag's context menu asks first. If a release is built on
+the tag, the question says so, because deleting the tag leaves the release
+without one. The commit itself stays; only the name goes.
+
 The **Releases** view lists each release: its tag, name, how many times its
 files have been downloaded, how many files it has, when it was made, and
 whether it is a draft or a pre-release. Enter on a release lists its files

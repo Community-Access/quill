@@ -2,6 +2,19 @@
 
 ## 2.0.0
 
+### Your GitHub status (2026-11-18)
+
+**Set Your Status...** on the GitHub Workbench's Account menu reads the
+status beside your name and sets a new one, with an emoji by name, busy or
+not, and when it clears, or clears it. Chapter 13 of the GitHub Guide has the
+details.
+
+### Tags without a release (2026-11-18)
+
+The GitHub Workbench's Tags view can make a tag on its own, on any branch, tag
+or commit, and delete one, saying first when a release is built on it.
+Chapter 7 of the GitHub Guide has the details.
+
 ### Invitations, and turning a workflow on or off (2026-11-18)
 
 **Needs My Attention > Invitations** in the GitHub Workbench lists the

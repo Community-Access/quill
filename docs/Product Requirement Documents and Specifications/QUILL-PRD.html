@@ -29472,7 +29472,14 @@ and Decline each asking first, an expired invitation not acceptable.
 Turn Workflow On or Off… on a workflow
 (<code>quill/core/github/workflow_state.py</code>) says GitHub’s state
 in words, including <code>disabled_inactivity</code>, and asks. Both are
-<code>quill/ui/github_workbench_tier2.py</code>.</p>
+<code>quill/ui/github_workbench_tier2.py</code>. So are New Tag… (Ctrl+N
+in Tags) and Delete Tag… (<code>quill/core/github/tags.py</code>:
+<code>valid_tag_name</code>, <code>create_tag</code>,
+<code>release_for_tag</code>, <code>delete_tag</code>). Account &gt; Set
+Your Status… (<code>Ctrl+Alt+S</code>,
+<code>quill/core/github/user_status.py</code>) reads
+<code>viewer.status</code> and sets or clears it with
+<code>changeUserStatus</code>.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

@@ -17527,7 +17527,11 @@ Invitations is the Explore account view `invitations`
 first, an expired invitation not acceptable. Turn Workflow On or Off... on a
 workflow (`quill/core/github/workflow_state.py`) says GitHub's state in words,
 including `disabled_inactivity`, and asks. Both are
-`quill/ui/github_workbench_tier2.py`.
+`quill/ui/github_workbench_tier2.py`. So are New Tag... (Ctrl+N in Tags) and
+Delete Tag... (`quill/core/github/tags.py`: `valid_tag_name`, `create_tag`,
+`release_for_tag`, `delete_tag`). Account > Set Your Status... (`Ctrl+Alt+S`,
+`quill/core/github/user_status.py`) reads `viewer.status` and sets or clears it
+with `changeUserStatus`.
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

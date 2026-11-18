@@ -362,6 +362,17 @@ def workflow_state(run: Any) -> str:
     return "turned off, read back as off, turned on again"
 
 
+def tags_made_and_deleted(run: Any) -> str:
+    from quill.core.github.tags import create_tag, delete_tag
+
+    name = f"quill-live-tag-{int(time.time())}"
+    said = create_tag(run.api, run.repo, name, run.ids["default_branch"])
+    _expect(run.exists(f"/repos/{run.repo}/git/ref/tags/{name}") is not None, "no tag")
+    delete_tag(run.api, run.repo, name)
+    _expect(run.exists(f"/repos/{run.repo}/git/ref/tags/{name}") is None, "still there")
+    return f"{said} Deleted it again."
+
+
 def cancel_run(run: Any) -> str:
     run_id = _dispatch(run, "pass")
     run.items.cancel_workflow_run(run.repo, run_id)
@@ -827,6 +838,9 @@ VERBS: dict[str, Scenario | str] = {
     "merge": merge_and_delete_branch,
     "revert_pull": revert_merged,
     "workflow_state": workflow_state,
+    "new_tag": tags_made_and_deleted,
+    "delete_tag": "with new_tag: made, then deleted",
+    "user_status": "needs Jeff: changes the status on your own GitHub profile",
     "accept_invitation": "not here: needs an invitation from a second GitHub account",
     "decline_invitation": "not here: needs an invitation from a second GitHub account",
     "practice": "needs Jeff: makes quill-practice in your own account, then deletes it",

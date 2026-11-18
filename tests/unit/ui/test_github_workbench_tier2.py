@@ -75,3 +75,59 @@ def test_invitations_are_answered_after_asking_and_expired_ones_cannot_be_accept
     expired = invitation_row({**INVITE, "expired": True})
     assert not window._fits_accept_invitation(expired)
     assert window._fits_decline_invitation(expired)
+
+
+# -- tags ------------------------------------------------------------------------
+
+
+def test_new_tag_asks_name_and_target_then_makes_it(monkeypatch) -> None:
+    from tests.unit.core.github_workbench.test_tags import FakeApi as TagApi
+
+    window = _Window()
+    window.api = TagApi()
+    answers = ["v1.2.0", "main"]
+    window._ask_text = lambda *_a, **_k: answers.pop(0)
+    window.frame.current = SimpleNamespace(key="tags")
+    assert window._fits_new_tag(None)
+    window._do_new_tag(REF, None)
+    assert window.said[0] == "Made tag v1.2.0 on main, commit abc1234."
+
+
+def test_delete_tag_names_the_release_built_on_it_first() -> None:
+    from quill.core.github.items_provider import GitHubTag
+    from tests.unit.core.github_workbench.test_tags import FakeApi as TagApi
+
+    window = _Window(yes=False)
+    window.api = TagApi(release="Version 1")
+    window._do_delete_tag(REF, GitHubTag("v1"))
+    assert "The release Version 1 is built on it" in window.asked[0]
+    assert not any(method == "DELETE" for method, _p, _b in window.api.sent)
+
+
+# -- your status -------------------------------------------------------------------
+
+
+def test_set_your_status_reads_it_then_asks_each_part() -> None:
+    from tests.unit.core.github_workbench.test_user_status import FakeApi as StatusApi
+
+    window = _Window(yes=True)
+    window.api = StatusApi({"message": "Old", "emoji": "", "indicatesLimitedAvailability": False})
+    picks = [0, 0]
+    window._choose = lambda _t, prompt, _l: (window.asked.append(prompt), picks.pop(0))[1]
+    texts = ["Back Monday", "palm_tree"]
+    window._ask_text = lambda *_a, **_k: texts.pop(0)
+    window._do_user_status(REF, None)
+    assert window.asked[0].startswith("Your status: Old.")
+    assert window.api.sent[0]["message"] == "Back Monday"
+    assert window.api.sent[0]["emoji"] == ":palm_tree:" and window.api.sent[0]["busy"] is True
+    assert window.said[-1].startswith("Your status is now: Back Monday")
+
+
+def test_clear_status_from_the_same_window() -> None:
+    from tests.unit.core.github_workbench.test_user_status import FakeApi as StatusApi
+
+    window = _Window()
+    window.api = StatusApi(None)
+    window._choose = lambda *_a: 1
+    window._do_user_status(REF, None)
+    assert window.said == ["Your status is cleared."]

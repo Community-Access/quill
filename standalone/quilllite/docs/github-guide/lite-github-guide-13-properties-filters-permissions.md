@@ -97,6 +97,12 @@ GitHub confirmed it. Undo This Change reverses the selected one. You can save
 the list as a CSV file or clear it. It stays on this computer for 90 days, and
 a secret's value is never in it.
 
+**Set Your Status...**, on the Workbench's Account menu, reads your GitHub
+status, the short message beside your name, and offers to set a new one or
+clear it. A new one asks, a question at a time, for the message, an emoji by
+its GitHub name (`palm_tree`, `house`, or none), whether to mark yourself busy,
+and when it clears itself. You hear the status as it is now.
+
 ## Filtering
 
 The filter box (`Ctrl+E`) takes plain words, which narrow the loaded list, and

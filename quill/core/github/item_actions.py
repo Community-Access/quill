@@ -293,6 +293,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     ),
     "tag": (
         _default("open", "Open", "The tagged commit."),
+        _a("delete_tag", "Delete Tag...", _D, "push", "Remove the tag; the commit stays."),
         _COMMIT_COMMENTS,
         _COMPARE_PREVIOUS,
         _COMPARE_DEFAULT,
@@ -514,6 +515,7 @@ DELETE_COMMANDS: dict[str, str] = {
     "run": "github.workbench.delete_run",
     "watch": "github.workbench.remove_watch",
     "repository_set": "github.workbench.across_delete_set",
+    "tag": "github.workbench.delete_tag",
 }
 
 #: What Ctrl+N makes on each node (C3, "New, here"), by the node's key.
@@ -524,6 +526,7 @@ NEW_HERE: dict[str, str] = {
     "saved_searches": "github.workbench.save_search",
     "search_issues": "github.workbench.save_search",
     "releases": "github.workbench.new_release",
+    "tags": "github.workbench.new_tag",
     "my_gists": "github.workbench.new_gist",
     "across": "github.workbench.choose_repositories",
     "across_sets": "github.workbench.across_new_set",
