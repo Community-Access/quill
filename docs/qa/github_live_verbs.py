@@ -189,9 +189,18 @@ def create_branch(run: Any) -> str:
     name = f"{branch_name_for(number, TAG)}-{int(time.time())}"
     said = create_linked_branch(run.api, run.repo, number, name)
     linked = linked_branches(run.api, run.repo, number)
+    from quill.core.github.issue_links import linked_branch_ids, unlink_branch
+
+    link = next(
+        (each for each in linked_branch_ids(run.api, run.repo, number) if each.name == name), None
+    )
+    if link is not None:
+        unlink_branch(run.api, number, link)
+    still = linked_branches(run.api, run.repo, number)
     run.rest("DELETE", f"/repos/{run.repo}/git/refs/heads/{name}")
     _expect(name in linked, f"not linked: {linked}")
-    return f"{said} It was listed as linked, then deleted."
+    _expect(name not in still, "still linked after Unlink Branch")
+    return f"{said} It was listed as linked, unlinked, then deleted."
 
 
 def labels(run: Any) -> str:
@@ -847,6 +856,8 @@ VERBS: dict[str, Scenario | str] = {
     "clone": "needs Jeff: clones into a folder you choose, then opens it in the editor",
     "close_reopen": close_reopen,
     "create_branch": create_branch,
+    "unlink_branch": "with create_branch: linked, unlinked, then deleted",
+    "not_duplicate": "needs Jeff: the duplicate mark needs a second issue closed as a duplicate",
     "edit_tasks": task_lists,
     "convert_tasks": "with edit_tasks: checked, converted and linked",
     "comment": comment,

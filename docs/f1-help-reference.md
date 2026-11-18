@@ -3010,6 +3010,10 @@ Control coverage: 365 audited sites (365 helped).
 
 **Create Branch for This Issue.** Make a branch from the default branch, linked to it as its Development.
 
+**Unlink Branch.** Unlink a branch; the branch stays.
+
+**Not a Duplicate.** Take back 'duplicate of #n'.
+
 **Set Issue Type.** Bug, feature, task and so on.
 
 **Reorder Sub-issues.** Change the order of sub-issues.

@@ -85,6 +85,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}new_tag": ("repo:write", _V),
     f"{_P}delete_tag": ("repo:write", _D),
     f"{_P}transfer_repository": ("repo:admin", _D),
+    f"{_P}unlink_branch": ("repo:write", _V),
+    f"{_P}not_duplicate": ("repo:triage", _V),
     f"{_P}delete_package_version": ("sign_in+scope:delete:packages", _D),
     f"{_P}delete_package": ("sign_in+scope:delete:packages", _D),
     f"{_P}new_star_list": ("sign_in+scope:user", _O),

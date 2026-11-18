@@ -155,6 +155,8 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
             "push",
             "Make a branch from the default branch, linked to it as its Development.",
         ),
+        _a("unlink_branch", "Unlink Branch...", _W, "push", "Unlink a branch; the branch stays."),
+        _a("not_duplicate", "Not a Duplicate...", _W, "triage", "Take back 'duplicate of #n'."),
         _a("issue_type", "Set Issue Type...", _W, "triage", "Bug, feature, task and so on."),
         _a("sub_issues", "Reorder Sub-issues...", _W, "triage", "Change the order of sub-issues."),
         _FAVORITE,

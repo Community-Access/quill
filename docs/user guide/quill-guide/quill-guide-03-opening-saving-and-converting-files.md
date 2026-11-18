@@ -1599,6 +1599,12 @@ person, read a profile as sentences, with the contribution calendar as
 numbers. See
 [Profiles](../github-guide/github-guide-12-the-workbench.html#profiles).
 
+#### Undoing an issue's links
+
+**Unlink Branch...** and **Not a Duplicate...** on an issue in the GitHub
+Workbench undo a linked branch and a "duplicate of" mark. See
+[Closing, branches and task lists](../github-guide/github-guide-04-issues.html#closing-branches-and-task-lists).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

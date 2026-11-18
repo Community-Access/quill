@@ -620,6 +620,13 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Unlinking a branch, and taking back "duplicate of" (2026-11-18)
+
+**Unlink Branch...** on an issue takes a linked branch off its Development,
+leaving the branch, and **Not a Duplicate...** takes back "duplicate of #n"
+when an issue was closed against the wrong one. Chapter 4 of the GitHub Guide
+has the details.
+
 ### Profiles as sentences (2026-11-18)
 
 **People > My Profile** in the GitHub Workbench, and **Profile** under any

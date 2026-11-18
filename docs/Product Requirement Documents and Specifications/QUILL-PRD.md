@@ -17551,7 +17551,8 @@ sign-in now asks `user`, `read:packages` and `delete:packages`. Repositories >
 Star Lists (`quill/core/github/star_lists.py`) reads and edits GitHub's star
 lists. People > My Profile and each person's Profile
 (`quill/core/github/profile.py`) read a profile and its contribution calendar
-as sentences.
+as sentences. Unlink Branch... and Not a Duplicate... on an issue
+(`quill/core/github/issue_links.py`) undo a linked branch and a duplicate mark.
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

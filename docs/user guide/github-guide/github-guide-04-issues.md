@@ -284,6 +284,11 @@ duplicate of #3, Original title." A duplicate is recorded on GitHub against
 the issue you named. On a closed issue the same command reopens it, and a pull
 request keeps the plain question, because GitHub gives it no reason.
 
+**Not a Duplicate...** takes back "duplicate of" when an issue was closed
+against the wrong one. QUILL asks which issue it was marked a duplicate of,
+then says "#7 is no longer marked a duplicate of #3, Original title." The
+issue stays closed; Close or Reopen... reopens it.
+
 **Create Branch for This Issue...** makes a branch for the work, from the
 default branch, and links it to the issue, so GitHub lists it under the
 issue's Development. QUILL suggests a name the way GitHub does, such as
@@ -292,6 +297,10 @@ branch that already exists, is refused before anything is sent. Afterwards you
 hear how to start: `git fetch`, then `git switch` and the name. The issue's
 properties (Alt+Enter) list its **Linked branches** on the Relationships page,
 beside the pull requests that will close it.
+
+**Unlink Branch...** lists the branches linked to the issue and takes the one
+you choose off its Development, after asking. The branch itself stays, with
+its commits; only the link goes.
 
 An issue's task list is the lines of its description that start with a check
 box, `- [ ]` or `- [x]`.

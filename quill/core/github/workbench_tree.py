@@ -496,8 +496,6 @@ def _planned(feature: str, node: str, reference: str = "") -> CoverageRow:
 
 PLANNED = CoverageTable((
     # 14.1, worth adding: people will look for these.
-    _planned("Close reason: completed, not planned, duplicate", "Item > Close Issue..."),
-    _planned("Linked pull requests and branches for an issue", "Item > Linked Pull Requests"),
     _planned("Saved replies", "Item > Insert Saved Reply", "GX05, GX12"),
     _planned("Wiki", "Repository > Wiki", "GX12"),
     _planned("Security policy and advisories", "Repository > Security > Advisories", "GX11"),

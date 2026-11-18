@@ -1139,15 +1139,15 @@ Source: PRD section 14. Its “today” statements describe the source audit rev
 
 | Feature | Status today | New home |
 |---|---|---|
-| Close reason: completed, not planned, or duplicate of #n | Not found: closing has no reason | Item > Close Issue... asks the reason; the details pane shows it |
-| Linked pull requests and branches for an issue ("Development"), and "create a branch for this issue" | Not found | Issue details; Item > Linked Pull Requests; Item > Create Branch for Issue... (next to Start in Local Worktree) |
+| Close reason: completed, not planned, or duplicate of #n | **Built:** Close or Reopen... asks the reason (2026-11-17); Not a Duplicate... takes the mark back (2026-11-18, `issue_links.py`) | Item > Close Issue... asks the reason; the details pane shows it |
+| Linked pull requests and branches for an issue ("Development"), and "create a branch for this issue" | **Built:** the issue sheet's Relationships page and Create Branch for This Issue... (2026-11-17); Unlink Branch... (2026-11-18, `issue_links.py`) | Issue details; Item > Linked Pull Requests; Item > Create Branch for Issue... (next to Start in Local Worktree) |
 | Saved replies | Roadmap GX05 and GX12, not built | Item > Insert Saved Reply in every comment box; Tools > Workbench Options > Saved Replies |
 | Wiki | Roadmap GX12, not built | Repository > Wiki (pages as a list, read in details, edit in the editor) |
-| Repository invitations: accept or decline | Seen only as a notification type | Needs My Attention > Invitations |
-| Edit description, website and features (issues, wiki, discussions, projects on or off) | Rename, visibility, default branch and topics only | Repository > Settings > General |
-| Rulesets: read them | Read only inside merge readiness, with a link out | Repository > Settings > Rulesets (read-only list; editing stays on github.com) |
-| Enable or disable a workflow | Not found | Workflow context menu; Item menu |
-| Revert a merged pull request | Not found | PR context menu > More > Revert... |
+| Repository invitations: accept or decline | **Built 2026-11-18** (`repo_invitations.py`) | Needs My Attention > Invitations |
+| Edit description, website and features (issues, wiki, discussions, projects on or off) | **Built:** the repository sheet's Description and feature switches (`sheets_repo.py`) | Repository > Settings > General |
+| Rulesets: read them | **Built:** the ruleset sheet (`sheets_code.py`, `rulesets.py`) | Repository > Settings > Rulesets (read-only list; editing stays on github.com) |
+| Enable or disable a workflow | **Built 2026-11-18:** Turn Workflow On or Off... (`workflow_state.py`) | Workflow context menu; Item menu |
+| Revert a merged pull request | **Built:** Revert... on a merged pull request (`revert_pull`) | PR context menu > More > Revert... |
 | Security policy, private vulnerability reports, repository security advisories | Not found (an advisory credit appears only as a notification reason) | Repository > Security > Policy; Security > Advisories (roadmap GX11) |
 
 ### 14.2 Worth adding later (useful, less often)

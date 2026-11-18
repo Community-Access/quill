@@ -225,3 +225,34 @@ def test_set_status_on_a_commit_asks_and_posts() -> None:
     window._do_commit_status(REF, GitHubCommit("abc1234def", "abc1234", "Fix it"))
     assert window.api.sent[0][2]["state"] == "failure"
     assert window.said == ["Set lab to failed on commit abc1234."]
+
+
+# -- links an issue carries ---------------------------------------------------------
+
+
+def _issue(number: int = 42) -> Any:
+    from quill.core.github.items_provider import GitHubItem
+
+    return GitHubItem(number, "Crash", "open", "", False)
+
+
+def test_unlink_branch_chooses_then_asks(monkeypatch) -> None:
+    from tests.unit.core.github_workbench.test_issue_links import FakeApi as LinkApi
+
+    window = _Window()
+    window.api = LinkApi()
+    window._choose = lambda *_a: 0
+    assert window._fits_unlink_branch(_issue())
+    window._do_unlink_branch(REF, _issue())
+    assert "Unlink 42-fix from #42?" in window.asked[0]
+    assert window.said == ["Unlinked 42-fix from #42. The branch is still there."]
+
+
+def test_not_a_duplicate_asks_the_original() -> None:
+    from tests.unit.core.github_workbench.test_issue_links import FakeApi as LinkApi
+
+    window = _Window()
+    window.api = LinkApi()
+    window._ask_text = lambda *_a, **_k: "#3"
+    window._do_not_duplicate(REF, _issue(7))
+    assert window.said == ["#7 is no longer marked a duplicate of #3, Crash."]

@@ -1671,7 +1671,9 @@ not reshape anything.</p>
 <td>Close reason: completed, not planned, or duplicate of #n</td>
 <td><strong>Built 2026-11-17.</strong> Close or Reopen… asks the reason;
 a duplicate names its original through GraphQL <code>closeIssue</code>;
-the sheet’s State shows it</td>
+the sheet’s State shows it. Not a Duplicate… (2026-11-18,
+<code>unmarkIssueAsDuplicate</code>,
+<code>quill/core/github/issue_links.py</code>) takes the mark back</td>
 <td>Item &gt; Close Issue… asks the reason; the details pane shows
 it</td>
 </tr>
@@ -1680,8 +1682,10 @@ it</td>
 “create a branch for this issue”</td>
 <td><strong>Built 2026-11-17.</strong> Linked branches on the issue
 sheet’s Relationships page; Create Branch for This Issue…
-(<code>createLinkedBranch</code>). Unlinking a branch
-(<code>deleteLinkedBranch</code>) is not built yet</td>
+(<code>createLinkedBranch</code>). Unlink Branch… (2026-11-18,
+<code>deleteLinkedBranch</code>,
+<code>quill/core/github/issue_links.py</code>) lists the linked branches
+and unlinks one after asking; the branch stays</td>
 <td>Issue details; Item &gt; Linked Pull Requests; Item &gt; Create
 Branch for Issue… (next to Start in Local Worktree)</td>
 </tr>

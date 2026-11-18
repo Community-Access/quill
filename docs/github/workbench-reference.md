@@ -970,7 +970,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 346 yes, 1117 planned, 15 not needed and 526 left to GitHub.
+In all: 348 yes, 1115 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2779,7 +2779,7 @@ In all: 346 yes, 1117 planned, 15 not needed and 526 left to GitHub.
 
 #### GraphQL: Issues
 
-51 mutations: 13 yes, 38 planned.
+51 mutations: 15 yes, 36 planned.
 
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
@@ -2805,7 +2805,7 @@ In all: 346 yes, 1117 planned, 15 not needed and 526 left to GitHub.
 | `deleteIssueFieldValue` | Planned | Issue sheet; Item menu |
 | `deleteIssueType` | Planned | Issue sheet; Item menu |
 | `deleteLabel` | Planned | Issue sheet; Item menu |
-| `deleteLinkedBranch` | Planned | Issue sheet; Item menu |
+| `deleteLinkedBranch` | Yes | context menu > Unlink Branch... |
 | `lockLockable` | Planned | Issue sheet; Item menu |
 | `minimizeComment` | Yes | context menu > View Timeline... |
 | `pinIssue` | Yes | context menu > Pin or Unpin Issue |
@@ -2823,7 +2823,7 @@ In all: 346 yes, 1117 planned, 15 not needed and 526 left to GitHub.
 | `setIssueFieldValue` | Planned | Issue sheet; Item menu |
 | `transferIssue` | Yes | context menu > Transfer Issue... |
 | `unlockLockable` | Planned | Issue sheet; Item menu |
-| `unmarkIssueAsDuplicate` | Planned | Issue sheet; Item menu |
+| `unmarkIssueAsDuplicate` | Yes | context menu > Not a Duplicate... |
 | `unminimizeComment` | Yes | context menu > View Timeline... |
 | `unpinIssue` | Yes | context menu > Pin or Unpin Issue |
 | `unpinIssueComment` | Planned | Issue sheet; Item menu |
