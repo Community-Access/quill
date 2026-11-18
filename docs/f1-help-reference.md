@@ -2336,7 +2336,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## GitHub Workbench
 
-Control coverage: 370 audited sites (370 helped).
+Control coverage: 382 audited sites (382 helped).
 
 ### Every window, and what it is for
 
@@ -2429,6 +2429,10 @@ Control coverage: 370 audited sites (370 helped).
 **Review Pull Request.** Write your review of a pull request: approve, ask for changes or just comment, with a message. The draft is kept on this computer until you press Submit Review.
 
 **Review pull request.** Read a pull request the way a reviewer does: its outline and threads, the review summary and the checks, with buttons to jump to the next unresolved thread, reply, request reviewers or write your review.
+
+**Roles in.** An organization's roles and who holds each one. Choose a role to list its people and teams; Give to Person and Give to Team add one, and Take Away removes this role or every role from the selected one.
+
+**Rulesets in.** An organization's rulesets, each read in plain words in Details. Enforcement makes one Active, Evaluate or Disabled; History and Rule Insights show its changes and the pushes it judged; Delete asks for its name.
 
 **Save Command.** A name for this console request, kept for this account on this device.
 
@@ -3324,6 +3328,10 @@ Control coverage: 370 audited sites (370 helped).
 
 **Open.** Select the organization's node in the tree.
 
+**Roles.** Who holds each role; give or take one.
+
+**Rulesets.** Read, enforce, review or delete.
+
 **Open.** Open the settings dialog for this; it asks before saving.
 
 **Edit Watch.** Change what the watch looks at.
@@ -3729,6 +3737,24 @@ Control coverage: 370 audited sites (370 helped).
 - `self._draft`: A draft cannot be merged and asks nobody to review it until you mark it ready.
 - `create`: Open the pull request on GitHub with these branches and text.
 - `cancel`: Close without sending. What you typed is kept for this session.
+#### _OrgWindow (`quill/ui/github_org_admin_dialog.py`)
+
+- `close`: Closes this window. Every change has already been sent.
+#### OrgRolesDialog (`quill/ui/github_org_admin_dialog.py`)
+
+- `self._role_list`: The organization's roles. Choose one to hear who holds it, in the list below.
+- `self._holder_list`: The people and teams holding the chosen role. A person who holds it through a team says which team; take it from the team to take it from them.
+- `self._give_person`: Gives the chosen role to a person, by GitHub username.
+- `self._give_team`: Gives the chosen role to a team, by the team's short name.
+- `self._take`: Takes the chosen role, or every organization role, from the selected person or team.
+#### OrgRulesetsDialog (`quill/ui/github_org_admin_dialog.py`)
+
+- `self._list`: The organization's rulesets, each with its enforcement. Choose one to read it in plain words in Details.
+- `self._details`: The chosen ruleset in plain words, or its history, or the pushes it judged.
+- `self._enforce`: Makes the ruleset Active, Evaluate (it reports what it would block and blocks nothing) or Disabled.
+- `self._history`: Lists the ruleset's changes, newest first, in Details.
+- `self._insights`: Lists recent pushes the organization's rulesets passed, blocked or let through on a bypass, for the day, week or month.
+- `self._delete`: Deletes the ruleset across every repository it covers. You type its name to confirm.
 #### PendingDeploymentsDialog (`quill/ui/github_pending_deployments_dialog.py`)
 
 - `env_label`: The environments this run is waiting on.

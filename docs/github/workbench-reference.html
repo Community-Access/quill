@@ -3023,8 +3023,8 @@ Unlink from Repository…, Template…, Copy Project…, Delete Project…, Copy
 Link; Properties…</li>
 <li><strong>team</strong>: Members and Access…, Copy Link, Open on
 GitHub; Properties…</li>
-<li><strong>organization</strong>: Open, Open on GitHub;
-Properties…</li>
+<li><strong>organization</strong>: Open, Roles…, Rulesets…, Open on
+GitHub; Properties…</li>
 <li><strong>favorite</strong>: Open, Copy Link, Open on GitHub, Add to
 or Remove from Favorites; Properties…</li>
 <li><strong>admin_action</strong>: Open; Properties…</li>
@@ -3350,7 +3350,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 628 yes, 241 planned, 269 not needed and 866 left to
+<p>In all: 642 yes, 228 planned, 268 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -9371,7 +9371,7 @@ job done on GitHub’s site.</td>
 </tbody>
 </table>
 <h4 id="organizations">Organizations</h4>
-<p>129 operations: 44 yes, 30 planned, 12 not needed, 43 left to
+<p>129 operations: 58 yes, 17 planned, 11 not needed, 43 left to
 github.</p>
 <table>
 <thead>
@@ -9795,38 +9795,38 @@ in full.</td>
 <tr>
 <td>Remove all organization roles for a team</td>
 <td><code>DELETE /orgs/{org}/organization-roles/teams/{team_slug}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles.</td>
+<td>Yes</td>
+<td>context menu &gt; Roles…</td>
 </tr>
 <tr>
 <td>Remove an organization role from a team</td>
 <td><code>DELETE /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles.</td>
+<td>Yes</td>
+<td>context menu &gt; Roles…</td>
 </tr>
 <tr>
 <td>Assign an organization role to a team</td>
 <td><code>PUT /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles.</td>
+<td>Yes</td>
+<td>context menu &gt; Roles…</td>
 </tr>
 <tr>
 <td>Remove all organization roles for a user</td>
 <td><code>DELETE /orgs/{org}/organization-roles/users/{username}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles.</td>
+<td>Yes</td>
+<td>context menu &gt; Roles…</td>
 </tr>
 <tr>
 <td>Remove an organization role from a user</td>
 <td><code>DELETE /orgs/{org}/organization-roles/users/{username}/{role_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles.</td>
+<td>Yes</td>
+<td>context menu &gt; Roles…</td>
 </tr>
 <tr>
 <td>Assign an organization role to a user</td>
 <td><code>PUT /orgs/{org}/organization-roles/users/{username}/{role_id}</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles.</td>
+<td>Yes</td>
+<td>context menu &gt; Roles…</td>
 </tr>
 <tr>
 <td>Get an organization role</td>
@@ -9838,14 +9838,14 @@ reads the list.</td>
 <tr>
 <td>List teams that are assigned to an organization role</td>
 <td><code>GET /orgs/{org}/organization-roles/{role_id}/teams</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles.</td>
+<td>Yes</td>
+<td>context menu &gt; Roles…</td>
 </tr>
 <tr>
 <td>List users that are assigned to an organization role</td>
 <td><code>GET /orgs/{org}/organization-roles/{role_id}/users</code></td>
-<td>Planned</td>
-<td>Organization sheet &gt; Roles.</td>
+<td>Yes</td>
+<td>context menu &gt; Roles…</td>
 </tr>
 <tr>
 <td>List outside collaborators for an organization</td>
@@ -10056,8 +10056,8 @@ publicly</td>
 <tr>
 <td>Get all organization repository rulesets</td>
 <td><code>GET /orgs/{org}/rulesets</code></td>
-<td>Planned</td>
-<td>Organization rulesets (section 18.3.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Rulesets…</td>
 </tr>
 <tr>
 <td>Create an organization repository ruleset</td>
@@ -10068,9 +10068,8 @@ publicly</td>
 <tr>
 <td>List organization rule suites</td>
 <td><code>GET /orgs/{org}/rulesets/rule-suites</code></td>
-<td>Planned</td>
-<td>Organization sheet: Members, Roles, Member Privileges, Webhooks,
-Custom Properties, Token Requests, Security managers, Rulesets.</td>
+<td>Yes</td>
+<td>context menu &gt; Rulesets…</td>
 </tr>
 <tr>
 <td>Get an organization rule suite</td>
@@ -10082,27 +10081,26 @@ reads the list.</td>
 <tr>
 <td>Delete an organization repository ruleset</td>
 <td><code>DELETE /orgs/{org}/rulesets/{ruleset_id}</code></td>
-<td>Planned</td>
-<td>Organization rulesets (section 18.3.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Rulesets…</td>
 </tr>
 <tr>
 <td>Get an organization repository ruleset</td>
 <td><code>GET /orgs/{org}/rulesets/{ruleset_id}</code></td>
-<td>Not needed</td>
-<td>Reads one item that its list already shows in full; the Workbench
-reads the list.</td>
+<td>Yes</td>
+<td>context menu &gt; Rulesets…</td>
 </tr>
 <tr>
 <td>Update an organization repository ruleset</td>
 <td><code>PUT /orgs/{org}/rulesets/{ruleset_id}</code></td>
-<td>Planned</td>
-<td>Organization rulesets (section 18.3.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Rulesets…</td>
 </tr>
 <tr>
 <td>Get organization ruleset history</td>
 <td><code>GET /orgs/{org}/rulesets/{ruleset_id}/history</code></td>
-<td>Planned</td>
-<td>Organization rulesets (section 18.3.1).</td>
+<td>Yes</td>
+<td>context menu &gt; Rulesets…</td>
 </tr>
 <tr>
 <td>Get organization ruleset version</td>

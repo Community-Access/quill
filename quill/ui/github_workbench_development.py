@@ -61,6 +61,11 @@ from quill.ui.github_workbench_merge import (
     MERGE_VERBS,
     GitHubWorkbenchMergeMixin,
 )
+from quill.ui.github_workbench_org_admin import (
+    ORG_ADMIN_REASONS,
+    ORG_ADMIN_VERBS,
+    GitHubWorkbenchOrgAdminMixin,
+)
 from quill.ui.github_workbench_packages import (
     PACKAGE_REASONS,
     PACKAGE_VERBS,
@@ -159,6 +164,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **PULL_REVIEW_VERBS,
     **PAGES_VERBS,
     **PROJECT_ADMIN_VERBS,
+    **ORG_ADMIN_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -186,6 +192,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **PULL_REVIEW_REASONS,
     **PAGES_REASONS,
     **PROJECT_ADMIN_REASONS,
+    **ORG_ADMIN_REASONS,
 }
 
 
@@ -211,6 +218,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchPullReviewsMixin,
     GitHubWorkbenchPagesMixin,
     GitHubWorkbenchProjectAdminMixin,
+    GitHubWorkbenchOrgAdminMixin,
 ):
     items: Any
     frame: Any

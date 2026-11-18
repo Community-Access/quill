@@ -492,6 +492,8 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     ),
     "organization": (
         _default("open_organization", "Open", "Select the organization's node in the tree."),
+        _a("org_roles", "Roles...", _W, "sign_in", "Who holds each role; give or take one."),
+        _a("org_rulesets", "Rulesets...", _W, "sign_in", "Read, enforce, review or delete."),
         _OPEN_WEB,
         _PROPERTIES,
     ),

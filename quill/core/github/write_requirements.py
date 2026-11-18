@@ -147,6 +147,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     },
     f"{_P}project_field_delete": ("scope:project", _D),
     f"{_P}project_delete": ("scope:project", _D),
+    f"{_P}org_roles": ("org:owner", _D),
+    f"{_P}org_rulesets": ("org:owner", _D),
     f"{_P}pages_turn_on": ("repo:admin", _V),
     f"{_P}pages_rebuild": ("repo:admin", _V),
     f"{_P}pages_turn_off": ("repo:admin", _D),

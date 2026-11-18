@@ -376,6 +376,17 @@ Review action and Submit Review have no access key; reach them with Tab.
 | Relationships | `Alt+S` | Add Sub-issue... |
 | Relationships | `Alt+B` | Add Blocked By... |
 | Relationships | `Alt+R` | Remove |
+| Roles in | `Alt+O` | Roles |
+| Roles in | `Alt+W` | Who holds it |
+| Roles in | `Alt+P` | Give to Person... |
+| Roles in | `Alt+T` | Give to Team... |
+| Roles in | `Alt+A` | Take Away... |
+| Rulesets in | `Alt+U` | Rulesets |
+| Rulesets in | `Alt+D` | Details |
+| Rulesets in | `Alt+E` | Enforcement... |
+| Rulesets in | `Alt+H` | History |
+| Rulesets in | `Alt+I` | Rule Insights... |
+| Rulesets in | `Alt+L` | Delete... |
 | Edit Release | `Alt+N` | Release name |
 | Edit Release | `Alt+O` | Release notes |
 | Edit Release | `Alt+D` | Draft (not published yet) |

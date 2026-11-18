@@ -121,6 +121,7 @@
   "quill.ui.github_line_comment_dialog": "reachable",
   "quill.ui.github_milestones_dialog": "reachable",
   "quill.ui.github_new_pull_dialog": "reachable",
+  "quill.ui.github_org_admin_dialog": "reachable",
   "quill.ui.github_pending_deployments_dialog": "reachable",
   "quill.ui.github_pr_diff_dialog": "reachable",
   "quill.ui.github_pr_review_dialog": "reachable",

@@ -974,6 +974,8 @@ VERBS: dict[str, Scenario | str] = {
     "pages_turn_off": "needs Jeff: a throwaway Pages site",
     "relationships": "needs Jeff: two throwaway issues in one repository, linked and unlinked",
     "project_draft": "needs Jeff: a throwaway Project",
+    "org_roles": "needs Jeff: an organization he owns and a throwaway member or team",
+    "org_rulesets": "needs Jeff: an organization he owns with a throwaway ruleset",
     "project_field": "needs Jeff: a throwaway Project",
     "project_field_delete": "needs Jeff: a throwaway Project with a field of its own",
     "project_status": "needs Jeff: a throwaway Project",

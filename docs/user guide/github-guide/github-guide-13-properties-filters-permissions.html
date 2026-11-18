@@ -467,6 +467,57 @@ check box with its settings, and a Summary page reads the whole thing as
 sentences: “On the default branch: changes need a pull request with 2
 approvals including a code owner; checks build and test must pass; force
 pushes are blocked.” Read that page first.</p>
+<h3 id="an-organizations-roles">An organization’s roles</h3>
+<p>GitHub gives every organization roles that reach all its repositories
+at once: All-repository read, triage, write, maintain and admin, the
+security manager, the app manager, and any custom roles. Choose
+<strong>Roles…</strong> on an organization’s row (in the Workbench’s
+Organizations place) to open <strong>Roles in</strong> that
+organization.</p>
+<ul>
+<li><strong>Roles</strong> lists them, each with what it is based on and
+what it is for. Choose one, and <strong>Who holds it</strong> fills with
+its people and teams, each row starting with “Person:” or “Team:”. A
+person who holds the role because of a team says so: “Person: kim,
+through docs”.</li>
+<li><strong>Give to Person…</strong> (<code>Alt+P</code>) asks for a
+GitHub username; <strong>Give to Team…</strong> (<code>Alt+T</code>)
+asks for the team’s short name, as it appears in the team’s
+address.</li>
+<li><strong>Take Away…</strong> (<code>Alt+A</code>) asks whether the
+selected person or team should lose only this role or every organization
+role. A role that comes through a team is taken from that team instead,
+and QUILL says which.</li>
+</ul>
+<p>After each change QUILL reads the list back from GitHub and says what
+happened, such as “sam now has all_repo_write.” These need an owner’s
+sign-in with the <strong>admin:org</strong> scope.</p>
+<h3 id="an-organizations-rulesets">An organization’s rulesets</h3>
+<p>An organization ruleset applies across its repositories. Choose
+<strong>Rulesets…</strong> on the organization’s row to open
+<strong>Rulesets in</strong> that organization. Each row gives its name,
+its enforcement and what it targets: “Protect main: Active, on
+branches”.</p>
+<ul>
+<li>Choosing one reads it in plain words in <strong>Details</strong>,
+the same sentences as a repository’s Summary page, and which
+repositories it covers.</li>
+<li><strong>Enforcement…</strong> (<code>Alt+E</code>) makes it
+<strong>Active</strong> (enforced), <strong>Evaluate</strong> (reports
+what it would have blocked, blocks nothing, a safe way to try a rule
+first) or <strong>Disabled</strong>.</li>
+<li><strong>History</strong> (<code>Alt+H</code>) lists its earlier
+versions, with when and by whom.</li>
+<li><strong>Rule Insights…</strong> (<code>Alt+I</code>) lists recent
+pushes across the organization that its rulesets passed, blocked or let
+through on a bypass, for the last day, week or month.</li>
+<li><strong>Delete…</strong> (<code>Alt+L</code>) deletes it from every
+repository it covers. QUILL asks you to type its name exactly, because
+this cannot be undone.</li>
+</ul>
+<p>To make an organization ruleset from repositories that each have the
+same one, use <strong>Promote to Organization</strong> under Across
+Repositories.</p>
 <h3 id="repository-settings-from-the-editor">Repository settings from
 the editor</h3>
 <p>With the Workbench in use, the editor’s Rename Repository, Change

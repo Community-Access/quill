@@ -934,7 +934,7 @@ Keys the window answers that are not menu rows:
 - **template**: Open Template..., Convert Form or Template..., Copy to Repositories..., Copy Link, Open on GitHub; Properties...
 - **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link; Properties...
 - **team**: Members and Access..., Copy Link, Open on GitHub; Properties...
-- **organization**: Open, Open on GitHub; Properties...
+- **organization**: Open, Roles..., Rulesets..., Open on GitHub; Properties...
 - **favorite**: Open, Copy Link, Open on GitHub, Add to or Remove from Favorites; Properties...
 - **admin_action**: Open; Properties...
 - **watch**: Edit Watch..., Pause or Resume Watch, Check Watches Now, Remove Watch, Open on GitHub; Properties...
@@ -1060,7 +1060,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 628 yes, 241 planned, 269 not needed and 866 left to GitHub.
+In all: 642 yes, 228 planned, 268 not needed and 866 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2134,7 +2134,7 @@ In all: 628 yes, 241 planned, 269 not needed and 866 left to GitHub.
 
 #### Organizations
 
-129 operations: 44 yes, 30 planned, 12 not needed, 43 left to github.
+129 operations: 58 yes, 17 planned, 11 not needed, 43 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2200,15 +2200,15 @@ In all: 628 yes, 241 planned, 269 not needed and 866 left to GitHub.
 | Get organization membership for a user | `GET /orgs/{org}/memberships/{username}` | Not needed | Reads one member, whom the organization's Members list already shows in full. |
 | Set organization membership for a user | `PUT /orgs/{org}/memberships/{username}` | Yes | Account > Roles and Access > Bulk Access Changes... |
 | Get all organization roles for an organization | `GET /orgs/{org}/organization-roles` | Yes | Properties (Alt+Enter) on Organization |
-| Remove all organization roles for a team | `DELETE /orgs/{org}/organization-roles/teams/{team_slug}` | Planned | Organization sheet > Roles. |
-| Remove an organization role from a team | `DELETE /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}` | Planned | Organization sheet > Roles. |
-| Assign an organization role to a team | `PUT /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}` | Planned | Organization sheet > Roles. |
-| Remove all organization roles for a user | `DELETE /orgs/{org}/organization-roles/users/{username}` | Planned | Organization sheet > Roles. |
-| Remove an organization role from a user | `DELETE /orgs/{org}/organization-roles/users/{username}/{role_id}` | Planned | Organization sheet > Roles. |
-| Assign an organization role to a user | `PUT /orgs/{org}/organization-roles/users/{username}/{role_id}` | Planned | Organization sheet > Roles. |
+| Remove all organization roles for a team | `DELETE /orgs/{org}/organization-roles/teams/{team_slug}` | Yes | context menu > Roles... |
+| Remove an organization role from a team | `DELETE /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}` | Yes | context menu > Roles... |
+| Assign an organization role to a team | `PUT /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}` | Yes | context menu > Roles... |
+| Remove all organization roles for a user | `DELETE /orgs/{org}/organization-roles/users/{username}` | Yes | context menu > Roles... |
+| Remove an organization role from a user | `DELETE /orgs/{org}/organization-roles/users/{username}/{role_id}` | Yes | context menu > Roles... |
+| Assign an organization role to a user | `PUT /orgs/{org}/organization-roles/users/{username}/{role_id}` | Yes | context menu > Roles... |
 | Get an organization role | `GET /orgs/{org}/organization-roles/{role_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| List teams that are assigned to an organization role | `GET /orgs/{org}/organization-roles/{role_id}/teams` | Planned | Organization sheet > Roles. |
-| List users that are assigned to an organization role | `GET /orgs/{org}/organization-roles/{role_id}/users` | Planned | Organization sheet > Roles. |
+| List teams that are assigned to an organization role | `GET /orgs/{org}/organization-roles/{role_id}/teams` | Yes | context menu > Roles... |
+| List users that are assigned to an organization role | `GET /orgs/{org}/organization-roles/{role_id}/users` | Yes | context menu > Roles... |
 | List outside collaborators for an organization | `GET /orgs/{org}/outside_collaborators` | Yes | Properties (Alt+Enter) on Organization |
 | Remove outside collaborator from an organization | `DELETE /orgs/{org}/outside_collaborators/{username}` | Yes | context menu > Delete... |
 | Convert an organization member to outside collaborator | `PUT /orgs/{org}/outside_collaborators/{username}` | Planned | Organization sheet > Outside Collaborators. |
@@ -2237,14 +2237,14 @@ In all: 628 yes, 241 planned, 269 not needed and 866 left to GitHub.
 | Remove public organization membership for the authenticated user | `DELETE /orgs/{org}/public_members/{username}` | Yes | Properties (Alt+Enter) on Organization: Show my membership publicly |
 | Check public organization membership for a user | `GET /orgs/{org}/public_members/{username}` | Yes | Properties (Alt+Enter) on Organization |
 | Set public organization membership for the authenticated user | `PUT /orgs/{org}/public_members/{username}` | Yes | Properties (Alt+Enter) on Organization: Show my membership publicly |
-| Get all organization repository rulesets | `GET /orgs/{org}/rulesets` | Planned | Organization rulesets (section 18.3.1). |
+| Get all organization repository rulesets | `GET /orgs/{org}/rulesets` | Yes | context menu > Rulesets... |
 | Create an organization repository ruleset | `POST /orgs/{org}/rulesets` | Yes | context menu > Promote to Organization... |
-| List organization rule suites | `GET /orgs/{org}/rulesets/rule-suites` | Planned | Organization sheet: Members, Roles, Member Privileges, Webhooks, Custom Properties, Token Requests, Security managers, Rulesets. |
+| List organization rule suites | `GET /orgs/{org}/rulesets/rule-suites` | Yes | context menu > Rulesets... |
 | Get an organization rule suite | `GET /orgs/{org}/rulesets/rule-suites/{rule_suite_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Delete an organization repository ruleset | `DELETE /orgs/{org}/rulesets/{ruleset_id}` | Planned | Organization rulesets (section 18.3.1). |
-| Get an organization repository ruleset | `GET /orgs/{org}/rulesets/{ruleset_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Update an organization repository ruleset | `PUT /orgs/{org}/rulesets/{ruleset_id}` | Planned | Organization rulesets (section 18.3.1). |
-| Get organization ruleset history | `GET /orgs/{org}/rulesets/{ruleset_id}/history` | Planned | Organization rulesets (section 18.3.1). |
+| Delete an organization repository ruleset | `DELETE /orgs/{org}/rulesets/{ruleset_id}` | Yes | context menu > Rulesets... |
+| Get an organization repository ruleset | `GET /orgs/{org}/rulesets/{ruleset_id}` | Yes | context menu > Rulesets... |
+| Update an organization repository ruleset | `PUT /orgs/{org}/rulesets/{ruleset_id}` | Yes | context menu > Rulesets... |
+| Get organization ruleset history | `GET /orgs/{org}/rulesets/{ruleset_id}/history` | Yes | context menu > Rulesets... |
 | Get organization ruleset version | `GET /orgs/{org}/rulesets/{ruleset_id}/history/{version_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | List security manager teams | `GET /orgs/{org}/security-managers` | Yes | Navigator: Organization > organization > Security Managers |
 | Remove a security manager team | `DELETE /orgs/{org}/security-managers/teams/{team_slug}` | Yes | context menu > Delete... |
