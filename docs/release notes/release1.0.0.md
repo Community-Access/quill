@@ -2167,6 +2167,10 @@ repository's Insights, reads the same numbers aloud: how many commits each
 week and which day was busiest, lines added and removed, the hours of the week
 the project is busiest, and what each contributor has done.
 
+A project that publishes container images or npm packages can see them all
+under **My Packages**, and clear out an old version without opening a
+browser.
+
 #### Reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

@@ -2,6 +2,18 @@
 
 ## 2.0.0
 
+### My Packages, and Set Your Status that works (2026-11-18)
+
+**Repositories > My Packages** in the GitHub Workbench lists your container
+images and npm, Maven, RubyGems and NuGet packages, each as one sentence, with
+**Delete Package Version...** and **Delete Package...** on each, both asking
+first. Sign In with GitHub now asks for the `user` permission instead of
+`user:follow`, because GitHub lets **Set Your Status...** change your status
+only with `user`, and for `read:packages` and `delete:packages`. If an account
+is missing a permission a command needs, QUILL now says to sign in again
+rather than repeating GitHub's message alone. Chapters 1 and 7 of the GitHub
+Guide have the details.
+
 ### Commit activity as tables (2026-11-18)
 
 **Repository > Insights > Commit Activity** in the GitHub Workbench reads

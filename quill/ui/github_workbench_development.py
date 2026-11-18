@@ -36,6 +36,11 @@ from quill.ui.github_workbench_merge import (
     MERGE_VERBS,
     GitHubWorkbenchMergeMixin,
 )
+from quill.ui.github_workbench_packages import (
+    PACKAGE_REASONS,
+    PACKAGE_VERBS,
+    GitHubWorkbenchPackagesMixin,
+)
 from quill.ui.github_workbench_practice import (
     PRACTICE_REASONS,
     PRACTICE_VERBS,
@@ -69,6 +74,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **DRY_RUN_VERBS,
     **PRACTICE_VERBS,
     **TIER2_VERBS,
+    **PACKAGE_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -81,6 +87,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **DRY_RUN_REASONS,
     **PRACTICE_REASONS,
     **TIER2_REASONS,
+    **PACKAGE_REASONS,
 }
 
 
@@ -91,6 +98,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchDryRunMixin,
     GitHubWorkbenchPracticeMixin,
     GitHubWorkbenchTier2Mixin,
+    GitHubWorkbenchPackagesMixin,
 ):
     items: Any
     frame: Any

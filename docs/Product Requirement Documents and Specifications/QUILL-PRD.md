@@ -17544,7 +17544,10 @@ optional message, which makes an annotated tag, and Read Tag Message reads one
 `transfer_repository`, `quill/core/github/repo_transfer.py`) asks the new owner
 and the typed full name. Repository > Insights > Commit Activity
 (`quill/core/github/repo_activity.py`, explore view `commit_stats`) reads
-GitHub's statistics charts as sentences.
+GitHub's statistics charts as sentences. Repositories > My Packages
+(`quill/core/github/packages.py`, `quill/ui/github_workbench_packages.py`)
+lists your packages with Delete Package Version... and Delete Package...; the
+sign-in now asks `user`, `read:packages` and `delete:packages`.
 
 **Live regression.** `docs/qa/github-live-run.py` exercises every Workbench
 list, sheet and write command against two test repositories, and

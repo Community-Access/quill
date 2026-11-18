@@ -123,6 +123,14 @@ _FIXED: tuple[NodeSpec, ...] = (
         row_type="repository",
     ),
     _n(
+        "packages",
+        "My Packages",
+        "repositories",
+        needs=_SIGN_IN,
+        loader="explore:my_packages",
+        row_type="package",
+    ),
+    _n(
         "organizations",
         "Organizations",
         "repositories",
@@ -477,7 +485,7 @@ PLANNED = CoverageTable((
     _planned("Wiki", "Repository > Wiki", "GX12"),
     _planned("Security policy and advisories", "Repository > Security > Advisories", "GX11"),
     # 14.2, worth adding later.
-    _planned("Packages", "Repository > Packages"),
+    _planned("Packages: an organization's, and restoring", "Repositories > My Packages"),
     _planned("Dependency graph and SBOM export", "Repository > Security > Dependencies"),
     _planned("Self-hosted runners (registering and removing)", "Repository > Actions > Runners"),
     _planned("Star lists", "Repositories > Starred > each list"),

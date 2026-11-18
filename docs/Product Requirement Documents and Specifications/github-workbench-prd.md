@@ -973,7 +973,7 @@ tree, so adding it later does not reshape anything.
 
 | Feature | Status today | New home |
 |---|---|---|
-| Packages (GitHub Packages, container registry) | Not found; only token scopes mention it | Repository > Packages; Repositories > My Packages |
+| Packages (GitHub Packages, container registry) | **Built 2026-11-18:** Repositories > My Packages (explore view `my_packages`, row type `package`; `GET /user/packages` once per package type), Delete Package Version... (versions newest first with container tags; a 400 for the only or a heavily downloaded version is said) and Delete Package... (typed name), in `quill/core/github/packages.py` and `quill/ui/github_workbench_packages.py`. An organization's packages and restoring remain planned | Repository > Packages; Repositories > My Packages |
 | Teams and organization members | Out of scope by a code comment ("Organizations in, Teams out"); roadmap GX13 adds team permissions. Now in scope: section 18.3.3 | Repositories > Organizations > org > Members, Teams; People > My Teams |
 | Insights charts as tables: commit activity, code frequency, punch card | **Built 2026-11-18:** Repository > Insights > Commit Activity (explore view `commit_stats`, `quill/core/github/repo_activity.py`): `/stats/participation`, `/stats/commit_activity` (twelve weeks, busiest day), `/stats/code_frequency`, `/stats/punch_card` (ten busiest hours, UTC) and `/stats/contributors` (commits, lines added and removed), each row a sentence; a 202 says "still counting", and no statistics says why | Repository > Insights (tables, never charts only) |
 | Dependency graph and software bill of materials (SBOM) export | **Built 2026-11-18:** Repository > Export Software Bill of Materials... (`Ctrl+Alt+B`, also on Repository Actions) saves `GET /repos/{owner}/{repo}/dependency-graph/sbom` as an SPDX (Software Package Data Exchange) JSON file and says the package count; a repository without a dependency graph is told where to turn it on (`quill/core/github/runners_sbom.py`) | Repository > Security > Dependencies |
@@ -1389,6 +1389,13 @@ is missing. The Workbench does the same and goes further.
   `admin:ssh_signing_key`, `security_events`, `codespace`, `copilot`,
   `read:audit_log`. Optional, risky ones (`delete_repo`, `delete:packages`,
   `admin:org`) are unchecked by default and each says why you might want it.
+  Sign In with GitHub itself asks for `delete_repo` and, since 2026-11-18,
+  `delete:packages`, following Jeff's 2026-11-08 choice of one sign-in that
+  covers every Workbench command; both commands still ask first, and Delete
+  Package and Delete Repository make you type the name. The same day `user`
+  replaced `user:follow` in the sign-in, because `changeUserStatus` (Set Your
+  Status) needs `user`, and a GraphQL `INSUFFICIENT_SCOPES` error is now said
+  as "sign in with GitHub again" with GitHub's own words after it.
 - **One step adds every missing one.** For the OAuth device sign-in (PR 1794),
   Add Permissions... runs the device flow again asking for the old scopes plus
   the new ones, and you approve once on GitHub. For a classic token, it opens

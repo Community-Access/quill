@@ -2490,6 +2490,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Watched.** Watched: repositories whose activity GitHub tells you about.
 
+**My Packages.** My Packages: your container images and npm, Maven, RubyGems and NuGet packages, with Delete Package Version and Delete Package on each.
+
 **Organizations.** Organizations: the organizations you belong to. Enter on one opens its repositories.
 
 **Search.** Search: GitHub's searches. Choose one, type in the filter box with Ctrl+E, and press Enter.
@@ -3088,7 +3090,11 @@ Control coverage: 365 audited sites (365 helped).
 
 **Read Tag Message.** Who made the tag, when, and its message.
 
-**Show Details.** The runner's state, system and labels.
+**Show Details.** The package's type, visibility and repository.
+
+**Delete Package Version.** Choose a version, newest first with its tags, and delete it after asking.
+
+**Delete Package.** Delete the package and every version, after you type its name.
 
 **Accept Invitation.** Join the repository with the access offered.
 

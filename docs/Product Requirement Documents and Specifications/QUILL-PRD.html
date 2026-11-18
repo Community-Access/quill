@@ -29497,7 +29497,12 @@ Read Tag Message reads one (<code>tags.py</code>,
 the typed full name. Repository &gt; Insights &gt; Commit Activity
 (<code>quill/core/github/repo_activity.py</code>, explore view
 <code>commit_stats</code>) reads GitHub’s statistics charts as
-sentences.</p>
+sentences. Repositories &gt; My Packages
+(<code>quill/core/github/packages.py</code>,
+<code>quill/ui/github_workbench_packages.py</code>) lists your packages
+with Delete Package Version… and Delete Package…; the sign-in now asks
+<code>user</code>, <code>read:packages</code> and
+<code>delete:packages</code>.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

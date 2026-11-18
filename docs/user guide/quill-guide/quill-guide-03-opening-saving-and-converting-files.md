@@ -1578,6 +1578,13 @@ GitHub's statistics charts as sentences: commits and lines each week, the
 busiest hours and each contributor. See
 [Commit activity, as tables](../github-guide/github-guide-07-code-and-repositories.html#commit-activity-as-tables).
 
+#### Your packages
+
+**Repositories > My Packages** in the GitHub Workbench lists your container
+images and other packages, with Delete Package Version... and Delete
+Package... on each. See
+[Packages](../github-guide/github-guide-07-code-and-repositories.html#packages).
+
 #### Changed since my last review
 
 One check box in the review keeps only the files changed since the commit you

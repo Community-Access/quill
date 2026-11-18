@@ -32,6 +32,10 @@ NODE_HELP: dict[str, str] = {
         "Runners: the machines this repository runs its own jobs on, online or not, busy "
         "or idle, with their labels. Only administrators can see them."
     ),
+    ":packages": (
+        "My Packages: your container images and npm, Maven, RubyGems and NuGet packages, "
+        "with Delete Package Version and Delete Package on each."
+    ),
     ":invitations": (
         "Invitations: repositories you have been invited to, who invited you and with what "
         "access. Accept or Decline from a row's context menu."

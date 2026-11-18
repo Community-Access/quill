@@ -2779,4 +2779,4 @@ in the diff window. Invitations, Turn Workflow On or Off..., New Tag...,
 Delete Tag..., Set Your Status..., Set Status... on a commit and the
 timeline's Hide or Show Comment... are the Workbench's too, as are the
 Runners node, Export Software Bill of Materials..., annotated tags, Read
-Tag Message, Transfer Repository... and Commit Activity
+Tag Message, Transfer Repository..., Commit Activity and My Packages

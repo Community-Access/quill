@@ -7,7 +7,7 @@ browsing files at any branch, tag or commit, blame and file history, opening a
 file to edit, branches and comparing them, commit comments, tags and
 releases, searching across GitHub, forks, templates and topics, the community
 profile, insights, looking after a repository, watching, starring and
-following, writing and editing gists, and cloning a repository to your
+following, your packages, writing and editing gists, and cloning a repository to your
 computer.
 
 ## Browsing a repository's files
@@ -485,6 +485,35 @@ with GitHub's own Watch button, and tells you so.
 On a person's row, the context menu has **Follow** or **Unfollow** and their
 username. These happen straight away, without a question: "You now follow"
 them. **Explore Person's Activity** shows what they have been doing.
+
+## Packages
+
+GitHub Packages holds what a project publishes besides its code: container
+images, and npm, Maven, RubyGems and NuGet packages. **Repositories > My
+Packages** in the GitHub Workbench lists yours as one list, each row whole on
+its own: "container quill-engine: private, 12 versions, from
+community-access/quill, updated 2026-11-12." GitHub keeps packages by type, so
+QUILL asks for each type in turn; the list is every type together, in
+alphabetical order.
+
+A package's context menu has:
+
+- **Show Details** and **Open on GitHub**.
+- **Delete Package Version...** lists the package's versions, newest first,
+  with their tags, such as "sha256:bbb, tagged latest, 1.2, updated
+  2026-11-12". Choose one and QUILL asks before deleting it. GitHub will not
+  delete a package's only version, or one downloaded more than 5,000 times,
+  and QUILL says so.
+- **Delete Package...** deletes the package and every version, after you type
+  its name.
+
+GitHub keeps a deleted package or version for 30 days, and you can restore it
+from the Packages page of your GitHub settings. Reading private packages needs
+the `read:packages` permission and deleting needs `delete:packages`; Sign In
+with GitHub asks for both, and an account signed in before November 2026 is
+told to sign in again rather than seeing an empty list.
+
+An organization's packages are not listed here yet; open them on GitHub.
 
 ## Gists
 

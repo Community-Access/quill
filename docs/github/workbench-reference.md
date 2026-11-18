@@ -970,7 +970,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 335 yes, 1128 planned, 15 not needed and 526 left to GitHub.
+In all: 339 yes, 1124 planned, 15 not needed and 526 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2180,7 +2180,7 @@ In all: 335 yes, 1128 planned, 15 not needed and 526 left to GitHub.
 
 #### Packages
 
-27 operations: 27 planned.
+27 operations: 4 yes, 23 planned.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2194,12 +2194,12 @@ In all: 335 yes, 1128 planned, 15 not needed and 526 left to GitHub.
 | Get a package version for an organization | `GET /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Planned | Repositories > My Packages; Package sheet. |
 | Restore package version for an organization | `POST /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Planned | Repositories > My Packages; Package sheet. |
 | Get list of conflicting packages during Docker migration for authenticated-user | `GET /user/docker/conflicts` | Planned | Repositories > My Packages; Package sheet. |
-| List packages for the authenticated user's namespace | `GET /user/packages` | Planned | Repositories > My Packages; Package sheet. |
-| Delete a package for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
+| List packages for the authenticated user's namespace | `GET /user/packages` | Yes | Navigator: Repositories > My Packages |
+| Delete a package for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}` | Yes | context menu > Delete Package... |
 | Get a package for the authenticated user | `GET /user/packages/{package_type}/{package_name}` | Planned | Repositories > My Packages; Package sheet. |
 | Restore a package for the authenticated user | `POST /user/packages/{package_type}/{package_name}/restore` | Planned | Repositories > My Packages; Package sheet. |
-| List package versions for a package owned by the authenticated user | `GET /user/packages/{package_type}/{package_name}/versions` | Planned | Repositories > My Packages; Package sheet. |
-| Delete a package version for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}/versions/{package_version_id}` | Planned | Repositories > My Packages; Package sheet. |
+| List package versions for a package owned by the authenticated user | `GET /user/packages/{package_type}/{package_name}/versions` | Yes | context menu > Delete Package Version... |
+| Delete a package version for the authenticated user | `DELETE /user/packages/{package_type}/{package_name}/versions/{package_version_id}` | Yes | context menu > Delete Package Version... |
 | Get a package version for the authenticated user | `GET /user/packages/{package_type}/{package_name}/versions/{package_version_id}` | Planned | Repositories > My Packages; Package sheet. |
 | Restore a package version for the authenticated user | `POST /user/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Planned | Repositories > My Packages; Package sheet. |
 | Get list of conflicting packages during Docker migration for user | `GET /users/{username}/docker/conflicts` | Planned | Repositories > My Packages; Package sheet. |

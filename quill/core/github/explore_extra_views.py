@@ -65,6 +65,14 @@ def fetch_extra_view(
             return fetch_invitations(TokenApi(token), limit=limit)
         except GitHubRestError as exc:
             raise GitHubExploreError(f"Could not read your invitations: {exc}") from exc
+    if view == "my_packages":
+        from quill.core.github.packages import PackageError, fetch_packages
+        from quill.core.github.workbench_api import TokenApi
+
+        try:
+            return fetch_packages(TokenApi(token), limit=limit)
+        except PackageError as exc:
+            raise GitHubExploreError(str(exc.args[0])) from exc
     if view == "billing_usage":
         from quill.core.github.billing_usage import fetch_billing_usage
 

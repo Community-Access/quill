@@ -856,6 +856,8 @@ VERBS: dict[str, Scenario | str] = {
     "new_tag": tags_made_and_deleted,
     "delete_tag": "with new_tag: made, then deleted",
     "transfer_repository": "not here: needs a second account or an organization to receive it",
+    "delete_package_version": "not here: the live run publishes no package to delete",
+    "delete_package": "not here: the live run publishes no package to delete",
     "commit_status": commit_status,
     "user_status": "needs Jeff: changes the status on your own GitHub profile",
     "accept_invitation": "not here: needs an invitation from a second GitHub account",
@@ -1106,6 +1108,16 @@ def commit_activity(run: Any) -> str:
     return rows[0].label
 
 
+def my_packages(run: Any) -> str:
+    from quill.core.github.packages import PackageError, fetch_packages
+
+    try:
+        rows = fetch_packages(run.api)
+    except PackageError as exc:
+        return f"refused, in words: {exc}"
+    return f"{len(rows)} packages" + (f"; first: {rows[0].label}" if rows else "")
+
+
 def check_with_git(run: Any) -> str:
     done = subprocess.run(["git", "--version"], capture_output=True, text=True, check=False)
     _expect(done.returncode == 0, "git is not installed")
@@ -1122,6 +1134,7 @@ FEATURES: dict[str, Scenario | str] = {
     "Why Can't I Merge?, for the exact commit": why_cant_merge,
     "Runners and Export Software Bill of Materials (PRD 14.2)": runners_and_sbom,
     "Commit Activity as tables (PRD 14.2)": commit_activity,
+    "My Packages, or the permission it needs said in words (PRD 14.2)": my_packages,
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

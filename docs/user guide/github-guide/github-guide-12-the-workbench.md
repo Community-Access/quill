@@ -406,6 +406,8 @@ own list, and `Shift+F1` reads it with the keys:
 - **An Actions cache:** Show Details and Delete Cache.
 - **A runner:** Show Details, Open on GitHub (its settings page) and Copy
   Link.
+- **A package:** Show Details, Open on GitHub, Delete Package Version and
+  Delete Package.
 - **A notification:** Open, Mark Read, Mark Done, Unsubscribe from Thread, and
   Snooze for One Day. Snoozing hides it in the Workbench on this computer
   until tomorrow and changes nothing on GitHub; Unsnooze Locally brings it

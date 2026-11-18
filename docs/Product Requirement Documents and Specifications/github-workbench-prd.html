@@ -1757,7 +1757,14 @@ later (useful, less often)</h3>
 <tbody>
 <tr>
 <td>Packages (GitHub Packages, container registry)</td>
-<td>Not found; only token scopes mention it</td>
+<td><strong>Built 2026-11-18:</strong> Repositories &gt; My Packages
+(explore view <code>my_packages</code>, row type <code>package</code>;
+<code>GET /user/packages</code> once per package type), Delete Package
+Version… (versions newest first with container tags; a 400 for the only
+or a heavily downloaded version is said) and Delete Package… (typed
+name), in <code>quill/core/github/packages.py</code> and
+<code>quill/ui/github_workbench_packages.py</code>. An organization’s
+packages and restoring remain planned</td>
 <td>Repository &gt; Packages; Repositories &gt; My Packages</td>
 </tr>
 <tr>
@@ -2304,7 +2311,16 @@ project fields. You have it.” The scopes it covers: <code>repo</code>,
 <code>read:audit_log</code>. Optional, risky ones
 (<code>delete_repo</code>, <code>delete:packages</code>,
 <code>admin:org</code>) are unchecked by default and each says why you
-might want it.</li>
+might want it. Sign In with GitHub itself asks for
+<code>delete_repo</code> and, since 2026-11-18,
+<code>delete:packages</code>, following Jeff’s 2026-11-08 choice of one
+sign-in that covers every Workbench command; both commands still ask
+first, and Delete Package and Delete Repository make you type the name.
+The same day <code>user</code> replaced <code>user:follow</code> in the
+sign-in, because <code>changeUserStatus</code> (Set Your Status) needs
+<code>user</code>, and a GraphQL <code>INSUFFICIENT_SCOPES</code> error
+is now said as “sign in with GitHub again” with GitHub’s own words after
+it.</li>
 <li><strong>One step adds every missing one.</strong> For the OAuth
 device sign-in (PR 1794), Add Permissions… runs the device flow again
 asking for the old scopes plus the new ones, and you approve once on

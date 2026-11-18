@@ -309,6 +309,26 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _OPEN_WEB,
         _PROPERTIES,
     ),
+    "package": (
+        _default("show_details", "Show Details", "The package's type, visibility and repository."),
+        _OPEN_WEB,
+        _a(
+            "delete_package_version",
+            "Delete Package Version...",
+            _D,
+            "sign_in",
+            "Choose a version, newest first with its tags, and delete it after asking.",
+        ),
+        _a(
+            "delete_package",
+            "Delete Package...",
+            _D,
+            "sign_in",
+            "Delete the package and every version, after you type its name.",
+        ),
+        _COPY_LINK,
+        _PROPERTIES,
+    ),
     "runner": (
         _default("show_details", "Show Details", "The runner's state, system and labels."),
         _OPEN_WEB,

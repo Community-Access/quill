@@ -66,6 +66,10 @@ GLOSSARY: dict[str, str] = {
         "A tag that carries a message, who made it and when. Releases usually use one. "
         "A lightweight tag is only a name for a commit."
     ),
+    "Package": (
+        "Something a project publishes besides its code, such as a container image or an "
+        "npm package, kept on GitHub Packages in versions."
+    ),
     "Runner": (
         "A machine that runs a workflow's jobs. GitHub provides them, or a repository "
         "brings its own, called self-hosted, listed under Actions > Runners."
@@ -143,6 +147,7 @@ ROW_TYPE_WORDS: dict[str, str] = {
     "notification": "Notification",
     "invitation": "Invitation",
     "runner": "Runner",
+    "package": "Package",
     "repository": "Repository",
     "person": "Mention",
     "label": "Label",
