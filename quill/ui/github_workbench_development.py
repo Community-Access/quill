@@ -30,6 +30,11 @@ from quill.ui.github_workbench_advisories import (
     ADVISORY_VERBS,
     GitHubWorkbenchAdvisoriesMixin,
 )
+from quill.ui.github_workbench_code_scanning import (
+    CODE_SCANNING_REASONS,
+    CODE_SCANNING_VERBS,
+    GitHubWorkbenchCodeScanningMixin,
+)
 from quill.ui.github_workbench_dry_run import (
     DRY_RUN_REASONS,
     DRY_RUN_VERBS,
@@ -117,6 +122,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **SPONSOR_VERBS,
     **RUNNER_ADMIN_VERBS,
     **RESOURCE_VERBS,
+    **CODE_SCANNING_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -137,6 +143,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **SPONSOR_REASONS,
     **RUNNER_ADMIN_REASONS,
     **RESOURCE_REASONS,
+    **CODE_SCANNING_REASONS,
 }
 
 
@@ -155,6 +162,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchSponsorsMixin,
     GitHubWorkbenchRunnerAdminMixin,
     GitHubWorkbenchResourcesMixin,
+    GitHubWorkbenchCodeScanningMixin,
 ):
     items: Any
     frame: Any

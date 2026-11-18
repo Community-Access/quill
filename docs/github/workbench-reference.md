@@ -658,6 +658,8 @@ Everything below is generated from the tables the window is built from. The GitH
 | Artifacts (`repository:artifacts`) | repository, actions | Artifacts: files workflow runs kept, such as builds and test reports. |
 | Invitations (`repository:repo_invitations`) | repository, people | Invitations: people asked to join this repository who have not answered yet. |
 | Issue Types (`repository:repo_issue_types`) | repository, settings | Issue Types: the kinds of issue this repository offers, set by its organization. |
+| Code Scanning Analyses (`repository:code_scanning_analyses`) | repository, security | Code Scanning Analyses: each upload of results, newest first. Deleting one removes its results; GitHub refuses the last analysis of a tool unless asked. |
+| CodeQL Databases (`repository:codeql_databases`) | repository, security | CodeQL Databases: the databases code scanning built, one per language. |
 | person (`person:person`) | person | A person: their repositories, activity, followers and who they follow. |
 | Profile (`person:person_profile`) | person, person | Profile: who this person is, their year of contributions as numbers, and what they pinned. |
 | Sponsor (`person:person_sponsor`) | person, person | Sponsor: whether this person takes sponsorships, and each tier with its price. |
@@ -688,6 +690,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Custom Properties (`organization:custom_properties`) | organization, organization | Custom Properties: labels the organization gives its repositories. |
 | Issue Types (`organization:org_issue_types`) | organization, organization | Issue Types: the kinds of issue, such as Bug, the organization's repositories offer. |
 | Organization Roles (`organization:org_roles`) | organization, organization | Organization Roles: the roles that can be given to people and teams. |
+| Code Scanning Alerts (`organization:org_code_scanning_alerts`) | organization, organization | Code Scanning Alerts: every repository's code scanning alerts in one list. Open a repository's Alerts to dismiss one. |
 
 ### The menu bar and its keys
 
@@ -915,7 +918,7 @@ Keys the window answers that are not menu rows:
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
 - **gist**: Edit Gist..., Star or Unstar, Copy Link, Open on GitHub, Delete Gist...; Properties...
 - **discussion**: Open Discussion Thread, Read as Document..., Copy Link, Open on GitHub; Properties...
-- **security_alert**: Open, Dismiss or Reopen Alert..., Open on GitHub; Properties...
+- **security_alert**: Open, Dismiss or Reopen Alert..., Copilot Autofix..., Show Every Place, Open on GitHub; Properties...
 - **cache**: Show Details, Delete Cache...; Properties...
 - **saved_search**: Run, Remove Saved Search; Properties...
 - **result**: Open, Copy Link, Open on GitHub; Properties...
@@ -1047,7 +1050,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 529 yes, 517 planned, 217 not needed and 741 left to GitHub.
+In all: 540 yes, 503 planned, 217 not needed and 744 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1543,35 +1546,35 @@ In all: 529 yes, 517 planned, 217 not needed and 741 left to GitHub.
 
 #### Code scanning
 
-25 operations: 4 yes, 18 planned, 3 not needed.
+25 operations: 15 yes, 4 planned, 3 not needed, 3 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | Get the AI Scan setting for an organization | `GET /orgs/{org}/code-scanning/ai-scan` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
 | Update the AI Scan setting for an organization | `PATCH /orgs/{org}/code-scanning/ai-scan` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
-| List code scanning alerts for an organization | `GET /orgs/{org}/code-scanning/alerts` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
+| List code scanning alerts for an organization | `GET /orgs/{org}/code-scanning/alerts` | Yes | Navigator: Organization > organization > Code Scanning Alerts |
 | Get AI Scan enablement for a repository | `GET /repos/{owner}/{repo}/code-scanning/ai-scan` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
 | Update AI Scan enablement for a repository | `PATCH /repos/{owner}/{repo}/code-scanning/ai-scan` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
 | List code scanning alerts for a repository | `GET /repos/{owner}/{repo}/code-scanning/alerts` | Yes | Navigator: Repository > owner/name > Security > Alerts |
 | Get a code scanning alert | `GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Update a code scanning alert | `PATCH /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}` | Yes | context menu > Dismiss or Reopen Alert... |
-| Get the status of an autofix for a code scanning alert | `GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
-| Create an autofix for a code scanning alert | `POST /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
-| Commit an autofix for a code scanning alert | `POST /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix/commits` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
-| List instances of a code scanning alert | `GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
-| List code scanning analyses for a repository | `GET /repos/{owner}/{repo}/code-scanning/analyses` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
-| Delete a code scanning analysis from a repository | `DELETE /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
+| Get the status of an autofix for a code scanning alert | `GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix` | Yes | context menu > Copilot Autofix... |
+| Create an autofix for a code scanning alert | `POST /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix` | Yes | context menu > Copilot Autofix... |
+| Commit an autofix for a code scanning alert | `POST /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix/commits` | Yes | context menu > Copilot Autofix... |
+| List instances of a code scanning alert | `GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances` | Yes | context menu > Show Every Place |
+| List code scanning analyses for a repository | `GET /repos/{owner}/{repo}/code-scanning/analyses` | Yes | Navigator: Repository > owner/name > Security > Code Scanning Analyses |
+| Delete a code scanning analysis from a repository | `DELETE /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}` | Yes | context menu > Delete... |
 | Get a code scanning analysis for a repository | `GET /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| List CodeQL databases for a repository | `GET /repos/{owner}/{repo}/code-scanning/codeql/databases` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
-| Delete a CodeQL database | `DELETE /repos/{owner}/{repo}/code-scanning/codeql/databases/{language}` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
+| List CodeQL databases for a repository | `GET /repos/{owner}/{repo}/code-scanning/codeql/databases` | Yes | Navigator: Repository > owner/name > Security > CodeQL Databases |
+| Delete a CodeQL database | `DELETE /repos/{owner}/{repo}/code-scanning/codeql/databases/{language}` | Yes | context menu > Delete... |
 | Get a CodeQL database for a repository | `GET /repos/{owner}/{repo}/code-scanning/codeql/databases/{language}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Create a CodeQL variant analysis | `POST /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
-| Get the summary of a CodeQL variant analysis | `GET /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses/{codeql_variant_analysis_id}` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
-| Get the analysis status of a repository in a CodeQL variant analysis | `GET /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses/{codeql_variant_analysis_id}/repos/{repo_owner}/{repo_name}` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
+| Create a CodeQL variant analysis | `POST /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses` | Left to GitHub | Variant analysis runs a CodeQL query pack, built and uploaded by the CodeQL command-line tool, across many repositories; it is run from VS Code's CodeQL extension or the CLI, not typed by a person. |
+| Get the summary of a CodeQL variant analysis | `GET /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses/{codeql_variant_analysis_id}` | Left to GitHub | Variant analysis runs a CodeQL query pack, built and uploaded by the CodeQL command-line tool, across many repositories; it is run from VS Code's CodeQL extension or the CLI, not typed by a person. |
+| Get the analysis status of a repository in a CodeQL variant analysis | `GET /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses/{codeql_variant_analysis_id}/repos/{repo_owner}/{repo_name}` | Left to GitHub | Variant analysis runs a CodeQL query pack, built and uploaded by the CodeQL command-line tool, across many repositories; it is run from VS Code's CodeQL extension or the CLI, not typed by a person. |
 | Get a code scanning default setup configuration | `GET /repos/{owner}/{repo}/code-scanning/default-setup` | Yes | Properties (Alt+Enter) on Repository |
 | Update a code scanning default setup configuration | `PATCH /repos/{owner}/{repo}/code-scanning/default-setup` | Yes | Properties (Alt+Enter) on Repository: Code scanning default setup |
-| Upload an analysis as SARIF data | `POST /repos/{owner}/{repo}/code-scanning/sarifs` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
-| Get information about a SARIF upload | `GET /repos/{owner}/{repo}/code-scanning/sarifs/{sarif_id}` | Planned | Repository > Security > Alerts (Kind: code scanning); Alert sheet; Repository > Security setup. |
+| Upload an analysis as SARIF data | `POST /repos/{owner}/{repo}/code-scanning/sarifs` | Yes | Navigator: Repository > owner/name > Security > Code Scanning Analyses |
+| Get information about a SARIF upload | `GET /repos/{owner}/{repo}/code-scanning/sarifs/{sarif_id}` | Yes | Navigator: Repository > owner/name > Security > Code Scanning Analyses |
 
 #### Code security
 

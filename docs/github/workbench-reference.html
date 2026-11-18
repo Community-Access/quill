@@ -1757,6 +1757,20 @@ answered yet.</td>
 organization.</td>
 </tr>
 <tr>
+<td>Code Scanning Analyses
+(<code>repository:code_scanning_analyses</code>)</td>
+<td>repository, security</td>
+<td>Code Scanning Analyses: each upload of results, newest first.
+Deleting one removes its results; GitHub refuses the last analysis of a
+tool unless asked.</td>
+</tr>
+<tr>
+<td>CodeQL Databases (<code>repository:codeql_databases</code>)</td>
+<td>repository, security</td>
+<td>CodeQL Databases: the databases code scanning built, one per
+language.</td>
+</tr>
+<tr>
 <td>person (<code>person:person</code>)</td>
 <td>person</td>
 <td>A person: their repositories, activity, followers and who they
@@ -1937,6 +1951,13 @@ repositories offer.</td>
 <td>organization, organization</td>
 <td>Organization Roles: the roles that can be given to people and
 teams.</td>
+</tr>
+<tr>
+<td>Code Scanning Alerts
+(<code>organization:org_code_scanning_alerts</code>)</td>
+<td>organization, organization</td>
+<td>Code Scanning Alerts: every repository’s code scanning alerts in one
+list. Open a repository’s Alerts to dismiss one.</td>
 </tr>
 </tbody>
 </table>
@@ -2939,7 +2960,7 @@ on GitHub, Delete Gist…; Properties…</li>
 <li><strong>discussion</strong>: Open Discussion Thread, Read as
 Document…, Copy Link, Open on GitHub; Properties…</li>
 <li><strong>security_alert</strong>: Open, Dismiss or Reopen Alert…,
-Open on GitHub; Properties…</li>
+Copilot Autofix…, Show Every Place, Open on GitHub; Properties…</li>
 <li><strong>cache</strong>: Show Details, Delete Cache…;
 Properties…</li>
 <li><strong>saved_search</strong>: Run, Remove Saved Search;
@@ -3276,7 +3297,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 529 yes, 517 planned, 217 not needed and 741 left to
+<p>In all: 540 yes, 503 planned, 217 not needed and 744 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -6116,7 +6137,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="code-scanning">Code scanning</h4>
-<p>25 operations: 4 yes, 18 planned, 3 not needed.</p>
+<p>25 operations: 15 yes, 4 planned, 3 not needed, 3 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -6144,9 +6165,9 @@ sheet; Repository &gt; Security setup.</td>
 <tr>
 <td>List code scanning alerts for an organization</td>
 <td><code>GET /orgs/{org}/code-scanning/alerts</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Yes</td>
+<td>Navigator: Organization &gt; organization &gt; Code Scanning
+Alerts</td>
 </tr>
 <tr>
 <td>Get AI Scan enablement for a repository</td>
@@ -6184,44 +6205,39 @@ reads the list.</td>
 <tr>
 <td>Get the status of an autofix for a code scanning alert</td>
 <td><code>GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Yes</td>
+<td>context menu &gt; Copilot Autofix…</td>
 </tr>
 <tr>
 <td>Create an autofix for a code scanning alert</td>
 <td><code>POST /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Yes</td>
+<td>context menu &gt; Copilot Autofix…</td>
 </tr>
 <tr>
 <td>Commit an autofix for a code scanning alert</td>
 <td><code>POST /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix/commits</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Yes</td>
+<td>context menu &gt; Copilot Autofix…</td>
 </tr>
 <tr>
 <td>List instances of a code scanning alert</td>
 <td><code>GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Yes</td>
+<td>context menu &gt; Show Every Place</td>
 </tr>
 <tr>
 <td>List code scanning analyses for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/code-scanning/analyses</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Security &gt; Code
+Scanning Analyses</td>
 </tr>
 <tr>
 <td>Delete a code scanning analysis from a repository</td>
 <td><code>DELETE /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a code scanning analysis for a repository</td>
@@ -6233,16 +6249,15 @@ reads the list.</td>
 <tr>
 <td>List CodeQL databases for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/code-scanning/codeql/databases</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Security &gt; CodeQL
+Databases</td>
 </tr>
 <tr>
 <td>Delete a CodeQL database</td>
 <td><code>DELETE /repos/{owner}/{repo}/code-scanning/codeql/databases/{language}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Yes</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get a CodeQL database for a repository</td>
@@ -6254,24 +6269,27 @@ reads the list.</td>
 <tr>
 <td>Create a CodeQL variant analysis</td>
 <td><code>POST /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Left to GitHub</td>
+<td>Variant analysis runs a CodeQL query pack, built and uploaded by the
+CodeQL command-line tool, across many repositories; it is run from VS
+Code’s CodeQL extension or the CLI, not typed by a person.</td>
 </tr>
 <tr>
 <td>Get the summary of a CodeQL variant analysis</td>
 <td><code>GET /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses/{codeql_variant_analysis_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Left to GitHub</td>
+<td>Variant analysis runs a CodeQL query pack, built and uploaded by the
+CodeQL command-line tool, across many repositories; it is run from VS
+Code’s CodeQL extension or the CLI, not typed by a person.</td>
 </tr>
 <tr>
 <td>Get the analysis status of a repository in a CodeQL variant
 analysis</td>
 <td><code>GET /repos/{owner}/{repo}/code-scanning/codeql/variant-analyses/{codeql_variant_analysis_id}/repos/{repo_owner}/{repo_name}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Left to GitHub</td>
+<td>Variant analysis runs a CodeQL query pack, built and uploaded by the
+CodeQL command-line tool, across many repositories; it is run from VS
+Code’s CodeQL extension or the CLI, not typed by a person.</td>
 </tr>
 <tr>
 <td>Get a code scanning default setup configuration</td>
@@ -6289,16 +6307,16 @@ setup</td>
 <tr>
 <td>Upload an analysis as SARIF data</td>
 <td><code>POST /repos/{owner}/{repo}/code-scanning/sarifs</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Security &gt; Code
+Scanning Analyses</td>
 </tr>
 <tr>
 <td>Get information about a SARIF upload</td>
 <td><code>GET /repos/{owner}/{repo}/code-scanning/sarifs/{sarif_id}</code></td>
-<td>Planned</td>
-<td>Repository &gt; Security &gt; Alerts (Kind: code scanning); Alert
-sheet; Repository &gt; Security setup.</td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Security &gt; Code
+Scanning Analyses</td>
 </tr>
 </tbody>
 </table>

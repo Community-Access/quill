@@ -70,3 +70,4 @@ def _resource_new_here() -> dict[str, str]:
 
 
 NEW_HERE.update(_resource_new_here())
+NEW_HERE["code_scanning_analyses"] = "github.workbench.upload_sarif"

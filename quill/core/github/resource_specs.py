@@ -13,6 +13,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from quill.core.github.resource_engine import Field, ResourceSpec
+from quill.core.github.resource_specs_security import SECURITY_SPECS
 from quill.core.github.resource_specs_user import USER_SPECS
 
 __all__ = ["RESOURCE_SPECS", "spec_for"]
@@ -513,6 +514,7 @@ RESOURCE_SPECS: tuple[ResourceSpec, ...] = (
         "https://github.com/settings/codespaces",
         "My Codespaces Secrets: values given to your own codespaces.",
     ),
+    *SECURITY_SPECS,
     *USER_SPECS,
 )
 
