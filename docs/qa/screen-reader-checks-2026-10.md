@@ -2394,3 +2394,54 @@ comments, and a signed-in account.
 - [ ] All nine with NVDA.
 - [ ] All nine with JAWS.
 - [ ] Checks 1, 3 and 7 with Narrator.
+
+## GitHub Workbench: the PRD 14.1 to 14.3 features (2026-11-18)
+
+Built overnight on 2026-11-18 and documented in GitHub Guide chapters 4, 6, 7,
+8 and 12; none has been heard yet. Use a repository you administer, signed in
+after 2026-11-18 so the sign-in carries the new permissions (`user`,
+`read:packages`, `delete:packages`, the three key permissions and
+`admin:org_hook`). Each check is a sentence that must be heard whole, without
+the reader stopping halfway or spelling anything out.
+
+1. **Runners.** Repository > Actions > Runners: each row says the runner's
+   name, online or offline, busy or idle, and its system. Signed in without
+   administration, the node note says why the list is empty.
+2. **Software bill of materials.** Ctrl+Alt+B saves a file and says how many
+   packages it holds.
+3. **Annotated tags.** In Tags, Ctrl+N with a message, then Read Tag Message on
+   the new tag: who, when and the message.
+4. **Transfer Repository.** Ctrl+Alt+T: the question names the new owner, and
+   the typed-name box is reachable and labelled. Cancel there; nothing moves.
+5. **Commit Activity.** Repository > Insights > Commit Activity: the first row
+   sums it up, and the weekly, hourly and contributor rows read as sentences.
+6. **My Packages.** Each row says type, name, visibility, versions and
+   repository. Delete Package Version lists versions with their tags.
+7. **Star Lists.** Ctrl+N makes a list; Star Lists... on a repository shows a
+   check list in which the lists it is on are already checked, and the reader
+   says checked and not checked.
+8. **Profiles.** People > My Profile: the year's total, the busiest day, both
+   streaks and one row a month, with no calendar of squares anywhere.
+9. **Unlink Branch and Not a Duplicate** on an issue: the branch list, the
+   question, and the sentence after.
+10. **Security.** Security > Policy says where the policy is and whether
+    private reporting is on; Advisories rows read severity and state; New Here
+    walks through the four questions; Search > Security Advisories finds
+    `lodash`.
+11. **My Keys.** Each key with its fingerprint, which is read as letters and
+    numbers without stalling. Ctrl+N with a .pub file: the file dialog opens in
+    the .ssh folder.
+12. **Settings > Webhooks.** A new webhook's secret is typed in a password box
+    and is never echoed: the reader says only that characters were typed.
+    Recent Deliveries lists results newest first.
+13. **Deploy Keys and Autolinks.** Ctrl+N in each, then Delete on the new row.
+14. **An organization's webhooks** under Organizations > org > Webhooks.
+15. **Sponsors.** A person's Sponsor node reads each tier's price; Sponsor at
+    This Tier says the price twice and wants the login typed. Cancel there.
+16. **The wiki.** Repository > Wiki says whether it is on; Ctrl+Alt+W opens the
+    clone window with the wiki's address already in the box.
+17. **QUILL Lite.** Checks 1, 5, 7, 10 and 12 from Tools > GitHub Workbench.
+
+- [ ] All seventeen with NVDA.
+- [ ] All seventeen with JAWS.
+- [ ] Checks 4, 7, 12 and 15 with Narrator.
