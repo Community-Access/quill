@@ -25,6 +25,15 @@
 - The plugin contract is now version 2
   (`docs/design/forms-payments-plugin-contract.md`). The QAF plugin's side
   is in QAF itself.
+### WordPress: the WordPress key says when it times out (2026-11-18)
+
+- The WordPress key's four-second wait now ends out loud: "WordPress keys
+  timed out", so you know the next key types into the document.
+- Ctrl, Alt and Shift still held from the WordPress key no longer spoil the
+  letter: Ctrl+Alt+Shift+O runs O's command.
+- With the WordPress area switched off, Tools > Forms > Responses no longer
+  shows the WordPress key, which cannot work then.
+- The Connect window offers WordPress.com only once QUILL can sign in to it.
 
 ### WordPress: five ways the Workbench could lose your work, closed (2026-11-18)
 

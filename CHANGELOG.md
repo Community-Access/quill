@@ -27,6 +27,33 @@
 - The plugin contract is now version 2
   (`docs/design/forms-payments-plugin-contract.md`). The QAF plugin's side
   is in QAF itself.
+### WordPress: keys, Escape, and words that were no longer true (2026-11-18)
+
+From the WordPress review's list, the items that were still true when checked:
+
+- The WordPress key's four-second wait now ends out loud: "WordPress keys
+  timed out", so you know the next key types into the document.
+- Ctrl, Alt and Shift still held from the WordPress key no longer spoil the
+  letter: Ctrl+Alt+Shift+O runs O's command instead of "No WordPress command
+  on Ctrl+Alt+Shift+O."
+- With WordPress switched off, Tools > Forms > Responses no longer shows the
+  WordPress key it cannot use, in QUILL or QUILL Lite.
+- In either Workbench, Escape in Details returns to the list instead of going
+  Back to another node.
+- Tools > WordPress > Manage > Fonts and Synced Patterns open their own windows
+  again, since installing fonts and editing a synced pattern's blocks are not
+  in the Workbench yet.
+- The Connect window offers WordPress.com only once QUILL can sign in to it,
+  rather than offering it and then refusing.
+- Start Here no longer calls the Workbench an early preview behind a developer
+  setting; the wp-admin map sends Import and Export to Tools > WXR Files; the
+  Move to Trash question and the "stop asking" sentence after a first publish
+  name where things really are.
+
+Checked and already fixed: menu letters in Insert, View, Tools and Edit (every
+WordPress row has a key of its own, shown in the label), and the filter and
+reload keys catching chords that menu rows own.
+
 
 Most people meet WordPress because they write something: a blog, or the news
 for their organization's site. That is where this story starts. You connect a

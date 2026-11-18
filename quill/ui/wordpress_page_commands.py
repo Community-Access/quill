@@ -301,6 +301,6 @@ class WordPressPageCommands(WordPressOfflineCommands):
             store.upsert(replace(fresh, ask_add_to_menu=False))
             self.save_sites(store)  # type: ignore[attr-defined]
             self.host.announce(
-                f"QUILL will not ask again for {fresh.name}. Menus is in File, WordPress, "
-                "Running the Site."
+                f"QUILL will not ask again for {fresh.name}. Menus is in Tools, WordPress, "
+                "and in the WordPress Workbench."
             )
