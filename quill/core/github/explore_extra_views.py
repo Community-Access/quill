@@ -165,13 +165,16 @@ def fetch_extra_view(
         except PackageError as exc:
             raise GitHubExploreError(str(exc.args[0])) from exc
     if view in ("my_codespaces", "repo_codespaces"):
-        from quill.core.github.codespaces import CodespaceError, fetch
+        from quill.core.github.codespaces import CodespaceError
+        from quill.core.github.codespaces import fetch as fetch_codespaces
         from quill.core.github.workbench_api import TokenApi
 
         if view == "repo_codespaces" and "/" not in repo:
             raise GitHubExploreError("Enter a repository as owner/repo for this view.")
         try:
-            return fetch(TokenApi(token), repo if view == "repo_codespaces" else "", warnings)
+            return fetch_codespaces(
+                TokenApi(token), repo if view == "repo_codespaces" else "", warnings
+            )
         except CodespaceError as exc:
             raise GitHubExploreError(str(exc.args[0])) from exc
     if view == "my_packages":
