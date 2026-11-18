@@ -5,19 +5,19 @@
 ### What is left to build for GitHub, and what is not (2026-11-18)
 
 The GitHub Workbench keeps a table of every GitHub endpoint and what QUILL does
-with each. A review of the 904 still marked as planned settled 321 of them:
+with each. A review of the 904 still marked as planned settled 327 of them:
 
 - **120 need nothing:** 90 only read one item that its list already shows in
   full, and 30 change one piece of branch protection, which the Workbench
   already reads and sets as a whole.
-- **201 are out of scope, each with its reason written down:** 45 need GitHub
+- **207 are out of scope, each with its reason written down:** 51 need GitHub
   Enterprise Cloud, and 156 are company administration such as billing,
   Copilot seat management, private networking for runners, migrations and
   paid Advanced Security features. What a small organization uses stays in:
   members, teams, roles, webhooks, rulesets, custom properties, secrets and
   variables, runner groups and interaction limits.
 
-That leaves 583 to build, about two dozen batches of everyday features.
+That leaves 577 to build, about two dozen batches of everyday features.
 
 ### Thirty-four lists of settings, in one place each (2026-11-18)
 

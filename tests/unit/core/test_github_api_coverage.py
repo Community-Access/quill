@@ -139,8 +139,10 @@ def test_the_read_query_ledger_names_what_10b2_asks_for() -> None:
 
 def test_enterprise_rows_have_homes_and_reasons() -> None:
     rows = cover.load_coverage()["enterprise"]
-    assert rows["GET /orgs/{org}/audit-log"].status == "planned"
-    assert rows["GET /orgs/{org}/credential-authorizations"].status == "planned"
+    # Both need GitHub Enterprise Cloud, which QUILL does not target (Jeff, 2026-11-18).
+    assert rows["GET /orgs/{org}/audit-log"].status == "out_of_scope"
+    assert rows["GET /orgs/{org}/credential-authorizations"].status == "out_of_scope"
+    assert "Enterprise Cloud" in rows["GET /orgs/{org}/audit-log"].reason
     assert any(key.startswith(("GET /scim/", "POST /scim/")) for key in rows)
     snap = cover.load_snapshot()
     assert {op["named_from"] for op in snap.enterprise.values()} == {"description"}

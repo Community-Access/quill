@@ -1047,7 +1047,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 477 yes, 583 planned, 209 not needed and 735 left to GitHub.
+In all: 477 yes, 577 planned, 209 not needed and 741 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -3198,7 +3198,7 @@ Operations api.github.com's description does not have, read from GitHub's own En
 | Delete an enterprise team | `DELETE /enterprises/{enterprise}/teams/{team_slug}` | Cloud | Left to GitHub | Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings. Organizations > org > Enterprise (Open on GitHub). |
 | Delete a Visual Studio subscription user match | `DELETE /enterprises/{enterprise}/visual-studio-subscriptions/{visual_studio_subscription_id}` | Cloud | Left to GitHub | Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings. Organizations > org > Enterprise (Open on GitHub). |
 | Remove announcement banner from organization | `DELETE /orgs/{org}/announcement` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
-| Remove a SAML SSO authorization for an organization | `DELETE /orgs/{org}/credential-authorizations/{credential_id}` | Cloud | Planned | Organizations > org > Single Sign-On |
+| Remove a SAML SSO authorization for an organization | `DELETE /orgs/{org}/credential-authorizations/{credential_id}` | Cloud | Left to GitHub | Credential authorizations are for organizations that sign in with SAML single sign-on, which needs GitHub Enterprise Cloud. |
 | Delete a custom repository role | `DELETE /orgs/{org}/custom-repository-roles/{role_id}` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Closing down - Delete a custom role | `DELETE /orgs/{org}/custom_roles/{role_id}` | Cloud | Left to GitHub | GitHub is closing this route down; the custom-repository-roles route replaces it. Organization sheet > Roles. |
 | Delete a custom organization role. | `DELETE /orgs/{org}/organization-roles/{role_id}` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
@@ -3323,7 +3323,7 @@ Operations api.github.com's description does not have, read from GitHub's own En
 | List bypass requests for secret scanning for an org | `GET /orgs/{org}/bypass-requests/secret-scanning` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Get feature policies for an organization | `GET /orgs/{org}/copilot/feature-policies` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Get model policies for an organization | `GET /orgs/{org}/copilot/model-policies` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
-| List SAML SSO authorizations for an organization | `GET /orgs/{org}/credential-authorizations` | Cloud | Planned | Organizations > org > Single Sign-On |
+| List SAML SSO authorizations for an organization | `GET /orgs/{org}/credential-authorizations` | Cloud | Left to GitHub | Credential authorizations are for organizations that sign in with SAML single sign-on, which needs GitHub Enterprise Cloud. |
 | List custom repository roles in an organization | `GET /orgs/{org}/custom-repository-roles` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Get a custom repository role | `GET /orgs/{org}/custom-repository-roles/{role_id}` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Closing down - Get a custom role | `GET /orgs/{org}/custom_roles/{role_id}` | Cloud | Left to GitHub | GitHub is closing this route down; the custom-repository-roles route replaces it. Organization sheet > Roles. |
@@ -3428,10 +3428,10 @@ Operations api.github.com's description does not have, read from GitHub's own En
 | Add organization assignments | `POST /enterprises/{enterprise}/teams/{enterprise-team}/organizations/add` | Cloud | Left to GitHub | Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings. Organizations > org > Enterprise (Open on GitHub). |
 | Remove organization assignments | `POST /enterprises/{enterprise}/teams/{enterprise-team}/organizations/remove` | Cloud | Left to GitHub | Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings. Organizations > org > Enterprise (Open on GitHub). |
 | Enable or disable a security feature | `POST /enterprises/{enterprise}/{security_product}/{enablement}` | Cloud | Left to GitHub | Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings. Organizations > org > Enterprise (Open on GitHub). |
-| Revoke all credential authorizations for an organization | `POST /orgs/{org}/credential-authorizations/revoke-all` | Cloud | Planned | Organizations > org > Single Sign-On |
-| Revoke a single credential type for an organization | `POST /orgs/{org}/credential-authorizations/revoke-credential-type` | Cloud | Planned | Organizations > org > Single Sign-On |
-| Revoke credential authorizations for a user in an organization | `POST /orgs/{org}/credential-authorizations/{username}/revoke` | Cloud | Planned | Organizations > org > Single Sign-On |
-| Revoke a single credential type for a user in an organization | `POST /orgs/{org}/credential-authorizations/{username}/revoke-credential-type` | Cloud | Planned | Organizations > org > Single Sign-On |
+| Revoke all credential authorizations for an organization | `POST /orgs/{org}/credential-authorizations/revoke-all` | Cloud | Left to GitHub | Credential authorizations are for organizations that sign in with SAML single sign-on, which needs GitHub Enterprise Cloud. |
+| Revoke a single credential type for an organization | `POST /orgs/{org}/credential-authorizations/revoke-credential-type` | Cloud | Left to GitHub | Credential authorizations are for organizations that sign in with SAML single sign-on, which needs GitHub Enterprise Cloud. |
+| Revoke credential authorizations for a user in an organization | `POST /orgs/{org}/credential-authorizations/{username}/revoke` | Cloud | Left to GitHub | Credential authorizations are for organizations that sign in with SAML single sign-on, which needs GitHub Enterprise Cloud. |
+| Revoke a single credential type for a user in an organization | `POST /orgs/{org}/credential-authorizations/{username}/revoke-credential-type` | Cloud | Left to GitHub | Credential authorizations are for organizations that sign in with SAML single sign-on, which needs GitHub Enterprise Cloud. |
 | Create a custom repository role | `POST /orgs/{org}/custom-repository-roles` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Closing down - Create a custom role | `POST /orgs/{org}/custom_roles` | Cloud | Left to GitHub | GitHub is closing this route down; the custom-repository-roles route replaces it. Organization sheet > Roles. |
 | Create a custom organization role | `POST /orgs/{org}/organization-roles` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
