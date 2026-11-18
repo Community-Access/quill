@@ -101,6 +101,17 @@ def _phase_8_sheets() -> tuple[SheetDef, ...]:
 
 SHEETS.update({sheet.kind: sheet for sheet in _phase_8_sheets()})
 
+
+def _with_more_settings() -> None:
+    """Actions rules, releases, scanning and safety on the Repository and Organization sheets."""
+    from quill.core.github.sheets_settings_more import with_more_settings
+
+    for kind in ("repository", "organization"):
+        SHEETS[kind] = with_more_settings(SHEETS[kind])
+
+
+_with_more_settings()
+
 #: The last page used per kind of object (section 16.3), for this session.
 LAST_PAGE: dict[str, str] = {}
 
