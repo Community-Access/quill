@@ -24,8 +24,10 @@ touch wx must marshal back to the UI thread themselves (e.g. via
 
 from __future__ import annotations
 
+import errno
 import heapq
 import logging
+import shutil
 import ssl
 import threading
 import urllib.error
@@ -62,6 +64,47 @@ class DownloadError(CodedError):
 
     code = "QUILL-PODCASTS-DOWNLOAD-FAILED"
 
+    #: What kind of failure: "network" (worth trying again), "disk" (this
+    #: computer could not write the file) or "refused" (the server said no).
+    kind = "network"
+
+
+class DownloadDiskError(DownloadError):
+    """The episode could not be written here: usually the disk is full.
+
+    Reported as such, and never retried: trying again fills the same disk.
+    Before 2026-11-18 this read "Download connection dropped" and was retried
+    five times (Jessica Dail, on a BrailleNote Evolve with little free space).
+    """
+
+    code = "QUILL-PODCASTS-DOWNLOAD-DISK"
+    kind = "disk"
+
+
+class DownloadRefusedError(DownloadError):
+    """The server answered, and refused: not found, forbidden, gone.
+
+    Not retried either; the same request gets the same answer.
+    """
+
+    code = "QUILL-PODCASTS-DOWNLOAD-REFUSED"
+    kind = "refused"
+
+
+#: HTTP answers that may come right on another try.
+_RETRYABLE_HTTP = frozenset({408, 425, 429, 500, 502, 503, 504})
+
+
+def free_space_text(folder: Path) -> str:
+    """ "120 MB free" for the drive *folder* is on, or "" when it cannot be read."""
+    try:
+        free = shutil.disk_usage(folder if folder.exists() else folder.parent).free
+    except OSError:
+        return ""
+    if free >= 1024**3:
+        return f"{free / 1024**3:.1f} GB free"
+    return f"{free // 1024**2} MB free"
+
 
 @dataclass(slots=True)
 class DownloadItem:
@@ -82,6 +125,8 @@ class DownloadItem:
     #: How many reconnect attempts this item has used after a dropped
     #: connection (0 = still on the first, uninterrupted attempt).
     reconnect_attempts: int = 0
+    #: The last failure's kind: "" (none), "network", "disk" or "refused".
+    error_kind: str = ""
     #: Ready "Authorization" header value for private feeds ("" = none).
     #: Computed by the enqueueing UI via feed_auth.auth_header_for_url, so
     #: the same-host gate has already been applied by the time it's here.
@@ -107,9 +152,12 @@ def _fetch_chunked(
     not only between whole-file attempts.
     """
     if not transport.is_allowed(url):
-        raise DownloadError("An episode link must start with https:// or http://.")
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    resume_from = destination.stat().st_size if destination.exists() else 0
+        raise DownloadRefusedError("An episode link must start with https:// or http://.")
+    try:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        resume_from = destination.stat().st_size if destination.exists() else 0
+    except OSError as error:
+        raise _disk_error(destination, error) from error
     headers = {"User-Agent": http_client.podcast_user_agent()}
     if auth_header:
         headers["Authorization"] = auth_header
@@ -117,16 +165,23 @@ def _fetch_chunked(
         headers["Range"] = f"bytes={resume_from}-"
     request = urllib.request.Request(url, headers=headers)
     context = verified_ssl_context()
+    written = resume_from
+    total = 0
+    resumed = False
     try:
         with feed_auth.urlopen_auth_safe(
             request, timeout=_TIMEOUT_SECONDS, context=context
         ) as resp:
-            resumed = resume_from and getattr(resp, "status", 200) == 206
+            resumed = bool(resume_from) and getattr(resp, "status", 200) == 206
             written = resume_from if resumed else 0
             content_length = resp.headers.get("Content-Length")
             total = (written + int(content_length)) if content_length else 0
             mode = "ab" if resumed else "wb"
-            with open(destination, mode) as handle:
+            try:
+                handle = open(destination, mode)  # noqa: SIM115 - closed below
+            except OSError as error:
+                raise _disk_error(destination, error) from error
+            with handle:
                 while True:
                     if cancel_event.is_set():
                         return "cancelled"
@@ -135,12 +190,84 @@ def _fetch_chunked(
                     chunk = resp.read(_CHUNK_BYTES)
                     if not chunk:
                         break
-                    handle.write(chunk)
+                    try:
+                        handle.write(chunk)
+                    except OSError as error:
+                        raise _disk_error(destination, error) from error
                     written += len(chunk)
                     on_progress(written, total)
         return "completed"
+    except DownloadError:
+        raise
+    except urllib.error.HTTPError as error:
+        _log_failure(url, destination, error, written, total, resume_from, resumed)
+        if error.code in _RETRYABLE_HTTP:
+            raise DownloadError(
+                f"The podcast's server was busy or failed (HTTP {error.code})."
+            ) from error
+        raise DownloadRefusedError(
+            f"The podcast's server refused the episode (HTTP {error.code}"
+            f"{', not found' if error.code == 404 else ''})."
+        ) from error
     except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError) as error:
-        raise DownloadError(f"Could not download that episode: {error}") from error
+        _log_failure(url, destination, error, written, total, resume_from, resumed)
+        raise DownloadError(f"The download connection dropped: {_reason(error)}") from error
+
+
+def _reason(error: BaseException) -> str:
+    reason = getattr(error, "reason", None)
+    return str(reason or error) or type(error).__name__
+
+
+def _disk_error(destination: Path, error: OSError) -> DownloadDiskError:
+    free = free_space_text(destination.parent)
+    _log.warning(
+        "Podcast download could not write %s: %s (errno %s, %s)",
+        destination.name,
+        type(error).__name__,
+        error.errno,
+        free or "free space unknown",
+    )
+    if error.errno in (errno.ENOSPC, getattr(errno, "EDQUOT", -1)):
+        return DownloadDiskError(
+            f"The disk is full{f' ({free})' if free else ''}. Free some space, "
+            "or delete episodes you have played, then download again."
+        )
+    return DownloadDiskError(
+        f"Could not save the episode on this computer: {error.strerror or error}"
+        f"{f' ({free})' if free else ''}."
+    )
+
+
+def _log_failure(
+    url: str,
+    destination: Path,
+    error: BaseException,
+    written: int,
+    total: int,
+    resume_from: int,
+    resumed: bool,
+) -> None:
+    """Everything a dropped download report needs, in the diagnostic log.
+
+    The host only (never the path or query, which can carry a private feed's
+    token), the error's type and errno or HTTP status, how far it got, whether
+    the server honoured a resume, and the free space where it was writing.
+    """
+    host = urllib.parse.urlsplit(url).hostname or "?"
+    _log.warning(
+        "Podcast download stopped: host=%s error=%s errno=%s http=%s "
+        "bytes=%d of %s resume_from=%d resumed=%s %s",
+        host,
+        type(error).__name__,
+        getattr(error, "errno", None),
+        getattr(error, "code", None),
+        written,
+        total or "unknown",
+        resume_from,
+        resumed,
+        free_space_text(destination.parent) or "free space unknown",
+    )
 
 
 class PodcastDownloadQueue:
@@ -417,8 +544,17 @@ class PodcastDownloadQueue:
                 break
             except DownloadError as error:
                 item.error_message = str(error)
-                _log.warning("Podcast download failed for %s: %s", item.item_id, error)
-                if not self._maybe_reconnect(item):
+                item.error_kind = error.kind
+                _log.warning(
+                    "Podcast download failed for %s (%s, attempt %d, %d active): %s",
+                    item.item_id,
+                    error.kind,
+                    item.reconnect_attempts + 1,
+                    self._active_count,
+                    error,
+                )
+                # A full disk or a refusal comes back the same on every try.
+                if error.kind != "network" or not self._maybe_reconnect(item):
                     result = "cancelled" if item._cancel_event.is_set() else "failed"
                     break
                 # Partial bytes stay on disk; the retried _fetch_chunked call

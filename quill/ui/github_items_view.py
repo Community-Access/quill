@@ -494,6 +494,7 @@ def render_pull_file_diff(
     *,
     base_label: str = "base",
     head_label: str = "this PR",
+    style: str = "",
 ) -> str:
     """An accessible compare of one PR file, via QUILL's compare engine.
 
@@ -502,8 +503,16 @@ def render_pull_file_diff(
     words) followed by the actual lines, prefixed the screen-reader-friendly
     way (``base:`` / ``this PR:``). Whole-file adds/removes are stated plainly
     instead of dumping hundreds of "added" lines.
+
+    The lines are marked in *style*, one of Kelly Ford's four
+    (:mod:`quill.core.diff_marks`); left empty, the style saved in Diff Line
+    Marks, the one choice every QUILL diff view shares.
     """
+    from quill.core import diff_marks
     from quill.core.compare_service import CompareService
+    from quill.core.github.review_preferences import load_line_marks
+
+    style = style or load_line_marks()
 
     if not base_text and head_text:
         line_count = len(head_text.splitlines())
@@ -519,9 +528,6 @@ def render_pull_file_diff(
     parts = [f"{filename}: {len(groups)} difference{'s' if len(groups) != 1 else ''}.", ""]
     for group in groups:
         parts.append(group.summary_verbose)
-        for line in group.left_text:
-            parts.append(f"  {base_label}: {line}")
-        for line in group.right_text:
-            parts.append(f"  {head_label}: {line}")
+        parts.extend(diff_marks.render_replacement(group.left_text, group.right_text, style))
         parts.append("")
     return "\n".join(parts).rstrip() + "\n"

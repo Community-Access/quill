@@ -187,6 +187,32 @@ class TestAutoDownload:
 
         assert acquisition.episodes_to_auto_download(library, show) == []
 
+    def test_a_stream_mode_show_still_downloads_what_is_queued(self) -> None:
+        """Chris Nova, 2026-11-18: streaming by default, queued episodes were
+        meant to download, and Download Queued Episodes silently did nothing."""
+        library, show = self._library(3, mode="stream")
+
+        wanted = acquisition.episodes_to_auto_download(
+            library, show, queued_guids=frozenset({"e2", "e4"})
+        )
+
+        assert {e.guid for e in wanted} == {"e2", "e4"}
+
+    def test_a_stream_mode_show_honours_a_download_override(self) -> None:
+        library, show = self._library(3, mode="stream")
+        show.episodes[1].mode_override = "download"
+
+        assert [e.guid for e in acquisition.episodes_to_auto_download(library, show)] == ["e1"]
+
+    def test_a_stream_mode_show_with_queued_downloads_off_fetches_nothing(self) -> None:
+        library, show = self._library(3, mode="stream")
+        library.settings.auto_download_queued = False
+
+        assert (
+            acquisition.episodes_to_auto_download(library, show, queued_guids=frozenset({"e2"}))
+            == []
+        )
+
     def test_a_queued_episode_is_fetched_whatever_its_age(self) -> None:
         library, show = self._library(1)
 

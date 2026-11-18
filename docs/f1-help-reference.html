@@ -7411,9 +7411,11 @@ environment.</li>
 id="githubpulldiffcommentsmixin-quilluigithub_pr_diff_commentspy">GitHubPullDiffCommentsMixin
 (<code>quill/ui/github_pr_diff_comments.py</code>)</h4>
 <ul>
-<li><code>self._marks_choice</code>: How patch lines are marked: words
-(Added line, Removed line) or symbols (plus and minus). Symbols need
-your screen reader to read punctuation.</li>
+<li><code>self._marks_choice</code>: How patch lines are marked, in
+Kelly Ford’s four styles: words (Added line), short words (Add), diff
+symbols (plus, minus, equals), or diff symbols with each changed line
+read old then new. Symbols need your screen reader to read punctuation.
+The same choice marks every difference in QUILL.</li>
 <li><code>self._changed_only</code>: Leave out the unchanged lines
 around each change, so the arrows move from change to change. Hunk
 headings stay, so each change still says where it is.</li>
@@ -7426,7 +7428,8 @@ at a time, or go back to all of them.</li>
 only with punctuation.</li>
 <li><code>self._patch_list</code>: The selected file’s changes, one line
 per row. Shift with the arrows selects a run of lines. Enter comments on
-the selected lines.</li>
+the selected lines. Alt+N and Alt+P, or F8 and Shift+F8, move to the
+next and previous change and say which words changed.</li>
 <li><code>self._comment_line_btn</code>: Write a comment on the selected
 patch line, for your review or to post now.</li>
 <li><code>self._comment_lines_btn</code>: Comment on the selected run of

@@ -2,6 +2,18 @@
 
 ## 2.0.0
 
+### Compare with Site marks each changed line, from Kelly Ford (2026-11-18)
+
+**File > WordPress > Compare with Site** now starts with a summary ("Comparing
+your copy with the copy on Community Radio: 1 line added, 3 removed, in 2
+places"), then gives each change with where it is ("Lines 10 to 15:"), each
+line marked first: "Removed" is on the site, "Added" is yours, "Unchanged" is in
+both. A blank line reads "blank line". The marks are one of Kelly Ford's four
+styles from GHManage and The Chat Place (words, short words, diff symbols, or
+diff symbols with changed lines), the same saved choice QUILL uses everywhere it
+shows a difference; it is chosen in QUILL's Compare Files or the GitHub
+Workbench. Before, the lines read "Site:" and "Yours:".
+
 ### What is left for GitHub, settled a second time (2026-11-18)
 
 Every one of the 422 GitHub endpoints still planned was read again, by

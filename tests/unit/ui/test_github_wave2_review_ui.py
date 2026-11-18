@@ -232,9 +232,18 @@ def test_patch_lines_follow_the_line_mark_style(diff_dialog) -> None:
     assert diff_dialog._patch_list.GetString(3) == "Added line 2: new"
     diff_dialog._marks_choice.SetSelection(1)
     diff_dialog._on_marks_changed(None)
+    assert diff_dialog._patch_list.GetString(3) == "Add 2: new"
+    assert review_preferences.load_line_marks() == "short"
+    diff_dialog._marks_choice.SetSelection(2)
+    diff_dialog._on_marks_changed(None)
     assert diff_dialog._patch_list.GetString(3) == "+ 2: new"
     assert "punctuation" in diff_dialog.spoken[-1]
     assert review_preferences.load_line_marks() == "symbols"
+    diff_dialog._marks_choice.SetSelection(3)
+    diff_dialog._on_marks_changed(None)
+    assert review_preferences.load_line_marks() == "changed"
+    rows = list(diff_dialog._patch_list.GetStrings())
+    assert rows[2:] == ["!- 2: old", "!+ 2: new", "+ 3: more"]
 
 
 def test_comment_on_lines_adds_to_the_pending_review(diff_dialog, monkeypatch) -> None:
@@ -434,3 +443,19 @@ def test_the_timeline_hides_the_comment_on_the_cursors_line(wx_app, monkeypatch)
     finally:
         dialog.dialog.Destroy()
         frame.Destroy()
+
+
+def test_next_and_previous_change_say_change_n_of_m(diff_dialog) -> None:
+    """Kelly Ford's GHManage: Alt+N / Alt+P, "Change 2 of 5"."""
+    diff_dialog._patch_list.SetSelection(0)
+    diff_dialog._step_change(1)
+    assert diff_dialog.spoken[-1].startswith(
+        "Change 1 of 1, at new line 2: 1 line removed, 2 added"
+    )
+    selected = diff_dialog._patch_list.GetSelections()
+    assert len(selected) == 1
+    assert diff_dialog._patch_list.GetString(selected[0]).startswith("Removed line 2: old")
+    diff_dialog._step_change(1)
+    assert diff_dialog.spoken[-1] == "No more changes."
+    diff_dialog._step_change(-1)
+    assert diff_dialog.spoken[-1] == "No earlier changes."

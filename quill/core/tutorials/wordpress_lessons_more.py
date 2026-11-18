@@ -263,7 +263,10 @@ def later_wordpress_lessons(
                     ),
                     command=command("compare"),
                     keys=layer_keys("compare"),
-                    hear="Lines starting Site: for the site's copy, and Yours: for yours.",
+                    hear=(
+                        "A count of lines added and removed, then each change: Removed for "
+                        "the site's line, Added for yours."
+                    ),
                     note=(
                         "Changed your mind? Your text from before the restore is the "
                         "newest row in Previous Versions, marked Before restore."

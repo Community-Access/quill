@@ -15,20 +15,24 @@ import tempfile
 import threading
 import webbrowser
 from pathlib import Path
+from typing import Any
 
 from quill.core.github.diff_lines import (
     LINE_MARK_LABELS,
     LINE_MARK_STYLES,
-    LINE_MARKS_SYMBOLS,
     SYMBOLS_NOTE,
     DiffLine,
     LineCommentAnchor,
     anchor_for,
+    change_runs,
     changed_only,
+    describe_change,
+    is_symbol_style,
     line_sound,
     lines_for_range,
     parse_diff_lines,
     parse_range,
+    reading_order,
     render_line,
     unified_diff_text,
 )
@@ -58,8 +62,10 @@ class GitHubPullDiffCommentsMixin:
         )
         self._marks_choice.SetName("Line marks")
         self._marks_choice.SetHelpText(
-            "How patch lines are marked: words (Added line, Removed line) or symbols "
-            "(plus and minus). Symbols need your screen reader to read punctuation."
+            "How patch lines are marked, in Kelly Ford's four styles: words (Added line), "
+            "short words (Add), diff symbols (plus, minus, equals), or diff symbols with "
+            "each changed line read old then new. Symbols need your screen reader to read "
+            "punctuation. The same choice marks every difference in QUILL."
         )
         self._marks_choice.SetSelection(LINE_MARK_STYLES.index(self._line_style))
         marks_row.Add(marks_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
@@ -86,7 +92,7 @@ class GitHubPullDiffCommentsMixin:
         self._whole_diff = self._diff
         root.Add(marks_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         self._marks_note = wx.StaticText(
-            panel, label=SYMBOLS_NOTE if self._line_style == LINE_MARKS_SYMBOLS else ""
+            panel, label=SYMBOLS_NOTE if is_symbol_style(self._line_style) else ""
         )
         self._marks_note.SetName("Line marks note")
         self._marks_note.SetHelpText("Reminds you that symbols are spoken only with punctuation.")
@@ -98,7 +104,8 @@ class GitHubPullDiffCommentsMixin:
         self._patch_list.SetName("Patch lines")
         self._patch_list.SetHelpText(
             "The selected file's changes, one line per row. Shift with the arrows selects a "
-            "run of lines. Enter comments on the selected lines."
+            "run of lines. Enter comments on the selected lines. Alt+N and Alt+P, or F8 and "
+            "Shift+F8, move to the next and previous change and say which words changed."
         )
         root.Add(self._patch_list, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
@@ -138,6 +145,7 @@ class GitHubPullDiffCommentsMixin:
         self._hide_ws.Bind(wx.EVT_CHECKBOX, self._on_hide_whitespace)
         self._commit_btn.Bind(wx.EVT_BUTTON, lambda _event: self._choose_commit())
         self._patch_list.Bind(wx.EVT_LISTBOX, self._on_patch_line)
+        self._patch_list.Bind(wx.EVT_KEY_DOWN, self._on_patch_key)
         self._comment_line_btn.Bind(wx.EVT_BUTTON, self._comment_on_line)
         self._comment_lines_btn.Bind(wx.EVT_BUTTON, self._comment_on_lines)
         self._copy_diff_btn.Bind(wx.EVT_BUTTON, self._copy_diff)
@@ -189,7 +197,15 @@ class GitHubPullDiffCommentsMixin:
 
             gone = whitespace_only(self._patch_lines)
             self._visible = tuple(index for index in self._visible if index not in gone)
-        rows = [render_line(self._patch_lines[index], self._line_style) for index in self._visible]
+        shown = set(self._visible)
+        kept = [line for index, line in enumerate(self._patch_lines) if index in shown]
+        where = [index for index in range(len(self._patch_lines)) if index in shown]
+        order = reading_order(kept, self._line_style)
+        self._visible = tuple(where[position] for position, _paired in order)
+        rows = [
+            render_line(kept[position], self._line_style, paired=paired)
+            for position, paired in order
+        ]
         self._patch_list.Set(rows or ["GitHub sent no patch lines for this file."])
         for position, index in enumerate(self._visible):
             if index in before:
@@ -285,6 +301,55 @@ class GitHubPullDiffCommentsMixin:
             self._files.SetSelection(0)
             self._on_select(None)
 
+    def _on_patch_key(self, event: Any) -> None:
+        """Next and previous change: Alt+N and Alt+P, as in Kelly Ford's
+        GHManage, and F8 and Shift+F8, as in Compare Files."""
+        import wx
+
+        code = event.GetKeyCode()
+        alt, shift, ctrl = event.AltDown(), event.ShiftDown(), event.ControlDown()
+        step = 0
+        if code == wx.WXK_F8 and not alt and not ctrl:
+            step = -1 if shift else 1
+        elif alt and not shift and not ctrl and code in (ord("N"), ord("P")):
+            step = 1 if code == ord("N") else -1
+        if not step:
+            event.Skip()
+            return
+        self._step_change(step)
+
+    def _step_change(self, step: int) -> None:
+        """Select the first line of the next (or previous) change and say
+        "Change 2 of 5", where it is, and which words changed."""
+        shown = {index: position for position, index in enumerate(self._visible)}
+        runs = [
+            (run, min(shown[i] for i in range(run[0], run[1] + 1) if i in shown))
+            for run in change_runs(self._patch_lines)
+            if any(i in shown for i in range(run[0], run[1] + 1))
+        ]
+        if not runs:
+            self._announce("No changes in this file.")
+            return
+        selected = self._patch_list.GetSelections()
+        here = selected[0] if selected else -1
+        if step > 0:
+            ahead = [item for item in runs if item[1] > here]
+            target = ahead[0] if ahead else None
+        else:
+            behind = [item for item in runs if item[1] < here]
+            target = behind[-1] if behind else None
+        if target is None:
+            self._announce("No more changes." if step > 0 else "No earlier changes.")
+            return
+        run, position = target
+        for chosen in selected:
+            self._patch_list.Deselect(chosen)
+        self._patch_list.SetSelection(position)
+        self._patch_list.EnsureVisible(position)
+        self._update_comment_buttons()
+        number = [item[0] for item in runs].index(run) + 1
+        self._announce(describe_change(self._patch_lines, run, number, len(runs)))
+
     def _on_patch_line(self, _event: object) -> None:
         """Arriving on an added or removed line plays its sound (Sound Scheme, optional)."""
         chosen = self._selected_patch_lines()
@@ -309,7 +374,7 @@ class GitHubPullDiffCommentsMixin:
             return
         self._line_style = LINE_MARK_STYLES[index]
         saved = save_line_marks(self._line_style)
-        symbols = self._line_style == LINE_MARKS_SYMBOLS
+        symbols = is_symbol_style(self._line_style)
         self._marks_note.SetLabel(SYMBOLS_NOTE if symbols else "")
         self._render_patch_lines()
         if symbols:

@@ -3713,12 +3713,12 @@ Control coverage: 365 audited sites (365 helped).
 - `box`: Checked, Approve or Reject applies to this environment.
 #### GitHubPullDiffCommentsMixin (`quill/ui/github_pr_diff_comments.py`)
 
-- `self._marks_choice`: How patch lines are marked: words (Added line, Removed line) or symbols (plus and minus). Symbols need your screen reader to read punctuation.
+- `self._marks_choice`: How patch lines are marked, in Kelly Ford's four styles: words (Added line), short words (Add), diff symbols (plus, minus, equals), or diff symbols with each changed line read old then new. Symbols need your screen reader to read punctuation. The same choice marks every difference in QUILL.
 - `self._changed_only`: Leave out the unchanged lines around each change, so the arrows move from change to change. Hunk headings stay, so each change still says where it is.
 - `self._hide_ws`: Leave out changed lines that differ only in spaces, tabs or blank lines, such as a reindent, so what is left is what really changed.
 - `self._commit_btn`: Review one commit of the pull request at a time, or go back to all of them.
 - `self._marks_note`: Reminds you that symbols are spoken only with punctuation.
-- `self._patch_list`: The selected file's changes, one line per row. Shift with the arrows selects a run of lines. Enter comments on the selected lines.
+- `self._patch_list`: The selected file's changes, one line per row. Shift with the arrows selects a run of lines. Enter comments on the selected lines. Alt+N and Alt+P, or F8 and Shift+F8, move to the next and previous change and say which words changed.
 - `self._comment_line_btn`: Write a comment on the selected patch line, for your review or to post now.
 - `self._comment_lines_btn`: Comment on the selected run of lines, or type a start and end line.
 - `self._copy_diff_btn`: Copy the whole pull request as a unified diff.
