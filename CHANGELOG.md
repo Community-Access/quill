@@ -620,6 +620,23 @@ guided Forms lessons.
   refusal means, what the person paying hears with a screen reader, receipts,
   refunds, reporting and going live.
 
+### Reviews already on a pull request (2026-11-18)
+
+**Reviews...** on a pull request in the GitHub Workbench lists its reviews
+("sam approved on 2026-11-17: Looks good"). Choose one, then:
+
+- **Read its comments...**: each line comment, to read in a window, change or
+  delete (your own).
+- **Change its summary...** of your review.
+- **Dismiss it...** for an approval or a request for changes, with the reason
+  GitHub asks for.
+- **Submit it...** for your pending review: as a comment, an approval or a
+  request for changes, with an optional summary; or **Delete it...**.
+
+A pull request's commits, which File Differences already reads, are counted
+now. Merging with GitHub's background merge route is left to Merge..., which
+does the same. Planned GitHub endpoints fall from 441 to 430.
+
 ### Environments, their secrets and variables, and some routes counted (2026-11-18)
 
 - **Settings > Environments** in each repository lists where its workflows

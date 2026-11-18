@@ -3142,6 +3142,8 @@ Control coverage: 365 audited sites (365 helped).
 
 **Auto-Merge.** Have it merge itself when it can, or turn that off.
 
+**Reviews.** Read, change, dismiss, submit or delete a review.
+
 **Open in a Codespace.** Make a codespace on its branch.
 
 **Add to or Remove from Merge Queue.** Queue it to merge after the pull requests ahead of it, or take it out.

@@ -167,6 +167,13 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
             "Have it merge itself when it can, or turn that off.",
         ),
         _a(
+            "manage_reviews",
+            "Reviews...",
+            _W,
+            "push",
+            "Read, change, dismiss, submit or delete a review.",
+        ),
+        _a(
             "pull_codespace",
             "Open in a Codespace",
             _W,

@@ -132,6 +132,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}codespace_delete": ("sign_in+scope:codespace", _D),
     f"{_P}react_release": ("sign_in", _O),
     f"{_P}rerun_job": ("repo:write", _V),
+    f"{_P}manage_reviews": ("repo:write", _V),
     f"{_P}environment_secrets": ("repo:admin", _V),
     f"{_P}environment_variables": ("repo:admin", _V),
     f"{_P}environment_delete": ("repo:admin", _D),

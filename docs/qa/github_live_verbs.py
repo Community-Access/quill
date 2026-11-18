@@ -969,6 +969,7 @@ VERBS: dict[str, Scenario | str] = {
             "pull_codespace",
         )
     },
+    "manage_reviews": "needs Jeff: a pull request with a review from someone else to dismiss",
     "environment_secrets": "needs Jeff: an environment on the test repository (admin)",
     "environment_variables": "needs Jeff: an environment on the test repository (admin)",
     "environment_delete": "needs Jeff: a throwaway environment on the test repository",

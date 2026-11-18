@@ -909,7 +909,7 @@ Keys the window answers that are not menu rows:
 ### Context menus, by row type
 
 - **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Add to or Remove from Favorites; Properties...
-- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
+- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., Re-run One Job...; More: Force Cancel..., Download Logs..., Delete Logs..., Approvals, Earlier Attempts..., View Artifacts..., Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link; Properties...
 - **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., React..., Compare With Previous; More: Compare With Default, Copy Link, Open on GitHub; Properties...
@@ -1058,7 +1058,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 592 yes, 441 planned, 226 not needed and 745 left to GitHub.
+In all: 600 yes, 430 planned, 229 not needed and 745 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2367,7 +2367,7 @@ In all: 592 yes, 441 planned, 226 not needed and 745 left to GitHub.
 
 #### Pull requests
 
-39 operations: 15 yes, 21 planned, 3 not needed.
+39 operations: 23 yes, 10 planned, 6 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2377,33 +2377,33 @@ In all: 592 yes, 441 planned, 226 not needed and 745 left to GitHub.
 | List pull requests | `GET /repos/{owner}/{repo}/pulls` | Yes | Navigator: Repository > owner/name > Pull Requests |
 | Create a pull request | `POST /repos/{owner}/{repo}/pulls` | Yes | File > New Here... (Ctrl+N) |
 | List review comments in a repository | `GET /repos/{owner}/{repo}/pulls/comments` | Planned | Review thread sheet; PR review. |
-| Delete a review comment for a pull request | `DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}` | Planned | Review thread sheet; PR review. |
+| Delete a review comment for a pull request | `DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}` | Yes | context menu > Reviews... |
 | Get a review comment for a pull request | `GET /repos/{owner}/{repo}/pulls/comments/{comment_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Update a review comment for a pull request | `PATCH /repos/{owner}/{repo}/pulls/comments/{comment_id}` | Planned | Review thread sheet; PR review. |
+| Update a review comment for a pull request | `PATCH /repos/{owner}/{repo}/pulls/comments/{comment_id}` | Yes | context menu > Reviews... |
 | Get a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}` | Yes | Properties (Alt+Enter) on Pull Request |
 | Update a pull request | `PATCH /repos/{owner}/{repo}/pulls/{pull_number}` | Yes | Properties (Alt+Enter) on Pull Request: Into branch |
 | List review comments on a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/comments` | Yes | context menu > Review... |
 | Create a review comment for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/comments` | Yes | context menu > Review... |
 | Create a reply for a review comment | `POST /repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies` | Yes | context menu > Review... |
-| List commits on a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/commits` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
+| List commits on a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/commits` | Yes | Item > File Differences... (Ctrl+Shift+D) |
 | Request a Copilot code review for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/copilot-code-review` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
 | List pull requests files | `GET /repos/{owner}/{repo}/pulls/{pull_number}/files` | Yes | Item > File Differences... (Ctrl+Shift+D) |
-| Check if a pull request has been merged | `GET /repos/{owner}/{repo}/pulls/{pull_number}/merge` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
+| Check if a pull request has been merged | `GET /repos/{owner}/{repo}/pulls/{pull_number}/merge` | Not needed | Whether a pull request is merged is part of the pull request itself, which every list and sheet already reads. |
 | Merge a pull request | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge` | Yes | Item > Merge... (Ctrl+Shift+Enter) |
-| Merge a pull request asynchronously | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge-async` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
-| Get the result of an asynchronous merge | `GET /repos/{owner}/{repo}/pulls/{pull_number}/merge-async/{uuid}` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
+| Merge a pull request asynchronously | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge-async` | Not needed | Merges the same way as Merge..., which waits for GitHub's answer; one route per operation. |
+| Get the result of an asynchronous merge | `GET /repos/{owner}/{repo}/pulls/{pull_number}/merge-async/{uuid}` | Not needed | Only follows a merge-async request, which the Workbench does not make. |
 | Remove requested reviewers from a pull request | `DELETE /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers` | Yes | Item > Assign to Copilot... (Ctrl+Shift+A) |
 | Get all requested reviewers for a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers` | Yes | Item > Assign to Copilot... (Ctrl+Shift+A) |
 | Request reviewers for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers` | Yes | Item > Assign to Copilot... (Ctrl+Shift+A) |
 | Rerequest reviewers for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers/rerequest` | Planned | Pull request > Reviews: reviewers. |
 | List reviews for a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews` | Yes | context menu > Review... |
 | Create a review for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews` | Yes | context menu > Review... |
-| Delete a pending review for a pull request | `DELETE /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}` | Planned | Pull request > Reviews; Review sheet. |
+| Delete a pending review for a pull request | `DELETE /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}` | Yes | context menu > Reviews... |
 | Get a review for a pull request | `GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Update a review for a pull request | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}` | Planned | Pull request > Reviews; Review sheet. |
-| List comments for a pull request review | `GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments` | Planned | Pull request > Reviews; Review sheet. |
-| Dismiss a review for a pull request | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/dismissals` | Planned | Pull request > Reviews; Review sheet. |
-| Submit a review for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/events` | Planned | Pull request > Reviews; Review sheet. |
+| Update a review for a pull request | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}` | Yes | context menu > Reviews... |
+| List comments for a pull request review | `GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments` | Yes | context menu > Reviews... |
+| Dismiss a review for a pull request | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/dismissals` | Yes | context menu > Reviews... |
+| Submit a review for a pull request | `POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/events` | Yes | context menu > Reviews... |
 | Update a pull request branch | `PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch` | Yes | context menu > Review... |
 | List pull request stacks | `GET /repos/{owner}/{repo}/stacks` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |
 | Create a pull request stack | `POST /repos/{owner}/{repo}/stacks` | Planned | Pull request sheet; PR review; Review and Review thread sheets. |

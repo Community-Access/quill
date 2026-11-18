@@ -2954,13 +2954,13 @@ Task…, Convert Tasks to Sub-issues…, Create Branch for This Issue…,
 Unlink Branch…, Not a Duplicate…, Set Issue Type…, Reorder Sub-issues…,
 Add to or Remove from Favorites; Properties…</li>
 <li><strong>pull_request</strong>: Review…, File Differences…, Comment…,
-Merge…, Why Can’t I Merge?, Auto-Merge…; More: Open in a Codespace, Add
-to or Remove from Merge Queue…, Open Patch in Editor, Revert Pull
-Request…, Resolve Conflicts in a Worktree…, Copy Link, Open on GitHub,
-Start in Local Worktree…, Open in Codespaces…, Commit Comments…, View
-Timeline…, Read as Document…, Summarize Discussion, React…, Labels…,
-Assignees…, Milestone…, Projects…, Edit Title…, Add to or Remove from
-Favorites; Properties…</li>
+Merge…, Why Can’t I Merge?, Auto-Merge…; More: Reviews…, Open in a
+Codespace, Add to or Remove from Merge Queue…, Open Patch in Editor,
+Revert Pull Request…, Resolve Conflicts in a Worktree…, Copy Link, Open
+on GitHub, Start in Local Worktree…, Open in Codespaces…, Commit
+Comments…, View Timeline…, Read as Document…, Summarize Discussion,
+React…, Labels…, Assignees…, Milestone…, Projects…, Edit Title…, Add to
+or Remove from Favorites; Properties…</li>
 <li><strong>run</strong>: Jobs and Logs, What Failed…, Re-run Failed
 Jobs Only, Re-run Workflow, Cancel Run…, Re-run One Job…; More: Force
 Cancel…, Download Logs…, Delete Logs…, Approvals, Earlier Attempts…,
@@ -3344,7 +3344,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 592 yes, 441 planned, 226 not needed and 745 left to
+<p>In all: 600 yes, 430 planned, 229 not needed and 745 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -10691,7 +10691,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="pull-requests">Pull requests</h4>
-<p>39 operations: 15 yes, 21 planned, 3 not needed.</p>
+<p>39 operations: 23 yes, 10 planned, 6 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -10741,8 +10741,8 @@ reads the list.</td>
 <tr>
 <td>Delete a review comment for a pull request</td>
 <td><code>DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}</code></td>
-<td>Planned</td>
-<td>Review thread sheet; PR review.</td>
+<td>Yes</td>
+<td>context menu &gt; Reviews…</td>
 </tr>
 <tr>
 <td>Get a review comment for a pull request</td>
@@ -10754,8 +10754,8 @@ reads the list.</td>
 <tr>
 <td>Update a review comment for a pull request</td>
 <td><code>PATCH /repos/{owner}/{repo}/pulls/comments/{comment_id}</code></td>
-<td>Planned</td>
-<td>Review thread sheet; PR review.</td>
+<td>Yes</td>
+<td>context menu &gt; Reviews…</td>
 </tr>
 <tr>
 <td>Get a pull request</td>
@@ -10790,8 +10790,8 @@ reads the list.</td>
 <tr>
 <td>List commits on a pull request</td>
 <td><code>GET /repos/{owner}/{repo}/pulls/{pull_number}/commits</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Yes</td>
+<td>Item &gt; File Differences… (Ctrl+Shift+D)</td>
 </tr>
 <tr>
 <td>Request a Copilot code review for a pull request</td>
@@ -10808,8 +10808,9 @@ reads the list.</td>
 <tr>
 <td>Check if a pull request has been merged</td>
 <td><code>GET /repos/{owner}/{repo}/pulls/{pull_number}/merge</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Not needed</td>
+<td>Whether a pull request is merged is part of the pull request itself,
+which every list and sheet already reads.</td>
 </tr>
 <tr>
 <td>Merge a pull request</td>
@@ -10820,14 +10821,16 @@ reads the list.</td>
 <tr>
 <td>Merge a pull request asynchronously</td>
 <td><code>PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge-async</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Not needed</td>
+<td>Merges the same way as Merge…, which waits for GitHub’s answer; one
+route per operation.</td>
 </tr>
 <tr>
 <td>Get the result of an asynchronous merge</td>
 <td><code>GET /repos/{owner}/{repo}/pulls/{pull_number}/merge-async/{uuid}</code></td>
-<td>Planned</td>
-<td>Pull request sheet; PR review; Review and Review thread sheets.</td>
+<td>Not needed</td>
+<td>Only follows a merge-async request, which the Workbench does not
+make.</td>
 </tr>
 <tr>
 <td>Remove requested reviewers from a pull request</td>
@@ -10868,8 +10871,8 @@ reads the list.</td>
 <tr>
 <td>Delete a pending review for a pull request</td>
 <td><code>DELETE /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Reviews; Review sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Reviews…</td>
 </tr>
 <tr>
 <td>Get a review for a pull request</td>
@@ -10881,26 +10884,26 @@ reads the list.</td>
 <tr>
 <td>Update a review for a pull request</td>
 <td><code>PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Reviews; Review sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Reviews…</td>
 </tr>
 <tr>
 <td>List comments for a pull request review</td>
 <td><code>GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Reviews; Review sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Reviews…</td>
 </tr>
 <tr>
 <td>Dismiss a review for a pull request</td>
 <td><code>PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/dismissals</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Reviews; Review sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Reviews…</td>
 </tr>
 <tr>
 <td>Submit a review for a pull request</td>
 <td><code>POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/events</code></td>
-<td>Planned</td>
-<td>Pull request &gt; Reviews; Review sheet.</td>
+<td>Yes</td>
+<td>context menu &gt; Reviews…</td>
 </tr>
 <tr>
 <td>Update a pull request branch</td>
