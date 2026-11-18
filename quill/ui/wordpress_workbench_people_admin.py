@@ -20,6 +20,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import site_admin as admin
 from quill.core.wordpress import workbench_people_admin as people
 from quill.core.wordpress.workbench_permissions import revoke_refusal
@@ -177,7 +178,7 @@ class WorkbenchPeopleAdminCommands:
                 title="Invite from a Spreadsheet",
                 summary=(
                     f"Add {count} {'person' if count == 1 else 'people'} to {site}"
-                    + (f"; {len(found.problems)} rows left out" if found.problems else "")
+                    + (f"; {plural(len(found.problems), 'row')} left out" if found.problems else "")
                     + f". {people.INVITE_NOTE}"
                 ),
                 lines=people.preview_lines(found),

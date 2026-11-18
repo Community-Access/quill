@@ -33,6 +33,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.site import kind_route
 from quill.core.workbench.export import export_rows, markdown_table  # shared since 2026-11-17
@@ -345,7 +346,7 @@ def answer_tree(value: Any, label: str = "Answer", *, depth: int = 0) -> TreeNod
                 node.children.append(TreeNode(f"{key}: {_scalar(child)}", []))
         return node
     if isinstance(value, list):
-        node = TreeNode(f"{label} ({len(value)} items)", [])
+        node = TreeNode(f"{label} ({plural(len(value), 'item')})", [])
         for index, child in enumerate(value, start=1):
             node.children.append(answer_tree(child, f"Item {index}", depth=depth + 1))
         return node

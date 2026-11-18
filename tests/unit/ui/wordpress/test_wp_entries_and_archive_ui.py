@@ -80,13 +80,13 @@ def test_copy_old_entries_previews_sends_each_and_undoes(gravity_bench, answers,
     provider.do_copy_entries_to_qaf(None, gbui._row(gravity_bench, "gravity_form"))
     assert chosen[0]["rows"] == ["Signup, 0 responses, draft"]
     preview = answers["previews"][-1]
-    assert preview["yes"] == "Copy Entries" and "Copy 1 entries from Signup" in preview["summary"]
+    assert preview["yes"] == "Copy Entries" and "Copy 1 entry from Signup" in preview["summary"]
     assert any("POST qaf/v1/entries" in line for line in preview["lines"])
     assert any("Songs: a list field" in line for line in preview["lines"])
     (post,) = [s for s in sent if s[0] == "POST"]
     assert post[1] == "qaf/v1/entries"
     assert post[2]["fields"] == {"field_1": "Ann", "field_2": "am"} and post[2]["form_id"] == 8
-    assert gravity_bench.said[-1] == f"Copied 1 of 1 entries into Signup on {gbui.SITE}."
+    assert gravity_bench.said[-1] == f"Copied 1 of 1 entry into Signup on {gbui.SITE}."
     assert "Done. " in reports[-1] and "copied as entry 300" in reports[-1]
     assert "1 copied entries" in provider.history.undo()
     assert sent[-1][:2] == ("DELETE", "qaf/v1/entries/300")

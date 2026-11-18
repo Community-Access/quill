@@ -39,6 +39,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, replace
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.site import raw_text, rendered
 from quill.core.wordpress.workbench_by_name import Edit, Outcome
@@ -426,7 +427,7 @@ def removal_plan(
             after = (
                 "; posts in no other category go to the default one" if word == "category" else ""
             )
-            words = f"the {word} is deleted from {count} posts{after}"
+            words = f"the {word} is deleted from {plural(count, 'post')}{after}"
             plan.append(Removal(site, name, "DELETE", f"{_term_route(name)}/{ident}", None, words))
         elif kind == "redirects":
             route = f"{_REDIRECTION}/bulk/redirect/delete"

@@ -40,6 +40,7 @@ from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.site import raw_text, rendered
 from quill.core.wordpress.workbench_no_rest import across_note
@@ -263,7 +264,7 @@ def kind_rows(scan: SiteScan, kind: str) -> list[WbRow]:
                     f"{taxonomy}:{raw.get('id')}",
                     f"{name} ({word})",
                     count,
-                    f"{count} posts",
+                    f"{plural(count, 'post')}",
                     used,
                 )
             )
@@ -322,7 +323,7 @@ def kind_rows(scan: SiteScan, kind: str) -> list[WbRow]:
                 found.setdefault(name, [])
         for value, places in found.items():
             count = len(places)
-            where = f"used on {count} pages" if count else "not used anywhere"
+            where = f"used on {plural(count, 'page')}" if count else "not used anywhere"
             rows.append(_row(site, kind, value, value, count, where, places))
     rows.sort(key=lambda r: -int(r.cell("count") or 0))
     missed = scan_unread(scan, kind)

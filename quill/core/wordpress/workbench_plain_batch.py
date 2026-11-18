@@ -39,6 +39,7 @@ from dataclasses import dataclass, field, replace
 from datetime import date
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.error_codes import CodedError
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.site import kind_route
@@ -303,7 +304,7 @@ class SitePlan:
             return f"{self.site}: nothing, because {self.problem}"
         if self.count >= 0:
             return f"{self.count} on {self.site}"
-        said = f"{self.site}: {len(self.rows)} items"
+        said = f"{self.site}: {plural(len(self.rows), 'item')}"
         if self.make_tag:
             said += f", and the tag {self.make_tag} made first"
         if self.more:

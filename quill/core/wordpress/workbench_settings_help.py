@@ -23,6 +23,7 @@ import time
 from collections.abc import Callable, Mapping
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 
 __all__ = ["EXPLAINED", "explain", "page_names"]
@@ -128,7 +129,7 @@ EXPLAINED: dict[str, Callable[[Any, Mapping[str, Any], Pages, str], str]] = {
     "page_on_front": _front,
     "page_for_posts": _posts,
     "posts_per_page": lambda v, _s, _p, _u: (
-        f"{v}: the posts page and archives show {v} posts, then a link to older ones."
+        f"{v}: the posts page and archives show {plural(v, 'post')}, then a link to older ones."
     ),
     "default_comment_status": _open("comments"),
     "default_ping_status": _open("pingbacks from other blogs"),

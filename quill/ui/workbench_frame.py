@@ -29,6 +29,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+from quill.core.counted import plural
 from quill.core.workbench.actions import ActionRow, ActionTable
 from quill.core.workbench.filters import Query, describe, matches_words, parse
 from quill.core.workbench.list_place import landing_index, same_cells
@@ -122,6 +123,8 @@ class WorkbenchFrame(
         self.forward: list[NodeRef] = []
         self.current: NodeRef | None = None
         self._generation = 0
+        self._report_for = -1  # the load whose end is said (reload report=True)
+        self._arrived_for = -1  # a node just opened: its emptiness is said
         self._items: dict[NodeRef, Any] = {}
         self._columns: tuple[str, ...] = ()
         self._navigating = False
@@ -345,7 +348,7 @@ class WorkbenchFrame(
             self.loading = False
             self.status.refresh()
             return
-        self.reload()
+        self.reload(arrived=True)
 
     def back(self) -> None:
         if not self.history:
@@ -414,7 +417,15 @@ class WorkbenchFrame(
         for index, name in enumerate(self._columns or ("name",)):
             self.list.InsertColumn(index, name.replace("_", " ").capitalize())
 
-    def reload(self) -> None:
+    def reload(self, *, report: bool = False, arrived: bool = False) -> None:
+        """Load the current node again; *report* says how it ended when it ends.
+
+        Refresh, Load More, Load All and a filter the service answers all start
+        something the person waits for, so they are told when it is over: how many
+        rows, or why the list is empty. A reload after another action does not
+        report, because that action already said its own outcome. *arrived* is a
+        node just opened: only an empty answer is said, since nothing else would.
+        """
         ref = self.current
         if ref is None:
             return
@@ -423,6 +434,8 @@ class WorkbenchFrame(
             return
         self._generation += 1
         generation, query = self._generation, self.query
+        self._report_for = generation if report else -1
+        self._arrived_for = generation if arrived else -1
         self.loading = True
         self.status.refresh()
         self._run_background(
@@ -441,6 +454,20 @@ class WorkbenchFrame(
         self.loaded_at = time.strftime("%H:%M")
         self._loaded = list(rows)
         self._fill_list()
+        if self._report_for == generation:
+            self._report_for = -1
+            self._say(self.loaded_words())
+        elif self._arrived_for == generation and not self.rows and self.current is not None:
+            self._say("No rows here.")  # a list arrived empty while focus was elsewhere
+
+    def loaded_words(self) -> str:
+        """How a reported load ended: the count and any limit, or why it is empty."""
+        if not self.rows:
+            return self.empty_words() or "No rows here."
+        said = f"{plural(len(self.rows), 'row')} shown."
+        cut = getattr(self.provider, "cut_for", None)
+        more = str(cut(self.current) or "") if callable(cut) and self.current is not None else ""
+        return f"{said} {more}".strip()
 
     def _load_failed(self, generation: int, node: NodeSpec, error: BaseException) -> None:
         if generation != self._generation:
@@ -495,10 +522,11 @@ class WorkbenchFrame(
         self.query = parse(self.filter.GetValue())
         remote = self.current is not None and self.provider.remote_words(self.node(self.current))
         if self.query.conditions != before.conditions or (remote and self.query != before):
-            self.reload()
+            self._say("Filtering.")  # said first: an answer can come back at once
+            self.reload(report=True)
         else:
             self._fill_list()
-        self._say(f"{len(self.rows)} shown." if not self.loading else "Filtering.")
+            self._say(f"{plural(len(self.rows), 'row')} shown.")
 
     def clear_filter(self) -> None:
         self.filter.ChangeValue("")

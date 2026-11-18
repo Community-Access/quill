@@ -29,6 +29,7 @@ from copy import deepcopy
 from dataclasses import replace
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.forms import model as M
 from quill.core.forms import qaf_site
 from quill.core.wordpress import gravity_build as gb
@@ -463,7 +464,8 @@ class WorkbenchGravityBuildCommands:
                 self.show_modal,
                 title="Copy Old Entries into QUILL Accessible Forms",
                 summary=(
-                    f"Copy {len(plan.copies)} entries from {plan.source_title} into {target} on "
+                    f"Copy {plural(len(plan.copies), 'entry', 'entries')} "
+                    f"from {plan.source_title} into {target} on "
                     f"{site}? The Gravity Forms entries stay as they are. Ctrl+Z moves the copies "
                     "to QUILL Accessible Forms' Trash."
                 ),
@@ -478,7 +480,10 @@ class WorkbenchGravityBuildCommands:
                 said = (
                     outcomes[0].words
                     if outcomes and not made and len(outcomes) == 1 and not outcomes[0].ok
-                    else f"Copied {good} of {len(plan.copies)} entries into {target} on {site}."
+                    else (
+                        f"Copied {good} of {plural(len(plan.copies), 'entry', 'entries')} "
+                        f"into {target} on {site}."
+                    )
                 )
                 self.say(said)
                 if made:

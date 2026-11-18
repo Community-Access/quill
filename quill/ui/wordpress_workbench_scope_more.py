@@ -25,6 +25,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import workbench_by_name as bn
 from quill.core.wordpress import workbench_by_name_blocks as bb
 from quill.core.wordpress.workbench_across_more import (
@@ -215,7 +216,8 @@ class WorkbenchScopeMoreCommands:
             if not found:
                 self.say(f"No page the scan read on {site} uses a block from {spaces}.")
                 return
-            said = f"{len(found)} pages on {site} use blocks from {spaces}."
+            verb = "uses" if len(found) == 1 else "use"
+            said = f"{plural(len(found), 'page')} on {site} {verb} blocks from {spaces}."
             self.say(said)
             dlg.show_report(
                 self.parent,
@@ -307,7 +309,8 @@ class WorkbenchScopeMoreCommands:
                 self.show_modal,
                 title=f"Merge {row.key} Everywhere",
                 summary=(
-                    f"On {len(sources)} sites, {len(edits)} posts move to {target} and {row.key} "
+                    f"On {plural(len(sources), 'site')}, {plural(len(edits), 'post')} "
+                    f"{'moves' if len(edits) == 1 else 'move'} to {target} and {row.key} "
                     "is deleted. A site where any post does not move keeps the old term. This "
                     "cannot be undone."
                 ),

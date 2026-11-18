@@ -25,6 +25,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
 
+from quill.core.counted import plural
 from quill.core.wordpress import query as wq
 from quill.core.wordpress import site_taxonomies as tx
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
@@ -172,4 +173,4 @@ def describe_scope(remote: bool, loaded: int) -> str:
     """What the filter reached, for the status bar: the site, or the rows here."""
     if remote:
         return "Filtered on the site"
-    return f"Filtered on this computer, {loaded} rows loaded"
+    return f"Filtered on this computer, {plural(loaded, 'row')} loaded"

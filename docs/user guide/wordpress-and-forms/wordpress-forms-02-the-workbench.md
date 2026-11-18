@@ -112,6 +112,11 @@ By...** (`Ctrl+Alt+G`) makes a small branch for each value of a column, such
 as one for each author. **View > Refresh** (`F5`) reads the list again from
 the site.
 
+Each of these tells you when it is done: how many rows are shown, and
+whether the site has more, or why the list is empty. A filter the site
+answers says "Filtering" first and the count when the answer comes. A list
+that opens empty says so too, so you are not left listening to silence.
+
 You can select several rows at once, the way you would in any Windows list.
 Most commands then act on all of them, and tell you how each one went.
 

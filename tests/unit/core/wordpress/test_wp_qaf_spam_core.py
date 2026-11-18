@@ -90,7 +90,7 @@ def test_the_spam_page_reads_every_part_of_qafs_state() -> None:
     assert lines[4] == (
         "Questions are asked only when the checks are unsure, using common-sense questions; "
         "2 are the site's own; Send Anyway is offered after 3 wrong answers. "
-        "1 forms choose their own."
+        "1 form chooses its own."
     )
     assert lines[5] == (
         "This week (2026-W46): 5 asked, 3 answered, 2 answered wrongly, 1 sent anyway."

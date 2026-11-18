@@ -27,6 +27,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import replace
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import site_taxonomies as tx
 from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.field_plugins import (
@@ -397,7 +398,7 @@ class WorkbenchSheetCommands:
         values = merge_values([values_for(r) for r in rows])
         for key in ("add_categories", "remove_categories", "add_tags", "remove_tags"):
             values[key] = ()
-        title = f"{len(rows)} items Properties - {rows[0].site}"
+        title = f"{plural(len(rows), 'item')} Properties - {rows[0].site}"
 
         def on_save(state: SheetState) -> None:
             self._send_batch(sheet, rows, state)
@@ -443,7 +444,7 @@ class WorkbenchSheetCommands:
             self.parent,
             self.show_modal,
             title="Change Several",
-            message=f"Change {len(rows)} items on {site}: {said}?\n{listing}{more}",
+            message=f"Change {plural(len(rows), 'item')} on {site}: {said}?\n{listing}{more}",
             yes_label="Change Them",
         ):
             return

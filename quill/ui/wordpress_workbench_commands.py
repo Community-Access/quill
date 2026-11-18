@@ -25,6 +25,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import comments as wc
 from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.workbench_edit import (
@@ -378,7 +379,11 @@ class WorkbenchRowCommands(
         def done(answer: tuple[list[WbRow], list[str]]) -> None:
             changed, failed = answer
             done_count = len(rows) - len(failed)
-            amount = _count(rows, "item") if not failed else f"{done_count} of {len(rows)} items"
+            amount = (
+                _count(rows, "item")
+                if not failed
+                else f"{done_count} of {plural(len(rows), 'item')}"
+            )
             if status == "approve" and all(r.status == "spam" for r in rows):
                 said = f"Not spam: {amount} on {site}, and the site was told."
             else:

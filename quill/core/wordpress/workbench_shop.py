@@ -29,6 +29,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import episode as ep
 from quill.core.wordpress import site_types as stypes
 from quill.core.wordpress.api import WordPressApiError
@@ -216,7 +217,8 @@ def load_episodes(ctx: Any, query: Mapping[str, object] | None = None) -> list[W
     if not episodes and not query:
         raise WordPressApiError(
             f"{ctx.name} has no podcast here: no content type for a podcast or its episodes in "
-            f"its REST index, and none of its newest {len(posts)} posts carries an episode's "
+            f"its REST index, and none of its newest "
+            f"{plural(len(posts), 'post')} carries an episode's "
             "player. QUILL Cast's Episode > Post This Episode to WordPress makes one."
         )
     return episodes

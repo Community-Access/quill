@@ -22,6 +22,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import menu_item_add as mia
 from quill.core.wordpress import navigation as nav
 from quill.core.wordpress.workbench_rows import WbRow
@@ -217,7 +218,7 @@ class WorkbenchMenuItemCommands:
             f"Where: {under}, {after}, {place + 1} of {len(siblings) + 1}.",
         ]
         if moving:
-            lines.append(f"The {moving} items after it there move down one.")
+            lines.append(f"The {plural(moving, 'item')} after it there move down one.")
         if not wdlg.ask_preview(
             self.parent,
             self.show_modal,

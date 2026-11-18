@@ -18,6 +18,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.wordpress import workbench_by_name as bn
 from quill.core.wordpress.workbench_across import kind_rows
 from quill.core.wordpress.workbench_permissions import refusal
@@ -139,7 +140,7 @@ class WorkbenchByNameCommands:
             self.parent,
             self.show_modal,
             title=title,
-            summary=f"{summary} {len(edits)} changes on {row.site}.{final}"
+            summary=f"{summary} {plural(len(edits), 'change')} on {row.site}.{final}"
             + (f" {note}" if note else ""),
             lines=lines,
             yes=title.removesuffix("..."),
@@ -275,7 +276,8 @@ class WorkbenchByNameCommands:
             self._bn_send(
                 row,
                 "Split...",
-                f"{len(ids)} items move to the new term {name}.",
+                f"{plural(len(ids), 'item')} "
+                f"{'moves' if len(ids) == 1 else 'move'} to the new term {name}.",
                 preview,
                 prepare=prepare,
                 undo_extra=remove_new,
@@ -292,7 +294,10 @@ class WorkbenchByNameCommands:
             if not new or new == value:
                 return
             self._bn_send(
-                row, "Split...", f"{len(ids)} items change.", bn.plan_field(scan, row.key, new, ids)
+                row,
+                "Split...",
+                f"{plural(len(ids), 'item')} {'changes' if len(ids) == 1 else 'change'}.",
+                bn.plan_field(scan, row.key, new, ids),
             )
             return
         items = [raw for raw in scan.items if str(raw.get("author", "")) == row.key]
@@ -304,7 +309,13 @@ class WorkbenchByNameCommands:
         if index is None:
             return
         edits = bn.plan_author(scan, int(row.key), people[index][0], ids)
-        self._bn_send(row, "Split...", f"{len(ids)} items go to {people[index][1]}.", edits)
+        self._bn_send(
+            row,
+            "Split...",
+            f"{plural(len(ids), 'item')} "
+            f"{'goes' if len(ids) == 1 else 'go'} to {people[index][1]}.",
+            edits,
+        )
 
     def do_merge_value(self, _ref: Any, row: WbRow | None) -> None:
         row = self._bn_row(row, "merge")

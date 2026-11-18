@@ -74,7 +74,7 @@ def test_every_kind_has_its_own_rows_with_where_it_is_used() -> None:
     assert values["terms"]["category:5"].cell("used") == "12 posts"
     assert values["fields"]["venue: Main Hall"].cell("count") == "2"
     assert "1 publish" in values["authors"]["3"].cell("used")
-    assert values["media_usage"]["logo.png"].cell("used") == "used on 1 pages"
+    assert values["media_usage"]["logo.png"].cell("used") == "used on 1 page"
     assert values["media_usage"]["big.mp3"].cell("used") == "not used anywhere"
     assert "Footer" in values["patterns"]
     assert list(values["links"]).count("https://old.example.org") == 1
