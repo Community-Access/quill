@@ -1386,6 +1386,19 @@ href="mailto:support@community-access.org">support@community-access.org</a>.
 Nothing is sent until you send it from your own email.</td>
 </tr>
 <tr>
+<td>People and Organizations (<code>:search_people</code>)</td>
+<td>search</td>
+<td>Search People and Organizations: accounts whose name or login
+matches the filter box, such as jeff or type:org location:Tucson. Enter
+opens one.</td>
+</tr>
+<tr>
+<td>Topics (<code>:search_topics</code>)</td>
+<td>search</td>
+<td>Search Topics: GitHub topics matching the filter box, with what each
+is about. Add one to a repository on its Properties.</td>
+</tr>
+<tr>
 <td>My Codespaces (<code>:my_codespaces</code>)</td>
 <td>repositories</td>
 <td>My Codespaces: every codespace of yours. Start, Stop, Change
@@ -1458,6 +1471,24 @@ for.</td>
 <td>Gists I Starred (<code>:my_starred_gists</code>)</td>
 <td>gists</td>
 <td>Gists I Starred: gists you starred, newest first.</td>
+</tr>
+<tr>
+<td>Licences (<code>:licenses</code>)</td>
+<td>repositories</td>
+<td>Licences: the open source licences GitHub offers a new
+repository.</td>
+</tr>
+<tr>
+<td>.gitignore Templates (<code>:gitignore_templates</code>)</td>
+<td>repositories</td>
+<td>.gitignore Templates: lists of files to leave out, offered to a new
+repository.</td>
+</tr>
+<tr>
+<td>Codes of Conduct (<code>:codes_of_conduct</code>)</td>
+<td>repositories</td>
+<td>Codes of Conduct: the codes of conduct GitHub offers a
+repository.</td>
 </tr>
 <tr>
 <td>owner/name (<code>repository:repository</code>)</td>
@@ -1925,6 +1956,54 @@ its price.</td>
 <td>person, person</td>
 <td>Packages: this person’s public packages. Show Versions lists each
 one’s versions.</td>
+</tr>
+<tr>
+<td>SSH Keys (<code>person:person_keys</code>)</td>
+<td>person, person</td>
+<td>SSH Keys: the public keys this person signs in to Git with; useful
+to check one before giving them access to a server.</td>
+</tr>
+<tr>
+<td>GPG Keys (<code>person:person_gpg_keys</code>)</td>
+<td>person, person</td>
+<td>GPG Keys: the keys GitHub checks this person’s signed commits
+against.</td>
+</tr>
+<tr>
+<td>SSH Signing Keys (<code>person:person_signing_keys</code>)</td>
+<td>person, person</td>
+<td>SSH Signing Keys: SSH keys this person signs commits with.</td>
+</tr>
+<tr>
+<td>Social Accounts (<code>person:person_social</code>)</td>
+<td>person, person</td>
+<td>Social Accounts: the links on this person’s profile.</td>
+</tr>
+<tr>
+<td>Gists (<code>person:person_gists</code>)</td>
+<td>person, person</td>
+<td>Gists: this person’s public gists, newest first.</td>
+</tr>
+<tr>
+<td>Starred (<code>person:person_starred</code>)</td>
+<td>person, person</td>
+<td>Starred: the repositories this person starred, newest first.</td>
+</tr>
+<tr>
+<td>Watching (<code>person:person_watching</code>)</td>
+<td>person, person</td>
+<td>Watching: the repositories this person watches.</td>
+</tr>
+<tr>
+<td>Projects (<code>person:person_projects</code>)</td>
+<td>person, person</td>
+<td>Projects: this person’s public Projects.</td>
+</tr>
+<tr>
+<td>People They Follow: Activity (<code>person:person_feed</code>)</td>
+<td>person, person</td>
+<td>People They Follow: Activity: public activity of the accounts this
+person follows.</td>
 </tr>
 <tr>
 <td>organization (<code>organization:organization</code>)</td>
@@ -3514,7 +3593,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 708 yes, 145 planned, 285 not needed and 866 left to
+<p>In all: 722 yes, 129 planned, 287 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -4923,7 +5002,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="activity">Activity</h4>
-<p>34 operations: 23 yes, 7 planned, 1 not needed, 3 left to github.</p>
+<p>34 operations: 26 yes, 3 planned, 2 not needed, 3 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -5108,9 +5187,10 @@ returns.</td>
 <tr>
 <td>List events for the authenticated user</td>
 <td><code>GET /users/{username}/events</code></td>
-<td>Planned</td>
-<td>Needs My Attention &gt; My Activity Feed; Repository &gt; Activity;
-Person &gt; Activity.</td>
+<td>Not needed</td>
+<td>A person’s Activity node reads their public events
+(/users/{username}/events/public); this route differs only for yourself,
+whose whole activity My Activity Feed already reads.</td>
 </tr>
 <tr>
 <td>List organization events for the authenticated user</td>
@@ -5134,21 +5214,20 @@ Person &gt; Activity.</td>
 <tr>
 <td>List public events received by a user</td>
 <td><code>GET /users/{username}/received_events/public</code></td>
-<td>Planned</td>
-<td>Needs My Attention &gt; My Activity Feed; Repository &gt; Activity;
-Person &gt; Activity.</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; People They Follow: Activity</td>
 </tr>
 <tr>
 <td>List repositories starred by a user</td>
 <td><code>GET /users/{username}/starred</code></td>
-<td>Planned</td>
-<td>You page: Star (section 16.7).</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; Starred</td>
 </tr>
 <tr>
 <td>List repositories watched by a user</td>
 <td><code>GET /users/{username}/subscriptions</code></td>
-<td>Planned</td>
-<td>You page: Watch level (section 16.7).</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; Watching</td>
 </tr>
 </tbody>
 </table>
@@ -6761,7 +6840,7 @@ Workbench.</td>
 </tbody>
 </table>
 <h4 id="codes-of-conduct">Codes of conduct</h4>
-<p>2 operations: 1 planned, 1 not needed.</p>
+<p>2 operations: 1 yes, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -6775,8 +6854,8 @@ Workbench.</td>
 <tr>
 <td>Get all codes of conduct</td>
 <td><code>GET /codes_of_conduct</code></td>
-<td>Planned</td>
-<td>Templates node; New Repository’s licence and .gitignore choices</td>
+<td>Yes</td>
+<td>Navigator: Repositories &gt; Codes of Conduct</td>
 </tr>
 <tr>
 <td>Get a code of conduct</td>
@@ -8330,7 +8409,7 @@ Plumbing.</td>
 </tbody>
 </table>
 <h4 id="gists">Gists</h4>
-<p>20 operations: 9 yes, 8 planned, 2 not needed, 1 left to github.</p>
+<p>20 operations: 10 yes, 7 planned, 2 not needed, 1 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -8462,8 +8541,8 @@ reads the list.</td>
 <tr>
 <td>List gists for a user</td>
 <td><code>GET /users/{username}/gists</code></td>
-<td>Planned</td>
-<td>Gists; Gist sheet.</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; Gists</td>
 </tr>
 </tbody>
 </table>
@@ -8563,7 +8642,7 @@ that write files. Plumbing under Commit Multiple Files.</td>
 </tbody>
 </table>
 <h4 id="gitignore">Gitignore</h4>
-<p>2 operations: 1 planned, 1 not needed.</p>
+<p>2 operations: 1 yes, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -8577,8 +8656,8 @@ that write files. Plumbing under Commit Multiple Files.</td>
 <tr>
 <td>Get all gitignore templates</td>
 <td><code>GET /gitignore/templates</code></td>
-<td>Planned</td>
-<td>Templates node; New Repository’s licence and .gitignore choices</td>
+<td>Yes</td>
+<td>Navigator: Repositories &gt; .gitignore Templates</td>
 </tr>
 <tr>
 <td>Get a gitignore template</td>
@@ -9171,7 +9250,7 @@ GitHub’s search.</td>
 </tbody>
 </table>
 <h4 id="licenses">Licenses</h4>
-<p>3 operations: 2 planned, 1 not needed.</p>
+<p>3 operations: 1 yes, 1 planned, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -9185,8 +9264,8 @@ GitHub’s search.</td>
 <tr>
 <td>Get all commonly used licenses</td>
 <td><code>GET /licenses</code></td>
-<td>Planned</td>
-<td>Templates node; New Repository’s licence and .gitignore choices</td>
+<td>Yes</td>
+<td>Navigator: Repositories &gt; Licences</td>
 </tr>
 <tr>
 <td>Get a license</td>
@@ -10760,7 +10839,7 @@ infrastructure, set up once on GitHub’s site.</td>
 </tbody>
 </table>
 <h4 id="projects">Projects</h4>
-<p>26 operations: 6 planned, 20 not needed.</p>
+<p>26 operations: 1 yes, 5 planned, 20 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -10895,9 +10974,8 @@ to one place.</td>
 <tr>
 <td>List projects for user</td>
 <td><code>GET /users/{username}/projectsV2</code></td>
-<td>Planned</td>
-<td>Projects; Project, Project item, field and view sheets (section
-16.6).</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; Projects</td>
 </tr>
 <tr>
 <td>Get project for user</td>
@@ -11961,7 +12039,7 @@ lists.</td>
 </tbody>
 </table>
 <h4 id="search">Search</h4>
-<p>7 operations: 4 yes, 3 planned.</p>
+<p>7 operations: 6 yes, 1 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -11993,8 +12071,9 @@ lists.</td>
 <tr>
 <td>Search labels</td>
 <td><code>GET /search/labels</code></td>
-<td>Planned</td>
-<td>Search branch; filter box (section 17).</td>
+<td>Not needed</td>
+<td>It searches one repository’s labels by that repository’s id; each
+repository’s Labels node already lists and filters them.</td>
 </tr>
 <tr>
 <td>Search repositories</td>
@@ -12005,14 +12084,14 @@ lists.</td>
 <tr>
 <td>Search topics</td>
 <td><code>GET /search/topics</code></td>
-<td>Planned</td>
-<td>Search branch; filter box (section 17).</td>
+<td>Yes</td>
+<td>Navigator: Search &gt; Topics</td>
 </tr>
 <tr>
 <td>Search users</td>
 <td><code>GET /search/users</code></td>
-<td>Planned</td>
-<td>Search branch; filter box (section 17).</td>
+<td>Yes</td>
+<td>Navigator: Search &gt; People and Organizations</td>
 </tr>
 </tbody>
 </table>
@@ -12486,7 +12565,7 @@ slug).</td>
 </tbody>
 </table>
 <h4 id="users">Users</h4>
-<p>55 operations: 39 yes, 5 planned, 4 not needed, 7 left to github.</p>
+<p>55 operations: 43 yes, 1 planned, 4 not needed, 7 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -12811,8 +12890,8 @@ pipeline, not by a person.</td>
 <tr>
 <td>List GPG keys for a user</td>
 <td><code>GET /users/{username}/gpg_keys</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; GPG Keys</td>
 </tr>
 <tr>
 <td>Get contextual information for a user</td>
@@ -12825,20 +12904,20 @@ lists.</td>
 <tr>
 <td>List public keys for a user</td>
 <td><code>GET /users/{username}/keys</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; SSH Keys</td>
 </tr>
 <tr>
 <td>List social accounts for a user</td>
 <td><code>GET /users/{username}/social_accounts</code></td>
-<td>Planned</td>
-<td>Account &gt; Profile and Status: Social accounts.</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; Social Accounts</td>
 </tr>
 <tr>
 <td>List SSH signing keys for a user</td>
 <td><code>GET /users/{username}/ssh_signing_keys</code></td>
-<td>Planned</td>
-<td>Account &gt; Keys.</td>
+<td>Yes</td>
+<td>Navigator: Person &gt; person &gt; SSH Signing Keys</td>
 </tr>
 </tbody>
 </table>

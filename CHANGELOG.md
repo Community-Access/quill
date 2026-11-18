@@ -732,6 +732,16 @@ lines the same way, with the same saved choice.
 With thanks to Kelly Ford, whose GHManage has been the measure for QUILL's
 GitHub work from the start.
 
+### GitHub: a person's public lists, GitHub's templates, and People and Topics search (2026-11-18)
+
+A person's place in the Workbench's tree now lists their SSH keys, GPG keys,
+SSH signing keys, social accounts, gists, starred and watched repositories,
+Projects, and the activity of people they follow. Repositories gains GitHub's
+Licences, .gitignore Templates and Codes of Conduct. Search gains **People and
+Organizations** and **Topics**. 14 more GitHub endpoints are covered and 2
+need nothing; 129 remain planned. The GitHub guide's Workbench chapter has
+them under Search, People and Lists of settings.
+
 ### GitHub: deleting releases, milestones and deployments, and more on rows (2026-11-18)
 
 - **Delete Release...** (keep the tag, or delete it too), **Delete

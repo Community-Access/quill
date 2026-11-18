@@ -112,12 +112,20 @@ def test_every_list_reaches_the_engine_through_explore(monkeypatch: Any) -> None
     )
     provider = SimpleNamespace(token="t", is_authenticated=True)
     for spec in RESOURCE_SPECS:
-        target = {"repository": "o/r", "organization": "acme", "user": ""}[spec.scope]
+        target = {"repository": "o/r", "organization": "acme", "user": "", "person": ""}[spec.scope]
+        person = "octocat" if spec.scope == "person" else ""
         rows = fetch_extra_view(
-            provider, f"res_{spec.key}", repo=target, query="", limit=5, warnings=[]
+            provider,
+            f"res_{spec.key}",
+            repo=target,
+            query="",
+            limit=5,
+            warnings=[],
+            person=person,
         )
         assert rows == []
     assert len(seen) == len(RESOURCE_SPECS)
+    assert ("person_keys", "octocat") in seen
 
 
 class RepoApi(FakeApi):

@@ -594,6 +594,8 @@ Everything below is generated from the tables the window is built from. The GitH
 | Keys (`:help_keys`) | help | Keys: every key in the Workbench, grouped by what it does. |
 | What Changed (`:help_changes`) | help | What Changed: what is new in the GitHub Workbench in this version. |
 | Ask a Person (`:help_ask`) | help | Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email. |
+| People and Organizations (`:search_people`) | search | Search People and Organizations: accounts whose name or login matches the filter box, such as jeff or type:org location:Tucson. Enter opens one. |
+| Topics (`:search_topics`) | search | Search Topics: GitHub topics matching the filter box, with what each is about. Add one to a repository on its Properties. |
 | My Codespaces (`:my_codespaces`) | repositories | My Codespaces: every codespace of yours. Start, Stop, Change Machine, Export to a Branch and Delete are on each row. |
 | My Codespaces Secrets (`:my_codespaces_secrets`) | people | My Codespaces Secrets: values given to your own codespaces. |
 | My Email Addresses (`:my_emails`) | people | My Email Addresses: the addresses on your account. Ctrl+N adds one. |
@@ -607,6 +609,9 @@ Everything below is generated from the tables the window is built from. The GitH
 | My Public Email Addresses (`:my_public_emails`) | people | My Public Email Addresses: the addresses anyone can see on your profile. |
 | Repositories I Watch (`:my_watching`) | people | Repositories I Watch: every repository you get notifications for. |
 | Gists I Starred (`:my_starred_gists`) | gists | Gists I Starred: gists you starred, newest first. |
+| Licences (`:licenses`) | repositories | Licences: the open source licences GitHub offers a new repository. |
+| .gitignore Templates (`:gitignore_templates`) | repositories | .gitignore Templates: lists of files to leave out, offered to a new repository. |
+| Codes of Conduct (`:codes_of_conduct`) | repositories | Codes of Conduct: the codes of conduct GitHub offers a repository. |
 | owner/name (`repository:repository`) | repository | A repository: its issues, pull requests, actions, code, releases and settings, each a node below. Ctrl+Shift+1 to Ctrl+Shift+0 jump to them. |
 | Overview (`repository:overview`) | repository, repository | Overview: the repository's README, description and community profile. |
 | Issues (`repository:issues`) | repository, repository | Issues: this repository's open issues. Ctrl+N files a new one; Delete closes the selected one after asking. |
@@ -686,6 +691,15 @@ Everything below is generated from the tables the window is built from. The GitH
 | Followers (`person:person_followers`) | person, person | Followers: who follows this person. |
 | Following (`person:person_following`) | person, person | Following: who this person follows. |
 | Packages (`person:person_packages`) | person, person | Packages: this person's public packages. Show Versions lists each one's versions. |
+| SSH Keys (`person:person_keys`) | person, person | SSH Keys: the public keys this person signs in to Git with; useful to check one before giving them access to a server. |
+| GPG Keys (`person:person_gpg_keys`) | person, person | GPG Keys: the keys GitHub checks this person's signed commits against. |
+| SSH Signing Keys (`person:person_signing_keys`) | person, person | SSH Signing Keys: SSH keys this person signs commits with. |
+| Social Accounts (`person:person_social`) | person, person | Social Accounts: the links on this person's profile. |
+| Gists (`person:person_gists`) | person, person | Gists: this person's public gists, newest first. |
+| Starred (`person:person_starred`) | person, person | Starred: the repositories this person starred, newest first. |
+| Watching (`person:person_watching`) | person, person | Watching: the repositories this person watches. |
+| Projects (`person:person_projects`) | person, person | Projects: this person's public Projects. |
+| People They Follow: Activity (`person:person_feed`) | person, person | People They Follow: Activity: public activity of the accounts this person follows. |
 | organization (`organization:organization`) | organization | An organization: its repositories. |
 | Repositories (`organization:organization_repositories`) | organization, organization | Repositories: the organization's repositories you can see. |
 | Teams (`organization:organization_teams`) | organization, organization | Teams: the organization's teams, as GitHub nests them. Alt+Enter opens a team's sheet: its members and maintainers, repositories and roles, child teams and code review assignment. |
@@ -1086,7 +1100,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
+In all: 722 yes, 129 planned, 287 not needed and 866 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1309,7 +1323,7 @@ In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
 
 #### Activity
 
-34 operations: 23 yes, 7 planned, 1 not needed, 3 left to github.
+34 operations: 26 yes, 3 planned, 2 not needed, 3 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1340,13 +1354,13 @@ In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
 | Check if a repository is starred by the authenticated user | `GET /user/starred/{owner}/{repo}` | Yes | Item > Properties... (Alt+Enter) |
 | Star a repository for the authenticated user | `PUT /user/starred/{owner}/{repo}` | Yes | Properties (Alt+Enter) on Repository: Starred |
 | List repositories watched by the authenticated user | `GET /user/subscriptions` | Yes | Navigator: People > Repositories I Watch |
-| List events for the authenticated user | `GET /users/{username}/events` | Planned | Needs My Attention > My Activity Feed; Repository > Activity; Person > Activity. |
+| List events for the authenticated user | `GET /users/{username}/events` | Not needed | A person's Activity node reads their public events (/users/{username}/events/public); this route differs only for yourself, whose whole activity My Activity Feed already reads. |
 | List organization events for the authenticated user | `GET /users/{username}/events/orgs/{org}` | Planned | Needs My Attention > My Activity Feed; Repository > Activity; Person > Activity. |
 | List public events for a user | `GET /users/{username}/events/public` | Yes | Navigator: Person > person > Activity |
 | List events received by the authenticated user | `GET /users/{username}/received_events` | Yes | Navigator: Needs My Attention > My Activity Feed |
-| List public events received by a user | `GET /users/{username}/received_events/public` | Planned | Needs My Attention > My Activity Feed; Repository > Activity; Person > Activity. |
-| List repositories starred by a user | `GET /users/{username}/starred` | Planned | You page: Star (section 16.7). |
-| List repositories watched by a user | `GET /users/{username}/subscriptions` | Planned | You page: Watch level (section 16.7). |
+| List public events received by a user | `GET /users/{username}/received_events/public` | Yes | Navigator: Person > person > People They Follow: Activity |
+| List repositories starred by a user | `GET /users/{username}/starred` | Yes | Navigator: Person > person > Starred |
+| List repositories watched by a user | `GET /users/{username}/subscriptions` | Yes | Navigator: Person > person > Watching |
 
 #### Agent automations
 
@@ -1641,11 +1655,11 @@ In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
 
 #### Codes of conduct
 
-2 operations: 1 planned, 1 not needed.
+2 operations: 1 yes, 1 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
-| Get all codes of conduct | `GET /codes_of_conduct` | Planned | Templates node; New Repository's licence and .gitignore choices |
+| Get all codes of conduct | `GET /codes_of_conduct` | Yes | Navigator: Repositories > Codes of Conduct |
 | Get a code of conduct | `GET /codes_of_conduct/{key}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 
 #### Codespaces
@@ -1931,7 +1945,7 @@ In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
 
 #### Gists
 
-20 operations: 9 yes, 8 planned, 2 not needed, 1 left to github.
+20 operations: 10 yes, 7 planned, 2 not needed, 1 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1954,7 +1968,7 @@ In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
 | Check if a gist is starred | `GET /gists/{gist_id}/star` | Yes | context menu > Star or Unstar |
 | Star a gist | `PUT /gists/{gist_id}/star` | Yes | context menu > Star or Unstar |
 | Get a gist revision | `GET /gists/{gist_id}/{sha}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| List gists for a user | `GET /users/{username}/gists` | Planned | Gists; Gist sheet. |
+| List gists for a user | `GET /users/{username}/gists` | Yes | Navigator: Person > person > Gists |
 
 #### Git database
 
@@ -1978,11 +1992,11 @@ In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
 
 #### Gitignore
 
-2 operations: 1 planned, 1 not needed.
+2 operations: 1 yes, 1 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
-| Get all gitignore templates | `GET /gitignore/templates` | Planned | Templates node; New Repository's licence and .gitignore choices |
+| Get all gitignore templates | `GET /gitignore/templates` | Yes | Navigator: Repositories > .gitignore Templates |
 | Get a gitignore template | `GET /gitignore/templates/{name}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 
 #### Interactions
@@ -2083,11 +2097,11 @@ In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
 
 #### Licenses
 
-3 operations: 2 planned, 1 not needed.
+3 operations: 1 yes, 1 planned, 1 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
-| Get all commonly used licenses | `GET /licenses` | Planned | Templates node; New Repository's licence and .gitignore choices |
+| Get all commonly used licenses | `GET /licenses` | Yes | Navigator: Repositories > Licences |
 | Get a license | `GET /licenses/{license}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Get the license for a repository | `GET /repos/{owner}/{repo}/license` | Planned | Templates node; New Repository's licence and .gitignore choices |
 
@@ -2362,7 +2376,7 @@ In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
 
 #### Projects
 
-26 operations: 6 planned, 20 not needed.
+26 operations: 1 yes, 5 planned, 20 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2381,7 +2395,7 @@ In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
 | List items for an organization project view | `GET /orgs/{org}/projectsV2/{project_number}/views/{view_number}/items` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
 | Create draft item for user owned project | `POST /user/{user_id}/projectsV2/{project_number}/drafts` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
 | Create a view for a user-owned project | `POST /users/{user_id}/projectsV2/{project_number}/views` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
-| List projects for user | `GET /users/{username}/projectsV2` | Planned | Projects; Project, Project item, field and view sheets (section 16.6). |
+| List projects for user | `GET /users/{username}/projectsV2` | Yes | Navigator: Person > person > Projects |
 | Get project for user | `GET /users/{username}/projectsV2/{project_number}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | List project fields for user | `GET /users/{username}/projectsV2/{project_number}/fields` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
 | Add field to user owned project | `POST /users/{username}/projectsV2/{project_number}/fields` | Not needed | The Workbench does this through GitHub's GraphQL API (quill/core/github/projects.py and project_admin.py), which covers the same project, item and field; a REST route for it would be a second way to one place. |
@@ -2572,17 +2586,17 @@ In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
 
 #### Search
 
-7 operations: 4 yes, 3 planned.
+7 operations: 6 yes, 1 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | Search code | `GET /search/code` | Yes | Navigator: Search > Code |
 | Search commits | `GET /search/commits` | Yes | Navigator: Search > Commits |
 | Search issues and pull requests | `GET /search/issues` | Yes | Navigator: Search > Issues and Pull Requests |
-| Search labels | `GET /search/labels` | Planned | Search branch; filter box (section 17). |
+| Search labels | `GET /search/labels` | Not needed | It searches one repository's labels by that repository's id; each repository's Labels node already lists and filters them. |
 | Search repositories | `GET /search/repositories` | Yes | Navigator: Search > Repositories |
-| Search topics | `GET /search/topics` | Planned | Search branch; filter box (section 17). |
-| Search users | `GET /search/users` | Planned | Search branch; filter box (section 17). |
+| Search topics | `GET /search/topics` | Yes | Navigator: Search > Topics |
+| Search users | `GET /search/users` | Yes | Navigator: Search > People and Organizations |
 
 #### Secret scanning
 
@@ -2670,7 +2684,7 @@ In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
 
 #### Users
 
-55 operations: 39 yes, 5 planned, 4 not needed, 7 left to github.
+55 operations: 43 yes, 1 planned, 4 not needed, 7 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2724,11 +2738,11 @@ In all: 708 yes, 145 planned, 285 not needed and 866 left to GitHub.
 | List followers of a user | `GET /users/{username}/followers` | Yes | Navigator: Person > person > Followers |
 | List the people a user follows | `GET /users/{username}/following` | Yes | Navigator: Person > person > Following |
 | Check if a user follows another user | `GET /users/{username}/following/{target_user}` | Yes | Properties (Alt+Enter) on Person |
-| List GPG keys for a user | `GET /users/{username}/gpg_keys` | Planned | Account > Keys. |
+| List GPG keys for a user | `GET /users/{username}/gpg_keys` | Yes | Navigator: Person > person > GPG Keys |
 | Get contextual information for a user | `GET /users/{username}/hovercard` | Left to GitHub | Lists every repository, user, organization, gist or event on GitHub; a person works with their own and those they follow, which the Workbench lists. |
-| List public keys for a user | `GET /users/{username}/keys` | Planned | Account > Keys. |
-| List social accounts for a user | `GET /users/{username}/social_accounts` | Planned | Account > Profile and Status: Social accounts. |
-| List SSH signing keys for a user | `GET /users/{username}/ssh_signing_keys` | Planned | Account > Keys. |
+| List public keys for a user | `GET /users/{username}/keys` | Yes | Navigator: Person > person > SSH Keys |
+| List social accounts for a user | `GET /users/{username}/social_accounts` | Yes | Navigator: Person > person > Social Accounts |
+| List SSH signing keys for a user | `GET /users/{username}/ssh_signing_keys` | Yes | Navigator: Person > person > SSH Signing Keys |
 
 ### GraphQL mutations, by category
 

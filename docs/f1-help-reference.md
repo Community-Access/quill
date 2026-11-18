@@ -2586,6 +2586,10 @@ Control coverage: 384 audited sites (384 helped).
 
 **Ask a Person.** Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email.
 
+**People and Organizations.** Search People and Organizations: accounts whose name or login matches the filter box, such as jeff or type:org location:Tucson. Enter opens one.
+
+**Topics.** Search Topics: GitHub topics matching the filter box, with what each is about. Add one to a repository on its Properties.
+
 **My Codespaces.** My Codespaces: every codespace of yours. Start, Stop, Change Machine, Export to a Branch and Delete are on each row.
 
 **My Codespaces Secrets.** My Codespaces Secrets: values given to your own codespaces.
@@ -2611,6 +2615,12 @@ Control coverage: 384 audited sites (384 helped).
 **Repositories I Watch.** Repositories I Watch: every repository you get notifications for.
 
 **Gists I Starred.** Gists I Starred: gists you starred, newest first.
+
+**Licences.** Licences: the open source licences GitHub offers a new repository.
+
+**.gitignore Templates.** .gitignore Templates: lists of files to leave out, offered to a new repository.
+
+**Codes of Conduct.** Codes of Conduct: the codes of conduct GitHub offers a repository.
 
 **repository: owner/name.** A repository: its issues, pull requests, actions, code, releases and settings, each a node below. Ctrl+Shift+1 to Ctrl+Shift+0 jump to them.
 
@@ -2769,6 +2779,24 @@ Control coverage: 384 audited sites (384 helped).
 **person: Following.** Following: who this person follows.
 
 **person: Packages.** Packages: this person's public packages. Show Versions lists each one's versions.
+
+**person: SSH Keys.** SSH Keys: the public keys this person signs in to Git with; useful to check one before giving them access to a server.
+
+**person: GPG Keys.** GPG Keys: the keys GitHub checks this person's signed commits against.
+
+**person: SSH Signing Keys.** SSH Signing Keys: SSH keys this person signs commits with.
+
+**person: Social Accounts.** Social Accounts: the links on this person's profile.
+
+**person: Gists.** Gists: this person's public gists, newest first.
+
+**person: Starred.** Starred: the repositories this person starred, newest first.
+
+**person: Watching.** Watching: the repositories this person watches.
+
+**person: Projects.** Projects: this person's public Projects.
+
+**person: People They Follow: Activity.** People They Follow: Activity: public activity of the accounts this person follows.
 
 **organization: organization.** An organization: its repositories.
 

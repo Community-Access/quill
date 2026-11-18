@@ -224,11 +224,25 @@ Enter. Plain words narrow the list you are looking at; GitHub's own words, such
 as `is:open author:@me label:bug`, ask GitHub. `Ctrl+8` goes to Saved
 Searches, and `Ctrl+N` in a search keeps it there.
 
+Besides issues, code, commits, advisories and repositories, Search has:
+
+- **People and Organizations:** accounts whose name or login matches, such
+  as `jeff`, or with GitHub's words, `type:org location:Tucson`. Each row
+  says whether it is a person or an organization; Enter opens one.
+- **Topics:** GitHub topics, with what each is about and whether GitHub
+  features it, such as "Accessibility: For everyone (featured)".
+
 ## People, Gists and Projects
 
 `Ctrl+4` goes to People: who you follow and who follows you. Enter on a person
 gives them a place in the tree, with their repositories and activity. Follow
-or Unfollow is on a person's context menu. `Ctrl+6` goes to Projects; each
+or Unfollow is on a person's context menu.
+
+A person's place also lists what GitHub shows of them publicly, read only:
+**SSH Keys**, **GPG Keys** and **SSH Signing Keys** (check one before giving
+them access to a server: "SSH key 4, ending abcdefgh."), **Social Accounts**,
+**Gists**, **Starred**, **Watching**, **Projects**, and **People They Follow:
+Activity**. `Ctrl+6` goes to Projects; each
 repository's own Projects are under it.
 
 ### Profiles
@@ -349,6 +363,10 @@ These were added on 2026-11-18.
   on a row checks which repositories it may reach; QUILL adds and removes them
   one at a time, so a change someone else made meanwhile is kept.
 - **My Public Email Addresses** and **Repositories I Watch:** read only.
+
+**Under Repositories**, three of GitHub's own lists, read only: **Licences**,
+**.gitignore Templates** and **Codes of Conduct**, the choices a new
+repository offers.
 
 **Under an organization:**
 
