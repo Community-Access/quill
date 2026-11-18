@@ -107,6 +107,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}resource_new": ("sign_in", _V),
     f"{_P}resource_edit": ("sign_in", _V),
     f"{_P}resource_repositories": ("sign_in", _V),
+    f"{_P}autofix_alert": ("repo:write+scope:security_events", _V),
+    f"{_P}upload_sarif": ("repo:write+scope:security_events", _V),
     f"{_P}resource_delete": ("sign_in", _D),
     f"{_P}restore_package": ("sign_in+scope:delete:packages", _V),
     f"{_P}new_runner": ("repo:admin", _V),

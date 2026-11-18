@@ -2,6 +2,29 @@
 
 ## 2.0.0
 
+### Copilot Autofix, every place an alert was found, and SARIF uploads (2026-11-18)
+
+Three more things to do with code scanning in the GitHub Workbench, beyond
+dismissing an alert:
+
+- **Copilot Autofix...** on a code scanning alert asks Copilot for a fix, says
+  when one is still being made, and, once it is ready, commits it to the
+  branch you name, with your message if you give one.
+- **Show Every Place** on a code scanning alert opens a window listing each
+  place it was found: the file, the line, the branch, whether it is still
+  open, and GitHub's message.
+- **Ctrl+N in Code Scanning Analyses** uploads a SARIF file, the results file
+  another scanning tool writes. QUILL compresses it as GitHub asks, sends it
+  against the newest commit on the branch you name, and then says whether
+  GitHub has processed it.
+
+Each repository also has **Code Scanning Analyses** (every upload of results,
+with Delete) and **CodeQL Databases** (one per language, with Delete), and
+each organization has **Code Scanning Alerts** across all its repositories.
+Planned GitHub endpoints fall from 517 to 503. Running CodeQL's variant
+analysis across many repositories is left to VS Code and the CodeQL
+command-line tool, which build the query packs it needs.
+
 ### Actions rules, immutable releases and code scanning on Properties (2026-11-18)
 
 **Properties** on a repository has two new pages:

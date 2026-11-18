@@ -2708,6 +2708,10 @@ Control coverage: 365 audited sites (365 helped).
 
 **repository: Issue Types.** Issue Types: the kinds of issue this repository offers, set by its organization.
 
+**repository: Code Scanning Analyses.** Code Scanning Analyses: each upload of results, newest first. Deleting one removes its results; GitHub refuses the last analysis of a tool unless asked.
+
+**repository: CodeQL Databases.** CodeQL Databases: the databases code scanning built, one per language.
+
 **person: person.** A person: their repositories, activity, followers and who they follow.
 
 **person: Profile.** Profile: who this person is, their year of contributions as numbers, and what they pinned.
@@ -2767,6 +2771,8 @@ Control coverage: 365 audited sites (365 helped).
 **organization: Issue Types.** Issue Types: the kinds of issue, such as Bug, the organization's repositories offer.
 
 **organization: Organization Roles.** Organization Roles: the roles that can be given to people and teams.
+
+**organization: Code Scanning Alerts.** Code Scanning Alerts: every repository's code scanning alerts in one list. Open a repository's Alerts to dismiss one.
 
 ### Every menu row
 
@@ -3239,6 +3245,10 @@ Control coverage: 365 audited sites (365 helped).
 **Open Discussion Thread.** Read the whole thread.
 
 **Dismiss or Reopen Alert.** Dismiss with a reason.
+
+**Copilot Autofix.** Ask for a fix, or commit it.
+
+**Show Every Place.** Each place it was found.
 
 **Show Details.** The cache's key, size and last use.
 

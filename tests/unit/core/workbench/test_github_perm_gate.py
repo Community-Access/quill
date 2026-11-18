@@ -108,6 +108,7 @@ def test_every_declared_command_is_a_real_row() -> None:
         "restore_package",  # New Here in a list of packages
         "new_runner",  # New Here in Runners
         "resource_new",  # New Here in every list of the resource engine
+        "upload_sarif",  # New Here in Code Scanning Analyses
     }
     for command_id in COMMAND_REQUIREMENTS:
         verb = command_id.removeprefix("github.workbench.")

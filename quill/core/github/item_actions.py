@@ -377,6 +377,8 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     "security_alert": (
         _default("open", "Open", "The alert's details and where it was found."),
         _a("dismiss_alert", "Dismiss or Reopen Alert...", _W, "push", "Dismiss with a reason."),
+        _a("autofix_alert", "Copilot Autofix...", _W, "push", "Ask for a fix, or commit it."),
+        _a("alert_instances", "Show Every Place", _R, "", "Each place it was found."),
         _OPEN_WEB,
         _PROPERTIES,
     ),
