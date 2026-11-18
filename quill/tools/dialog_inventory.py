@@ -44,7 +44,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from quill.tools.platform_guard import build_parent_map, platform_for_node
-from quill.tools.source_cache import parsed, scope
+from quill.tools.source_cache import parsed, read, scope
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _PACKAGE_ROOT = _REPO_ROOT / "quill"
@@ -194,8 +194,21 @@ class _DialogVisitor(ast.NodeVisitor):
         )
 
 
+#: Every name a surface's call or base class must spell. A module whose text holds
+#: none of them cannot have a surface, so it is not parsed or walked at all: the
+#: scan reads the whole tree, and most modules never mention a dialog.
+_NEEDLES = (*sorted(_NATIVE_WX_DIALOGS), _HARDENED_WX_DIALOG, *sorted(_WEB_HELPERS))
+
+
+def _may_hold_a_surface(path: Path) -> bool:
+    text = read(path)
+    return any(needle in text for needle in _NEEDLES)
+
+
 def scan_module(path: Path) -> list[DialogSurface]:
     """Scan one module for dialog surfaces."""
+    if not _may_hold_a_surface(path):
+        return []
     module = path.relative_to(_REPO_ROOT).as_posix()
     tree = parsed(path)
     visitor = _DialogVisitor(module, build_parent_map(tree))
