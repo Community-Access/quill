@@ -30,6 +30,7 @@ import logging
 import shutil
 import ssl
 import threading
+import time
 import urllib.error
 import urllib.request
 from collections.abc import Callable
@@ -47,6 +48,12 @@ _log = logging.getLogger(__name__)
 
 _TIMEOUT_SECONDS = 20.0
 _CHUNK_BYTES = 65536
+#: How often a download's progress reaches the listener, at most. Every chunk is
+#: 64 KB, so reporting each one sent a 60 MB episode's progress about a thousand
+#: times, and each report is work on the UI thread (the status bar, the manager
+#: window): on a fast line the window stalled until the download ended (Chris
+#: Nova, 2026-11-18). Twice a second is still a live progress readout.
+PROGRESS_INTERVAL_SECONDS = 0.5
 _MAX_CONCURRENT = 3
 
 
@@ -292,7 +299,11 @@ class PodcastDownloadQueue:
         reconnect_enabled: bool = True,
         reconnect_max_attempts: int = 5,
         reconnect_wait_seconds: float = 10.0,
+        progress_interval: float = PROGRESS_INTERVAL_SECONDS,
+        clock: Callable[[], float] = time.monotonic,
     ) -> None:
+        self._progress_interval = max(0.0, progress_interval)
+        self._clock = clock
         self._max_concurrent = max(1, max_concurrent)
         self._on_status_changed = on_status_changed or (lambda _item: None)
         self._on_completed = on_completed or (lambda _item: None)
@@ -525,10 +536,18 @@ class PodcastDownloadQueue:
         return not item._cancel_event.is_set()
 
     def _run_one(self, item: DownloadItem) -> None:
+        last_report = [float("-inf")]
+
         def progress(written: int, total: int) -> None:
             item.bytes_downloaded = written
             item.total_bytes = total
-            self._on_status_changed(item)
+            # The counts stay exact on the item; only the listener is told less
+            # often: at most every progress_interval, and always at the last byte.
+            now = self._clock()
+            finished = bool(total) and written >= total
+            if finished or now - last_report[0] >= self._progress_interval:
+                last_report[0] = now
+                self._on_status_changed(item)
 
         result: DownloadStatus = "failed"
         while True:
