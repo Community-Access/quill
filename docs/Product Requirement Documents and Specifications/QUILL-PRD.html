@@ -29320,6 +29320,13 @@ or Uncheck a Task… and Convert Tasks to Sub-issues… rewrite the body’s
 still matches what was shown.
 <code>quill/core/github/issue_development.py</code>,
 <code>quill/ui/github_workbench_development.py</code>.</p>
+<p><strong>The comment composer (GH-C).</strong> The Workbench’s
+Comment… opens <code>quill/ui/github_comment_composer.py</code>: Insert
+Mention, Insert Reference, Insert Emoji, Insert Saved Reply, a spoken
+Preview and an optional Check before posting, from
+<code>quill/core/github/comment_compose.py</code>. Lookups run on the
+Workbench’s background path; Ctrl+Enter posts; Attach Files explains
+that GitHub has no attachment API.</p>
 <p><strong>Live regression.</strong>
 <code>docs/qa/github-live-run.py</code> exercises every Workbench list,
 sheet and write command against two test repositories, and

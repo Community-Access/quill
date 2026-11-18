@@ -55,13 +55,29 @@ class GitHubWorkbenchWritesMixin:
         if not repository or not number:
             self._say("Select an issue or a pull request first.")
             return
-        body = self._ask_text("Comment", f"Comment on #{number}:", multiline=True)
+        body = self._compose(f"Comment on #{number}", repository, row)
         if not body:
             return
         self._background(
             "post the comment",
             lambda: self.items.create_comment(repository, number, body),
             lambda _result: self._say(f"Comment posted on #{number}."),
+        )
+
+    def _compose(self, title: str, repository: str, row: object) -> str:
+        """The comment composer (GH-C): mentions, references, emoji, saved replies, preview."""
+        from quill.ui.github_comment_composer import compose_comment
+
+        author = str(getattr(row, "author", "") or "")
+        return compose_comment(
+            self.frame.frame,
+            show_modal_dialog,
+            title=title,
+            api=self.github_api(),  # type: ignore[attr-defined]
+            repository=repository,
+            background=self._background,
+            say=self._say,
+            people=[author] if author else [],
         )
 
     def _do_close_reopen(self, ref: Any, row: object) -> None:

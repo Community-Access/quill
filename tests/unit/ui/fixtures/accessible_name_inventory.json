@@ -445,6 +445,8 @@
   "quill/ui/github_artifacts_dialog.py::ArtifactsDialog.__init__::wx.ListCtrl": "named",
   "quill/ui/github_clone.py::CloneRepositoryDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/github_clone.py::CloneRepositoryDialog.__init__::wx.TextCtrl#2": "named",
+  "quill/ui/github_comment_composer.py::CommentComposer.__init__::wx.TextCtrl": "modal-hook",
+  "quill/ui/github_comment_composer.py::CommentComposer.__init__::wx.TextCtrl#2": "modal-hook",
   "quill/ui/github_commit_comments_dialog.py::GitHubCommitCommentsDialog.__init__::wx.ListBox": "named",
   "quill/ui/github_commit_comments_dialog.py::GitHubCommitCommentsDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/github_commit_comments_dialog.py::GitHubCommitCommentsDialog.__init__::wx.TextCtrl#2": "named",

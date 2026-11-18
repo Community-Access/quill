@@ -1687,7 +1687,8 @@ Branch for Issue… (next to Start in Local Worktree)</td>
 </tr>
 <tr>
 <td>Saved replies</td>
-<td>Roadmap GX05 and GX12, not built</td>
+<td><strong>Inserting built 2026-11-17</strong> (the comment composer’s
+Insert Saved Reply); managing them stays on GitHub</td>
 <td>Item &gt; Insert Saved Reply in every comment box; Tools &gt;
 Workbench Options &gt; Saved Replies</td>
 </tr>
@@ -3030,27 +3031,46 @@ commits, or the file has uncommitted changes.</p>
 <h3 id="224-reading-github-like-a-document">22.4 Reading GitHub like a
 document</h3>
 <ul>
-<li><strong>Read as Document</strong> (Item menu) opens an issue, pull
-request or discussion thread as a read-only document in the editor: one
-heading per comment (“kellylford, 9 November, 14:05”), quotes as quotes,
-code as code, so heading navigation, find, Read Aloud, braille and every
-reading tool QUILL has work on a GitHub conversation. Export it to Word,
-EPUB or DAISY to read later or offline.</li>
-<li><strong>Comment boxes are editors.</strong> Mentions
+<li><p><strong>Read as Document</strong> (Item menu) opens an issue,
+pull request or discussion thread as a read-only document in the editor:
+one heading per comment (“kellylford, 9 November, 14:05”), quotes as
+quotes, code as code, so heading navigation, find, Read Aloud, braille
+and every reading tool QUILL has work on a GitHub conversation. Export
+it to Word, EPUB or DAISY to read later or offline.</p></li>
+<li><p><strong>Comment boxes are editors.</strong> Mentions
 (<code>@</code>), references (<code>#</code>) and emoji (<code>:</code>)
 complete as you type; Markdown preview reads aloud; saved replies
-insert; attachments upload.</li>
-<li><strong>What you post is accessible.</strong> Before a comment,
+insert; attachments upload.</p></li>
+<li><p><strong>What you post is accessible.</strong> Before a comment,
 issue, pull request or release posts, the Workbench checks it as QUILL
 checks documents: an image with no alt text (and an offer to describe it
 with AI), headings out of order, link text like “here”, a table with no
-header row. It offers, never blocks.</li>
-<li><strong>Pictures, diagrams and math in issues</strong> are read the
-way QUILL reads them in Markdown pages: Mermaid diagrams as their
-accessible text, math as speech, and images described on request.</li>
-<li><strong>Braille-shaped rows.</strong> A Workbench Options choice
+header row. It offers, never blocks.</p>
+<p><em>Built 2026-11-17 for comments, as the comment composer:</em> the
+Workbench’s Comment… opens
+<code>quill/ui/github_comment_composer.py</code> over
+<code>quill/core/github/comment_compose.py</code>. Insert Mention (the
+conversation’s people, then <code>GET /repos/{r}/assignees</code>),
+Insert Reference (search by title words, or a number), Insert Emoji
+(QUILL’s emoji list), Insert Saved Reply (GraphQL
+<code>viewer.savedReplies</code>), a spoken Preview that says each
+line’s kind, what images and links stand for, who will be notified and
+what is referred to, and an optional Check before posting (images
+without descriptions, vague links, skipped heading levels, long
+capitals, emoji-only comments). Two deliberate departures: mentions and
+references are chosen from lists, not completed as you type, because a
+list is announced and a completion popup in a multi-line box is not
+reliably; and attachments are explained, not offered, because GitHub has
+no API to attach a file. Not yet: the AI image description, the
+table-header check, and the same composer for review replies, discussion
+replies, line comments, issues, pull requests and releases.</p></li>
+<li><p><strong>Pictures, diagrams and math in issues</strong> are read
+the way QUILL reads them in Markdown pages: Mermaid diagrams as their
+accessible text, math as speech, and images described on
+request.</p></li>
+<li><p><strong>Braille-shaped rows.</strong> A Workbench Options choice
 makes list rows short enough for a 40-cell display: “#42 open bug Fix
-crash” instead of the full sentence.</li>
+crash” instead of the full sentence.</p></li>
 </ul>
 <h3 id="225-watches-tell-me-when-it-happens">22.5 Watches: tell me when
 it happens</h3>

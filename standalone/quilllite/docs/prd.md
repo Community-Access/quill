@@ -2754,4 +2754,6 @@ reason (completed, not planned, duplicate of another issue), Create Branch for
 This Issue..., Linked branches on the issue sheet, and Check or Uncheck a
 Task... and Convert Tasks to Sub-issues... (`quill/core/github/issue_development.py`,
 `quill/ui/github_workbench_development.py`). They are Workbench context-menu
-commands, so QUILL Lite has them without rows of its own.
+commands, so QUILL Lite has them without rows of its own. The Workbench's
+Comment... opens the comment composer too
+(`quill/ui/github_comment_composer.py`), the same window in both editors.

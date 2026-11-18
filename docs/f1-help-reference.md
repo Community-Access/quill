@@ -2336,7 +2336,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## GitHub Workbench
 
-Control coverage: 356 audited sites (356 helped).
+Control coverage: 361 audited sites (361 helped).
 
 ### Every window, and what it is for
 
@@ -2355,6 +2355,8 @@ Control coverage: 356 audited sites (356 helped).
 **Code Owners (CODEOWNERS).** Who reviews changes to which paths, and a lookup for who owns a path.
 
 **Columns.** Choose which columns this list shows. Space checks or clears one.
+
+**Comment on.** Write a comment for GitHub. Insert Mention, Insert Reference, Insert Emoji and Insert Saved Reply put what you choose at the cursor; Preview reads the comment as GitHub will show it. Ctrl+Enter or Post sends it, after the check if it is on.
 
 **Configure Branch Protection.** Pick a branch, then protect it with the rules you choose, or clear the protection it already has.
 
@@ -3223,6 +3225,14 @@ Control coverage: 356 audited sites (356 helped).
 - `browse`: Choose the folder the copy goes in.
 - `ok`: Copy the repository into the folder.
 - `cancel`: Close without cloning.
+#### CommentComposer (`quill/ui/github_comment_composer.py`)
+
+- `self`: Write a comment for GitHub. The buttons insert a mention, a reference, an emoji or a saved reply at the cursor; Preview reads it as GitHub will show it. Ctrl+Enter or Post sends it; Escape leaves without sending.
+- `self.box`: The comment, in Markdown. Enter starts a new line; Ctrl+Enter posts it.
+- `self.check`: When on, Post first checks for images without a description, vague links, skipped heading levels, long capitals and emoji-only comments, and asks.
+- `self.preview_box`: The comment as GitHub will show it, one line each, saying what every line is. Press Preview again after a change.
+- `post`: Send the comment to GitHub. Ctrl+Enter in the comment does the same.
+- `cancel`: Leave without sending anything. Escape does the same.
 #### GitHubCommitCommentsDialog (`quill/ui/github_commit_comments_dialog.py`)
 
 - `self._list`: Each comment as its author, date and first line. Tab reads the whole comment; Enter moves there.

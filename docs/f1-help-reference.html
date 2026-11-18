@@ -5689,7 +5689,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="github-workbench">GitHub Workbench</h2>
-<p>Control coverage: 356 audited sites (356 helped).</p>
+<p>Control coverage: 361 audited sites (361 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>Add GitHub Token.</strong> Paste a personal access token you
@@ -5715,6 +5715,10 @@ copy runs in the background and you hear once how it went.</p>
 which paths, and a lookup for who owns a path.</p>
 <p><strong>Columns.</strong> Choose which columns this list shows. Space
 checks or clears one.</p>
+<p><strong>Comment on.</strong> Write a comment for GitHub. Insert
+Mention, Insert Reference, Insert Emoji and Insert Saved Reply put what
+you choose at the cursor; Preview reads the comment as GitHub will show
+it. Ctrl+Enter or Post sends it, after the check if it is on.</p>
 <p><strong>Configure Branch Protection.</strong> Pick a branch, then
 protect it with the rules you choose, or clear the protection it already
 has.</p>
@@ -6680,6 +6684,27 @@ a new folder inside it named after the repository.</li>
 <li><code>browse</code>: Choose the folder the copy goes in.</li>
 <li><code>ok</code>: Copy the repository into the folder.</li>
 <li><code>cancel</code>: Close without cloning.</li>
+</ul>
+<h4
+id="commentcomposer-quilluigithub_comment_composerpy">CommentComposer
+(<code>quill/ui/github_comment_composer.py</code>)</h4>
+<ul>
+<li><code>self</code>: Write a comment for GitHub. The buttons insert a
+mention, a reference, an emoji or a saved reply at the cursor; Preview
+reads it as GitHub will show it. Ctrl+Enter or Post sends it; Escape
+leaves without sending.</li>
+<li><code>self.box</code>: The comment, in Markdown. Enter starts a new
+line; Ctrl+Enter posts it.</li>
+<li><code>self.check</code>: When on, Post first checks for images
+without a description, vague links, skipped heading levels, long
+capitals and emoji-only comments, and asks.</li>
+<li><code>self.preview_box</code>: The comment as GitHub will show it,
+one line each, saying what every line is. Press Preview again after a
+change.</li>
+<li><code>post</code>: Send the comment to GitHub. Ctrl+Enter in the
+comment does the same.</li>
+<li><code>cancel</code>: Leave without sending anything. Escape does the
+same.</li>
 </ul>
 <h4
 id="githubcommitcommentsdialog-quilluigithub_commit_comments_dialogpy">GitHubCommitCommentsDialog
