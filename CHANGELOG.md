@@ -655,7 +655,10 @@ view remembers:
   same way.
 - **GitHub Workbench**: **Line marks** on a pull request's files now has all
   four styles; in the changed-lines style the patch list puts each removed
-  line straight before its replacement. File Differences, Compare Branches
+  line straight before its replacement. **Alt+N** and **Alt+P** (Kelly's
+  keys) or **F8** and **Shift+F8** move from change to change, saying
+  "Change 2 of 5, at new line 41: 1 line removed, 1 added", and which words
+  changed when lines were replaced. File Differences, Compare Branches
   and a local repository's differences mark their lines too.
 
 QUILL Lite's **Compare with Site** is the same shared code, so it marks its

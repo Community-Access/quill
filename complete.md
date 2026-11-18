@@ -12,7 +12,7 @@ For whoever continues this work, person or AI. The running log of every step is 
 
 - **Merged today:** #1887 and #1888 (GitHub Workbench batches). 272 GitHub endpoints are still planned (Part 1.2).
 - **Open:** #1889, Chris Nova's Cast queue fix (branch `cast/queue-advance`). Its size-gate failure is fixed; merge it when CI is green. See Part 5 for what is still unknown.
-- **In progress:** Kelly Ford's diff marks (Part 2), on branch `diff/kelly-marks`. Built and tested; the pull request is the next step.
+- **Done, pending merge:** Kelly Ford's diff marks (Part 2), #1890.
 - **Then:** the EdSharp items (Part 4), then the GitHub API batches in the order of Part 1.2 until planned is 0, then the GitHub documentation pass (1.3).
 - **How to work here:** the commands and gates are in `CLAUDE.md`. Squash-merge with `gh api -X PUT repos/Community-Access/quill/pulls/N/merge -f merge_method=squash`. Log each step to `claude.log` with the time read from a clock, never guessed.
 
@@ -139,10 +139,7 @@ Kelly Ford asked on 2026-11-18 whether QUILL had seen how GHManage and The Chat 
 
 Built on branch `diff/kelly-marks` (2026-11-18): `quill/core/diff_marks.py` (adapted from Kelly's `difftext.py`, MIT notice kept) with the four styles, "!-"/"!+" pairing, "Lines 10 to 15:", file summaries, "blank line" and the punctuation reminder. It is used by Compare Files (a new Mark lines as choice), Compare with File, WordPress Compare with Site, and the Workbench's pull request patch list, File Differences, Compare Branches and local git differences, all through one saved choice. Credited in the code, the changelog, both guides and CONTRIBUTING. QUILL Lite has no compare views, so nothing there to change.
 
-Still to do:
-
-- [ ] A changed pair in the Workbench's patch list also says which words changed (Compare Files already does, through `_word_diff_label`).
-- [ ] Next and previous change in the Workbench's patch list, saying "Change 2 of 5" (Compare Files already says "Difference 2 of 5").
+The Workbench's patch list also moves from change to change (Alt+N and Alt+P, Kelly's keys, or F8 and Shift+F8), saying "Change 2 of 5" and which words changed. Part 2 is complete.
 
 ## Part 3. WordPress: what is still missing
 

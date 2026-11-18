@@ -148,6 +148,58 @@ def render_patch(patch: str, style: str = LINE_MARKS_WORDS) -> str:
     )
 
 
+def change_runs(lines: Sequence[DiffLine]) -> list[tuple[int, int]]:
+    """``(first, last)`` indices of each run of added and removed lines.
+
+    A note ("No newline at end of file") inside a run stays part of it; an
+    unchanged line or a hunk heading ends it. Each run is one "change" for
+    next and previous change (Kelly Ford's "Change 2 of 5" in GHManage).
+    """
+    runs: list[tuple[int, int]] = []
+    start = end = -1
+    for index, line in enumerate(lines):
+        if line.kind in ("added", "removed"):
+            if start < 0:
+                start = index
+            end = index
+        elif line.kind == "note" and start >= 0:
+            continue
+        elif start >= 0:
+            runs.append((start, end))
+            start = -1
+    if start >= 0:
+        runs.append((start, end))
+    return runs
+
+
+def describe_change(
+    lines: Sequence[DiffLine], run: tuple[int, int], number: int, total: int
+) -> str:
+    """ "Change 2 of 5, at new line 12: 1 line removed, 1 added. Changed next
+    Thursday to Friday." -- the words, when a few lines were replaced by as
+    many, from the same word-level difference dictation's review uses."""
+    from quill.core.diffing import spoken_changes
+
+    chunk = [line for line in lines[run[0] : run[1] + 1] if line.kind in ("added", "removed")]
+    removed = [line for line in chunk if line.kind == "removed"]
+    added = [line for line in chunk if line.kind == "added"]
+    where = f"new line {added[0].new_line}" if added else f"old line {removed[0].old_line}"
+    parts = []
+    if removed:
+        parts.append(f"{len(removed)} line{'s' if len(removed) != 1 else ''} removed")
+    if added:
+        parts.append(
+            f"{len(added)}{' line' if not removed else ''}"
+            f"{'s' if not removed and len(added) != 1 else ''} added"
+        )
+    text = f"Change {number} of {total}, at {where}: {', '.join(parts)}."
+    if removed and added and len(removed) == len(added) <= 3:
+        old = "\n".join(line.text for line in removed)
+        new = "\n".join(line.text for line in added)
+        text = f"{text} {spoken_changes(old, new)}"
+    return text
+
+
 @dataclass(frozen=True, slots=True)
 class LineCommentAnchor:
     """Where a review comment goes, in the shape GitHub's REST API takes."""

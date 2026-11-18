@@ -176,6 +176,12 @@ and the title.
   reader says them only when it reads punctuation, and QUILL reminds you of
   that when you choose them. Your choice is kept, and it is the same choice
   Compare Files, Compare with File and WordPress's Compare with Site use.
+- **Next and previous change**: in the patch list, `Alt+N` and `Alt+P` (the
+  keys Kelly Ford's GHManage uses), or `F8` and `Shift+F8` (as in Compare
+  Files), move to the first line of the next or previous change and say
+  where you are: "Change 2 of 5, at new line 41: 1 line removed, 1 added."
+  When a few lines were replaced by as many, it also says which words
+  changed: "Changed Thursday to Friday."
 - **Changed Lines Only** (`Alt+H`), beside it, leaves the unchanged lines
   around each change out of the patch list, so the arrows go from change to
   change. The hunk headings stay, so each change still says where it is. You
