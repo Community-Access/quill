@@ -3268,6 +3268,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **React.** Add or remove a reaction.
 
+**Delete Release.** Delete it, and its tag if you say.
+
 **Compare With Previous.** Compare it with the one before: the previous tag or release, or a commit's parent.
 
 **Compare With Default.** Compare it with the default branch: commits each way, files, any open pull request.
@@ -3279,6 +3281,10 @@ Control coverage: 384 audited sites (384 helped).
 **Commits.** The branch's commits.
 
 **Compare Branches.** Commits ahead and behind, and changed files.
+
+**Merge Into.** Merge it into another branch on GitHub.
+
+**Download Source.** Its files, as a zip or tar.gz.
 
 **Copy Name.** Copy the branch name.
 
@@ -3311,6 +3317,8 @@ Control coverage: 384 audited sites (384 helped).
 **Watch or Unwatch.** Choose how much it notifies you.
 
 **Clone.** Copy it to a folder on this computer.
+
+**Send Repository Dispatch.** Start workflows that listen for repository_dispatch.
 
 **Pin.** Keep it under Repositories > Pinned.
 
@@ -3350,9 +3358,13 @@ Control coverage: 384 audited sites (384 helped).
 
 **Remove Saved Search.** Forget it on this device.
 
+**Delete Deployment.** Only an inactive one.
+
 **Open in Editor.** Open the file in the editor, to read or edit.
 
 **Find Issues in Milestone.** Its issues and pull requests.
+
+**Delete Milestone.** Its issues stay, without it.
 
 **Open Template.** Build or edit it, preview it and save it; a missing file starts from a starter.
 
@@ -3497,6 +3509,10 @@ Control coverage: 384 audited sites (384 helped).
 **Request CVE.** Ask GitHub for a CVE number.
 
 **Ping.** Send it a test message.
+
+**Send Test Push.** A push event, if it listens.
+
+**Turn On or Off.** Stop or start its events.
 
 **Recent Deliveries.** Read and redeliver.
 
