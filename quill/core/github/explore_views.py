@@ -13,6 +13,8 @@ VIEWS: tuple[tuple[str, str], ...] = (
     ("code_search", "Code search"),
     ("commit_search", "Commit search"),
     ("repo_search", "Repository search"),
+    ("user_search", "People search"),
+    ("topic_search", "Topic search"),
     ("my_work", "My Work"),
     ("attention", "Attention queue"),
     ("activity", "My activity feed"),
@@ -100,7 +102,14 @@ REPO_VIEWS = frozenset({
     "merge_queue",
     "runners",
 })
-QUERY_VIEWS = frozenset({"search", "code_search", "commit_search", "repo_search"})
+QUERY_VIEWS = frozenset({
+    "search",
+    "code_search",
+    "commit_search",
+    "repo_search",
+    "user_search",
+    "topic_search",
+})
 """Views that run the query typed in the search box."""
 PERSON_VIEWS = frozenset({
     "person_profile",
@@ -165,7 +174,12 @@ def _resource_views() -> tuple[tuple[tuple[str, str], ...], frozenset[str]]:
     """The resource engine's lists (resource_specs.py), and which need a repository."""
     from quill.core.github.resource_specs import RESOURCE_SPECS
 
-    owner = {"repository": "Repository", "organization": "Organization", "user": "My"}
+    owner = {
+        "repository": "Repository",
+        "organization": "Organization",
+        "user": "My",
+        "person": "Person's",
+    }
     views = tuple(
         (f"res_{spec.key}", f"{owner[spec.scope]} {spec.noun}s") for spec in RESOURCE_SPECS
     )

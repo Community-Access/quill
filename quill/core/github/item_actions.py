@@ -30,6 +30,7 @@ from quill.core.github.item_action_parts import (
     _default,
 )
 from quill.core.github.item_shortcuts import DELETE_COMMANDS, NEW_HERE
+from quill.core.github.quick_tables import QUICK_ROWS
 from quill.core.workbench.actions import ActionRow, ActionTable
 
 __all__ = [
@@ -406,6 +407,10 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     "gist": (
         _default("edit_gist", "Edit Gist...", "Change the gist's files and description."),
         _a("star_gist", "Star or Unstar", _O, "sign_in", "Star it, or take the star away."),
+        _a("gist_comments", "Comments...", help="Read its comments; add, change or delete."),
+        _a("gist_history", "History...", help="Every saved version, with how much changed."),
+        _a("gist_forks", "Forks...", help="Who forked it, and when."),
+        _a("fork_gist", "Fork Gist", _O, "sign_in", "Copy it to your own gists."),
         _COPY_LINK,
         _OPEN_WEB,
         _a("delete_gist", "Delete Gist...", _D, "sign_in", "Delete the gist."),
@@ -565,6 +570,10 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
 }
 
 _ROWS.update(ACCOUNT_ROWS)
+# The quick commands (quill/core/github/quick_tables.py): each goes before Properties.
+for _type, _extra in QUICK_ROWS.items():
+    _have = _ROWS.get(_type, (_PROPERTIES,))
+    _ROWS[_type] = (*_have[:-1], *_extra, _have[-1])
 
 GITHUB_ACTIONS = ActionTable(_ROWS, properties_command=PROPERTIES_COMMAND)
 """Every GitHub row type's menu, checked against the shared rules on import."""

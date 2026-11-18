@@ -224,11 +224,25 @@ Enter. Plain words narrow the list you are looking at; GitHub's own words, such
 as `is:open author:@me label:bug`, ask GitHub. `Ctrl+8` goes to Saved
 Searches, and `Ctrl+N` in a search keeps it there.
 
+Besides issues, code, commits, advisories and repositories, Search has:
+
+- **People and Organizations:** accounts whose name or login matches, such
+  as `jeff`, or with GitHub's words, `type:org location:Tucson`. Each row
+  says whether it is a person or an organization; Enter opens one.
+- **Topics:** GitHub topics, with what each is about and whether GitHub
+  features it, such as "Accessibility: For everyone (featured)".
+
 ## People, Gists and Projects
 
 `Ctrl+4` goes to People: who you follow and who follows you. Enter on a person
 gives them a place in the tree, with their repositories and activity. Follow
-or Unfollow is on a person's context menu. `Ctrl+6` goes to Projects; each
+or Unfollow is on a person's context menu.
+
+A person's place also lists what GitHub shows of them publicly, read only:
+**SSH Keys**, **GPG Keys** and **SSH Signing Keys** (check one before giving
+them access to a server: "SSH key 4, ending abcdefgh."), **Social Accounts**,
+**Gists**, **Starred**, **Watching**, **Projects**, and **People They Follow:
+Activity**. `Ctrl+6` goes to Projects; each
 repository's own Projects are under it.
 
 ### Profiles
@@ -322,6 +336,12 @@ figures are on GitHub's billing page.
 - **Edit Gist** (`Enter` on a gist) reads the gist and opens it in the same
   window. If you change nothing, nothing is sent.
 - **Star or Unstar** is on the context menu.
+- **Comments...** lists the gist's comments, oldest first, with "Add a
+  comment..." at the top; choose one of yours to change or delete it.
+- **History...** lists every saved version, newest first: "2026-11-02 by
+  jeff: 3 lines added, 1 removed."
+- **Forks...** lists who copied it, and **Fork Gist** copies someone else's
+  gist to your own, where you can change it.
 - **Delete Gist...** (`Delete` on a gist) asks first, because a deleted gist,
   its files and its history cannot be brought back.
 - **Gists I Starred**, under Gists, lists the gists you starred, with who
@@ -349,6 +369,10 @@ These were added on 2026-11-18.
   on a row checks which repositories it may reach; QUILL adds and removes them
   one at a time, so a change someone else made meanwhile is kept.
 - **My Public Email Addresses** and **Repositories I Watch:** read only.
+
+**Under Repositories**, three of GitHub's own lists, read only: **Licences**,
+**.gitignore Templates** and **Codes of Conduct**, the choices a new
+repository offers.
 
 **Under an organization:**
 
@@ -636,6 +660,81 @@ it yourself.
 and close an issue; try a command with Dry Run; review and merge a pull
 request; read a failed run; and delete the repository. Each step says what to
 press and what you should hear.
+
+## More commands on rows
+
+Many rows have commands that make one call to GitHub and say what came
+back, or show a longer answer in a window to read and copy. They are on the
+row's context menu (`Shift+F10`, under More when the menu is long) and on
+the Item menu. Each asks before it changes anything, and anything that
+holds a token (a runner's setup or removal commands) goes to the clipboard
+and is never said or shown.
+
+- **A repository:** Languages, License, Star History, Mark Its Notifications
+  Read, Set a Custom Property..., Compare Dependencies... (between two
+  branches, tags or commits, with known vulnerabilities), SBOM Report,
+  Ruleset History..., Secret Scanning History, Fork Workflow Settings and
+  Fork Workflows from Private Repositories....
+- **A commit:** Branches at This Commit, Check Run Details... (a check's
+  summary and every annotation), Re-run a Check Suite..., and the reactions
+  on its comments: Reactions on a Commit Comment..., React to a Commit
+  Comment..., Remove My Reaction from a Commit Comment....
+- **A workflow run:** Read a Step's Log..., one step at a time.
+- **A pull request:** Re-request Review.... **A release:** GitHub's Release
+  Notes..., the notes GitHub writes from the changes since another tag.
+- **A secret scanning alert:** Where It Was Found. **A security advisory:**
+  Advisory Comments, Comment on Advisory..., Edit an Advisory Comment...,
+  Make a Private Fork for the Fix.
+- **Runners:** in a repository's Runners or an organization's, Just-in-Time
+  Runner... (a runner that takes one job) and Is a Runner Version
+  Retiring?...; in an organization's, New Organization Runner...; on a
+  runner, Removal Commands..., and on an organization's runner Add Runner
+  Label... and Remove Runner Label.... **A runner group:** Runners in This
+  Group, Hosted Runners in This Group, Add a Runner to This Group...,
+  Remove a Runner from This Group....
+- **An organization:** Dependabot Repository Access, Give Dependabot a
+  Repository..., Take a Repository from Dependabot..., Dependabot's Default
+  Access..., Make Someone an Outside Collaborator..., Define a Custom
+  Property..., Set Repositories' Custom Property..., New Team..., Accept
+  Membership and My Activity Here.
+- **A team:** Pending Invitations and Delete Team.... **An invitation to an
+  organization:** Teams It Adds To.
+- **A Project:** New View... and Items in a View....
+- **A discussion:** Close Discussion... (resolved, outdated or a duplicate),
+  Reopen Discussion, Delete Discussion..., Upvote, Remove Upvote, Vote in the
+  Poll..., Edit a Comment... and Delete a Comment....
+- **An issue:** Link a Pull Request That Closes It... and Unlink a Pull
+  Request....
+- **An environment:** Pin Environment, Unpin Environment and Move
+  Environment....
+- **A repository or an organization:** Require Sign-off on Web Commits....
+  **An organization:** Follow Organization and Unfollow Organization. **A
+  repository:** Sponsor Links (its FUNDING.yml) and Dependency Manifests.
+- **A Project, inside:** Rename a View..., Delete a View..., Rename a
+  Field..., Add an Issue Field..., Edit a Draft..., Make a Draft an
+  Issue..., Move an Item..., Edit a Status Update..., Delete a Status
+  Update..., Delete a Workflow..., Share the Project..., Link a Team... and
+  Unlink a Team....
+- **Your sponsorships:** Set Up a Sponsors Profile..., New Sponsor Tier...
+  and Patreon Sponsorships...; on a sponsorship, Sponsorship
+  Preferences...; on one of your tiers, Publish Tier and Retire Tier....
+- **Copilot's cloud agent, on a repository:** Start an Agent Task..., Agent
+  Tasks, An Agent Task's Progress..., Automations, New Automation..., Run an
+  Automation..., Rename an Automation..., Delete an Automation..., An
+  Automation's History..., An Automation's Tasks..., Automation Tools and
+  Triggers, Agent Secrets from the Organization and Agent Variables from the
+  Organization. **On a pull request:** Ask Copilot to Review, Agent Merge,
+  Turn On Agent Merge and Turn Off Agent Merge.... **On your profile:** My
+  Agent Tasks and My Automations. These need a Copilot plan with the cloud
+  agent, and GitHub calls them a preview: QUILL sends only what GitHub
+  documents and reads you GitHub's own answer.
+- **Your emails:** Email Visibility.... **Your profile:** Interaction
+  Limits, Limit Interactions... and Lift Interaction Limits.
+
+A few of these use parts of GitHub newer than the description QUILL was
+built against (closing references, a Project's views and issue fields).
+Those first read from GitHub what the change needs, and if GitHub has
+changed it, they send nothing and say to use Open on GitHub instead.
 
 ## Workbench Options
 

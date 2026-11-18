@@ -24,17 +24,27 @@ from typing import Any
 from quill.core.github.explore_models import ExploreRow, GitHubExploreError
 from quill.core.github.rest_transport import GitHubRestError, request_json, rest_failure_message
 
-SEARCH_VIEWS = frozenset({"code_search", "commit_search", "repo_search"})
+SEARCH_VIEWS = frozenset({
+    "code_search",
+    "commit_search",
+    "repo_search",
+    "user_search",
+    "topic_search",
+})
 _TEXT_MATCH = "application/vnd.github.text-match+json"
 _ENDPOINT = {
     "code_search": "/search/code",
     "commit_search": "/search/commits",
     "repo_search": "/search/repositories",
+    "user_search": "/search/users",
+    "topic_search": "/search/topics",
 }
 _WHAT = {
     "code_search": "code",
     "commit_search": "commits",
     "repo_search": "repositories",
+    "user_search": "people and organizations",
+    "topic_search": "topics",
 }
 
 
@@ -150,10 +160,33 @@ def repository_row(item: dict[str, Any]) -> ExploreRow:
     return ExploreRow(label, detail, url, name, "repo", name, _s(item.get("updated_at")))
 
 
+def user_row(item: dict[str, Any]) -> ExploreRow:
+    login = _s(item.get("login"))
+    kind = "an organization" if item.get("type") == "Organization" else "a person"
+    url = _s(item.get("html_url")) or f"https://github.com/{login}"
+    return ExploreRow(f"{login}, {kind}", f"{login}\n{url}", url, "", "person", login)
+
+
+def topic_row(item: dict[str, Any]) -> ExploreRow:
+    name = _s(item.get("name"))
+    about = _s(item.get("short_description") or item.get("description"))
+    shown = _s(item.get("display_name")) or name
+    flags = [
+        w for w, on in (("featured", item.get("featured")), ("curated", item.get("curated"))) if on
+    ]
+    label = f"{shown}: {about}" if about else shown
+    if flags:
+        label += f" ({', '.join(flags)})"
+    url = f"https://github.com/topics/{name}"
+    return ExploreRow(label, f"Topic {name}\n{about}\n{url}", url, "", "result", name)
+
+
 _MAPPERS = {
     "code_search": code_row,
     "commit_search": commit_row,
     "repo_search": repository_row,
+    "user_search": user_row,
+    "topic_search": topic_row,
 }
 
 
@@ -202,5 +235,7 @@ __all__ = [
     "commit_row",
     "matching_line",
     "repository_row",
+    "topic_row",
+    "user_row",
     "run_search",
 ]
