@@ -15,6 +15,38 @@ announcing "Up next" over silence. Every engine reports the end of an episode
 and the queue finds the next one correctly, so if this is not the cause, the
 session log from the next time it happens will show what is.
 
+### A streaming show downloads what you queue (2026-11-18)
+
+**Download Queued Episodes** (on by default) promises that an episode you
+queue is fetched, because you mean to play it. For a show set to stream it
+did nothing: Cast stopped looking before it got to the queue, so a queued
+episode streamed, and so did one you had marked Download by hand. Chris Nova
+found it: he streams by default and wanted only what he queues, including
+episodes Auto-Queue adds, on his disk. Now a streaming show still downloads
+nothing on its own, but it fetches what is in the queue (with the setting
+on) and any episode marked Download. They are fetched the next time the
+show is refreshed.
+
+### Downloads say why they stopped (2026-11-18)
+
+"Download connection dropped; reconnecting" was said for every download
+that stopped, whatever the reason, and Cast tried five more times. Jessica
+Dail heard it again and again on a BrailleNote Evolve, where a nearly full
+drive was the likely cause. Now:
+
+- **A full disk is said aloud:** "The disk is full (120 MB free). Free some
+  space, or delete episodes you have played, then download again." It is not
+  retried, because trying again fills the same disk.
+- **A server that refuses** (an episode not found, or forbidden) is recorded
+  in Recent Problems as that, and not retried. A busy server is still tried
+  again, and so is a dropped connection, which is what the message now
+  means.
+- **The diagnostic log says what happened:** the server's name (never the
+  rest of the address, which can carry a private feed's password), the kind
+  of error, how much had arrived, whether the server let the download carry
+  on from where it stopped, how many downloads were running, and the free
+  space.
+
 ## 2.0.0 -- 2026-10-03
 
 QUILL Cast 2.0. The main window, Find in
