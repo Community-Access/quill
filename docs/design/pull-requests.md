@@ -323,8 +323,9 @@ row's context menu) opens one window for that:
 - **Mark changes** (a check box, kept as a preference) rewrites both fields
   with the differences inline and named in words, "[was: 0.2]" in Before and
   "[now: 0.25]" in After, or as symbols (`{-0.2-}` and `{+0.25+}`) for people
-  who prefer them, using the same Words or Symbols choice as the diff
-  window's Line marks. Off, the fields hold the code exactly.
+  who prefer them, using the diff window's Line marks: the words
+  styles mark in words, the two symbol styles in symbols. Line marks has
+  Kelly Ford's four styles since 2026-11-18 (`quill/core/diff_marks.py`). Off, the fields hold the code exactly.
 - **One column**, a check box, interleaves the two: "Before 14:" then "After
   14:" line by line in a single field, for comparing line against line without
   changing fields.
@@ -658,7 +659,7 @@ preference in section 10.
 9. **Accepting a suggestion**: commit after asking, as GitHub does; collecting
    first is a preference.
 10. **Mark changes**: off by default, so the fields hold the code exactly;
-   Words or Symbols when turned on.
+   in words or symbols, by the Line marks style, when turned on.
 
 ## 15. Progress log
 

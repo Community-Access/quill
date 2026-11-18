@@ -658,7 +658,8 @@ view remembers:
   line straight before its replacement. File Differences, Compare Branches
   and a local repository's differences mark their lines too.
 
-QUILL Lite has no compare views yet, so there is nothing there to change.
+QUILL Lite's **Compare with Site** is the same shared code, so it marks its
+lines the same way, with the same saved choice.
 With thanks to Kelly Ford, whose GHManage has been the measure for QUILL's
 GitHub work from the start.
 

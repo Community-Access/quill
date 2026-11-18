@@ -7407,9 +7407,11 @@ environment.</li>
 id="githubpulldiffcommentsmixin-quilluigithub_pr_diff_commentspy">GitHubPullDiffCommentsMixin
 (<code>quill/ui/github_pr_diff_comments.py</code>)</h4>
 <ul>
-<li><code>self._marks_choice</code>: How patch lines are marked: words
-(Added line, Removed line) or symbols (plus and minus). Symbols need
-your screen reader to read punctuation.</li>
+<li><code>self._marks_choice</code>: How patch lines are marked, in
+Kelly Ford’s four styles: words (Added line), short words (Add), diff
+symbols (plus, minus, equals), or diff symbols with each changed line
+read old then new. Symbols need your screen reader to read punctuation.
+The same choice marks every difference in QUILL.</li>
 <li><code>self._changed_only</code>: Leave out the unchanged lines
 around each change, so the arrows move from change to change. Hunk
 headings stay, so each change still says where it is.</li>

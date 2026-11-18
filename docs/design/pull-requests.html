@@ -699,8 +699,10 @@ difference in Compare Documents.</li>
 rewrites both fields with the differences inline and named in words,
 “[was: 0.2]” in Before and “[now: 0.25]” in After, or as symbols
 (<code>{-0.2-}</code> and <code>{+0.25+}</code>) for people who prefer
-them, using the same Words or Symbols choice as the diff window’s Line
-marks. Off, the fields hold the code exactly.</li>
+them, using the diff window’s Line marks: the words styles mark in
+words, the two symbol styles in symbols. Line marks has Kelly Ford’s
+four styles since 2026-11-18 (<code>quill/core/diff_marks.py</code>).
+Off, the fields hold the code exactly.</li>
 <li><strong>One column</strong>, a check box, interleaves the two:
 “Before 14:” then “After 14:” line by line in a single field, for
 comparing line against line without changing fields.</li>
@@ -1323,7 +1325,8 @@ preference.</li>
 <li><strong>Accepting a suggestion</strong>: commit after asking, as
 GitHub does; collecting first is a preference.</li>
 <li><strong>Mark changes</strong>: off by default, so the fields hold
-the code exactly; Words or Symbols when turned on.</li>
+the code exactly; in words or symbols, by the Line marks style, when
+turned on.</li>
 </ol>
 <h2 id="15-progress-log">15. Progress log</h2>
 <ul>

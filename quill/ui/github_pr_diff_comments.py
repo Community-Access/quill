@@ -59,8 +59,10 @@ class GitHubPullDiffCommentsMixin:
         )
         self._marks_choice.SetName("Line marks")
         self._marks_choice.SetHelpText(
-            "How patch lines are marked: words (Added line, Removed line) or symbols "
-            "(plus and minus). Symbols need your screen reader to read punctuation."
+            "How patch lines are marked, in Kelly Ford's four styles: words (Added line), "
+            "short words (Add), diff symbols (plus, minus, equals), or diff symbols with "
+            "each changed line read old then new. Symbols need your screen reader to read "
+            "punctuation. The same choice marks every difference in QUILL."
         )
         self._marks_choice.SetSelection(LINE_MARK_STYLES.index(self._line_style))
         marks_row.Add(marks_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)

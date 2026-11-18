@@ -3707,7 +3707,7 @@ Control coverage: 365 audited sites (365 helped).
 - `box`: Checked, Approve or Reject applies to this environment.
 #### GitHubPullDiffCommentsMixin (`quill/ui/github_pr_diff_comments.py`)
 
-- `self._marks_choice`: How patch lines are marked: words (Added line, Removed line) or symbols (plus and minus). Symbols need your screen reader to read punctuation.
+- `self._marks_choice`: How patch lines are marked, in Kelly Ford's four styles: words (Added line), short words (Add), diff symbols (plus, minus, equals), or diff symbols with each changed line read old then new. Symbols need your screen reader to read punctuation. The same choice marks every difference in QUILL.
 - `self._changed_only`: Leave out the unchanged lines around each change, so the arrows move from change to change. Hunk headings stay, so each change still says where it is.
 - `self._hide_ws`: Leave out changed lines that differ only in spaces, tabs or blank lines, such as a reindent, so what is left is what really changed.
 - `self._commit_btn`: Review one commit of the pull request at a time, or go back to all of them.

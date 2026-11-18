@@ -292,8 +292,15 @@ page's whole history.
   before is in Previous Versions."
 
 **File > WordPress > Compare with Site** shows the lines that differ between
-your copy and the site's, starting with a count such as "3 lines only on
-Community Radio, 1 only in yours."
+your copy and the site's. It starts with a count, such as "Comparing your copy
+with the copy on Community Radio: 1 line added, 3 removed, in 2 places", then
+gives each change with where it is ("Lines 10 to 15:"). Each line starts with
+a mark: "Removed" is on the site and not in yours, "Added" is yours and not on
+the site, and "Unchanged" is the same in both. The marks follow the style you
+chose for every difference in QUILL (Kelly Ford's four: words, short words,
+diff symbols, or diff symbols with changed lines); in QUILL you choose it in
+Compare Files or in the GitHub Workbench's Line marks, and QUILL Lite uses the
+same saved choice.
 
 ## The Trash
 
