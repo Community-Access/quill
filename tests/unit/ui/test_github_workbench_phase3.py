@@ -190,15 +190,30 @@ def test_comment_posts_through_items_and_says_one_result(bench, monkeypatch) -> 
 
 
 def test_delete_on_an_issue_closes_it_after_asking(bench, monkeypatch) -> None:
+    # Closing an issue asks GitHub's reason (completed, not planned, duplicate):
+    # that question is the asking, and the reason travels with the close.
+    from tests.unit.core.github.test_issue_development import FakeApi
+
+    api = FakeApi()
+    asked: list[str] = []
     monkeypatch.setattr(
-        "quill.ui.github_workbench_actions.GitHubWorkbenchActionsMixin._confirm",
-        lambda _self, *_a: True,
+        "quill.ui.github_workbench_actions.GitHubWorkbenchActionsMixin._choose",
+        lambda _self, title, _prompt, _labels: asked.append(title) or 0,
+    )
+    monkeypatch.setattr(
+        "quill.ui.github_workbench_properties.GitHubWorkbenchPropertiesMixin.github_api",
+        lambda _self: api,
     )
     assert DELETE_COMMANDS["issue"] == "github.workbench.close_reopen"
     _go(bench, NodeRef("repository", "issues", REPO))
     bench.list.Select(0)
     bench._remove_selected()
-    assert bench.items.states == [(REPO, [1], "closed")]
+    assert asked == ["Close #1"]
+    assert (
+        "PATCH",
+        f"/repos/{REPO}/issues/1",
+        {"state": "closed", "state_reason": "completed"},
+    ) in (api.calls)
 
 
 def test_repository_actions_run_the_editors_own_command(bench, monkeypatch) -> None:
