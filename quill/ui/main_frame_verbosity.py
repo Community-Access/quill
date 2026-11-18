@@ -25,6 +25,10 @@ if TYPE_CHECKING:
 __all__ = ["VerbosityCommandsMixin"]
 
 
+#: Two presses closer together than this are one double press.
+_SECOND_PRESS_SECONDS = 0.8
+
+
 class VerbosityCommandsMixin:
     """Verbosity command handlers for the editor shell."""
 
@@ -83,8 +87,86 @@ class VerbosityCommandsMixin:
     # -- status queries -----------------------------------------------------
 
     def verbosity_where_am_i(self) -> None:
-        line, column, total = self._caret_position()
-        self._announce_text(self.verbosity.where_am_i(line=line, column=column, total=total))
+        """Say where the caret is; pressed twice quickly, show it all in a window.
+
+        The second press is EdSharp's: everything Where Am I knows, then every
+        command and its key, in a read-only window to arrow through.
+        """
+        import time
+
+        now = time.monotonic()
+        twice = now - getattr(self, "_where_am_i_at", -10.0) < _SECOND_PRESS_SECONDS
+        self._where_am_i_at = -10.0 if twice else now
+        line, column, total, percent = self._text_position()
+        if line is None:
+            line, column, total = self._caret_position()
+        said = self.verbosity.where_am_i(line=line, column=column, total=total, percent=percent)
+        if twice:
+            self._show_where_am_i_review(said)
+            return
+        self._announce_text(said)
+
+    def _where_am_i_review_text(self, position: str) -> str:
+        """Everything for the second press: the document, then every command."""
+        document = getattr(self, "document", None)
+        lines = [position]
+        name = str(getattr(document, "name", "") or "")
+        if name:
+            lines.append(f"Document: {name}")
+        path = getattr(document, "path", None)
+        if path:
+            lines.append(f"Saved at: {path}")
+        lines.append("Modified" if getattr(document, "modified", False) else "Saved")
+        mirror = getattr(self, "doc_text", None)
+        try:
+            stats = mirror.stats() if mirror is not None else None
+        except Exception:  # noqa: BLE001 - counts are a nicety here
+            stats = None
+        if stats is not None:
+            lines.append(f"{stats.words:,} words, {stats.characters:,} characters")
+        encoding = str(getattr(document, "encoding", "") or "")
+        if encoding:
+            lines.append(f"Encoding: {encoding}")
+        build = getattr(self, "_build_cheatsheet_text", None)
+        if callable(build):
+            lines += ["", "Every command and its key, in menu order:", "", build("", "menu")]
+        return "\n".join(lines)
+
+    def _show_where_am_i_review(self, position: str) -> None:
+        from quill.ui.wordpress_dialogs import show_report
+
+        show_report(
+            self.frame,
+            self._show_modal_dialog,
+            title="Where Am I",
+            text=self._where_am_i_review_text(position),
+            help_text=(
+                "Where the caret is and what the document is, then every command and "
+                "its key. Opened by pressing Where Am I twice."
+            ),
+        )
+
+    def _text_position(self) -> tuple[int | None, int | None, int | None, int | None]:
+        """Line, column, line count and percent through, counted in the text.
+
+        Off the shared document mirror, the same one the status bar's Ln/Col
+        cell reads, so a paragraph the window wraps is one line, as it is in
+        the file. ``PositionToXY`` on Windows counts the wrapped screen lines.
+        """
+        editor = getattr(self, "editor", None)
+        mirror = getattr(self, "doc_text", None)
+        get_pos = getattr(editor, "GetInsertionPoint", None)
+        if mirror is None or not callable(get_pos):
+            return None, None, None, None
+        try:
+            position = int(get_pos())
+            line, column = mirror.line_column(position)
+            total = len(mirror.line_starts())
+            length = len(mirror.text)
+        except Exception:  # noqa: BLE001 - a dead control means "fall back"
+            return None, None, None, None
+        percent = round(100 * min(position, length) / length) if length else 0
+        return line, column, total, percent
 
     def verbosity_what_changed(self) -> None:
         self._announce_text(self.verbosity.what_changed())

@@ -1240,6 +1240,24 @@ delivered it and which screen reader or display handled each one. If
 something is not reaching you, this is the quickest way to tell whether
 the trouble is QUILL, your screen reader, or a display that is not
 connected.</li>
+<li><strong>Check What QUILL Says…</strong> runs each command whose job
+is to speak (Where Am I, Say Time and Date, Speak Window Title and the
+rest) once and then twice, and opens a new document with a table: what
+QUILL meant to say, and an empty column for what your screen reader
+actually said. Fill it in and mark each row Same, Extra or Missing; it
+is how over-announcing and missing speech get found with a real screen
+reader. It comes from EdSharp’s testSay.</li>
+<li><strong>Where Am I</strong> says the line, the column and how far
+through the document you are: “Line 12 of 40, column 5, 30 percent”. It
+counts lines in the text itself, so a paragraph the window wraps is one
+line. Press it twice quickly to open everything in a window: the
+position, the document’s name, whether it is saved, its word count and
+encoding, then every command and its key.</li>
+<li><strong>What QUILL did not say</strong> is written to the session
+log with the reason: Quiet or Meeting Mode, a repeat, no speech output,
+or a speech failure, and whether QUILL was the window in front. A
+diagnostic bundle includes it, so a report of “QUILL went quiet” can say
+why.</li>
 <li><strong>Report Editor Surface</strong> tells you, in one keystroke,
 which editor is active, its window class, whether the braille fix
 (system-edit emulation) is on, whether the editor border is hidden, and

@@ -110,6 +110,11 @@ def test_where_am_i() -> None:
     ctrl = VerbosityController()
     assert ctrl.where_am_i(line=12, total=540, column=3) == "Line 12 of 540, column 3"
     assert ctrl.where_am_i() == "Position unknown"
+    assert (
+        ctrl.where_am_i(line=12, total=40, column=3, percent=30)
+        == "Line 12 of 40, column 3, 30 percent"
+    )
+    assert ctrl.where_am_i(percent=50) == "Position unknown"
 
 
 def test_speak_status() -> None:

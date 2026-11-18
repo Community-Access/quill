@@ -364,6 +364,7 @@ from quill.ui.main_frame_image import ImageCaptureMixin
 from quill.ui.main_frame_image_alt import ImageAltMixin
 from quill.ui.main_frame_inline_notes import InlineNotesMixin
 from quill.ui.main_frame_intellisense import IntellisensePopupMixin
+from quill.ui.main_frame_key_cheatsheet import KeyCheatsheetMixin
 from quill.ui.main_frame_keymap_io import KeymapIoMixin
 from quill.ui.main_frame_language_detect import LanguageDetectMixin
 from quill.ui.main_frame_library import LibraryMixin
@@ -412,6 +413,7 @@ from quill.ui.main_frame_reveal_codes import RevealCodesMixin
 from quill.ui.main_frame_review import ReviewToolsMixin
 from quill.ui.main_frame_rich_mode import RichModeMixin
 from quill.ui.main_frame_rich_paragraph import RichParagraphMixin
+from quill.ui.main_frame_say_check import SayCheckMixin
 from quill.ui.main_frame_say_commands import SayCommandsAdapterMixin
 from quill.ui.main_frame_search import SearchCommandsMixin
 from quill.ui.main_frame_section_move import SectionMoveMixin
@@ -460,6 +462,7 @@ from quill.ui.spoken_name import set_spoken_name
 from quill.ui.startup_launch import editor_starts_hidden
 from quill.ui.status_bar_role import mark_as_status_bar
 from quill.ui.suggestion_list import SuggestionPopup as _IntellisensePopup
+from quill.ui.unspoken_log import log_unspoken
 from quill.ui.word_view import WordDocumentSurface
 
 
@@ -591,6 +594,8 @@ class MainFrame(
     # Moved whole out of this class on 2026-10-17; listed first to keep their old precedence.
     BookmarksFoldsMixin,
     ReadAloudMixin,
+    KeyCheatsheetMixin,  # moved out 2026-11-18
+    SayCheckMixin,  # EdSharp testSay, 2026-11-18
     SpeechHubMixin,
     OpenDocumentsFindMixin,  # ahead of SearchCommandsMixin: its F3 wins
     CloseOthersMixin,
@@ -3692,76 +3697,6 @@ class MainFrame(
         except Exception:  # noqa: BLE001
             return []
 
-    def open_key_cheatsheet(self) -> None:
-        """§8.1 QK-1..9: Full key cheatsheet overlay (Alt+Shift+/).
-
-        Presents every bound command grouped by category in a read-only
-        searchable dialog.  Screen readers can navigate by group heading and
-        individual key entry.
-        """
-        wx = self._wx
-        dialog = wx.Dialog(
-            self.frame,
-            title="Key Cheatsheet",
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        )
-        dialog.SetSize(dip_size(dialog, 720, 560))
-        root = wx.BoxSizer(wx.VERTICAL)
-
-        search = wx.SearchCtrl(dialog, style=wx.TE_PROCESS_ENTER)
-        search.SetDescriptiveText("Search by command name or key binding")
-        set_accessible_name(search, "Search by command name or key binding")
-        set_spoken_name(search, "Search by command name or key binding")
-        root.Add(search, 0, wx.EXPAND | wx.ALL, 8)
-
-        cheatsheet_ctrl = wx.TextCtrl(
-            dialog,
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
-        )
-        set_accessible_name(cheatsheet_ctrl, "Key cheatsheet")
-        set_spoken_name(cheatsheet_ctrl, "Key cheatsheet")
-        root.Add(cheatsheet_ctrl, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-
-        close_btn = wx.Button(dialog, id=wx.ID_CANCEL, label="Close")
-        btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        btn_row.AddStretchSpacer()
-        btn_row.Add(close_btn, 0)
-        root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 8)
-        dialog.SetSizer(root)
-
-        all_bindings = self._build_cheatsheet_text("")
-        cheatsheet_ctrl.SetValue(all_bindings)
-        apply_modal_ids(dialog, affirmative_id=wx.ID_CANCEL, escape_id=wx.ID_CANCEL)
-
-        def _on_cheatsheet_search(event: object) -> None:
-            query = search.GetValue().strip().lower()
-            cheatsheet_ctrl.SetValue(self._build_cheatsheet_text(query))
-            event.Skip()
-
-        search.Bind(wx.EVT_TEXT, _on_cheatsheet_search)
-        close_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CANCEL))
-
-        try:
-            self._show_modal_dialog(dialog, "Key Cheatsheet")
-        finally:
-            dialog.Destroy()
-
-    def _build_cheatsheet_text(self, query: str) -> str:
-        """Return a human-readable key cheatsheet, filtered by *query*."""
-        commands = self.commands.list(feature_manager=getattr(self, "features", None))
-        lines: list[str] = []
-        for cmd in sorted(commands, key=lambda c: c.title):
-            binding = self.keymap.get(cmd.id) or DEFAULT_KEYMAP.get(cmd.id) or ""
-            if query and query not in cmd.title.lower() and query not in binding.lower():
-                continue
-            if binding:
-                lines.append(f"{cmd.title}: {binding}")
-            else:
-                lines.append(f"{cmd.title}: (no binding)")
-        if not lines:
-            return "No matching commands."
-        return "\n".join(lines)
-
     def explain_unavailable_feature(self) -> None:
         """§8.1: 'Why Don't I See a Feature?' — explain why the focused item is greyed out."""
         wx = self._wx
@@ -4604,13 +4539,18 @@ class MainFrame(
         if not force and getattr(self, "_verbosity_controller", None) is not None:
             speech, suppressed = self._route_verbosity_announcement(message)
             if suppressed:
+                log_unspoken(self.frame, message, "Quiet Mode or Meeting Mode")
                 return
             message = speech or message
         service = self._announce_service()
         if service is None:
             return
         report = service.announce(build_announcement(message, force=force, sound_event=sound))
+        if AnnounceChannel.SPEECH in getattr(report, "skipped", ()):
+            log_unspoken(self.frame, message, "a repeat, the settings, or no speech output")
         backend_error = report.failed.get(AnnounceChannel.SPEECH, "")
+        if backend_error:
+            log_unspoken(self.frame, message, f"speech failed: {backend_error}")
         if backend_error and backend_error != self._announcement_error_reported:
             self._announcement_error_reported = backend_error
             self._record_notification(backend_error, "accessibility")

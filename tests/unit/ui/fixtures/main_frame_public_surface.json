@@ -771,6 +771,7 @@
   "run_profile_onboarding",
   "run_python_tool",
   "run_quillin_command",
+  "run_say_check",
   "run_startup_profile_prompt",
   "run_startup_wizard",
   "run_target_at_cursor",
