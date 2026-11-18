@@ -90,3 +90,18 @@ def test_the_last_version_cannot_go_and_a_package_can() -> None:
     with pytest.raises(pk.PackageError, match="delete:packages"):
         pk.delete_package(FakeApi({"DELETE": 403}), "npm", "left-pad")
     assert pk.PackageError.code == "QUILL-GITHUB-PACKAGES"
+
+
+def test_the_my_packages_node_reaches_its_loader(monkeypatch: Any) -> None:
+    """The node's view must be one fetch_extra_view answers, or the node never loads."""
+    from types import SimpleNamespace
+
+    from quill.core.github.explore_extra_views import fetch_extra_view
+    from quill.core.github.workbench_tree import GITHUB_TREE
+
+    loaders = {node.loader for _template, node in GITHUB_TREE.all_nodes()}
+    assert "explore:my_packages" in loaders
+    monkeypatch.setattr(pk, "fetch_packages", lambda _api, limit: ["a row"])
+    provider = SimpleNamespace(token="t", is_authenticated=True)
+    rows = fetch_extra_view(provider, "my_packages", repo="", query="", limit=5, warnings=[])
+    assert rows == ["a row"]

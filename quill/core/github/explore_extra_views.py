@@ -37,7 +37,7 @@ EXTRA_REPO_VIEWS = frozenset({
     "runners",
 })
 #: Account views (Billing and Usage), answered without a repository.
-EXTRA_ACCOUNT_VIEWS = frozenset({"billing_usage", "invitations"})
+EXTRA_ACCOUNT_VIEWS = frozenset({"billing_usage", "invitations", "my_packages"})
 EXTRA_VIEWS = SEARCH_VIEWS | EXTRA_REPO_VIEWS | EXTRA_ACCOUNT_VIEWS
 _REDIRECTS = (301, 302, 303, 307, 308)
 
