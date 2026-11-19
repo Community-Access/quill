@@ -557,6 +557,12 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     "help_topic": (
         _default("open_topic", "Open", "Read the topic, or open the chapter it names."),
         _a("take_me_there", "Take Me There", help="Go to the place the topic is about."),
+        _a(
+            "walk_me_through",
+            "Walk Me Through It",
+            help="Go there and say the steps one at a time, each after you do the one before.",
+        ),
+        _a("do_it", "Do It", help="Run the one command the topic is about, as its key would."),
         _PROPERTIES,
     ),
     "node": (

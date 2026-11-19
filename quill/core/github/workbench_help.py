@@ -42,6 +42,8 @@ __all__ = [
     "ROW_TYPE_WORDS",
     "SURFACE_PURPOSES",
     "TASKS",
+    "DO_IT",
+    "do_it_command",
     "WHAT_CHANGED",
     "HelpHit",
     "HelpTopic",
@@ -296,6 +298,24 @@ def help_rows(view: str, keys: Mapping[str, tuple[str, str]] | None = None) -> l
             ),
         ]
     return []
+
+
+#: Do Something tasks whose answer is one command (D12's Do It), by task id: the
+#: command, run where Take Me There goes, with its usual dialog or preview.
+DO_IT: dict[str, str] = {
+    "file_an_issue": "github.workbench.new_issue",
+    "open_another_repository": "github.workbench.open_address",
+    "choose_how_notifications_work": "github.workbench.options",
+    "keep_a_search": "github.workbench.new_here",
+}
+
+
+def do_it_command(title: str) -> str:
+    """The one command a task titled *title* comes down to, or ""."""
+    for task_id, task_title, _steps, _place in TASKS:
+        if task_title == title:
+            return DO_IT.get(task_id, "")
+    return ""
 
 
 REPORT_TARGET = "report:help"

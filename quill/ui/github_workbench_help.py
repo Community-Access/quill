@@ -27,9 +27,15 @@ from quill.core.github.explore_models import ExploreRow
 from quill.core.workbench.menus import MenuSub, all_rows
 from quill.core.workbench.tree import NodeSpec
 
-__all__ = ["HELP_PREFIX", "GitHubWorkbenchHelpMixin"]
+__all__ = ["HELP_PREFIX", "HELP_VERBS", "GitHubWorkbenchHelpMixin"]
 
 HELP_PREFIX = "help:"
+
+#: The help rows' own verbs, for the actions mixin's table of native verbs.
+HELP_VERBS = {
+    verb: frozenset({"help_topic"})
+    for verb in ("open_topic", "take_me_there", "walk_me_through", "do_it")
+}
 
 
 class GitHubWorkbenchHelpMixin:
@@ -153,6 +159,36 @@ class GitHubWorkbenchHelpMixin:
             return
         if self.frame.select(NodeRef(template, key, instance)):
             self.frame.tree.SetFocus()
+
+    def _do_walk_me_through(self, ref: Any, row: object) -> None:
+        """Walk Me Through It: go where the task starts, then say its steps one at a time."""
+        assert isinstance(row, ExploreRow)
+        if ":" in row.key and not row.key.startswith(("chapter:", "mailto:", "report:")):
+            self._go_quietly(row.key)
+        self.frame.start_walk(row.label, row.detail)
+
+    def _fits_do_it(self, row: object) -> bool:
+        return isinstance(row, ExploreRow) and bool(catalogue.do_it_command(row.label))
+
+    def _do_do_it(self, ref: Any, row: object) -> None:
+        """Do It: the one command the task comes down to, where it belongs."""
+        assert isinstance(row, ExploreRow)
+        command = catalogue.do_it_command(row.label)
+        template, _, _key = row.key.partition(":")
+        if template and not self._go_quietly(row.key):
+            self._say("Open a repository first. Ctrl+L opens one by name or link.")
+            return
+        self.frame.run(command)
+
+    def _go_quietly(self, target: str) -> bool:
+        """Select the node *target* names, in the first open repository; False if none."""
+        from quill.ui.workbench_frame import NodeRef
+
+        template, _, key = target.partition(":")
+        instance = next(iter(self.instances(template)), "") if template else ""  # type: ignore[attr-defined]
+        if template and not instance:
+            return False
+        return bool(self.frame.select(NodeRef(template, key, instance)))
 
     def _say(self, text: str) -> None:  # replaced by the actions mixin's, which comes first
         if self.frame is not None:

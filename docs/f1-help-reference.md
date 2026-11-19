@@ -3616,6 +3616,10 @@ Control coverage: 384 audited sites (384 helped).
 
 **Take Me There.** Go to the place the topic is about.
 
+**Walk Me Through It.** Go there and say the steps one at a time, each after you do the one before.
+
+**Do It.** Run the one command the topic is about, as its key would.
+
 **Refresh.** Load this view again. F5 does the same.
 
 **Help for This View.** What this view shows. F1 does the same.

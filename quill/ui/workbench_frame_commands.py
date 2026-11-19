@@ -323,13 +323,16 @@ class WorkbenchCommandsMixin:
         """Do *command_id*: a menu row, a context-menu row or a key."""
         verb = command_id.rsplit(".", 1)[-1]
         actions = self._frame_actions()
+        walk = getattr(self, "walk", None)  # a walk moves on when a command is done
         if command_id in self.provider.go_nodes:
             self.go(command_id)
+            self.walk_moved_on(walk)
         elif verb in actions:
             actions[verb]()
         elif self.current is not None and self.provider.run(
             command_id, self.current, self.selected_row()
         ):
+            self.walk_moved_on(walk)
             return
         else:
             self._say(self.reason(command_id))
@@ -408,6 +411,8 @@ class WorkbenchCommandsMixin:
             return
         plain = not event.HasAnyModifiers()
         on_lists = focused in (self.tree, self.list)
+        if code == wx.WXK_ESCAPE and plain and self.stop_walk():
+            return
         if code == wx.WXK_ESCAPE and plain:
             # Escape clears the filter first. From Details it returns to the list, so
             # leaving that pane never jumps the tree to another node (UX review item 36);

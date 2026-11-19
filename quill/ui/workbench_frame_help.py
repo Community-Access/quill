@@ -46,6 +46,8 @@ class WorkbenchHelpMixin:
     tree: Any
     list: Any
     current: Any
+    walk: Any = None
+    """The Walk Me Through It in progress, or None (D12)."""
 
     # -- the words -------------------------------------------------------------
 
@@ -77,6 +79,10 @@ class WorkbenchHelpMixin:
 
     def show_layered_help(self) -> None:
         """F1: the window's purpose and this node, then the focused control."""
+        walk = getattr(self, "walk", None)
+        if walk is not None:  # during Walk Me Through It, F1 says the step again
+            self._announce(walk.current())
+            return
         try:
             from quill.core.help import HelpTopic
             from quill.ui import app_context_help
@@ -111,6 +117,10 @@ class WorkbenchHelpMixin:
 
     def what_can_i_do(self) -> None:
         """Shift+F1: every action for the selection, its key, and why any is greyed."""
+        walk = getattr(self, "walk", None)
+        if walk is not None:  # during Walk Me Through It, Shift+F1 lists the steps
+            self._announce(walk.listing())
+            return
         kind = self._row_kind()
         table = self.provider.actions
         if kind not in table.row_types:
@@ -185,6 +195,37 @@ class WorkbenchHelpMixin:
         hook = self._hook("key_text")
         name = str(getattr(self.provider, "name", "") or "Workbench")
         HelpTextDialog(self.frame, f"{name} Keys", hook() if hook else "").show()
+
+    # -- Walk Me Through It (D12) ------------------------------------------------
+
+    def start_walk(self, title: str, text: str) -> None:
+        """Say a task's first step and wait for a command before the next one."""
+        from quill.core.workbench.walk import Walk, steps_of
+
+        steps = steps_of(text)
+        if not steps:
+            self._announce("This topic has no steps to walk through.")
+            return
+        self.walk = Walk(title, steps)
+        self._announce(self.walk.opening())
+
+    def walk_moved_on(self, walk: Any) -> None:
+        """A command ran during *walk*: say the next step after the command's own words."""
+        if walk is None or getattr(self, "walk", None) is not walk:
+            return
+        said = walk.advance()
+        if walk.finished:
+            self.walk = None
+        self._wx.CallAfter(self._announce, said)
+
+    def stop_walk(self) -> bool:
+        """Escape during a walk ends it; False when there was none."""
+        walk = getattr(self, "walk", None)
+        if walk is None:
+            return False
+        self.walk = None
+        self._announce(f"Stopped walking through {walk.title}.")
+        return True
 
     def empty_words(self) -> str:
         hook = self._hook("empty_text")

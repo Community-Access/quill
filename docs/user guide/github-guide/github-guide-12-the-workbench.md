@@ -617,7 +617,16 @@ so is one QUILL does not know.
 The last place in the tree is help you can walk through like any other list.
 
 - **Do Something** has tasks in plain words, such as Fix a failed run. Enter
-  reads the steps; Take Me There, on the context menu, goes to the place.
+  reads the steps. The context menu has three more:
+  - **Take Me There** goes to the place the task is about.
+  - **Walk Me Through It** goes there too, then says the first step only.
+    When you have done it, the next step is said, and so on to the end. `F1`
+    says the step again, `Shift+F1` lists all the steps with where you are,
+    and `Escape` stops the walk. A step that only moves the selection, such
+    as "Arrow down the list", counts as done when you run the next command.
+  - **Do It** runs the one command a task comes down to, where it belongs,
+    with its usual dialog: File an issue opens New Issue in the repository's
+    Issues. It is greyed on tasks that take more than one command.
 - **The Guide** lists this book's chapters. Enter opens one.
 - **Words** is the GitHub glossary. Type a word to jump to it.
 - **Keys** has every key in the window, grouped by what it does.

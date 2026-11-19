@@ -2,6 +2,15 @@
 
 ## 1.0.0
 
+### GitHub Workbench: help that walks with you (2026-11-19)
+
+The tasks under Help and Learning, Do Something, have two more choices on
+their context menu. **Walk Me Through It** goes to the place and says one
+step at a time, the next after you have done the one before. `F1` repeats
+the step, `Shift+F1` lists all of them and `Escape` stops. **Do It** runs
+the one command a task comes down to, such as New Issue for File an issue.
+This meets GH-R-107.
+
 ### GitHub Workbench: results follow your sound or speech choice (2026-11-19)
 
 The GitHub Workbench used to speak every result and play no sounds. It now

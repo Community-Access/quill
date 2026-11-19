@@ -61,6 +61,7 @@ from quill.ui.github_workbench_compare import (
     GitHubWorkbenchCompareMixin,
 )
 from quill.ui.github_workbench_gists import GitHubWorkbenchGistsMixin
+from quill.ui.github_workbench_help import HELP_VERBS
 from quill.ui.github_workbench_items import ITEM_REASONS, ITEM_VERBS, GitHubWorkbenchItemsMixin
 from quill.ui.github_workbench_pulls import GitHubWorkbenchPullsMixin
 from quill.ui.github_workbench_reading import (
@@ -171,8 +172,7 @@ _NATIVE: dict[str, frozenset[str]] = {
     "choose_repositories": frozenset({"view"}),
     "go_to_number": frozenset({"view"}),
     "review": frozenset({"pr_item"}),
-    "open_topic": frozenset({"help_topic"}),
-    "take_me_there": frozenset({"help_topic"}),
+    **HELP_VERBS,
     "undo_change": frozenset({"view"}),
     # Export List (PRD 22.7): the list as shown, whatever node it is.
     "export_list": frozenset({"view"}),
