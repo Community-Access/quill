@@ -75,9 +75,8 @@ Each is done only with evidence: a test or a live run.
 
 #### Requirement audit: what is still open
 
-The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`: 80 of 100 GH-R ids met, 12 partly met, 8 not met.
+The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`: 81 of 100 GH-R ids met, 12 partly met, 7 not met; every Must is at least partly met.
 
-- [ ] **GH-R-002, needs a Windows check:** every Workbench dialog uses `ShowModal()`, which in wx disables every top-level window, the editor included. Try it before acting: if the editor is blocked, the fix is window-modal or modeless dialogs throughout the Workbench.
 - [ ] **GH-R-046:** a single You page.
 - [ ] **GH-R-150 and 151:** more kinds under Across Repositories (see the by-name collections row above).
 - [ ] **Shoulds and Mays:** Alt+Enter on a GitHub reference in a document (036), access templates (068), real permission evidence for the role views (069), team review requests in Needs My Attention (143), tutorials (105), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116), plain-language batches (086) and Ask How (118).

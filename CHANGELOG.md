@@ -2,6 +2,15 @@
 
 ## 1.0.0
 
+### Workbench: a dialog no longer blocks the editor (2026-11-19)
+
+Opening Properties, a picker or any other dialog from the GitHub or WordPress
+Workbench used to freeze the editor too, until the dialog closed: wx's
+ShowModal disables every window in the app. Now a Workbench dialog blocks only
+the Workbench, so you can Alt+Tab to your document, keep typing and come back
+(GH-R-002, checked on Windows). A dialog opened from a Workbench dialog still
+waits for its own answer, as before.
+
 ### Documents: WooCommerce and Yoast are in scope, and the GitHub PRD says what GitHub cannot change (2026-11-19)
 
 - The WordPress Workbench PRD and the WordPress design document now record

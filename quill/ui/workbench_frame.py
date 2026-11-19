@@ -132,6 +132,9 @@ class WorkbenchFrame(
         instance = next(iter(provider.instances("repository")), "")
         self.frame = wx.Frame(None, title=provider.window_title(instance))
         self.frame.SetSize(dip_size(self.frame, 980, 680))
+        # Its dialogs block only it, never the editor (GH-R-002): see
+        # dialog_contract.show_modal_dialog's scoped modality.
+        self.frame._quill_modal_scope = True
         from quill.ui.app_context_help import ensure_help_provider
 
         ensure_help_provider(wx)  # without one, every SetHelpText below stores nothing
