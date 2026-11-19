@@ -2394,4 +2394,22 @@ to build every item and to move Cast's wording to Played and Unplayed.
   picked up as its whole group.
 - **D1** Played and Unplayed, never heard and unheard (GATE-CAST-WORDS).
 
+### 23.33 Family UX pilot (2026-11-19)
+
+Quill Cast is one of the two pilots chosen in
+`docs/design/2026-11-19-family-ux-pilots.md`. Two things are accepted for it:
+
+- **The actual result, once (FUX-04).** A save, a change of speed or sound, a
+  download or an import ends by saying what is now true, in words the listener
+  can check: the speed now playing, the episode that downloaded and where it
+  is. It never says "saved" while the old value goes on playing.
+- **Lists that stay still (FUX-06).** A feed refresh, a finished download or a
+  new arrival never moves the selected row or focus in Episodes, Continue
+  Listening or the Play Queue. New items wait to be reached, with their count
+  said once.
+
+It is also where journey A starts: hear a passage, save the exact place with a
+note, and come back to it, or open its notes in QUILL, without losing where it
+came from.
+
 See `CHANGELOG.md` for the full, versioned history.
