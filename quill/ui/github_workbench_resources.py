@@ -160,6 +160,15 @@ class GitHubWorkbenchResourcesMixin:
             return
         if not self._confirm(f"Delete {spec.noun}", f"Delete: {row.label}"):
             return
+        if spec.typed_delete:
+            expected = row.title or item_id
+            typed = self._ask_text(
+                "Type to Confirm", f"This is hard to reverse. Type {expected} to go ahead:"
+            ).strip()
+            if typed != expected:
+                if typed:
+                    self._say("The name did not match. Nothing changed.")
+                return
         api, target = self.github_api(), ref.instance
         self._background(
             f"delete the {spec.noun}",

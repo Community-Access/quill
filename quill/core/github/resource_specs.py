@@ -12,7 +12,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from quill.core.github.org_people import member_problem, member_rows
 from quill.core.github.resource_engine import Field, ResourceSpec
+from quill.core.github.resource_specs_admin import ADMIN_SPECS
 from quill.core.github.resource_specs_env import REPO_ORG_SPECS
 from quill.core.github.resource_specs_more import MORE_SPECS
 from quill.core.github.resource_specs_people import PEOPLE_SPECS
@@ -353,7 +355,9 @@ RESOURCE_SPECS: tuple[ResourceSpec, ...] = (
         id_field="login",
         id_param="{username}",
         sentence=lambda raw: f"{_login(raw)}.",
-        help="Members: the organization's people. Ctrl+N invites someone; Delete removes them.",
+        help="Members: the organization's people, each an owner or a member, with two-factor "
+        "sign-in on or off where you may see it. Ctrl+N invites someone; Delete removes them, "
+        "after their name is typed, and never removes the last owner or your own ownership.",
         page="https://github.com/orgs/{target}/people",
         create=(
             Field("username", "Their GitHub username:", is_id=True),
@@ -361,6 +365,9 @@ RESOURCE_SPECS: tuple[ResourceSpec, ...] = (
         ),
         create_method="PUT",
         create_path="{base}/memberships/{id}",
+        reader=member_rows,
+        guard=member_problem,
+        typed_delete=True,
     ),
     ResourceSpec(
         key="org_invitations",
@@ -409,8 +416,10 @@ RESOURCE_SPECS: tuple[ResourceSpec, ...] = (
         id_field="login",
         id_param="{username}",
         sentence=lambda raw: f"{_login(raw)}, not a member, with access to some repositories.",
-        help="Outside Collaborators: people with access to repositories but not members.",
+        help="Outside Collaborators: people with access to repositories but not members. "
+        "Delete takes away every repository they have here, after their name is typed.",
         page="https://github.com/orgs/{target}/outside-collaborators",
+        typed_delete=True,
     ),
     ResourceSpec(
         key="security_managers",
@@ -522,6 +531,7 @@ RESOURCE_SPECS: tuple[ResourceSpec, ...] = (
     *USER_SPECS,
     *MORE_SPECS,
     *PEOPLE_SPECS,
+    *ADMIN_SPECS,
 )
 
 _BY_KEY = {spec.key: spec for spec in RESOURCE_SPECS}

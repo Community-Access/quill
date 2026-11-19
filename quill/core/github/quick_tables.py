@@ -1,7 +1,8 @@
 """Every quick command, and the tables the Workbench reads from them.
 
-:data:`QUICK` is :mod:`quick_table_actions`, :mod:`quick_table_repo` and
-:mod:`quick_table_org`, :mod:`quick_table_discuss`, :mod:`quick_table_projects` and
+:data:`QUICK` is :mod:`quick_table_actions`, :mod:`quick_table_repo`,
+:mod:`quick_table_org`, :mod:`quick_table_admin`, :mod:`quick_table_discuss`,
+:mod:`quick_table_projects` and
 :mod:`quick_table_agents` together. From it come the menu rows
 (:data:`QUICK_ROWS`, merged into ``item_actions``), what each write needs
 (:data:`QUICK_REQUIREMENTS`, merged into ``write_requirements``), the live
@@ -14,6 +15,7 @@ from __future__ import annotations
 from quill.core.github.permissions import WriteTier
 from quill.core.github.quick_actions import Quick
 from quill.core.github.quick_table_actions import ACTIONS_QUICK
+from quill.core.github.quick_table_admin import ADMIN_QUICK
 from quill.core.github.quick_table_agents import AGENT_QUICK
 from quill.core.github.quick_table_discuss import DISCUSS_QUICK
 from quill.core.github.quick_table_org import ORG_QUICK
@@ -27,6 +29,7 @@ QUICK: tuple[Quick, ...] = (
     *ACTIONS_QUICK,
     *REPO_QUICK,
     *ORG_QUICK,
+    *ADMIN_QUICK,
     *DISCUSS_QUICK,
     *PROJECT_QUICK,
     *AGENT_QUICK,

@@ -242,6 +242,34 @@ and recorded in Change History. The Workbench refuses to remove your own admin
 access or the last owner, and says who else could do it. Organization and
 team sheets work the same way for members and maintainers.
 
+On an organization's sheet, each member reads with their role and whether
+two-factor sign-in is on: "kim, person, member, direct, two-factor off".
+GitHub shows two-factor only to owners; anyone else hears "two-factor not
+shown to you". Change... on a member offers member, owner, or outside
+collaborator; making someone an outside collaborator takes them out of the
+organization and its teams and leaves only the repositories they were given
+directly, so QUILL asks you to type their name first. On the Outside
+Collaborators page, Add makes a member an outside collaborator, Change...
+invites one to be a member, and Remove takes away every repository they
+have here, again after their name is typed. You cannot make yourself an
+outside collaborator, remove yourself while you are the last owner, or
+remove the last owner.
+
+A team's sheet lists its maintainers and members, and its Repositories page
+lists every repository the team reaches with its role there. Add gives the
+team a repository, Change... changes its role, and Remove takes it away. The
+last maintainer cannot remove themselves. When you take admin away from a
+team you are on, QUILL asks GitHub first whether that team is how you
+administer the repository, and if it is, says so and changes nothing. The
+General page's **Parent team** moves the team under another (empty makes it a
+top-level team), and **New Team...** on an organization asks for the parent
+and whether mentions notify the team.
+
+The organization's **Members** list in the tree reads the same way ("kim,
+member, two-factor off."), and Delete there asks for the name typed and keeps
+the last owner. **Members Without Two-Factor** on the organization's row lists
+only those, for owners.
+
 On the pending invitations, Remove cancels the invitation (they can be
 invited again), and Change... changes the role a repository invitation
 offers before it is answered. GitHub cannot change an organization
@@ -258,6 +286,32 @@ invitation's role, so for one of those, Remove it and invite them again.
 - **Bulk Access Changes...**, one team or person on many repositories at
   once, previewed, with a result per change.
 
+### Who has what, and why
+
+Under an organization in the tree, three lists answer "who can do what here"
+a row at a time, so you never have to read a grid:
+
+- **Access Review: People** has a row for every person and repository pair,
+  with the role they really have and where it comes from: "jeff on quill:
+  Admin, from team Maintainers; also Write directly; also Read from the
+  organization's base permission." The highest comes first; every other way
+  they have access follows "also". An outside collaborator's direct access
+  says so, and an owner's reads "from being an owner of the organization".
+- **Access Review: Teams** has a row for every team and repository pair:
+  "Docs on site: Reviewer, for 3 members, a child team of Maintainers."
+- **Custom Property Values** has a row a repository with every custom
+  property, unset ones said as "not set": "site: tier is not set; areas is
+  docs and ui."
+
+Type a name, a role or a team in the filter box, or use Show Only, to narrow
+any of them, and **Export List...** (`Ctrl+Shift+X`), on the Workbench's File
+menu, saves what is shown. When GitHub will
+not show part of the answer, for example a repository's direct collaborators
+to someone who is not its admin, the status bar says which, rather than
+leaving people out silently. **Set Repositories' Custom Property...** on the
+organization's row gives one property a value in several repositories at
+once, and **Issue Types** under the organization lists its issue types.
+
 ### Rules in plain words
 
 A ruleset's sheet, and a branch's protection, list every rule as a check box
@@ -265,6 +319,30 @@ with its settings, and a Summary page reads the whole thing as sentences: "On
 the default branch: changes need a pull request with 2 approvals including a
 code owner; checks build and test must pass; force pushes are blocked." Read
 that page first.
+
+A repository's **Settings > Rulesets** list, and an organization's
+**Rulesets**, show each ruleset as a sentence; Alt+Enter opens its sheet, and
+Delete removes it after you type its name.
+
+- The **Rules** page also has **Every rule and its settings**, a line a rule
+  with every setting GitHub sent: file paths, file sizes, patterns, workflows,
+  code scanning tools, and any rule type QUILL has no check box for yet.
+- The **Bypass** page has a check list of the roles that may bypass the rules
+  (organization admins, admins, maintainers, writers, deploy keys), and lists
+  everyone who may, teams and apps included. Teams and apps you have not
+  changed are kept as they are.
+- An organization ruleset's **Repositories** page says which repositories it
+  covers, by name or by a custom property, and lets you choose them by name,
+  and stop those repositories being renamed out of it.
+- A branch's classic protection sheet has every setting GitHub offers:
+  approvals, stale approvals, code owners, the most recent push, status
+  checks and up to date, signed commits, administrators, linear history,
+  force pushes, deletion, conversations, blocking new branches, locking the
+  branch, and fork syncing. Its **Who** page says who may push, dismiss
+  reviews and skip the pull request; saving keeps those lists exactly as they
+  were.
+- **Rule Insights** under a repository's settings, and under an
+  organization, lists the pushes its rules passed, blocked or let through.
 
 ### An organization's roles
 
@@ -310,6 +388,32 @@ organization. Each row gives its name, its enforcement and what it targets:
 
 To make an organization ruleset from repositories that each have the same
 one, use **Promote to Organization** under Across Repositories.
+
+### Custom roles and the audit log
+
+These are GitHub Enterprise Cloud features. QUILL asks GitHub rather than
+guessing your organization's plan, and when GitHub refuses, it says so in
+GitHub's own words and what that usually means, for example "GitHub refused
+to read the audit log of acme: Not Found (HTTP 404). The audit log API is for
+organizations on GitHub Enterprise Cloud; Open on GitHub reads this
+organization's audit log on any plan." On an organization's row:
+
+- **Custom Repository Roles** lists the organization's own repository roles,
+  each with the role it builds on and what it adds. **New Custom Repository
+  Role...** asks for a name, a description, the base role (read, triage,
+  write or maintain) and the permissions it adds, separated by commas;
+  **Permissions for Custom Roles** lists those permissions in GitHub's words.
+  **Change Custom Repository Role...** keeps whatever you leave empty.
+  **Delete Custom Repository Role...** asks you to type its name; people
+  given it keep its base role.
+- **New Organization Role...**, **Change Organization Role...**, **Delete
+  Organization Role...** and **Permissions for Organization Roles** do the
+  same for organization roles. Giving a role to someone is **Roles...**,
+  above.
+- **Audit Log...** lists what people did, newest first, each a sentence:
+  "2026-11-19 10:02 UTC: kim did repo.create on acme/site". Leave the search
+  empty for everything recent, or use GitHub's words, such as
+  `action:repo.create` or `actor:kim`.
 
 ### Repository settings from the editor
 

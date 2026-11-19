@@ -24,6 +24,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from quill.core.github.access_matrix import property_rows
 from quill.core.github.resource_engine import Field, ResourceSpec
 from quill.core.github.sheet_fields import dig
 
@@ -394,11 +395,14 @@ MORE_SPECS: tuple[ResourceSpec, ...] = (
             + "."
         ),
         help=(
-            "Custom Property Values: every repository's custom properties in one list. "
-            "Change a repository's on its Properties."
+            "Custom Property Values: every repository and every custom property, a row a "
+            "repository, with unset properties said as not set. Change a repository's on its "
+            "Properties, or several at once with Set Repositories' Custom Property... on the "
+            "organization."
         ),
         page=f"{_ORG_SETTINGS}/custom-properties",
         delete=False,
+        reader=property_rows,
     ),
     # -- a repository ------------------------------------------------------------------------
     ResourceSpec(

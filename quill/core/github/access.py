@@ -31,6 +31,7 @@ from dataclasses import dataclass
 from quill.core.github.permissions import REPO_ROLES, WriteTier
 
 __all__ = [
+    "OUTSIDE",
     "ROLE_ABILITIES",
     "AccessChange",
     "AccessRow",
@@ -46,6 +47,10 @@ __all__ = [
     "view_as_role",
     "why_cant_they",
 ]
+
+
+#: The role word of an organization's outside collaborator, on its rows and as a new role.
+OUTSIDE = "outside collaborator"
 
 
 @dataclass(frozen=True)
@@ -68,7 +73,7 @@ def parse_row(text: str) -> AccessRow:
     kind = parts[1] if len(parts) > 1 else "person"
     role = parts[2] if len(parts) > 2 else ""
     source = ", ".join(parts[3:]) if len(parts) > 3 else "direct"
-    if kind not in ("person", "team", "invited"):
+    if kind not in ("person", "team", "invited", "repository"):
         # A two-part row ("kelly, maintainer") is a team member and their role.
         return AccessRow(name, "person", kind, "team")
     return AccessRow(name, kind, role, source)
@@ -113,6 +118,16 @@ def plan_add(scope: str, ident: Mapping[str, str], who: str, kind: str, role: st
             WriteTier.ACCESS,
             ("DELETE", f"/repos/{repo}/collaborators/{name}", None),
         )
+    if scope == "team" and kind == "repository":
+        org, team = ident["org"], ident["team"]
+        return AccessChange(
+            "PUT",
+            f"/orgs/{org}/teams/{team}/repos/{name}",
+            {"permission": _api_role(role)},
+            f"Give the team {team} {role} access to {name}.",
+            WriteTier.ACCESS,
+            ("DELETE", f"/orgs/{org}/teams/{team}/repos/{name}", None),
+        )
     if scope == "team":
         org, team = ident["org"], ident["team"]
         return AccessChange(
@@ -124,6 +139,15 @@ def plan_add(scope: str, ident: Mapping[str, str], who: str, kind: str, role: st
             ("DELETE", f"/orgs/{org}/teams/{team}/memberships/{name}", None),
         )
     org = ident["org"]
+    if role == OUTSIDE:
+        return AccessChange(
+            "PUT",
+            f"/orgs/{org}/outside_collaborators/{name}",
+            {},
+            f"Make {name} an outside collaborator of {org}: they stop being a member of it and "
+            "of its teams, and keep only the repositories they were given directly.",
+            WriteTier.DESTRUCTIVE,
+        )
     return AccessChange(
         "PUT",
         f"/orgs/{org}/memberships/{name}",
@@ -138,21 +162,32 @@ def plan_change(scope: str, ident: Mapping[str, str], row: AccessRow, role: str)
     """Change a row's role: the same request as adding, previewed as a change."""
     found = plan_add(scope, ident, row.name, row.kind, role)
     where = ident.get("repo") or ident.get("team") or ident.get("org", "")
+    if role == OUTSIDE:
+        return found
     back = plan_add(scope, ident, row.name, row.kind, row.role) if row.role else None
+    undo = (back.method, back.path, back.body) if back and row.role != OUTSIDE else None
     return AccessChange(
         found.method,
         found.path,
         found.body,
         f"Change {row.name} from {row.role or 'their role'} to {role} on {where}.",
         WriteTier.ACCESS,
-        (back.method, back.path, back.body) if back else None,
+        undo,
     )
 
 
 def plan_remove(scope: str, ident: Mapping[str, str], row: AccessRow) -> AccessChange:
-    """Remove a row: tier 3 when it is an admin or owner (18.4)."""
-    added = plan_add(scope, ident, row.name, row.kind, row.role or "read")
+    """Remove a row: tier 3 when it is an admin or owner, or an outside collaborator (18.4)."""
     where = ident.get("repo") or ident.get("team") or ident.get("org", "")
+    if scope == "organization" and row.role == OUTSIDE:
+        return AccessChange(
+            "DELETE",
+            f"/orgs/{ident['org']}/outside_collaborators/{row.name}",
+            None,
+            f"Remove {row.name} from every repository of {where}. They lose that access at once.",
+            WriteTier.DESTRUCTIVE,
+        )
+    added = plan_add(scope, ident, row.name, row.kind, row.role or "read")
     method, path, _body = added.undo or ("DELETE", added.path, None)
     heavy = row.role in ("admin", "owner", "maintainer")
     return AccessChange(
@@ -167,30 +202,50 @@ def plan_remove(scope: str, ident: Mapping[str, str], row: AccessRow) -> AccessC
 
 
 def lockout_problem(
-    rows: Sequence[AccessRow], target: AccessRow, me: str, *, new_role: str = ""
+    rows: Sequence[AccessRow],
+    target: AccessRow,
+    me: str,
+    *,
+    new_role: str = "",
+    top: frozenset[str] = frozenset({"admin", "owner"}),
 ) -> str:
-    """Why removing or lowering *target* is refused, or "" when it is safe (18.4)."""
-    top = {"admin", "owner"}
+    """Why removing or lowering *target* is refused, or "" when it is safe (18.4).
+
+    *top* is the role that manages the thing: admin or owner for a repository
+    or an organization, maintainer for a team. Making yourself an outside
+    collaborator is refused too: it takes you out of the organization.
+    """
+    mine = target.name.casefold() == me.casefold()
+    if new_role == OUTSIDE and mine:
+        return (
+            "That takes you out of the organization and its teams. Another owner can do it "
+            "if it is what you want."
+        )
     if target.role not in top or new_role in top:
         return ""
+    words = " or ".join(sorted(top))
     others = [r.name for r in rows if r.role in top and r.name != target.name]
-    if target.name.casefold() == me.casefold() and not others:
+    if mine and not others:
         return (
-            "That would leave nobody who can manage it, you included. Make someone else an "
-            "admin or owner first."
+            f"That would leave nobody who can manage it, you included. Make someone else "
+            f"{_a(words)} first."
         )
-    if target.name.casefold() == me.casefold():
+    if mine:
         return (
-            "That removes your own admin access. Ask "
+            f"That removes your own {target.role} access. Ask "
             + " or ".join(others[:3])
             + " to do it if it is what you want."
         )
     if not others:
         return (
-            f"{target.name} is the only admin or owner. Make someone else one first, or "
+            f"{target.name} is the only {words}. Make someone else one first, or "
             "nobody can manage it."
         )
     return ""
+
+
+def _a(words: str) -> str:
+    return ("an " if words[:1] in "aeiou" else "a ") + words
 
 
 # ---------------------------------------------------------------------------
