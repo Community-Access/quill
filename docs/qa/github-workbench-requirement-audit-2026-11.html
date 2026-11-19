@@ -251,7 +251,7 @@ href="../Product Requirement Documents and Specifications/github-workbench-prd.m
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 76 are met, 16 are partly met and 8 are
+<p>Of the 100 live requirements, 77 are met, 15 are partly met and 8 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -266,8 +266,8 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>65</td>
-<td>9</td>
+<td>66</td>
+<td>8</td>
 <td>1</td>
 <td>75</td>
 </tr>
@@ -409,14 +409,6 @@ Searches node in the tree (<code>workbench_tree.py:186</code>);
 <code>test_the_filter_builder</code>… saves one,
 <code>test_go_lists_pins_favorites_and_saved_searches</code>. A saved
 search is a row in that node, not a node of its own.</td>
-</tr>
-<tr>
-<td>GH-R-106</td>
-<td>Must</td>
-<td>Help and Learning in the tree, with every node of D11</td>
-<td>Help and Learning has Start Here, Do Something, The Guide, Words,
-Keys, What Changed, Ask a Person (<code>workbench_tree.py:287</code>);
-D11’s Tutorials and Tips nodes are missing.</td>
 </tr>
 <tr>
 <td>GH-R-119</td>
@@ -1358,11 +1350,14 @@ Tutorials.</td>
 <tr>
 <td>GH-R-106</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Help and Learning in the tree, with every node of D11</td>
 <td>Help and Learning has Start Here, Do Something, The Guide, Words,
-Keys, What Changed, Ask a Person (<code>workbench_tree.py:287</code>);
-D11’s Tutorials and Tips nodes are missing.</td>
+Keys, Tutorials (the GitHub lessons with progress; open in the Tutorials
+window or walk here), What Changed, Tips (QUILLBert’s, keys checked
+against the bindings) and Ask a Person (<code>workbench_tree.py</code>;
+<code>workbench_learning.py</code>;
+<code>test_github_workbench_learning.py</code>).</td>
 </tr>
 <tr>
 <td>GH-R-107</td>
