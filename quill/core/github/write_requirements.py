@@ -68,6 +68,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}projects": ("scope:project", _O),
     f"{_P}react": ("sign_in", _O),
     f"{_P}remove_search": ("local", _O),
+    f"{_P}pin_search": ("local", _O),
+    f"{_P}unpin_search": ("local", _O),
     f"{_P}rerun": ("repo:write", _V),
     f"{_P}rerun_failed": ("repo:write", _V),
     f"{_P}run_workflow": ("repo:write", _V),

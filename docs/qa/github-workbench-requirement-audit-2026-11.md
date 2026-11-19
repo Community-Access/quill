@@ -4,11 +4,11 @@ Checked 2026-11-18 against main, updated the same day for the follow-up pull req
 
 ## Summary
 
-Of the 100 live requirements, 78 are met, 14 are partly met and 8 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 79 are met, 13 are partly met and 8 are not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
-| Must | 67 | 7 | 1 | 75 |
+| Must | 68 | 6 | 1 | 75 |
 | Should | 11 | 7 | 5 | 23 |
 | May | 0 | 0 | 2 | 2 |
 
@@ -33,7 +33,6 @@ Of the 100 live requirements, 78 are met, 14 are partly met and 8 are not met. G
 | --- | --- | --- | --- |
 | GH-R-045 | Must | Projects (version 2): every field type, views, items, workflows and status updates are readable and editable | `sheets_projects.py`: every field type incl. iteration, items, status updates editable; views and workflows read only (GitHub has no API to change them; worth saying so in the PRD). |
 | GH-R-046 | Must | Every relationship (star, watch level, follow, subscribe, react, block, sponsor, pin) on a You page and in... | Star, watch level, follow, subscribe, react, sponsor, pin and block (`resource_specs_user`) each exist in their own places; no single You page holding them, and batch only where the multi-row sheet has the field. Needs a closer look. |
-| GH-R-053 | Must | Filters can be saved as searches and pinned as nodes | Save Search (`github_workbench_actions.py:158`), Saved Searches node in the tree (`workbench_tree.py:186`); `test_the_filter_builder`... saves one, `test_go_lists_pins_favorites_and_saved_searches`. A saved search is a row in that node, not a node of its own. |
 | GH-R-119 | Must | One source for every help surface (D19), and the measures of D20 | One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the generated reference (GATE-GITHUB-HELP, `build_help_reference`); D20's measures (timed find-the-answer sessions) not done. |
 | GH-R-150 | Must | Across Repositories has a place for every kind in the 22.11 table, a row per name with its variants and... | Labels, Milestones, Topics, Rules and Branch Protection by name, and the Fleet; every other kind is a decided cell with a reason in `across_scope_matrix.py` (`test_no_cell_is_blank`, `test_the_decided_cells`), not yet a place. |
 | GH-R-151 | Must | Every operation a kind allows in one repository is offered across a scope, with the preview and a result... | Preview and a result per repository for labels, milestones, topics, rulesets (`test_labels_by_name_make_the_same_with_a_preview_and_a_result_each`, `test_a_change_previews_permission_and_conflict_then_reports_each_repository`); environments, secrets, variables, webhooks, keys, autolinks remain. |
@@ -110,7 +109,7 @@ Of the 100 live requirements, 78 are met, 14 are partly met and 8 are not met. G
 | GH-R-050 | Must | Met | One query, written by the filter box, the Filter Builder, the Filter menu and Show Only or Hide on cells,... | `filter_menu.py` (one query for box, builder, menu, Show Only/Hide); `test_quick_filters_toggle_in_the_one_query`, `test_a_query_round_trips_through_the_builder` |
 | GH-R-051 | Must | Met | Every attribute GitHub search supports is sent to GitHub; every other attribute filters locally with an... | (sampled) `test_words_filter_here_and_qualifiers_ask_github`, `test_has_conflicts_filters_locally_and_says_so`; Load More/Load All in `github_workbench_explore.py`. "Every attribute" not checked one by one. |
 | GH-R-052 | Must | Met | Every list attribute has "has none"; every person field has "Me" | `filter_builder.py`: has none/has any on every person and list attribute, Me as @me; `tests/unit/ui/test_github_workbench_requirement_checks.py::test_every_person_and_list_attribute_offers_has_none_and_has_any`, `test_me_is_sent_as_at_me_and_read_back_as_me` |
-| GH-R-053 | Must | Partly | Filters can be saved as searches and pinned as nodes | Save Search (`github_workbench_actions.py:158`), Saved Searches node in the tree (`workbench_tree.py:186`); `test_the_filter_builder`... saves one, `test_go_lists_pins_favorites_and_saved_searches`. A saved search is a row in that node, not a node of its own. |
+| GH-R-053 | Must | Met | Filters can be saved as searches and pinned as nodes | Save Search (`github_workbench_actions.py`), Saved Searches node in the tree (`workbench_tree.py`), and Pin as Node / Unpin Node giving a saved search a node of its own under Saved Searches whose list is the search's results (`workbench_tree_more.PINNED_SEARCH`; `test_github_workbench_pinned_search.py`). |
 | GH-R-054 | Should | Met | Or groups where GitHub search allows them | `filter_builder.render_query` brackets groups and joins them with OR; `tests/unit/ui/test_github_workbench_requirement_checks.py::test_or_groups_are_bracketed_and_joined_by_or` |
 
 ### E7. Permissions

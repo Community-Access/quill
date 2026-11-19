@@ -229,6 +229,12 @@ Enter. Plain words narrow the list you are looking at; GitHub's own words, such
 as `is:open author:@me label:bug`, ask GitHub. `Ctrl+8` goes to Saved
 Searches, and `Ctrl+N` in a search keeps it there.
 
+A search you use all the time can have a place of its own in the tree. In
+Saved Searches, choose **Pin as Node** on its context menu: it appears under
+Saved Searches, named by the search, and opening it asks GitHub for the
+results afresh. **Unpin Node** takes the place away and keeps the saved
+search; **Remove Saved Search** takes both.
+
 Besides issues, code, commits, advisories and repositories, Search has:
 
 - **People and Organizations:** accounts whose name or login matches, such

@@ -85,7 +85,7 @@ from quill.ui.github_workbench_watches import (
     WATCH_VERBS,
     GitHubWorkbenchWatchesMixin,
 )
-from quill.ui.github_workbench_writes import GitHubWorkbenchWritesMixin
+from quill.ui.github_workbench_writes import SEARCH_VERBS, GitHubWorkbenchWritesMixin
 
 __all__ = ["REPOSITORY_ACTIONS", "GitHubWorkbenchActionsMixin"]
 
@@ -154,8 +154,7 @@ _NATIVE: dict[str, frozenset[str]] = {
     "star": frozenset({"repo", "view"}),
     "favorite": frozenset({"item", "issue", "pr", "favorite", "any_url"}),
     "pin_repository": frozenset({"repo", "view"}),
-    "run_search": frozenset({"saved_search"}),
-    "remove_search": frozenset({"saved_search"}),
+    **SEARCH_VERBS,
     "save_search": frozenset({"view"}),
     "label_issues": frozenset({"label"}),
     "milestone_issues": frozenset({"milestone"}),

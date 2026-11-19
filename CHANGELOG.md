@@ -2,6 +2,13 @@
 
 ## 1.0.0
 
+### GitHub Workbench: pin a saved search as a place in the tree (2026-11-19)
+
+**Pin as Node**, on a row in Saved Searches, gives that search a place of
+its own in the tree under Saved Searches, named by the search. Opening it
+asks GitHub for the results afresh, so it is always current. **Unpin Node**
+takes the place away and keeps the search. This meets GH-R-053.
+
 ### GitHub Workbench: counts after the names in the tree (2026-11-19)
 
 A place in the GitHub Workbench's tree that you have opened now says how many

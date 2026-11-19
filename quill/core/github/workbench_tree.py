@@ -27,7 +27,6 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.github.across import CATEGORIES as ACROSS_CATEGORIES
-from quill.core.workbench.coverage import CoverageRow, CoverageStatus, CoverageTable
 from quill.core.workbench.tree import Need, NodeSpec, Scope, TreeSpec
 
 __all__ = ["GITHUB_TREE", "PLANNED", "START_NODE", "node_for_items_view"]
@@ -188,6 +187,7 @@ _FIXED: tuple[NodeSpec, ...] = (
         "search",
         loader="local:saved_searches",
         row_type="saved_search",
+        template="pinned_search",
     ),
     _n("people", "People"),
     _n(
@@ -545,7 +545,12 @@ def _resource_nodes(scope: str) -> tuple[NodeSpec, ...]:
     )
 
 
-from quill.core.github.workbench_tree_more import MORE_FIXED, MORE_REPOSITORY  # noqa: E402
+from quill.core.github.workbench_tree_more import (  # noqa: E402
+    MORE_FIXED,
+    MORE_REPOSITORY,
+    PINNED_SEARCH,
+    PLANNED,
+)
 
 GITHUB_TREE = TreeSpec(
     (*_FIXED, *MORE_FIXED, *_resource_nodes("user")),
@@ -553,6 +558,7 @@ GITHUB_TREE = TreeSpec(
         "repository": (*_REPOSITORY, *MORE_REPOSITORY, *_resource_nodes("repository")),
         "person": (*_PERSON, *_resource_nodes("person")),
         "organization": (*_ORGANIZATION, *_resource_nodes("organization")),
+        "pinned_search": PINNED_SEARCH,
     },
 )
 """The whole GitHub Navigator."""
@@ -573,28 +579,3 @@ _ITEMS_NODES = {
 def node_for_items_view(view: str) -> str:
     """The repository-template node that is GitHub Items' *view*'s home."""
     return _ITEMS_NODES[view]
-
-
-def _planned(feature: str, node: str, reference: str = "") -> CoverageRow:
-    return CoverageRow(feature, CoverageStatus.PLANNED, node, reference=reference)
-
-
-PLANNED = CoverageTable((
-    # 14.1, worth adding: people will look for these.
-    _planned(
-        "Wiki: pages listed and edited in the Workbench", "Repository > Wiki > each page", "GX12"
-    ),
-    _planned(
-        "Security advisories: comments, private forks, an organization's",
-        "Repository > Security > Advisories",
-        "GX11",
-    ),
-    # 14.2, worth adding later.
-    _planned("Dependency graph and SBOM export", "Repository > Security > Dependencies"),
-    _planned("Packages: one version at a time, and other people's", "Packages > a version"),
-    _planned(
-        "Self-hosted runners: just-in-time setup and removal tokens",
-        "Repository > Actions > Runners > a token",
-    ),
-))
-"""GitHub features with a future home and no node yet (GitHub PRD 14.1, 14.2)."""

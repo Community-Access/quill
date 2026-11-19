@@ -58,6 +58,8 @@ class GitHubSavedItems:
     columns: dict[str, list[str]]
     searches: list[str] | None = None
     recent: list[str] | None = None
+    pinned_searches: list[str] | None = None
+    """Saved searches that are also nodes of their own under Saved Searches (GH-R-053)."""
 
     @classmethod
     def load(
@@ -102,6 +104,7 @@ class GitHubSavedItems:
         columns: dict[str, list[str]] = {}
         searches: list[str] = []
         recent: list[str] = []
+        pinned_searches: list[str] = []
         if isinstance(raw, dict):
             for entry in raw.get("pinned", []):
                 if isinstance(entry, str) and "/" in entry:
@@ -135,6 +138,11 @@ class GitHubSavedItems:
                 searches = [
                     value for value in raw_searches if isinstance(value, str) and value.strip()
                 ]
+            pinned_searches = [
+                value
+                for value in raw.get("pinned_searches", []) or []
+                if isinstance(value, str) and value.strip() and value in searches
+            ]
             raw_recent = raw.get("recent", [])
             if isinstance(raw_recent, list):
                 recent = [value for value in raw_recent if isinstance(value, str) and "/" in value][
@@ -147,6 +155,7 @@ class GitHubSavedItems:
             columns=columns,
             searches=searches,
             recent=recent,
+            pinned_searches=pinned_searches,
         )
 
     def save(self) -> None:
@@ -158,6 +167,7 @@ class GitHubSavedItems:
                 "columns": {view: list(cols) for view, cols in self.columns.items()},
                 "searches": list(self.searches or []),
                 "recent": list(self.recent or []),
+                "pinned_searches": list(self.pinned_searches or []),
             },
         )
 
@@ -240,7 +250,22 @@ class GitHubSavedItems:
         self.save()
         return True
 
+    def pin_search(self, query: str, pinned: bool = True) -> bool:
+        """Make a saved search a node of its own, or stop; True when that changed."""
+        have = list(self.pinned_searches or [])
+        known = query in (self.searches or [])
+        if pinned and (not known or query in have):
+            return False
+        if not pinned and query not in have:
+            return False
+        self.pinned_searches = [*have, query] if pinned else [q for q in have if q != query]
+        self.save()
+        return True
+
     def remove_search(self, query: str) -> bool:
+        self.pinned_searches = [
+            entry for entry in self.pinned_searches or [] if entry.casefold() != query.casefold()
+        ]
         before = len(self.searches or [])
         self.searches = [
             entry for entry in self.searches or [] if entry.casefold() != query.casefold()
