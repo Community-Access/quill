@@ -304,6 +304,7 @@ SECRET = SheetDef(
                 ed(
                     "secret_value",
                     "New value",
+                    _K.SECRET,
                     help="Write-only: GitHub never shows a secret's value, and neither "
                     "does QUILL. Type a new one to replace it; leave it empty to keep it.",
                 ),

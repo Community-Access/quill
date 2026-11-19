@@ -104,6 +104,7 @@ class ResourceSpec:
     delete_body: str = ""  # delete sends {delete_body: [id]} to the list itself
     extra: tuple[str, ...] = field(default=())  # further "METHOD path" rows it covers
     repositories: str = ""  # "/repositories": which repositories may use an item
+    query: tuple[tuple[str, str], ...] = ()  # sent with every list read ("hide_secret")
 
     def base(self, target: str) -> str:
         return BASES[self.scope][0].replace("{target}", target)
@@ -175,7 +176,9 @@ def fetch(
     api: GitHubApi, spec: ResourceSpec, target: str, warnings: list[str] | None = None
 ) -> list[ExploreRow]:
     try:
-        data = api.rest("GET", spec.path(target), query={"per_page": "100"}).data
+        data = api.rest(
+            "GET", spec.path(target), query={"per_page": "100", **dict(spec.query)}
+        ).data
     except GitHubRestError as exc:
         raise _refused(exc, f"list the {spec.noun}s") from exc
     items = data.get(spec.items_key) if spec.items_key and isinstance(data, Mapping) else data
@@ -335,7 +338,7 @@ def allowed_repositories(
         if exc.status == 409:
             raise ResourceError(
                 f"This {spec.noun} is available to all or to private repositories, not to a "
-                "chosen few. Change its visibility to Selected repositories first."
+                "chosen few. Change it on its row and choose Selected repositories first."
             ) from exc
         raise _refused(exc, f"read which repositories may use the {spec.noun}") from exc
     return sorted(_repos(reply.data), key=lambda repo: repo.name.lower())
