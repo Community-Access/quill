@@ -333,6 +333,7 @@ MORE_EXTRA: Mapping[str, tuple[ActionRow, ...]] = {
 MORE_NEW_HERE: dict[str, str] = {
     "shop_orders": "do_new_order",
     "membership_levels": "do_new_membership_level",
+    "redirect_groups": "do_new_redirect_group",
     "shop_shipping": "do_new_zone",
     "shop_taxes": "do_new_tax_rate",
     "shop_tax_classes": "do_new_tax_class",

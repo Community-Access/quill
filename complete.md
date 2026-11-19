@@ -187,7 +187,7 @@ Membership levels can now be made and changed (New Membership Level..., Edit Mem
 
 List, add, change, turn on and off, delete, test an address, and the 404 log are built from Redirection's documentation and have never met a real install.
 
-- **Groups, import and export, and Redirection's options.** Route: `redirection/v1/group`, `/import`, `/export`, `/setting` (from the plugin's docs, unverified). Coverage marks them planned.
+- **Redirection's options.** Route: `redirection/v1/setting` (from the plugin's docs, unverified). They stay in the plugin's own screen for now. Groups, import and export were built 2026-11-18: groups through `group` and `bulk/group`, import and export on this computer through the redirect routes already used (the plugin's own import takes an uploaded form file).
 
 ##### Maintenance
 
@@ -201,6 +201,8 @@ All of the following has tests over recorded or fake answers and none has met a 
 - WooCommerce, The Events Calendar and Yoast SEO, signed in on the test site, which has all three. A refund only against a gateway's test mode.
 - New Order, Change Items and Change Address on a test order: especially that a quantity of 0 takes an item off, which WooCommerce's order controller documents but QUILL has only met in fakes.
 - Redirection, and the slug-change redirect offer.
+
+- Redirection, and the slug-change redirect offer, and Redirect Groups (new, rename, turn off, delete) and Import Redirects.
 - QAF on the test site (it still runs BAF), the QAF migration, and the spam settings with a live submission.
 - Gravity Forms building, conversion, feeds, results and test submissions. These need a licensed Gravity Forms with its REST API on.
 - Paid Memberships Pro 3.9 or later on WordPress 6.9 or later, with a role whose PMPro capabilities were changed; and New and Edit Membership Level on a test level.

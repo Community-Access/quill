@@ -540,7 +540,21 @@ site.</li>
 <strong>Turn On or Off</strong> does what it says.</li>
 <li><strong>Delete Redirect…</strong> deletes it for good, because the
 plugin keeps no Trash.</li>
+<li><strong>Export Redirects…</strong> saves every redirect to a file on
+your computer: CSV, or the plugin’s own JSON with its groups.</li>
+<li><strong>Import Redirects…</strong> reads a CSV (from, to, and
+optionally a pattern flag and a code) or a Redirection JSON export, and
+previews every redirect it would add and every line it cannot use, with
+why: a line with no address, a code that is not a redirect, an address
+in the file twice, or one the site already redirects. Then it asks which
+group, and adds them one at a time.</li>
 </ul>
+<p><strong>Redirect Groups</strong>, under Redirects, lists the groups
+the plugin keeps redirects in, with how many each holds and whether it
+is on. <strong>New Group…</strong> (<code>Ctrl+N</code>),
+<strong>Rename…</strong> and <strong>Turn On or Off</strong> each
+preview first and can be undone. <strong>Delete Group…</strong> deletes
+its redirects with it, so it asks you to type the group’s name.</p>
 <p><strong>404 Log</strong>, under Redirects, lists addresses visitors
 asked for that were not found. <strong>Redirect This Address…</strong>
 sends one somewhere, after a preview.</p>
