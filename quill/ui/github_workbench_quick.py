@@ -5,7 +5,9 @@ own (``_fits_<verb>`` and ``_do_<verb>``, made below from the table): it
 works out what the row is about (its repository, organization, key or
 number), reads a list to pick from if it needs one, asks its questions,
 asks before it changes anything, then calls GitHub off the UI thread and
-says what happened, or shows a long answer in a window to read.
+says what happened, or shows a long answer in a window to read. A write is
+refused first, in words, when the account's Workbench level (Read Only or
+Organize) does not allow its tier.
 """
 
 from __future__ import annotations
@@ -16,7 +18,7 @@ from typing import Any
 from quill.core.github.explore_models import ExploreRow
 from quill.core.github.items_provider import GitHubCommit, GitHubItem
 from quill.core.github.quick_actions import Quick, QuickError
-from quill.core.github.quick_tables import QUICK
+from quill.core.github.quick_tables import _WRITE_TIER, QUICK
 from quill.core.github.workflow_models import GitHubWorkflowRun
 
 __all__ = ["QUICK_REASONS", "QUICK_VERBS", "GitHubWorkbenchQuickMixin", "quick_context"]
@@ -104,8 +106,24 @@ class GitHubWorkbenchQuickMixin:
             return False
         return all(ctx.get(key) for key in quick.needs)
 
+    def _quick_refusal(self, quick: Quick) -> str:
+        """Why the account's Workbench level refuses *quick*; "" when it may run."""
+        level = getattr(self, "access_level", None)
+        if not quick.writes or not callable(level):
+            return ""
+        from quill.core.github.permissions import level_refusal
+
+        return level_refusal(level(), _WRITE_TIER[quick.tier])
+
     def _quick_run(self, quick: Quick, row: object) -> None:
-        ctx = self._quick_ctx(row)
+        self.quick_start(quick, self._quick_ctx(row))
+
+    def quick_start(self, quick: Quick, ctx: dict[str, str]) -> None:
+        """Run *quick* on what *ctx* names: a row's context, or a sheet's (Vote... there)."""
+        refusal = self._quick_refusal(quick)
+        if refusal:
+            self._say(refusal)
+            return
         if quick.pick is None:
             self._quick_ask(quick, ctx)
             return

@@ -13,6 +13,12 @@ network call and no new egress row:
 - ``projects:repository`` is :func:`quill.core.github.projects.list_projects`;
 - ``admin:organizations`` and ``admin:org_repositories`` are
   :class:`quill.core.github.repo_admin.GitHubRepoAdminProvider`'s listings;
+- ``discussions:pinned`` is the spotlight
+  (:func:`quill.core.github.discussions.list_pinned_discussions`) and
+  ``discussions:categories`` the categories New Discussion already reads,
+  by section where GitHub gives sections
+  (:func:`quill.core.github.discussion_categories.category_rows`); its
+  "folder" is the open section, kept apart from Files' (:func:`place_key`);
 - ``admin:general`` and ``admin:branch_protection`` list the settings commands
   the editor already has, as rows Enter runs (the change itself stays in the
   dialog it always used, so nothing is changed without that dialog's
@@ -31,9 +37,17 @@ from quill.core.github.explore_models import ExploreRow
 from quill.core.github.navigation_state import account_key_for_token
 from quill.core.workbench.tree import NodeSpec
 
-__all__ = ["ADMIN_ACTIONS", "LOCAL_PREFIXES", "load_local", "saved_items_for"]
+__all__ = ["ADMIN_ACTIONS", "LOCAL_PREFIXES", "load_local", "place_key", "saved_items_for"]
 
-LOCAL_PREFIXES = ("local:", "files:", "milestones:", "projects:", "admin:", "templates:")
+LOCAL_PREFIXES = (
+    "local:",
+    "files:",
+    "milestones:",
+    "projects:",
+    "admin:",
+    "templates:",
+    "discussions:",
+)
 
 #: The rows of the two admin pages: (editor command id, label, what it does).
 ADMIN_ACTIONS: dict[str, tuple[tuple[str, str, str], ...]] = {
@@ -145,10 +159,39 @@ def _template_rows(items: Any, repository: str) -> list[ExploreRow]:
     ]
 
 
-def load_local(items: Any, node: NodeSpec, *, instance: str, folder: str = "") -> list[ExploreRow]:
-    """Fetch the rows of a ``local:``, ``files:``, ``milestones:``, ``projects:`` or
-    ``admin:`` node. Runs off the UI thread."""
+#: Nodes whose open "folder" is their own, not the repository's Files folder.
+_OWN_FOLDERS = frozenset({"discussion_categories"})
+
+
+def place_key(node_key: str, instance: str) -> str:
+    """Where a node's open folder is kept: Files' by repository, a section by its node too."""
+    return f"{node_key}@{instance}" if node_key in _OWN_FOLDERS else instance
+
+
+def _discussion_rows(items: Any, view: str, repository: str, section: str) -> tuple[Any, str]:
+    """The spotlight, or the categories by section; ``(rows, the list's note)``."""
+    if view == "pinned":
+        from quill.core.github.discussions import list_pinned_discussions
+
+        rows = list_pinned_discussions(getattr(items, "token", None), repository)
+        return rows, "" if rows else "Nothing is pinned in this repository's Discussions."
+    from quill.core.github.discussion_categories import category_rows
+
+    _repository_id, categories = items.fetch_discussion_categories(repository)
+    return category_rows(categories, repository, section)
+
+
+def load_local(
+    items: Any, node: NodeSpec, *, instance: str, folder: str = "", host: Any = None
+) -> list[ExploreRow]:
+    """Fetch the rows of a ``local:``, ``files:``, ``milestones:``, ``projects:``,
+    ``discussions:`` or ``admin:`` node; *host* gets the list's note. Runs off the UI thread."""
     prefix, _, view = node.loader.partition(":")
+    if prefix == "discussions":
+        rows, note = _discussion_rows(items, view, instance, folder)
+        if host is not None:
+            host.local_note = note
+        return list(rows)
     if prefix == "local":
         return _local_rows(items, view)
     if prefix == "files":

@@ -53,6 +53,8 @@ _KINDS = {
     "label": "label",
     "gist": "gist",
     "discussion": "discussion",
+    "discussion_section": "discussion_section",
+    "discussion_category": "discussion_category",
     "security": "security_alert",
     "cache": "cache",
     # The Phase 3 loaders' rows (quill/ui/github_workbench_loaders.py).

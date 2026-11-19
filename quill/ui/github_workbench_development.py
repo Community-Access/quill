@@ -40,6 +40,11 @@ from quill.ui.github_workbench_codespaces import (
     CODESPACE_VERBS,
     GitHubWorkbenchCodespacesMixin,
 )
+from quill.ui.github_workbench_discussions import (
+    DISCUSSION_REASONS,
+    DISCUSSION_VERBS,
+    GitHubWorkbenchDiscussionsMixin,
+)
 from quill.ui.github_workbench_dry_run import (
     DRY_RUN_REASONS,
     DRY_RUN_VERBS,
@@ -195,6 +200,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **ROW_ADMIN_VERBS,
     **SCOPED_VERBS,
     **QUICK_VERBS,
+    **DISCUSSION_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -228,6 +234,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **ROW_ADMIN_REASONS,
     **SCOPED_REASONS,
     **QUICK_REASONS,
+    **DISCUSSION_REASONS,
 }
 
 
@@ -259,6 +266,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchRowAdminMixin,
     GitHubWorkbenchScopedListsMixin,
     GitHubWorkbenchQuickMixin,
+    GitHubWorkbenchDiscussionsMixin,
 ):
     items: Any
     frame: Any

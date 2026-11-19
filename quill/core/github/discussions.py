@@ -1,4 +1,9 @@
-"""Bounded, read-only GitHub Discussions view for the shared Explore dialog."""
+"""Bounded, read-only GitHub Discussions views: the list, one discussion, and the spotlight.
+
+Each discussion's details carry its poll as a table (option, votes,
+percentage, your vote). Pinned (spotlight) lists the pinned discussions in
+GitHub's order; pinning itself has no API, which :data:`PIN_NOT_IN_API` says.
+"""
 
 from __future__ import annotations
 
@@ -7,6 +12,12 @@ from typing import Any
 from urllib.error import HTTPError
 from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener
 
+from quill.core.github.discussion_actions import (
+    POLL_FIELDS,
+    parse_poll,
+    poll_heading,
+    poll_table,
+)
 from quill.core.github.explore_models import ExploreRow, GitHubExploreError, _text
 from quill.core.net import verified_ssl_context
 
@@ -25,11 +36,12 @@ query($owner:String!, $repo:String!, $first:Int!, $after:String) {
         author { login }
         category { name emoji isAnswerable }
         answer { isAnswer bodyText url author { login } }
+        POLL
       }
     }
   }
 }
-"""
+""".replace("POLL", POLL_FIELDS)
 _DISCUSSION_QUERY = """
 query($owner:String!, $repo:String!, $number:Int!) {
   repository(owner:$owner, name:$repo) {
@@ -38,10 +50,40 @@ query($owner:String!, $repo:String!, $number:Int!) {
       author { login }
       category { name emoji isAnswerable }
       answer { isAnswer bodyText url author { login } }
+      POLL
     }
   }
 }
-"""
+""".replace("POLL", POLL_FIELDS)
+# Repository > Discussions > Pinned (spotlight): the discussions pinned at the top
+# of the repository's Discussions page, in the order GitHub shows them. GitHub's
+# API reads them (Repository.pinnedDiscussions) but has no mutation to pin,
+# unpin or reorder one, so this place is read only (api_coverage.json says so).
+_PINNED_QUERY = """
+query($owner:String!, $repo:String!) {
+  repository(owner:$owner, name:$repo) {
+    pinnedDiscussions(first:10) {
+      totalCount
+      nodes {
+        pinnedBy { login }
+        discussion {
+          number title bodyText url createdAt updatedAt closed
+          author { login }
+          category { name emoji isAnswerable }
+          answer { isAnswer bodyText url author { login } }
+          POLL
+        }
+      }
+    }
+  }
+}
+""".replace("POLL", POLL_FIELDS)
+
+#: Said wherever pinning would be offered: why the spotlight is read only.
+PIN_NOT_IN_API = (
+    "GitHub's API reads pinned discussions but cannot pin, unpin or reorder one; "
+    "do that on the discussion's page on GitHub (Open on GitHub)."
+)
 
 
 class _NoRedirect(HTTPRedirectHandler):
@@ -50,6 +92,7 @@ class _NoRedirect(HTTPRedirectHandler):
 
 
 def _request(token: str, query: str, variables: dict[str, object]) -> dict[str, Any]:
+    """One GraphQL read for the Discussions places; refusals said in words."""
     request = Request(
         "https://api.github.com/graphql",
         data=json.dumps({"query": query, "variables": variables}).encode("utf-8"),
@@ -92,7 +135,8 @@ def _request(token: str, query: str, variables: dict[str, object]) -> dict[str, 
     return data
 
 
-def _map(row: Any, repository: str) -> ExploreRow:
+def map_discussion(row: Any, repository: str) -> ExploreRow:
+    """One discussion node as a Workbench row: its label, and details with any poll."""
     number = row.get("number") if isinstance(row, dict) else 0
     if isinstance(number, bool) or not isinstance(number, int) or number <= 0:
         raise GitHubExploreError("GitHub returned a Discussion without a valid number.")
@@ -129,6 +173,11 @@ def _map(row: Any, repository: str) -> ExploreRow:
     ]
     if body:
         details.extend(["", body])
+    poll = parse_poll(row.get("poll"))
+    if poll is not None:
+        # The poll as a table: option, votes, percentage, your vote.
+        details.extend(["", poll_heading(poll), "Option, votes, percent, your vote:"])
+        details.extend(poll_table(poll))
     if answer_body:
         details.extend(["", "Chosen answer:", answer_body])
     if url:
@@ -181,7 +230,7 @@ def list_discussions(
             raise GitHubExploreError("GitHub returned incomplete Discussions data.") from exc
         if not isinstance(nodes, list) or not isinstance(page_info, dict):
             raise GitHubExploreError("GitHub returned malformed Discussions pagination data.")
-        rows.extend(_map(row, repository) for row in nodes)
+        rows.extend(map_discussion(row, repository) for row in nodes)
         has_next = page_info.get("hasNextPage")
         if not isinstance(has_next, bool):
             raise GitHubExploreError("GitHub returned invalid Discussions page status.")
@@ -221,7 +270,47 @@ def fetch_discussion(token: str | None, repository: str, number: int) -> Explore
         raise GitHubExploreError("GitHub returned incomplete Discussion data.") from exc
     if not isinstance(discussion, dict):
         raise GitHubExploreError(f"Discussion #{number} was not found in {repository}.")
-    return _map(discussion, repository)
+    return map_discussion(discussion, repository)
 
 
-__all__ = ["fetch_discussion", "list_discussions"]
+def list_pinned_discussions(token: str | None, repository: str) -> list[ExploreRow]:
+    """The spotlight: pinned discussions first to last, as GitHub orders them (read only)."""
+    if not token:
+        raise GitHubExploreError("Sign in to GitHub to view repository Discussions.")
+    owner, _sep, name = repository.partition("/")
+    if not owner.strip() or not name.strip():
+        raise GitHubExploreError("Enter a repository as owner/repo to view Discussions.")
+    data = _request(token, _PINNED_QUERY, {"owner": owner, "repo": name})
+    repo = data.get("repository")
+    connection = repo.get("pinnedDiscussions") if isinstance(repo, dict) else None
+    nodes = connection.get("nodes") if isinstance(connection, dict) else None
+    if not isinstance(nodes, list):
+        raise GitHubExploreError("GitHub returned incomplete pinned Discussions data.")
+    rows: list[ExploreRow] = []
+    for place, pin in enumerate((n for n in nodes if isinstance(n, dict)), start=1):
+        found = map_discussion(pin.get("discussion"), repository)
+        by = pin.get("pinnedBy")
+        who = _text(by.get("login")) if isinstance(by, dict) else ""
+        pinned = f"Pinned {place} of {len(nodes)}" + (f", by {who}." if who else ".")
+        rows.append(
+            ExploreRow(
+                label=f"{place}. {found.label}",
+                detail=f"{pinned}\n{found.detail}\n\n{PIN_NOT_IN_API}",
+                url=found.url,
+                repo=found.repo,
+                kind=found.kind,
+                key=found.key,
+                updated_at=found.updated_at,
+                title=found.title,
+            )
+        )
+    return rows
+
+
+__all__ = [
+    "PIN_NOT_IN_API",
+    "fetch_discussion",
+    "list_discussions",
+    "list_pinned_discussions",
+    "map_discussion",
+]

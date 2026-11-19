@@ -51,6 +51,7 @@ __all__ = [
     "fine_grained_steps",
     "gh_refresh_command",
     "level_allows",
+    "level_refusal",
     "missing_scopes",
     "repo_role",
     "requirement_words",
@@ -101,6 +102,18 @@ def level_allows(level: AccessLevel, tier: WriteTier) -> bool:
     if level is AccessLevel.ORGANIZE:
         return tier <= WriteTier.VISIBLE
     return True
+
+
+def level_refusal(level: AccessLevel, tier: WriteTier) -> str:
+    """Why this account's Workbench level refuses a write of *tier*; "" when it allows it."""
+    if level_allows(level, tier):
+        return ""
+    if level is AccessLevel.READ_ONLY:
+        return "This account is read only in the Workbench. Workbench Options, Accounts changes it."
+    return (
+        "This account is set to Organize in the Workbench, which allows organizing and "
+        "comments, not access, settings or deleting."
+    )
 
 
 def safe_mode_on() -> bool:
@@ -449,15 +462,7 @@ def _check_one(token: str, ctx: ViewerContext) -> str:
 def check(requirement: str, ctx: ViewerContext, tier: WriteTier | None = None) -> str:
     """ "" when *ctx* may do something needing *requirement*; else why not, in sentences."""
     if tier is not None and not level_allows(ctx.level, tier):
-        if ctx.level is AccessLevel.READ_ONLY:
-            return (
-                "This account is read only in the Workbench. Workbench Options, "
-                "Accounts changes it."
-            )
-        return (
-            "This account is set to Organize in the Workbench, which allows organizing and "
-            "comments, not access, settings or deleting."
-        )
+        return level_refusal(ctx.level, tier)
     for token in (t for t in requirement.split("+") if t):
         reason = _check_one(token, ctx)
         if reason:

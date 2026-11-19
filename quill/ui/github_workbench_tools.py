@@ -467,6 +467,9 @@ class GitHubWorkbenchToolsMixin(GitHubWorkbenchInvitationsMixin):
             if spec.key == "invitations" and scope in ("repository", "organization"):
                 self.act_on_invitation(scope, state["ident"], verb, row, target.title())
                 return
+            if target.kind == "discussion" and spec.key == "poll":
+                self.vote_from_sheet(dict(state["ident"]), verb)  # type: ignore[attr-defined]
+                return
             if scope is None or spec.key not in (
                 "collaborators",
                 "teams",
