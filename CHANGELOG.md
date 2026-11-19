@@ -2,6 +2,15 @@
 
 ## 1.0.0
 
+### Quill Cast: Ctrl+2 shows the episode that is playing (2026-11-19)
+
+Reported by Chris: Enter on a podcast, or on an episode in the Queue, played
+it, and Ctrl+2 then brought up Now Playing without it. Now Playing only loaded
+the current episode, and started its clock, when it was opened through its own
+command. Ctrl+2, Ctrl+Tab and the Window menu showed the hidden window as it
+had been left, which was often "Nothing is playing". Every way of reaching it
+now brings it up to date first. Cast's other windows that hide rather than
+close, such as Statistics, now refresh the same way.
 ### WordPress Workbench: Shop Analytics (2026-11-19)
 
 A site with WooCommerce Analytics now has **Shop Analytics** beside its Shop:
