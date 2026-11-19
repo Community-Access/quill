@@ -1,8 +1,9 @@
 """Sheets for people, collaborators and invitations (GitHub PRD Appendix C, 16.7, 18.3).
 
 A person's sheet has the **You** page of section 16.7: Follow, Block, and
-whether they follow you; Sponsor and Report are links, because GitHub has no
-API for either. Your own sheet's Profile page is editable (name, bio,
+whether they follow you; whether you sponsor them, which only reads because
+sponsoring spends money at a tier (their Sponsor node does that), and Report,
+which GitHub has no API for. Your own sheet's Profile page is editable (name, bio,
 company, location, website, social handle, hireable); anyone else's reads.
 A collaborator's role and an invitation's role are editable, each a tier 2
 change previewed in words.
@@ -18,6 +19,7 @@ from typing import Any
 from quill.core.github.permissions import REPO_ROLES, WriteTier
 from quill.core.github.sheet_engine import Ident, Read, SheetDef, Write
 from quill.core.github.sheet_fields import dig, ed, lst, page, patch, ro, toggle, when
+from quill.core.github.sheets_you import PERSON_SPONSOR_READ, sponsoring_field
 from quill.core.workbench.properties import FieldKind, SheetSpec, Value
 
 __all__ = ["COLLABORATOR", "INVITATION", "PERSON"]
@@ -78,12 +80,8 @@ PERSON = SheetDef(
                     "comment on your issues or open pull requests on your repositories.",
                 ),
                 ro("follows_you", "Follows you", _K.CHECK),
-                ro(
-                    "sponsor",
-                    "Sponsor",
-                    _K.LINK,
-                    "GitHub Sponsors has no API for sponsoring; Open on GitHub goes to the page.",
-                ),
+                sponsoring_field(),
+                ro("sponsor", "Sponsor", _K.LINK, "Their Sponsors page on GitHub."),
                 ro(
                     "report",
                     "Report",
@@ -131,6 +129,7 @@ PERSON = SheetDef(
             optional=True,
             fallback={"follows_you": False},
         ),
+        PERSON_SPONSOR_READ,
         Read(
             "/users/{login}/orgs",
             lambda d: {

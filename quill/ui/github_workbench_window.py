@@ -66,7 +66,7 @@ from quill.ui.github_workbench_explore import (
 )
 from quill.ui.github_workbench_help import HELP_PREFIX, GitHubWorkbenchHelpMixin
 from quill.ui.github_workbench_import import GitHubWorkbenchImportMixin
-from quill.ui.github_workbench_loaders import LOCAL_PREFIXES, load_local, saved_items_for
+from quill.ui.github_workbench_loaders import LOCAL_PREFIXES, load_local, place_key, saved_items_for
 from quill.ui.github_workbench_place import GitHubWorkbenchPlaceMixin
 from quill.ui.github_workbench_properties import PAGE_FOR_VERB, GitHubWorkbenchPropertiesMixin
 from quill.ui.github_workbench_tools import GitHubWorkbenchToolsMixin
@@ -275,8 +275,8 @@ class GitHubWorkbenchProvider(
         if node.loader.startswith("teams:"):
             return list(self.load_teams(node.loader, ref.instance))
         if node.loader.startswith(LOCAL_PREFIXES):
-            folder = self._folders.get(ref.instance, "")
-            return list(load_local(self.items, node, instance=ref.instance, folder=folder))
+            folder = self._folders.get(place_key(node.key, ref.instance), "")
+            return load_local(self.items, node, instance=ref.instance, folder=folder, host=self)
         view, repo, items = node.loader.removeprefix("items:"), ref.instance, self.items
         limit = self.page_limit(ref, DEFAULT_PAGE_LIMIT)
         preset = dict(node.preset)
@@ -392,8 +392,8 @@ class GitHubWorkbenchProvider(
         frame = self.frame
         if frame is None:
             return False
-        if self.run_view(command_id) or self.run_tool(command_id):
-            return True
+        if self.refused(command_id) or self.run_view(command_id) or self.run_tool(command_id):
+            return True  # refused: the account's level, checked once for every command
         if command_id == "github.workbench.open":
             frame.details.SetFocus()
             return True

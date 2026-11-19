@@ -48,6 +48,22 @@ _OPEN_WEB = _a("open_on_github", "Open on GitHub", help="Open the item in your b
 
 #: Row types added for PRD 14.2 and 14.3, merged into the Workbench's table.
 ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
+    # Repository > Discussions > Categories (quill/core/github/discussion_categories.py).
+    "discussion_section": (
+        _default("open_section", "Open Section", "List the categories in this section."),
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
+    "discussion_category": (
+        _default(
+            "category_discussions",
+            "Find Discussions in Category",
+            "The repository's discussions in this category.",
+        ),
+        _COPY_LINK,
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
     "runner": (
         _default("show_details", "Show Details", "The runner's state, system and labels."),
         _a("runner_labels", "Runner Labels...", _O, "admin", "Add a label, or take one away."),

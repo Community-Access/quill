@@ -619,7 +619,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Issues (`repository:issues`) | repository, repository | Issues: this repository's open issues. Ctrl+N files a new one; Delete closes the selected one after asking. |
 | Pull Requests (`repository:pulls`) | repository, repository | Pull Requests: this repository's open pull requests. Enter opens the review; Ctrl+Shift+D lists the changed files. |
 | Issues and Pull Requests (`repository:issues_and_pulls`) | repository, repository | Issues and Pull Requests: both in one list, newest first, the way an inbox reads. |
-| Discussions (`repository:discussions`) | repository, repository | Discussions: the repository's conversations that are not issues. |
+| Discussions (`repository:discussions`) | repository, repository | Discussions: the repository's conversations that are not issues. A poll shows in the details as a table; Vote... casts your vote. |
 | Merge Queue (`repository:merge_queue`) | repository, repository | Merge Queue: the default branch's merge queue in order, each pull request's state. |
 | Actions (`repository:actions`) | repository, repository | Actions: the repository's workflow runs, workflows and caches. |
 | Runs (`repository:runs`) | repository, actions | Runs: each time a workflow ran. Enter shows its jobs and logs; Ctrl+Shift+W says what failed; Ctrl+Shift+F5 re-runs the failed jobs. |
@@ -664,6 +664,8 @@ Everything below is generated from the tables the window is built from. The GitH
 | Autolinks (`repository:autolinks`) | repository, settings | Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one. |
 | Environments (`repository:environments`) | repository, settings | Environments: where this repository's workflows deploy, each with its protection rules. Secrets... and Variables... on a row are that environment's own. |
 | Codespaces (`repository:repo_codespaces`) | repository, code | Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you name, with the machine and dev container you choose. |
+| Pinned (spotlight) (`repository:discussions_pinned`) | repository, discussions | Pinned (spotlight): the discussions pinned at the top of Discussions, in GitHub's order. Read only: GitHub's API cannot pin, unpin or reorder one. |
+| Categories (`repository:discussion_categories`) | repository, discussions | Categories: the repository's discussion categories, grouped by section where GitHub gives sections; Enter lists a category's discussions. |
 | Actions Variables (`repository:actions_variables`) | repository, settings | Actions Variables: values workflows read as vars.NAME. Ctrl+N adds one. |
 | Actions Secrets (`repository:actions_secrets`) | repository, settings | Actions Secrets: values workflows read but nobody sees again. Ctrl+N adds one. |
 | Dependabot Secrets (`repository:dependabot_secrets`) | repository, settings | Dependabot Secrets: what Dependabot uses to reach private registries. |
@@ -967,7 +969,7 @@ Keys the window answers that are not menu rows:
 - **person**: Open, Follow or Unfollow, Open on GitHub; Properties...
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
 - **gist**: Edit Gist..., Star or Unstar, Comments..., History..., Forks..., Fork Gist; More: Copy Link, Open on GitHub, Delete Gist...; Properties...
-- **discussion**: Open Discussion Thread, Read as Document..., Copy Link, Open on GitHub, Close Discussion..., Reopen Discussion; More: Delete Discussion..., Upvote, Remove Upvote, Vote in the Poll..., Edit a Comment..., Delete a Comment...; Properties...
+- **discussion**: Open Discussion Thread, Read as Document..., Copy Link, Open on GitHub, Close Discussion..., Reopen Discussion; More: Delete Discussion..., Upvote, Remove Upvote, Vote..., Edit a Comment..., Delete a Comment...; Properties...
 - **security_alert**: Open, Dismiss or Reopen Alert..., Copilot Autofix..., Show Every Place, Open on GitHub, Where It Was Found; Properties...
 - **cache**: Show Details, Delete Cache...; Properties...
 - **saved_search**: Run, Pin as Node, Unpin Node, Remove Saved Search; Properties...
@@ -990,6 +992,8 @@ Keys the window answers that are not menu rows:
 - **repository_set**: Use This Set, Edit Repositories..., Set Filter..., New Set..., Rename Set..., Delete Set...; Properties...
 - **by_name**: Variants and Missing From, Make Them the Same..., Add to Missing..., Find Uses, Rename Everywhere..., Merge Into...; More: Close Everywhere..., Move Open Work To..., Promote to Organization..., Delete Everywhere...; Properties...
 - **fleet**: Open Repository, Open on GitHub, Copy Link; Properties...
+- **discussion_section**: Open Section, Open on GitHub; Properties...
+- **discussion_category**: Find Discussions in Category, Copy Link, Open on GitHub; Properties...
 - **runner**: Show Details, Runner Labels..., Remove Runner..., Open on GitHub, Copy Link, Removal Commands...; Properties...
 - **pages_site**: Show Details, Check Site, Rebuild, Turn Off Pages..., Open on GitHub, Copy Link; Properties...
 - **environment**: Show Details, Secrets..., Variables..., Branch Policies..., Protection Rules..., Delete...; More: Open on GitHub, Copy Link, Pin Environment, Unpin Environment, Move Environment...; Properties...
@@ -1038,6 +1042,7 @@ Keys the window answers that are not menu rows:
 - **Deploy key**: An SSH key that reaches one repository only, for a server to clone, pull or push.
 - **Deployment**: Code sent to an environment, such as a website.
 - **Discussion**: A conversation in a repository that is not an issue.
+- **Discussion category**: A kind of discussion, such as Q&A or Ideas. Under Discussions, Categories, by section where GitHub gives sections; Enter lists its discussions.
 - **Draft**: A pull request that is not ready for review yet.
 - **Environment**: A named place code is deployed to, with its own rules and secrets.
 - **Favorite**: An item kept on this computer under Repositories, Favorites.
@@ -1059,6 +1064,7 @@ Keys the window answers that are not menu rows:
 - **Organization**: An account many people share, which owns repositories and teams.
 - **Package**: Something a project publishes besides its code, such as a container image or an npm package, kept on GitHub Packages in versions.
 - **Pin**: A repository kept on this computer under Repositories, Pinned.
+- **Poll**: A question in a discussion with options to vote for. Its details show it as a table: option, votes, percentage and your vote. Vote... casts yours.
 - **Project**: A board or table for planning issues and pull requests.
 - **Pull request**: A proposed change: commits on one branch that somebody asks to merge into another, with a review. Under a repository's Pull Requests.
 - **Rate limit**: How many requests GitHub allows an account each hour. Account, GitHub API Rate Limit, Ctrl+Shift+L.
@@ -1076,6 +1082,7 @@ Keys the window answers that are not menu rows:
 - **Security advisory**: A notice that a package has a vulnerability: which versions, how serious, and where it is fixed. Each has a GHSA id, and often a CVE number too.
 - **Security alert**: A warning that code, a dependency or a secret in it is at risk.
 - **Sponsorship**: Money you pay someone through GitHub Sponsors for their open-source work, each month or once, at one of the tiers they offer.
+- **Spotlight**: The discussions pinned at the top of Discussions. Under Discussions, Pinned (spotlight); read only, because GitHub's API cannot pin one.
 - **Squash**: Merging a pull request as one single commit, instead of all of its commits.
 - **Star**: A bookmark on a repository, which also shows you like it.
 - **Star list**: One of your own named groups of starred repositories, such as Screen readers. A repository can be on several.
@@ -1105,7 +1112,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 848 yes, 0 planned, 290 not needed and 866 left to GitHub.
+In all: 849 yes, 0 planned, 290 not needed and 868 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2837,7 +2844,7 @@ In all: 848 yes, 0 planned, 290 not needed and 866 left to GitHub.
 | Mutation | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
 | `addDiscussionComment` | Yes | context menu > Open Discussion Thread |
-| `addDiscussionPollVote` | Yes | context menu > Vote in the Poll... |
+| `addDiscussionPollVote` | Yes | context menu > Vote... |
 | `addUpvote` | Yes | context menu > Upvote |
 | `closeDiscussion` | Yes | context menu > Close Discussion... |
 | `createDiscussion` | Yes | Navigator: Repository > owner/name > Discussions |
@@ -3193,18 +3200,21 @@ In all: 848 yes, 0 planned, 290 not needed and 866 left to GitHub.
 
 | Query field | Can QUILL do it? | Where, or why |
 | --- | --- | --- |
+| `DiscussionCategory section` | Left to GitHub | GitHub's GraphQL DiscussionCategory has no section field, so Discussions > Categories lists the categories in GitHub's order and says why, in the list's note. Open on GitHub: the repository's Discussions page. |
 | `blockedBy` | Yes | context menu > Reorder Sub-issues... |
 | `closingIssuesReferences` | Yes | Properties (Alt+Enter) on Pull Request |
 | `compare` | Yes | Navigator: Repository > owner/name > Code > Branches |
 | `contributionsCollection` | Yes | Navigator: People > My Profile |
 | `dependencyGraphManifests` | Yes | context menu > Dependency Manifests |
-| `discussionCategories` | Yes | Navigator: Repository > owner/name > Discussions |
+| `discussionCategories` | Yes | Navigator: Repository > owner/name > Discussions > Categories |
 | `discussions` | Yes | Navigator: Repository > owner/name > Discussions |
 | `fundingLinks` | Yes | context menu > Sponsor Links |
 | `issueTypes` | Yes | context menu > Set Issue Type... |
 | `linkedBranches` | Yes | Properties (Alt+Enter) on Issue: Linked branches |
 | `lists` | Yes | Navigator: Repositories > Star Lists |
 | `mergeQueue` | Yes | Item > Merge... (Ctrl+Shift+Enter) |
+| `pinDiscussion (pin, unpin, reorder)` | Left to GitHub | GitHub's GraphQL API reads pinned discussions (Repository.pinnedDiscussions) but has no mutation to pin, unpin or reorder one, so Discussions > Pinned (spotlight) is read only and says so. Open on GitHub: the discussion's page. |
+| `pinnedDiscussions` | Yes | Navigator: Repository > owner/name > Discussions > Pinned (spotlight) |
 | `pinnedItems` | Yes | Navigator: People > My Profile |
 | `projectsV2` | Yes | Navigator: Repository > owner/name > Projects |
 | `rateLimit` | Yes | Account > GitHub API Rate Limit (Ctrl+Shift+L) |

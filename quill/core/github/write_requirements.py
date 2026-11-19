@@ -21,7 +21,7 @@ from __future__ import annotations
 from quill.core.github.permissions import WriteTier
 from quill.core.github.quick_tables import QUICK_REQUIREMENTS
 
-__all__ = ["COMMAND_REQUIREMENTS", "requirement_for"]
+__all__ = ["COMMAND_REQUIREMENTS", "EDITOR_READS", "EDITOR_REQUIREMENTS", "requirement_for"]
 
 _O, _V, _A, _D = (
     WriteTier.ORGANIZING,
@@ -233,6 +233,32 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
 
 # The quick commands (quill/core/github/quick_tables.py) declare their own.
 COMMAND_REQUIREMENTS.update(QUICK_REQUIREMENTS)
+
+#: The editor's own GitHub commands the Workbench runs for you (Repository
+#: Actions, New, the admin pages): the same declaration, so the Workbench's
+#: level holds for them too (quill.core.github.write_gate).
+EDITOR_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
+    "github.fork_repository": ("sign_in", _V),
+    "github.dispatch_workflow": ("repo:write", _V),
+    "github.create_release": ("repo:write", _V),
+    "github.create_codespace": ("sign_in+scope:codespace", _V),
+    "github.rename_repository": ("repo:admin", _A),
+    "github.change_repository_visibility": ("repo:admin", _D),
+    "github.change_default_branch": ("repo:admin", _A),
+    "github.configure_branch_protection": ("repo:admin", _A),
+    "github.delete_branch": ("repo:write", _D),
+    "github.commit_multiple_files": ("repo:write", _V),
+    "github.create_repository": ("sign_in", _V),
+    "github.clone_repository": ("local", _O),
+}
+
+#: The editor commands the Workbench runs that only read or open a list.
+EDITOR_READS: frozenset[str] = frozenset({
+    "file.github_manage_accounts",
+    "github.browse_organization",
+    "github.list_codespaces",
+    "github.view_security_alerts",
+})
 
 
 def requirement_for(command_id: str) -> tuple[str, WriteTier] | None:

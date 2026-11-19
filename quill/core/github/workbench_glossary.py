@@ -137,6 +137,18 @@ GLOSSARY: dict[str, str] = {
     "Watch": "Asking GitHub to tell you about a repository's activity.",
     "Gist": "A small shared file or snippet, with its own history.",
     "Discussion": "A conversation in a repository that is not an issue.",
+    "Discussion category": (
+        "A kind of discussion, such as Q&A or Ideas. Under Discussions, Categories, "
+        "by section where GitHub gives sections; Enter lists its discussions."
+    ),
+    "Poll": (
+        "A question in a discussion with options to vote for. Its details show it as a "
+        "table: option, votes, percentage and your vote. Vote... casts yours."
+    ),
+    "Spotlight": (
+        "The discussions pinned at the top of Discussions. Under Discussions, Pinned "
+        "(spotlight); read only, because GitHub's API cannot pin one."
+    ),
     "Project": "A board or table for planning issues and pull requests.",
     "GitHub Pages": "A website GitHub publishes from a repository, from a branch or by a workflow.",
     "Codespace": "A computer in the cloud with the repository ready to work on. It can cost money.",
@@ -198,6 +210,8 @@ ROW_TYPE_WORDS: dict[str, str] = {
     "label": "Label",
     "gist": "Gist",
     "discussion": "Discussion",
+    "discussion_section": "Discussion category",
+    "discussion_category": "Discussion category",
     "security_alert": "Security alert",
     "cache": "Cache",
     "saved_search": "Saved search",
@@ -365,6 +379,8 @@ _CHAPTER_FOR: dict[str, str] = {
     "repository:workflows": "06",
     "repository:caches": "06",
     "repository:discussions": "08",
+    "repository:discussions_pinned": "08",
+    "repository:discussion_categories": "08",
     "repository:security": "08",
     "repository:alerts": "08",
     "repository:alerts_closed": "08",

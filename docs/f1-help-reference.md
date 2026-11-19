@@ -2636,7 +2636,7 @@ Control coverage: 384 audited sites (384 helped).
 
 **repository: Issues and Pull Requests.** Issues and Pull Requests: both in one list, newest first, the way an inbox reads.
 
-**repository: Discussions.** Discussions: the repository's conversations that are not issues.
+**repository: Discussions.** Discussions: the repository's conversations that are not issues. A poll shows in the details as a table; Vote... casts your vote.
 
 **repository: Merge Queue.** Merge Queue: the default branch's merge queue in order, each pull request's state.
 
@@ -2725,6 +2725,10 @@ Control coverage: 384 audited sites (384 helped).
 **repository: Environments.** Environments: where this repository's workflows deploy, each with its protection rules. Secrets... and Variables... on a row are that environment's own.
 
 **repository: Codespaces.** Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you name, with the machine and dev container you choose.
+
+**repository: Pinned (spotlight).** Pinned (spotlight): the discussions pinned at the top of Discussions, in GitHub's order. Read only: GitHub's API cannot pin, unpin or reorder one.
+
+**repository: Categories.** Categories: the repository's discussion categories, grouped by section where GitHub gives sections; Enter lists a category's discussions.
 
 **repository: Actions Variables.** Actions Variables: values workflows read as vars.NAME. Ctrl+N adds one.
 
@@ -3486,7 +3490,7 @@ Control coverage: 384 audited sites (384 helped).
 
 **Remove Upvote.** Take your upvote back.
 
-**Vote in the Poll.** Choose an answer in this discussion's poll.
+**Vote.** Choose an answer in this discussion's poll and cast your vote; says the new count.
 
 **Edit a Comment.** Change a comment you may edit.
 
@@ -3711,6 +3715,10 @@ Control coverage: 384 audited sites (384 helped).
 **Delete Everywhere.** Delete the label, or remove the topic, in every repository, after the preview.
 
 **Open Repository.** Select the repository's node in the tree.
+
+**Open Section.** List the categories in this section.
+
+**Find Discussions in Category.** The repository's discussions in this category.
 
 **Runner Labels.** Add a label, or take one away.
 

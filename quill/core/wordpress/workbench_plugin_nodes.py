@@ -318,7 +318,9 @@ PLUGIN_ROW_HELP: Mapping[str, str] = {
     "seo_item": (
         "A post or page with its Yoast SEO. Search Appearance reads what a search engine "
         "shows; Edit SEO changes the title, description, keyphrase, indexing and social "
-        "title, description and image; the Bulk SEO Editor changes many in one window."
+        "title, description and image; the Bulk SEO Editor changes many in one window. "
+        "Properties' SEO page has the canonical address, primary category and schema type, "
+        "and Open in wp-admin opens the post's editor for any the site keeps from REST."
     ),
     "shop_review": (
         "A WooCommerce product review. Approve, Hold, Mark as Spam, Reply, Edit Review and "

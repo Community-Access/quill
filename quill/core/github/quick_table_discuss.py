@@ -1,7 +1,7 @@
 """Quick commands over GraphQL: discussions, closing references, environments and more.
 
 * A discussion: **Close Discussion...**, **Reopen Discussion**, **Delete
-  Discussion...**, **Upvote**, **Remove Upvote**, **Vote in the Poll...**,
+  Discussion...**, **Upvote**, **Remove Upvote**, **Vote...** (in its poll),
   **Edit a Comment...**, **Delete a Comment...**.
 * An issue: **Link a Pull Request That Closes It...** and **Unlink a Pull
   Request...**.
@@ -22,7 +22,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from quill.core.github.discussion_actions import POLL_FIELDS
 from quill.core.github.quick_actions import Ask, Quick, QuickError, bulleted, gql
+from quill.core.github.sheet_fields import input_mutation
 
 __all__ = ["DISCUSS_QUICK", "input_fields", "node_id"]
 
@@ -75,10 +77,8 @@ def node_id(api: Any, kind: str, ctx: Mapping[str, str], number: str = "") -> st
 
 
 def _mutate(api: Any, name: str, fields: Mapping[str, Any]) -> Any:
-    query = f"mutation($input: {name[0].upper()}{name[1:]}Input!) {{ {name}(input: $input) " + (
-        "{ clientMutationId } }"
-    )
-    return gql(api, query, {"input": dict(fields)})
+    # The very text a sheet's You page sends (sheet_fields.input_mutation).
+    return gql(api, input_mutation(name), {"input": dict(fields)})
 
 
 def _discussion(api: Any, ctx: dict[str, str]) -> str:
@@ -109,21 +109,47 @@ def _deletable(api: Any, ctx: dict[str, str]) -> list[tuple[str, str]]:
 
 
 def _poll(api: Any, ctx: dict[str, str]) -> list[tuple[str, str]]:
+    """Vote...'s choices: each option with its votes, or why you cannot vote."""
     owner, _s, name = ctx["repo"].partition("/")
     query = (
         "query($o: String!, $n: String!, $x: Int!) { repository(owner: $o, name: $n) { "
-        "discussion(number: $x) { poll { question options(first: 20) { nodes { id option "
-        "totalVoteCount } } } } } }"
+        f"discussion(number: $x) {{ {POLL_FIELDS} }} }} }}"
     )
     data = gql(api, query, {"o": owner, "n": name, "x": int(ctx["key"])})
     poll = ((data.get("repository") or {}).get("discussion") or {}).get("poll")
     if not isinstance(poll, Mapping):
         raise QuickError("This discussion has no poll.")
+    nodes = [o for o in (poll.get("options") or {}).get("nodes") or () if isinstance(o, Mapping)]
+    mine = [str(o.get("option")) for o in nodes if o.get("viewerHasVoted")]
+    if mine:
+        raise QuickError(f"You have already voted in this poll, for {', '.join(mine)}.")
+    if not poll.get("viewerCanVote"):
+        raise QuickError("GitHub says you cannot vote in this poll.")
     return [
         (f"{o.get('option')} ({o.get('totalVoteCount', 0)} votes)", str(o["id"]))
-        for o in (poll.get("options") or {}).get("nodes") or ()
-        if isinstance(o, Mapping) and o.get("id")
+        for o in nodes
+        if o.get("id")
     ]
+
+
+def _vote(api: Any, ctx: dict[str, str]) -> Any:
+    query = (
+        "mutation($input: AddDiscussionPollVoteInput!) { addDiscussionPollVote(input: $input) "
+        "{ pollOption { option totalVoteCount viewerHasVoted poll { totalVoteCount } } } }"
+    )
+    return gql(api, query, {"input": {"pollOptionId": ctx["option"]}})
+
+
+def _voted(data: Any, ctx: Mapping[str, str]) -> str:
+    """The outcome, once, with the new count GitHub sends back."""
+    option = ((data or {}).get("addDiscussionPollVote") or {}).get("pollOption") or {}
+    if not option.get("viewerHasVoted", True):
+        raise QuickError("GitHub did not record the vote.")
+    name = str(option.get("option") or ctx.get("option_label") or "that answer")
+    votes = int(option.get("totalVoteCount") or 0)
+    total = int((option.get("poll") or {}).get("totalVoteCount") or votes)
+    noun = "vote" if votes == 1 else "votes"
+    return f"Voted for {name}. It has {votes} {noun} now, of {total} in all."
 
 
 def _closing(add: bool) -> Any:
@@ -245,10 +271,9 @@ DISCUSS_QUICK: tuple[Quick, ...] = (
           lambda api, ctx: _mutate(api, "removeUpvote", {"subjectId": _discussion(api, ctx)}),
           _say("Removed your upvote."), tier="O", need="sign_in", needs=("repo", "key"),
           live=_LIVE_DISC),
-    Quick("poll_vote", "Vote in the Poll...", ("discussion",), _DISC,
-          "Choose an answer in this discussion's poll.", ("graphql:addDiscussionPollVote",),
-          lambda api, ctx: _mutate(api, "addDiscussionPollVote", {"pollOptionId": ctx["option"]}),
-          lambda _d, ctx: f"Voted for {ctx.get('option_label', 'that answer')}.", tier="O",
+    Quick("poll_vote", "Vote...", ("discussion",), _DISC,
+          "Choose an answer in this discussion's poll and cast your vote; says the new count.",
+          ("graphql:addDiscussionPollVote",), _vote, _voted, tier="O",
           need="sign_in", pick=_poll, pick_key="option", pick_question="Your answer:",
           needs=("repo", "key"), live="needs Jeff: a discussion with a poll"),
     Quick("edit_discussion_comment", "Edit a Comment...", ("discussion",), _DISC,

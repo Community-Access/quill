@@ -2,6 +2,63 @@
 
 ## 1.0.0
 
+### GitHub Workbench: a You page for your own relationships (2026-11-19)
+
+Properties now has a **You** page, right after General, on repositories,
+gists, people, organizations, issues, pull requests, discussions, releases and
+notifications. It shows where you stand with the item: starred, watch level,
+following, blocked, subscribed, your reactions, upvoted and pinned. Each can be
+changed there, for one item or for many selected at once. What GitHub does not
+let QUILL change is shown with a sentence saying why: profile pins, custom
+watching, a pull request's pin, and sponsoring, which spends money and is done
+from the person's Sponsor place.
+### GitHub Workbench: your account's level is checked on every change (2026-11-19)
+
+Every command that changes something on GitHub now checks the account's
+Workbench level before it reads or sends anything: a menu row, a context-menu
+row, a key, a list's Add or Remove on a Properties sheet, a sheet's save, and
+the editor's own GitHub commands when the Workbench runs them. A Read Only or
+Organize account is refused in one sentence that names the command, the level
+it needs and where to change it (Account, Roles and Access, Workbench Level
+for This Account). When Safe Mode is the reason, the sentence says so.
+Commands that only read are never refused. Typed confirmations and the guard
+against removing your own admin access are now tested too.
+### WordPress Workbench: Yoast's canonical address, primary category and schema type, and other scheduled tasks (2026-11-19)
+
+- A post's Properties now has an **SEO** page on sites with Yoast SEO. It
+  shows the canonical address, the primary category (chosen by name from the
+  post's own categories) and the schema page and article type. They can be
+  changed where the site makes Yoast's settings available to QUILL. Elsewhere
+  they are shown as Yoast reports them, with one sentence saying they are
+  changed in the post's Yoast panel, which Open in wp-admin reaches.
+- **Search and Upkeep** has a new row, **Other scheduled tasks**. It says
+  plainly that only scheduled posts and pages can be checked from QUILL. When
+  WP Crontrol is active, the row opens its Cron Events screen.
+
+### GitHub Workbench: discussion polls, the spotlight and categories (2026-11-19)
+
+- A discussion's poll is now a table showing each option, its votes, its
+  percentage and your vote. **Vote...** casts your vote and says the new count.
+  If you have voted already it says which option you chose, and a Read Only
+  account is told why it cannot vote.
+- **Discussions > Pinned** lists the pinned discussions in GitHub's order.
+  GitHub has no way to pin or unpin from outside its own page, and the details
+  say so.
+- **Discussions > Categories** lists the repository's categories, and Enter
+  opens the discussions in one of them. GitHub does not yet report category
+  sections, so they are listed in GitHub's order.
+- Every quick command that changes something on GitHub now checks your
+  account's Workbench level before it reads or sends anything.
+
+### Quill Cast: Ctrl+2 shows the episode that is playing (2026-11-19)
+
+Reported by Chris: Enter on a podcast, or on an episode in the Queue, played
+it, and Ctrl+2 then brought up Now Playing without it. Now Playing only loaded
+the current episode, and started its clock, when it was opened through its own
+command. Ctrl+2, Ctrl+Tab and the Window menu showed the hidden window as it
+had been left, which was often "Nothing is playing". Every way of reaching it
+now brings it up to date first. Cast's other windows that hide rather than
+close, such as Statistics, now refresh the same way.
 ### WordPress Workbench: Shop Analytics (2026-11-19)
 
 A site with WooCommerce Analytics now has **Shop Analytics** beside its Shop:

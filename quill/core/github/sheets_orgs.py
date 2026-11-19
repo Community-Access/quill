@@ -24,6 +24,7 @@ from typing import Any
 from quill.core.github.permissions import WriteTier
 from quill.core.github.sheet_engine import Ident, Read, SheetDef, Write
 from quill.core.github.sheet_fields import dig, ed, lst, page, patch, ro, toggle, when
+from quill.core.github.sheets_you import FOLLOW_ORGANIZATION, ORG_YOU_READ, sponsoring_field
 from quill.core.workbench.properties import FieldKind, SheetSpec, Value
 
 __all__ = ["ORGANIZATION", "TEAM", "TEAM_REVIEW_QUERY"]
@@ -115,8 +116,15 @@ ORGANIZATION = SheetDef(
             page(
                 "you",
                 "You",
-                ro("your_org_role", "Your role"),
+                ed(
+                    "following",
+                    "Following",
+                    _K.CHECK,
+                    "Follow it to see its public activity in your feed.",
+                ),
                 ed("public_member", "Show my membership publicly", _K.CHECK),
+                ro("your_org_role", "Your role"),
+                sponsoring_field(),
             ),
             page(
                 "members",
@@ -200,6 +208,7 @@ ORGANIZATION = SheetDef(
     (
         Read(_ORG, _organization),
         Read("/user/memberships/orgs/{org}", _membership, optional=True),
+        ORG_YOU_READ,
         Read(
             _ORG + "/public_members/{me}", _public, optional=True, fallback={"public_member": False}
         ),
@@ -265,6 +274,7 @@ ORGANIZATION = SheetDef(
         "blog": patch(_ORG, _OWNER, _V),
         "base_permission": patch(_ORG, _OWNER, _A, "default_repository_permission"),
         **{key: patch(_ORG, _OWNER, _A) for key, _label in _PRIVILEGES},
+        "following": FOLLOW_ORGANIZATION,
         "public_member": toggle(_ORG + "/public_members/{me}", "org:member", _O),
         "actions_repositories": patch(
             _ORG + "/actions/permissions", _OWNER, _A, "enabled_repositories", method="PUT"
