@@ -165,11 +165,14 @@ def disable_auto_merge(provider: Any, full_name: str, number: int) -> str:
     return f"Auto-merge is off for pull request #{number}."
 
 
-def enqueue_pull_request(provider: Any, full_name: str, number: int) -> str:
+def enqueue_pull_request(
+    provider: Any, full_name: str, number: int, *, expected_head: str = ""
+) -> str:
+    """Queue #*number*; with *expected_head*, only if its head is still that commit."""
     action = "add the pull request to the merge queue"
     token = _token(provider, action)
     node_id, head = _pull_ids(token, full_name, number, action)
-    variables: dict[str, object] = {"id": node_id, "head": head or None}
+    variables: dict[str, object] = {"id": node_id, "head": expected_head or head or None}
     data = _mutate(token, action, _ENQUEUE, variables)
     result = data.get("enqueuePullRequest")
     entry = result.get("mergeQueueEntry") if isinstance(result, dict) else None

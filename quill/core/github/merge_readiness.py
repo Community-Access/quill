@@ -38,8 +38,9 @@ class MergeReadinessError(CodedError):
 _QUERY = """
 query($o: String!, $n: String!, $i: Int!) {
   repository(owner: $o, name: $n) {
+    mergeCommitAllowed squashMergeAllowed rebaseMergeAllowed
     pullRequest(number: $i) {
-      state isDraft mergeable mergeStateStatus reviewDecision
+      state isDraft mergeable mergeStateStatus reviewDecision isMergeQueueEnabled
       headRefOid baseRefName headRefName viewerCanMergeAsAdmin
       autoMergeRequest { mergeMethod enabledBy { login } }
       mergeQueueEntry { position state }
@@ -100,6 +101,11 @@ class Readiness:
     auto_merge: str = ""
     queue_position: int | None = None
     admin_can_merge: bool = False
+    queue_required: bool = False
+    """The base branch has a merge queue, so the pull request joins it rather than merging."""
+    methods: tuple[str, ...] = ()
+    """The REST merge methods the repository allows (``squash``, ``merge``, ``rebase``);
+    empty when GitHub did not say, and then all three are offered."""
 
     @property
     def short_head(self) -> str:
@@ -137,11 +143,16 @@ class Readiness:
             found.append(_listed("Required check", failed, "failed") + ". Re-run or fix it.")
         if pending:
             found.append(_listed("Required check", pending, "has not finished") + ".")
-        if self.merge_state == "BLOCKED" and not found:
+        if self.merge_state == "BLOCKED" and not found and not self.queue_required:
             found.append(f"A rule on {self.base} blocks it. Check Merge Policy names the rules.")
         if self.merge_state == "UNKNOWN" and not found:
             found.append("GitHub is still working out whether it can merge. Ask again shortly.")
         return tuple(found)
+
+    @property
+    def allowed_methods(self) -> tuple[str, ...]:
+        """What the repository allows, best first; all three when GitHub did not say."""
+        return self.methods or ("squash", "merge", "rebase")
 
     @property
     def can_merge(self) -> bool:
@@ -150,7 +161,12 @@ class Readiness:
     @property
     def sentence(self) -> str:
         at = f"as of commit {self.short_head}" if self.head else "as GitHub has it now"
-        if self.can_merge:
+        if self.can_merge and self.queue_required:
+            said = (
+                f"#{self.number} can join the merge queue for {self.base}, {at}; "
+                f"{self.base} merges only through its queue."
+            )
+        elif self.can_merge:
             said = f"#{self.number} can merge into {self.base}, {at}."
             others = [c.name for c in self.checks if not c.required and c.state == "failed"]
             if others:
@@ -181,6 +197,16 @@ def load_readiness(api: GitHubApi, repository: str, number: int) -> Readiness:
     commits = (pull.get("commits") or {}).get("nodes") or []
     rollup = ((commits[-1] or {}).get("commit") or {}).get("statusCheckRollup") if commits else {}
     nodes = ((rollup or {}).get("contexts") or {}).get("nodes") or []
+    repo = (data or {}).get("repository") or {}
+    allowed = tuple(
+        method
+        for method, key in (
+            ("squash", "squashMergeAllowed"),
+            ("merge", "mergeCommitAllowed"),
+            ("rebase", "rebaseMergeAllowed"),
+        )
+        if repo.get(key)
+    )
     auto = pull.get("autoMergeRequest") or {}
     queue = pull.get("mergeQueueEntry") or {}
     position = queue.get("position") if isinstance(queue, Mapping) else None
@@ -197,6 +223,8 @@ def load_readiness(api: GitHubApi, repository: str, number: int) -> Readiness:
         auto_merge=str(auto.get("mergeMethod") or "") if isinstance(auto, Mapping) else "",
         queue_position=int(position) if isinstance(position, int) else None,
         admin_can_merge=bool(pull.get("viewerCanMergeAsAdmin")),
+        queue_required=bool(pull.get("isMergeQueueEnabled")),
+        methods=allowed,
     )
 
 

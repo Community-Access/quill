@@ -1112,7 +1112,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 849 yes, 0 planned, 290 not needed and 868 left to GitHub.
+In all: 850 yes, 0 planned, 290 not needed and 867 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2517,7 +2517,7 @@ In all: 849 yes, 0 planned, 290 not needed and 868 left to GitHub.
 
 #### Repositories
 
-74 operations: 63 yes, 6 not needed, 5 left to github.
+74 operations: 64 yes, 6 not needed, 4 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2528,7 +2528,7 @@ In all: 849 yes, 0 planned, 290 not needed and 868 left to GitHub.
 | Update a repository | `PATCH /repos/{owner}/{repo}` | Yes | editor GitHub menu > Rename Repository... |
 | List repository activities | `GET /repos/{owner}/{repo}/activity` | Yes | Navigator: Repository > owner/name > Activity > Push Activity |
 | Create an attestation | `POST /repos/{owner}/{repo}/attestations` | Left to GitHub | Build provenance (attestations) is read by tools in a release pipeline, not by a person. |
-| List attestations | `GET /repos/{owner}/{repo}/attestations/{subject_digest}` | Left to GitHub | Build provenance (attestations) is read by tools in a release pipeline, not by a person. |
+| List attestations | `GET /repos/{owner}/{repo}/attestations/{subject_digest}` | Yes | context menu > Attestations... |
 | Get all autolinks of a repository | `GET /repos/{owner}/{repo}/autolinks` | Yes | Properties (Alt+Enter) on Repository |
 | Create an autolink reference for a repository | `POST /repos/{owner}/{repo}/autolinks` | Yes | Navigator: Repository > owner/name > Settings > Autolinks |
 | Delete an autolink reference from a repository | `DELETE /repos/{owner}/{repo}/autolinks/{autolink_id}` | Yes | context menu > Delete Autolink... |
