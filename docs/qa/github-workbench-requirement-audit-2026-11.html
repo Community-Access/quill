@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>GitHub Workbench requirement audit, November 2026</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="github-workbench-requirement-audit-november-2026">GitHub
+Workbench requirement audit, November 2026</h1>
+<p>Checked 2026-11-18 against main, updated the same day for the
+follow-up pull request. This is the record of the complete.md 1.3
+requirement audit: every id in Part E of the GitHub Workbench PRD
+(<code>docs/Product Requirement Documents and Specifications/github-workbench-prd.md</code>),
+with the code and the test behind each verdict.</p>
+<h2 id="summary">Summary</h2>
+<p>Of the 100 live requirements, 67 are met, 25 are partly met and 8 are
+not met. GH-R-042 is withdrawn.</p>
+<table>
+<thead>
+<tr>
+<th>Strength</th>
+<th>Met</th>
+<th>Partly met</th>
+<th>Not met</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Must</td>
+<td>57</td>
+<td>17</td>
+<td>1</td>
+<td>75</td>
+</tr>
+<tr>
+<td>Should</td>
+<td>10</td>
+<td>8</td>
+<td>5</td>
+<td>23</td>
+</tr>
+<tr>
+<td>May</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p>“Sampled” means a few cases of an “every” were checked, not all of
+them. The tests the audit cites pass; nothing here was checked on
+Windows or with a screen reader, so GH-R-002 (whether a Workbench dialog
+also blocks the editor) needs a live check before it is acted on.</p>
+<h2 id="not-met">Not met</h2>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Requirement</th>
+<th>Evidence and what remains</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-002</td>
+<td>Must</td>
+<td>It never blocks the editor; its dialogs block only it</td>
+<td>The window is modeless, but every dialog goes through
+<code>dialog_contract.show_modal_dialog</code> to ShowModal(), which in
+wx disables every top-level window of the app, the editor included.
+Needs a live check.</td>
+</tr>
+<tr>
+<td>GH-R-036</td>
+<td>Should</td>
+<td>Alt+Enter on a GitHub reference in a document opens its sheet</td>
+<td>No Alt+Enter on a GitHub reference in the editor (keymap has none);
+decision 23 recommends it.</td>
+</tr>
+<tr>
+<td>GH-R-109</td>
+<td>Should</td>
+<td>Examples from the person’s own data and situation</td>
+<td>No examples drawn from the person’s own data (D14).</td>
+</tr>
+<tr>
+<td>GH-R-114</td>
+<td>Should</td>
+<td>A braille-shaped row option</td>
+<td>No braille-shaped (short) row option.</td>
+</tr>
+<tr>
+<td>GH-R-115</td>
+<td>Should</td>
+<td>Key cards in print and braille, the guide as a book, the spoken
+tour</td>
+<td>No key cards, book edition of the guide beyond the EPUBs, or spoken
+tour (D15). The guide’s EPUB siblings exist.</td>
+</tr>
+<tr>
+<td>GH-R-116</td>
+<td>Should</td>
+<td>QUILLBert and QUILLBee tips at the right moment, with an option for
+plain help</td>
+<td>No QUILLBert or QUILLBee tips in the GitHub Workbench (D16).</td>
+</tr>
+<tr>
+<td>GH-R-086</td>
+<td>May</td>
+<td>Plain-language batches through the Command Key work</td>
+<td>(May) no plain-language batches for GitHub; WordPress has its
+own.</td>
+</tr>
+<tr>
+<td>GH-R-118</td>
+<td>May</td>
+<td>Ask How through the family’s AI, grounded only in the help
+catalogue</td>
+<td>(May) no Ask How.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="partly-met">Partly met</h2>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Requirement</th>
+<th>Evidence and what remains</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-010</td>
+<td>Must</td>
+<td>The tree is a native <code>wx.TreeCtrl</code>, at most four levels
+deep, loading lazily, with counts after names that…</td>
+<td>Native wx.TreeCtrl (<code>workbench_frame.py:148</code>),
+<code>test_no_node_is_more_than_four_levels_deep</code>; rows load on
+selection. No counts after node names anywhere.</td>
+</tr>
+<tr>
+<td>GH-R-035</td>
+<td>Must</td>
+<td>Every picker ends with New… that creates and uses the thing</td>
+<td>New Label…, New Milestone…, New Project…
+(<code>sheets_items.py</code>;
+<code>github_workbench_properties.py:386</code>;
+<code>test_new_project_creates_one</code>…). Pickers for people/teams
+have Add, not New; other pickers (issue type, branch) have none.</td>
+</tr>
+<tr>
+<td>GH-R-045</td>
+<td>Must</td>
+<td>Projects (version 2): every field type, views, items, workflows and
+status updates are readable and editable</td>
+<td><code>sheets_projects.py</code>: every field type incl. iteration,
+items, status updates editable; views and workflows read only (GitHub
+has no API to change them; worth saying so in the PRD).</td>
+</tr>
+<tr>
+<td>GH-R-046</td>
+<td>Must</td>
+<td>Every relationship (star, watch level, follow, subscribe, react,
+block, sponsor, pin) on a You page and in…</td>
+<td>Star, watch level, follow, subscribe, react, sponsor, pin and block
+(<code>resource_specs_user</code>) each exist in their own places; no
+single You page holding them, and batch only where the multi-row sheet
+has the field. Needs a closer look.</td>
+</tr>
+<tr>
+<td>GH-R-053</td>
+<td>Must</td>
+<td>Filters can be saved as searches and pinned as nodes</td>
+<td>Save Search (<code>github_workbench_actions.py:158</code>), Saved
+Searches node in the tree (<code>workbench_tree.py:186</code>);
+<code>test_the_filter_builder</code>… saves one,
+<code>test_go_lists_pins_favorites_and_saved_searches</code>. A saved
+search is a row in that node, not a node of its own.</td>
+</tr>
+<tr>
+<td>GH-R-063</td>
+<td>Must</td>
+<td>Every object with an access list has an Access page with Add, Change
+Role, Remove and pending invitations</td>
+<td>Access pages with Add…, Change Role…, Remove
+(<code>github_workbench_tools.py:459</code>);
+<code>test_an_access_change_is_previewed_sent_and_recorded</code>.
+Pending invitations are not on the Access page (repository invitations
+are a separate list).</td>
+</tr>
+<tr>
+<td>GH-R-093</td>
+<td>Must</td>
+<td>Every key is rebindable, and the rebinding follows into menus, the
+reference, Shift+F1 and the Key Describer</td>
+<td><code>bound_keys</code> puts the person’s bindings over the defaults
+and the menu shows the rebound key
+(<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_a_rebound_key_is_the_one_the_menu_shows</code>);
+the generated reference is defaults by design; Shift+F1 and the Key
+Describer not checked.</td>
+</tr>
+<tr>
+<td>GH-R-106</td>
+<td>Must</td>
+<td>Help and Learning in the tree, with every node of D11</td>
+<td>Help and Learning has Start Here, Do Something, The Guide, Words,
+Keys, What Changed, Ask a Person (<code>workbench_tree.py:287</code>);
+D11’s Tutorials and Tips nodes are missing.</td>
+</tr>
+<tr>
+<td>GH-R-107</td>
+<td>Must</td>
+<td>Take Me There and Walk Me Through It on every help topic and task;
+Do It where the answer is one command</td>
+<td>Take Me There on Do Something tasks; no Walk Me Through, no Do
+It.</td>
+</tr>
+<tr>
+<td>GH-R-108</td>
+<td>Must</td>
+<td>Shift+F9 Explain That for every result, and Why? on every automatic
+behaviour</td>
+<td>Shift+F9 Explain That (<code>workbench_window_menu.py</code>, frame
+<code>explain_result</code>); no Why? on automatic behaviours.</td>
+</tr>
+<tr>
+<td>GH-R-113</td>
+<td>Must</td>
+<td>Sounds go through the shared action-feedback channels; a failure or
+a count is always spoken</td>
+<td>Every outcome is spoken, so failures and counts always are; but the
+Workbench plays no sounds and ignores the <code>action_feedback</code>
+setting (only diff hearing has sounds, through sound events).</td>
+</tr>
+<tr>
+<td>GH-R-117</td>
+<td>Must</td>
+<td>Ask a Person and Report a Help Problem, never sending a secret</td>
+<td>Ask a Person node (mail to support, nothing sent by QUILL); no
+Report a Help Problem, and nothing “attached” about what you were
+doing.</td>
+</tr>
+<tr>
+<td>GH-R-119</td>
+<td>Must</td>
+<td>One source for every help surface (D19), and the measures of
+D20</td>
+<td>One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the
+generated reference (GATE-GITHUB-HELP,
+<code>build_help_reference</code>); D20’s measures (timed
+find-the-answer sessions) not done.</td>
+</tr>
+<tr>
+<td>GH-R-131</td>
+<td>Must</td>
+<td>Conditional requests (ETag) for every repeated read
+(<code>conditional_requests.py</code>), and secondary rate limits…</td>
+<td>Secondary limits respected in <code>rest_transport.py</code>
+(<code>secondary_wait_seconds</code>,
+<code>test_a_secondary_limit_stops_every_later_request_with_one_sentence</code>);
+ETag only in <code>explore.py</code>’s conditional read,
+<code>explore_extra_views</code>, <code>repo_activity</code> and
+<code>repo_insights</code>, not every repeated read
+(<code>items_provider</code> lists and sheets reload in full)</td>
+</tr>
+<tr>
+<td>GH-R-150</td>
+<td>Must</td>
+<td>Across Repositories has a place for every kind in the 22.11 table, a
+row per name with its variants and…</td>
+<td>Labels, Milestones, Topics, Rules and Branch Protection by name, and
+the Fleet; every other kind is a decided cell with a reason in
+<code>across_scope_matrix.py</code> (<code>test_no_cell_is_blank</code>,
+<code>test_the_decided_cells</code>), not yet a place.</td>
+</tr>
+<tr>
+<td>GH-R-151</td>
+<td>Must</td>
+<td>Every operation a kind allows in one repository is offered across a
+scope, with the preview and a result…</td>
+<td>Preview and a result per repository for labels, milestones, topics,
+rulesets
+(<code>test_labels_by_name_make_the_same_with_a_preview_and_a_result_each</code>,
+<code>test_a_change_previews_permission_and_conflict_then_reports_each_repository</code>);
+environments, secrets, variables, webhooks, keys, autolinks remain.</td>
+</tr>
+<tr>
+<td>GH-R-157</td>
+<td>Must</td>
+<td>Repository and item-property checklists announce a Space toggle
+once, save from Enter, return focus…</td>
+<td><code>test_the_checklist_checks_adds_once_and_returns_the_checked</code>;
+the JAWS, NVDA and VoiceOver checks it names are live checks not yet
+recorded.</td>
+</tr>
+<tr>
+<td>GH-R-068</td>
+<td>Should</td>
+<td>The access matrix, bulk access changes and access templates</td>
+<td>Access matrix as CSV and bulk access changes, now tested
+(<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_the_access_matrix_is_one_sorted_row_per_person_and_repository</code>,
+<code>test_bulk_access_gives_a_team_a_role_on_each_repository_with_an_undo</code>);
+access templates not built.</td>
+</tr>
+<tr>
+<td>GH-R-069</td>
+<td>Should</td>
+<td>View As Role, Compare Roles and Why Can’t They?</td>
+<td>View As Role, Compare Roles, Why Can’t They? now tested
+(<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_why_cant_they_names_the_role_needed_and_who_can_change_it</code>
+and others), but they read a fixed ability table, not GitHub’s real
+permissions (the open complete.md row).</td>
+</tr>
+<tr>
+<td>GH-R-083</td>
+<td>Should</td>
+<td>Watches with one-sentence results and sounds through the shared
+feedback channels</td>
+<td>Watches with one-sentence results
+(<code>test_a_first_check_learns_then_only_new_things_are_said</code>,
+<code>test_add_edit_pause_check_and_remove_a_watch</code>); no sounds at
+all, nothing in the GitHub Workbench uses
+<code>action_feedback</code>.</td>
+</tr>
+<tr>
+<td>GH-R-088</td>
+<td>Should</td>
+<td>The GitHub features listed in 22.1, each as the coverage gate
+schedules it</td>
+<td>Ongoing: the 22.1 features are the 43 open rows of complete.md
+1.3.</td>
+</tr>
+<tr>
+<td>GH-R-105</td>
+<td>Should</td>
+<td>The GitHub tutorials of D8</td>
+<td>One GitHub lesson (practice repository) in docs/user
+guide/tutorials.md; D8 plans eleven, and there is no Help &gt;
+Tutorials.</td>
+</tr>
+<tr>
+<td>GH-R-143</td>
+<td>Should</td>
+<td>People &gt; My Teams and team review requests in Needs My
+Attention</td>
+<td>People &gt; My Teams (<code>load_teams</code>, “teams:mine”); team
+review requests are a filter attribute but are not in Needs My
+Attention.</td>
+</tr>
+<tr>
+<td>GH-R-153</td>
+<td>Should</td>
+<td>Promote to Organization wherever GitHub has a shared form</td>
+<td>Rulesets only
+(<code>test_promote_creates_the_organization_ruleset_before_deleting_copies</code>);
+labels cannot be promoted (no GitHub API)</td>
+</tr>
+<tr>
+<td>GH-R-154</td>
+<td>Should</td>
+<td>The fourth sweep of 22.12, each as the coverage gate schedules
+it</td>
+<td>Ongoing, as the coverage gate schedules it.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="every-requirement">Every requirement</h2>
+<h3 id="e1-the-window-and-its-panes">E1. The window and its panes</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-001</td>
+<td>Must</td>
+<td>Met</td>
+<td>The Workbench is a top-level frame with its own menu bar, status bar
+and taskbar button, one per app</td>
+<td><code>workbench_frame.py:133</code> a top-level wx.Frame with its
+own menu bar and status bar; <code>open_github_workbench</code> reuses
+the one open window (one per app).
+<code>test_every_github_door_opens_the_workbench</code>,
+<code>test_both_editors_reach_the_window_through_the_one_shared_call</code></td>
+</tr>
+<tr>
+<td>GH-R-002</td>
+<td>Must</td>
+<td>Not met</td>
+<td>It never blocks the editor; its dialogs block only it</td>
+<td>The window is modeless, but every dialog goes through
+<code>dialog_contract.show_modal_dialog</code> to ShowModal(), which in
+wx disables every top-level window of the app, the editor included.
+Needs a live check.</td>
+</tr>
+<tr>
+<td>GH-R-003</td>
+<td>Must</td>
+<td>Met</td>
+<td>F6 and Shift+F6 cycle tree, filter, list and details</td>
+<td><code>test_f6_cycles_the_panes_in_order</code> (window test);
+<code>workbench_frame.py:392</code></td>
+</tr>
+<tr>
+<td>GH-R-004</td>
+<td>Must</td>
+<td>Met</td>
+<td>It remembers size, panes, last node, expanded nodes, columns and
+filters per account</td>
+<td>Last node, expanded nodes, repositories and people, and now the
+window’s size and tree-pane width, per account
+(<code>navigation_state.WorkbenchPlace</code> size/sash,
+<code>workbench_frame_commands</code>
+<code>restore_layout/remember_layout</code>);
+<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_the_window_opens_at_last_times_size_and_remembers_it_on_close</code>.
+Columns and filters are not in PRD 3.1’s list.</td>
+</tr>
+<tr>
+<td>GH-R-005</td>
+<td>Must</td>
+<td>Met</td>
+<td>Escape clears the filter, then goes Back, and never closes the
+window</td>
+<td><code>test_escape_clears_the_filter_then_goes_back</code>,
+<code>test_escape_in_details_returns</code>…</td>
+</tr>
+<tr>
+<td>GH-R-006</td>
+<td>Must</td>
+<td>Met</td>
+<td>Switch to Editor and Open in Editor raise the editor that opened
+it</td>
+<td><code>switch_to_editor</code>
+(<code>workbench_frame_actions.py</code>) raises and focuses the editor,
+or says it has closed;
+<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_switch_to_editor_raises_and_focuses_the_editor_that_opened_it</code></td>
+</tr>
+<tr>
+<td>GH-R-007</td>
+<td>Must</td>
+<td>Met</td>
+<td>The status bar is reached with F6, arrowed across, and every cell
+has Enter and a context menu with Copy…</td>
+<td><code>workbench_status_bar.py</code> (Copy, Help for This Cell,
+Enter);
+<code>test_the_status_bar_reads_name_and_value_and_mirrors_them</code>;
+<code>test_github_workbench_status_cell.py</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="e2-the-tree">E2. The tree</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-010</td>
+<td>Must</td>
+<td>Partly</td>
+<td>The tree is a native <code>wx.TreeCtrl</code>, at most four levels
+deep, loading lazily, with counts after names that…</td>
+<td>Native wx.TreeCtrl (<code>workbench_frame.py:148</code>),
+<code>test_no_node_is_more_than_four_levels_deep</code>; rows load on
+selection. No counts after node names anywhere.</td>
+</tr>
+<tr>
+<td>GH-R-011</td>
+<td>Must</td>
+<td>Met</td>
+<td>Every view in GitHub Items and Explore appears exactly once (the
+“nothing dropped” test)</td>
+<td><code>test_nothing_dropped_every_items_and_explore_view_has_exactly_one_home</code></td>
+</tr>
+<tr>
+<td>GH-R-012</td>
+<td>Must</td>
+<td>Met</td>
+<td>Nodes needing sign-in, permission or an opt-in are shown, explained,
+and offer the fix</td>
+<td><code>github_workbench_window.py</code> <code>node_help</code>
+(“Needs …”) and unavailable() name the fix;
+<code>test_nodes_needing_sign_in_or_permission_are_listed_not_hidden</code></td>
+</tr>
+<tr>
+<td>GH-R-013</td>
+<td>Must</td>
+<td>Met</td>
+<td>Drill-downs move the tree, and Back and Forward walk one
+history</td>
+<td><code>workbench_frame.py</code> history/forward;
+<code>test_escape_clears_the_filter_then_goes_back</code> asserts
+forward stack</td>
+</tr>
+<tr>
+<td>GH-R-014</td>
+<td>Should</td>
+<td>Met</td>
+<td>Group By puts groups in the tree as child nodes</td>
+<td><code>test_group_by_puts_groups_in_the_tree</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="e3-menus-and-context-menus">E3. Menus and context menus</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-020</td>
+<td>Must</td>
+<td>Met</td>
+<td>Every menu row shows its key; no key is claimed twice; greyed rows
+carry a reason</td>
+<td><code>test_the_menu_bar_keeps_the_accelerator_and_access_key_rules</code>,
+<code>tests/unit/ui/test_menu_accelerators.py</code>, greyed reasons:
+<code>test_shift_f1_lists_every_action_with_its_key_and_why_greyed</code>,
+<code>test_merge_is_greyed_on_an_issue_with_a_reason</code></td>
+</tr>
+<tr>
+<td>GH-R-021</td>
+<td>Must</td>
+<td>Met</td>
+<td>Context menus hold only rows for the selected row type, the default
+first and Properties last, with More…</td>
+<td><code>test_github_item_actions.py</code> rules 1,2,3,6 (default
+first, only rows about the row, More keeps everything, Properties
+last)</td>
+</tr>
+<tr>
+<td>GH-R-022</td>
+<td>Must</td>
+<td>Met</td>
+<td>Codespaces appears only on repositories, branches and pull requests;
+Rate Limit on no context menu</td>
+<td><code>test_rule_4_codespaces_only_on</code>…,
+<code>test_rule_5_the_rate_limit_is_on_no_context_menu</code></td>
+</tr>
+<tr>
+<td>GH-R-023</td>
+<td>Must</td>
+<td>Met</td>
+<td>Menus, context menus, Shift+F1 and sheets are all built from one
+action table</td>
+<td>Menus/context/Shift+F1 from provider.actions
+(<code>workbench_frame_help.py:115</code>);
+<code>test_a_command_appears_once_per_row_type</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="e4-properties">E4. Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-030</td>
+<td>Must</td>
+<td>Met</td>
+<td>Alt+Enter, Item &gt; Properties… and the context menu’s last row
+open the Properties sheet of the selected…</td>
+<td><code>test_every_appendix_c_object_has_a_sheet_that_opens_on_general</code>
+(perm gate),
+<code>test_alt_enter_opens_the_sheet_for_the_selected_row</code>,
+<code>test_alt_enter_on_the_repository_node</code>…</td>
+</tr>
+<tr>
+<td>GH-R-031</td>
+<td>Must</td>
+<td>Met</td>
+<td>Every fact is a focusable labelled control; read-only facts are
+read-only text boxes</td>
+<td><code>workbench_properties_sheet.py:259</code>
+<code>TE_READONLY</code> for read-only facts, labels on every field;
+<code>test_a_sheet_opens_on_general_and_names_fields_once</code></td>
+</tr>
+<tr>
+<td>GH-R-032</td>
+<td>Must</td>
+<td>Met</td>
+<td>An editable field is editable exactly when the user may change it,
+and read-only with a reason otherwise</td>
+<td><code>test_fields_lock_with_a_reason_when_your_role_is_too_low</code>;
+sheet shows “Read only: reason” (<code>sheet.py:199</code>)</td>
+</tr>
+<tr>
+<td>GH-R-033</td>
+<td>Must</td>
+<td>Met</td>
+<td>A multiple selection opens one sheet with Mixed values and
+three-state check lists, saving only touched fields</td>
+<td><code>test_several_rows_open_one_sheet_with_three_state_lists</code>;
+<code>properties.py</code> Mixed;
+<code>test_a_plan_sends_only_changed_fields</code></td>
+</tr>
+<tr>
+<td>GH-R-034</td>
+<td>Must</td>
+<td>Met</td>
+<td>Before saving, someone else’s changes are detected and the user
+chooses per field; after saving, the…</td>
+<td><code>test_someone_else_s_change_stops_the_save_until_you_choose</code>,
+<code>test_save_verifies_and_reports_only_what_the_re_read_proves</code></td>
+</tr>
+<tr>
+<td>GH-R-035</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Every picker ends with New… that creates and uses the thing</td>
+<td>New Label…, New Milestone…, New Project…
+(<code>sheets_items.py</code>;
+<code>github_workbench_properties.py:386</code>;
+<code>test_new_project_creates_one</code>…). Pickers for people/teams
+have Add, not New; other pickers (issue type, branch) have none.</td>
+</tr>
+<tr>
+<td>GH-R-036</td>
+<td>Should</td>
+<td>Not met</td>
+<td>Alt+Enter on a GitHub reference in a document opens its sheet</td>
+<td>No Alt+Enter on a GitHub reference in the editor (keymap has none);
+decision 23 recommends it.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="e5-editing">E5. Editing</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-040</td>
+<td>Must</td>
+<td>Met</td>
+<td>Every field GitHub’s API can change has a control on its object’s
+sheet; the coverage gate proves it</td>
+<td>GATE-GITHUB-COVER:
+<code>tests/unit/core/test_github_api_coverage.py</code> (every
+operation accounted, planned may only shrink); field writes:
+<code>test_every_phase_7_sheet_opens_on_general_and_has_writes_for_its_editable_fields</code></td>
+</tr>
+<tr>
+<td>GH-R-041</td>
+<td>Must</td>
+<td>Met</td>
+<td>Removal and replacement are as available as adding, lifting today’s
+add-only batch rule</td>
+<td>Three-state removal:
+<code>test_a_three_state_delta_becomes_the_item_s_own_additions_and_removals</code>;
+GH-R-041 cited in 3 modules</td>
+</tr>
+<tr>
+<td>GH-R-042</td>
+<td>Withdrawn</td>
+<td>n/a</td>
+<td>Per-property keys (withdrawn 2026-11-09)</td>
+<td>Alt+Enter opens the sheet instead.</td>
+</tr>
+<tr>
+<td>GH-R-043</td>
+<td>Must</td>
+<td>Met</td>
+<td>Batches preview, run paced for the rate limit, and report a result
+per item with retry</td>
+<td><code>batch.py</code> (preview, 1 s pace, result per item),
+<code>github_workbench_results.py</code> Retry Failed (F8);
+<code>test_a_batch_previews_skips_what_is_already_so_and_reports_each_item</code></td>
+</tr>
+<tr>
+<td>GH-R-044</td>
+<td>Must</td>
+<td>Met</td>
+<td>Undo GitHub Change reverses any reversible change, and an
+irreversible one says so before it happens</td>
+<td><code>test_undo_is_the_inverse_and_says_what_cannot_be_undone</code>,
+<code>test_ctrl_z_in_the_list_undoes_the_last_github_change</code></td>
+</tr>
+<tr>
+<td>GH-R-045</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Projects (version 2): every field type, views, items, workflows and
+status updates are readable and editable</td>
+<td><code>sheets_projects.py</code>: every field type incl. iteration,
+items, status updates editable; views and workflows read only (GitHub
+has no API to change them; worth saying so in the PRD).</td>
+</tr>
+<tr>
+<td>GH-R-046</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Every relationship (star, watch level, follow, subscribe, react,
+block, sponsor, pin) on a You page and in…</td>
+<td>Star, watch level, follow, subscribe, react, sponsor, pin and block
+(<code>resource_specs_user</code>) each exist in their own places; no
+single You page holding them, and batch only where the multi-row sheet
+has the field. Needs a closer look.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="e6-filtering">E6. Filtering</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-050</td>
+<td>Must</td>
+<td>Met</td>
+<td>One query, written by the filter box, the Filter Builder, the Filter
+menu and Show Only or Hide on cells,…</td>
+<td><code>filter_menu.py</code> (one query for box, builder, menu, Show
+Only/Hide); <code>test_quick_filters_toggle_in_the_one_query</code>,
+<code>test_a_query_round_trips_through_the_builder</code></td>
+</tr>
+<tr>
+<td>GH-R-051</td>
+<td>Must</td>
+<td>Met</td>
+<td>Every attribute GitHub search supports is sent to GitHub; every
+other attribute filters locally with an…</td>
+<td>(sampled)
+<code>test_words_filter_here_and_qualifiers_ask_github</code>,
+<code>test_has_conflicts_filters_locally_and_says_so</code>; Load
+More/Load All in <code>github_workbench_explore.py</code>. “Every
+attribute” not checked one by one.</td>
+</tr>
+<tr>
+<td>GH-R-052</td>
+<td>Must</td>
+<td>Met</td>
+<td>Every list attribute has “has none”; every person field has
+“Me”</td>
+<td><code>filter_builder.py</code>: has none/has any on every person and
+list attribute, Me as @me;
+<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_every_person_and_list_attribute_offers_has_none_and_has_any</code>,
+<code>test_me_is_sent_as_at_me_and_read_back_as_me</code></td>
+</tr>
+<tr>
+<td>GH-R-053</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Filters can be saved as searches and pinned as nodes</td>
+<td>Save Search (<code>github_workbench_actions.py:158</code>), Saved
+Searches node in the tree (<code>workbench_tree.py:186</code>);
+<code>test_the_filter_builder</code>… saves one,
+<code>test_go_lists_pins_favorites_and_saved_searches</code>. A saved
+search is a row in that node, not a node of its own.</td>
+</tr>
+<tr>
+<td>GH-R-054</td>
+<td>Should</td>
+<td>Met</td>
+<td>Or groups where GitHub search allows them</td>
+<td><code>filter_builder.render_query</code> brackets groups and joins
+them with OR;
+<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_or_groups_are_bracketed_and_joined_by_or</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="e7-permissions">E7. Permissions</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-060</td>
+<td>Must</td>
+<td>Met</td>
+<td>Account &gt; GitHub Permissions lists every scope the Workbench can
+use, what each unlocks, and whether you…</td>
+<td><code>test_github_permissions_lists_every_scope_and_adds_the_missing_in_one_step</code>,
+<code>test_every_scope_the_prd_names_is_in_the_catalogue</code>,
+<code>test_the_three_ways_to_add_missing_scopes</code></td>
+</tr>
+<tr>
+<td>GH-R-061</td>
+<td>Must</td>
+<td>Met</td>
+<td>The viewer fields of Appendix F.1 are fetched with each object and
+drive greying with reasons</td>
+<td><code>test_a_load_reads_the_object_and_its_viewer_fields</code>,
+<code>test_an_optional_viewer_read_that_fails_leaves_the_rest</code></td>
+</tr>
+<tr>
+<td>GH-R-062</td>
+<td>Must</td>
+<td>Met</td>
+<td>Every write command and editable field declares its requirement and
+tier; GATE-GITHUB-PERM fails on one…</td>
+<td>GATE-GITHUB-PERM:
+<code>test_every_write_command_declares_a_requirement_and_a_tier</code>,
+<code>test_every_editable_field_has_a_write_with_requirement_and_tier</code></td>
+</tr>
+<tr>
+<td>GH-R-063</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Every object with an access list has an Access page with Add, Change
+Role, Remove and pending invitations</td>
+<td>Access pages with Add…, Change Role…, Remove
+(<code>github_workbench_tools.py:459</code>);
+<code>test_an_access_change_is_previewed_sent_and_recorded</code>.
+Pending invitations are not on the Access page (repository invitations
+are a separate list).</td>
+</tr>
+<tr>
+<td>GH-R-064</td>
+<td>Must</td>
+<td>Met</td>
+<td>Rulesets and branch protection expose every rule and setting GitHub
+offers, with a plain-words Summary page</td>
+<td><code>rulesets.py</code> every rule and a Summary page;
+<code>test_a_ruleset_reads_as_one_plain_sentence</code>,
+<code>test_a_ruleset_sheet_edits_rules_and_sends_the_whole_ruleset_back</code>,
+<code>test_classic_protection_reads_through_the_same_summary</code></td>
+</tr>
+<tr>
+<td>GH-R-065</td>
+<td>Must</td>
+<td>Met</td>
+<td>Tier 2 changes preview in words; tier 3 adds typed confirmation;
+self-lockout is refused</td>
+<td>Tier 2 preview, TypedConfirmDialog for tier 3
+(<code>github_workbench_tier2.py:337</code>),
+<code>test_removing_your_own_admin_role_is_refused</code>,
+<code>test_destructive_writes_are_tier_3</code>…</td>
+</tr>
+<tr>
+<td>GH-R-066</td>
+<td>Must</td>
+<td>Met</td>
+<td>Read Only, Organize and Full per account; Safe Mode makes every
+account Read Only</td>
+<td><code>permissions.py:145</code>;
+<code>test_account_levels_and_safe_mode</code>,
+<code>test_safe_mode_and_read_only_lock_every_field_of_every_sheet</code>,
+<code>test_the_account_level_is_kept_and_read_only_locks_every_field</code></td>
+</tr>
+<tr>
+<td>GH-R-067</td>
+<td>Must</td>
+<td>Met</td>
+<td>Change History records every write, with before and after, and never
+a secret</td>
+<td><code>change_log.py</code> (atomic, redacted, before/after);
+<code>test_change_history_is_atomic_kept_ninety_days_and_never_holds_a_token</code>,
+<code>test_change_history_lists_changes_and_undoes_one</code>. “Every
+write” sampled, not proven.</td>
+</tr>
+<tr>
+<td>GH-R-068</td>
+<td>Should</td>
+<td>Partly</td>
+<td>The access matrix, bulk access changes and access templates</td>
+<td>Access matrix as CSV and bulk access changes, now tested
+(<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_the_access_matrix_is_one_sorted_row_per_person_and_repository</code>,
+<code>test_bulk_access_gives_a_team_a_role_on_each_repository_with_an_undo</code>);
+access templates not built.</td>
+</tr>
+<tr>
+<td>GH-R-069</td>
+<td>Should</td>
+<td>Partly</td>
+<td>View As Role, Compare Roles and Why Can’t They?</td>
+<td>View As Role, Compare Roles, Why Can’t They? now tested
+(<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_why_cant_they_names_the_role_needed_and_who_can_change_it</code>
+and others), but they read a fixed ability table, not GitHub’s real
+permissions (the open complete.md row).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="e8-templates">E8. Templates</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-070</td>
+<td>Must</td>
+<td>Met</td>
+<td>Issue forms and discussion forms are filled natively, with bodies
+identical to GitHub’s</td>
+<td><code>test_complete_answers_give_githubs_body</code> (issue form
+dialog), <code>test_new_discussion_fills_the_categorys_form</code>,
+<code>test_forms_open_with_the_repositorys_labels_and_assignees</code></td>
+</tr>
+<tr>
+<td>GH-R-071</td>
+<td>Must</td>
+<td>Met</td>
+<td>Every template kind in 21.2 can be listed, created, edited field by
+field, checked, previewed and saved</td>
+<td><code>test_github_workbench_templates.py</code>: new, builder
+adds/moves/removes/checks, sheets build files, broken form opens as
+source; every 21.2 kind in <code>template_data.py</code></td>
+</tr>
+<tr>
+<td>GH-R-072</td>
+<td>Should</td>
+<td>Met</td>
+<td>Forms can be written as BFL and converted to and from GitHub’s
+schema through <code>interop_github.py</code></td>
+<td><code>core/forms/interop_github.py</code>;
+<code>test_forms_interop_github.py</code> (round trips, refusals)</td>
+</tr>
+<tr>
+<td>GH-R-073</td>
+<td>Should</td>
+<td>Met</td>
+<td>Copy to Repositories for templates and community files</td>
+<td><code>test_copy_previews_then_reports_each_repository</code>,
+<code>test_copy_a_whole_set_from_the_chooser</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="e9-beyond-parity">E9. Beyond parity</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-080</td>
+<td>Must</td>
+<td>Met</td>
+<td>The API Console reaches any REST or GraphQL operation, with scope
+shown, tiers applied and Change History kept</td>
+<td><code>github_api_console.py</code>: scope and tier on the What it
+does line, writes need Full access and the method typed, written to
+Change History (<code>_record</code>);
+<code>test_a_console_write_needs_full_access_and_the_method_typed</code>,
+<code>test_the_console_reads_explains_and_shows_a_tree</code></td>
+</tr>
+<tr>
+<td>GH-R-081</td>
+<td>Should</td>
+<td>Met</td>
+<td>Read as Document for threads, with export</td>
+<td><code>test_read_as_document_opens_the_thread_in_the_editor</code>,
+<code>test_read_as_document_saves_html_from_a_discussion_row</code>,
+<code>test_a_pull_request_reads_as_one_document_in_time_order</code></td>
+</tr>
+<tr>
+<td>GH-R-082</td>
+<td>Should</td>
+<td>Met</td>
+<td>Posts are checked for accessibility before sending, offering and
+never blocking</td>
+<td><code>comment_compose.accessibility_findings</code>, offered in
+<code>github_comment_composer.py</code>, never blocks;
+<code>test_comment_compose.py</code></td>
+</tr>
+<tr>
+<td>GH-R-083</td>
+<td>Should</td>
+<td>Partly</td>
+<td>Watches with one-sentence results and sounds through the shared
+feedback channels</td>
+<td>Watches with one-sentence results
+(<code>test_a_first_check_learns_then_only_new_things_are_said</code>,
+<code>test_add_edit_pause_check_and_remove_a_watch</code>); no sounds at
+all, nothing in the GitHub Workbench uses
+<code>action_feedback</code>.</td>
+</tr>
+<tr>
+<td>GH-R-084</td>
+<td>Should</td>
+<td>Met</td>
+<td>The editor commands of 22.3</td>
+<td><code>editor_line.py</code> / <code>github_editor_line.py</code> in
+both editors; <code>test_editor_line.py</code>. (Alt+Enter on a
+reference, C9, is the missing part, see 036.)</td>
+</tr>
+<tr>
+<td>GH-R-085</td>
+<td>Should</td>
+<td>Met</td>
+<td>Export of any list; import of issues from CSV</td>
+<td><code>test_github_workbench_export.py</code> (any list, as shown),
+<code>test_issue_import.py</code> and
+<code>test_github_workbench_import.py</code> (CSV and Excel)</td>
+</tr>
+<tr>
+<td>GH-R-086</td>
+<td>May</td>
+<td>Not met</td>
+<td>Plain-language batches through the Command Key work</td>
+<td>(May) no plain-language batches for GitHub; WordPress has its
+own.</td>
+</tr>
+<tr>
+<td>GH-R-087</td>
+<td>Should</td>
+<td>Met</td>
+<td>Dry Run and the practice repository</td>
+<td><code>dry_run.py</code> (REST, GraphQL, PyGithub stop before the
+network), <code>test_dry_run.py</code>,
+<code>test_github_workbench_dry_run.py</code>; practice repository
+<code>test_practice_repository.py</code>,
+<code>test_github_workbench_practice.py</code></td>
+</tr>
+<tr>
+<td>GH-R-088</td>
+<td>Should</td>
+<td>Partly</td>
+<td>The GitHub features listed in 22.1, each as the coverage gate
+schedules it</td>
+<td>Ongoing: the 22.1 features are the 43 open rows of complete.md
+1.3.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="e10-keyboard">E10. Keyboard</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-090</td>
+<td>Must</td>
+<td>Met</td>
+<td>Every key in Part C passes the checks in C1 before adoption and
+lives in the Workbench’s <code>APP_KEYMAPS</code> entry</td>
+<td><code>test_every_menu_key_is_the_app_keymap_entry_and_wx_can_bind_it</code>,
+<code>test_every_command_id_is_in_quills_keymap_and_has_no_chord</code>.
+The C1 checks themselves (screen reader and AltGr collisions) are only
+partly automated.</td>
+</tr>
+<tr>
+<td>GH-R-091</td>
+<td>Must</td>
+<td>Met</td>
+<td>The families of Part C hold: Ctrl+number goes, Alt+number says,
+F-keys keep Windows meanings, and…</td>
+<td><code>test_ctrl_numbers_go_to_places_and_ctrl_shift_numbers_to_repository_parts</code>,
+<code>test_alt_readouts_say_and_move_nothing</code>,
+<code>test_a_go_key_selects_its_node</code></td>
+</tr>
+<tr>
+<td>GH-R-092</td>
+<td>Must</td>
+<td>Met</td>
+<td>Typing always moves through the tree and lists; no letter is ever a
+command</td>
+<td>None of the Workbench keys is a bare or shifted letter or digit;
+<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_no_workbench_key_is_a_letter_or_digit_on_its_own</code></td>
+</tr>
+<tr>
+<td>GH-R-093</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Every key is rebindable, and the rebinding follows into menus, the
+reference, Shift+F1 and the Key Describer</td>
+<td><code>bound_keys</code> puts the person’s bindings over the defaults
+and the menu shows the rebound key
+(<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_a_rebound_key_is_the_one_the_menu_shows</code>);
+the generated reference is defaults by design; Shift+F1 and the Key
+Describer not checked.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="e11-help">E11. Help</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-100</td>
+<td>Must</td>
+<td>Met</td>
+<td>F1 answers on every node, row, sheet page, field, menu row and
+dialog, in layers</td>
+<td>GATE-GITHUB-HELP
+(<code>tests/unit/tools/test_github_help_audit.py</code>: inventory
+matches, nothing missing, catalogue has no gaps);
+<code>test_f1_on_the_tree_and_list_follows_the_node</code></td>
+</tr>
+<tr>
+<td>GH-R-101</td>
+<td>Must</td>
+<td>Met</td>
+<td>Shift+F1 What Can I Do Here? for every selection</td>
+<td><code>test_shift_f1_lists_every_action_with_its_key_and_why_greyed</code></td>
+</tr>
+<tr>
+<td>GH-R-102</td>
+<td>Must</td>
+<td>Met</td>
+<td>Alt+F1 glossary, Ctrl+F1 guide chapter, Ctrl+Shift+F1 Search
+Help</td>
+<td><code>test_alt_f1_explains_the_word_for_the_row</code>,
+<code>test_a_chapter_topic_opens_the_guide</code>,
+<code>test_search_help_finds_places_commands_words_and_tasks</code></td>
+</tr>
+<tr>
+<td>GH-R-103</td>
+<td>Must</td>
+<td>Met</td>
+<td>Empty states, greyed rows, previews and errors carry help</td>
+<td>(sampled) <code>test_an_empty_list_says_why</code>,
+<code>test_placeholders_explain_themselves_and_are_greyed</code>, greyed
+rows with reasons (020); every coded error having help not checked</td>
+</tr>
+<tr>
+<td>GH-R-104</td>
+<td>Must</td>
+<td>Met</td>
+<td>GATE-GITHUB-HELP at zero and the help tests of D10 green</td>
+<td><code>tests/unit/tools/test_github_help_audit.py</code> passes
+(inventory matches, nothing missing, catalogue has no gaps), with the
+window help tests</td>
+</tr>
+<tr>
+<td>GH-R-105</td>
+<td>Should</td>
+<td>Partly</td>
+<td>The GitHub tutorials of D8</td>
+<td>One GitHub lesson (practice repository) in docs/user
+guide/tutorials.md; D8 plans eleven, and there is no Help &gt;
+Tutorials.</td>
+</tr>
+<tr>
+<td>GH-R-106</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Help and Learning in the tree, with every node of D11</td>
+<td>Help and Learning has Start Here, Do Something, The Guide, Words,
+Keys, What Changed, Ask a Person (<code>workbench_tree.py:287</code>);
+D11’s Tutorials and Tips nodes are missing.</td>
+</tr>
+<tr>
+<td>GH-R-107</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Take Me There and Walk Me Through It on every help topic and task;
+Do It where the answer is one command</td>
+<td>Take Me There on Do Something tasks; no Walk Me Through, no Do
+It.</td>
+</tr>
+<tr>
+<td>GH-R-108</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Shift+F9 Explain That for every result, and Why? on every automatic
+behaviour</td>
+<td>Shift+F9 Explain That (<code>workbench_window_menu.py</code>, frame
+<code>explain_result</code>); no Why? on automatic behaviours.</td>
+</tr>
+<tr>
+<td>GH-R-109</td>
+<td>Should</td>
+<td>Not met</td>
+<td>Examples from the person’s own data and situation</td>
+<td>No examples drawn from the person’s own data (D14).</td>
+</tr>
+<tr>
+<td>GH-R-115</td>
+<td>Should</td>
+<td>Not met</td>
+<td>Key cards in print and braille, the guide as a book, the spoken
+tour</td>
+<td>No key cards, book edition of the guide beyond the EPUBs, or spoken
+tour (D15). The guide’s EPUB siblings exist.</td>
+</tr>
+<tr>
+<td>GH-R-116</td>
+<td>Should</td>
+<td>Not met</td>
+<td>QUILLBert and QUILLBee tips at the right moment, with an option for
+plain help</td>
+<td>No QUILLBert or QUILLBee tips in the GitHub Workbench (D16).</td>
+</tr>
+<tr>
+<td>GH-R-117</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Ask a Person and Report a Help Problem, never sending a secret</td>
+<td>Ask a Person node (mail to support, nothing sent by QUILL); no
+Report a Help Problem, and nothing “attached” about what you were
+doing.</td>
+</tr>
+<tr>
+<td>GH-R-118</td>
+<td>May</td>
+<td>Not met</td>
+<td>Ask How through the family’s AI, grounded only in the help
+catalogue</td>
+<td>(May) no Ask How.</td>
+</tr>
+<tr>
+<td>GH-R-119</td>
+<td>Must</td>
+<td>Partly</td>
+<td>One source for every help surface (D19), and the measures of
+D20</td>
+<td>One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the
+generated reference (GATE-GITHUB-HELP,
+<code>build_help_reference</code>); D20’s measures (timed
+find-the-answer sessions) not done.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="e12-speech-braille-and-sound">E12. Speech, braille and
+sound</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-110</td>
+<td>Must</td>
+<td>Met</td>
+<td>The Workbench announces only what the reader cannot see (results,
+background changes, Watches) and nothing…</td>
+<td>GATE-13 (<code>check_over_announce.py</code> scans quill/ui, which
+holds every Workbench module); the frame speaks results only
+(<code>workbench_frame_commands._say</code>)</td>
+</tr>
+<tr>
+<td>GH-R-111</td>
+<td>Must</td>
+<td>Met</td>
+<td>Every announcement is also brailled</td>
+<td>The Workbench speaks only through the announce callback the editor
+passes (its announcement service, which brailles); GATE-BRAILLE in
+<code>platform_report</code></td>
+</tr>
+<tr>
+<td>GH-R-112</td>
+<td>Must</td>
+<td>Met</td>
+<td>One sentence per outcome, naming what changed</td>
+<td>(sampled) one-sentence results across the window tests, e.g.
+<code>test_saving_sends_only_the_change_verifies_it_and_says_one_sentence</code>,
+<code>test_comment_posts_through_items_and_says_one_result</code></td>
+</tr>
+<tr>
+<td>GH-R-113</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Sounds go through the shared action-feedback channels; a failure or
+a count is always spoken</td>
+<td>Every outcome is spoken, so failures and counts always are; but the
+Workbench plays no sounds and ignores the <code>action_feedback</code>
+setting (only diff hearing has sounds, through sound events).</td>
+</tr>
+<tr>
+<td>GH-R-114</td>
+<td>Should</td>
+<td>Not met</td>
+<td>A braille-shaped row option</td>
+<td>No braille-shaped (short) row option.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="e13-settings">E13. Settings</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-120</td>
+<td>Must</td>
+<td>Met</td>
+<td>Every GitHub preference lives in Workbench Options, stored in
+<code>github_workbench.json</code> through…</td>
+<td><code>workbench_prefs.py</code> to
+<code>github_workbench.json</code>, shared;
+<code>test_the_schema_names_every_field_and_every_choice</code>,
+<code>test_the_options_dialog_saves_to_the_workbench_file</code>;
+<code>settings.py</code> holds no GitHub fields</td>
+</tr>
+<tr>
+<td>GH-R-121</td>
+<td>Must</td>
+<td>Met</td>
+<td>The three poll settings migrate out of the main Settings once, with
+the vocabulary audit and GATE-SETDOC…</td>
+<td><code>test_the_three_settings_move_once</code>,
+<code>test_settings_no_longer_hold_them_and_drop_the_old_keys</code>,
+<code>test_the_settings_file_hands_them_over_before_the_load</code></td>
+</tr>
+<tr>
+<td>GH-R-122</td>
+<td>Must</td>
+<td>Met</td>
+<td>The Workbench is fully usable without opening Workbench Options</td>
+<td>(by inspection) every preference has a default
+(<code>test_defaults_round_trip_and_bad_values_fall_back</code>);
+nothing asks for Options first</td>
+</tr>
+</tbody>
+</table>
+<h3 id="e14-api-use">E14. API use</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-130</td>
+<td>Must</td>
+<td>Met</td>
+<td>Only <code>api.github.com</code>, <code>github.com</code> sign-in
+pages, <code>uploads.github.com</code> for assets and, with
+consent,…</td>
+<td><code>network_egress_entries_github.py</code> names every GitHub
+endpoint family; githubstatus.com is not on main yet (built today,
+uncommitted, branch gh/service-status)</td>
+</tr>
+<tr>
+<td>GH-R-131</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Conditional requests (ETag) for every repeated read
+(<code>conditional_requests.py</code>), and secondary rate limits…</td>
+<td>Secondary limits respected in <code>rest_transport.py</code>
+(<code>secondary_wait_seconds</code>,
+<code>test_a_secondary_limit_stops_every_later_request_with_one_sentence</code>);
+ETag only in <code>explore.py</code>’s conditional read,
+<code>explore_extra_views</code>, <code>repo_activity</code> and
+<code>repo_insights</code>, not every repeated read
+(<code>items_provider</code> lists and sheets reload in full)</td>
+</tr>
+<tr>
+<td>GH-R-132</td>
+<td>Must</td>
+<td>Met</td>
+<td>GraphQL where it is the only API (Appendix F) and where one query
+replaces many REST calls; REST otherwise</td>
+<td>(sampled) GraphQL for Projects, Discussions, reviews, team code
+review; summary queries batch with aliases
+(<code>test_summary_query_batches_with_aliases</code>); REST
+otherwise</td>
+</tr>
+<tr>
+<td>GH-R-133</td>
+<td>Must</td>
+<td>Met</td>
+<td>The vendored API snapshot and <code>api_coverage.json</code> drive
+GATE-GITHUB-COVER</td>
+<td><code>test_github_api_coverage.py</code> (1,281 REST operations: 731
+covered, 354 out of scope, 196 no API needed; planned ceiling 0)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="e15-teams">E15. Teams</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-140</td>
+<td>Must</td>
+<td>Met</td>
+<td>Teams are created, edited, nested, filled, given repository and
+project roles, and deleted, from the Team…</td>
+<td>New Team and Delete Team (<code>quick_tables.py</code>), Team sheet
+(<code>sheets_orgs.py</code>), members and repositories through
+<code>access.py</code>; <code>api_coverage</code> marks
+POST/PATCH/DELETE /orgs/{org}/teams covered. Team creation itself has no
+test of its own.</td>
+</tr>
+<tr>
+<td>GH-R-141</td>
+<td>Must</td>
+<td>Met</td>
+<td>Team code review assignment is readable and editable</td>
+<td><code>test_team_code_review_is_one_mutation_with_every_setting</code></td>
+</tr>
+<tr>
+<td>GH-R-142</td>
+<td>Should</td>
+<td>Met</td>
+<td>Batch membership and batch repository roles across teams</td>
+<td>Bulk Access Changes (<code>access.bulk_plan</code>) for team
+memberships and team repositories;
+<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_bulk_team_membership_and_its_removal</code></td>
+</tr>
+<tr>
+<td>GH-R-143</td>
+<td>Should</td>
+<td>Partly</td>
+<td>People &gt; My Teams and team review requests in Needs My
+Attention</td>
+<td>People &gt; My Teams (<code>load_teams</code>, “teams:mine”); team
+review requests are a filter attribute but are not in Needs My
+Attention.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="e16-across-repositories">E16. Across repositories</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Strength</th>
+<th>Status</th>
+<th>Requirement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GH-R-150</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Across Repositories has a place for every kind in the 22.11 table, a
+row per name with its variants and…</td>
+<td>Labels, Milestones, Topics, Rules and Branch Protection by name, and
+the Fleet; every other kind is a decided cell with a reason in
+<code>across_scope_matrix.py</code> (<code>test_no_cell_is_blank</code>,
+<code>test_the_decided_cells</code>), not yet a place.</td>
+</tr>
+<tr>
+<td>GH-R-151</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Every operation a kind allows in one repository is offered across a
+scope, with the preview and a result…</td>
+<td>Preview and a result per repository for labels, milestones, topics,
+rulesets
+(<code>test_labels_by_name_make_the_same_with_a_preview_and_a_result_each</code>,
+<code>test_a_change_previews_permission_and_conflict_then_reports_each_repository</code>);
+environments, secrets, variables, webhooks, keys, autolinks remain.</td>
+</tr>
+<tr>
+<td>GH-R-152</td>
+<td>Must</td>
+<td>Met</td>
+<td>Repository Sets, by hand or by filter, usable as the scope of any
+batch</td>
+<td><code>test_named_sets_are_made_used_renamed_filtered_and_deleted</code>,
+<code>test_a_filter_set_runs_the_search_and_keeps_what_it_found</code>,
+<code>test_repository_sets_are_per_account_and_validated</code></td>
+</tr>
+<tr>
+<td>GH-R-153</td>
+<td>Should</td>
+<td>Partly</td>
+<td>Promote to Organization wherever GitHub has a shared form</td>
+<td>Rulesets only
+(<code>test_promote_creates_the_organization_ruleset_before_deleting_copies</code>);
+labels cannot be promoted (no GitHub API)</td>
+</tr>
+<tr>
+<td>GH-R-154</td>
+<td>Should</td>
+<td>Partly</td>
+<td>The fourth sweep of 22.12, each as the coverage gate schedules
+it</td>
+<td>Ongoing, as the coverage gate schedules it.</td>
+</tr>
+<tr>
+<td>GH-R-155</td>
+<td>Must</td>
+<td>Met</td>
+<td>Category-first lists cover the eight item kinds in 22.11.1, use an
+explicit per-account repository set,…</td>
+<td>(sampled)
+<code>test_category_rows_keep_every_repository_and_enter_then_back_returns</code>,
+<code>test_every_repository_state_has_its_own_sentence</code>,
+<code>test_releases_are_latest_only_until_asked</code></td>
+</tr>
+<tr>
+<td>GH-R-156</td>
+<td>Must</td>
+<td>Met</td>
+<td>Issue-type and issue-field values in category lists, filters, and
+Properties retain their stable IDs,…</td>
+<td><code>test_issue_types_and_fields_keep_their_states_apart</code>,
+<code>test_issue_type_and_fields_are_read_shown_and_filtered</code></td>
+</tr>
+<tr>
+<td>GH-R-157</td>
+<td>Must</td>
+<td>Partly</td>
+<td>Repository and item-property checklists announce a Space toggle
+once, save from Enter, return focus…</td>
+<td><code>test_the_checklist_checks_adds_once_and_returns_the_checked</code>;
+the JAWS, NVDA and VoiceOver checks it names are live checks not yet
+recorded.</td>
+</tr>
+</tbody>
+</table>
+</main>
+</body>
+</html>

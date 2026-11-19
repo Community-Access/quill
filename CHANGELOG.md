@@ -2,6 +2,14 @@
 
 ## 1.0.0
 
+### GitHub Workbench: requirements checked, and the window keeps its size (2026-11-18)
+
+Every requirement in the GitHub Workbench PRD was checked against the code
+and its tests; the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`,
+and what is left is in complete.md. The window now opens at the size you
+left it, with the tree as wide as you made it, for each account. Nine
+requirements that worked but had no test now have one.
+
 ### GitHub Workbench: 116 more commands on rows, and every endpoint settled (2026-11-18)
 
 Repositories, commits, runs, pull requests, releases, alerts, advisories,

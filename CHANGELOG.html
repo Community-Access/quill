@@ -245,6 +245,16 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="github-workbench-requirements-checked-and-the-window-keeps-its-size-2026-11-18">GitHub
+Workbench: requirements checked, and the window keeps its size
+(2026-11-18)</h3>
+<p>Every requirement in the GitHub Workbench PRD was checked against the
+code and its tests; the record is
+<code>docs/qa/github-workbench-requirement-audit-2026-11.md</code>, and
+what is left is in complete.md. The window now opens at the size you
+left it, with the tree as wide as you made it, for each account. Nine
+requirements that worked but had no test now have one.</p>
+<h3
 id="github-workbench-116-more-commands-on-rows-and-every-endpoint-settled-2026-11-18">GitHub
 Workbench: 116 more commands on rows, and every endpoint settled
 (2026-11-18)</h3>
@@ -281,6 +291,31 @@ on too. Insert Payment Field, Form Payments Setup and Verify Payment
 Setup are in Tools &gt; Forms only while it is on, and the shared
 command refuses in either editor when the switch is off, rather than
 running when it cannot tell.</p>
+<h3 id="github-copilot-sdk-201-and-agent-options-2026-11-18">GitHub
+Copilot SDK 2.0.1 and agent options (2026-11-18)</h3>
+<ul>
+<li>Replaced the Copilot SDK 1.x integration with the Microsoft Copilot
+SDK 2.0.1 in-process runtime. The runtime is included with QUILL; a
+Copilot subscription or allowance is not. GitHub determines eligibility,
+models, limits and billing.</li>
+<li>My own key can use the SDK agent harness for OpenAI-compatible and
+Gemini connections without GitHub sign-in. The selected provider
+controls its terms and billing. QUILL does not silently change
+providers.</li>
+<li>AI Hub &gt; Sessions offers opt-in session retention, local session
+listing, one-task resumption and permanent deletion. Sharing enabled AI
+Library skills and long-task context summaries are separately opt-in.
+These options remain off by default.</li>
+<li>Copilot’s own file, shell and web tools remain off until enabled for
+a project. Each use requires approval; vendor edits bypass Review
+Changes and vendor shell commands run with the user’s account
+permissions.</li>
+<li>Choose Your AI now has an optional Auto provider choice. It selects
+a ready provider with the capability each action needs and announces the
+destination before sending. A connectivity retry requires confirmation;
+agent tasks are never automatically retried. Explicitly selected
+providers do not switch.</li>
+</ul>
 <h3 id="wordpress">WordPress</h3>
 <h3 id="wordpress-menu-changes-can-be-undone-2026-11-18">WordPress: menu
 changes can be undone (2026-11-18)</h3>

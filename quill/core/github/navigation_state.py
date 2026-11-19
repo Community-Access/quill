@@ -208,6 +208,10 @@ class WorkbenchPlace:
     expanded: tuple[Place, ...] = ()
     repositories: tuple[str, ...] = ()
     people: tuple[str, ...] = ()
+    size: tuple[int, int] | None = None
+    """The window's width and height in device-independent pixels (GH-R-004)."""
+    sash: int = 0
+    """Where the tree pane ends, in device-independent pixels; 0 = the default."""
 
 
 def _place(value: object) -> Place | None:
@@ -229,6 +233,23 @@ def _names(value: object, *, repository: bool) -> tuple[str, ...]:
     return tuple(found[:_MAX_INSTANCES])
 
 
+def _size(value: object) -> tuple[int, int] | None:
+    if not isinstance(value, list | tuple) or len(value) != 2:
+        return None
+    if not all(isinstance(part, int) and not isinstance(part, bool) for part in value):
+        return None
+    width, height = int(value[0]), int(value[1])
+    if not (400 <= width <= 10_000 and 300 <= height <= 10_000):
+        return None
+    return (width, height)
+
+
+def _sash(value: object) -> int:
+    if isinstance(value, int) and not isinstance(value, bool) and 120 <= value <= 5_000:
+        return value
+    return 0
+
+
 def load_workbench_place(account_key: str, path: Path | None = None) -> WorkbenchPlace:
     """The Workbench's place for *account_key*, or an empty one."""
     raw = read_json(path or app_data_dir() / _FILENAME, default={})
@@ -248,6 +269,8 @@ def load_workbench_place(account_key: str, path: Path | None = None) -> Workbenc
         expanded=expanded,
         repositories=_names(data.get("repositories"), repository=True),
         people=_names(data.get("people"), repository=False),
+        size=_size(data.get("size")),
+        sash=_sash(data.get("sash")),
     )
 
 
@@ -266,6 +289,8 @@ def save_workbench_place(account_key: str, place: WorkbenchPlace, path: Path | N
         "expanded": [list(p) for p in place.expanded[:_MAX_EXPANDED]],
         "repositories": list(place.repositories[:_MAX_INSTANCES]),
         "people": list(place.people[:_MAX_INSTANCES]),
+        "size": list(size) if (size := _size(place.size)) else None,
+        "sash": _sash(place.sash),
     }
     accounts = {k: v for k, v in accounts.items() if k != account_key}
     accounts[account_key] = account

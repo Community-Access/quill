@@ -11,7 +11,8 @@ The provider may answer a few optional hooks, read with ``getattr`` so a
 provider that has not grown them yet still works: ``readout(name)`` for the
 Alt+number readouts, ``reason(command_id)`` for why a row is greyed,
 ``remove_command(row_type)`` for Delete, ``explain(text)`` for Explain That,
-``recall_place()`` / ``remember_place(place)`` for where the window was, and
+``recall_place()`` / ``remember_place(place)`` for where the window was,
+``recall_layout()`` / ``remember_layout(size, sash)`` for its size, and
 ``keymap_id`` naming its ``APP_KEYMAPS`` entry.
 
 GATE-13: nothing here speaks on focus or selection. Words are results the
@@ -89,6 +90,7 @@ class WorkbenchCommandsMixin:
     _wx: Any
     provider: Any
     frame: Any
+    _splitter: Any
     tree: Any
     list: Any
     filter: Any
@@ -485,3 +487,30 @@ class WorkbenchCommandsMixin:
             keep((expanded, self.current))
         except OSError:
             pass  # a place not remembered costs one arrow press, never the close
+
+    def restore_layout(self) -> None:
+        """Last time's window size and tree-pane width, when the provider keeps them."""
+        recall = getattr(self.provider, "recall_layout", None)
+        if not callable(recall):
+            return
+        try:
+            size, sash = recall()
+        except (OSError, TypeError, ValueError):
+            return
+        if size:
+            self.frame.SetSize(self.frame.FromDIP(self._wx.Size(*size)))
+        if sash:
+            self._splitter.SetSashPosition(self.frame.FromDIP(sash))
+
+    def remember_layout(self) -> None:
+        keep = getattr(self.provider, "remember_layout", None)
+        if not callable(keep) or self.frame.IsMaximized() or self.frame.IsIconized():
+            return
+        size = self.frame.ToDIP(self.frame.GetSize())
+        try:
+            keep(
+                (int(size.GetWidth()), int(size.GetHeight())),
+                int(self.frame.ToDIP(self._splitter.GetSashPosition())),
+            )
+        except OSError:
+            pass  # a size not remembered costs a drag, never the close

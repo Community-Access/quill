@@ -3,8 +3,9 @@
 Three small jobs for :class:`quill.ui.github_workbench_window.GitHubWorkbenchProvider`,
 kept out of that module (GATE-11):
 
-- **The place** (GitHub PRD 3.1 and 9): the last node, the expanded nodes and
-  the repositories and people the tree showed, per account, in
+- **The place** (GitHub PRD 3.1 and 9): the window's size and pane size, the
+  last node, the expanded nodes and the repositories and people the tree
+  showed, per account, in
   ``github_items_context.json`` beside GitHub Items' resume state
   (:mod:`quill.core.github.navigation_state`). A big account never means
   re-expanding everything.
@@ -18,12 +19,12 @@ kept out of that module (GATE-11):
 from __future__ import annotations
 
 from collections.abc import Sequence
+from dataclasses import replace
 from typing import Any
 
 from quill.core.github.explore_models import ExploreRow
 from quill.core.github.items_provider import GitHubItem, GitHubWorkflowRun
 from quill.core.github.navigation_state import (
-    WorkbenchPlace,
     account_key_for_token,
     load_workbench_place,
     save_workbench_place,
@@ -65,15 +66,26 @@ class GitHubWorkbenchPlaceMixin:
 
     def remember_place(self, place: tuple[Sequence[Any], Any]) -> None:
         expanded, current = place
+        kept = load_workbench_place(self._account_key())
         save_workbench_place(
             self._account_key(),
-            WorkbenchPlace(
+            replace(
+                kept,
                 last=(current.template, current.key, current.instance) if current else None,
                 expanded=tuple((r.template, r.key, r.instance) for r in expanded),
                 repositories=tuple(self._repositories),
                 people=tuple(self._people),
             ),
         )
+
+    def recall_layout(self) -> tuple[tuple[int, int] | None, int]:
+        """The window's size and tree-pane width last time (GH-R-004), in DIPs."""
+        place = load_workbench_place(self._account_key())
+        return place.size, place.sash
+
+    def remember_layout(self, size: tuple[int, int], sash: int) -> None:
+        kept = load_workbench_place(self._account_key())
+        save_workbench_place(self._account_key(), replace(kept, size=size, sash=sash))
 
     # -- readouts ---------------------------------------------------------------
 
