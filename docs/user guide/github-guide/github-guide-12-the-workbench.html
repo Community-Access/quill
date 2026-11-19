@@ -701,8 +701,12 @@ off. Set the setting itself to “chosen repositories” on the
 organization’s Properties first.</li>
 <li><strong>Dependabot Alerts</strong>, <strong>Secret Scanning
 Alerts</strong>, <strong>Security Advisories:</strong> every
-repository’s, in one list. A secret’s value is never shown. Open a
-repository’s Alerts to dismiss or resolve one.</li>
+repository’s, in one list. A secret’s value is never asked for, so it is
+never shown. Open a repository’s Alerts to dismiss or resolve one.</li>
+<li><strong>Actions, Dependabot, Codespaces and Copilot Agent
+Secrets:</strong> Change… on one sends a new value, sealed, or keeps it,
+and chooses all, private or selected repositories; Repositories Allowed…
+picks the selected ones.</li>
 <li><strong>Recent Events:</strong> the organization’s public activity,
 newest first.</li>
 <li><strong>Custom Property Values:</strong> every repository’s custom
@@ -1224,10 +1228,11 @@ commands) goes to the clipboard and is never said or shown.</p>
 <ul>
 <li><strong>A repository:</strong> Languages, License, Star History,
 Mark Its Notifications Read, Set a Custom Property…, Compare
-Dependencies… (between two branches, tags or commits, with known
-vulnerabilities), SBOM Report, Ruleset History…, Secret Scanning
-History, Fork Workflow Settings and Fork Workflows from Private
-Repositories….</li>
+Dependencies… (between two branches, tags or commits, with licences and
+known vulnerabilities), SBOM Report, Ruleset History…, Secret Scanning
+History, Allow a Blocked Secret… (the placeholder id
+<code>git push</code> printed, and why), Fork Workflow Settings and Fork
+Workflows from Private Repositories….</li>
 <li><strong>A commit:</strong> Branches at This Commit, Check Run
 Details… (a check’s summary and every annotation), Re-run a Check
 Suite…, and the reactions on its comments: Reactions on a Commit
@@ -1235,9 +1240,10 @@ Comment…, React to a Commit Comment…, Remove My Reaction from a Commit
 Comment….</li>
 <li><strong>A workflow run:</strong> Read a Step’s Log…, one step at a
 time.</li>
-<li><strong>A pull request:</strong> Re-request Review…. <strong>A
-release:</strong> GitHub’s Release Notes…, the notes GitHub writes from
-the changes since another tag.</li>
+<li><strong>A pull request:</strong> Re-request Review… and Dependency
+Review (what it changes in the dependencies, with licences and known
+vulnerabilities). <strong>A release:</strong> GitHub’s Release Notes…,
+the notes GitHub writes from the changes since another tag.</li>
 <li><strong>A secret scanning alert:</strong> Where It Was Found.
 <strong>A security advisory:</strong> Advisory Comments, Comment on
 Advisory…, Edit an Advisory Comment…, Make a Private Fork for the
@@ -1253,7 +1259,9 @@ a Runner to This Group…, Remove a Runner from This Group….</li>
 Dependabot a Repository…, Take a Repository from Dependabot…,
 Dependabot’s Default Access…, Make Someone an Outside Collaborator…,
 Define a Custom Property…, Set Repositories’ Custom Property…, New
-Team…, Accept Membership and My Activity Here.</li>
+Team…, Accept Membership, My Activity Here and Security Overview (open
+alerts in every repository, worst first; a kind GitHub will not show you
+is said, never counted as none).</li>
 <li><strong>A team:</strong> Pending Invitations and Delete Team….
 <strong>An invitation to an organization:</strong> Teams It Adds
 To.</li>

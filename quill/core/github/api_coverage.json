@@ -1044,7 +1044,7 @@
   "GET /repos/{owner}/{repo}/secret-scanning/custom-patterns": {"status": "out_of_scope", "home": "None", "reason": "Custom secret patterns need paid GitHub Advanced Security."},
   "POST /repos/{owner}/{repo}/secret-scanning/custom-patterns": {"status": "out_of_scope", "home": "None", "reason": "Custom secret patterns need paid GitHub Advanced Security."},
   "PATCH /repos/{owner}/{repo}/secret-scanning/custom-patterns/{pattern_id}": {"status": "out_of_scope", "home": "None", "reason": "Custom secret patterns need paid GitHub Advanced Security."},
-  "POST /repos/{owner}/{repo}/secret-scanning/push-protection-bypasses": {"status": "out_of_scope", "home": "None", "reason": "A push that secret scanning blocks is let through from git push itself, with the link GitHub prints there; it is not a Workbench step."},
+  "POST /repos/{owner}/{repo}/secret-scanning/push-protection-bypasses": {"status": "covered", "home": "command:github.workbench.allow_blocked_secret", "via": "quill/core/github/quick_tables.py"},
   "GET /repos/{owner}/{repo}/secret-scanning/scan-history": {"status": "covered", "home": "command:github.workbench.secret_scan_history", "via": "quill/core/github/quick_tables.py"},
   "GET /repos/{owner}/{repo}/security-advisories": {"status": "covered", "home": "node:repository:advisories", "via": "quill/core/github/security_advisories.py"},
   "POST /repos/{owner}/{repo}/security-advisories": {"status": "covered", "home": "node:repository:advisories", "via": "quill/core/github/security_advisories.py"},
