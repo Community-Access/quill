@@ -1,14 +1,14 @@
 # GitHub Workbench requirement audit, November 2026
 
-Checked 2026-11-18 against main, updated the same day for the follow-up pull request. This is the record of the complete.md 1.3 requirement audit: every id in Part E of the GitHub Workbench PRD (`docs/Product Requirement Documents and Specifications/github-workbench-prd.md`), with the code and the test behind each verdict.
+Checked 2026-11-18 against main, updated the same day for the follow-up pull request. This is the record of the complete.md 1.3 requirement audit: every id in Part E of [the GitHub Workbench PRD](<../Product Requirement Documents and Specifications/github-workbench-prd.md>), with the code and the test behind each verdict.
 
 ## Summary
 
-Of the 100 live requirements, 68 are met, 24 are partly met and 8 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 69 are met, 23 are partly met and 8 are not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
-| Must | 58 | 16 | 1 | 75 |
+| Must | 59 | 15 | 1 | 75 |
 | Should | 10 | 8 | 5 | 23 |
 | May | 0 | 0 | 2 | 2 |
 
@@ -41,7 +41,6 @@ Of the 100 live requirements, 68 are met, 24 are partly met and 8 are not met. G
 | GH-R-107 | Must | Take Me There and Walk Me Through It on every help topic and task; Do It where the answer is one command | Take Me There on Do Something tasks; no Walk Me Through, no Do It. |
 | GH-R-108 | Must | Shift+F9 Explain That for every result, and Why? on every automatic behaviour | Shift+F9 Explain That (`workbench_window_menu.py`, frame `explain_result`); no Why? on automatic behaviours. |
 | GH-R-113 | Must | Sounds go through the shared action-feedback channels; a failure or a count is always spoken | Every outcome is spoken, so failures and counts always are; but the Workbench plays no sounds and ignores the `action_feedback` setting (only diff hearing has sounds, through sound events). |
-| GH-R-117 | Must | Ask a Person and Report a Help Problem, never sending a secret | Ask a Person node (mail to support, nothing sent by QUILL); no Report a Help Problem, and nothing "attached" about what you were doing. |
 | GH-R-119 | Must | One source for every help surface (D19), and the measures of D20 | One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the generated reference (GATE-GITHUB-HELP, `build_help_reference`); D20's measures (timed find-the-answer sessions) not done. |
 | GH-R-131 | Must | Conditional requests (ETag) for every repeated read (`conditional_requests.py`), and secondary rate limits... | Secondary limits respected in `rest_transport.py` (`secondary_wait_seconds`, `test_a_secondary_limit_stops_every_later_request_with_one_sentence`); ETag only in `explore.py`'s conditional read, `explore_extra_views`, `repo_activity` and `repo_insights`, not every repeated read (`items_provider` lists and sheets reload in full) |
 | GH-R-150 | Must | Across Repositories has a place for every kind in the 22.11 table, a row per name with its variants and... | Labels, Milestones, Topics, Rules and Branch Protection by name, and the Fleet; every other kind is a decided cell with a reason in `across_scope_matrix.py` (`test_no_cell_is_blank`, `test_the_decided_cells`), not yet a place. |
@@ -186,7 +185,7 @@ Of the 100 live requirements, 68 are met, 24 are partly met and 8 are not met. G
 | GH-R-109 | Should | Not met | Examples from the person's own data and situation | No examples drawn from the person's own data (D14). |
 | GH-R-115 | Should | Not met | Key cards in print and braille, the guide as a book, the spoken tour | No key cards, book edition of the guide beyond the EPUBs, or spoken tour (D15). The guide's EPUB siblings exist. |
 | GH-R-116 | Should | Not met | QUILLBert and QUILLBee tips at the right moment, with an option for plain help | No QUILLBert or QUILLBee tips in the GitHub Workbench (D16). |
-| GH-R-117 | Must | Partly | Ask a Person and Report a Help Problem, never sending a secret | Ask a Person node (mail to support, nothing sent by QUILL); no Report a Help Problem, and nothing "attached" about what you were doing. |
+| GH-R-117 | Must | Met | Ask a Person and Report a Help Problem, never sending a secret | Ask a Person node (mail to support, nothing sent by QUILL); Report a Help Problem on every topic opens a mail with the place and the last thing said, scrubbed of secrets first (`workbench_help.help_report_mailto`, `redact_text_for_bundle`; `test_github_workbench_help_problem.py`). |
 | GH-R-118 | May | Not met | Ask How through the family's AI, grounded only in the help catalogue | (May) no Ask How. |
 | GH-R-119 | Must | Partly | One source for every help surface (D19), and the measures of D20 | One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the generated reference (GATE-GITHUB-HELP, `build_help_reference`); D20's measures (timed find-the-answer sessions) not done. |
 

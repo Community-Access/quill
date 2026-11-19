@@ -96,12 +96,13 @@ The endpoint count is not the whole job. These rows from the Workbench delivery 
 
 #### Requirement audits
 
-Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against the code and tests, and the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. Of the 100 live ids, 68 are met, 24 partly met and 8 not met. What it found, the Musts first:
+Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against the code and tests, and the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. Of the 100 live ids, 68 are met, 24 partly met and 8 not met (now 69 and 23, with GH-R-117 done). What it found, the Musts first:
 
 - [ ] **GH-R-002, needs a Windows check:** every Workbench dialog uses `ShowModal()`, which in wx disables every top-level window, the editor included. Try it before acting: if the editor is blocked, the fix is window-modal or modeless dialogs throughout the Workbench.
 - [ ] **GH-R-010:** no counts after node names. A native tree speaks its item text, so a count there is always announced; decide whether the Alt+number readouts are the answer and say so in the PRD.
 - [ ] **GH-R-035:** New... on the remaining pickers (issue type, branch).
-- [ ] **GH-R-106, 107, 108, 117, 119 (help):** Tutorials and Tips nodes; Walk Me Through and Do It; Why? on automatic behaviours; Report a Help Problem; D20's timed sessions.
+- [ ] **GH-R-106, 107, 108, 119 (help):** Tutorials and Tips nodes; Walk Me Through and Do It; Why? on automatic behaviours; D20's timed sessions.
+- [x] **GH-R-117 (2026-11-18):** Report a Help Problem on every help topic, a mail with the place and the last thing said, with secrets scrubbed first.
 - [ ] **GH-R-113 and 083 (sound):** Workbench results through `action_feedback`, as the editors do.
 - [ ] **GH-R-131:** conditional requests (ETag) on item lists and sheet reloads.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists (with the 1.5 live rows).
