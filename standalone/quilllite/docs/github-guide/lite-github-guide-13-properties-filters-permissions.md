@@ -297,16 +297,6 @@ and lets you choose them by name. A branch's classic protection sheet has
 every setting GitHub offers, and its **Who** page says who may push, dismiss
 reviews and skip the pull request; saving keeps those lists as they were.
 
-### Custom roles and the audit log
-
-These are GitHub Enterprise Cloud features. When GitHub refuses, QUILL Lite
-says so in GitHub's own words and what that usually means. On an
-organization's row: **Custom Repository Roles**, **New Custom Repository
-Role...**, **Change Custom Repository Role...**, **Delete Custom Repository
-Role...** (its name typed first) and **Permissions for Custom Roles**; the
-same four for organization roles; and **Audit Log...**, newest first, each
-event a sentence, searched with GitHub's words such as `actor:kim`.
-
 ---
 
 - Previous: [Chapter 12: The GitHub Workbench, place by place](lite-github-guide-12-the-workbench.html)

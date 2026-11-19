@@ -389,32 +389,6 @@ organization. Each row gives its name, its enforcement and what it targets:
 To make an organization ruleset from repositories that each have the same
 one, use **Promote to Organization** under Across Repositories.
 
-### Custom roles and the audit log
-
-These are GitHub Enterprise Cloud features. QUILL asks GitHub rather than
-guessing your organization's plan, and when GitHub refuses, it says so in
-GitHub's own words and what that usually means, for example "GitHub refused
-to read the audit log of acme: Not Found (HTTP 404). The audit log API is for
-organizations on GitHub Enterprise Cloud; Open on GitHub reads this
-organization's audit log on any plan." On an organization's row:
-
-- **Custom Repository Roles** lists the organization's own repository roles,
-  each with the role it builds on and what it adds. **New Custom Repository
-  Role...** asks for a name, a description, the base role (read, triage,
-  write or maintain) and the permissions it adds, separated by commas;
-  **Permissions for Custom Roles** lists those permissions in GitHub's words.
-  **Change Custom Repository Role...** keeps whatever you leave empty.
-  **Delete Custom Repository Role...** asks you to type its name; people
-  given it keep its base role.
-- **New Organization Role...**, **Change Organization Role...**, **Delete
-  Organization Role...** and **Permissions for Organization Roles** do the
-  same for organization roles. Giving a role to someone is **Roles...**,
-  above.
-- **Audit Log...** lists what people did, newest first, each a sentence:
-  "2026-11-19 10:02 UTC: kim did repo.create on acme/site". Leave the search
-  empty for everything recent, or use GitHub's words, such as
-  `action:repo.create` or `actor:kim`.
-
 ### Repository settings from the editor
 
 With the Workbench in use, the editor's Rename Repository, Change Visibility,

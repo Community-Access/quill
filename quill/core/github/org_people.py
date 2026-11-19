@@ -19,8 +19,6 @@ strict-typed.
 
 from __future__ import annotations
 
-from typing import Any
-
 from quill.core.github.access import AccessRow, lockout_problem
 from quill.core.github.explore_models import ExploreRow
 from quill.core.github.rest_transport import GitHubRestError
@@ -28,7 +26,6 @@ from quill.core.github.workbench_api import GitHubApi
 
 __all__ = [
     "convert_problem",
-    "describe_refusal",
     "member_problem",
     "member_rows",
     "owner_logins",
@@ -137,12 +134,3 @@ def member_rows(api: GitHubApi, org: str, warnings: list[str]) -> list[ExploreRo
     if len(members) == 100:
         warnings.append("Showing the first 100 members; GitHub's people page lists the rest.")
     return rows
-
-
-def describe_refusal(exc: Any) -> str:
-    """GitHub's own words for a refusal, with its status: "Not Found (HTTP 404)"."""
-    data = getattr(exc, "data", None)
-    message = data.get("message") if isinstance(data, dict) else None
-    status = getattr(exc, "status", None)
-    said = str(message or exc or "no reason given").rstrip(".")
-    return f"{said} (HTTP {status})" if status else said

@@ -4,7 +4,8 @@
   Repository...**, **Take a Repository from Dependabot...**, **Dependabot's
   Default Access...**, **Make Someone an Outside Collaborator...**, **Define
   a Custom Property...**, **Set Repositories' Custom Property...**, **New
-  Team...**, **Accept Membership**, **My Activity Here**.
+  Team...**, **Accept Membership**, **Members Without Two-Factor**, **My Activity
+  Here**.
 * A team: **Pending Invitations**, **Delete Team...**. An invitation to the
   organization: **Teams It Adds To**.
 * A Project: **New View...** and **Items in a View...**.
@@ -117,6 +118,11 @@ def _event_rows(data: Any, _ctx: dict[str, str]) -> str:
         for e in data if isinstance(e, Mapping)
     ] if isinstance(data, list) else []  # fmt: skip
     return bulleted(rows, "No recent activity of yours here.")
+
+
+def _two_factor(data: Any, _ctx: dict[str, str]) -> str:
+    rows = [str(r.get("login")) for r in data or () if isinstance(r, Mapping)]
+    return bulleted(rows, "Every member has two-factor sign-in on.")
 
 
 def _invitees(data: Any, _ctx: dict[str, str]) -> str:
@@ -295,6 +301,12 @@ ORG_QUICK: tuple[Quick, ...] = (
                                 {"state": "active"}),
           lambda _d, ctx: f"You are a member of {ctx['org']} now.", tier="A", need="sign_in",
           needs=("org",), live="not here: needs an invitation from another organization"),
+    Quick("two_factor_off", "Members Without Two-Factor", ("organization",), _ORG,
+          "Members who have not turned on two-factor sign-in. GitHub shows this to owners.",
+          ("GET /orgs/{org}/members",),
+          lambda api, ctx: call(api, "GET", "/orgs/{org}/members?filter=2fa_disabled"
+                                "&per_page=100", ctx),
+          _two_factor, report=True, needs=("org",)),
     Quick("my_org_activity", "My Activity Here", ("organization",), _ORG,
           "What you have done lately in this organization's repositories.",
           ("GET /users/{username}/events/orgs/{org}",),

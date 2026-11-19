@@ -14,7 +14,7 @@ from typing import Any
 
 import pytest
 
-from quill.core.github import access, access_matrix, branch_protection, custom_roles, org_people
+from quill.core.github import access, access_matrix, branch_protection, org_people
 from quill.core.github.quick_actions import QuickError
 from quill.core.github.resource_engine import ResourceError, delete, fetch
 from quill.core.github.resource_specs import spec_for
@@ -375,98 +375,23 @@ def test_a_new_team_can_start_under_a_parent_with_notifications_off() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Custom roles, organization roles and the audit log (GitHub Enterprise Cloud)
+# Typed names and guards; nothing that is GitHub Enterprise Cloud only
 # ---------------------------------------------------------------------------
 
 
-def test_custom_repository_roles_list_make_change_and_delete() -> None:
-    api = FakeGitHubApi()
-    api.answer("GET", "/orgs/acme/custom-repository-roles", {"total_count": 1, "custom_roles": [
-        {"id": 8, "name": "Reviewer", "description": "Reviews code", "base_role": "triage",
-         "permissions": ["add_label", "close_issue"]},
-    ]})  # fmt: skip
-    ctx = {"org": "acme"}
-    listed = custom_roles.custom_role_lines(custom_roles.custom_roles(api, ctx), ctx)
-    assert listed == "Reviewer, based on triage: Reviews code. Adds: add label, close issue."
-    assert custom_roles.custom_role_picks(api, ctx) == [("Reviewer", "8")]
-    custom_roles.save_custom_role(api, {**ctx, "name": "Docs", "base_role": "read",
-                                        "permissions": "add label, close_issue"})  # fmt: skip
-    custom_roles.save_custom_role(api, {**ctx, "role": "8", "role_label": "Reviewer",
-                                        "name": "", "base_role": "write"})  # fmt: skip
-    custom_roles.delete_custom_role(api, {**ctx, "role": "8", "role_label": "Reviewer"})
-    assert api.writes() == [
-        (
-            "POST",
-            "/orgs/acme/custom-repository-roles",
-            {"name": "Docs", "base_role": "read", "permissions": ["add_label", "close_issue"]},
-        ),
-        ("PATCH", "/orgs/acme/custom-repository-roles/8", {"base_role": "write"}),
-        ("DELETE", "/orgs/acme/custom-repository-roles/8", None),
-    ]
-    with pytest.raises(QuickError, match="at least one permission"):
-        custom_roles.save_custom_role(api, {**ctx, "name": "Empty", "base_role": "read"})
-
-
-def test_a_refusal_is_said_in_githubs_own_words_then_what_it_means() -> None:
-    api = FakeGitHubApi()
-    refusal = GitHubRestError("Not Found", status=404, data={"message": "Not Found"})
-    api.answer("GET", "/orgs/acme/audit-log", refusal)
-    with pytest.raises(QuickError) as caught:
-        custom_roles.audit_log(api, {"org": "acme"})
-    assert caught.value.args[0] == (
-        "GitHub refused to read the audit log of acme: Not Found (HTTP 404). The audit log "
-        "API is for organizations on GitHub Enterprise Cloud; Open on GitHub reads this "
-        "organization's audit log on any plan."
-    )
-    api.answer("GET", "/orgs/acme/custom-repository-roles", GitHubRestError(
-        "Forbidden", status=403,
-        data={"message": "This feature requires GitHub Enterprise Cloud"},
-    ))  # fmt: skip
-    with pytest.raises(QuickError, match="requires GitHub Enterprise Cloud \\(HTTP 403\\)"):
-        custom_roles.custom_roles(api, {"org": "acme"})
-
-
-def test_the_audit_log_reads_newest_first_as_sentences_and_searches() -> None:
-    api = QueryApi()
-    api.answer_query("/orgs/acme/audit-log", {"order": "desc", "phrase": "actor:kim"}, [
-        {"@timestamp": 1763546520000, "actor": "kim", "action": "repo.create", "repo": "acme/x"},
-        {"@timestamp": 1763540000000, "actor": "kim", "action": "org.update_member"},
-    ])  # fmt: skip
-    ctx = {"org": "acme", "phrase": "actor:kim"}
-    said = custom_roles.audit_lines(custom_roles.audit_log(api, ctx), ctx)
-    assert said.splitlines() == [
-        "2025-11-19 10:02 UTC: kim did repo.create on acme/x",
-        "2025-11-19 08:13 UTC: kim did org.update_member",
-    ]
-    assert custom_roles.audit_lines([], ctx) == "The audit log has nothing searching for actor:kim."
-
-
-def test_organization_roles_are_made_changed_and_deleted_with_typed_names() -> None:
-    from quill.core.github.quick_tables import QUICK, QUICK_LIVE, QUICK_REQUIREMENTS
-    from quill.core.github.write_gate import gated_tier
+def test_converting_is_typed_and_guarded_and_enterprise_only_commands_are_absent() -> None:
+    from quill.core.github.quick_tables import QUICK, QUICK_ENDPOINTS
 
     by_verb = {q.verb: q for q in QUICK}
-    for verb in ("delete_custom_repo_role", "delete_org_role"):
-        assert by_verb[verb].tier == "D" and by_verb[verb].typed == "role_label"
     convert = by_verb["make_outside_collaborator"]
     assert convert.tier == "D" and convert.typed == "who" and convert.guard is not None
-    for verb in ("new_custom_repo_role", "change_org_role", "delete_org_role"):
-        assert QUICK_REQUIREMENTS[f"github.workbench.{verb}"][0] == "org:owner"
-        assert QUICK_LIVE[verb].startswith("needs Jeff")
-        assert gated_tier(f"github.workbench.{verb}") is not None
-    api = FakeGitHubApi()
-    api.answer("GET", "/orgs/acme/organization-roles", {"roles": [
-        {"id": 1, "name": "all_repo_read", "source": "Predefined"},
-        {"id": 40, "name": "Auditors", "source": "Organization"},
-    ]})  # fmt: skip
-    assert custom_roles.org_role_picks(api, {"org": "acme"}) == [("Auditors", "40")]
-    custom_roles.save_org_role(
-        api, {"org": "acme", "name": "Billing", "permissions": "read_audit_logs"}
-    )
-    assert api.writes()[-1] == (
-        "POST", "/orgs/acme/organization-roles",
-        {"name": "Billing", "permissions": ["read_audit_logs"]},
-    )  # fmt: skip
+    assert by_verb["two_factor_off"].tier == ""  # a read
+    for endpoint in (
+        "GET /orgs/{org}/audit-log",
+        "GET /orgs/{org}/custom-repository-roles",
+        "POST /orgs/{org}/organization-roles",
+    ):
+        assert endpoint not in QUICK_ENDPOINTS, endpoint
 
 
 # ---------------------------------------------------------------------------

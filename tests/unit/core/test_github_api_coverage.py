@@ -139,13 +139,10 @@ def test_the_read_query_ledger_names_what_10b2_asks_for() -> None:
 
 def test_enterprise_rows_have_homes_and_reasons() -> None:
     rows = cover.load_coverage()["enterprise"]
-    # Credential authorizations need GitHub Enterprise Cloud, which QUILL does not target
-    # (Jeff, 2026-11-18). The audit log and custom roles are asked of GitHub instead
-    # (complete.md 1.3, 2026-11-19): a refusal is said in GitHub's own words.
+    # Both need GitHub Enterprise Cloud, which QUILL does not target (Jeff, 2026-11-18).
+    assert rows["GET /orgs/{org}/audit-log"].status == "out_of_scope"
     assert rows["GET /orgs/{org}/credential-authorizations"].status == "out_of_scope"
-    for key in ("GET /orgs/{org}/audit-log", "POST /orgs/{org}/custom-repository-roles"):
-        assert rows[key].status == "covered", key
-        assert rows[key].via == "quill/core/github/custom_roles.py", key
+    assert "Enterprise Cloud" in rows["GET /orgs/{org}/audit-log"].reason
     assert any(key.startswith(("GET /scim/", "POST /scim/")) for key in rows)
     snap = cover.load_snapshot()
     assert {op["named_from"] for op in snap.enterprise.values()} == {"description"}

@@ -233,10 +233,9 @@ ORGANIZATION = SheetDef(
                 ro(
                     "audit_note",
                     "Audit log",
-                    help="Audit Log... on the organization's row reads it, newest first, "
-                    "and searches it. GitHub offers it only to organizations on GitHub "
-                    "Enterprise Cloud; elsewhere it says why in GitHub's own words, and "
-                    "Open on GitHub reads it.",
+                    help="The audit log API "
+                    "is for GitHub Enterprise Cloud; Open on GitHub "
+                    "reads it otherwise.",
                 ),
             ),
         ),

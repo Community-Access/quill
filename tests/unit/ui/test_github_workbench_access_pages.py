@@ -146,19 +146,6 @@ def test_make_outside_collaborator_asks_for_the_name_and_refuses_yourself(
     assert bench.said[-1] == "kim is an outside collaborator now."
 
 
-def test_deleting_a_custom_role_needs_its_name_typed(bench, monkeypatch) -> None:
-    provider = bench.provider
-    api = provider.api
-    api.answer("GET", "/orgs/acme/custom-repository-roles", {"custom_roles": [
-        {"id": 8, "name": "Reviewer"},
-    ]})  # fmt: skip
-    monkeypatch.setattr(provider, "_choose", lambda *_a: 0)
-    _answers(monkeypatch, provider, typed=["Reviewer"])
-    provider.quick_start(_QUICK["delete_custom_repo_role"], {"org": "acme"})
-    assert api.writes() == [("DELETE", "/orgs/acme/custom-repository-roles/8", None)]
-    assert bench.said[-1] == "Deleted the role Reviewer."
-
-
 def test_removing_a_member_from_the_members_list_is_typed_and_guarded(bench, monkeypatch) -> None:
     provider = bench.provider
     api = provider.api
