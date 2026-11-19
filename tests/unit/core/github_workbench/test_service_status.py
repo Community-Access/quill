@@ -30,9 +30,11 @@ _SUMMARY = {
 
 
 def test_everything_working_says_so() -> None:
-    text = ss.parse_summary(
-        {"status": {"description": "All Systems Operational"}, "components": [], "incidents": []}
-    ).sentences()
+    text = ss.parse_summary({
+        "status": {"description": "All Systems Operational"},
+        "components": [],
+        "incidents": [],
+    }).sentences()
     assert text == "GitHub says: All Systems Operational.\nGitHub lists no incident."
 
 

@@ -14,13 +14,13 @@ sends nothing about you or your repositories, and never runs on its own.
 from __future__ import annotations
 
 import json
-import ssl
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener
 
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
 
@@ -106,7 +106,7 @@ class _NoRedirect(HTTPRedirectHandler):
 
 def read_status(timeout: float = 15.0) -> ServiceStatus:
     """Read the status page: HTTPS, verified TLS, no redirects, nothing sent but the request."""
-    opener = build_opener(HTTPSHandler(context=ssl.create_default_context()), _NoRedirect())
+    opener = build_opener(HTTPSHandler(context=verified_ssl_context()), _NoRedirect())
     request = Request(STATUS_URL, headers={"User-Agent": "QUILL", "Accept": "application/json"})
     try:
         with opener.open(request, timeout=timeout) as response:
