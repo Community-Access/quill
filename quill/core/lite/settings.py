@@ -224,7 +224,7 @@ class Settings(DictationSettings):
     ai_own_key_model: str = ""  # own-key AI model; key in the OS store (core/ai/own_key.py)
     ai_own_key_provider: str = "openai"  # or "gemini": the explicit choice, QUILL's field too
     # Choose Your AI, QUILL's fields (core/ai/connection_choice.py): the AI in use and two models.
-    ai_connection: str = ""  # free, chatgpt, copilot, codex, own_key; "" until decided
+    ai_connection: str = ""  # free, chatgpt, copilot, codex, own_key, auto; "" until decided
     ai_copilot_model: str = ""
     ai_codex_model: str = ""
     ai_answer_delivery: str = "window"  # or cursor/clipboard; QUILL's field (ai/answer_delivery)

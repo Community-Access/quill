@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Lite changelog</title>
   <style>
@@ -11,10 +11,7 @@
     */
     html {
       color: #1a1a1a;
-      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
-      background-color: light-dark(#fdfdfd, #1a1a1a);
-      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -39,16 +36,11 @@
     }
     @media print {
       html {
-        color-scheme: light only;
+        background-color: white;
       }
-      html, body, pre, code {
+      body {
         background-color: transparent;
-      }
-      body, a, a:visited, blockquote {
         color: black;
-      }
-      pre, code {
-        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -61,8 +53,11 @@
     p {
       margin: 1em 0;
     }
-    a, a:visited {
-      color: inherit;
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
     }
     img {
       max-width: 100%;
@@ -91,11 +86,8 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid;
-      border-color: #e6e6e6;
-      border-color: light-dark(#e6e6e6, #4c4c4c);
+      border-left: 2px solid #e6e6e6;
       color: #606060;
-      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -119,7 +111,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -136,11 +128,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid currentColor;
-      border-bottom: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
     }
     th {
-      border-top: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -179,6 +171,7 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -350,6 +343,29 @@ was.</li>
 commands, shop and event edits, among others) are not yet written to
 Change History, so Ctrl+Z straight after one undoes an older change
 instead.</p>
+<h3
+id="github-copilot-sdk-201-and-optional-agent-features-2026-11-18">GitHub
+Copilot SDK 2.0.1 and optional agent features (2026-11-18)</h3>
+<ul>
+<li>QUILL Lite now uses the Microsoft Copilot SDK 2.0.1 in-process
+runtime. GitHub still controls Copilot eligibility, models, limits and
+billing; QUILL Lite does not provide or subsidize Copilot access.</li>
+<li>OpenAI-compatible and Gemini connections chosen in My own key can
+use the SDK harness for multi-step tasks without GitHub sign-in. The
+selected provider’s terms and billing apply.</li>
+<li>AI Hub &gt; Sessions lets you opt into keeping local sessions,
+listing and resuming one for a task, or deleting it. Skill sharing and
+long-task context summaries are also explicit opt-ins. All are off by
+default.</li>
+<li>Copilot’s own file, shell and web tools are off until enabled per
+project. Each use still asks first; vendor edits bypass Review Changes,
+and shell commands run with your account permissions.</li>
+<li>Choose Your AI now has an optional Auto provider choice. It selects
+a ready provider with the capability each action needs and announces the
+destination before sending. A connectivity retry requires confirmation;
+agent tasks are never automatically retried. Explicitly selected
+providers do not switch.</li>
+</ul>
 <h3
 id="compare-with-site-marks-each-changed-line-from-kelly-ford-2026-11-18">Compare
 with Site marks each changed line, from Kelly Ford (2026-11-18)</h3>

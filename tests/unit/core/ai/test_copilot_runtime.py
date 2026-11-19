@@ -1,8 +1,9 @@
-"""Finding the bundled Copilot CLI, and the environment its child gets."""
+"""Finding and verifying the native Copilot SDK runtime shipped with QUILL."""
 
 from __future__ import annotations
 
 import hashlib
+import os
 import sys
 from pathlib import Path
 
@@ -11,70 +12,38 @@ import pytest
 from quill.core.ai import copilot_runtime as rt
 
 
-def _plant(root: Path, *, wrapper: bytes = b"MZ wrapper", node: bytes = b"MZ runtime") -> Path:
-    """A complete hostless bundle in ``root/tools/copilot``; returns the alias."""
+def _plant(root: Path, *, runtime: bytes = b"pinned runtime") -> Path:
     directory = root / "tools" / "copilot"
     directory.mkdir(parents=True)
-    (directory / rt.COPILOT_RUNTIME_WRAPPER).write_bytes(wrapper)
-    (directory / rt.COPILOT_EXE).write_bytes(wrapper)
-    (directory / rt.COPILOT_RUNTIME_NODE).write_bytes(node)
-    (directory / rt.COPILOT_ASSETS_MARKER).write_text("1\n", encoding="ascii")
-    return directory / rt.COPILOT_EXE
+    path = directory / rt.COPILOT_RUNTIME_NODE
+    path.write_bytes(runtime)
+    return path
 
 
 @pytest.fixture
 def pinned(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Pin the bytes :func:`_plant` writes by default."""
-    monkeypatch.setattr(rt, "COPILOT_WRAPPER_SHA256", hashlib.sha256(b"MZ wrapper").hexdigest())
-    monkeypatch.setattr(
-        rt, "COPILOT_RUNTIME_NODE_SHA256", hashlib.sha256(b"MZ runtime").hexdigest()
-    )
+    digest = hashlib.sha256(b"pinned runtime").hexdigest()
+    monkeypatch.setattr(rt, "COPILOT_RUNTIME_NODE_SHA256", digest)
 
 
 @pytest.fixture
 def no_overrides(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, absent_env) -> Path:
-    absent_env("QUILL_APP_ROOT", "COPILOT_CLI_PATH")
+    absent_env("QUILL_APP_ROOT", rt.SDK_RUNTIME_PATH_ENV)
     fake_python = tmp_path / "runtime" / "python.exe"
     fake_python.parent.mkdir()
     monkeypatch.setattr(sys, "executable", str(fake_python))
     return fake_python.parent
 
 
-def test_none_when_the_build_carries_no_cli(no_overrides: Path) -> None:
-    assert rt.find_copilot_cli() is None
-    assert rt.resolve_cli_path() is None
+def test_none_when_the_build_carries_no_runtime(no_overrides: Path) -> None:
+    assert rt.find_copilot_runtime() is None
+    with pytest.raises(rt.CopilotRuntimeUnavailable, match="will not download"):
+        rt.runtime_path_for_launch()
 
 
 def test_found_beside_the_interpreter(no_overrides: Path) -> None:
-    exe = _plant(no_overrides)
-    assert rt.find_copilot_cli() == exe
-    # What the SDK's get_cached_cli_path returns: the alias, not the wrapper.
-    assert exe.name == ("copilot.exe" if sys.platform == "win32" else "copilot")
-
-
-@pytest.mark.parametrize(
-    "missing",
-    [rt.COPILOT_EXE, rt.COPILOT_RUNTIME_WRAPPER, rt.COPILOT_RUNTIME_NODE, rt.COPILOT_ASSETS_MARKER],
-)
-def test_an_incomplete_bundle_is_no_bundle(no_overrides: Path, missing: str) -> None:
-    exe = _plant(no_overrides)
-    (exe.parent / missing).unlink()
-    assert rt.copilot_bundle_complete(exe.parent) is False
-    assert rt.find_copilot_cli() is None
-
-
-def test_an_empty_bundle_file_is_no_bundle(no_overrides: Path) -> None:
-    exe = _plant(no_overrides)
-    (exe.parent / rt.COPILOT_RUNTIME_NODE).write_bytes(b"")
-    assert rt.find_copilot_cli() is None
-
-
-def test_a_legacy_single_file_stage_is_no_bundle(no_overrides: Path) -> None:
-    """The old copilot-win32-x64.zip exe alone: the SDK would not use it either."""
-    legacy = no_overrides / "tools" / "copilot" / rt.COPILOT_EXE
-    legacy.parent.mkdir(parents=True)
-    legacy.write_bytes(b"MZ legacy sea")
-    assert rt.find_copilot_cli() is None
+    runtime = _plant(no_overrides)
+    assert rt.find_copilot_runtime() == runtime
 
 
 def test_app_root_is_tried_first(no_overrides: Path, monkeypatch, tmp_path: Path) -> None:
@@ -82,81 +51,66 @@ def test_app_root_is_tried_first(no_overrides: Path, monkeypatch, tmp_path: Path
     app_root = tmp_path / "app"
     preferred = _plant(app_root)
     monkeypatch.setenv("QUILL_APP_ROOT", str(app_root))
-    assert rt.copilot_search_dirs()[0] == app_root / "tools" / "copilot"
-    assert rt.find_copilot_cli() == preferred
+    assert rt.copilot_runtime_search_dirs()[0] == app_root / "tools" / "copilot"
+    assert rt.find_copilot_runtime() == preferred
 
 
 def test_never_searches_path(no_overrides: Path, monkeypatch, tmp_path: Path) -> None:
     on_path = tmp_path / "bin"
     on_path.mkdir()
-    (on_path / rt.COPILOT_EXE).write_bytes(b"")
+    (on_path / rt.COPILOT_RUNTIME_NODE).write_bytes(b"pinned runtime")
     monkeypatch.setenv("PATH", str(on_path))
-    assert rt.find_copilot_cli() is None
+    assert rt.find_copilot_runtime() is None
 
 
-def test_cli_path_override_wins_only_when_it_exists(
-    no_overrides: Path, monkeypatch, tmp_path: Path
-) -> None:
-    bundled = _plant(no_overrides)
-    monkeypatch.setenv("COPILOT_CLI_PATH", str(tmp_path / "missing.exe"))
-    assert rt.resolve_cli_path() == bundled
-    dev = tmp_path / "dev-copilot.exe"
-    dev.write_bytes(b"")
-    monkeypatch.setenv("COPILOT_CLI_PATH", str(dev))
-    assert rt.resolve_cli_path() == dev
+def test_empty_runtime_is_unavailable(no_overrides: Path) -> None:
+    runtime = _plant(no_overrides, runtime=b"")
+    assert rt.find_copilot_runtime() is None
+    assert rt.copilot_runtime_matches_pin(runtime) is False
 
 
-def test_child_env_carries_no_token_and_pins_the_binary(monkeypatch, tmp_path: Path) -> None:
-    monkeypatch.setenv("GITHUB_TOKEN", "gho_leak")
-    monkeypatch.setenv("COPILOT_GITHUB_TOKEN", "gho_leak")
-    exe = tmp_path / "copilot.exe"
-    env = rt.copilot_child_env(exe)
-    assert "GITHUB_TOKEN" not in env
-    assert "COPILOT_GITHUB_TOKEN" not in env
-    assert env["COPILOT_SKIP_CLI_DOWNLOAD"] == "1"
-    assert env["COPILOT_CLI_PATH"] == str(exe)
-
-
-def test_child_env_without_a_binary_adds_nothing(monkeypatch, absent_env) -> None:
-    absent_env("COPILOT_SKIP_CLI_DOWNLOAD")
-    env = rt.copilot_child_env(None)
-    assert "COPILOT_SKIP_CLI_DOWNLOAD" not in env
-
-
-def test_pin_matches_only_the_pinned_bundle(pinned: None, tmp_path: Path) -> None:
+def test_runtime_pin_accepts_only_the_pinned_library(pinned: None, tmp_path: Path) -> None:
     good = _plant(tmp_path / "good")
-    assert rt.copilot_cli_matches_pin(good) is True
-    assert rt.copilot_cli_matches_pin(good.parent / rt.COPILOT_RUNTIME_WRAPPER) is True
-    assert rt.copilot_cli_matches_pin(_plant(tmp_path / "w", wrapper=b"MZ other")) is False
-    assert rt.copilot_cli_matches_pin(_plant(tmp_path / "n", node=b"MZ other")) is False
-    assert rt.copilot_cli_matches_pin(tmp_path / "missing.exe") is False
+    other = _plant(tmp_path / "other", runtime=b"another runtime")
+    assert rt.copilot_runtime_matches_pin(good) is True
+    assert rt.copilot_runtime_matches_pin(other) is False
+    assert rt.copilot_runtime_matches_pin(tmp_path / "missing" / rt.COPILOT_RUNTIME_NODE) is False
 
 
-def test_pin_refuses_an_alias_that_is_not_the_wrapper(pinned: None, tmp_path: Path) -> None:
-    exe = _plant(tmp_path)
-    exe.write_bytes(b"MZ legacy sea")
-    assert rt.copilot_cli_matches_pin(exe) is False
+def test_explicit_runtime_path_is_verified(pinned: None, monkeypatch, tmp_path: Path) -> None:
+    runtime = _plant(tmp_path)
+    monkeypatch.setenv(rt.SDK_RUNTIME_PATH_ENV, str(runtime))
+    assert rt.runtime_path_for_launch() == runtime
 
 
-def test_launch_path_returns_a_pinned_bundle(no_overrides: Path, pinned: None) -> None:
-    exe = _plant(no_overrides)
-    assert rt.cli_path_for_launch() == exe
+def test_invalid_explicit_runtime_fails_instead_of_downloading(
+    pinned: None, monkeypatch, tmp_path: Path
+) -> None:
+    runtime = _plant(tmp_path, runtime=b"untrusted")
+    monkeypatch.setenv(rt.SDK_RUNTIME_PATH_ENV, str(runtime))
+    with pytest.raises(rt.CopilotRuntimeUnverified, match=rt.COPILOT_RUNTIME_VERSION):
+        rt.runtime_path_for_launch()
 
 
-def test_launch_path_refuses_an_unpinned_bundle(no_overrides: Path) -> None:
-    _plant(no_overrides)  # test bytes: never the pinned bundle
-    with pytest.raises(rt.CopilotCliUnverified):
-        rt.cli_path_for_launch()
+def test_stale_explicit_path_falls_back_to_bundled_runtime(
+    no_overrides: Path, pinned: None, monkeypatch, tmp_path: Path
+) -> None:
+    runtime = _plant(no_overrides)
+    monkeypatch.setenv(rt.SDK_RUNTIME_PATH_ENV, str(tmp_path / "missing" / "runtime.node"))
+    assert rt.runtime_path_for_launch() == runtime
 
 
-def test_launch_path_is_none_without_a_bundle(no_overrides: Path) -> None:
-    assert rt.cli_path_for_launch() is None
+def test_prepare_directs_sdk_to_verified_library(
+    pinned: None, no_overrides: Path, monkeypatch
+) -> None:
+    runtime = _plant(no_overrides)
+    assert rt.prepare_inprocess_runtime() == runtime
+    assert rt.SDK_RUNTIME_PATH_ENV in os.environ
+    assert os.environ[rt.SDK_RUNTIME_PATH_ENV] == str(runtime)
 
 
-def test_pins_are_the_ones_the_build_stages() -> None:
-    assert rt.COPILOT_CLI_VERSION == "1.0.105"
+def test_release_runtime_pin_is_explicit() -> None:
+    assert rt.COPILOT_RUNTIME_VERSION == "1.0.114"
     assert rt.COPILOT_RUNTIME_PLATFORM == "win32-x64"
-    assert rt.COPILOT_ASSETS_MARKER == ".hostless-runtime-assets-v2"
-    assert rt.COPILOT_RUNTIME_NODE == "runtime.node"
-    for pin in (rt.COPILOT_WRAPPER_SHA256, rt.COPILOT_RUNTIME_NODE_SHA256):
-        assert len(pin) == 64 and pin == pin.lower()
+    assert len(rt.COPILOT_RUNTIME_NODE_SHA256) == 64
+    assert rt.COPILOT_RUNTIME_NODE_SHA256 == rt.COPILOT_RUNTIME_NODE_SHA256.lower()

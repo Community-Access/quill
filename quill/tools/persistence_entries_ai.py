@@ -27,6 +27,9 @@ AI_ENTRIES: dict[str, str] = {
     # two flags, "ended by GitHub" and "not available for your account", so the
     # Choose Your AI row says them after a restart. No token; a sign-in clears it.
     "core/ai/copilot_state.py::_save": "marker",
+    # Per-app Copilot feature choices. The file carries a schema stamp, but
+    # does not yet use the versioned-store migration contract.
+    "core/ai/copilot_preferences.py::save_copilot_preferences": "needs-versioning",
     # The family prompt store (codex.md decision 18): the user prompts in
     # <app data>/prompts.json, in the Prompt Library's own shape, every unknown
     # key kept on write -- user-created, additive content. Its sidecar

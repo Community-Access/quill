@@ -82,9 +82,18 @@ def test_the_conversation_note_matches_the_route(service, monkeypatch) -> None:
     assert "ChatGPT subscription" in service.conversation_note()
 
 
+def test_auto_conversation_note_names_the_app_that_discloses_the_destination(service) -> None:
+    from quill.core.ai.connection_choice import ConnectionFacts
+
+    service._app.settings.ai_connection = "auto"
+    service.connection_facts = lambda: ConnectionFacts(stored="auto", chatgpt_signed_in=True)
+    note = service.conversation_note()
+    assert "QUILL Lite says which provider will receive it before sending" in note
+
+
 def test_ask_and_converse_go_to_the_plan_when_signed_in(service, monkeypatch) -> None:
     account = _signed_in(service, monkeypatch)
-    import quill.ui.hosted_ai_service as module
+    import quill.ui.hosted_ai_service_requests as module
 
     ran = []
 
@@ -129,7 +138,7 @@ def test_ask_and_converse_go_to_the_plan_when_signed_in(service, monkeypatch) ->
 
 def test_describe_image_reports_a_bad_file_as_its_own_sentence(service, monkeypatch) -> None:
     _signed_in(service, monkeypatch)
-    import quill.ui.hosted_ai_service as module
+    import quill.ui.hosted_ai_service_requests as module
 
     def run_now(name, work, *, on_success, on_failure):
         try:
@@ -146,7 +155,7 @@ def test_describe_image_reports_a_bad_file_as_its_own_sentence(service, monkeypa
 
 def test_cancelling_one_window_does_not_cancel_another_request(service, monkeypatch) -> None:
     """A service is shared by windows; Stop owns only the request returned to it."""
-    import quill.ui.hosted_ai_service as module
+    import quill.ui.hosted_ai_service_requests as module
 
     submitted = []
 

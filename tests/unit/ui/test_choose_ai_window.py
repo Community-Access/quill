@@ -168,6 +168,27 @@ def test_the_button_follows_the_row(window) -> None:
     assert _row_texts(frame)[2] == "My GitHub Copilot, not available yet"
 
 
+def test_auto_is_an_opt_in_row_with_its_ready_provider_pool(window) -> None:
+    said: list[str] = []
+    service = _Service(stored="free", free=True)
+    service.auto_ready_connections = lambda: ["free"]
+    frame = window(service, said)
+
+    frame.select("auto")
+
+    assert _row_texts(frame)[-1] == "Auto, signed in"
+    assert frame._about.GetValue().startswith("Uses only ready connections: QUILL's free AI.")
+    assert frame._model.GetString(0) == "Auto picks a ready connection for each action"
+    assert not frame._model.IsEnabled()
+    frame.do_action()
+    assert service.chosen == ["auto"]
+    assert said == [
+        "<changed>",
+        "Now using Auto. The ready provider that supports each action will "
+        "be named before your text is sent.",
+    ]
+
+
 def test_the_free_ai_chooses_no_model_and_a_signed_out_row_has_none(window) -> None:
     frame = window(_Service(stored="free"), [])
 

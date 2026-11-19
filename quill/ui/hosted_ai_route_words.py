@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.ai.connection_caps import AUTO
+
 __all__ = ["RouteWords"]
 
 
@@ -22,10 +24,14 @@ class RouteWords:
     chatgpt: Any
     direct: bool
     free_limits: Any
+    connection: str
+    _app: Any
 
     @property
     def route_label(self) -> str:
         """The active direct route as a person hears it."""
+        if self.connection == AUTO:
+            return "Auto"
         if self.chatgpt_active:
             return "your ChatGPT subscription"
         from quill.core.ai.own_key import provider_name
@@ -41,6 +47,8 @@ class RouteWords:
 
     def size_note(self, text: str) -> str:
         """What sending *text* on the active direct route means."""
+        if self.connection == AUTO:
+            return ""
         if not self.direct:
             return ""
         free_tokens = self.free_limits.max_input_tokens
@@ -59,6 +67,13 @@ class RouteWords:
 
     def conversation_note(self) -> str:
         """What a conversation costs on the active route."""
+        if self.connection == AUTO:
+            app_name = str(getattr(self._app, "ai_agent_name", "") or "QUILL")
+            return (
+                f"Auto chooses a ready provider that supports each message. {app_name} "
+                "says which provider will receive it before sending; that provider's "
+                "own terms, limits and billing apply."
+            )
         if self.chatgpt_active:
             return (
                 "This conversation uses your ChatGPT subscription: no QUILL limit, and "

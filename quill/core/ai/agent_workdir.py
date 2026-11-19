@@ -1,11 +1,12 @@
-"""Per-app engine folders, emptied after every task (codex.md 8, decision 4).
+"""Per-app engine folders, normally emptied after every task (codex.md 8).
 
 Each app's agent engine gets its own folder under
 ``app_data_dir()/ai/<engine>/<slug>``: Copilot's empty ``working_directory``
 and its session state (``COPILOT_HOME``), and later Codex's ``CODEX_HOME``.
-Nothing in it outlives a task. It is swept when the task ends, on Stop, and
-again at the next start, so a crash in the middle of a task still leaves
-nothing behind after the next run.
+By default, nothing in it outlives a task. It is swept when the task ends, on
+Stop, and again at the next start. A user may explicitly retain a Copilot
+session's ``home`` for resumption; its temporary ``work`` directory is still
+cleared every time.
 
 Two subfolders, so the engine's own built-in read tools -- were one ever to
 slip through the allowlist -- would find nothing to read:
@@ -39,6 +40,7 @@ class AgentFolders:
     """The folders one app's engine uses for one task."""
 
     root: Path
+    retain_home: bool = False
 
     @property
     def work(self) -> Path:
@@ -50,20 +52,35 @@ class AgentFolders:
 
     def prepare(self) -> AgentFolders:
         """Sweep anything a previous run left, then make both folders empty."""
-        sweep(self.root)
+        if self.retain_home:
+            sweep(self.work)
+        else:
+            sweep(self.root)
         self.work.mkdir(parents=True, exist_ok=True)
         self.home.mkdir(parents=True, exist_ok=True)
         return self
 
     def clear(self) -> None:
         """Delete everything under the root (task end, Stop)."""
-        sweep(self.root)
+        if self.retain_home:
+            sweep(self.work)
+        else:
+            sweep(self.root)
 
 
-def agent_folders(engine: str, agent_name: str, *, base: Path | None = None) -> AgentFolders:
+def agent_folders(
+    engine: str,
+    agent_name: str,
+    *,
+    base: Path | None = None,
+    retain_home: bool = False,
+) -> AgentFolders:
     """The folders for ``engine`` ("copilot", "codex") in the app ``agent_name``."""
     root_base = base if base is not None else app_data_dir() / "ai"
-    return AgentFolders(root=root_base / agent_slug(engine) / agent_slug(agent_name))
+    return AgentFolders(
+        root=root_base / agent_slug(engine) / agent_slug(agent_name),
+        retain_home=retain_home,
+    )
 
 
 def sweep(root: Path) -> None:

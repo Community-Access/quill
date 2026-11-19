@@ -5,7 +5,7 @@ No network and no real SDK: a stand-in module goes into ``sys.modules`` so
 lazy import, the pack's client options, the session options, ``session.on``,
 ``send_and_wait``, ``list_models`` and ``rpc.account.get_quota``.
 
-The fake mirrors ``github-copilot-sdk`` 1.0.28 as read from its source:
+The fake mirrors ``microsoft-copilot-sdk`` 2.0.1 as read from its source:
 keyword-only signatures, events with a ``type`` and typed ``data``
 (``assistant.message_delta`` ``delta_content``, ``assistant.message``
 ``content``, ``assistant.usage``, ``session.error`` with ``status_code`` /
@@ -31,7 +31,8 @@ from typing import Any, ClassVar
 
 import pytest
 
-from quill.core.ai import connection_caps, copilot_auth, copilot_runtime, copilot_state
+import quill.ai_packs.copilot as copilot_pack
+from quill.core.ai import connection_caps, copilot_auth, copilot_state
 from quill.core.ai.connection_choice import (
     NOT_AVAILABLE_YET,
     NOT_FOR_ACCOUNT,
@@ -98,9 +99,13 @@ class Rec:
     #: Emit deltas slowly and wait for abort (the Stop test).
     slow: bool = False
     raise_on_wait: BaseException | None = None
+    typed_reply: str = '{"title": "A useful title", "tags": ["alpha"]}'
+    typed_response_type: type[Any] | None = None
+    typed_error: BaseException | None = None
     models: list[Any] = field(default_factory=list)
     models_error: BaseException | None = None
     quota: Any = None
+    stop_error: BaseException | None = None
 
 
 def _fake_sdk(rec: Rec) -> types.ModuleType:
@@ -150,6 +155,22 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
                 raise rec.raise_on_wait
             return Event("assistant.message", _Message(rec.reply))
 
+        async def send_and_wait_typed(
+            self,
+            prompt: str,
+            response_type: type[Any],
+            *,
+            attachments: list[dict[str, Any]] | None = None,
+            timeout: float = 60.0,
+        ) -> Any:
+            rec.calls.append("send_and_wait_typed")
+            rec.sent.append(prompt)
+            rec.attachments.append(attachments)
+            rec.typed_response_type = response_type
+            if rec.typed_error is not None:
+                raise rec.typed_error
+            return response_type.model_validate_json(rec.typed_reply)
+
         async def abort(self) -> None:
             rec.calls.append("abort")
             self.aborted = True
@@ -164,39 +185,31 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
         def __init__(
             self,
             *,
-            connection: Any = None,
-            env: dict[str, str] | None = None,
-            github_token: str | None = None,
-            use_logged_in_user: bool | None = None,
-            working_directory: str | None = None,
-            base_directory: str | None = None,
+            mode: str,
+            runtime: Any,
+            github: dict[str, Any],
+            network: dict[str, Any] | None = None,
         ) -> None:
+            assert mode == "empty"
             rec.clients += 1
-            rec.client_kwargs = {"github_token": github_token, "env": env}
+            rec.client_kwargs = {
+                "mode": mode,
+                "runtime": runtime,
+                "github": github,
+                "network": network,
+            }
             self.rpc = types.SimpleNamespace(account=Account())
 
-        async def __aenter__(self) -> CopilotClient:
-            return self
+        async def start(self) -> None:
+            rec.calls.append("start")
 
-        async def __aexit__(self, *exc: object) -> None:
+        async def stop(self) -> None:
             rec.calls.append("stop")
+            if rec.stop_error is not None:
+                raise rec.stop_error
 
-        async def create_session(
-            self,
-            *,
-            on_permission_request: Any = None,
-            model: str | None = None,
-            system_message: dict[str, str] | None = None,
-            available_tools: list[str] | None = None,
-            streaming: bool | None = None,
-        ) -> CopilotSession:
-            rec.sessions.append({
-                "on_permission_request": on_permission_request,
-                "model": model,
-                "system_message": system_message,
-                "available_tools": available_tools,
-                "streaming": streaming,
-            })
+        async def create_session(self, **kwargs: Any) -> CopilotSession:
+            rec.sessions.append(kwargs)
             return CopilotSession()
 
         async def list_models(self) -> list[Any]:
@@ -205,14 +218,10 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
                 raise rec.models_error
             return list(rec.models)
 
-    @dataclass
-    class StdioRuntimeConnection:
-        path: str | None = None
-
     class RuntimeConnection:
         @staticmethod
-        def for_stdio(*, path: str | None = None, args: tuple[str, ...] = ()) -> Any:
-            return StdioRuntimeConnection(path=path)
+        def for_inprocess(*, base_directory: str | None = None) -> Any:
+            return types.SimpleNamespace(base_directory=base_directory)
 
     module = types.ModuleType("copilot")
     module.CopilotClient = CopilotClient  # type: ignore[attr-defined]
@@ -293,7 +302,7 @@ def rec(monkeypatch: pytest.MonkeyPatch) -> Rec:
     monkeypatch.setitem(sys.modules, "copilot.rpc", rpc)
     for name in ("QUILL_SAFE_MODE", "COPILOT_CLI_PATH", "GH_TOKEN", "GITHUB_TOKEN"):
         monkeypatch.delenv(name, raising=False)
-    monkeypatch.setattr(copilot_runtime, "find_copilot_cli", lambda: None)
+    monkeypatch.setattr(copilot_pack, "prepare_inprocess_runtime", lambda: Path("runtime.node"))
     monkeypatch.setattr(copilot_auth, "stored_token", lambda name="QUILL": "gho_test")
     monkeypatch.setattr(copilot_auth, "forget_token", lambda name="QUILL": True)
     connection_caps.clear_model_capabilities()
@@ -341,28 +350,115 @@ def test_ask_sends_a_picture_as_a_blob_attachment(rec: Rec, tmp_path: Path) -> N
             }
         ]
     ]
-    assert rec.calls == ["send_and_wait", "disconnect", "stop"]
-    assert rec.client_kwargs["github_token"] == "gho_test"  # this app's own token
-    assert "gho_test" not in (rec.client_kwargs["env"] or {}).values()
+    assert rec.calls == ["start", "send_and_wait", "disconnect", "stop"]
+    assert rec.client_kwargs["github"] == {
+        "token": "gho_test",
+        "use_logged_in_user": False,
+    }
 
 
 def test_session_offers_no_tools_and_appends_the_family_line(rec: Rec, tmp_path: Path) -> None:
     _on_worker(lambda: _chat(tmp_path).ask("Hi", system="Be brief."))
     session = rec.sessions[0]
-    assert session["available_tools"] == ["quill_text_only"]
+    assert session["tools"]["available_tools"] == ["quill_text_only"]
+    assert session["enable_config_discovery"] is False
+    assert session["skills"] == {"enabled": False}
+    assert session["state"] == {
+        "embedding_cache_storage": "in-memory",
+        "enable_cross_session_store": False,
+        "infinite_sessions": {"enabled": False},
+        "memory": {"enabled": False},
+    }
+    assert session["github"]["telemetry_enabled"] is False
     assert session["system_message"]["mode"] == "append"
     content = session["system_message"]["content"]
     assert content.startswith("Be brief.") and content.endswith(FAMILY_INSTRUCTION)
-    assert session["streaming"] is None and session["model"] is None
-    decision = session["on_permission_request"](types.SimpleNamespace(kind="shell"), {})
+    assert session["events"]["streaming"] is False and "model" not in session
+    decision = session["permissions"]["on_request"](types.SimpleNamespace(kind="shell"), {})
     assert isinstance(decision, PermissionDecisionReject)
+
+
+def test_ask_typed_validates_the_response_with_the_requested_model(
+    rec: Rec, tmp_path: Path
+) -> None:
+    BaseModel = pytest.importorskip("pydantic").BaseModel
+
+    class Metadata(BaseModel):
+        title: str
+        tags: list[str]
+
+    answer = _on_worker(lambda: _chat(tmp_path).ask_typed("Describe it.", Metadata))
+
+    assert answer == Metadata(title="A useful title", tags=["alpha"])
+    assert rec.typed_response_type is Metadata
+    assert rec.sent == ["Describe it."]
+    session = rec.sessions[0]
+    assert session["enable_config_discovery"] is False
+    assert session["skills"] == {"enabled": False}
+    assert session["state"]["infinite_sessions"] == {"enabled": False}
+    assert session["state"]["memory"] == {"enabled": False}
+    assert session["github"]["telemetry_enabled"] is False
+    assert rec.calls == ["start", "send_and_wait_typed", "disconnect", "stop"]
+
+
+def test_ask_typed_surfaces_invalid_structured_output_as_a_failure(
+    rec: Rec, tmp_path: Path
+) -> None:
+    BaseModel = pytest.importorskip("pydantic").BaseModel
+
+    class Metadata(BaseModel):
+        title: str
+
+    rec.typed_reply = '{"wrong": "shape"}'
+
+    with pytest.raises(CopilotChatError, match="did not answer"):
+        _on_worker(lambda: _chat(tmp_path).ask_typed("Describe it.", Metadata))
+
+
+def test_ask_typed_aborts_when_the_request_times_out(rec: Rec, tmp_path: Path) -> None:
+    BaseModel = pytest.importorskip("pydantic").BaseModel
+
+    class Metadata(BaseModel):
+        title: str
+
+    rec.typed_error = TimeoutError("timed out")
+
+    with pytest.raises(CopilotChatError, match="took too long"):
+        _on_worker(lambda: _chat(tmp_path).ask_typed("Describe it.", Metadata))
+
+    assert rec.calls == ["start", "send_and_wait_typed", "abort", "disconnect", "stop"]
+
+
+def test_ask_typed_rejects_non_pydantic_types_before_starting(rec: Rec, tmp_path: Path) -> None:
+    pytest.importorskip("pydantic")
+
+    with pytest.raises(TypeError, match="Pydantic BaseModel"):
+        _on_worker(lambda: _chat(tmp_path).ask_typed("Describe it.", dict))
+    assert rec.clients == 0
 
 
 def test_chosen_model_is_passed_and_auto_lets_copilot_choose(rec: Rec, tmp_path: Path) -> None:
     _on_worker(lambda: _chat(tmp_path, model="gpt-6").ask("Hi"))
     _on_worker(lambda: _chat(tmp_path, model=AUTO_MODEL).ask("Hi"))
     assert rec.sessions[0]["model"] == "gpt-6"
-    assert rec.sessions[1]["model"] is None
+    assert "model" not in rec.sessions[1]
+
+
+def test_auto_tier_preference_applies_only_to_copilot_auto(rec: Rec, tmp_path: Path) -> None:
+    from quill.core.ai.copilot_preferences import (
+        CopilotPreferences,
+        save_copilot_preferences,
+    )
+
+    save_copilot_preferences(CopilotPreferences(auto_tier="efficiency"), tmp_path)
+    chat = CopilotChat(data_dir=tmp_path)
+
+    auto_options = chat._session_kwargs("", AUTO_MODEL, streaming=False)
+    named_model_options = chat._session_kwargs("", "gpt-6", streaming=False)
+
+    assert auto_options["github"]["capi"]["auto_tier"] == "efficiency"
+    assert "model" not in auto_options
+    assert "auto_tier" not in named_model_options["github"]["capi"]
 
 
 def test_a_picture_type_copilot_cannot_take_is_refused_before_anything_starts(
@@ -406,7 +502,7 @@ def test_stream_delivers_each_piece_in_order(rec: Rec, tmp_path: Path) -> None:
     answer = _on_worker(lambda: _chat(tmp_path).stream("Hi", on_delta=pieces.append))
     assert pieces == ["Hel", "lo", "."]
     assert answer.text == "Hello." and not answer.stopped
-    assert rec.sessions[0]["streaming"] is True
+    assert rec.sessions[0]["events"]["streaming"] is True
 
 
 def test_stop_aborts_the_turn_and_keeps_the_text_so_far(rec: Rec, tmp_path: Path) -> None:
@@ -426,7 +522,14 @@ def test_a_timeout_aborts_and_is_worded(rec: Rec, tmp_path: Path) -> None:
     rec.raise_on_wait = TimeoutError("Timeout after 600s")
     with pytest.raises(CopilotChatError, match="took too long"):
         _on_worker(lambda: _chat(tmp_path).ask("Hi"))
-    assert rec.calls[:2] == ["send_and_wait", "abort"]
+    assert rec.calls[:3] == ["start", "send_and_wait", "abort"]
+
+
+def test_session_folders_are_cleared_even_if_client_stop_fails(rec: Rec, tmp_path: Path) -> None:
+    rec.stop_error = RuntimeError("stop failed")
+    with pytest.raises(CopilotChatError, match="stop failed"):
+        _on_worker(lambda: _chat(tmp_path).ask("Hi"))
+    assert not (tmp_path / "ai" / "copilot" / "quill-lite").exists()
 
 
 # -- models ---------------------------------------------------------------------- #
@@ -550,12 +653,12 @@ def test_classify_failure(kwargs: dict[str, Any], outcome: str) -> None:
 
 @pytest.fixture
 def parts(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> dict[str, Any]:
-    state: dict[str, Any] = {"client_id": "Iv1.test", "cli": tmp_path / "copilot.exe"}
+    state: dict[str, Any] = {"client_id": "Iv1.test", "runtime": tmp_path / "runtime.node"}
     state["sdk"] = True
     state["token"] = "gho_test"
     monkeypatch.setitem(copilot_auth.CLIENT_IDS, "QUILL Lite", "")
     monkeypatch.setattr(copilot_auth, "client_id", lambda name="QUILL": state["client_id"])
-    monkeypatch.setattr(copilot_state, "resolve_cli_path", lambda: state["cli"])
+    monkeypatch.setattr(copilot_state, "resolve_runtime_path", lambda: state["runtime"])
     monkeypatch.setattr(copilot_state, "sdk_bundled", lambda: state["sdk"])
     monkeypatch.setattr(copilot_auth, "stored_token", lambda name="QUILL": state["token"])
     return state
@@ -575,9 +678,9 @@ def test_readiness_states(parts: dict[str, Any], tmp_path: Path) -> None:
     parts["client_id"] = ""
     assert _copilot_row(tmp_path) == NOT_AVAILABLE_YET
     parts["client_id"] = "Iv1.test"
-    parts["cli"] = None  # no bundled CLI and no developer override
+    parts["runtime"] = None  # no bundled runtime and no developer override
     assert _copilot_row(tmp_path) == NOT_AVAILABLE_YET
-    parts["cli"] = tmp_path / "copilot.exe"
+    parts["runtime"] = tmp_path / "runtime.node"
     parts["sdk"] = False
     assert _copilot_row(tmp_path) == NOT_AVAILABLE_YET
 

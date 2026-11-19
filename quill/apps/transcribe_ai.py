@@ -5,9 +5,9 @@ ChatGPT sign-in for Review Dictation (risk R1). Now it runs the shared hosted
 AI (:mod:`quill.ui.hosted_ai_commands`) the way the editors and the other apps
 do, through :class:`TranscribeAiHost` -- the five things the shared code asks
 of "the app" -- and :class:`TranscribeAiMixin`, the hooks. So QUILL Transcribe
-gets an AI menu with Choose Your AI and all five connections, Which AI Am I
-Using, the one AI Usage list, an AI line in its window, and **Ask** about your
-dictation.
+gets an AI menu with Choose Your AI and five connections plus Auto, Which AI
+Am I Using, the one AI Usage list, an AI line in its window, and **Ask** about
+your dictation.
 
 **Its own sign-in (decision 2).** The ChatGPT and GitHub sign-ins are made as
 "QUILL Transcribe", under this app's own agent name and its own credential

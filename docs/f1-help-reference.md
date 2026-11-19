@@ -4437,7 +4437,7 @@ Control coverage: 297 audited sites (297 helped).
 
 **Discard These Words.** The AI has changed these words. Yes throws them away and writes nothing; No keeps the review open.
 
-**Do a Document Task.** Tell GitHub Copilot or Codex what to do to this document. Each change asks first and is shown before it is applied; the task ends with a summary.
+**Do a Document Task.** Tell a task-capable AI what to do to this document. Each change asks first and is shown before it is applied; the task ends with a summary.
 
 **Do a Project Task.** Tell the AI what to do in your project folder. It plans, reads and proposes changes; nothing is written until you accept it in Review Changes, and no command runs until you allow it. Plan, Changes and Output are one key each.
 
@@ -5025,6 +5025,7 @@ Control coverage: 297 audited sites (297 helped).
 - `self.send_button`: Starts a task with what you typed, or sends it to the task that is running.
 - `self.stop_button`: Stops the task now. Changes already applied stay, and each can be undone with Control Z.
 - `close`: Closes this window, stopping a task that is still running.
+- `text`: Type your answer. Cancel tells Copilot you chose not to answer.
 #### (module level) (`quill/ui/paste_file.py`)
 
 - `listbox`: Each file's text puts in what the file says, read the way this editor opens it, with a blank line between files; files that are too large or are not text are left out and named. Each file's full path puts in one path per line. Enter pastes.

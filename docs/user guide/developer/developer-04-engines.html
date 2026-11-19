@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Chapter 4: Engines, and choosing one</title>
   <style>
@@ -11,10 +11,7 @@
     */
     html {
       color: #1a1a1a;
-      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
-      background-color: light-dark(#fdfdfd, #1a1a1a);
-      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -39,16 +36,11 @@
     }
     @media print {
       html {
-        color-scheme: light only;
+        background-color: white;
       }
-      html, body, pre, code {
+      body {
         background-color: transparent;
-      }
-      body, a, a:visited, blockquote {
         color: black;
-      }
-      pre, code {
-        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -61,8 +53,11 @@
     p {
       margin: 1em 0;
     }
-    a, a:visited {
-      color: inherit;
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
     }
     img {
       max-width: 100%;
@@ -91,11 +86,8 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid;
-      border-color: #e6e6e6;
-      border-color: light-dark(#e6e6e6, #4c4c4c);
+      border-left: 2px solid #e6e6e6;
       color: #606060;
-      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -119,7 +111,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -136,11 +128,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid currentColor;
-      border-bottom: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
     }
     th {
-      border-top: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -179,6 +171,7 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -283,14 +276,21 @@ selection, but never runs an agent.</li>
 Gemini, OpenRouter, Ollama Cloud or a service of your own. These answer
 in text only.</li>
 </ul>
-<p>If the AI you have chosen cannot run tasks, nothing is sent: QUILL
-tells you, and offers to switch.</p>
+<p>If you chose a specific AI that cannot run tasks, nothing is sent:
+QUILL tells you and offers to switch. You can instead choose
+<strong>Auto</strong> in Choose Your AI. Auto is an opt-in provider
+choice; for a task it selects a ready AI that can run tasks and
+announces the provider and destination before the task starts.</p>
 <h2 id="choosing">Choosing</h2>
 <p>Press <code>Ctrl+4</code>, move to the row you want, and press
 <strong>Use This</strong>, or <strong>Sign In…</strong> if you have not
 signed in yet. For My own key, choose the provider and model in that
-row’s own window. Your choice applies to Do a Document Task and Do a
-Project Task alike.</p>
+row’s own window. Choose <strong>Auto</strong> only if you want each
+action to use a ready provider that supports it; QUILL announces the
+destination before sending. Your choice applies to Do a Document Task
+and Do a Project Task alike. A document or project task is never
+automatically retried after a failure because the provider may already
+have performed an approved action.</p>
 <p>Some plain advice:</p>
 <ul>
 <li><strong>Already pay for Copilot?</strong> Start there. It is the
@@ -305,12 +305,14 @@ leaves your computer.</li>
 </ul>
 <h2 id="every-engine-behaves-the-same-in-front-of-you">Every engine
 behaves the same in front of you</h2>
-<p>QUILL gives every engine the same project tools, and keeps the
-engine’s own file and shell tools off. That is what makes the promises
-in this manual hold whichever one you choose:</p>
+<p>By default, QUILL gives every engine the same project tools and keeps
+the engine’s own file and shell tools off. You can enable selected
+vendor tools for one project in <strong>Engine Tools for This
+Project…</strong>; each use still needs approval. This changes how some
+safety guarantees work:</p>
 <ul>
-<li>every change waits in Review Changes before it reaches your
-disk;</li>
+<li>every change made with QUILL’s tools waits in Review Changes before
+it reaches your disk; a vendor edit tool writes directly to disk;</li>
 <li>every command asks first, in the same window, with the same
 warnings;</li>
 <li>the plan, the result sentences and the closing summary are worded by
@@ -321,8 +323,11 @@ QUILL, not by the engine;</li>
 happened, never from what the model says it did.</p>
 <h2 id="how-each-engine-is-held">How each engine is held</h2>
 <ul>
-<li><strong>Copilot</strong> sees only QUILL’s tools. Every other kind
-of permission it asks for is refused and logged.</li>
+<li><strong>Copilot</strong> sees QUILL’s tools by default. Its file,
+shell and web tools are off until you enable them for this project; each
+use still asks first. Vendor edits bypass Review Changes, and the shell
+can do anything your account can. MCP and unsupported permissions are
+refused and logged.</li>
 <li><strong>Codex</strong> runs with a read-only sandbox, asks for
 approval of anything untrusted, and has its built-in tools off. Its file
 changes arrive as a unified diff, which goes to Review Changes like any

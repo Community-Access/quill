@@ -124,6 +124,8 @@ class AIHubDialog:
         open_advanced_connection: Callable[[], None] | None = None,
         initial_page: str | None = None,
         open_own_key: Callable[[], None] | None = None,
+        app_context: object | None = None,
+        open_choose: Callable[[], None] | None = None,
     ) -> None:
         import wx
 
@@ -138,25 +140,37 @@ class AIHubDialog:
         _base_announce = announce or (lambda _m: None)
         self._announce = lambda message: _base_announce(speak_legacy_text(message))
         self._open_own_key = open_own_key
+        self._open_choose = open_choose
+        self._app_context = app_context
+        self._app_name = str(getattr(app_context, "ai_agent_name", "") or "QUILL")
+        self._lite_mode = self._app_name == "QUILL Lite"
         self._own_key_after_close = False
 
-        from quill.core.assistant_ai import load_assistant_connection_settings
+        if self._lite_mode:
+            self._settings = getattr(app_context, "settings", None)
+            if self._settings is None:
+                raise RuntimeError("QUILL Lite AI Hub requires app settings.")
+            self._deepgram_key = ""
+            self._deepgram_max_speakers = 6
+            self._instructions = {}
+            self._vision_disabled = set()
+            self._vision_overrides = {}
+        else:
+            from quill.core.assistant_ai import load_assistant_connection_settings
 
-        self._settings = load_assistant_connection_settings()
-        self._deepgram_key = _load_deepgram_key()
-        self._deepgram_max_speakers = _load_deepgram_max_speakers()
+            self._settings = load_assistant_connection_settings()
+            self._deepgram_key = _load_deepgram_key()
+            self._deepgram_max_speakers = _load_deepgram_max_speakers()
 
-        from quill.core.ai.custom_instructions import load_instructions
+            from quill.core.ai.custom_instructions import load_instructions
 
-        self._instructions = load_instructions()
+            self._instructions = load_instructions()
 
-        from quill.core.settings import load_settings as _load_settings
+            from quill.core.settings import load_settings as _load_settings
 
-        _vsettings = _load_settings()
-        self._vision_disabled: set[str] = set(_vsettings.vision_disabled_builtin_styles)
-        self._vision_overrides: dict[str, str] = dict(
-            getattr(_vsettings, "vision_builtin_overrides", {})
-        )
+            _vsettings = _load_settings()
+            self._vision_disabled = set(_vsettings.vision_disabled_builtin_styles)
+            self._vision_overrides = dict(getattr(_vsettings, "vision_builtin_overrides", {}))
 
         self.dialog = wx.Dialog(
             parent,
@@ -190,9 +204,10 @@ class AIHubDialog:
         self._notebook.AddPage(self._build_provider_tab(), str(_("Provider")))
         self._notebook.AddPage(self._build_harnesses_tab(), str(_("Engines")))
         self._notebook.AddPage(self._build_on_device_tab(), str(_("On-Device")))
-        self._notebook.AddPage(self._build_audio_tab(), str(_("Audio Services")))
-        self._notebook.AddPage(self._build_services_tab(), str(_("Services")))
-        self._notebook.AddPage(self._build_instructions_tab(), str(_("Instructions")))
+        if not self._lite_mode:
+            self._notebook.AddPage(self._build_audio_tab(), str(_("Audio Services")))
+            self._notebook.AddPage(self._build_services_tab(), str(_("Services")))
+            self._notebook.AddPage(self._build_instructions_tab(), str(_("Instructions")))
         self._notebook.AddPage(self._build_sessions_tab(), str(_("Sessions")))
         self._notebook.AddPage(self._build_advanced_tab(), str(_("Advanced")))
         if self._initial_page:
@@ -225,50 +240,21 @@ class AIHubDialog:
     # ------------------------------------------------------------------
 
     def _build_provider_tab(self) -> object:
-        """Which AI the advanced features use, and the one way to change it."""
-        wx = self._wx
-        panel = wx.Panel(self._notebook)
-        sizer = wx.BoxSizer(wx.VERTICAL)
+        from quill.ui.ai_hub_provider_panel import build_provider_panel
 
-        from quill.core.ai.own_key import provider_name
-
-        provider = self._settings.provider or "ollama"
-        model = self._settings.model or ""
-        in_use = provider_name(provider) if provider != "off" else str(_("none"))
-        text = _(
-            "The AI these advanced features use is chosen in Use My Own AI Key, "
-            "with the rest of QUILL's AI. Every provider this page used to list is "
-            "there: OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama Cloud, "
-            "a custom OpenAI-compatible service, and Ollama on this computer, which "
-            "needs no key. Saving a provider there makes it the one used here.\n\n"
-            "In use now: {provider}{model}."
-        ).format(provider=in_use, model=f", {model}" if model and provider != "off" else "")
-        sizer.Add(wx.StaticText(panel, label=_("&Provider in use:")), 0, wx.ALL, 6)
-        self._provider_summary = wx.TextCtrl(
-            panel, value=str(text), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2
+        panel, self._provider_summary = build_provider_panel(
+            self._wx,
+            self._notebook,
+            settings=self._settings,
+            lite_mode=self._lite_mode,
+            app_name=self._app_name,
+            open_choose=self._open_choose,
+            open_own_key=self._open_own_key,
+            on_change_ai=self._on_change_ai,
         )
-        set_accessible_name(self._provider_summary, str(_("Provider in use")))
-        self._provider_summary.SetHelpText(
-            str(_("Which AI the advanced features use, and where it is chosen now."))
-        )
-        sizer.Add(self._provider_summary, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
-        own_key_btn = wx.Button(panel, label=_("Open Use My Own AI &Key..."))
-        own_key_btn.SetHelpText(
-            str(
-                _(
-                    "Saves the AI Hub, closes it and opens Use My Own AI Key, where "
-                    "the provider, its key, its model and its address are chosen."
-                )
-            )
-        )
-        own_key_btn.Enable(self._open_own_key is not None)
-        own_key_btn.Bind(wx.EVT_BUTTON, self._on_open_own_key)
-        sizer.Add(own_key_btn, 0, wx.ALL, 6)
-        panel.SetSizer(sizer)
         return panel
 
-    def _on_open_own_key(self, event: object) -> None:
-        """Save the Hub and close it; :meth:`show` opens Use My Own AI Key after."""
+    def _on_change_ai(self, event: object) -> None:
         self._own_key_after_close = True
         self._on_ok(event)
 
@@ -286,6 +272,8 @@ class AIHubDialog:
             parent_dialog=self.dialog,
             announce=self._announce,
             show_modal=self._show_modal,
+            app_name=self._app_name,
+            data_dir=getattr(self._app_context, "data_dir", None),
         )
         return self._engines_panel.panel
 
@@ -1082,10 +1070,14 @@ class AIHubDialog:
     # ------------------------------------------------------------------
 
     def _build_sessions_tab(self) -> object:
-        from quill.ui.ai_hub_sessions_panel import SessionsPanel
+        from quill.ui.ai_hub_sessions_panel import create_sessions_panel
 
-        self._sessions_panel = SessionsPanel(
-            self._notebook, parent_dialog=self.dialog, announce=self._announce
+        self._sessions_panel = create_sessions_panel(
+            self._notebook,
+            parent_dialog=self.dialog,
+            announce=self._announce,
+            app_name=self._app_name,
+            app_context=self._app_context,
         )
         return self._sessions_panel.panel
 
@@ -1094,10 +1086,11 @@ class AIHubDialog:
         panel = wx.Panel(self._notebook)
         sizer = wx.BoxSizer(wx.VERTICAL)
 
+        app_name = self._app_name
         consent_text = _(
             "Data sent to cloud AI providers\n"
             "--------------------------------\n"
-            "When cloud AI is enabled, QUILL sends your document text or selection "
+            "When cloud AI is enabled, {app} sends your document text or selection "
             "to the provider you configured (e.g. OpenAI, Claude). The following "
             "operations send data:\n\n"
             "  - Ask Quill chat\n"
@@ -1105,10 +1098,17 @@ class AIHubDialog:
             "  - AI Translate (when using AI provider, not LibreTranslate)\n"
             "  - AI Thesaurus\n"
             "  - Document Q&A\n"
-            "  - TTS Read Aloud (text only, no document metadata)\n"
-            "  - Transcribe / Translate Audio (audio file bytes)\n\n"
-            "QUILL never sends your API key to any service other than the configured "
+            "  - TTS Read Aloud (text only, no document metadata)\n\n"
+            "{audio}"
+            "{app} never sends your API key to any service other than the configured "
             "provider, never tracks usage, and never stores responses externally."
+        ).format(
+            app=app_name,
+            audio=(
+                "  - Transcribe / Translate Audio (audio file bytes)\n\n"
+                if not self._lite_mode
+                else ""
+            ),
         )
         consent_label = wx.StaticText(panel, label=consent_text)
         consent_label.Wrap(620)
@@ -1144,43 +1144,41 @@ class AIHubDialog:
         self._deepgram_key_ctrl.Refresh()
 
     def _on_ok(self, event: object) -> None:
-        # The provider, its key and its address are saved by Use My Own AI Key
-        # now (decision 20); the Hub saves only what is still its own.
-        # Audio settings
-        _save_deepgram_key(self._deepgram_key_ctrl.GetValue())
-        _save_deepgram_max_speakers(self._max_speakers_spin.GetValue())
+        if not self._sessions_panel.save_preferences():
+            return
+        if not self._lite_mode:
+            _save_deepgram_key(self._deepgram_key_ctrl.GetValue())
+            _save_deepgram_max_speakers(self._max_speakers_spin.GetValue())
 
-        # Custom instructions — flush any in-progress edit before saving
-        task_id = self._selected_inst_task_id()
-        if task_id and task_id in self._instructions:
-            self._instructions[task_id].user_prompt = self._inst_editor.GetValue()
-        from quill.core.ai.custom_instructions import save_instructions
+            task_id = self._selected_inst_task_id()
+            if task_id and task_id in self._instructions:
+                self._instructions[task_id].user_prompt = self._inst_editor.GetValue()
+            from quill.core.ai.custom_instructions import save_instructions
 
-        save_instructions(self._instructions)
+            save_instructions(self._instructions)
 
-        # Image style overrides + enabled state
-        img_style_id = self._selected_img_style_id()
-        if img_style_id:
-            text = self._img_editor.GetValue().strip()
-            if text:
-                self._vision_overrides[img_style_id] = text
-            else:
-                self._vision_overrides.pop(img_style_id, None)
-        from quill.core.settings import (
-            load_settings as _load_settings2,
-        )
-        from quill.core.settings import (
-            save_settings as _save_settings,
-        )
+            img_style_id = self._selected_img_style_id()
+            if img_style_id:
+                text = self._img_editor.GetValue().strip()
+                if text:
+                    self._vision_overrides[img_style_id] = text
+                else:
+                    self._vision_overrides.pop(img_style_id, None)
+            from quill.core.settings import (
+                load_settings as _load_settings2,
+            )
+            from quill.core.settings import (
+                save_settings as _save_settings,
+            )
 
-        _vsettings = _load_settings2()
-        _vsettings.vision_disabled_builtin_styles = sorted(self._vision_disabled)
-        _vsettings.vision_builtin_overrides = dict(self._vision_overrides)
-        if _vsettings.vision_default_prompt_style in self._vision_disabled:
-            _vsettings.vision_default_prompt_style = "accessibility"
-        _save_settings(_vsettings)
+            _vsettings = _load_settings2()
+            _vsettings.vision_disabled_builtin_styles = sorted(self._vision_disabled)
+            _vsettings.vision_builtin_overrides = dict(self._vision_overrides)
+            if _vsettings.vision_default_prompt_style in self._vision_disabled:
+                _vsettings.vision_default_prompt_style = "accessibility"
+            _save_settings(_vsettings)
 
-        self._announce(_("AI Hub settings saved."))
+        self._announce(_("AI Hub closed.") if self._lite_mode else _("AI Hub settings saved."))
         self.dialog.EndModal(self._wx.ID_OK)
 
     # ------------------------------------------------------------------
@@ -1192,5 +1190,7 @@ class AIHubDialog:
         # is required (it names the modal region for screen readers).
         self._show_modal(self.dialog, _("AI Hub"))
         self.dialog.Destroy()
-        if self._own_key_after_close and self._open_own_key is not None:
-            self._open_own_key()
+        if self._own_key_after_close:
+            callback = self._open_choose if self._lite_mode else self._open_own_key
+            if callback is not None:
+                callback()

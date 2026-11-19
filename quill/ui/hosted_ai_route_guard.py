@@ -3,30 +3,27 @@
 Mixed into :class:`quill.ui.hosted_ai_service.AiService`, so QUILL and QUILL
 Lite share it, as they share everything else in the hosted AI.
 
-The service decides the route on every request, from live state: a ChatGPT
-sign-in wins, then the listener's own key for the provider they chose, then
-QUILL's free AI (:attr:`AiService.route`). Live state is what keeps that honest
--- and it is also how a request could quietly change company. A ChatGPT sign-in
-that stops working, or an own key that disappears from the credential store,
-and the very next Rewrite goes to QUILL's free service instead; a key saved in
-another window, and the next one goes to OpenAI. Each is a different company
-receiving the person's text, and nothing said so.
+For an explicitly selected provider, the service uses that provider and asks
+before a request can move to another company. The listener may instead
+explicitly choose Auto, which selects a ready, capability-eligible provider for
+each action and announces the destination before sending. Auto may offer one
+confirmed retry through a different ready provider after a connectivity
+failure.
 
-So the route a request takes is remembered for the session, and a request that
-would take a different one -- without the listener having changed it here --
-is a substitution (:func:`quill.core.ai.fallback.plan_substitution`). Every
-hosted substitution sends text to a different company, so every one asks first:
-a Yes/No box whose text is the plan's announcement, No the default. Yes, and the
-new route is simply the route from then on, so the question is asked once. No,
-and nothing is sent; the request's own error path says so.
+For an explicit provider, the route a request takes is remembered for the
+session, and a request that would take a different one -- without the listener
+having changed it here -- is a substitution
+(:func:`quill.core.ai.fallback.plan_substitution`). Every hosted substitution
+sends text to a different company, so every one asks first: a Yes/No box whose
+text is the plan's announcement, No the default.
 
 Changing the route deliberately -- signing in or out of ChatGPT, saving or
 removing a key in Use My Own AI Key -- calls :meth:`route_chosen`, so a choice
 made a moment ago is never questioned as if it were a fallback.
 
-What this cannot see: a change between sessions. The first request after
-starting has nothing to compare against, and goes where the route says, as it
-always has.
+What this cannot see: a change between sessions. An explicit provider's first
+request after starting has nothing to compare against, and goes where the
+listener selected.
 """
 
 from __future__ import annotations
@@ -47,18 +44,54 @@ class RouteGuardMixin:
     confirm_route_change: Callable[[str], bool] | None = None
 
     def route_names(self, route: str = "") -> tuple[str, str]:
-        """``(what the route is called, which company receives the text)``."""
+        """``(what the route is called, which company receives the request)``."""
         route = route or self.route
+        if route == "auto":
+            return "Auto", "the provider chosen for this request"
         if route == "chatgpt":
             return "your ChatGPT subscription", "OpenAI"
         if route == "copilot":
             return "your GitHub Copilot", "GitHub"
+        if route == "codex":
+            return "Codex, for tasks", "OpenAI"
         if route == "own_key":
             from quill.core.ai.own_key import provider_name
 
             company = provider_name(self.own_key_provider)
             return f"your own {company} key", company
         return "QUILL's free AI", "QUILL's free AI service"
+
+    def confirm_auto_retry(
+        self, error: BaseException, failed_connection: str, requires: tuple[str, ...]
+    ) -> str:
+        """Ask before retrying an Auto request through a different ready provider."""
+        from quill.core.ai.fallback import CONNECTIVITY_FAILURES, classify_exception
+
+        if self.connection != "auto" or classify_exception(error) not in CONNECTIVITY_FAILURES:
+            return ""
+        candidate = self.auto_connection(requires, exclude=(failed_connection,))
+        if not candidate:
+            return ""
+        name, destination = self.route_names(candidate)
+        if candidate == "own_key" and self.own_key_provider == "ollama":
+            question = (
+                f"The request could not be completed. Retry with {name}? "
+                "Your request stays on this computer."
+            )
+        else:
+            question = (
+                f"The request could not be completed. Retry the same request with {name}? "
+                f"It will go to {destination} and may count toward that provider's limits "
+                "or billing. Choose No and no retry is sent."
+            )
+        confirm = self.confirm_route_change
+        if confirm is not None:
+            return candidate if confirm(question) else ""
+        import wx
+
+        from quill.ui.hosted_ai_connections import ask_yes_no
+
+        return candidate if ask_yes_no(wx.GetActiveWindow(), question, default_yes=False) else ""
 
     def route_chosen(self) -> None:
         """The listener just chose the route (signed in or out, saved or removed

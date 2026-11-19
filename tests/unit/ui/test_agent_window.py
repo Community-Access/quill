@@ -161,6 +161,13 @@ def test_the_controls_and_the_status_line_name_the_engine(world) -> None:
     assert not window.stop_button.IsEnabled()
 
 
+def test_own_key_task_status_and_transcript_do_not_misidentify_the_engine() -> None:
+    from quill.core.ai.agent_task_words import engine_name, status_line
+
+    assert status_line("own_key") == "Using your selected AI"
+    assert engine_name("own_key") == "Your selected AI"
+
+
 def test_allow_once_runs_the_step_and_the_summary_is_spoken_once(world) -> None:
     world.answers.append(ApprovalChoice.ONCE)
     window = world.make(_Harness(_BOLD))
@@ -266,3 +273,158 @@ def test_closing_a_running_task_stops_it(world) -> None:
     window.Close()
 
     assert harness.sessions[0].cancelled is True
+
+
+class _FakeButton:
+    def __init__(self) -> None:
+        self.label = ""
+        self.default = False
+
+    def SetLabel(self, label: str) -> None:
+        self.label = label
+
+    def SetDefault(self) -> None:
+        self.default = True
+
+
+class _FakeInput:
+    def __init__(self) -> None:
+        self.help_text = ""
+        self.focused = False
+
+    def SetHelpText(self, text: str) -> None:
+        self.help_text = text
+
+    def SetFocus(self) -> None:
+        self.focused = True
+
+
+class _FakePrompt:
+    def __init__(self) -> None:
+        self.ok = _FakeButton()
+        self.cancel = _FakeButton()
+        self.destroyed = False
+        self.affirmative_id = None
+        self.escape_id = None
+
+    def SetAffirmativeId(self, value: int) -> None:
+        self.affirmative_id = value
+
+    def SetEscapeId(self, value: int) -> None:
+        self.escape_id = value
+
+    def FindWindow(self, value: int) -> _FakeButton:
+        return self.ok if value == wx.ID_OK else self.cancel
+
+    def Destroy(self) -> None:
+        self.destroyed = True
+
+
+class _FakeChoicePrompt(_FakePrompt):
+    def __init__(self, selection: int) -> None:
+        super().__init__()
+        self.selection = selection
+
+    def GetSelection(self) -> int:
+        return self.selection
+
+
+class _FakeTextPrompt(_FakePrompt):
+    def __init__(self, answer: str) -> None:
+        super().__init__()
+        self.answer = answer
+        self.input = _FakeInput()
+
+    def GetTextCtrl(self) -> _FakeInput:
+        return self.input
+
+    def GetValue(self) -> str:
+        return self.answer
+
+
+def test_user_input_choice_uses_labeled_native_prompt_and_restores_focus(
+    world, monkeypatch
+) -> None:
+    prompt = _FakeChoicePrompt(selection=1)
+    shown: list[tuple[object, str]] = []
+    monkeypatch.setattr(
+        module.wx,
+        "SingleChoiceDialog",
+        lambda _parent, _question, _title, _choices: prompt,
+    )
+    monkeypatch.setattr(
+        module,
+        "show_modal_dialog",
+        lambda dialog, title, **_kwargs: shown.append((dialog, title)) or wx.ID_OK,
+    )
+    window = world.make(_Harness([]))
+
+    answer = window._present_user_input("Choose one", ("First", "Second"), False)
+
+    assert answer is not None
+    assert (answer.answer, answer.was_freeform) == ("Second", False)
+    assert prompt.destroyed
+    assert prompt.affirmative_id == wx.ID_OK
+    assert prompt.escape_id == wx.ID_CANCEL
+    assert prompt.ok.label == "Choose answer"
+    assert prompt.cancel.label == "Cancel"
+    assert prompt.ok.default
+    assert shown == [(prompt, "Copilot needs your answer")]
+    assert window._focus_target is window.instruction
+
+
+def test_user_input_closes_choice_prompt_before_opening_freeform(world, monkeypatch) -> None:
+    choice = _FakeChoicePrompt(selection=1)
+    text = _FakeTextPrompt("A clearer answer")
+    prompts: list[object] = []
+
+    def make_text(*_args):
+        assert choice.destroyed
+        prompts.append(text)
+        return text
+
+    monkeypatch.setattr(
+        module.wx,
+        "SingleChoiceDialog",
+        lambda *_args: prompts.append(choice) or choice,
+    )
+    monkeypatch.setattr(module.wx, "TextEntryDialog", make_text)
+    monkeypatch.setattr(module, "show_modal_dialog", lambda *_args, **_kwargs: wx.ID_OK)
+    window = world.make(_Harness([]))
+
+    answer = window._present_user_input("Choose one", ("First",), True)
+
+    assert prompts == [choice, text]
+    assert answer is not None
+    assert (answer.answer, answer.was_freeform) == ("A clearer answer", True)
+    assert text.destroyed
+    assert text.input.focused
+    assert "Cancel tells Copilot" in text.input.help_text
+    assert text.ok.label == "Submit answer"
+    assert text.ok.default
+
+
+def test_dismissing_user_input_returns_no_answer(world, monkeypatch) -> None:
+    prompt = _FakeChoicePrompt(selection=0)
+    monkeypatch.setattr(module.wx, "SingleChoiceDialog", lambda *_args: prompt)
+    monkeypatch.setattr(module, "show_modal_dialog", lambda *_args, **_kwargs: wx.ID_CANCEL)
+    window = world.make(_Harness([]))
+
+    assert window._present_user_input("Choose one", ("Only choice",), False) is None
+    assert prompt.destroyed
+
+
+def test_tagged_sdk_progress_is_written_and_announced(world) -> None:
+    window = world.make(_Harness([]))
+    summary = "Copilot is starting doc read document."
+
+    window._on_event(
+        AgentEvent(
+            AgentEventKind.TOOL_CALL_REQUESTED,
+            summary,
+            {"announce": "true"},
+        )
+    )
+
+    assert summary in window.transcript.GetValue()
+    assert world.said == [summary]

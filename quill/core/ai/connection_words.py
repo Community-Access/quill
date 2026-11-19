@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from quill.core.ai.connection_caps import (
     AGENT_TOOLS,
+    AUTO,
     CHATGPT,
     CODEX,
     CONNECTION_NAMES,
@@ -79,6 +80,8 @@ def row_action(row: ConnectionRow, *, free_connected: bool) -> str:
     (decision 23: Connect happens when somebody asks). Its button then
     connects, because signing out of something not signed in does nothing.
     """
+    if row.connection == AUTO:
+        return USE
     if row.state == IN_USE:
         if row.connection == FREE and not free_connected:
             return SIGN_IN
@@ -138,6 +141,20 @@ def about_line(record: ConnectionRecord, *, own_key_provider: str = "") -> str:
     if not record.available:
         return f"Not available yet; it comes in a later update. {line}"
     return line
+
+
+def auto_about_line(connections: list[str]) -> str:
+    """Explain Auto's configured provider pool and the per-request disclosure."""
+    names = [CONNECTION_NAMES[connection] for connection in connections]
+    if not names:
+        return "Set up at least one connection before using Auto. Nothing is sent now."
+    ready = ", ".join(names)
+    return (
+        f"Uses only ready connections: {ready}. Auto picks one that supports each "
+        "action, says who will receive your text before sending, and asks before "
+        "retrying with another provider. Each provider's own terms, limits and "
+        "billing apply."
+    )
 
 
 # -- the model choice (10A.3, 10A.4) --------------------------------------------- #

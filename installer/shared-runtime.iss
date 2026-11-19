@@ -109,36 +109,19 @@ Source: "{#RuntimeSourceDir}\tools\deno\*"; DestDir: "{code:RuntimeDir}\tools\de
   Components: runtime; \
   Flags: ignoreversion recursesubdirs createallsubdirs uninsneveruninstall
 #endif
-; The AI engines: the GitHub Copilot CLI and the OpenAI Codex app-server. Not
+; The AI engines: the Copilot SDK native runtime and OpenAI Codex app-server. Not
 ; per app -- standalone\runtime\build_runtime.ps1 stages both into every shared
 ; runtime (codex.md section 9) -- so no Tool define. Ungated for the same reason as
-; the tools above. Each vendor exe and its licence files are named one by one,
+; the tools above. Each required file and its licence are named one by one,
 ; with no skipifsourcedoesntexist, so ISCC refuses to compile an installer that
-; would ship either engine without its licence (the Copilot CLI licence permits
-; redistribution only with it). Copilot is the SDK's hostless runtime bundle:
-; the four files the SDK's completeness check needs (alias, wrapper,
-; runtime.node, marker) and the licence are named, and the rest of the bundle --
-; runtime assets in subfolders, the Microsoft auth DLLs and their licence --
-; rides one recursive wildcard that excludes the named five.
-Source: "{#RuntimeSourceDir}\tools\copilot\copilot.exe"; DestDir: "{code:RuntimeDir}\tools\copilot"; \
-  Components: runtime; \
-  Flags: ignoreversion uninsneveruninstall
-Source: "{#RuntimeSourceDir}\tools\copilot\copilot-runtime.exe"; DestDir: "{code:RuntimeDir}\tools\copilot"; \
-  Components: runtime; \
-  Flags: ignoreversion uninsneveruninstall
+; would ship either engine without its licence. Copilot is SDK 2's native
+; runtime library and licence only; no CLI executable or wrapper is shipped.
 Source: "{#RuntimeSourceDir}\tools\copilot\runtime.node"; DestDir: "{code:RuntimeDir}\tools\copilot"; \
-  Components: runtime; \
-  Flags: ignoreversion uninsneveruninstall
-Source: "{#RuntimeSourceDir}\tools\copilot\.hostless-runtime-assets-v2"; DestDir: "{code:RuntimeDir}\tools\copilot"; \
   Components: runtime; \
   Flags: ignoreversion uninsneveruninstall
 Source: "{#RuntimeSourceDir}\tools\copilot\COPILOT-CLI-LICENSE.txt"; DestDir: "{code:RuntimeDir}\tools\copilot"; \
   Components: runtime; \
   Flags: ignoreversion uninsneveruninstall
-Source: "{#RuntimeSourceDir}\tools\copilot\*"; DestDir: "{code:RuntimeDir}\tools\copilot"; \
-  Excludes: "\copilot.exe,\copilot-runtime.exe,\runtime.node,\.hostless-runtime-assets-v2,\COPILOT-CLI-LICENSE.txt"; \
-  Components: runtime; \
-  Flags: ignoreversion recursesubdirs createallsubdirs uninsneveruninstall
 Source: "{#RuntimeSourceDir}\tools\codex\codex-app-server.exe"; DestDir: "{code:RuntimeDir}\tools\codex"; \
   Components: runtime; \
   Flags: ignoreversion uninsneveruninstall

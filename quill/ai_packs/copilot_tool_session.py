@@ -5,7 +5,7 @@ these. It never imports the SDK itself: the harness hands it a
 ``client_factory`` and the SDK classes it needs (:class:`SdkParts`), so tests
 drive the real code path with a fake SDK.
 
-How a task runs (codex.md 5.2, 5.3, 8; SDK 1.0.28 read from source):
+How a task runs (codex.md 5.2, 5.3, 8; SDK 2.0.1 read from source):
 
 - **Thread.** :meth:`CopilotToolSession.run` blocks on a worker thread and
   owns a private asyncio loop there -- never the UI thread's. Tool handlers
@@ -38,7 +38,7 @@ import asyncio
 import logging
 import threading
 import uuid
-from collections import deque
+from collections import Counter, deque
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
@@ -67,6 +67,18 @@ STOP_SECONDS = 1.0
 CLOSE_SECONDS = 2.0
 
 REFUSAL_FEEDBACK = "QUILL offers only its own tools; this request is not allowed."
+_SAFE_EVENT_TYPES = frozenset({
+    "assistant.message",
+    "assistant.message_delta",
+    "assistant.reasoning",
+    "assistant.usage",
+    "session.idle",
+    "session.error",
+    "tool.execution_start",
+    "tool.execution_complete",
+    "tool.execution_error",
+    "user.message",
+})
 
 
 @dataclass(frozen=True, slots=True)
@@ -78,6 +90,31 @@ class SdkParts:
     binary_cls: Any
     reject_cls: Any
     approve_cls: Any
+    skill_descriptor_cls: Any | None = None
+
+
+class _AppSkillProvider:
+    """Expose only enabled, app-installed skills through the SDK provider API."""
+
+    def __init__(self, descriptor_cls: Any) -> None:
+        from quill.core.paths import app_data_dir
+        from quill.core.skill_store import SkillStore
+
+        self._store = SkillStore(app_data_dir() / "skills")
+        self._descriptor_cls = descriptor_cls
+
+    def list_skills(self) -> list[Any]:
+        return [
+            self._descriptor_cls(name=skill.name, description=skill.description)
+            for skill in self._store.all()
+            if skill.enabled
+        ]
+
+    def read_skill(self, name: str) -> str | None:
+        skill = self._store.find_by_name(name)
+        if skill is None or not skill.enabled:
+            return None
+        return skill.source
 
 
 def _permission_detail(request: Any) -> str:
@@ -135,13 +172,17 @@ class CopilotToolSession:
         client_factory: Callable[[AgentFolders], Any],
         folders: AgentFolders,
         session_options: dict[str, Any],
+        enable_long_context: bool = False,
+        share_enabled_skills: bool = False,
+        resume_session_id: str = "",
+        on_resume_consumed: Callable[[], None] | None = None,
         keep_open: bool = False,
         on_usage: Callable[[TurnUsage], None] | None = None,
         display_name: str = "GitHub Copilot",
         stop_seconds: float = STOP_SECONDS,
         close_seconds: float = CLOSE_SECONDS,
     ) -> None:
-        self._id = uuid.uuid4().hex
+        self._id = resume_session_id or uuid.uuid4().hex
         self._agent = agent
         self._ctx = ctx
         self._tools = tools
@@ -151,6 +192,10 @@ class CopilotToolSession:
         self._client_factory = client_factory
         self._folders = folders
         self._session_options = dict(session_options)
+        self._enable_long_context = enable_long_context and folders.retain_home
+        self._share_enabled_skills = share_enabled_skills
+        self._resume_session_id = resume_session_id
+        self._on_resume_consumed = on_resume_consumed
         self._keep_open = keep_open
         self._on_usage = on_usage
         self._name = display_name
@@ -226,10 +271,14 @@ class CopilotToolSession:
             self._emit(AgentEvent(AgentEventKind.ERROR, f"{self._name} could not complete."))
             return HarnessResult(status="error", error=str(exc))
         finally:
-            self._tools.gate.end_task()
-            self._folders.clear()
-            self._loop = None
-            loop.close()
+            try:
+                self._tools.gate.end_task()
+            finally:
+                try:
+                    self._folders.clear()
+                finally:
+                    self._loop = None
+                    loop.close()
 
     async def _main(self) -> HarnessResult:
         self._emit(AgentEvent(AgentEventKind.AGENT_STARTED, f"{self._name} started."))
@@ -239,7 +288,14 @@ class CopilotToolSession:
             await client.start()
             if self._cancelled:
                 return self._cancelled_result()
-            session = await client.create_session(**self._create_kwargs())
+            session_kwargs = self._create_kwargs()
+            if self._resume_session_id:
+                session_kwargs.pop("session_id", None)
+                session_kwargs.pop("name", None)
+                session = await client.resume_session(self._resume_session_id, **session_kwargs)
+                self._consume_resume_selection()
+            else:
+                session = await client.create_session(**session_kwargs)
             session.on(self._on_event)
             prompt: str | None = f"{self._ctx.prompt}\n\n{self._ctx.context_text}".strip()
             while prompt is not None:
@@ -251,18 +307,26 @@ class CopilotToolSession:
                     await self._quietly(session.abort(), self._stop_seconds / 2)
                     return self._cancelled_result()
                 if self._turn_error:
-                    self._emit(AgentEvent(AgentEventKind.ERROR, self._turn_error))
+                    history = await self._safe_event_history(session)
+                    self._emit(AgentEvent(AgentEventKind.ERROR, self._turn_error, history))
                     return HarnessResult(status="error", error=self._turn_error)
                 prompt = await self._next_prompt()
             if self._cancelled:
                 return self._cancelled_result()
-            self._emit(AgentEvent(AgentEventKind.AGENT_COMPLETED, f"{self._name} finished."))
+            history = await self._safe_event_history(session)
+            self._emit(
+                AgentEvent(AgentEventKind.AGENT_COMPLETED, f"{self._name} finished.", history)
+            )
             return HarnessResult(status="completed", final_text=self._answer)
         finally:
             await self._shutdown(client, session)
 
     def _create_kwargs(self) -> dict[str, Any]:
-        from quill.ai_packs.copilot import available_tools_for, system_message_for
+        from quill.ai_packs.copilot import (
+            available_tools_for,
+            session_safety_options,
+            system_message_for,
+        )
 
         sdk_tools = to_copilot_tools(
             self._tools,
@@ -274,18 +338,81 @@ class CopilotToolSession:
         # Decision 4: Copilot's own tools only when the person turned them on.
         names.extend(sorted(getattr(self._tools, "vendor_tools", frozenset())))
         self._recorded_tools = list(names)
-        kwargs: dict[str, Any] = dict(self._session_options)
-        kwargs.update({
-            "tools": sdk_tools,
-            "available_tools": names,
-            "on_permission_request": self._on_permission,
-            "streaming": True,
-            "working_directory": getattr(self._tools, "vendor_cwd", "") or str(self._folders.work),
-        })
+        kwargs: dict[str, Any] = session_safety_options(
+            infinite_sessions_enabled=self._enable_long_context
+        )
+        kwargs.update(self._session_options)
+        kwargs["permissions"] = {"on_request": self._on_permission}
+        kwargs["tools"] = {"definitions": sdk_tools, "available_tools": names}
+        kwargs["events"] = {"streaming": True}
+        kwargs["interaction"] = {"on_user_input_request": self._on_user_input_request}
+        kwargs["hooks"] = {
+            "handlers": {
+                "on_pre_tool_use": self._on_pre_tool_use,
+                "on_post_tool_use": self._on_post_tool_use,
+                "on_post_tool_use_failure": self._on_post_tool_use_failure,
+                "on_subagent_start": self._on_subagent_start,
+                "on_subagent_stop": self._on_subagent_stop,
+            }
+        }
+        kwargs["working_directory"] = getattr(self._tools, "vendor_cwd", "") or str(
+            self._folders.work
+        )
+        if self._folders.retain_home:
+            kwargs["session_id"] = self._id
+            kwargs["name"] = self._agent.display_name
+        if self._share_enabled_skills:
+            if self._sdk.skill_descriptor_cls is None:
+                raise RuntimeError("The installed Copilot SDK cannot provide AI Library skills.")
+            kwargs["skills"] = {
+                "enabled": True,
+                "provider": _AppSkillProvider(self._sdk.skill_descriptor_cls),
+            }
         system_message = system_message_for(self._agent.system_prompt)
         if system_message is not None:
             kwargs["system_message"] = system_message
         return kwargs
+
+    def _consume_resume_selection(self) -> None:
+        if self._on_resume_consumed is None:
+            return
+        try:
+            self._on_resume_consumed()
+        except OSError:
+            _log.exception("Could not clear the one-time Copilot resume selection.")
+            self._emit(
+                AgentEvent(
+                    AgentEventKind.WARNING,
+                    "This saved Copilot session may be selected again because its resume choice "
+                    "could not be cleared.",
+                )
+            )
+
+    async def _safe_event_history(self, session: Any) -> dict[str, str]:
+        """Summarize event metadata only; never retain or expose event payloads."""
+        get_events = getattr(session, "get_events", None)
+        if not callable(get_events):
+            return {}
+        try:
+            events = await get_events()
+        except Exception as exc:  # noqa: BLE001 - diagnostics must not hide a task result
+            _log.warning("Copilot event history was unavailable: %s", type(exc).__name__)
+            self._emit(
+                AgentEvent(
+                    AgentEventKind.WARNING,
+                    "Copilot event history could not be summarized.",
+                    {"diagnostic": "event_history_unavailable"},
+                )
+            )
+            return {}
+        counts = Counter(
+            _event_type(event) if _event_type(event) in _SAFE_EVENT_TYPES else "other"
+            for event in events
+        )
+        return {
+            "event_count": str(len(events)),
+            "event_types": ", ".join(f"{kind}={count}" for kind, count in sorted(counts.items())),
+        }
 
     # -- engine callbacks ---------------------------------------------------
 
@@ -313,6 +440,68 @@ class CopilotToolSession:
                 f"Copilot asked for a {kind or 'unknown'} permission; refused."
             )
         return self._sdk.reject_cls(feedback=REFUSAL_FEEDBACK)
+
+    async def _on_user_input_request(self, request: Any, _context: Any) -> dict[str, Any]:
+        question = str(request.get("question", "")).strip()
+        if not question:
+            raise ValueError("Copilot requested user input without a question.")
+        raw_choices = request.get("choices", [])
+        if not isinstance(raw_choices, list) or not all(
+            isinstance(choice, str) for choice in raw_choices
+        ):
+            raise ValueError("Copilot requested user input with invalid choices.")
+        allow_freeform = request.get("allowFreeform", True)
+        if not isinstance(allow_freeform, bool):
+            raise ValueError("Copilot requested user input with an invalid freeform flag.")
+        ask_user = getattr(self._approver, "ask_user", None)
+        if not callable(ask_user):
+            raise RuntimeError("This task has no accessible user-input dialog.")
+        answer = await asyncio.to_thread(ask_user, question, tuple(raw_choices), allow_freeform)
+        if answer is None:
+            return {"answer": "The user chose not to answer.", "wasFreeform": False}
+        return {"answer": answer.answer, "wasFreeform": answer.was_freeform}
+
+    def _on_pre_tool_use(self, request: Any, _context: Any) -> None:
+        self._emit_progress("Copilot is starting", request)
+
+    def _on_post_tool_use(self, request: Any, _context: Any) -> None:
+        self._emit_progress("Copilot finished", request, completed=True)
+
+    def _on_post_tool_use_failure(self, request: Any, _context: Any) -> None:
+        self._emit_progress("Copilot could not complete", request, failed=True)
+
+    def _on_subagent_start(self, request: Any, _context: Any) -> None:
+        self._emit_progress("Copilot started a helper agent", request, agent=True)
+
+    def _on_subagent_stop(self, request: Any, _context: Any) -> None:
+        self._emit_progress("Copilot finished a helper agent", request, agent=True)
+
+    def _emit_progress(
+        self,
+        prefix: str,
+        request: Any,
+        *,
+        completed: bool = False,
+        failed: bool = False,
+        agent: bool = False,
+    ) -> None:
+        name = request.get("toolName", "") if isinstance(request, dict) else ""
+        if agent:
+            name = request.get("agentDisplayName", "") or request.get("agentName", "")
+        safe_name = " ".join(
+            part for part in str(name).replace("_", " ").replace(".", " ").split() if part.isalnum()
+        )[:60]
+        summary = f"{prefix} {safe_name}." if safe_name else f"{prefix} a step."
+        kind = (
+            AgentEventKind.WARNING
+            if failed
+            else AgentEventKind.AGENT_THINKING_SUMMARY
+            if agent
+            else AgentEventKind.TOOL_CALL_COMPLETED
+            if completed
+            else AgentEventKind.TOOL_CALL_REQUESTED
+        )
+        self._emit(AgentEvent(kind, summary, {"announce": "true"}))
 
     def _on_event(self, event: Any) -> None:
         kind = _event_type(event)

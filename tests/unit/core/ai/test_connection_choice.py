@@ -14,11 +14,12 @@ from quill.core.ai.text_only import FAMILY_INSTRUCTION, as_text, with_family_ins
 # -- settings and migration ------------------------------------------------------ #
 
 
-def test_the_loader_keeps_the_five_values_and_drops_anything_else() -> None:
+def test_the_loader_keeps_the_five_connections_and_auto_and_drops_anything_else() -> None:
     assert choice.load_connection_fields({"ai_connection": " ChatGPT "})["ai_connection"] == (
         "chatgpt"
     )
     assert choice.load_connection_fields({"ai_connection": "claude"})["ai_connection"] == ""
+    assert choice.load_connection_fields({"ai_connection": " AUTO "})["ai_connection"] == "auto"
     assert choice.load_connection_fields({}) == {
         "ai_connection": "",
         "ai_copilot_model": "",
@@ -86,7 +87,20 @@ def test_rows_read_name_then_state() -> None:
         "My GitHub Copilot, not available yet",
         "Codex, for tasks, not available yet",
         "My own key, OpenAI, signed in",
+        "Auto, signed in",
     ]
+
+
+def test_auto_is_in_use_only_when_a_configured_provider_is_ready() -> None:
+    ready_facts = ConnectionFacts(stored="auto", chatgpt_signed_in=True)
+    assert choice.ready(ready_facts, "auto")
+    assert choice.in_use(ready_facts) == "auto"
+    assert choice.row_states(ready_facts)[-1].text == "Auto, in use"
+
+    empty_facts = ConnectionFacts(stored="auto")
+    assert not choice.ready(empty_facts, "auto")
+    assert choice.in_use(empty_facts) == ""
+    assert choice.not_ready_sentence(empty_facts).startswith("Auto has no ready AI connection.")
 
 
 def test_signing_out_of_the_row_in_use_leaves_no_ai_in_use() -> None:
@@ -212,6 +226,14 @@ def test_which_ai_speaks_connection_model_and_one_clause() -> None:
     assert usage.which_ai_sentence(none) == "No AI is in use. Choose one."
     assert usage.status_cell_text(plan) == "AI: ChatGPT plan"
     assert usage.status_cell_text(none) == "AI: none"
+
+
+def test_auto_which_ai_names_the_product_that_will_announce_the_provider() -> None:
+    auto = ConnectionFacts(stored="auto", chatgpt_signed_in=True)
+    assert usage.which_ai_sentence(auto, app_name="QUILL Lite") == (
+        "Auto, chooses a ready connection that supports each action. "
+        "QUILL Lite says which provider will receive your text before sending."
+    )
 
 
 # -- everything is text ------------------------------------------------------------- #

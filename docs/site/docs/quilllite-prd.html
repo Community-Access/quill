@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Lite — Product Requirements</title>
   <style>
@@ -11,10 +11,7 @@
     */
     html {
       color: #1a1a1a;
-      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
-      background-color: light-dark(#fdfdfd, #1a1a1a);
-      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -39,16 +36,11 @@
     }
     @media print {
       html {
-        color-scheme: light only;
+        background-color: white;
       }
-      html, body, pre, code {
+      body {
         background-color: transparent;
-      }
-      body, a, a:visited, blockquote {
         color: black;
-      }
-      pre, code {
-        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -61,8 +53,11 @@
     p {
       margin: 1em 0;
     }
-    a, a:visited {
-      color: inherit;
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
     }
     img {
       max-width: 100%;
@@ -91,11 +86,8 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid;
-      border-color: #e6e6e6;
-      border-color: light-dark(#e6e6e6, #4c4c4c);
+      border-left: 2px solid #e6e6e6;
       color: #606060;
-      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -119,7 +111,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -136,11 +128,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid currentColor;
-      border-bottom: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
     }
     th {
-      border-top: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -179,6 +171,7 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -1529,10 +1522,10 @@ item here in the same change, from the shared
 <code>quill/ui/hosted_ai_*.py</code> modules (family rule 10); QUILL
 reaches them through <code>quill/ui/main_frame_hosted_ai.py</code>,
 which has no commands of its own.</p>
-<p><strong>Five connections, one stored choice.</strong>
+<p><strong>Five connections and Auto, one stored choice.</strong>
 <code>ai_connection</code> (<code>free</code>, <code>chatgpt</code>,
-<code>copilot</code>, <code>codex</code>, <code>own_key</code>; empty
-means not yet decided) is the same field in
+<code>copilot</code>, <code>codex</code>, <code>own_key</code>,
+<code>auto</code>; empty means not yet decided) is the same field in
 <code>quill/core/settings.py</code> and
 <code>quill/core/lite/settings.py</code>. On the first read where it is
 empty it is set once to what the old silent precedence chose (ChatGPT
@@ -1581,13 +1574,21 @@ ChatGPT plan (decision 24, never used to guess a limit), GitHub’s quota
 for Copilot, and the provider’s last rate-limit headers for an own key.
 Manage Usage opens the selected connection’s page. Everything is text
 (decision 13).</p>
-<p><strong>No silent fall-back (decision 15).</strong> Signing in is
-choosing. Sign Out of the connection in use leaves none in use; the next
-AI command opens Choose Your AI and says once “No AI is in use. Choose
-one.” A revoked token, a missing key or a reached limit is said once,
-nothing is sent, nothing is retried and nothing switches. This replaces
-the session route guard’s “Send to a Different AI?” question for the
-hosted-AI commands; the guard stays only as a backstop.</p>
+<p><strong>No silent fall-back for an explicit connection (decision
+15).</strong> Signing in is choosing. Sign Out of the connection in use
+leaves none in use; the next AI command opens Choose Your AI and says
+once “No AI is in use. Choose one.” A revoked token, a missing key or a
+reached limit is said once, nothing is sent, nothing is retried and
+nothing switches. Auto is a separate, explicit choice, never the
+default: it selects a ready connection that supports the action and
+announces the concrete provider and destination before sending. Ask,
+conversations and image requests may offer one retry after a classified
+connectivity failure; the same request is sent only after confirmation,
+with destination and possible provider limits or billing stated.
+Declining preserves the original error. Agent tasks are not
+automatically retried because a provider may have performed an approved
+action before a failure. Copilot’s Auto model-priority setting remains
+separate and never changes providers.</p>
 <p><strong>Capability gating (GATE-CAPS).</strong>
 <code>quill/core/ai/connection_caps.py</code> holds one record per
 connection, each claim naming its source. A gated command
@@ -1604,6 +1605,16 @@ features. The device flow needs a GitHub OAuth App client id per app
 “not available yet” and About says why in one sentence. Single requests,
 conversations and Ask About an Image (on a model that sees) go through
 the SDK; an error is said once.</p>
+<p><strong>Auto provider routing.</strong> The additional Auto row in
+Choose Your AI is opt-in, not a default or silent fallback. The shared
+capability registry selects the first ready provider that supports every
+capability required by each action. The local Ollama route says it stays
+on this computer. The registry order is a stable tie-breaker, not a
+quality ranking; Auto does not change provider model settings, combine
+histories or share credentials. Which AI Am I Using reports that Auto is
+active, and a pre-send announcement identifies each request’s concrete
+recipient. Usage remains tied to the provider that handled the request,
+with no fabricated cross-provider quota.</p>
 <p><strong>Codex</strong> (decision 21) is one keypress once the ChatGPT
 plan is signed in. Single requests while Codex is in use go over the
 plan’s direct route; the Codex app-server starts only for document
@@ -1612,19 +1623,20 @@ yet”.</p>
 <p><strong>Do a Document Task</strong> (Ctrl+3;
 <code>tools.hosted_ai_task</code>, Lite <code>cmd_ai_task</code>;
 <code>quill/ui/agent_window.py</code>,
-<code>quill/core/ai/document_task.py</code>) needs agent tools, which
-only Copilot and Codex have. Controls: Conversation, Status, Instruction
-(focus starts here; Enter sends; text sent while a task runs is a
-follow-up), Send, Stop, Close. Tools are limited to
-<code>DOCUMENT_TASK_TOOLS</code> (read outline, section, selection and
-document; apply_patch; the accessibility audit; <code>run_command</code>
-limited to <code>SAFE_TOOL_IDS</code>). Every mutating step asks in
-Allow This Step? (Allow once, the default; Allow for this task; Don’t
-allow, Escape), every edit opens Review AI Changes, each applied change
-is one undo step, and nothing carries over between tasks. The closing
-summary is built from the registry’s record of calls, not the model’s
-claims, and is the only thing spoken. Engine folders are swept when the
-task ends, on Stop and before the next task (decision 4).</p>
+<code>quill/core/ai/document_task.py</code>) needs agent tools,
+available on Copilot, Codex, and supported providers selected in My own
+key. Controls: Conversation, Status, Instruction (focus starts here;
+Enter sends; text sent while a task runs is a follow-up), Send, Stop,
+Close. Tools are limited to <code>DOCUMENT_TASK_TOOLS</code> (read
+outline, section, selection and document; apply_patch; the accessibility
+audit; <code>run_command</code> limited to <code>SAFE_TOOL_IDS</code>).
+Every mutating step asks in Allow This Step? (Allow once, the default;
+Allow for this task; Don’t allow, Escape), every edit opens Review AI
+Changes, each applied change is one undo step, and nothing carries over
+between tasks. The closing summary is built from the registry’s record
+of calls, not the model’s claims, and is the only thing spoken. Engine
+folders are swept when the task ends, on Stop and before the next task
+(decision 4).</p>
 <p><strong>One family prompt list (decision 18)</strong> at
 <code>&lt;app data&gt;/prompts.json</code>, with a run-once, off-thread
 migration (<code>quill/core/ai/family_prompt_migration.py</code>) from
@@ -3300,20 +3312,21 @@ fall-back), the document task’s tools, the family prompt list and the
 own key’s providers, are in section 5.6e.</p>
 <p><strong>One window for where the AI comes from.</strong> Choose Your
 AI (Tools &gt; AI, <strong>Ctrl+4</strong>, <code>cmd_ai_choose</code>)
-lists five connections: QUILL’s free AI, the ChatGPT plan, GitHub
-Copilot, Codex and the user’s own key. The window is QUILL’s, shared
-(<code>quill/ui/hosted_ai_connections.py</code>, with the rows in
-<code>quill/core/ai/connection_choice.py</code>); every sentence it can
-say comes from <code>quill/core/ai/connection_words.py</code>, so the
-two editors cannot word one moment two ways (rule 10). Each row reads
-its name and then “in use”, “signed in” or “not set up”; an About line
-says what the connection can do, who receives the text and what it
-costs; one button follows the row (Use This, Sign In…, Sign Out).
-Nothing is spoken on open, focus or selection (GATE-13); only outcomes
-are, through the announcement service, so they are brailled too. Use My
-Own AI Key (Alt+F2), Use My ChatGPT Subscription (Alt+F5) and Connect or
-Sign Out (Ctrl+Alt+Shift+F10) keep their chords and open this window on
-their row.</p>
+lists five connections and an Auto choice: QUILL’s free AI, the ChatGPT
+plan, GitHub Copilot, Codex, the user’s own key and Auto. The window is
+QUILL’s, shared (<code>quill/ui/hosted_ai_connections.py</code>, with
+the rows in <code>quill/core/ai/connection_choice.py</code>); every
+sentence it can say comes from
+<code>quill/core/ai/connection_words.py</code>, so the two editors
+cannot word one moment two ways (rule 10). Each row reads its name and
+then “in use”, “signed in” or “not set up”; an About line says what the
+connection can do, who receives the text and what it costs; one button
+follows the row (Use This, Sign In…, Sign Out). Nothing is spoken on
+open, focus or selection (GATE-13); only outcomes are, through the
+announcement service, so they are brailled too. Use My Own AI Key
+(Alt+F2), Use My ChatGPT Subscription (Alt+F5) and Connect or Sign Out
+(Ctrl+Alt+Shift+F10) keep their chords and open this window on their
+row.</p>
 <p><strong>GitHub Copilot</strong> signs in by GitHub’s device flow
 (<code>quill/core/ai/copilot_sign_in.py</code>,
 <code>copilot_auth.py</code>): the code is spaced so a reader spells it,
@@ -3330,9 +3343,9 @@ Codex is in use go to the plan directly; Codex itself is for tasks.</p>
 <code>quill/core/ai/connection_caps.py</code> records what each
 connection can do. A command the connection in use cannot serve keeps
 its menu row and chord (rule 8), its label says what it needs, such as
-“(needs Copilot or Codex)”, and invoking it sends nothing and offers to
-switch, with Yes as the default. The user can only do what the service
-supports, and is never left at a silent failure.</p>
+“(needs an AI that runs tasks)”, and invoking it sends nothing and
+offers to switch, with Yes as the default. The user can only do what the
+service supports, and is never left at a silent failure.</p>
 <p><strong>Which AI Am I Using</strong> (<strong>Ctrl+8</strong>,
 <code>cmd_ai_which</code>) says the connection, the model and one usage
 fact in one line; a double press opens Choose Your AI. The status bar’s
@@ -3342,7 +3355,8 @@ AI cell carries the short form and opens the window on Enter.
 or charts), each sentence naming whose count it is
 (<code>quill/core/ai/connection_usage.py</code>).</p>
 <p><strong>Do a Document Task</strong> (<strong>Ctrl+3</strong>,
-<code>cmd_ai_task</code>) hands a multi-step job to Copilot or Codex
+<code>cmd_ai_task</code>) hands a multi-step job to Copilot, Codex or a
+supported My own key provider
 (<code>quill/core/ai/document_task.py</code>, shared mixin
 <code>quill/ui/hosted_ai_task_commands.py</code>). Every step that
 changes something is asked first (Allow once, Allow for this task, Don’t

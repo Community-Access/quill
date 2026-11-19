@@ -8,8 +8,8 @@ Three checks, all static, all fast:
    a guess, and a guess is a request that fails on the far side.
 2. **Every hosted-AI entry point declares what it needs.** A call to the
    shared service's ``ask``, ``converse`` or ``describe_image`` anywhere in
-   ``quill/ui`` or ``quill/apps`` passes ``requires=(...)``, and the service's
-   own three methods call ``request_allowed`` -- the one place
+   ``quill/ui`` or ``quill/apps`` passes ``requires=(...)``, and each request
+   calls ``request_connection`` -- the one place
    :func:`~quill.core.ai.connection_caps.require` is asked before anything
    leaves.
 3. **Nothing goes round the check.** An engine call -- the ChatGPT plan's
@@ -57,7 +57,7 @@ ENGINE_FUNCTIONS = frozenset({
 CLIENT_METHODS = frozenset({"ask", "converse"})
 
 #: Calls that count as asking the registry first.
-CHECKS = frozenset({"require", "request_allowed"})
+CHECKS = frozenset({"require", "request_allowed", "request_connection"})
 
 SERVICE_MODULE = "quill/ui/hosted_ai_service.py"
 

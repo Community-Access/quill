@@ -45,6 +45,7 @@ import wx
 
 from quill.core.ai import connection_words as words
 from quill.core.ai.connection_caps import (
+    AUTO,
     CHATGPT,
     CODEX,
     CONNECTION_NAMES,
@@ -58,6 +59,7 @@ from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
 from quill.ui.hosted_ai_dialogs import _PAD, _close_row, _read_only, focus_on
+from quill.ui.hosted_ai_plan_options_action import PlanOptionsActionMixin
 
 __all__ = ["SIGN_IN_TITLE", "TITLE", "ChooseAiFrame", "ChooseAiHooks", "SignInStep", "ask_yes_no"]
 
@@ -203,7 +205,7 @@ def _chatgpt_sign_in(parent: Any, account: Any, connection: str, app_name: str) 
     return bool(getattr(account, "signed_in", False))
 
 
-class ChooseAiFrame(wx.Frame):
+class ChooseAiFrame(PlanOptionsActionMixin, wx.Frame):
     """The Connections list, About, Model, the action button and Close."""
 
     def __init__(
@@ -324,6 +326,8 @@ class ChooseAiFrame(wx.Frame):
             return
         if self._hooks.safe_mode:
             self._about.SetValue(words.SAFE_MODE_ABOUT)
+        elif row.connection == AUTO:
+            self._about.SetValue(words.auto_about_line(self._service.auto_ready_connections()))
         elif row.state == NOT_AVAILABLE_YET and row.connection in (COPILOT, CODEX):
             self._about.SetValue(self._service.engine_unavailable_about(row.connection))
         else:
@@ -352,6 +356,9 @@ class ChooseAiFrame(wx.Frame):
         connection = row.connection
         if self._hooks.safe_mode or row.state == NOT_AVAILABLE_YET:
             self._disabled_model(words.NOT_AVAILABLE_MODELS)
+            return
+        if connection == AUTO:
+            self._disabled_model("Auto picks a ready connection for each action")
             return
         if connection == FREE:
             self._disabled_model(words.FREE_MODEL)
@@ -452,6 +459,8 @@ class ChooseAiFrame(wx.Frame):
         event.Skip()
 
     def _signed_in(self, row: Any) -> bool:
+        if row.connection == AUTO:
+            return False
         if row.connection == FREE:
             return bool(self._service.signed_in)
         return row.state in (IN_USE, SIGNED_IN)
@@ -473,6 +482,16 @@ class ChooseAiFrame(wx.Frame):
         if self._hooks.safe_mode:
             say(words.SAFE_MODE_ABOUT)
             return
+        if row.connection == AUTO:
+            if self._service.choose(AUTO):
+                self._after_change(AUTO)
+                say(
+                    "Now using Auto. The ready provider that supports each action will "
+                    "be named before your text is sent."
+                )
+            else:
+                say(words.auto_about_line(self._service.auto_ready_connections()))
+            return
         if row.state == NOT_AVAILABLE_YET:
             say(words.not_available_sentence(row.connection))
             return
@@ -486,26 +505,6 @@ class ChooseAiFrame(wx.Frame):
             self.sign_out(row)
             return
         self.start_sign_in(row.connection)
-
-    def plan_options(self) -> None:
-        """ChatGPT Plan Options: web search, and Forget on This Computer."""
-        from quill.ui.hosted_ai_plan_options import show_plan_options
-
-        row = self._selected_row()
-        if row is None or row.connection not in (CHATGPT, CODEX):
-            return
-        was_in_use = self._service.connection_in_use in (CHATGPT, CODEX)
-        agent = self._hooks.app_name
-        if not show_plan_options(self, self._service.chatgpt, agent):
-            self._hooks.changed()  # a web-search change can alter what the plan offers
-            return
-        self._service.connection_changed(CHATGPT)
-        self._after_change(row.connection)
-        lead = words.SIGNED_OUT_IN_USE + " " if was_in_use else ""
-        self._hooks.announce(
-            f"{lead}Forgotten on this computer. {agent} stays listed under Apps in "
-            "ChatGPT's settings until you remove it there."
-        )
 
     def start_sign_in(self, connection: str) -> None:
         """The row's sign-in step. A command that opened the window on its row calls this."""

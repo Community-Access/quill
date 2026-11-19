@@ -23,7 +23,15 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core.ai.chatgpt_usage import LocalCount
-from quill.core.ai.connection_caps import CHATGPT, CODEX, CONNECTION_NAMES, COPILOT, FREE, OWN_KEY
+from quill.core.ai.connection_caps import (
+    AUTO,
+    CHATGPT,
+    CODEX,
+    CONNECTION_NAMES,
+    COPILOT,
+    FREE,
+    OWN_KEY,
+)
 from quill.core.ai.connection_choice import (
     NO_AI_IN_USE,
     ROW_STATES,
@@ -258,6 +266,11 @@ def which_ai_sentence(
         if stored in rows and rows[stored].state == SIGNED_OUT_BY_OPENAI:
             return f"{CONNECTION_NAMES[stored]}, {ROW_STATES[SIGNED_OUT_BY_OPENAI]}. {NO_AI_IN_USE}"
         return NO_AI_IN_USE
+    if active == AUTO:
+        return (
+            "Auto, chooses a ready connection that supports each action. "
+            f"{app_name or 'QUILL'} says which provider will receive your text before sending."
+        )
     name = CONNECTION_NAMES[active]
     chosen = model.strip()
     if active == FREE:
@@ -286,6 +299,7 @@ def _capital(text: str) -> str:
 
 
 _SHORT_NAMES = {
+    AUTO: "Auto",
     FREE: "free",
     CHATGPT: "ChatGPT plan",
     COPILOT: "Copilot",

@@ -23,7 +23,7 @@ from quill.core.ai.chatgpt_errors import (
 )
 from quill.core.ai.connection_caps import CAPABILITIES, Claim, ConnectionRecord
 from quill.ui import hosted_ai_connection_route as route_module
-from quill.ui import hosted_ai_service as service_module
+from quill.ui import hosted_ai_service_requests as request_module
 from quill.ui.hosted_ai_service import AiService
 
 
@@ -66,7 +66,7 @@ def world(tmp_path, monkeypatch):
     key = {"saved": False}
     monkeypatch.setattr(own_key, "has_own_key", lambda *_a: key["saved"])
     monkeypatch.setattr(
-        service_module,
+        request_module,
         "_submit",
         lambda name, func, *, on_success, on_failure: submitted.append((
             name,
@@ -75,7 +75,7 @@ def world(tmp_path, monkeypatch):
             on_failure,
         )),
     )
-    monkeypatch.setattr(service_module, "_call_after", lambda func, *args: func(*args))
+    monkeypatch.setattr(request_module, "_call_after", lambda func, *args: func(*args))
 
     def make(connection: str = "", *, account: _Account | None = None) -> AiService:
         service = AiService(_App(tmp_path, connection))
@@ -287,3 +287,78 @@ def test_which_ai_and_usage_read_the_live_state(world, tmp_path) -> None:
     assert service.status_cell() == "AI: ChatGPT plan"
     sentences = [row.sentence for row in service.usage_rows()]
     assert sentences[1].startswith("My ChatGPT plan: 1 request today from QUILL")
+
+
+def test_auto_routes_by_capability_and_announces_the_recipient_before_work(world) -> None:
+    from quill.core.ai.connection_caps import AGENT_TOOLS
+    from quill.core.ai.connection_choice import ConnectionFacts
+
+    service = world.make("auto", account=_Account(signed_in=True))
+    service.connection_facts = lambda: ConnectionFacts(
+        stored="auto",
+        chatgpt_signed_in=True,
+        own_key_ready=True,
+        own_key_provider="gemini",
+        copilot_available=True,
+        copilot_signed_in=True,
+        codex_available=True,
+    )
+    said: list[str] = []
+    service.route_announce = said.append
+
+    assert service.request_connection(("text",), lambda _message: None) == "chatgpt"
+    assert said == ["Auto chose your ChatGPT subscription. Your request will go to OpenAI."]
+    assert service.request_connection((AGENT_TOOLS,), lambda _message: None) == "copilot"
+    assert said[-1].startswith("Auto chose your GitHub Copilot.")
+
+    service.connection_facts = lambda: ConnectionFacts(
+        stored="auto", chatgpt_signed_in=True, codex_available=True
+    )
+    assert service.request_connection((AGENT_TOOLS,), lambda _message: None) == "codex"
+    assert said[-1] == "Auto chose Codex, for tasks. Your request will go to OpenAI."
+
+
+def test_auto_retries_after_connectivity_failure_only_after_confirmation(world) -> None:
+    from urllib.error import URLError
+
+    from quill.core.ai.connection_choice import ConnectionFacts
+
+    service = world.make("auto", account=_Account(signed_in=True))
+    service.connection_facts = lambda: ConnectionFacts(
+        stored="auto", chatgpt_signed_in=True, own_key_ready=True, own_key_provider="gemini"
+    )
+    service._app.settings.ai_own_key_provider = "gemini"
+    said: list[str] = []
+    questions: list[str] = []
+    service.route_announce = said.append
+    service.confirm_route_change = lambda question: questions.append(question) or True
+    errors: list[str] = []
+    service.ask("rewrite", "text", None, on_done=lambda *_args: None, on_error=errors.append)
+    assert [job[0] for job in world.submitted] == ["quill-ai-ask"]
+
+    world.submitted[0][3]("quill-ai-ask", URLError("offline"))
+
+    assert len(questions) == 1
+    assert "Retry the same request with your own Google Gemini key?" in questions[0]
+    assert "will go to Google" in questions[0]
+    assert "may count toward that provider's limits or billing" in questions[0]
+    assert [job[0] for job in world.submitted] == ["quill-ai-ask", "quill-ai-ask-retry"]
+    assert said[-1].startswith("Retrying with your own Google Gemini key.")
+    assert errors == []
+
+
+def test_auto_does_not_retry_non_connectivity_failures(world) -> None:
+    from quill.core.ai.connection_choice import ConnectionFacts
+
+    service = world.make("auto", account=_Account(signed_in=True))
+    service.connection_facts = lambda: ConnectionFacts(
+        stored="auto", chatgpt_signed_in=True, own_key_ready=True
+    )
+    service.confirm_route_change = lambda _question: pytest.fail("unexpected retry confirmation")
+    errors: list[str] = []
+    service.ask("rewrite", "text", None, on_done=lambda *_args: None, on_error=errors.append)
+    world.submitted[0][3]("quill-ai-ask", ValueError("invalid input"))
+    assert len(world.submitted) == 1
+    assert errors == [
+        "The AI service is not answering right now. Try again in a moment. Nothing was used."
+    ]

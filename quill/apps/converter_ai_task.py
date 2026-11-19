@@ -1,9 +1,9 @@
 """Make This Right for My Player: Quill Converter's agent task (codex.md 6.7, Phase 4c).
 
 The person says what they want ("make these 40 MP3s one M4B audiobook with a
-chapter per file, at a size my phone can hold"), and an agent engine -- My
-GitHub Copilot or Codex -- works it out with Converter's own tools in the shared
-agent window (:mod:`quill.ui.agent_window`):
+chapter per file, at a size my phone can hold"), and a task-capable AI engine
+works it out with Converter's own tools in the shared agent window
+(:mod:`quill.ui.agent_window`):
 
 * ``converter.list_queue`` -- the queued files by name, with an id (``F1``) the
   other tools take, and what Convert would do now. Never a folder.

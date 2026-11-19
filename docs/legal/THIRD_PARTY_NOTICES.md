@@ -26,7 +26,7 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 
 ## Summary by licence
 
-- MIT License: 74 components
+- MIT License: 75 components
 - BSD 3-Clause License: 23 components
 - Apache License, version 2.0: 18 components
 - GNU General Public License, version 2: 10 components
@@ -62,6 +62,7 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 
 These entries carry a condition on how the family may use them, or a check to repeat when the component changes. Each one says which under its own heading.
 
+- GitHub Copilot SDK 1.x (legacy runtime package)
 - pywin32
 - OptiLab Core
 - Inno Setup
@@ -361,16 +362,28 @@ Python itself and libraries shipped in the shared runtime or an app's own depend
 - **How it reaches you:** Bundled: it is inside the installer or the portable zip.
 - **What the licence asks of us:** Keep the PSF copyright notice and licence with the distribution and summarise any changes we made.
 
-### GitHub Copilot SDK (copilot)
+### Microsoft Copilot SDK (copilot)
 
-- **What it is:** The Python side of the My GitHub Copilot connection: it starts the bundled Copilot CLI in tools\copilot and talks to it. Ships in the shared runtime unmodified; its licence text is the repository's LICENSE at tag v1.0.28 (SHA-256 2510b446bc1f0cf9702453075d20cd88631e20e5642658edb7325d9c1eb534f7), the MIT text with GitHub's copyright.
+- **What it is:** The Python SDK for My GitHub Copilot, using the SDK 2 in-process native runtime. Ships in the shared runtime; licensed under MIT with GitHub's copyright.
 - **Included in:** Every product in the family.
+- **Version:** 2.0.1
+- **Licence:** MIT
+- **Copyright:** Copyright GitHub, Inc.
+- **Upstream:** https://github.com/microsoft/copilot-sdk
+- **How it reaches you:** Bundled: it is inside the installer or the portable zip.
+- **What the licence asks of us:** Keep the copyright notice and the permission notice with every copy.
+
+### GitHub Copilot SDK 1.x (legacy runtime package)
+
+- **What it is:** The legacy 1.x Python SDK distribution remains named in the committed shared-runtime inventory. The active source dependency is Microsoft Copilot SDK 2.0.1.
+- **Included in:** The QuillVille Runtime and installed app editions that include it. Standalone portable editions are scoped by their own dependency inventories.
 - **Version:** 1.0.28
 - **Licence:** MIT
 - **Copyright:** Copyright GitHub, Inc.
 - **Upstream:** https://github.com/github/copilot-sdk
-- **How it reaches you:** Bundled: it is inside the installer or the portable zip.
+- **How it reaches you:** Bundled in the QuillVille Runtime used by installed app editions. A standalone portable includes it only when that app's declared dependencies require it.
 - **What the licence asks of us:** Keep the copyright notice and the permission notice with every copy.
+- **Maintainer note:** Remove this legacy entry only after a verified SDK 2-only Windows runtime build confirms github-copilot-sdk is absent from the runtime inventory.
 
 ### h11
 
@@ -1166,20 +1179,20 @@ Python itself and libraries shipped in the shared runtime or an app's own depend
 - **How it reaches you:** Bundled: it is inside the installer or the portable zip.
 - **What the licence asks of us:** None. Keep the copyright notice and the permission notice with every copy. Keep the copyright notice and the permission notice.
 
-### GitHub Copilot CLI runtime (copilot-runtime.exe, runtime.node)
+### GitHub Copilot SDK native runtime (runtime.node)
 
-- **What it is:** The engine behind the My GitHub Copilot connection, run as a separate program: the runtime bundle the GitHub Copilot SDK installs for itself, taken from GitHub's github-copilot-1.0.105-win32-x64 package. Ships unmodified in the shared runtime's tools\copilot with its licence as COPILOT-CLI-LICENSE.txt. The bundle also carries components GitHub ships inside it -- Microsoft's sign-in libraries (OneAuthInterop.dll, with its licence as OneAuthInterop.LICENSE.txt, and msalruntime.dll), and Microsoft's tgrep -- each signed by GitHub or Microsoft and covered by that licence -- and ripgrep, which has its own entry.
+- **What it is:** The pinned native runtime library loaded by microsoft-copilot-sdk 2.0.1 in-process. Ships byte-for-byte unchanged as tools\copilot\runtime.node with the GitHub Copilot CLI redistribution licence beside it; the SDK does not ship or launch a CLI executable.
 - **Included in:** The QuillVille Runtime and installed app editions that include it. Standalone portable editions are scoped by their own dependency inventories.
-- **Version:** 1.0.105
+- **Version:** 1.0.114
 - **Licence:** GitHub Copilot CLI License (proprietary; redistribution of unmodified copies permitted)
 - **Copyright:** Copyright (c) GitHub, Inc.
-- **Upstream:** https://github.com/github/copilot-cli
+- **Upstream:** https://github.com/github/copilot-sdk
 - **How it reaches you:** Bundled in the QuillVille Runtime used by installed app editions. A standalone portable includes it only when that app's declared dependencies require it.
 - **What the licence asks of us:** Redistribute only unmodified copies, only as part of an application that does more than the CLI itself and never on a standalone basis, with a copy of this licence included and GitHub's copyright, trademark and attribution notices kept.
 
 ### ripgrep (rg.exe)
 
-- **What it is:** A fast text search program the GitHub Copilot CLI runtime carries in tools\copilot\ripgrep, shipped inside GitHub's package unmodified. Its licence texts are LICENSE-MIT (SHA-256 0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f) and UNLICENSE (SHA-256 7e12e5df4bae12cb21581ba157ced20e1986a0508dd10d0e8a4ab9a4cf94e85c) at ripgrep tag 15.0.0, the version the bundled rg.exe reports.
+- **What it is:** A fast text search program used by QUILL's IntelliSense layer. Ships as tools\ripgrep\rg.exe with its upstream MIT or Unlicense text beside it; it is not part of the Copilot SDK runtime.
 - **Included in:** The QuillVille Runtime and installed app editions that include it. Standalone portable editions are scoped by their own dependency inventories.
 - **Version:** 15.0.0 (rev 3a612f88b8)
 - **Licence:** Unlicense or MIT (your choice)
@@ -3184,7 +3197,7 @@ The availability of this Exception does not imply any general presumption that t
 
 ### GitHub Copilot CLI License (proprietary)
 
-Used by: GitHub Copilot CLI runtime (copilot-runtime.exe, runtime.node).
+Used by: GitHub Copilot SDK native runtime (runtime.node).
 
 What it asks of us: Redistribute only unmodified copies, only as part of an application that does more than the CLI itself and never on a standalone basis, with a copy of this licence included and GitHub's copyright, trademark and attribution notices kept.
 
@@ -5040,7 +5053,7 @@ Library.
 
 ### MIT License
 
-Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, Git for Windows (MinGit) and GitHub CLI, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sherpa-onnx (with ONNX Runtime), sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Deno (deno.exe), ripgrep (rg.exe), TG Drop Deck (adapted code), Dictation models: Moonshine tiny (English), Whisper tiny.en and tiny (ONNX), Silero VAD, Kokoro-82M voices and kokoro-onnx, ptts (Phonon text-to-speech runtime), MathCAT, Piper text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), BlindRadio network table, Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), Dial tuning hiss (quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav), Test and lint tools (pytest, ruff, mypy and their plugins), Node.js (node.exe), VS Code HTML, CSS, JSON and Markdown language servers (vscode-langservers-extracted), Pyright, Prettier, GitHub REST API description.
+Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, Microsoft Copilot SDK (copilot), GitHub Copilot SDK 1.x (legacy runtime package), h11, Git for Windows (MinGit) and GitHub CLI, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sherpa-onnx (with ONNX Runtime), sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Deno (deno.exe), ripgrep (rg.exe), TG Drop Deck (adapted code), Dictation models: Moonshine tiny (English), Whisper tiny.en and tiny (ONNX), Silero VAD, Kokoro-82M voices and kokoro-onnx, ptts (Phonon text-to-speech runtime), MathCAT, Piper text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), BlindRadio network table, Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), Dial tuning hiss (quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav), Test and lint tools (pytest, ruff, mypy and their plugins), Node.js (node.exe), VS Code HTML, CSS, JSON and Markdown language servers (vscode-langservers-extracted), Pyright, Prettier, GitHub REST API description.
 
 What it asks of us: Keep the copyright notice and the permission notice with every copy.
 

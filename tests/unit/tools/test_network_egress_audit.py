@@ -54,19 +54,18 @@ def test_egress_platforms_cover_every_discovered_site() -> None:
     assert set(discover_egress_platforms()) == set(discover_egress_sites())
 
 
-def test_every_child_process_entry_names_a_real_launcher() -> None:
-    # Child-process egress (the Copilot CLI, the Codex app-server) is invisible
-    # to the AST scan, so its entries cannot be checked for staleness the usual
-    # way. Instead each key must still name a function that exists.
+def test_every_non_ast_egress_entry_names_a_real_integration_point() -> None:
+    # SDK and subprocess egress is invisible to the AST scan, so entries cannot
+    # be checked for staleness the usual way. Each key must name a real function.
     import ast
     from pathlib import Path
 
     import quill
-    from quill.tools.network_egress_entries import _CHILD_PROCESS_EGRESS
+    from quill.tools.network_egress_entries import _NON_AST_EGRESS
 
     root = Path(quill.__file__).parent
-    assert _CHILD_PROCESS_EGRESS, "the Copilot and Codex entries are missing"
-    for site, reason in _CHILD_PROCESS_EGRESS.items():
+    assert _NON_AST_EGRESS, "external SDK/runtime egress entries are missing"
+    for site, reason in _NON_AST_EGRESS.items():
         assert reason.strip(), f"{site} has an empty rationale"
         rel, func = site.split("::")
         path = root / rel

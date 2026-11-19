@@ -1,8 +1,8 @@
 """Organize What I Saved: QuillBeacon's agent task (codex.md 6.10, Phase 4c).
 
 The person says what they want ("tag everything about knitting and put it in a
-Crafts collection"), and an agent engine -- My GitHub Copilot or Codex -- works
-through it with Beacon's own tools in the shared agent window
+Crafts collection"), and a task-capable AI engine works through it with
+Beacon's own tools in the shared agent window
 (:mod:`quill.ui.agent_window`):
 
 * ``beacon.search`` -- Beacon's own search (``search.search``, the syntax the
