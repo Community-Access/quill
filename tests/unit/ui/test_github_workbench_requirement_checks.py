@@ -272,12 +272,12 @@ def test_the_window_opens_at_last_times_size_and_remembers_it_on_close(
 ) -> None:
     frame, _said = _frame()
     try:
-        frame.provider.remember_layout((1111, 777), 333)
+        frame.provider.remember_layout((720, 520), 260)  # fits a small CI screen
         frame.restore_layout()
         size = frame.frame.ToDIP(frame.frame.GetSize())
-        assert (size.GetWidth(), size.GetHeight()) == (1111, 777)
-        frame.frame.SetSize(frame.frame.FromDIP(wx.Size(1050, 720)))
+        assert (size.GetWidth(), size.GetHeight()) == (720, 520)
+        frame.frame.SetSize(frame.frame.FromDIP(wx.Size(760, 540)))
         frame.remember_layout()
-        assert frame.provider.recall_layout()[0] == (1050, 720)
+        assert frame.provider.recall_layout()[0] == (760, 540)
     finally:
         frame.frame.Destroy()
