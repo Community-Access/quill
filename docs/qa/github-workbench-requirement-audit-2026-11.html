@@ -251,7 +251,7 @@ href="../Product Requirement Documents and Specifications/github-workbench-prd.m
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 79 are met, 13 are partly met and 8 are
+<p>Of the 100 live requirements, 80 are met, 12 are partly met and 8 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -266,8 +266,8 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>68</td>
-<td>6</td>
+<td>69</td>
+<td>5</td>
 <td>1</td>
 <td>75</td>
 </tr>
@@ -372,15 +372,6 @@ catalogue</td>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>GH-R-045</td>
-<td>Must</td>
-<td>Projects (version 2): every field type, views, items, workflows and
-status updates are readable and editable</td>
-<td><code>sheets_projects.py</code>: every field type incl. iteration,
-items, status updates editable; views and workflows read only (GitHub
-has no API to change them; worth saying so in the PRD).</td>
-</tr>
 <tr>
 <td>GH-R-046</td>
 <td>Must</td>
@@ -843,12 +834,13 @@ irreversible one says so before it happens</td>
 <tr>
 <td>GH-R-045</td>
 <td>Must</td>
-<td>Partly</td>
-<td>Projects (version 2): every field type, views, items, workflows and
-status updates are readable and editable</td>
+<td>Met</td>
+<td>Projects (version 2): every field type, items and status updates are
+readable and editable; views and workflows readable and read only</td>
 <td><code>sheets_projects.py</code>: every field type incl. iteration,
-items, status updates editable; views and workflows read only (GitHub
-has no API to change them; worth saying so in the PRD).</td>
+items, status updates editable; views and workflows read only because
+GitHub has no API to change them, which the PRD (16.6 and GH-R-045) now
+says.</td>
 </tr>
 <tr>
 <td>GH-R-046</td>

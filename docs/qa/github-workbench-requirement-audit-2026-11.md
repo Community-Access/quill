@@ -4,11 +4,11 @@ Checked 2026-11-18 against main, updated the same day for the follow-up pull req
 
 ## Summary
 
-Of the 100 live requirements, 79 are met, 13 are partly met and 8 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 80 are met, 12 are partly met and 8 are not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
-| Must | 68 | 6 | 1 | 75 |
+| Must | 69 | 5 | 1 | 75 |
 | Should | 11 | 7 | 5 | 23 |
 | May | 0 | 0 | 2 | 2 |
 
@@ -31,7 +31,6 @@ Of the 100 live requirements, 79 are met, 13 are partly met and 8 are not met. G
 
 | Id | Strength | Requirement | Evidence and what remains |
 | --- | --- | --- | --- |
-| GH-R-045 | Must | Projects (version 2): every field type, views, items, workflows and status updates are readable and editable | `sheets_projects.py`: every field type incl. iteration, items, status updates editable; views and workflows read only (GitHub has no API to change them; worth saying so in the PRD). |
 | GH-R-046 | Must | Every relationship (star, watch level, follow, subscribe, react, block, sponsor, pin) on a You page and in... | Star, watch level, follow, subscribe, react, sponsor, pin and block (`resource_specs_user`) each exist in their own places; no single You page holding them, and batch only where the multi-row sheet has the field. Needs a closer look. |
 | GH-R-119 | Must | One source for every help surface (D19), and the measures of D20 | One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the generated reference (GATE-GITHUB-HELP, `build_help_reference`); D20's measures (timed find-the-answer sessions) not done. |
 | GH-R-150 | Must | Across Repositories has a place for every kind in the 22.11 table, a row per name with its variants and... | Labels, Milestones, Topics, Rules and Branch Protection by name, and the Fleet; every other kind is a decided cell with a reason in `across_scope_matrix.py` (`test_no_cell_is_blank`, `test_the_decided_cells`), not yet a place. |
@@ -99,7 +98,7 @@ Of the 100 live requirements, 79 are met, 13 are partly met and 8 are not met. G
 | GH-R-042 | Withdrawn | n/a | Per-property keys (withdrawn 2026-11-09) | Alt+Enter opens the sheet instead. |
 | GH-R-043 | Must | Met | Batches preview, run paced for the rate limit, and report a result per item with retry | `batch.py` (preview, 1 s pace, result per item), `github_workbench_results.py` Retry Failed (F8); `test_a_batch_previews_skips_what_is_already_so_and_reports_each_item` |
 | GH-R-044 | Must | Met | Undo GitHub Change reverses any reversible change, and an irreversible one says so before it happens | `test_undo_is_the_inverse_and_says_what_cannot_be_undone`, `test_ctrl_z_in_the_list_undoes_the_last_github_change` |
-| GH-R-045 | Must | Partly | Projects (version 2): every field type, views, items, workflows and status updates are readable and editable | `sheets_projects.py`: every field type incl. iteration, items, status updates editable; views and workflows read only (GitHub has no API to change them; worth saying so in the PRD). |
+| GH-R-045 | Must | Met | Projects (version 2): every field type, items and status updates are readable and editable; views and workflows readable and read only | `sheets_projects.py`: every field type incl. iteration, items, status updates editable; views and workflows read only because GitHub has no API to change them, which the PRD (16.6 and GH-R-045) now says. |
 | GH-R-046 | Must | Partly | Every relationship (star, watch level, follow, subscribe, react, block, sponsor, pin) on a You page and in... | Star, watch level, follow, subscribe, react, sponsor, pin and block (`resource_specs_user`) each exist in their own places; no single You page holding them, and batch only where the multi-row sheet has the field. Needs a closer look. |
 
 ### E6. Filtering

@@ -352,9 +352,12 @@ PRD changes what they open.
 - **Dialogs launched from the Workbench stay dialogs** (PR review, diff,
   timeline, jobs and logs, release editing, and the rest). They are parented
   to the Workbench, so they block only the Workbench and never the editor.
-- **It remembers** its size, pane sizes, last node and expanded nodes, per
-  account, in the Workbench's own files, never in the main Settings
-  (section 4.1).
+- **It remembers** its size, pane sizes, last node and expanded nodes, and
+  the columns chosen for each list (View > Columns), per account, in the
+  Workbench's own files, never in the main Settings (section 4.1). A filter is
+  not restored when the window opens, because an old filter silently hiding
+  rows is worse than retyping one; a filter worth keeping is a saved search,
+  which can also be pinned as a node.
 - **Closing:** Alt+F4 and File > Close Workbench close it. Escape clears
   the filter box, then goes Back, and never closes the window (decision 5).
 
@@ -1278,15 +1281,19 @@ lives, so they get their own treatment:
 - **Project properties:** title, short description, README, visibility
   (public or private), closed or open, template, linked repositories, and
   the project's access list (section 18.3).
-- **Fields and views are editable:** add, rename, reorder and delete fields;
-  add, rename and delete single-select options and iterations; create,
-  rename, copy and delete views; set a view's filter, sort, group and
-  visible fields.
+- **Fields are editable:** add, rename, reorder and delete fields; add,
+  rename and delete single-select options and iterations.
+- **Views are read only.** Each view's layout, filter, sort, group and
+  visible fields are shown, but GitHub's API (GraphQL and REST) has no way to
+  create, rename, copy, delete or change a view, so the sheet's help says so
+  and sends the change to GitHub rather than offering a control that cannot
+  work.
 - **Items:** add an issue or pull request by number or address, add a draft
   item, convert a draft to an issue, archive and restore, delete, reorder.
-- **Workflows and status updates:** turn the project's built-in workflows on
-  and off; post, edit and read status updates (on track, at risk, off
-  track, with dates).
+- **Workflows and status updates:** the project's built-in workflows are
+  listed with whether each is on, read only for the same reason as views (no
+  API turns one on or off); status updates are posted, edited and read (on
+  track, at risk, off track, with dates).
 
 ### 16.7 You and the object: star, watch, follow and the rest
 
@@ -2944,8 +2951,9 @@ phase's PR. Ids are never renumbered; a dropped requirement keeps its id with
   status bar and taskbar button, one per app (3.1).
 - GH-R-002 Must: it never blocks the editor; its dialogs block only it (3.1).
 - GH-R-003 Must: F6 and Shift+F6 cycle tree, filter, list and details (3.2).
-- GH-R-004 Must: it remembers size, panes, last node, expanded nodes,
-  columns and filters per account (3.1).
+- GH-R-004 Must: it remembers size, panes, last node, expanded nodes and
+  each list's columns per account; filters are kept as saved searches, not
+  restored on open (3.1).
 - GH-R-005 Must: Escape clears the filter, then goes Back, and never closes
   the window (3.1).
 - GH-R-006 Must: Switch to Editor and Open in Editor raise the editor that
@@ -3010,8 +3018,10 @@ phase's PR. Ids are never renumbered; a dropped requirement keeps its id with
   result per item with retry (16.4).
 - GH-R-044 Must: Undo GitHub Change reverses any reversible change, and an
   irreversible one says so before it happens (16.5).
-- GH-R-045 Must: Projects (version 2): every field type, views, items,
-  workflows and status updates are readable and editable (16.6).
+- GH-R-045 Must: Projects (version 2): every field type, items and status
+  updates are readable and editable; views and built-in workflows are
+  readable, and read only because GitHub's API has no way to change them
+  (16.6).
 - GH-R-046 Must: every relationship (star, watch level, follow, subscribe,
   react, block, sponsor, pin) on a You page and in batch (16.7).
 

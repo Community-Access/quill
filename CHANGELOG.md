@@ -2,6 +2,18 @@
 
 ## 1.0.0
 
+### Documents: WooCommerce and Yoast are in scope, and the GitHub PRD says what GitHub cannot change (2026-11-19)
+
+- The WordPress Workbench PRD and the WordPress design document now record
+  Jeff's 2026-11-18 decisions: WooCommerce and Yoast SEO are first-class
+  integrations beside QAF, Gravity Forms and PMPro; Rank Math is read only;
+  updates stay in the Dashboard; backups are snapshots and WXR.
+- GitHub Workbench PRD: a project's views and built-in workflows are read
+  only, because GitHub has no API to change them, and a project's sheet now
+  says so on those pages (GH-R-045, now met). The window remembers each
+  list's columns; a filter is kept as a saved search rather than restored on
+  open (GH-R-004's wording now matches section 3.1).
+
 ### Quill Cast and QUILL: a saved podcast speed plays straight away, and typed numbers are kept (2026-11-19)
 
 Reported by Chris: Settings for This Podcast set to 1.5x said it was saved,
