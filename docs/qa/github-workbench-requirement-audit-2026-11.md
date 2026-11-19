@@ -4,11 +4,11 @@ Checked 2026-11-18 against main, updated the same day for the follow-up pull req
 
 ## Summary
 
-Of the 100 live requirements, 70 are met, 22 are partly met and 8 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 71 are met, 21 are partly met and 8 are not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
-| Must | 60 | 14 | 1 | 75 |
+| Must | 61 | 13 | 1 | 75 |
 | Should | 10 | 8 | 5 | 23 |
 | May | 0 | 0 | 2 | 2 |
 
@@ -41,7 +41,6 @@ Of the 100 live requirements, 70 are met, 22 are partly met and 8 are not met. G
 | GH-R-108 | Must | Shift+F9 Explain That for every result, and Why? on every automatic behaviour | Shift+F9 Explain That (`workbench_window_menu.py`, frame `explain_result`); no Why? on automatic behaviours. |
 | GH-R-113 | Must | Sounds go through the shared action-feedback channels; a failure or a count is always spoken | Every outcome is spoken, so failures and counts always are; but the Workbench plays no sounds and ignores the `action_feedback` setting (only diff hearing has sounds, through sound events). |
 | GH-R-119 | Must | One source for every help surface (D19), and the measures of D20 | One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the generated reference (GATE-GITHUB-HELP, `build_help_reference`); D20's measures (timed find-the-answer sessions) not done. |
-| GH-R-131 | Must | Conditional requests (ETag) for every repeated read (`conditional_requests.py`), and secondary rate limits... | Secondary limits respected in `rest_transport.py` (`secondary_wait_seconds`, `test_a_secondary_limit_stops_every_later_request_with_one_sentence`); ETag only in `explore.py`'s conditional read, `explore_extra_views`, `repo_activity` and `repo_insights`, not every repeated read (`items_provider` lists and sheets reload in full) |
 | GH-R-150 | Must | Across Repositories has a place for every kind in the 22.11 table, a row per name with its variants and... | Labels, Milestones, Topics, Rules and Branch Protection by name, and the Fleet; every other kind is a decided cell with a reason in `across_scope_matrix.py` (`test_no_cell_is_blank`, `test_the_decided_cells`), not yet a place. |
 | GH-R-151 | Must | Every operation a kind allows in one repository is offered across a scope, with the preview and a result... | Preview and a result per repository for labels, milestones, topics, rulesets (`test_labels_by_name_make_the_same_with_a_preview_and_a_result_each`, `test_a_change_previews_permission_and_conflict_then_reports_each_repository`); environments, secrets, variables, webhooks, keys, autolinks remain. |
 | GH-R-157 | Must | Repository and item-property checklists announce a Space toggle once, save from Enter, return focus... | `test_the_checklist_checks_adds_once_and_returns_the_checked`; the JAWS, NVDA and VoiceOver checks it names are live checks not yet recorded. |
@@ -211,7 +210,7 @@ Of the 100 live requirements, 70 are met, 22 are partly met and 8 are not met. G
 | Id | Strength | Status | Requirement | Evidence |
 | --- | --- | --- | --- | --- |
 | GH-R-130 | Must | Met | Only `api.github.com`, `github.com` sign-in pages, `uploads.github.com` for assets and, with consent,... | `network_egress_entries_github.py` names every GitHub endpoint family; githubstatus.com is not on main yet (built today, uncommitted, branch gh/service-status) |
-| GH-R-131 | Must | Partly | Conditional requests (ETag) for every repeated read (`conditional_requests.py`), and secondary rate limits... | Secondary limits respected in `rest_transport.py` (`secondary_wait_seconds`, `test_a_secondary_limit_stops_every_later_request_with_one_sentence`); ETag only in `explore.py`'s conditional read, `explore_extra_views`, `repo_activity` and `repo_insights`, not every repeated read (`items_provider` lists and sheets reload in full) |
+| GH-R-131 | Must | Met | Conditional requests (ETag) for every repeated read (`conditional_requests.py`), and secondary rate limits... | Secondary limits respected in `rest_transport.py` (`secondary_wait_seconds`, `test_a_secondary_limit_stops_every_later_request_with_one_sentence`); every repeated REST read is conditional: Workbench lists through `list_probe.py` (one If-None-Match read of the same window, rows kept on 304) and sheets, pickers and reloads through TokenApi.rest (`test_conditional_reads.py`). GraphQL has no ETag. |
 | GH-R-132 | Must | Met | GraphQL where it is the only API (Appendix F) and where one query replaces many REST calls; REST otherwise | (sampled) GraphQL for Projects, Discussions, reviews, team code review; summary queries batch with aliases (`test_summary_query_batches_with_aliases`); REST otherwise |
 | GH-R-133 | Must | Met | The vendored API snapshot and `api_coverage.json` drive GATE-GITHUB-COVER | `test_github_api_coverage.py` (1,281 REST operations: 731 covered, 354 out of scope, 196 no API needed; planned ceiling 0) |
 

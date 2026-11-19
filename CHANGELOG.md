@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### GitHub Workbench: a refresh that changed nothing costs nothing (2026-11-18)
+
+Every GitHub read the Workbench repeats is now conditional: QUILL sends what
+GitHub called the last answer, and if nothing has changed GitHub says so in an
+answer that does not count against your hourly allowance. That covers F5 on
+the issue, pull request, branch, commit, tag, release, workflow and run
+lists, reopening a sheet, picker lists and the check after a save. On a list
+of 30 pull requests, an unchanged F5 used to cost 31 requests; now it costs
+none. What QUILL remembers for this stays in memory, never on disk. This
+meets GH-R-131.
+
 ### GitHub Workbench: pick an issue type or a branch from a list (2026-11-18)
 
 On an issue's sheet, Issue type was a text box you had to spell into; on a
