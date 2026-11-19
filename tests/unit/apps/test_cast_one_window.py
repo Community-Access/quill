@@ -221,12 +221,15 @@ def test_prepared_episode_rows_separate_native_clear_count_and_repaint(cast_fram
             frame._episodes, name, lambda *_a, **_kw: pytest.fail("Use native virtual rows")
         )
     chunks = frame._cast_list_update_chunks(frame._episode_pair_row_chunks(pairs, prepared=True))
+    # Lists that stay still (FUX-06): the rows and the reader's selection stay
+    # until the new count lands -- emptying first scrolled to the top and
+    # dropped the row the listener was on.
     next(chunks)
-    assert frame._episodes.GetItemCount() == 0
-    assert frame._episodes.GetFirstSelected() == -1
+    assert frame._episodes.GetItemCount() == len(pairs)
+    assert frame._episodes.GetFirstSelected() == 0
     assert not frame._cast_list_mutating
     next(chunks)
-    assert frame._episodes.GetItemCount() == 0
+    assert frame._episodes.GetFirstSelected() == 0
     assert all(a is b for a, b in zip(frame._current_episodes, show.episodes, strict=True))
     next(chunks)
     assert frame._episodes.GetItemCount() == len(pairs)
