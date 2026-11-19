@@ -235,9 +235,8 @@ From the review of 2026-11-14 (the full notes are in git history; the walkthroug
 
 ###### Safety: things that can change or lose data unexpectedly
 
-Ten of the eleven are fixed (checked 2026-11-18; five by #1837, five by the WordPress safety pull request). Left:
+All eleven are fixed (five by #1837, five by the WordPress safety pull request, and the last, Change History for every write, on 2026-11-18).
 
-1. Many Workbench writes are not written to Change History (Reply, Merge Into, Convert, Allow This Sender, the Empty commands, New Here, products, orders, coupons, events, redirects, membership changes, form status and settings, Find a Plugin install), so Ctrl+Z straight after one silently undoes an older, unrelated change, perhaps on another site. Each should record a step, with an undo where one is possible. (Undo already passes over a step that cannot be undone.)
 
 ###### Keys that do not work, or teach the wrong thing
 

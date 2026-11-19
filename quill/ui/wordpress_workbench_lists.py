@@ -317,6 +317,7 @@ class WorkbenchListCommands:
         def done(_made: object) -> None:
             state = " as a draft" if what.family == "items" else ""
             self.say(f"Made the {what.noun} {named} on {site}{state}.")
+            self.step(site, f"Made the {what.noun} {named} on {site}")  # type: ignore[attr-defined]
             self.refresh()
 
         self.background(f"making {a_or_an(what.noun)}", lambda: create(api, what, answers), done)
@@ -372,6 +373,7 @@ class WorkbenchListCommands:
                     )
                 else:
                     self.say(f"Merged {row.title} into {target.title}.")
+                    self.step(row.site, f"Merged {row.title} into {target.title}")  # type: ignore[attr-defined]
                 self.refresh()
 
             self.background(
@@ -417,6 +419,7 @@ class WorkbenchListCommands:
                 )
             else:
                 self.say(f"{row.title} is now {a_or_an(word)}.")
+                self.step(row.site, f"{row.title} became {a_or_an(word)}")  # type: ignore[attr-defined]
             self.refresh()
 
         self.background(
@@ -482,7 +485,9 @@ class WorkbenchListCommands:
             def done(failed: list[int]) -> None:
                 gone = len(ids) - len(failed)
                 more = f" {len(failed)} could not be deleted." if failed else ""
-                self.say(f"Deleted {gone} spam comments on {site}.{more}")
+                self.say(f"Deleted {plural(gone, 'spam comment')} on {site}.{more}")
+                if gone:
+                    self.step(site, f"Deleted {plural(gone, 'spam comment')} on {site}")  # type: ignore[attr-defined]
                 self.refresh()
 
             self.background("emptying spam", lambda: empty_spam(api, ids), done)
@@ -504,8 +509,16 @@ class WorkbenchListCommands:
                 settings = {}
             return allow_sender_words(author, settings)
 
+        was = "spam" if row.status == "spam" else "hold"
+
+        def undo() -> str:
+            set_comment_status(api, row, was)
+            state = "spam" if was == "spam" else "waiting"
+            return f"{author}'s comment on {row.site} is {state} again."
+
         def done(sentence: str) -> None:
             self.say(sentence)
+            self.step(row.site, f"Allowed {author}'s comment on {row.site}", undo)  # type: ignore[attr-defined]
             self.refresh()
 
         self.background("allowing the sender", work, done)

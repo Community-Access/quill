@@ -70,7 +70,7 @@ from quill.core.wordpress.workbench_tree import (
 )
 from quill.core.wordpress.workbench_type_nodes import type_children
 from quill.core.workbench.filters import Query
-from quill.core.workbench.history import ChangeHistory
+from quill.core.workbench.history import Change, ChangeHistory
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import NodeSpec
 from quill.ui.wordpress_workbench_across import WorkbenchAcrossCommands
@@ -477,6 +477,17 @@ class WordPressWorkbenchProvider(
         if frame is None:
             return []
         return [r for i in frame.selected_indices() if isinstance(r := frame.rows[i], WbRow)]
+
+    def step(self, target: str, summary: str, undo: Callable[[], str] | None = None) -> None:
+        """Put a finished write in Change History (review item 1).
+
+        Without a step, Ctrl+Z straight after the write undid an older change,
+        perhaps on another site. With one and no *undo*, Ctrl+Z says this one
+        cannot be undone and passes over it, as it should.
+        """
+        said = summary.strip()
+        said = said if said.endswith((".", "!", "?")) else f"{said}."
+        self.history.record(Change(target, said, undo=undo))
 
     def refresh(self) -> None:
         if self.frame is not None:

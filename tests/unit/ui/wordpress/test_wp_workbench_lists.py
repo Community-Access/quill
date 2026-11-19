@@ -107,6 +107,9 @@ def test_new_here_makes_a_draft_post(bench, monkeypatch) -> None:
     bench.run(command("new_here"))
     assert ("POST", "wp/v2/posts", {"title": "Fresh", "status": "draft"}) in bench.api.writes
     assert any("as a draft" in s for s in bench.said)
+    # Item 1: a step in Change History, so Ctrl+Z does not reach past it to an older change.
+    assert bench.provider.history.entries[-1].summary.startswith("Made the post Fresh")
+    assert bench.provider.history.undo().endswith("cannot be undone.")
 
 
 def test_empty_spam_asks_then_deletes_every_spam_comment(bench, monkeypatch) -> None:
@@ -124,6 +127,9 @@ def test_allow_this_sender_approves_and_explains(bench) -> None:
     bench.run(command("allow_sender"))
     assert ("POST", "wp/v2/comments/8", {"status": "approve"}) in bench.api.writes
     assert any("next comments" in s or "will wait" in s for s in bench.said)
+    said = bench.provider.history.undo()  # item 1: Ctrl+Z puts it back in spam
+    assert ("POST", "wp/v2/comments/8", {"status": "spam"}) in bench.api.writes
+    assert said.endswith("is spam again.")
 
 
 def test_password_reset_opens_wp_admin_and_roles_read_in_words(bench, monkeypatch) -> None:

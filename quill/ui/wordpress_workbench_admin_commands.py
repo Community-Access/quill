@@ -230,21 +230,34 @@ class WorkbenchAdminCommands:
         ):
             return
 
+        installed: list[tuple[str, str]] = []  # (site, the plugin's file), for Ctrl+Z
+
         def work() -> list[str]:
             failed: list[str] = []
             for site in missing:
                 try:
-                    self.ctx(site).api.post("wp/v2/plugins", {"slug": slug, "status": "inactive"})
+                    raw = self.ctx(site).api.post(
+                        "wp/v2/plugins", {"slug": slug, "status": "inactive"}
+                    )
+                    plugin = str(raw.get("plugin", "")) if isinstance(raw, dict) else ""
+                    if plugin:
+                        installed.append((site, plugin))
                 except Exception as exc:  # noqa: BLE001 - one site must not stop the rest
                     failed.append(f"{site}: {getattr(exc, 'plain', '') or exc}")
             return failed
 
+        def undo() -> str:  # an inactive plugin just installed comes out cleanly
+            for site, plugin in installed:
+                self.ctx(site).api.delete(f"wp/v2/plugins/{plugin}")
+            return f"Removed {name} from {plural(len(installed), 'site')} again."
+
         def done(failed: list[str]) -> None:
             made = len(missing) - len(failed)
             more = f" Not installed: {'; '.join(failed[:3])}" if failed else ""
-            self.say(
-                f"{name} installed on {made} of {plural(len(missing), 'site')}, inactive.{more}"
-            )
+            said = f"{name} installed on {made} of {plural(len(missing), 'site')}, inactive."
+            self.say(said + more)
+            if made:
+                self.step(missing[0], said.rstrip("."), undo if installed else None)  # item 1
             self.refresh()
 
         self.background("installing a plugin", work, done)

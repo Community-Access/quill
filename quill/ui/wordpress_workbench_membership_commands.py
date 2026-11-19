@@ -135,6 +135,7 @@ class WorkbenchMembershipCommands:
 
             def done(_answer: Any) -> None:
                 self.say(f"Cancelled {row.title}'s {name} membership on {row.site}.")
+                self.step(row.site, f"Cancelled {row.title}'s {name} membership on {row.site}")
                 self.refresh()
 
             self.background(
@@ -209,6 +210,7 @@ class WorkbenchMembershipCommands:
 
             def done(_answer: Any) -> None:
                 self.say(f"{row.title} now has {name} on {row.site}.")
+                self.step(row.site, f"{row.title} was given {name} on {row.site}")
                 self.refresh()
 
             self.background(
@@ -403,6 +405,7 @@ class WorkbenchMembershipCommands:
 
         def done(_raw: object) -> None:
             self.say(f"Made the discount code {spec.code} on {site}.")
+            self.step(site, f"Made the discount code {spec.code} on {site}")
             self.refresh()
 
         self.background(

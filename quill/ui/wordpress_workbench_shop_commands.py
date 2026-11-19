@@ -77,9 +77,17 @@ class WorkbenchShopCommands:
             yes=yes,
         )
 
-    def _pl_send(self, site: str, name: str, work: Callable[[], Any], said: str) -> None:
+    def _pl_send(
+        self,
+        site: str,
+        name: str,
+        work: Callable[[], Any],
+        said: str,
+        undo: Callable[[], str] | None = None,
+    ) -> None:
         def done(_answer: Any) -> None:
             self.say(said)  # type: ignore[attr-defined]
+            self.step(site, said.rstrip("."), undo)  # type: ignore[attr-defined]  # item 1
             self.refresh()  # type: ignore[attr-defined]
 
         self.background(name, work, done)  # type: ignore[attr-defined]
@@ -276,11 +284,20 @@ class WorkbenchShopCommands:
         ):
             return
         api = self.ctx(row.site).api  # type: ignore[attr-defined]
+        was = row.status
+
+        def undo() -> str:
+            api.post(f"{SHOP_NAMESPACE}/orders/{row.object_id}", {"status": was})
+            return (
+                f"Shop order {number} on {row.site} is {orders.ORDER_STATUSES.get(was, was)} again."
+            )
+
         self._pl_send(
             row.site,
             f"changing shop order {number}",
             lambda: api.post(f"{SHOP_NAMESPACE}/orders/{row.object_id}", {"status": new}),
             f"Shop order {number} on {row.site} is {orders.ORDER_STATUSES[new]}.",
+            undo,
         )
 
     def do_order_notes(self, _ref: Any, row: WbRow | None) -> None:
