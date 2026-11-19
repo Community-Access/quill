@@ -211,7 +211,9 @@ whole site.
 Every row has a context menu. Press the Applications key, or Shift+F10. It
 lists everything you can do to that kind of row, with the main job first and
 Properties last. The **Item** menu in the menu bar holds the same commands
-that have keys.
+that have keys, and **Item > Commands for This Row** holds every command the
+context menu has for the selected row, the ones under More included, each
+with its own letter. So nothing is reachable only by right-clicking.
 
 A command your role cannot use is dimmed. Choose it by its key anyway and you
 hear why, for example "Publishing pages needs the Editor role or higher. You

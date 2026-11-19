@@ -145,7 +145,7 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
         "&Item",
         (
             MenuRow(PROPERTIES, "&Properties...", "Alt+Enter", "Everything about it on one sheet."),
-            _row("publish", "P&ublish or Update...", "Ctrl+Shift+P", "Publish the selection."),
+            _row("publish", "P&ublish...", "Ctrl+Shift+P", "Publish the selection."),
             _row("approve", "&Approve, or Not Spam", "Ctrl+Shift+A", "Approve, or release spam."),
             _row("unapprove", "U&napprove", "Ctrl+Shift+U", "Back to waiting."),
             _row("spam", "&Spam", "Ctrl+Shift+S", "Mark the selection as spam."),
@@ -197,6 +197,11 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
             ),
             *GRAVITY_ITEM_ROWS,
             GRAVITY_SUB,
+            MenuSub(
+                "Commands for T&his Row",
+                dynamic="row_actions",
+                help="Every command the context menu has for the selected row (item 31).",
+            ),
             None,
             _row("trash", "Move to &Trash", "Delete", "Into WordPress's Trash; Restore undoes it."),
             _row("restore", "R&estore from Trash", "Ctrl+Shift+R", "Out of the Trash."),

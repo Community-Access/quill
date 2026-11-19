@@ -36,6 +36,15 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress Workbench: the Item menu reaches every row command (2026-11-18)
+
+Review item 31: Earlier Versions, Duplicate, Change Role, Remove, Set New
+Password, Replace File, Edit Picture and about 160 more were on a row's
+context menu but nowhere in the menu bar. **Item > Commands for This Row** now
+lists every command the context menu has for the selected row, More included,
+each with its own access letter, dimmed with its reason when your role cannot
+use it. The GitHub Workbench shares the window and can use the same submenu.
+
 ### WordPress: names that say what happens (2026-11-18)
 
 Review item 29: commands named for what they do.

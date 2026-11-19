@@ -288,3 +288,18 @@ def test_an_empty_list_says_so(bench) -> None:
     bench.apply_filter()
     assert bench.said[-1] and bench.said[-1] != "Filtering."
     assert not bench.rows
+
+
+def test_item_menu_reaches_every_context_menu_command(bench) -> None:
+    """Item 31: Item > Commands for This Row has what the context menu has, More too."""
+    _posts(bench)
+    bench.focus_row(0)
+    sub = bench._dynamic_menus["row_actions"]
+    bench.fill_dynamic_menus()
+    shown = [item.GetItemLabelText() for item in sub.GetMenuItems()]
+    top, more = bench.row_actions(bench.selected_row())
+    assert len(shown) == len(top) + len(more)
+    assert "Earlier Versions..." in shown and "Duplicate as Draft" in shown
+    labels = [item.GetItemLabel() for item in sub.GetMenuItems()]
+    letters = [label.split("&", 1)[1][:1].lower() for label in labels if "&" in label]
+    assert len(letters) == len(set(letters))  # no letter claimed twice (GATE-14)
