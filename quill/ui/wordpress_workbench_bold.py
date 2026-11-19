@@ -501,10 +501,15 @@ class WorkbenchBoldCommands(
                 "Tools > Workbench Options turns each on or off",
             ))
             if options.watches:
+                from quill.core.wordpress.workbench_watch_log import recent
                 from quill.core.wordpress.workbench_watches import load_state, status_facts
 
                 state = load_state(self._data_dir)
                 facts += status_facts(state, list(self._profiles), options.watch_minutes)
+                facts += [  # what Watches said, newest first (item 27)
+                    (time.strftime("Said %d %b, %H:%M", time.localtime(when)), sentence.rstrip("."))
+                    for when, sentence in recent(state)
+                ]
             return fact_rows("", facts)
         tools = find_cli()
         process = getattr(self, "_practice", None)

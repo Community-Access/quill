@@ -162,6 +162,19 @@ def test_watches_say_when_they_last_ran_and_each_site_state(bench) -> None:
     assert facts["Last round"] == "none yet" and facts[SITE] == "not checked yet"
 
 
+def test_the_watches_node_lists_what_watches_said(bench) -> None:
+    from quill.core.wordpress.workbench_watch_log import remember
+    from quill.core.wordpress.workbench_watches import save_state
+
+    save_options(WorkbenchOptions(watches=("comment",)), bench.provider._data_dir)
+    state = load_state(bench.provider._data_dir)
+    remember(state, ["2 new comments waiting on Radio."], 1000.0)
+    save_state(state, bench.provider._data_dir)
+    _go(bench, NodeRef("", "watches"))
+    said = [r.cell("value") for r in bench.rows if r.cell("fact").startswith("Said ")]
+    assert said == ["2 new comments waiting on Radio"]
+
+
 def test_a_watch_round_claims_its_turn_and_keeps_a_down_site_quiet_the_first_time(
     tmp_path: Path,
 ) -> None:

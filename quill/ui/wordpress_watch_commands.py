@@ -21,6 +21,7 @@ from typing import Any
 
 from quill.core.wordpress.workbench_editorial import load_reviews, save_reviews
 from quill.core.wordpress.workbench_options import load_options
+from quill.core.wordpress.workbench_watch_log import one_announcement
 from quill.core.wordpress.workbench_watches import check, due, load_state, save_state
 from quill.core.wordpress.workbench_watches_more import WatchContext
 
@@ -85,8 +86,8 @@ def watch_round(commands: Any) -> None:
 
     def done(said: list[str]) -> None:
         commands._watching = False
-        for sentence in said:
-            commands.host.announce(sentence)
+        if said:  # one announcement a round (item 27), the count first when several
+            commands.host.announce(one_announcement(said))
 
     def failed(_error: BaseException) -> None:
         commands._watching = False

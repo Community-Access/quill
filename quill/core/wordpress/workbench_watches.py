@@ -50,6 +50,7 @@ from typing import Any
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.core.wordpress.sites import sites_path
+from quill.core.wordpress.workbench_watch_log import guarded, remember
 from quill.core.wordpress.workbench_watches_more import MORE_KINDS, WatchContext, more_round
 
 __all__ = [
@@ -267,13 +268,26 @@ def check(
         elif "site_down" in wanted:
             _first(state, site, "site_down")
         state.answered[site] = moment
-        try:
-            said += _site_round(site, api, namespaces, state, wanted, reviews)
-            said += more_round(site, api, namespaces, state, wanted, ctx)
-        except WordPressApiError:
-            continue
+        # One Watch at a time (item 27): a read this site refuses costs only that Watch.
+        for kind in [k for k in KINDS if k in wanted and k != "site_down"]:
+
+            def one(
+                k: str = kind, a: WordPressApi = api, n: Sequence[str] = namespaces, s: str = site
+            ) -> list[str]:
+                return _site_round(s, a, n, state, {k}, reviews) + more_round(
+                    s, a, n, state, {k}, ctx
+                )
+
+            said += guarded(state, site, kind, _watch_name(kind), one)
     state.last_round = moment
+    remember(state, said, moment)
     return said
+
+
+def _watch_name(kind: str) -> str:
+    """ "new comments waiting": a Watch's label as it reads mid-sentence."""
+    label = KINDS.get(kind, kind).split(" (")[0]
+    return label[:1].lower() + label[1:]
 
 
 def _site_round(
