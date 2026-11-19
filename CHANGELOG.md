@@ -36,6 +36,16 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress: menu changes can be undone (2026-11-18)
+
+Review item 20: the Menus window, which the Workbench's Arrange Items opens,
+had no way back from a rename, a move or a removal, and none of them reached
+the Workbench's Change History. The window has **Undo** now, which puts back
+a rename, a move (every item where it stood) or an item removed from a
+Navigation block, and when the Workbench opened it, each change is a step in
+Change History too, so Ctrl+Z there undoes it. An item removed from a classic
+menu is deleted by WordPress, and says so.
+
 ### WordPress Workbench: a site shows the branches it has (2026-11-18)
 
 Review item 30: every site showed every plugin's branch (Shop, Memberships,

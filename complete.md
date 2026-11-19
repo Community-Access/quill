@@ -243,7 +243,6 @@ All eleven are fixed (five by #1837, five by the WordPress safety pull request, 
 
 ###### Dead ends and lost features
 
-20. Menu items cannot be seen, renamed, moved or removed inside the Workbench; Arrange Items hands off to the editor's Menus window, which has no previews and no Ctrl+Z.
 
 ###### What is heard, and what is not
 
