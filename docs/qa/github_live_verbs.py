@@ -1338,6 +1338,29 @@ def security_policy_and_database(run: Any) -> str:
     return f"{policy[0].label} {policy[-1].label} Database: {found[0].label}"
 
 
+def discussion_places(run: Any) -> str:
+    """Pinned (spotlight), Categories by section, and each poll as a table: reads only."""
+    from quill.core.github.discussion_categories import category_rows
+    from quill.core.github.discussions import list_discussions, list_pinned_discussions
+    from quill.core.github.items_errors import GitHubItemsError
+
+    token = _token(run)
+    try:
+        _repository_id, categories = run.items.fetch_discussion_categories(run.repo)
+    except GitHubItemsError as exc:
+        raise NotHere(f"the repository has no Discussions: {exc}") from exc
+    rows, note = category_rows(categories, run.repo)
+    _expect(bool(rows), "no category rows")
+    pinned = list_pinned_discussions(token, run.repo)
+    found, _complete, _warning = list_discussions(token, run.repo, limit=20)
+    polls = sum("Option, votes, percent, your vote:" in row.detail for row in found)
+    grouping = "by section" if not note else "no sections in the API, said once"
+    return (
+        f"{len(pinned)} pinned; {len(rows)} category rows ({grouping}); "
+        f"{polls} polls among the first {len(found)} discussions"
+    )
+
+
 def my_keys(run: Any) -> str:
     from quill.core.github.account_keys import fetch_keys
 
@@ -1378,6 +1401,7 @@ FEATURES: dict[str, Scenario | str] = {
     "Security policy, private reporting, and the Advisory Database (GX11)": (
         security_policy_and_database
     ),
+    "Discussions: Pinned (spotlight), Categories by section, polls as tables": discussion_places,
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

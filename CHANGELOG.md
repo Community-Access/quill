@@ -2,6 +2,21 @@
 
 ## 1.0.0
 
+### GitHub Workbench: discussion polls, the spotlight and categories (2026-11-19)
+
+- A discussion's poll is now a table showing each option, its votes, its
+  percentage and your vote. **Vote...** casts your vote and says the new count.
+  If you have voted already it says which option you chose, and a Read Only
+  account is told why it cannot vote.
+- **Discussions > Pinned** lists the pinned discussions in GitHub's order.
+  GitHub has no way to pin or unpin from outside its own page, and the details
+  say so.
+- **Discussions > Categories** lists the repository's categories, and Enter
+  opens the discussions in one of them. GitHub does not yet report category
+  sections, so they are listed in GitHub's order.
+- Every quick command that changes something on GitHub now checks your
+  account's Workbench level before it reads or sends anything.
+
 ### Quill Cast: Ctrl+2 shows the episode that is playing (2026-11-19)
 
 Reported by Chris: Enter on a podcast, or on an episode in the Queue, played

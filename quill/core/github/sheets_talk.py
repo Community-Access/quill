@@ -1,6 +1,7 @@
 """Sheets for discussions, comments and issue types (GitHub PRD Appendix C).
 
-A discussion's title and body (GraphQL updateDiscussion), a comment's body,
+A discussion's title and body (GraphQL updateDiscussion) and its poll as a
+table (option, votes, percentage, your vote; Vote... casts one), a comment's body,
 and an organization's issue type (name, description, colour, enabled; saved
 whole, as GitHub wants).
 
@@ -13,6 +14,7 @@ import json
 from collections.abc import Mapping
 from typing import Any
 
+from quill.core.github.discussion_actions import POLL_FIELDS, parse_poll, poll_heading, poll_table
 from quill.core.github.permissions import WriteTier
 from quill.core.github.sheet_engine import Ident, Read, SheetDef, Write
 from quill.core.github.sheet_fields import (
@@ -41,8 +43,15 @@ _DISCUSSION_QUERY = (
     "query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){"
     "discussion(number:$number){id title body locked upvoteCount createdAt url "
     "category{name} author{login} answer{author{login}} comments{totalCount} "
-    "viewerCanUpdate viewerCanReact viewerCanSubscribe viewerSubscription}}}"
+    "viewerCanUpdate viewerCanReact viewerCanSubscribe viewerSubscription " + POLL_FIELDS + "}}}"
 )
+
+
+def _poll_values(found: Mapping[str, Any]) -> dict[str, Value]:
+    poll = parse_poll(found.get("poll"))
+    if poll is None:
+        return {"poll_question": "This discussion has no poll.", "poll": ()}
+    return {"poll_question": poll_heading(poll), "poll": poll_table(poll)}
 
 
 def _discussion(data: Mapping[str, Any]) -> dict[str, Value]:
@@ -60,6 +69,7 @@ def _discussion(data: Mapping[str, Any]) -> dict[str, Value]:
         "subscribed": found.get("viewerSubscription") == "SUBSCRIBED",
         "created": when(found.get("createdAt")),
         "url": str(found.get("url") or ""),
+        **_poll_values(found),
         **{k: bool(v) for k, v in found.items() if str(k).startswith("viewerCan")},
     }
 
@@ -116,7 +126,18 @@ DISCUSSION = SheetDef(
                 ro("comments", "Comments", _K.NUMBER),
                 ro("locked", "Locked", _K.CHECK),
             ),
-            page("poll", "Poll", ro("poll_note", "Poll", help="Open the thread to vote.")),
+            page(
+                "poll",
+                "Poll",
+                ro("poll_question", "Question"),
+                ro(
+                    "poll",
+                    "Options",
+                    _K.TABLE,
+                    "Option, votes, percentage and your vote. Vote... on the discussion, or "
+                    "Change... here, casts your vote.",
+                ),
+            ),
         ),
     ),
     (
