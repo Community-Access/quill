@@ -2,6 +2,15 @@
 
 ## 1.0.0
 
+### GitHub Workbench: is it GitHub, or is it me? (2026-11-18)
+
+Help > GitHub Service Status... (Ctrl+Alt+F1) reads GitHub's public status
+page and says whether GitHub says everything is working, which parts are
+slow or down, and any incident it is working on, with its latest update. It
+is the one Workbench command that reads a site other than GitHub itself, so
+it asks once first, sends nothing about you or your repositories, reads only
+when you choose it, and is greyed in Safe Mode.
+
 ### GitHub Workbench: 116 more commands on rows, and every endpoint settled (2026-11-18)
 
 Repositories, commits, runs, pull requests, releases, alerts, advisories,

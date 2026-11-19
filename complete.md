@@ -75,7 +75,7 @@ The endpoint count is not the whole job. These rows from the Workbench delivery 
 - [ ] Installed/authorized Apps, repository grants, install requests, suspend/unsuspend and OIDC subject templates.
 - [ ] Code/secret scanning, advisories, private reports, bypass/dismissal requests, Autofix/dependency review and organization security overview.
 - [ ] Discussion polls, spotlight and category sections.
-- [ ] GitHub service status with opt-in network access and a useful explanation.
+- [x] GitHub service status with opt-in network access and a useful explanation. *(2026-11-18: Help > GitHub Service Status... (`Ctrl+Alt+F1`) reads www.githubstatus.com after asking once, never on its own or in Safe Mode, and says the overall status, the parts not working and any incident with its latest update (`service_status.py`, `github_workbench_service_status.py`).)*
 - [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
 - [ ] Least-privilege advice based on observed usage with honest uncertainty; artifact attestations and immutable release evidence.
 - [ ] First-class by-name collections for every kind in PRD 22.11, not only items inside a repository. *(Partly, 2026-11-13: Labels, Milestones, Topics and Rules and Branch Protection by Name, and the Fleet, under Across Repositories; every other kind is a decided, test-backed cell with its reason in `quill/core/github/across_scope_matrix.py`.)*

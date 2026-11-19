@@ -661,6 +661,20 @@ and close an issue; try a command with Dry Run; review and merge a pull
 request; read a failed run; and delete the repository. Each step says what to
 press and what you should hear.
 
+## Is it GitHub, or is it me?
+
+When GitHub is slow or failing, the Workbench's errors can look like your own
+mistake. **Help > GitHub Service Status...** (`Ctrl+Alt+F1`) reads GitHub's
+public status page, www.githubstatus.com, and shows what it says: whether
+GitHub says everything is working, which parts are slow or down, and any
+incident GitHub is working on, with its latest update.
+
+It is the one Workbench command that reads a site other than GitHub itself,
+so the first time it asks before reading. QUILL sends only the request:
+nothing about you, your accounts or your repositories. It reads the page
+only when you choose the command, never on its own, and the command is
+greyed in Safe Mode.
+
 ## More commands on rows
 
 Many rows have commands that make one call to GitHub and say what came

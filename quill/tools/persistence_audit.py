@@ -406,6 +406,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/onboarding.py::mark_trust_consent_complete": "marker",
     "core/onboarding.py::mark_watch_folder_onboarding_complete": "marker",
     "core/github/consent.py::save_github_consent_complete": "marker",
+    "core/github/service_status.py::record_consent": "marker",
     "core/spotify/consent.py::save_spotify_consent_complete": "marker",
     "ui/main_frame_onboarding_flow.py::_maybe_run_first_run_onboarding": "marker",
     "core/ai/model_manager.py::save_ai_enabled": "marker",
