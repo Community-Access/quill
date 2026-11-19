@@ -235,9 +235,20 @@ changes, old and new; new prices are for new signups, because Paid
 Memberships Pro does not change what members already pay. Undo puts it
 back, or deletes a level you just made.
 
-**Discount codes.** **Look Up a Discount Code...** reads one code, and **New
-Discount Code...** makes one after a preview. Where the site cannot list
-every code, the list says so and opens the wp-admin screen.
+**Members of This Level...**, on a level, lists everyone who holds it now,
+with their email addresses, to count them or write to them. Paid Memberships
+Pro has no way to ask for a level's members, so QUILL asks the site about
+each person in turn. Before it starts, it says how many people that is, and
+on a big site it says plainly that it is slow. It runs in the background;
+choose it again to stop, and the members found so far are kept. The members
+open in a list, where **Copy Email Addresses** copies every address, with a
+semicolon between, ready for the To box of a message.
+
+**Discount codes.** Where the site offers Paid Memberships Pro's
+discount-codes ability, **Discount Codes** lists every code. Elsewhere its
+one row says that this site lists its codes only in wp-admin, and Enter
+opens that screen in your browser. Either way, **Look Up a Discount Code...**
+reads one code, and **New Discount Code...** makes one after a preview.
 
 **A member.** On a person in **People > Users**:
 
@@ -286,6 +297,17 @@ redirects in, with how many each holds and whether it is on. **New
 Group...** (`Ctrl+N`), **Rename...** and **Turn On or Off** each preview
 first and can be undone. **Delete Group...** deletes its redirects with it,
 so it asks you to type the group's name.
+
+**Redirect Options**, under Redirects, lists the plugin's own options that
+QUILL knows, each with its value: how addresses are matched (capital letters,
+a slash at the end, query parameters), how long the logs are kept, whether
+they keep visitors' IP addresses, HTTPS and www, and how long browsers keep a
+redirect. The last row says how many more options stay in Tools >
+Redirection > Options. **Change Options...** (Enter), or `Alt+Enter`, opens
+them all on one Properties sheet; OK previews only the options you changed,
+sends only those, and checks what the site answers. Undo puts them back. A
+site whose Redirection does not offer its options to QUILL says so on its one
+row, and Enter opens the plugin's Options screen in your browser.
 
 **404 Log**, under Redirects, lists addresses visitors asked for that were not
 found. **Redirect This Address...** sends one somewhere, after a preview.

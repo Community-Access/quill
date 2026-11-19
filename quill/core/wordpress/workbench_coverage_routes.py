@@ -95,6 +95,10 @@ COVERED: tuple[tuple[str, str], ...] = (
     ),
     (r"redirection/v1/(redirect|404)(/.*)?$", "Sites > site > Redirects and its 404 Log"),
     (r"redirection/v1/bulk/redirect(/.*)?$", "Sites > site > Redirects (on, off, delete)"),
+    (
+        r"redirection/v1/setting$",
+        "Sites > site > Redirects > Redirect Options, as a Properties sheet",
+    ),
     # Packages 8 to 13 (2026-11-13): WooCommerce, The Events Calendar and Yoast SEO.
     (r"wc/v3/products(/\(\?P<id>[^)]*\))?$", "Sites > site > Shop: list, new, edit, trash"),
     (r"wc/v3/products/\(\?P<id>[^)]*\)/duplicate$", "a Shop product's Duplicate"),
