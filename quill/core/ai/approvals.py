@@ -371,10 +371,11 @@ class UiApprovalBridge:
         self, question: str, choices: Sequence[str], allow_freeform: bool
     ) -> UserInputAnswer | None:
         """Ask an agent's question on the UI thread; ``None`` means cancelled."""
-        if self._present_user_input is None:
+        present_user_input = self._present_user_input
+        if present_user_input is None:
             raise RuntimeError("This task has no accessible user-input dialog.")
         return self._bridge.call(
-            lambda: self._present_user_input(question, tuple(choices), allow_freeform),
+            lambda: present_user_input(question, tuple(choices), allow_freeform),
             default=None,
         )
 

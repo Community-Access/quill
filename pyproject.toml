@@ -777,6 +777,9 @@ module = [
     "pdfplumber",
     "comtypes",
     "comtypes.client",
+    # Pydantic is installed with the optional Copilot SDK, not the dev extra.
+    "pydantic",
+    "pydantic.*",
     # Optional GLOW shared-core engine, pulled in only by the `glow` extra.
     # core/glow.py imports it behind a guarded try/except; the scoped strict
     # gate must not depend on the extra being installed.
