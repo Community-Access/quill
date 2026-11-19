@@ -392,8 +392,8 @@ class GitHubWorkbenchProvider(
         frame = self.frame
         if frame is None:
             return False
-        if self.run_view(command_id) or self.run_tool(command_id):
-            return True
+        if self.refused(command_id) or self.run_view(command_id) or self.run_tool(command_id):
+            return True  # refused: the account's level, checked once for every command
         if command_id == "github.workbench.open":
             frame.details.SetFocus()
             return True

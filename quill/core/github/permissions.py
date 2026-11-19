@@ -115,7 +115,10 @@ def level_refusal(level: AccessLevel, tier: WriteTier) -> str:
     if level is AccessLevel.READ_ONLY and safe_mode_on():
         return "QUILL is in Safe Mode, so the Workbench changes nothing on GitHub."
     if level is AccessLevel.READ_ONLY:
-        return "This account is read only in the Workbench. Workbench Options, Accounts changes it."
+        return (
+            "This account is read only in the Workbench. Account, Roles and Access, "
+            "Workbench Level for This Account changes it."
+        )
     return (
         "This account is set to Organize in the Workbench, which allows organizing and "
         "comments, not access, settings or deleting."
