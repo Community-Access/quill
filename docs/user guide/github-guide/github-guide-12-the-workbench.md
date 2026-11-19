@@ -578,6 +578,22 @@ Every change asks first when it cannot be undone, runs without freezing the
 window, and says one sentence about what GitHub confirmed. `F9` says it
 again.
 
+Those sentences follow the same setting as the editor's copy and paste, **When
+a command does something, give me** (QUILL Guide, chapter 11):
+
+- A change that worked plays the task-complete sound. If its sentence is only
+  an acknowledgement, such as "Saved.", the setting decides whether you hear
+  the sound, the words, both or neither, as it does for `Ctrl+C`. If the
+  sentence has a number in it, such as "Saved 3 changes to Issue #12", it is
+  always spoken, because no sound can carry a count.
+- Something that did not work, starting "Could not", plays the error sound
+  when sounds are on, and is always spoken, whatever the setting, so you
+  always hear why.
+- Everything else, such as "Open a repository first", is spoken with no
+  sound.
+
+`F9` says the last result even when you only heard its sound.
+
 ## Hearing where you are
 
 `Alt+1` to `Alt+9` say something and move nothing: where you are, what is

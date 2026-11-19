@@ -2,6 +2,16 @@
 
 ## 1.0.0
 
+### GitHub Workbench: results follow your sound or speech choice (2026-11-19)
+
+The GitHub Workbench used to speak every result and play no sounds. It now
+follows **When a command does something, give me**, the setting the editor
+uses for copy and paste. A change that worked plays the task-complete sound,
+and a bare "Saved." can be a sound alone if that is what you chose.
+Something that did not work plays the error sound and is always spoken, and
+so is any result with a number in it. `F9` says the last result even when
+you only heard its sound. This meets GH-R-113 and GH-R-083.
+
 ### GitHub Workbench: a refresh that changed nothing costs nothing (2026-11-18)
 
 Every GitHub read the Workbench repeats is now conditional: QUILL sends what

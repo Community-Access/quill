@@ -330,10 +330,10 @@ class GitHubWorkbenchActionsMixin(
         return True
 
     def _say(self, text: str) -> None:
-        if self.frame is not None:
-            self.frame._say(text)
-        else:
-            self._announce(text)
+        """A result: its tone and its words, by the shared action-feedback setting (GH-R-113)."""
+        from quill.ui.github_workbench_feedback import say_result
+
+        say_result(self.frame, self._announce, text)
 
     def _background(self, name: str, work: Callable[[], Any], done: Callable[[Any], None]) -> None:
         said = _development.failure_sentence

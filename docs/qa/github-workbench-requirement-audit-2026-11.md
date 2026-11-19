@@ -4,12 +4,12 @@ Checked 2026-11-18 against main, updated the same day for the follow-up pull req
 
 ## Summary
 
-Of the 100 live requirements, 71 are met, 21 are partly met and 8 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 73 are met, 19 are partly met and 8 are not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
-| Must | 61 | 13 | 1 | 75 |
-| Should | 10 | 8 | 5 | 23 |
+| Must | 62 | 12 | 1 | 75 |
+| Should | 11 | 7 | 5 | 23 |
 | May | 0 | 0 | 2 | 2 |
 
 "Sampled" means a few cases of an "every" were checked, not all of them. The tests the audit cites pass; nothing here was checked on Windows or with a screen reader, so GH-R-002 (whether a Workbench dialog also blocks the editor) needs a live check before it is acted on.
@@ -39,14 +39,12 @@ Of the 100 live requirements, 71 are met, 21 are partly met and 8 are not met. G
 | GH-R-106 | Must | Help and Learning in the tree, with every node of D11 | Help and Learning has Start Here, Do Something, The Guide, Words, Keys, What Changed, Ask a Person (`workbench_tree.py:287`); D11's Tutorials and Tips nodes are missing. |
 | GH-R-107 | Must | Take Me There and Walk Me Through It on every help topic and task; Do It where the answer is one command | Take Me There on Do Something tasks; no Walk Me Through, no Do It. |
 | GH-R-108 | Must | Shift+F9 Explain That for every result, and Why? on every automatic behaviour | Shift+F9 Explain That (`workbench_window_menu.py`, frame `explain_result`); no Why? on automatic behaviours. |
-| GH-R-113 | Must | Sounds go through the shared action-feedback channels; a failure or a count is always spoken | Every outcome is spoken, so failures and counts always are; but the Workbench plays no sounds and ignores the `action_feedback` setting (only diff hearing has sounds, through sound events). |
 | GH-R-119 | Must | One source for every help surface (D19), and the measures of D20 | One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the generated reference (GATE-GITHUB-HELP, `build_help_reference`); D20's measures (timed find-the-answer sessions) not done. |
 | GH-R-150 | Must | Across Repositories has a place for every kind in the 22.11 table, a row per name with its variants and... | Labels, Milestones, Topics, Rules and Branch Protection by name, and the Fleet; every other kind is a decided cell with a reason in `across_scope_matrix.py` (`test_no_cell_is_blank`, `test_the_decided_cells`), not yet a place. |
 | GH-R-151 | Must | Every operation a kind allows in one repository is offered across a scope, with the preview and a result... | Preview and a result per repository for labels, milestones, topics, rulesets (`test_labels_by_name_make_the_same_with_a_preview_and_a_result_each`, `test_a_change_previews_permission_and_conflict_then_reports_each_repository`); environments, secrets, variables, webhooks, keys, autolinks remain. |
 | GH-R-157 | Must | Repository and item-property checklists announce a Space toggle once, save from Enter, return focus... | `test_the_checklist_checks_adds_once_and_returns_the_checked`; the JAWS, NVDA and VoiceOver checks it names are live checks not yet recorded. |
 | GH-R-068 | Should | The access matrix, bulk access changes and access templates | Access matrix as CSV and bulk access changes, now tested (`tests/unit/ui/test_github_workbench_requirement_checks.py::test_the_access_matrix_is_one_sorted_row_per_person_and_repository`, `test_bulk_access_gives_a_team_a_role_on_each_repository_with_an_undo`); access templates not built. |
 | GH-R-069 | Should | View As Role, Compare Roles and Why Can't They? | View As Role, Compare Roles, Why Can't They? now tested (`tests/unit/ui/test_github_workbench_requirement_checks.py::test_why_cant_they_names_the_role_needed_and_who_can_change_it` and others), but they read a fixed ability table, not GitHub's real permissions (the open complete.md row). |
-| GH-R-083 | Should | Watches with one-sentence results and sounds through the shared feedback channels | Watches with one-sentence results (`test_a_first_check_learns_then_only_new_things_are_said`, `test_add_edit_pause_check_and_remove_a_watch`); no sounds at all, nothing in the GitHub Workbench uses `action_feedback`. |
 | GH-R-088 | Should | The GitHub features listed in 22.1, each as the coverage gate schedules it | Ongoing: the 22.1 features are the 43 open rows of complete.md 1.3. |
 | GH-R-105 | Should | The GitHub tutorials of D8 | One GitHub lesson (practice repository) in docs/user guide/tutorials.md; D8 plans eleven, and there is no Help > Tutorials. |
 | GH-R-143 | Should | People > My Teams and team review requests in Needs My Attention | People > My Teams (`load_teams`, "teams:mine"); team review requests are a filter attribute but are not in Needs My Attention. |
@@ -151,7 +149,7 @@ Of the 100 live requirements, 71 are met, 21 are partly met and 8 are not met. G
 | GH-R-080 | Must | Met | The API Console reaches any REST or GraphQL operation, with scope shown, tiers applied and Change History kept | `github_api_console.py`: scope and tier on the What it does line, writes need Full access and the method typed, written to Change History (`_record`); `test_a_console_write_needs_full_access_and_the_method_typed`, `test_the_console_reads_explains_and_shows_a_tree` |
 | GH-R-081 | Should | Met | Read as Document for threads, with export | `test_read_as_document_opens_the_thread_in_the_editor`, `test_read_as_document_saves_html_from_a_discussion_row`, `test_a_pull_request_reads_as_one_document_in_time_order` |
 | GH-R-082 | Should | Met | Posts are checked for accessibility before sending, offering and never blocking | `comment_compose.accessibility_findings`, offered in `github_comment_composer.py`, never blocks; `test_comment_compose.py` |
-| GH-R-083 | Should | Partly | Watches with one-sentence results and sounds through the shared feedback channels | Watches with one-sentence results (`test_a_first_check_learns_then_only_new_things_are_said`, `test_add_edit_pause_check_and_remove_a_watch`); no sounds at all, nothing in the GitHub Workbench uses `action_feedback`. |
+| GH-R-083 | Should | Met | Watches with one-sentence results and sounds through the shared feedback channels | Watches with one-sentence results (`test_a_first_check_learns_then_only_new_things_are_said`, `test_add_edit_pause_check_and_remove_a_watch`), and their results now play through the shared feedback channels like every Workbench result (`outcome_feedback.py`; `test_outcome_feedback.py`). |
 | GH-R-084 | Should | Met | The editor commands of 22.3 | `editor_line.py` / `github_editor_line.py` in both editors; `test_editor_line.py`. (Alt+Enter on a reference, C9, is the missing part, see 036.) |
 | GH-R-085 | Should | Met | Export of any list; import of issues from CSV | `test_github_workbench_export.py` (any list, as shown), `test_issue_import.py` and `test_github_workbench_import.py` (CSV and Excel) |
 | GH-R-086 | May | Not met | Plain-language batches through the Command Key work | (May) no plain-language batches for GitHub; WordPress has its own. |
@@ -194,7 +192,7 @@ Of the 100 live requirements, 71 are met, 21 are partly met and 8 are not met. G
 | GH-R-110 | Must | Met | The Workbench announces only what the reader cannot see (results, background changes, Watches) and nothing... | GATE-13 (`check_over_announce.py` scans quill/ui, which holds every Workbench module); the frame speaks results only (`workbench_frame_commands._say`) |
 | GH-R-111 | Must | Met | Every announcement is also brailled | The Workbench speaks only through the announce callback the editor passes (its announcement service, which brailles); GATE-BRAILLE in `platform_report` |
 | GH-R-112 | Must | Met | One sentence per outcome, naming what changed | (sampled) one-sentence results across the window tests, e.g. `test_saving_sends_only_the_change_verifies_it_and_says_one_sentence`, `test_comment_posts_through_items_and_says_one_result` |
-| GH-R-113 | Must | Partly | Sounds go through the shared action-feedback channels; a failure or a count is always spoken | Every outcome is spoken, so failures and counts always are; but the Workbench plays no sounds and ignores the `action_feedback` setting (only diff hearing has sounds, through sound events). |
+| GH-R-113 | Must | Met | Sounds go through the shared action-feedback channels; a failure or a count is always spoken | Results go through `action_feedback` (`quill/core/github/outcome_feedback.py` plan, `quill/ui/github_workbench_feedback.py`): task-complete tone for a change that landed, error tone for a failure, a failure or a count always spoken, a bare acknowledgement by the setting (`test_outcome_feedback.py`). |
 | GH-R-114 | Should | Not met | A braille-shaped row option | No braille-shaped (short) row option. |
 
 ### E13. Settings

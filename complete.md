@@ -96,14 +96,14 @@ The endpoint count is not the whole job. These rows from the Workbench delivery 
 
 #### Requirement audits
 
-Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against the code and tests, and the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. Of the 100 live ids, 68 are met, 24 partly met and 8 not met (now 71 and 21, with GH-R-117, 035 and 131 done). What it found, the Musts first:
+Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against the code and tests, and the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. Of the 100 live ids, 68 are met, 24 partly met and 8 not met (now 73 and 19, with GH-R-117, 035, 131, 113 and 083 done). What it found, the Musts first:
 
 - [ ] **GH-R-002, needs a Windows check:** every Workbench dialog uses `ShowModal()`, which in wx disables every top-level window, the editor included. Try it before acting: if the editor is blocked, the fix is window-modal or modeless dialogs throughout the Workbench.
 - [ ] **GH-R-010:** no counts after node names. A native tree speaks its item text, so a count there is always announced; decide whether the Alt+number readouts are the answer and say so in the PRD.
 - [x] **GH-R-035 (2026-11-18):** Issue type and Into branch are pickers now, with New Issue Type... and New Branch....
 - [ ] **GH-R-106, 107, 108, 119 (help):** Tutorials and Tips nodes; Walk Me Through and Do It; Why? on automatic behaviours; D20's timed sessions.
 - [x] **GH-R-117 (2026-11-18):** Report a Help Problem on every help topic, a mail with the place and the last thing said, with secrets scrubbed first.
-- [ ] **GH-R-113 and 083 (sound):** Workbench results through `action_feedback`, as the editors do.
+- [x] **GH-R-113 and 083 (2026-11-19):** Workbench results through `action_feedback` (`quill/core/github/outcome_feedback.py`): the task-complete tone for a change that landed, the error tone for a failure, and failures and counts always spoken.
 - [x] **GH-R-131 (2026-11-18):** conditional requests (ETag) on every repeated REST read: the eight Workbench lists through `list_probe.py`, and sheets, pickers and reloads through `TokenApi`. GraphQL reads cannot be conditional; GitHub offers no ETag there.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists (with the 1.5 live rows).
 - [ ] **Shoulds and Mays:** Alt+Enter on a GitHub reference in a document (036), access templates (068), real permission evidence for the role views (069, the row above), team review requests in Needs My Attention (143), tutorials (105), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116), plain-language batches (086) and Ask How (118).
