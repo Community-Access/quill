@@ -17,7 +17,8 @@ A mixin on :class:`quill.ui.wordpress_workbench_window.WordPressWorkbenchProvide
   on a site whose index has the Redirection plugin's namespace, the Workbench
   offers to add a redirect from the old address, naming both; nothing is sent
   before Add Redirect. Elsewhere nothing is offered.
-- **Search and Upkeep** (:mod:`quill.core.wordpress.workbench_upkeep`) and
+- **Search and Upkeep** (:mod:`quill.core.wordpress.workbench_upkeep`; past scheduled posts,
+  WP Crontrol's Tools > Cron Events opened for every other WP-Cron task) and
   **Administration Areas** (every third-sweep row's disposition, from
   :data:`quill.core.wordpress.workbench_coverage.THIRD_SWEEP`).
 """
@@ -28,6 +29,7 @@ from collections.abc import Callable
 from typing import Any
 from urllib.error import HTTPError
 
+from quill.core.wordpress import workbench_upkeep as upkeep
 from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.workbench_coverage import (
     THIRD_SWEEP,
@@ -54,14 +56,6 @@ from quill.core.wordpress.workbench_sweep import (
     redirect_body,
     redirect_offered,
     trash_preview,
-)
-from quill.core.wordpress.workbench_upkeep import (
-    certificate_row,
-    lock_rows,
-    overdue_rows,
-    read_certificate,
-    sitemap_row,
-    visibility_row,
 )
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui import wordpress_workbench_dialogs as wdlg
@@ -174,8 +168,8 @@ class WorkbenchSweepCommands(WorkbenchRedirectGroup):
         except (WordPressApiError, OSError, ValueError, AttributeError) as exc:
             error = getattr(exc, "plain", "") or str(exc)
         rows = [
-            visibility_row(site, site_url, settings, found),
-            sitemap_row(site, site_url, body, error),
+            upkeep.visibility_row(site, site_url, settings, found),
+            upkeep.sitemap_row(site, site_url, body, error),
         ]
         scheduled: list[Any] = []
         recent: list[Any] = []
@@ -202,10 +196,11 @@ class WorkbenchSweepCommands(WorkbenchRedirectGroup):
                 )
             except WordPressApiError:
                 continue
-        rows += overdue_rows(site, scheduled)
-        rows.append(certificate_row(site, site_url, read_certificate(api)))
+        rows += upkeep.overdue_rows(site, scheduled)
+        rows.append(upkeep.cron_row(site, site_url, upkeep.crontrol_active(api)))  # complete.md 2.3
+        rows.append(upkeep.certificate_row(site, site_url, upkeep.read_certificate(api)))
         me = int(getattr(ctx.account, "id", 0) or 0) if ctx.account is not None else 0
-        rows += lock_rows(site, recent, me=me)
+        rows += upkeep.lock_rows(site, recent, me=me)
         return rows
 
     # -- findings -----------------------------------------------------------------

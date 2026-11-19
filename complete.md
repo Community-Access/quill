@@ -41,7 +41,7 @@ Each is done only with evidence: a test or a live run.
 - [ ] Preserve issue types and organization-defined issue fields as typed values on issue rows, details, filters and Properties. Hidden, unsupported, unset, empty and unreadable values stay distinct.
 - [ ] Repository and item-property checklists expose state in the row; Space changes it once, Enter saves, focus returns predictably, and JAWS/NVDA/VoiceOver do not hear a duplicate row.
 - [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle.
-- [ ] Verify per-account Read Only/Organize/Full, Safe Mode, tiers, typed confirmations, self-lockout prevention and permission explanations. Found 2026-11-19: row commands declare a tier but most do not check it when they run (only Unlink Branch and the issue sheet's Add Branch do, through `permissions.level_refusal`).
+- [ ] Live check on the GitHub test repository: Read Only, Organize, Full and Safe Mode refuse and allow as tested, and the permission explanations (greyed rows, Shift+F1, GitHub's own refusals) match what GitHub does.
 - [ ] Verify encrypted write-only secrets for repository/environment/organization scopes and selected-repository access.
 - [ ] Verify View As Role, Compare Roles, Why Can't They?, My Access Here, access reviews and bulk changes against actual server authority.
 - [ ] Grouping, sorting and the column chooser beyond issues and pull requests (filters, Show Only/Hide, Load More and Load All are done).
@@ -54,12 +54,10 @@ Each is done only with evidence: a test or a live run.
 - [ ] Rulesets/protection management, organization/member/team access, custom roles and audit logs.
 - [ ] Accessible workflow authoring: triggers/jobs/steps/inputs/permissions/dependency graph as linear controls (turning a workflow on or off is done).
 - [ ] Dependabot configuration and pull request commands; CODEOWNERS editing/ownership lookup.
-- [ ] Batch merges of independently eligible pull requests (Merge Queue, Why Can't I Merge?, Auto-Merge and queue add/remove are done).
-- [ ] Environments, deployment protection and release/deployment evidence (Set Status... on a commit is done).
 - [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
 - [ ] Code/secret scanning, advisories, private reports, bypass/dismissal requests, Autofix/dependency review and organization security overview.
 - [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
-- [ ] Least-privilege advice based on observed usage with honest uncertainty; artifact attestations and immutable release evidence.
+- [ ] Least-privilege advice based on observed usage with honest uncertainty (attestations and immutable releases are done).
 - [ ] First-class by-name collections for every kind in product requirements document (PRD) 22.11 beyond Labels, Milestones, Topics, Rules and Branch Protection, and the Fleet; the other kinds are classified in `quill/core/github/across_scope_matrix.py`.
 - [ ] Tags, release trains and branch renames across repositories: comparison, publishing, feature-specific safeguards (topics are done).
 - [ ] Align or promote to organization, where supported: environments, secrets, variables, webhooks, keys and autolinks (rulesets and default-branch protection are done; labels cannot be promoted).
@@ -67,7 +65,8 @@ Each is done only with evidence: a test or a live run.
 - [ ] People/teams/settings/custom properties/issue types: access and setting matrices with inherited-role explanations.
 - [ ] Saved replies/favorites/watch levels/stars, alerts/packages/Pages where supported.
 - [ ] Cross-repository coverage is complete only when the corresponding single-repository operation and batch behavior are complete; read-only category views are tracked separately from multi-target writes.
-- [ ] GX09 policy-aware merging; GX10 release/deployment evidence.
+- [ ] GX09: Why Can't I Merge? and Merge Selected... do not yet name the specific ruleset or CODEOWNERS rule that blocks (only the review window's Check Merge Policy does), and nothing watches a pull request to say when its readiness changes.
+- [ ] GX10: attestation signatures are not verified in QUILL (it points to gh attestation verify), and a downloaded release file is not checked against its digest.
 - [ ] GX11 security/dependencies; GX12 collaboration/knowledge; GX13 administration.
 - [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance; GX16 category-first cross-repository browsing.
 - [ ] Apply provider-neutral patterns: read long issue/pull request/discussion threads as one structured page; preserve the selected row on return; say the actual outcome once through QUILL's existing feedback settings.
@@ -78,9 +77,9 @@ Each is done only with evidence: a test or a live run.
 
 #### Requirement audit: what is still open
 
-The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`: 81 of 100 GH-R ids met, 12 partly met, 7 not met; every Must is at least partly met.
+The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`: 82 of 100 GH-R ids met, 11 partly met, 7 not met; every Must is at least partly met.
 
-- [ ] **GH-R-046:** a single You page.
+- [ ] **The rest of PRD 16.7:** a menu row for Subscribe and Block, star lists, Fork and Pin and Favorite on the You page, sponsoring a repository's owner from the repository, blocking from an organization, leaving an organization and answering an invitation, reactions on comments, and commits.
 - [ ] **GH-R-150 and 151:** more kinds under Across Repositories (see the by-name collections row above).
 - [ ] **Shoulds and Mays:** Alt+Enter on a GitHub reference in a document (036), access templates (068), real permission evidence for the role views (069), team review requests in Needs My Attention (143), tutorials (105), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116), plain-language batches (086) and Ask How (118).
 
@@ -93,6 +92,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 - [ ] Run `python docs/qa/github-live-run.py --create` after signing in again, and the live rows marked "needs Jeff".
 - [ ] GitHub live scenarios: multiple roles/accounts, protected branches, organization restrictions, rate limiting, private repositories, project fields, secrets, failure/retry and no-API fallbacks; the Copilot cloud agent commands on a Copilot plan.
 - [ ] Vote... in a real discussion poll, and the Pinned (spotlight) place, on the test repository.
+- [ ] Merge Selected... on two throwaway pull requests, and Release Evidence on `v0.0.1-quill-live`, on the test repository; Merge Selected on a queue-only branch needs an organization repository with a merge-queue ruleset; confirm GitHub's `immutable` and asset `digest` fields.
 - [ ] **GH-R-119:** timed find-the-answer sessions with people.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists.
 - [ ] WordPress current candidate: run the documented live regression on an authorized test site and distinguish existing site-side failures from regressions.
@@ -123,14 +123,6 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 
 Scheduled Actions and the extensions marketplace are wp-admin only. Subscriptions and Bookings are paid extensions with their own routes, not in scope.
 
-##### SEO (Yoast SEO)
-
-- [ ] **Canonical address, primary category and schema type per post.** Route: only where Yoast registers that post meta for REST, which most sites do not. Not yet verified which of these the bulk editor routes carry. Otherwise they stay in the post's Yoast panel.
-
-##### Maintenance
-
-- [ ] **Missed scheduled tasks beyond posts.** Search and Upkeep lists posts still Scheduled after their time. No other WP-Cron task is visible to REST. WP Crontrol is named as the plugin that lists them; whether it has a REST API is unverified.
-
 ##### Payments in QAF: waiting on the test site and a person
 
 - [ ] **Square and connections on a real site.** On the test site's sandbox: a Square payment, a declined card (4000 0000 0000 0002), a refund, and a webhook replay, with the receipt and the entry showing the same amount and status; then a form with two Stripe connections, a PayPal and a Square routing a test payment by each kind of rule, and each refund returning to the account that took it.
@@ -146,6 +138,7 @@ All of the following has tests over recorded or fake answers and none has met a 
 - [ ] New Order, Change Items and Change Address on a test order: especially that a quantity of 0 takes an item off, which WooCommerce's order controller documents but QUILL has only met in fakes.
 - [ ] PMPro Members of This Level (built from users plus each person's levels: the `pmpro/member-memberships-get` ability or `pmpro/v1/get_membership_levels_for_user`), its speed on a big site, and the paged discount-code list.
 - [ ] Shop Analytics against a real store: the `wc-analytics` answer shapes, a store that has not imported its order history, and whether Customers should take a date range.
+- [ ] Yoast's canonical address, primary category and schema type: whether the test site registers those meta keys for REST (expect read only), the `yoast_head_json` schema shape, and Open in wp-admin landing on the Yoast panel. WP Crontrol's Cron Events page slug and plugin name.
 - [ ] Redirection's options (`redirection/v1/setting`, built from the plugin's documentation, never seen live).
 - [ ] Redirection: the slug-change redirect offer, the redirect list and 404 log, Redirect Groups (new, rename, turn off, delete) and Import Redirects.
 - [ ] QAF on the test site (it still runs BAF), the QAF migration, and the spam settings with a live submission.
