@@ -2,6 +2,18 @@
 
 ## 1.0.0
 
+### WordPress Workbench: Yoast's canonical address, primary category and schema type, and other scheduled tasks (2026-11-19)
+
+- A post's Properties now has an **SEO** page on sites with Yoast SEO. It
+  shows the canonical address, the primary category (chosen by name from the
+  post's own categories) and the schema page and article type. They can be
+  changed where the site makes Yoast's settings available to QUILL. Elsewhere
+  they are shown as Yoast reports them, with one sentence saying they are
+  changed in the post's Yoast panel, which Open in wp-admin reaches.
+- **Search and Upkeep** has a new row, **Other scheduled tasks**. It says
+  plainly that only scheduled posts and pages can be checked from QUILL. When
+  WP Crontrol is active, the row opens its Cron Events screen.
+
 ### GitHub Workbench: discussion polls, the spotlight and categories (2026-11-19)
 
 - A discussion's poll is now a table showing each option, its votes, its

@@ -250,12 +250,13 @@ THIRD_SWEEP: tuple[SweepArea, ...] = (
     ),
     SweepArea(
         "Scheduled tasks",
-        "Sites > site > Search and Upkeep, Missed schedule rows",
+        "Sites > site > Search and Upkeep, Missed schedule and Other scheduled tasks rows",
         "WordPress itself; WP Crontrol lists every WP-Cron task",
-        ("wp-crontrol/v1",),
+        (),
         "site-health.php",
         "Posts and pages still Scheduled after their time are listed; no other WP-Cron task "
-        "is visible to REST.",
+        "is visible to REST, and no WP Crontrol route is recorded, so the Other scheduled "
+        "tasks row opens its Tools > Cron Events where the plugin is active.",
     ),
     SweepArea(
         "SSL and the address",
