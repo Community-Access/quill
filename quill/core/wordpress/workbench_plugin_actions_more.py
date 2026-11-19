@@ -149,6 +149,28 @@ MORE_ROWS: Mapping[str, tuple[ActionRow, ...]] = {
         _DELETE,
         _SHEET,
     ),
+    "shop_gateway": (
+        _READ,
+        _a(
+            "toggle_gateway",
+            "Turn On or Off...",
+            "Offer it at checkout, or stop offering it, after a preview.",
+            tier=Tier.WRITE,
+            needs=_SHOP,
+        ),
+        _SHEET,
+    ),
+    "shop_tool": (
+        _READ,
+        _a(
+            "run_shop_tool",
+            "Run Tool...",
+            "Run this maintenance tool, after a preview.",
+            tier=Tier.WRITE,
+            needs=_SHOP,
+        ),
+        _SHEET,
+    ),
     "shop_webhook": (
         _READ,
         _a(
@@ -231,6 +253,15 @@ MORE_ROWS: Mapping[str, tuple[ActionRow, ...]] = {
 """The rows for each kind these commands add."""
 
 MORE_EXTRA: Mapping[str, tuple[ActionRow, ...]] = {
+    "shop_order": (  # complete.md 2.3: "the receipt never came"
+        _a(
+            "resend_order_details",
+            "Resend Order Details...",
+            "Send the customer their order details again, after a preview.",
+            tier=Tier.WRITE,
+            needs=_SHOP,
+        ),
+    ),
     "shop_product": (
         _a(
             "edit_variation",
@@ -311,6 +342,10 @@ MORE_KEYLESS: dict[str, str] = {
     _c("new_tax_rate"): _NEW,
     _c("new_tax_class"): _NEW,
     _c("toggle_webhook"): _RARE,
+    _c("toggle_gateway"): _RARE,
+    _c("run_shop_tool"): "Run when something is wrong, a few times a year, behind a preview "
+    "(rule 9).",
+    _c("resend_order_details"): "Sent when a customer asks, on a selected order (rule 9).",
     _c("new_webhook"): _NEW,
     _c("delete_webhook"): _GONE,
     _c("attribute_terms"): _RARE,

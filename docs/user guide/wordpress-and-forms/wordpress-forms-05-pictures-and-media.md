@@ -109,7 +109,12 @@ The rest are on the context menu (the Applications key, or Shift+F10):
   how.
 - **Edit Picture...** turns, flips or crops a picture, to a shape or by
   numbers in percent, after a preview that says the result in words.
-  WordPress keeps the original and makes the edit a new picture.
+  WordPress keeps the original and makes the edit a new picture. Its last
+  choice, **Scale, crop or turn the original on this computer**, changes the
+  original itself: type 1200 wide, 800 high, 50%, turn 90, or crop and four
+  percentages. QUILL downloads it, changes it here, says the size and weight
+  before and after, then sends it back with Replace File, and has WordPress
+  make its smaller copies again.
 - **Regenerate Sizes** remakes a picture's smaller copies, so the theme shows
   it right everywhere.
 - **Attach to a Post or Page...** finds a post or page by words or number and

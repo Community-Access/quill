@@ -146,7 +146,11 @@ Gravity Forms**.
    **Notification to** and **Notification subject** are for the email the
    site's administrator gets. If the form sends people to a page instead, or
    routes its email by an answer, those boxes are dimmed, and Gravity Forms
-   keeps them as they are.
+   keeps them as they are. **Other Notifications and Confirmations...** lists
+   the form's other emails and thank-you messages: **Add Notification...**,
+   **Add Confirmation...**, **Change...**, **Turn On** or **Turn Off**, and
+   **Remove...**. One that routes by an answer or uses logic can be turned on
+   or off or removed, and its routing is changed in Gravity Forms.
 5. Tab to **Fields**, the questions in order. Insert, or **Add Field...**,
    adds one after the one you are on. Enter, or **Edit Field...**, changes
    one. **Move Up** and **Move Down** move it. Delete, or **Remove Field**,

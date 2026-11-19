@@ -75,7 +75,7 @@ The endpoint count is not the whole job. These rows from the Workbench delivery 
 - [x] Installed/authorized Apps, repository grants, install requests, suspend/unsuspend and OIDC subject templates. *(Settled 2026-11-18 by the 1.3 sweep: My Installations with each installation's repository grants added and removed (`resource_engine.py`); suspend, unsuspend, install requests and OIDC subject templates are App-token, Enterprise or company plumbing, each classified with its reason in `api_coverage.json`.)*
 - [ ] Code/secret scanning, advisories, private reports, bypass/dismissal requests, Autofix/dependency review and organization security overview.
 - [ ] Discussion polls, spotlight and category sections.
-- [ ] GitHub service status with opt-in network access and a useful explanation.
+- [x] GitHub service status with opt-in network access and a useful explanation. *(2026-11-18: Help > GitHub Service Status... (`Ctrl+Alt+F1`) reads www.githubstatus.com after asking once, never on its own or in Safe Mode, and says the overall status, the parts not working and any incident with its latest update (`service_status.py`, `github_workbench_service_status.py`).)*
 - [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
 - [ ] Least-privilege advice based on observed usage with honest uncertainty; artifact attestations and immutable release evidence.
 - [ ] First-class by-name collections for every kind in PRD 22.11, not only items inside a repository. *(Partly, 2026-11-13: Labels, Milestones, Topics and Rules and Branch Protection by Name, and the Fleet, under Across Repositories; every other kind is a decided, test-backed cell with its reason in `quill/core/github/across_scope_matrix.py`.)*
@@ -145,18 +145,12 @@ The most useful to a site owner come first in each area. "Route" means the REST 
 
 ##### Media
 
-- **Scale or crop a picture on this computer, and send it back.** This was marked wp-admin only, and it need not be. WordPress has no route that scales an existing original in place, but QUILL can do the work locally and upload the result:
-  - Open the picture from the Media Library, scale it (to a width, a height, or a percentage, keeping its shape), crop or rotate it, with the size and file weight said before and after, using Pillow, which QUILL already ships.
-  - Send it back through the Replace File path already built: in place where the site lists a replace route, otherwise as a new file with every use pointed at it (previewed, with Ctrl+Z, and a redirect offered where Redirection is active).
-  - Then ask the site to make its sizes again (`POST wp/v2/media/{id}/post-process` with `action: create-image-subsizes`, WordPress 5.3 and later), so thumbnails match.
-  - For a quick rotate or crop of a site's picture without a local copy, `POST wp/v2/media/{id}/edit` (WordPress 5.5 and later) does it on the site and makes an edited copy; offer it where the site's index lists it.
-  - What stays wp-admin only: the site-wide media size settings (thumbnail, medium and large widths), because WordPress does not expose them to REST.
+- **Scale, crop or turn a picture on this computer, and send it back:** built 2026-11-18 (Edit Picture's last choice). What stays wp-admin only: the site-wide media size settings (thumbnail, medium and large widths), because WordPress does not expose them to REST.
 
 ##### Forms
 
-QAF is covered end to end: build, publish, settings, status, delete, entries, views, spam and spam settings. Gravity Forms is close.
+QAF is covered end to end: build, publish, settings, status, delete, entries, views, spam and spam settings, and so is Gravity Forms, notifications and confirmations included (2026-11-18).
 
-- **More than one notification or confirmation on a Gravity Form.** Who: forms that send different emails by answer. Route: the `notifications` and `confirmations` objects inside `gf/v2/forms/{id}`. Today QUILL's form editor edits the default confirmation and the Admin Notification and keeps the rest untouched.
 
 Gravity Forms' own settings, add-ons and licence are wp-admin only.
 
@@ -187,11 +181,7 @@ took the money. What is left needs the test site and a person:
 
 ##### Shop (WooCommerce)
 
-- **Edit every product field.** Who: shop managers. Route: `POST wc/v3/products/{id}`. Edit Product changes price, sale price, stock, status and categories only. Missing: SKU, description, short description, sale dates, weight and dimensions, shipping class, images, downloads, upsells and cross-sells, tax class.
 - **Create an order, or change its items and addresses.** Who: shops taking phone orders. Route: `POST wc/v3/orders`, `POST wc/v3/orders/{id}`.
-- **Resend an order email or invoice.** Who: a customer who says the receipt never came. Route: `wc/v3/orders/{id}/actions/send_email` and `send_order_details`, which were on the test site's index on 2026-11-04.
-- **Payment gateways: turn on or off, and their settings.** Route: `wc/v3/payment_gateways/{id}`. Any key fields must stay write-only, as Store Settings already does.
-- **System status and its tools** (clear transients, recount terms). Route: `wc/v3/system_status`, `system_status/tools/{id}`. This also gives the PHP and database versions that core REST does not.
 
 Also missing but less urgent: editing many products at once (`products/batch`), generating variations (`products/{id}/variations/generate`), shipping classes (`products/shipping_classes`), and Analytics (`wc-analytics/reports/*`). Scheduled Actions and the extensions marketplace are wp-admin only. Subscriptions and Bookings are paid extensions with their own routes, not in scope.
 

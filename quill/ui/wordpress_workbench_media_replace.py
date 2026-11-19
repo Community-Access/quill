@@ -59,6 +59,10 @@ class WorkbenchMediaReplace:
         path = self._file(f"Replace {row.title} with", "All files (*.*)|*.*", save=False)
         if path is None:
             return
+        self.replace_with(row, path)
+
+    def replace_with(self, row: WbRow, path: Path, after: Callable[[], None] | None = None) -> None:
+        """Send *path* in place of *row*'s file; *after* runs once an in-place swap lands."""
         from quill.core.wordpress import media_tools as mt
 
         size = path.stat().st_size
@@ -94,15 +98,22 @@ class WorkbenchMediaReplace:
         self.background(
             f"reading what {row.site} can do with {row.title}",
             look,
-            lambda found: self._replace_chosen(row, path, new, found),
+            lambda found: self._replace_chosen(row, path, new, found, after),
         )
 
-    def _replace_chosen(self, row: WbRow, path: Path, new: Any, found: dict[str, Any]) -> None:
+    def _replace_chosen(
+        self,
+        row: WbRow,
+        path: Path,
+        new: Any,
+        found: dict[str, Any],
+        after: Callable[[], None] | None = None,
+    ) -> None:
         old = found["old"]
         old_url = str(old.get("source_url", "") or row.link)
         facts = mr.file_facts(old)
         if found["route"]:
-            self._replace_in_place(row, path, new, facts, old_url, found["route"])
+            self._replace_in_place(row, path, new, facts, old_url, found["route"], after)
             return
         choices = [_REPOINT] + ([_EMR] if found["emr"] else [])
         index = dlg.ask_choice(
@@ -137,7 +148,14 @@ class WorkbenchMediaReplace:
         )
 
     def _replace_in_place(
-        self, row: WbRow, path: Path, new: Any, facts: Any, old_url: str, route: str
+        self,
+        row: WbRow,
+        path: Path,
+        new: Any,
+        facts: Any,
+        old_url: str,
+        route: str,
+        after: Callable[[], None] | None = None,
     ) -> None:
         if not wdlg.ask_preview(
             self.parent,
@@ -161,12 +179,83 @@ class WorkbenchMediaReplace:
             )
 
         def done(answer: tuple[bool, str]) -> None:
-            _kept, said = answer
+            kept, said = answer
             self.say(said)
             self.history.record(Change(row.title, said, undo=None))
             self.refresh()
+            if kept and after is not None:
+                after()
 
         self.background(f"replacing {row.title}", work, done)
+
+    # -- Scale on This Computer (complete.md 2.3, Media) ------------------------------
+
+    def scale_on_this_computer(self, row: WbRow) -> None:
+        """Download the original, change it here, preview, then Replace File with it."""
+        from quill.core.wordpress import media_scale as ms
+
+        text = dlg.ask_text(
+            self.parent,
+            self.show_modal,
+            title=f"Change {row.title} on This Computer",
+            prompt="&What to do:",
+            value="1200 wide",
+            help_text=(
+                "1200 wide, 800 high, 50%, turn 90, or crop 10, 0, 80, 100 (left, top, width "
+                "and height in percent). The original is downloaded, changed here, and sent "
+                "back with Replace File; you hear the size before and after first."
+            ),
+        )
+        if not text:
+            return
+        try:
+            wanted = ms.parse_wanted(text)
+        except ms.ScaleError as exc:
+            self.say(str(exc.args[0]))
+            return
+        api = self.ctx(row.site).api
+        source = str(row.raw.get("source_url", "") or row.link)
+
+        def work() -> Any:
+            from quill.core.wordpress import media_tools as mt
+
+            got = mt.download_file(api._opener, source, timeout=max(api.timeout, 30.0))
+            return ms.change_picture(got.content, wanted)
+
+        def made(scaled: Any) -> None:
+            import tempfile
+
+            if not wdlg.ask_preview(
+                self.parent,
+                self.show_modal,
+                title="Change Picture",
+                summary=f"{row.title}, {wanted.words()}. Send it back to {row.site}?",
+                lines=[scaled.report(), "Replace File sends it, and says how, before it does."],
+                yes="Continue",
+            ):
+                return
+            name = source.rsplit("/", 1)[-1].split("?", 1)[0] or f"{row.key}.png"
+            folder = Path(tempfile.mkdtemp(prefix="quill-picture-"))
+            path = folder / name
+            path.write_bytes(scaled.data)
+            self.replace_with(row, path, after=lambda: self._remake_sizes(row))
+
+        self.background(f"changing {row.title} on this computer", work, made)
+
+    def _remake_sizes(self, row: WbRow) -> None:
+        """After an in-place swap: WordPress makes the thumbnails again from the new original."""
+        api = self.ctx(row.site).api
+
+        def work() -> Any:
+            from quill.core.wordpress.media_pieces import regenerate_sizes
+
+            return regenerate_sizes(api, int(row.key))
+
+        self.background(
+            f"remaking the sizes of {row.title}",
+            work,
+            lambda _item: self.say(f"{row.title}'s sizes on {row.site} are made again."),
+        )
 
     def _repoint(
         self,
