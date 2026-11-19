@@ -207,7 +207,7 @@ menu, beside Secrets... and Variables...:
   each. To approve or reject a deployment that is waiting, use **Review
   Pending Deployments...** on the run that is waiting, above.
 
-An environment's **Properties...** (`Alt+Enter`) puts its protection on one
+An environment's properties (Alt+Enter) put its protection on one
 sheet: the required reviewers, prevent self-review, the wait timer and whether
 administrators may bypass, with the custom protection rules (the apps) listed
 under them; which branches and tags may deploy, with the chosen ones listed;
