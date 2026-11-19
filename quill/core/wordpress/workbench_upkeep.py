@@ -14,7 +14,10 @@ something the core REST API only half shows:
   replaces it, which the row says.
 - **Overdue schedules** (:func:`overdue_rows`): posts and pages still
   ``future`` after their time, which means WP-Cron did not run them. The
-  REST API lists no other WP-Cron task; Site Health and WP Crontrol do.
+  REST API lists no other WP-Cron task, and WP Crontrol, the plugin that
+  does, has no REST route in the recorded route list (none is guessed), so
+  :func:`cron_row` says only posts can be checked from here and, where
+  ``wp/v2/plugins`` shows WP Crontrol active, opens its Tools > Cron Events.
 - **The certificate** (:func:`certificate_row`): its expiry date, from the
   connection QUILL already makes to the site (:func:`read_certificate`), and
   a warning inside 30 days. Where the date cannot be read, the row says the
@@ -37,13 +40,17 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 from urllib.parse import urlparse
 
+from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.site import friendly_date
 from quill.core.wordpress.workbench_rows import WbRow
 
 __all__ = [
     "CERT_WARN_DAYS",
+    "CRON_EVENTS",
     "LOCK_SECONDS",
     "certificate_row",
+    "cron_row",
+    "crontrol_active",
     "lock_rows",
     "overdue_rows",
     "peer_certificate",
@@ -204,6 +211,60 @@ def overdue_rows(
             )
         )
     return rows
+
+
+CRON_EVENTS = "tools.php?page=crontrol_admin_manage_page"
+"""WP Crontrol's Tools > Cron Events. The plugin's own menu slug, from its source; it has not
+been read from a live site yet."""
+_CRONTROL = "wp-crontrol/"
+"""The start of WP Crontrol's id in ``wp/v2/plugins`` (its folder)."""
+
+
+def crontrol_active(api: Any) -> bool | None:
+    """Whether WP Crontrol is active, from ``wp/v2/plugins``; None when the list is not readable.
+
+    Reading the plugin list needs ``activate_plugins``; a role without it gets None.
+    """
+    try:
+        found = api.get("wp/v2/plugins", _fields="plugin,status")
+    except (WordPressApiError, OSError, ValueError):
+        return None
+    if not isinstance(found, list):
+        return None
+    return any(
+        isinstance(p, Mapping)
+        and str(p.get("plugin", "")).startswith(_CRONTROL)
+        and p.get("status") in ("active", "network-active")
+        for p in found
+    )
+
+
+def cron_row(site: str, site_url: str, active: bool | None) -> WbRow:
+    """Every other WP-Cron task: what can be checked from here, and where the rest is."""
+    said = (
+        "Only scheduled posts and pages can be checked from here. WordPress's REST API lists "
+        "no other WP-Cron task, and WP Crontrol, the plugin that lists them all with any that "
+        "are late, has no REST route QUILL knows of; its Tools > Cron Events screen in "
+        "wp-admin shows them."
+    )
+    source = "the plugin list (wp/v2/plugins), for whether WP Crontrol is active."
+    if active:
+        return _row(
+            site,
+            "cron",
+            "Other scheduled tasks",
+            "WP Crontrol active",
+            f"{said} WP Crontrol is active on {site}: Open Where It Is Checked opens Tools > "
+            "Cron Events in your browser.",
+            source,
+            f"{site_url.rstrip('/')}/wp-admin/{CRON_EVENTS}",
+        )
+    more = (
+        f"QUILL could not read {site}'s plugin list, so whether WP Crontrol is there is not known."
+        if active is None
+        else f"WP Crontrol is not active on {site}; with it, Tools > Cron Events lists them."
+    )
+    return _row(site, "cron", "Other scheduled tasks", "not checked here", f"{said} {more}", source)
 
 
 def peer_certificate(response: Any) -> dict[str, Any] | None:
