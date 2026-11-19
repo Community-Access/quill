@@ -23,6 +23,7 @@ from quill.core.ai.approvals import (
     ApprovalRequest,
     UiApprovalBridge,
     UiThreadBridge,
+    UserInputAnswer,
 )
 from quill.core.ai.document_task import (
     DOCUMENT_TASK_TOOLS,
@@ -207,6 +208,50 @@ def test_ui_answer_reaches_the_worker() -> None:
     bridge = UiApprovalBridge(post, lambda req: req.answer(ApprovalChoice.TASK))
     tool = _tool("studio.record", PermissionCategory.RECORD_AUDIO)
     assert bridge.ask(tool, "Record?") is ApprovalChoice.TASK
+
+
+def test_user_input_is_marshaled_to_the_ui_thread() -> None:
+    posted: list[Callable[[], None]] = []
+    bridge = UiApprovalBridge(
+        posted.append,
+        lambda _request: None,
+        present_user_input=lambda question, choices, allow_freeform: UserInputAnswer(
+            f"{question}:{choices[0]}:{allow_freeform}", was_freeform=False
+        ),
+    )
+    out: list[UserInputAnswer | None] = []
+    worker = threading.Thread(target=lambda: out.append(bridge.ask_user("Choose", ("A",), False)))
+    worker.start()
+    deadline = time.monotonic() + 5
+    while not posted and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert posted
+    posted.pop(0)()
+    worker.join(2)
+    assert not worker.is_alive()
+    assert out == [UserInputAnswer("Choose:A:False", was_freeform=False)]
+
+
+def test_cancelling_unblocks_a_user_input_request() -> None:
+    posted: list[Callable[[], None]] = []
+    bridge = UiApprovalBridge(posted.append, lambda _request: None, lambda *_args: None)
+    out: list[UserInputAnswer | None] = []
+    worker = threading.Thread(target=lambda: out.append(bridge.ask_user("Question", (), True)))
+    worker.start()
+    deadline = time.monotonic() + 5
+    while not posted and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert posted
+    bridge.cancel()
+    worker.join(2)
+    assert not worker.is_alive()
+    assert out == [None]
+
+
+def test_user_input_requires_an_accessible_presenter() -> None:
+    bridge = UiApprovalBridge(lambda fn: fn(), lambda _request: None)
+    with pytest.raises(RuntimeError, match="accessible user-input dialog"):
+        bridge.ask_user("Question", (), True)
 
 
 def test_thread_bridge_returns_the_value_and_raises_errors() -> None:

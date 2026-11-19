@@ -134,7 +134,7 @@ def test_the_ai_menu_sits_before_quillville_on_the_fallback_keys(inkwell) -> Non
     assert labels == [
         "&Ask...\tCtrl+Shift+8",
         "Suggest Abbreviations from a &Document...\tCtrl+Shift+A",
-        "Add A&bbreviations from a Document (needs Copilot or Codex)...\tCtrl+F3",
+        "Add A&bbreviations from a Document (needs an AI that runs tasks)...\tCtrl+F3",
         "&Which AI Am I Using\tCtrl+F8",
         "&Choose Your AI...\tCtrl+Shift+F8",
         "Accounts and &Usage",

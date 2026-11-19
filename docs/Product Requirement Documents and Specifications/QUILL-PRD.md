@@ -5231,8 +5231,8 @@ the same change, from the shared `quill/ui/hosted_ai_*.py` modules (family
 rule 10); QUILL reaches them through `quill/ui/main_frame_hosted_ai.py`, which
 has no commands of its own.
 
-**Five connections, one stored choice.** `ai_connection` (`free`, `chatgpt`,
-`copilot`, `codex`, `own_key`; empty means not yet decided) is the same field
+**Five connections and Auto, one stored choice.** `ai_connection` (`free`,
+`chatgpt`, `copilot`, `codex`, `own_key`, `auto`; empty means not yet decided) is the same field
 in `quill/core/settings.py` and `quill/core/lite/settings.py`. On the first
 read where it is empty it is set once to what the old silent precedence
 chose (ChatGPT signed in, else an own key, else free), so nobody's behaviour
@@ -5276,13 +5276,19 @@ ChatGPT plan (decision 24, never used to guess a limit), GitHub's quota for
 Copilot, and the provider's last rate-limit headers for an own key. Manage
 Usage opens the selected connection's page. Everything is text (decision 13).
 
-**No silent fall-back (decision 15).** Signing in is choosing. Sign Out of
+**No silent fall-back for an explicit connection (decision 15).** Signing in is choosing. Sign Out of
 the connection in use leaves none in use; the next AI command opens Choose
 Your AI and says once "No AI is in use. Choose one." A revoked token, a
 missing key or a reached limit is said once, nothing is sent, nothing is
-retried and nothing switches. This replaces the session route guard's
-"Send to a Different AI?" question for the hosted-AI commands; the guard
-stays only as a backstop.
+retried and nothing switches. Auto is a separate, explicit choice, never the
+default: it selects a ready connection that supports the action and announces
+the concrete provider and destination before sending. Ask, conversations and
+image requests may offer one retry after a classified connectivity failure;
+the same request is sent only after confirmation, with destination and
+possible provider limits or billing stated. Declining preserves the original
+error. Agent tasks are not automatically retried because a provider may have
+performed an approved action before a failure. Copilot's Auto model-priority
+setting remains separate and never changes providers.
 
 **Capability gating (GATE-CAPS).** `quill/core/ai/connection_caps.py` holds
 one record per connection, each claim naming its source. A gated command
@@ -5299,6 +5305,16 @@ empty the row is "not available yet" and About says why in one sentence.
 Single requests, conversations and Ask About an Image (on a model that sees)
 go through the SDK; an error is said once.
 
+**Auto provider routing.** The additional Auto row in Choose Your AI is
+opt-in, not a default or silent fallback. The shared capability registry
+selects the first ready provider that supports every capability required by
+each action. The local Ollama route says it stays on this computer. The
+registry order is a stable tie-breaker, not a quality ranking; Auto does not
+change provider model settings, combine histories or share credentials.
+Which AI Am I Using reports that Auto is active, and a pre-send announcement
+identifies each request's concrete recipient. Usage remains tied to the
+provider that handled the request, with no fabricated cross-provider quota.
+
 **Codex** (decision 21) is one keypress once the ChatGPT plan is signed in.
 Single requests while Codex is in use go over the plan's direct route; the
 Codex app-server starts only for document tasks. If the engine is not in the
@@ -5306,7 +5322,8 @@ build, the row is "not available yet".
 
 **Do a Document Task** (Ctrl+3; `tools.hosted_ai_task`, Lite `cmd_ai_task`;
 `quill/ui/agent_window.py`, `quill/core/ai/document_task.py`) needs agent
-tools, which only Copilot and Codex have. Controls: Conversation, Status,
+tools, available on Copilot, Codex, and supported providers selected in My own
+key. Controls: Conversation, Status,
 Instruction (focus starts here; Enter sends; text sent while a task runs is a
 follow-up), Send, Stop, Close. Tools are limited to `DOCUMENT_TASK_TOOLS`
 (read outline, section, selection and document; apply_patch; the
@@ -5405,47 +5422,65 @@ a stronger model" (`free_models.stronger_model_hint`) while still offering them.
 
 ### 5.84e Agent harnesses — interchangeable agentic engines (shipped)
 
-**Goal.** Let a user drive QUILL's agent with the AI agent they already pay for
-— GitHub Copilot, OpenAI (ChatGPT), or Claude — without a second API key or
-per-token cost, while keeping QUILL's edit-safety contract exactly as it is.
+**Goal.** Let users choose an AI engine for agent tasks while keeping the
+interaction accessible, the provider choice explicit, and QUILL's edit-safety
+contract in control. A provider's account, allowance, and billing remain the
+user's responsibility; QUILL does not provide free GitHub Copilot usage.
 
 **The harness layer (`quill/core/ai/harness/`).** A *harness* is an
 interchangeable engine that drives an agent session above the AI backend. QUILL
-ships the **Native** harness (its own loop, always available) plus three
-optional **SDK harness packs** in `quill/ai_packs/` — `copilot.py` (extra
-`ai-copilot`, `github-copilot-sdk`), `claude.py` (extra `ai-claude`,
-`claude-agent-sdk`), and `openai_agents.py` (extra `ai-openai`, `openai-agents`).
-Every harness, native or SDK, drives the **same** `SafeEditorToolGateway` and
+ships the **Native** harness plus SDK packs in `quill/ai_packs/`. The Copilot
+pack uses `microsoft-copilot-sdk==2.0.1`; Claude and OpenAI agent packs retain
+their separate optional-install behavior.
+Every harness drives the shared tool gateway and
 `PermissionBroker` and emits the **same** normalized `AgentEvent`s; a
 `HarnessRegistry` tracks availability, and the Hub hides capabilities a harness
 lacks rather than presenting a broken control.
 
-**Safety law (non-negotiable).** The SDK packs run the vendor agent
-**text-only** (`allowed_tools=[]`): the vendor's own file-editing and shell tools
-are denied, and QUILL applies the produced text through its reviewed gateway —
-permission broker, diff preview, one-step undo. The agent proposes; only QUILL
-touches the document, and only with user approval. All of this is off by default
-and disabled in Safe Mode.
+**Copilot safety law (non-negotiable).** Copilot agent sessions offer QUILL's
+registered tools by default. Copilot's own file, shell, and web tools are off
+until the user enables them for a project; every use still requires QUILL's
+permission broker. Vendor edits bypass Review Changes, and the shell runs with
+the user's account permissions, so the warning and approval must remain
+visible. MCP and unsupported permission requests are rejected. QUILL's own
+reviewed gateway, diff preview, and one-step undo remain in control of its own
+edits. Safe Mode disables AI.
 
-**On-demand install (`quill/core/ai/sdk_install.py`).** The packs are never
-bundled (large, fast-moving, and most users want exactly one). The first time a
-user picks an engine, QUILL installs its extra with `pip` into the running
-interpreter behind a consent + progress surface; the pack self-registers on the
-next probe. An uninstalled pack reports `is_available() == (False, reason)` and
-QUILL keeps working.
+**Copilot packaging.** Microsoft Copilot SDK 2.0.1 and its SDK-pinned
+`runtime.node` are included in the shared runtime. No Copilot CLI executable is
+shipped or launched, and no Copilot runtime is downloaded on first use. Claude
+and OpenAI agent packs retain their separate optional-install behavior.
 
-**Surfaces.** (1) **AI Hub → Engines tab** (`ai_hub_engines_panel.py`): list the
-engines, **Set Up / Install...** (installs the pack, or opens the Copilot
-onboarding dialog), and **Set as Active Engine**. (2) **AI Setup Wizard**: the
-onboarding path *"Use an AI agent you already pay for"* finishes by opening the
-Engines tab. (3) **GitHub Copilot sign-in** (`copilot_auth.py`): OAuth 2.0 device
-flow (a short, speakable code) when a build provides `QUILL_GITHUB_CLIENT_ID`,
-with a graceful fallback to the Copilot/GitHub CLI sign-in when it is not — so
-Copilot works either way; the token lives in the OS secure store.
+**Privacy defaults and explicit controls.** Config discovery, memory,
+cross-session storage, and telemetry remain disabled. Session retention,
+long-task compaction, and sharing enabled AI Library skills are off by default
+and can be opted into in AI Hub > Sessions. Compaction requires retention and
+may use additional account usage. With retention enabled, the Hub lists local
+session IDs and update times, resumes a selected session for one next Copilot
+task, and permits explicit permanent deletion. Temporary task working folders
+are always cleared. Chat creates a fresh SDK session for each request and
+sends conversation history only when the user asks a follow-up. Image
+requests use attachments only when the selected model supports vision.
 
-**Value.** Use the subscription you already hold ($0 extra), vendor-grade
-orchestration inside QUILL's guardrails, and interchangeable engines that install
-on demand so the base app stays lean.
+**Accessible interaction.** SDK user-input requests use native, keyboard
+operable choice and text-entry dialogs. Cancel is returned as cancellation;
+sanitized task and helper-agent progress is announced through QUILL's
+announcement service. Session IDs and update times are shown without
+conversation content, and deletion requires an explicit confirmation checkbox.
+
+**Provider and routing boundary.** Users choose My GitHub Copilot, My own key,
+or a local model explicitly, or opt into the separate Auto provider choice;
+QUILL never switches a specifically selected provider silently. The balanced
+Auto tier is applied only when the user chooses Copilot Auto, and changes
+model priority rather than provider selection. OpenAI-compatible and
+Gemini connections selected in Use My Own AI Key can use SDK BYOK for
+multi-step tasks without GitHub sign-in; the chosen provider controls access
+and billing. Credential-free system proxy settings are honored without
+obtaining proxy credentials. Event-history diagnostics contain allowlisted
+event types and counts only, never conversation, document, or tool payloads.
+
+**Value.** Provide a simple, accessible choice of provider while keeping account
+ownership, usage, and cost visible to the user.
 
 ---
 
@@ -12562,19 +12597,24 @@ in both editors (`PROJECT_ROWS`):
 - **R15.** GitHub Copilot and Codex run project tasks, on QUILL's project
   tools. Codex's `dynamicTools` come from the same registry, and `project_edit`
   accepts a unified diff.
-- **R16.** On My own key, two providers run project tasks:
+- **R16.** On My own key, selected providers can run project tasks through
+  their respective harnesses:
   - **Claude**, through the Claude Agent SDK on the person's Anthropic key
     (`quill/ai_packs/claude_tool_session.py`). QUILL's tools are an in-process
     MCP server named `quill`; every built-in is denied by name;
     `permission_mode="default"`; the key goes only into the SDK child's
     environment. It is named "Claude" or "Claude Agent", never "Claude Code".
+  - **OpenAI, Google Gemini, OpenRouter, Ollama Cloud, and custom
+    OpenAI-compatible endpoints**, using Copilot SDK 2 BYOK with the provider
+    and model the user selected in My own key. They do not use GitHub
+    sign-in; the selected provider's key, terms and billing apply.
   - **Ollama on this computer**, practice mode, on QUILL's own loop
     (`quill/core/ai/harness/loop_session.py`, `ollama_tools.py`), loopback
     only. Its label is "Practice, on this computer. Nothing is sent. Slower and
     less capable."
-- **R17.** QUILL's free AI and other own-key providers do not run tasks; the
-  command names what it needs and offers to switch, as Do a Document Task
-  does.
+- **R17.** QUILL's free AI and direct own-key chat routes do not run tasks.
+  Supported My own key providers are listed in R16; the command names the
+  capability it needs and offers to switch when the current AI cannot run it.
 - **R18.** Engine tools (decision 4, `quill/core/ai/vendor_tools.py`): each
   engine's own tools are listed in Engine Tools for This Project, one check box
   each. All are off until checked, per engine and per project, stored in app

@@ -1,14 +1,10 @@
 """In-app, on-demand install planner for the optional SDK harness packs (Phase 10).
 
-QUILL ships the three agentic SDKs — GitHub Copilot, Claude Agent, and OpenAI
-Agents — as **optional extras** (``quill[ai-copilot]`` etc.), never bundled into
-the installer. They are large, fast-moving, and most users want exactly one (the
-account they already pay for), so baking all three into the Inno Setup payload
-would bloat every download for everyone and pin SDK versions to the release
-cadence. Instead a pack is installed *on demand* from inside the app the first
-time the user chooses that engine — the "magical" path: pick Copilot, QUILL
-offers to install it, runs ``pip install`` into the running environment, and the
-pack self-registers on next probe.
+QUILL bundles the Microsoft Copilot SDK in the shared runtime. The Claude Agent
+and OpenAI Agents SDKs remain optional extras, installed on demand after the
+user chooses one and approves the install. This keeps the base app smaller for
+people who do not use those engines, while Copilot works without a separate
+download or install step.
 
 This module is the **pure planner** for that flow. Mirroring
 :mod:`quill.core.ai.device_login`, it never calls out itself: it builds the
@@ -80,10 +76,9 @@ class PackInstall:
 # Keyed by harness/pack id (matches the ``pack_id`` on each SdkHarness). Kept in
 # step with pyproject ``[project.optional-dependencies]`` and the pack modules.
 #
-# GitHub Copilot is not here any more (codex.md 10A.12, Phase 2): its SDK ships
-# in the shared runtime (pyproject ``[runtime]`` pulls ``quill[ai-copilot]``)
-# beside the bundled CLI, so nothing is downloaded at first use and sign-in is
-# the only step. It is listed in :data:`BUNDLED_PACKS` instead.
+# GitHub Copilot is bundled in the shared runtime (pyproject ``[runtime]`` pulls
+# ``quill[ai-copilot]``) with its native runtime library. It is listed in
+# :data:`BUNDLED_PACKS`, so it is never installed on demand.
 PACK_INSTALLS: dict[str, PackInstall] = {
     "claude_agent_sdk": PackInstall(
         pack_id="claude_agent_sdk",

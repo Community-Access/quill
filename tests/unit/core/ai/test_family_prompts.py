@@ -167,7 +167,7 @@ def test_labelled_names_what_the_connection_lacks() -> None:
         "Describe (needs a connection that sees)"
     )
     assert cat.labelled("Describe", ["pictures"], [TEXT, PICTURES]) == "Describe"
-    assert cat.labelled("Organise", ["tools"], [TEXT]).endswith("(needs Copilot or Codex)")
+    assert cat.labelled("Organise", ["tools"], [TEXT]).endswith("(needs an AI that runs tasks)")
 
 
 def test_what_can_i_do_here_is_answered_from_f1() -> None:

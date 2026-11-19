@@ -1,8 +1,8 @@
 """Phase 4a: QUILL's family tools on Copilot, against a fake SDK.
 
 No network and no real SDK. A stand-in ``copilot`` package (with
-``copilot.tools`` and ``copilot.rpc``) mirrors ``github-copilot-sdk`` 1.0.28 as
-read from its source: ``Tool(name, description, handler, parameters,
+``copilot.tools`` and ``copilot.rpc``) mirrors ``microsoft-copilot-sdk`` 2.0.1
+as read from its source: ``Tool(name, description, handler, parameters,
 skip_permission=...)``, a handler that receives a ``ToolInvocation`` and
 returns a ``ToolResult`` (``binary_results_for_llm`` for pictures),
 ``custom-tool`` permission requests carrying ``tool_name``/``args``/
@@ -23,6 +23,7 @@ import time
 import types
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -31,10 +32,10 @@ import pytest
 
 import quill.ai_packs.copilot as pack
 from quill.ai_packs.copilot_tool_session import REFUSAL_FEEDBACK, CopilotToolSession
-from quill.core.ai import copilot_auth, copilot_runtime
+from quill.core.ai import copilot_auth
 from quill.core.ai.activity_log import ActivityLog
 from quill.core.ai.agent_workdir import AgentFolders, agent_folders
-from quill.core.ai.approvals import ApprovalChoice
+from quill.core.ai.approvals import ApprovalChoice, UserInputAnswer
 from quill.core.ai.diff_review import DiffReview
 from quill.core.ai.document_task import DocumentTaskRunner, build_document_tools
 from quill.core.ai.events import AgentEvent, AgentEventKind
@@ -104,6 +105,12 @@ class ToolResult:
 
 
 @dataclass
+class SkillProviderDescriptor:
+    name: str
+    description: str
+
+
+@dataclass
 class ToolInvocation:
     session_id: str = ""
     tool_call_id: str = ""
@@ -141,6 +148,9 @@ class Rec:
     sent: list[str] = field(default_factory=list)
     tool_results: list[ToolResult] = field(default_factory=list)
     permission_answers: list[Any] = field(default_factory=list)
+    session_metadata: list[Any] = field(default_factory=list)
+    deleted_sessions: list[str] = field(default_factory=list)
+    resumed_session_id: str = ""
     stop_hangs: bool = False
     clients_made: int = 0
     turn_started: threading.Event = field(default_factory=threading.Event)
@@ -149,8 +159,8 @@ class Rec:
 def _fake_sdk(rec: Rec) -> types.ModuleType:
     class RuntimeConnection:
         @staticmethod
-        def for_stdio(*, path: str | None = None, args: tuple[str, ...] = ()) -> Any:
-            return types.SimpleNamespace(path=path, args=args)
+        def for_inprocess(*, base_directory: str | None = None) -> Any:
+            return types.SimpleNamespace(base_directory=base_directory)
 
     class CopilotSession:
         session_id = "sess-1"
@@ -158,7 +168,8 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
         def __init__(self, kwargs: dict[str, Any]) -> None:
             self._kwargs = kwargs
             self._handlers: list[Callable[[Any], None]] = []
-            self._tools = {t.name: t for t in kwargs.get("tools") or []}
+            tool_options = kwargs.get("tools") or {}
+            self._tools = {t.name: t for t in tool_options.get("definitions", [])}
             self._turn = 0
             self._abort = asyncio.Event()
 
@@ -180,7 +191,7 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
 
         async def _play(self, script: list[tuple[Any, ...]]) -> None:
             rec.turn_started.set()
-            on_permission = self._kwargs["on_permission_request"]
+            on_permission = self._kwargs["permissions"]["on_request"]
             for step in script:
                 if step[0] == "tool":
                     _, name, args = step
@@ -231,6 +242,14 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
         async def disconnect(self) -> None:
             rec.calls.append("disconnect")
 
+        async def get_events(self) -> list[Any]:
+            return [
+                types.SimpleNamespace(
+                    type="assistant.message",
+                    data=types.SimpleNamespace(content="private conversation text"),
+                )
+            ]
+
     class CopilotClient:
         def __init__(self, **kwargs: Any) -> None:
             rec.clients_made += 1
@@ -241,11 +260,23 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
 
         async def create_session(self, **kwargs: Any) -> CopilotSession:
             rec.session_kwargs = kwargs
-            home = Path(rec.client_kwargs["base_directory"])
+            home = Path(rec.client_kwargs["runtime"].base_directory)
             state = home / "session-state" / "sess-1"
             state.mkdir(parents=True, exist_ok=True)
             (state / "events.jsonl").write_text("{}", encoding="utf-8")
             return CopilotSession(kwargs)
+
+        async def resume_session(self, session_id: str, **kwargs: Any) -> CopilotSession:
+            rec.resumed_session_id = session_id
+            rec.session_kwargs = kwargs
+            return CopilotSession(kwargs)
+
+        async def list_sessions(self) -> list[Any]:
+            rec.calls.append("list_sessions")
+            return list(rec.session_metadata)
+
+        async def delete_session(self, session_id: str) -> None:
+            rec.deleted_sessions.append(session_id)
 
         async def stop(self) -> None:
             rec.calls.append("stop")
@@ -257,6 +288,7 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
 
     module = types.ModuleType("copilot")
     module.__spec__ = importlib.machinery.ModuleSpec("copilot", None)
+    module.__path__ = []  # type: ignore[attr-defined]
     module.CopilotClient = CopilotClient  # type: ignore[attr-defined]
     module.RuntimeConnection = RuntimeConnection  # type: ignore[attr-defined]
     return module
@@ -272,13 +304,18 @@ def rec(monkeypatch: pytest.MonkeyPatch, absent_env) -> Rec:
     rpc = types.ModuleType("copilot.rpc")
     rpc.PermissionDecisionReject = PermissionDecisionReject  # type: ignore[attr-defined]
     rpc.PermissionDecisionApproveOnce = PermissionDecisionApproveOnce  # type: ignore[attr-defined]
+    sdk_session = types.ModuleType("copilot.session")
+    sdk_session.SkillProviderDescriptor = SkillProviderDescriptor  # type: ignore[attr-defined]
     module.tools = tools_mod  # type: ignore[attr-defined]
     module.rpc = rpc  # type: ignore[attr-defined]
+    module.session = sdk_session  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "copilot", module)
     monkeypatch.setitem(sys.modules, "copilot.tools", tools_mod)
     monkeypatch.setitem(sys.modules, "copilot.rpc", rpc)
+    monkeypatch.setitem(sys.modules, "copilot.session", sdk_session)
     absent_env("QUILL_SAFE_MODE", "COPILOT_CLI_PATH", "COPILOT_SDK_DEFAULT_CONNECTION")
-    monkeypatch.setattr(copilot_runtime, "find_copilot_cli", lambda: None)
+    monkeypatch.setattr(pack, "resolve_runtime_path", lambda: Path("runtime.node"))
+    monkeypatch.setattr(pack, "prepare_inprocess_runtime", lambda: Path("runtime.node"))
     monkeypatch.setattr(copilot_auth, "stored_token", lambda name="QUILL": None)
     return recorder
 
@@ -348,6 +385,24 @@ class ScriptedApprover:
 
     def cancel(self) -> None:
         self.cancelled += 1
+
+
+class InputApprover(ScriptedApprover):
+    def __init__(self, answer: UserInputAnswer | None) -> None:
+        super().__init__()
+        self.answer = answer
+        self.requests: list[tuple[str, tuple[str, ...], bool]] = []
+
+    def ask_user(
+        self, question: str, choices: tuple[str, ...], allow_freeform: bool
+    ) -> UserInputAnswer | None:
+        self.requests.append((question, choices, allow_freeform))
+        return self.answer
+
+
+class ApprovalOnly:
+    def ask(self, _tool: FamilyTool, _summary: str) -> ApprovalChoice:
+        return ApprovalChoice.DENY
 
 
 def _agent() -> AgentSpec:
@@ -426,23 +481,129 @@ def test_tool_round_trip_reads_then_applies_a_reviewed_patch(rec: Rec, tmp_path:
 
 def test_session_options_stream_append_and_stay_in_the_app_folder(rec: Rec, tmp_path: Path) -> None:
     registry, _gw = _registry(tmp_path, FakeHost())
-    _session(tmp_path, registry, ScriptedApprover()).run()
+    events: list[AgentEvent] = []
+    _session(tmp_path, registry, ScriptedApprover(), events).run()
     folders = _folders(tmp_path)
-    assert rec.session_kwargs["streaming"] is True
+    assert rec.session_kwargs["events"]["streaming"] is True
     assert rec.session_kwargs["system_message"]["mode"] == "append"
     assert "Be careful." in rec.session_kwargs["system_message"]["content"]
     assert rec.session_kwargs["working_directory"] == str(folders.work)
-    assert rec.client_kwargs["working_directory"] == str(folders.work)
-    assert rec.client_kwargs["base_directory"] == str(folders.home)
-    assert all(t.skip_permission is False for t in rec.session_kwargs["tools"])
+    assert "working_directory" not in rec.client_kwargs
+    assert rec.client_kwargs["runtime"].base_directory == str(folders.home)
+    assert all(t.skip_permission is False for t in rec.session_kwargs["tools"]["definitions"])
+    assert rec.session_kwargs["skills"]["enabled"] is False
+    completion = next(e for e in events if e.kind is AgentEventKind.AGENT_COMPLETED)
+    assert completion.detail["event_types"] == "assistant.message=1"
+    assert "private conversation text" not in str(completion.detail)
+
+
+def test_hooks_emit_safe_accessible_progress_without_changing_tool_permissions(
+    rec: Rec, tmp_path: Path
+) -> None:
+    registry, _gw = _registry(tmp_path, FakeHost())
+    events: list[AgentEvent] = []
+    _session(tmp_path, registry, ScriptedApprover(), events).run()
+    handlers = rec.session_kwargs["hooks"]["handlers"]
+    request = {
+        "toolName": "doc_read_document",
+        "toolArgs": {"document": "private document text"},
+    }
+
+    assert handlers["on_pre_tool_use"](request, {}) is None
+    assert handlers["on_post_tool_use"](request, {}) is None
+    assert handlers["on_post_tool_use_failure"](request, {}) is None
+    assert handlers["on_subagent_start"]({"agentDisplayName": "Repository helper"}, {}) is None
+    assert handlers["on_subagent_stop"]({"agentDisplayName": "Repository helper"}, {}) is None
+
+    assert [event.kind for event in events[-5:]] == [
+        AgentEventKind.TOOL_CALL_REQUESTED,
+        AgentEventKind.TOOL_CALL_COMPLETED,
+        AgentEventKind.WARNING,
+        AgentEventKind.AGENT_THINKING_SUMMARY,
+        AgentEventKind.AGENT_THINKING_SUMMARY,
+    ]
+    assert [event.summary for event in events[-5:]] == [
+        "Copilot is starting doc read document.",
+        "Copilot finished doc read document.",
+        "Copilot could not complete doc read document.",
+        "Copilot started a helper agent Repository helper.",
+        "Copilot finished a helper agent Repository helper.",
+    ]
+    assert all(event.detail == {"announce": "true"} for event in events[-5:])
+    assert "private document text" not in repr(events[-5:])
+
+
+def test_user_input_request_uses_the_approver_and_returns_the_answer(
+    rec: Rec, tmp_path: Path
+) -> None:
+    registry, _gw = _registry(tmp_path, FakeHost())
+    approver = InputApprover(UserInputAnswer("Use the shorter title.", was_freeform=False))
+    _session(tmp_path, registry, approver).run()
+    handler = rec.session_kwargs["interaction"]["on_user_input_request"]
+    response = asyncio.run(
+        handler(
+            {
+                "question": "Which title should I use?",
+                "choices": ["Short", "Long"],
+                "allowFreeform": False,
+            },
+            {"session_id": "session"},
+        )
+    )
+
+    assert response == {"answer": "Use the shorter title.", "wasFreeform": False}
+    assert approver.requests == [("Which title should I use?", ("Short", "Long"), False)]
+
+
+def test_cancelling_user_input_is_explicit_and_never_becomes_a_guess(
+    rec: Rec, tmp_path: Path
+) -> None:
+    registry, _gw = _registry(tmp_path, FakeHost())
+    _session(tmp_path, registry, InputApprover(None)).run()
+    handler = rec.session_kwargs["interaction"]["on_user_input_request"]
+    response = asyncio.run(handler({"question": "Which one?"}, {"session_id": "session"}))
+
+    assert response == {
+        "answer": "The user chose not to answer.",
+        "wasFreeform": False,
+    }
+
+
+def test_user_input_fails_explicitly_when_no_interaction_bridge_exists(
+    rec: Rec, tmp_path: Path
+) -> None:
+    registry, _gw = _registry(tmp_path, FakeHost())
+    _session(tmp_path, registry, ApprovalOnly()).run()
+    handler = rec.session_kwargs["interaction"]["on_user_input_request"]
+    with pytest.raises(RuntimeError, match="accessible user-input dialog"):
+        asyncio.run(handler({"question": "Which one?"}, {"session_id": "session"}))
+
+
+@pytest.mark.parametrize(
+    ("payload", "message"),
+    [
+        ({}, "without a question"),
+        ({"question": "Pick", "choices": "not a list"}, "invalid choices"),
+        ({"question": "Pick", "allowFreeform": "yes"}, "invalid freeform flag"),
+    ],
+)
+def test_user_input_rejects_malformed_requests(
+    rec: Rec, tmp_path: Path, payload: dict[str, Any], message: str
+) -> None:
+    registry, _gw = _registry(tmp_path, FakeHost())
+    _session(tmp_path, registry, InputApprover(None)).run()
+    handler = rec.session_kwargs["interaction"]["on_user_input_request"]
+
+    with pytest.raises(ValueError, match=message):
+        asyncio.run(handler(payload, {"session_id": "session"}))
 
 
 def test_g3_the_offered_tool_list_holds_only_quill_tools(rec: Rec, tmp_path: Path) -> None:
     registry, _gw = _registry(tmp_path, FakeHost())
     session = _session(tmp_path, registry, ScriptedApprover())
     session.run()
-    offered = rec.session_kwargs["available_tools"]
-    defined = [t.name for t in rec.session_kwargs["tools"]]
+    offered = rec.session_kwargs["tools"]["available_tools"]
+    defined = [t.name for t in rec.session_kwargs["tools"]["definitions"]]
     assert offered and offered == defined == registry.wire_names()
     assert offered == session.recorded_tool_names
     assert all(name.startswith("doc_") for name in offered)
@@ -471,7 +632,7 @@ def test_a_custom_tool_that_is_not_ours_is_rejected(rec: Rec, tmp_path: Path) ->
     session = _session(tmp_path, registry, ScriptedApprover())
     rec.turns = [[("text", "x")]]
     session.run()
-    on_permission = rec.session_kwargs["on_permission_request"]
+    on_permission = rec.session_kwargs["permissions"]["on_request"]
     # The session is over; call the callback directly on a fresh loop.
     answer = asyncio.run(
         on_permission(PermissionRequestCustomTool("", "bash", {}, "c1"), {"session_id": "s"})
@@ -543,6 +704,188 @@ def test_session_files_are_swept_at_start_and_deleted_at_task_end(rec: Rec, tmp_
         _session(tmp_path, registry, ScriptedApprover()).run()
     assert seen_at_create == [False]  # swept before the child started
     assert not folders.root.exists()  # and nothing left after the task
+
+
+def test_explicit_session_retention_preserves_sdk_history_but_clears_work(
+    rec: Rec, tmp_path: Path
+) -> None:
+    folders = agent_folders("copilot", "QUILL", base=tmp_path / "ai", retain_home=True)
+    existing = folders.home / "session-state" / "previous" / "events.jsonl"
+    existing.parent.mkdir(parents=True)
+    existing.write_text("retained", encoding="utf-8")
+    registry, _gw = _registry(tmp_path, FakeHost())
+
+    session = pack.CopilotHarness().start_tool_session(
+        _agent(),
+        AIContext(prompt="Fix the headings."),
+        registry,
+        ScriptedApprover(),
+        lambda _event: None,
+        folders=folders,
+    )
+    assert isinstance(session, CopilotToolSession)
+    session.run()
+
+    assert existing.read_text(encoding="utf-8") == "retained"
+    assert rec.session_kwargs["session_id"] == session.session_id
+    assert rec.session_kwargs["name"] == "Doc"
+    assert not folders.work.exists()
+
+
+def test_keep_sessions_preference_selects_persistent_app_folders(rec: Rec, tmp_path: Path) -> None:
+    from quill.core.ai.copilot_preferences import CopilotPreferences, save_copilot_preferences
+
+    data_dir = tmp_path / "app"
+    save_copilot_preferences(
+        CopilotPreferences(auto_tier="efficiency", keep_sessions=True, long_context=True), data_dir
+    )
+    registry, _gw = _registry(tmp_path, FakeHost())
+    session = pack.CopilotHarness(data_dir=data_dir).start_tool_session(
+        _agent(),
+        AIContext(prompt="Fix the headings."),
+        registry,
+        ScriptedApprover(),
+        lambda _event: None,
+    )
+    assert isinstance(session, CopilotToolSession)
+    assert session._folders.retain_home
+    session.run()
+    assert session._folders.home.exists()
+    assert rec.session_kwargs["github"]["capi"]["auto_tier"] == "efficiency"
+    assert rec.session_kwargs["state"]["infinite_sessions"] == {"enabled": True}
+
+
+def test_long_context_stays_disabled_without_session_retention(rec: Rec, tmp_path: Path) -> None:
+    from quill.core.ai.copilot_preferences import CopilotPreferences, save_copilot_preferences
+
+    data_dir = tmp_path / "app"
+    save_copilot_preferences(CopilotPreferences(long_context=True), data_dir)
+    registry, _gw = _registry(tmp_path, FakeHost())
+    session = pack.CopilotHarness(data_dir=data_dir).start_tool_session(
+        _agent(),
+        AIContext(prompt="Fix the headings."),
+        registry,
+        ScriptedApprover(),
+        lambda _event: None,
+    )
+    assert isinstance(session, CopilotToolSession)
+    assert session._create_kwargs()["state"]["infinite_sessions"] == {"enabled": False}
+
+
+def test_saved_sessions_list_only_local_metadata_and_delete_selected_session(
+    rec: Rec, tmp_path: Path
+) -> None:
+    data_dir = tmp_path / "app"
+    rec.session_metadata = [
+        types.SimpleNamespace(
+            session_id="older",
+            modified_time=datetime(2026, 1, 1, 12, 0),
+            is_remote=False,
+            summary="private conversation",
+        ),
+        types.SimpleNamespace(
+            session_id="newer",
+            modified_time=datetime(2026, 2, 1, 12, 0),
+            is_remote=False,
+            summary="also private",
+        ),
+        types.SimpleNamespace(
+            session_id="remote",
+            modified_time=datetime(2026, 3, 1, 12, 0),
+            is_remote=True,
+            summary="remote conversation",
+        ),
+    ]
+    harness = pack.CopilotHarness(data_dir=data_dir)
+
+    sessions = harness.list_saved_sessions()
+    harness.delete_saved_session("newer")
+
+    assert [session.session_id for session in sessions] == ["newer", "older"]
+    assert sessions[0].modified_at == "2026-02-01 12:00"
+    assert "private" not in repr(sessions)
+    assert rec.deleted_sessions == ["newer"]
+    assert rec.calls.count("start") == 2
+    assert rec.calls.count("stop") == 2
+
+
+def test_selected_saved_session_is_resumed_once_with_current_safety_options(
+    rec: Rec, tmp_path: Path
+) -> None:
+    from quill.core.ai.copilot_preferences import (
+        CopilotPreferences,
+        load_copilot_preferences,
+        save_copilot_preferences,
+    )
+
+    data_dir = tmp_path / "app"
+    save_copilot_preferences(
+        CopilotPreferences(keep_sessions=True, resume_session_id="saved-session"), data_dir
+    )
+    registry, _gw = _registry(tmp_path, FakeHost())
+    session = pack.CopilotHarness(data_dir=data_dir).start_tool_session(
+        _agent(),
+        AIContext(prompt="Continue this work."),
+        registry,
+        ScriptedApprover(),
+        lambda _event: None,
+    )
+
+    assert isinstance(session, CopilotToolSession)
+    result = session.run()
+
+    assert result.status == "completed"
+    assert rec.resumed_session_id == "saved-session"
+    assert "session_id" not in rec.session_kwargs
+    assert "name" not in rec.session_kwargs
+    assert rec.session_kwargs["tools"]["available_tools"]
+    assert rec.session_kwargs["permissions"]["on_request"]
+    assert load_copilot_preferences(data_dir).resume_session_id == ""
+    assert session.session_id == "saved-session"
+
+
+def test_enabled_ai_library_skills_are_shared_only_after_opt_in(
+    rec: Rec, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.core.ai.copilot_preferences import (
+        CopilotPreferences,
+        save_copilot_preferences,
+    )
+    from quill.core.skill_pack import SQP_SCHEMA
+    from quill.core.skill_store import SkillStore
+
+    data_dir = tmp_path / "app"
+    save_copilot_preferences(CopilotPreferences(share_enabled_skills=True), data_dir)
+    monkeypatch.setattr("quill.core.paths.app_data_dir", lambda: data_dir)
+    store = SkillStore(data_dir / "skills")
+    source = (
+        f"---\nschema: {SQP_SCHEMA}\nname: Enabled skill\n"
+        "description: Available only after opt-in.\n"
+        "author: Test\nversion: 1.0.0\n---\n\n"
+        "# Step 1: Work\n\nUse {selection}.\n"
+    )
+    store.add_source(source)
+    store.add_source(source.replace("Enabled skill", "Disabled skill"))
+    store.disable("disabled-skill")
+    registry, _gw = _registry(tmp_path, FakeHost())
+    session = pack.CopilotHarness(data_dir=data_dir).start_tool_session(
+        _agent(),
+        AIContext(prompt="Fix the headings."),
+        registry,
+        ScriptedApprover(),
+        lambda _event: None,
+        folders=_folders(tmp_path),
+    )
+    assert isinstance(session, CopilotToolSession)
+
+    kwargs = session._create_kwargs()
+    provider = kwargs["skills"]["provider"]
+    listed = provider.list_skills()
+    assert [(skill.name, skill.description) for skill in listed] == [
+        ("Enabled skill", "Available only after opt-in.")
+    ]
+    assert provider.read_skill("Enabled skill") == source
+    assert provider.read_skill("Disabled skill") is None
 
 
 def _run_in_thread(session: CopilotToolSession) -> tuple[threading.Thread, list[Any]]:
@@ -644,7 +987,7 @@ def test_document_task_runner_ends_with_a_text_summary(rec: Rec, tmp_path: Path)
         activity=ActivityLog(tmp_path / "activity.json"),
     )
     with pytest.MonkeyPatch.context() as mp:
-        mp.setattr(pack, "agent_folders", lambda engine, name: _folders(tmp_path))
+        mp.setattr(pack, "agent_folders", lambda engine, name, **_kwargs: _folders(tmp_path))
         outcome = runner.run("Tidy it.")
     assert outcome.ok
     assert outcome.summary.startswith("Done. 1 change applied: Changed the document.")

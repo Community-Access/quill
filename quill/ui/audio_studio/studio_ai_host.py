@@ -6,9 +6,9 @@ in QUILL, with a question between the two. Now it runs the shared hosted AI
 (:mod:`quill.ui.hosted_ai_commands`) the way the editors, Quill Radio and QUILL
 Cast do, through :class:`StudioAiHost` -- the five things the shared code asks
 of "the app" -- and :class:`StudioAiMixin`, the hooks. So Studio gets Choose
-Your AI with all five connections, Which AI Am I Using, the one AI Usage list,
-the AI status cell and capability gating, from the same code as everyone else,
-and every picture it sends goes to the connection chosen there.
+Your AI with five connections plus Auto, Which AI Am I Using, the one AI Usage
+list, the AI status cell and capability gating, from the same code as everyone
+else, and every picture it sends goes to the connection chosen there.
 
 What Studio *does* with AI -- Ask about the recording, Describe a Picture, and
 the Screenshot Inspector's questions -- is

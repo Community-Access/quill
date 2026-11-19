@@ -35,15 +35,20 @@ These say no, and do not run tasks:
 - **My own key** with any other provider: OpenAI, Google Gemini, OpenRouter,
   Ollama Cloud or a service of your own. These answer in text only.
 
-If the AI you have chosen cannot run tasks, nothing is sent: QUILL tells you,
-and offers to switch.
+If you chose a specific AI that cannot run tasks, nothing is sent: QUILL tells
+you and offers to switch. You can instead choose **Auto** in Choose Your AI.
+Auto is an opt-in provider choice; for a task it selects a ready AI that can
+run tasks and announces the provider and destination before the task starts.
 
 ## Choosing
 
 Press `Ctrl+4`, move to the row you want, and press **Use This**, or **Sign
 In...** if you have not signed in yet. For My own key, choose the provider and
-model in that row's own window. Your choice applies to Do a Document Task and
-Do a Project Task alike.
+model in that row's own window. Choose **Auto** only if you want each action
+to use a ready provider that supports it; QUILL announces the destination
+before sending. Your choice applies to Do a Document Task and Do a Project
+Task alike. A document or project task is never automatically retried after a
+failure because the provider may already have performed an approved action.
 
 Some plain advice:
 
@@ -58,11 +63,13 @@ Some plain advice:
 
 ## Every engine behaves the same in front of you
 
-QUILL gives every engine the same project tools, and keeps the engine's own
-file and shell tools off. That is what makes the promises in this manual hold
-whichever one you choose:
+By default, QUILL gives every engine the same project tools and keeps the
+engine's own file and shell tools off. You can enable selected vendor tools for
+one project in **Engine Tools for This Project...**; each use still needs
+approval. This changes how some safety guarantees work:
 
-- every change waits in Review Changes before it reaches your disk;
+- every change made with QUILL's tools waits in Review Changes before it
+  reaches your disk; a vendor edit tool writes directly to disk;
 - every command asks first, in the same window, with the same warnings;
 - the plan, the result sentences and the closing summary are worded by QUILL,
   not by the engine;
@@ -73,8 +80,10 @@ from what the model says it did.
 
 ## How each engine is held
 
-- **Copilot** sees only QUILL's tools. Every other kind of permission it asks
-  for is refused and logged.
+- **Copilot** sees QUILL's tools by default. Its file, shell and web tools are
+  off until you enable them for this project; each use still asks first.
+  Vendor edits bypass Review Changes, and the shell can do anything your
+  account can. MCP and unsupported permissions are refused and logged.
 - **Codex** runs with a read-only sandbox, asks for approval of anything
   untrusted, and has its built-in tools off. Its file changes arrive as a
   unified diff, which goes to Review Changes like any other.

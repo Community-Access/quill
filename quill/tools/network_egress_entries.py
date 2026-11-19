@@ -788,15 +788,11 @@ _REVIEWED_EGRESS: dict[str, str] = {
 }
 
 
-# Child-process egress: a bundled agent runtime QUILL starts, whose network
-# calls happen inside that child, not at a urlopen in quill/ source -- so the
-# AST scan above cannot see them, and an entry in _REVIEWED_EGRESS would be
-# reported stale. A new kind of entry, then: keyed "<path>::<function>" at the
-# place QUILL launches (or, before the launcher exists, locates) the binary.
-# tests/unit/tools/test_network_egress_audit.py checks every key still names a
-# real function, so an entry cannot outlive its launcher unnoticed.
-_CHILD_PROCESS_EGRESS: dict[str, str] = {
-    # The Codex engine and the commands a person approves for an agent.
+# Egress inside SDKs, subprocesses and other external runtimes is not visible
+# to the AST scan. Entries are keyed "<path>::<function>" at the integration
+# point, and the audit test checks that each key still names a real function.
+_NON_AST_EGRESS: dict[str, str] = {
+    # The Copilot SDK native runtime and the commands a person approves for an agent.
     **AGENT_EGRESS,
     "core/lsp/client.py::start": (
         "None, by design: a note so nobody has to wonder. The language servers "
@@ -810,24 +806,21 @@ _CHILD_PROCESS_EGRESS: dict[str, str] = {
         "the open document and its project folder and send nothing anywhere."
     ),
     "ai_packs/copilot.py::_make_invoke": (
-        "The GitHub Copilot engine. The Copilot SDK starts the bundled Copilot "
-        "CLI (tools/copilot/copilot.exe, pinned by SHA-256 in "
-        "core/ai/copilot_runtime.py and checked before every launch; "
-        "COPILOT_SKIP_CLI_DOWNLOAD=1 so it never fetches another) and the CLI "
-        "talks to GitHub's Copilot service over HTTPS (api.github.com and the "
+        "The GitHub Copilot engine. The Copilot SDK 2 loads QUILL's pinned "
+        "native runtime (tools/copilot/runtime.node) in-process and makes "
+        "HTTPS calls to GitHub's Copilot service (api.github.com and the "
         "Copilot API hosts; gate G5 records the exact list). What is sent: the "
         "agent's instructions, the person's prompt and the document context "
         "they chose. Reached only when the person has chosen GitHub Copilot as "
         "the engine and runs an AI command; never in the background. The "
-        "GitHub token travels as the SDK's explicit github_token argument, "
-        "never in the child's environment (copilot_child_env strips "
-        "GITHUB_TOKEN, GH_TOKEN and COPILOT_GITHUB_TOKEN). No vendor tools are "
+        "GitHub token is passed explicitly in the SDK's github.token option. "
+        "No vendor tools are "
         "offered and every permission request is refused. Safe Mode turns AI "
         "off, so the engine never starts under it."
     ),
     "ai_packs/copilot.py::_tool_client": (
-        "The same bundled, pinned Copilot CLI, started for a multi-step agent "
-        "task (Phase 4a). Same hosts and the same explicit-token rule as the "
+        "The same SDK 2 in-process native runtime, used for a multi-step agent "
+        "task (Phase 4a). Same hosts and explicit github.token option as the "
         "entry above. What is sent: the agent's instructions, the person's "
         "instruction and follow-ups, and the results of the QUILL tools the "
         "agent calls (document text it reads); the session is offered only "
@@ -841,9 +834,9 @@ _CHILD_PROCESS_EGRESS: dict[str, str] = {
         "My GitHub Copilot as a hosted-AI route (codex.md 10A.12): single "
         "requests, conversations, the model list (models.list) and GitHub's "
         "quota count (account.getQuota). The client is made by the pack's own "
-        "client_kwargs, so it is the same bundled, SHA-256-pinned Copilot CLI "
-        "over explicit stdio, the same scrubbed child environment and the same "
-        "explicit github_token as the entries above, talking to the same "
+        "client_kwargs, so it loads the same bundled, SHA-256-pinned native "
+        "runtime in-process and uses the same explicit github.token option, "
+        "talking to the same "
         "GitHub hosts. What is sent: the person's prompt, the instruction text "
         "for the command (with the family text-only line), any earlier turns "
         "of the conversation kept in the app's window (resent each turn; "

@@ -175,6 +175,16 @@ def test_choose_your_ai_refuses_when_the_area_is_off(lite_window, choose_window,
     assert choose_window.last is None
 
 
+def test_ai_hub_command_opens_the_shared_hub(lite_window, monkeypatch):
+    win = lite_window("text")
+    opened: list[str] = []
+    monkeypatch.setattr(win, "_ai_open_hub", lambda: opened.append("hub"))
+
+    (lambda w: w.cmd_ai_hub())(win)
+
+    assert opened == ["hub"]
+
+
 def test_with_no_ai_in_use_an_ai_command_opens_the_window_and_says_so(
     lite_window, choose_window, service, monkeypatch
 ):

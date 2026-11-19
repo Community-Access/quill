@@ -296,7 +296,7 @@ class AiMenuMixin:
         # gone entirely — the menu keeps only the Hub and the Use AI switch.
         ai_menu.Append(
             self._id_ai_hub,
-            self._menu_label(_("AI &Hub..."), "tools.ai_hub"),
+            self._menu_label(_("AI Hu&b..."), "tools.ai_hub"),
         )
         ai_menu.AppendSeparator()
         # "Forget API Key" moved into the AI Hub as a per-provider action

@@ -18,7 +18,8 @@ from quill.core.ai.copilot_chat_parts import CopilotModel
 from quill.core.ai.copilot_quota import CopilotQuota, QuotaBucket
 from quill.core.ai.copilot_state import CopilotReadiness
 from quill.ui import hosted_ai_copilot_route as route
-from quill.ui import hosted_ai_service as service_module
+from quill.ui import hosted_ai_service_requests as request_module
+from quill.ui import hosted_ai_service_support as task_module
 from quill.ui.hosted_ai_service import AiService
 
 
@@ -95,11 +96,13 @@ def world(tmp_path, monkeypatch):
         else:
             on_success(name, result)
 
-    monkeypatch.setattr(service_module, "_submit", submit)
-    monkeypatch.setattr(service_module, "_call_after", lambda func, *args: func(*args))
+    monkeypatch.setattr(request_module, "_submit", submit)
+    monkeypatch.setattr(request_module, "_call_after", lambda func, *args: func(*args))
+    monkeypatch.setattr(task_module, "_submit", submit)
+    monkeypatch.setattr(task_module, "_call_after", lambda func, *args: func(*args))
     chat = _Chat()
     monkeypatch.setattr(route.CopilotRouteMixin, "copilot_chat", lambda _self: chat)
-    ready = CopilotReadiness(client_id=True, sdk=True, cli=True, signed_in=True)
+    ready = CopilotReadiness(client_id=True, sdk=True, runtime=True, signed_in=True)
     monkeypatch.setattr(route.CopilotRouteMixin, "copilot_readiness", lambda _self: ready)
     monkeypatch.setattr(route.CopilotRouteMixin, "codex_available", property(lambda _s: True))
 
@@ -248,6 +251,26 @@ def test_copilot_tasks_run_copilots_tool_harness_under_this_apps_name(world) -> 
     assert harness.id == "copilot"
     assert harness._harness.agent_name == "QUILL Lite"
     assert world.make("free").agent_harness() is None
+
+
+def test_own_key_agent_tasks_use_the_saved_provider_and_model(world, monkeypatch) -> None:
+    from quill.core import assistant_ai
+    from quill.core.ai import own_key_providers
+
+    monkeypatch.setattr(
+        own_key_providers, "host_for", lambda _provider: "https://api.openai.com/v1"
+    )
+    monkeypatch.setattr(assistant_ai, "stored_provider_api_key", lambda _provider: "sk-stored")
+    service = world.make("own_key")
+    app = service._app
+    app.settings.ai_own_key_model = "gpt-selected"
+
+    harness = service.agent_harness("own_key")
+
+    assert harness.id == "copilot_byok"
+    assert harness.capabilities().requires_oauth is False
+    assert harness._connection.provider == "openai"
+    assert harness._connection.model == "gpt-selected"
 
 
 def test_copilot_free_lists_only_auto(world) -> None:

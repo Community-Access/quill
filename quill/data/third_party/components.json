@@ -744,8 +744,26 @@
       "pypi": "feedparser-sgmllib"
     },
     {
+      "id": "microsoft-copilot-sdk",
+      "name": "Microsoft Copilot SDK (copilot)",
+      "group": "runtime",
+      "version": "2.0.1",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright GitHub, Inc.",
+      "homepage": "https://github.com/microsoft/copilot-sdk",
+      "what": "The Python SDK for My GitHub Copilot, using the SDK 2 in-process native runtime. Ships in the shared runtime; licensed under MIT with GitHub's copyright.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "microsoft-copilot-sdk"
+    },
+    {
       "id": "github-copilot-sdk",
-      "name": "GitHub Copilot SDK (copilot)",
+      "name": "GitHub Copilot SDK 1.x (legacy runtime package)",
       "group": "runtime",
       "version": "1.0.28",
       "licenses": [
@@ -754,11 +772,12 @@
       "license_label": "MIT",
       "copyright": "Copyright GitHub, Inc.",
       "homepage": "https://github.com/github/copilot-sdk",
-      "what": "The Python side of the My GitHub Copilot connection: it starts the bundled Copilot CLI in tools\\copilot and talks to it. Ships in the shared runtime unmodified; its licence text is the repository's LICENSE at tag v1.0.28 (SHA-256 2510b446bc1f0cf9702453075d20cd88631e20e5642658edb7325d9c1eb534f7), the MIT text with GitHub's copyright.",
+      "what": "The legacy 1.x Python SDK distribution remains named in the committed shared-runtime inventory. The active source dependency is Microsoft Copilot SDK 2.0.1.",
+      "review": "Remove this legacy entry only after a verified SDK 2-only Windows runtime build confirms github-copilot-sdk is absent from the runtime inventory.",
       "products": [
         "all"
       ],
-      "delivery": "bundled",
+      "delivery": "shared-runtime",
       "pypi": "github-copilot-sdk"
     },
     {
@@ -2104,17 +2123,17 @@
       "delivery": "bundled"
     },
     {
-      "id": "copilot-cli",
-      "name": "GitHub Copilot CLI runtime (copilot-runtime.exe, runtime.node)",
+      "id": "copilot-sdk-runtime",
+      "name": "GitHub Copilot SDK native runtime (runtime.node)",
       "group": "runtime",
-      "version": "1.0.105",
+      "version": "1.0.114",
       "licenses": [
         "GitHub-Copilot-CLI"
       ],
       "license_label": "GitHub Copilot CLI License (proprietary; redistribution of unmodified copies permitted)",
       "copyright": "Copyright (c) GitHub, Inc.",
-      "homepage": "https://github.com/github/copilot-cli",
-      "what": "The engine behind the My GitHub Copilot connection, run as a separate program: the runtime bundle the GitHub Copilot SDK installs for itself, taken from GitHub's github-copilot-1.0.105-win32-x64 package. Ships unmodified in the shared runtime's tools\\copilot with its licence as COPILOT-CLI-LICENSE.txt. The bundle also carries components GitHub ships inside it -- Microsoft's sign-in libraries (OneAuthInterop.dll, with its licence as OneAuthInterop.LICENSE.txt, and msalruntime.dll), and Microsoft's tgrep -- each signed by GitHub or Microsoft and covered by that licence -- and ripgrep, which has its own entry.",
+      "homepage": "https://github.com/github/copilot-sdk",
+      "what": "The pinned native runtime library loaded by microsoft-copilot-sdk 2.0.1 in-process. Ships byte-for-byte unchanged as tools\\copilot\\runtime.node with the GitHub Copilot CLI redistribution licence beside it; the SDK does not ship or launch a CLI executable.",
       "products": [
         "all"
       ],
@@ -2132,7 +2151,7 @@
       "license_label": "Unlicense or MIT (your choice)",
       "copyright": "Copyright (c) 2015 Andrew Gallant",
       "homepage": "https://github.com/BurntSushi/ripgrep",
-      "what": "A fast text search program the GitHub Copilot CLI runtime carries in tools\\copilot\\ripgrep, shipped inside GitHub's package unmodified. Its licence texts are LICENSE-MIT (SHA-256 0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f) and UNLICENSE (SHA-256 7e12e5df4bae12cb21581ba157ced20e1986a0508dd10d0e8a4ab9a4cf94e85c) at ripgrep tag 15.0.0, the version the bundled rg.exe reports.",
+      "what": "A fast text search program used by QUILL's IntelliSense layer. Ships as tools\\ripgrep\\rg.exe with its upstream MIT or Unlicense text beside it; it is not part of the Copilot SDK runtime.",
       "products": [
         "all"
       ],

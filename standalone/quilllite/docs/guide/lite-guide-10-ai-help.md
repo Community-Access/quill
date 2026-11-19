@@ -364,7 +364,8 @@ the model can read at once, and the window tells you if that happens.
 ## Choose Your AI
 
 **Choose Your AI** is the one window for where your AI comes from: QUILL's free
-AI, your ChatGPT plan, your GitHub Copilot, Codex or your own key. Press **Choose Your AI** (**Ctrl+4**), or
+AI, your ChatGPT plan, your GitHub Copilot, Codex, your own key or the optional
+Auto choice. Press **Choose Your AI** (**Ctrl+4**), or
 choose **Tools > AI > Choose Your AI...**. Focus lands on the list, on the one
 in use. There are five things in the window, in Tab order:
 
@@ -391,9 +392,9 @@ because your screen reader already reads each row. It speaks only what happened:
 "Now using My ChatGPT plan.", "Signed in to My ChatGPT plan. It is now in use.",
 or "Signed out. No AI is in use until you choose one." If no AI is in use, the
 next AI command opens this window and says "No AI is in use. Choose one."
-QUILL Lite never moves you to another AI by itself: not when you sign out, not
-when a key goes missing, not when a sign-in ends or a limit is reached. Each of
-those is said once, nothing is sent, and the choice stays yours.
+When you select a specific AI, QUILL Lite never moves you to another one by
+itself: not when you sign out, a key goes missing, a sign-in ends or a limit
+is reached. Each is said once, nothing is sent, and the choice stays yours.
 
 **Use My Own AI Key** (**Alt+F2**), **Use My ChatGPT Subscription** (**Alt+F5**)
 and **Connect or Sign Out** (**Ctrl+Alt+Shift+F10**) keep their keys and open
@@ -404,18 +405,54 @@ small step with a short code from GitHub. The code is spaced out so your screen
 reader reads one character at a time, it is said once, and it is already on the
 clipboard. Press **Open the Page**, paste or type the code on GitHub's page and
 approve QUILL Lite. The step closes by itself and you hear "Signed in to My
-GitHub Copilot. It is now in use." **Cancel** stops waiting at once. Copilot
-Free works too: its only model is "Auto (Copilot Free chooses)". QUILL Lite
-signs in to GitHub on its own, separately from QUILL.
+GitHub Copilot. It is now in use." **Cancel** stops waiting at once. GitHub
+determines which Copilot models and usage allowance are available to your
+account, and bills any usage under that account. QUILL Lite does not provide
+free Copilot access. The model list comes from GitHub and may differ by account
+or plan.
 
-Signing in to GitHub from inside QUILL Lite needs QUILL Lite's own registration
-with GitHub. Until a build carries it, the row says "not available yet",
-**About this connection** says "Not available yet: GitHub sign-in for QUILL
-Lite has not been registered, so it comes in a later update.", and **Sign
-In...** says the same instead of opening the step. Once you are signed in, the
-pad, Ask, the Prompt Library and Ask About an Image (on a Copilot model that
-sees) go to Copilot on your plan. A Copilot error is said once; nothing is
-retried or switched.
+QUILL Lite includes the Copilot SDK runtime, but that does not include a
+Copilot subscription or allowance. If GitHub sign-in is unavailable or the
+bundled runtime cannot start, QUILL Lite reports that and leaves your other AI
+choices available. Your Copilot sign-in is separate from QUILL and from the
+GitHub sign-in QUILL uses for repository features. Once signed in, the pad,
+Ask, the Prompt Library and Ask About an Image (on a Copilot model that sees)
+go to Copilot on your plan. When Copilot is the specific provider in use, an
+error is said once; nothing is retried or switched.
+
+**Copilot options are in AI Hub > Sessions.** Auto priority is Efficiency,
+Balanced or Intelligence, and applies only when you choose Copilot Auto; it
+changes model priority within Copilot, not which AI provider is in use. This
+is separate from the **Auto** row, which you can explicitly choose to route
+each action to a ready provider that supports it. Session retention, long-task
+context summaries and sharing enabled AI Library skills are off until you opt
+in. Long-task summaries require retention and may use additional Copilot
+account usage. With retention on, Refresh
+lists saved local session IDs and update times. Choose **Use selected session
+for the next task**, save the AI Hub settings with **OK**, and the next Copilot
+task continues that conversation. Permanent deletion requires an explicit
+confirmation check box. Conversation content is not displayed in the list,
+and temporary work files are still cleared. You can turn retention off and
+start another Copilot task to remove retained session data. Credential-free
+system proxy settings are honored; QUILL Lite does not collect proxy credentials.
+
+For multi-step tasks, choosing **My own key** can use the Copilot SDK with
+OpenAI-compatible or Gemini providers. Your selected provider's key, terms and
+billing apply; this does not use or require GitHub Copilot sign-in.
+
+**Auto is optional and never selected for you.** Choose its row in Choose Your
+AI to use a ready provider that supports each action. Before QUILL Lite sends
+a request, it says which provider will receive it; for Ollama on this computer,
+it says the request stays on your computer. A text request, image request and
+document task may use different providers. If none can perform an action,
+nothing is sent.
+
+For a connectivity failure during a one-off request, conversation or image
+request, QUILL Lite may offer one retry through another eligible provider. The
+confirmation says where the same request will go and that it may count toward
+that provider's limits or billing. **No** sends no retry. A limit, sign-in
+failure or document task is never automatically retried. Selecting a specific
+provider instead of Auto means failures never switch you to another provider.
 
 **Codex** runs on your ChatGPT plan with the same sign-in, so once you are
 signed in to your plan, **Use This** on **Codex, for tasks** is one key. While
@@ -460,14 +497,14 @@ nothing and asks whether to switch to one that can, with **Yes** as the default.
 ## Do a Document Task
 
 **Do a Document Task** (**Ctrl+3**), in **Tools > AI**, hands a job with several
-steps to GitHub Copilot or Codex, whichever is in use: "Fix the heading levels,
-then build a table of contents", or "Turn these notes into actions grouped by
-owner." On any other AI its name says "(needs Copilot or Codex)" and pressing
-it offers to switch.
+steps to GitHub Copilot, Codex or a supported provider you chose in My own key:
+"Fix the heading levels, then build a table of contents", or "Turn these notes
+into actions grouped by owner." On another AI its name says "(needs an AI that
+runs tasks)" and pressing it offers to switch.
 
 The window has six things, in Tab order: **Conversation**, a read-only record
-of the task; **Status**, which says "Using GitHub Copilot" or "Using Codex on
-your ChatGPT plan"; **Instruction**, where focus starts; **Send**; **Stop**; and
+of the task; **Status**, which names GitHub Copilot, Codex or your selected
+own-key AI; **Instruction**, where focus starts; **Send**; **Stop**; and
 **Close**. Type what you want done and press **Enter**. While the task runs,
 what you type goes to it as a follow-up. **Stop** ends it at once, and
 **Close** stops a task that is still running.
@@ -485,12 +522,23 @@ really happened and says how many changes you declined; the AI's own summary
 follows in the conversation. Nothing else is spoken; the conversation fills in
 quietly, one **Shift+Tab** away.
 
-A task can only read your document, propose edits and run a short list of safe
-QUILL Lite commands. It cannot reach the web, your files or anything else, and
-it answers in plain text, never charts. Whatever the engine keeps while it
-works is deleted when the task ends or you press **Stop**. If Copilot or Codex
-is in use but cannot be started, you hear "Document tasks need My GitHub
-Copilot or Codex. Press Ctrl+4 to choose one."
+By default, the task uses QUILL Lite's document tools: read the outline,
+sections, selection or whole document; check accessibility; propose an edit;
+and run a short list of safe QUILL Lite commands. Copilot's own file, shell
+and web tools are off until enabled for a project. Each use still asks first,
+but a vendor edit writes directly to disk without Review AI Changes, and the
+vendor shell runs with your account permissions. MCP and unsupported
+permissions are refused. QUILL Lite's own edits remain reviewed. The task
+answers in plain text, never charts.
+
+By default, the SDK session and temporary work folder are deleted when the
+task ends, when you press **Stop**, and before the next task. If you opt into
+session retention in **AI Hub > Sessions**, Copilot history stays in this
+app's local data until you delete it; the Hub lets you list, resume and
+permanently delete sessions. Temporary task work files are still cleared.
+Long-task context summaries are separately opt-in, require retention and may
+use additional Copilot account usage. If an engine cannot start, QUILL Lite
+says so and leaves your other AI choices available.
 
 ## Propose Alt Text
 
@@ -526,8 +574,8 @@ If the AI in use can see pictures, the task may ask to look at one, and
 **Allow This Step?** names the picture first. Only pictures saved on this
 computer are ever sent; a picture on a web address is never fetched. On an AI
 that cannot see pictures, every proposal comes from the words around the
-picture, and the summary says so. Like Do a Document Task, it needs GitHub
-Copilot or Codex.
+picture, and the summary says so. Like Do a Document Task, it needs a
+task-capable AI connection.
 
 ## QUILL's free AI
 
@@ -872,14 +920,16 @@ sent and you hear why, once:
 > in again or choose another.
 
 If no AI is in use at all, you hear "No AI is in use. Choose one." and Choose
-Your AI opens. QUILL Lite does not offer the free AI, or anything else, in its
-place; switching is something you do.
+Your AI opens. QUILL Lite does not offer the free AI, or anything else, in
+place of a specific provider. Auto is a separate choice you can opt into.
 
 This covers the pad, the Chat Key, the Prompt Library, AI conversations, **Ask
 About an Image** and document tasks. Changing the AI yourself is never
 questioned: signing in or out, **Use This**, or saving or removing a key all
 count as your choice. A request that simply *fails* (no connection, a limit
-reached) is said once, with what to do, and nothing is retried.
+reached) is said once, with what to do, when you selected a specific provider.
+With Auto selected, only a connectivity failure may offer one confirmed retry
+through another eligible provider; limits are never retried.
 
 ## Using your ChatGPT subscription
 
@@ -1132,10 +1182,11 @@ Choose the **Developer** profile in **Tools > Customize Features**
 own. Either way the project commands appear in the menus below, and they leave
 again when you choose another profile.
 
-Project tasks need a connection that runs tasks: **My GitHub Copilot** or
-**Codex** on your ChatGPT plan, or, on your own key, **Claude** or **Ollama on
-this computer**. QUILL's free AI does not run tasks. Choose with **Choose Your
-AI** (**Ctrl+4**).
+Project tasks need a connection that runs tasks: **My GitHub Copilot**,
+**Codex** on your ChatGPT plan, or a supported provider selected in **My own
+key**, including OpenAI, Gemini, Claude, OpenRouter, Ollama Cloud, custom
+OpenAI-compatible services or Ollama on this computer. QUILL's free AI does
+not run tasks. Choose with **Choose Your AI** (**Ctrl+4**).
 
 ### Where the commands are
 

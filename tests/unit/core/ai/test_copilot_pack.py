@@ -4,23 +4,16 @@ No network and no real SDK: a stand-in module is placed in ``sys.modules`` so
 ``CopilotHarness._make_invoke`` runs its real code path -- the lazy import,
 the client and session options, ``send_and_wait`` -- and records every call.
 
-The fake mirrors ``github-copilot-sdk`` 1.0.28 as read from its source:
-keyword-only signatures (so a misspelt argument fails here as it would there),
-``RuntimeConnection.for_stdio(*, path=None, args=())`` returning a
-``StdioRuntimeConnection``, the ``COPILOT_SDK_DEFAULT_CONNECTION`` check that
-rejects ``env=`` for an in-process default, the tool-filter validation, the
-60-second ``send_and_wait`` default, and ``PermissionDecisionReject`` living in
-``copilot.rpc`` (with a ``ClassVar`` kind) and nowhere else.
+The fake mirrors the SDK 2.0.1 grouped client/session options, in-process
+runtime connection, tool allowlist, and ``copilot.rpc`` permission decisions.
 """
 
 from __future__ import annotations
 
-import hashlib
 import os
 import re
 import sys
 import types
-from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, ClassVar
@@ -91,30 +84,14 @@ def _fake_sdk(rec: _Recorder) -> types.ModuleType:
     @dataclass
     class RuntimeConnection:
         @staticmethod
-        def for_stdio(*, path: str | None = None, args: Sequence[str] = ()) -> Any:
-            return StdioRuntimeConnection(path=path, args=tuple(args))
-
-        @staticmethod
-        def for_inprocess() -> Any:
-            return InProcessRuntimeConnection()
-
-    @dataclass
-    class StdioRuntimeConnection(RuntimeConnection):
-        path: str | None = None
-        args: Sequence[str] = ()
-        env: dict[str, str] | None = None
+        def for_inprocess(*, base_directory: str | None = None) -> Any:
+            return InProcessRuntimeConnection(base_directory=base_directory)
 
     @dataclass
     class InProcessRuntimeConnection(RuntimeConnection):
-        pass
+        base_directory: str | None = None
 
     class CopilotSession:
-        async def __aenter__(self) -> CopilotSession:
-            return self
-
-        async def __aexit__(self, *exc: object) -> None:
-            await self.disconnect()
-
         async def send(
             self, prompt: str, *, attachments: list[dict[str, Any]] | None = None
         ) -> str:
@@ -146,77 +123,43 @@ def _fake_sdk(rec: _Recorder) -> types.ModuleType:
         def __init__(
             self,
             *,
-            connection: RuntimeConnection | None = None,
-            working_directory: str | None = None,
-            log_level: str = "info",
-            env: dict[str, str] | None = None,
-            github_token: str | None = None,
-            base_directory: str | None = None,
-            use_logged_in_user: bool | None = None,
+            mode: str,
+            runtime: RuntimeConnection,
+            github: dict[str, Any],
+            network: dict[str, Any] | None = None,
         ) -> None:
-            if connection is None:
-                default = os.environ.get("COPILOT_SDK_DEFAULT_CONNECTION", "").strip().lower()
-                connection = (
-                    RuntimeConnection.for_inprocess()
-                    if default == "inprocess"
-                    else RuntimeConnection.for_stdio()
-                )
-            if isinstance(connection, InProcessRuntimeConnection) and env is not None:
-                raise ValueError("env is not supported with RuntimeConnection.for_inprocess()")
+            assert mode == "empty"
+            assert isinstance(runtime, InProcessRuntimeConnection)
+            assert runtime.base_directory
             rec.client_kwargs = {
-                key: value
-                for key, value in {
-                    "connection": connection,
-                    "working_directory": working_directory,
-                    "env": env,
-                    "github_token": github_token,
-                    "use_logged_in_user": use_logged_in_user,
-                }.items()
-                if value is not None
+                "mode": mode,
+                "runtime": runtime,
+                "github": github,
+                "network": network,
             }
 
-        async def __aenter__(self) -> CopilotClient:
-            return self
+        async def start(self) -> None:
+            rec.calls.append("start")
 
-        async def __aexit__(self, *exc: object) -> None:
+        async def stop(self) -> None:
             rec.calls.append("stop")
 
-        async def create_session(
-            self,
-            *,
-            on_permission_request: Any = None,
-            model: str | None = None,
-            tools: list[Any] | None = None,
-            system_message: dict[str, str] | None = None,
-            available_tools: list[str] | None = None,
-            excluded_tools: list[str] | None = None,
-            working_directory: str | None = None,
-            streaming: bool | None = None,
-        ) -> CopilotSession:
-            if isinstance(available_tools, str):
-                raise TypeError("tool filter must be a ToolSet or list[str], not str")
-            for name in available_tools or ():
+        async def create_session(self, **kwargs: Any) -> CopilotSession:
+            tools = kwargs.get("tools")
+            system_message = kwargs.get("system_message")
+            available_tools = (tools or {}).get("available_tools", [])
+            for name in available_tools:
                 if name == "*" or not _TOOL_NAME.match(name):
                     raise ValueError(f"invalid available_tools entry {name!r}")
             if system_message is not None:
                 assert system_message.get("mode", "append") in ("append", "replace", "customize")
-            rec.session_kwargs = {
-                key: value
-                for key, value in {
-                    "on_permission_request": on_permission_request,
-                    "model": model,
-                    "system_message": system_message,
-                    "available_tools": available_tools,
-                    "streaming": streaming,
-                }.items()
-                if value is not None
-            }
+            rec.session_kwargs = kwargs
             return CopilotSession()
 
     module = types.ModuleType("copilot")
     module.CopilotClient = CopilotClient  # type: ignore[attr-defined]
     module.RuntimeConnection = RuntimeConnection  # type: ignore[attr-defined]
-    module.StdioRuntimeConnection = StdioRuntimeConnection  # type: ignore[attr-defined]
+    module.InProcessRuntimeConnection = InProcessRuntimeConnection  # type: ignore[attr-defined]
     return module
 
 
@@ -238,7 +181,8 @@ def rec(monkeypatch: pytest.MonkeyPatch, absent_env) -> _Recorder:
         "COPILOT_SDK_AUTH_TOKEN",
         "COPILOT_SDK_DEFAULT_CONNECTION",
     )
-    monkeypatch.setattr(copilot_runtime, "find_copilot_cli", lambda: None)
+    monkeypatch.setattr(pack, "resolve_runtime_path", lambda: Path("runtime.node"))
+    monkeypatch.setattr(pack, "prepare_inprocess_runtime", lambda: Path("runtime.node"))
     return recorder
 
 
@@ -262,7 +206,7 @@ def no_token(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_uses_send_and_wait_and_returns_the_answer(rec: _Recorder, no_token) -> None:
     assert _run() == "The answer."
-    assert rec.calls == ["send_and_wait", "disconnect", "stop"]
+    assert rec.calls == ["start", "send_and_wait", "disconnect", "stop"]
     assert rec.sent == ["Say hi"]
 
 
@@ -276,7 +220,7 @@ def test_a_timeout_aborts_the_turn_before_closing(rec: _Recorder, no_token) -> N
     rec.raise_on_wait = TimeoutError("Timeout after 600s waiting for session.idle")
     with pytest.raises(TimeoutError):
         _run()
-    assert rec.calls == ["send_and_wait", "abort", "disconnect", "stop"]
+    assert rec.calls == ["start", "send_and_wait", "abort", "disconnect", "stop"]
 
 
 def test_system_prompt_is_appended_not_glued_onto_the_prompt(rec: _Recorder, no_token) -> None:
@@ -301,46 +245,84 @@ def test_token_passed_explicitly_and_never_in_environ(rec: _Recorder, monkeypatc
     monkeypatch.setattr(copilot_auth, "stored_token", fake_stored)
     _run("QUILL Lite")
     assert seen == ["QUILL Lite"]  # read from this app's own entry at session start
-    assert rec.client_kwargs["github_token"] == "gho_explicit"
-    assert rec.client_kwargs["use_logged_in_user"] is False
-    child_env = rec.client_kwargs["env"]
-    assert isinstance(child_env, dict)
-    assert "gho_explicit" not in child_env.values()
+    assert rec.client_kwargs["github"] == {
+        "token": "gho_explicit",
+        "use_logged_in_user": False,
+    }
     for name in ("GITHUB_TOKEN", "GH_TOKEN", "COPILOT_GITHUB_TOKEN", "COPILOT_SDK_AUTH_TOKEN"):
         assert name not in os.environ
         assert name not in rec.env_during_call
-        assert name not in child_env
 
 
-def test_no_stored_token_leaves_the_cli_sign_in(rec: _Recorder, no_token) -> None:
+def test_no_stored_token_never_borrows_a_cli_sign_in(rec: _Recorder, no_token) -> None:
     _run()
-    assert "github_token" not in rec.client_kwargs
-    assert "use_logged_in_user" not in rec.client_kwargs  # SDK default: logged-in user
+    assert rec.client_kwargs["github"] == {"use_logged_in_user": False}
+    assert rec.client_kwargs["network"]["scope"] == "connection"
+    assert rec.client_kwargs["network"]["resolve_proxy"].__name__ == "resolve_system_proxy"
 
 
-def test_inherited_token_vars_are_stripped_from_the_child(
+def test_byok_uses_the_selected_saved_provider_without_github_auth(
+    rec: _Recorder, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.core import assistant_ai
+    from quill.core.ai import own_key_providers
+
+    monkeypatch.setattr(
+        own_key_providers, "host_for", lambda _provider: "https://api.openai.com/v1"
+    )
+    monkeypatch.setattr(assistant_ai, "stored_provider_api_key", lambda _provider: "sk-stored")
+    monkeypatch.setattr(
+        copilot_auth,
+        "stored_token",
+        lambda *_a: pytest.fail("BYOK must not read a GitHub token"),
+    )
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-ambient")
+    harness = pack.CopilotByokHarness(provider="openai", model="gpt-selected")
+
+    assert harness._make_invoke()(_agent(), _ctx()) == "The answer."
+    assert rec.client_kwargs["github"] == {"use_logged_in_user": False}
+    assert rec.session_kwargs["github"] == {
+        "capi": {"enabled": False},
+        "telemetry_enabled": False,
+    }
+    assert rec.session_kwargs["model"] == "gpt-selected"
+    assert rec.session_kwargs["inference"] == {
+        "default_provider": "quill_user",
+        "providers": [
+            {
+                "name": "quill_user",
+                "type": "openai",
+                "base_url": "https://api.openai.com/v1",
+                "api_key": "sk-stored",
+            }
+        ],
+    }
+    assert rec.env_during_call["OPENAI_API_KEY"] == "sk-ambient"
+    assert "token" not in rec.client_kwargs["github"]
+
+
+def test_inherited_token_vars_are_not_used_for_github_auth(
     rec: _Recorder, no_token, monkeypatch
 ) -> None:
     monkeypatch.setenv("GH_TOKEN", "gho_from_shell")
-    monkeypatch.setenv("COPILOT_SDK_AUTH_TOKEN", "gho_sdk_channel")
     _run()
-    env = rec.client_kwargs["env"]
-    assert "GH_TOKEN" not in env  # type: ignore[operator]
-    assert "COPILOT_SDK_AUTH_TOKEN" not in env  # type: ignore[operator]
+    assert "GH_TOKEN" in rec.env_during_call
+    assert rec.client_kwargs["github"]["use_logged_in_user"] is False
 
 
-def test_transport_is_always_explicit_stdio(rec: _Recorder, no_token, monkeypatch) -> None:
-    # An in-process default would make the real SDK reject env= with ValueError.
+def test_transport_is_always_explicit_inprocess(rec: _Recorder, no_token, monkeypatch) -> None:
     monkeypatch.setenv("COPILOT_SDK_DEFAULT_CONNECTION", "inprocess")
     assert _run() == "The answer."
-    connection = rec.client_kwargs["connection"]
-    assert type(connection).__name__ == "StdioRuntimeConnection"
-    assert connection.path is None  # type: ignore[attr-defined]  # no bundle: SDK's own
+    assert rec.client_kwargs["mode"] == "empty"
+    connection = rec.client_kwargs["runtime"]
+    assert type(connection).__name__ == "InProcessRuntimeConnection"
+    assert connection.base_directory  # type: ignore[attr-defined]
+    assert "env" not in rec.client_kwargs
 
 
 def test_available_tools_is_never_empty(rec: _Recorder, no_token) -> None:
     _run()
-    tools = rec.session_kwargs["available_tools"]
+    tools = rec.session_kwargs["tools"]["available_tools"]
     assert tools == [pack.TEXT_ONLY_TOOL_NAME]
     assert pack.available_tools_for([]) == [pack.TEXT_ONLY_TOOL_NAME]
     assert pack.available_tools_for(["quill_insert"]) == ["quill_insert"]
@@ -349,7 +331,7 @@ def test_available_tools_is_never_empty(rec: _Recorder, no_token) -> None:
 @pytest.mark.parametrize("kind", PERMISSION_KINDS)
 def test_every_permission_request_is_refused(rec: _Recorder, no_token, kind: str) -> None:
     _run()
-    handler = rec.session_kwargs["on_permission_request"]
+    handler = rec.session_kwargs["permissions"]["on_request"]
     request = types.SimpleNamespace(kind=kind)
     decision = handler(request, {"session_id": "s1"})  # type: ignore[operator]
     assert isinstance(decision, PermissionDecisionReject)
@@ -357,37 +339,25 @@ def test_every_permission_request_is_refused(rec: _Recorder, no_token, kind: str
     assert decision.feedback
 
 
-def test_bundled_cli_is_used_and_download_switched_off(
+def test_verified_runtime_is_used_without_a_cli(
     rec: _Recorder, no_token, monkeypatch, tmp_path: Path
 ) -> None:
-    # A hostless bundle: the copilot.exe alias is a byte copy of the wrapper.
-    exe = tmp_path / copilot_runtime.COPILOT_EXE
-    exe.write_bytes(b"MZ pinned")
-    (tmp_path / copilot_runtime.COPILOT_RUNTIME_WRAPPER).write_bytes(b"MZ pinned")
-    (tmp_path / copilot_runtime.COPILOT_RUNTIME_NODE).write_bytes(b"MZ runtime")
-    monkeypatch.setattr(
-        copilot_runtime, "COPILOT_WRAPPER_SHA256", hashlib.sha256(b"MZ pinned").hexdigest()
-    )
-    monkeypatch.setattr(
-        copilot_runtime, "COPILOT_RUNTIME_NODE_SHA256", hashlib.sha256(b"MZ runtime").hexdigest()
-    )
-    monkeypatch.setattr(copilot_runtime, "find_copilot_cli", lambda: exe)
+    runtime = tmp_path / "runtime.node"
+    monkeypatch.setattr(pack, "prepare_inprocess_runtime", lambda: runtime)
     _run()
-    connection = rec.client_kwargs["connection"]
-    assert type(connection).__name__ == "StdioRuntimeConnection"
-    assert connection.path == str(exe)  # type: ignore[attr-defined]
-    env = rec.client_kwargs["env"]
-    assert env["COPILOT_SKIP_CLI_DOWNLOAD"] == "1"  # type: ignore[index]
-    assert env["COPILOT_CLI_PATH"] == str(exe)  # type: ignore[index]
+    assert rec.client_kwargs["mode"] == "empty"
+    assert type(rec.client_kwargs["runtime"]).__name__ == "InProcessRuntimeConnection"
+    assert "env" not in rec.client_kwargs
 
 
-def test_a_bundle_that_fails_the_pin_is_never_launched(
+def test_an_unavailable_runtime_is_never_launched(
     rec: _Recorder, no_token, monkeypatch, tmp_path: Path
 ) -> None:
-    exe = tmp_path / "copilot.exe"
-    exe.write_bytes(b"MZ tampered")
-    monkeypatch.setattr(copilot_runtime, "find_copilot_cli", lambda: exe)
-    with pytest.raises(copilot_runtime.CopilotCliUnverified):
+    def unavailable() -> Path:
+        raise copilot_runtime.CopilotRuntimeUnavailable("runtime missing")
+
+    monkeypatch.setattr(pack, "prepare_inprocess_runtime", unavailable)
+    with pytest.raises(copilot_runtime.CopilotRuntimeUnavailable):
         _run()
     assert rec.client_kwargs == {}  # no client was ever made
     assert rec.calls == []

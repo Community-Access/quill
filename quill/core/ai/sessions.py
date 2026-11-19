@@ -546,10 +546,10 @@ def list_sessions(*, directory: Path | None = None) -> tuple[SessionSummary, ...
     return tuple(summaries)
 
 
-def most_recent_session() -> WritingSession | None:
-    """Load the most recently updated session, for continue-most-recent."""
+def most_recent_session(*, directory: Path | None = None) -> WritingSession | None:
+    """Load the most recently updated session from the chosen app folder."""
 
-    summaries = list_sessions()
+    summaries = list_sessions(directory=directory)
     if not summaries:
         return None
-    return load_session(summaries[0].session_id)
+    return load_session(summaries[0].session_id, directory=directory)

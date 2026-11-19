@@ -56,3 +56,34 @@ def test_after_install_survives_a_destroyed_status_label() -> None:
     # The button re-enable happened (before the dead status), but the install
     # callback did not crash -- that is the regression.
     assert panel.setup_btn.__class__ is _OkButton
+
+
+def test_panel_uses_app_scoped_engine_registry_and_preference(tmp_path, monkeypatch) -> None:
+    panel = EnginesPanel.__new__(EnginesPanel)
+    panel._app_name = "QUILL Lite"
+    panel._data_dir = tmp_path
+    panel.engine_list = type("_EngineList", (), {"Clear": lambda _self: None})()
+
+    class _Registry:
+        pass
+
+    captured: list[tuple[str, object]] = []
+    import quill.core.ai.engines as engines
+    import quill.core.ai.quick_switch as quick_switch
+
+    panel._registry = None
+    # Keep the registry builder behavior under test without probing optional SDKs.
+    monkeypatch.setattr(
+        engines,
+        "build_engine_registry",
+        lambda *, agent_name: captured.append((agent_name, panel._data_dir)) or _Registry(),
+    )
+    monkeypatch.setattr(
+        quick_switch,
+        "list_targets",
+        lambda _registry, *, data_dir: captured.append(("targets", data_dir)) or [],
+    )
+    panel._build_registry()
+    panel._reload()
+
+    assert captured == [("QUILL Lite", tmp_path), ("QUILL Lite", tmp_path), ("targets", tmp_path)]

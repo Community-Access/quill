@@ -233,23 +233,16 @@ def test_deno_is_installed_unconditionally_for_the_apps_that_play_youtube() -> N
 
 
 def test_the_ai_engines_ship_in_every_runtime_with_their_licences() -> None:
-    """The Copilot bundle and codex-app-server.exe: ungated, no #ifdef, licences by name.
+    """The Copilot runtime and codex-app-server.exe are ungated and licensed.
 
     Every shared runtime carries both engines (codex.md section 9), so no app
     opts in; each required file is its own entry so ISCC refuses to compile
-    without it -- above all the licence the Copilot CLI may only be
-    redistributed with. Copilot's named files are the four the SDK's
-    completeness check needs plus that licence.
+    without its required runtime or licence. Copilot SDK 2 needs only its pinned
+    native runtime library and the corresponding licence text.
     """
     source = FRAGMENT.read_text(encoding="utf-8")
     expected = {
-        "copilot": (
-            "copilot.exe",
-            "copilot-runtime.exe",
-            "runtime.node",
-            ".hostless-runtime-assets-v2",
-            "COPILOT-CLI-LICENSE.txt",
-        ),
+        "copilot": ("runtime.node", "COPILOT-CLI-LICENSE.txt"),
         "codex": ("codex-app-server.exe", "CODEX-LICENSE.txt", "CODEX-NOTICE.txt"),
     }
     assert 'Source: "{#RuntimeSourceDir}\\tools\\codex\\*"' not in source
@@ -267,24 +260,14 @@ def test_the_ai_engines_ship_in_every_runtime_with_their_licences() -> None:
             )
 
 
-def test_the_whole_copilot_bundle_ships_recursively_without_doubling_the_named_files() -> None:
-    """The bundle's assets live in subfolders; the named five are not packed twice."""
+def test_no_copilot_cli_bundle_is_included_in_the_installer() -> None:
+    """Only the native runtime and its licence are shipped for Copilot."""
     source = FRAGMENT.read_text(encoding="utf-8")
-    marker = r'Source: "{#RuntimeSourceDir}\tools\copilot\*"'
-    entry = _files_entry(source, marker)
-    assert "recursesubdirs" in entry and "createallsubdirs" in entry
-    assert "Check:" not in entry and "skipifsourcedoesntexist" not in entry
-    assert r'DestDir: "{code:RuntimeDir}\tools\copilot"' in entry
-    excludes = entry.split('Excludes: "', 1)[1].split('"', 1)[0].split(",")
-    assert sorted(excludes) == sorted([
-        r"\copilot.exe",
-        r"\copilot-runtime.exe",
-        r"\runtime.node",
-        r"\.hostless-runtime-assets-v2",
-        r"\COPILOT-CLI-LICENSE.txt",
-    ])
-    before = source.split(marker, 1)[0]
-    assert before.count("#ifdef") == before.count("#endif")
+    assert r'Source: "{#RuntimeSourceDir}\tools\copilot\*"' not in source
+    assert r"tools\copilot\copilot.exe" not in source
+    assert r"tools\copilot\copilot-runtime.exe" not in source
+    assert r"tools\copilot\.hostless-runtime-assets-v2" not in source
+    assert source.count('Source: "{#RuntimeSourceDir}\\tools\\copilot\\runtime.node"') == 1
 
 
 def test_the_optilab_adapter_is_not_behind_the_runtime_gate() -> None:

@@ -162,6 +162,7 @@ Each command has a name, its key when it has one, what it does, and some of the 
 
 These are never done from a sentence, because they send, delete, sign in, change settings or leave the app. Each is still on its menu and its key.
 
+- AI Hub: AI, AI Hub.
 - Check for Updates: Help, Check for Updates.
 - Check What QUILL Says: Command Palette.
 - Compare Braille Surfaces: Help, Troubleshooting.
@@ -323,6 +324,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 These are never done from a sentence, because they send, delete, sign in, change settings or leave the app. Each is still on its menu and its key.
 
+- AI Hub: AI, AI Hub.
 - Check for Updates: Help, Check for Updates.
 - Copy to the Next Tray Slot: Edit, Copy Tray.
 - Dark Mode: View, Dark Mode.

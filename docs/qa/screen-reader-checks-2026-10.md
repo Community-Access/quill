@@ -1773,11 +1773,13 @@ ChatGPT plan or an own key signed in.
 - [ ] Checks 1, 3, 5 and 8 with Narrator.
 
 
-## GitHub Copilot, Codex, Plan Options and Do a Document Task, QUILL and QUILL Lite (codex.md 10A.12, 10A.13, 6.2, 2026-11-01)
+## GitHub Copilot, Codex, own-key tasks, Plan Options and Do a Document Task, QUILL and QUILL Lite (codex.md 10A.12, 10A.13, 6.2, 2026-11-01)
 
 Run each check in both editors. Copilot checks need a build with this app's
 GitHub registration and a Copilot account (Free and paid if you can); the Codex
-checks need a ChatGPT plan and a build with the Codex engine.
+checks need a ChatGPT plan and a build with the Codex engine. Own-key task
+checks need a saved supported provider key and selected model that supports
+tool use; do not use live credentials in automated tests.
 
 1. Ctrl+4, arrow to "My GitHub Copilot". In a build without the GitHub
    registration it reads "not available yet", and Tab to About reads one
@@ -1801,12 +1803,13 @@ checks need a ChatGPT plan and a build with the Codex engine.
    is there; on any other row it is not. Its window has Allow web search (a
    check box; Space changes it and only your reader speaks) and Forget on This
    Computer. Forget says once that the sign-in was forgotten here.
-8. On the free AI, open the AI menu: Do a Document Task reads "(needs Copilot
-   or Codex)" after its name and still shows Ctrl+3. Press Ctrl+3: nothing is
-   sent and the switch question has Yes chosen.
-9. On Copilot or Codex, press Ctrl+3: Do a Document Task opens with focus in
-   Instruction and nothing spoken by the app. Shift+Tab reaches Status ("Using
-   GitHub Copilot") and Conversation.
+8. On a connection that cannot run tasks, open the AI menu: Do a Document Task
+   reads "(needs an AI that runs tasks)" after its name and still shows Ctrl+3.
+   Press Ctrl+3: nothing is sent and the switch question has Yes chosen.
+9. On Copilot, Codex or a selected supported own-key provider, press Ctrl+3:
+   Do a Document Task opens with focus in Instruction and nothing spoken by
+   the app. Shift+Tab reaches Status (the selected connection is named) and
+   Conversation.
 10. Type "Make the first heading level 1" and Enter. Allow This Step? opens
     with focus on its sentence, which your reader says. Enter allows once;
     Review AI Changes opens; accept. When the task ends you hear the summary
@@ -2085,7 +2088,8 @@ One prompt list:
 
 ## Agent tasks across the family, Propose Alt Text and Tell Me When This Changes (codex.md Phase 4c, 2026-11-01)
 
-Set up GitHub Copilot (or Codex) in Choose Your AI in each app first. Keyboard only.
+Set up a task-capable connection (GitHub Copilot, Codex or a supported My own
+key provider) in Choose Your AI in each app first. Keyboard only.
 
 QUILL and QUILL Lite, Propose Alt Text:
 
@@ -2093,9 +2097,9 @@ QUILL and QUILL Lite, Propose Alt Text:
    saved beside it. On the free AI, AI > Propose Alt Text reads "(needs
    Copilot or Codex)" and pressing it offers to switch; say No and nothing
    opens.
-2. On Copilot, press it: the window title is Do a Document Task, focus lands
-   in Instruction and the reader says the filled-in request. Nothing is
-   spoken by QUILL itself.
+2. On a selected task-capable connection, press it: the window title is Do a
+   Document Task, focus lands in Instruction and the reader says the
+   filled-in request. Nothing is spoken by QUILL itself.
 3. Press Enter. If the AI can see, Allow This Step? names the picture
    ("Send the picture ... from this document"); the first time on this AI a
    Yes/No about pictures follows, No the default.
@@ -2111,9 +2115,10 @@ Studio Recording Pre-flight Check on Ctrl+3 and Narrate a Recording on
 Ctrl+Shift+3; Quill Converter, Quill Media Player and Quill Inkwell on Ctrl+F3;
 QuillBeacon Organize What I Saved on Ctrl+3):
 
-6. On the free AI the row says "(needs Copilot or Codex)" and the key offers
-   to switch, sending nothing. In Safe Mode the key says AI is off.
-7. On Copilot the key opens the agent window with the app's own title; the
+6. On a connection that cannot run tasks, the row says "(needs an AI that runs
+   tasks)" and the key offers to switch, sending nothing. In Safe Mode the key
+   says AI is off.
+7. On a selected task-capable connection the key opens the agent window with the app's own title; the
    reader says the title and the Instruction field, and the app says nothing.
    F1 on Instruction gives the app's own sentence.
 8. Ask for something that changes data (follow a show, schedule a recording,

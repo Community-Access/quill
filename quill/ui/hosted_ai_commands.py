@@ -43,12 +43,15 @@ from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.hosted_ai_answers import AiAnswersMixin
 from quill.ui.hosted_ai_chatgpt_commands import ChatGptAiMixin
 from quill.ui.hosted_ai_choose_commands import ChooseAiMixin
+from quill.ui.hosted_ai_service_access import HostedAiServiceMixin
 from quill.ui.project_task_commands import ProjectTaskMixin
 
 __all__ = ["HostedAiMixin"]
 
 
-class HostedAiMixin(ProjectTaskMixin, ChooseAiMixin, AiAnswersMixin, ChatGptAiMixin):
+class HostedAiMixin(
+    ProjectTaskMixin, ChooseAiMixin, AiAnswersMixin, ChatGptAiMixin, HostedAiServiceMixin
+):
     """The hosted-AI commands. Mixed into both editors' document windows.
 
     Answers, Review Changes, Ask, prompts and searches: hosted_ai_answers (GATE-11);
@@ -118,21 +121,6 @@ class HostedAiMixin(ProjectTaskMixin, ChooseAiMixin, AiAnswersMixin, ChatGptAiMi
     # ------------------------------------------------------------------ #
     # Plumbing
     # ------------------------------------------------------------------ #
-
-    def _ai_service(self) -> Any:
-        """The app's one AI service, made on first use.
-
-        Built lazily rather than at startup: an install with the area switched
-        on but never used should cost nothing, and constructing this reads the
-        credential store.
-        """
-        service = getattr(self._ai_host(), "ai_service", None)
-        if service is None:
-            from quill.ui.hosted_ai_service import AiService
-
-            service = AiService(self._ai_host())
-            self._ai_host().ai_service = service
-        return service
 
     def ai_support_id(self) -> str:
         """This computer's QUILL AI support ID, or "" when it is not connected.

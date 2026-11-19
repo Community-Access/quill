@@ -466,7 +466,7 @@ class CommandRegistryMixin:
             "tools.ai_hub",
             "AI Hub",
             self.open_ai_hub,
-            None,
+            self._binding_for("tools.ai_hub"),
         )
         self.commands.register(
             "tools.ai_assistant",

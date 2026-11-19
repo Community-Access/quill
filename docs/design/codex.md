@@ -6,31 +6,46 @@ repository root). Code cites it by section as `codex.md <section>` -- for exampl
 Where shipped code differs from the plan, the code and its docstrings are the
 record.
 
+**Current Copilot implementation, 2026-11-18:** QUILL and QUILL Lite now use
+Microsoft Copilot SDK 2.0.1. The current runtime, safety boundaries, and
+user-controlled SDK features are recorded in sections 2B.8 and 3.7;
+older 1.x rows below are dated research, not the shipped configuration.
+The shared AI layer also offers a separate, explicit Auto provider choice;
+that is not Copilot's Auto model-priority setting.
+
 ## 1. The short version
 
-Every QuillVille app will offer five connections in one Choose Your AI window: QUILL's free AI, My ChatGPT plan, My GitHub Copilot, Codex and My own key (section 10A), with one Ask conversation in every app (10C). Copilot comes before Codex (section 11).
+Every QuillVille app will offer five concrete connections and an Auto choice in one Choose Your AI window: QUILL's free AI, My ChatGPT plan, My GitHub Copilot, Codex, My own key, and Auto (section 10A), with one Ask conversation in every app (10C). Copilot comes before Codex (section 11).
 
 Four QUILL apps can already sign in to ChatGPT on their own:
 
 - QUILL, QUILL Lite, Radio and Cast use `quill/core/ai/chatgpt_account.py`, each under its own agent name. The other apps have no sign-in yet (section 3.1).
 - Today they send one-shot requests to `/v1/responses` through `quill/core/ai/chatgpt_client.py`.
 
-QUILL also has a GitHub Copilot engine already (section 3.7). It installs the Copilot SDK on demand, signs in with GitHub's device flow, and runs Copilot text-only: QUILL denies every Copilot tool and applies the answer itself.
+QUILL also has a GitHub Copilot engine already (section 3.7). It ships Microsoft
+Copilot SDK 2.0.1 and the SDK-pinned in-process runtime; each app signs in with
+its own GitHub device flow. Copilot agent tasks can call QUILL's approved tools,
+and can use the SDK's own tools only when the user enables them for that
+project; each request still goes through QUILL's approval gate. Supported
+providers selected in My own key can also run agent tasks through their
+provider-specific harnesses.
 
 The next step is an agent: the model plans, calls tools, asks permission, and finishes a job over several steps.
 
-Two vendor runtimes can run that loop on a subscription the user already has:
+Two vendor engines can run that loop on a subscription or provider the user
+already chose:
 
 - **OpenAI's Codex app-server**, on the ChatGPT plan (section 2). A local Rust child process, JSON-RPC over stdio, threads, turns, streaming, approvals and app-defined tools. A preview programme.
-- **The GitHub Copilot SDK**, on a Copilot subscription, including Copilot Free (section 2B). A Python package that drives the Copilot CLI runtime as a child process over JSON-RPC, with custom tools whose handlers run in our own Python, a permission callback, and a tool allowlist. Generally available since 2026-06-02, and being renamed Microsoft Copilot SDK.
+- **The Microsoft Copilot SDK**, using the user's GitHub Copilot entitlement or an explicitly selected BYOK connection (section 2B). The pinned 2.0.1 Python package loads its runtime in-process; QUILL supplies its custom tools and permission gate, with optional per-project SDK tools. GitHub determines any account allowance and billing.
 
-Recommendation: one shared agent layer, two engine adapters, Copilot first.
+Recommendation: one shared agent layer, with Copilot, Codex and supported
+user-selected own-key harnesses behind it.
 
 - **Shared:** one tool registry, one approvals UI and one agent window serve every app and both engines (section 5). Most of the work is here, not in either adapter.
 - **Copilot first:** the SDK is GA and semver, it is Python, its tool handlers are plain Python callables, and QUILL already has its sign-in, onboarding dialog and pack. Codex follows on the same registry (section 11).
-- **Separate connections:** each app runs its own child process. Each keeps its own ChatGPT sign-in. Copilot uses one GitHub sign-in, but no app hands its token to anything else.
-- **The vendor's own tools off:** shell, file edits, plugins, connectors and image generation are switched off under either engine.
-- **QUILL's tools only:** the model gets only tools QUILL already has (section 3), wrapped as functions. Each runs through the existing `SafeEditorToolGateway` and `PermissionBroker`.
+- **Separate connections:** each app keeps its own ChatGPT sign-in. Copilot runs its SDK-pinned runtime in-process with a separate GitHub device flow per app; no app hands its token to anything else.
+- **Vendor tools are opt-in:** Codex built-ins remain off. Copilot's file, shell and web tools are off by default and may be enabled per project; every use still asks first. Vendor edits bypass Review Changes, and the vendor shell runs with the user's account permissions.
+- **QUILL's tools are the default:** the model gets QUILL's registered tools (section 3), wrapped as functions. Each runs through the existing `SafeEditorToolGateway` and `PermissionBroker`.
 - **Accessible approvals:** every approval appears in QUILL's own accessible dialogs.
 
 Revised 2026-10-31 (section 11): Choose Your AI comes first, in QUILL and QUILL Lite (section 10A), then the Copilot route, then single-request features app by app, then the agent engines. The first agent feature is multi-step document tasks in QUILL and QUILL Lite, on tools that already exist; Studio's "check my recording setup" comes straight after (decision 3).
@@ -250,19 +265,76 @@ Read 2026-10-31, primary sources only. Same marking as section 2.
 - **Unknown:** whether the CLI sends telemetry by default. The SDK has optional OpenTelemetry (`[telemetry]` extra). Gate G5 measures the CLI.
 - **Unknown:** the Copilot product-specific terms for individuals were not read in full.
 
+### 2B.8 QUILL's shipped SDK 2.0 integration
+
+The following describes the implementation shared by QUILL and QUILL Lite.
+
+- **Package and runtime.** The runtime pins `microsoft-copilot-sdk==2.0.1`
+  (Python import `copilot`). It loads the SDK-pinned `runtime.node` in-process
+  from the shared runtime. Installers ship that library and its redistribution
+  licence, not `copilot.exe`; QUILL does not download the runtime on first use.
+- **Account and cost.** GitHub Copilot uses the person's own GitHub sign-in and
+  the entitlement, limits and billing GitHub assigns. QUILL does not provide
+  or subsidize Copilot usage. OpenAI-compatible and Gemini connections selected
+  through Use My Own AI Key use the selected provider's own terms and billing,
+  without borrowing GitHub sign-in.
+- **Sessions and privacy.** Chat uses a fresh session per request and resends
+  only the local conversation history needed for that turn. Agent session
+  retention is off by default. When a user opts in under AI Hub > Sessions,
+  QUILL keeps sessions on this device, lists only local session IDs and update
+  times, resumes a selected session for the next Copilot task, and permits
+  explicit permanent deletion. Temporary work folders are still cleared.
+  Long-task context compaction is a separate opt-in that requires retention
+  and may use additional account usage. Config discovery, memory,
+  cross-session storage and telemetry remain disabled.
+- **Skills and routing.** Skill sharing is off by default; when enabled, the
+  SDK receives only skills the user has enabled in the AI Library. Auto model
+  priority is balanced by default and applies only when Copilot Auto is chosen.
+  It never changes the selected provider. QUILL does not automatically switch
+  between Copilot, BYOK, local models or other providers.
+- **BYOK and network.** OpenAI-compatible and Gemini connections selected in
+  Use My Own AI Key can use the SDK agent harness without GitHub sign-in; the
+  selected provider's own terms and billing apply. Credential-free system
+  proxy settings are honored. QUILL does not obtain proxy credentials or
+  install authentication callbacks.
+- **Diagnostics.** SDK event history is summarized as allowlisted event-type
+  counts only. Conversation, tool and document payloads are not included.
+- **Tool boundary.** A task offers QUILL's registered tools by default.
+  Copilot's own file, shell, and web tools are off until enabled for that
+  project; each use still requires QUILL approval. A vendor edit writes
+  directly to disk without Review Changes, and a vendor shell can do anything
+  the user's account can. MCP and unsupported permission requests are refused.
+  QUILL's own edits still use the permission broker and review flow.
+- **Accessible interaction.** SDK user-input requests are answered through
+  QUILL's native, keyboard-operable choice and text-entry dialogs. Cancel
+  returns an explicit cancellation to the agent. Sanitized tool and sub-agent
+  progress is announced through the announcement service, without raw document
+  text or tool arguments.
+- **Structured output.** `CopilotChat.ask_typed` provides an internal typed
+  response path using Pydantic models. It is not currently a separate user
+  command.
+- **Not enabled by design.** SDK memory, cross-session storage, config
+  discovery, telemetry, proxy authentication callbacks, and SDK built-in tools
+  remain disabled by default. Long-task compaction is separately opt-in and
+  requires retention. Specifically selected providers never switch
+  automatically; explicit Auto routing is separate (section 10A.15).
+  Structured output is available to internal callers, not as a separate user
+  command.
+
 ## 2C. Engine comparison
 
-Small on purpose. "Plan" means a subscription the user already pays for or has free.
+Small on purpose. Account plans and any free allowance belong to the provider;
+QUILL does not supply or pay for Copilot usage.
 
 | | Codex app-server | Copilot SDK | ChatGPT direct | Own key | Hosted free AI | Local |
 |---|---|---|---|---|---|---|
-| Auth | SIWC per app | GitHub device flow, our OAuth App | SIWC per app | key in Credential Manager | QUILL sign-in | none |
-| Cost to user | ChatGPT plan | Copilot plan, Free included | ChatGPT plan | per token | $0 | $0 |
-| Multi-step tools | yes, `dynamicTools` (experimental) | yes, Python handlers (GA) | no | Native loop | Native loop | Native loop, model-dependent |
+| Auth | SIWC per app | User's GitHub Copilot account, per app | SIWC per app | key in Credential Manager | QUILL sign-in | none |
+| Cost to user | ChatGPT plan | User's GitHub plan and allowance | ChatGPT plan | per token | $0 | $0 |
+| Multi-step tools | yes, `dynamicTools` (experimental) | yes, QUILL tools through Python handlers | no | Native loop or SDK BYOK, by provider | Native loop | Native loop, model-dependent |
 | Vision | yes, per model | attachments yes; tool-result images unknown | yes | per provider | per model | some models |
-| Size | 92 MB zip, 284 MB exe | 113 MB zip, plus 1 MB wheel | in tree | in tree | in tree | model files |
-| Terms | strict, preview | ordinary GitHub terms | strict, preview | provider's | ours | none |
-| Maturity | preview | GA, changing owner | shipped | shipped | shipped | shipped |
+| Size | 92 MB zip, 284 MB exe | `runtime.node` and SDK in shared runtime; no CLI executable | in tree | in tree | in tree | model files |
+| Terms | strict, preview | GitHub terms; usage is user-owned | strict, preview | provider's | ours | none |
+| Maturity | preview | SDK 2.0.1 pinned | shipped | shipped | shipped | shipped |
 
 The direct routes stay the default for single-shot work under either engine.
 
@@ -525,34 +597,55 @@ Core code in `quill/core/podcasts/`:
 - The manifest (`quill/core/schemas/extension.json`) contributes `commands`, `hotkeys`, `abbreviations`, `transcription_providers`, `feed_auth_providers` and `directory_providers`.
 - An agent can reach a Quillin's command only through the host's command table, never directly.
 
-### 3.7 What QUILL already has for Copilot
+### 3.7 What QUILL has for Copilot
 
-Checked 2026-10-31. Line numbers are from `main` at `0e447bcd6`.
+Reconciled 2026-11-18. The integration is shared by QUILL and QUILL Lite.
 
-**Implemented:**
+- **SDK and runtime.** `microsoft-copilot-sdk==2.0.1` is loaded from the shared
+  runtime. Its pinned `runtime.node` runs in-process; there is no Copilot CLI
+  executable and no SDK runtime download at first use.
+- **Chat.** `quill/core/ai/copilot_chat.py` provides one-shot and typed chat
+  requests. Each request uses a fresh SDK session with local privacy settings;
+  the app's saved conversation is sent only when the user asks a follow-up.
+- **Agent tasks.** `quill/ai_packs/copilot_tool_session.py` streams task output
+  and usage, supports accessible user-input prompts and Stop, and offers
+  QUILL's registered tools by default. Copilot's own file, shell, and web
+  tools are off until enabled per project; every use still requires QUILL's
+  approval, while vendor edits bypass Review Changes. MCP and unsupported
+  requests remain refused.
+- **Privacy defaults.** Config discovery, memory, cross-session storage, and
+  telemetry are disabled. Skill sharing and session retention are off by
+  default; users may opt into sharing only enabled AI Library skills and
+  keeping Copilot sessions on this device. Long-task compaction is a separate
+  opt-in that requires retention and may use additional Copilot account usage.
+  The Sessions tab lists local IDs and update times, supports one-task
+  resumption, and requires explicit confirmation to delete a session.
+  Temporary work folders are always cleared.
+- **Sign-in.** Each app uses its own GitHub device-flow registration. Tokens
+  remain in the OS-protected store and are passed to the SDK without placing
+  them in the process-wide environment.
+- **Accessible interaction.** SDK questions use native choice or text-entry
+  dialogs with cancellation; sanitized progress is announced through QUILL's
+  announcement service.
+- **Provider choice and BYOK.** The user chooses My GitHub Copilot, My own key,
+  or a local model explicitly; QUILL never silently routes or falls back
+  between providers. OpenAI-compatible and Gemini own-key connections use
+  SDK 2 BYOK for multi-step tasks without borrowing GitHub sign-in. Their
+  provider's billing applies. The SDK Auto tier changes model priority only
+  within a user-selected Copilot route.
+- **User-controlled SDK features.** AI Hub > Sessions offers opt-in session
+  retention and skill sharing, a local session list, one-task resumption, and
+  explicit deletion. Auto priority, credential-free system proxy resolution,
+  and payload-free event summaries are also integrated. Skills include only
+  enabled AI Library entries. Memory, cross-session storage, infinite-session
+  compaction, config discovery and telemetry remain off.
+- **Account and cost.** Copilot access and any plan allowance are governed by
+  GitHub. QUILL does not provide, subsidize or guarantee free Copilot usage;
+  BYOK use is governed and billed by the selected provider.
 
-- **The harness interface.** `quill/core/ai/harness/__init__.py`: `HarnessCapabilities` (line 41), `AgentSpec` (67), `AIContext` (101), `HarnessResult` (114), `HarnessSession` (127), `Harness` (137), `HarnessRegistry` (156). Every engine drives the same `SafeEditorToolGateway` and `PermissionBroker`.
-- **The pack base.** `quill/ai_packs/_base.py`: `SdkHarness` (170) and `_SdkSession` (108). A session calls the SDK once for text (`Invoke`, line 53), then applies it once through the gateway, as a replace or an insert (157-160). It is single-shot by design.
-- **The Copilot pack.** `quill/ai_packs/copilot.py`: `CopilotHarness` (26), capabilities with `tool_calling`, `mcp`, `skills`, `subagents` and `requires_oauth` set (32-43). `_make_invoke` (45-83) opens `CopilotClient()`, creates a session whose permission handler rejects everything (59-63), and calls `session.send(prompt)` (73).
-- **Selection.** `quill/core/ai/engines.py` `build_engine_registry()` (35); `quill/ai_packs/__init__.py` `all_packs()` (38); `quill/core/ai/quick_switch.py` keeps the preferred engine; `quill/ui/agent_editor_host.py` `_select_responder` (428-462) runs the chosen pack and falls back to Native.
-- **Install on demand.** `quill/core/ai/sdk_install.py`: `PACK_INSTALLS["copilot"]` is `github-copilot-sdk>=1.0` (80-85); `install_pack` (286) runs `pip install --only-binary=:all: --target` into a user folder. `pyproject.toml:363` declares the extra `ai-copilot = ["github-copilot-sdk>=1.0.15rc3"]`. `quill/__main__.py:442-449` adds installed packs to `sys.path` at start.
-- **Sign-in.** `quill/core/ai/copilot_auth.py`: GitHub device flow (`GITHUB_DEVICE_AUTH_URL`, line 44), scope `read:user` (48). The token goes to the GitHub token store (DPAPI) and is exported to `GITHUB_TOKEN` and `GH_TOKEN` in QUILL's own process (51, 91-102). Egress entry `core/ai/oauth_poster.py::_real_opener` in `quill/tools/network_egress_entries.py:399`.
-- **UI.** `quill/ui/copilot_onboarding_dialog.py`: Install, then Sign in (two steps). `quill/ui/ai_hub_engines_panel.py:125-135` and `quill/ui/main_frame_ai_actions.py:279-292` open it. The wizard's "agent" path is in `quill/core/ai/onboarding.py:105-117` and `:239`.
-
-**How it authenticates:** GitHub OAuth device flow against the app's own OAuth App. Each app's client id is built in (`CLIENT_IDS` in `quill/core/ai/copilot_auth.py`, registered 2026-11-02, one per app, device flow on, no client secret). `QUILL_GITHUB_CLIENT_ID` is now only a developer override, honoured in a dev build. An app with no client id still falls back to telling the user to run `copilot` or `gh auth login` in a terminal (`copilot_onboarding_dialog.py`).
-
-**What it reaches:** whatever model the CLI defaults to. No model is chosen, no image is sent, no tool is offered, and no streaming is read. Text only.
-
-**Stubbed, missing or wrong:**
-
-- **The answer is probably a request id.** Current docs say `session.send` "returns a request ID" and does not wait. The pack would then insert an id string, not the answer (`copilot.py:73-79`). Inferred from docs, not run. The fix is `send_and_wait` or the event stream.
-- **No tool allowlist.** The session is made without `available_tools`, so the model is offered every built-in and each one is then refused (`copilot.py:70-72`). That costs tokens and invites refusals.
-- **Not multi-step.** QUILL's tools are never registered, though `agent_tools.py:1-14` was written for exactly that.
-- **The runtime is fetched from the network.** Nothing sets `COPILOT_CLI_PATH` or `COPILOT_SKIP_CLI_DOWNLOAD`, so the SDK downloads the CLI on first use. That and the pip install both break bundle-everything.
-- **The token leaks to children.** It sits in `os.environ`, and `harness_credentials.scrubbed_child_env()` (line 83) removes only `OPENAI_API_KEY` and `ANTHROPIC_API_KEY` (line 30). Quillin workers and external engines inherit `GITHUB_TOKEN`.
-- **One token, two uses.** The Copilot token shares the GitHub token store with the GitHub repository features (`quill/core/github/token_store.py`). Inferred: signing out of one signs out of the other.
-- **Dead commands.** `quill/core/github/gh_bridge.py:149-174` calls `gh copilot suggest` and `explain`, bound as `github.copilot_suggest` and `github.copilot_explain` (`quill/ui/main_frame_gh_bridge.py:318-325`). GitHub retired that extension on 2025-10-25 (github.blog changelog 2025-09-25). Out of scope here, but they should go.
-- **Only QUILL.** No other app reaches the Copilot engine.
+The older implementation notes and investigations in sections 2B.1-2B.7 are
+dated SDK 1.x research. They are retained as history and are not instructions
+for the shipped SDK 2.0 integration.
 
 ## 4. Rules that bind this work
 
@@ -566,8 +659,7 @@ From `S:\QUILL\CLAUDE.md` and memory:
   - `_ENGINE_EXECUTABLE_BASENAMES` in `quill/core/ai/external_engine.py` lists node, python, python3 and quill-engine.
   - That module is "spawned per request and torn down", with no daemon.
   - App-server is long-lived, so it does not belong there (section 5.2).
-  - The same goes for the Copilot CLI. The SDK starts it, not `external_engine.py`, so the allowlist is never consulted. Adding `copilot.exe` there would only widen a list that guards something else.
-  - Do not install the Copilot CLI through npm: that needs Node 22, and `node` on the allowlist would then be one step from running arbitrary scripts.
+  - The Copilot SDK 2 runtime is loaded in-process and does not go through `external_engine.py`. Do not add `runtime.node` to the external-engine executable allowlist.
 - **Accessibility gates:**
   - GATE-13: say only what the screen reader does not.
   - GATE-BRAILLE.
@@ -576,7 +668,7 @@ From `S:\QUILL\CLAUDE.md` and memory:
   - Dialogs: `_show_modal_dialog`, `bind_close_button`.
   - GATE-REACH.
 - **QUILL Lite is never ahead of QUILL.** The engine goes in shared `quill/core/ai`, and QUILL gets every capability in the same change.
-- **Bundle everything.** No downloads at install or first use (`feedback_bundle_everything.md`). The only standing exception is optional dictation models. The existing SDK packs predate this rule: they pip-install from PyPI on demand, and the Copilot SDK then downloads its runtime (section 3.7). Both have to change.
+- **Bundle everything.** No downloads at install or first use (`feedback_bundle_everything.md`). The only standing exception is optional dictation models. Copilot SDK 2.0.1 and its pinned in-process runtime are included in the shared runtime; Claude and OpenAI agent packs retain their separate install behavior.
 - **Errors:** GATE-EC `CodedError` with `QUILL-AI-...` codes.
 - **Size:** GATE-11 module budgets.
 
@@ -592,7 +684,7 @@ From `S:\QUILL\CLAUDE.md` and memory:
    |  one interface, two adapters; both emit EXISTING AgentEvent
    +--> CopilotToolHarness (EXTENDS quill/ai_packs/copilot.py)
    |      FamilyTool -> copilot Tool(handler=...); permission callback -> Approver
-   |      copilot.exe (bundled, COPILOT_CLI_PATH) --(user's GitHub token)--> Copilot
+   |      SDK 2.0.1 + bundled runtime.node (in-process) --(user's GitHub token)--> Copilot
    +--> CodexHarness (NEW quill/core/ai/harness/codex.py)
           FamilyTool -> dynamicTools; item/tool/call -> handler
           codex-app-server.exe (bundled) --(this app's plan token)--> api.openai.com
@@ -647,7 +739,7 @@ The external-engine allowlist does not change. The launcher has its own constant
 
 **`quill/ai_packs/copilot.py`, extended to `CopilotToolHarness`** (the pack stays in `ai_packs`, the SDK import stays lazy)
 
-- **Binary:** `CopilotClient(connection=RuntimeConnection.for_stdio(path=<bundled copilot.exe>))`, with `COPILOT_SKIP_CLI_DOWNLOAD=1`. Check the exe's SHA-256 against the build pin before launch.
+- **Runtime:** load the SDK-pinned `runtime.node` in-process from the shared runtime. No Copilot CLI executable is launched or downloaded.
 - **Token:** pass `github_token=` explicitly, read from the store at session start. Stop exporting it to `os.environ`; add `GITHUB_TOKEN`, `GH_TOKEN` and `COPILOT_GITHUB_TOKEN` to `scrubbed_child_env()` and a redaction pattern for `gho_`.
 - **Environment:** the child gets a minimal `env=`, and `working_directory` is an empty per-app folder under `app_data_dir()/ai/copilot/<slug>`, so the built-in read tools would find nothing even if one slipped through.
 - **Tools:** `available_tools` lists only our tool names, never empty (CLI issue #5306). Each `FamilyTool` becomes a `copilot.tools.Tool` whose handler calls the registry.
@@ -906,7 +998,7 @@ Every feature calls the same `FamilyToolRegistry` tools, so the engine is the us
 | Video | Input refused | FFmpeg frames into a contact sheet, sent as images |
 | Web search | Policy-dependent | Off by default. Follows `chatgpt_account.set_web_search`. |
 
-The column is for the ChatGPT plan. Under Copilot the answers are the same in practice: no audio or video input is documented, image generation is not offered, and the CLI's own `web_fetch`-style tools stay off. QUILL's consented `web_search` and `web_fetch` tools from `agent_tools.py` are the only route to the web under either engine.
+The column is for the ChatGPT plan. Under Copilot the answers are the same in practice: no audio or video input is documented, and image generation is not offered. QUILL's consented `web_search` and `web_fetch` tools are available by default; Copilot's own web tools are a separate per-project opt-in and still require approval.
 
 ## 8. Consent, privacy and usage display
 
@@ -938,7 +1030,7 @@ The column is for the ChatGPT plan. Under Copilot the answers are the same in pr
 
 ### Local data
 
-- Thread files are kept for the length of one task, in the app's own `CODEX_HOME`, so a token refresh can resume the task. They are deleted when the task ends, on Stop, and again at the next start (decision 4). Copilot session state under its per-app `working_directory` follows the same rule.
+- Codex thread files are kept for the length of one task, in the app's own `CODEX_HOME`, so a token refresh can resume the task. They are deleted when the task ends, on Stop, and again at the next start (decision 4). Copilot's per-task working folder is cleared on exit; saved Copilot sessions remain local only when the user explicitly enables retention, and are listed, resumable once, and permanently deletable in AI Hub > Sessions. Long-task compaction is separately opt-in and requires retention.
 - The token lives only in memory and in the child's environment.
 - Crash bundles (`quill/stability/crash_report.py`) redact `ACCESS_TOKEN` and exclude `CODEX_HOME`.
 
@@ -973,19 +1065,38 @@ The column is for the ChatGPT plan. Under Copilot the answers are the same in pr
 
 ### Copilot
 
-- **Node:** not needed. Ship the standalone `copilot-win32-x64.zip` build, not the npm package, which needs Node 22 (section 2B.2). The zip is 112,637,935 bytes for v1.0.105; the unzipped size is unknown until we unpack it.
-- **The SDK:** `github-copilot-sdk` is a 925 KB pure wheel. Bundle it in the shared runtime as an ordinary dependency instead of pip-installing it on demand. Its dependencies are pydantic 2.11+, httpx and python-dateutil; check which the runtime already has (memory: runtime layering).
-- **The runtime:** ship `copilot.exe` once in the shared runtime, beside app-server if both ship. Set `COPILOT_CLI_PATH` and `COPILOT_SKIP_CLI_DOWNLOAD=1` so the SDK never downloads. The CLI licence allows this, unmodified and only as part of QUILL, with its licence file shipped (section 2B.7).
-- **Signing:** ship GitHub's exe unchanged; `scripts/code_signing.py` must skip it. Whether it carries an Authenticode signature is unknown; pin its SHA-256 from `SHA256SUMS.txt` at build time either way.
-- **Version pin:** one CLI version and one SDK version per QUILL release. The SDK negotiates protocol versions 2 to 3, but pin both anyway.
-- **External-engine allowlist:** unchanged (section 4).
-- **Notices:** MIT for the SDK; the GitHub Copilot CLI License text for the exe.
-- **Both engines:** about 205 MB compressed between them. That is the real cost of offering both. Decided: both in the shared runtime, each from the release that first uses it (decisions 1 and 8). Measure the Copilot CLI's unpacked size in Phase 2 and record it here.
-- **Retire:** `PACK_INSTALLS["copilot"]` and the Install step of the onboarding dialog, once the SDK is bundled. Sign-in becomes the only step.
+- **SDK and runtime:** `microsoft-copilot-sdk==2.0.1` and its SDK-pinned
+  `runtime.node` are included in the shared runtime. The runtime inventory and
+  dependency notices name the Microsoft package; no Copilot CLI executable is
+  shipped or launched.
+- **Startup:** runtime discovery is local and does not download components.
+  If the bundled runtime is missing or cannot load, QUILL reports that the
+  Copilot connection is unavailable and leaves other providers usable.
+- **Sign-in:** GitHub device flow is per app. The token is read from the
+  protected store and passed to the SDK explicitly, not exported to the
+  process-wide environment.
+- **Tools and permissions:** QUILL's custom tools are available by default.
+  Copilot's file, shell, and web tools are off until enabled per project, and
+  each use requires QUILL approval. Vendor edits bypass Review Changes;
+  unsupported permissions are rejected. QUILL's own edits remain reviewed.
+- **Privacy and telemetry:** config discovery, memory, cross-session storage,
+  and telemetry are disabled. Retention and skill sharing are opt-in, and
+  long-task compaction is a separate opt-in that requires retention. The tool
+  session also clears its per-task working folder on exit.
+- **Account and cost:** GitHub owns eligibility, model availability, usage
+  limits, and billing. QUILL does not supply or subsidize Copilot access.
+- **External-engine allowlist:** unchanged (section 4); the in-process runtime
+  is not an external child executable.
+- **Notice:** retain the Microsoft Copilot SDK MIT notice and the runtime's
+  required redistribution licence.
+- **BYOK and local models:** remain separate user-selected provider routes.
+  OpenAI-compatible and Gemini connections can use SDK BYOK for agent tasks;
+  local models remain separate, and QUILL never switches providers
+  automatically.
 
 ### Gates
 
-- GATE-9: a child-process egress entry for each engine. The Copilot CLI talks to GitHub's Copilot endpoints; G5 records which hosts.
+- GATE-9: an egress entry for each outbound engine route. Copilot's SDK uses the SDK-pinned in-process runtime, not a Copilot CLI child; G5 records the hosts it contacts.
 - GATE-REACH: the agent window.
 - F1 audits.
 - Settings vocabulary for any new setting.
@@ -1029,7 +1140,7 @@ The column is for the ChatGPT plan. Under Copilot the answers are the same in pr
 
 ## 10A. Choose Your AI: the connection layer
 
-Decided by Jeff on 2026-10-31. One window, shared by QUILL and QUILL Lite and then by every QuillVille app, built in the shared hosted-AI layer (`quill/ui/hosted_ai_*.py`) so neither editor is ahead (rule 10). The aim is "magical and simple": a person picks where their AI comes from once, hears which one is in use with one key, and is never surprised.
+Decided by Jeff on 2026-10-31. One window, shared by QUILL and QUILL Lite and then by every QuillVille app, built in the shared hosted-AI layer (`quill/ui/hosted_ai_*.py`) so neither editor is ahead (rule 10). The aim is "magical and simple": a person picks one provider or explicitly opts into Auto, hears which one is in use with one key, and is never surprised.
 
 ### 10A.1 Where we start: today's code
 
@@ -1043,23 +1154,24 @@ Decided by Jeff on 2026-10-31. One window, shared by QUILL and QUILL Lite and th
 - **Engines are a separate choice.** `quill/core/ai/quick_switch.py` keeps the preferred agent engine in `<app data>/ai/active-harness.json` (`:61-78`) and cycles among ready ones (`:149`). `HarnessCapabilities` (`quill/core/ai/harness/__init__.py:41-63`) already has `images`, `audio`, `tool_calling` and `streaming` flags.
 - **Copilot sign-in.** `quill/core/ai/copilot_auth.py`: device-flow URLs (`:44-45`), scope `read:user` (`:48`), client id from `QUILL_GITHUB_CLIENT_ID` (`:54-56`), token exported to `os.environ` (`:91-102`).
 
-### 10A.2 The five connections
+### 10A.2 The five connections and Auto choice
 
 | Row, as heard | Sign-in | What it is |
 |---|---|---|
 | QUILL's free AI | none to choose; Connect as today | the default; QUILL's service and its limits |
 | My ChatGPT plan | Continue with ChatGPT, per app | direct to OpenAI on the person's plan |
-| My GitHub Copilot | GitHub device code, per app | Copilot SDK, Copilot Free included |
+| My GitHub Copilot | GitHub device code, per app | Copilot SDK; availability and usage follow the user's GitHub plan |
 | Codex, for tasks | the same ChatGPT sign-in | the agent engine of section 2, on the plan |
 | My own key | paste a key, OpenAI or Gemini | billed per request by that company |
+| Auto | at least one ready connection | chooses a ready, capable connection per action; the user sees the destination first |
 
-Each is one keypress (free, Codex once ChatGPT is signed in) or one sign-in. Each app signs in separately, as the SIWC terms require. Jeff extended that to GitHub on 2026-10-31, which replaces the "one GitHub sign-in for the family" in section 5.4.
+Each concrete connection takes one keypress (free, Codex once ChatGPT is signed in) or one sign-in. Auto takes one keypress to opt in and needs at least one ready connection. Each app signs in separately, as the SIWC terms require. Jeff extended that to GitHub on 2026-10-31, which replaces the "one GitHub sign-in for the family" in section 5.4.
 
 ### 10A.3 The window, as a screen-reader user meets it
 
 Opened by Ctrl+4 (section 10A.9), or from AI > Choose Your AI. The title is "Choose Your AI". Focus lands on the connection list, on the row in use. There are five controls in tab order, and nothing else: no tabs, no Advanced page.
 
-1. **Connections** (`&Connections`): a single-column list. Each row reads as name, then state: "QUILL's free AI, in use"; "My ChatGPT plan, signed in"; "My GitHub Copilot, not set up"; "Codex, for tasks, not set up"; "My own key, OpenAI, signed in". Three states only: In use, Signed in, Not set up. A fourth, "Signed out by GitHub" (or OpenAI), appears after a revoked token (10A.5). Enter does the action button's job. Delete on a signed-in row signs it out, after a Yes/No with No as the default.
+1. **Connections** (`&Connections`): a single-column list. Each row reads as name, then state: "QUILL's free AI, in use"; "My ChatGPT plan, signed in"; "My GitHub Copilot, not set up"; "Codex, for tasks, not set up"; "My own key, OpenAI, signed in"; "Auto, in use". Three states only: In use, Signed in, Not Set Up. A fourth, "Signed out by GitHub" (or OpenAI), appears after a revoked token (10A.5). Enter does the action button's job. Delete on a signed-in row signs it out, after a Yes/No with No as the default.
 2. **About this connection**: a read-only line, two sentences at most, rewritten as the selection moves. Who receives the text, what it costs, and what it can do, from the capability registry: "Text and pictures. Agent tasks: yes. Billed to your Copilot plan."
 3. **Model** (`&Model`): a choice list filled from the selected connection's own discovery (10A.7). The first item is the service's recommendation, marked "(recommended)". Disabled with one item, "Sign in to see the models", when the row is not set up.
 4. **The action button.** One button whose label follows the row: "&Use This" on a signed-in row, "&Sign In..." on a row not set up, "Sign &Out" on the row in use. The three letters are distinct and collide with nothing else here (GATE-14).
@@ -1081,7 +1193,7 @@ ChatGPT and Codex use the existing loopback sign-in (`quill/core/ai/chatgpt_loop
 ### 10A.4 First run and empty states
 
 - **Nothing is chosen at first run, and nothing is sent.** The free AI is the default row and reads "in use". No network call happens until somebody asks (`hosted_ai_service.py:16-19`); the privacy agreement still comes first (`_ask_ai_privacy`, `hosted_ai_commands.py:299`).
-- **No model list yet:** the free AI's model row says "QUILL chooses the model" and is disabled. Copilot Free says "Auto (Copilot Free chooses)", because Free gets Auto selection only (section 2B.6).
+- **No model list yet:** the free AI's model row says "QUILL chooses the model" and is disabled. Copilot model availability follows the signed-in GitHub account and plan; QUILL does not provide a Copilot plan.
 - **Discovery failed:** "Could not read the model list. The recommended model is used." Never a stale hard-coded list.
 - **Organisation switched Copilot off** (R15): the row says "My GitHub Copilot, not available for your account", and About says why in one sentence.
 - **Safe Mode:** the window opens and says, in About, that AI is off in Safe Mode. Nothing can be signed in.
@@ -1095,10 +1207,11 @@ ChatGPT and Codex use the existing loopback sign-in (`quill/core/ai/chatgpt_loop
 - **Sign Out of another row** changes nothing about which one is in use.
 - **A revoked token** (401 from OpenAI or GitHub, or a refresh that fails): nothing is sent, the row becomes "Signed out by OpenAI", and the app says "Your ChatGPT plan sign-in has ended. Nothing was sent. Press Ctrl+4 to sign in again or choose another." No retry and no fallback. The route guard (`:66-91`) stays as the backstop for any case this misses.
 - **A limit is reached:** the ChatGPT plan's 429 `subscription_sharing_usage_limit_exceeded`, Copilot's quota, the free AI's `GatewayQuota`, or an own key's 429. Spoken once, never retried, never switched: "Your ChatGPT plan's limit for QUILL is reached. Nothing was sent. Manage usage is in the Usage window." The 503 `subscription_sharing_usage_unavailable` gets the bounded retry OpenAI asks for (errors-and-recovery page), and then the same sentence.
+- Those no-switch guarantees describe an explicitly selected connection. Auto is a separate, explicit choice, never selected by default: it chooses only a ready provider that supports the action and announces the provider and destination before sending. Ask, conversations and image requests may offer one retry after a classified connectivity failure; the same request is sent only after confirmation, with destination and possible provider limits or billing stated. Declining preserves the original error. Agent tasks are never retried automatically because a provider may have performed an approved action before a failure. Copilot's Auto model-priority setting remains separate and never changes providers.
 
 ### 10A.6 Data model and settings
 
-- **One stored choice:** `ai_connection: str`, with values `free`, `chatgpt`, `copilot`, `codex`, `own_key`, and `""` meaning "not yet decided". The same field name in `quill/core/settings.py` and `quill/core/lite/settings.py`, so the settings-vocabulary gate (`quill/tools/settings_vocabulary_audit.py`, snapshot `tests/unit/ui/fixtures/settings_vocabulary_inventory.json`, line 42 of the audit) classifies it `shared`, not `missing`. Regenerate with `--write`.
+- **One stored choice:** `ai_connection: str`, with values `free`, `chatgpt`, `copilot`, `codex`, `own_key`, `auto`, and `""` meaning "not yet decided". The same field name in `quill/core/settings.py` and `quill/core/lite/settings.py`, so the settings-vocabulary gate (`quill/tools/settings_vocabulary_audit.py`, snapshot `tests/unit/ui/fixtures/settings_vocabulary_inventory.json`, line 42 of the audit) classifies it `shared`, not `missing`. Regenerate with `--write`.
 - **Per-connection model:** existing fields stay. ChatGPT is `ChatGptState.model`; the own key is `ai_own_key_model` (`settings.py:294`, `lite/settings.py:223`). New: `ai_copilot_model` and `ai_codex_model`, both editors, same names. The free AI has none.
 - **Migration, so nobody's behaviour changes:** on the first read where `ai_connection` is empty, it is set once to what `route` returns today (ChatGPT signed in, else own key active, else free), and saved through `write_json_atomic`. From then on `route` returns the stored choice, provided that connection is ready. If it is not ready, the request fails with the revoked-token sentence above; it does not fall through.
 - **Other apps:** each app's own settings get the same field name. Whether the vocabulary gate covers settings outside the editor pair: to verify.
@@ -1106,7 +1219,7 @@ ChatGPT and Codex use the existing loopback sign-in (`quill/core/ai/chatgpt_loop
 
 ### 10A.7 The capability registry
 
-New, wx-free and strict-typed: `quill/core/ai/connection_caps.py`. One record per connection, plus a per-model override when the service reports it.
+New, wx-free and strict-typed: `quill/core/ai/connection_caps.py`. One record per concrete connection, plus a per-model override when the service reports it. Auto has no capability record of its own; it resolves through this table for each action.
 
 | Capability | Free | ChatGPT plan | Copilot | Codex | Own key |
 |---|---|---|---|---|---|
@@ -1132,7 +1245,7 @@ Where each fact comes from, never guessed:
 
 - The menu label says what it needs, after the name: "Ask About an Image (needs a connection that sees)...". Menus already rebuild when the route changes (`QuillAiHost.rebuild_all_menus`, `main_frame_hosted_ai.py:131`). The item stays enabled and keeps its key, so the menu accelerator rule holds; only a disabled status readout is exempt from showing a key, and these are commands.
 - Pressing it sends nothing. It says which connections can, and offers the switch in one key: "Pictures need a connection that can see. My ChatGPT plan can. Switch to it and ask?" Yes and No, with Yes the default because the person just asked for this. Yes calls `route_chosen()`, so it is a choice, not a fallback. When no connection that is set up can do it: "Pictures need My ChatGPT plan, My GitHub Copilot, Codex or a Gemini key. Choose one now?" and Yes opens Choose Your AI on that row.
-- Agent tasks follow the same rule. On the free AI, "Fix headings, then build a table of contents" is listed with "(needs Copilot or Codex)".
+- Agent tasks follow the same rule. On the free AI, "Fix headings, then build a table of contents" is listed with "(needs an AI that runs tasks)". Copilot, Codex and supported own-key providers can run them.
 
 Why this rule rather than hiding: a hidden command is one nobody learns exists, and a disabled one is skipped by arrow keys in some readers and says "unavailable" with no reason. The sentence on press is something only the app knows, so it is not over-announcing (GATE-13).
 
@@ -1185,12 +1298,23 @@ One button, **Manage Usage**, opens the selected connection's own page (`USAGE_U
 
 **Everything is text (Jeff, 2026-10-31).** Usage is a spoken and brailled sentence or a list, never a chart: no meter, gauge, progress bar or colour carries a number, in this window or anywhere else (decision 13).
 
+Auto is an explicit provider-selection choice. Usage remains reported under
+the concrete provider for each request; QUILL does not invent an aggregate
+quota across providers.
+
 ### 10A.12 Copilot as a route
 
-- **Chat and pictures** through the SDK: `send_and_wait` for single requests, streaming events for conversations, images as attachments (section 2B.6). This also fixes the request-id bug (section 3.7).
-- **Sign-in** by GitHub device flow, which needs Jeff's GitHub OAuth App client id. None exists today (R10). Section 10F is Jeff's checklist. With per-app sign-in, each app gets its own registration (10F step 8).
-- **Bundled:** `copilot.exe` and the SDK wheel in `standalone/runtime/quillville-runtime.spec`, with `COPILOT_CLI_PATH` and `COPILOT_SKIP_CLI_DOWNLOAD=1`; about 113 MB compressed, approved by Jeff. The runtime file inventory and its drift test get the new files. The CLI licence text goes in `quill/core/third_party_notices.py` and `docs/legal`. `scripts/code_signing.py` skips GitHub's exe, and the SHA-256 from `SHA256SUMS.txt` is pinned at build time (section 9).
-- **Retired:** `PACK_INSTALLS["copilot"]` and the Install step in `copilot_onboarding_dialog.py`; sign-in becomes the only step.
+- **Chat and pictures:** one-shot and streaming requests use the SDK 2 session API; images are sent only as attachments, and the selected model's vision capability gates image requests.
+- **Models and usage:** the route reads the signed-in account's models and quota from `models.list` and `account.getQuota`. GitHub is the source of plan availability, model entitlements, limits, and billing.
+- **Sign-in:** each app uses its own registered GitHub device-flow client id. No client secret is shipped.
+- **Bundled runtime:** `microsoft-copilot-sdk==2.0.1` and its SDK-pinned `runtime.node` are part of the shared runtime. The runtime inventory and dependency notices identify the SDK; no Copilot CLI executable is bundled.
+- **Agent tasks:** QUILL's registered tools are available by default.
+  Copilot's file, shell, and web tools are off until enabled per project; each
+  use still requires QUILL approval. Vendor edits bypass Review Changes, while
+  QUILL's own edits remain reviewed. MCP and unsupported permissions are refused.
+- **Separate choices:** My own key and local models remain separate routes. Copilot is never used as an automatic fallback for another provider.
+- Copilot's **Auto** model-priority setting is independent of the Choose Your AI **Auto** provider choice.
+- **Verification still open:** the SDK integration has focused fake-SDK tests, but a real-account run and a regenerated runtime inventory from a completed runtime build remain unverified. Do not treat either as passed until performed.
 
 ### 10A.13 Codex as a route
 
@@ -1204,6 +1328,33 @@ One button, **Manage Usage**, opens the selected connection's own page (`USAGE_U
 - The window, the registry and the gating live in shared modules: `quill/ui/hosted_ai_connections.py` (new, the window), `quill/core/ai/connection_caps.py` (new), and `AiService.route` reading `ai_connection`. QUILL reaches them through `main_frame_hosted_ai.py`, which still has no commands of its own; the test that asserts that absence stays.
 - Parity-table rows in `quill/core/lite/parity.py`: `COMMAND_EQUIVALENTS` (`:170`) gains `cmd_ai_choose` to `tools.hosted_ai_choose` and `cmd_ai_which` to `tools.hosted_ai_which`; `SETTINGS_ALIASES` needs nothing, because the field names match.
 - Gates that will check it: bound-command and family rules (`tests/unit/core/test_family_rules_and_gates.py`), menu accelerators (`tests/unit/ui/test_menu_accelerators.py`), menu shape, documentation chords and GATE-DOCKEY for the guides, GATE-LITE-COVER (`quill/tools/lite_command_coverage.py --write`) for behavioural tests of both new handlers, the settings vocabulary, GATE-REACH for the new window, the F1 audits, GATE-13 and GATE-BRAILLE, and the new GATE-CAPS.
+
+### 10A.15 Explicit Auto provider routing
+
+Auto is an additional choice in Choose Your AI, not a default and not a
+background fallback. A person opts in by selecting its row. For each action,
+the shared capability registry selects the first ready provider that supports
+all required capabilities. For example, a text request can use a ready text
+provider while an agent task uses a different ready provider with agent tools;
+an image request must use a provider whose selected model can see. Copilot's
+own Auto model priority remains a separate setting within Copilot.
+
+Before any request leaves, QUILL or QUILL Lite announces the selected provider
+and destination. The local Ollama route explicitly says that the request stays
+on this computer. If no ready provider can perform the action, the action is
+not sent and the user is told what to set up. A connectivity failure on one
+ordinary request may offer one retry through another eligible provider; the
+confirmation says where the same request will go and that the provider may
+count it toward limits or billing. No means no retry. Limits, authorization
+failures, other errors and multi-step agent tasks are not retried
+automatically. A confirmed task is not restarted because a provider may have
+performed an approved action.
+
+The registry order is the stable tie-breaker, not a ranking of quality. Auto
+does not change model settings, combine provider histories or share
+credentials. Which AI Am I Using reports that Auto is active; the
+pre-send announcement names the concrete provider for each action. Provider
+terms, availability, usage and billing still belong to that provider.
 
 ## 10B. Pictures, video and sound across the family
 
@@ -1365,7 +1516,7 @@ Every built-in prompt stays, with the same name, wording and place. Listed so no
 
 ## 10E. AI across the QuillVille apps
 
-Built on the inventory in section 3 and the per-app reports read on 2026-10-31. **Single-request features come first**, on the shared connection layer (10A), because they work on every connection, including the free AI. **Agent features come later**, on Copilot or Codex, and appear only where the connection in use has agent tools (10A.8).
+Built on the inventory in section 3 and the per-app reports read on 2026-10-31. **Single-request features come first**, on the shared connection layer (10A), because they work on every connection, including the free AI. **Agent features** appear only where the selected connection has agent tools: Copilot, Codex, supported own-key providers, or local Ollama (10A.8).
 
 Ranked by value to blind and low-vision users: what a person can do alone that today needs sighted help or a long workaround.
 
@@ -1571,26 +1722,20 @@ In every app below, "Capabilities required" uses the five connection names: Free
 
 **Not here, and why.** Nothing is ever posted by a model: posting is an irreversible send and always asks.
 
-## 10F. Setting up the GitHub app: Jeff's steps
+## 10F. GitHub app registration and sign-in (implemented)
 
-A checklist to follow in a browser. Each step was checked against docs.github.com on 2026-10-31 unless it says "to verify".
-
-1. **Choose an OAuth App, not a GitHub App.** The Copilot SDK accepts `gho_` (OAuth App), `ghu_` (GitHub App) and fine-grained `github_pat_` tokens, and refuses classic `ghp_` (section 2B.5, docs.github.com Copilot SDK authentication). Both kinds of app would work. The OAuth App is the simpler one: QUILL's code already runs the OAuth device flow with scope `read:user` (`copilot_auth.py:44-48`), a user approves it once with no installation step, and the GitHub App's required Copilot permission, if any, is not documented (to verify).
-2. **Create it under the Community-Access organization,** not your personal account. Go to the organization's page, then Settings, then Developer settings, then OAuth Apps, then New OAuth App. The org owns it, so it survives a change of maintainer, and users see the organization's name on the approval page. Docs: docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app (it says any organization where you are an administrator can own one).
-3. **Fill in the form, field by field:**
-   1. Application name: `QUILL`. This is what users see on GitHub's approval page and in their settings. For the other apps, use the app's name exactly: `QUILL Lite`, `QUILL Studio`, and so on (step 8).
-   2. Homepage URL: the QUILL site's home page.
-   3. Application description: "Lets QUILL use your GitHub Copilot plan for AI help. QUILL never sees your password."
-   4. Authorization callback URL: device flow does not use it, but the field is required. Enter the homepage URL again.
-   5. Enable Device Flow: check this box. Without it, sign-in fails with `device_flow_disabled`.
-   6. Expire user access tokens: uncheck it for now. GitHub's own advice is to leave it off until the app can refresh short-lived tokens, and QUILL cannot yet (gate G2). Tokens then do not expire unless revoked.
-   7. Register application.
-4. **Do not create a client secret.** Device flow needs none ("The client_secret is not needed for the device flow"). QUILL must never contain one: anything shipped in an app can be read out of it.
-5. **Copy the Client ID** from the app's page and send it to us in any ordinary message. A client id is public: it names the app, it grants nothing, and it appears in every sign-in request anyway.
-6. **Wiring it in (our work, not yours). Done.** `copilot_auth.py` now carries a built-in `CLIENT_IDS` table, one per app's agent name, with the environment variable kept only as a developer override. Users never set anything.
-7. **Testing it.** In a build with the id: open Choose Your AI, select My GitHub Copilot, press Sign In. You should hear the code, spaced out, and find it on the clipboard. Press Open the Page, sign in to GitHub if asked, paste the code, approve. Back in QUILL you should hear "Signed in to My GitHub Copilot. It is now in use", and Ctrl+8 should say Copilot.
-8. **One registration per app.** Decided (decision 16), for two reasons. Each app signs in separately (Jeff's decision), and each should appear by its own name on the approval page and in a user's GitHub settings. And GitHub allows only ten tokens per user, app and scope combination; an eleventh revokes an older one (docs.github.com, authorizing OAuth apps). Eleven family apps signing in on one registration would sign each other out. Start with QUILL and QUILL Lite; add the others as each gets AI.
-9. **Revoking and rotating.** A user revokes QUILL at github.com/settings/connections/applications/ followed by the client id; the next request then fails, and QUILL says "Your GitHub Copilot sign-in has ended" (10A.5). You can revoke every token at once from the app's page in the organization's settings (the exact button: to verify); every user then sees the same sentence and signs in again. Deleting the app breaks sign-in until a build with a new client id ships, so do it only if the app is compromised.
+- QUILL and QUILL Lite use their registered GitHub device-flow client ids from
+  `quill/core/ai/copilot_auth.py`. User sign-in does not require a client
+  secret, a terminal, or a separately installed Copilot CLI.
+- Each app stores its Copilot token in the OS-protected credential store,
+  separately from the token used for GitHub repository features.
+- Users complete sign-in from **Choose Your AI**. The accessible device-code
+  prompt includes the code and an **Open the Page** action; Cancel stops the
+  pending flow. The user approves QUILL on GitHub and controls revocation from
+  GitHub's account settings.
+- No user needs to send a key, token, password, client id, or credential file
+  to the project. Real-account testing remains unverified; use a test account
+  only when a maintainer explicitly schedules that validation.
 
 ## 11. Phased delivery
 
@@ -1598,11 +1743,11 @@ Revised 2026-10-31 to Jeff's order: Copilot engine fixes, then the Choose Your A
 
 ### Which engine first: Copilot
 
-- **Stable ground.** The Copilot SDK is GA with a stable API. Codex plan sharing is a preview, and `dynamicTools` is experimental.
+- **Stable ground.** The Copilot SDK has a supported Python API. Codex plan sharing is a preview, and `dynamicTools` is experimental.
 - **Less new code.** Copilot has a Python SDK, so tool handlers are Python functions in our process. Codex needs our own JSON-RPC client and process manager.
 - **Half of it exists.** The Copilot pack, device-flow sign-in, onboarding dialog, Engines tab and wizard path are all in the tree (section 3.7).
-- **It costs users nothing.** Copilot Free is included.
-- **What it does not settle:** images through tools (G6), and the OAuth App (R10, section 10F).
+- **Account ownership.** A user's own GitHub Copilot account supplies access and determines any cost, usage limits, and model availability. QUILL does not provide or subsidize Copilot.
+- **What it does not settle:** SDK-owned tools remain disabled; image attachments are supported on the chat route when the selected model accepts vision.
 
 ### Phase 0: Copilot engine fixes (no user-visible feature)
 
@@ -1621,10 +1766,17 @@ Revised 2026-10-31 to Jeff's order: Copilot engine fixes, then the Choose Your A
 
 ### Phase 2: the Copilot route (section 10A.12)
 
-- Jeff's OAuth App and client id (10F); per-app sign-in.
-- `copilot.exe` and the SDK in `standalone/runtime/quillville-runtime.spec`, inventories, notices, signing skip, SHA-256 pin.
-- Chat, conversations and pictures as attachments; the model list from `models.list`; usage from `account.getQuota`.
-- Gates G1, G2, G4, G5 and G6 for Copilot.
+The SDK 2 implementation is delivered in QUILL and QUILL Lite. The runtime
+inventory remains a release gate: regenerate it from a completed runtime build,
+not by editing the JSON by hand. Focused fake-SDK tests do not replace a
+real-account run or a network-egress verification.
+
+- Shipped: SDK 2.0.1 runtime, per-app device sign-in, chat and picture
+  attachments, model and quota discovery, tool sessions, accessible input and
+  progress, privacy defaults, and user-owned account/usage language.
+- Still to verify: G1 with a real account and G5 network capture. Confirm the
+  generated runtime inventory and its drift test after a full runtime build.
+- Do not use account credentials or keys from local files for validation.
 
 ### Phase 3: per-app single-request features, Ask and prompts (sections 10B to 10E)
 
@@ -1641,12 +1793,12 @@ Revised 2026-10-31 to Jeff's order: Copilot engine fixes, then the Choose Your A
 
 ### Gates for the engines (each engine passes all of them)
 
-- **G1:** with a real account (Copilot Free and Pro; ChatGPT Plus), the pinned exe completes one turn through the token we supply, and the usage-limit path is checked by hand.
+- **G1:** a real-account turn and usage-limit path are not yet verified. Do not use credentials or keys from local files.
 - **G2:** a token refresh keeps the conversation. For Codex: restart and `thread/resume`. For Copilot: with "Expire user access tokens" off, record that the token does not expire; with it on, refresh without a client secret.
-- **G3:** the recorded tools list contains only QUILL's tools. No shell, file edit, `apply_patch`, image generation, `view_image`, plugins, apps or MCP.
-- **G4:** Safe Mode refuses to start either engine. Stop ends a turn within 1 second. Closing the app kills the child within 2 seconds.
+- **G3:** the recorded Copilot tool list contains QUILL's registered tools plus only vendor tools explicitly enabled for the project; each vendor permission still requires approval. Plugins, apps, and MCP are not offered.
+- **G4:** Safe Mode refuses to start either engine. Copilot Stop and client shutdown use bounded completion deadlines; Codex child-process shutdown has its separate deadline.
 - **G5:** a 10-minute network capture shows only the vendor's API and auth hosts.
-- **G6 (Copilot):** can a custom tool return an image the model sees? If not, the attachment fallback in section 6.0 is the design.
+- **G6 (Copilot):** the chat route sends pictures as SDK attachments only when the selected model supports vision. Image results from custom tools are not integrated.
 
 ### Acceptance, every phase
 
@@ -1662,17 +1814,19 @@ Revised 2026-10-31 to Jeff's order: Copilot engine fixes, then the Choose Your A
 
 ## 12. Decisions (2026-10-31)
 
-Jeff accepted all 25 recommendations on 2026-10-31. They join what was already settled: the five connections, the Copilot CLI in the shared runtime, Copilot before Codex, a separate sign-in in every app, capability gating, and an unchanged unified presentation, usage tracking, Ask in every app and basic prompt library. The body of this plan already reflects each one; the numbers below are what "decision N" means elsewhere in the document.
+These are historical product decisions from 2026-10-31. The shipped SDK 2
+implementation is described in sections 2B.8 and 3.7; those sections supersede
+the old Copilot CLI packaging assumptions below.
 
 1. **Codex size.** Codex app-server ships once, in the shared runtime, starting with the release that carries Phase 4b; nothing before then and no opt-in download. About 92 MB compressed and 284 MB installed. Measure at G3 whether the sandbox helpers (about 80 MB) are needed with the shell off, and leave them out if not (section 9).
 2. **Transcribe sign-in.** Transcribe gets its own "QUILL Transcribe" ChatGPT sign-in in Phase 3, before it gets any new AI feature, ending the borrowed sign-in at `quill/apps/transcribe_review.py:53` (R1). Say so once, in one sentence, the first time Review Dictation needs the plan.
 3. **First agent feature.** QUILL and QUILL Lite document tasks are the first agent feature (Phase 4a), on `TOOL_DESCRIPTORS`, `SafeEditorToolGateway`, `PermissionBroker` and diff review. Studio's pre-flight check is the second, first in Phase 4c (sections 1, 6.1, 11).
 4. **Thread storage.** Thread files are kept for the length of one task, in the app's own `CODEX_HOME`, and deleted when the task ends, on Stop, and again at the next start. Copilot session state under its per-app `working_directory` follows the same rule (section 8).
 5. **Social.** Left out of this plan. It moves under `quill/` as its own program, with its own PRs, before any AI goes into it (R8).
-6. **Accounts for live checks.** Jeff's ChatGPT Plus account, one Copilot Free account and one paid Copilot account. No Pro account. Jeff creates or lends them; Claude never signs in for Jeff. Phase 0 needs none (fake SDK client).
+6. **Accounts for live checks.** Automated tests use fake SDK clients and do not require account credentials. Any future live-account validation must use a test account arranged explicitly for that purpose; never read credentials or keys from local files.
 7. **Engine order.** Copilot first.
-8. **Both engines.** Both in the shared runtime: Copilot from Phase 2, Codex from Phase 4b, about 205 MB compressed together. No opt-in download for either. Measure the Copilot CLI's unpacked size in Phase 2 and record it in section 9. Each engine gets its own child-process entry in the network egress audit.
-9. **GitHub OAuth App.** Registered under the Community-Access organization, device flow on, no client secret, expiring tokens off, following section 10F. Unblocks Phase 2 (R10).
+8. **Both engines.** Both are available from the shared runtime without an opt-in download. Copilot uses the SDK-pinned in-process runtime; Codex has its own app-server process. The network-egress audit records each integration separately; no combined size estimate is asserted here.
+9. **GitHub OAuth App.** QUILL and QUILL Lite registrations are wired in the shipped app; device flow requires no client secret (section 10F).
 10. **GitHub sign-in.** One per app, matching ChatGPT.
 11. **Token split.** Each app's Copilot token gets its own store entry, keyed by that app's agent name, apart from the GitHub repository features' token in `quill/core/github/token_store.py`. One-time migration: an existing token stays with the repository features, and Copilot asks for its own sign-in once. Phase 0 work (section 10A.6).
 12. **Dead `gh copilot` commands.** `github.copilot_suggest` and `github.copilot_explain` are removed now, in their own small change, before Phase 2: the handlers in `quill/ui/main_frame_gh_bridge.py`, the functions in `quill/core/github/gh_bridge.py`, the keymap rows, `quill/core/feature_command_map.py` and the sign-off lists.

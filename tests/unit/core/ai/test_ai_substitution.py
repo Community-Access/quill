@@ -251,11 +251,12 @@ def test_a_route_the_listener_chose_is_never_questioned() -> None:
 
 def test_the_service_sends_nothing_when_the_answer_is_no(monkeypatch: pytest.MonkeyPatch) -> None:
     import quill.ui.hosted_ai_service as module
+    import quill.ui.hosted_ai_service_requests as requests
 
     submitted: list[str] = []
     told: list[str] = []
-    monkeypatch.setattr(module, "_submit", lambda name, *_a, **_k: submitted.append(name))
-    monkeypatch.setattr(module, "_call_after", lambda func, *args: func(*args))
+    monkeypatch.setattr(requests, "_submit", lambda name, *_a, **_k: submitted.append(name))
+    monkeypatch.setattr(requests, "_call_after", lambda func, *args: func(*args))
     monkeypatch.setattr(
         module.AiService,
         "route_allowed",

@@ -1,8 +1,9 @@
-"""GitHub Copilot SDK harness pack (PRD §18.5).
+"""Copilot SDK harness pack (PRD §18.5).
 
-Optional extra ``quill[ai-copilot]`` (PyPI package ``github-copilot-sdk``, import
-``copilot``). The Copilot SDK exposes the same agent runtime behind Copilot CLI;
-it is imported lazily only when a session runs.
+Optional extra ``quill[ai-copilot]`` (PyPI package
+``microsoft-copilot-sdk``, import ``copilot``). The SDK's native runtime is
+loaded in-process from QUILL's verified ``runtime.node``; a missing runtime is
+reported instead of triggering the SDK's automatic download.
 
 Integration note: the Copilot SDK is itself an agent that can edit files and run
 shell commands, governed by an ``on_permission_request`` handler. QUILL must own
@@ -20,7 +21,7 @@ every edit. Two paths:
   ``custom-tool`` request is approved only for those names, only after the
   broker and the approver agree. See :mod:`quill.ai_packs.copilot_tool_session`.
 
-How a session is made, and why (checked against the SDK 1.0.28 source):
+How a session is made, and why (checked against the SDK 2.0.1 source):
 
 - **The answer, not a request id.** ``session.send`` returns a message id and
   does not wait; the pack calls ``send_and_wait(prompt, timeout=...)``, which
@@ -28,35 +29,24 @@ How a session is made, and why (checked against the SDK 1.0.28 source):
   is 60 seconds and a timeout does *not* stop the agent, so the pack passes
   :data:`SEND_TIMEOUT_SECONDS` and calls ``session.abort()`` when it expires.
 - **The system prompt is appended, not glued on.** It travels as
-  ``system_message={"mode": "append", "content": ...}``, keeping the CLI's own
+  ``system_message={"mode": "append", "content": ...}``, keeping the runtime's own
   safety sections; ``"replace"`` would remove them.
 - **The token is explicit.** It is read from this app's own Copilot store entry
-  (:func:`quill.core.ai.copilot_auth.stored_token`) when the session starts and
-  passed as ``github_token=`` with ``use_logged_in_user=False``; it is never
-  placed in ``os.environ``. The SDK hands it to the child as
-  ``COPILOT_SDK_AUTH_TOKEN`` with ``--auth-token-env`` (and adds
-  ``--no-auto-login``). With no stored token the SDK falls back to the CLI's
-  own signed-in user.
-- **The child inherits no other credential.** ``env=`` is
-  :func:`quill.core.ai.copilot_runtime.copilot_child_env`, which strips every
-  GitHub and cloud token variable.
-- **The transport is pinned to stdio.** ``connection=`` is always
-  ``RuntimeConnection.for_stdio(path=...)``: left unset, the SDK reads
-  ``COPILOT_SDK_DEFAULT_CONNECTION`` and an ``inprocess`` value there would
-  reject ``env=`` outright.
-- **The bundled CLI.** When the build carries the SDK's hostless runtime
-  bundle in ``tools\\copilot`` (entrypoint ``copilot.exe``, the alias of
-  ``copilot-runtime.exe``; or ``COPILOT_CLI_PATH`` names one), it is the stdio
-  ``path``, so the SDK never reaches its own download. A bundled entrypoint and
-  its ``runtime.node`` must match the build's SHA-256 pins first, or the session
-  fails with a coded error instead of launching it.
+  (:func:`quill.core.ai.copilot_auth.stored_token`) when the client is made and
+  passed as ``github.token`` with ``github.use_logged_in_user=False``. It is
+  never placed in the process environment or implicitly borrowed from a CLI
+  sign-in.
+- **The runtime is local and verified.** The app resolves the pinned
+  ``runtime.node`` under ``tools\\copilot`` and sets the SDK's
+  ``COPILOT_CLI_PATH`` runtime override. It does not search ``PATH`` or allow
+  the SDK to download a runtime at first use.
 - **Never an empty tool list.** An empty ``available_tools`` has been seen to
   expose every built-in (Copilot CLI issue #5306), so a text-only session still
   passes a non-empty allowlist that names only QUILL-owned tools -- today a
   single QUILL name that matches no built-in (:data:`TEXT_ONLY_TOOL_NAME`).
   Names must match ``^[a-zA-Z0-9_-]+$``; a bare ``"*"`` is rejected.
 
-SDK 1.0.28 facts recorded for later phases (read from source, not built here):
+SDK 2.0.1 facts recorded for later phases (read from source):
 
 - **Permission requests** arrive as ``(request, invocation)``; ``request.kind``
   is one of ``shell``, ``write``, ``read``, ``url``, ``mcp``, ``memory``,
@@ -97,33 +87,48 @@ from __future__ import annotations
 
 import os
 import sys
-from collections.abc import Callable, Sequence
-from typing import TYPE_CHECKING, Any
+from collections.abc import Awaitable, Callable, Sequence
+from dataclasses import dataclass, replace
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from quill.ai_packs._base import Invoke, SdkHarness
 from quill.core.ai import copilot_auth
 from quill.core.ai.agent_workdir import AgentFolders, agent_folders
-from quill.core.ai.copilot_runtime import cli_path_for_launch, copilot_child_env
+from quill.core.ai.copilot_preferences import (
+    load_copilot_preferences,
+    save_copilot_preferences,
+)
+from quill.core.ai.copilot_proxy import resolve_system_proxy
+from quill.core.ai.copilot_runtime import (
+    prepare_inprocess_runtime,
+    resolve_runtime_path,
+)
 from quill.core.ai.harness import AgentSpec, AIContext, HarnessCapabilities, TurnUsage
 from quill.stability.safe_mode import should_enable_safe_mode
 
 if TYPE_CHECKING:
     from quill.ai_packs.copilot_tool_session import SdkParts
     from quill.core.ai.approvals import Approver
+    from quill.core.ai.copilot_byok import CopilotByokConnection
     from quill.core.ai.family_tools import FamilyToolRegistry
     from quill.core.ai.harness import ToolSession
     from quill.core.ai.tool_gateway import Emit
 
 __all__ = [
     "CopilotHarness",
+    "CopilotSessionInfo",
     "SEND_TIMEOUT_SECONDS",
     "TEXT_ONLY_TOOL_NAME",
     "available_tools_for",
     "answer_text",
     "client_kwargs",
+    "session_safety_options",
     "reject_class",
     "system_message_for",
 ]
+
+_ResultT = TypeVar("_ResultT")
 
 #: A QUILL-owned tool name that matches no Copilot built-in. Listing it alone
 #: is how a text-only session says "no vendor tools" without the empty list.
@@ -169,6 +174,14 @@ class CopilotNoReplyError(RuntimeError):
     """The session went idle without an assistant message, or with an empty one."""
 
 
+@dataclass(frozen=True, slots=True)
+class CopilotSessionInfo:
+    """Local session metadata safe to show in the AI Hub."""
+
+    session_id: str
+    modified_at: str
+
+
 def _reject_class() -> Any:
     """``PermissionDecisionReject``, from the public ``copilot.rpc`` namespace.
 
@@ -180,26 +193,47 @@ def _reject_class() -> Any:
     return PermissionDecisionReject
 
 
-def _client_kwargs(copilot: Any, agent_name: str) -> dict[str, object]:
-    """``CopilotClient`` options: pinned stdio CLI, scrubbed env, explicit token."""
-    cli_path = cli_path_for_launch()  # raises on a bundle that fails the pin
-    kwargs: dict[str, object] = {
-        "env": copilot_child_env(cli_path),
-        # Always explicit stdio: path=None means the SDK's own runtime.
-        "connection": copilot.RuntimeConnection.for_stdio(
-            path=str(cli_path) if cli_path is not None else None
-        ),
-    }
+def _client_kwargs(copilot: Any, agent_name: str, base_directory: str) -> dict[str, Any]:
+    """Create an isolated in-process client using only this app's stored token."""
+    github: dict[str, object] = {"use_logged_in_user": False}
     token = copilot_auth.stored_token(agent_name)
     if token:
-        kwargs["github_token"] = token
-        kwargs["use_logged_in_user"] = False
-    return kwargs
+        github["token"] = token
+    return _runtime_client_kwargs(copilot, base_directory, github)
+
+
+def _runtime_client_kwargs(
+    copilot: Any, base_directory: str, github: dict[str, object]
+) -> dict[str, Any]:
+    """Common verified runtime and credential-free proxy configuration."""
+    prepare_inprocess_runtime()
+    return {
+        "mode": "empty",
+        "runtime": copilot.RuntimeConnection.for_inprocess(base_directory=base_directory),
+        "github": github,
+        "network": {"scope": "connection", "resolve_proxy": resolve_system_proxy},
+    }
+
+
+def session_safety_options(*, infinite_sessions_enabled: bool = False) -> dict[str, Any]:
+    """Privacy defaults shared by text and tool sessions."""
+    return {
+        "enable_config_discovery": False,
+        "github": {"capi": {"enabled": True}, "telemetry_enabled": False},
+        "skills": {"enabled": False},
+        "state": {
+            "embedding_cache_storage": "in-memory",
+            "enable_cross_session_store": False,
+            "infinite_sessions": {"enabled": infinite_sessions_enabled},
+            "memory": {"enabled": False},
+        },
+    }
 
 
 def _sdk_parts() -> SdkParts:
     """The SDK classes a tool session needs (imports the SDK; call lazily)."""
     from copilot.rpc import PermissionDecisionApproveOnce  # type: ignore[import-not-found]
+    from copilot.session import SkillProviderDescriptor  # type: ignore[import-not-found]
     from copilot.tools import (  # type: ignore[import-not-found]
         Tool,
         ToolBinaryResult,
@@ -214,6 +248,7 @@ def _sdk_parts() -> SdkParts:
         binary_cls=ToolBinaryResult,
         reject_cls=_reject_class(),
         approve_cls=PermissionDecisionApproveOnce,
+        skill_descriptor_cls=SkillProviderDescriptor,
     )
 
 
@@ -224,7 +259,7 @@ reject_class = _reject_class
 
 
 def system_message_for(system_prompt: str) -> dict[str, str] | None:
-    """The ``system_message`` option: QUILL's prompt appended to the CLI's own."""
+    """The ``system_message`` option: QUILL's prompt appended to the runtime's."""
     text = system_prompt.strip()
     return {"mode": "append", "content": text} if text else None
 
@@ -240,9 +275,15 @@ class CopilotHarness(SdkHarness):
         invoke: Invoke | None = None,
         *,
         agent_name: str = copilot_auth.DEFAULT_AGENT_NAME,
+        data_dir: Path | None = None,
     ) -> None:
         super().__init__(invoke)
         self.agent_name = agent_name
+        self.data_dir = data_dir
+
+    def _agent_folders(self, *, retain_home: bool = False) -> AgentFolders:
+        base = self.data_dir / "ai" if self.data_dir is not None else None
+        return agent_folders("copilot", self.agent_name, base=base, retain_home=retain_home)
 
     def capabilities(self) -> HarnessCapabilities:
         return HarnessCapabilities(
@@ -262,15 +303,92 @@ class CopilotHarness(SdkHarness):
     def _tool_client(self, folders: AgentFolders) -> Any:
         """A ``CopilotClient`` for one tool task (not yet started).
 
-        Its state (``COPILOT_HOME``, via ``base_directory``) and its working
-        directory both sit in this app's own folders, emptied after the task.
+        Its state (``COPILOT_HOME``) sits in this app's folders, emptied after
+        the task. The session gets its working directory separately.
         """
         import copilot  # type: ignore[import-not-found]
 
-        kwargs = _client_kwargs(copilot, self.agent_name)
-        kwargs["working_directory"] = str(folders.work)
-        kwargs["base_directory"] = str(folders.home)
-        return copilot.CopilotClient(**kwargs)
+        return copilot.CopilotClient(**self._client_options(copilot, str(folders.home)))
+
+    def _client_options(self, copilot: Any, base_directory: str) -> dict[str, Any]:
+        return _client_kwargs(copilot, self.agent_name, base_directory)
+
+    def _session_provider_options(self, model: str = "") -> dict[str, Any]:
+        options: dict[str, Any] = {}
+        if model and model.strip().lower() != "auto":
+            options["model"] = model
+        if model.strip().lower() in {"", "auto"}:
+            options["github"] = {
+                "capi": {
+                    "enabled": True,
+                    "auto_tier": load_copilot_preferences(self.data_dir).auto_tier,
+                },
+                "telemetry_enabled": False,
+            }
+        return options
+
+    def _run_local_client_operation(
+        self, operation: Callable[[Any], Awaitable[_ResultT]]
+    ) -> _ResultT:
+        """Run an SDK session-management operation in its isolated app home."""
+        import asyncio
+
+        folders = self._agent_folders(retain_home=True).prepare()
+
+        async def _run() -> _ResultT:
+            client = self._tool_client(folders)
+            started = False
+            try:
+                await client.start()
+                started = True
+                return await operation(client)
+            finally:
+                if started:
+                    await client.stop()
+
+        try:
+            return asyncio.run(_run())
+        finally:
+            folders.clear()
+
+    def list_saved_sessions(self) -> tuple[CopilotSessionInfo, ...]:
+        """List only session IDs and modification times from this app's local store."""
+
+        async def _list(client: Any) -> tuple[CopilotSessionInfo, ...]:
+            sessions = await client.list_sessions()
+            return tuple(
+                CopilotSessionInfo(
+                    session_id=str(session.session_id),
+                    modified_at=session.modified_time.isoformat(sep=" ", timespec="minutes"),
+                )
+                for session in sorted(
+                    (item for item in sessions if not item.is_remote),
+                    key=lambda item: item.modified_time,
+                    reverse=True,
+                )
+            )
+
+        return self._run_local_client_operation(_list)
+
+    def delete_saved_session(self, session_id: str) -> None:
+        """Permanently remove one session from this app's local Copilot store."""
+        session_id = session_id.strip()
+        if not session_id:
+            raise ValueError("A saved Copilot session ID is required.")
+
+        async def _delete(client: Any) -> None:
+            await client.delete_session(session_id)
+
+        self._run_local_client_operation(_delete)
+
+    def is_available(self) -> tuple[bool, str | None]:
+        """Report a missing SDK or runtime without trying to download either."""
+        try:
+            if resolve_runtime_path() is None:
+                return False, "The in-process Copilot runtime is not installed with this build."
+        except OSError:
+            return False, "The in-process Copilot runtime could not be read."
+        return super().is_available()
 
     def start_tool_session(
         self,
@@ -288,7 +406,7 @@ class CopilotHarness(SdkHarness):
         """A multi-turn session over QUILL's family tools (codex.md 5.2).
 
         Refused (an error result, never a launch) in Safe Mode (G4) or when the
-        SDK pack is not installed. ``keep_open`` keeps the task alive for
+        SDK pack or native runtime is not installed. ``keep_open`` keeps the task alive for
         follow-ups until ``end()``; ``on_usage`` receives token counts per call.
         """
         from quill.ai_packs.copilot_tool_session import CopilotToolSession, RefusedToolSession
@@ -298,9 +416,26 @@ class CopilotHarness(SdkHarness):
         available, reason = self.is_available()
         if not available:
             return RefusedToolSession(reason or "GitHub Copilot is not available.", emit)
+        preferences = load_copilot_preferences(self.data_dir)
+        resume_session_id = preferences.resume_session_id if preferences.keep_sessions else ""
+        session_folders = folders or self._agent_folders(retain_home=preferences.keep_sessions)
+        if resume_session_id and not session_folders.retain_home:
+            return RefusedToolSession(
+                "Enable Copilot session retention before resuming a saved session.", emit
+            )
+
+        on_resume_consumed = None
+        if resume_session_id:
+
+            def _consume_resume_selection() -> None:
+                current = load_copilot_preferences(self.data_dir)
+                if current.resume_session_id == resume_session_id:
+                    save_copilot_preferences(replace(current, resume_session_id=""), self.data_dir)
+
+            on_resume_consumed = _consume_resume_selection
+
         options: dict[str, Any] = {}
-        if model:
-            options["model"] = model
+        options.update(self._session_provider_options(model or ""))
         return CopilotToolSession(
             agent=agent,
             ctx=ctx,
@@ -309,27 +444,22 @@ class CopilotHarness(SdkHarness):
             emit=emit,
             sdk=_sdk_parts(),
             client_factory=self._tool_client,
-            folders=folders or agent_folders("copilot", self.agent_name),
+            folders=session_folders,
             session_options=options,
+            enable_long_context=preferences.long_context and preferences.keep_sessions,
+            share_enabled_skills=preferences.share_enabled_skills,
+            resume_session_id=resume_session_id,
+            on_resume_consumed=on_resume_consumed,
             keep_open=keep_open,
             on_usage=on_usage,
             display_name=self.display_name,
         )
 
     def _make_invoke(self) -> Invoke:
-        """Transport over the Copilot SDK's async session API.
-
-        ``CopilotClient(github_token=..., env=..., connection=...)``, then
-        ``create_session(available_tools=[...], system_message=...,
-        on_permission_request=...)``, then ``session.send_and_wait(prompt,
-        timeout=...)``. The SDK is imported here, never at module import.
-        """
+        """Transport over the SDK's async session API; imports stay lazy."""
         import asyncio
 
-        import copilot  # type: ignore[import-not-found]
-
         reject = _reject_class()
-        agent_name = self.agent_name
 
         def _deny_own_tools(request: object, invocation: object) -> object:
             # QUILL owns the editor: every kind (shell, write, read, url, mcp,
@@ -338,34 +468,100 @@ class CopilotHarness(SdkHarness):
 
         def invoke(agent: AgentSpec, ctx: AIContext) -> str:
             prompt = f"{ctx.prompt}\n\n{ctx.context_text}".strip()
-            session_kwargs: dict[str, object] = {
-                "available_tools": available_tools_for(),
-                "on_permission_request": _deny_own_tools,
-            }
+            session_kwargs: dict[str, Any] = session_safety_options()
+            session_kwargs["permissions"] = {"on_request": _deny_own_tools}
+            session_kwargs["tools"] = {"available_tools": available_tools_for()}
+            session_kwargs["events"] = {"streaming": False}
+            session_kwargs.update(self._session_provider_options())
             system_message = system_message_for(agent.system_prompt)
             if system_message is not None:
                 session_kwargs["system_message"] = system_message
 
             async def _run() -> str:
-                async with copilot.CopilotClient(**_client_kwargs(copilot, agent_name)) as client:
-                    async with await client.create_session(**session_kwargs) as session:
-                        try:
-                            result = await session.send_and_wait(
-                                prompt, timeout=SEND_TIMEOUT_SECONDS
-                            )
-                        except TimeoutError:
-                            # The SDK's timeout only stops waiting; stop the turn too.
-                            await session.abort()
-                            raise
-                        text = answer_text(result)
-                        if not text.strip():
-                            # Inserting "" would look like success and change
-                            # nothing; say it went wrong instead.
-                            raise CopilotNoReplyError(
-                                "GitHub Copilot finished without an answer. Try again."
-                            )
-                        return text
+                folders = self._agent_folders().prepare()
+                client: Any | None = None
+                try:
+                    client = self._tool_client(folders)
+                    await client.start()
+                    session = await client.create_session(
+                        **session_kwargs, working_directory=str(folders.work)
+                    )
+                    try:
+                        result = await session.send_and_wait(prompt, timeout=SEND_TIMEOUT_SECONDS)
+                    except TimeoutError:
+                        await session.abort()
+                        raise
+                    finally:
+                        await session.disconnect()
+                    text = answer_text(result)
+                    if not text.strip():
+                        raise CopilotNoReplyError(
+                            "GitHub Copilot finished without an answer. Try again."
+                        )
+                    return text
+                finally:
+                    try:
+                        if client is not None:
+                            await client.stop()
+                    finally:
+                        folders.clear()
 
             return asyncio.run(_run())
 
         return invoke
+
+
+class CopilotByokHarness(CopilotHarness):
+    """Copilot SDK agent tools using only the user's explicitly selected provider."""
+
+    pack_id = "copilot_byok"
+    pack_name = "Copilot SDK (your provider)"
+
+    def __init__(
+        self,
+        *,
+        provider: str,
+        model: str,
+        agent_name: str = copilot_auth.DEFAULT_AGENT_NAME,
+        data_dir: Path | None = None,
+    ) -> None:
+        super().__init__(agent_name=agent_name, data_dir=data_dir)
+        from quill.core.ai.copilot_byok import load_selected_connection
+
+        self._connection: CopilotByokConnection | None
+        try:
+            self._connection = load_selected_connection(provider, model)
+            self._connection_error = ""
+        except (OSError, ValueError) as exc:
+            self._connection = None
+            self._connection_error = str(exc)
+
+    def capabilities(self) -> HarnessCapabilities:
+        base = super().capabilities()
+        local = bool(self._connection and self._connection.local_only)
+        return replace(
+            base,
+            requires_oauth=False,
+            requires_api_key=not local,
+            local_only=local,
+        )
+
+    def is_available(self) -> tuple[bool, str | None]:
+        available, reason = super().is_available()
+        if not available:
+            return available, reason
+        if self._connection is None:
+            return False, self._connection_error or "The selected provider is not ready."
+        return True, None
+
+    def _client_options(self, copilot: Any, base_directory: str) -> dict[str, Any]:
+        return _runtime_client_kwargs(copilot, base_directory, {"use_logged_in_user": False})
+
+    def _session_provider_options(self, model: str = "") -> dict[str, Any]:
+        if self._connection is None:
+            return {}
+        return {
+            "github": {"capi": {"enabled": False}, "telemetry_enabled": False},
+            "inference": self._connection.inference_options(),
+            "model": model or self._connection.model,
+        }

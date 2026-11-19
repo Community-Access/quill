@@ -70,6 +70,13 @@ NEVER_ROWS: tuple[CommandSpec, ...] = (
         where="Tools, Preferences Hub",
     ),
     CommandSpec(
+        "tools.ai_hub",
+        "AI Hub",
+        risk=_N,
+        group="AI",
+        where="AI, AI Hub",
+    ),
+    CommandSpec(
         "app.announcement_self_test",
         "Speech and Braille Self-Test",
         aliases=("speech test", "braille test", "output check"),

@@ -365,6 +365,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+F3** | Tidy Dictated Text... |
 | **Ctrl+8** | Which AI Am I Using |
 | **Ctrl+4** | Choose Your AI... |
+| **Ctrl+Alt+Shift+?** | AI Hub... |
 
 ### AI|Accounts and Usage (in Tools)
 

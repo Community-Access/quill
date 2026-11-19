@@ -51,8 +51,9 @@ key, which now covers OpenAI, Google Gemini, Anthropic Claude, OpenRouter,
 Ollama Cloud, a custom OpenAI-compatible service and Ollama on your own
 computer. **Which AI Am I Using** (Ctrl+8) says which one is answering. Signing
 out of the one in use leaves no AI in use until you choose; nothing switches
-by itself. On Copilot or Codex, **Do a Document Task** (Ctrl+3) carries out a
-job with several steps and asks before every change. Saved prompts become one
+by itself. On Copilot, Codex or a supported provider selected in My own key,
+**Do a Document Task** (Ctrl+3) carries out a job with several steps and asks
+before every change. Saved prompts become one
 list shared by the family. GitHub Copilot sign-in shows "not available yet"
 until the builds carry each app's GitHub registration, and Codex needs the
 engine in the shared runtime; both must be confirmed in the staged packages

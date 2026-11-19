@@ -1,7 +1,7 @@
 """Recording Pre-flight Check: QUILL Studio's agent task (codex.md 6.1, Phase 4c).
 
 The person presses Ctrl+3 (AI > Recording Pre-flight Check...) and Enter, and
-an agent engine -- My GitHub Copilot or Codex -- checks the set-up with
+a task-capable AI engine checks the set-up with
 Studio's own tools and answers with a short checklist in plain words: "The
 microphone is the webcam mic, not the USB headset. The captured window is
 Settings, not the browser you named."

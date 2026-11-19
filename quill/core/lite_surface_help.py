@@ -79,7 +79,7 @@ PURPOSES: dict[str, str] = {
         "Whether your ChatGPT plan may search the web, and Forget on This Computer."
     ),
     "Do a Document Task": (
-        "Tell GitHub Copilot or Codex what to do to this document. Each change asks "
+        "Tell a task-capable AI what to do to this document. Each change asks "
         "first and is shown before it is applied; the task ends with a summary."
     ),
     "Allow This Step?": "Whether the document task may take its next step.",

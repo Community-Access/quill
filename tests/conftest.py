@@ -1083,7 +1083,7 @@ def _no_copilot_or_codex_here(monkeypatch: pytest.MonkeyPatch) -> None:
     from quill.core.ai.copilot_state import CopilotReadiness
     from quill.ui import hosted_ai_copilot_route as route
 
-    nothing = CopilotReadiness(client_id=False, sdk=False, cli=False, signed_in=False)
+    nothing = CopilotReadiness(client_id=False, sdk=False, runtime=False, signed_in=False)
     monkeypatch.setattr(route.CopilotRouteMixin, "copilot_readiness", lambda _self: nothing)
     monkeypatch.setattr(route.CopilotRouteMixin, "codex_available", property(lambda _s: False))
 

@@ -116,9 +116,9 @@ def test_the_ai_menu_has_the_family_rows_on_the_editors_keys(studio) -> None:
     studio._ai_connection_refresh()
     assert _ai_menu(studio) == [
         "&Ask...\tCtrl+6",
-        # The agent tasks say what they need on the ChatGPT plan (codex.md 10A.8).
-        "&Recording Pre-flight Check (needs Copilot or Codex)...\tCtrl+3",
-        "&Narrate a Recording (needs Copilot or Codex)...\tCtrl+Shift+3",
+        # The agent tasks say what they need (codex.md 10A.8).
+        "&Recording Pre-flight Check (needs an AI that runs tasks)...\tCtrl+3",
+        "&Narrate a Recording (needs an AI that runs tasks)...\tCtrl+Shift+3",
         "&Describe a Picture...\tCtrl+F5",
         "Describe a &Folder...\tCtrl+Shift+F5",
         "Stop Describing the Fo&lder\tAlt+Shift+F5",

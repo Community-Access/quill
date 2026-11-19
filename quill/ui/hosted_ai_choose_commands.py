@@ -39,6 +39,10 @@ class ChooseAiMixin:
 
     # -- the commands ------------------------------------------------------ #
 
+    def cmd_ai_hub(self) -> None:
+        """Open shared AI setup and session controls without changing the AI choice."""
+        self._ai_open_hub()
+
     def cmd_ai_which(self) -> None:
         """Say which AI is in use; pressed twice, open Choose Your AI."""
         now = time.monotonic()
@@ -140,12 +144,13 @@ class ChooseAiMixin:
         from quill.ui.hosted_ai_connections import ChooseAiFrame, ChooseAiHooks
 
         service = self._ai_service()
+        app_name = str(getattr(self._ai_host(), "ai_agent_name", "") or "QUILL")
         hooks = ChooseAiHooks(
             announce=self._announce,
             connect_free=self._ai_open_connect,
             own_key=self._ai_own_key_dialog,
             changed=self._ai_connection_refresh,
-            app_name=str(getattr(self._ai_host(), "ai_agent_name", "") or "QUILL"),
+            app_name=app_name,
             safe_mode=self._ai_safe_mode(),
         )
         self._open_ai_window(
@@ -159,6 +164,27 @@ class ChooseAiMixin:
             frame.select(select)
         if sign_in and callable(getattr(frame, "start_sign_in", None)):
             self._ai_later(frame.start_sign_in, select)
+
+    def _ai_open_hub(self) -> None:
+        """Open the shared AI Hub for QUILL or QUILL Lite."""
+        opener = getattr(self, "open_ai_hub", None)
+        if callable(opener):
+            opener()
+            return
+
+        from quill.ui.ai_hub_dialog import AIHubDialog
+        from quill.ui.dialog_contract import show_modal_dialog
+
+        dialog = AIHubDialog(
+            self._ai_parent(),
+            show_modal_dialog=lambda dlg, label: show_modal_dialog(
+                dlg, label, announce=self._announce
+            ),
+            announce=self._announce,
+            app_context=self._ai_host(),
+            open_choose=self._ai_open_choose,
+        )
+        dialog.show()
 
     def _ai_later(self, func: Any, *args: Any) -> None:
         """Run *func* once the window is on screen, so a modal step opens over it."""

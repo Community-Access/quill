@@ -26,7 +26,7 @@ is answered from this session's cache and sends nothing.
 **The agent tasks** (codex.md Phase 4c): Recording Pre-flight Check (Ctrl+3,
 :mod:`~quill.ui.audio_studio.studio_ai_task`) and Narrate a Recording
 (Ctrl+Shift+3, :mod:`~quill.ui.audio_studio.studio_ai_narrative`), in the
-shared agent window, on Copilot or Codex.
+shared agent window, on a task-capable AI connection.
 
 **Screenshot questions.** The Screenshot Inspector and Ask AI About a Video
 send to the connection in use as well -- Studio's own picture chooser folded

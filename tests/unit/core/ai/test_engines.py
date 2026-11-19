@@ -15,6 +15,12 @@ def test_registry_has_native_plus_every_pack() -> None:
     assert {"copilot", "claude_agent_sdk", "openai_agents"} <= ids
 
 
+def test_registry_scopes_copilot_identity_to_the_app() -> None:
+    copilot = build_engine_registry(agent_name="QUILL Lite").get("copilot")
+    assert copilot is not None
+    assert copilot.agent_name == "QUILL Lite"
+
+
 def test_native_is_always_available_and_default_active() -> None:
     reg = build_engine_registry()
     native = reg.get("native")
@@ -30,7 +36,9 @@ def test_targets_carry_install_reason_for_absent_packs() -> None:
     for pack_id in ("copilot", "claude_agent_sdk", "openai_agents"):
         target = targets[pack_id]
         if not target.available:
-            assert target.reason and "pip install" in target.reason
+            assert target.reason
+            if pack_id != "copilot":
+                assert "pip install" in target.reason
 
 
 def test_selection_registry_refuses_to_run() -> None:

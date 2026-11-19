@@ -51,15 +51,10 @@ function Stage-QuillMediaTools {
         # for YouTube's challenges; staged by the app that plays YouTube
         # (Radio), found by quill.core.js_runtime.find_deno.
         [string]$DenoDir = "",
-        # A vetted directory holding the Copilot hostless runtime bundle
-        # (scripts\fetch_build_deps.py --only copilot): copilot.exe (the SDK's
-        # compatibility alias), copilot-runtime.exe, runtime.node, the
-        # .hostless-runtime-assets-v2 marker, the runtime assets in subfolders,
-        # and COPILOT-CLI-LICENSE.txt. The GitHub Copilot CLI the Copilot SDK
-        # drives. Unlike the tools above it is not per app: it ships in every
-        # shared runtime, so build_runtime.ps1 stages it. The whole folder is
-        # copied unmodified -- the licence allows redistribution only that way,
-        # and only with the licence beside it.
+        # A vetted directory holding runtime.node and COPILOT-CLI-LICENSE.txt
+        # (scripts\fetch_build_deps.py --only copilot). The SDK 2 native runtime
+        # library is staged in every shared runtime, without any CLI wrapper or
+        # executable.
         [string]$CopilotDir = "",
         # A vetted directory holding codex-app-server.exe, CODEX-LICENSE.txt and
         # CODEX-NOTICE.txt (scripts\fetch_build_deps.py --only codex). OpenAI's
@@ -142,16 +137,12 @@ function Stage-QuillMediaTools {
     }
 
     # The two AI engines, each with the licence files that must ride with it.
-    # The named files are required, so a stage missing its licence (or, for
-    # Copilot, a piece the SDK's completeness check needs) fails here rather
-    # than shipping without it. Copilot is a whole bundle with subfolders
-    # (Copy = "tree"): the target is emptied first so no file of an older
-    # bundle -- the legacy single-file copilot.exe included -- survives beside
-    # the new one. Codex is its named files only.
+    # Every named file is required, so a stage missing its licence fails here
+    # rather than shipping an incomplete runtime. Copilot is only the SDK's
+    # pinned native runtime library; Codex remains its named files.
     $engines = @(
-        @{ Dir = $CopilotDir; Name = "copilot"; Copy = "tree"; Files = @(
-            "copilot.exe", "copilot-runtime.exe", "runtime.node",
-            ".hostless-runtime-assets-v2", "COPILOT-CLI-LICENSE.txt") },
+        @{ Dir = $CopilotDir; Name = "copilot"; Copy = "files"; Files = @(
+            "runtime.node", "COPILOT-CLI-LICENSE.txt") },
         @{ Dir = $CodexDir; Name = "codex"; Copy = "files"; Files = @(
             "codex-app-server.exe", "CODEX-LICENSE.txt", "CODEX-NOTICE.txt") },
         @{ Dir = $NodeDir; Name = "nodejs"; Copy = "files"; Files = @(

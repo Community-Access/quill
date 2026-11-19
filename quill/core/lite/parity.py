@@ -209,6 +209,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     # (quill/ui/hosted_ai_choose_commands.py), Ctrl+8 and Ctrl+4 in both.
     "cmd_ai_which": "tools.hosted_ai_which",
     "cmd_ai_choose": "tools.hosted_ai_choose",
+    "cmd_ai_hub": "tools.ai_hub",
     # Do a Document Task (codex.md 6.2): the shared mixin's
     # (quill/ui/hosted_ai_task_commands.py), Ctrl+3 in both.
     "cmd_ai_task": "tools.hosted_ai_task",

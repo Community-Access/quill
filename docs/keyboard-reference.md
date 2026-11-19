@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 595.
+Editor commands with default bindings: 596.
 
 ## The QUILL editor
 
@@ -362,6 +362,7 @@ Editor commands with default bindings: 595.
 | Ctrl+Alt+Shift+. | Next Difference | `tools.compare_next_difference` |
 | Ctrl+Alt+Shift+/ | Is This the Right Word? | `tools.word_right` |
 | Ctrl+Alt+Shift+; | Rhymes | `tools.word_rhymes` |
+| Ctrl+Alt+Shift+? | AI Hub... | `tools.ai_hub` |
 | Ctrl+Alt+Shift+D | Announce Current Difference | `tools.compare_announce_difference` |
 | Ctrl+Alt+Shift+F | Search in Files... | `tools.search_in_files` |
 | Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |

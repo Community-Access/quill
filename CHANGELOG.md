@@ -33,6 +33,26 @@ but Everything, and needing Forms on too. Insert Payment Field, Form Payments
 Setup and Verify Payment Setup are in Tools > Forms only while it is on, and
 the shared command refuses in either editor when the switch is off, rather
 than running when it cannot tell.
+### GitHub Copilot SDK 2.0.1 and agent options (2026-11-18)
+
+- Replaced the Copilot SDK 1.x integration with the Microsoft Copilot SDK 2.0.1
+  in-process runtime. The runtime is included with QUILL; a Copilot subscription
+  or allowance is not. GitHub determines eligibility, models, limits and
+  billing.
+- My own key can use the SDK agent harness for OpenAI-compatible and Gemini
+  connections without GitHub sign-in. The selected provider controls its terms
+  and billing. QUILL does not silently change providers.
+- AI Hub > Sessions offers opt-in session retention, local session listing,
+  one-task resumption and permanent deletion. Sharing enabled AI Library skills
+  and long-task context summaries are separately opt-in. These options remain
+  off by default.
+- Copilot's own file, shell and web tools remain off until enabled for a
+  project. Each use requires approval; vendor edits bypass Review Changes and
+  vendor shell commands run with the user's account permissions.
+- Choose Your AI now has an optional Auto provider choice. It selects a ready
+  provider with the capability each action needs and announces the destination
+  before sending. A connectivity retry requires confirmation; agent tasks
+  are never automatically retried. Explicitly selected providers do not switch.
 
 ### WordPress
 
