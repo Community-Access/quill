@@ -116,7 +116,6 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 
 ##### Shop (WooCommerce)
 
-- [ ] Analytics (`wc-analytics/reports/*`).
 
 Scheduled Actions and the extensions marketplace are wp-admin only. Subscriptions and Bookings are paid extensions with their own routes, not in scope.
 
@@ -142,6 +141,7 @@ All of the following has tests over recorded or fake answers and none has met a 
 - [ ] WooCommerce, The Events Calendar and Yoast SEO, signed in on the test site, which has all three. A refund only against a gateway's test mode.
 - [ ] New Order, Change Items and Change Address on a test order: especially that a quantity of 0 takes an item off, which WooCommerce's order controller documents but QUILL has only met in fakes.
 - [ ] PMPro Members of This Level (built from users plus each person's levels: the `pmpro/member-memberships-get` ability or `pmpro/v1/get_membership_levels_for_user`), its speed on a big site, and the paged discount-code list.
+- [ ] Shop Analytics against a real store: the `wc-analytics` answer shapes, a store that has not imported its order history, and whether Customers should take a date range.
 - [ ] Redirection's options (`redirection/v1/setting`, built from the plugin's documentation, never seen live).
 - [ ] Redirection: the slug-change redirect offer, the redirect list and 404 log, Redirect Groups (new, rename, turn off, delete) and Import Redirects.
 - [ ] QAF on the test site (it still runs BAF), the QAF migration, and the spam settings with a live submission.

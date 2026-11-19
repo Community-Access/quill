@@ -11,6 +11,15 @@ command. Ctrl+2, Ctrl+Tab and the Window menu showed the hidden window as it
 had been left, which was often "Nothing is playing". Every way of reaching it
 now brings it up to date first. Cast's other windows that hide rather than
 close, such as Statistics, now refresh the same way.
+### WordPress Workbench: Shop Analytics (2026-11-19)
+
+A site with WooCommerce Analytics now has **Shop Analytics** beside its Shop:
+Revenue, Orders, Products, Categories, Coupons, Taxes, Downloads, Stock and
+Customers. Each report starts with the range's total, and arriving says it
+once, for example "Revenue on Radio, last 7 days: $1,240 from 31 orders, up
+12% on the 7 days before." Date Range and Interval apply to every report on
+the site, money follows the store's currency settings, and Export List saves
+the report as shown. Nothing is changed on the site.
 
 ### WordPress Workbench: a level's members, every discount code, and Redirection's options (2026-11-19)
 

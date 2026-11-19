@@ -16,6 +16,7 @@ from quill.core.wordpress import workbench_shop_order_edit as edit
 from quill.core.wordpress.plugin_shop_seo import SHOP_NAMESPACE, ShopValueError
 from quill.core.wordpress.site import raw_text
 from quill.core.wordpress.workbench_rows import WbRow
+from quill.ui.wordpress_workbench_shop_analytics import WorkbenchShopAnalyticsCommands
 
 __all__ = ["WorkbenchShopOrderEditCommands"]
 
@@ -38,8 +39,11 @@ def _person_words(person: dict[str, Any]) -> str:
     return ", ".join(part for part in (name, str(person.get("email") or "")) if part)
 
 
-class WorkbenchShopOrderEditCommands:
-    """Mixed in beside the other shop commands, whose plumbing it uses."""
+class WorkbenchShopOrderEditCommands(WorkbenchShopAnalyticsCommands):
+    """Mixed in beside the other shop commands, whose plumbing it uses.
+
+    Shop Analytics' Date Range and Interval come from its base.
+    """
 
     say: Callable[[str], None]
     ctx: Callable[[str], Any]

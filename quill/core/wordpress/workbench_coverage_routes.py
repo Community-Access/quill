@@ -110,6 +110,11 @@ COVERED: tuple[tuple[str, str], ...] = (
     (r"wc/v3/customers$", "Sites > site > Shop > Customers, read only"),
     (r"wc/v3/reports/(sales|top_sellers|[a-z]+/totals)$", "Sites > site > Shop > Shop Reports"),
     (r"wc/v3/data/currencies/current$", "Sites > site > Shop > Shop Reports, the currency"),
+    (
+        r"wc-analytics/reports/((revenue|orders|downloads)/stats"
+        r"|(products|coupons|taxes|stock|customers)(/stats)?|categories)$",
+        "Sites > site > Shop Analytics, read only",
+    ),
     (r"wc/v3/settings(/\(\?P<group_id>[^)]*\))?$", "Sites > site > Shop > Store Settings"),
     (
         r"wc/v3/settings/\(\?P<group_id>[^)]*\)/\(\?P<id>[^)]*\)$",

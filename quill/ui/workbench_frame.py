@@ -443,6 +443,11 @@ class WorkbenchFrame(
             lambda error: self._load_failed(generation, node, error),
         )
 
+    @property
+    def arrival(self) -> int:
+        """The load that opened the node shown now, or -1 once a refresh replaced it."""
+        return self._arrived_for
+
     def _loaded_rows(self, generation: int, rows: list[object]) -> None:
         if generation != self._generation:
             return  # a stale answer for a node somebody already left
