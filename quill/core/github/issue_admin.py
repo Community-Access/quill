@@ -27,6 +27,7 @@ from quill.core.github.across_issue_fields import (
     combine,
     parse_definitions,
     parse_values,
+    read_definitions,
 )
 from quill.core.github.rest_transport import GitHubRestError
 from quill.core.github.workbench_api import GitHubApi
@@ -70,14 +71,8 @@ def _why(exc: GitHubRestError, doing: str) -> IssueAdminError:
 
 
 def _definitions(api: GitHubApi, repo: str) -> Any:
-    owner = repo.split("/", 1)[0]
     try:
-        return api.rest("GET", f"/orgs/{quote(owner)}/issue-fields").data
-    except GitHubRestError as exc:
-        if exc.status != 404:
-            raise _why(exc, "read the issue fields") from exc
-    try:
-        return api.rest("GET", "/user/issue-fields").data
+        return read_definitions(api, repo.split("/", 1)[0])
     except GitHubRestError as exc:
         raise _why(exc, "read the issue fields") from exc
 

@@ -159,10 +159,12 @@ class PodcastAcquisitionMixin:
     def _podcast_new_episode_message(self, show: PodcastShow, new_count: int, queued: int) -> str:
         """One sentence covering what arrived and where it went, rather than
         a count now and a separate "and they were queued" later."""
-        message = f"{new_count} new episode(s) for {show.title}"
+        # Said once, here (FUX-06): the list the episodes arrive in stays where
+        # the listener left it and says nothing itself, so this is the count.
+        message = f"{new_count} new episode{'' if new_count == 1 else 's'} in {show.title}"
         if queued:
             message += f"; {queued} added to the Play Queue"
-        return message
+        return message if message.endswith((".", "!", "?")) else message + "."
 
     def _podcast_resurface_republished(
         self, show: PodcastShow, republished: list[str]

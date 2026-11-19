@@ -2870,7 +2870,7 @@ Control coverage: 384 audited sites (384 helped).
 
 **organization: Dependabot Alerts.** Dependabot Alerts: every repository's vulnerable dependencies in one list.
 
-**organization: Secret Scanning Alerts.** Secret Scanning Alerts: secrets found in any repository. The secret itself is never shown here.
+**organization: Secret Scanning Alerts.** Secret Scanning Alerts: secrets found in any repository. The secret itself is never asked for, so it is never shown here.
 
 **organization: Security Advisories.** Security Advisories: the repository advisories across this organization.
 
@@ -3284,6 +3284,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Turn Off Agent Merge.** Stop Copilot merging this pull request.
 
+**Dependency Review.** What this pull request changes in the dependencies: each one added or removed, its licence, and its known vulnerabilities.
+
 **Jobs and Logs.** The run's jobs, steps and logs.
 
 **What Failed.** The failing steps and their log lines.
@@ -3420,7 +3422,7 @@ Control coverage: 384 audited sites (384 helped).
 
 **Set a Custom Property.** Give one of the organization's custom properties a value here.
 
-**Compare Dependencies.** Which dependencies changed between two branches, tags or commits, and their known vulnerabilities.
+**Compare Dependencies.** Which dependencies changed between two branches, tags or commits, their licences, and their known vulnerabilities.
 
 **SBOM Report.** Ask GitHub to build a software bill of materials report, and read it.
 
@@ -3459,6 +3461,8 @@ Control coverage: 384 audited sites (384 helped).
 **Agent Secrets from the Organization.** The organization's agent secrets this repository may use (names only).
 
 **Agent Variables from the Organization.** The organization's agent variables this repository may use.
+
+**Allow a Blocked Secret.** When push protection stopped your push, let that one secret through: give the placeholder id git push printed and say why.
 
 **Open.** Select the person's node in the tree.
 
@@ -3623,6 +3627,8 @@ Control coverage: 384 audited sites (384 helped).
 **Follow Organization.** See this organization's public activity in your feed.
 
 **Unfollow Organization.** Stop seeing this organization in your feed.
+
+**Security Overview.** Open Dependabot, code scanning and secret scanning alerts in every repository, counted by severity, worst first.
 
 **Open.** Open the settings dialog for this; it asks before saving.
 

@@ -1438,6 +1438,53 @@ def security_policy_and_database(run: Any) -> str:
     return f"{policy[0].label} {policy[-1].label} Database: {found[0].label}"
 
 
+def secrets_sealed_and_write_only(run: Any) -> str:
+    """A repository secret: sealed with its key, set, changed, never read back, then deleted."""
+    import secrets as _random
+
+    from quill.core.github import resource_engine as engine
+    from quill.core.github.resource_specs import spec_for
+
+    spec = spec_for("actions_secrets")
+    assert spec is not None
+    name = f"QUILL_LIVE_SECRET_{int(time.time()) % 100000}"
+    value = _random.token_urlsafe(24)
+    said = engine.create(run.api, spec, run.repo, {"name": name, "value": value})
+    try:
+        engine.edit(run.api, spec, run.repo, name, {"value": _random.token_urlsafe(24)})
+        rows = engine.fetch(run.api, spec, run.repo)
+        _expect(any(name in row.label for row in rows), "the secret is not listed")
+        _expect(all(value not in row.label + row.detail for row in rows), "the value was shown")
+        one = run.rest("GET", f"/repos/{run.repo}/actions/secrets/{name}")
+        _expect(value not in str(one) and "value" not in one, "GitHub sent a value back")
+        _expect(value not in said, "the value was said")
+    finally:
+        gone = engine.delete(run.api, spec, run.repo, name)
+    return f"{name}: sealed, set, changed, listed by name only. {gone}"
+
+
+def security_reads(run: Any) -> str:
+    """Dependency Review on an open pull request, and Security Overview where there is an org."""
+    from quill.core.github.quick_table_security import SECURITY_QUICK
+    from quill.core.github.workbench_api import TokenApi
+
+    quick = {q.verb: q for q in SECURITY_QUICK}
+    api = TokenApi(_token(run))
+    pulls = run.rest("GET", f"/repos/{run.repo}/pulls", per_page="1")
+    said = []
+    if pulls:
+        ctx = {"repo": run.repo, "number": str(pulls[0]["number"])}
+        review = quick["dependency_review"]
+        said.append(review.said(review.run(api, ctx), ctx).splitlines()[0])
+    owner = run.repo.split("/", 1)[0]
+    if run.rest("GET", f"/users/{owner}").get("type") == "Organization":
+        overview = quick["security_overview"]
+        said.append(overview.run(api, {"org": owner}).splitlines()[0])
+    if not said:
+        raise NotHere("no open pull request, and the test repository is not an organization's")
+    return " ".join(said)
+
+
 def discussion_places(run: Any) -> str:
     """Pinned (spotlight), Categories by section, and each poll as a table: reads only."""
     from quill.core.github.discussion_categories import category_rows
@@ -1509,6 +1556,14 @@ FEATURES: dict[str, Scenario | str] = {
         security_policy_and_database
     ),
     "Discussions: Pinned (spotlight), Categories by section, polls as tables": discussion_places,
+    "Secrets: sealed with the owner's key, write-only, never read back (complete.md 1.3)": (
+        secrets_sealed_and_write_only
+    ),
+    "Organization secrets: all, private or selected, and Repositories Allowed": (
+        "needs Jeff: an organization secret in Community-Access; Change to selected, add and "
+        "remove a repository with Repositories Allowed..., then back to private"
+    ),
+    "Dependency Review on a pull request, and Security Overview (GX11)": security_reads,
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

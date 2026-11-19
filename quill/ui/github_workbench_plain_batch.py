@@ -76,11 +76,12 @@ class GitHubWorkbenchPlainBatchMixin:
                 break
             except PlainError as exc:
                 self._say(exc.plain)  # then the same sentence again, to correct it
-        if request.changes_anything:
-            refusal = self._write_refusal("plain_batch")  # type: ignore[attr-defined]
-            if refusal:
-                self._say(refusal)
-                return
+        # A question only reads; a change is held to the account's level first,
+        # through the one write gate (quill.core.github.write_gate).
+        if request.changes_anything and self.refused(  # type: ignore[attr-defined]
+            "github.workbench.plain_batch"
+        ):
+            return
         self._resolve(repository, request)
 
     def _ask_sentence(self, repository: str, text: str, examples: tuple[str, ...]) -> str | None:

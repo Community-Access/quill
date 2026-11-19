@@ -34,6 +34,11 @@ _STATES = (
     ("Close it", "closed"),
     ("Make it a draft again", "draft"),
 )
+#: A private report someone sent (GitHub's "triage" state): accept it or close it.
+_REPORT_STATES = (
+    ("Accept it: a draft advisory you and the reporter work on", "draft"),
+    ("Close it: not a vulnerability, or not one here", "closed"),
+)
 
 
 class GitHubWorkbenchAdvisoriesMixin:
@@ -121,18 +126,20 @@ class GitHubWorkbenchAdvisoriesMixin:
         self._background("send it", work, lambda said: (self._say(str(said)), self.frame.reload()))
 
     def _do_advisory_state(self, _ref: Any, row: object) -> None:
-        from quill.core.github.security_advisories import set_state
+        from quill.core.github.security_advisories import is_private_report, set_state
         from quill.ui.github_repo_admin_dialogs import TypedConfirmDialog
 
         found = self._advisory(row)
         if found is None:
             return
+        report = is_private_report(found)
+        states = _REPORT_STATES if report else _STATES
         picked = self._choose(
-            "Advisory", f"What to do with {found.key}?", [label for label, _s in _STATES]
+            "Advisory", f"What to do with {found.key}?", [label for label, _s in states]
         )
         if picked < 0:
             return
-        state = _STATES[picked][1]
+        state = states[picked][1]
         if state == "published":
             if not TypedConfirmDialog(
                 self.frame.frame,
@@ -147,12 +154,12 @@ class GitHubWorkbenchAdvisoriesMixin:
             ).show():
                 self._say("Cancelled; the advisory was not published.")
                 return
-        elif not self._confirm("Advisory", f"{_STATES[picked][0]}: {found.key}?"):
+        elif not self._confirm("Advisory", f"{states[picked][0]}: {found.key}?"):
             return
         api, repository = self.github_api(), found.repo
         self._background(
             "change the advisory",
-            lambda: set_state(api, repository, found.key, state),
+            lambda: set_state(api, repository, found.key, state, report=report),
             lambda said: (self._say(str(said)), self.frame.reload()),
         )
 
