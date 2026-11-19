@@ -762,6 +762,25 @@
       "pypi": "microsoft-copilot-sdk"
     },
     {
+      "id": "github-copilot-sdk",
+      "name": "GitHub Copilot SDK 1.x (legacy runtime package)",
+      "group": "runtime",
+      "version": "1.0.28",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright GitHub, Inc.",
+      "homepage": "https://github.com/github/copilot-sdk",
+      "what": "The legacy 1.x Python SDK distribution remains named in the committed shared-runtime inventory. The active source dependency is Microsoft Copilot SDK 2.0.1.",
+      "review": "Remove this legacy entry only after a verified SDK 2-only Windows runtime build confirms github-copilot-sdk is absent from the runtime inventory.",
+      "products": [
+        "all"
+      ],
+      "delivery": "shared-runtime",
+      "pypi": "github-copilot-sdk"
+    },
+    {
       "id": "h11",
       "name": "h11",
       "group": "runtime",

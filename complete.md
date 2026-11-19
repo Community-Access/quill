@@ -8,7 +8,7 @@
 
 For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claude.log`. The commands and gates are in `CLAUDE.md`.
 
-- **Done on 2026-11-18:** five WordPress data-loss fixes (Send Back, Approve and Schedule, plugin Status, Gravity spam, Replace File, Put Back), Kelly Ford's diff marks (#1890), the Cast queue and download fixes for Chris Nova and Jessica Dail (#1889, #1892), every EdSharp item (#1891), and the Copilot SDK 2.0 migration and requested feature work (#1893, including opt-in Auto routing; maintained design record in `docs/design/codex.md`).
+- **Done on 2026-11-18:** five WordPress data-loss fixes (Send Back, Approve and Schedule, plugin Status, Gravity spam, Replace File, Put Back), Kelly Ford's diff marks (#1890), the Cast queue and download fixes for Chris Nova and Jessica Dail (#1889, #1892), every EdSharp item (#1891), and the Copilot SDK 2.0 source migration and requested feature work (#1893, including opt-in Auto routing; maintained design record in `docs/design/codex.md`). Clean Windows runtime verification remains open below.
 - **Screen-reader testing** is done by Jeff's testers and is not tracked here.
 - **Next:** Part 1 below, the GitHub Workbench: the endpoints are done (1.1); next the open features and checks (1.3), then the documentation pass (1.4).
 - **How to work here:**
@@ -21,7 +21,7 @@ For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claud
 
 1. **The GitHub Workbench (Part 1)**, above everything else.
 2. **WordPress (Part 2).**
-3. **Other work (Part 3):** Earshot parity.
+3. **Other work (Part 3):** Copilot runtime verification, then Earshot parity.
 
 ## Part 1. The GitHub Workbench
 
@@ -235,6 +235,7 @@ Every item from the review of 2026-11-14 is fixed (the walkthrough is `docs/desi
 
 ## Part 3. Other work
 
+- [ ] **Copilot SDK 2.0 runtime verification:** build the QuillVille Runtime from a clean Windows environment, regenerate `standalone/runtime/runtime-inventory.json` with `python scripts/check_runtime_inventory.py <dist-dir> --write`, and verify the resulting inventory contains Microsoft Copilot SDK 2.0.1 but no `github-copilot-sdk` 1.x package. The committed inventory still names the legacy 1.x distribution; keep its notice entry until this build is verified.
 
 ### 3.1 Earshot parity, what is left
 

@@ -213,7 +213,7 @@ quill/tools/build_third_party_notices.py. Do not edit it by hand.</p>
 </ul>
 <h2 id="summary-by-licence">Summary by licence</h2>
 <ul>
-<li>MIT License: 74 components</li>
+<li>MIT License: 75 components</li>
 <li>BSD 3-Clause License: 23 components</li>
 <li>Apache License, version 2.0: 18 components</li>
 <li>GNU General Public License, version 2: 10 components</li>
@@ -255,6 +255,7 @@ bundled libraries: 1 component</li>
 check to repeat when the component changes. Each one says which under
 its own heading.</p>
 <ul>
+<li>GitHub Copilot SDK 1.x (legacy runtime package)</li>
 <li>pywin32</li>
 <li>OptiLab Core</li>
 <li>Inno Setup</li>
@@ -710,6 +711,29 @@ href="https://github.com/microsoft/copilot-sdk">https://github.com/microsoft/cop
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice and the permission notice with every copy.</li>
+</ul>
+<h3 id="github-copilot-sdk-1x-legacy-runtime-package">GitHub Copilot SDK
+1.x (legacy runtime package)</h3>
+<ul>
+<li><strong>What it is:</strong> The legacy 1.x Python SDK distribution
+remains named in the committed shared-runtime inventory. The active
+source dependency is Microsoft Copilot SDK 2.0.1.</li>
+<li><strong>Included in:</strong> The QuillVille Runtime and installed
+app editions that include it. Standalone portable editions are scoped by
+their own dependency inventories.</li>
+<li><strong>Version:</strong> 1.0.28</li>
+<li><strong>Licence:</strong> MIT</li>
+<li><strong>Copyright:</strong> Copyright GitHub, Inc.</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/github/copilot-sdk">https://github.com/github/copilot-sdk</a></li>
+<li><strong>How it reaches you:</strong> Bundled in the QuillVille
+Runtime used by installed app editions. A standalone portable includes
+it only when that app's declared dependencies require it.</li>
+<li><strong>What the licence asks of us:</strong> Keep the copyright
+notice and the permission notice with every copy.</li>
+<li><strong>Maintainer note:</strong> Remove this legacy entry only
+after a verified SDK 2-only Windows runtime build confirms
+github-copilot-sdk is absent from the runtime inventory.</li>
 </ul>
 <h3 id="h11">h11</h3>
 <ul>
@@ -6392,25 +6416,25 @@ Library.</code></pre>
 accessible_output2, annotated-types, AnyIO, attrs, autoupdate
 (vendored), Brotli, charset-normalizer, chat-downloader, colorlog,
 comtypes, curl_cffi, docstring_parser, et_xmlfile, Microsoft Copilot SDK
-(copilot), h11, Git for Windows (MinGit) and GitHub CLI, keyring,
-latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime
-(libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six,
-pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core,
-python-docx, python-pptx, six, python-sounddevice (with PortAudio),
-typing-inspection, PyWinRT (winrt-runtime and the Windows.*
-projections), PyYAML, RapidFuzz, setuptools, sherpa-onnx (with ONNX
-Runtime), sound_lib (with the BASS audio libraries), tomli, tqdm,
-truststore, urllib3, yt-dlp-ejs, Deno (deno.exe), ripgrep (rg.exe), TG
-Drop Deck (adapted code), Dictation models: Moonshine tiny (English),
-Whisper tiny.en and tiny (ONNX), Silero VAD, Kokoro-82M voices and
-kokoro-onnx, ptts (Phonon text-to-speech runtime), MathCAT, Piper
-text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji
-catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data),
-BlindRadio network table, Image Description Toolkit (ideas and image
-prompt text), App icons, Page-turn sound
-(quill/assets/audio/page_turn.wav), Dial tuning hiss
-(quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav), QUILL
-sound packs (Ink and the indent-tone packs), VS Code accessibility
+(copilot), GitHub Copilot SDK 1.x (legacy runtime package), h11, Git for
+Windows (MinGit) and GitHub CLI, keyring, latex2mathml, libffi, libipld,
+libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread),
+openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs,
+pydantic, pydantic-core, python-docx, python-pptx, six,
+python-sounddevice (with PortAudio), typing-inspection, PyWinRT
+(winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz,
+setuptools, sherpa-onnx (with ONNX Runtime), sound_lib (with the BASS
+audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Deno
+(deno.exe), ripgrep (rg.exe), TG Drop Deck (adapted code), Dictation
+models: Moonshine tiny (English), Whisper tiny.en and tiny (ONNX),
+Silero VAD, Kokoro-82M voices and kokoro-onnx, ptts (Phonon
+text-to-speech runtime), MathCAT, Piper text-to-speech engine, Whisper
+models (GGML format), whisper.cpp, Emoji catalog (Unicode
+emoji-test.txt, CLDR annotations, iamcal/emoji-data), BlindRadio network
+table, Image Description Toolkit (ideas and image prompt text), App
+icons, Page-turn sound (quill/assets/audio/page_turn.wav), Dial tuning
+hiss (quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav),
+QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility
 signal sounds (the VS Code Signals sound pack), Weather alert sound
 (quill/assets/audio/weather_alert.wav), Test and lint tools (pytest,
 ruff, mypy and their plugins), Node.js (node.exe), VS Code HTML, CSS,

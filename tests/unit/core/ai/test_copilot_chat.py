@@ -444,7 +444,7 @@ def test_chosen_model_is_passed_and_auto_lets_copilot_choose(rec: Rec, tmp_path:
     assert "model" not in rec.sessions[1]
 
 
-def test_auto_tier_preference_applies_only_to_copilot_auto(tmp_path: Path) -> None:
+def test_auto_tier_preference_applies_only_to_copilot_auto(rec: Rec, tmp_path: Path) -> None:
     from quill.core.ai.copilot_preferences import (
         CopilotPreferences,
         save_copilot_preferences,
