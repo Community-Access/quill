@@ -434,8 +434,10 @@ _RELATIONSHIPS = page(
     ro(
         "branches",
         "Linked branches",
-        _K.LIST,
-        "Branches made for it: its Development on GitHub. Create Branch for This Issue adds one.",
+        _K.TABLE,
+        "Branches made for it: its Development on GitHub. Add (Insert) makes one from the "
+        "default branch, linked to it. Remove (Delete) unlinks the selected one after asking; "
+        "the branch itself is kept. Unlink Branch on the issue's row does the same.",
     ),
 )
 _CONVERSATION = page(

@@ -38,6 +38,7 @@ from quill.core.wordpress.site import friendly_date, raw_text
 from quill.core.wordpress.workbench_listing import pages_for
 from quill.core.wordpress.workbench_plugin_nodes import PLUGIN_NODES
 from quill.core.wordpress.workbench_rows import WbRow
+from quill.core.wordpress.workbench_shop_analytics_places import ANALYTICS_NODES
 from quill.core.workbench.tree import NodeSpec
 
 __all__ = [
@@ -74,6 +75,7 @@ SHOP_NODES: tuple[NodeSpec, ...] = (
         columns=("what", "status", "customer", "total", "date"),
         row_type="shop_order",
     ),
+    *ANALYTICS_NODES,  # complete.md 2.3: Shop Analytics, beside Shop as in wp-admin
     NodeSpec(
         "podcast",
         "Podcast",
@@ -84,8 +86,8 @@ SHOP_NODES: tuple[NodeSpec, ...] = (
     ),
     *PLUGIN_NODES,
 )
-"""The site template's Shop, Shop Orders and Podcast nodes, then Shop's other nodes, Events
-Calendar and SEO (the tree splices them)."""
+"""The site template's Shop, Shop Orders, Shop Analytics and Podcast nodes, then Shop's other
+nodes, Events Calendar and SEO (the tree splices them)."""
 
 MEMBERSHIP_NOT_SHOP = (
     "A WooCommerce shop order. Membership orders from Paid Memberships Pro "
@@ -238,6 +240,10 @@ def load_shop(ctx: Any, family: str, what: str, query: Mapping[str, object]) -> 
         return seo.load_seo_site(ctx) if what == "site" else seo.load_seo_items(ctx, query)
     if what == "orders":
         return load_shop_orders(ctx, query)
+    if what.startswith("analytics_"):  # complete.md 2.3: Shop Analytics, read only
+        from quill.core.wordpress.workbench_shop_analytics import load_analytics
+
+        return load_analytics(ctx, what, query)
     if what in ("customers", "coupons", "reports", "settings"):
         return _load_shop_more(ctx, what, query)
     if what in ("gateways", "status"):  # complete.md 2.3: Payment Gateways, System Status
@@ -247,6 +253,12 @@ def load_shop(ctx: Any, family: str, what: str, query: Mapping[str, object]) -> 
             raise WordPressApiError(no_shop_words(ctx.name))
         loader = store.load_gateways if what == "gateways" else store.load_status
         return loader(ctx.api, ctx.name)
+    if what == "shipping_classes":  # complete.md 2.3: Shipping Classes
+        from quill.core.wordpress.workbench_shop_classes import load_classes
+
+        if not has_shop(ctx):
+            raise WordPressApiError(no_shop_words(ctx.name))
+        return load_classes(ctx.api, ctx.name)
     if what in _SETUP:
         from quill.core.wordpress.workbench_shop_setup import load_shop_setup
 

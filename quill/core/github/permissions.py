@@ -105,9 +105,15 @@ def level_allows(level: AccessLevel, tier: WriteTier) -> bool:
 
 
 def level_refusal(level: AccessLevel, tier: WriteTier) -> str:
-    """Why this account's Workbench level refuses a write of *tier*; "" when it allows it."""
+    """ "" when *level* allows a write of *tier*; else why not, in one or two sentences.
+
+    Safe Mode is named when it is what made the account Read Only, because
+    Workbench Options cannot change that; only starting QUILL normally does.
+    """
     if level_allows(level, tier):
         return ""
+    if level is AccessLevel.READ_ONLY and safe_mode_on():
+        return "QUILL is in Safe Mode, so the Workbench changes nothing on GitHub."
     if level is AccessLevel.READ_ONLY:
         return "This account is read only in the Workbench. Workbench Options, Accounts changes it."
     return (
@@ -461,8 +467,9 @@ def _check_one(token: str, ctx: ViewerContext) -> str:
 
 def check(requirement: str, ctx: ViewerContext, tier: WriteTier | None = None) -> str:
     """ "" when *ctx* may do something needing *requirement*; else why not, in sentences."""
-    if tier is not None and not level_allows(ctx.level, tier):
-        return level_refusal(ctx.level, tier)
+    refused = level_refusal(ctx.level, tier) if tier is not None else ""
+    if refused:
+        return refused
     for token in (t for t in requirement.split("+") if t):
         reason = _check_one(token, ctx)
         if reason:

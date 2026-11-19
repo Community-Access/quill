@@ -312,17 +312,31 @@ class GitHubWorkbenchDevelopmentMixin(
         )
 
     def _do_create_branch(self, ref: Any, row: object) -> None:
+        assert isinstance(row, GitHubItem)
+        self._create_branch_for(ref.instance, row.number, row.title)
+
+    def _create_branch_for(
+        self,
+        repository: str,
+        number: int,
+        title: str,
+        after: Callable[[str], None] | None = None,
+    ) -> None:
+        """Ask the name, then make it linked to #*number*; *after* gets the name once made.
+
+        The issue's sheet (its Linked branches list) passes *after* to show the
+        new branch at once.
+        """
         from quill.core.github.issue_development import (
             branch_name_for,
             create_linked_branch,
             valid_branch_name,
         )
 
-        assert isinstance(row, GitHubItem)
         name = self._ask_text(
             "Create Branch for This Issue",
-            f"Branch name for #{row.number}, made from the default branch and linked to it:",
-            value=branch_name_for(row.number, row.title),
+            f"Branch name for #{number}, made from the default branch and linked to it:",
+            value=branch_name_for(number, title),
         )
         if not name:
             return
@@ -330,11 +344,17 @@ class GitHubWorkbenchDevelopmentMixin(
         if why:
             self._say(why)
             return
-        api, repository = self.github_api(), ref.instance
+        api = self.github_api()
+
+        def done(said: Any) -> None:
+            self._say(f"{said} To work on it: git fetch, then git switch {name}.")
+            if after is not None:
+                after(name)
+
         self._background(
             "make the branch",
-            lambda: create_linked_branch(api, repository, row.number, name),
-            lambda said: self._say(f"{said} To work on it: git fetch, then git switch {name}."),
+            lambda: create_linked_branch(api, repository, number, name),
+            done,
         )
 
     # -- task lists ------------------------------------------------------------

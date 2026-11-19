@@ -463,6 +463,9 @@ class GitHubWorkbenchToolsMixin(GitHubWorkbenchInvitationsMixin):
         """The Access buttons on a sheet's list (people, teams, members)."""
 
         def act(spec: Any, verb: str, row: str) -> None:
+            if spec.key == "branches" and target.kind == "issue":
+                self.act_on_linked_branch(state, verb, row)  # type: ignore[attr-defined]
+                return
             scope = _TABLE_SCOPES.get(target.kind)
             if spec.key == "invitations" and scope in ("repository", "organization"):
                 self.act_on_invitation(scope, state["ident"], verb, row, target.title())

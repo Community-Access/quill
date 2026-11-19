@@ -37,14 +37,14 @@ Each is done only with evidence: a test or a live run.
 - [ ] Preserve issue types and organization-defined issue fields as typed values on issue rows, details, filters and Properties. Hidden, unsupported, unset, empty and unreadable values stay distinct.
 - [ ] Repository and item-property checklists expose state in the row; Space changes it once, Enter saves, focus returns predictably, and JAWS/NVDA/VoiceOver do not hear a duplicate row.
 - [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle.
-- [ ] Verify per-account Read Only/Organize/Full, Safe Mode, tiers, typed confirmations, self-lockout prevention and permission explanations.
+- [ ] Verify per-account Read Only/Organize/Full, Safe Mode, tiers, typed confirmations, self-lockout prevention and permission explanations. Found 2026-11-19: row commands declare a tier but most do not check it when they run (only Unlink Branch and the issue sheet's Add Branch do, through `permissions.level_refusal`).
 - [ ] Verify encrypted write-only secrets for repository/environment/organization scopes and selected-repository access.
 - [ ] Verify View As Role, Compare Roles, Why Can't They?, My Access Here, access reviews and bulk changes against actual server authority.
 - [ ] Grouping, sorting and the column chooser beyond issues and pull requests (filters, Show Only/Hide, Load More and Load All are done).
 - [ ] Plain-language query/batch commands through the shared catalogue, with resolved targets, editable previews and deterministic non-AI paths.
 - [ ] Compare Accounts and one-action Act As with unambiguous identity and cache isolation.
 - [ ] Role comparison and learning workflows reach real permission evidence, not guessed privileges.
-- [ ] Organization issue fields, and unlinking a branch from an issue (close reasons, linked branches, branch for an issue and task lists are done).
+- [ ] Organization issue fields (close reasons, linked branches and unlinking them, branch for an issue and task lists are done).
 - [ ] Wiki, and cross-linked discussion → issue → pull request workflows (saved replies and repository invitations are done).
 - [ ] Repository General/features, complete creation/template options, transfer, topics and star lists (standalone tags are done).
 - [ ] Rulesets/protection management, organization/member/team access, custom roles and audit logs.
@@ -54,7 +54,6 @@ Each is done only with evidence: a test or a live run.
 - [ ] Environments, deployment protection and release/deployment evidence (Set Status... on a commit is done).
 - [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
 - [ ] Code/secret scanning, advisories, private reports, bypass/dismissal requests, Autofix/dependency review and organization security overview.
-- [ ] Discussion polls, spotlight and category sections.
 - [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
 - [ ] Least-privilege advice based on observed usage with honest uncertainty; artifact attestations and immutable release evidence.
 - [ ] First-class by-name collections for every kind in product requirements document (PRD) 22.11 beyond Labels, Milestones, Topics, Rules and Branch Protection, and the Fleet; the other kinds are classified in `quill/core/github/across_scope_matrix.py`.
@@ -89,6 +88,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 
 - [ ] Run `python docs/qa/github-live-run.py --create` after signing in again, and the live rows marked "needs Jeff".
 - [ ] GitHub live scenarios: multiple roles/accounts, protected branches, organization restrictions, rate limiting, private repositories, project fields, secrets, failure/retry and no-API fallbacks; the Copilot cloud agent commands on a Copilot plan.
+- [ ] Vote... in a real discussion poll, and the Pinned (spotlight) place, on the test repository.
 - [ ] **GH-R-119:** timed find-the-answer sessions with people.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists.
 - [ ] WordPress current candidate: run the documented live regression on an authorized test site and distinguish existing site-side failures from regressions.
@@ -116,24 +116,12 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 
 ##### Shop (WooCommerce)
 
-- [ ] Generating variations (`products/{id}/variations/generate`).
-- [ ] Shipping classes (`products/shipping_classes`).
-- [ ] Analytics (`wc-analytics/reports/*`).
 
 Scheduled Actions and the extensions marketplace are wp-admin only. Subscriptions and Bookings are paid extensions with their own routes, not in scope.
 
 ##### SEO (Yoast SEO)
 
 - [ ] **Canonical address, primary category and schema type per post.** Route: only where Yoast registers that post meta for REST, which most sites do not. Not yet verified which of these the bulk editor routes carry. Otherwise they stay in the post's Yoast panel.
-
-##### Memberships (PMPro)
-
-- [ ] **Members of a level, as a list.** Who: the owner emailing or counting one tier's members. Route: unverified. `pmpro/v1/recent_memberships` exists. Otherwise build it from users plus each person's levels, which is slow on big sites.
-- [ ] **Every discount code, as a list.** `pmpro/v1` reads one code at a time. The list works only where an ability offers it, and otherwise opens wp-admin, which QUILL says.
-
-##### Redirects (Redirection)
-
-- [ ] **Redirection's options.** Route: `redirection/v1/setting` (from the plugin's docs, unverified). They stay in the plugin's own screen for now.
 
 ##### Maintenance
 
@@ -152,6 +140,9 @@ All of the following has tests over recorded or fake answers and none has met a 
 - [ ] The whole Workbench, W1 to W8 and packages 1 to 14. It is now the default, so this comes before the next release.
 - [ ] WooCommerce, The Events Calendar and Yoast SEO, signed in on the test site, which has all three. A refund only against a gateway's test mode.
 - [ ] New Order, Change Items and Change Address on a test order: especially that a quantity of 0 takes an item off, which WooCommerce's order controller documents but QUILL has only met in fakes.
+- [ ] PMPro Members of This Level (built from users plus each person's levels: the `pmpro/member-memberships-get` ability or `pmpro/v1/get_membership_levels_for_user`), its speed on a big site, and the paged discount-code list.
+- [ ] Shop Analytics against a real store: the `wc-analytics` answer shapes, a store that has not imported its order history, and whether Customers should take a date range.
+- [ ] Redirection's options (`redirection/v1/setting`, built from the plugin's documentation, never seen live).
 - [ ] Redirection: the slug-change redirect offer, the redirect list and 404 log, Redirect Groups (new, rename, turn off, delete) and Import Redirects.
 - [ ] QAF on the test site (it still runs BAF), the QAF migration, and the spam settings with a live submission.
 - [ ] Gravity Forms building, conversion, feeds, notifications and confirmations, results and test submissions. These need a licensed Gravity Forms with its REST API on.

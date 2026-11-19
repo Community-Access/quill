@@ -75,8 +75,8 @@ PLUGIN_SCREENS: tuple[tuple[str, str, str, str, str, str, str], ...] = (
         "Tools > Redirection",
         "redirects",
         "both",
-        "Adding, changing and removing redirects is in Redirects; groups and Redirection's "
-        "options are in its own screens.",
+        "Redirects, their groups and the options QUILL knows are in Redirects; Redirection's "
+        "other options and its import from other plugins are in its own screens.",
         _REDIRECTION,
     ),
     (
@@ -120,6 +120,17 @@ PLUGIN_SCREENS: tuple[tuple[str, str, str, str, str, str, str], ...] = (
         "Sales, top sellers and order and customer totals are in Shop Reports; "
         "WooCommerce Analytics' own charts and date comparisons are in its screens.",
         _WC,
+    ),
+    (
+        "wc_analytics",
+        "admin.php?page=wc-admin&path=%2Fanalytics%2Foverview",
+        "Analytics",
+        "shop_analytics",
+        "both",
+        "Each report's totals, rows and comparison with the days before are in Shop "
+        "Analytics, read only; the charts, segments, advanced filters and Analytics' "
+        "settings are in WooCommerce's screens.",
+        "wc-analytics",
     ),
     (
         "wc_settings",

@@ -12,8 +12,9 @@ are used here for three things:
 - **Discount Codes**: read one code by its code, and create one after a
   preview (:func:`read_discount_code`, :func:`discount_preview`,
   :func:`create_discount_code`). ``pmpro/v1`` has no route that lists every
-  code, so the list says so and opens Memberships > Discount Codes in wp-admin
-  unless the site offers a discount-codes ability.
+  code: the list is read, page by page, through the discount-codes ability
+  where the site offers it; otherwise its one row says the site lists them
+  only in wp-admin, and Enter opens Memberships > Discount Codes there.
 
 The site checks the caller's PMPro capability on every call. Nothing here
 reads or sends payment details. Wx-free.
@@ -21,7 +22,7 @@ reads or sends payment details. Wx-free.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
@@ -54,6 +55,8 @@ DISCOUNT_ABILITY = "pmpro/discount-codes-query"
 _ACCESS = "pmpro/v1/has_membership_access"
 _LEVELS_FOR_USER = "pmpro/v1/get_membership_levels_for_user"
 _DISCOUNT = "pmpro/v1/discount_code"
+_CODES_PAGE = 50  # PMPro's abilities answer at most 50 a page
+_CODES_PAGES = 40
 
 
 def _items(raw: Any) -> list[dict[str, Any]]:
@@ -217,26 +220,48 @@ def create_discount_code(api: WordPressApi, spec: DiscountSpec) -> dict[str, Any
 
 
 def _note(ctx: SiteContext) -> WbRow:
+    """The row of a site with no discount-codes ability: the list is only in wp-admin."""
     screen = ADMIN_SCREENS["pmpro_discount_codes"]
     link = admin_link(ctx.url, "pmpro_discount_codes")
-    where = f" Enter opens {screen.name} in wp-admin for the full list." if link else ""
+    why = f"{ctx.name} lists its discount codes only in wp-admin. {screen.why}"
+    where = f" Enter opens {screen.name} in your browser." if link else ""
+    cells = {"code": "Every code", "uses": "In wp-admin"}
     return WbRow(
-        "pmpro",
+        "discount_note",
         ctx.name,
         "discount-codes-note",
-        {"code": "Every code", "uses": "", "used": "", "starts": "", "expires": "", "levels": ""},
-        f"{screen.why} Look Up a Discount Code reads one; New Discount Code makes one after a "
-        f"preview.{where}",
+        {**cells, "used": "", "starts": "", "expires": "", "levels": ""},
+        f"{why}{where} Look Up a Discount Code reads one; New Discount Code makes one after "
+        "a preview.",
         link=link,
         subkind="discount_note",
+        raw={"node": "membership_discount_codes", "why": why, "name": screen.name},
     )
+
+
+def _all_codes(ctx: SiteContext, ability: Any) -> list[WbRow]:
+    """Every code the ability gives, page by page, until a short page or its total."""
+    from quill.core.wordpress.abilities import run_ability
+
+    rows: list[WbRow] = []
+    for page in range(1, _CODES_PAGES + 1):
+        answer = run_ability(ctx.api, ability, {"limit": _CODES_PAGE, "page": page})
+        items = answer.get("items", []) if isinstance(answer, Mapping) else []
+        got = [i for i in items if isinstance(i, Mapping)] if isinstance(items, list) else []
+        rows.extend(discount_row(ctx.name, i, ctx.url) for i in got)
+        try:
+            total = int(answer.get("total", 0) or 0) if isinstance(answer, Mapping) else 0
+        except (TypeError, ValueError):
+            total = 0
+        if len(got) < _CODES_PAGE or (total and len(rows) >= total):
+            break
+    return rows
 
 
 def load_discount_codes(ctx: SiteContext) -> list[WbRow]:
     """Every code when the site offers the ability; otherwise the row that says why not."""
-    from quill.core.wordpress.abilities import NAMESPACE, list_abilities, run_ability
+    from quill.core.wordpress.abilities import NAMESPACE, list_abilities
 
-    rows: list[WbRow] = []
     if ctx.info is None or ctx.info.supports(NAMESPACE):
         try:
             found = {a.name: a for a in list_abilities(ctx.api)}
@@ -244,10 +269,7 @@ def load_discount_codes(ctx: SiteContext) -> list[WbRow]:
             found = {}
         ability = found.get(DISCOUNT_ABILITY)
         if ability is not None and ability.readonly:
-            answer = run_ability(ctx.api, ability, {"limit": 100, "page": 1})
-            items: Sequence[Any] = answer.get("items", []) if isinstance(answer, Mapping) else []
-            rows = [discount_row(ctx.name, i, ctx.url) for i in items if isinstance(i, Mapping)]
-            return rows
+            return _all_codes(ctx, ability)
     if ctx.info is not None and not ctx.info.supports(PMPRO_NAMESPACE):
         return [
             WbRow(

@@ -404,7 +404,7 @@ class WorkbenchSiteEditorCommands:
         self.commands.host.open_in_browser(link)
 
     def do_open_admin_screen(self, _ref: Any, row: WbRow | None) -> None:
-        if row is None or row.kind != "admin_screen":
+        if row is None or row.kind not in ("admin_screen", "discount_note"):
             self.say("Choose a wp-admin screen first.")
             return
         why = str(row.raw.get("why", "") or "")
