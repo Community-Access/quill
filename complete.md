@@ -250,7 +250,6 @@ All eleven are fixed (five by #1837, five by the WordPress safety pull request, 
 
 ###### Structure and consistency
 
-30. The site tree gives every site every plugin's branch whether installed or not (over 100 nodes per site), each selection reads the network, and discovery rebuilds the tree and collapses what you expanded.
 
 ## Part 3. Other work
 

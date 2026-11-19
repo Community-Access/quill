@@ -306,6 +306,16 @@ class WordPressWorkbenchProvider(
             what += " Open it with Right Arrow to see what it holds."
         return what
 
+    def shows_node(self, node: NodeSpec, ref: NodeRef) -> bool:
+        """A plugin's branch only on a site that has the plugin (review item 30)."""
+        if ref.template != "site" or not ref.instance:
+            return True
+        from quill.core.wordpress.workbench_plugin_branches import shows
+
+        context = self._contexts.get(self.split(ref.instance)[0])
+        info = context.info if context is not None else None
+        return shows(node.key, info.namespaces if info is not None else None)
+
     def unavailable(self, ref: NodeRef, node: NodeSpec) -> str:
         if node.loader.startswith("planned:"):
             return PLANNED_WORDS.get(node.loader.removeprefix("planned:"), "In a later phase.")

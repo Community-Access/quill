@@ -36,6 +36,15 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress Workbench: a site shows the branches it has (2026-11-18)
+
+Review item 30: every site showed every plugin's branch (Shop, Memberships,
+Events, SEO, Redirects, Forms), installed or not, so a site came to over a
+hundred nodes, each reading the network to find nothing. Once the Workbench has
+read a site's index, a branch whose plugin is not there is left out; until
+then everything shows. And discovery, which rebuilds the tree, no longer
+closes the branches you had opened.
+
 ### WordPress Workbench: Change History says what each write did, and undoes more (2026-11-18)
 
 Review item 1: since the WordPress safety work, a write with no step of its own

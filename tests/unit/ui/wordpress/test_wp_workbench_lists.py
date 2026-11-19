@@ -372,3 +372,28 @@ def test_reaching_a_dimmed_menu_row_speaks_its_reason(bench) -> None:
         menu.ProcessEvent(wx.MenuEvent(wx.wxEVT_MENU_HIGHLIGHT, item.GetId(), menu))
     assert bench.said == ["Installing needs the Administrator role."]  # once, dimmed only
     menu.Destroy()
+
+
+def test_a_site_shows_only_the_plugin_branches_it_has(bench) -> None:
+    """Item 30: once the site's index is read, a missing plugin's branch is left out."""
+    from quill.core.wordpress.workbench_plugin_branches import PLUGIN_BRANCHES, shows
+
+    assert shows("shop", None)  # not read yet: shown
+    assert not shows("shop", ["wp/v2"]) and shows("shop", ["wp/v2", "wc/v3/"])
+    assert shows("posts", ["wp/v2"])  # not a plugin's branch
+    ctx = bench.provider._contexts.get(SITE)
+    if ctx is None or ctx.info is None:
+        bench.provider.ensure(bench.provider.ctx(SITE))
+    bench.rebuild_tree()
+    spaces = set(bench.provider._contexts[SITE].info.namespaces)
+    for key, wanted in PLUGIN_BRANCHES.items():
+        present = NodeRef("site", key, SITE) in bench._items
+        assert present == bool(spaces & set(wanted)), key
+
+
+def test_a_rebuild_keeps_what_was_opened(bench) -> None:
+    ref = NodeRef("site", "posts", SITE)
+    _go(bench, ref)
+    bench.tree.Expand(bench._items[ref])
+    bench.rebuild_tree()
+    assert bench.tree.IsExpanded(bench._items[ref])
