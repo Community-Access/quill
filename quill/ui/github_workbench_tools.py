@@ -75,6 +75,8 @@ def _table_command(key: str, verb: str) -> str:
     """The declared command a sheet list's Add, Change Role or Remove is ("" for none)."""
     if key == "branches":
         return {"add": f"{_P}create_branch", "remove": f"{_P}unlink_branch"}.get(verb, "")
+    if key == "poll":  # a discussion's poll: Add and Change vote; Remove only explains
+        return f"{_P}poll_vote" if verb in ("add", "change") else ""
     return f"{_P}access_{verb}" if key in _ACCESS_LISTS else ""
 
 
@@ -479,6 +481,9 @@ class GitHubWorkbenchToolsMixin(GitHubWorkbenchInvitationsMixin):
             scope = _TABLE_SCOPES.get(target.kind)
             if spec.key == "invitations" and scope in ("repository", "organization"):
                 self.act_on_invitation(scope, state["ident"], verb, row, target.title())
+                return
+            if target.kind == "discussion" and spec.key == "poll":
+                self.vote_from_sheet(dict(state["ident"]), verb)  # type: ignore[attr-defined]
                 return
             if scope is None or spec.key not in (
                 "collaborators",

@@ -9,7 +9,9 @@
 For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claude.log`. The commands and gates are in `CLAUDE.md`.
 
 - **Screen-reader testing** is done by Jeff's testers and is not tracked here.
-- **Next:** Part 1 below, the GitHub Workbench: the open features and checks (1.3), then the documentation pass (1.4).
+- **Where it stands (2026-11-19, afternoon):** today's merged PRs are #1943 to #1949, which cover WordPress scope docs, GH-R-045, GH-R-002, the 3.2 decisions, unlinking a branch from the issue sheet, shipping classes and Generate Variations, PMPro members and discount codes, Redirection's options, and Shop Analytics. Open: #1950 (discussion polls, spotlight and categories) and #1951 (Chris's Cast Ctrl+2 fix). Being built: permission levels enforced on every Workbench write.
+- **Next:** finish 1.3 smallest first, then the documentation pass (1.4), then the rest of 2.3 and 3.2. A tester's defect report always comes first.
+- **Live testing waits until all code is done (Jeff, 2026-11-19).** That covers the WordPress test site over SSH (`ssh lp.csedesigns.com`, wp-cli through `~/app/wordpress-test/wpcli.sh`, which needs more PHP memory), installing QAF and the other plugins, the GitHub test repository, and the 1.5 and 2.4 rows. Gravity Forms waits until later.
 - **How to work here:**
   - Squash-merge with `gh api -X PUT repos/Community-Access/quill/pulls/N/merge -f merge_method=squash`.
   - Log each step to `claude.log`, with the time read from a clock.
@@ -18,9 +20,11 @@ For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claud
 
 ## The order of work
 
-1. **The GitHub Workbench (Part 1)**, above everything else.
-2. **WordPress (Part 2).**
-3. **Other work (Part 3):** Copilot runtime verification, then Earshot parity.
+1. **A tester's defect report**, whenever one arrives.
+2. **The GitHub Workbench (Part 1)**, code first.
+3. **WordPress (Part 2)**, code first.
+4. **Other work (Part 3):** the family UX pilots, Earshot parity, and the Copilot runtime build.
+5. **Then all live testing:** 1.5, 2.4 and 2.5, the test site and the GitHub test repository.
 
 ## Part 1. The GitHub Workbench
 
@@ -37,7 +41,7 @@ Each is done only with evidence: a test or a live run.
 - [ ] Preserve issue types and organization-defined issue fields as typed values on issue rows, details, filters and Properties. Hidden, unsupported, unset, empty and unreadable values stay distinct.
 - [ ] Repository and item-property checklists expose state in the row; Space changes it once, Enter saves, focus returns predictably, and JAWS/NVDA/VoiceOver do not hear a duplicate row.
 - [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle.
-- [ ] Verify per-account Read Only/Organize/Full, Safe Mode, tiers, typed confirmations, self-lockout prevention and permission explanations. Found 2026-11-19: row commands declare a tier but most do not check it when they run (only Unlink Branch and the issue sheet's Add Branch do, through `permissions.level_refusal`).
+- [ ] Live check on the GitHub test repository: Read Only, Organize, Full and Safe Mode refuse and allow as tested, and the permission explanations (greyed rows, Shift+F1, GitHub's own refusals) match what GitHub does.
 - [ ] Verify encrypted write-only secrets for repository/environment/organization scopes and selected-repository access.
 - [ ] Verify View As Role, Compare Roles, Why Can't They?, My Access Here, access reviews and bulk changes against actual server authority.
 - [ ] Grouping, sorting and the column chooser beyond issues and pull requests (filters, Show Only/Hide, Load More and Load All are done).
@@ -54,7 +58,6 @@ Each is done only with evidence: a test or a live run.
 - [ ] Environments, deployment protection and release/deployment evidence (Set Status... on a commit is done).
 - [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
 - [ ] Code/secret scanning, advisories, private reports, bypass/dismissal requests, Autofix/dependency review and organization security overview.
-- [ ] Discussion polls, spotlight and category sections.
 - [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
 - [ ] Least-privilege advice based on observed usage with honest uncertainty; artifact attestations and immutable release evidence.
 - [ ] First-class by-name collections for every kind in product requirements document (PRD) 22.11 beyond Labels, Milestones, Topics, Rules and Branch Protection, and the Fleet; the other kinds are classified in `quill/core/github/across_scope_matrix.py`.
@@ -89,6 +92,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 
 - [ ] Run `python docs/qa/github-live-run.py --create` after signing in again, and the live rows marked "needs Jeff".
 - [ ] GitHub live scenarios: multiple roles/accounts, protected branches, organization restrictions, rate limiting, private repositories, project fields, secrets, failure/retry and no-API fallbacks; the Copilot cloud agent commands on a Copilot plan.
+- [ ] Vote... in a real discussion poll, and the Pinned (spotlight) place, on the test repository.
 - [ ] **GH-R-119:** timed find-the-answer sessions with people.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists.
 - [ ] WordPress current candidate: run the documented live regression on an authorized test site and distinguish existing site-side failures from regressions.
@@ -116,24 +120,12 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 
 ##### Shop (WooCommerce)
 
-- [ ] Generating variations (`products/{id}/variations/generate`).
-- [ ] Shipping classes (`products/shipping_classes`).
-- [ ] Analytics (`wc-analytics/reports/*`).
 
 Scheduled Actions and the extensions marketplace are wp-admin only. Subscriptions and Bookings are paid extensions with their own routes, not in scope.
 
 ##### SEO (Yoast SEO)
 
 - [ ] **Canonical address, primary category and schema type per post.** Route: only where Yoast registers that post meta for REST, which most sites do not. Not yet verified which of these the bulk editor routes carry. Otherwise they stay in the post's Yoast panel.
-
-##### Memberships (PMPro)
-
-- [ ] **Members of a level, as a list.** Who: the owner emailing or counting one tier's members. Route: unverified. `pmpro/v1/recent_memberships` exists. Otherwise build it from users plus each person's levels, which is slow on big sites.
-- [ ] **Every discount code, as a list.** `pmpro/v1` reads one code at a time. The list works only where an ability offers it, and otherwise opens wp-admin, which QUILL says.
-
-##### Redirects (Redirection)
-
-- [ ] **Redirection's options.** Route: `redirection/v1/setting` (from the plugin's docs, unverified). They stay in the plugin's own screen for now.
 
 ##### Maintenance
 
@@ -152,6 +144,9 @@ All of the following has tests over recorded or fake answers and none has met a 
 - [ ] The whole Workbench, W1 to W8 and packages 1 to 14. It is now the default, so this comes before the next release.
 - [ ] WooCommerce, The Events Calendar and Yoast SEO, signed in on the test site, which has all three. A refund only against a gateway's test mode.
 - [ ] New Order, Change Items and Change Address on a test order: especially that a quantity of 0 takes an item off, which WooCommerce's order controller documents but QUILL has only met in fakes.
+- [ ] PMPro Members of This Level (built from users plus each person's levels: the `pmpro/member-memberships-get` ability or `pmpro/v1/get_membership_levels_for_user`), its speed on a big site, and the paged discount-code list.
+- [ ] Shop Analytics against a real store: the `wc-analytics` answer shapes, a store that has not imported its order history, and whether Customers should take a date range.
+- [ ] Redirection's options (`redirection/v1/setting`, built from the plugin's documentation, never seen live).
 - [ ] Redirection: the slug-change redirect offer, the redirect list and 404 log, Redirect Groups (new, rename, turn off, delete) and Import Redirects.
 - [ ] QAF on the test site (it still runs BAF), the QAF migration, and the spam settings with a live submission.
 - [ ] Gravity Forms building, conversion, feeds, notifications and confirmations, results and test submissions. These need a licensed Gravity Forms with its REST API on.

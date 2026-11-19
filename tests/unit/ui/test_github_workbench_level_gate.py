@@ -187,6 +187,8 @@ _REPO = SimpleNamespace(kind="repository", title=lambda: "o/r")
         ("collaborators", "remove", AccessLevel.ORGANIZE),
         ("branches", "add", AccessLevel.READ_ONLY),
         ("branches", "remove", AccessLevel.READ_ONLY),
+        ("poll", "add", AccessLevel.READ_ONLY),  # Vote... on a discussion's poll table
+        ("poll", "change", AccessLevel.READ_ONLY),
     ],
 )
 def test_a_sheet_lists_buttons_are_held_to_the_level(
@@ -196,8 +198,10 @@ def test_a_sheet_lists_buttons_are_held_to_the_level(
     provider._ask_text = lambda *_a, **_k: pytest.fail("asked before the level check")  # type: ignore[method-assign]
     provider._unlink_from = lambda *_a, **_k: pytest.fail("unlinked")  # type: ignore[method-assign]
     provider._create_branch_for = lambda *_a, **_k: pytest.fail("made a branch")  # type: ignore[method-assign]
+    provider.quick_start = lambda *_a, **_k: pytest.fail("voted")  # type: ignore[method-assign]
+    kinds = {"branches": "issue", "poll": "discussion"}
     act = provider.table_action(
-        _REPO if key != "branches" else SimpleNamespace(kind="issue"),
+        SimpleNamespace(kind=kinds[key]) if key in kinds else _REPO,
         {
             **_sheet_list(("me, person, admin, direct",)),
             "ident": {"repo": "o/r", "number": "7"},
@@ -312,6 +316,27 @@ def _handler_calls() -> list[tuple[str, str]]:
 
 def test_no_write_handler_is_called_except_through_the_checked_dispatcher() -> None:
     assert _handler_calls() == []
+
+
+#: Entries into a write that are not ``_do_``/``_tool_`` handlers, and the only modules
+#: allowed to call them: the quick commands' runner (reached from a gated ``_do_<verb>``)
+#: and the sheet-list doors (reached from ``table_action``, which checks first).
+_CHECKED_ENTRIES = {
+    "quick_start": {"github_workbench_quick.py", "github_workbench_discussions.py"},
+    "vote_from_sheet": {"github_workbench_tools.py"},
+    "act_on_linked_branch": {"github_workbench_tools.py"},
+    "act_on_invitation": {"github_workbench_tools.py"},
+}
+
+
+def test_write_entries_are_called_only_from_behind_the_check() -> None:
+    callers: dict[str, set[str]] = {name: set() for name in _CHECKED_ENTRIES}
+    for path in sorted(_UI.glob("*.py")):
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
+                if node.func.attr in callers:
+                    callers[node.func.attr].add(path.name)
+    assert callers == _CHECKED_ENTRIES
 
 
 def test_the_dispatcher_is_the_only_caller_of_the_providers_run() -> None:

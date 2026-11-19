@@ -26,4 +26,12 @@ def _install_peer(host: Any, window: Any) -> None:
     if callable(keep):
         keep(close_id)
     if windows is not None:
-        windows.register(frame, TITLE, focus=lambda: window._slider.SetFocus())
+        # on_show: Ctrl+2, Ctrl+Tab and the Window menu show this hidden window
+        # without its own show(), which is what loads the episode playing now
+        # and starts the clock; without it the window came back empty (Chris).
+        windows.register(
+            frame,
+            TITLE,
+            focus=lambda: window._slider.SetFocus(),
+            on_show=lambda: window.show(focus=False),
+        )

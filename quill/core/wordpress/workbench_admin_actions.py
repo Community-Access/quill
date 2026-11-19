@@ -173,6 +173,14 @@ PMPRO_ROWS: tuple[ActionRow, ...] = (
         tier=Tier.WRITE,
         needs="manage_options",
     ),
+    _a(
+        "level_members",
+        "Members of This Level...",
+        "Everyone who holds this level now, with their email addresses, to count or write to. "
+        "QUILL asks about each person in turn, so it is slow on a big site; choose it again "
+        "to stop.",
+        needs="list_users",
+    ),
 )
 
 MODEL_ROWS: tuple[ActionRow, ...] = (
@@ -254,6 +262,7 @@ KEYLESS: dict[str, str] = {
     command("new_discount_code"): "Codes are made for a sale or event, rarely (rule 9).",
     command("edit_membership_level"): "A level's price changes a few times a year (rule 9).",
     command("new_membership_level"): "Ctrl+N (New Here) on Membership Levels reaches it.",
+    command("level_members"): "A tier's members are counted or written to now and then (rule 9).",
     command("define_site_type"): "Ctrl+N on Content Model; a new type is rare (rule 9).",
     command("stop_defining"): "Retiring a content type is rare and previewed (rule 9).",
     command("export_as_code"): "Exported once, when a site leaves the plugin (rule 9).",

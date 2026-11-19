@@ -44,9 +44,11 @@ product's price, and Properties shows them.
 Each site with WooCommerce has a **Shop**. Its list is your products, with
 price, stock and status. Under it are **Draft Products**, **On Sale**, **Out
 of Stock**, **Shop Orders**, **Customers**, **Coupons**, **Shop Reports**,
-**Store Settings**, **Product Reviews**, **Shipping Zones**, **Tax Rates**,
-**Tax Classes**, **Attributes**, **Brands**, **Webhooks**, **Payment
-Gateways** and **System Status**.
+**Store Settings**, **Product Reviews**, **Shipping Zones**, **Shipping
+Classes**, **Tax Rates**, **Tax Classes**, **Attributes**, **Brands**,
+**Webhooks**, **Payment Gateways** and **System Status**. Beside it is **Shop
+Analytics**, WooCommerce Analytics' reports, described at the end of this
+section.
 
 ### Products
 
@@ -63,11 +65,21 @@ Gateways** and **System Status**.
 - **Properties...** (`Alt+Enter`) on a product has every field WooCommerce
   lets you change: SKU, description and short description, sale dates,
   weight and dimensions, shipping and tax class, images, downloads, upsells
-  and cross-sells. A list or a group of values is a box of JSON that QUILL
-  checks before it saves.
+  and cross-sells. The shipping class is chosen by name from the shop's
+  Shipping Classes, or No shipping class. A list or a group of values is a
+  box of JSON that QUILL checks before it saves.
 - **Show Its Variations** lists a product's variations, and **Edit a
   Variation...** changes one's price, sale price, stock, or whether it is for
   sale.
+- **Generate Variations...** on a variable product makes a variation for
+  every combination of its attributes that it does not have yet. The
+  preview says how many combinations there are and how many variations it
+  has now; afterwards QUILL says how many it made. Existing variations are
+  never changed or removed. WooCommerce makes at most 50 at a time, so a
+  large product may need it again. A new variation has no price until you
+  give it one with Edit a Variation. Ctrl+Z deletes the ones it made. On a
+  product that is not variable, or has no attribute used for variations,
+  QUILL says why and sends nothing.
 - **Duplicate...** makes a copy, and **Move to Trash...** sends one to
   WooCommerce's Trash.
 
@@ -134,6 +146,13 @@ Trash...** removes it.
   methods: choose one to turn it on or off, change its cost or remove it, or
   add flat rate, free shipping or local pickup. **Rename...** and
   **Delete...** are there too.
+- **Shipping Classes** lists each class, such as Heavy items, with its slug
+  and how many products are in it. Ctrl+N makes one: give it a name, and a
+  slug and description if you want them. **Change...** changes its name,
+  slug or description, and Ctrl+Z puts them back. **Delete...** removes a
+  class for good, after a preview naming the class and the site: its
+  products are left with no shipping class, and any rate a zone set for it
+  stops applying. A product is put in a class from its Properties.
 - **Tax Rates**: Ctrl+N makes a rate, **Edit Tax Rate...** changes its name,
   percentage and where it applies, and **Delete...** removes one. A deleted
   rate comes back with Ctrl+Z.
@@ -164,6 +183,51 @@ Trash...** removes it.
 
 In the editor, **Tools > WordPress > Plugin Extras > Shop Orders...** lists
 the newest orders, to read.
+
+### Shop Analytics
+
+WooCommerce Analytics has its own menu in wp-admin, beside WooCommerce, and in
+the Workbench it is **Shop Analytics**, beside Shop. It is there when the site
+lists WooCommerce Analytics' routes; WooCommerce turns Analytics on in
+WooCommerce > Settings > Advanced > Features. Nothing in it changes the site.
+
+Under it is one place for each report: **Revenue**, **Orders**, **Products**,
+**Categories**, **Coupons**, **Taxes**, **Downloads**, **Stock** and
+**Customers**. The first row of each is the total for the whole range. Then:
+
+- **Revenue**, **Orders** and **Downloads** have a row for each day, week or
+  month. Revenue gives orders, gross sales, returns, coupons, net sales, taxes,
+  shipping and total sales; Orders gives the orders, net sales, the average
+  order and the items in each.
+- **Products**, **Categories**, **Coupons** and **Taxes** have a row for each
+  product, category, coupon or tax rate that sold or was used, best first.
+- **Stock** lists every product's stock as it is now, out of stock first.
+- **Customers** lists customers, biggest spenders first, with their orders,
+  total spent, average order and when they were last active. Emails and
+  addresses stay out of the list.
+
+When you arrive on a report, QUILL says its totals once, compared with the
+same number of days just before, for example "Revenue on Radio, last 7 days:
+$1,240 from 31 orders, up 12% on the 7 days before." Amounts are written the
+way your store writes them, with its currency symbol and separators. F5 reads
+the report again without repeating the sentence.
+
+On any row of a report:
+
+- **Date Range...** chooses the days: Today, Yesterday, Last 7 Days, Last 30
+  Days, Month to Date, Last Month, This Year, Last Year, or **Custom...**, which
+  asks for the first and last day, such as 2026-11-01. Last 7 Days is where it
+  starts.
+- **Interval...** chooses a row for each day, week or month.
+
+Both are kept for every report on that site until you change them or close
+the Workbench, so Revenue and Orders always cover the same days. Stock and
+Customers say how things are now, so the range does not change them.
+
+To keep a report, **Edit > Export List...** (Ctrl+Shift+X) writes the rows as
+shown, the total first, as an Excel workbook, a CSV file or a Markdown table.
+WooCommerce's charts, segments and advanced filters stay in its own screens:
+**wp-admin for This Place** opens them.
 
 ## Events: The Events Calendar
 
@@ -235,9 +299,20 @@ changes, old and new; new prices are for new signups, because Paid
 Memberships Pro does not change what members already pay. Undo puts it
 back, or deletes a level you just made.
 
-**Discount codes.** **Look Up a Discount Code...** reads one code, and **New
-Discount Code...** makes one after a preview. Where the site cannot list
-every code, the list says so and opens the wp-admin screen.
+**Members of This Level...**, on a level, lists everyone who holds it now,
+with their email addresses, to count them or write to them. Paid Memberships
+Pro has no way to ask for a level's members, so QUILL asks the site about
+each person in turn. Before it starts, it says how many people that is, and
+on a big site it says plainly that it is slow. It runs in the background;
+choose it again to stop, and the members found so far are kept. The members
+open in a list, where **Copy Email Addresses** copies every address, with a
+semicolon between, ready for the To box of a message.
+
+**Discount codes.** Where the site offers Paid Memberships Pro's
+discount-codes ability, **Discount Codes** lists every code. Elsewhere its
+one row says that this site lists its codes only in wp-admin, and Enter
+opens that screen in your browser. Either way, **Look Up a Discount Code...**
+reads one code, and **New Discount Code...** makes one after a preview.
 
 **A member.** On a person in **People > Users**:
 
@@ -286,6 +361,17 @@ redirects in, with how many each holds and whether it is on. **New
 Group...** (`Ctrl+N`), **Rename...** and **Turn On or Off** each preview
 first and can be undone. **Delete Group...** deletes its redirects with it,
 so it asks you to type the group's name.
+
+**Redirect Options**, under Redirects, lists the plugin's own options that
+QUILL knows, each with its value: how addresses are matched (capital letters,
+a slash at the end, query parameters), how long the logs are kept, whether
+they keep visitors' IP addresses, HTTPS and www, and how long browsers keep a
+redirect. The last row says how many more options stay in Tools >
+Redirection > Options. **Change Options...** (Enter), or `Alt+Enter`, opens
+them all on one Properties sheet; OK previews only the options you changed,
+sends only those, and checks what the site answers. Undo puts them back. A
+site whose Redirection does not offer its options to QUILL says so on its one
+row, and Enter opens the plugin's Options screen in your browser.
 
 **404 Log**, under Redirects, lists addresses visitors asked for that were not
 found. **Redirect This Address...** sends one somewhere, after a preview.

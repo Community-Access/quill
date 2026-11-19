@@ -2,6 +2,76 @@
 
 ## 1.0.0
 
+### GitHub Workbench: your account's level is checked on every change (2026-11-19)
+
+Every command that changes something on GitHub now checks the account's
+Workbench level before it reads or sends anything: a menu row, a context-menu
+row, a key, a list's Add or Remove on a Properties sheet, a sheet's save, and
+the editor's own GitHub commands when the Workbench runs them. A Read Only or
+Organize account is refused in one sentence that names the command, the level
+it needs and where to change it (Account, Roles and Access, Workbench Level
+for This Account). When Safe Mode is the reason, the sentence says so.
+Commands that only read are never refused. Typed confirmations and the guard
+against removing your own admin access are now tested too.
+
+### GitHub Workbench: discussion polls, the spotlight and categories (2026-11-19)
+
+- A discussion's poll is now a table showing each option, its votes, its
+  percentage and your vote. **Vote...** casts your vote and says the new count.
+  If you have voted already it says which option you chose, and a Read Only
+  account is told why it cannot vote.
+- **Discussions > Pinned** lists the pinned discussions in GitHub's order.
+  GitHub has no way to pin or unpin from outside its own page, and the details
+  say so.
+- **Discussions > Categories** lists the repository's categories, and Enter
+  opens the discussions in one of them. GitHub does not yet report category
+  sections, so they are listed in GitHub's order.
+- Every quick command that changes something on GitHub now checks your
+  account's Workbench level before it reads or sends anything.
+
+### Quill Cast: Ctrl+2 shows the episode that is playing (2026-11-19)
+
+Reported by Chris: Enter on a podcast, or on an episode in the Queue, played
+it, and Ctrl+2 then brought up Now Playing without it. Now Playing only loaded
+the current episode, and started its clock, when it was opened through its own
+command. Ctrl+2, Ctrl+Tab and the Window menu showed the hidden window as it
+had been left, which was often "Nothing is playing". Every way of reaching it
+now brings it up to date first. Cast's other windows that hide rather than
+close, such as Statistics, now refresh the same way.
+### WordPress Workbench: Shop Analytics (2026-11-19)
+
+A site with WooCommerce Analytics now has **Shop Analytics** beside its Shop:
+Revenue, Orders, Products, Categories, Coupons, Taxes, Downloads, Stock and
+Customers. Each report starts with the range's total, and arriving says it
+once, for example "Revenue on Radio, last 7 days: $1,240 from 31 orders, up
+12% on the 7 days before." Date Range and Interval apply to every report on
+the site, money follows the store's currency settings, and Export List saves
+the report as shown. Nothing is changed on the site.
+
+### WordPress Workbench: a level's members, every discount code, and Redirection's options (2026-11-19)
+
+- **Members of This Level...** on a PMPro membership level lists everyone on
+  it, with Copy Email Addresses. A big site is slow, so it asks first and says
+  how many people it will read; choosing it again stops it and keeps what it
+  found.
+- **Discount codes** are now read page by page, so a site with more than 100
+  shows them all. Where a site lists them only in wp-admin, Enter on that row
+  now opens Memberships > Discount Codes, as the row always said it would.
+- **Redirects > Redirect Options** shows the Redirection plugin's settings
+  that QUILL understands and changes them as one Properties sheet, sending
+  only what changed, with Ctrl+Z to put them back. A site without that route
+  is told so, and is offered the plugin's own screen.
+
+### WordPress Workbench: shipping classes, and Generate Variations (2026-11-19)
+
+- **Shop > Shipping Classes** lists a shop's shipping classes, each with how
+  many products use it. You can add, change or delete them, and Ctrl+Z undoes
+  a new or changed class. A product's Properties now offers its shipping class
+  by name instead of a slug to type.
+- **Generate Variations...** on a variable product makes every combination of
+  its attributes that it is missing. It says how many it made, never changes or
+  removes the variations already there, and Ctrl+Z deletes exactly the ones it
+  made. A product that is not variable is told why, and nothing is sent.
 ### GitHub Workbench: unlink a branch from the issue's own sheet (2026-11-19)
 
 An issue's Properties > Relationships now lists its linked branches. Delete

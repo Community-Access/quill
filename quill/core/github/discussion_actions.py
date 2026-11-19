@@ -8,7 +8,10 @@ and starting a discussion in a category. Every call is GraphQL through
 :func:`~quill.core.github.github_graphql.graphql_data`, and each write is
 reported only when GitHub's reply shows it.
 
-A poll reads as text, one option to a line: "Option A: 12 votes, 40 percent".
+A poll reads as text, one option to a line: "Option A: 12 votes, 40 percent",
+and as a table (:func:`poll_table`: option, votes, percentage, your vote),
+which the Discussions lists' details and the Properties sheet show.
+:data:`POLL_FIELDS` is the one GraphQL selection every reader of a poll asks for.
 No ``wx`` imports; strict-typed.
 """
 
@@ -26,11 +29,21 @@ __all__ = [
     "DiscussionPoll",
     "DiscussionThread",
     "GitHubDiscussionActionsMixin",
+    "POLL_FIELDS",
     "parse_discussion_thread",
+    "parse_poll",
+    "poll_heading",
     "poll_lines",
+    "poll_table",
 ]
 
 _MAX_BODY = 20_000
+
+#: A discussion's poll, as every reader asks for it (thread, lists, sheet, Vote...).
+POLL_FIELDS = (
+    "poll { question totalVoteCount viewerCanVote viewerHasVoted "
+    "options(first:20) { nodes { id option totalVoteCount viewerHasVoted } } }"
+)
 
 _THREAD_QUERY = """
 query($owner:String!, $repo:String!, $number:Int!) {
@@ -40,7 +53,7 @@ query($owner:String!, $repo:String!, $number:Int!) {
       author { login }
       category { name isAnswerable }
       answer { id author { login } }
-      poll { question totalVoteCount options(first:20) { nodes { option totalVoteCount } } }
+      POLL
       comments(first:50) {
         totalCount
         nodes {
@@ -55,7 +68,7 @@ query($owner:String!, $repo:String!, $number:Int!) {
     }
   }
 }
-"""
+""".replace("POLL", POLL_FIELDS)
 
 _CATEGORIES_QUERY = """
 query($owner:String!, $repo:String!) {
@@ -101,6 +114,13 @@ def _login(node: object) -> str:
     return str(author.get("login") or "") if isinstance(author, dict) else ""
 
 
+def _section_name(value: object) -> str:
+    """A category's section as text, whether a reply names it or nests it; "" for none."""
+    if isinstance(value, dict):
+        value = value.get("name")
+    return str(value).strip() if isinstance(value, str) else ""
+
+
 def _count(value: object) -> int:
     return value if isinstance(value, int) and not isinstance(value, bool) and value > 0 else 0
 
@@ -113,6 +133,8 @@ class DiscussionCategory:
     description: str = ""
     #: Its form, when it has one, is .github/DISCUSSION_TEMPLATE/<slug>.yml.
     slug: str = ""
+    #: The section GitHub groups it under, when the API gives one (it does not yet).
+    section: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -120,16 +142,47 @@ class DiscussionPoll:
     question: str
     total_votes: int
     options: tuple[tuple[str, int], ...] = ()
+    #: The options you voted for, by their text.
+    voted: tuple[str, ...] = ()
+    #: GitHub's viewerCanVote: False once you have voted, or when you may not.
+    can_vote: bool = False
+
+
+def _percent(votes: int, total: int) -> int:
+    return votes * 100 // total if total else 0
+
+
+def _votes(count: int) -> str:
+    return f"{count} vote" if count == 1 else f"{count} votes"
 
 
 def poll_lines(poll: DiscussionPoll) -> list[str]:
     """The poll as text: the question, then "Option A: 12 votes, 40 percent" per option."""
     lines = [f"Poll: {poll.question or 'untitled'}, {poll.total_votes} votes in all"]
     for option, votes in poll.options:
-        percent = votes * 100 // poll.total_votes if poll.total_votes else 0
-        noun = "vote" if votes == 1 else "votes"
-        lines.append(f"{option}: {votes} {noun}, {percent} percent")
+        mine = ", your vote" if option in poll.voted else ""
+        lines.append(
+            f"{option}: {_votes(votes)}, {_percent(votes, poll.total_votes)} percent{mine}"
+        )
     return lines
+
+
+def poll_heading(poll: DiscussionPoll) -> str:
+    """The line above the table: the question, the total, and whether you may vote."""
+    if poll.voted:
+        you = "You have voted."
+    else:
+        you = "You may vote: Vote..." if poll.can_vote else "You cannot vote in it."
+    return f"Poll: {poll.question or 'untitled'}, {_votes(poll.total_votes)} in all. {you}"
+
+
+def poll_table(poll: DiscussionPoll) -> tuple[str, ...]:
+    """The poll as table rows: option, votes, percentage, and your vote (yes or no)."""
+    return tuple(
+        f"{option}, {_votes(votes)}, {_percent(votes, poll.total_votes)} percent, "
+        f"your vote: {'yes' if option in poll.voted else 'no'}"
+        for option, votes in poll.options
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -230,18 +283,19 @@ def _comment(node: dict[str, Any], parent_id: str = "") -> DiscussionComment:
     )
 
 
-def _poll(node: object) -> DiscussionPoll | None:
+def parse_poll(node: object) -> DiscussionPoll | None:
+    """A discussion's ``poll`` as :data:`POLL_FIELDS` reads it; None when it has none."""
     if not isinstance(node, dict):
         return None
     options_node = as_dict(node.get("options"))
-    rows = options_node.get("nodes") if isinstance(options_node, dict) else None
-    options = tuple(
-        (str(row.get("option") or ""), _count(row.get("totalVoteCount")))
-        for row in rows or ()
-        if isinstance(row, dict)
-    )
+    found = options_node.get("nodes") if isinstance(options_node, dict) else None
+    rows = [row for row in found or () if isinstance(row, dict)]
     return DiscussionPoll(
-        str(node.get("question") or ""), _count(node.get("totalVoteCount")), options
+        str(node.get("question") or ""),
+        _count(node.get("totalVoteCount")),
+        tuple((str(row.get("option") or ""), _count(row.get("totalVoteCount"))) for row in rows),
+        voted=tuple(str(row.get("option") or "") for row in rows if row.get("viewerHasVoted")),
+        can_vote=bool(node.get("viewerCanVote")),
     )
 
 
@@ -277,7 +331,7 @@ def parse_discussion_thread(data: object, number: int) -> DiscussionThread:
         answerable=bool(category.get("isAnswerable")) if isinstance(category, dict) else False,
         answered_by=_login(answer) or ("someone" if answer else ""),
         closed=bool(node.get("closed")),
-        poll=_poll(node.get("poll")),
+        poll=parse_poll(node.get("poll")),
         comments=comments,
         warnings=tuple(warnings),
     )
@@ -341,6 +395,7 @@ class GitHubDiscussionActionsMixin:
                 answerable=bool(row.get("isAnswerable")),
                 description=str(row.get("description") or ""),
                 slug=str(row.get("slug") or ""),
+                section=_section_name(row.get("section")),
             )
             for row in nodes or ()
             if isinstance(row, dict) and row.get("id")

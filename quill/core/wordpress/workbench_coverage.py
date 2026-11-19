@@ -120,7 +120,8 @@ _PLANNED: tuple[tuple[str, str], ...] = (
     (r"jetpack/v4(/.*)?$", "Sites > site > Jetpack"),
     (
         r"redirection/v1(/.*)?$",
-        "Redirection's groups, import and options: More from This Site and the plugin's screen",
+        "Redirection's import from other plugins and its tools: More from This Site and the "
+        "plugin's screen",
     ),
     (r"(baf|qaf)/v1(/.*)?$", "Sites > site > Forms, the builder"),
     (r"pmpro/v1(/.*)?$", "Sites > site > Memberships, where the site has no PMPro abilities"),

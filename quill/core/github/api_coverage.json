@@ -1571,7 +1571,7 @@
   "verifyVerifiableDomain": {"status": "out_of_scope", "home": "None", "reason": "Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site."}
  },
  "graphql_queries": {
-  "discussionCategories": {"status": "covered", "home": "node:repository:discussions", "via": "quill/core/github/discussion_actions.py"},
+  "discussionCategories": {"status": "covered", "home": "node:repository:discussion_categories", "via": "quill/core/github/discussion_actions.py"},
   "discussions": {"status": "covered", "home": "node:repository:discussions", "via": "quill/core/github/discussions.py"},
   "projectsV2": {"status": "covered", "home": "node:repository:repo_projects", "via": "quill/core/github/projects.py"},
   "reviewThreads": {"status": "covered", "home": "command:github.workbench.review", "via": "quill/core/github/review_graphql.py"},
@@ -1591,7 +1591,10 @@
   "fundingLinks": {"status": "covered", "home": "command:github.workbench.funding_links", "via": "quill/core/github/quick_tables.py"},
   "dependencyGraphManifests": {"status": "covered", "home": "command:github.workbench.dependency_manifests", "via": "quill/core/github/quick_tables.py"},
   "lists": {"status": "covered", "home": "node::star_lists", "via": "quill/core/github/star_lists.py"},
-  "linkedBranches": {"status": "covered", "home": "sheet:issue.branches", "via": "quill/core/github/sheets_items.py"}
+  "linkedBranches": {"status": "covered", "home": "sheet:issue.branches", "via": "quill/core/github/sheets_items.py"},
+  "pinnedDiscussions": {"status": "covered", "home": "node:repository:discussions_pinned", "via": "quill/core/github/discussions.py"},
+  "pinDiscussion (pin, unpin, reorder)": {"status": "out_of_scope", "home": "Open on GitHub: the discussion's page", "reason": "GitHub's GraphQL API reads pinned discussions (Repository.pinnedDiscussions) but has no mutation to pin, unpin or reorder one, so Discussions > Pinned (spotlight) is read only and says so."},
+  "DiscussionCategory section": {"status": "out_of_scope", "home": "Open on GitHub: the repository's Discussions page", "reason": "GitHub's GraphQL DiscussionCategory has no section field, so Discussions > Categories lists the categories in GitHub's order and says why, in the list's note."}
  },
  "enterprise": {
   "DELETE /admin/hooks/{hook_id}": {"status": "out_of_scope", "home": "Open on GitHub: the server's own pages", "reason": "Only on GitHub Enterprise Server, and the Workbench connects to GitHub.com accounts only (accounts.py refuses other hosts)."},

@@ -59,6 +59,7 @@ Spam, Form Responses, Membership Orders and Watches.
 | Forms | Responses, Held as Spam, Feeds, Results | 13 |
 | Memberships | Membership Levels, Orders, Subscriptions, Renewals Due, Discount Codes | 10 |
 | Shop | Products and the shop's places | 10 |
+| Shop Analytics | Revenue, Orders, Products, Categories, Coupons, Taxes, Downloads, Stock, Customers | 10 |
 | Podcast | The site's episodes | 10 |
 | Events Calendar | Past Events, Venues, Organizers, Event Categories, Event Tags | 10 |
 | SEO | Each item's search appearance, and Site SEO | 10 |
@@ -70,7 +71,7 @@ Spam, Form Responses, Membership Orders and Watches.
 | By Name | Every Term, Field Values, Authors, Media Usage, Patterns Used, Links, Blocks and Shortcodes, Forms Used, Template Parts | 9 |
 | Content Audit | Orphaned, stale and duplicated content, reading level and headings | 7 |
 | Privacy Requests | WordPress's export and erase screens | 8 |
-| Redirects | The Redirection plugin's redirects, and the 404 Log | 10 |
+| Redirects | The Redirection plugin's redirects, the 404 Log, Redirect Groups and Redirect Options | 10 |
 | Search and Upkeep | Search visibility, sitemap, missed schedules, certificate, who is editing | 8 |
 | Administration Areas | Every part of running a site, and where QUILL handles it | 8 |
 | Content Model | Every content type, taxonomy and field group, and who added it | 8 |
@@ -78,7 +79,8 @@ Spam, Form Responses, Membership Orders and Watches.
 
 The Shop's places are Shop Orders, Draft Products, On Sale, Out of Stock,
 Customers, Coupons, Shop Reports, Store Settings, Product Reviews, Shipping
-Zones, Tax Rates, Tax Classes, Attributes, Brands and Webhooks.
+Zones, Shipping Classes, Tax Rates, Tax Classes, Attributes, Brands and
+Webhooks.
 
 A place for a plugin the site does not have is left out, or says so in one
 sentence.
@@ -153,6 +155,7 @@ last, and is left out below.
   Import Redirects..., Open on the Site.
 - **Redirect group:** Read in Full, New Group..., Rename..., Turn On or Off,
   Delete Group....
+- **Redirect option:** Change Options..., Read in Full.
 - **404 Log entry:** Read in Full, Redirect This Address..., Test an
   Address....
 - **Update:** Open Dashboard Updates in the Browser, Read in Full.
@@ -160,15 +163,19 @@ last, and is left out below.
   Read in Full.
 - **Shop product:** Open on the Site, Read in Full, Edit Product..., Show Its
   Variations, Duplicate..., New Product..., Copy Link, Move to Trash..., Edit
-  a Variation....
+  a Variation..., Generate Variations....
 - **Shop order:** Open in the Shop's Dashboard, Read in Full, Change
   Status..., Notes..., Refund....
 - **Shop customer:** Read in Full, Customer Details, Edit Customer....
+- **Shop Analytics row:** Read in Full, Date Range..., Interval.... Both
+  choices are kept for every report on the site.
 - **Coupon:** Read in Full, Edit Coupon..., New Coupon..., Move to Trash....
 - **Product review:** Read in Full, Approve, Hold, Mark as Spam, Reply...,
   Edit Review..., Move to Trash....
 - **Shipping zone:** Read in Full, Locations..., Methods..., New Shipping
   Zone..., Rename..., Delete....
+- **Shipping class:** Read in Full, Change..., New Shipping Class...,
+  Delete....
 - **Tax rate, tax class, attribute, brand, webhook:** Read in Full, then
   their own New, Edit or Rename, Delete, and for a webhook Pause or
   Activate..., for an attribute Terms....
@@ -179,8 +186,11 @@ last, and is left out below.
 - **Venue or organizer:** Read in Full, Edit, New, Move to Trash.
 - **SEO item:** Search Appearance, Edit SEO..., Open on the Site, Bulk SEO
   Editor....
-- **Discount code:** Read in Full, Look Up a Discount Code..., New Discount
-  Code....
+- **Membership level, order, subscription or discount code:** Read in Full,
+  Look Up a Discount Code..., New Discount Code..., Edit Membership Level...,
+  New Membership Level..., Members of This Level....
+- **Discount codes kept only in wp-admin:** Open in Dashboard, Look Up a
+  Discount Code..., New Discount Code..., Read in Full.
 - **Ability:** Run..., Offer to Ask the Site.
 - **Content type or taxonomy:** Open Its List.
 - **Calendar day:** Open This Day.
@@ -237,11 +247,11 @@ explains the roles the site reports.
 | --- | --- | --- |
 | QUILL Accessible Forms | Forms, their status and settings, responses, spam and spam settings, saved views | 13 |
 | Gravity Forms | Building and editing forms, responses, notes, starred and read, resending emails, feeds, results, test entries, copying forms | 13 |
-| Paid Memberships Pro | Levels, orders, subscriptions, renewals due, discount codes, a person's memberships and access, changing and cancelling a membership | 10 |
-| WooCommerce | Products and variations, orders, notes and refunds, customers, coupons, reports, store settings, reviews, shipping zones, taxes, attributes, brands, webhooks | 10 |
+| Paid Memberships Pro | Levels, orders, subscriptions, renewals due, a level's members, discount codes, a person's memberships and access, changing and cancelling a membership | 10 |
+| WooCommerce | Products and variations, orders, notes and refunds, customers, coupons, reports, store settings, reviews, shipping zones and classes, taxes, attributes, brands, webhooks | 10 |
 | The Events Calendar | Events, venues, organizers, event categories and tags | 10 |
 | Yoast SEO | Each item's SEO and social fields, the Bulk SEO Editor, the site's scores | 10 |
-| Redirection | Redirects and the 404 Log | 10 |
+| Redirection | Redirects, their groups, import and export, the plugin's options, and the 404 Log | 10 |
 
 Other plugins are named as such in Administration Areas. Their routes are
 listed under More from This Site, or their own wp-admin screen opens.

@@ -20,6 +20,10 @@ from quill.core.wordpress.workbench_dashboard_places import (
     DASHBOARD_ROW_HELP,
 )
 from quill.core.wordpress.workbench_plugin_nodes import PLUGIN_NODE_HELP, PLUGIN_ROW_HELP
+from quill.core.wordpress.workbench_shop_analytics_places import (
+    ANALYTICS_NODE_HELP,
+    ANALYTICS_ROW_HELP,
+)
 from quill.core.wordpress.workbench_sweep_places import SWEEP_NODE_HELP, SWEEP_ROW_HELP
 
 __all__ = ["NODE_HELP", "PLANNED_WORDS", "ROW_HELP", "node_help", "row_help"]
@@ -127,8 +131,8 @@ NODE_HELP: Mapping[str, str] = {
     ),
     "membership_discount_codes": (
         "Paid Memberships Pro discount codes. Look Up a Discount Code reads one by its code; "
-        "New Discount Code makes one after a preview. The full list is in wp-admin unless the "
-        "site offers a discount-codes ability."
+        "New Discount Code makes one after a preview. Every code is listed where the site "
+        "offers a discount-codes ability; otherwise the list is in wp-admin, and Enter opens it."
     ),
     "shop": (
         "WooCommerce's products, from its wc/v3 routes. Ctrl+N makes one; the context menu "
@@ -208,6 +212,7 @@ NODE_HELP: Mapping[str, str] = {
     **SWEEP_NODE_HELP,
     **DASHBOARD_NODE_HELP,
     **PLUGIN_NODE_HELP,  # Shop's other nodes, Events Calendar, SEO
+    **ANALYTICS_NODE_HELP,  # Shop Analytics and its reports
 }
 """One sentence per node key; status children and group nodes share their parent's."""
 
@@ -229,7 +234,11 @@ ROW_HELP: Mapping[str, str] = {
     "gravity_result": "One answer's count in a quiz, poll or survey. Enter reads the question.",
     "pmpro": (
         "A Paid Memberships Pro level, membership order, subscription or discount code. "
-        "Alt+Enter reads its details."
+        "Alt+Enter reads its details. On a level, Members of This Level lists who holds it."
+    ),
+    "discount_note": (
+        "This site lists its discount codes only in wp-admin. Enter opens that screen in your "
+        "browser; Look Up a Discount Code reads one code here."
     ),
     "term": "A category, tag or term. Enter lists its posts; Merge Into folds it into another.",
     "user": (
@@ -304,6 +313,7 @@ ROW_HELP: Mapping[str, str] = {
     **SWEEP_ROW_HELP,
     **DASHBOARD_ROW_HELP,
     **PLUGIN_ROW_HELP,  # shop, events and SEO rows
+    **ANALYTICS_ROW_HELP,  # a Shop Analytics report's rows
 }
 """One sentence per row type."""
 

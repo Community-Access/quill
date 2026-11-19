@@ -5,7 +5,10 @@ own (``_fits_<verb>`` and ``_do_<verb>``, made below from the table): it
 works out what the row is about (its repository, organization, key or
 number), reads a list to pick from if it needs one, asks its questions,
 asks before it changes anything, then calls GitHub off the UI thread and
-says what happened, or shows a long answer in a window to read.
+says what happened, or shows a long answer in a window to read. The
+account's Workbench level is checked before a quick command reaches here, by
+the one check every write passes (:mod:`quill.core.github.write_gate`): the
+dispatcher for a row, and a sheet list's buttons for Vote... on a poll.
 """
 
 from __future__ import annotations
@@ -105,7 +108,10 @@ class GitHubWorkbenchQuickMixin:
         return all(ctx.get(key) for key in quick.needs)
 
     def _quick_run(self, quick: Quick, row: object) -> None:
-        ctx = self._quick_ctx(row)
+        self.quick_start(quick, self._quick_ctx(row))
+
+    def quick_start(self, quick: Quick, ctx: dict[str, str]) -> None:
+        """Run *quick* on what *ctx* names: a row's context, or a sheet's (Vote... there)."""
         if quick.pick is None:
             self._quick_ask(quick, ctx)
             return

@@ -3,21 +3,18 @@
 A mixin on :class:`quill.ui.wordpress_workbench_window.WordPressWorkbenchProvider`.
 
 - **Alt+Enter on one row** reads the object again (``context=edit``), with its
-  term and author names, its registered meta and, for anything without a
-  written sheet, its route's schema, then opens the shared editable sheet
+  term and author names, its registered meta and, without a written sheet, its
+  route's schema, then opens the shared sheet
   (:class:`quill.ui.workbench_sheet_editor.WorkbenchSheetEditor`). A field the
-  person's role or Workbench access cannot change is read only, with the
-  reason as its F1 help.
-- **Saving** is :func:`quill.core.wordpress.workbench_edit.save` (through
-  :func:`~quill.core.wordpress.field_plugins_cmb2.save_with_cmb2`): the conflict
-  check on ``modified_gmt``, the write, and the verify after it. A conflict
-  sends nothing and asks Use Mine or Keep Theirs.
+  person's role or access cannot change is read only, with why as its F1 help.
+- **Saving** is :func:`~quill.core.wordpress.field_plugins_cmb2.save_with_cmb2`: the
+  conflict check, the write and the verify. A conflict asks Use Mine or Keep Theirs.
 - **Alt+Enter on several rows** is the batch sheet (section 9): only the
   fields they share, Mixed where they differ, categories and tags added or
   removed; a preview names every item, and the change goes through
   ``batch/v1`` with a result per item and Try Again for any that failed.
-- **Alt+Enter on a site** (or Alt+Shift+Enter anywhere in it) is the Site sheet,
-  with its Spam page read only (13a.5).
+- **Alt+Enter on a site** (or Alt+Shift+Enter in it) is the Site sheet (13a.5); on a
+  Redirect Options row, Redirection's options (their own load and save).
 - **Ctrl+Z** undoes the newest change from Change History, off the UI thread.
 """
 
@@ -140,6 +137,8 @@ class WorkbenchSheetCommands:
         """Off the UI thread: the fresh object, its sheet, its values and term names."""
         if row.subkind == "gravity" and row.kind in _GRAVITY_SHEETS:
             return self.gravity_sheet(row)  # type: ignore[attr-defined]
+        if row.kind == "redirect_option":  # Redirection's options (complete.md 2.3)
+            return self.redirect_options_sheet(row)  # type: ignore[attr-defined]
         ctx = self.ensure(self.ctx(row.site))
         api = ctx.api
         fresh: dict[str, Any] = dict(row.raw)
@@ -194,6 +193,8 @@ class WorkbenchSheetCommands:
         values = values_for(row, fresh, term_names=term_names, author_names=author_names)
         if row.kind == "user" and hasattr(self, "with_access_page"):  # PMPro's Has Access
             sheet = self.with_access_page(ctx, sheet, values)
+        if row.kind == "shop_product" and hasattr(self, "with_shipping_classes"):  # by name
+            sheet = self.with_shipping_classes(api, sheet, values)
         if row.kind == "item":  # Author and Template as choices, as wp-admin offers (9.18)
             from quill.core.wordpress import workbench_parity as wpp
 
@@ -291,6 +292,8 @@ class WorkbenchSheetCommands:
         with whether the save landed, so the sheet stays open until it knows."""
         if row.kind == "form_entry" and row.subkind == "gravity":
             return bool(self.gravity_entry_save(row, state))  # type: ignore[attr-defined]
+        if row.kind == "redirect_option":
+            return bool(self.save_redirect_options(row, state))  # type: ignore[attr-defined]
         try:
             body = body_for(
                 sheet,
@@ -546,11 +549,7 @@ class WorkbenchSheetCommands:
                 ),
             }
 
-        self.background(
-            f"reading {site}",
-            work,
-            lambda values: self._site_editor(site, values).show(),
-        )
+        self.background(f"reading {site}", work, lambda v: self._site_editor(site, v).show())
 
     def _site_editor(self, site: str, values: dict[str, Any]) -> Any:
         parts = self.site_sheet_with_spam(site, SITE_SHEET, values)  # type: ignore[attr-defined]
