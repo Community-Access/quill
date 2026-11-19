@@ -1,4 +1,4 @@
-"""Running the Site: Site Health Check, Site Settings, Plugins, Themes, Fonts and Synced Patterns."""
+"""Running the Site: Site Health Check, Settings, Plugins, Themes, Fonts and Synced Patterns."""
 
 from __future__ import annotations
 
