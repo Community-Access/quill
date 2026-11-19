@@ -1178,7 +1178,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+L | Load More | `wordpress.workbench.load_more` |
 | Ctrl+Shift+M | Reply... | `wordpress.workbench.reply` |
 | Ctrl+Shift+O | Workbench Options... | `wordpress.workbench.options` |
-| Ctrl+Shift+P | Publish or Update... | `wordpress.workbench.publish` |
+| Ctrl+Shift+P | Publish... | `wordpress.workbench.publish` |
 | Ctrl+Shift+R | Restore from Trash | `wordpress.workbench.restore` |
 | Ctrl+Shift+S | Spam | `wordpress.workbench.spam` |
 | Ctrl+Shift+T | REST Console... | `wordpress.workbench.rest_console` |
