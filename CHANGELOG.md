@@ -19,6 +19,14 @@ stock status or the status, or adds or removes a category, through
 WooCommerce's batch route. The preview names every product's old and new
 value, and every product it leaves alone and why. Undo puts them back.
 
+### WordPress Workbench: membership levels you can change (2026-11-18)
+
+Membership Levels has New Membership Level... (Ctrl+N) and Edit Membership
+Level...: the name, the initial and recurring payment and its period, when
+membership expires, and whether new signups are allowed, previewed old and
+new. The preview says that new prices are for new signups, since Paid
+Memberships Pro does not change what members pay now. Undo puts it back.
+
 ### GitHub Workbench: is it GitHub, or is it me? (2026-11-18)
 
 Help > GitHub Service Status... (Ctrl+Alt+F1) reads GitHub's public status
