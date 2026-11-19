@@ -26,6 +26,7 @@ from quill.core.github import workbench_help as catalogue
 from quill.core.github.explore_models import ExploreRow
 from quill.core.workbench.menus import MenuSub, all_rows
 from quill.core.workbench.tree import NodeSpec
+from quill.ui.github_workbench_why import GitHubWorkbenchWhyMixin
 
 __all__ = ["HELP_PREFIX", "HELP_VERBS", "GitHubWorkbenchHelpMixin"]
 
@@ -35,10 +36,10 @@ HELP_PREFIX = "help:"
 HELP_VERBS = {
     verb: frozenset({"help_topic"})
     for verb in ("open_topic", "take_me_there", "walk_me_through", "do_it")
-}
+} | {"why": frozenset({"view"})}
 
 
-class GitHubWorkbenchHelpMixin:
+class GitHubWorkbenchHelpMixin(GitHubWorkbenchWhyMixin):
     """Help hooks for the GitHub provider. Runs on the UI thread except :meth:`load_help`."""
 
     frame: Any

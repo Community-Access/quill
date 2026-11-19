@@ -4,11 +4,11 @@ Checked 2026-11-18 against main, updated the same day for the follow-up pull req
 
 ## Summary
 
-Of the 100 live requirements, 74 are met, 18 are partly met and 8 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 75 are met, 17 are partly met and 8 are not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
-| Must | 63 | 11 | 1 | 75 |
+| Must | 64 | 10 | 1 | 75 |
 | Should | 11 | 7 | 5 | 23 |
 | May | 0 | 0 | 2 | 2 |
 
@@ -37,7 +37,6 @@ Of the 100 live requirements, 74 are met, 18 are partly met and 8 are not met. G
 | GH-R-053 | Must | Filters can be saved as searches and pinned as nodes | Save Search (`github_workbench_actions.py:158`), Saved Searches node in the tree (`workbench_tree.py:186`); `test_the_filter_builder`... saves one, `test_go_lists_pins_favorites_and_saved_searches`. A saved search is a row in that node, not a node of its own. |
 | GH-R-093 | Must | Every key is rebindable, and the rebinding follows into menus, the reference, Shift+F1 and the Key Describer | `bound_keys` puts the person's bindings over the defaults and the menu shows the rebound key (`tests/unit/ui/test_github_workbench_requirement_checks.py::test_a_rebound_key_is_the_one_the_menu_shows`); the generated reference is defaults by design; Shift+F1 and the Key Describer not checked. |
 | GH-R-106 | Must | Help and Learning in the tree, with every node of D11 | Help and Learning has Start Here, Do Something, The Guide, Words, Keys, What Changed, Ask a Person (`workbench_tree.py:287`); D11's Tutorials and Tips nodes are missing. |
-| GH-R-108 | Must | Shift+F9 Explain That for every result, and Why? on every automatic behaviour | Shift+F9 Explain That (`workbench_window_menu.py`, frame `explain_result`); no Why? on automatic behaviours. |
 | GH-R-119 | Must | One source for every help surface (D19), and the measures of D20 | One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the generated reference (GATE-GITHUB-HELP, `build_help_reference`); D20's measures (timed find-the-answer sessions) not done. |
 | GH-R-150 | Must | Across Repositories has a place for every kind in the 22.11 table, a row per name with its variants and... | Labels, Milestones, Topics, Rules and Branch Protection by name, and the Fleet; every other kind is a decided cell with a reason in `across_scope_matrix.py` (`test_no_cell_is_blank`, `test_the_decided_cells`), not yet a place. |
 | GH-R-151 | Must | Every operation a kind allows in one repository is offered across a scope, with the preview and a result... | Preview and a result per repository for labels, milestones, topics, rulesets (`test_labels_by_name_make_the_same_with_a_preview_and_a_result_each`, `test_a_change_previews_permission_and_conflict_then_reports_each_repository`); environments, secrets, variables, webhooks, keys, autolinks remain. |
@@ -176,7 +175,7 @@ Of the 100 live requirements, 74 are met, 18 are partly met and 8 are not met. G
 | GH-R-105 | Should | Partly | The GitHub tutorials of D8 | One GitHub lesson (practice repository) in docs/user guide/tutorials.md; D8 plans eleven, and there is no Help > Tutorials. |
 | GH-R-106 | Must | Partly | Help and Learning in the tree, with every node of D11 | Help and Learning has Start Here, Do Something, The Guide, Words, Keys, What Changed, Ask a Person (`workbench_tree.py:287`); D11's Tutorials and Tips nodes are missing. |
 | GH-R-107 | Must | Met | Take Me There and Walk Me Through It on every help topic and task; Do It where the answer is one command | Take Me There, Walk Me Through It (`quill/core/workbench/walk.py`; the shared frame's `start_walk`, F1 repeats, Shift+F1 lists, Escape stops) and Do It where the task is one command (`workbench_help.DO_IT`, greyed otherwise) on every Do Something task (`test_github_workbench_walk.py`). |
-| GH-R-108 | Must | Partly | Shift+F9 Explain That for every result, and Why? on every automatic behaviour | Shift+F9 Explain That (`workbench_window_menu.py`, frame `explain_result`); no Why? on automatic behaviours. |
+| GH-R-108 | Must | Met | Shift+F9 Explain That for every result, and Why? on every automatic behaviour | Shift+F9 Explain That (`workbench_window_menu.py`, frame `explain_result`), and Why? on what happens on its own: a watch, a notification, a filter applied locally (`quill/core/github/why.py`, `github_workbench_why.py`), listed first by Shift+F1; greyed commands and read-only fields already say why (`test_github_workbench_why.py`). |
 | GH-R-109 | Should | Not met | Examples from the person's own data and situation | No examples drawn from the person's own data (D14). |
 | GH-R-115 | Should | Not met | Key cards in print and braille, the guide as a book, the spoken tour | No key cards, book edition of the guide beyond the EPUBs, or spoken tour (D15). The guide's EPUB siblings exist. |
 | GH-R-116 | Should | Not met | QUILLBert and QUILLBee tips at the right moment, with an option for plain help | No QUILLBert or QUILLBee tips in the GitHub Workbench (D16). |

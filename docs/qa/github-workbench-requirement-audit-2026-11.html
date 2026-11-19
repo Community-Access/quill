@@ -251,7 +251,7 @@ href="../Product Requirement Documents and Specifications/github-workbench-prd.m
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 74 are met, 18 are partly met and 8 are
+<p>Of the 100 live requirements, 75 are met, 17 are partly met and 8 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -266,8 +266,8 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>63</td>
-<td>11</td>
+<td>64</td>
+<td>10</td>
 <td>1</td>
 <td>75</td>
 </tr>
@@ -428,14 +428,6 @@ Describer not checked.</td>
 <td>Help and Learning has Start Here, Do Something, The Guide, Words,
 Keys, What Changed, Ask a Person (<code>workbench_tree.py:287</code>);
 D11’s Tutorials and Tips nodes are missing.</td>
-</tr>
-<tr>
-<td>GH-R-108</td>
-<td>Must</td>
-<td>Shift+F9 Explain That for every result, and Why? on every automatic
-behaviour</td>
-<td>Shift+F9 Explain That (<code>workbench_window_menu.py</code>, frame
-<code>explain_result</code>); no Why? on automatic behaviours.</td>
 </tr>
 <tr>
 <td>GH-R-119</td>
@@ -1398,11 +1390,16 @@ greyed otherwise) on every Do Something task
 <tr>
 <td>GH-R-108</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Shift+F9 Explain That for every result, and Why? on every automatic
 behaviour</td>
 <td>Shift+F9 Explain That (<code>workbench_window_menu.py</code>, frame
-<code>explain_result</code>); no Why? on automatic behaviours.</td>
+<code>explain_result</code>), and Why? on what happens on its own: a
+watch, a notification, a filter applied locally
+(<code>quill/core/github/why.py</code>,
+<code>github_workbench_why.py</code>), listed first by Shift+F1; greyed
+commands and read-only fields already say why
+(<code>test_github_workbench_why.py</code>).</td>
 </tr>
 <tr>
 <td>GH-R-109</td>
