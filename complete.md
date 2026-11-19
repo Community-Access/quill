@@ -9,7 +9,7 @@
 For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claude.log`. The commands and gates are in `CLAUDE.md`.
 
 - **Screen-reader testing** is done by Jeff's testers and is not tracked here.
-- **Where it stands (2026-11-19, afternoon):** today's merged PRs are #1943 to #1949, which cover WordPress scope docs, GH-R-045, GH-R-002, the 3.2 decisions, unlinking a branch from the issue sheet, shipping classes and Generate Variations, PMPro members and discount codes, Redirection's options, and Shop Analytics. Open: #1950 (discussion polls, spotlight and categories) and #1951 (Chris's Cast Ctrl+2 fix). Being built: permission levels enforced on every Workbench write.
+- **Where it stands (2026-11-19, night):** merged today: #1943 to #1957 except #1955's neighbours still open, i.e. #1943-#1957 minus the open ones below. Open: #1958 (Cast lists that stay still), #1959 (workflow authoring, Dependabot, CODEOWNERS), #1960 (sort, group, place kept, plain-language batch), #1961 (rulesets, members, teams, access matrices; Enterprise Cloud-only parts being removed). Paused by the usage limit, to be resumed: roles and accounts, Across Repositories, repository administration, wiki/collaboration/Copilot, and the GH-R items not met. Rule (Jeff): nothing Enterprise Cloud only; organization-only checks run in a test organization.
 - **Next:** finish 1.3 smallest first, then the documentation pass (1.4), then the rest of 2.3 and 3.2. A tester's defect report always comes first.
 - **Live testing waits until all code is done (Jeff, 2026-11-19).** That covers the WordPress test site over SSH (`ssh lp.csedesigns.com`, wp-cli through `~/app/wordpress-test/wpcli.sh`, which needs more PHP memory), installing QAF and the other plugins, the GitHub test repository, and the 1.5 and 2.4 rows. Gravity Forms waits until later.
 - **How to work here:**
@@ -23,7 +23,7 @@ For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claud
 1. **A tester's defect report**, whenever one arrives.
 2. **The GitHub Workbench (Part 1)**, code first.
 3. **WordPress (Part 2)**, code first.
-4. **Other work (Part 3):** the family UX pilots, Earshot parity, and the Copilot runtime build.
+4. **Other work (Part 3):** the family UX pilots and the Copilot runtime build. (Earshot parity was taken off the list by Jeff, 2026-11-19.)
 5. **Then all live testing:** 1.5, 2.4 and 2.5, the test site and the GitHub test repository.
 
 ## Part 1. The GitHub Workbench
@@ -167,14 +167,6 @@ All of the following has tests over recorded or fake answers and none has met a 
 ## Part 3. Other work
 
 - [ ] **Copilot SDK 2.0 runtime verification (needs a Windows build).** The source pins `microsoft-copilot-sdk==2.0.1` everywhere; what still names 1.x is the committed `standalone/runtime/runtime-inventory.json`, and `scripts/check_build_env.py` now stops a build whose Python still has `github-copilot-sdk`. On the build machine: `py -m pip uninstall -y github-copilot-sdk`, `py -m pip install -e ".[runtime,packaging]"`, build the runtime, run `python scripts/check_runtime_inventory.py <dist-dir> --write`, confirm the inventory names `microsoft-copilot-sdk` and not `github-copilot-sdk`, then drop the legacy notices entry (`github-copilot-sdk` in `quill/data/third_party/components.json`) and regenerate the notices.
-
-### 3.1 Earshot parity, what is left
-
-The plan of record is `docs/design/earshot.md`.
-
-- [ ] **Listen to the three compression levels** on quiet and loud speech, and decide whether turning compression on should keep starting at Light (a little gentler than the old fixed -18 dB, 3:1).
-- [ ] **Sound Enhancements window:** a strength choice in the window itself, which means changing the editor Quill Radio shares; waits for a reason.
-- [ ] **Round three** starts from Earshot `c11dda93`: when Earshot's Listening Places starts reading other devices' files, check the records Cast writes against what it expects.
 
 ### 3.2 Family UX pilots
 

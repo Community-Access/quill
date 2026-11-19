@@ -3704,7 +3704,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 850 yes, 0 planned, 290 not needed and 867 left to
+<p>In all: 851 yes, 0 planned, 290 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -12188,7 +12188,7 @@ repository’s Labels node already lists and filters them.</td>
 </tbody>
 </table>
 <h4 id="secret-scanning">Secret scanning</h4>
-<p>17 operations: 5 yes, 1 not needed, 11 left to github.</p>
+<p>17 operations: 6 yes, 1 not needed, 10 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -12298,10 +12298,8 @@ reads the list.</td>
 <tr>
 <td>Create a push protection bypass</td>
 <td><code>POST /repos/{owner}/{repo}/secret-scanning/push-protection-bypasses</code></td>
-<td>Left to GitHub</td>
-<td>A push that secret scanning blocks is let through from git push
-itself, with the link GitHub prints there; it is not a Workbench
-step.</td>
+<td>Yes</td>
+<td>context menu &gt; Allow a Blocked Secret…</td>
 </tr>
 <tr>
 <td>Get secret scanning scan history for a repository</td>

@@ -1116,7 +1116,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 850 yes, 0 planned, 290 not needed and 867 left to GitHub.
+In all: 851 yes, 0 planned, 290 not needed and 866 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2616,7 +2616,7 @@ In all: 850 yes, 0 planned, 290 not needed and 867 left to GitHub.
 
 #### Secret scanning
 
-17 operations: 5 yes, 1 not needed, 11 left to github.
+17 operations: 6 yes, 1 not needed, 10 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2635,7 +2635,7 @@ In all: 850 yes, 0 planned, 290 not needed and 867 left to GitHub.
 | List repository custom patterns | `GET /repos/{owner}/{repo}/secret-scanning/custom-patterns` | Left to GitHub | Custom secret patterns need paid GitHub Advanced Security. |
 | Bulk create repository custom patterns | `POST /repos/{owner}/{repo}/secret-scanning/custom-patterns` | Left to GitHub | Custom secret patterns need paid GitHub Advanced Security. |
 | Update a repository custom pattern | `PATCH /repos/{owner}/{repo}/secret-scanning/custom-patterns/{pattern_id}` | Left to GitHub | Custom secret patterns need paid GitHub Advanced Security. |
-| Create a push protection bypass | `POST /repos/{owner}/{repo}/secret-scanning/push-protection-bypasses` | Left to GitHub | A push that secret scanning blocks is let through from git push itself, with the link GitHub prints there; it is not a Workbench step. |
+| Create a push protection bypass | `POST /repos/{owner}/{repo}/secret-scanning/push-protection-bypasses` | Yes | context menu > Allow a Blocked Secret... |
 | Get secret scanning scan history for a repository | `GET /repos/{owner}/{repo}/secret-scanning/scan-history` | Yes | context menu > Secret Scanning History |
 
 #### Security advisories
