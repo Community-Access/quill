@@ -214,12 +214,11 @@ TOOLS_ROWS: tuple[Entry, ...] = (
     Submenu(
         "WordPress",
         (
-            # The Workbench comes first (W6), on H, its WordPress-layer key too, and
-            # Check Before Publishing on K (item 15). Menu History and Site Health
-            # Check gave those letters up and no letter of their names is free here,
-            # so they have none rather than a duplicate (GATE-14); the Workbench
-            # reaches both.
-            ("wordpress.workbench", "Open WordPress Workbenc&h...", "cmd_workbench"),
+            # The Workbench comes first (W6). It has the WordPress layer's H and no
+            # letter: every letter of its name is held by a row with no key, which
+            # needs its letter more. Check Before Publishing takes K, its layer key
+            # (item 15); Site Health Check takes I, which Plugin Extras gave up for P.
+            ("wordpress.workbench", "Open WordPress Workbench...", "cmd_workbench"),
             None,
             ("wordpress.check", "Chec&k Before Publishing...", "cmd_check"),
             ("wordpress.check_page", "Check &This Page", "cmd_check_page"),
@@ -251,8 +250,8 @@ TOOLS_ROWS: tuple[Entry, ...] = (
             ("wordpress.comments", "&Comments...", "cmd_comments"),
             ("wordpress.manage_terms", "Categories and Ta&gs...", "cmd_manage_terms"),
             ("wordpress.menus", "Me&nus...", "cmd_menus"),
-            ("wordpress.menu_history", "Menu History...", "cmd_menu_history"),
-            ("wordpress.site_check", "Site Health Check", "cmd_site_check"),
+            ("wordpress.menu_history", "Menu &History...", "cmd_menu_history"),
+            ("wordpress.site_check", "S&ite Health Check", "cmd_site_check"),
             ("wordpress.site_settings", "Site S&ettings...", "cmd_site_settings"),
             Submenu(
                 "&Design",
@@ -262,7 +261,7 @@ TOOLS_ROWS: tuple[Entry, ...] = (
                 ),
             ),
             Submenu(
-                "Plug&in Extras",
+                "&Plugin Extras",
                 (
                     ("wordpress.events_coming_up", "&Upcoming Events...", "cmd_events_coming_up"),
                     ("wordpress.new_event", "New &Event...", "cmd_new_event"),
