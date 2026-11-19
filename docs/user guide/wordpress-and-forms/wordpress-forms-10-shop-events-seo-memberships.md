@@ -44,9 +44,9 @@ product's price, and Properties shows them.
 Each site with WooCommerce has a **Shop**. Its list is your products, with
 price, stock and status. Under it are **Draft Products**, **On Sale**, **Out
 of Stock**, **Shop Orders**, **Customers**, **Coupons**, **Shop Reports**,
-**Store Settings**, **Product Reviews**, **Shipping Zones**, **Tax Rates**,
-**Tax Classes**, **Attributes**, **Brands**, **Webhooks**, **Payment
-Gateways** and **System Status**.
+**Store Settings**, **Product Reviews**, **Shipping Zones**, **Shipping
+Classes**, **Tax Rates**, **Tax Classes**, **Attributes**, **Brands**,
+**Webhooks**, **Payment Gateways** and **System Status**.
 
 ### Products
 
@@ -63,11 +63,21 @@ Gateways** and **System Status**.
 - **Properties...** (`Alt+Enter`) on a product has every field WooCommerce
   lets you change: SKU, description and short description, sale dates,
   weight and dimensions, shipping and tax class, images, downloads, upsells
-  and cross-sells. A list or a group of values is a box of JSON that QUILL
-  checks before it saves.
+  and cross-sells. The shipping class is chosen by name from the shop's
+  Shipping Classes, or No shipping class. A list or a group of values is a
+  box of JSON that QUILL checks before it saves.
 - **Show Its Variations** lists a product's variations, and **Edit a
   Variation...** changes one's price, sale price, stock, or whether it is for
   sale.
+- **Generate Variations...** on a variable product makes a variation for
+  every combination of its attributes that it does not have yet. The
+  preview says how many combinations there are and how many variations it
+  has now; afterwards QUILL says how many it made. Existing variations are
+  never changed or removed. WooCommerce makes at most 50 at a time, so a
+  large product may need it again. A new variation has no price until you
+  give it one with Edit a Variation. Ctrl+Z deletes the ones it made. On a
+  product that is not variable, or has no attribute used for variations,
+  QUILL says why and sends nothing.
 - **Duplicate...** makes a copy, and **Move to Trash...** sends one to
   WooCommerce's Trash.
 
@@ -134,6 +144,13 @@ Trash...** removes it.
   methods: choose one to turn it on or off, change its cost or remove it, or
   add flat rate, free shipping or local pickup. **Rename...** and
   **Delete...** are there too.
+- **Shipping Classes** lists each class, such as Heavy items, with its slug
+  and how many products are in it. Ctrl+N makes one: give it a name, and a
+  slug and description if you want them. **Change...** changes its name,
+  slug or description, and Ctrl+Z puts them back. **Delete...** removes a
+  class for good, after a preview naming the class and the site: its
+  products are left with no shipping class, and any rate a zone set for it
+  stops applying. A product is put in a class from its Properties.
 - **Tax Rates**: Ctrl+N makes a rate, **Edit Tax Rate...** changes its name,
   percentage and where it applies, and **Delete...** removes one. A deleted
   rate comes back with Ctrl+Z.

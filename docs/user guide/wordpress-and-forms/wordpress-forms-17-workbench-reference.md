@@ -78,7 +78,8 @@ Spam, Form Responses, Membership Orders and Watches.
 
 The Shop's places are Shop Orders, Draft Products, On Sale, Out of Stock,
 Customers, Coupons, Shop Reports, Store Settings, Product Reviews, Shipping
-Zones, Tax Rates, Tax Classes, Attributes, Brands and Webhooks.
+Zones, Shipping Classes, Tax Rates, Tax Classes, Attributes, Brands and
+Webhooks.
 
 A place for a plugin the site does not have is left out, or says so in one
 sentence.
@@ -160,7 +161,7 @@ last, and is left out below.
   Read in Full.
 - **Shop product:** Open on the Site, Read in Full, Edit Product..., Show Its
   Variations, Duplicate..., New Product..., Copy Link, Move to Trash..., Edit
-  a Variation....
+  a Variation..., Generate Variations....
 - **Shop order:** Open in the Shop's Dashboard, Read in Full, Change
   Status..., Notes..., Refund....
 - **Shop customer:** Read in Full, Customer Details, Edit Customer....
@@ -169,6 +170,8 @@ last, and is left out below.
   Edit Review..., Move to Trash....
 - **Shipping zone:** Read in Full, Locations..., Methods..., New Shipping
   Zone..., Rename..., Delete....
+- **Shipping class:** Read in Full, Change..., New Shipping Class...,
+  Delete....
 - **Tax rate, tax class, attribute, brand, webhook:** Read in Full, then
   their own New, Edit or Rename, Delete, and for a webhook Pause or
   Activate..., for an attribute Terms....
@@ -238,7 +241,7 @@ explains the roles the site reports.
 | QUILL Accessible Forms | Forms, their status and settings, responses, spam and spam settings, saved views | 13 |
 | Gravity Forms | Building and editing forms, responses, notes, starred and read, resending emails, feeds, results, test entries, copying forms | 13 |
 | Paid Memberships Pro | Levels, orders, subscriptions, renewals due, discount codes, a person's memberships and access, changing and cancelling a membership | 10 |
-| WooCommerce | Products and variations, orders, notes and refunds, customers, coupons, reports, store settings, reviews, shipping zones, taxes, attributes, brands, webhooks | 10 |
+| WooCommerce | Products and variations, orders, notes and refunds, customers, coupons, reports, store settings, reviews, shipping zones and classes, taxes, attributes, brands, webhooks | 10 |
 | The Events Calendar | Events, venues, organizers, event categories and tags | 10 |
 | Yoast SEO | Each item's SEO and social fields, the Bulk SEO Editor, the site's scores | 10 |
 | Redirection | Redirects and the 404 Log | 10 |
