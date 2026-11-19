@@ -8,6 +8,7 @@ from wx.lib.scrolledpanel import ScrolledPanel
 from quill.core.studio_capture import REGION_PRESETS, CaptureTarget, guided_region, validate_region
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 from quill.ui.studio_capture_options import CaptureOptionsMixin
 
 # a11y: needs manual verification — screen-reader/braille announcements,
@@ -385,7 +386,7 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
                 target = guided_region(source, self.portion.GetSelection(), target.device)
                 bounds = target.bounds
             else:
-                left, top, width, height = (field.GetValue() for field in self.coordinates)
+                left, top, width, height = (spin_value(field) for field in self.coordinates)
                 bounds = (left, top, left + width, top + height)
                 target = replace(
                     target,

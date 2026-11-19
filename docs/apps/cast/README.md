@@ -174,6 +174,7 @@ Three things are true of every control in it:
 - **It shows the value actually in force**, whether that came from this podcast, from its folder, or from your shared defaults. F1 on any control says which: *"Every 60 minutes, from the folder News."*
 - **Saving writes only what you changed.** Anything you leave alone keeps following its folder and the shared defaults, so changing a shared default later still reaches this podcast.
 - **Where this podcast has an answer of its own, a Follow button appears beside the control.** Pressing it drops that one answer, so the podcast goes back to inheriting — it does not write today's default over it.
+- **What you save is heard at once.** If this podcast is playing, a new speed, equaliser, compressor, Skip Silence or Volume Boost takes effect in the episode you are listening to, at the point you are at. The same is true when you change a shared default in Podcast Settings, for any podcast that follows it. A file that has a speed of its own keeps it. The speed box moves in steps of 0.05, the same as Speed Up and Speed Down, and a number you type is the number saved even if you press Enter or OK without leaving the box.
 
 **What Have I Changed?** lists only the settings this podcast answers for itself, out of all of them. It is the question a window full of controls cannot answer, and it is the honest way to find out why one podcast is behaving differently from the rest.
 

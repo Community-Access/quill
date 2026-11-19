@@ -17,6 +17,7 @@ from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, bin
 from quill.ui.dpi import dip_size
 from quill.ui.radio import schedule_marks
 from quill.ui.radio.marks_shared import say_ignored, with_ignored_note
+from quill.ui.spin_value import spin_value
 
 _WEEKDAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
@@ -163,8 +164,7 @@ class ScheduleRecordingDialog:
         self._editing_id: str | None = None
 
         # Modeless wx.Frame (menu bar + &Window menu, controls on an inner panel)
-        # when standalone Radio supplies a WindowManager; modal wx.Dialog for
-        # embedded QUILL.
+        # when standalone Radio supplies a WindowManager; modal wx.Dialog for embedded QUILL.
         self._windows = windows
         self._modeless = windows is not None
         if self._modeless:
@@ -628,7 +628,7 @@ class ScheduleRecordingDialog:
             date_text=self._date_ctrl.GetValue(),
             weekday_index=self._weekday_choice.GetSelection(),
             timezone_name="" if tz_index <= 0 else _TIMEZONE_CHOICES[tz_index],
-            duration_minutes=self._hours_ctrl.GetValue() * 60 + self._minutes_ctrl.GetValue(),
+            duration_minutes=spin_value(self._hours_ctrl) * 60 + spin_value(self._minutes_ctrl),
             editing_id=self._editing_id,
             folder=self._folder_ctrl.GetValue(),
         )

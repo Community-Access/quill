@@ -28,6 +28,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.podcasts.inference_budget import BUDGET_LABELS, BUDGETS, describe_plan, for_budget
+from quill.ui.spin_value import spin_value
 
 #: "Work chapters out" -- when, in the listener's terms.
 _AUTO_VALUES = ("off", "when_downloaded", "always")
@@ -162,5 +163,5 @@ class ChapterSettingsGroup:
             "chapters_use_transcript": self._transcript.GetValue(),
             "chapters_scan_audio": self._scan_audio.GetValue(),
             "chapters_announce": self._announce.GetValue(),
-            "chapters_preview_seconds": self._preview.GetValue(),
+            "chapters_preview_seconds": spin_value(self._preview),
         }

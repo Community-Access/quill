@@ -20,6 +20,7 @@ from quill.core.watch_profiles import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 from quill.ui.spoken_name import set_spoken_name
 
 
@@ -409,7 +410,7 @@ class WatchProfileDialogMixin:
                     suffix = python_suffix.GetValue().strip()
                     if suffix:
                         options["output_suffix"] = suffix
-                    options["timeout_seconds"] = float(python_timeout.GetValue())
+                    options["timeout_seconds"] = float(spin_value(python_timeout))
                 elif action_id == "ai":
                     ai_index = ai_choice.GetSelection()
                     options["mode"] = ai_modes[ai_index if ai_index >= 0 else 0]
@@ -443,15 +444,16 @@ class WatchProfileDialogMixin:
                     process_existing=bool(process_existing.GetValue()),
                     suffixes=suffixes,
                     name_patterns=name_patterns,
-                    min_size_bytes=int(size_input.GetValue()),
-                    min_age_seconds=float(age_input.GetValue()),
-                    poll_interval_seconds=int(interval_input.GetValue()),
+                    min_size_bytes=int(spin_value(size_input)),
+                    min_age_seconds=float(spin_value(age_input)),
+                    poll_interval_seconds=int(spin_value(interval_input)),
                     action_id=action_id,
                     action_options=_collect_options(action_id),
                     schedule_mode=schedule_mode,
-                    schedule_start_minute=int(start_hour.GetValue()) * 60
-                    + int(start_minute.GetValue()),
-                    schedule_end_minute=int(end_hour.GetValue()) * 60 + int(end_minute.GetValue()),
+                    schedule_start_minute=int(spin_value(start_hour)) * 60
+                    + int(spin_value(start_minute)),
+                    schedule_end_minute=int(spin_value(end_hour)) * 60
+                    + int(spin_value(end_minute)),
                     post_action=post_action,
                     post_action_destination=post_dest_input.GetValue().strip(),
                 ).normalized()

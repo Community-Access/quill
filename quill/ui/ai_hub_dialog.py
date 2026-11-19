@@ -18,8 +18,7 @@ Provider page says which provider is in use and has one button, Open Use My Own
 AI Key, which saves the Hub and opens that window. The Ollama address moved
 there too, and so did "reset the provider", which is just choosing another.
 
-Settings are saved on OK; Cancel discards changes.
-"""
+Settings are saved on OK; Cancel discards changes."""
 
 from __future__ import annotations
 
@@ -29,6 +28,7 @@ from quill.core.i18n import _
 from quill.core.platform_nouns import credential_store_name
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 
 _DEEPGRAM_KEY_CRED_TARGET = "QUILL_DEEPGRAM_API_KEY"
 _DEEPGRAM_MAX_SPEAKERS_KEY = "deepgram_default_max_speakers"
@@ -1148,7 +1148,7 @@ class AIHubDialog:
             return
         if not self._lite_mode:
             _save_deepgram_key(self._deepgram_key_ctrl.GetValue())
-            _save_deepgram_max_speakers(self._max_speakers_spin.GetValue())
+            _save_deepgram_max_speakers(spin_value(self._max_speakers_spin))
 
             task_id = self._selected_inst_task_id()
             if task_id and task_id in self._instructions:

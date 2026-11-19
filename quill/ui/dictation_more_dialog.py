@@ -24,8 +24,7 @@ window because every Alt letter is taken there, and nobody needs these on day on
   with the reason, while the command word is a common word or one of My Words.
 
 Nothing is applied until OK (:meth:`MoreDictationDialog.values`); Dictation
-Settings applies it with its own OK, so Cancel there cancels this too.
-"""
+Settings applies it with its own OK, so Cancel there cancels this too."""
 
 from __future__ import annotations
 
@@ -40,6 +39,7 @@ from quill.core.windows_dictation.options import PAUSE_CHOICES, coerce_pause
 from quill.core.windows_dictation.preview import PREVIEW_CHOICES, coerce_preview
 from quill.core.windows_dictation.settings_fields import SHARE_FIELD, share_on
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.spin_value import spin_value
 
 __all__ = [
     "DICTATE_ANYWHERE",
@@ -585,7 +585,7 @@ class MoreDictationDialog(wx.Dialog):
             "windows_dictation_never_type": list(self._never_type),
             "windows_dictation_command_prefix": " ".join(self.command_prefix.GetValue().split()),
             "windows_dictation_command_prefix_required": self.command_required.GetValue(),
-            "windows_dictation_command_timeout": int(self.command_timeout.GetValue()),
+            "windows_dictation_command_timeout": int(spin_value(self.command_timeout)),
             "windows_dictation_profile": self._profiles[max(0, self.profile.GetSelection())],
             "windows_dictation_profile_locked": self.profile_locked.GetValue(),
             "windows_dictation_history_days": self._history_days[

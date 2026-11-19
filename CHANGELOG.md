@@ -2,6 +2,29 @@
 
 ## 1.0.0
 
+### Quill Cast and QUILL: a saved podcast speed plays straight away, and typed numbers are kept (2026-11-19)
+
+Reported by Chris: Settings for This Podcast set to 1.5x said it was saved,
+and the episode went on at its old speed until Speed Up or Speed Down was used.
+Two things were wrong, and both are fixed everywhere they occurred.
+
+- **Saved settings now reach what is playing.** The player was told a
+  podcast's speed and sound only when an episode started. Now every save of
+  the podcast library passes on what changed: speed, equaliser, compressor,
+  Skip Silence and Volume Boost, from Settings for This Podcast, Podcast
+  Settings' shared defaults, a folder's settings, Change Speed and Settings by
+  Name alike. Only what actually changed is sent, so a feed refresh never
+  restarts the audio, a scan in progress is left alone, and a file with a
+  speed of its own keeps it.
+- **A number you type is the number saved.** On Windows a number box only
+  took a typed value once focus left it, so typing 1.5 and pressing Enter or
+  OK saved the old number. Every number box in every QuillVille app (about 120
+  of them, in 45 windows) now reads what you typed, and a test stops a new one
+  from being read the old way.
+- Settings for This Podcast's speed box now moves in steps of 0.05 with two
+  decimals, matching Speed Up and Speed Down; it used to step 0.1 and show
+  1.25x as 1.2.
+
 ### GitHub Workbench: pin a saved search as a place in the tree (2026-11-19)
 
 **Pin as Node**, on a row in Saved Searches, gives that search a place of

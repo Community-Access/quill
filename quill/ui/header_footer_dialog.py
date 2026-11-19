@@ -18,6 +18,7 @@ import wx
 from quill.core.header_footer import PRESETS, HeaderFooterSpec, PageNumberStyle
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 
 
 class HeaderFooterDialog:
@@ -180,7 +181,7 @@ class HeaderFooterDialog:
                 if self._page_style_choice.GetSelection() == 1
                 else PageNumberStyle.ARABIC
             ),
-            start_page_number=self._start_page_ctrl.GetValue(),
+            start_page_number=spin_value(self._start_page_ctrl),
         )
 
     # -- event handlers --

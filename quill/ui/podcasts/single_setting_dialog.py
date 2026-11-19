@@ -25,6 +25,7 @@ from collections.abc import Callable
 
 from quill.core.podcasts.single_settings import SingleSetting
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.spin_value import spin_value
 
 __all__ = ["SingleSettingDialog"]
 
@@ -124,7 +125,7 @@ class SingleSettingDialog:
         try:
             if show_modal_dialog(self.dialog, self._title, announce=self._announce) != wx.ID_OK:
                 return None
-            value = float(self._ctrl.GetValue())
+            value = float(spin_value(self._ctrl))
             self._result = max(self._minimum, min(self._maximum, value))
             return self._result
         finally:

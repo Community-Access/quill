@@ -43,6 +43,7 @@ from quill.core.lineups.rules import (
 from quill.core.podcasts.filter_conditions import OP_PHRASES
 from quill.ui.dpi import dip_size
 from quill.ui.lineups.host import LineupsHost
+from quill.ui.spin_value import spin_value
 
 TITLE = "Edit Rule"
 TEST_TITLE = "Test"
@@ -504,14 +505,14 @@ class RuleEditor:
             self._rule,
             match=MATCH_ANY if self._match.GetSelection() == 1 else MATCH_ALL,
             sort=SORTS[max(0, self._sort.GetSelection())],
-            limit=int(self._limit.GetValue()),
-            per_group=int(self._per_group.GetValue()) if self._rule.kind in GROUP_FIELDS else 0,
-            budget_minutes=int(self._budget.GetValue()),
+            limit=int(spin_value(self._limit)),
+            per_group=int(spin_value(self._per_group)) if self._rule.kind in GROUP_FIELDS else 0,
+            budget_minutes=int(spin_value(self._budget)),
             keep=Keep(
                 modes[max(0, self._keep.GetSelection())],
-                days=int(self._days.GetValue()),
-                percent=int(self._percent.GetValue()),
-                max_kept=int(self._max_kept.GetValue()),
+                days=int(spin_value(self._days)),
+                percent=int(spin_value(self._percent)),
+                max_kept=int(spin_value(self._max_kept)),
             ),
             enabled=bool(self._enabled.GetValue()),
         )

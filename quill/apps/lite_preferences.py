@@ -48,6 +48,7 @@ from quill.core.action_feedback import coerce as coerce_feedback
 from quill.core.app_features import AppArea, AppFeatureSettings, AppProfile
 from quill.core.structure_announce import HEADING_POSITION_LABELS, HEADING_POSITIONS
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
+from quill.ui.spin_value import spin_value
 from quill.ui.text_editor_prefs import TextEditorPrefs
 
 __all__ = ["PreferencesResult", "edit_preferences"]
@@ -211,8 +212,7 @@ def edit_preferences(
     root.Add(share, 0, wx.LEFT | wx.RIGHT, _PAD)
 
     # Beside the abbreviation switch on purpose: they are the same decision
-    # asked twice, and two switches that behave differently would be two
-    # switches to remember.
+    # asked twice, and two switches that behave differently would be two switches to remember.
     share_dict = wx.CheckBox(dialog, label="Share QUILL's &dictionary of taught words")
     share_dict.SetHelpText(
         "Off: words you teach the spell checker are QUILL Lite's own. On: read "
@@ -559,11 +559,11 @@ def edit_preferences(
         settings.autoformat_dashes = bool(dashes.GetValue())
         settings.open_blank_document_at_startup = bool(blank.GetValue())
         settings.check_updates_on_launch = bool(updates.GetValue())
-        settings.autosave_seconds = int(autosave.GetValue())
+        settings.autosave_seconds = int(spin_value(autosave))
         settings.action_feedback = str(feedback_values[action_choice.GetSelection()])
         settings.find_not_found_feedback = str(feedback_values[miss_choice.GetSelection()])
         settings.wrap_find = bool(wrap_find.GetValue())
-        settings.announcement_throttle_ms = int(throttle.GetValue())
+        settings.announcement_throttle_ms = int(spin_value(throttle))
         settings.heading_announce_position = HEADING_POSITIONS[
             max(0, heading_choice.GetSelection())
         ]

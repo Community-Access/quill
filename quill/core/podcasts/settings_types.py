@@ -152,6 +152,12 @@ class SettingDef:
     #: Numeric bounds, for the editors that need them.
     minimum: float = 0.0
     maximum: float = 0.0
+    #: How far one arrow press moves a number, and how many decimals it shows.
+    #: 0 means the editor's own default (0.1 and one decimal for a float). Speed
+    #: says 0.05 and two: a box that stepped 0.1 could not show 1.25x, the speed
+    #: two presses of Speed Up leave a podcast at, and saved it as 1.2x.
+    step: float = 0.0
+    digits: int = 0
     #: Free-form notes for the generated settings reference.
     notes: str = ""
     #: Set when this definition is a family rather than a single control (a

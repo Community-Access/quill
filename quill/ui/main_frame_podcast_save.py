@@ -83,6 +83,9 @@ class PodcastLibrarySaveMixin:
         self._podcast_library_dirty = True
         if getattr(self, "_cast_closing", False):
             return
+        from quill.ui.podcasts.live_settings import reapply_saved_settings
+
+        reapply_saved_settings(self)  # a saved speed or sound reaches what is playing
         if getattr(self, "_check_run", None) is not None:
             self._schedule_podcast_library_flush()
         elif self._podcast_library_is_large():

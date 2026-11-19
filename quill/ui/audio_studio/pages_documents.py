@@ -4,8 +4,7 @@ Four pages: what to read (folder + types + filters), who reads it (engine,
 voice, pace, round-robin rotation, translated editions), how chapters work
 (mode, headings, the transition sounder, gaps), and output (format, existing-
 file policy, mastering and diagnostics). Together they collect every field of
-the classic Batch Export dialog — nothing is lost in the rebrand.
-"""
+the classic Batch Export dialog — nothing is lost in the rebrand."""
 
 from __future__ import annotations
 
@@ -29,6 +28,7 @@ from quill.ui.audio_studio.request import (
 )
 from quill.ui.dialog_contract import apply_listbox_activation
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 
 # (label, engine_id) pairs, mirroring the Speech Hub's engine list.
 EngineOptions = list[tuple[str, str]]
@@ -208,7 +208,7 @@ class DocSourcePage(StudioPage):
         include = self.include.GetValue().strip()
         exclude = self.exclude.GetValue().strip()
         recursive = self.recursive.GetValue()
-        max_bytes = int(self.max_mb.GetValue()) * 1024 * 1024
+        max_bytes = int(spin_value(self.max_mb)) * 1024 * 1024
         self._count_label.SetLabel(_("Counting..."))
 
         def work() -> None:
@@ -255,7 +255,7 @@ class DocSourcePage(StudioPage):
         req.extensions = self.selected_extensions()
         req.include_glob = self.include.GetValue().strip()
         req.exclude_glob = self.exclude.GetValue().strip()
-        req.max_file_bytes = int(self.max_mb.GetValue()) * 1024 * 1024
+        req.max_file_bytes = int(spin_value(self.max_mb)) * 1024 * 1024
 
     def is_valid(self) -> tuple[bool, str]:
         text = self.source.GetValue().strip()
@@ -712,8 +712,8 @@ class VoicesPage(StudioPage):
     def collect(self, req: BatchSpeechRequest) -> None:
         req.engine = self.current_engine_id()
         req.voice = self.current_voice_id()
-        req.rate = int(self.rate.GetValue())
-        req.speed = float(self.speed.GetValue())
+        req.rate = int(spin_value(self.rate))
+        req.speed = float(spin_value(self.speed))
         req.round_robin_voices = tuple(vid for vid, _lbl in self._rr_voices)
         req.casting_rules = tuple((p, v) for p, v, _lbl in self._cast_rules)
         req.translation_targets = tuple((c, e, v) for c, e, v, _ in self._tr_targets)

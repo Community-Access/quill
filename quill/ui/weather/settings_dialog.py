@@ -17,6 +17,7 @@ from quill.core.weather.settings import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 
 _SEVERITY_LABELS = {
     "all": "Show all alerts",
@@ -337,7 +338,7 @@ class WeatherSettingsDialog:
         hear it before saving."""
         from quill.platform import alert_sound
 
-        alert_sound.play_alert_sound(self._alert_sound_value, self._alert_sound_repeat.GetValue())
+        alert_sound.play_alert_sound(self._alert_sound_value, spin_value(self._alert_sound_repeat))
         self._announce("Playing the alert sound.")
 
     def show(self) -> bool:
@@ -364,13 +365,13 @@ class WeatherSettingsDialog:
         s = self._settings
         s.temperature_unit = TEMPERATURE_UNITS[self._temp.GetSelection()]
         s.wind_unit = WIND_UNITS[self._wind.GetSelection()]
-        s.forecast_period_count = self._periods.GetValue()
-        s.daily_outlook_days = self._daily_days.GetValue()
-        s.hourly_hours = self._hourly_hours.GetValue()
+        s.forecast_period_count = spin_value(self._periods)
+        s.daily_outlook_days = spin_value(self._daily_days)
+        s.hourly_hours = spin_value(self._hourly_hours)
         for attr, check in self._detail_checks.items():
             setattr(s, attr, check.GetValue())
         s.alert_severity_floor = SEVERITY_FLOOR[self._severity.GetSelection()]
-        s.refresh_minutes = self._refresh.GetValue()
+        s.refresh_minutes = spin_value(self._refresh)
         s.show_detailed_forecast = self._detailed.GetValue()
         s.announce_alert_count_on_open = self._announce_open.GetValue()
         s.refresh_on_open = self._refresh_open.GetValue()
@@ -384,7 +385,7 @@ class WeatherSettingsDialog:
         ]
         s.alert_sound_enabled = self._alert_sound.GetValue()
         s.alert_sound_path = self._alert_sound_value
-        s.alert_sound_repeat = self._alert_sound_repeat.GetValue()
+        s.alert_sound_repeat = spin_value(self._alert_sound_repeat)
         settings_mod.save_settings(self._data_dir, s)
         self._saved = True
         self._announce("Weather settings saved.")

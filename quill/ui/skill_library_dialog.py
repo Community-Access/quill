@@ -2,8 +2,7 @@
 
 Entry point: open_skill_library() in MainFrame (Tools > AI Assistant > Skill Library...).
 A11Y-4 hardened: apply_modal_ids, public show()/close().
-Status changes are announced via announce_cb (finding #43).
-"""
+Status changes are announced via announce_cb (finding #43)."""
 
 from __future__ import annotations
 
@@ -29,6 +28,7 @@ from quill.ui.dialog_contract import (
     show_message_box,
 )
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 from quill.ui.spoken_name import set_spoken_name
 
 if TYPE_CHECKING:
@@ -504,11 +504,11 @@ class _SkillParameterDialog:
             if isinstance(ctrl, wx.Choice):
                 val = ctrl.GetString(ctrl.GetSelection())
             elif isinstance(ctrl, wx.CheckBox):
-                val = "true" if ctrl.GetValue() else "false"
+                val = "true" if spin_value(ctrl) else "false"
             elif isinstance(ctrl, wx.SpinCtrl):
-                val = str(ctrl.GetValue())
+                val = str(spin_value(ctrl))
             else:
-                val = ctrl.GetValue()  # type: ignore[attr-defined]
+                val = spin_value(ctrl)  # type: ignore[attr-defined]
             result[f"parameters.{param.name}"] = val
         return result
 

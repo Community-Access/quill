@@ -35,6 +35,7 @@ from quill.core.audio_enhance import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.slider_keys import bind_up_means_more
+from quill.ui.spin_value import spin_value
 
 _PRESET_NAMES = ("Custom", *EQ_PRESETS)
 
@@ -489,7 +490,7 @@ class SoundEnhanceDialog:
                 else "off"
             ),
             optilab_input_db=(
-                float(self._optilab_input_ctrl.GetValue()) if self._optilab_input_ctrl else 0.0
+                float(spin_value(self._optilab_input_ctrl)) if self._optilab_input_ctrl else 0.0
             ),
             optilab_auto_adapt=(
                 int(self._optilab_adapt_slider.GetValue()) if self._optilab_adapt_slider else 0

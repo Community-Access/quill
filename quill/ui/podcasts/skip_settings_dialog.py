@@ -14,6 +14,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.spin_value import spin_value
 
 
 class SkipSettingsDialog:
@@ -125,9 +126,9 @@ class SkipSettingsDialog:
 
     def _on_save(self, _event: object) -> None:
         self._result = (
-            self._forward_ctrl.GetValue(),
-            self._back_ctrl.GetValue(),
-            self._intro_ctrl.GetValue() if self._intro_ctrl is not None else 0,
-            self._outro_ctrl.GetValue() if self._outro_ctrl is not None else 0,
+            spin_value(self._forward_ctrl),
+            spin_value(self._back_ctrl),
+            spin_value(self._intro_ctrl) if self._intro_ctrl is not None else 0,
+            spin_value(self._outro_ctrl) if self._outro_ctrl is not None else 0,
         )
         self.dialog.EndModal(self._wx.ID_OK)

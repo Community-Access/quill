@@ -8,6 +8,7 @@ from pathlib import Path
 from quill.core.ai.transcription import SUPPORTED_AUDIO_EXTENSIONS, SUPPORTED_LANGUAGES
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 
 
 class AITranscribeDialog:
@@ -186,7 +187,7 @@ class AITranscribeDialog:
         lang_code = SUPPORTED_LANGUAGES.get(lang_name, "")
         diarize = self._diarize_cb.GetValue()
         translate = self._translate_cb.GetValue()
-        max_speakers = int(self._max_speakers.GetValue()) if diarize else 0
+        max_speakers = int(spin_value(self._max_speakers)) if diarize else 0
         self.dialog.EndModal(wx.ID_OK)
         self._on_transcribe(path, lang_code or None, translate, diarize, max_speakers)
 

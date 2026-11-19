@@ -28,6 +28,7 @@ from quill.ui.podcasts.podcast_settings_choices import (
     _RETENTION_LABELS,
     _RETENTION_MODES,
 )
+from quill.ui.spin_value import spin_value
 
 
 class PodcastSettingsDialog:
@@ -509,8 +510,8 @@ class PodcastSettingsDialog:
             self._settings,
             playback_mode=_PLAYBACK_MODES[playback_index] if playback_index >= 0 else "download",
             retention=_RETENTION_MODES[retention_index] if retention_index >= 0 else "keep_all",
-            retention_count=self._retention_count_ctrl.GetValue(),
-            speed=float(self._speed_ctrl.GetValue()),
+            retention_count=spin_value(self._retention_count_ctrl),
+            speed=float(spin_value(self._speed_ctrl)),
             download_root=self._download_root_ctrl.GetValue().strip(),
             delete_files_on_remove=_DELETE_POLICIES[delete_index] if delete_index >= 0 else "ask",
             always_sync_full_catalog=always_sync,
@@ -518,18 +519,18 @@ class PodcastSettingsDialog:
             auto_download_queued=self._auto_download_queued_check.GetValue(),
             auto_download_inbox=self._auto_download_inbox_check.GetValue(),
             inbox_mode="exclude" if self._inbox_mode.GetSelection() == 1 else "include",
-            inbox_max_episodes=self._inbox_max_ctrl.GetValue(),
+            inbox_max_episodes=spin_value(self._inbox_max_ctrl),
             **self._chapters.values(),
             history_retention_days=_HISTORY_VALUES[max(0, self._history_choice.GetSelection())],
             download_on_metered=self._metered_check.GetValue(),
             download_notify=self._notify_check.GetValue(),
             volume_boost=volume_boost.from_index(self._boost_choice.GetSelection()),
             stats_streaks_enabled=self._streaks_check.GetValue(),
-            download_retention_days=self._retention_days_ctrl.GetValue(),
-            storage_cap_mb=self._storage_cap_ctrl.GetValue(),
+            download_retention_days=spin_value(self._retention_days_ctrl),
+            storage_cap_mb=spin_value(self._storage_cap_ctrl),
             delete_after_play=self._delete_played_check.GetValue(),
             playback_cache=self._playback_cache_ctrl.GetValue(),
-            playback_cache_cap_mb=self._playback_cache_cap_ctrl.GetValue(),
+            playback_cache_cap_mb=spin_value(self._playback_cache_cap_ctrl),
             continue_after_queue=self._continue_queue_check.GetValue(),
             prebuffer_next=self._prebuffer_check.GetValue(),
             continue_after_group=self._continue_group_check.GetValue(),
@@ -538,7 +539,7 @@ class PodcastSettingsDialog:
             auto_trim_silence=self._auto_trim_check.GetValue(),
             normalize_loudness=self._normalize_check.GetValue(),
             reconnect_enabled=self._reconnect_check.GetValue(),
-            reconnect_max_attempts=self._reconnect_attempts_ctrl.GetValue(),
-            reconnect_wait_seconds=self._reconnect_wait_ctrl.GetValue(),
+            reconnect_max_attempts=spin_value(self._reconnect_attempts_ctrl),
+            reconnect_wait_seconds=spin_value(self._reconnect_wait_ctrl),
         )
         self.dialog.EndModal(self._wx.ID_OK)

@@ -24,6 +24,7 @@ from quill.core.lineups.rules import Rule, evaluate, new_rule
 from quill.ui.dpi import dip_size
 from quill.ui.lineups import dialogs
 from quill.ui.lineups.rule_edit_dialog import RuleEditor
+from quill.ui.spin_value import spin_value
 
 TITLE = "Rules"
 
@@ -198,7 +199,7 @@ class RulesDialog:
     def _settings(self) -> dict[str, object]:
         return {
             "new_items": NEW_ITEMS_PLACES[max(0, self._new_items.GetSelection())],
-            "budget_minutes": int(self._budget.GetValue()),
+            "budget_minutes": int(spin_value(self._budget)),
             "skip_live": bool(self._skip_live.GetValue()),
         }
 

@@ -15,6 +15,7 @@ from quill.core.radio.recording import (
 )
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 
 _BITRATE_CHOICES = (96, 128, 160, 192, 256, 320)
 
@@ -262,12 +263,12 @@ class RecordingSettingsDialog:
             destination_root=self._destination_ctrl.GetValue().strip(),
             temp_dir=self._temp_dir_ctrl.GetValue().strip(),
             filename_pattern=pattern,
-            max_duration_minutes=self._max_duration_ctrl.GetValue(),
+            max_duration_minutes=spin_value(self._max_duration_ctrl),
             reconnect_enabled=self._reconnect_check.GetValue(),
-            reconnect_max_attempts=self._reconnect_attempts_ctrl.GetValue(),
-            reconnect_wait_seconds=self._reconnect_wait_ctrl.GetValue(),
+            reconnect_max_attempts=spin_value(self._reconnect_attempts_ctrl),
+            reconnect_wait_seconds=spin_value(self._reconnect_wait_ctrl),
             apply_sound_enhancements=self._apply_enhancements_check.GetValue(),
-            max_concurrent_recordings=self._max_concurrent_ctrl.GetValue(),
+            max_concurrent_recordings=spin_value(self._max_concurrent_ctrl),
             split_at_song_changes=self._split_songs_check.GetValue(),
             # Not on this dialog, so carried over rather than reset on save.
             exact_optilab=self._exact_optilab,

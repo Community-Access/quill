@@ -34,6 +34,7 @@ import wx
 
 from quill.core.spelling.voicing import LETTER_STYLES, SpellAloudPolicy, spell_out
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
+from quill.ui.spin_value import spin_value
 from quill.ui.spoken_name import set_spoken_name
 
 __all__ = ["edit_spelling_voice"]
@@ -274,15 +275,15 @@ def edit_spelling_voice(
         before = _snapshot(settings)
         settings.spelling_alert_sound = bool(sound.GetValue())
         settings.spelling_alert_speech = bool(speech.GetValue())
-        settings.spelling_alert_repeat_ms = int(repeat.GetValue())
+        settings.spelling_alert_repeat_ms = int(spin_value(repeat))
         settings.spell_aloud_enabled = bool(enabled.GetValue())
         settings.spell_aloud_style = values[max(0, style_choice.GetSelection())]
         settings.spell_aloud_capitals = bool(capitals.GetValue())
-        settings.spell_aloud_delay_ms = int(review_delay.GetValue())
+        settings.spell_aloud_delay_ms = int(spin_value(review_delay))
         settings.spell_aloud_on_navigation = bool(navigation.GetValue())
-        settings.spell_aloud_navigation_delay_ms = int(nav_delay.GetValue())
+        settings.spell_aloud_navigation_delay_ms = int(spin_value(nav_delay))
         settings.spell_aloud_suggestions = bool(suggestions.GetValue())
-        settings.spell_aloud_suggestion_delay_ms = int(sug_delay.GetValue())
+        settings.spell_aloud_suggestion_delay_ms = int(spin_value(sug_delay))
         settings.spell_aloud_first_suggestion = bool(first.GetValue())
         settings.normalized()
         return _snapshot(settings) != before

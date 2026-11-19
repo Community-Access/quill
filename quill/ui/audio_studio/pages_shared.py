@@ -16,6 +16,7 @@ from quill.ui.audio_studio.request import (
 )
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 from quill.ui.spoken_name import set_spoken_name
 
 
@@ -429,7 +430,7 @@ class BookPage(StudioPage):
         req.book_acx_normalize = self.acx.GetValue()
         req.book_fade_in_ms = int(self.fade_in.GetValue())
         req.book_fade_out_ms = int(self.fade_out.GetValue())
-        req.book_tempo = float(self.tempo.GetValue())
+        req.book_tempo = float(spin_value(self.tempo))
         if not self._forced:
             req.book_review_chapters = self.review.GetValue()
         # When forced (combine-audio journey) the source page already decided:

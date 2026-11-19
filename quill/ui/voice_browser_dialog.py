@@ -27,6 +27,7 @@ from quill.ui.dialog_contract import (
     ok_cancel_platform_order,
 )
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -565,9 +566,9 @@ class VoiceBrowserDialog:
         adjustments. Only the current engine's rate is written; Kokoro uses its
         own speed spin; Piper exposes no rate control so nothing is written."""
         s = self._settings
-        s.read_aloud_volume = self._vol_spin.GetValue()
-        voice_browser_settings.store_speed(eng, s, self._kok_spin.GetValue())
-        rate = self._rate_spin.GetValue()
+        s.read_aloud_volume = spin_value(self._vol_spin)
+        voice_browser_settings.store_speed(eng, s, spin_value(self._kok_spin))
+        rate = spin_value(self._rate_spin)
         if eng == "sapi5":
             s.read_aloud_rate = rate
         elif eng == "dectalk":
@@ -660,10 +661,10 @@ class VoiceBrowserDialog:
         return voice_browser_settings.collect(
             eng,
             self._settings,
-            rate=self._rate_spin.GetValue(),
-            volume=self._vol_spin.GetValue(),
-            pitch=self._pitch_spin.GetValue(),
-            speed=self._kok_spin.GetValue(),
+            rate=spin_value(self._rate_spin),
+            volume=spin_value(self._vol_spin),
+            pitch=spin_value(self._pitch_spin),
+            speed=spin_value(self._kok_spin),
         )
 
     # ------------------------------------------------------------------

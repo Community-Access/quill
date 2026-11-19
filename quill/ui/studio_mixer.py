@@ -29,6 +29,7 @@ import wx
 
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip, dip_size
+from quill.ui.spin_value import spin_value
 from quill.ui.sync_guard import SyncGuard
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
@@ -315,7 +316,7 @@ class StudioMixerDialog(wx.Dialog):
         if step is None:
             event.Skip()
             return
-        self.volume.SetValue(min(100, max(0, self.volume.GetValue() + step)))
+        self.volume.SetValue(min(100, max(0, spin_value(self.volume) + step)))
         self._volume_changed(None)
 
     def _toggle_mute(self) -> None:
@@ -339,7 +340,7 @@ class StudioMixerDialog(wx.Dialog):
         row = self._row()
         if row < 0 or self._showing:
             return
-        level = self.volume.GetValue() / 100
+        level = spin_value(self.volume) / 100
         try:
             set_process_volume(self.sessions[row].process_id, level)
         except AudioSessionError as error:
@@ -411,11 +412,11 @@ class StudioMixerDialog(wx.Dialog):
         if row < 0 or self._showing:
             return
         try:
-            set_input_level(self.inputs[row].device_id, self.input_level.GetValue() / 100)
+            set_input_level(self.inputs[row].device_id, spin_value(self.input_level) / 100)
         except AudioRoutingError as error:
             self._announce(str(error))
             return
-        self.recording.SetItem(row, 2, f"{self.input_level.GetValue()} percent")
+        self.recording.SetItem(row, 2, f"{spin_value(self.input_level)} percent")
 
     def _input_mute_changed(self, _event: wx.Event) -> None:
         from quill.platform.windows.audio_routing import AudioRoutingError, set_input_mute
@@ -431,5 +432,5 @@ class StudioMixerDialog(wx.Dialog):
         self.recording.SetItem(
             row,
             2,
-            "Muted" if self.input_mute.GetValue() else f"{self.input_level.GetValue()} percent",
+            "Muted" if self.input_mute.GetValue() else f"{spin_value(self.input_level)} percent",
         )
