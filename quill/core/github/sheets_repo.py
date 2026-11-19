@@ -28,6 +28,7 @@ from quill.core.github.sheet_rows import (
     rows_of,
     team_row,
 )
+from quill.core.github.sheets_you import profile_pin_field, profile_pin_read
 from quill.core.workbench.properties import FieldKind, SheetSpec, Value
 
 __all__ = ["REPOSITORY", "VIEWER_REPO_QUERY", "WATCH_LEVELS", "repo_variables"]
@@ -250,6 +251,7 @@ _YOU = page(
         "discussions or security alerts is set on GitHub's page; GitHub has no API for it. "
         "Open on GitHub, Shift+Enter, goes there.",
     ),
+    profile_pin_field(),
     ro("your_access", "Your access", help="Your role, as GitHub reports it."),
 )
 _FORK = page(
@@ -437,6 +439,7 @@ REPOSITORY = SheetDef(
     (
         Read(_REPO, _repo),
         Read(graphql=VIEWER_REPO_QUERY, variables=repo_variables, extract=_viewer, optional=True),
+        profile_pin_read("repo"),
         Read(
             _REPO + "/subscription",
             _watch,

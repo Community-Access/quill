@@ -1,21 +1,18 @@
 """Properties, batch edits and undo in the WordPress Workbench (PRD 8, 9, W2 and W3).
 
-A mixin on :class:`quill.ui.wordpress_workbench_window.WordPressWorkbenchProvider`.
-
-- **Alt+Enter on one row** reads the object again (``context=edit``), with its
-  term and author names, its registered meta and, without a written sheet, its
-  route's schema, then opens the shared sheet
-  (:class:`quill.ui.workbench_sheet_editor.WorkbenchSheetEditor`). A field the
-  person's role or access cannot change is read only, with why as its F1 help.
-- **Saving** is :func:`~quill.core.wordpress.field_plugins_cmb2.save_with_cmb2`: the
-  conflict check, the write and the verify. A conflict asks Use Mine or Keep Theirs.
-- **Alt+Enter on several rows** is the batch sheet (section 9): only the
-  fields they share, Mixed where they differ, categories and tags added or
-  removed; a preview names every item, and the change goes through
-  ``batch/v1`` with a result per item and Try Again for any that failed.
-- **Alt+Enter on a site** (or Alt+Shift+Enter in it) is the Site sheet (13a.5); on a
-  Redirect Options row, Redirection's options (their own load and save).
-- **Ctrl+Z** undoes the newest change from Change History, off the UI thread.
+A mixin on :class:`quill.ui.wordpress_workbench_window.WordPressWorkbenchProvider`:
+- **Alt+Enter on one row** reads the object again (``context=edit``), with its term and
+  author names, registered meta and, without a written sheet, its route's schema, then
+  opens the shared :class:`quill.ui.workbench_sheet_editor.WorkbenchSheetEditor`. A field
+  the person cannot change is read only, with why as its F1 help. A post on a site with
+  Yoast SEO, or an SEO row, has an SEO page (:mod:`~quill.core.wordpress.workbench_seo_fields`).
+- **Saving** is :func:`~quill.core.wordpress.field_plugins_cmb2.save_with_cmb2` (conflict check,
+  write, verify); a conflict asks Use Mine or Keep Theirs.
+- **Alt+Enter on several rows** is the batch sheet (section 9): only the fields they share,
+  Mixed where they differ, categories and tags added or removed; a preview names every
+  item, and ``batch/v1`` sends it, with a result per item and Try Again for any that failed.
+- **Alt+Enter on a site** (or Alt+Shift+Enter in it) is the Site sheet (13a.5); on a Redirect
+  Options row, Redirection's options. **Ctrl+Z** undoes the newest change, off the UI thread.
 """
 
 from __future__ import annotations
@@ -50,6 +47,7 @@ from quill.core.wordpress.workbench_forms import form_plugins
 from quill.core.wordpress.workbench_moderation import version_of
 from quill.core.wordpress.workbench_people_bulk import user_post_count
 from quill.core.wordpress.workbench_rows import WbRow
+from quill.core.wordpress.workbench_seo_fields import with_seo_page
 from quill.core.wordpress.workbench_sheets import (
     SITE_SHEET,
     sheet_for,
@@ -208,6 +206,7 @@ class WorkbenchSheetCommands:
             if "featured_media" in fresh:  # the picture by title, chosen from the library
                 sheet = wpp.with_featured(sheet)
                 values["featured_media"] = wpp.featured_value(api, fresh.get("featured_media"))
+            sheet = with_seo_page(ctx, sheet, values, fresh, meta, names.get("categories", {}))
         if acf:  # its own page; saved as {"acf": ...} and checked like meta
             sheet = with_acf_page(sheet, acf)
             values.update(acf_values(fresh))
@@ -231,6 +230,9 @@ class WorkbenchSheetCommands:
         return sheet, values, fresh, names, meta
 
     def _one_sheet(self, row: WbRow) -> None:
+        if row.kind == "seo_item":  # the SEO node's row is a post or page: its own sheet
+            row = replace(row, kind="item", route=str(row.raw.get("route", "")))
+
         def shown(
             loaded: tuple[SheetSpec, dict[str, Any], dict[str, Any], Any, dict[str, Any]],
         ) -> None:

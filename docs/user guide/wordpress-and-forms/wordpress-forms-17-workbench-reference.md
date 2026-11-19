@@ -72,7 +72,7 @@ Spam, Form Responses, Membership Orders and Watches.
 | Content Audit | Orphaned, stale and duplicated content, reading level and headings | 7 |
 | Privacy Requests | WordPress's export and erase screens | 8 |
 | Redirects | The Redirection plugin's redirects, the 404 Log, Redirect Groups and Redirect Options | 10 |
-| Search and Upkeep | Search visibility, sitemap, missed schedules, certificate, who is editing | 8 |
+| Search and Upkeep | Search visibility, sitemap, missed schedules, other scheduled tasks, certificate, who is editing | 8 |
 | Administration Areas | Every part of running a site, and where QUILL handles it | 8 |
 | Content Model | Every content type, taxonomy and field group, and who added it | 8 |
 | More from This Site | The routes the site's plugins offer, by plugin | 8 |
@@ -185,7 +185,7 @@ last, and is left out below.
   Tags....
 - **Venue or organizer:** Read in Full, Edit, New, Move to Trash.
 - **SEO item:** Search Appearance, Edit SEO..., Open on the Site, Bulk SEO
-  Editor....
+  Editor..., Open in wp-admin, Properties... (with its SEO page).
 - **Membership level, order, subscription or discount code:** Read in Full,
   Look Up a Discount Code..., New Discount Code..., Edit Membership Level...,
   New Membership Level..., Members of This Level....

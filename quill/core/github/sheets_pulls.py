@@ -47,6 +47,7 @@ from quill.core.github.sheets_items import (
     _viewer,
     item_variables,
 )
+from quill.core.github.sheets_you import pull_request_pin_field
 from quill.core.workbench.properties import SheetSpec, Value
 
 __all__ = ["PULL_REQUEST"]
@@ -109,7 +110,7 @@ PULL_REQUEST = SheetDef(
                 ro("created", "Created", _K.DATE),
                 ro("url", "Address", _K.LINK, "Ctrl+C copies it."),
             ),
-            _YOU,
+            page("you", "You", *_YOU.fields, pull_request_pin_field()),
             _ORGANIZE,
             _PROJECTS_PAGE,
             page(

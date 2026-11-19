@@ -1,14 +1,14 @@
 # GitHub Workbench requirement audit, November 2026
 
-Checked 2026-11-18 against main, updated the same day for the follow-up pull request. This is the record of the complete.md 1.3 requirement audit: every id in Part E of [the GitHub Workbench PRD](<../Product Requirement Documents and Specifications/github-workbench-prd.md>), with the code and the test behind each verdict.
+Checked 2026-11-18 against main, updated the same day for the follow-up pull request, and on 2026-11-19 for GH-R-046 (the You page). This is the record of the complete.md 1.3 requirement audit: every id in Part E of [the GitHub Workbench PRD](<../Product Requirement Documents and Specifications/github-workbench-prd.md>), with the code and the test behind each verdict.
 
 ## Summary
 
-Of the 100 live requirements, 81 are met, 12 are partly met and 7 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 82 are met, 11 are partly met and 7 are not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
-| Must | 70 | 5 | 0 | 75 |
+| Must | 71 | 4 | 0 | 75 |
 | Should | 11 | 7 | 5 | 23 |
 | May | 0 | 0 | 2 | 2 |
 
@@ -30,7 +30,6 @@ Of the 100 live requirements, 81 are met, 12 are partly met and 7 are not met. G
 
 | Id | Strength | Requirement | Evidence and what remains |
 | --- | --- | --- | --- |
-| GH-R-046 | Must | Every relationship (star, watch level, follow, subscribe, react, block, sponsor, pin) on a You page and in... | Star, watch level, follow, subscribe, react, sponsor, pin and block (`resource_specs_user`) each exist in their own places; no single You page holding them, and batch only where the multi-row sheet has the field. Needs a closer look. |
 | GH-R-119 | Must | One source for every help surface (D19), and the measures of D20 | One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the generated reference (GATE-GITHUB-HELP, `build_help_reference`); D20's measures (timed find-the-answer sessions) not done. |
 | GH-R-150 | Must | Across Repositories has a place for every kind in the 22.11 table, a row per name with its variants and... | Labels, Milestones, Topics, Rules and Branch Protection by name, and the Fleet; every other kind is a decided cell with a reason in `across_scope_matrix.py` (`test_no_cell_is_blank`, `test_the_decided_cells`), not yet a place. |
 | GH-R-151 | Must | Every operation a kind allows in one repository is offered across a scope, with the preview and a result... | Preview and a result per repository for labels, milestones, topics, rulesets (`test_labels_by_name_make_the_same_with_a_preview_and_a_result_each`, `test_a_change_previews_permission_and_conflict_then_reports_each_repository`); environments, secrets, variables, webhooks, keys, autolinks remain. |
@@ -98,7 +97,7 @@ Of the 100 live requirements, 81 are met, 12 are partly met and 7 are not met. G
 | GH-R-043 | Must | Met | Batches preview, run paced for the rate limit, and report a result per item with retry | `batch.py` (preview, 1 s pace, result per item), `github_workbench_results.py` Retry Failed (F8); `test_a_batch_previews_skips_what_is_already_so_and_reports_each_item` |
 | GH-R-044 | Must | Met | Undo GitHub Change reverses any reversible change, and an irreversible one says so before it happens | `test_undo_is_the_inverse_and_says_what_cannot_be_undone`, `test_ctrl_z_in_the_list_undoes_the_last_github_change` |
 | GH-R-045 | Must | Met | Projects (version 2): every field type, items and status updates are readable and editable; views and workflows readable and read only | `sheets_projects.py`: every field type incl. iteration, items, status updates editable; views and workflows read only because GitHub has no API to change them, which the PRD (16.6 and GH-R-045) now says. |
-| GH-R-046 | Must | Partly | Every relationship (star, watch level, follow, subscribe, react, block, sponsor, pin) on a You page and in... | Star, watch level, follow, subscribe, react, sponsor, pin and block (`resource_specs_user`) each exist in their own places; no single You page holding them, and batch only where the multi-row sheet has the field. Needs a closer look. |
+| GH-R-046 | Must | Met | Every relationship (star, watch level, follow, subscribe, react, block, sponsor, pin) on a You page and in... | A You page right after General on every sheet with a relationship (`sheets_you.py` `YOU_PAGES`): repository (Starred, Watch level), gist (Starred), person (Following, Blocked), organization (Following, public membership), issue (Subscribed, reactions, Pinned), pull request and discussion (Subscribed, reactions; Upvoted), release (reactions), notification (Subscribed). Writes are the menu rows' own calls (Follow Organization and Upvote share `sheet_fields.input_mutation`), saved through the checked Properties path, so Read Only and Safe Mode lock them. Sponsoring, pins to your profile, custom watching and a pull request's or discussion's pin read only, each saying why. Batch: the multi-row sheet shows Mixed and changes each row. `tests/unit/core/workbench/test_github_you_page.py` (every kind, a write per kind, batch, read-only reasons, levels). Subscribe and Block have no menu row of their own; the You page is their row. |
 
 ### E6. Filtering
 
