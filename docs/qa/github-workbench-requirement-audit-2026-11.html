@@ -245,13 +245,14 @@
 <h1 id="github-workbench-requirement-audit-november-2026">GitHub
 Workbench requirement audit, November 2026</h1>
 <p>Checked 2026-11-18 against main, updated the same day for the
-follow-up pull request. This is the record of the complete.md 1.3
-requirement audit: every id in Part E of <a
+follow-up pull request, and on 2026-11-19 for GH-R-086 and GH-R-157.
+This is the record of the complete.md 1.3 requirement audit: every id in
+Part E of <a
 href="../Product Requirement Documents and Specifications/github-workbench-prd.md">the
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 81 are met, 12 are partly met and 7 are
+<p>Of the 100 live requirements, 82 are met, 12 are partly met and 6 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -280,9 +281,9 @@ not met. GH-R-042 is withdrawn.</p>
 </tr>
 <tr>
 <td>May</td>
+<td>1</td>
 <td>0</td>
-<td>0</td>
-<td>2</td>
+<td>1</td>
 <td>2</td>
 </tr>
 </tbody>
@@ -334,13 +335,6 @@ tour (D15). The guide’s EPUB siblings exist.</td>
 <td>QUILLBert and QUILLBee tips at the right moment, with an option for
 plain help</td>
 <td>No QUILLBert or QUILLBee tips in the GitHub Workbench (D16).</td>
-</tr>
-<tr>
-<td>GH-R-086</td>
-<td>May</td>
-<td>Plain-language batches through the Command Key work</td>
-<td>(May) no plain-language batches for GitHub; WordPress has its
-own.</td>
 </tr>
 <tr>
 <td>GH-R-118</td>
@@ -408,7 +402,14 @@ environments, secrets, variables, webhooks, keys, autolinks remain.</td>
 <td>Must</td>
 <td>Repository and item-property checklists announce a Space toggle
 once, save from Enter, return focus…</td>
-<td><code>test_the_checklist_checks_adds_once_and_returns_the_checked</code>;
+<td><code>test_space_changes_the_row_once_and_its_text_says_the_new_state</code>,
+<code>test_no_key_handler_can_toggle_a_second_time</code>
+(<code>tests/unit/ui/test_workbench_check_group.py</code>),
+<code>test_repository_features_say_their_state_once_in_the_row</code>,
+<code>test_enter_on_a_checklist_row_saves_and_ok_is_the_default</code>,
+<code>test_focus_comes_back_when_the_save_took_it_away</code>
+(<code>tests/unit/ui/test_github_workbench_properties.py</code>),
+<code>test_the_checklist_checks_adds_once_and_returns_the_checked</code>;
 the JAWS, NVDA and VoiceOver checks it names are live checks not yet
 recorded.</td>
 </tr>
@@ -1170,10 +1171,17 @@ reference, C9, is the missing part, see 036.)</td>
 <tr>
 <td>GH-R-086</td>
 <td>May</td>
-<td>Not met</td>
+<td>Met</td>
 <td>Plain-language batches through the Command Key work</td>
-<td>(May) no plain-language batches for GitHub; WordPress has its
-own.</td>
+<td>Tools &gt; Plain-Language Batch… (Ctrl+Shift+S): a fixed grammar
+without AI (<code>quill/core/github/plain_batch.py</code>), the age
+shared with WordPress (<code>quill/core/workbench/plain_age.py</code>),
+the targets resolved by GitHub’s search, an editable checklist, then the
+several-items batch;
+<code>tests/unit/core/github_workbench/test_github_plain_batch.py</code>,
+<code>tests/unit/ui/test_github_workbench_plain_batch.py</code>. Command
+Key itself runs in the editor, not the Workbench window, so the sentence
+is typed in the Workbench, as WordPress’s is.</td>
 </tr>
 <tr>
 <td>GH-R-087</td>
@@ -1724,7 +1732,14 @@ Properties retain their stable IDs,…</td>
 <td>Partly</td>
 <td>Repository and item-property checklists announce a Space toggle
 once, save from Enter, return focus…</td>
-<td><code>test_the_checklist_checks_adds_once_and_returns_the_checked</code>;
+<td><code>test_space_changes_the_row_once_and_its_text_says_the_new_state</code>,
+<code>test_no_key_handler_can_toggle_a_second_time</code>
+(<code>tests/unit/ui/test_workbench_check_group.py</code>),
+<code>test_repository_features_say_their_state_once_in_the_row</code>,
+<code>test_enter_on_a_checklist_row_saves_and_ok_is_the_default</code>,
+<code>test_focus_comes_back_when_the_save_took_it_away</code>
+(<code>tests/unit/ui/test_github_workbench_properties.py</code>),
+<code>test_the_checklist_checks_adds_once_and_returns_the_checked</code>;
 the JAWS, NVDA and VoiceOver checks it names are live checks not yet
 recorded.</td>
 </tr>

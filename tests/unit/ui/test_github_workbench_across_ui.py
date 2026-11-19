@@ -359,10 +359,10 @@ def test_the_checklist_checks_adds_once_and_returns_the_checked(wx_session_app) 
         dialog.add_box.ChangeValue("not a repo")
         assert dialog.add() == "" and len(dialog.rows()) == 3
         assert dialog.scroller.GetHelpText() and dialog.add_box.GetHelpText()
-        # A11Y-SR-1: one real check box per repository, named owner/name.
+        # A11Y-SR-1: one real check box per repository, named owner/name and its state.
         boxes = dialog.group.boxes
         assert all(isinstance(box, wx.CheckBox) for box in boxes.values())
-        assert [box.GetLabel() for box in boxes.values()] == ["o/one", "o/two", "o/three"]
+        assert dialog.group.labels() == ["o/one, on", "o/two, on", "o/three, on"]
         assert boxes["o/three"].GetValue() is True
     finally:
         dialog.Destroy()
