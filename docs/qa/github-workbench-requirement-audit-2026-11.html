@@ -251,7 +251,7 @@ href="../Product Requirement Documents and Specifications/github-workbench-prd.m
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 77 are met, 15 are partly met and 8 are
+<p>Of the 100 live requirements, 78 are met, 14 are partly met and 8 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -266,8 +266,8 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>66</td>
-<td>8</td>
+<td>67</td>
+<td>7</td>
 <td>1</td>
 <td>75</td>
 </tr>
@@ -372,15 +372,6 @@ catalogue</td>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>GH-R-010</td>
-<td>Must</td>
-<td>The tree is a native <code>wx.TreeCtrl</code>, at most four levels
-deep, loading lazily, with counts after names that…</td>
-<td>Native wx.TreeCtrl (<code>workbench_frame.py:148</code>),
-<code>test_no_node_is_more_than_four_levels_deep</code>; rows load on
-selection. No counts after node names anywhere.</td>
-</tr>
 <tr>
 <td>GH-R-045</td>
 <td>Must</td>
@@ -615,12 +606,16 @@ Enter);
 <tr>
 <td>GH-R-010</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>The tree is a native <code>wx.TreeCtrl</code>, at most four levels
 deep, loading lazily, with counts after names that…</td>
-<td>Native wx.TreeCtrl (<code>workbench_frame.py:148</code>),
-<code>test_no_node_is_more_than_four_levels_deep</code>; rows load on
-selection. No counts after node names anywhere.</td>
+<td>Native wx.TreeCtrl (<code>workbench_frame.py</code>),
+<code>test_no_node_is_more_than_four_levels_deep</code>, rows load on
+selection; counts after node names (“Issues (12)”, “30 or more”),
+written as the node is left so never announced, none on searches
+(<code>workbench_frame_groups.py</code>
+<code>counted_label/write_count</code>;
+<code>test_github_workbench_tree_counts.py</code>).</td>
 </tr>
 <tr>
 <td>GH-R-011</td>
