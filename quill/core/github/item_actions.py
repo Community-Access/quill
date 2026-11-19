@@ -171,6 +171,14 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
             help="Whether it can merge, or each reason it cannot, for the commit it is at.",
         ),
         _a(
+            "merge_selected",
+            "Merge Selected...",
+            _W,
+            "push",
+            "Merge the selected pull requests one at a time, each checked on its own, "
+            "after a preview of which will merge and which will not.",
+        ),
+        _a(
             "auto_merge",
             "Auto-Merge...",
             _W,
@@ -283,17 +291,17 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a("release_notes", "Draft Release Notes...", help="Notes drafted from the changes."),
         _a("upload_asset", "Upload Asset...", _W, "push", "Add a file to the release."),
         _a("react_release", "React...", _O, "sign_in", "Add or remove a reaction."),
+        _a(
+            "release_evidence",
+            "Release Evidence...",
+            help="Its commit, the checks that passed, where it deployed, whether it is "
+            "immutable, and each file's attestations.",
+        ),
         _a("delete_release", "Delete Release...", _D, "push", "Delete it, and its tag if you say."),
         _COMPARE_PREVIOUS,
         _COMPARE_DEFAULT,
         _COPY_LINK,
         _OPEN_WEB,
-        _PROPERTIES,
-    ),
-    "release_asset": (
-        _default("download", "Download", "Download the file in your browser."),
-        _COPY_LINK,
-        _a("delete_asset", "Delete Asset...", _D, "push", "Remove the file from the release."),
         _PROPERTIES,
     ),
     "branch": (
@@ -442,13 +450,6 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a("pin_search", "Pin as Node", _O, "", "A node of its own under Saved Searches."),
         _a("unpin_search", "Unpin Node", _O, "", "Take its node away; the search stays."),
         _a("remove_search", "Remove Saved Search", _O, "", "Forget it on this device."),
-        _PROPERTIES,
-    ),
-    "deployment": (
-        _default("open", "Open", "Read it in the details pane."),
-        _a("delete_deployment", "Delete Deployment...", _D, "push", "Only an inactive one."),
-        _COPY_LINK,
-        _OPEN_WEB,
         _PROPERTIES,
     ),
     "result": (

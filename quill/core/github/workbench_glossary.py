@@ -41,6 +41,10 @@ GLOSSARY: dict[str, str] = {
         "Bringing a pull request's changes into the branch it targets. Item, "
         "Merge, Ctrl+Shift+Enter."
     ),
+    "Merge queue": (
+        "A line pull requests wait in to merge one after another, each tested with the ones "
+        "ahead. Merge Selected... adds a pull request to it when its branch requires one."
+    ),
     "Squash": "Merging a pull request as one single commit, instead of all of its commits.",
     "Rebase": (
         "Replaying commits on top of another branch, so the history reads as one straight line."
@@ -124,6 +128,18 @@ GLOSSARY: dict[str, str] = {
     "Check": "A test or other run that reports passing or failing on a commit.",
     "Deployment": "Code sent to an environment, such as a website.",
     "Environment": "A named place code is deployed to, with its own rules and secrets.",
+    "Attestation": (
+        "A signed record GitHub keeps of how a file was built. A release file's "
+        "Attestations... lists them by the file's digest."
+    ),
+    "Immutable release": (
+        "A published release whose tag and files can no longer change. Its sheet and "
+        "Release Evidence... say whether a release is one."
+    ),
+    "Release evidence": (
+        "What vouches for a release: its commit, the checks that passed, where it "
+        "deployed, and its files' attestations. Release Evidence... on a release."
+    ),
     "Secret": "A value, such as a password, that workflows use and GitHub never shows.",
     "Variable": "A value workflows use that is not secret.",
     "Branch protection": "Rules that decide who may change a branch and what a change needs.",

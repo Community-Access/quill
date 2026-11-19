@@ -129,13 +129,16 @@ class GitHubWorkbenchItemsMixin:
     def _merge_checked(self, repo: str, row: GitHubItem, ready: Any) -> None:
         from quill.core.github.merge_readiness import merge_at
 
-        if not ready.can_merge:
-            self._say(ready.sentence)
+        if not ready.can_merge or ready.queue_required:
+            queue = " Add to or Remove from Merge Queue... queues it." * ready.can_merge
+            self._say(ready.sentence + queue)
             return
+        # Only the ways the repository allows (all three when GitHub did not say).
+        offered = [(label, m) for label, m in _MERGE_METHODS if m in ready.allowed_methods]
         index = self._choose(
             "Merge Pull Request",
             f"How to merge #{row.number} into {ready.base or 'its base branch'}:",
-            [label for label, _method in _MERGE_METHODS],
+            [label for label, _method in offered],
         )
         if index < 0:
             return
@@ -154,7 +157,7 @@ class GitHubWorkbenchItemsMixin:
             expected=str(row.number),
         ).show():
             return
-        method, number, api = _MERGE_METHODS[index][1], row.number, self.github_api()  # type: ignore[attr-defined]
+        method, number, api = offered[index][1], row.number, self.github_api()  # type: ignore[attr-defined]
 
         def merged(sha: str) -> None:
             self._say(f"Merged #{number} ({str(sha)[:7]}).")
