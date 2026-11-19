@@ -38,7 +38,7 @@ Each is done only with evidence: a test or a live run.
 
 - [ ] Complete Appendix A/B "nothing dropped" mapping and Appendix C object/sheet/filter mapping.
 - [ ] Verify every editable field, mixed value, field removal, batch operation, conflict resolution, verify-after-save, history and supported undo/redo.
-- [ ] Preserve issue types and organization-defined issue fields as typed values on issue rows, details, filters and Properties. Hidden, unsupported, unset, empty and unreadable values stay distinct.
+- [ ] Edit issue fields directly on the Properties sheet's Issue Fields page (today read only; Issue Fields... on the row edits them).
 - [ ] Repository and item-property checklists expose state in the row; Space changes it once, Enter saves, focus returns predictably, and JAWS/NVDA/VoiceOver do not hear a duplicate row.
 - [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle.
 - [ ] Live check on the GitHub test repository: Read Only, Organize, Full and Safe Mode refuse and allow as tested, and the permission explanations (greyed rows, Shift+F1, GitHub's own refusals) match what GitHub does.
@@ -48,7 +48,6 @@ Each is done only with evidence: a test or a live run.
 - [ ] Plain-language query/batch commands through the shared catalogue, with resolved targets, editable previews and deterministic non-AI paths.
 - [ ] Compare Accounts and one-action Act As with unambiguous identity and cache isolation.
 - [ ] Role comparison and learning workflows reach real permission evidence, not guessed privileges.
-- [ ] Organization issue fields (close reasons, linked branches and unlinking them, branch for an issue and task lists are done).
 - [ ] Wiki, and cross-linked discussion → issue → pull request workflows (saved replies and repository invitations are done).
 - [ ] Repository General/features, complete creation/template options, transfer, topics and star lists (standalone tags are done).
 - [ ] Rulesets/protection management, organization/member/team access, custom roles and audit logs.
@@ -93,6 +92,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 - [ ] Run `python docs/qa/github-live-run.py --create` after signing in again, and the live rows marked "needs Jeff".
 - [ ] GitHub live scenarios: multiple roles/accounts, protected branches, organization restrictions, rate limiting, private repositories, project fields, secrets, failure/retry and no-API fallbacks; the Copilot cloud agent commands on a Copilot plan.
 - [ ] Vote... in a real discussion poll, and the Pinned (spotlight) place, on the test repository.
+- [ ] Issue types and fields in an organization that has them: typed values in the Issue fields column (a date, a number, a choice), `type:Bug` and `field.priority:high` searches, the Properties Issue Fields page, "hidden from you" for an account that cannot see fields, a person's repository (`/user/issue-fields`).
 - [ ] **GH-R-119:** timed find-the-answer sessions with people.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists.
 - [ ] WordPress current candidate: run the documented live regression on an authorized test site and distinguish existing site-side failures from regressions.
