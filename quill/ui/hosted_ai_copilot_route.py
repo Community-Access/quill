@@ -26,7 +26,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from quill.core.ai.connection_caps import CODEX, COPILOT, OWN_KEY
+from quill.core.ai.connection_caps import AUTO, CODEX, COPILOT, OWN_KEY
 
 __all__ = ["CopilotRouteMixin"]
 
@@ -199,7 +199,7 @@ class CopilotRouteMixin:
         self, *, on_done: Callable[[Any], None], on_error: Callable[[str], None]
     ) -> None:
         """Ask GitHub for this account's quota on a worker; answers on the UI thread."""
-        from quill.ui.hosted_ai_service import _call_after, _submit
+        from quill.ui.hosted_ai_service_support import _call_after, _submit
 
         chat = self.copilot_chat()
 
@@ -277,6 +277,12 @@ class CopilotRouteMixin:
         the model chosen for it, when one is.
         """
         chosen = connection or str(getattr(self, "connection_in_use", "") or "")
+        if chosen == AUTO:
+            chosen = self.auto_connection(("agent_tools",))
+            if chosen:
+                self._announce_auto_route(chosen)
+        if not chosen:
+            return None
         settings = getattr(self._app, "settings", None)
         if chosen == COPILOT:
             from quill.ai_packs.copilot import CopilotHarness

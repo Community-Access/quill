@@ -1,7 +1,9 @@
 """What each Choose Your AI connection can do, and where that fact comes from.
 
 One record per connection (codex.md 10A.7): QUILL's free AI, My ChatGPT plan,
-My GitHub Copilot, Codex for tasks, and My own key. Every claim names its
+My GitHub Copilot, Codex for tasks, and My own key. Auto is a choice that
+selects among these concrete connections, not a connection with capabilities
+of its own. Every claim names its
 **source** -- a document a person can read, or the discovery call that
 reports it -- because a capability somebody guessed is a request that fails
 on the far side with a sentence nobody can act on. GATE-CAPS
@@ -31,6 +33,7 @@ from quill.core.error_codes import CodedError
 
 __all__ = [
     "AGENT_TOOLS",
+    "AUTO",
     "CAPABILITIES",
     "CONNECTIONS",
     "CONNECTION_NAMES",
@@ -45,6 +48,7 @@ __all__ = [
     "ConnectionRecord",
     "SwitchOffer",
     "all_records",
+    "auto_connection",
     "can",
     "clear_model_capabilities",
     "connections_that_can",
@@ -64,12 +68,14 @@ CHATGPT = "chatgpt"
 COPILOT = "copilot"
 CODEX = "codex"
 OWN_KEY = "own_key"
+AUTO = "auto"
 
 #: Every connection, in the order the window lists them and offers them.
 CONNECTIONS: tuple[str, ...] = (FREE, CHATGPT, COPILOT, CODEX, OWN_KEY)
 
 #: Each connection as a person hears it (the window's row names, 10A.2).
 CONNECTION_NAMES: dict[str, str] = {
+    AUTO: "Auto",
     FREE: "QUILL's free AI",
     CHATGPT: "My ChatGPT plan",
     COPILOT: "My GitHub Copilot",
@@ -478,6 +484,36 @@ def connections_that_can(
         for record in records
         if can(record, capability) and (allowed is None or record.connection in allowed)
     ]
+
+
+def auto_connection(
+    requires: Iterable[str],
+    records: Iterable[ConnectionRecord],
+    *,
+    set_up: Iterable[str],
+    exclude: Iterable[str] = (),
+) -> str:
+    """Choose the first ready connection that can do every required capability.
+
+    The registry order is the stable tie-breaker. Codex is task-only; its
+    single-shot requests use the ChatGPT plan directly, so it is not a second
+    candidate for ordinary text work.
+    """
+    required = tuple(requires)
+    unknown = [capability for capability in required if capability not in CAPABILITIES]
+    if unknown:
+        raise ValueError(f"Unknown capability: {', '.join(unknown)}")
+    ready = set(set_up)
+    excluded = set(exclude)
+    for record in records:
+        connection = record.connection
+        if connection not in ready or connection in excluded:
+            continue
+        if connection == CODEX and AGENT_TOOLS not in required:
+            continue
+        if all(can(record, capability) for capability in required):
+            return connection
+    return ""
 
 
 @dataclass(frozen=True, slots=True)

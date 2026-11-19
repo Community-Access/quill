@@ -18,7 +18,8 @@ from quill.core.ai.copilot_chat_parts import CopilotModel
 from quill.core.ai.copilot_quota import CopilotQuota, QuotaBucket
 from quill.core.ai.copilot_state import CopilotReadiness
 from quill.ui import hosted_ai_copilot_route as route
-from quill.ui import hosted_ai_service as service_module
+from quill.ui import hosted_ai_service_requests as request_module
+from quill.ui import hosted_ai_service_support as task_module
 from quill.ui.hosted_ai_service import AiService
 
 
@@ -95,8 +96,10 @@ def world(tmp_path, monkeypatch):
         else:
             on_success(name, result)
 
-    monkeypatch.setattr(service_module, "_submit", submit)
-    monkeypatch.setattr(service_module, "_call_after", lambda func, *args: func(*args))
+    monkeypatch.setattr(request_module, "_submit", submit)
+    monkeypatch.setattr(request_module, "_call_after", lambda func, *args: func(*args))
+    monkeypatch.setattr(task_module, "_submit", submit)
+    monkeypatch.setattr(task_module, "_call_after", lambda func, *args: func(*args))
     chat = _Chat()
     monkeypatch.setattr(route.CopilotRouteMixin, "copilot_chat", lambda _self: chat)
     ready = CopilotReadiness(client_id=True, sdk=True, runtime=True, signed_in=True)

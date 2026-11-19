@@ -53,6 +53,9 @@ class _Service:
     def can_do(self, capability: str) -> bool:
         return capability != "agent_tools" or self.tools
 
+    def request_connection(self, _requires: tuple[str, ...], _on_error: Any) -> str:
+        return getattr(self, "request_route", self.connection_in_use)
+
     def needs_label(self, capability: str) -> str:
         return "" if self.can_do(capability) else "(needs an AI that runs tasks)"
 
@@ -88,6 +91,20 @@ def test_on_copilot_the_task_window_opens_on_the_connection_in_use(
     hooks = agent_window.last["args"][1]
     assert hooks.connection == "copilot"
     assert win.announcements == []  # the reader says the window; the app says nothing
+
+
+def test_auto_task_uses_the_concrete_route_selected_for_agent_tools(
+    lite_window, agent_window, monkeypatch
+):
+    win = lite_window("Some text.")
+    service = _Service("auto", tools=True)
+    service.request_route = "own_key"
+    monkeypatch.setattr(win, "_ai_service", lambda: service)
+
+    (lambda w: w.cmd_ai_task())(win)
+
+    assert service.harnesses == ["own_key"]
+    assert agent_window.last["args"][1].connection == "own_key"
 
 
 def test_on_the_free_ai_it_sends_nothing_and_offers_the_switch(

@@ -63,7 +63,9 @@ class AgentTaskMixin:
         if not self._ai_capable(AGENT_TOOLS):
             return None  # nothing sent; the switch was offered (codex.md 10A.8)
         service = self._ai_service()
-        connection = str(getattr(service, "connection_in_use", "") or "")
+        connection = str(service.request_connection((AGENT_TOOLS,), self._announce) or "")
+        if not connection:
+            return None
         harness = service.agent_harness(connection)
         if harness is None:
             from quill.core.ai.agent_task_words import no_engine
@@ -82,7 +84,9 @@ class AgentTaskMixin:
         hooks = AgentTaskHooks(
             announce=self._announce,
             connection=connection,
-            make_runner=lambda approver, host: self._ai_task_runner(harness, approver, host),
+            make_runner=lambda approver, host: self._ai_task_runner(
+                harness, approver, host, connection=connection
+            ),
             make_host=self._ai_task_host,
             starter=starter,
         )
@@ -131,7 +135,9 @@ class AgentTaskMixin:
 
     # -- the editor half -------------------------------------------------------- #
 
-    def _ai_task_runner(self, harness: Any, approver: Any, host: Any) -> Any:
+    def _ai_task_runner(
+        self, harness: Any, approver: Any, host: Any, *, connection: str = ""
+    ) -> Any:
         """A :class:`DocumentTaskRunner` on *harness*, with the default broker and log."""
         from quill.core.ai.activity_log import ActivityLog
         from quill.core.ai.document_task import DocumentTaskRunner
@@ -143,7 +149,7 @@ class AgentTaskMixin:
             approver=approver,
             broker=PermissionBroker(),
             activity=ActivityLog(),
-            pictures=self._ai_doc_pictures(getattr(host, "bridge", None)),
+            pictures=self._ai_doc_pictures(getattr(host, "bridge", None), connection),
         )
 
     def _ai_document_path(self) -> Any:
@@ -156,7 +162,7 @@ class AgentTaskMixin:
             path = getattr(self, "path", None)  # QUILL Lite
         return Path(str(path)) if path else None
 
-    def _ai_doc_pictures(self, bridge: Any) -> Any:
+    def _ai_doc_pictures(self, bridge: Any, connection: str = "") -> Any:
         """The picture loader for ``doc.image``, when the connection in use sees.
 
         Runs on the task's worker: the 10B.4 consent is asked on the UI thread
@@ -166,10 +172,10 @@ class AgentTaskMixin:
         from quill.core.ai.connection_caps import PICTURES
 
         service = self._ai_service()
+        selected = connection or str(getattr(service, "connection_in_use", "") or "")
         can_do = getattr(service, "can_do", None)
-        if bridge is None or not callable(can_do) or not can_do(PICTURES):
+        if bridge is None or not callable(can_do) or not can_do(PICTURES, selected):
             return None
-        connection = str(getattr(service, "connection_in_use", "") or "")
         document_path = self._ai_document_path()
 
         def load(image: Any) -> Any:

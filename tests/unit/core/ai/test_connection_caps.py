@@ -47,6 +47,30 @@ def test_supported_own_key_providers_can_run_agent_tasks(provider: str) -> None:
     assert record.claim("agent_tools").source
 
 
+def test_auto_chooses_the_first_ready_route_with_every_required_capability() -> None:
+    records = [
+        caps.record_for("free"),
+        caps.record_for("chatgpt"),
+        caps.record_for("copilot", available=True),
+        caps.record_for("codex", available=True),
+        caps.record_for("own_key", own_key_provider="gemini"),
+    ]
+    assert caps.auto_connection(("text",), records, set_up=["chatgpt", "copilot"]) == "chatgpt"
+    assert (
+        caps.auto_connection(("agent_tools",), records, set_up=["copilot", "codex", "own_key"])
+        == "copilot"
+    )
+    assert (
+        caps.auto_connection(
+            ("agent_tools",), records, set_up=["copilot", "codex", "own_key"], exclude=["copilot"]
+        )
+        == "codex"
+    )
+    assert caps.auto_connection(("pictures", "web_search"), records, set_up=["free"]) == ""
+    with pytest.raises(ValueError):
+        caps.auto_connection(("telepathy",), records, set_up=["free"])
+
+
 def test_copilot_and_codex_are_not_available_yet_and_so_can_do_nothing() -> None:
     for name in ("copilot", "codex"):
         record = caps.record_for(name)

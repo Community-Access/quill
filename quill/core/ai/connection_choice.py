@@ -8,10 +8,12 @@ values are, how an older profile is migrated once, which connections are
 ready, what each row of the window says, and the sentences a request speaks
 when the choice cannot be honoured.
 
-**No fall-through.** When the connection in use is not ready the request
-fails with a sentence naming why (10A.5); it never quietly goes to the free AI
-or a key (decision 15). Signing out of the row in use leaves no AI in use
-until the person chooses one.
+**No implicit fall-through.** An explicitly selected connection that is not
+ready fails with a sentence naming why (10A.5); it never quietly goes to the
+free AI or a key (decision 15). Auto is a separate explicit choice: it uses
+only ready connections that support the action and announces the recipient.
+Signing out of an explicit choice leaves no AI in use until the person chooses
+one.
 
 wx-free and strict-typed. Every sentence here is spoken and brailled by the
 app's announcement service, so each is plain text (decision 13).
@@ -24,6 +26,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core.ai.connection_caps import (
+    AUTO,
     CHATGPT,
     CODEX,
     CONNECTION_NAMES,
@@ -63,7 +66,7 @@ __all__ = [
 ]
 
 #: The stored values; "" means "not yet decided" and is migrated on first read.
-CHOICE_VALUES: tuple[str, ...] = ("", *CONNECTIONS)
+CHOICE_VALUES: tuple[str, ...] = ("", *CONNECTIONS, AUTO)
 
 # -- row states (10A.3) ---------------------------------------------------------- #
 
@@ -97,9 +100,9 @@ _OWN_KEY_PROVIDER_NAMES = PROVIDER_NAMES
 
 
 def normalize_choice(value: object) -> str:
-    """A stored choice, or "" for anything that is not one of the five."""
+    """A stored choice, or "" for anything outside the connection list."""
     text = str(value or "").strip().lower()
-    return text if text in CONNECTIONS else ""
+    return text if text in (*CONNECTIONS, AUTO) else ""
 
 
 def load_connection_fields(data: Mapping[str, Any]) -> dict[str, Any]:
@@ -185,6 +188,8 @@ class ConnectionFacts:
     copilot_policy_off: bool = False
 
     def available(self, connection: str) -> bool:
+        if connection == AUTO:
+            return any(self.available(candidate) for candidate in CONNECTIONS)
         if connection == COPILOT:
             return self.copilot_available
         if connection == CODEX:
@@ -198,6 +203,11 @@ def ready(facts: ConnectionFacts, connection: str) -> bool:
     The free AI is always ready: its one Connect step happens when the first
     command needs it (decision 23), not as a precondition of choosing it.
     """
+    if connection == AUTO:
+        return any(
+            facts.free_connected if candidate == FREE else ready(facts, candidate)
+            for candidate in CONNECTIONS
+        )
     if not facts.available(connection):
         return False
     if connection == FREE:
@@ -244,6 +254,10 @@ class ConnectionRow:
 
 
 def _row_state(facts: ConnectionFacts, connection: str, active: str) -> str:
+    if connection == AUTO:
+        if active == AUTO:
+            return IN_USE
+        return SIGNED_IN if ready(facts, AUTO) else NOT_SET_UP
     if not facts.available(connection):
         return NOT_AVAILABLE_YET
     if connection == COPILOT and facts.copilot_policy_off:
@@ -271,10 +285,11 @@ def _row_name(facts: ConnectionFacts, connection: str) -> str:
 
 
 def row_states(facts: ConnectionFacts) -> list[ConnectionRow]:
-    """Every row of the window, in order, with the state it reads (10A.3)."""
+    """Every connection row, then Auto, with the state each one reads."""
     active = in_use(facts)
     return [
-        ConnectionRow(c, _row_name(facts, c), _row_state(facts, c, active)) for c in CONNECTIONS
+        ConnectionRow(c, _row_name(facts, c), _row_state(facts, c, active))
+        for c in (*CONNECTIONS, AUTO)
     ]
 
 
@@ -323,6 +338,8 @@ def not_ready_sentence(facts: ConnectionFacts) -> str:
     stored = facts.stored
     if stored and ready(facts, stored):
         return ""
+    if stored == AUTO:
+        return "Auto has no ready AI connection. Set one up in Choose Your AI. Nothing was sent."
     if stored in (COPILOT, CODEX) and not facts.available(stored):
         name = "My GitHub Copilot" if stored == COPILOT else "Codex"
         return f"{name} is not available yet. Nothing was sent. Press Ctrl+4 to choose another."
