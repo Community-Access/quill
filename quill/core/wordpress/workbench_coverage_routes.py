@@ -80,6 +80,10 @@ COVERED: tuple[tuple[str, str], ...] = (
     ),
     (r"gf/v2/(forms|entries)(/.*)?$", "Sites > site > Forms"),
     (r"pmpro/v1/discount_code(/.*)?$", "Sites > site > Memberships > Discount Codes"),
+    (
+        r"pmpro/v1/membership_level$",
+        "Sites > site > Memberships > Membership Levels: New and Edit Membership Level",
+    ),
     (r"pmpro/v1/has_membership_access$", "Users > person > Check Membership Access"),
     (
         r"pmpro/v1/(change|cancel)_membership_level$",

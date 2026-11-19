@@ -178,7 +178,8 @@ Also missing but less urgent: editing many products at once (`products/batch`), 
 
 ##### Memberships (Paid Memberships Pro)
 
-- **Create or edit a membership level.** Who: the site owner changing a price or adding a tier. Route: PMPro's abilities, if the site offers a level-writing one, or `pmpro/v1/membership_level` (I believe it takes POST, unverified). Today levels are read only.
+Membership levels can now be made and changed (New Membership Level..., Edit Membership Level..., through `pmpro/v1/membership_level`, 2026-11-18); a live check is in 2.4.
+
 - **Members of a level, as a list.** Who: the owner emailing or counting one tier's members. Route: unverified. `pmpro/v1/recent_memberships` exists. Otherwise build it from users plus each person's levels, which is slow on big sites. Today you see a person's memberships one person at a time.
 - **Every discount code, as a list.** `pmpro/v1` reads one code at a time. The list works only where an ability offers it, and otherwise opens wp-admin, which QUILL says.
 
@@ -201,7 +202,7 @@ All of the following has tests over recorded or fake answers and none has met a 
 - Redirection, and the slug-change redirect offer.
 - QAF on the test site (it still runs BAF), the QAF migration, and the spam settings with a live submission.
 - Gravity Forms building, conversion, feeds, results and test submissions. These need a licensed Gravity Forms with its REST API on.
-- Paid Memberships Pro 3.9 or later on WordPress 6.9 or later, with a role whose PMPro capabilities were changed.
+- Paid Memberships Pro 3.9 or later on WordPress 6.9 or later, with a role whose PMPro capabilities were changed; and New and Edit Membership Level on a test level.
 - Advanced Custom Fields read and write, and the QUILL Site Types plugin in a real WordPress.
 - Copy to Site and Compare Sites between two real sites, and Promote to Network on a real multisite.
 - The Practice Site from an installed build, not only from source.

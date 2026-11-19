@@ -159,6 +159,20 @@ PMPRO_ROWS: tuple[ActionRow, ...] = (
         tier=Tier.WRITE,
         needs="manage_options",
     ),
+    _a(
+        "edit_membership_level",
+        "Edit Membership Level...",
+        "Its name, prices, billing period, expiry and signups, after a preview of old and new.",
+        tier=Tier.WRITE,
+        needs="manage_options",
+    ),
+    _a(
+        "new_membership_level",
+        "New Membership Level...",
+        "A level with its prices and expiry, after a preview. Ctrl+N on Membership Levels.",
+        tier=Tier.WRITE,
+        needs="manage_options",
+    ),
 )
 
 MODEL_ROWS: tuple[ActionRow, ...] = (
@@ -238,6 +252,8 @@ KEYLESS: dict[str, str] = {
     command("insert_picked"): "Enter does it in picking mode, the only time it applies.",
     command("look_up_discount"): "A code is looked up when a member asks about it (rule 9).",
     command("new_discount_code"): "Codes are made for a sale or event, rarely (rule 9).",
+    command("edit_membership_level"): "A level's price changes a few times a year (rule 9).",
+    command("new_membership_level"): "Ctrl+N (New Here) on Membership Levels reaches it.",
     command("define_site_type"): "Ctrl+N on Content Model; a new type is rare (rule 9).",
     command("stop_defining"): "Retiring a content type is rare and previewed (rule 9).",
     command("export_as_code"): "Exported once, when a site leaves the plugin (rule 9).",

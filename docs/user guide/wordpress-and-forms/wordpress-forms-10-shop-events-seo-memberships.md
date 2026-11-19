@@ -210,6 +210,14 @@ Codes**. Card and billing details are never shown. **Needs My Attention >
 Membership Orders** lists orders, on every site, that wait on a person:
 pending, in review, waiting on payment, or failed.
 
+**Levels.** **New Membership Level...** (`Ctrl+N` on Membership Levels) and
+**Edit Membership Level...** ask the name, the initial payment, the
+recurring payment and how often it is taken, when membership expires, and
+whether new signups are allowed, then preview them. A change shows only what
+changes, old and new; new prices are for new signups, because Paid
+Memberships Pro does not change what members already pay. Undo puts it
+back, or deletes a level you just made.
+
 **Discount codes.** **Look Up a Discount Code...** reads one code, and **New
 Discount Code...** makes one after a preview. Where the site cannot list
 every code, the list says so and opens the wp-admin screen.
