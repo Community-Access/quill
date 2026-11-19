@@ -36,6 +36,93 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress: menu changes can be undone (2026-11-18)
+
+Review item 20: the Menus window, which the Workbench's Arrange Items opens,
+had no way back from a rename, a move or a removal, and none of them reached
+the Workbench's Change History. The window has **Undo** now, which puts back
+a rename, a move (every item where it stood) or an item removed from a
+Navigation block, and when the Workbench opened it, each change is a step in
+Change History too, so Ctrl+Z there undoes it. An item removed from a classic
+menu is deleted by WordPress, and says so.
+
+### WordPress Workbench: a site shows the branches it has (2026-11-18)
+
+Review item 30: every site showed every plugin's branch (Shop, Memberships,
+Events, SEO, Redirects, Forms), installed or not, so a site came to over a
+hundred nodes, each reading the network to find nothing. Once the Workbench has
+read a site's index, a branch whose plugin is not there is left out; until
+then everything shows. And discovery, which rebuilds the tree, no longer
+closes the branches you had opened.
+
+### WordPress Workbench: Change History says what each write did, and undoes more (2026-11-18)
+
+Review item 1: since the WordPress safety work, a write with no step of its own
+got a generic one ("Reply on Radio."), so Ctrl+Z no longer reached past it.
+Now Reply, Merge Into, Convert, Allow This Sender, Empty Spam, New Here, the
+shop, event and form writes, redirects, membership changes, discount codes and
+Find a Plugin's install each record what they did ("Replied to Ann on Radio.").
+More of them can be undone: Allow This Sender puts the comment back where it
+was, an order or form status goes back, a redirect turned on or off turns
+back, and a plugin just installed is removed again. The rest say they cannot
+be undone, and Ctrl+Z moves on to the step before.
+
+### WordPress Workbench: a dimmed row says why (2026-11-18)
+
+Review item 25: the reason a row was dimmed went to a status bar nobody hears,
+context menus gave none, and every dimmed row said "Not available here."
+Now arrowing to a dimmed row, in the menu bar or a context menu, speaks the
+Workbench's own reason once ("Publishing pages needs the Editor role or
+higher. You are an Author on Community Radio."), and Shift+F1, What Can I Do
+Here?, starts with who you are on the site and your Workbench access. The
+GitHub Workbench's dimmed rows speak their reasons the same way.
+
+### WordPress: menu letters that work, and agree with the WordPress keys (2026-11-18)
+
+Review items 15 and 16:
+
+- The four Gravity Forms entry rows (Entry Notes, Star or Unstar, Mark Read or
+  Unread, Resend Notifications) had no access letter, because every letter of
+  their names was taken in the Item menu. They are in Item > Gravity Forms
+  now, with letters, and their chords still work.
+- Every Workbench context menu row has its own letter and shows its key, and
+  so do More and its rows, and Show Only and Hide.
+- Menu letters match the WordPress-layer keys where they can: File >
+  WordPress > Publish or Update is P, New Page G and Plugin Fields U; Tools >
+  WordPress > Check Before Publishing is K, Site Health Check is I and Plugin
+  Extras P. Open WordPress Workbench keeps its WordPress key, H, and no letter,
+  because every letter of its name belongs to a row with no key.
+
+### WordPress: every editor command has a key or a reason (2026-11-18)
+
+Review item 37: the rule 8 gate only read the editor keymap, and 77 WordPress
+menu rows are not in it, so they had neither a key nor a written reason and
+nothing noticed. The gate now walks every WordPress row in both editors, and
+each without a WordPress-layer key has its reason in
+`quill/core/wordpress/menu_unbound.py`, by kind: site windows the Workbench
+also reaches, once-a-document commands, page commands the layer's last free
+letters cannot teach, and the cross-site lists. A row that gains a key loses
+its line, and the gate says so.
+
+### WordPress Workbench: shop, event and membership rows say who may (2026-11-18)
+
+Review item 34: these rows named no capability, so they were never dimmed, and
+an Editor answered several dialogs before WooCommerce, The Events Calendar or
+Paid Memberships Pro refused. Each write now names what it needs and is dimmed
+with the reason ("Changing the shop needs the Shop Manager or Administrator
+role. You are an Editor on Radio."); an administrator is never dimmed. Change
+Membership Level and a shop setting's chooser start on the current value, and
+the order and form status choosers say what the status is now.
+
+### WordPress Workbench: the Item menu reaches every row command (2026-11-18)
+
+Review item 31: Earlier Versions, Duplicate, Change Role, Remove, Set New
+Password, Replace File, Edit Picture and about 160 more were on a row's
+context menu but nowhere in the menu bar. **Item > Commands for This Row** now
+lists every command the context menu has for the selected row, More included,
+each with its own access letter, dimmed with its reason when your role cannot
+use it. The GitHub Workbench shares the window and can use the same submenu.
+
 ### WordPress: names that say what happens (2026-11-18)
 
 Review item 29: commands named for what they do.

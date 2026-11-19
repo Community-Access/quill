@@ -372,3 +372,28 @@ def test_add_edit_move_and_remove_widgets(wp, wp_site, wp_dialogs):
     assert len(wp_site.sent("DELETE", f"{API}/widgets/search-1")) == 1
     wp_dialogs.press("Open in Dashboard", None)
     assert wp.host.browsed == ["https://radio.example/wp-admin/widgets.php"]
+
+
+def test_undo_puts_a_move_and_a_rename_back_and_the_workbench_hears_each(wp, wp_site, wp_dialogs):
+    """Item 20: the Menus window has Undo, and the Workbench gets each change as a step."""
+    _classic(wp_site)
+    for iid in (11, 12, 13):
+        wp_site.on("POST", f"{API}/menu-items/{iid}", {"id": iid})
+    steps: list[tuple[str, object]] = []
+    wp.cmd_menus(menu_id=3, record=lambda said, undo: steps.append((said, undo)))
+    rows = wp_dialogs.press("Move Down", 0)
+    assert rows[0].startswith("Sessions")
+    wp_dialogs.answer("ask_text", "Our Sessions")
+    wp_dialogs.press("Rename...", 0)
+    assert [said for said, _undo in steps] == [
+        "Home moved down, 2 of 2.",
+        "Renamed Sessions to Our Sessions in Main.",
+    ]
+    assert all(callable(undo) for _said, undo in steps)
+    rows = wp_dialogs.press("Undo", None)
+    assert wp.host.announced[-1] == "Our Sessions is called Sessions again in Main."
+    assert rows[0].startswith("Sessions,")
+    rows = wp_dialogs.press("Undo", None)
+    assert rows[0].startswith("Home")  # the move, put back
+    wp_dialogs.press("Undo", None)
+    assert wp.host.announced[-1] == "Nothing to undo in this window."

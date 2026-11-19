@@ -114,11 +114,13 @@ class WorkbenchCommandsMixin:
         bar = wx.MenuBar()
         for spec in self.provider.menu:
             menu = wx.Menu()
+            self.hear_greyed(menu)
             for row in spec.rows:
                 if row is None:
                     menu.AppendSeparator()
                 elif isinstance(row, MenuSub):
                     sub = wx.Menu()
+                    self.hear_greyed(sub)
                     if row.dynamic:
                         self._dynamic_menus[row.dynamic] = sub
                     for inner in row.rows:
@@ -151,6 +153,9 @@ class WorkbenchCommandsMixin:
         for key, sub in getattr(self, "_dynamic_menus", {}).items():
             for item in list(sub.GetMenuItems()):
                 sub.Delete(item)
+            if key == "row_actions":
+                self._fill_row_actions(sub)
+                continue
             entries = list(hook(key)) if callable(hook) else []
             if not entries:
                 empty = sub.Append(wx.ID_ANY, "(None yet)")
@@ -159,6 +164,58 @@ class WorkbenchCommandsMixin:
             for index, (label, action) in enumerate(entries[:9], start=1):
                 item = sub.Append(wx.ID_ANY, f"&{index} {label}")
                 self.frame.Bind(wx.EVT_MENU, lambda _e, a=action: a(), item)
+
+    def hear_greyed(self, menu: Any) -> None:
+        """Say why a dimmed row is dimmed when it is highlighted (review item 25).
+
+        The screen reader says "unavailable" and nothing more, and the status bar
+        that would show the row's help is not where a listener is; so the reason,
+        which the app alone knows, is spoken -- once per row, never for a row that
+        works, which the reader already describes in full (GATE-13).
+        """
+        wx = self._wx
+
+        def highlighted(event: Any) -> None:
+            ident = event.GetMenuId()
+            item = menu.FindItemById(ident) if ident != wx.ID_NONE else None
+            if item is not None and not item.IsEnabled() and not item.IsSubMenu():
+                said = item.GetHelp() or self.reason("")
+                if said and said != getattr(self, "_greyed_said", ""):
+                    self._greyed_said = said
+                    self._say(said)
+            event.Skip()
+
+        menu.Bind(wx.EVT_MENU_HIGHLIGHT, highlighted)
+
+    def _fill_row_actions(self, sub: Any) -> None:
+        """Item > Commands for This Row: all the context menu has, More included (item 31)."""
+        wx = self._wx
+        row = self.selected_row() if self.current is not None else None
+        if row is not None:
+            top, more = self.row_actions(row)
+        else:
+            top, more = self.provider.actions.menu_for("node")
+        from quill.core.workbench.menus import keep_access_key
+
+        used: set[str] = set()
+        rows = [*top, *more]
+        if not rows:
+            empty = sub.Append(wx.ID_ANY, "(Nothing for this row)")
+            empty.Enable(False)
+            return
+        for action in rows:
+            label = self.toggle_words(action.command_id, action.label)
+            letter = next((c for c in label.lower() if c.isalnum() and c not in used), "")
+            used.add(letter)
+            shown = keep_access_key(f"&{letter}", label) if letter else label
+            # No chord in the label: the bar's own row already claims it, and a second
+            # claim would be a key two items share. The access letter is the route.
+            item = sub.Append(wx.ID_ANY, shown, action.help)
+            able = self.can_run(action.command_id)
+            item.Enable(able)
+            if not able:
+                item.SetHelp(f"{self.reason(action.command_id)} {action.help}".strip())
+            self.frame.Bind(wx.EVT_MENU, lambda _e, c=action.command_id: self.run(c), item)
 
     def _on_menu_open(self, event: Any) -> None:
         """Grey what does not apply here, with the reason as the row's help."""

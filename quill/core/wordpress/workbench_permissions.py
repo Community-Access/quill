@@ -119,6 +119,14 @@ ROLE_CAPABILITIES: Mapping[str, frozenset[str]] = {
 """What WordPress gives each default role, for View As Role and for the refusal's role name."""
 
 _VERBS = {
+    "manage_woocommerce": "Changing the shop",
+    "edit_tribe_events": "Changing events",
+    "delete_tribe_events": "Moving events to the Trash",
+    "edit_tribe_venues": "Changing venues",
+    "delete_tribe_venues": "Moving venues to the Trash",
+    "edit_tribe_organizers": "Changing organizers",
+    "delete_tribe_organizers": "Moving organizers to the Trash",
+    "pmpro_edit_members": "Changing memberships",
     "publish_posts": "Publishing posts",
     "publish_pages": "Publishing pages",
     "edit_posts": "Editing posts",
@@ -189,9 +197,55 @@ class AccessStore:
         write_json_atomic(self.path, data)
 
 
+#: What the shop, event and membership writes need (review item 34), so a row is greyed
+#: before WooCommerce, The Events Calendar or PMPro refuses it. "a|b" means either.
+#: manage_options is always one of them, so an administrator is never wrongly greyed
+#: on a site whose REST answer leaves the plugin's own capabilities out.
+_SHOP = "manage_woocommerce|manage_options"
+_EVENTS = "edit_tribe_events|manage_options"
+_VENUES = "edit_tribe_venues|manage_options"
+_ORGANIZERS = "edit_tribe_organizers|manage_options"
+_MEMBERS = "pmpro_edit_members|pmpro_edit_memberships|manage_options"
+PLUGIN_NEEDS: dict[str, str] = {
+    **dict.fromkeys(
+        (
+            "edit_coupon",
+            "new_coupon",
+            "trash_coupon",
+            "change_order_status",
+            "refund_order",
+            "edit_product",
+            "duplicate_product",
+            "new_product",
+            "trash_product",
+            "change_shop_setting",
+        ),
+        _SHOP,
+    ),
+    **dict.fromkeys(("edit_event", "new_event"), _EVENTS),
+    "trash_event": "delete_tribe_events|manage_options",
+    **dict.fromkeys(("edit_venue", "new_venue"), _VENUES),
+    "trash_venue": "delete_tribe_venues|manage_options",
+    **dict.fromkeys(("edit_organizer", "new_organizer"), _ORGANIZERS),
+    "trash_organizer": "delete_tribe_organizers|manage_options",
+    **dict.fromkeys(("change_membership", "cancel_membership"), _MEMBERS),
+}
+#: Who has a plugin's capability out of the box, for the refusal sentence.
+_PLUGIN_ROLES = {
+    "manage_woocommerce": "the Shop Manager or Administrator role",
+    "edit_tribe_events": "the Author role or higher",
+    "delete_tribe_events": "the Author role or higher",
+    "edit_tribe_venues": "the Author role or higher",
+    "delete_tribe_venues": "the Author role or higher",
+    "edit_tribe_organizers": "the Author role or higher",
+    "delete_tribe_organizers": "the Author role or higher",
+    "pmpro_edit_members": "the Administrator or Membership Manager role",
+}
+
+
 def capability_for(row: ActionRow, row_kind: str, subkind: str = "") -> str:
     """The site capability *row* needs on a *row_kind* row ("" for none)."""
-    need = row.requirement
+    need = row.requirement or PLUGIN_NEEDS.get(row.command_id.rsplit(".", 1)[-1], "")
     plural = "pages" if subkind == "page" else "posts"
     if need == "edit":
         return {"item": f"edit_{plural}", "comment": "moderate_comments"}.get(row_kind, "")
@@ -219,8 +273,10 @@ def _a(role: str) -> str:
 
 def refusal(capability: str, account: Account | None, site: str) -> str:
     """Why *account* may not do what *capability* allows ("" when it may)."""
-    if not capability or (account is not None and account.can(capability)):
+    either = capability.split("|")
+    if not capability or (account is not None and any(account.can(c) for c in either)):
         return ""
+    capability = either[0]
     lowest = _lowest_role(capability).title()
     if account is not None:
         you = f"You are {_a(account.role_name)} on {site}."
@@ -229,6 +285,8 @@ def refusal(capability: str, account: Account | None, site: str) -> str:
     what = _VERBS.get(capability, f"Doing this ({capability.replace('_', ' ')})")
     if lowest:
         return f"{what} needs the {lowest} role or higher. {you}"
+    if capability in _PLUGIN_ROLES:
+        return f"{what} needs {_PLUGIN_ROLES[capability]}. {you}"
     return f"{what} needs a role this site defines. {you}"
 
 

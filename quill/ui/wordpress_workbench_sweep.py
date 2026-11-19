@@ -363,7 +363,9 @@ class WorkbenchSweepCommands(WorkbenchRedirectGroup):
         api = self.ctx(site).api
 
         def done(_result: Any) -> None:
-            self.say(f"Saved on {site}: {body['url']} now leads to {body['action_data']['url']}.")
+            said = f"Saved on {site}: {body['url']} now leads to {body['action_data']['url']}."
+            self.say(said)
+            self.step(site, said.rstrip("."))  # item 1
             self.refresh()
 
         self.background("saving a redirect", lambda: api.post(route, body), done)
@@ -465,13 +467,23 @@ class WorkbenchSweepCommands(WorkbenchRedirectGroup):
             return
         self._in_group(site, "Change Redirect", send)
 
-    def _bulk(self, row: WbRow, action: str, message: str, yes: str, said: str) -> None:
+    def _bulk(
+        self, row: WbRow, action: str, message: str, yes: str, said: str, back: str = ""
+    ) -> None:
+        """One bulk action on a redirect; *back* is the action that undoes it, if any."""
         if not dlg.confirm(self.parent, self.show_modal, title=yes, message=message, yes_label=yes):
             return
         api = self.ctx(row.site).api
+        route = f"{REDIRECTION_NAMESPACE}/bulk/redirect"
+
+        def undo() -> str:
+            api.post(f"{route}/{back}", {"items": [int(row.key)]})
+            state = "on" if back == "enable" else "off"
+            return f"The redirect from {row.cell('source')} is {state} again."
 
         def done(_result: Any) -> None:
             self.say(said)
+            self.step(row.site, said.rstrip("."), undo if back else None)  # item 1
             self.refresh()
 
         self.background(
@@ -494,6 +506,7 @@ class WorkbenchSweepCommands(WorkbenchRedirectGroup):
             f"{verb} the redirect from {row.cell('source')} on {row.site}?",
             verb,
             f"The redirect from {row.cell('source')} is {'off' if on else 'on'}.",
+            "enable" if on else "disable",
         )
 
     def do_delete_redirect(self, ref: Any, row: WbRow | None) -> None:

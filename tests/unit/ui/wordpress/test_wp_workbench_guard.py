@@ -216,10 +216,11 @@ def test_a_reply_is_recorded_so_ctrl_z_does_not_undo_an_older_change(bench, monk
     comment = WbRow("comment", SITE, "7", {"author": "Ann"}, "Ann", raw={"id": 7, "post": 2})
     bench.provider.run(command("reply"), NodeRef("site", "comments", SITE), comment)
     newest = bench.provider.history.entries[-1]
-    assert newest.summary == f"Reply on {SITE}." and newest.undo is None
+    assert newest.summary == f"Replied to Ann on {SITE}." and newest.undo is None
     bench.run(command("undo"))
     assert bench.said[-1] == (
-        f"Reply on {SITE}. This cannot be undone. Ctrl+Z again undoes the change before it."
+        f"Replied to Ann on {SITE}. This cannot be undone. Ctrl+Z again undoes the change "
+        "before it."
     )
     assert bench.api.posts[0]["status"] == "trash"  # not undone yet
     bench.run(command("undo"))
@@ -231,7 +232,7 @@ def test_empty_spam_is_recorded_as_a_change_that_cannot_be_undone(bench, monkeyp
     bench.provider.run(command("empty_spam"), POSTS, None)
     assert ("DELETE", "wp/v2/comments/8", {"force": True}) in bench.api.writes
     newest = bench.provider.history.entries[-1]
-    assert newest.summary == f"Empty Spam on {SITE}." and newest.undo is None
+    assert newest.summary == f"Deleted 1 spam comment on {SITE}." and newest.undo is None
 
 
 @pytest.mark.parametrize(

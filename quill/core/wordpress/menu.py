@@ -50,14 +50,14 @@ Entry = Row | Submenu | None
 # File > WordPress: the whole document, and the sites
 
 WORDPRESS_ROWS: tuple[Entry, ...] = (
-    ("wordpress.new_page", "New &Page...", "cmd_new_page"),
+    ("wordpress.new_page", "New Pa&ge...", "cmd_new_page"),
     ("wordpress.new_post", "&New Post...", "cmd_new_post"),
     ("wordpress.open", "&Open Page or Post...", "cmd_open"),
     ("wordpress.open_by_address", "Open by &Web Address...", "cmd_open_by_address"),
     ("wordpress.open_local_draft", "Open &Local Draft...", "cmd_open_local_draft"),
     None,
     ("wordpress.save_draft", "Save &Draft to Site", "cmd_save_draft"),
-    ("wordpress.publish", "P&ublish or Update...", "cmd_publish"),
+    ("wordpress.publish", "&Publish or Update...", "cmd_publish"),
     ("wordpress.schedule", "Sch&edule Publish...", "cmd_schedule"),
     ("wordpress.open_on_site", "Open on S&ite", "cmd_open_on_site"),
     ("wordpress.copy_address", "Cop&y Address", "cmd_copy_address"),
@@ -69,7 +69,7 @@ WORDPRESS_ROWS: tuple[Entry, ...] = (
     None,
     ("wordpress.properties", "P&roperties...", "cmd_properties"),
     ("wordpress.custom_fields", "Custom &Fields...", "cmd_custom_fields"),
-    ("wordpress.plugin_fields", "Plu&gin Fields...", "cmd_plugin_fields"),
+    ("wordpress.plugin_fields", "Pl&ugin Fields...", "cmd_plugin_fields"),
     ("wordpress.versions", "Previous &Versions...", "cmd_versions"),
     ("wordpress.compare", "Co&mpare with Site", "cmd_compare"),
     ("wordpress.trash", "Move to &Trash...", "cmd_trash"),
@@ -214,11 +214,13 @@ TOOLS_ROWS: tuple[Entry, ...] = (
     Submenu(
         "WordPress",
         (
-            # The Workbench comes first (W6). Every letter of its name is taken
-            # in this menu, so its key is the WordPress layer's H, not a letter.
+            # The Workbench comes first (W6). It has the WordPress layer's H and no
+            # letter: every letter of its name is held by a row with no key, which
+            # needs its letter more. Check Before Publishing takes K, its layer key
+            # (item 15); Site Health Check takes I, which Plugin Extras gave up for P.
             ("wordpress.workbench", "Open WordPress Workbench...", "cmd_workbench"),
             None,
-            ("wordpress.check", "Check Before &Publishing...", "cmd_check"),
+            ("wordpress.check", "Chec&k Before Publishing...", "cmd_check"),
             ("wordpress.check_page", "Check &This Page", "cmd_check_page"),
             ("wordpress.check_site", "Check the &Whole Site...", "cmd_check_site"),
             ("wordpress.undo_site_fix", "&Undo Site Fix...", "cmd_undo_site_fix"),
@@ -249,7 +251,7 @@ TOOLS_ROWS: tuple[Entry, ...] = (
             ("wordpress.manage_terms", "Categories and Ta&gs...", "cmd_manage_terms"),
             ("wordpress.menus", "Me&nus...", "cmd_menus"),
             ("wordpress.menu_history", "Menu &History...", "cmd_menu_history"),
-            ("wordpress.site_check", "Site Health Chec&k", "cmd_site_check"),
+            ("wordpress.site_check", "S&ite Health Check", "cmd_site_check"),
             ("wordpress.site_settings", "Site S&ettings...", "cmd_site_settings"),
             Submenu(
                 "&Design",
@@ -259,7 +261,7 @@ TOOLS_ROWS: tuple[Entry, ...] = (
                 ),
             ),
             Submenu(
-                "Plug&in Extras",
+                "&Plugin Extras",
                 (
                     ("wordpress.events_coming_up", "&Upcoming Events...", "cmd_events_coming_up"),
                     ("wordpress.new_event", "New &Event...", "cmd_new_event"),

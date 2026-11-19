@@ -54,13 +54,16 @@ class WorkbenchShopCommands:
             help_text=help_text,
         )
 
-    def _pl_choose(self, title: str, prompt: str, rows: list[str], help_text: str) -> int | None:
+    def _pl_choose(
+        self, title: str, prompt: str, rows: list[str], help_text: str, initial: int = 0
+    ) -> int | None:
         return dlg.ask_choice(
             self.parent,  # type: ignore[attr-defined]
             self.show_modal,  # type: ignore[attr-defined]
             title=title,
             prompt=prompt,
             rows=rows,
+            initial=max(0, initial),
             help_text=help_text,
         )
 
@@ -74,9 +77,17 @@ class WorkbenchShopCommands:
             yes=yes,
         )
 
-    def _pl_send(self, site: str, name: str, work: Callable[[], Any], said: str) -> None:
+    def _pl_send(
+        self,
+        site: str,
+        name: str,
+        work: Callable[[], Any],
+        said: str,
+        undo: Callable[[], str] | None = None,
+    ) -> None:
         def done(_answer: Any) -> None:
             self.say(said)  # type: ignore[attr-defined]
+            self.step(site, said.rstrip("."), undo)  # type: ignore[attr-defined]  # item 1
             self.refresh()  # type: ignore[attr-defined]
 
         self.background(name, work, done)  # type: ignore[attr-defined]
@@ -258,7 +269,8 @@ class WorkbenchShopCommands:
             f"Change Status - {row.title}",
             "&New status:",
             [orders.ORDER_STATUSES[s] for s in choices],
-            "The order's new status. The preview says which email WooCommerce sends.",
+            f"The order's new status; it is {orders.ORDER_STATUSES.get(row.status, row.status)} "
+            "now. The preview says which email WooCommerce sends.",
         )
         if picked is None:
             return
@@ -272,11 +284,20 @@ class WorkbenchShopCommands:
         ):
             return
         api = self.ctx(row.site).api  # type: ignore[attr-defined]
+        was = row.status
+
+        def undo() -> str:
+            api.post(f"{SHOP_NAMESPACE}/orders/{row.object_id}", {"status": was})
+            return (
+                f"Shop order {number} on {row.site} is {orders.ORDER_STATUSES.get(was, was)} again."
+            )
+
         self._pl_send(
             row.site,
             f"changing shop order {number}",
             lambda: api.post(f"{SHOP_NAMESPACE}/orders/{row.object_id}", {"status": new}),
             f"Shop order {number} on {row.site} is {orders.ORDER_STATUSES[new]}.",
+            undo,
         )
 
     def do_order_notes(self, _ref: Any, row: WbRow | None) -> None:
@@ -509,7 +530,15 @@ class WorkbenchShopCommands:
                 title,
                 "&New value:",
                 [words for _v, words in choice.values],
-                "The setting's new value.",
+                "The setting's new value. The list starts on the one it has now.",
+                next(
+                    (
+                        i
+                        for i, (v, _w) in enumerate(choice.values)
+                        if str(v) == str(row.raw.get("value", ""))
+                    ),
+                    0,
+                ),
             )
             if picked is None:
                 return

@@ -276,6 +276,11 @@ place, such as "Sessions, page, level 1, 3 of 7".
   takes it back up a level.
 - **Rename...** changes what the item says.
 - **Remove...** takes it out of the menu. The page itself is not touched.
+- **Undo** puts back the last rename or move made in the window, and an item
+  removed from a Navigation block. WordPress deletes an item removed from a
+  classic menu, so that one cannot come back. When the Workbench opened the
+  window, each change is also in its Change History, so Ctrl+Z there undoes it
+  after you close the window.
 - **Check Menu** finds items with no name, and links to pages that are drafts
   or gone.
 - **Locations...** chooses where the theme shows the menu, such as the header

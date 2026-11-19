@@ -44,7 +44,8 @@ class WorkbenchPluginCommands(
             f"Change Form Status - {row.title}",
             "&New status:",
             [qaf.FORM_STATUSES[s] for s in choices],
-            "Whether the form takes responses.",
+            "Whether the form takes responses; it is "
+            f"{qaf.FORM_STATUSES.get(row.status, row.status)} now.",
         )
         if picked is None:
             return
@@ -57,11 +58,18 @@ class WorkbenchPluginCommands(
         ):
             return
         api = self.ctx(row.site).api  # type: ignore[attr-defined]
+        was = row.status
+
+        def undo() -> str:
+            api.post(row.route, {"status": was})
+            return f"{row.title} on {row.site} is {qaf.FORM_STATUSES.get(was, was)} again."
+
         self._pl_send(
             row.site,
             f"changing {row.title}",
             lambda: api.post(row.route, {"status": new}),
             f"{row.title} on {row.site} is {qaf.FORM_STATUSES[new]}.",
+            undo,
         )
 
     def do_delete_form(self, _ref: Any, row: WbRow | None) -> None:

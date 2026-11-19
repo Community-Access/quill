@@ -143,12 +143,12 @@ NEEDS: dict[str, str] = {
 """The :data:`~quill.core.wordpress.workbench_gravity.CAPABILITIES` key each command needs."""
 
 GRAVITY_ITEM_ROWS: tuple[MenuRow, ...] = (
-    MenuRow(command("entry_notes"), "Entry Notes...", "Ctrl+Alt+N", "Read and add entry notes."),
-    MenuRow(command("toggle_starred"), "Star or Unstar Entry", "Ctrl+Alt+F", "Star the entry."),
-    MenuRow(command("toggle_read"), "Mark Entry Read or Unread", "Ctrl+Alt+U", "Read or unread."),
+    MenuRow(command("entry_notes"), "Entry Note&s...", "Ctrl+Alt+N", "Read and add entry notes."),
+    MenuRow(command("toggle_starred"), "Star or &Unstar Entry", "Ctrl+Alt+F", "Star the entry."),
+    MenuRow(command("toggle_read"), "&Mark Entry Read or Unread", "Ctrl+Alt+U", "Read or unread."),
     MenuRow(
         command("resend_notifications"),
-        "Resend Notifications...",
+        "Resen&d Notifications...",
         "Ctrl+Alt+I",
         "Send the entry's emails again, after a preview.",
     ),
@@ -158,6 +158,8 @@ GRAVITY_ITEM_ROWS: tuple[MenuRow, ...] = (
 GRAVITY_SUB = MenuSub(
     "Gravity &Forms",
     (
+        *GRAVITY_ITEM_ROWS,  # in here for their letters (item 16); the chords still work
+        None,
         MenuRow(command("show_feeds"), "Show Its &Feeds", help="The selected form's feeds."),
         MenuRow(command("show_results"), "Show Its &Results", help="The form's results."),
         MenuRow(command("test_form"), "&Test This Form...", help="Validate, then submit."),

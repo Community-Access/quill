@@ -14,6 +14,8 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
+from quill.core.counted import plural
+
 __all__ = ["GroupRef", "WorkbenchGroupsMixin"]
 
 
@@ -86,3 +88,36 @@ class WorkbenchGroupsMixin:
         both = wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED
         self.list.SetItemState(index, both, both)
         self.list.EnsureVisible(index)
+
+    # -- the tree and the list, kept as they were (items 26 and 30) ----------------
+
+    def rebuild_tree(self) -> None:
+        """Build the tree again after an instance was added; selection and openings kept.
+
+        Discovery rebuilds the tree, and a rebuild that closed every branch you had
+        opened would undo your place (review item 30), so what was expanded is
+        expanded again.
+        """
+        current = self.current
+        tree = self.tree
+        opened = [ref for ref, item in self._items.items() if item.IsOk() and tree.IsExpanded(item)]
+        self._navigating = self._rebuilding = True
+        try:
+            self._build_tree()
+            for ref in opened:
+                item = self._items.get(ref)
+                if item is not None:
+                    tree.Expand(item)
+        finally:
+            self._navigating = self._rebuilding = False
+        if current is not None and current in self._items:
+            self.select(current, remember=False)
+
+    def loaded_words(self) -> str:
+        """How a reported load ended: the count and any limit, or why it is empty."""
+        if not self.rows:
+            return self.empty_words() or "No rows here."
+        said = f"{plural(len(self.rows), 'row')} shown."
+        cut = getattr(self.provider, "cut_for", None)
+        more = str(cut(self.current) or "") if callable(cut) and self.current is not None else ""
+        return f"{said} {more}".strip()

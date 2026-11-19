@@ -1,4 +1,4 @@
-"""Menus, Navigation and Widgets (wordpress.md 9.9): the drag-and-drop parts, as lists.
+"""Menus and Navigation (wordpress.md 9.9): the drag-and-drop parts, as lists.
 
 A mixin of :class:`~quill.ui.wordpress_commands.WordPressCommands`, gathered
 by :class:`~quill.ui.wordpress_admin_commands.WordPressAdminCommands`.
@@ -15,9 +15,9 @@ from typing import TYPE_CHECKING, Any
 from quill.core.counted import plural
 from quill.core.wordpress import navigation as nav
 from quill.core.wordpress import site as wp
-from quill.core.wordpress import site_structure as ss
 from quill.ui import wordpress_dialogs as dlg
-from quill.ui.wordpress_admin_base import WordPressAdminBase
+from quill.ui.wordpress_menu_steps import MenuSteps, Record
+from quill.ui.wordpress_widget_commands import WordPressWidgetCommands
 
 if TYPE_CHECKING:
     from quill.core.wordpress import sites as st
@@ -49,17 +49,23 @@ def _holder(location: nav.Location, menu: nav.Menu) -> str:
     return "another menu" if location.menu else "empty"
 
 
-class WordPressMenuCommands(WordPressAdminBase):
+class WordPressMenuCommands(WordPressWidgetCommands):  # widgets split out (GATE-11)
     # ------------------------------------------------------------------ #
     # Menus and Navigation
 
     def cmd_menus(
-        self, page_id: int = 0, *, menu_id: int = 0, profile: st.SiteProfile | None = None
+        self,
+        page_id: int = 0,
+        *,
+        menu_id: int = 0,
+        profile: st.SiteProfile | None = None,
+        record: Record | None = None,
     ) -> None:
         """The Menus window. With *page_id*, first add that page to a menu the person picks.
 
         With *menu_id* (and the Workbench's *profile*), it opens that menu straight away:
-        the Workbench's Arrange Items... on a menu row comes here to move items.
+        the Workbench's Arrange Items... on a menu row comes here to move items, and
+        passes *record*, so each change is a step in its Change History (item 20).
         """
         if not page_id and not menu_id and self.workbench_door("wordpress.menus"):
             return  # the developer flag sends this door to the WordPress Workbench
@@ -71,11 +77,19 @@ class WordPressMenuCommands(WordPressAdminBase):
             f"reading menus on {profile.name}",
             "menus",
             lambda api, _account: _MenuData(api, page_id),
-            lambda api, _account, data: self._menus_ready(profile, api, data, page_id, menu_id),
+            lambda api, _account, data: self._menus_ready(
+                profile, api, data, page_id, menu_id, record
+            ),
         )
 
     def _menus_ready(
-        self, profile: st.SiteProfile, api: Any, data: _MenuData, page_id: int, menu_id: int
+        self,
+        profile: st.SiteProfile,
+        api: Any,
+        data: _MenuData,
+        page_id: int,
+        menu_id: int,
+        record: Record | None = None,
     ) -> None:
         if not data.menus:
             self.host.announce(
@@ -114,11 +128,17 @@ class WordPressMenuCommands(WordPressAdminBase):
                 lambda: nav.add_item(api, menu, node),
                 lambda _n: f"{node.title} added to {menu.name} on {profile.name}, at the end.",
             )
-        self._show_menu(profile, api, data, menu)
+        self._show_menu(profile, api, data, menu, record)
 
     def _show_menu(
-        self, profile: st.SiteProfile, api: Any, data: _MenuData, menu: nav.Menu
+        self,
+        profile: st.SiteProfile,
+        api: Any,
+        data: _MenuData,
+        menu: nav.Menu,
+        record: Record | None = None,
     ) -> None:
+        steps = MenuSteps(api, menu, record)  # Undo here, and in the Workbench (item 20)
 
         def rows() -> list[str]:
             return [r.spoken() for r in nav.rows(menu.nodes)]
@@ -209,13 +229,14 @@ class WordPressMenuCommands(WordPressAdminBase):
             )
             if not name or not name.strip() or name.strip() == node.title:
                 return None
-            new = name.strip()
+            new, old = name.strip(), node.title
             self.site_job(
                 f"saving {menu.name}",
                 lambda: nav.rename_item(api, menu, node, new),
                 lambda _n: f"Renamed to {new}.",
             )
             node.title = new
+            steps.renamed(node, old, new)
             return rows()
 
         def mover(how: Any) -> Any:
@@ -223,11 +244,13 @@ class WordPressMenuCommands(WordPressAdminBase):
                 node = at(index)
                 if node is None:
                     return None
+                before = steps.kept()
                 said = how(menu.nodes, node)
                 if not said:
                     self.host.announce(f"{node.title} cannot move that way.")
                     return None
                 save(said)
+                steps.moved(said, before)
                 return rows()
 
             return run
@@ -250,11 +273,17 @@ class WordPressMenuCommands(WordPressAdminBase):
                 yes_label=f"Remove {node.title}",
             ):
                 return None
+            before = steps.kept()
             self.site_job(
                 f"saving {menu.name}",
                 lambda: nav.remove_item(api, menu, node),
                 lambda _n: f"{node.title} removed from {menu.name}.",
             )
+            steps.removed(node, before)
+            return rows()
+
+        def undo(index: int | None) -> object:
+            self.host.announce(steps.undo(index))
             return rows()
 
         def locations(_index: int | None) -> object:
@@ -361,6 +390,12 @@ class WordPressMenuCommands(WordPressAdminBase):
             dlg.Action("Move Ou&t", "Move the selected item out one level.", mover(nav.move_out)),
             dlg.Action("Re&move...", "Take the selected item out of the menu.", remove),
             dlg.Action(
+                "Un&do",
+                "Undo the last change made in this window: a rename, a move or a removal.",
+                undo,
+                needs_row=False,
+            ),
+            dlg.Action(
                 "C&heck Menu",
                 "Find items with no name, and links to drafts or deleted pages.",
                 check,
@@ -372,7 +407,7 @@ class WordPressMenuCommands(WordPressAdminBase):
         ]
         if menu.source == "classic":
             actions.insert(
-                10,
+                11,
                 dlg.Action(
                     "Locatio&ns...",
                     "Choose where the theme shows this menu, such as the header or footer.",
@@ -396,203 +431,5 @@ class WordPressMenuCommands(WordPressAdminBase):
             rows=rows(),
             details=details,
             actions=actions,
-        )
-        window.Destroy()
-
-    # ------------------------------------------------------------------ #
-    # Widgets (classic themes)
-
-    def cmd_widgets(self) -> None:
-        if self.workbench_door("wordpress.widgets"):
-            return  # the developer flag sends this door to the WordPress Workbench
-        profile = self.admin_site("Widgets")
-        if profile is None:
-            return
-
-        def work(api: Any, _account: wp.Account) -> tuple[list[ss.Sidebar], list[ss.Widget]]:
-            sidebars = ss.list_sidebars(api)
-            widgets = [w for s in sidebars for w in ss.list_widgets(api, s.id)]
-            return sidebars, widgets
-
-        def show(api: Any, _account: wp.Account, data: Any) -> None:
-            sidebars, widgets = data
-            if not sidebars:
-                self.host.announce(
-                    f"{profile.name} has no widget areas. A block theme keeps its header and "
-                    "footer in templates instead: see Template Outline."
-                )
-                return
-            self._show_widgets(profile, api, sidebars, widgets)
-
-        self.admin_load(profile, f"reading widgets on {profile.name}", "widgets", work, show)
-
-    def _show_widgets(
-        self,
-        profile: st.SiteProfile,
-        api: Any,
-        sidebars: list[ss.Sidebar],
-        widgets: list[ss.Widget],
-    ) -> None:
-        live = list(widgets)
-        names = {s.id: s.name for s in sidebars}
-
-        def ordered() -> list[ss.Widget]:
-            return [w for s in sidebars for w in live if w.sidebar == s.id]
-
-        def rows() -> list[str]:
-            out = []
-            for w in ordered():
-                same = [x for x in live if x.sidebar == w.sidebar]
-                out.append(
-                    f"{names.get(w.sidebar, w.sidebar)}: {w.spoken()}, "
-                    f"{same.index(w) + 1} of {len(same)}"
-                )
-            return out
-
-        def at(index: int | None) -> ss.Widget | None:
-            items = ordered()
-            return items[index] if index is not None and index < len(items) else None
-
-        def choose_area(title: str, exclude: str = "") -> ss.Sidebar | None:
-            areas = [s for s in sidebars if s.id != exclude]
-            if len(areas) == 1:
-                return areas[0]
-            picked = dlg.ask_choice(
-                self.host.parent,
-                self.host.show_modal,
-                title=title,
-                prompt="&Widget area:",
-                rows=[f"{s.name}: {s.description}" if s.description else s.name for s in areas],
-                help_text="The widget areas the theme offers, such as a sidebar or the footer.",
-            )
-            return None if picked is None else areas[picked]
-
-        def add(_index: int | None) -> object:
-            area = choose_area("Add Text Widget")
-            if area is None:
-                return None
-            text = dlg.ask_text(
-                self.host.parent,
-                self.host.show_modal,
-                title=f"Add Text to {area.name}",
-                prompt="&Text:",
-                multiline=True,
-                help_text="The words for a new paragraph widget at the end of this area.",
-            )
-            if not text or not text.strip():
-                return None
-
-            def done(widget: ss.Widget) -> None:
-                live.append(widget)
-                self.host.announce(f"Text widget added to {area.name} on {profile.name}.")
-
-            self.background(  # type: ignore[attr-defined]
-                "adding a widget",
-                lambda: ss.add_block_widget(api, area.id, ss.paragraph_block(text.strip())),
-                done,
-            )
-            return None
-
-        def edit(index: int | None) -> object:
-            widget = at(index)
-            if widget is None:
-                return None
-            if not widget.is_block:
-                self.host.announce(
-                    "This is a classic widget; its settings are only in the dashboard. "
-                    "Open in Dashboard takes you there."
-                )
-                return None
-            text = dlg.ask_text(
-                self.host.parent,
-                self.host.show_modal,
-                title="Edit Widget",
-                prompt="&Blocks:",
-                value=widget.content,
-                multiline=True,
-                help_text="The widget's blocks, as the site keeps them. Keep the block comments.",
-            )
-            if text is None or text == widget.content:
-                return None
-            self.site_job(
-                "saving a widget",
-                lambda: ss.edit_block_widget(api, widget, text),
-                lambda _w: f"Widget saved in {names.get(widget.sidebar)}.",
-            )
-            live[live.index(widget)] = ss.Widget(
-                widget.id, widget.id_base, widget.sidebar, text, widget.rendered
-            )
-            return rows()
-
-        def move_to(index: int | None) -> object:
-            widget = at(index)
-            if widget is None or len(sidebars) < 2:
-                return None
-            area = choose_area("Move Widget To", exclude=widget.sidebar)
-            if area is None:
-                return None
-            self.site_job(
-                "moving a widget",
-                lambda: ss.move_widget(api, widget, area.id),
-                lambda _w: f"Widget moved to {area.name}.",
-            )
-            live[live.index(widget)] = ss.Widget(
-                widget.id, widget.id_base, area.id, widget.content, widget.rendered
-            )
-            return rows()
-
-        def remove(index: int | None) -> object:
-            widget = at(index)
-            if widget is None:
-                return None
-            if not dlg.confirm(
-                self.host.parent,
-                self.host.show_modal,
-                title="Remove Widget",
-                message=(
-                    f"Take {widget.spoken()} out of {names.get(widget.sidebar)} on "
-                    f"{profile.name}? It goes to Inactive Widgets, where the dashboard can "
-                    "bring it back."
-                ),
-                yes_label="Remove Widget",
-            ):
-                return None
-            self.site_job(
-                "removing a widget",
-                lambda: ss.remove_widget(api, widget),
-                lambda _r: f"Widget removed from {names.get(widget.sidebar)}.",
-            )
-            live.remove(widget)
-            return rows()
-
-        def dashboard(_index: int | None) -> object:
-            self.host.open_in_browser(profile.site_url.rstrip("/") + "/wp-admin/widgets.php")
-            return None
-
-        window = dlg.show_list_window(
-            self.host.parent,
-            self.host.show_modal,
-            title=f"Widgets, {profile.name}",
-            purpose=f"Every widget on {profile.name}, by the area the theme shows it in.",
-            list_label="&Widgets:",
-            list_help="Each row gives the area, what the widget is, and its place in that area.",
-            rows=rows(),
-            details=lambda i: wp.plain_text((at(i) or live[0]).rendered),
-            actions=[
-                dlg.Action(
-                    "&Add Text...", "Add a paragraph widget to an area.", add, needs_row=False
-                ),
-                dlg.Action("&Edit...", "Change a block widget's content.", edit),
-                dlg.Action(
-                    "&Move to Area...", "Show the selected widget in another area.", move_to
-                ),
-                dlg.Action("&Remove...", "Take the selected widget out of its area.", remove),
-                dlg.Action(
-                    "Open in Dash&board",
-                    "Open the site's Widgets screen in your browser.",
-                    dashboard,
-                    needs_row=False,
-                ),
-            ],
         )
         window.Destroy()

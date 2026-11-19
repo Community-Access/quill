@@ -22,6 +22,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.counted import a_or_an
 from quill.core.wordpress import site_admin as admin
 from quill.core.wordpress.workbench_actions import command as workbench_command
 from quill.core.wordpress.workbench_people import (
@@ -214,23 +215,30 @@ class WorkbenchPeopleCommands:
         account = self.account_for(site)
         return refusal(needed, account, site) if account is not None else ""
 
-    def do_what_can_i_do(self, ref: Any, row: WbRow | None) -> None:
-        site = (row.site if row is not None else "") or self.site_of(ref) or self.current_site()
+    def reason(self, command_id: str) -> str:
+        """Why *command_id* is greyed on the selection, for the frame (review item 25)."""
+        frame = self.frame
+        row = frame.selected_row() if frame is not None else None
+        ref = frame.current if frame is not None else None
+        said = self.refusal_for(command_id, row if isinstance(row, WbRow) else None, ref)
+        if said:
+            return said
+        if row is None:
+            return "Select a row first; this works on the row you choose."
+        return "It does not apply to this kind of row."
+
+    def role_words(self) -> str:
+        """ "You are Editor on Radio." and the Workbench access, for Shift+F1's list."""
+        frame = self.frame
+        row = frame.selected_row() if frame is not None else None
+        ref = frame.current if frame is not None else None
+        site = (row.site if isinstance(row, WbRow) else "") or self.site_of(ref)
+        site = site or self.current_site()
         account = self.account_for(site) if site else None
-        kind = row.kind if row is not None and row.kind in self.actions.row_types else "node"
-        lines = []
-        if account is not None:
-            lines.append(f"You are {account.role_name} on {site}. {self._access_sentence(site)}")
-        for action in self.actions.rows_for(kind):
-            why = self.refusal_for(action.command_id, row) if row is not None else ""
-            lines.append(f"{action.label}: {why or 'yes'}")
-        dlg.show_report(
-            self.parent,
-            self.show_modal,
-            title="What Can I Do Here?",
-            text="\n".join(lines),
-            help_text="What your role and the Workbench's access let you do with this row.",
-        )
+        if account is None:
+            return ""
+        you = f"You are {a_or_an(account.role_name)} on {site}."
+        return f"{you} {self._access_sentence(site)}".strip()
 
     def do_view_as(self, ref: Any, _row: WbRow | None) -> None:
         site = self.site_of(ref) or self.current_site()

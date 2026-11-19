@@ -70,7 +70,7 @@ from quill.core.wordpress.workbench_tree import (
 )
 from quill.core.wordpress.workbench_type_nodes import type_children
 from quill.core.workbench.filters import Query
-from quill.core.workbench.history import ChangeHistory
+from quill.core.workbench.history import Change, ChangeHistory
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import NodeSpec
 from quill.ui.wordpress_workbench_across import WorkbenchAcrossCommands
@@ -306,6 +306,16 @@ class WordPressWorkbenchProvider(
             what += " Open it with Right Arrow to see what it holds."
         return what
 
+    def shows_node(self, node: NodeSpec, ref: NodeRef) -> bool:
+        """A plugin's branch only on a site that has the plugin (review item 30)."""
+        if ref.template != "site" or not ref.instance:
+            return True
+        from quill.core.wordpress.workbench_plugin_branches import shows
+
+        context = self._contexts.get(self.split(ref.instance)[0])
+        info = context.info if context is not None else None
+        return shows(node.key, info.namespaces if info is not None else None)
+
     def unavailable(self, ref: NodeRef, node: NodeSpec) -> str:
         if node.loader.startswith("planned:"):
             return PLANNED_WORDS.get(node.loader.removeprefix("planned:"), "In a later phase.")
@@ -477,6 +487,17 @@ class WordPressWorkbenchProvider(
         if frame is None:
             return []
         return [r for i in frame.selected_indices() if isinstance(r := frame.rows[i], WbRow)]
+
+    def step(self, target: str, summary: str, undo: Callable[[], str] | None = None) -> None:
+        """Put a finished write in Change History (review item 1).
+
+        Without a step, Ctrl+Z straight after the write undid an older change,
+        perhaps on another site. With one and no *undo*, Ctrl+Z says this one
+        cannot be undone and passes over it, as it should.
+        """
+        said = summary.strip()
+        said = said if said.endswith((".", "!", "?")) else f"{said}."
+        self.history.record(Change(target, said, undo=undo))
 
     def refresh(self) -> None:
         if self.frame is not None:

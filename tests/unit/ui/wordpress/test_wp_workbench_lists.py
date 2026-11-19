@@ -107,6 +107,9 @@ def test_new_here_makes_a_draft_post(bench, monkeypatch) -> None:
     bench.run(command("new_here"))
     assert ("POST", "wp/v2/posts", {"title": "Fresh", "status": "draft"}) in bench.api.writes
     assert any("as a draft" in s for s in bench.said)
+    # Item 1: a step in Change History, so Ctrl+Z does not reach past it to an older change.
+    assert bench.provider.history.entries[-1].summary.startswith("Made the post Fresh")
+    assert bench.provider.history.undo().endswith("cannot be undone.")
 
 
 def test_empty_spam_asks_then_deletes_every_spam_comment(bench, monkeypatch) -> None:
@@ -124,6 +127,9 @@ def test_allow_this_sender_approves_and_explains(bench) -> None:
     bench.run(command("allow_sender"))
     assert ("POST", "wp/v2/comments/8", {"status": "approve"}) in bench.api.writes
     assert any("next comments" in s or "will wait" in s for s in bench.said)
+    said = bench.provider.history.undo()  # item 1: Ctrl+Z puts it back in spam
+    assert ("POST", "wp/v2/comments/8", {"status": "spam"}) in bench.api.writes
+    assert said.endswith("is spam again.")
 
 
 def test_password_reset_opens_wp_admin_and_roles_read_in_words(bench, monkeypatch) -> None:
@@ -288,3 +294,106 @@ def test_an_empty_list_says_so(bench) -> None:
     bench.apply_filter()
     assert bench.said[-1] and bench.said[-1] != "Filtering."
     assert not bench.rows
+
+
+def test_item_menu_reaches_every_context_menu_command(bench) -> None:
+    """Item 31: Item > Commands for This Row has what the context menu has, More too."""
+    _posts(bench)
+    bench.focus_row(0)
+    sub = bench._dynamic_menus["row_actions"]
+    bench.fill_dynamic_menus()
+    shown = [item.GetItemLabelText() for item in sub.GetMenuItems()]
+    top, more = bench.row_actions(bench.selected_row())
+    assert len(shown) == len(top) + len(more)
+    assert "Earlier Versions..." in shown and "Duplicate as Draft" in shown
+    labels = [item.GetItemLabel() for item in sub.GetMenuItems()]
+    letters = [label.split("&", 1)[1][:1].lower() for label in labels if "&" in label]
+    assert len(letters) == len(set(letters))  # no letter claimed twice (GATE-14)
+
+
+def test_the_context_menu_gives_every_row_a_letter_and_its_key(bench, monkeypatch) -> None:
+    """Item 16: context-menu rows, More and its rows each have a letter; keys show."""
+    _posts(bench)
+    bench.focus_row(0)
+    seen: dict[str, list[str]] = {}
+
+    def popup(menu) -> bool:
+        def walk(target, name):
+            seen[name] = []
+            for item in target.GetMenuItems():
+                seen[name].append(item.GetItemLabel())
+                if item.GetSubMenu() is not None:
+                    walk(item.GetSubMenu(), item.GetItemLabelText())
+
+        walk(menu, "top")
+        return True
+
+    monkeypatch.setattr(bench.list, "PopupMenu", popup)
+    bench.show_row_menu()
+    for name, labels in seen.items():
+        rows = [label for label in labels if label]
+        letters = [label.replace("&&", "").split("&", 1)[1][:1].lower() for label in rows]
+        assert all(letters) and len(letters) == len(set(letters)), (name, rows)
+    assert any(label.startswith("&More") or "&" in label for label in seen["top"])
+    assert any("\tCtrl+Shift+P" in label for label in seen["top"] + seen.get("More", []))
+
+
+def test_a_greyed_row_says_why_and_shift_f1_says_who_you_are(bench, monkeypatch) -> None:
+    """Item 25: the reason is the provider's own, spoken when the row is reached."""
+    _posts(bench)
+    bench.focus_row(0)
+    said = bench.reason(command("toggle_plugin"))  # a plugin command, on a post
+    assert said == "It does not apply to this kind of row."
+    assert bench.provider.role_words().startswith("You are an Editor on ")
+    prompts: list[str] = []
+
+    class _Dialog:
+        def __init__(self, _parent, _title, prompt, _choices) -> None:
+            prompts.append(prompt)
+
+        def show(self) -> None:
+            return None
+
+    import quill.ui.workbench_frame_help as help_module
+
+    monkeypatch.setattr(help_module, "ActionListDialog", _Dialog)
+    bench.what_can_i_do()
+    assert prompts and prompts[0].startswith("You are an Editor on ")
+
+
+def test_reaching_a_dimmed_menu_row_speaks_its_reason(bench) -> None:
+    menu = wx.Menu()
+    bench.hear_greyed(menu)
+    dimmed = menu.Append(wx.ID_ANY, "&Install", "Installing needs the Administrator role.")
+    dimmed.Enable(False)
+    working = menu.Append(wx.ID_ANY, "&Read", "Read it.")
+    bench.said.clear()
+    for item in (working, dimmed, dimmed):
+        menu.ProcessEvent(wx.MenuEvent(wx.wxEVT_MENU_HIGHLIGHT, item.GetId(), menu))
+    assert bench.said == ["Installing needs the Administrator role."]  # once, dimmed only
+    menu.Destroy()
+
+
+def test_a_site_shows_only_the_plugin_branches_it_has(bench) -> None:
+    """Item 30: once the site's index is read, a missing plugin's branch is left out."""
+    from quill.core.wordpress.workbench_plugin_branches import PLUGIN_BRANCHES, shows
+
+    assert shows("shop", None)  # not read yet: shown
+    assert not shows("shop", ["wp/v2"]) and shows("shop", ["wp/v2", "wc/v3/"])
+    assert shows("posts", ["wp/v2"])  # not a plugin's branch
+    ctx = bench.provider._contexts.get(SITE)
+    if ctx is None or ctx.info is None:
+        bench.provider.ensure(bench.provider.ctx(SITE))
+    bench.rebuild_tree()
+    spaces = set(bench.provider._contexts[SITE].info.namespaces)
+    for key, wanted in PLUGIN_BRANCHES.items():
+        present = NodeRef("site", key, SITE) in bench._items
+        assert present == bool(spaces & set(wanted)), key
+
+
+def test_a_rebuild_keeps_what_was_opened(bench) -> None:
+    ref = NodeRef("site", "posts", SITE)
+    _go(bench, ref)
+    bench.tree.Expand(bench._items[ref])
+    bench.rebuild_tree()
+    assert bench.tree.IsExpanded(bench._items[ref])

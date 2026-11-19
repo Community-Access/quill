@@ -135,6 +135,7 @@ class WorkbenchMembershipCommands:
 
             def done(_answer: Any) -> None:
                 self.say(f"Cancelled {row.title}'s {name} membership on {row.site}.")
+                self.step(row.site, f"Cancelled {row.title}'s {name} membership on {row.site}")
                 self.refresh()
 
             self.background(
@@ -164,7 +165,16 @@ class WorkbenchMembershipCommands:
                     title=f"Change Membership Level - {row.title}",
                     prompt="&New level:",
                     rows=[f"{_level_name(level)} (level {level['id']})" for level in levels],
-                    help_text="The level this person has from now on.",
+                    initial=next(  # on the level they have now (item 34)
+                        (
+                            i
+                            for i, level in enumerate(levels)
+                            if any(str(m.get("id")) == str(level.get("id")) for m in current)
+                        ),
+                        0,
+                    ),
+                    help_text="The level this person has from now on. The list starts on the "
+                    "one they have now.",
                 )
                 if picked is None:
                     return
@@ -200,6 +210,7 @@ class WorkbenchMembershipCommands:
 
             def done(_answer: Any) -> None:
                 self.say(f"{row.title} now has {name} on {row.site}.")
+                self.step(row.site, f"{row.title} was given {name} on {row.site}")
                 self.refresh()
 
             self.background(
@@ -394,6 +405,7 @@ class WorkbenchMembershipCommands:
 
         def done(_raw: object) -> None:
             self.say(f"Made the discount code {spec.code} on {site}.")
+            self.step(site, f"Made the discount code {spec.code} on {site}")
             self.refresh()
 
         self.background(

@@ -211,12 +211,15 @@ whole site.
 Every row has a context menu. Press the Applications key, or Shift+F10. It
 lists everything you can do to that kind of row, with the main job first and
 Properties last. The **Item** menu in the menu bar holds the same commands
-that have keys.
+that have keys, and **Item > Commands for This Row** holds every command the
+context menu has for the selected row, the ones under More included, each
+with its own letter. So nothing is reachable only by right-clicking.
 
-A command your role cannot use is dimmed. Choose it by its key anyway and you
-hear why, for example "Publishing pages needs the Editor role or higher. You
+A command your role cannot use is dimmed. Arrow to it in a menu, or choose it
+by its key anyway, and you hear why, for example "Publishing pages needs the Editor role or higher. You
 are an Author on Community Radio." **Site > What Can I Do Here?**
-(`Shift+F1`) lists everything on the current place, and what each one needs.
+(`Shift+F1`) says who you are on the site and what Workbench access you have,
+then lists everything on the current place and what each one needs.
 
 The tree has a context menu too. On any place in a site it has **wp-admin for
 This Place...**, which offers the wp-admin screens nearest to that place, for

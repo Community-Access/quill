@@ -68,7 +68,11 @@ class WorkbenchMenuItemCommands:
         if profile is None:
             self.say(f"{row.site} is not a connected site here.")
             return
-        self.commands.cmd_menus(menu_id=int(row.key), profile=profile)
+        self.commands.cmd_menus(  # each change a Workbench step, so Ctrl+Z reaches it (item 20)
+            menu_id=int(row.key),
+            profile=profile,
+            record=lambda said, undo: self.step(row.site, said, undo),  # type: ignore[attr-defined]
+        )
 
     # -- Add Menu Item ------------------------------------------------------------
 

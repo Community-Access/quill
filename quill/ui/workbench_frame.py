@@ -207,24 +207,17 @@ class WorkbenchFrame(
         self.list.Bind(wx.EVT_CONTEXT_MENU, lambda _e: self.show_row_menu())
         self.filter.Bind(wx.EVT_TEXT_ENTER, lambda _e: self.apply_filter())
 
-    def rebuild_tree(self) -> None:
-        """Build the tree again after an instance was added; the selection is kept."""
-        current = self.current
-        self._navigating = self._rebuilding = True
-        try:
-            self._build_tree()
-        finally:
-            self._navigating = self._rebuilding = False
-        if current is not None and current in self._items:
-            self.select(current, remember=False)
-
     def _build_tree(self) -> None:
         tree, spec = self.tree, self.provider.tree
         tree.DeleteAllItems()
         self._items.clear()
         root = tree.AddRoot("Workbench")
 
+        shows = getattr(self.provider, "shows_node", None)
+
         def add(parent: Any, node: NodeSpec, ref: NodeRef) -> None:
+            if callable(shows) and not shows(node, ref):
+                return  # a plugin's branch on a site without the plugin (item 30)
             item = tree.AppendItem(
                 parent, node.label if node.parent or not ref.instance else ref.instance
             )
@@ -459,15 +452,6 @@ class WorkbenchFrame(
             self._say(self.loaded_words())
         elif self._arrived_for == generation and not self.rows and self.current is not None:
             self._say("No rows here.")  # a list arrived empty while focus was elsewhere
-
-    def loaded_words(self) -> str:
-        """How a reported load ended: the count and any limit, or why it is empty."""
-        if not self.rows:
-            return self.empty_words() or "No rows here."
-        said = f"{plural(len(self.rows), 'row')} shown."
-        cut = getattr(self.provider, "cut_for", None)
-        more = str(cut(self.current) or "") if callable(cut) and self.current is not None else ""
-        return f"{said} {more}".strip()
 
     def _load_failed(self, generation: int, node: NodeSpec, error: BaseException) -> None:
         if generation != self._generation:

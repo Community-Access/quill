@@ -433,6 +433,7 @@ class WorkbenchRowCommands(
             lambda: wc.reply(api, parent, text.strip()),
             lambda _c: (
                 self.say(f"Replied to {row.cell('author')} on {row.site}."),
+                self.step(row.site, f"Replied to {row.cell('author')} on {row.site}"),
                 self.refresh(),
             ),
         )
