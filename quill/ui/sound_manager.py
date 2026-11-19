@@ -202,6 +202,19 @@ def get_loaded_events() -> frozenset[str]:
     return frozenset()
 
 
+_feedback_mode = "sound"
+
+
+def action_feedback_mode() -> str:
+    """The person's ``action_feedback`` choice, as the manager last applied it.
+
+    For surfaces that report results but hold no Settings of their own (the
+    GitHub Workbench): "sound" until the manager has started, which is the
+    setting's default.
+    """
+    return _feedback_mode
+
+
 def has_sound_for(event_id: str) -> bool:
     """True when *event_id* would actually make a noise if posted right now.
 
@@ -293,6 +306,8 @@ class _SoundManager:
         self.apply_settings(settings)
 
     def apply_settings(self, settings: Settings) -> None:
+        global _feedback_mode
+        _feedback_mode = str(getattr(settings, "action_feedback", "sound") or "sound")
         self.enabled = bool(getattr(settings, "sound_enabled", True))
         new_pack_path = str(getattr(settings, "sound_pack_path", ""))
         volume = int(getattr(settings, "sound_volume", 80))

@@ -578,6 +578,23 @@ Every change asks first when it cannot be undone, runs without freezing the
 window, and says one sentence about what GitHub confirmed. `F9` says it
 again.
 
+Those sentences follow the same setting as the editor's copy and paste, **When
+a command does something, give me** (QUILL Guide, chapter 11):
+
+- A change that worked plays the task-complete sound. If its sentence names
+  or counts what changed, such as "Created bug" or "Saved 3 changes to Issue
+  #12", it is always spoken as well, because no sound can carry a name or a
+  number. Only a bare acknowledgement, such as "Saved." or "Copied.", follows
+  the setting: the sound, the words, both or neither, as it does for
+  `Ctrl+C`.
+- Something that did not work, starting "Could not", plays the error sound
+  when sounds are on, and is always spoken, whatever the setting, so you
+  always hear why.
+- Everything else, such as "Open a repository first", is spoken with no
+  sound.
+
+`F9` says the last result even when you only heard its sound.
+
 ## Hearing where you are
 
 `Alt+1` to `Alt+9` say something and move nothing: where you are, what is
@@ -601,7 +618,16 @@ so is one QUILL does not know.
 The last place in the tree is help you can walk through like any other list.
 
 - **Do Something** has tasks in plain words, such as Fix a failed run. Enter
-  reads the steps; Take Me There, on the context menu, goes to the place.
+  reads the steps. The context menu has three more:
+  - **Take Me There** goes to the place the task is about.
+  - **Walk Me Through It** goes there too, then says the first step only.
+    When you have done it, the next step is said, and so on to the end. `F1`
+    says the step again, `Shift+F1` lists all the steps with where you are,
+    and `Escape` stops the walk. A step that only moves the selection, such
+    as "Arrow down the list", counts as done when you run the next command.
+  - **Do It** runs the one command a task comes down to, where it belongs,
+    with its usual dialog: File an issue opens New Issue in the repository's
+    Issues. It is greyed on tasks that take more than one command.
 - **The Guide** lists this book's chapters. Enter opens one.
 - **Words** is the GitHub glossary. Type a word to jump to it.
 - **Keys** has every key in the window, grouped by what it does.

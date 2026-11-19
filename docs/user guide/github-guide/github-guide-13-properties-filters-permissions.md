@@ -44,6 +44,13 @@ who can change that. `F1` on the field says the same.
   a new one on GitHub and check it straight away. If one by that name is
   already there, that is not a failure: QUILL says "bug already exists;
   using it" and checks the one GitHub has.
+- An issue's **Issue type** and a pull request's **Into branch** are lists
+  too, of the types your organization has and the repository's branches.
+  New Issue Type... makes a type for the whole organization, which needs an
+  organization owner. New Branch... makes a branch from the one the pull
+  request merges into now, then selects it. "(none)" clears an issue type,
+  but a pull request always merges into some branch, so choosing "(none)"
+  there leaves it as it was and QUILL says so.
 - **OK** saves and closes. **Apply**, or `Ctrl+S`, saves and keeps the sheet
   open. `Ctrl+Enter` is OK from anywhere, even in a long text box. Escape is
   Cancel.

@@ -391,6 +391,15 @@ again. Your notifications work the same way, with one more rule: GitHub tells
 apps how often they may check the inbox, and QUILL keeps to it. Chapter 3
 explains what you hear if you refresh sooner.
 
+The Workbench's lists and sheets do the same. Pressing F5 on a list of issues,
+pull requests, branches, commits, tags, releases, workflows or runs first asks
+GitHub whether that list has changed, and if it has not, the rows you already
+have stay as they are without being read again. Reopening a sheet, or the
+check QUILL makes after you save one, works the same way. This matters most
+for pull requests, where reading each row's size used to cost one request a
+row. Nothing is kept on disk: what QUILL remembers for this lasts until you
+close it.
+
 ---
 
 - Previous: [Chapter 1: Getting started](github-guide-01-getting-started.html)

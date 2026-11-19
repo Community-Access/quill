@@ -251,7 +251,7 @@ href="../Product Requirement Documents and Specifications/github-workbench-prd.m
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 69 are met, 23 are partly met and 8 are
+<p>Of the 100 live requirements, 74 are met, 18 are partly met and 8 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -266,15 +266,15 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>59</td>
-<td>15</td>
+<td>63</td>
+<td>11</td>
 <td>1</td>
 <td>75</td>
 </tr>
 <tr>
 <td>Should</td>
-<td>10</td>
-<td>8</td>
+<td>11</td>
+<td>7</td>
 <td>5</td>
 <td>23</td>
 </tr>
@@ -382,16 +382,6 @@ deep, loading lazily, with counts after names that…</td>
 selection. No counts after node names anywhere.</td>
 </tr>
 <tr>
-<td>GH-R-035</td>
-<td>Must</td>
-<td>Every picker ends with New… that creates and uses the thing</td>
-<td>New Label…, New Milestone…, New Project…
-(<code>sheets_items.py</code>;
-<code>github_workbench_properties.py:386</code>;
-<code>test_new_project_creates_one</code>…). Pickers for people/teams
-have Add, not New; other pickers (issue type, branch) have none.</td>
-</tr>
-<tr>
 <td>GH-R-045</td>
 <td>Must</td>
 <td>Projects (version 2): every field type, views, items, workflows and
@@ -440,29 +430,12 @@ Keys, What Changed, Ask a Person (<code>workbench_tree.py:287</code>);
 D11’s Tutorials and Tips nodes are missing.</td>
 </tr>
 <tr>
-<td>GH-R-107</td>
-<td>Must</td>
-<td>Take Me There and Walk Me Through It on every help topic and task;
-Do It where the answer is one command</td>
-<td>Take Me There on Do Something tasks; no Walk Me Through, no Do
-It.</td>
-</tr>
-<tr>
 <td>GH-R-108</td>
 <td>Must</td>
 <td>Shift+F9 Explain That for every result, and Why? on every automatic
 behaviour</td>
 <td>Shift+F9 Explain That (<code>workbench_window_menu.py</code>, frame
 <code>explain_result</code>); no Why? on automatic behaviours.</td>
-</tr>
-<tr>
-<td>GH-R-113</td>
-<td>Must</td>
-<td>Sounds go through the shared action-feedback channels; a failure or
-a count is always spoken</td>
-<td>Every outcome is spoken, so failures and counts always are; but the
-Workbench plays no sounds and ignores the <code>action_feedback</code>
-setting (only diff hearing has sounds, through sound events).</td>
 </tr>
 <tr>
 <td>GH-R-119</td>
@@ -473,19 +446,6 @@ D20</td>
 generated reference (GATE-GITHUB-HELP,
 <code>build_help_reference</code>); D20’s measures (timed
 find-the-answer sessions) not done.</td>
-</tr>
-<tr>
-<td>GH-R-131</td>
-<td>Must</td>
-<td>Conditional requests (ETag) for every repeated read
-(<code>conditional_requests.py</code>), and secondary rate limits…</td>
-<td>Secondary limits respected in <code>rest_transport.py</code>
-(<code>secondary_wait_seconds</code>,
-<code>test_a_secondary_limit_stops_every_later_request_with_one_sentence</code>);
-ETag only in <code>explore.py</code>’s conditional read,
-<code>explore_extra_views</code>, <code>repo_activity</code> and
-<code>repo_insights</code>, not every repeated read
-(<code>items_provider</code> lists and sheets reload in full)</td>
 </tr>
 <tr>
 <td>GH-R-150</td>
@@ -534,17 +494,6 @@ access templates not built.</td>
 (<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_why_cant_they_names_the_role_needed_and_who_can_change_it</code>
 and others), but they read a fixed ability table, not GitHub’s real
 permissions (the open complete.md row).</td>
-</tr>
-<tr>
-<td>GH-R-083</td>
-<td>Should</td>
-<td>Watches with one-sentence results and sounds through the shared
-feedback channels</td>
-<td>Watches with one-sentence results
-(<code>test_a_first_check_learns_then_only_new_things_are_said</code>,
-<code>test_add_edit_pause_check_and_remove_a_watch</code>); no sounds at
-all, nothing in the GitHub Workbench uses
-<code>action_feedback</code>.</td>
 </tr>
 <tr>
 <td>GH-R-088</td>
@@ -855,13 +804,14 @@ chooses per field; after saving, the…</td>
 <tr>
 <td>GH-R-035</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Every picker ends with New… that creates and uses the thing</td>
-<td>New Label…, New Milestone…, New Project…
-(<code>sheets_items.py</code>;
-<code>github_workbench_properties.py:386</code>;
-<code>test_new_project_creates_one</code>…). Pickers for people/teams
-have Add, not New; other pickers (issue type, branch) have none.</td>
+<td>New Label…, New Milestone…, New Project…, New Issue Type… and New
+Branch… (<code>github_workbench_create.py</code>;
+<code>test_new_project_creates_one</code>…,
+<code>test_github_workbench_picker_new.py</code>). Pickers for people
+and teams have Add…, since a person or team cannot be made from a
+sheet.</td>
 </tr>
 <tr>
 <td>GH-R-036</td>
@@ -1242,14 +1192,15 @@ never blocking</td>
 <tr>
 <td>GH-R-083</td>
 <td>Should</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Watches with one-sentence results and sounds through the shared
 feedback channels</td>
 <td>Watches with one-sentence results
 (<code>test_a_first_check_learns_then_only_new_things_are_said</code>,
-<code>test_add_edit_pause_check_and_remove_a_watch</code>); no sounds at
-all, nothing in the GitHub Workbench uses
-<code>action_feedback</code>.</td>
+<code>test_add_edit_pause_check_and_remove_a_watch</code>), and their
+results now play through the shared feedback channels like every
+Workbench result (<code>outcome_feedback.py</code>;
+<code>test_outcome_feedback.py</code>).</td>
 </tr>
 <tr>
 <td>GH-R-084</td>
@@ -1434,11 +1385,15 @@ D11’s Tutorials and Tips nodes are missing.</td>
 <tr>
 <td>GH-R-107</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Take Me There and Walk Me Through It on every help topic and task;
 Do It where the answer is one command</td>
-<td>Take Me There on Do Something tasks; no Walk Me Through, no Do
-It.</td>
+<td>Take Me There, Walk Me Through It
+(<code>quill/core/workbench/walk.py</code>; the shared frame’s
+<code>start_walk</code>, F1 repeats, Shift+F1 lists, Escape stops) and
+Do It where the task is one command (<code>workbench_help.DO_IT</code>,
+greyed otherwise) on every Do Something task
+(<code>test_github_workbench_walk.py</code>).</td>
 </tr>
 <tr>
 <td>GH-R-108</td>
@@ -1550,12 +1505,15 @@ passes (its announcement service, which brailles); GATE-BRAILLE in
 <tr>
 <td>GH-R-113</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Sounds go through the shared action-feedback channels; a failure or
 a count is always spoken</td>
-<td>Every outcome is spoken, so failures and counts always are; but the
-Workbench plays no sounds and ignores the <code>action_feedback</code>
-setting (only diff hearing has sounds, through sound events).</td>
+<td>Results go through <code>action_feedback</code>
+(<code>quill/core/github/outcome_feedback.py</code> plan,
+<code>quill/ui/github_workbench_feedback.py</code>): task-complete tone
+for a change that landed, error tone for a failure, a failure or a count
+always spoken, a bare acknowledgement by the setting
+(<code>test_outcome_feedback.py</code>).</td>
 </tr>
 <tr>
 <td>GH-R-114</td>
@@ -1637,16 +1595,16 @@ uncommitted, branch gh/service-status)</td>
 <tr>
 <td>GH-R-131</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Conditional requests (ETag) for every repeated read
 (<code>conditional_requests.py</code>), and secondary rate limits…</td>
 <td>Secondary limits respected in <code>rest_transport.py</code>
 (<code>secondary_wait_seconds</code>,
 <code>test_a_secondary_limit_stops_every_later_request_with_one_sentence</code>);
-ETag only in <code>explore.py</code>’s conditional read,
-<code>explore_extra_views</code>, <code>repo_activity</code> and
-<code>repo_insights</code>, not every repeated read
-(<code>items_provider</code> lists and sheets reload in full)</td>
+every repeated REST read is conditional: Workbench lists through
+<code>list_probe.py</code> (one If-None-Match read of the same window,
+rows kept on 304) and sheets, pickers and reloads through TokenApi.rest
+(<code>test_conditional_reads.py</code>). GraphQL has no ETag.</td>
 </tr>
 <tr>
 <td>GH-R-132</td>

@@ -35,6 +35,7 @@ from quill.core.github.items_provider import (
     GitHubWorkflowRun,
 )
 from quill.core.github.items_provider_constants import DEFAULT_PAGE_LIMIT
+from quill.core.github.list_probe import probe_token, rows_or_fetch, view_rows
 from quill.core.github.workbench_sheets import sheet_for, sheet_title, values_for
 from quill.core.github.workbench_tree import GITHUB_TREE, START_NODE, node_for_items_view
 from quill.core.github.workbench_window_menu import (
@@ -287,7 +288,7 @@ class GitHubWorkbenchProvider(
             "workflows": lambda: items.fetch_workflows(repo, limit=limit),
             "runs": lambda: items.fetch_workflow_runs(repo, limit=limit),
         }.get(view)
-        return list(fetch()) if fetch is not None else []
+        return view_rows(items, repo, view, limit, fetch) if fetch is not None else []
 
     def _load_issues(
         self, repo: str, preset: dict[str, str], query: Query, limit: int
@@ -308,10 +309,16 @@ class GitHubWorkbenchProvider(
             )
         else:
             found = []
-            if show in ("issues", "both"):
-                found += items.fetch_issues(repo, state=state, limit=limit)
-            if show in ("prs", "both"):
-                found += items.fetch_pulls(repo, state=state, limit=limit)
+            token = probe_token(items)
+            window = {"state": state, "per_page": str(limit)}
+            for kind, fetch in (("issues", items.fetch_issues), ("pulls", items.fetch_pulls)):
+                if show in ("both", "issues" if kind == "issues" else "prs"):
+                    found += rows_or_fetch(
+                        token,
+                        f"/repos/{repo}/{kind}",
+                        window,
+                        lambda f=fetch: f(repo, state=state, limit=limit),  # type: ignore[misc]
+                    )[0]
         rows = [r for r in found if isinstance(r, GitHubItem)]
         if any(key == "conflicts" for key, _v, _n in local):
             self.fetch_merge_states(repo, list(rows))

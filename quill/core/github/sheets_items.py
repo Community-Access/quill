@@ -228,6 +228,11 @@ def _milestone_encode(
     return {"milestone": choices.get(str(value)) if value else None}
 
 
+def _type_encode(value: Value, _choices: Mapping[str, object], _ident: Ident) -> dict[str, object]:
+    """An issue type by name, and "(none)" clears it rather than asking for a type called ""."""
+    return {"type": str(value) if value else None}
+
+
 def _subscription(value: Value, _choices: Mapping[str, object], ident: Ident) -> dict[str, object]:
     return {"id": ident.get("node_id", ""), "state": "SUBSCRIBED" if value else "UNSUBSCRIBED"}
 
@@ -349,6 +354,10 @@ def _owner_and_name(ident: Ident) -> dict[str, object]:
 
 
 _OPTIONS = {
+    "issue_type": Options(
+        "/orgs/{owner}/issue-types",
+        lambda row: str(row.get("name", "")) if row.get("is_enabled", True) else "",
+    ),
     "labels": Options("/repos/{repo}/labels", lambda row: str(row.get("name", ""))),
     "assignees": Options("/repos/{repo}/assignees", lambda row: str(row.get("login", ""))),
     "milestone": Options(
@@ -478,7 +487,10 @@ ISSUE = SheetDef(
                 ed(
                     "issue_type",
                     "Issue type",
-                    help="The organization's issue type, such as Bug or Feature. Empty for none.",
+                    _K.CHOICE,
+                    "The organization's issue type, such as Bug or Feature, or none. "
+                    "New Issue Type... makes one, which needs an organization owner.",
+                    create="New Issue Type...",
                 ),
                 ro("author", "Author"),
                 ro("created", "Created", _K.DATE),
@@ -516,7 +528,7 @@ ISSUE = SheetDef(
         "title": patch(_ISSUE_PATH, "viewer:viewerCanUpdate", _V),
         "body": patch(_ISSUE_PATH, "viewer:viewerCanUpdate", _V),
         "state": patch(_ISSUE_PATH, "viewer:viewerCanUpdate", _V, encode=_state_encode),
-        "issue_type": patch(_ISSUE_PATH, "repo:triage", _O, "type"),
+        "issue_type": patch(_ISSUE_PATH, "repo:triage", _O, encode=_type_encode),
         "labels": _LABELS_WRITE,
         "assignees": patch(_ISSUE_PATH, "repo:triage+viewer:viewerCanAssign", _O),
         "milestone": patch(_ISSUE_PATH, "repo:triage", _O, encode=_milestone_encode),

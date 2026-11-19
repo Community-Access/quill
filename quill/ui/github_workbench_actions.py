@@ -61,6 +61,7 @@ from quill.ui.github_workbench_compare import (
     GitHubWorkbenchCompareMixin,
 )
 from quill.ui.github_workbench_gists import GitHubWorkbenchGistsMixin
+from quill.ui.github_workbench_help import HELP_VERBS
 from quill.ui.github_workbench_items import ITEM_REASONS, ITEM_VERBS, GitHubWorkbenchItemsMixin
 from quill.ui.github_workbench_pulls import GitHubWorkbenchPullsMixin
 from quill.ui.github_workbench_reading import (
@@ -171,8 +172,7 @@ _NATIVE: dict[str, frozenset[str]] = {
     "choose_repositories": frozenset({"view"}),
     "go_to_number": frozenset({"view"}),
     "review": frozenset({"pr_item"}),
-    "open_topic": frozenset({"help_topic"}),
-    "take_me_there": frozenset({"help_topic"}),
+    **HELP_VERBS,
     "undo_change": frozenset({"view"}),
     # Export List (PRD 22.7): the list as shown, whatever node it is.
     "export_list": frozenset({"view"}),
@@ -330,10 +330,10 @@ class GitHubWorkbenchActionsMixin(
         return True
 
     def _say(self, text: str) -> None:
-        if self.frame is not None:
-            self.frame._say(text)
-        else:
-            self._announce(text)
+        """A result: its tone and its words, by the shared action-feedback setting (GH-R-113)."""
+        from quill.ui.github_workbench_feedback import say_result
+
+        say_result(self.frame, self._announce, text)
 
     def _background(self, name: str, work: Callable[[], Any], done: Callable[[Any], None]) -> None:
         said = _development.failure_sentence

@@ -119,7 +119,10 @@ PULL_REQUEST = SheetDef(
                 ed(
                     "base",
                     "Into branch",
-                    help="The branch it merges into. Changing it re-targets the pull request.",
+                    _K.CHOICE,
+                    "The branch it merges into. Changing it re-targets the pull request. "
+                    "New Branch... makes one from the branch it merges into now.",
+                    create="New Branch...",
                 ),
                 ed(
                     "maintainer_can_modify",
@@ -233,6 +236,7 @@ PULL_REQUEST = SheetDef(
         **_OPTIONS,
         "reviewers": Options("/repos/{repo}/collaborators", lambda r: str(r.get("login", ""))),
         "team_reviewers": Options("/repos/{repo}/teams", lambda r: str(r.get("slug", ""))),
+        "base": Options("/repos/{repo}/branches", lambda r: str(r.get("name", ""))),
     },
     title=lambda ident: f"Pull Request #{ident['number']}",
     url=lambda ident: f"https://github.com/{ident['repo']}/pull/{ident['number']}",

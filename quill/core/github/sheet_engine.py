@@ -259,7 +259,7 @@ def load_options(api: GitHubApi, sheet: SheetDef, ident: Ident) -> dict[str, dic
             else:
                 answer = api.rest(
                     "GET",
-                    fill_path(source.path, ident),
+                    fill_path(source.path, _with_owner(ident)),
                     query={"per_page": "100", **source.query},
                 )
                 rows = answer.data if isinstance(answer.data, list) else []
@@ -271,6 +271,14 @@ def load_options(api: GitHubApi, sheet: SheetDef, ident: Ident) -> dict[str, dic
                 name = source.name(row)
                 choices[name] = source.value(row) if source.value else name
         found[key] = choices
+    return found
+
+
+def _with_owner(ident: Ident) -> dict[str, str]:
+    """*ident* with ``owner`` too, from ``repo``: issue types live on the organization."""
+    found = dict(ident)
+    if "repo" in found and "owner" not in found:
+        found["owner"] = found["repo"].partition("/")[0]
     return found
 
 

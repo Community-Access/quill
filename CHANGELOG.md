@@ -2,6 +2,45 @@
 
 ## 1.0.0
 
+### GitHub Workbench: help that walks with you (2026-11-19)
+
+The tasks under Help and Learning, Do Something, have two more choices on
+their context menu. **Walk Me Through It** goes to the place and says one
+step at a time, the next after you have done the one before. `F1` repeats
+the step, `Shift+F1` lists all of them and `Escape` stops. **Do It** runs
+the one command a task comes down to, such as New Issue for File an issue.
+This meets GH-R-107.
+
+### GitHub Workbench: results follow your sound or speech choice (2026-11-19)
+
+The GitHub Workbench used to speak every result and play no sounds. It now
+follows **When a command does something, give me**, the setting the editor
+uses for copy and paste. A change that worked plays the task-complete sound
+and is still spoken when it names or counts what changed; only a bare
+"Saved." or "Copied." can be a sound alone, if that is what you chose.
+Something that did not work plays the error sound and is always spoken. `F9` says the last result even when
+you only heard its sound. This meets GH-R-113 and GH-R-083.
+
+### GitHub Workbench: a refresh that changed nothing costs nothing (2026-11-18)
+
+Every GitHub read the Workbench repeats is now conditional: QUILL sends what
+GitHub called the last answer, and if nothing has changed GitHub says so in an
+answer that does not count against your hourly allowance. That covers F5 on
+the issue, pull request, branch, commit, tag, release, workflow and run
+lists, reopening a sheet, picker lists and the check after a save. On a list
+of 30 pull requests, an unchanged F5 used to cost 31 requests; now it costs
+none. What QUILL remembers for this stays in memory, never on disk. This
+meets GH-R-131.
+
+### GitHub Workbench: pick an issue type or a branch from a list (2026-11-18)
+
+On an issue's sheet, Issue type was a text box you had to spell into; on a
+pull request's sheet, so was Into branch. Both are now lists of what GitHub
+has, and each ends with a button to make a new one, as Labels and Milestone
+already did: New Issue Type... for the organization and New Branch... from
+the branch the pull request merges into now. "(none)" clears an issue type,
+and is refused for Into branch, with QUILL saying why. This meets GH-R-035.
+
 ### WordPress Workbench: take an order by telephone, and fix one (2026-11-18)
 
 Shop Orders has New Order... (Ctrl+N): choose a customer, or a guest by name
