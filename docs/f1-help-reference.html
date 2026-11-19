@@ -6359,7 +6359,7 @@ one.</p>
 every repository’s vulnerable dependencies in one list.</p>
 <p><strong>organization: Secret Scanning Alerts.</strong> Secret
 Scanning Alerts: secrets found in any repository. The secret itself is
-never shown here.</p>
+never asked for, so it is never shown here.</p>
 <p><strong>organization: Security Advisories.</strong> Security
 Advisories: the repository advisories across this organization.</p>
 <p><strong>organization: Recent Events.</strong> Recent Events: the
@@ -6773,6 +6773,9 @@ request itself once it is ready, and how.</p>
 request once its checks and reviews allow.</p>
 <p><strong>Turn Off Agent Merge.</strong> Stop Copilot merging this pull
 request.</p>
+<p><strong>Dependency Review.</strong> What this pull request changes in
+the dependencies: each one added or removed, its licence, and its known
+vulnerabilities.</p>
 <p><strong>Jobs and Logs.</strong> The run’s jobs, steps and logs.</p>
 <p><strong>What Failed.</strong> The failing steps and their log
 lines.</p>
@@ -6886,7 +6889,7 @@ about this repository as read.</p>
 <p><strong>Set a Custom Property.</strong> Give one of the
 organization’s custom properties a value here.</p>
 <p><strong>Compare Dependencies.</strong> Which dependencies changed
-between two branches, tags or commits, and their known
+between two branches, tags or commits, their licences, and their known
 vulnerabilities.</p>
 <p><strong>SBOM Report.</strong> Ask GitHub to build a software bill of
 materials report, and read it.</p>
@@ -6926,6 +6929,9 @@ here may do, and what may start it.</p>
 organization’s agent secrets this repository may use (names only).</p>
 <p><strong>Agent Variables from the Organization.</strong> The
 organization’s agent variables this repository may use.</p>
+<p><strong>Allow a Blocked Secret.</strong> When push protection stopped
+your push, let that one secret through: give the placeholder id git push
+printed and say why.</p>
 <p><strong>Open.</strong> Select the person’s node in the tree.</p>
 <p><strong>Follow or Unfollow.</strong> Follow them, or stop.</p>
 <p><strong>Find Issues with Label.</strong> Issues and pull requests
@@ -7061,6 +7067,9 @@ sign-off.</p>
 activity in your feed.</p>
 <p><strong>Unfollow Organization.</strong> Stop seeing this organization
 in your feed.</p>
+<p><strong>Security Overview.</strong> Open Dependabot, code scanning
+and secret scanning alerts in every repository, counted by severity,
+worst first.</p>
 <p><strong>Open.</strong> Open the settings dialog for this; it asks
 before saving.</p>
 <p><strong>Edit Watch.</strong> Change what the watch looks at.</p>

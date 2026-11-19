@@ -14,6 +14,9 @@
   .../security-advisories``, maintainers).
 * **Publish or Close Advisory...** changes its state (``PATCH``);
   publishing is public and cannot be undone, so it asks for the GHSA id typed.
+  A private report someone sent (state ``triage``) reads "private report to
+  review", and the same command offers to accept it (it becomes a draft the
+  maintainers and the reporter work on) or to close it.
   **Request CVE...** asks GitHub for a CVE number (``POST .../cve``).
 * **Search > Security Advisories** searches GitHub's Advisory Database by a
   package name, a CVE or a GHSA id (``GET /advisories``).
@@ -41,6 +44,7 @@ __all__ = [
     "draft_advisory",
     "fetch_advisories",
     "fetch_policy",
+    "is_private_report",
     "report_vulnerability",
     "request_cve",
     "search_advisories",
@@ -81,10 +85,20 @@ def _vulnerable(raw: Mapping[str, Any]) -> list[str]:
     return lines
 
 
+_REPORT = "private report to review"
+
+
+def is_private_report(row: ExploreRow) -> bool:
+    """Whether an advisory row is a report someone sent that nobody has accepted yet."""
+    return row.kind == "advisory" and f", {_REPORT}:" in row.label
+
+
 def advisory_row(repository: str, raw: Mapping[str, Any]) -> ExploreRow:
     ghsa = str(raw.get("ghsa_id") or "")
     severity = str(raw.get("severity") or "unknown")
     state = str(raw.get("state") or "")
+    if state == "triage":
+        state = _REPORT
     summary = str(raw.get("summary") or "")
     cve = str(raw.get("cve_id") or "")
     label = f"{ghsa}: {severity} severity" + (f", {state}" if state else "") + f": {summary}."
@@ -230,7 +244,10 @@ def draft_advisory(
     return f"Drafted advisory {ghsa}. Only maintainers can see it until it is published."
 
 
-def set_state(api: GitHubApi, repository: str, ghsa: str, state: str) -> str:
+def set_state(
+    api: GitHubApi, repository: str, ghsa: str, state: str, *, report: bool = False
+) -> str:
+    """Publish, close or re-draft an advisory; with *report*, accept or close a private report."""
     if state not in ("published", "closed", "draft"):
         raise AdvisoryError(f"{state} is not an advisory state.")
     try:
@@ -241,6 +258,13 @@ def set_state(api: GitHubApi, repository: str, ghsa: str, state: str) -> str:
         )
     except GitHubRestError as exc:
         raise _refused(exc, f"change {ghsa}") from exc
+    if report and state == "draft":
+        return (
+            f"Accepted the report; {ghsa} is a draft advisory now, which the maintainers and "
+            "the reporter can see."
+        )
+    if report and state == "closed":
+        return f"Closed the report {ghsa}. The reporter can still read it."
     return {
         "published": f"Published {ghsa}. It is public now, and in the Advisory Database.",
         "closed": f"Closed {ghsa}.",
