@@ -51,24 +51,21 @@ Each is done only with evidence: a test or a live run.
 - [ ] Organization issue fields (close reasons, linked branches and unlinking them, branch for an issue and task lists are done).
 - [ ] Wiki, and cross-linked discussion → issue → pull request workflows (saved replies and repository invitations are done).
 - [ ] Repository General/features, complete creation/template options, transfer, topics and star lists (standalone tags are done).
-- [ ] Rulesets/protection management, organization/member/team access, custom roles and audit logs.
 - [ ] Accessible workflow authoring: triggers/jobs/steps/inputs/permissions/dependency graph as linear controls (turning a workflow on or off is done).
 - [ ] Dependabot configuration and pull request commands; CODEOWNERS editing/ownership lookup.
-- [ ] Batch merges of independently eligible pull requests (Merge Queue, Why Can't I Merge?, Auto-Merge and queue add/remove are done).
-- [ ] Environments, deployment protection and release/deployment evidence (Set Status... on a commit is done).
 - [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
 - [ ] Code/secret scanning, advisories, private reports, bypass/dismissal requests, Autofix/dependency review and organization security overview.
 - [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
-- [ ] Least-privilege advice based on observed usage with honest uncertainty; artifact attestations and immutable release evidence.
+- [ ] Least-privilege advice based on observed usage with honest uncertainty (attestations and immutable releases are done).
 - [ ] First-class by-name collections for every kind in product requirements document (PRD) 22.11 beyond Labels, Milestones, Topics, Rules and Branch Protection, and the Fleet; the other kinds are classified in `quill/core/github/across_scope_matrix.py`.
 - [ ] Tags, release trains and branch renames across repositories: comparison, publishing, feature-specific safeguards (topics are done).
 - [ ] Align or promote to organization, where supported: environments, secrets, variables, webhooks, keys and autolinks (rulesets and default-branch protection are done; labels cannot be promoted).
 - [ ] Workflow/template/community/Dependabot/CODEOWNERS content: compare and update through reviewable pull requests.
-- [ ] People/teams/settings/custom properties/issue types: access and setting matrices with inherited-role explanations.
 - [ ] Saved replies/favorites/watch levels/stars, alerts/packages/Pages where supported.
 - [ ] Cross-repository coverage is complete only when the corresponding single-repository operation and batch behavior are complete; read-only category views are tracked separately from multi-target writes.
-- [ ] GX09 policy-aware merging; GX10 release/deployment evidence.
-- [ ] GX11 security/dependencies; GX12 collaboration/knowledge; GX13 administration.
+- [ ] GX09: Why Can't I Merge? and Merge Selected... do not yet name the specific ruleset or CODEOWNERS rule that blocks (only the review window's Check Merge Policy does), and nothing watches a pull request to say when its readiness changes.
+- [ ] GX10: attestation signatures are not verified in QUILL (it points to gh attestation verify), and a downloaded release file is not checked against its digest.
+- [ ] GX11 security/dependencies; GX12 collaboration/knowledge; GX13: account-aware repository switching (Compare Accounts and Act As, still open).
 - [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance; GX16 category-first cross-repository browsing.
 - [ ] Apply provider-neutral patterns: read long issue/pull request/discussion threads as one structured page; preserve the selected row on return; say the actual outcome once through QUILL's existing feedback settings.
 
@@ -93,6 +90,8 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 - [ ] Run `python docs/qa/github-live-run.py --create` after signing in again, and the live rows marked "needs Jeff".
 - [ ] GitHub live scenarios: multiple roles/accounts, protected branches, organization restrictions, rate limiting, private repositories, project fields, secrets, failure/retry and no-API fallbacks; the Copilot cloud agent commands on a Copilot plan.
 - [ ] Vote... in a real discussion poll, and the Pinned (spotlight) place, on the test repository.
+- [ ] Merge Selected... on two throwaway pull requests, and Release Evidence on `v0.0.1-quill-live`, on the test repository; Merge Selected on a queue-only branch needs an organization repository with a merge-queue ruleset; confirm GitHub's `immutable` and asset `digest` fields.
+- [ ] Rulesets, members and teams on GitHub: the organization ruleset sheet on a throwaway organization; push restrictions and signed commits surviving a branch protection save; members' two-factor as an owner and as a member; making a member an outside collaborator and removing one; a team's parent and repository changes; the team-admin guard; and Access Review: People and Teams against real permissions.
 - [ ] **GH-R-119:** timed find-the-answer sessions with people.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists.
 - [ ] WordPress current candidate: run the documented live regression on an authorized test site and distinguish existing site-side failures from regressions.

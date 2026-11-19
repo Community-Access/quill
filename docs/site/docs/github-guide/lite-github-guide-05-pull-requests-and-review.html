@@ -599,17 +599,53 @@ pull request and press <code>Ctrl+Shift+Enter</code>, or choose
 <p>QUILL Lite first asks GitHub whether the pull request can merge. If
 it cannot, you hear why, the same answer as <strong>Why Can’t I
 Merge?</strong> below, and nothing else happens. If it can, QUILL Lite
-asks how to merge: Squash and merge, Merge commit, or Rebase. Then it
-asks you to type the pull request’s number to confirm, not just press
-Yes, and says what will happen: that it merges into the base branch, as
-of the commit QUILL Lite checked, for example “as of commit 3f9a2c1”,
-and that this changes the branch for everyone. You hear “Merged #42” and
-the start of the new commit.</p>
+asks how to merge: Squash and merge, Merge commit, or Rebase, offering
+only the ways the repository allows. Then it asks you to type the pull
+request’s number to confirm, not just press Yes, and says what will
+happen: that it merges into the base branch, as of the commit QUILL Lite
+checked, for example “as of commit 3f9a2c1”, and that this changes the
+branch for everyone. You hear “Merged #42” and the start of the new
+commit.</p>
 <p>That commit is the one that merges. If somebody pushes to the pull
 request between the check and your typing the number, GitHub refuses,
 nothing is merged, and QUILL Lite says so: “Somebody pushed to #42 after
 commit 3f9a2c1 was checked, so nothing was merged.” Check again and you
 are merging what you have actually read.</p>
+<p>When the base branch merges only through a merge queue, Merge… does
+not try to go around it: you hear that the pull request can join the
+queue, and <strong>Add to or Remove from Merge Queue…</strong> puts it
+there.</p>
+<h3 id="merging-several-at-once">Merging several at once</h3>
+<p>To merge more than one pull request, select them in the list (hold
+<code>Shift</code> or <code>Ctrl</code> with the arrow keys), then
+choose <strong>Merge Selected…</strong> from the context menu or the
+Item menu. It needs at least two open pull requests selected; anything
+else in the selection is left out.</p>
+<ol type="1">
+<li>QUILL asks once how they should merge: Squash and merge, Merge
+commit, or Rebase. Where a repository does not allow that way, QUILL
+uses one it does, and the preview says which.</li>
+<li>It asks GitHub about each pull request on its own, with the same
+question as <strong>Why Can’t I Merge?</strong>. One that cannot merge
+does not hold up the others.</li>
+<li>The preview lists every pull request: “#42: will merge into main by
+squash and merge, commit 3f9a2c1.”, “#43: will join the merge queue for
+main” when its branch requires a queue, or “#44: will not merge.” and
+the reasons. The first line sums it up, such as “Of 3 pull requests:
+merge 2; 1 will not.” Press Enter to go on, or Escape to change nothing,
+and then type how many will go in.</li>
+<li>QUILL merges them one at a time, about a second apart. Just before
+each one it asks GitHub again, because merging one can make the next
+conflict or put it behind its base. A pull request that can no longer
+merge, or that has new commits since the preview, is left alone, and
+says why: you agreed to merge the commit you were shown, not a later
+one. A failure stops nothing else.</li>
+</ol>
+<p>At the end you hear one sentence with the counts, such as “Merged 2
+of 3 pull requests, 1 not merged.”, and the results list has a line for
+each pull request. <strong>Copy Results</strong> copies them, and
+<strong>Retry Failed</strong> (<code>F8</code>) starts again with only
+the ones that failed, preview and all.</p>
 <h3 id="why-cant-i-merge">Why Can’t I Merge?</h3>
 <p><strong>Why Can’t I Merge?</strong> on a pull request’s context menu
 in the Workbench answers the question GitHub’s merge box answers with

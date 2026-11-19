@@ -3283,15 +3283,15 @@ Relationships…, Issue Fields…, Delete Issue…, Add to or Remove from
 Favorites, Link a Pull Request That Closes It…, Unlink a Pull Request…;
 Properties…</li>
 <li><strong>pull_request</strong>: Review…, File Differences…, Comment…,
-Merge…, Why Can’t I Merge?, Auto-Merge…; More: Reviews…, Open in a
-Codespace, Add to or Remove from Merge Queue…, Open Patch in Editor,
-Revert Pull Request…, Resolve Conflicts in a Worktree…, Copy Link, Open
-on GitHub, Start in Local Worktree…, Open in Codespaces…, Commit
-Comments…, View Timeline…, Read as Document…, Summarize Discussion,
-React…, Labels…, Assignees…, Milestone…, Projects…, Edit Title…, Add to
-or Remove from Favorites, Re-request Review…, Ask Copilot to Review,
-Agent Merge, Turn On Agent Merge, Turn Off Agent Merge…;
-Properties…</li>
+Merge…, Why Can’t I Merge?, Merge Selected…; More: Auto-Merge…,
+Reviews…, Open in a Codespace, Add to or Remove from Merge Queue…, Open
+Patch in Editor, Revert Pull Request…, Resolve Conflicts in a Worktree…,
+Copy Link, Open on GitHub, Start in Local Worktree…, Open in
+Codespaces…, Commit Comments…, View Timeline…, Read as Document…,
+Summarize Discussion, React…, Labels…, Assignees…, Milestone…,
+Projects…, Edit Title…, Add to or Remove from Favorites, Re-request
+Review…, Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn
+Off Agent Merge…; Properties…</li>
 <li><strong>run</strong>: Jobs and Logs, What Failed…, Re-run Failed
 Jobs Only, Re-run Workflow, Cancel Run…, Re-run One Job…; More: Force
 Cancel…, Download Logs…, Delete Logs…, Approvals, Earlier Attempts…,
@@ -3301,11 +3301,9 @@ Step’s Log…; Properties…</li>
 <li><strong>workflow</strong>: Runs, Run Workflow on Branch…, Turn
 Workflow On or Off…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>release</strong>: Assets, Edit Release…, Draft Release
-Notes…, Upload Asset…, React…, Delete Release…; More: Compare With
-Previous, Compare With Default, Copy Link, Open on GitHub, GitHub’s
-Release Notes…; Properties…</li>
-<li><strong>release_asset</strong>: Download, Copy Link, Delete Asset…;
-Properties…</li>
+Notes…, Upload Asset…, React…, Release Evidence…; More: Delete Release…,
+Compare With Previous, Compare With Default, Copy Link, Open on GitHub,
+GitHub’s Release Notes…; Properties…</li>
 <li><strong>branch</strong>: Commits, Compare With Default, Compare
 Branches…, Merge Into…, Download Source…, Compare With Previous; More:
 Open in Codespaces…, Copy Name, Delete Branch…; Properties…</li>
@@ -3353,8 +3351,6 @@ Properties…</li>
 Properties…</li>
 <li><strong>saved_search</strong>: Run, Pin as Node, Unpin Node, Remove
 Saved Search; Properties…</li>
-<li><strong>deployment</strong>: Open, Delete Deployment…, Copy Link,
-Open on GitHub; Properties…</li>
 <li><strong>result</strong>: Open, Copy Link, Open on GitHub;
 Properties…</li>
 <li><strong>file</strong>: Open in Editor, Copy Link, Open on GitHub;
@@ -3382,11 +3378,7 @@ Repositories…; More: Dependabot Repository Access, Give Dependabot a
 Repository…, Take a Repository from Dependabot…, Dependabot’s Default
 Access…, Make Someone an Outside Collaborator…, Define a Custom
 Property…, Set Repositories’ Custom Property…, New Team…, Accept
-Membership, My Activity Here, Custom Repository Roles, New Custom
-Repository Role…, Change Custom Repository Role…, Delete Custom
-Repository Role…, Permissions for Custom Roles, New Organization Role…,
-Change Organization Role…, Delete Organization Role…, Permissions for
-Organization Roles, Audit Log…, Members Without Two-Factor, Require
+Membership, Members Without Two-Factor, My Activity Here, Require
 Sign-off on Web Commits…, Follow Organization, Unfollow Organization;
 Properties…</li>
 <li><strong>favorite</strong>: Open, Copy Link, Open on GitHub, Add to
@@ -3417,6 +3409,10 @@ More: Close Everywhere…, Move Open Work To…, Promote to Organization…,
 Delete Everywhere…; Properties…</li>
 <li><strong>fleet</strong>: Open Repository, Open on GitHub, Copy Link;
 Properties…</li>
+<li><strong>release_asset</strong>: Download, Copy Link, Attestations…,
+Delete Asset…; Properties…</li>
+<li><strong>deployment</strong>: Open, Delete Deployment…, Copy Link,
+Open on GitHub; Properties…</li>
 <li><strong>discussion_section</strong>: Open Section, Open on GitHub;
 Properties…</li>
 <li><strong>discussion_category</strong>: Find Discussions in Category,
@@ -3425,10 +3421,10 @@ Copy Link, Open on GitHub; Properties…</li>
 Runner…, Open on GitHub, Copy Link, Removal Commands…; Properties…</li>
 <li><strong>pages_site</strong>: Show Details, Check Site, Rebuild, Turn
 Off Pages…, Open on GitHub, Copy Link; Properties…</li>
-<li><strong>environment</strong>: Show Details, Secrets…, Variables…,
-Branch Policies…, Protection Rules…, Delete…; More: Open on GitHub, Copy
-Link, Pin Environment, Unpin Environment, Move Environment…;
-Properties…</li>
+<li><strong>environment</strong>: Show Details, Deployments…, Secrets…,
+Variables…, Branch Policies…, Protection Rules…; More: Delete…, Open on
+GitHub, Copy Link, Pin Environment, Unpin Environment, Move
+Environment…; Properties…</li>
 <li><strong>codespace</strong>: Show Details, Start, Stop, Change
 Machine…, Export to a Branch, Publish to a New Repository…; More:
 Delete…, Open on GitHub, Copy Link; Properties…</li>
@@ -3562,6 +3558,9 @@ name for a commit.</li>
 download.</li>
 <li><strong>Assignee</strong>: The person an issue or pull request is
 given to.</li>
+<li><strong>Attestation</strong>: A signed record GitHub keeps of how a
+file was built. A release file’s Attestations… lists them by the file’s
+digest.</li>
 <li><strong>Autolink</strong>: A prefix, such as BUG-, that GitHub turns
 into a link to another system.</li>
 <li><strong>Branch</strong>: A line of work: a name that follows the
@@ -3602,6 +3601,9 @@ from which you can propose changes back. Under People, Forks.</li>
 history.</li>
 <li><strong>GitHub Pages</strong>: A website GitHub publishes from a
 repository, from a branch or by a workflow.</li>
+<li><strong>Immutable release</strong>: A published release whose tag
+and files can no longer change. Its sheet and Release Evidence… say
+whether a release is one.</li>
 <li><strong>Inbox</strong>: The Workbench’s one list of what needs you,
 made from notifications, review requests, assignments and mentions.</li>
 <li><strong>Invitation</strong>: Someone with admin access asking you to
@@ -3623,6 +3625,9 @@ variables, secrets or members.</li>
 as @you, which notifies you.</li>
 <li><strong>Merge</strong>: Bringing a pull request’s changes into the
 branch it targets. Item, Merge, Ctrl+Shift+Enter.</li>
+<li><strong>Merge queue</strong>: A line pull requests wait in to merge
+one after another, each tested with the ones ahead. Merge Selected… adds
+a pull request to it when its branch requires one.</li>
 <li><strong>Milestone</strong>: A goal with a due date that issues and
 pull requests belong to.</li>
 <li><strong>Notification</strong>: GitHub telling you something happened
@@ -3648,6 +3653,9 @@ account each hour. Account, GitHub API Rate Limit, Ctrl+Shift+L.</li>
 so the history reads as one straight line.</li>
 <li><strong>Release</strong>: A published version, with notes and files
 to download. Under a repository’s Releases.</li>
+<li><strong>Release evidence</strong>: What vouches for a release: its
+commit, the checks that passed, where it deployed, and its files’
+attestations. Release Evidence… on a release.</li>
 <li><strong>Repository</strong>: A project’s folder on GitHub: its
 files, their history, and its issues and pull requests. Under
 Repositories in the tree.</li>
@@ -3739,7 +3747,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 861 yes, 0 planned, 289 not needed and 857 left to
+<p>In all: 852 yes, 0 planned, 288 not needed and 867 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -11679,7 +11687,7 @@ it returns.</td>
 </tbody>
 </table>
 <h4 id="repositories">Repositories</h4>
-<p>74 operations: 63 yes, 6 not needed, 5 left to github.</p>
+<p>74 operations: 64 yes, 6 not needed, 4 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -11737,9 +11745,8 @@ pipeline, not by a person.</td>
 <tr>
 <td>List attestations</td>
 <td><code>GET /repos/{owner}/{repo}/attestations/{subject_digest}</code></td>
-<td>Left to GitHub</td>
-<td>Build provenance (attestations) is read by tools in a release
-pipeline, not by a person.</td>
+<td>Yes</td>
+<td>context menu &gt; Attestations…</td>
 </tr>
 <tr>
 <td>Get all autolinks of a repository</td>
@@ -15585,8 +15592,8 @@ SAML single sign-on, which needs GitHub Enterprise Cloud.</td>
 <td>Delete a custom repository role</td>
 <td><code>DELETE /orgs/{org}/custom-repository-roles/{role_id}</code></td>
 <td>Cloud</td>
-<td>Yes</td>
-<td>context menu &gt; Delete Custom Repository Role…</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Closing down - Delete a custom role</td>
@@ -15600,8 +15607,8 @@ replaces it. Organization sheet &gt; Roles.</td>
 <td>Delete a custom organization role.</td>
 <td><code>DELETE /orgs/{org}/organization-roles/{role_id}</code></td>
 <td>Cloud</td>
-<td>Yes</td>
-<td>context menu &gt; Delete Organization Role…</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Remove the connection between an external group and a team</td>
@@ -16649,8 +16656,8 @@ replaces it. Organization sheet &gt; Roles.</td>
 <td>Get the audit log for an organization</td>
 <td><code>GET /orgs/{org}/audit-log</code></td>
 <td>Cloud</td>
-<td>Yes</td>
-<td>context menu &gt; Audit Log…</td>
+<td>Left to GitHub</td>
+<td>The organization audit log API needs GitHub Enterprise Cloud.</td>
 </tr>
 <tr>
 <td>List push rule bypass requests within an organization</td>
@@ -16692,16 +16699,15 @@ SAML single sign-on, which needs GitHub Enterprise Cloud.</td>
 <td>List custom repository roles in an organization</td>
 <td><code>GET /orgs/{org}/custom-repository-roles</code></td>
 <td>Cloud</td>
-<td>Yes</td>
-<td>context menu &gt; Custom Repository Roles</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Get a custom repository role</td>
 <td><code>GET /orgs/{org}/custom-repository-roles/{role_id}</code></td>
 <td>Cloud</td>
-<td>Not needed</td>
-<td>Reads one item that its list already shows in full; the Workbench
-reads the list.</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Closing down - Get a custom role</td>
@@ -16765,15 +16771,15 @@ replaces it. Organization sheet &gt; Roles.</td>
 <td>List organization fine-grained permissions for an organization</td>
 <td><code>GET /orgs/{org}/organization-fine-grained-permissions</code></td>
 <td>Cloud</td>
-<td>Yes</td>
-<td>context menu &gt; Permissions for Organization Roles</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>List repository fine-grained permissions for an organization</td>
 <td><code>GET /orgs/{org}/repository-fine-grained-permissions</code></td>
 <td>Cloud</td>
-<td>Yes</td>
-<td>context menu &gt; Permissions for Custom Roles</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Get GitHub Advanced Security active committers for an
@@ -17172,8 +17178,8 @@ org &gt; Enterprise (Open on GitHub).</td>
 <td>Update a custom repository role</td>
 <td><code>PATCH /orgs/{org}/custom-repository-roles/{role_id}</code></td>
 <td>Cloud</td>
-<td>Yes</td>
-<td>context menu &gt; Change Custom Repository Role…</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Closing down - Update a custom role</td>
@@ -17187,8 +17193,8 @@ replaces it. Organization sheet &gt; Roles.</td>
 <td>Update a custom organization role</td>
 <td><code>PATCH /orgs/{org}/organization-roles/{role_id}</code></td>
 <td>Cloud</td>
-<td>Yes</td>
-<td>context menu &gt; Change Organization Role…</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Update the connection between an external group and a team</td>
@@ -17605,8 +17611,8 @@ SAML single sign-on, which needs GitHub Enterprise Cloud.</td>
 <td>Create a custom repository role</td>
 <td><code>POST /orgs/{org}/custom-repository-roles</code></td>
 <td>Cloud</td>
-<td>Yes</td>
-<td>context menu &gt; New Custom Repository Role…</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Closing down - Create a custom role</td>
@@ -17620,8 +17626,8 @@ replaces it. Organization sheet &gt; Roles.</td>
 <td>Create a custom organization role</td>
 <td><code>POST /orgs/{org}/organization-roles</code></td>
 <td>Cloud</td>
-<td>Yes</td>
-<td>context menu &gt; New Organization Role…</td>
+<td>Left to GitHub</td>
+<td>Needs GitHub Enterprise Cloud, which QUILL does not target.</td>
 </tr>
 <tr>
 <td>Create a dismissal request for a Dependabot alert for a

@@ -960,11 +960,10 @@ Keys the window answers that are not menu rows:
 ### Context menus, by row type
 
 - **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Relationships..., Issue Fields..., Delete Issue..., Add to or Remove from Favorites, Link a Pull Request That Closes It..., Unlink a Pull Request...; Properties...
-- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Auto-Merge...; More: Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites, Re-request Review..., Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn Off Agent Merge...; Properties...
+- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Merge Selected...; More: Auto-Merge..., Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites, Re-request Review..., Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn Off Agent Merge...; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., Re-run One Job...; More: Force Cancel..., Download Logs..., Delete Logs..., Approvals, Earlier Attempts..., View Artifacts..., Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link, Read a Step's Log...; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link; Properties...
-- **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., React..., Delete Release...; More: Compare With Previous, Compare With Default, Copy Link, Open on GitHub, GitHub's Release Notes...; Properties...
-- **release_asset**: Download, Copy Link, Delete Asset...; Properties...
+- **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., React..., Release Evidence...; More: Delete Release..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub, GitHub's Release Notes...; Properties...
 - **branch**: Commits, Compare With Default, Compare Branches..., Merge Into..., Download Source..., Compare With Previous; More: Open in Codespaces..., Copy Name, Delete Branch...; Properties...
 - **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link; More: Open on GitHub, Check Run Details..., Re-run a Check Suite..., Branches at This Commit, Reactions on a Commit Comment..., React to a Commit Comment..., Remove My Reaction from a Commit Comment...; Properties...
 - **tag**: Open, Delete Tag..., Read Tag Message, Download Source..., Commit Comments..., Compare With Previous; More: Compare With Default, Copy Link, Open on GitHub; Properties...
@@ -978,7 +977,6 @@ Keys the window answers that are not menu rows:
 - **security_alert**: Open, Dismiss or Reopen Alert..., Copilot Autofix..., Show Every Place, Open on GitHub, Where It Was Found; Properties...
 - **cache**: Show Details, Delete Cache...; Properties...
 - **saved_search**: Run, Pin as Node, Unpin Node, Remove Saved Search; Properties...
-- **deployment**: Open, Delete Deployment..., Copy Link, Open on GitHub; Properties...
 - **result**: Open, Copy Link, Open on GitHub; Properties...
 - **file**: Open in Editor, Copy Link, Open on GitHub; Properties...
 - **folder**: Open Folder, Open on GitHub; Properties...
@@ -986,7 +984,7 @@ Keys the window answers that are not menu rows:
 - **template**: Open Template..., Convert Form or Template..., Copy to Repositories..., Copy Link, Open on GitHub; Properties...
 - **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link, New View..., Items in a View..., Rename a View..., Delete a View..., Rename a Field..., Add an Issue Field..., Edit a Draft..., Make a Draft an Issue..., Move an Item..., Edit a Status Update..., Delete a Status Update..., Delete a Workflow..., Share the Project..., Link a Team..., Unlink a Team...; Properties...
 - **team**: Members and Access..., Copy Link, Open on GitHub, Delete Team..., Pending Invitations; Properties...
-- **organization**: Open, Roles..., Rulesets..., Open on GitHub, Fork Workflow Settings, Fork Workflows from Private Repositories...; More: Dependabot Repository Access, Give Dependabot a Repository..., Take a Repository from Dependabot..., Dependabot's Default Access..., Make Someone an Outside Collaborator..., Define a Custom Property..., Set Repositories' Custom Property..., New Team..., Accept Membership, My Activity Here, Custom Repository Roles, New Custom Repository Role..., Change Custom Repository Role..., Delete Custom Repository Role..., Permissions for Custom Roles, New Organization Role..., Change Organization Role..., Delete Organization Role..., Permissions for Organization Roles, Audit Log..., Members Without Two-Factor, Require Sign-off on Web Commits..., Follow Organization, Unfollow Organization; Properties...
+- **organization**: Open, Roles..., Rulesets..., Open on GitHub, Fork Workflow Settings, Fork Workflows from Private Repositories...; More: Dependabot Repository Access, Give Dependabot a Repository..., Take a Repository from Dependabot..., Dependabot's Default Access..., Make Someone an Outside Collaborator..., Define a Custom Property..., Set Repositories' Custom Property..., New Team..., Accept Membership, Members Without Two-Factor, My Activity Here, Require Sign-off on Web Commits..., Follow Organization, Unfollow Organization; Properties...
 - **favorite**: Open, Copy Link, Open on GitHub, Add to or Remove from Favorites; Properties...
 - **admin_action**: Open; Properties...
 - **watch**: Edit Watch..., Pause or Resume Watch, Check Watches Now, Remove Watch, Why?, Open on GitHub; Properties...
@@ -997,11 +995,13 @@ Keys the window answers that are not menu rows:
 - **repository_set**: Use This Set, Edit Repositories..., Set Filter..., New Set..., Rename Set..., Delete Set...; Properties...
 - **by_name**: Variants and Missing From, Make Them the Same..., Add to Missing..., Find Uses, Rename Everywhere..., Merge Into...; More: Close Everywhere..., Move Open Work To..., Promote to Organization..., Delete Everywhere...; Properties...
 - **fleet**: Open Repository, Open on GitHub, Copy Link; Properties...
+- **release_asset**: Download, Copy Link, Attestations..., Delete Asset...; Properties...
+- **deployment**: Open, Delete Deployment..., Copy Link, Open on GitHub; Properties...
 - **discussion_section**: Open Section, Open on GitHub; Properties...
 - **discussion_category**: Find Discussions in Category, Copy Link, Open on GitHub; Properties...
 - **runner**: Show Details, Runner Labels..., Remove Runner..., Open on GitHub, Copy Link, Removal Commands...; Properties...
 - **pages_site**: Show Details, Check Site, Rebuild, Turn Off Pages..., Open on GitHub, Copy Link; Properties...
-- **environment**: Show Details, Secrets..., Variables..., Branch Policies..., Protection Rules..., Delete...; More: Open on GitHub, Copy Link, Pin Environment, Unpin Environment, Move Environment...; Properties...
+- **environment**: Show Details, Deployments..., Secrets..., Variables..., Branch Policies..., Protection Rules...; More: Delete..., Open on GitHub, Copy Link, Pin Environment, Unpin Environment, Move Environment...; Properties...
 - **codespace**: Show Details, Start, Stop, Change Machine..., Export to a Branch, Publish to a New Repository...; More: Delete..., Open on GitHub, Copy Link; Properties...
 - **package**: Show Details, Open on GitHub, Show Versions, Restore Package Version..., Delete Package Version..., Delete Package..., Copy Link; Properties...
 - **key**: Show Details, Delete Key..., Open on GitHub; Properties...
@@ -1036,6 +1036,7 @@ Keys the window answers that are not menu rows:
 - **Annotated tag**: A tag that carries a message, who made it and when. Releases usually use one. A lightweight tag is only a name for a commit.
 - **Artifact**: A file a run produced and kept, to download.
 - **Assignee**: The person an issue or pull request is given to.
+- **Attestation**: A signed record GitHub keeps of how a file was built. A release file's Attestations... lists them by the file's digest.
 - **Autolink**: A prefix, such as BUG-, that GitHub turns into a link to another system.
 - **Branch**: A line of work: a name that follows the newest commit of one set of changes. Under Code, Branches.
 - **Branch protection**: Rules that decide who may change a branch and what a change needs.
@@ -1055,6 +1056,7 @@ Keys the window answers that are not menu rows:
 - **Fork**: Your own copy of somebody else's repository, from which you can propose changes back. Under People, Forks.
 - **Gist**: A small shared file or snippet, with its own history.
 - **GitHub Pages**: A website GitHub publishes from a repository, from a branch or by a workflow.
+- **Immutable release**: A published release whose tag and files can no longer change. Its sheet and Release Evidence... say whether a release is one.
 - **Inbox**: The Workbench's one list of what needs you, made from notifications, review requests, assignments and mentions.
 - **Invitation**: Someone with admin access asking you to join their repository, with the access they chose. It waits under Needs My Attention > Invitations and expires after a week.
 - **Issue**: A note about a bug, an idea or a task, with a conversation under it. Under a repository's Issues.
@@ -1064,6 +1066,7 @@ Keys the window answers that are not menu rows:
 - **Listed setting**: One of a repository's, an organization's or your own settings that GitHub keeps as a list, such as variables, secrets or members.
 - **Mention**: Your login written with an at sign, such as @you, which notifies you.
 - **Merge**: Bringing a pull request's changes into the branch it targets. Item, Merge, Ctrl+Shift+Enter.
+- **Merge queue**: A line pull requests wait in to merge one after another, each tested with the ones ahead. Merge Selected... adds a pull request to it when its branch requires one.
 - **Milestone**: A goal with a due date that issues and pull requests belong to.
 - **Notification**: GitHub telling you something happened on a thread you are part of. Under Needs My Attention.
 - **Organization**: An account many people share, which owns repositories and teams.
@@ -1075,6 +1078,7 @@ Keys the window answers that are not menu rows:
 - **Rate limit**: How many requests GitHub allows an account each hour. Account, GitHub API Rate Limit, Ctrl+Shift+L.
 - **Rebase**: Replaying commits on top of another branch, so the history reads as one straight line.
 - **Release**: A published version, with notes and files to download. Under a repository's Releases.
+- **Release evidence**: What vouches for a release: its commit, the checks that passed, where it deployed, and its files' attestations. Release Evidence... on a release.
 - **Repository**: A project's folder on GitHub: its files, their history, and its issues and pull requests. Under Repositories in the tree.
 - **Repository Set**: A named list of repositories kept on this computer, made by hand or by a filter such as org:name. Across Repositories reads one kind of thing from all of them. Under Across Repositories, Repository Sets.
 - **Review**: Reading a pull request's changes and approving them, asking for changes, or commenting. Enter on a pull request.
@@ -1117,7 +1121,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 861 yes, 0 planned, 289 not needed and 857 left to GitHub.
+In all: 852 yes, 0 planned, 288 not needed and 867 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2522,7 +2526,7 @@ In all: 861 yes, 0 planned, 289 not needed and 857 left to GitHub.
 
 #### Repositories
 
-74 operations: 63 yes, 6 not needed, 5 left to github.
+74 operations: 64 yes, 6 not needed, 4 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2533,7 +2537,7 @@ In all: 861 yes, 0 planned, 289 not needed and 857 left to GitHub.
 | Update a repository | `PATCH /repos/{owner}/{repo}` | Yes | editor GitHub menu > Rename Repository... |
 | List repository activities | `GET /repos/{owner}/{repo}/activity` | Yes | Navigator: Repository > owner/name > Activity > Push Activity |
 | Create an attestation | `POST /repos/{owner}/{repo}/attestations` | Left to GitHub | Build provenance (attestations) is read by tools in a release pipeline, not by a person. |
-| List attestations | `GET /repos/{owner}/{repo}/attestations/{subject_digest}` | Left to GitHub | Build provenance (attestations) is read by tools in a release pipeline, not by a person. |
+| List attestations | `GET /repos/{owner}/{repo}/attestations/{subject_digest}` | Yes | context menu > Attestations... |
 | Get all autolinks of a repository | `GET /repos/{owner}/{repo}/autolinks` | Yes | Properties (Alt+Enter) on Repository |
 | Create an autolink reference for a repository | `POST /repos/{owner}/{repo}/autolinks` | Yes | Navigator: Repository > owner/name > Settings > Autolinks |
 | Delete an autolink reference from a repository | `DELETE /repos/{owner}/{repo}/autolinks/{autolink_id}` | Yes | context menu > Delete Autolink... |
@@ -3272,9 +3276,9 @@ Operations api.github.com's description does not have, read from GitHub's own En
 | Delete a Visual Studio subscription user match | `DELETE /enterprises/{enterprise}/visual-studio-subscriptions/{visual_studio_subscription_id}` | Cloud | Left to GitHub | Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings. Organizations > org > Enterprise (Open on GitHub). |
 | Remove announcement banner from organization | `DELETE /orgs/{org}/announcement` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Remove a SAML SSO authorization for an organization | `DELETE /orgs/{org}/credential-authorizations/{credential_id}` | Cloud | Left to GitHub | Credential authorizations are for organizations that sign in with SAML single sign-on, which needs GitHub Enterprise Cloud. |
-| Delete a custom repository role | `DELETE /orgs/{org}/custom-repository-roles/{role_id}` | Cloud | Yes | context menu > Delete Custom Repository Role... |
+| Delete a custom repository role | `DELETE /orgs/{org}/custom-repository-roles/{role_id}` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Closing down - Delete a custom role | `DELETE /orgs/{org}/custom_roles/{role_id}` | Cloud | Left to GitHub | GitHub is closing this route down; the custom-repository-roles route replaces it. Organization sheet > Roles. |
-| Delete a custom organization role. | `DELETE /orgs/{org}/organization-roles/{role_id}` | Cloud | Yes | context menu > Delete Organization Role... |
+| Delete a custom organization role. | `DELETE /orgs/{org}/organization-roles/{role_id}` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Remove the connection between an external group and a team | `DELETE /orgs/{org}/teams/{team_slug}/external-groups` | Cloud | Left to GitHub | Identity-provider group connections are managed from the identity provider and the organization's SSO settings. Team sheet (Open on GitHub: identity provider groups). |
 | Dismiss a response on a bypass request for secret scanning | `DELETE /repos/{owner}/{repo}/bypass-responses/secret-scanning/{bypass_response_id}` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Cancel a dismissal request for a Dependabot alert for a repository | `DELETE /repos/{owner}/{repo}/dismissal-requests/dependabot/{alert_number}` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
@@ -3391,14 +3395,14 @@ Operations api.github.com's description does not have, read from GitHub's own En
 | Closing down - List custom repository roles in an organization | `GET /organizations/{organization_id}/custom_roles` | Cloud | Left to GitHub | GitHub is closing this route down; the custom-repository-roles route replaces it. Organization sheet > Roles. |
 | Get all custom property values for an organization | `GET /organizations/{org}/org-properties/values` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Get announcement banner for organization | `GET /orgs/{org}/announcement` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
-| Get the audit log for an organization | `GET /orgs/{org}/audit-log` | Cloud | Yes | context menu > Audit Log... |
+| Get the audit log for an organization | `GET /orgs/{org}/audit-log` | Cloud | Left to GitHub | The organization audit log API needs GitHub Enterprise Cloud. |
 | List push rule bypass requests within an organization | `GET /orgs/{org}/bypass-requests/push-rules` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | List bypass requests for secret scanning for an org | `GET /orgs/{org}/bypass-requests/secret-scanning` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Get feature policies for an organization | `GET /orgs/{org}/copilot/feature-policies` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Get model policies for an organization | `GET /orgs/{org}/copilot/model-policies` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | List SAML SSO authorizations for an organization | `GET /orgs/{org}/credential-authorizations` | Cloud | Left to GitHub | Credential authorizations are for organizations that sign in with SAML single sign-on, which needs GitHub Enterprise Cloud. |
-| List custom repository roles in an organization | `GET /orgs/{org}/custom-repository-roles` | Cloud | Yes | context menu > Custom Repository Roles |
-| Get a custom repository role | `GET /orgs/{org}/custom-repository-roles/{role_id}` | Cloud | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
+| List custom repository roles in an organization | `GET /orgs/{org}/custom-repository-roles` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
+| Get a custom repository role | `GET /orgs/{org}/custom-repository-roles/{role_id}` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Closing down - Get a custom role | `GET /orgs/{org}/custom_roles/{role_id}` | Cloud | Left to GitHub | GitHub is closing this route down; the custom-repository-roles route replaces it. Organization sheet > Roles. |
 | List dismissal requests for code scanning alerts for an organization | `GET /orgs/{org}/dismissal-requests/code-scanning` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | List dismissal requests for Dependabot alerts for an organization | `GET /orgs/{org}/dismissal-requests/dependabot` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
@@ -3406,8 +3410,8 @@ Operations api.github.com's description does not have, read from GitHub's own En
 | Get an external group | `GET /orgs/{org}/external-group/{group_id}` | Cloud | Left to GitHub | Identity-provider group connections are managed from the identity provider and the organization's SSO settings. Team sheet (Open on GitHub: identity provider groups). |
 | List external groups available to an organization | `GET /orgs/{org}/external-groups` | Cloud | Left to GitHub | Identity-provider group connections are managed from the identity provider and the organization's SSO settings. Team sheet (Open on GitHub: identity provider groups). |
 | Closing down - List fine-grained permissions for an organization | `GET /orgs/{org}/fine_grained_permissions` | Cloud | Left to GitHub | GitHub is closing this route down; the custom-repository-roles route replaces it. Organization sheet > Roles. |
-| List organization fine-grained permissions for an organization | `GET /orgs/{org}/organization-fine-grained-permissions` | Cloud | Yes | context menu > Permissions for Organization Roles |
-| List repository fine-grained permissions for an organization | `GET /orgs/{org}/repository-fine-grained-permissions` | Cloud | Yes | context menu > Permissions for Custom Roles |
+| List organization fine-grained permissions for an organization | `GET /orgs/{org}/organization-fine-grained-permissions` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
+| List repository fine-grained permissions for an organization | `GET /orgs/{org}/repository-fine-grained-permissions` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Get GitHub Advanced Security active committers for an organization | `GET /orgs/{org}/settings/billing/advanced-security` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | List IdP groups for an organization | `GET /orgs/{org}/team-sync/groups` | Cloud | Left to GitHub | Identity-provider group connections are managed from the identity provider and the organization's SSO settings. Team sheet (Open on GitHub: identity provider groups). |
 | List a connection between an external group and a team | `GET /orgs/{org}/teams/{team_slug}/external-groups` | Cloud | Left to GitHub | Identity-provider group connections are managed from the identity provider and the organization's SSO settings. Team sheet (Open on GitHub: identity provider groups). |
@@ -3455,9 +3459,9 @@ Operations api.github.com's description does not have, read from GitHub's own En
 | Set announcement banner for organization | `PATCH /orgs/{org}/announcement` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Update feature policies for an organization | `PATCH /orgs/{org}/copilot/feature-policies` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Update model policies for an organization | `PATCH /orgs/{org}/copilot/model-policies` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
-| Update a custom repository role | `PATCH /orgs/{org}/custom-repository-roles/{role_id}` | Cloud | Yes | context menu > Change Custom Repository Role... |
+| Update a custom repository role | `PATCH /orgs/{org}/custom-repository-roles/{role_id}` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Closing down - Update a custom role | `PATCH /orgs/{org}/custom_roles/{role_id}` | Cloud | Left to GitHub | GitHub is closing this route down; the custom-repository-roles route replaces it. Organization sheet > Roles. |
-| Update a custom organization role | `PATCH /orgs/{org}/organization-roles/{role_id}` | Cloud | Yes | context menu > Change Organization Role... |
+| Update a custom organization role | `PATCH /orgs/{org}/organization-roles/{role_id}` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Update the connection between an external group and a team | `PATCH /orgs/{org}/teams/{team_slug}/external-groups` | Cloud | Left to GitHub | Identity-provider group connections are managed from the identity provider and the organization's SSO settings. Team sheet (Open on GitHub: identity provider groups). |
 | Create or update IdP group connections | `PATCH /orgs/{org}/teams/{team_slug}/team-sync/group-mappings` | Cloud | Left to GitHub | Identity-provider group connections are managed from the identity provider and the organization's SSO settings. Team sheet (Open on GitHub: identity provider groups). |
 | Review a bypass request for secret scanning | `PATCH /repos/{owner}/{repo}/bypass-requests/secret-scanning/{bypass_request_number}` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
@@ -3505,9 +3509,9 @@ Operations api.github.com's description does not have, read from GitHub's own En
 | Revoke a single credential type for an organization | `POST /orgs/{org}/credential-authorizations/revoke-credential-type` | Cloud | Left to GitHub | Credential authorizations are for organizations that sign in with SAML single sign-on, which needs GitHub Enterprise Cloud. |
 | Revoke credential authorizations for a user in an organization | `POST /orgs/{org}/credential-authorizations/{username}/revoke` | Cloud | Left to GitHub | Credential authorizations are for organizations that sign in with SAML single sign-on, which needs GitHub Enterprise Cloud. |
 | Revoke a single credential type for a user in an organization | `POST /orgs/{org}/credential-authorizations/{username}/revoke-credential-type` | Cloud | Left to GitHub | Credential authorizations are for organizations that sign in with SAML single sign-on, which needs GitHub Enterprise Cloud. |
-| Create a custom repository role | `POST /orgs/{org}/custom-repository-roles` | Cloud | Yes | context menu > New Custom Repository Role... |
+| Create a custom repository role | `POST /orgs/{org}/custom-repository-roles` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Closing down - Create a custom role | `POST /orgs/{org}/custom_roles` | Cloud | Left to GitHub | GitHub is closing this route down; the custom-repository-roles route replaces it. Organization sheet > Roles. |
-| Create a custom organization role | `POST /orgs/{org}/organization-roles` | Cloud | Yes | context menu > New Organization Role... |
+| Create a custom organization role | `POST /orgs/{org}/organization-roles` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Create a dismissal request for a Dependabot alert for a repository | `POST /repos/{owner}/{repo}/dismissal-requests/dependabot/{alert_number}` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Check license compliance for packages | `POST /repos/{owner}/{repo}/license-compliance/package-checks` | Cloud | Left to GitHub | Needs GitHub Enterprise Cloud, which QUILL does not target. |
 | Provision a SCIM enterprise group | `POST /scim/v2/enterprises/{enterprise}/Groups` | Cloud | Left to GitHub | SCIM provisioning is driven by an identity provider, not by a person. Organizations > org > Enterprise (Open on GitHub). |

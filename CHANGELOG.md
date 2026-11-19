@@ -2,6 +2,55 @@
 
 ## 1.0.0
 
+### GitHub Workbench: rulesets, branch protection, members, teams and access reviews (2026-11-19)
+
+- A repository's **Rulesets** list, under its settings, and an organization's
+  **Rulesets** list each ruleset in a sentence. Alt+Enter opens its sheet. The
+  Rules page now lists every rule with every setting GitHub sent, including
+  rule types QUILL has no check box for yet. The Bypass page has a check list
+  of the roles that may bypass the rules, and keeps teams and apps as they
+  were. An organization ruleset has a Repositories page that says which
+  repositories it covers and lets you choose them by name. Delete asks you to
+  type the ruleset's name. **Rule Insights** is now under an organization too.
+- Saving a branch's classic protection no longer wipes who may push, who may
+  dismiss reviews and who may skip the pull request. The sheet now has every
+  setting GitHub offers, signed commits included, and a Who page.
+- An organization's members now read with their role and whether two-factor
+  sign-in is on (GitHub shows that to owners). **Members Without
+  Two-Factor** lists only those. Making a member an outside collaborator, and
+  removing an outside collaborator or a member, ask you to type their name.
+- A team's parent can be changed on its sheet, **New Team...** asks for the
+  parent and whether mentions notify the team, and a team's Repositories page
+  can add, change and remove repositories.
+- QUILL refuses, before sending anything, a change that would leave you or
+  the organization with nobody to manage it: removing the last owner or your
+  own ownership, making yourself an outside collaborator, the last maintainer
+  leaving a team, or taking admin away from the team that is your way into a
+  repository.
+- **Access Review: People** and **Access Review: Teams**, under an
+  organization, list every person or team and repository with the role they
+  have and where it comes from: "jeff on quill: Admin, from team Maintainers;
+  also Write directly." **Custom Property Values** now shows every property
+  on every repository, unset ones as "not set". All three filter and export
+  like any other list.
+
+### GitHub Workbench: Merge Selected, deployments and release evidence (2026-11-19)
+
+- **Merge Selected...** merges several pull requests at once. Each one is
+  checked on its own, with the reason given when it cannot be merged, and a
+  preview lists what will merge, what will join the merge queue and what will
+  not. They merge one at a time, each checked again just before. A failure
+  stops nothing else, and Retry Failed is there at the end. Merge... now offers
+  only the merge methods the repository allows.
+- An environment now shows its custom protection rules, branches and tags, how
+  many secrets and variables it has, and its newest deployments.
+  **Deployments...** lists them.
+- **Release Evidence...** on a release says whether it is a draft and whether
+  it is immutable. It names the tag's commit, which checks passed or failed,
+  which environments it was deployed to, and each file's attestations.
+  **Attestations...** on a release file lists them. QUILL does not verify the
+  signatures itself, and says so.
+
 ### GitHub Workbench: a You page for your own relationships (2026-11-19)
 
 Properties now has a **You** page, right after General, on repositories,

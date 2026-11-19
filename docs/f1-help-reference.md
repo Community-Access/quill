@@ -3258,6 +3258,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Why Can't I Merge?.** Whether it can merge, or each reason it cannot, for the commit it is at.
 
+**Merge Selected.** Merge the selected pull requests one at a time, each checked on its own, after a preview of which will merge and which will not.
+
 **Auto-Merge.** Have it merge itself when it can, or turn that off.
 
 **Reviews.** Read, change, dismiss, submit or delete a review.
@@ -3336,6 +3338,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **React.** Add or remove a reaction.
 
+**Release Evidence.** Its commit, the checks that passed, where it deployed, whether it is immutable, and each file's attestations.
+
 **Delete Release.** Delete it, and its tag if you say.
 
 **Compare With Previous.** Compare it with the one before: the previous tag or release, or a commit's parent.
@@ -3343,10 +3347,6 @@ Control coverage: 384 audited sites (384 helped).
 **Compare With Default.** Compare it with the default branch: commits each way, files, any open pull request.
 
 **GitHub's Release Notes.** The notes GitHub writes from the changes since another tag.
-
-**Download.** Download the file in your browser.
-
-**Delete Asset.** Remove the file from the release.
 
 **Commits.** The branch's commits.
 
@@ -3526,8 +3526,6 @@ Control coverage: 384 audited sites (384 helped).
 
 **Remove Saved Search.** Forget it on this device.
 
-**Delete Deployment.** Only an inactive one.
-
 **Open in Editor.** Open the file in the editor, to read or edit.
 
 **Find Issues in Milestone.** Its issues and pull requests.
@@ -3622,29 +3620,9 @@ Control coverage: 384 audited sites (384 helped).
 
 **Accept Membership.** Join this organization, when it has invited you.
 
-**My Activity Here.** What you have done lately in this organization's repositories.
-
-**Custom Repository Roles.** The organization's own repository roles: each one's base role and what it adds.
-
-**New Custom Repository Role.** Make a repository role: a base role and the permissions it adds.
-
-**Change Custom Repository Role.** Change a custom repository role's name, description, base role or permissions.
-
-**Delete Custom Repository Role.** Delete a custom repository role; whoever has it keeps its base role.
-
-**Permissions for Custom Roles.** Every permission a custom repository role can add, in GitHub's words.
-
-**New Organization Role.** Make an organization role: the organization permissions it holds.
-
-**Change Organization Role.** Change a custom organization role's name, description or permissions.
-
-**Delete Organization Role.** Delete a custom organization role; whoever holds it loses it.
-
-**Permissions for Organization Roles.** Every permission an organization role can hold, in GitHub's words.
-
-**Audit Log.** What people did in the organization, newest first; search with GitHub's words, such as action:repo.create or actor:kim.
-
 **Members Without Two-Factor.** Members who have not turned on two-factor sign-in. GitHub shows this to owners.
+
+**My Activity Here.** What you have done lately in this organization's repositories.
 
 **Require Sign-off on Web Commits.** Whether commits made on GitHub's site, in every repository here, must carry a sign-off.
 
@@ -3748,6 +3726,14 @@ Control coverage: 384 audited sites (384 helped).
 
 **Open Repository.** Select the repository's node in the tree.
 
+**Download.** Download the file in your browser.
+
+**Attestations.** The file's digest and GitHub's attestations for it, such as build provenance.
+
+**Delete Asset.** Remove the file from the release.
+
+**Delete Deployment.** Only an inactive one.
+
 **Open Section.** List the categories in this section.
 
 **Find Discussions in Category.** The repository's discussions in this category.
@@ -3763,6 +3749,8 @@ Control coverage: 384 audited sites (384 helped).
 **Rebuild.** Ask GitHub for a fresh build.
 
 **Turn Off Pages.** Stop publishing, after asking.
+
+**Deployments.** Its newest deployments, each with its latest state.
 
 **Secrets.** Add, change or delete its secrets.
 

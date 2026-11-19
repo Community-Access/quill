@@ -201,6 +201,19 @@ menu, beside Secrets... and Variables...:
 - **Protection Rules...:** GitHub Apps that must approve each deployment to it.
   Add one by choosing from the apps GitHub says are installed and can do this;
   if there are none, QUILL says so. Delete removes one.
+- **Deployments...:** its newest deployments, each with its latest state:
+  "production: success, 2026-11-01 11:05 by jeff (v1.0, commit 3f9a2c1)." You
+  hear how many there are and the newest one's state; the list has a line
+  each. To approve or reject a deployment that is waiting, use **Review
+  Pending Deployments...** on the run that is waiting, above.
+
+An environment's **Properties...** (`Alt+Enter`) puts its protection on one
+sheet: the required reviewers, prevent self-review, the wait timer and whether
+administrators may bypass, with the custom protection rules (the apps) listed
+under them; which branches and tags may deploy, with the chosen ones listed;
+how many secrets and variables it has, with their names; and its newest
+deployments. The protection, the wait timer and the branch choice can be
+changed there; the lists are read only, and the commands above change them.
 
 ## Starting workflows from outside
 

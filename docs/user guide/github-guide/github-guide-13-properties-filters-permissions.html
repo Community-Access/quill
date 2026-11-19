@@ -652,36 +652,6 @@ this cannot be undone.</li>
 <p>To make an organization ruleset from repositories that each have the
 same one, use <strong>Promote to Organization</strong> under Across
 Repositories.</p>
-<h3 id="custom-roles-and-the-audit-log">Custom roles and the audit
-log</h3>
-<p>These are GitHub Enterprise Cloud features. QUILL asks GitHub rather
-than guessing your organization’s plan, and when GitHub refuses, it says
-so in GitHub’s own words and what that usually means, for example
-“GitHub refused to read the audit log of acme: Not Found (HTTP 404). The
-audit log API is for organizations on GitHub Enterprise Cloud; Open on
-GitHub reads this organization’s audit log on any plan.” On an
-organization’s row:</p>
-<ul>
-<li><strong>Custom Repository Roles</strong> lists the organization’s
-own repository roles, each with the role it builds on and what it adds.
-<strong>New Custom Repository Role…</strong> asks for a name, a
-description, the base role (read, triage, write or maintain) and the
-permissions it adds, separated by commas; <strong>Permissions for Custom
-Roles</strong> lists those permissions in GitHub’s words. <strong>Change
-Custom Repository Role…</strong> keeps whatever you leave empty.
-<strong>Delete Custom Repository Role…</strong> asks you to type its
-name; people given it keep its base role.</li>
-<li><strong>New Organization Role…</strong>, <strong>Change Organization
-Role…</strong>, <strong>Delete Organization Role…</strong> and
-<strong>Permissions for Organization Roles</strong> do the same for
-organization roles. Giving a role to someone is <strong>Roles…</strong>,
-above.</li>
-<li><strong>Audit Log…</strong> lists what people did, newest first,
-each a sentence: “2026-11-19 10:02 UTC: kim did repo.create on
-acme/site”. Leave the search empty for everything recent, or use
-GitHub’s words, such as <code>action:repo.create</code> or
-<code>actor:kim</code>.</li>
-</ul>
 <h3 id="repository-settings-from-the-editor">Repository settings from
 the editor</h3>
 <p>With the Workbench in use, the editor’s Rename Repository, Change
