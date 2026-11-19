@@ -606,7 +606,11 @@ The last place in the tree is help you can walk through like any other list.
 - **Words** is the GitHub glossary. Type a word to jump to it.
 - **Keys** has every key in the window, grouped by what it does.
 - **What Changed** says what is new.
-- **Ask a Person** says how to write to support@community-access.org.
+- **Ask a Person** says how to write to support@community-access.org, and
+  has **Report a Help Problem**: for help that was wrong, missing or hard to
+  follow. Enter opens a message in your own email, already saying where you
+  were and the last thing the Workbench said, for you to change and send.
+  The Workbench sends nothing, and no token or password is ever in it.
 
 The help keys work everywhere in the window:
 
