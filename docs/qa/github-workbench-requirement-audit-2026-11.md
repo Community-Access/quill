@@ -4,11 +4,11 @@ Checked 2026-11-18 against main, updated the same day for the follow-up pull req
 
 ## Summary
 
-Of the 100 live requirements, 77 are met, 15 are partly met and 8 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 78 are met, 14 are partly met and 8 are not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
-| Must | 66 | 8 | 1 | 75 |
+| Must | 67 | 7 | 1 | 75 |
 | Should | 11 | 7 | 5 | 23 |
 | May | 0 | 0 | 2 | 2 |
 
@@ -31,7 +31,6 @@ Of the 100 live requirements, 77 are met, 15 are partly met and 8 are not met. G
 
 | Id | Strength | Requirement | Evidence and what remains |
 | --- | --- | --- | --- |
-| GH-R-010 | Must | The tree is a native `wx.TreeCtrl`, at most four levels deep, loading lazily, with counts after names that... | Native wx.TreeCtrl (`workbench_frame.py:148`), `test_no_node_is_more_than_four_levels_deep`; rows load on selection. No counts after node names anywhere. |
 | GH-R-045 | Must | Projects (version 2): every field type, views, items, workflows and status updates are readable and editable | `sheets_projects.py`: every field type incl. iteration, items, status updates editable; views and workflows read only (GitHub has no API to change them; worth saying so in the PRD). |
 | GH-R-046 | Must | Every relationship (star, watch level, follow, subscribe, react, block, sponsor, pin) on a You page and in... | Star, watch level, follow, subscribe, react, sponsor, pin and block (`resource_specs_user`) each exist in their own places; no single You page holding them, and batch only where the multi-row sheet has the field. Needs a closer look. |
 | GH-R-053 | Must | Filters can be saved as searches and pinned as nodes | Save Search (`github_workbench_actions.py:158`), Saved Searches node in the tree (`workbench_tree.py:186`); `test_the_filter_builder`... saves one, `test_go_lists_pins_favorites_and_saved_searches`. A saved search is a row in that node, not a node of its own. |
@@ -65,7 +64,7 @@ Of the 100 live requirements, 77 are met, 15 are partly met and 8 are not met. G
 
 | Id | Strength | Status | Requirement | Evidence |
 | --- | --- | --- | --- | --- |
-| GH-R-010 | Must | Partly | The tree is a native `wx.TreeCtrl`, at most four levels deep, loading lazily, with counts after names that... | Native wx.TreeCtrl (`workbench_frame.py:148`), `test_no_node_is_more_than_four_levels_deep`; rows load on selection. No counts after node names anywhere. |
+| GH-R-010 | Must | Met | The tree is a native `wx.TreeCtrl`, at most four levels deep, loading lazily, with counts after names that... | Native wx.TreeCtrl (`workbench_frame.py`), `test_no_node_is_more_than_four_levels_deep`, rows load on selection; counts after node names ("Issues (12)", "30 or more"), written as the node is left so never announced, none on searches (`workbench_frame_groups.py` `counted_label/write_count`; `test_github_workbench_tree_counts.py`). |
 | GH-R-011 | Must | Met | Every view in GitHub Items and Explore appears exactly once (the "nothing dropped" test) | `test_nothing_dropped_every_items_and_explore_view_has_exactly_one_home` |
 | GH-R-012 | Must | Met | Nodes needing sign-in, permission or an opt-in are shown, explained, and offer the fix | `github_workbench_window.py` `node_help` ("Needs ...") and unavailable() name the fix; `test_nodes_needing_sign_in_or_permission_are_listed_not_hidden` |
 | GH-R-013 | Must | Met | Drill-downs move the tree, and Back and Forward walk one history | `workbench_frame.py` history/forward; `test_escape_clears_the_filter_then_goes_back` asserts forward stack |

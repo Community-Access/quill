@@ -43,6 +43,47 @@ class WorkbenchGroupsMixin:
     _wx: Any
     selected_indices: Any
 
+    # -- counts after node names (GitHub PRD 3.3 and 9, GH-R-010) -----------------
+
+    def _count_store(self) -> tuple[dict[Any, str], dict[Any, str]]:
+        """(count words by node, plain label by node), made on first use."""
+        if not hasattr(self, "_node_counts"):
+            self._node_counts: dict[Any, str] = {}
+            self._node_labels: dict[Any, str] = {}
+        return self._node_counts, self._node_labels
+
+    def counted_label(self, ref: Any, label: str) -> str:
+        """*label* with the node's count after it, once it has one: "Issues (12)"."""
+        counts, labels = self._count_store()
+        labels[ref] = label
+        words = counts.get(ref, "")
+        return f"{label} ({words})" if words else label
+
+    def remember_count(self, count: int) -> None:
+        """Keep the count of the list just loaded; it reaches the tree when you leave."""
+        ref = self.current
+        if ref is None:
+            return
+        node = self.node(ref)  # type: ignore[attr-defined]
+        if not node.loader or self.provider.remote_words(node):
+            return  # a search's rows depend on what was typed, so it has no count of its own
+        hook = getattr(self.provider, "count_words", None)
+        words = str(hook(ref, count)) if callable(hook) else str(count)
+        self._count_store()[0][ref] = words
+
+    def write_count(self, ref: Any) -> None:
+        """Put *ref*'s count after its name, as it is left, so no reader announces it."""
+        counts, labels = self._count_store()
+        item = self._items.get(ref)
+        if ref not in counts or ref not in labels or item is None:
+            return
+        try:
+            text = f"{labels[ref]} ({counts[ref]})"
+            if self.tree.GetItemText(item) != text:
+                self.tree.SetItemText(item, text)
+        except Exception:  # noqa: BLE001 - a stale item after a rebuild; the next build counts
+            return
+
     def show_groups(self, groups: Sequence[tuple[str, list[object]]]) -> None:
         """Put the list's groups in the tree under the current node; [] removes them."""
         for _ref, (item, _rows) in list(self._groups.items()):
