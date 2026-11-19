@@ -201,6 +201,11 @@ and recorded in Change History. The Workbench refuses to remove your own admin
 access or the last owner, and says who else could do it. Organization and
 team sheets work the same way for members and maintainers.
 
+On the pending invitations, Remove cancels the invitation (they can be
+invited again), and Change... changes the role a repository invitation
+offers before it is answered. GitHub cannot change an organization
+invitation's role, so for one of those, Remove it and invite them again.
+
 **Account > Roles and Access** also has:
 
 - **My Access Here...**, your role on this repository and where it comes from;
