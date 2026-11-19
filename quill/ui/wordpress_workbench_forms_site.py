@@ -44,7 +44,8 @@ class WorkbenchPluginCommands(
             f"Change Form Status - {row.title}",
             "&New status:",
             [qaf.FORM_STATUSES[s] for s in choices],
-            "Whether the form takes responses.",
+            "Whether the form takes responses; it is "
+            f"{qaf.FORM_STATUSES.get(row.status, row.status)} now.",
         )
         if picked is None:
             return

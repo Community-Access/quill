@@ -164,7 +164,16 @@ class WorkbenchMembershipCommands:
                     title=f"Change Membership Level - {row.title}",
                     prompt="&New level:",
                     rows=[f"{_level_name(level)} (level {level['id']})" for level in levels],
-                    help_text="The level this person has from now on.",
+                    initial=next(  # on the level they have now (item 34)
+                        (
+                            i
+                            for i, level in enumerate(levels)
+                            if any(str(m.get("id")) == str(level.get("id")) for m in current)
+                        ),
+                        0,
+                    ),
+                    help_text="The level this person has from now on. The list starts on the "
+                    "one they have now.",
                 )
                 if picked is None:
                     return

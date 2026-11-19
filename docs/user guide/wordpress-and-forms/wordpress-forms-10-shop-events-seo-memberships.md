@@ -30,7 +30,10 @@ keep something.
 Ctrl+Z undoes a change wherever putting the old values back really restores
 it. When something cannot be undone, such as a shipping zone deleted for
 good, the preview says so. A command your role cannot use is dimmed, and F1
-on it says which role could.
+on it says which role could: shop changes need the Shop Manager or
+Administrator role, events, venues and organizers the Author role or higher,
+and membership changes an Administrator or Membership Manager. A chooser for
+a new value starts on the value it has now.
 
 In the editor, **File > WordPress > Plugin Fields...** changes the fields
 these plugins add to the page you are writing, such as an event's date or a

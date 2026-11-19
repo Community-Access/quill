@@ -181,9 +181,15 @@ def test_cancel_previews_the_gateway_consequence_every_run(bench, previews) -> N
 
 def test_change_picks_a_level_previews_what_ends_and_posts(bench, previews, monkeypatch) -> None:
     offered: list[list[str]] = []
-    monkeypatch.setattr(dlg, "ask_choice", lambda *_a, **k: offered.append(k["rows"]) or 1)
+    starts: list[int] = []
+    monkeypatch.setattr(
+        dlg,
+        "ask_choice",
+        lambda *_a, **k: offered.append(k["rows"]) or starts.append(k["initial"]) or 1,
+    )
     bench.provider.do_change_membership(_REF, _ann())
     assert offered == [["Gold (level 2)", "Silver (level 3)"]]
+    assert starts == [0]  # on Gold, the level Ann has now (item 34)
     lines = previews[1]["lines"]
     assert lines[:2] == [
         f"Ann gets Silver on {SITE} now, with no checkout and no payment taken.",

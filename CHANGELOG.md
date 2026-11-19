@@ -36,6 +36,16 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress Workbench: shop, event and membership rows say who may (2026-11-18)
+
+Review item 34: these rows named no capability, so they were never dimmed, and
+an Editor answered several dialogs before WooCommerce, The Events Calendar or
+Paid Memberships Pro refused. Each write now names what it needs and is dimmed
+with the reason ("Changing the shop needs the Shop Manager or Administrator
+role. You are an Editor on Radio."); an administrator is never dimmed. Change
+Membership Level and a shop setting's chooser start on the current value, and
+the order and form status choosers say what the status is now.
+
 ### WordPress Workbench: the Item menu reaches every row command (2026-11-18)
 
 Review item 31: Earlier Versions, Duplicate, Change Role, Remove, Set New

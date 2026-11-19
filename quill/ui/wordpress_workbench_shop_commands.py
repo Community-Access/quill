@@ -54,13 +54,16 @@ class WorkbenchShopCommands:
             help_text=help_text,
         )
 
-    def _pl_choose(self, title: str, prompt: str, rows: list[str], help_text: str) -> int | None:
+    def _pl_choose(
+        self, title: str, prompt: str, rows: list[str], help_text: str, initial: int = 0
+    ) -> int | None:
         return dlg.ask_choice(
             self.parent,  # type: ignore[attr-defined]
             self.show_modal,  # type: ignore[attr-defined]
             title=title,
             prompt=prompt,
             rows=rows,
+            initial=max(0, initial),
             help_text=help_text,
         )
 
@@ -258,7 +261,8 @@ class WorkbenchShopCommands:
             f"Change Status - {row.title}",
             "&New status:",
             [orders.ORDER_STATUSES[s] for s in choices],
-            "The order's new status. The preview says which email WooCommerce sends.",
+            f"The order's new status; it is {orders.ORDER_STATUSES.get(row.status, row.status)} "
+            "now. The preview says which email WooCommerce sends.",
         )
         if picked is None:
             return
@@ -509,7 +513,15 @@ class WorkbenchShopCommands:
                 title,
                 "&New value:",
                 [words for _v, words in choice.values],
-                "The setting's new value.",
+                "The setting's new value. The list starts on the one it has now.",
+                next(
+                    (
+                        i
+                        for i, (v, _w) in enumerate(choice.values)
+                        if str(v) == str(row.raw.get("value", ""))
+                    ),
+                    0,
+                ),
             )
             if picked is None:
                 return

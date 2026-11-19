@@ -290,9 +290,20 @@ def test_coupons_new_edit_and_trash(bench) -> None:
 # -- Package 10 --------------------------------------------------------------------------
 
 
-def test_change_setting_previews_and_a_password_is_refused(bench) -> None:
-    raw = {"id": "woocommerce_currency", "label": "Currency", "type": "select", "value": "USD",
+def test_change_setting_previews_and_a_password_is_refused(bench, monkeypatch) -> None:
+    raw = {"id": "woocommerce_currency", "label": "Currency", "type": "select", "value": "EUR",
            "options": {"USD": "US dollar", "EUR": "Euro"}}  # fmt: skip
+    starts: list[int] = []
+    monkeypatch.setattr(
+        dlg, "ask_choice", lambda *_a, **k: starts.append(k["initial"]) or k["initial"]
+    )
+    bench.provider.do_change_shop_setting(
+        _ref("shop_settings"), setting_row("general", "General", raw, SITE)
+    )
+    assert starts == [1]  # the chooser starts on Euro, its value now (item 34)
+    assert bench.api.sent == []  # and choosing it again sends nothing
+    raw["value"] = "USD"
+    monkeypatch.setattr(dlg, "ask_choice", lambda *_a, **_k: bench.answers.choices.pop(0))
     bench.answers.choices += [1]
     bench.provider.do_change_shop_setting(
         _ref("shop_settings"), setting_row("general", "General", raw, SITE)
