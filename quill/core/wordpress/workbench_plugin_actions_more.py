@@ -308,6 +308,7 @@ MORE_EXTRA: Mapping[str, tuple[ActionRow, ...]] = {
 """Rows added to existing kinds' menus, before Properties."""
 
 MORE_NEW_HERE: dict[str, str] = {
+    "redirect_groups": "do_new_redirect_group",
     "shop_shipping": "do_new_zone",
     "shop_taxes": "do_new_tax_rate",
     "shop_tax_classes": "do_new_tax_class",

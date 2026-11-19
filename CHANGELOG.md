@@ -2,6 +2,15 @@
 
 ## 1.0.0
 
+### WordPress Workbench: redirect groups, and redirects to and from a file (2026-11-18)
+
+Redirects has Redirect Groups under it: new, rename, turn on or off, each
+undoable, and delete after you type the group's name, because its redirects
+go with it. Export Redirects... saves every redirect to a CSV or the
+Redirection plugin's own JSON on your computer, and Import Redirects...
+reads one back, previewing each redirect it adds and each line it cannot
+use, with why.
+
 ### GitHub Workbench: is it GitHub, or is it me? (2026-11-18)
 
 Help > GitHub Service Status... (Ctrl+Alt+F1) reads GitHub's public status

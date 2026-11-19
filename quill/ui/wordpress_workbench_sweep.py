@@ -115,9 +115,11 @@ class WorkbenchSweepCommands(WorkbenchRedirectGroup):
             routes = info.routes if info is not None else ()
             version = info.wp_version if info is not None else ""
             return privacy_rows(site, site_url, routes, version)
-        if what in ("redirects", "not_found"):
+        if what in ("redirects", "not_found", "redirect_groups"):
             if not redirect_offered(namespaces):
                 return [self._area_row(site, site_url, THIRD_SWEEP[0], namespaces)]
+            if what == "redirect_groups":
+                return self.redirect_group_rows(site, ctx.api)
             if what == "not_found":
                 return [not_found_row(site, r, site_url) for r in read_pages(ctx.api, "404")]
             items = read_pages(ctx.api, "redirect")

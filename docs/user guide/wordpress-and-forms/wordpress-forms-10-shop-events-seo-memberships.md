@@ -247,6 +247,20 @@ many times it was used, and whether it is on.
   what it says.
 - **Delete Redirect...** deletes it for good, because the plugin keeps no
   Trash.
+- **Export Redirects...** saves every redirect to a file on your computer:
+  CSV, or the plugin's own JSON with its groups.
+- **Import Redirects...** reads a CSV (from, to, and optionally a pattern
+  flag and a code) or a Redirection JSON export, and previews every redirect
+  it would add and every line it cannot use, with why: a line with no
+  address, a code that is not a redirect, an address in the file twice, or
+  one the site already redirects. Then it asks which group, and adds them
+  one at a time.
+
+**Redirect Groups**, under Redirects, lists the groups the plugin keeps
+redirects in, with how many each holds and whether it is on. **New
+Group...** (`Ctrl+N`), **Rename...** and **Turn On or Off** each preview
+first and can be undone. **Delete Group...** deletes its redirects with it,
+so it asks you to type the group's name.
 
 **404 Log**, under Redirects, lists addresses visitors asked for that were not
 found. **Redirect This Address...** sends one somewhere, after a preview.
