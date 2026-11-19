@@ -2,6 +2,26 @@
 
 ## 1.0.0
 
+### GitHub Workbench: write workflows, Dependabot and CODEOWNERS (2026-11-19)
+
+- **Edit Workflow...** and **New Workflow...**
+  - **The editor.** It lays a workflow out as plain controls: its triggers and
+    their inputs, permissions, jobs, and each job's steps. The order jobs run
+    in is said in words ("Build runs after Test and Lint").
+  - **Checks before saving.** A "What GitHub would say" box lists anything
+    GitHub would refuse, and Save waits until the list is empty.
+  - **Saving.** Changes are saved to the default branch, or as a pull request
+    when the branch is protected. Comments at the top of the file are kept;
+    comments inside it are not, and the window says so.
+- **dependabot.yml** opens as a sheet, and **Dependabot Commands...** on a
+  Dependabot pull request posts the command you choose.
+- **CODEOWNERS** is now a table with Add, Edit, Remove and Move. GitHub's
+  errors for the file are shown with it. **Who Owns This?** on a file or folder
+  says which rule wins.
+- **Compare Configuration With Another Repository...** compares workflows,
+  templates, community files, Dependabot and CODEOWNERS with another
+  repository, and proposes the files you choose as one pull request.
+
 ### GitHub Workbench: a You page for your own relationships (2026-11-19)
 
 Properties now has a **You** page, right after General, on repositories,

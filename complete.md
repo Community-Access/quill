@@ -52,8 +52,6 @@ Each is done only with evidence: a test or a live run.
 - [ ] Wiki, and cross-linked discussion → issue → pull request workflows (saved replies and repository invitations are done).
 - [ ] Repository General/features, complete creation/template options, transfer, topics and star lists (standalone tags are done).
 - [ ] Rulesets/protection management, organization/member/team access, custom roles and audit logs.
-- [ ] Accessible workflow authoring: triggers/jobs/steps/inputs/permissions/dependency graph as linear controls (turning a workflow on or off is done).
-- [ ] Dependabot configuration and pull request commands; CODEOWNERS editing/ownership lookup.
 - [ ] Batch merges of independently eligible pull requests (Merge Queue, Why Can't I Merge?, Auto-Merge and queue add/remove are done).
 - [ ] Environments, deployment protection and release/deployment evidence (Set Status... on a commit is done).
 - [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
@@ -63,7 +61,6 @@ Each is done only with evidence: a test or a live run.
 - [ ] First-class by-name collections for every kind in product requirements document (PRD) 22.11 beyond Labels, Milestones, Topics, Rules and Branch Protection, and the Fleet; the other kinds are classified in `quill/core/github/across_scope_matrix.py`.
 - [ ] Tags, release trains and branch renames across repositories: comparison, publishing, feature-specific safeguards (topics are done).
 - [ ] Align or promote to organization, where supported: environments, secrets, variables, webhooks, keys and autolinks (rulesets and default-branch protection are done; labels cannot be promoted).
-- [ ] Workflow/template/community/Dependabot/CODEOWNERS content: compare and update through reviewable pull requests.
 - [ ] People/teams/settings/custom properties/issue types: access and setting matrices with inherited-role explanations.
 - [ ] Saved replies/favorites/watch levels/stars, alerts/packages/Pages where supported.
 - [ ] Cross-repository coverage is complete only when the corresponding single-repository operation and batch behavior are complete; read-only category views are tracked separately from multi-target writes.
@@ -93,6 +90,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 - [ ] Run `python docs/qa/github-live-run.py --create` after signing in again, and the live rows marked "needs Jeff".
 - [ ] GitHub live scenarios: multiple roles/accounts, protected branches, organization restrictions, rate limiting, private repositories, project fields, secrets, failure/retry and no-API fallbacks; the Copilot cloud agent commands on a Copilot plan.
 - [ ] Vote... in a real discussion poll, and the Pinned (spotlight) place, on the test repository.
+- [ ] Edit Workflow..., New Workflow... and Compare Configuration... on the test repository (each through a pull request, then closed); Dependabot Commands... on a real Dependabot pull request, and whether GitHub still accepts `@dependabot merge`, `squash and merge`, `cancel merge`, `close` and `reopen`.
 - [ ] **GH-R-119:** timed find-the-answer sessions with people.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists.
 - [ ] WordPress current candidate: run the documented live regression on an authorized test site and distinguish existing site-side failures from regressions.
