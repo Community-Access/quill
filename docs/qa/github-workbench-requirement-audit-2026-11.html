@@ -251,7 +251,7 @@ href="../Product Requirement Documents and Specifications/github-workbench-prd.m
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 73 are met, 19 are partly met and 8 are
+<p>Of the 100 live requirements, 74 are met, 18 are partly met and 8 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -266,8 +266,8 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>62</td>
-<td>12</td>
+<td>63</td>
+<td>11</td>
 <td>1</td>
 <td>75</td>
 </tr>
@@ -428,14 +428,6 @@ Describer not checked.</td>
 <td>Help and Learning has Start Here, Do Something, The Guide, Words,
 Keys, What Changed, Ask a Person (<code>workbench_tree.py:287</code>);
 D11’s Tutorials and Tips nodes are missing.</td>
-</tr>
-<tr>
-<td>GH-R-107</td>
-<td>Must</td>
-<td>Take Me There and Walk Me Through It on every help topic and task;
-Do It where the answer is one command</td>
-<td>Take Me There on Do Something tasks; no Walk Me Through, no Do
-It.</td>
 </tr>
 <tr>
 <td>GH-R-108</td>
@@ -1393,11 +1385,15 @@ D11’s Tutorials and Tips nodes are missing.</td>
 <tr>
 <td>GH-R-107</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Take Me There and Walk Me Through It on every help topic and task;
 Do It where the answer is one command</td>
-<td>Take Me There on Do Something tasks; no Walk Me Through, no Do
-It.</td>
+<td>Take Me There, Walk Me Through It
+(<code>quill/core/workbench/walk.py</code>; the shared frame’s
+<code>start_walk</code>, F1 repeats, Shift+F1 lists, Escape stops) and
+Do It where the task is one command (<code>workbench_help.DO_IT</code>,
+greyed otherwise) on every Do Something task
+(<code>test_github_workbench_walk.py</code>).</td>
 </tr>
 <tr>
 <td>GH-R-108</td>

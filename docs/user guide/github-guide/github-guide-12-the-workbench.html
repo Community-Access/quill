@@ -979,8 +979,21 @@ typed, since there it is code, and so is one QUILL does not know.</p>
 other list.</p>
 <ul>
 <li><strong>Do Something</strong> has tasks in plain words, such as Fix
-a failed run. Enter reads the steps; Take Me There, on the context menu,
-goes to the place.</li>
+a failed run. Enter reads the steps. The context menu has three more:
+<ul>
+<li><strong>Take Me There</strong> goes to the place the task is
+about.</li>
+<li><strong>Walk Me Through It</strong> goes there too, then says the
+first step only. When you have done it, the next step is said, and so on
+to the end. <code>F1</code> says the step again, <code>Shift+F1</code>
+lists all the steps with where you are, and <code>Escape</code> stops
+the walk. A step that only moves the selection, such as “Arrow down the
+list”, counts as done when you run the next command.</li>
+<li><strong>Do It</strong> runs the one command a task comes down to,
+where it belongs, with its usual dialog: File an issue opens New Issue
+in the repository’s Issues. It is greyed on tasks that take more than
+one command.</li>
+</ul></li>
 <li><strong>The Guide</strong> lists this book’s chapters. Enter opens
 one.</li>
 <li><strong>Words</strong> is the GitHub glossary. Type a word to jump
