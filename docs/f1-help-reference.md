@@ -2870,7 +2870,7 @@ Control coverage: 384 audited sites (384 helped).
 
 **organization: Dependabot Alerts.** Dependabot Alerts: every repository's vulnerable dependencies in one list.
 
-**organization: Secret Scanning Alerts.** Secret Scanning Alerts: secrets found in any repository. The secret itself is never shown here.
+**organization: Secret Scanning Alerts.** Secret Scanning Alerts: secrets found in any repository. The secret itself is never asked for, so it is never shown here.
 
 **organization: Security Advisories.** Security Advisories: the repository advisories across this organization.
 
@@ -3140,6 +3140,10 @@ Control coverage: 384 audited sites (384 helped).
 
 **Account > Bulk Access Changes....** One team or person, many repositories: previewed, then a result per change.
 
+**Account > Compare Accounts....** Two of your signed-in accounts on this repository, side by side: each one's role and sign-in, as GitHub answered that account.
+
+**Account > Act As Another Account....** One action sent as another signed-in account, such as approving your own pull request: the account is named before and after, and held to its own level.
+
 **Account > Workbench Level for This Account....** Read Only, Organize or Full: what the Workbench may change with this account, whatever GitHub would allow.
 
 **Tools > Workbench Options....** Where the Workbench opens, how notifications check, lists and privacy.
@@ -3248,6 +3252,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Why Can't I Merge?.** Whether it can merge, or each reason it cannot, for the commit it is at.
 
+**Merge Selected.** Merge the selected pull requests one at a time, each checked on its own, after a preview of which will merge and which will not.
+
 **Auto-Merge.** Have it merge itself when it can, or turn that off.
 
 **Reviews.** Read, change, dismiss, submit or delete a review.
@@ -3275,6 +3281,8 @@ Control coverage: 384 audited sites (384 helped).
 **Turn On Agent Merge.** Let Copilot merge this pull request once its checks and reviews allow.
 
 **Turn Off Agent Merge.** Stop Copilot merging this pull request.
+
+**Dependency Review.** What this pull request changes in the dependencies: each one added or removed, its licence, and its known vulnerabilities.
 
 **Jobs and Logs.** The run's jobs, steps and logs.
 
@@ -3326,6 +3334,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **React.** Add or remove a reaction.
 
+**Release Evidence.** Its commit, the checks that passed, where it deployed, whether it is immutable, and each file's attestations.
+
 **Delete Release.** Delete it, and its tag if you say.
 
 **Compare With Previous.** Compare it with the one before: the previous tag or release, or a commit's parent.
@@ -3333,10 +3343,6 @@ Control coverage: 384 audited sites (384 helped).
 **Compare With Default.** Compare it with the default branch: commits each way, files, any open pull request.
 
 **GitHub's Release Notes.** The notes GitHub writes from the changes since another tag.
-
-**Download.** Download the file in your browser.
-
-**Delete Asset.** Remove the file from the release.
 
 **Commits.** The branch's commits.
 
@@ -3414,7 +3420,7 @@ Control coverage: 384 audited sites (384 helped).
 
 **Set a Custom Property.** Give one of the organization's custom properties a value here.
 
-**Compare Dependencies.** Which dependencies changed between two branches, tags or commits, and their known vulnerabilities.
+**Compare Dependencies.** Which dependencies changed between two branches, tags or commits, their licences, and their known vulnerabilities.
 
 **SBOM Report.** Ask GitHub to build a software bill of materials report, and read it.
 
@@ -3453,6 +3459,8 @@ Control coverage: 384 audited sites (384 helped).
 **Agent Secrets from the Organization.** The organization's agent secrets this repository may use (names only).
 
 **Agent Variables from the Organization.** The organization's agent variables this repository may use.
+
+**Allow a Blocked Secret.** When push protection stopped your push, let that one secret through: give the placeholder id git push printed and say why.
 
 **Open.** Select the person's node in the tree.
 
@@ -3515,8 +3523,6 @@ Control coverage: 384 audited sites (384 helped).
 **Unpin Node.** Take its node away; the search stays.
 
 **Remove Saved Search.** Forget it on this device.
-
-**Delete Deployment.** Only an inactive one.
 
 **Open in Editor.** Open the file in the editor, to read or edit.
 
@@ -3620,6 +3626,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Unfollow Organization.** Stop seeing this organization in your feed.
 
+**Security Overview.** Open Dependabot, code scanning and secret scanning alerts in every repository, counted by severity, worst first.
+
 **Open.** Open the settings dialog for this; it asks before saving.
 
 **Edit Watch.** Change what the watch looks at.
@@ -3716,6 +3724,14 @@ Control coverage: 384 audited sites (384 helped).
 
 **Open Repository.** Select the repository's node in the tree.
 
+**Download.** Download the file in your browser.
+
+**Attestations.** The file's digest and GitHub's attestations for it, such as build provenance.
+
+**Delete Asset.** Remove the file from the release.
+
+**Delete Deployment.** Only an inactive one.
+
 **Open Section.** List the categories in this section.
 
 **Find Discussions in Category.** The repository's discussions in this category.
@@ -3731,6 +3747,8 @@ Control coverage: 384 audited sites (384 helped).
 **Rebuild.** Ask GitHub for a fresh build.
 
 **Turn Off Pages.** Stop publishing, after asking.
+
+**Deployments.** Its newest deployments, each with its latest state.
 
 **Secrets.** Add, change or delete its secrets.
 
@@ -3916,6 +3934,7 @@ Control coverage: 384 audited sites (384 helped).
 #### GitHubSignInDialog (`quill/ui/github_dialogs.py`)
 
 - `self._token_ctrl`: A personal access token you made on GitHub. QUILL asks GitHub whose it is before it keeps it.
+- `self._host_ctrl`: github.com, or your GitHub Enterprise Server's name, such as github.example.com. The token is only ever sent to this server.
 - `self._connect_btn`: Sign in with the token you typed or the browser sign-in.
 - `anon_btn`: Go on without signing in. Public repositories can still be read.
 - `cancel_button`: Close without changing anything. Escape does the same.
@@ -3925,6 +3944,7 @@ Control coverage: 384 audited sites (384 helped).
 - `self._switch_btn`: Make the selected account the one QUILL uses for GitHub.
 - `self._remove_btn`: Forget the selected account on this computer. Its token is removed.
 - `add_btn`: Paste a personal access token you made on GitHub, for example a fine-grained token limited to a few repositories.
+- `gh_btn`: If you already signed in to the GitHub CLI (gh), QUILL asks it for that sign-in, checks whose it is, asks you, and keeps its own copy. Works for github.com and a GitHub Enterprise Server.
 - `close_btn`: Close Manage GitHub Accounts.
 - `self._choice`: The GitHub accounts QUILL knows. Choose one to use or remove.
 #### GitHubDiscussionDialog (`quill/ui/github_discussion_dialog.py`)

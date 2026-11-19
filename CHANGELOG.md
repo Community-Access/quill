@@ -2,6 +2,68 @@
 
 ## 1.0.0
 
+### Quill Cast: lists stay still while new episodes arrive (2026-11-19)
+
+A feed refresh, a finished download or a change to the queue no longer moves
+your place. In Inbox, New Episodes, Downloads, Continue Listening, the Play
+Queue and the other episode lists, the episode you were on stays selected and
+focused, on the same line of the screen, and nothing takes the keyboard focus.
+New episodes are said once, as "3 new episodes in The Daily.", and a refresh
+with nothing new says nothing. QUILL's Play Queue window, which used to act on
+the wrong episode once the one in front had played, now keeps up with the queue
+and keeps its caret on the same episode. This is the first part of the family
+UX pilot.
+### GitHub Workbench: secrets stay secret, Dependency Review and Security Overview (2026-11-19)
+
+- **A secret is never shown.** A secret's new value in Properties was a plain
+  text field, so it was visible as you typed it, included in Copy as Text and
+  named in the preview before saving. It is now a password box that is emptied
+  after saving, and previews say "(hidden)". Values are sealed with the
+  repository's, environment's or organization's own key before they are sent,
+  never read back, and dropped from memory once the call ends.
+- **Changing secrets.** Change... on a secret sends a new value. For an
+  organization's secret, Change... can also just change who may use it: all,
+  private or selected repositories.
+- **Dependency Review** on a pull request lists each dependency it adds or
+  removes, with its licence and any known vulnerabilities, the vulnerable ones
+  first.
+- **Security Overview** on an organization counts open alerts of every kind
+  by repository and severity, worst first. A kind GitHub will not show you is
+  said, never counted as none.
+- **Allow a Blocked Secret...** answers GitHub's push protection, with a
+  reason. A private report waiting for review is called that, and can be
+  accepted or closed.
+### GitHub Workbench: issue types and fields in the lists (2026-11-19)
+
+An issue's type and its organization's issue fields now show in the
+Workbench's own lists:
+- **Columns.** Columns... offers **Issue type** and **Issue fields** on every
+  Issues list.
+- **Typed values.** A date reads as a date, a number as a number and a choice
+  by its name.
+- **Details and filters.** The details name the type and each field.
+  `type:Bug` and `field.priority:high` searches go to GitHub, Show Only and
+  Hide offer each value, and Group By Type works.
+- **Properties.** An issue's Properties has an Issue Fields page.
+- **Distinct states.** A field that is empty, not set, hidden from you, not
+  yet supported or could not be read each says so in its own words.
+### GitHub Workbench: Merge Selected, deployments and release evidence (2026-11-19)
+
+- **Merge Selected...** merges several pull requests at once. Each one is
+  checked on its own, with the reason given when it cannot be merged, and a
+  preview lists what will merge, what will join the merge queue and what will
+  not. They merge one at a time, each checked again just before. A failure
+  stops nothing else, and Retry Failed is there at the end. Merge... now offers
+  only the merge methods the repository allows.
+- An environment now shows its custom protection rules, branches and tags, how
+  many secrets and variables it has, and its newest deployments.
+  **Deployments...** lists them.
+- **Release Evidence...** on a release says whether it is a draft and whether
+  it is immutable. It names the tag's commit, which checks passed or failed,
+  which environments it was deployed to, and each file's attestations.
+  **Attestations...** on a release file lists them. QUILL does not verify the
+  signatures itself, and says so.
+
 ### GitHub Workbench: a You page for your own relationships (2026-11-19)
 
 Properties now has a **You** page, right after General, on repositories,

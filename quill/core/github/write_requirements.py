@@ -168,6 +168,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}user_status": ("sign_in+scope:user", _V),
     f"{_P}commit_status": ("repo:write", _V),
     f"{_P}merge_queue": ("repo:write", _V),
+    f"{_P}merge_selected": ("repo:write", _V),
     f"{_P}sub_issues": ("repo:triage", _O),
     f"{_P}relationships": ("repo:triage", _O),
     f"{_P}issue_fields": ("repo:triage", _O),

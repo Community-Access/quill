@@ -46,9 +46,9 @@ from quill.core.github.branch_compare import GitHubBranchComparison, fetch_branc
 from quill.core.github.branch_divergence import with_divergence
 from quill.core.github.discussion_actions import GitHubDiscussionActionsMixin
 from quill.core.github.dry_run import stop_if_dry
-from quill.core.github.github_provider import _get_gh_module, require_pygithub
-from quill.core.github.hosts import pygithub_host
+from quill.core.github.github_provider import _get_gh_module, pygithub_host, require_pygithub
 from quill.core.github.issue_comments import list_comments as _list_issue_comments
+from quill.core.github.issue_fields_rows import IssueExtras, issue_type_of
 from quill.core.github.items_errors import GitHubItemsError
 from quill.core.github.items_provider_constants import DEFAULT_PAGE_LIMIT
 from quill.core.github.items_provider_review import GitHubPullReviewExtrasMixin
@@ -102,9 +102,8 @@ class GitHubItem:
 
     The field set mirrors GHManage's ``Item`` (the reference viewer): the PR-only
     ``changed_files`` / ``base_branch`` / ``head_branch`` carry the diff summary
-    and the branch flow shown in the details pane. ``review_status`` is the
-    review decision; PyGithub does not expose it on the list endpoint, so it is
-    populated only when a detail fetch supplies it (left empty in list rows).
+    and the branch flow shown in the details pane. ``review_status`` is the review
+    decision, empty in list rows; ``issue_type`` comes with the row, at no cost.
     """
 
     number: int
@@ -127,6 +126,8 @@ class GitHubItem:
     changed_files: int = 0
     base_branch: str = ""
     head_branch: str = ""
+    issue_type: str = ""
+    issue_fields: IssueExtras | None = None  # read only when asked (issue_fields_rows.py)
 
     @property
     def kind(self) -> str:
@@ -548,10 +549,8 @@ class GitHubItemsProvider(
             additions = int(getattr(row, "additions", 0) or 0)
             deletions = int(getattr(row, "deletions", 0) or 0)
             changed_files = int(getattr(row, "changed_files", 0) or 0)
-            # reviewDecision is a gh-CLI field; PyGithub does not expose it on the
-            # list endpoint, so review_status stays empty in list rows (a detail
-            # fetch could populate it; v1 leaves it blank rather than burn an
-            # extra API call per row).
+            # reviewDecision is not on the list endpoint, so review_status stays
+            # empty in list rows rather than cost a request per row.
             base = getattr(row, "base", None)
             head = getattr(row, "head", None)
             base_branch = _safe_str(getattr(base, "ref", "")) if base is not None else ""
@@ -577,6 +576,7 @@ class GitHubItemsProvider(
             changed_files=changed_files,
             base_branch=base_branch,
             head_branch=head_branch,
+            issue_type="" if effective_pr else issue_type_of(row),
         )
 
     # ------------------------------------------------------------------

@@ -30,6 +30,11 @@ from quill.ui.github_workbench_advisories import (
     ADVISORY_VERBS,
     GitHubWorkbenchAdvisoriesMixin,
 )
+from quill.ui.github_workbench_batch_merge import (
+    BATCH_MERGE_REASONS,
+    BATCH_MERGE_VERBS,
+    GitHubWorkbenchBatchMergeMixin,
+)
 from quill.ui.github_workbench_code_scanning import (
     CODE_SCANNING_REASONS,
     CODE_SCANNING_VERBS,
@@ -55,6 +60,11 @@ from quill.ui.github_workbench_environments import (
     ENVIRONMENT_REASONS,
     ENVIRONMENT_VERBS,
     GitHubWorkbenchEnvironmentsMixin,
+)
+from quill.ui.github_workbench_evidence import (
+    EVIDENCE_REASONS,
+    EVIDENCE_VERBS,
+    GitHubWorkbenchEvidenceMixin,
 )
 from quill.ui.github_workbench_inbox_rules import (
     INBOX_RULE_REASONS,
@@ -175,6 +185,8 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     "convert_tasks": frozenset({"item"}),
     **PULL_TOOL_VERBS,
     **MERGE_VERBS,
+    **BATCH_MERGE_VERBS,
+    **EVIDENCE_VERBS,
     **INBOX_RULE_VERBS,
     **DRY_RUN_VERBS,
     **PRACTICE_VERBS,
@@ -209,6 +221,8 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     "convert_tasks": "Task lists are for an issue, while you are signed in.",
     **PULL_TOOL_REASONS,
     **MERGE_REASONS,
+    **BATCH_MERGE_REASONS,
+    **EVIDENCE_REASONS,
     **INBOX_RULE_REASONS,
     **DRY_RUN_REASONS,
     **PRACTICE_REASONS,
@@ -241,6 +255,8 @@ DEVELOPMENT_REASONS: dict[str, str] = {
 class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchPullToolsMixin,
     GitHubWorkbenchMergeMixin,
+    GitHubWorkbenchBatchMergeMixin,
+    GitHubWorkbenchEvidenceMixin,
     GitHubWorkbenchInboxRulesMixin,
     GitHubWorkbenchDryRunMixin,
     GitHubWorkbenchPracticeMixin,

@@ -47,13 +47,13 @@ from quill.core.workbench.filters import Query, render
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import Need, NodeSpec, Scope
 from quill.ui.github_items_view import (
-    VIEW_COLUMNS,
     item_detail,
     model_detail,
     model_url,
     parse_repo_reference,
     row_cells,
     sort_items,
+    workbench_columns,
 )
 from quill.ui.github_workbench_across import ACROSS_PREFIX, GitHubWorkbenchAcrossMixin
 from quill.ui.github_workbench_actions import GitHubWorkbenchActionsMixin
@@ -322,8 +322,7 @@ class GitHubWorkbenchProvider(
                         lambda f=fetch: f(repo, state=state, limit=limit),  # type: ignore[misc]
                     )[0]
         rows = [r for r in found if isinstance(r, GitHubItem)]
-        if any(key == "conflicts" for key, _v, _n in local):
-            self.fetch_merge_states(repo, list(rows))
+        rows = self.enrich_issue_rows(repo, rows, local)  # merge states, issue fields
         kept = self.filter_locally(list(rows), text, complete=len(rows) < limit)
         order = self.view_choice("sort") or "number_desc"
         return list(sort_items([r for r in kept if isinstance(r, GitHubItem)], order))
@@ -332,7 +331,7 @@ class GitHubWorkbenchProvider(
         one_column = (EXPLORE_PREFIX, HELP_PREFIX, ACROSS_PREFIX, WATCH_PREFIX, *LOCAL_PREFIXES)
         if node.loader.startswith(one_column):
             return ("result",)
-        return VIEW_COLUMNS.get(node.loader.removeprefix("items:"), ())
+        return workbench_columns(node.loader.removeprefix("items:"))
 
     def columns(self, node: NodeSpec) -> tuple[str, ...]:
         return self.visible_columns(node.loader, self.all_columns(node))
