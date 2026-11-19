@@ -17,6 +17,7 @@ from quill.core.ai.context_builder import ContextScope
 from quill.core.ai.events import AgentEvent, AgentEventKind
 from quill.core.ai.harness import AgentSpec, AIContext, HarnessCapabilities, HarnessRegistry
 from quill.core.ai.permissions import PermissionBroker, RiskLevel, SafetyProfile
+from quill.core.ai.sdk_install import pack_is_bundled
 from quill.core.ai.tool_gateway import AgentIdentity, SafeEditorToolGateway
 
 PACK_IDS = {
@@ -75,14 +76,14 @@ def test_all_packs_present() -> None:
 
 def test_packs_report_status_consistently() -> None:
     # Installation-agnostic: a pack is either available (its SDK is installed) or
-    # reports a reason naming its extra. CI usually has none installed; a dev
-    # machine may have some (e.g. openai-agents), and both must hold.
+    # reports a reason naming its extra; bundled packs name the missing runtime.
     for pack in all_packs():
         available, reason = pack.is_available()
         if available:
             assert reason is None
         else:
-            assert reason is not None and pack.extra in reason
+            expected = "Copilot runtime" if pack_is_bundled(pack.id) else pack.extra
+            assert reason is not None and expected in reason
 
 
 def test_crash_interrupted_install_reports_unavailable_not_stuck(
@@ -138,8 +139,8 @@ def test_crash_interrupted_install_reports_unavailable_not_stuck(
 
 
 def test_copilot_pack_matches_real_sdk() -> None:
-    # Cross-check against the GA GitHub Copilot SDK: PyPI `github-copilot-sdk`,
-    # import name `copilot`, OAuth-by-default.
+    # Cross-check against Microsoft Copilot SDK 2: PyPI
+    # `microsoft-copilot-sdk`, import name `copilot`, OAuth-by-default.
     copilot = next(p for p in all_packs() if p.id == "copilot")
     assert copilot.sdk_modules == ("copilot",)
     assert copilot.extra == "ai-copilot"
@@ -169,7 +170,16 @@ def test_unavailable_session_returns_error_not_crash(tmp_path: Path) -> None:
     events: list[AgentEvent] = []
     # Pick a pack whose SDK is NOT installed, so this never triggers a real model
     # call (some SDKs may be installed locally, e.g. openai-agents/claude-agent-sdk).
-    pack = next((p for p in all_packs() if not p.is_available()[0]), None)
+    pack = next(
+        (
+            candidate
+            for candidate in all_packs()
+            if not pack_is_bundled(candidate.id)
+            and not candidate.is_available()[0]
+            and candidate.extra in (candidate.is_available()[1] or "")
+        ),
+        None,
+    )
     if pack is None:
         pytest.skip("all SDK packs are installed in this environment")
     gw = _gateway(tmp_path, FakeHost(), events)

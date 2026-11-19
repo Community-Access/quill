@@ -58,7 +58,7 @@ def test_copilot_sdk_is_pinned_in_the_runtime_extra() -> None:
     optional = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))["project"][
         "optional-dependencies"
     ]
-    assert optional["ai-copilot"] == ["github-copilot-sdk==1.0.28"]
+    assert optional["ai-copilot"] == ["microsoft-copilot-sdk==2.0.1"]
     assert "quill[ai-copilot]" in optional["runtime"]
 
 

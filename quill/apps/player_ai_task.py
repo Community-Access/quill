@@ -1,9 +1,9 @@
 """Find the Part Where: Quill Media Player's agent task (codex.md 6.11, Phase 4c).
 
 The person says what they want ("take me to the chapter about the storm", "go
-back to where I left the note about Ahab"), and an agent engine -- My GitHub
-Copilot or Codex -- finds it with the player's own tools in the shared agent
-window (:mod:`quill.ui.agent_window`):
+back to where I left the note about Ahab"), and a task-capable AI engine finds
+it with the player's own tools in the shared agent window
+(:mod:`quill.ui.agent_window`):
 
 * ``player.where_am_i`` -- the book's title, the place and the length.
 * ``player.list_chapters`` and ``player.list_bookmarks`` -- the chapters (with

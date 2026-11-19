@@ -1,8 +1,8 @@
 """Find and Follow: QUILL Cast's agent task (codex.md 6.5, Phase 4c).
 
 The person says what they want ("find two good podcasts about birds, follow
-them and put them in a Nature folder"), and an agent engine -- My GitHub
-Copilot or Codex -- works through it with Cast's own tools in the shared agent
+them and put them in a Nature folder"), and a task-capable AI engine works
+through it with Cast's own tools in the shared agent
 window (:mod:`quill.ui.agent_window`). Each tool wraps what Cast already does:
 
 * ``podcasts.find_shows`` -- the podcast directories Add Podcast searches

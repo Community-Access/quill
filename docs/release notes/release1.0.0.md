@@ -1112,10 +1112,11 @@ from:
 - **QUILL's free AI**, within its monthly allowance.
 - **My ChatGPT plan**, signed in once in your browser, with no key and no bill
   per request.
-- **My GitHub Copilot**, Copilot Free included, signed in with GitHub's short
-  code, spaced out for your screen reader and already on the clipboard. It
-  says "not available yet" until a build carries QUILL's own GitHub
-  registration.
+- **My GitHub Copilot**, signed in with GitHub's short code, spaced out for
+  your screen reader and already on the clipboard. Copilot access, available
+  models, allowances and billing belong to your GitHub account; QUILL does not
+  provide free Copilot usage. The SDK runtime is included, but not a Copilot
+  subscription.
 - **Codex, for tasks**, one key once your ChatGPT plan is signed in.
 - **My own key**: OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama
   Cloud, a custom OpenAI-compatible service, or Ollama on this computer, which
@@ -1137,11 +1138,35 @@ that sees)", and pressing it offers to switch. Every answer is text; nothing
 in QUILL's AI draws a chart, a diagram or a picture.
 
 **Do a Document Task** (**Ctrl+3**) hands a job with several steps to GitHub
-Copilot or Codex: "Fix the heading levels, then build a table of contents,
+Copilot, Codex or a supported provider you chose in My own key: "Fix the heading levels, then build a table of contents,
 then list broken links." It works only with QUILL's own document tools. Every
 step that changes something asks first (Allow once, Allow for this task, Don't
 allow), every edit opens the review you already know and undoes with Ctrl+Z,
 Stop ends it at once, and you hear a plain summary at the end.
+
+Copilot's own file, shell and web tools stay off unless you enable them for a
+project. Each use still asks first, but a vendor edit writes directly to disk
+without Review AI Changes, and the vendor shell runs with your account
+permissions. MCP and unsupported permission requests are refused. QUILL's own
+edits remain reviewed. The Copilot SDK also powers multi-step tasks for
+OpenAI-compatible and Gemini connections you choose in My own key, without
+GitHub sign-in; your selected provider's key and billing apply.
+
+**Auto, if you choose it.** Choose Your AI now has an optional Auto row. It
+selects a ready provider that supports the action and announces who will
+receive your request before sending. The local Ollama route says it stays on
+this computer. If an ordinary request, conversation or image request hits a
+connectivity problem, QUILL may offer one retry; the confirmation names the
+destination and says the provider may count the request toward limits or
+billing. A document task is never automatically retried. A specific provider
+never changes unless you choose another one.
+
+In **AI Hub > Sessions**, you can opt into keeping sessions on this computer,
+resume or delete one, share enabled AI Library skills, or let Copilot
+summarize older context for a longer task. These choices start off, and
+long-task summaries may use additional Copilot account usage. The provider you
+chose never changes on its own unless you explicitly select Auto. GitHub controls Copilot access and billing;
+QUILL does not provide or subsidize it.
 
 QUILL Lite has all of this, on the same keys, from the same code. Your saved
 prompts are one list for the whole family, shared with QUILL Lite.

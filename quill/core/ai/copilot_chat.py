@@ -3,9 +3,9 @@
 The single-request side of Copilot (codex.md 10A.12), the counterpart of
 ``chatgpt_ai_help.respond_on_plan`` for the ChatGPT plan. It is a small facade
 over the Copilot pack (:mod:`quill.ai_packs.copilot`), and makes its clients
-exactly the way the pack does -- the pinned bundled CLI over explicit stdio,
-the scrubbed child environment, this app's own token passed as
-``github_token`` -- so everything said about that path holds here too.
+exactly the way the pack does -- the verified in-process runtime, this app's
+own token passed explicitly in the grouped ``github`` options, and an ephemeral
+per-app session directory -- so everything said about that path holds here too.
 
 What a request looks like:
 
@@ -51,9 +51,10 @@ import sys
 import threading
 from collections.abc import Awaitable, Callable, Sequence
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from quill.core.ai import copilot_auth, copilot_state
+from quill.core.ai.agent_workdir import AgentFolders, agent_folders
 from quill.core.ai.connection_caps import COPILOT, PICTURES, set_model_capabilities
 from quill.core.ai.connection_choice import (
     limit_sentence,
@@ -119,6 +120,7 @@ __all__ = [
 _SAFE_MODE = "Safe Mode is on, so AI is off. Nothing was sent."
 _UI_THREAD = "GitHub Copilot was asked on the window's own thread. Nothing was sent."
 T = TypeVar("T")
+TResponse = TypeVar("TResponse")
 
 
 def _safe_mode() -> bool:
@@ -214,6 +216,48 @@ class CopilotChat:
         """One request, one answer (``send_and_wait``); pictures as attachments."""
         return self._turn(prompt, system=system, images=images, model=model)
 
+    def ask_typed(
+        self,
+        prompt: str,
+        response_type: type[TResponse],
+        *,
+        system: str = "",
+        images: Sequence[CopilotImage] = (),
+        model: str = "",
+    ) -> TResponse:
+        """One request validated as a Pydantic model by SDK 2's typed-output API."""
+        self._refuse_if_blocked()
+        from pydantic import BaseModel
+
+        if not isinstance(response_type, type) or not issubclass(response_type, BaseModel):
+            raise TypeError("response_type must be a Pydantic BaseModel subclass")
+        attachments = attachments_for(images)
+        listener = _Listener(None)
+        session_kwargs = self._session_kwargs(system, model, streaming=False)
+        timeout = self._send_timeout()
+
+        async def work(client: Any) -> TResponse:
+            async with await client.create_session(**session_kwargs) as session:
+                unsubscribe = session.on(listener)
+                try:
+                    return cast(
+                        TResponse,
+                        await session.send_and_wait_typed(
+                            prompt,
+                            response_type,
+                            attachments=attachments or None,
+                            timeout=timeout,
+                        ),
+                    )
+                except TimeoutError:
+                    await session.abort()
+                    raise
+                finally:
+                    if callable(unsubscribe):
+                        unsubscribe()
+
+        return self._with_client(work, listener)
+
     def stream(
         self,
         prompt: str,
@@ -300,11 +344,11 @@ class CopilotChat:
         if threading.current_thread() is threading.main_thread():
             raise CopilotRefused(_UI_THREAD)
 
-    def _client(self, copilot: Any) -> Any:
+    def _client(self, copilot: Any, folders: AgentFolders) -> Any:
         """A ``CopilotClient`` made exactly as the pack makes one (not started)."""
         from quill.ai_packs.copilot import client_kwargs
 
-        return copilot.CopilotClient(**client_kwargs(copilot, self.agent_name))
+        return copilot.CopilotClient(**client_kwargs(copilot, self.agent_name, str(folders.home)))
 
     def _send_timeout(self) -> float:
         if self.timeout is not None:
@@ -314,7 +358,12 @@ class CopilotChat:
         return SEND_TIMEOUT_SECONDS
 
     def _session_kwargs(self, system: str, model: str, streaming: bool) -> dict[str, Any]:
-        from quill.ai_packs.copilot import available_tools_for, reject_class, system_message_for
+        from quill.ai_packs.copilot import (
+            available_tools_for,
+            reject_class,
+            session_safety_options,
+            system_message_for,
+        )
 
         reject = reject_class()
         refusal = "QUILL answers in text only; no tools are offered."
@@ -322,16 +371,26 @@ class CopilotChat:
         def deny(request: object, invocation: object) -> object:
             return reject(feedback=refusal)
 
-        kwargs: dict[str, Any] = {
-            "available_tools": available_tools_for(),
-            "on_permission_request": deny,
-            "system_message": system_message_for(with_family_instruction(system)),
-        }
+        kwargs: dict[str, Any] = session_safety_options()
+        kwargs.update({
+            "permissions": {"on_request": deny},
+            "tools": {"available_tools": available_tools_for()},
+            "events": {"streaming": streaming},
+        })
+        system_message = system_message_for(with_family_instruction(system))
+        if system_message is not None:
+            kwargs["system_message"] = system_message
         chosen = (model or self.model).strip()
-        if chosen and chosen != AUTO_MODEL:
+        if chosen and chosen.lower() != AUTO_MODEL:
             kwargs["model"] = chosen
-        if streaming:
-            kwargs["streaming"] = True
+        if chosen.lower() in {"", AUTO_MODEL}:
+            from quill.core.ai.copilot_preferences import load_copilot_preferences
+
+            github = dict(kwargs.get("github", {}))
+            capi = dict(github.get("capi", {}))
+            capi["auto_tier"] = load_copilot_preferences(self.data_dir).auto_tier
+            github["capi"] = capi
+            kwargs["github"] = github
         return kwargs
 
     def _turn(
@@ -400,8 +459,22 @@ class CopilotChat:
         copilot = importlib.import_module("copilot")
 
         async def run() -> T:
-            async with self._client(copilot) as client:
-                return await work(client)
+            folders = agent_folders(
+                "copilot",
+                self.agent_name,
+                base=self.data_dir / "ai" if self.data_dir is not None else None,
+            ).prepare()
+            client: Any | None = None
+            try:
+                client = self._client(copilot, folders)
+                try:
+                    await client.start()
+                    return await work(client)
+                finally:
+                    if client is not None:
+                        await client.stop()
+            finally:
+                folders.clear()
 
         try:
             value = asyncio.run(run())

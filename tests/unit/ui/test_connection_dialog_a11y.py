@@ -79,4 +79,5 @@ def test_ai_model_and_connection_menu_item_removed() -> None:
     body = _menu_source()
     assert '"AI &Model and Connection..."' not in body
     assert '"&Forget API Key"' not in body
-    assert '"AI &Hub..."' in body
+    assert '_("AI Hu&b...")' in body
+    assert '"tools.ai_hub"' in body

@@ -20,10 +20,13 @@ the SDK is imported for real inside a session when the pack actually runs.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from quill.ai_packs._base import SdkHarness
 from quill.ai_packs.claude import ClaudeAgentHarness
 from quill.ai_packs.copilot import CopilotHarness
 from quill.ai_packs.openai_agents import OpenAIAgentsHarness
+from quill.core.ai.copilot_auth import DEFAULT_AGENT_NAME
 
 __all__ = [
     "SdkHarness",
@@ -35,23 +38,30 @@ __all__ = [
 ]
 
 
-def all_packs() -> list[SdkHarness]:
+def all_packs(*, agent_name: str | None = None, data_dir: Path | None = None) -> list[SdkHarness]:
     """Construct one instance of every pack (no SDK import happens here)."""
+    if agent_name is None and data_dir is None:
+        copilot = CopilotHarness()
+    else:
+        copilot = CopilotHarness(
+            agent_name=agent_name or DEFAULT_AGENT_NAME,
+            data_dir=data_dir,
+        )
     return [
-        CopilotHarness(),
+        copilot,
         ClaudeAgentHarness(),
         OpenAIAgentsHarness(),
     ]
 
 
-def register_all(registry: object) -> list[SdkHarness]:
+def register_all(registry: object, *, agent_name: str | None = None) -> list[SdkHarness]:
     """Register every pack into ``registry``; return the packs.
 
     Registering an uninstalled pack is intentional: it appears in the Hub's
     Harnesses tab as available-to-install (``is_available()`` reports the reason),
     rather than vanishing silently.
     """
-    packs = all_packs()
+    packs = all_packs(agent_name=agent_name)
     for pack in packs:
         registry.register(pack)  # type: ignore[attr-defined]
     return packs

@@ -38,12 +38,12 @@ it empty keeps the saved key. Removing takes effect at once, not at OK, and is
 spoken, so nobody is left wondering which service their next request will use.
 
 **The model is a list, filled from the account.** Once the key is known to be
-good -- Test the Key, or simply opening this window with a key already saved --
-every model the key can use for text is listed, the current flagship first
-(:mod:`quill.core.ai.own_key_models`). Each row carries an *estimated* cost at
-that company's prices, so arrowing through the list is enough to compare them,
-and the Cost estimate box says plainly that the figures are estimates and where
-the real prices are.
+good with **Test the Key**, every model the key can use for text is listed, the
+current flagship first (:mod:`quill.core.ai.own_key_models`). Merely opening
+this window or changing the provider does not contact a service. Each model row
+carries an *estimated* cost at that company's prices, so arrowing through the
+list is enough to compare them, and the Cost estimate box says plainly that the
+figures are estimates and where the real prices are.
 
 **Test the Key** checks the key by listing the models (which costs nothing),
 then sends one tiny request ("reply with the word pong") to the chosen model.
@@ -134,7 +134,9 @@ def _explanation(provider: str) -> str:
         f"the passage straight from this computer to {name}, on your own {name} "
         "account. Nothing goes through QUILL's servers, there is no QUILL allowance "
         f"and no size limit beyond the model's own, and {name} bills your account "
-        "for each request under its own terms and privacy policy."
+        "for each request under its own terms and privacy policy. Agent tasks, "
+        "when available for this provider, also send the task and approved context "
+        f"to {name}; their tool actions still go through QUILL's permission checks."
         f"{pictures} "
         f"Create a key at {key_url(provider)}. {address}"
         "While a key is saved for the provider chosen above, every limit is "
@@ -264,8 +266,6 @@ class OwnKeyDialog(wx.Dialog):
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         self._follow_provider_fields()
         (self.key if needs_key(self._provider) else self.provider).SetFocus()
-        if saved:
-            self._list_saved_key_models()
 
     # -- the provider ------------------------------------------------------ #
 
@@ -310,8 +310,6 @@ class OwnKeyDialog(wx.Dialog):
         self._show_estimate()
         self._follow_provider_fields()
         self._set_status(self._saved_status(saved))
-        if saved:
-            self._list_saved_key_models()
 
     def _key_label(self, saved: bool) -> str:
         name = provider_name(self._provider)
@@ -396,43 +394,6 @@ class OwnKeyDialog(wx.Dialog):
         self.model.Set([self._label(name) for name in self._models])
         self.model.SetSelection(self._models.index(select) if select in self._models else 0)
         self._show_estimate()
-
-    def _list_saved_key_models(self) -> None:
-        """Fill the list for a key already saved, so the model can be changed any time.
-
-        Quiet on success -- the list is there when the person reaches it, and a
-        sentence spoken over the window's own title would be noise (GATE-13).
-        """
-        from quill.ui.update_download import thread_submit
-
-        key = self._key_to_use()
-        if not key and needs_key(self._provider):
-            return
-        provider = self._provider
-        self.status.SetValue("Listing the models your key can use...")
-
-        def work(**_kwargs: Any) -> tuple[list[str], str]:
-            return self._list(key, provider)
-
-        def done(_name: str, result: Any) -> None:
-            models, error = result
-            wx.CallAfter(self._after_quiet_listing, provider, models, error)
-
-        thread_submit("quill-ai-own-key-models", work, on_success=done, on_failure=_ignore)
-
-    def _after_quiet_listing(self, provider: str, models: list[str], error: str) -> None:
-        if not self or provider != self._provider:
-            return  # the list changed under the listing; it is for the old provider
-        if error:
-            self.status.SetValue(f"The models could not be listed. {error}")
-            return
-        self._fill_models(models, self._preferred(models, self._selected_model()))
-        found = f"{len(models)} models are listed."
-        self.status.SetValue(
-            f"{provider_name(provider)} is ready. {found}"
-            if is_local(provider)
-            else f"A {provider_name(provider)} key is saved. {found}"
-        )
 
     def _on_test(self, _event: Any) -> None:
         provider = self._provider
@@ -534,10 +495,6 @@ class OwnKeyDialog(wx.Dialog):
 # --------------------------------------------------------------------------- #
 # Usage and About, when AI help is on the user's own key
 # --------------------------------------------------------------------------- #
-
-
-def _ignore(_name: str, _error: BaseException) -> None:
-    """A background listing that failed: the status line already says what to try."""
 
 
 def own_key_about_text(model: str, provider: str = "openai") -> str:

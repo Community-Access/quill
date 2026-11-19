@@ -22,9 +22,9 @@ docstring says: an area switched on by an import is not consent. The OpenAI
 consent page names "QUILL Cast", because each app signs in on its own.
 
 **Choose Your AI** (codex.md Phase 3): Cast stores its own ``ai_connection``
-in the history record, so it gets the window with all five connections, Which
-AI Am I Using, the one AI Usage list, the AI status cell and capability gating
-from the shared code, and **Ask** with Cast's own facts
+in the history record, so it gets the window with five connections plus Auto,
+Which AI Am I Using, the one AI Usage list, the AI status cell and capability
+gating from the shared code, and **Ask** with Cast's own facts
 (:mod:`quill.ui.podcasts.cast_ai_ask`). Ctrl+1 to Ctrl+9 are Cast's Window menu
 keys (and an episode list's Quick Actions), so Ask is Ctrl+Shift+8, Which AI
 Ctrl+F8 and Choose Your AI Ctrl+Shift+F8, as in Quill Radio

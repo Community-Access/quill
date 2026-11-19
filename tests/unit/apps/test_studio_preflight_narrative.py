@@ -79,8 +79,14 @@ class _Service:
             return self.sees
         return True
 
+    def request_connection(self, _requires: tuple[str, ...], on_error: Any) -> str:
+        if not self.can_do("agent_tools"):
+            on_error("This connection cannot run agent tasks.")
+            return ""
+        return self.connection_in_use
+
     def needs_label(self, capability: str) -> str:
-        return "" if self.can_do(capability) else "(needs Copilot or Codex)"
+        return "" if self.can_do(capability) else "(needs an AI that runs tasks)"
 
     def agent_harness(self, connection: str) -> object:
         self.harnesses.append(connection)
@@ -219,7 +225,7 @@ def test_the_narrative_row_says_what_it_needs_without_agent_tools(studio) -> Non
     narrate = next(
         i.GetItemLabel() for i in menu.GetMenuItems() if i.GetItemLabel().startswith("&Narrate")
     )
-    assert "(needs Copilot or Codex)" in narrate
+    assert "(needs an AI that runs tasks)" in narrate
 
 
 # --------------------------------------------------------------------------- #

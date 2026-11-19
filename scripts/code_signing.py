@@ -91,11 +91,9 @@ DEFAULT_SIGN_PATTERNS = ("*.exe", "*.dll")
 
 # Third-party binaries that arrive already Authenticode-signed by their vendor
 # and must ship byte-for-byte as staged: ``tools/<name>/`` under any tree we
-# walk, at any depth and whatever the extension. The GitHub Copilot CLI may be
-# redistributed only unmodified: it is the SDK's hostless runtime bundle, whose
-# copilot.exe alias, copilot-runtime.exe wrapper and runtime.node (all pinned in
-# quill.core.ai.copilot_runtime), its other .node addons and its subfolder exes
-# are signed by GitHub, Inc., and its auth DLLs and tgrep by Microsoft. The
+# walk, at any depth and whatever the extension. The Copilot SDK native runtime may be
+# redistributed only unmodified: runtime.node is pinned in
+# quill.core.ai.copilot_runtime and vendor-signed by GitHub, Inc. The
 # OpenAI Codex app-server (signed by OpenAI) is checked against its pinned
 # SHA-256 before every launch (quill.core.ai.codex_binary). Re-signing any of
 # them would change its bytes and replace the vendor's signature with ours. The

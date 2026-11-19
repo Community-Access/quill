@@ -103,7 +103,7 @@ def _is_qualified_egress(call: ast.Call) -> bool:
 # The reviewed table moved to its own module under GATE-11 (extract, never
 # rebaseline): it is data that grows with every networked feature, while the
 # scanner below is logic that does not.
-# Child-process egress (bundled agent runtimes) is _CHILD_PROCESS_EGRESS there.
+# Egress inside SDKs and subprocesses is _NON_AST_EGRESS there.
 from quill.tools.network_egress_entries import _REVIEWED_EGRESS  # noqa: E402
 
 # ---------------------------------------------------------------------------

@@ -76,7 +76,7 @@ def test_available_pack_supplies_its_own_transport(monkeypatch: pytest.MonkeyPat
         def responder(self):  # type: ignore[no-untyped-def]
             return lambda agent, ctx: "sdk text"
 
-    monkeypatch.setattr("quill.ai_packs.all_packs", lambda: [_FakePack()])
+    monkeypatch.setattr("quill.ai_packs.all_packs", lambda **_kwargs: [_FakePack()])
     responder, name = _select_responder(_Backend(True), _Controller())
     assert name == "OpenAI Agents SDK"
     assert responder(object(), object()) == "sdk text"
@@ -97,7 +97,7 @@ def test_pack_responder_failure_falls_back_to_native(monkeypatch: pytest.MonkeyP
         def responder(self):  # type: ignore[no-untyped-def]
             raise RuntimeError("sdk import broke")
 
-    monkeypatch.setattr("quill.ai_packs.all_packs", lambda: [_BoomPack()])
+    monkeypatch.setattr("quill.ai_packs.all_packs", lambda **_kwargs: [_BoomPack()])
     controller = _Controller()
     responder, name = _select_responder(_Backend(True), controller)
     assert name == "Native (QUILL)"

@@ -1,7 +1,7 @@
 """Narrate a Recording: QUILL Studio's second agent task (codex.md 6.8 and 6.3).
 
-The person presses Ctrl+Shift+3 (AI > Narrate a Recording...) and an agent
-engine -- My GitHub Copilot or Codex -- writes an accessible narrative of a
+The person presses Ctrl+Shift+3 (AI > Narrate a Recording...) and a
+task-capable AI engine writes an accessible narrative of a
 recording: what is seen and said, in order, with times. The recording is the
 one Studio last made; when there is none, Studio's own file chooser asks for
 one the first time a tool needs it.

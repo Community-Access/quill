@@ -29,6 +29,8 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.ai.connection_caps import (
+    AGENT_TOOLS,
+    AUTO,
     CHATGPT,
     CODEX,
     CONNECTIONS,
@@ -38,6 +40,7 @@ from quill.core.ai.connection_caps import (
     CapabilityMissing,
     ConnectionRecord,
     SwitchOffer,
+    auto_connection,
     can,
     needs_label,
     record_for,
@@ -164,6 +167,8 @@ class ConnectionRouteMixin:
     def connection_model(self, connection: str = "") -> str:
         """The model *connection* (default: the stored one) answers with, or ""."""
         chosen = connection or self.connection
+        if chosen == AUTO:
+            return ""
         settings = self._settings()
         if chosen == CHATGPT:
             return str(getattr(self.chatgpt, "model", "") or "")
@@ -181,7 +186,7 @@ class ConnectionRouteMixin:
         """Make *connection* the one in use (Use This, or a sign-in: signing in is
         choosing). False, and nothing changes, when it is not ready."""
         settings = self._settings()
-        if connection not in CONNECTIONS or not hasattr(settings, "ai_connection"):
+        if connection not in (*CONNECTIONS, AUTO) or not hasattr(settings, "ai_connection"):
             return False
         if not ready(self.connection_facts(), connection):
             return False
@@ -210,19 +215,21 @@ class ConnectionRouteMixin:
         before: dict[str, bool] = getattr(self, "_ready_before", {})
         was = before.pop(connection, None)
         now = self._set_up(self.connection_facts(), connection)
-        if now and was is False:
+        if now and was is False and self.connection != AUTO:
             self.choose(connection)
         self.route_chosen()
 
     # -- what the window and Ctrl+8 read ----------------------------------- #
 
     def connection_rows(self) -> list[ConnectionRow]:
-        """Choose Your AI's five rows, each with its state (10A.3)."""
+        """Choose Your AI's five provider rows plus Auto, each with its state (10A.3)."""
         return row_states(self.connection_facts())
 
     def capability_record(self, connection: str = "") -> ConnectionRecord:
         """The capability record for *connection* (default: the stored one)."""
         chosen = connection or self.connection
+        if chosen == AUTO:
+            raise ValueError("Auto must be resolved to a connection before reading capabilities.")
         limits = getattr(self, "_limits", None)
         return record_for(
             chosen,
@@ -232,10 +239,41 @@ class ConnectionRouteMixin:
             available=self.connection_facts().available(chosen) if chosen else None,
         )
 
-    def can_do(self, capability: str) -> bool:
+    def can_do(self, capability: str, connection: str = "") -> bool:
         """Whether the connection in use can do *capability* now."""
-        active = self.connection_in_use
+        active = connection or self.connection_in_use
+        if active == AUTO:
+            return bool(self.auto_connection((capability,)))
         return bool(active) and can(self.capability_record(active), capability)
+
+    def auto_connection(self, requires: tuple[str, ...], *, exclude: tuple[str, ...] = ()) -> str:
+        """The first ready provider that supports every requested capability."""
+        facts = self.connection_facts()
+        set_up = [connection for connection in CONNECTIONS if self._set_up(facts, connection)]
+        records = [self.capability_record(connection) for connection in CONNECTIONS]
+        return auto_connection(
+            requires,
+            records,
+            set_up=set_up,
+            exclude=exclude,
+        )
+
+    def auto_ready_connections(self) -> list[str]:
+        """Ready concrete connections eligible for Auto to consider."""
+        facts = self.connection_facts()
+        return [connection for connection in CONNECTIONS if self._set_up(facts, connection)]
+
+    def _announce_auto_route(self, connection: str, *, retry: bool = False) -> None:
+        """Name the recipient before an Auto request sends content."""
+        announce = getattr(self, "route_announce", None)
+        if not callable(announce):
+            return
+        name, destination = self.route_names(connection)
+        prefix = "Retrying with" if retry else "Auto chose"
+        if connection == OWN_KEY and self.own_key_provider == "ollama":
+            announce(f"{prefix} {name}. Your request stays on this computer.")
+            return
+        announce(f"{prefix} {name}. Your request will go to {destination}.")
 
     def needs_label(self, capability: str) -> str:
         """The menu-label suffix for a command needing *capability*, or "" (10A.8)."""
@@ -292,19 +330,42 @@ class ConnectionRouteMixin:
 
     # -- the check every request makes ------------------------------------- #
 
-    def request_allowed(self, requires: tuple[str, ...], on_error: Callable[[str], None]) -> bool:
-        """Whether a request needing *requires* may leave now; on no, tells *on_error*
-        once, with the sentence that says why, and nothing is sent."""
-        problem = not_ready_sentence(self.connection_facts())
+    def request_connection(self, requires: tuple[str, ...], on_error: Callable[[str], None]) -> str:
+        """Return the concrete route for a request, or report why nothing was sent."""
+        facts = self.connection_facts()
+        if self.connection == AUTO:
+            problem = not_ready_sentence(facts)
+            if problem:
+                on_error(self._keyed(problem))
+                return ""
+            selected = self.auto_connection(requires)
+            if not selected:
+                needs = " and ".join(requires) or "the requested capability"
+                on_error(
+                    self._keyed(
+                        f"Auto has no ready connection that supports {needs}. Nothing was sent."
+                    )
+                )
+                return ""
+            self._announce_auto_route(selected)
+            return selected if AGENT_TOOLS in requires else request_route(selected)
+
+        problem = not_ready_sentence(facts)
         if problem:
             on_error(self._keyed(problem))
-            return False
+            return ""
         try:
             require(self.capability_record(), *requires)
         except CapabilityMissing as missing:
             on_error(self._keyed(str(missing.args[0])))
-            return False
-        return self.route_allowed(on_error)
+            return ""
+        if not self.route_allowed(on_error):
+            return ""
+        return self.connection if AGENT_TOOLS in requires else request_route(self.connection)
+
+    def request_allowed(self, requires: tuple[str, ...], on_error: Callable[[str], None]) -> bool:
+        """Compatibility predicate for callers that only need an allow/deny answer."""
+        return bool(self.request_connection(requires, on_error))
 
     def _keyed(self, sentence: str) -> str:
         """*sentence* naming this app's Choose Your AI key. Quill Radio and QUILL
@@ -313,7 +374,7 @@ class ConnectionRouteMixin:
         key = str(getattr(self._app, "ai_choose_key", "") or "")
         return sentence.replace("Ctrl+4", key) if key else sentence
 
-    def _failure_sentence(self, error: BaseException) -> str:
+    def _failure_sentence(self, error: BaseException, connection: str = "") -> str:
         """The sentence for a failed request, with 10A.5's cases on the plan.
 
         A 401 forgets the sign-in and marks it ended by OpenAI; the plan's own
@@ -330,7 +391,7 @@ class ConnectionRouteMixin:
 
         if isinstance(error, CopilotChatError):
             return self._keyed(error.sentence)  # said once; CopilotChat marked the row
-        connection = self.connection
+        connection = connection or self.connection
         if connection in (CHATGPT, CODEX):
             if isinstance(error, ChatGptSignedOutError):
                 try:

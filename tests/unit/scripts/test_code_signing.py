@@ -215,14 +215,9 @@ def test_sanitize_ignores_non_pe_files(tmp_path: Path) -> None:
 
 
 def test_collect_files_never_returns_vendor_signed_tools(tmp_path: Path) -> None:
-    """GitHub's Copilot bundle and OpenAI's app-server ship exactly as signed."""
+    """Copilot's native runtime and OpenAI's app-server ship exactly as signed."""
     vendor = (
-        "tools/copilot/copilot.exe",
-        "tools/copilot/copilot-runtime.exe",
         "tools/copilot/runtime.node",
-        "tools/copilot/msalruntime.dll",
-        "tools/copilot/plugins/computer-use/computer-use-mcp.exe",
-        "tools/copilot/ripgrep/bin/win32-x64/rg.exe",
         "tools/codex/codex-app-server.exe",
     )
     for rel in vendor:
@@ -239,10 +234,7 @@ def test_collect_files_never_returns_vendor_signed_tools(tmp_path: Path) -> None
 
 
 def test_is_vendor_signed_matches_only_the_vendor_tool_dirs() -> None:
-    assert cs.is_vendor_signed(Path("dist/R/tools/copilot/copilot.exe"))
-    assert cs.is_vendor_signed(Path("dist/R/tools/copilot/copilot-runtime.exe"))
     assert cs.is_vendor_signed(Path("dist/R/tools/copilot/runtime.node"))
-    assert cs.is_vendor_signed(Path("dist/R/tools/copilot/tgrep/bin/win32-x64/tgrep.exe"))
     assert cs.is_vendor_signed(Path("dist/R/TOOLS/Codex/codex-app-server.exe"))
     assert not cs.is_vendor_signed(Path("dist/R/tools/deno/deno.exe"))
     assert not cs.is_vendor_signed(Path("dist/R/copilot/copilot.exe"))

@@ -5,14 +5,15 @@ Your AI commands, so both editors get the handler the moment they get the rest
 and QUILL's adapter keeps having no commands of its own.
 
 **Do a Document Task** (Ctrl+3 in both editors) opens the agent window
-(:mod:`quill.ui.agent_window`) on the document. It needs agent tools, which only
-My GitHub Copilot and Codex have (codex.md 10A.7), so it is capability-gated
-like every AI command (10A.8): the menu row says "(needs Copilot or Codex)"
-when the connection in use cannot, and pressing it sends nothing and offers the
-switch in one Yes/No.
+(:mod:`quill.ui.agent_window`) on the document. It needs agent tools, which
+Copilot, Codex, and supported My own key providers have (codex.md 10A.7), so
+it is capability-gated like every AI command (10A.8): the menu row says
+"(needs an AI that runs tasks)" when the connection in use cannot, and pressing
+it sends nothing and offers the switch in one Yes/No.
 
 **The engine is the connection in use**: Copilot's tool harness on this app's
-own GitHub sign-in, or Codex given this app's own ChatGPT access token
+own GitHub sign-in, Codex given this app's own ChatGPT access token, or the
+selected own-key provider's task harness
 (:meth:`quill.ui.hosted_ai_copilot_route.CopilotRouteMixin.agent_harness`).
 """
 
@@ -62,7 +63,9 @@ class AgentTaskMixin:
         if not self._ai_capable(AGENT_TOOLS):
             return None  # nothing sent; the switch was offered (codex.md 10A.8)
         service = self._ai_service()
-        connection = str(getattr(service, "connection_in_use", "") or "")
+        connection = str(service.request_connection((AGENT_TOOLS,), self._announce) or "")
+        if not connection:
+            return None
         harness = service.agent_harness(connection)
         if harness is None:
             from quill.core.ai.agent_task_words import no_engine
@@ -81,7 +84,9 @@ class AgentTaskMixin:
         hooks = AgentTaskHooks(
             announce=self._announce,
             connection=connection,
-            make_runner=lambda approver, host: self._ai_task_runner(harness, approver, host),
+            make_runner=lambda approver, host: self._ai_task_runner(
+                harness, approver, host, connection=connection
+            ),
             make_host=self._ai_task_host,
             starter=starter,
         )
@@ -130,7 +135,9 @@ class AgentTaskMixin:
 
     # -- the editor half -------------------------------------------------------- #
 
-    def _ai_task_runner(self, harness: Any, approver: Any, host: Any) -> Any:
+    def _ai_task_runner(
+        self, harness: Any, approver: Any, host: Any, *, connection: str = ""
+    ) -> Any:
         """A :class:`DocumentTaskRunner` on *harness*, with the default broker and log."""
         from quill.core.ai.activity_log import ActivityLog
         from quill.core.ai.document_task import DocumentTaskRunner
@@ -142,7 +149,7 @@ class AgentTaskMixin:
             approver=approver,
             broker=PermissionBroker(),
             activity=ActivityLog(),
-            pictures=self._ai_doc_pictures(getattr(host, "bridge", None)),
+            pictures=self._ai_doc_pictures(getattr(host, "bridge", None), connection),
         )
 
     def _ai_document_path(self) -> Any:
@@ -155,7 +162,7 @@ class AgentTaskMixin:
             path = getattr(self, "path", None)  # QUILL Lite
         return Path(str(path)) if path else None
 
-    def _ai_doc_pictures(self, bridge: Any) -> Any:
+    def _ai_doc_pictures(self, bridge: Any, connection: str = "") -> Any:
         """The picture loader for ``doc.image``, when the connection in use sees.
 
         Runs on the task's worker: the 10B.4 consent is asked on the UI thread
@@ -165,10 +172,10 @@ class AgentTaskMixin:
         from quill.core.ai.connection_caps import PICTURES
 
         service = self._ai_service()
+        selected = connection or str(getattr(service, "connection_in_use", "") or "")
         can_do = getattr(service, "can_do", None)
-        if bridge is None or not callable(can_do) or not can_do(PICTURES):
+        if bridge is None or not callable(can_do) or not can_do(PICTURES, selected):
             return None
-        connection = str(getattr(service, "connection_in_use", "") or "")
         document_path = self._ai_document_path()
 
         def load(image: Any) -> Any:

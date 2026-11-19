@@ -294,7 +294,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     # choice made in Use My Own AI Key, never inferred (core/ai/own_key.py).
     ai_own_key_provider: str = "openai"
     # Choose Your AI (core/ai/connection_choice.py; QUILL Lite's fields too): the AI in
-    # use -- free, chatgpt, copilot, codex, own_key; "" until decided -- and two models.
+    # use -- free, chatgpt, copilot, codex, own_key or auto; "" until decided -- and two models.
     ai_connection: str = ""
     ai_copilot_model: str = ""
     ai_codex_model: str = ""

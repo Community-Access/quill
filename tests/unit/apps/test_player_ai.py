@@ -130,7 +130,7 @@ def test_the_ai_menu_sits_before_quillville_on_the_fallback_keys(player) -> None
     labels = [i.GetItemLabel() for i in _menu(player, "AI").GetMenuItems() if not i.IsSeparator()]
     assert labels == [
         "&Ask...\tCtrl+Shift+8",
-        "&Find the Part Where (needs Copilot or Codex)...\tCtrl+F3",
+        "&Find the Part Where (needs an AI that runs tasks)...\tCtrl+F3",
         "&Which AI Am I Using\tCtrl+F8",
         "&Choose Your AI...\tCtrl+Shift+F8",
         "Accounts and &Usage",

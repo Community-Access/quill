@@ -15,7 +15,7 @@ wx-free and strict-typed.
 
 from __future__ import annotations
 
-from quill.core.ai.connection_caps import CODEX, COPILOT
+from quill.core.ai.connection_caps import CODEX, COPILOT, OWN_KEY
 
 __all__ = [
     "APPROVAL_TITLE",
@@ -35,17 +35,18 @@ APPROVAL_TITLE = "Allow This Step?"
 _USING: dict[str, str] = {
     COPILOT: "Using GitHub Copilot",
     CODEX: "Using Codex on your ChatGPT plan",
+    OWN_KEY: "Using your selected AI",
 }
 
 WORKING = "Working."
 STOPPING = "Stopping."
-NO_ENGINE = "Document tasks need My GitHub Copilot or Codex. Press Ctrl+4 to choose one."
+NO_ENGINE = "Document tasks need an AI connection that can run tasks. Press Ctrl+4 to choose one."
 
 
 def no_engine(choose_key: str = "Ctrl+4") -> str:
     """Why a task could not start, naming this app's Choose Your AI key."""
     where = f"Press {choose_key} to choose one." if choose_key else "Choose one in Choose Your AI."
-    return f"Agent tasks need My GitHub Copilot or Codex. {where}"
+    return f"Agent tasks need an AI connection that can run tasks. {where}"
 
 
 def status_line(connection: str, state: str = "") -> str:
@@ -61,4 +62,8 @@ def transcript_line(who: str, text: str) -> str:
 
 def engine_name(connection: str) -> str:
     """Who speaks in the transcript for *connection*."""
-    return "Codex" if connection == CODEX else "GitHub Copilot"
+    if connection == CODEX:
+        return "Codex"
+    if connection == OWN_KEY:
+        return "Your selected AI"
+    return "GitHub Copilot"

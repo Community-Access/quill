@@ -1053,19 +1053,6 @@ wheels = [
 ]
 
 [[package]]
-name = "github-copilot-sdk"
-version = "1.0.28"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "httpx" },
-    { name = "pydantic" },
-    { name = "python-dateutil" },
-]
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/7f/d8/fa5b5892a08584d169ba8676f3a38ea0217947c60ba91608c8192acf32bd/github_copilot_sdk-1.0.28-py3-none-any.whl", hash = "sha256:191e4b7f22a5a3842504ec9ee92f88abc4cf3aecca4ab04e2d359aa307436dd1", size = 925301, upload-time = "2026-10-28T00:55:38.809Z" },
-]
-
-[[package]]
 name = "griffelib"
 version = "2.3.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1848,6 +1835,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/9e/2d/7c251e34207f6c51000312fc8839111ac45cfe02023f90b44e7f1051dd8e/mcp_types-2.3.0.tar.gz", hash = "sha256:d1e46549edb35ee19a94940fcee6d1addd7e589ab7ea92dda83f5d84781fc362", size = 65898, upload-time = "2026-10-02T22:06:57.863Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ce/48/32583066b155bb5d4507e7887dc88ee23118cc4de8e2a12870c49719e2a8/mcp_types-2.3.0-py3-none-any.whl", hash = "sha256:968efdbdaedfab06adae40d378a34395f1090c5921d4be3c9cde283aaf76d91d", size = 69108, upload-time = "2026-10-02T22:06:54.099Z" },
+]
+
+[[package]]
+name = "microsoft-copilot-sdk"
+version = "2.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "python-dateutil" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/aa/6f/ec7f61e1b2f55f046012b46d13661cb58ff51bc9678934eebcbc15a8012b/microsoft_copilot_sdk-2.0.1-py3-none-any.whl", hash = "sha256:beb3a37d64947700b39761187409cf2104e711328db517e3d070837da89e6a77", size = 1119194, upload-time = "2026-11-18T06:13:04.036Z" },
 ]
 
 [[package]]
@@ -5563,7 +5563,7 @@ ai-claude = [
     { name = "claude-agent-sdk" },
 ]
 ai-copilot = [
-    { name = "github-copilot-sdk" },
+    { name = "microsoft-copilot-sdk" },
 ]
 ai-openai = [
     { name = "openai-agents" },
@@ -5675,12 +5675,12 @@ runtime = [
     { name = "chat-downloader" },
     { name = "curl-cffi" },
     { name = "faster-whisper" },
-    { name = "github-copilot-sdk" },
     { name = "huggingface-hub" },
     { name = "kokoro-onnx" },
     { name = "latex2mathml" },
     { name = "markitdown", extra = ["docx", "pdf", "pptx", "xls", "xlsx"] },
     { name = "mastodon-py" },
+    { name = "microsoft-copilot-sdk" },
     { name = "mutagen" },
     { name = "numpy" },
     { name = "openpyxl" },
@@ -5800,8 +5800,6 @@ requires-dist = [
     { name = "faster-whisper", marker = "extra == 'fasterwhisper'", specifier = ">=1.2.1" },
     { name = "faster-whisper", marker = "extra == 'runtime'", specifier = ">=1.2.1" },
     { name = "feedparser", specifier = ">=6.0.14" },
-    { name = "github-copilot-sdk", marker = "extra == 'ai-copilot'", specifier = "==1.0.28" },
-    { name = "github-copilot-sdk", marker = "extra == 'runtime'", specifier = "==1.0.28" },
     { name = "huggingface-hub", marker = "extra == 'fasterwhisper'", specifier = ">=2.0.0" },
     { name = "huggingface-hub", marker = "extra == 'runtime'", specifier = ">=2.0.0" },
     { name = "hypothesis", marker = "extra == 'dev'", specifier = ">=6.168.1" },
@@ -5815,6 +5813,8 @@ requires-dist = [
     { name = "markitdown", extras = ["docx", "pdf", "pptx", "xls", "xlsx"], marker = "extra == 'runtime'", specifier = ">=0.1.8" },
     { name = "mastodon-py", marker = "extra == 'runtime'", specifier = ">=2.2.2" },
     { name = "mastodon-py", marker = "extra == 'social-app'", specifier = ">=2.2.2" },
+    { name = "microsoft-copilot-sdk", marker = "extra == 'ai-copilot'", specifier = "==2.0.1" },
+    { name = "microsoft-copilot-sdk", marker = "extra == 'runtime'", specifier = "==2.0.1" },
     { name = "mutagen", marker = "extra == 'mp3'", specifier = ">=1.48.1" },
     { name = "mutagen", marker = "extra == 'runtime'", specifier = ">=1.48.1" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=2.3.0" },

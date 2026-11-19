@@ -11,6 +11,7 @@ others via an on-demand wheel-only ``install_pack`` off the UI thread.
 from __future__ import annotations
 
 from collections.abc import Callable
+from pathlib import Path
 
 from quill.core.i18n import _
 
@@ -25,6 +26,8 @@ class EnginesPanel:
         parent_dialog: object,
         announce: Callable[[str], None],
         show_modal: Callable,
+        app_name: str = "QUILL",
+        data_dir: Path | None = None,
     ) -> None:
         import wx
 
@@ -32,6 +35,8 @@ class EnginesPanel:
         self._parent_dialog = parent_dialog
         self._announce = announce
         self._show_modal = show_modal
+        self._app_name = app_name
+        self._data_dir = data_dir
         self._targets: list[object] = []
         self._registry: object | None = None
 
@@ -46,7 +51,7 @@ class EnginesPanel:
         intro = wx.StaticText(
             self.panel,
             label=_(
-                "Choose which engine runs QUILL's agent. Native always works, using "
+                "Choose which engine runs {app}'s agent. Native always works, using "
                 "the provider you have already connected. Or bring the AI agent you "
                 "already pay for: GitHub Copilot, OpenAI (ChatGPT), or Claude. Pick "
                 "one and select Set Up to install the connector and sign in with "
@@ -54,7 +59,7 @@ class EnginesPanel:
                 "key or per-word charge. Whichever engine you pick, QUILL owns every "
                 "edit: the agent proposes, you approve a preview, and one keystroke "
                 "undoes it."
-            ),
+            ).format(app=self._app_name),
         )
         intro.Wrap(620)
         sizer.Add(intro, 0, wx.ALL, 8)
@@ -85,13 +90,13 @@ class EnginesPanel:
         from quill.core.ai.engines import build_engine_registry
 
         # Rebuilt on each reload so a just-installed pack is reflected.
-        self._registry = build_engine_registry()
+        self._registry = build_engine_registry(agent_name=self._app_name)
         return self._registry
 
     def _reload(self) -> None:
         from quill.core.ai.quick_switch import list_targets
 
-        targets = list_targets(self._build_registry())
+        targets = list_targets(self._build_registry(), data_dir=self._data_dir)
         self._targets = targets
         self.engine_list.Clear()
         for target in targets:
@@ -117,7 +122,7 @@ class EnginesPanel:
         target = self._selected()
         if target is None:
             return
-        chosen = set_active(self._build_registry(), target.harness_id)
+        chosen = set_active(self._build_registry(), target.harness_id, data_dir=self._data_dir)
         self._reload()
         message = announce_switch(chosen)
         self.status.SetLabel(message)
@@ -134,7 +139,7 @@ class EnginesPanel:
             # step Choose Your AI uses, under QUILL's own name.
             from quill.ui.copilot_onboarding_dialog import sign_in_copilot_for_app
 
-            if sign_in_copilot_for_app(self._parent_dialog, "QUILL", self._announce):
+            if sign_in_copilot_for_app(self._parent_dialog, self._app_name, self._announce):
                 self._announce("Signed in to GitHub Copilot.")
             self._reload()
             return

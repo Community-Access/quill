@@ -83,6 +83,18 @@ def test_set_active_persists_and_changes_running_engine() -> None:
     assert active_target(reg).harness_id == "openai_agents"
 
 
+def test_engine_preference_is_isolated_by_app_data_directory(tmp_path: Path) -> None:
+    reg = _registry()
+    quill_dir = tmp_path / "quill"
+    lite_dir = tmp_path / "lite"
+
+    set_active(reg, "copilot", data_dir=lite_dir)
+
+    assert preferred_harness_id(data_dir=lite_dir) == "copilot"
+    assert preferred_harness_id(data_dir=quill_dir) == AUTO
+    assert preferred_harness_id() == AUTO
+
+
 def test_set_active_unavailable_persists_but_does_not_run() -> None:
     reg = _registry()
     target = set_active(reg, "copilot")

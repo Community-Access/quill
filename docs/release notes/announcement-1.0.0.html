@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL 1.0.0 is here</title>
   <style>
@@ -11,10 +11,7 @@
     */
     html {
       color: #1a1a1a;
-      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
-      background-color: light-dark(#fdfdfd, #1a1a1a);
-      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -39,16 +36,11 @@
     }
     @media print {
       html {
-        color-scheme: light only;
+        background-color: white;
       }
-      html, body, pre, code {
+      body {
         background-color: transparent;
-      }
-      body, a, a:visited, blockquote {
         color: black;
-      }
-      pre, code {
-        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -61,8 +53,11 @@
     p {
       margin: 1em 0;
     }
-    a, a:visited {
-      color: inherit;
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
     }
     img {
       max-width: 100%;
@@ -91,11 +86,8 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid;
-      border-color: #e6e6e6;
-      border-color: light-dark(#e6e6e6, #4c4c4c);
+      border-left: 2px solid #e6e6e6;
       color: #606060;
-      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -119,7 +111,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -136,11 +128,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid currentColor;
-      border-bottom: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
     }
     th {
-      border-top: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -179,6 +171,7 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -432,20 +425,40 @@ that instead. One window, <strong>Choose Your AI</strong> (Ctrl+4),
 lists them all, and <strong>Which AI Am I Using</strong> (Ctrl+8) tells
 you in one line which one is answering. Sign out of the one in use and
 nothing quietly takes its place: QUILL waits for you to choose. On
-Copilot or Codex, <strong>Do a Document Task</strong> (Ctrl+3) works
-through a job with several steps, asking before each change. Every
-answer is text, never a chart.</p>
+Copilot, Codex or a supported provider you chose in My own key,
+<strong>Do a Document Task</strong> (Ctrl+3) works through a job with
+several steps, asking before each change. Every answer is text, never a
+chart.</p>
+<p>There is now an optional <strong>Auto</strong> choice in Choose Your
+AI. It is never picked for you. If you select it, QUILL chooses a ready
+AI that can do each action and tells you who will receive your request
+before sending. A connectivity problem on an ordinary request may offer
+one retry through another provider; QUILL tells you where the same
+request would go and that the provider may count it toward limits or
+billing, then waits for your yes. A document task is never automatically
+retried. Choose a specific provider and it stays the one you chose
+unless you change it.</p>
 <p>One rule runs through every AI feature: <strong>the AI proposes, you
 dispose.</strong> Every suggested edit stops at a review dialog you can
 judge by ear. Each change is announced as what it is, and you can hear
 the sentence before and after it, so you get the same context a sighted
 reviewer gets from a highlight. Nothing touches your document until you
-agree, and then the change is one undo step. QUILL never quietly changes
-which AI is answering you, and never switches between the cloud and your
-own computer.</p>
+agree, and then the change is one undo step. When you choose a specific
+AI, QUILL never quietly changes which one answers or switches between
+the cloud and your own computer. Auto is a separate choice for people
+who want QUILL to select a ready provider, with the destination spoken
+before each request.</p>
 <p>Copilot signs in with a short code your screen reader spells out,
 already on the clipboard, and the Copilot engine comes with QUILL, so
-there is nothing else to install.</p>
+there is nothing else to install. Access and usage still come from your
+own GitHub Copilot account; QUILL does not provide or subsidize a
+Copilot plan.</p>
+<p>For multi-step tasks, My own key can use the same Copilot SDK harness
+with OpenAI-compatible or Gemini providers. Your selected provider’s key
+and billing apply. AI Hub &gt; Sessions gives you optional local session
+retention, session resumption and deletion, skill sharing, and long-task
+context summaries. Nothing is retained or shared until you opt in, and
+QUILL never switches providers automatically.</p>
 <h2 id="for-people-who-write-code">For people who write code</h2>
 <p>Choose the Developer profile (Help, Feature Profiles, Switch Profile)
 and QUILL can work on a folder of code with an AI, on GitHub Copilot,

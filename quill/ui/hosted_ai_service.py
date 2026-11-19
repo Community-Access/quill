@@ -19,7 +19,6 @@ idle or focus; the limits are fetched once, lazily, when a window needs them.
 
 from __future__ import annotations
 
-import threading
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
@@ -35,13 +34,14 @@ from quill.core.ai.gateway_session import (
     save_token,
     support_id_for,
 )
-from quill.core.ai.text_only import as_text
 from quill.ui.hosted_ai_connection_route import ConnectionRouteMixin
 from quill.ui.hosted_ai_connection_route import plain_sentence as _sentence
 from quill.ui.hosted_ai_copilot_route import CopilotRouteMixin
 from quill.ui.hosted_ai_own_key_route import OwnKeyRouteMixin
 from quill.ui.hosted_ai_route_guard import RouteGuardMixin
 from quill.ui.hosted_ai_route_words import RouteWords
+from quill.ui.hosted_ai_service_requests import AiRequestMixin
+from quill.ui.hosted_ai_service_support import _call_after, _submit
 
 __all__ = ["AiService", "SignInCode"]
 
@@ -73,7 +73,12 @@ class SignInCode:
 
 
 class AiService(
-    CopilotRouteMixin, ConnectionRouteMixin, OwnKeyRouteMixin, RouteWords, RouteGuardMixin
+    AiRequestMixin,
+    CopilotRouteMixin,
+    ConnectionRouteMixin,
+    OwnKeyRouteMixin,
+    RouteWords,
+    RouteGuardMixin,
 ):
     """One per running QUILL Lite. Holds the session and does the waiting."""
 
@@ -201,212 +206,6 @@ class AiService(
         if feature and self._limits is not None and not self._limits.feature_available(feature):
             return f"{feature.replace('_', ' ').capitalize()} is not available right now."
         return ""
-
-    # -- the one that costs something ------------------------------------- #
-
-    def ask(
-        self,
-        feature: str,
-        prompt: str,
-        chunks: list[str] | None,
-        *,
-        on_done: Callable[[str, GatewayQuota | None], None],
-        on_error: Callable[[str], None],
-        language: str = "",
-        requires: tuple[str, ...] = ("text",),
-    ) -> threading.Event:
-        """Run one AI request. Returns at once; answers on the UI thread.
-
-        *on_error* receives a finished sentence, never an exception. Every
-        failure in the client is already a coded error whose text was written
-        for a person to hear, so rendering one at a user is the whole job.
-        *language* is Translate's target language; *requires* is what the
-        request needs of the connection in use (GATE-CAPS).
-        """
-        stop = threading.Event()
-        if not self.request_allowed(requires, lambda said: _call_after(on_error, said)):
-            return stop  # not ready, cannot do it, or the route changed and they said No
-        if self.copilot_active:
-            work = self._copilot_ask_work(feature, prompt, chunks, language, stop)
-        elif self.chatgpt_active:
-            from quill.core.ai.chatgpt_ai_help import ask_with_chatgpt
-
-            account = self.chatgpt
-
-            def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None]:
-                answer = ask_with_chatgpt(
-                    account, feature, prompt, chunks, language=language or "English"
-                )
-                return answer, None
-
-        elif self.own_key_active:
-            from quill.core.ai.own_key import ask_with_own_key
-
-            model = self.own_key_model
-            provider = self.own_key_provider
-
-            def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None]:
-                answer = ask_with_own_key(
-                    feature,
-                    prompt,
-                    chunks,
-                    model=model,
-                    language=language or "English",
-                    provider=provider,
-                    cancel=stop,
-                )
-                return answer, None
-
-        else:
-            client = self.client()
-
-            def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None]:
-                return client.ask(feature, prompt, chunks, language=language)
-
-        def done(_name: str, result: Any) -> None:
-            def deliver() -> None:
-                if stop.is_set():
-                    return
-                text, quota = result
-                on_done(as_text(text), quota)  # chart-like content stays text (decision 13)
-
-            _call_after(deliver)
-
-        def failed(_name: str, error: BaseException) -> None:
-            said = self._failure_sentence(error)
-
-            def deliver() -> None:
-                if not stop.is_set():
-                    on_error(said)
-
-            _call_after(deliver)
-
-        _submit("quill-ai-ask", work, on_success=done, on_failure=failed)
-        return stop
-
-    def cancel(self, request: threading.Event | None) -> bool:
-        """Cancel only *request*, leaving requests from other windows untouched."""
-        if request is None or request.is_set():
-            return False
-        request.set()
-        return True
-
-    def converse(
-        self,
-        prompt: str,
-        chunks: list[str] | None,
-        history: list[dict[str, str]],
-        *,
-        on_done: Callable[[str, GatewayQuota | None, int], None],
-        on_error: Callable[[str], None],
-        requires: tuple[str, ...] = ("text",),
-    ) -> threading.Event:
-        """One conversation turn (:mod:`quill.core.ai.hosted_chat`). Returns at
-        once; answers on the UI thread with ``(reply, quota, turns_dropped)``.
-
-        With an own key the history goes to OpenAI as it is -- the window has
-        already trimmed it only as far as the model can read -- and nothing is
-        counted; on QUILL's service the service may trim further and says by
-        how many turns.
-        """
-        stop = threading.Event()
-        if not self.request_allowed(requires, lambda said: _call_after(on_error, said)):
-            return stop
-        if self.copilot_active:
-            work = self._copilot_converse_work(prompt, chunks, history, stop)
-        elif self.chatgpt_active:
-            from quill.core.ai.chatgpt_ai_help import converse_with_chatgpt
-
-            account = self.chatgpt
-
-            def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None, int]:
-                return converse_with_chatgpt(account, prompt, chunks, history), None, 0
-
-        elif self.own_key_active:
-            from quill.core.ai.own_key import ask_with_own_key
-
-            model, provider = self.own_key_model, self.own_key_provider
-
-            def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None, int]:
-                reply = ask_with_own_key(
-                    "chat",
-                    prompt,
-                    chunks,
-                    model=model,
-                    history=history,
-                    provider=provider,
-                    cancel=stop,
-                )
-                return reply, None, 0
-
-        else:
-            client = self.client()
-
-            def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None, int]:
-                return client.converse(prompt, chunks, history)
-
-        def done(_name: str, result: Any) -> None:
-            def deliver() -> None:
-                if stop.is_set():
-                    return
-                text, quota, dropped = result
-                on_done(as_text(text), quota, dropped)
-
-            _call_after(deliver)
-
-        def failed(_name: str, error: BaseException) -> None:
-            said = self._failure_sentence(error)
-
-            def deliver() -> None:
-                if not stop.is_set():
-                    on_error(said)
-
-            _call_after(deliver)
-
-        _submit("quill-ai-converse", work, on_success=done, on_failure=failed)
-        return stop
-
-    def describe_image(
-        self,
-        path: Any,
-        question: str,
-        *,
-        on_done: Callable[[str], None],
-        on_error: Callable[[str], None],
-        requires: tuple[str, ...] = ("text", "pictures"),
-    ) -> None:
-        """Ask About an Image on the plan, Copilot or a seeing own key; answers on the
-        UI thread. GATE-CAPS refuses elsewhere. A bad file is the client's sentence."""
-        if not self.request_allowed(requires, lambda said: _call_after(on_error, said)):
-            return
-        if self.copilot_active:
-            work = self._copilot_image_work(path, question)
-        elif self.chatgpt_active:
-            from quill.core.ai.chatgpt_ai_help import describe_image_with_chatgpt
-
-            account = self.chatgpt
-
-            def work(**_kwargs: Any) -> str:
-                return describe_image_with_chatgpt(account, path, question)
-
-        else:
-            from quill.core.ai.own_key import describe_image_with_own_key
-
-            provider, model = self.own_key_provider, self.own_key_model
-
-            def work(**_kwargs: Any) -> str:
-                return describe_image_with_own_key(path, question, provider=provider, model=model)
-
-        def done(_name: str, text: Any) -> None:
-            _call_after(on_done, as_text(str(text)))
-
-        def failed(_name: str, error: BaseException) -> None:
-            if isinstance(error, ValueError):
-                _call_after(on_error, str(error))
-                return
-            _call_after(on_error, self._failure_sentence(error))
-
-        _submit("quill-ai-image", work, on_success=done, on_failure=failed)
 
     def fetch_quota(
         self,
@@ -559,20 +358,6 @@ def _now() -> str:
     from datetime import UTC, datetime
 
     return datetime.now(UTC).isoformat()
-
-
-def _call_after(func: Callable[..., None], *args: Any) -> None:
-    import wx
-
-    wx.CallAfter(func, *args)
-
-
-def _submit(name: str, func: Callable[..., Any], *, on_success: Any, on_failure: Any) -> None:
-    """One background job. QUILL Lite has no task manager, so this is the
-    family's ``thread_submit`` -- the same one the update check uses."""
-    from quill.ui.update_download import thread_submit
-
-    thread_submit(name, func, on_success=on_success, on_failure=on_failure)
 
 
 def _ignore(_name: str, _error: BaseException) -> None:

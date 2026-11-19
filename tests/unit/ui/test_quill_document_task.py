@@ -30,8 +30,11 @@ class _Commands:
 class _Service:
     connection_in_use = "codex"
 
-    def can_do(self, _capability: str) -> bool:
+    def can_do(self, _capability: str, _connection: str = "") -> bool:
         return True
+
+    def request_connection(self, _requires: tuple[str, ...], _on_error: Any) -> str:
+        return self.connection_in_use
 
     def agent_harness(self, connection: str) -> Any:
         return ("harness", connection)
@@ -106,9 +109,15 @@ def test_a_task_on_a_connection_that_sees_gets_the_picture_tool(opened, tmp_path
     from quill.core.ai.approvals import UiThreadBridge
 
     quill = _Quill()
+    service = _Service()
+    service.connection_in_use = "auto"
+    checked: list[str] = []
+    service.can_do = lambda _capability, connection="": checked.append(connection) or True
+    quill._ai_service = lambda: service
     quill.document = type("Doc", (), {"path": tmp_path / "trip.md"})()
-    loader = quill._ai_doc_pictures(UiThreadBridge(lambda fn: fn()))
+    loader = quill._ai_doc_pictures(UiThreadBridge(lambda fn: fn()), "own_key")
     assert callable(loader)
+    assert checked == ["own_key"]
     assert quill._ai_document_path() == tmp_path / "trip.md"
     from quill.core.ai.doc_images import list_document_images
 

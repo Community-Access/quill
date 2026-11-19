@@ -148,7 +148,7 @@ def test_the_ai_rows_follow_the_three_local_helpers_in_assist(beacon) -> None:
         "&Summarize Note\tCtrl+Shift+M",
         "&Ask...\tCtrl+6",
         "&Describe a Saved Picture...\tCtrl+F5",
-        "Or&ganize What I Saved (needs Copilot or Codex)...\tCtrl+3",
+        "Or&ganize What I Saved (needs an AI that runs tasks)...\tCtrl+3",
         "&Which AI Am I Using\tCtrl+8",
         "&Choose Your AI...\tCtrl+4",
         "Accounts and &Usage",

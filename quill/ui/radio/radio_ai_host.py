@@ -5,8 +5,9 @@ one route only, the listener's ChatGPT plan. Now it runs the shared hosted AI
 (:mod:`quill.ui.hosted_ai_commands`) the way QUILL, QUILL Lite and QUILL Cast
 do, through :class:`RadioAiHost` -- the five things the shared code asks of
 "the app" -- and :class:`RadioAiMixin`, the hooks. So Quill Radio gets Choose
-Your AI with all five connections, Which AI Am I Using, the one AI Usage list,
-the AI status cell and capability gating, from the same code as everyone else.
+Your AI with five connections plus Auto, Which AI Am I Using, the one AI Usage
+list, the AI status cell and capability gating, from the same code as everyone
+else.
 
 What Radio *does* with AI -- Ask about what is playing, and describing the
 video picture -- is :mod:`quill.ui.radio.radio_ai_features`; this module has no

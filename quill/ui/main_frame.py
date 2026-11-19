@@ -11355,6 +11355,7 @@ class MainFrame(
             announce=self._set_status,
             open_own_key=self.cmd_ai_own_key,  # the Provider page's one route (decision 20)
             initial_page=initial_page,
+            app_context=self._ai_host(),
         )
         dlg.show()
         # The Services tab persists the Datalab config straight to disk; fold

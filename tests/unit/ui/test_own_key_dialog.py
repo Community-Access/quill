@@ -45,42 +45,42 @@ def test_without_a_key_the_list_holds_one_model_with_its_estimate(
         dialog.Destroy()
 
 
-def test_a_saved_key_lists_every_model_on_opening_luna_6_first(wx_app, dialog_module, monkeypatch):
-    """So the model can be changed at any time, not only after a test."""
+def test_opening_with_a_saved_key_does_not_contact_the_provider(wx_app, dialog_module, monkeypatch):
+    """Network discovery happens only after the person explicitly tests the key."""
     monkeypatch.setattr(dialog_module, "has_own_key", lambda *_a: True)
+    listed = []
     monkeypatch.setattr(
-        dialog_module, "list_models", lambda _key, *_a: (["luna-6", "gpt-6", "gpt-4o"], "")
+        dialog_module,
+        "list_models",
+        lambda _key, *_a: (listed.append(True), (["luna-6", "gpt-6", "gpt-4o"], ""))[1],
     )
-    import quill.core.assistant_ai as assistant_ai
+    from quill.core.ai.own_key import default_model
 
-    monkeypatch.setattr(assistant_ai, "load_provider_api_key", lambda _provider: "sk-test")
     dialog = dialog_module.OwnKeyDialog(None, _Settings())
     try:
-        assert dialog.model.GetCount() == 3
-        assert dialog._selected_model() == "luna-6"
-        dialog.model.SetSelection(2)
-        dialog._show_estimate()
-        assert "gpt-4o" in dialog.cost.GetValue()
-        settings = _Settings()
-        dialog.apply(settings)
-        assert settings.ai_own_key_model == "gpt-4o"
+        assert listed == []
+        assert dialog.model.GetCount() == 1
+        assert dialog._selected_model() == default_model("openai")
     finally:
         dialog.Destroy()
 
 
-def test_a_saved_choice_stays_selected_when_the_list_arrives(wx_app, dialog_module, monkeypatch):
+def test_a_saved_model_stays_selected_without_contacting_the_provider(
+    wx_app, dialog_module, monkeypatch
+):
     monkeypatch.setattr(dialog_module, "has_own_key", lambda *_a: True)
+    listed = []
     monkeypatch.setattr(
-        dialog_module, "list_models", lambda _key, *_a: (["luna-6", "gpt-6", "gpt-4o"], "")
+        dialog_module,
+        "list_models",
+        lambda *_a, **_kw: (listed.append(True), (["luna-6", "gpt-6", "gpt-4o"], ""))[1],
     )
-    import quill.core.assistant_ai as assistant_ai
-
-    monkeypatch.setattr(assistant_ai, "load_provider_api_key", lambda _provider: "sk-test")
     settings = _Settings()
     settings.ai_own_key_model = "gpt-6"
     dialog = dialog_module.OwnKeyDialog(None, settings)
     try:
         assert dialog._selected_model() == "gpt-6"
+        assert listed == []
     finally:
         dialog.Destroy()
 
@@ -138,7 +138,7 @@ def test_ollama_on_this_computer_needs_no_key_and_has_an_address(
         assert not dialog.key.IsEnabled() and dialog.host.IsEnabled()
         assert not dialog.remove.IsEnabled()
         assert dialog.test.GetLabel() == "Test the Connectio&n"
-        assert listed and listed[0][0] == ""  # listed on opening, with no key
+        assert listed == []
         dialog.host.SetValue("http://127.0.0.1:11500")
         dialog._on_test(None)
         assert said[-1] == (
@@ -166,6 +166,8 @@ def test_switching_to_a_keyed_hub_provider_turns_the_key_back_on(
     wx_app, dialog_module, monkeypatch
 ):
     monkeypatch.setattr(dialog_module, "has_own_key", lambda *_a: False)
+    listed = []
+    monkeypatch.setattr(dialog_module, "list_models", lambda *_a, **_kw: listed.append(True))
     dialog = dialog_module.OwnKeyDialog(None, _Settings())
     try:
         dialog.provider.SetStringSelection("Anthropic Claude")
@@ -175,5 +177,6 @@ def test_switching_to_a_keyed_hub_provider_turns_the_key_back_on(
         words = [w.strip(".,;:()") for w in dialog.about.GetValue().split()]
         assert words.count("console.anthropic.com") == 1  # a whole word, not a substring
         assert dialog.test.GetLabel() == "Test the Ke&y"
+        assert listed == []
     finally:
         dialog.Destroy()
