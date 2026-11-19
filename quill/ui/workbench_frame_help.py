@@ -242,11 +242,15 @@ class WorkbenchHelpMixin:
 
     # -- Walk Me Through It (D12) ------------------------------------------------
 
-    def start_walk(self, title: str, text: str) -> None:
-        """Say a task's first step and wait for a command before the next one."""
+    def start_walk(self, title: str, text: str, steps: tuple[str, ...] = ()) -> None:
+        """Say a task's first step and wait for a command before the next one.
+
+        *steps*, when given, are used as they are (a lesson's own steps);
+        otherwise they are cut from *text*.
+        """
         from quill.core.workbench.walk import Walk, steps_of
 
-        steps = steps_of(text)
+        steps = steps or steps_of(text)
         if not steps:
             self._announce("This topic has no steps to walk through.")
             return

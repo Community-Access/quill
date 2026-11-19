@@ -2,6 +2,14 @@
 
 ## 1.0.0
 
+### GitHub Workbench: Tutorials and Tips under Help and Learning (2026-11-19)
+
+Help and Learning now has every place it was designed with. **Tutorials**
+lists the GitHub lessons with your progress in each; Enter opens one in the
+Tutorials window, and Walk Me Through It says it in the Workbench a step at a
+time. **Tips** holds QUILLBert's tips, eleven short things worth trying, and
+never interrupts you with them. This meets GH-R-106.
+
 ### GitHub Workbench: a Key Describer, and your keys everywhere (2026-11-19)
 
 Help > Key Describer (`Ctrl+Alt+K`) in the GitHub Workbench makes each key

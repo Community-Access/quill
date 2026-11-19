@@ -4,11 +4,11 @@ Checked 2026-11-18 against main, updated the same day for the follow-up pull req
 
 ## Summary
 
-Of the 100 live requirements, 76 are met, 16 are partly met and 8 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 77 are met, 15 are partly met and 8 are not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
-| Must | 65 | 9 | 1 | 75 |
+| Must | 66 | 8 | 1 | 75 |
 | Should | 11 | 7 | 5 | 23 |
 | May | 0 | 0 | 2 | 2 |
 
@@ -35,7 +35,6 @@ Of the 100 live requirements, 76 are met, 16 are partly met and 8 are not met. G
 | GH-R-045 | Must | Projects (version 2): every field type, views, items, workflows and status updates are readable and editable | `sheets_projects.py`: every field type incl. iteration, items, status updates editable; views and workflows read only (GitHub has no API to change them; worth saying so in the PRD). |
 | GH-R-046 | Must | Every relationship (star, watch level, follow, subscribe, react, block, sponsor, pin) on a You page and in... | Star, watch level, follow, subscribe, react, sponsor, pin and block (`resource_specs_user`) each exist in their own places; no single You page holding them, and batch only where the multi-row sheet has the field. Needs a closer look. |
 | GH-R-053 | Must | Filters can be saved as searches and pinned as nodes | Save Search (`github_workbench_actions.py:158`), Saved Searches node in the tree (`workbench_tree.py:186`); `test_the_filter_builder`... saves one, `test_go_lists_pins_favorites_and_saved_searches`. A saved search is a row in that node, not a node of its own. |
-| GH-R-106 | Must | Help and Learning in the tree, with every node of D11 | Help and Learning has Start Here, Do Something, The Guide, Words, Keys, What Changed, Ask a Person (`workbench_tree.py:287`); D11's Tutorials and Tips nodes are missing. |
 | GH-R-119 | Must | One source for every help surface (D19), and the measures of D20 | One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the generated reference (GATE-GITHUB-HELP, `build_help_reference`); D20's measures (timed find-the-answer sessions) not done. |
 | GH-R-150 | Must | Across Repositories has a place for every kind in the 22.11 table, a row per name with its variants and... | Labels, Milestones, Topics, Rules and Branch Protection by name, and the Fleet; every other kind is a decided cell with a reason in `across_scope_matrix.py` (`test_no_cell_is_blank`, `test_the_decided_cells`), not yet a place. |
 | GH-R-151 | Must | Every operation a kind allows in one repository is offered across a scope, with the preview and a result... | Preview and a result per repository for labels, milestones, topics, rulesets (`test_labels_by_name_make_the_same_with_a_preview_and_a_result_each`, `test_a_change_previews_permission_and_conflict_then_reports_each_repository`); environments, secrets, variables, webhooks, keys, autolinks remain. |
@@ -172,7 +171,7 @@ Of the 100 live requirements, 76 are met, 16 are partly met and 8 are not met. G
 | GH-R-103 | Must | Met | Empty states, greyed rows, previews and errors carry help | (sampled) `test_an_empty_list_says_why`, `test_placeholders_explain_themselves_and_are_greyed`, greyed rows with reasons (020); every coded error having help not checked |
 | GH-R-104 | Must | Met | GATE-GITHUB-HELP at zero and the help tests of D10 green | `tests/unit/tools/test_github_help_audit.py` passes (inventory matches, nothing missing, catalogue has no gaps), with the window help tests |
 | GH-R-105 | Should | Partly | The GitHub tutorials of D8 | One GitHub lesson (practice repository) in docs/user guide/tutorials.md; D8 plans eleven, and there is no Help > Tutorials. |
-| GH-R-106 | Must | Partly | Help and Learning in the tree, with every node of D11 | Help and Learning has Start Here, Do Something, The Guide, Words, Keys, What Changed, Ask a Person (`workbench_tree.py:287`); D11's Tutorials and Tips nodes are missing. |
+| GH-R-106 | Must | Met | Help and Learning in the tree, with every node of D11 | Help and Learning has Start Here, Do Something, The Guide, Words, Keys, Tutorials (the GitHub lessons with progress; open in the Tutorials window or walk here), What Changed, Tips (QUILLBert's, keys checked against the bindings) and Ask a Person (`workbench_tree.py`; `workbench_learning.py`; `test_github_workbench_learning.py`). |
 | GH-R-107 | Must | Met | Take Me There and Walk Me Through It on every help topic and task; Do It where the answer is one command | Take Me There, Walk Me Through It (`quill/core/workbench/walk.py`; the shared frame's `start_walk`, F1 repeats, Shift+F1 lists, Escape stops) and Do It where the task is one command (`workbench_help.DO_IT`, greyed otherwise) on every Do Something task (`test_github_workbench_walk.py`). |
 | GH-R-108 | Must | Met | Shift+F9 Explain That for every result, and Why? on every automatic behaviour | Shift+F9 Explain That (`workbench_window_menu.py`, frame `explain_result`), and Why? on what happens on its own: a watch, a notification, a filter applied locally (`quill/core/github/why.py`, `github_workbench_why.py`), listed first by Shift+F1; greyed commands and read-only fields already say why (`test_github_workbench_why.py`). |
 | GH-R-109 | Should | Not met | Examples from the person's own data and situation | No examples drawn from the person's own data (D14). |
