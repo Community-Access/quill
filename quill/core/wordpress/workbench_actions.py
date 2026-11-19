@@ -138,7 +138,7 @@ WORDPRESS_ACTIONS = ActionTable(
             ),
             _a(
                 "publish",
-                "Publish or Update...",
+                "Publish...",
                 tier=Tier.WRITE,
                 needs="publish",
                 help="Make the selected items public, after a preview. Ctrl+Shift+P.",

@@ -164,6 +164,22 @@ class WorkbenchDiscoveredCommands:
             got,
         )
 
+    def toggle_label(self, command_id: str, row: object) -> str:
+        """What a toggle row will do to *row* (review item 29), for the frame's menus."""
+        from quill.core.wordpress.workbench_toggle_words import toggle_label
+
+        return toggle_label(command_id, row if isinstance(row, WbRow) else None, self._offered)
+
+    def _offered(self, row: WbRow) -> bool:
+        profile = self.profile(row.site)
+        choices_for = getattr(self.commands, "ability_choices", None)
+        if profile is None or choices_for is None:
+            return False
+        try:
+            return str(row.key) in choices_for(profile).on()
+        except Exception:  # noqa: BLE001 - an unreadable choice file reads as "not offered"
+            return False
+
     def do_offer_to_ask(self, _ref: Any, row: WbRow | None) -> None:
         """Ability row > Offer to Ask the Site: the per-site opt-in Ask the Site reads."""
         if row is None or row.kind != "ability":

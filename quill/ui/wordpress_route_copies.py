@@ -1,4 +1,4 @@
-"""Send This Document to WordPress, Publish to Another Site, and Duplicate (wordpress.md 9.16).
+"""Send This Document, Copy to Another Site as a Draft, and Duplicate (wordpress.md 9.16).
 
 A mixin of :class:`~quill.ui.wordpress_commands.WordPressCommands` (through
 :class:`~quill.ui.wordpress_route_commands.WordPressRouteCommands`), shared by
@@ -8,7 +8,7 @@ QUILL and QUILL Lite.
   a new draft on a chosen site. Its first heading is the title; its pictures
   on this computer go to the Media Library with the send (the same pending
   uploads Insert Picture uses), and the draft opens as a WordPress document.
-* **Publish to Another Site:** the WordPress document in front, copied to
+* **Copy to Another Site as a Draft:** the WordPress document in front, copied to
   another connected site as a draft there, pictures uploaded again and
   categories and tags matched by name (missing ones created after asking).
 * **Duplicate:** a new draft from any page or post, on the same site or
@@ -110,14 +110,14 @@ class WordPressRouteCopies:
         )
 
     # ------------------------------------------------------------------ #
-    # Publish to Another Site
+    # Copy to Another Site as a Draft
 
     def cmd_publish_elsewhere(self) -> None:
-        found = self.current(command="Publish to Another Site")  # type: ignore[attr-defined]
+        found = self.current(command="Copy to Another Site as a Draft")  # type: ignore[attr-defined]
         if found is None:
             return
         copy, profile = found
-        target = self._other_site(profile, "Publish to Another Site")
+        target = self._other_site(profile, "Copy to Another Site as a Draft")
         if target is None:
             return
         html = self.to_html(copy)[0]  # type: ignore[attr-defined]

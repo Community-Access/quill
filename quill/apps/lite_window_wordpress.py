@@ -348,7 +348,7 @@ class DocumentWordPressMixin:
         self._wordpress().cmd_name_embeds()
 
     def cmd_wp_document_as_page(self) -> None:
-        """Tools > WordPress > More Media > Publish a Document as a Page."""
+        """Tools > WordPress > More Media > Make a Page from a Document."""
         self._wordpress().cmd_document_as_page()
 
     def cmd_wp_comments(self) -> None:
@@ -364,7 +364,7 @@ class DocumentWordPressMixin:
         self._wordpress().cmd_menus()
 
     def cmd_wp_site_check(self) -> None:
-        """Tools > WordPress > Site Check."""
+        """Tools > WordPress > Site Health Check."""
         self._wordpress().cmd_site_check()
 
     def cmd_wp_site_settings(self) -> None:
@@ -444,7 +444,7 @@ class DocumentWordPressMixin:
         self._wordpress().cmd_send_document()
 
     def cmd_wp_publish_elsewhere(self) -> None:
-        """File > WordPress > Send and Copy > Publish to Another Site."""
+        """File > WordPress > Send and Copy > Copy to Another Site as a Draft."""
         self._wordpress().cmd_publish_elsewhere()
 
     def cmd_wp_duplicate(self) -> None:
@@ -496,7 +496,7 @@ class DocumentWordPressMixin:
         self._wordpress().cmd_download_design()
 
     def cmd_wp_coming_up(self) -> None:
-        """Tools > WordPress > Your Sites > Coming Up."""
+        """Tools > WordPress > Your Sites > Coming Up on All Sites."""
         self._wordpress().cmd_coming_up()
 
     def cmd_wp_what_changed(self) -> None:
@@ -516,7 +516,7 @@ class DocumentWordPressMixin:
         self._wordpress().cmd_site_styles()
 
     def cmd_wp_events_coming_up(self) -> None:
-        """Tools > WordPress > Plugin Extras > Events Coming Up."""
+        """Tools > WordPress > Plugin Extras > Upcoming Events."""
         self._wordpress().cmd_events_coming_up()
 
     def cmd_wp_new_event(self) -> None:

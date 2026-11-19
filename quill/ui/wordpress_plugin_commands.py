@@ -5,7 +5,7 @@ recognised plugin's namespace is in the site's index, QUILL adds a small,
 plain extra for it; without the plugin nothing shows, and a command reached
 anyway says why in one sentence.
 
-* **The Events Calendar:** Coming Up, New Event, and an event's start, end
+* **The Events Calendar:** Upcoming Events, New Event, and an event's start, end
   and venue in Properties and Plugin Fields.
 * **WooCommerce:** a product's price and stock in Properties, the prices and
   stock changeable in Plugin Fields (Shop Orders is in
@@ -290,10 +290,10 @@ class WordPressPluginCommands(WordPressApiSiteBase):
         )
 
     # ------------------------------------------------------------------ #
-    # Coming Up and New Event
+    # Upcoming Events and New Event
 
     def cmd_events_coming_up(self) -> None:
-        profile = self.chosen_site("Coming Up")
+        profile = self.chosen_site("Upcoming Events")
         if profile is None:
             return
         self.when_offered(
@@ -323,7 +323,7 @@ class WordPressPluginCommands(WordPressApiSiteBase):
         window = dlg.show_list_window(
             self.host.parent,
             self.host.show_modal,
-            title=f"Coming Up, {profile.name}",
+            title=f"Upcoming Events, {profile.name}",
             purpose=f"Every event from today on {profile.name}, soonest first.",
             list_label="&Events:",
             list_help="Each event's name, when it is, and where.",

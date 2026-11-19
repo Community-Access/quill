@@ -140,6 +140,8 @@ class WorkbenchCommandsMixin:
         kind = wx.ITEM_CHECK if row.check else wx.ITEM_RADIO if row.radio else wx.ITEM_NORMAL
         item = menu.Append(wx.ID_ANY, label, row.help, kind)
         self._menu_items[row.command_id] = item
+        self._row_labels = getattr(self, "_row_labels", {})
+        self._row_labels[row.command_id] = row.label
         self.frame.Bind(wx.EVT_MENU, lambda _e, c=row.command_id: self.run(c), item)
 
     def fill_dynamic_menus(self) -> None:
@@ -162,6 +164,7 @@ class WorkbenchCommandsMixin:
         """Grey what does not apply here, with the reason as the row's help."""
         checked = getattr(self.provider, "is_checked", None)
         for command_id, item in getattr(self, "_menu_items", {}).items():
+            self._name_toggle(command_id, item)
             able = self.can_run(command_id)
             item.Enable(able)
             row_help = self._row_help(command_id)
@@ -171,6 +174,25 @@ class WorkbenchCommandsMixin:
                 item.Check(bool(checked(command_id)))
         self.fill_dynamic_menus()
         event.Skip()
+
+    def toggle_words(self, command_id: str, label: str) -> str:
+        """*label*, or what a toggle row will do to the selected row (item 29)."""
+        hook = getattr(self.provider, "toggle_label", None)
+        words = hook(command_id, self.selected_row()) if callable(hook) else ""
+        if not words:
+            return label
+        from quill.core.workbench.menus import keep_access_key
+
+        return keep_access_key(label, str(words))
+
+    def _name_toggle(self, command_id: str, item: Any) -> None:
+        base = getattr(self, "_row_labels", {}).get(command_id, "")
+        if not base:
+            return
+        label = self.toggle_words(command_id, base)
+        if item.GetItemLabel().split("\t")[0] != label:
+            key = getattr(self, "_keys", {}).get(command_id, "")
+            item.SetItemLabel(f"{label}\t{key}" if key else label)
 
     def _row_help(self, command_id: str) -> str:
         from quill.core.workbench.menus import all_rows

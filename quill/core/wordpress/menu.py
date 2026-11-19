@@ -77,7 +77,11 @@ WORDPRESS_ROWS: tuple[Entry, ...] = (
         "Send and &Copy",
         (
             ("wordpress.send_document", "Send This &Document to WordPress...", "cmd_send_document"),
-            ("wordpress.publish_elsewhere", "&Publish to Another Site...", "cmd_publish_elsewhere"),
+            (
+                "wordpress.publish_elsewhere",
+                "Co&py to Another Site as a Draft...",
+                "cmd_publish_elsewhere",
+            ),
             ("wordpress.duplicate", "D&uplicate...", "cmd_duplicate"),
             ("wordpress.send_folder", "Send a &Folder as Drafts...", "cmd_send_folder"),
             ("wordpress.download_writing", "Download &My Writing...", "cmd_download_writing"),
@@ -169,7 +173,7 @@ MORE_MEDIA = Submenu(
         ("wordpress.transcript", "&Transcript for Audio...", "cmd_transcript"),
         ("wordpress.listening_version", "Make a Listening Versio&n...", "cmd_listening_version"),
         ("wordpress.name_embeds", "Name Em&beds", "cmd_name_embeds"),
-        ("wordpress.document_as_page", "Publish a &Document as a Page...", "cmd_document_as_page"),
+        ("wordpress.document_as_page", "Make a Page from a &Document...", "cmd_document_as_page"),
     ),
 )
 
@@ -245,7 +249,7 @@ TOOLS_ROWS: tuple[Entry, ...] = (
             ("wordpress.manage_terms", "Categories and Ta&gs...", "cmd_manage_terms"),
             ("wordpress.menus", "Me&nus...", "cmd_menus"),
             ("wordpress.menu_history", "Menu &History...", "cmd_menu_history"),
-            ("wordpress.site_check", "Site Chec&k", "cmd_site_check"),
+            ("wordpress.site_check", "Site Health Chec&k", "cmd_site_check"),
             ("wordpress.site_settings", "Site S&ettings...", "cmd_site_settings"),
             Submenu(
                 "&Design",
@@ -257,7 +261,7 @@ TOOLS_ROWS: tuple[Entry, ...] = (
             Submenu(
                 "Plug&in Extras",
                 (
-                    ("wordpress.events_coming_up", "Events &Coming Up...", "cmd_events_coming_up"),
+                    ("wordpress.events_coming_up", "&Upcoming Events...", "cmd_events_coming_up"),
                     ("wordpress.new_event", "New &Event...", "cmd_new_event"),
                     ("wordpress.shop_orders", "Shop &Orders...", "cmd_shop_orders"),
                 ),
@@ -266,7 +270,7 @@ TOOLS_ROWS: tuple[Entry, ...] = (
             Submenu(
                 "&Your Sites",
                 (
-                    ("wordpress.coming_up", "Coming &Up...", "cmd_coming_up"),
+                    ("wordpress.coming_up", "Coming &Up on All Sites...", "cmd_coming_up"),
                     ("wordpress.what_changed", "&What Changed on My Sites...", "cmd_what_changed"),
                 ),
             ),

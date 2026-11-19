@@ -89,7 +89,7 @@ The first command is what Enter does. Properties (`Alt+Enter`) is always
 last, and is left out below.
 
 - **Post, page or other item:** Open in Editor, Preview on the Site, Visual
-  Review..., Publish or Update..., Move to Trash, Restore from Trash, Delete
+  Review..., Publish..., Move to Trash, Restore from Trash, Delete
   Permanently..., Copy Link, Copy to Site..., Approve and Schedule..., Send
   Back with a Note..., Assign a Reviewer..., Move to Another Day..., Show Its
   Comments, Duplicate as Draft, Counts by Status, Empty Trash..., Open in
@@ -109,7 +109,7 @@ last, and is left out below.
 - **Gravity Forms form:** Show Its Responses, Change a Field Type..., Show Its
   Feeds, Show Its Results, Test This Form..., Edit Form..., New Gravity
   Form..., Copy as a QUILL Accessible Form..., Copy to Site....
-- **Gravity Forms feed:** Read in Full, Activate or Deactivate..., Rename...,
+- **Gravity Forms feed:** Read in Full, Activate... or Deactivate... (whichever applies), Rename...,
   Delete Permanently....
 - **Category, tag or term:** Show Its Posts, Merge Into..., Convert to
   Category or Tag..., Copy to Site..., Delete Permanently....
@@ -122,7 +122,7 @@ last, and is left out below.
 - **Menu:** Read in Full, Add Menu Item..., Add New Pages Automatically...,
   Arrange Items...,
   Earlier Versions..., Default Navigation Menu..., Copy to Site....
-- **Plugin:** Read in Full, Activate or Deactivate, Check on WordPress.org...,
+- **Plugin:** Read in Full, Activate or Deactivate (whichever applies), Check on WordPress.org...,
   Find a Plugin on WordPress.org..., Pages Using Its Blocks, Open in
   Dashboard.
 - **Theme:** Read in Full, Activate..., Find a Theme on WordPress.org..., Open
@@ -269,7 +269,7 @@ Sites (`Ctrl+0`), Calendar (`Ctrl+3`), Watches (`Ctrl+5`), Practice Site
 (`Ctrl+6`), Parent Node (`Alt+Up`). The nine site places, in order, are Posts,
 Pages, Media, Comments, Users, Plugins, Appearance, Settings and Site Health.
 
-**Item:** Properties... (`Alt+Enter`), Publish or Update... (`Ctrl+Shift+P`),
+**Item:** Properties... (`Alt+Enter`), Publish... (`Ctrl+Shift+P`),
 Approve, or Not Spam (`Ctrl+Shift+A`), Unapprove (`Ctrl+Shift+U`), Spam
 (`Ctrl+Shift+S`), Reply... (`Ctrl+Shift+M`), Not Spam, and Allow This Sender
 (`Ctrl+Alt+W`), Merge Into... (`Ctrl+Shift+G`), Convert to Category or
@@ -286,7 +286,7 @@ Notifications... (`Ctrl+Alt+I`), the Gravity Forms submenu, Move to Trash
 **Item > Gravity Forms**, with no keys of their own: Show Its Feeds, Show Its
 Results, Test This Form..., Change a Field Type..., Edit Form..., New Gravity
 Form..., Copy as a QUILL Accessible Form..., Copy QAF Form as a Gravity
-Form..., Activate or Deactivate Feed..., Rename Feed....
+Form..., Activate Feed... or Deactivate Feed..., Rename Feed....
 
 **Site:** Site Properties... (`Alt+Shift+Enter`), What Can I Do Here?
 (`Shift+F1`), View As Role... (`Ctrl+Alt+V`), Workbench Access...
@@ -318,7 +318,7 @@ Some of those, by row:
 
 - **A Site Health or broken link row:** Explain (Enter), Fix..., Take Me
   There and Open in Editor.
-- **A plugin:** What Depends on It, beside Activate or Deactivate.
+- **A plugin:** What Depends on It, beside Deactivate.
 - **An explained setting** (Permalinks, the Discussion rules, Search engine
   visibility and plugin settings): Open Its Documentation and Open in
   Dashboard.

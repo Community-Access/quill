@@ -113,7 +113,7 @@ def test_settings_values_in_words() -> None:
 
 def test_check_text_counts() -> None:
     text = sa.check_text("Radio", [sa.CheckLine("good", "Fine."), sa.CheckLine("critical", "Bad.")])
-    assert text.startswith("Site Check for Radio: 1 critical, 0 recommended.")
+    assert text.startswith("Site Health Check for Radio: 1 critical, 0 recommended.")
 
 
 def test_font_words_and_unused_terms() -> None:

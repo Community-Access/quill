@@ -1,4 +1,4 @@
-"""Running the Site: Site Check, Site Settings, Plugins, Themes, Fonts and Synced Patterns."""
+"""Running the Site: Site Health Check, Settings, Plugins, Themes, Fonts and Synced Patterns."""
 
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ AUTHOR = {"id": 9, "name": "Ann", "roles": ["author"], "capabilities": {"edit_po
 
 
 # --------------------------------------------------------------------------- #
-# Site Check
+# Site Health Check
 
 
 def test_site_check_puts_critical_first(wp, wp_site, wp_dialogs):
@@ -56,7 +56,7 @@ def test_site_check_puts_critical_first(wp, wp_site, wp_dialogs):
     wp.cmd_site_check()
     text = wp_dialogs.reports[-1]["text"]
     lines = text.splitlines()
-    assert lines[0] == "Site Check for Community Radio: 1 critical, 1 recommended."
+    assert lines[0] == "Site Health Check for Community Radio: 1 critical, 1 recommended."
     assert lines[2] == "Critical: Background updates are not working."
     assert lines[3].startswith("Recommended: Permalinks: plain")
     assert "Note: WordPress version: 6.8." in text

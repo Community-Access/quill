@@ -1,4 +1,4 @@
-"""Send This Document, Publish to Another Site, and Duplicate (wordpress.md 9.16).
+"""Send This Document, Copy to Another Site as a Draft, and Duplicate (wordpress.md 9.16).
 
 Three ways a draft comes from something that already exists:
 
@@ -6,7 +6,7 @@ Three ways a draft comes from something that already exists:
   draft. Its first heading becomes the title, its headings become heading
   blocks (the Markdown conversion does that), and its pictures on this
   computer go to the Media Library on the send (:func:`local_pictures`).
-* **Publish to Another Site:** a post copied to another connected site as a
+* **Copy to Another Site as a Draft:** a post copied to another connected site as a
   draft there. Pictures are uploaded again; categories and tags are matched
   by name (:func:`match_terms`), and the missing ones created after asking.
 * **Duplicate:** a new draft from any page or post, on the same site (same

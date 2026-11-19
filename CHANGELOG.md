@@ -36,6 +36,24 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress: names that say what happens (2026-11-18)
+
+Review item 29: commands named for what they do.
+
+- **Site Check** is now **Site Health Check**, since that is what it shows.
+- **Publish a Document as a Page** is **Make a Page from a Document**, and
+  **Publish to Another Site** is **Copy to Another Site as a Draft**: both make
+  drafts.
+- The two Coming Up lists are **Upcoming Events** (The Events Calendar) and
+  **Coming Up on All Sites** (everything scheduled).
+- The Workbench row **Publish or Update...** is **Publish...**: it publishes
+  drafts and leaves published rows alone. The editor's Publish or Update,
+  which does update, keeps its name.
+- Toggles say which way they will go, in the Item menu, the context menu and
+  the editor's Plugins window: **Activate** or **Deactivate**, **Offer to Ask
+  the Site** or **Stop Offering to Ask the Site**, **Add New Pages
+  Automatically** or **Stop Adding New Pages Automatically**.
+
 ### WordPress: Watches keep what they said (2026-11-18)
 
 Review item 27: Watches were fire-and-forget. Now Go > Watches lists what they

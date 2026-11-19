@@ -1,4 +1,4 @@
-"""Abilities, Ask the Site, and Site Check with every Site Health test (9.15)."""
+"""Abilities, Ask the Site, and Site Health Check with every Site Health test (9.15)."""
 
 from __future__ import annotations
 
@@ -254,7 +254,7 @@ def test_an_ability_that_is_off_is_never_run(site, wp_site, wp_dialogs):
 
 
 # --------------------------------------------------------------------------- #
-# Site Check, every test
+# Site Health Check, every test
 
 
 def test_site_check_runs_every_test_the_index_lists_and_explains_the_header(

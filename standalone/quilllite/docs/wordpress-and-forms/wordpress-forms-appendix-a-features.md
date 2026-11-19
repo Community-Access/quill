@@ -55,7 +55,7 @@ safely hide.
 
 | Feature and routes | Where | Key | When the site lacks it |
 |---|---|---|---|
-| The Media Library: `media` | Tools > WordPress > Media Library; Insert > Picture from the Media Library; More Media uploads; Alt Text for the Whole Library; Captions, Transcript, Listening Version, Publish a Document as a Page | M, U | "Community Radio does not offer its Media Library to QUILL." |
+| The Media Library: `media` | Tools > WordPress > Media Library; Insert > Picture from the Media Library; More Media uploads; Alt Text for the Whole Library; Captions, Transcript, Listening Version, Make a Page from a Document | M, U | "Community Radio does not offer its Media Library to QUILL." |
 | Editing a picture: `media/{id}/edit` | Tools > WordPress > More Media > Edit a Picture on the Site | - | "Community Radio offers no edits QUILL can make to" the picture. |
 | Uploads in pieces: `media/{id}/sideload`, `finalize` | Tools > WordPress > More Media > Upload a Large File | - | "Community Radio cannot take an upload in pieces. Upload Files sends it in one go instead." |
 | Remaking sizes: `media/{id}/post-process` | Tools > WordPress > More Media > Regenerate Sizes | - | "Community Radio cannot remake a picture's sizes. That needs WordPress 6.9 or later." |
@@ -86,7 +86,7 @@ safely hide.
 | Feature and routes | Where | Key | When the site lacks it |
 |---|---|---|---|
 | Settings: `settings` | Tools > WordPress > Site Settings | - | "Only an administrator on Community Radio can change site settings." |
-| Health: `wp-site-health/v1/tests` | Tools > WordPress > Site Check | - | Each test the site could not run is one line, such as "the site could not run this test"; for a role that cannot run them, "Health checks: only an administrator can run them." |
+| Health: `wp-site-health/v1/tests` | Tools > WordPress > Site Health Check | - | Each test the site could not run is one line, such as "the site could not run this test"; for a role that cannot run them, "Health checks: only an administrator can run them." |
 | Space used: `wp-site-health/v1/directory-sizes` | Tools > WordPress > Manage > Space Used | - | "Community Radio does not say how much space it uses. That needs WordPress 5.6 or later." |
 | People: `users`, `users/me` | Tools > WordPress > Manage > Users and My Profile; your role on every window | - | The role sentence; your own profile is still yours. |
 | Application passwords: `users/{id}/application-passwords`, `introspect` | Sites > Which Password; Manage > Application Passwords; Sign Out This Site | - | "Community Radio did not say which application password QUILL is using." |
@@ -96,12 +96,12 @@ safely hide.
 ## Plugins QUILL recognises
 
 These are not part of WordPress itself. Each is offered only when the
-plugin's own routes are on the site, and Site Check names it.
+plugin's own routes are on the site, and Site Health Check names it.
 
 | Feature and routes | Where | Key | When the site lacks it |
 |---|---|---|---|
 | QUILL Accessible Forms: `qaf/v1` (or the older `baf/v1`) | Tools > Forms: Publish Form, Insert Form Into Page, Test on Site, Responses | - | "Publish Form needs QUILL Accessible Forms on Community Radio, and the site does not offer it." |
-| The Events Calendar: `tribe/events/v1` | Plugin Extras > Events Coming Up, New Event; Plugin Fields | - | Plugin Fields says the plugins add no fields. |
+| The Events Calendar: `tribe/events/v1` | Plugin Extras > Upcoming Events, New Event; Plugin Fields | - | Plugin Fields says the plugins add no fields. |
 | WooCommerce: `wc/v3` | Plugin Extras > Shop Orders; Plugin Fields | - | As above. |
 | Yoast SEO and Rank Math (their registered fields) | Plugin Fields; Properties | - | As above. |
 
@@ -114,7 +114,7 @@ credentials and checkout are managed by WordPress, not the desktop.
 
 ## Across all your sites
 
-Coming Up and What Changed on My Sites (Tools > WordPress > Your Sites) read
+Coming Up on All Sites and What Changed on My Sites (Tools > WordPress > Your Sites) read
 the routes above from every connected site. A site that does not answer is
 listed as "Did not answer:" and its name, and the rest carry on.
 

@@ -11,7 +11,7 @@ so, which is the honest thing for a list that claims to be everything.
 - **Held as Spam (13a.5):** comments in ``spam``, and form entries held as
   spam on sites with QUILL Accessible Forms or Gravity Forms.
 - **Form Responses:** entries not yet read, on sites with a forms plugin.
-- **Site Health:** the Site Check lines that are critical or should be improved.
+- **Site Health:** the Site Health Check lines that are critical or should be improved.
 - **Updates, Membership Orders:** what REST can say of updates, and PMPro
   orders waiting on a person (:mod:`~quill.core.wordpress.workbench_updates`).
 - **Inbox:** all of the above, newest first.

@@ -1,4 +1,4 @@
-"""Site Check, Site Settings, Plugins and Themes (wordpress.md 9.10, 9.13).
+"""Site Health Check, Site Settings, Plugins and Themes (wordpress.md 9.10, 9.13).
 
 A mixin of :class:`~quill.ui.wordpress_commands.WordPressCommands`, gathered
 by :class:`~quill.ui.wordpress_admin_commands.WordPressAdminCommands`. Every
@@ -21,12 +21,12 @@ if TYPE_CHECKING:
 
 class WordPressManageCommands(WordPressDesignCommands):
     # ------------------------------------------------------------------ #
-    # Site Check (9.10)
+    # Site Health Check (9.10)
 
     def cmd_site_check(self) -> None:
         if self.workbench_door("wordpress.site_check"):
             return  # the developer flag sends this door to the WordPress Workbench
-        profile = self.admin_site("Site Check")
+        profile = self.admin_site("Site Health Check")
         if profile is None:
             return
 
@@ -34,7 +34,7 @@ class WordPressManageCommands(WordPressDesignCommands):
             dlg.show_report(
                 self.host.parent,
                 self.host.show_modal,
-                title=f"Site Check, {profile.name}",
+                title=f"Site Health Check, {profile.name}",
                 text=sa.check_text(profile.name, lines),
                 help_text=(
                     "What the site says about its own health, critical problems first. Each "
@@ -348,8 +348,17 @@ class WordPressManageCommands(WordPressDesignCommands):
             self.host.open_in_browser(profile.site_url.rstrip("/") + "/wp-admin/plugins.php")
             return None
 
+        def toggle_words(index: int | None) -> str:  # which way it goes (item 29)
+            plugin = at(index)
+            return "Deactivate..." if plugin is not None and plugin.active else "Activate..."
+
         actions = [
-            dlg.Action("&Activate or Deactivate...", "Turn the selected plugin on or off.", toggle)
+            dlg.Action(
+                "&Activate or Deactivate...",
+                "Turn the selected plugin on or off.",
+                toggle,
+                label_for=toggle_words,
+            )
         ]
         purpose = f"The plugins on {profile.name}."
         if sa.can(account, "install_plugins"):

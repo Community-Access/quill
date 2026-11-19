@@ -29,7 +29,7 @@ has its own accessible builder screens, if someone on your team prefers to
 work in the dashboard.
 
 To use it, install QUILL Accessible Forms on your site in the usual way, or
-ask your site's administrator to. Site Check (Chapter 8) names it when it is
+ask your site's administrator to. Site Health Check (Chapter 8) names it when it is
 there. A site that still runs it under its old name, BITS Accessible Forms,
 works too.
 

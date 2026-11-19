@@ -9,7 +9,7 @@ same mixin rules apply (wordpress.md 9.6, 15 item 9):
   up to date, and a new one replaces the old.
 * **Name Embeds** asks the site's oEmbed proxy what each embedded link is and
   gives every unnamed embed a caption, so no visitor meets an unnamed frame.
-* **Publish a Document as a Page** converts a PDF or Word file with Import /
+* **Make a Page from a Document** converts a PDF or Word file with Import /
   Convert Document, uploads the original, and opens the text as a new page
   draft linked to it.
 * :meth:`post_episode` and :meth:`upload_file` are what QUILL Cast, QUILL Studio
@@ -252,7 +252,7 @@ class WordPressListenPages:
         )
 
     # ------------------------------------------------------------------ #
-    # Publish a Document as a Page
+    # Make a Page from a Document
 
     def cmd_document_as_page(self) -> None:
         store = self.need_site()  # type: ignore[attr-defined]
@@ -260,13 +260,13 @@ class WordPressListenPages:
             return
         found = self.local.copy_for_path(self.host.current_path())
         profile = store.get(found.site_id) if found else None
-        profile = profile or self.pick_site(store, "Publish a Document as a Page")  # type: ignore[attr-defined]
+        profile = profile or self.pick_site(store, "Make a Page from a Document")  # type: ignore[attr-defined]
         if profile is None:
             return
         path = ldlg.pick_file(
             self.host.parent,
             self.host.show_modal,
-            title="Publish a Document as a Page",
+            title="Make a Page from a Document",
             wildcard=ldlg.DOCUMENT_WILDCARD,
         )
         if path is not None:
@@ -276,7 +276,7 @@ class WordPressListenPages:
         title = dlg.ask_text(
             self.host.parent,
             self.host.show_modal,
-            title="Publish a Document as a Page",
+            title="Make a Page from a Document",
             prompt="Page &title:",
             value=ep.title_from_file(path.name),
             help_text=(
@@ -294,7 +294,7 @@ class WordPressListenPages:
             if result.needs_ocr and dlg.confirm(
                 self.host.parent,
                 self.host.show_modal,
-                title="Publish a Document as a Page",
+                title="Make a Page from a Document",
                 message=(
                     f"{path.name} has no readable text: it looks scanned. Read its pages with "
                     "OCR on this computer? Nothing is uploaded to read them."
@@ -323,7 +323,7 @@ class WordPressListenPages:
         if not dlg.confirm(
             self.host.parent,
             self.host.show_modal,
-            title="Publish a Document as a Page",
+            title="Make a Page from a Document",
             message=(
                 f"Upload {path.name} to {profile.name}'s Media Library, then open its text as a "
                 "new page draft? The file can be reached by its address as soon as it is "

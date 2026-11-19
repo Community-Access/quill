@@ -388,7 +388,7 @@ link in the page is, and gives each one without a caption its title, so
 nobody meets an unnamed frame. A report says what each one turned out to
 be.
 
-**Publish a Document as a Page...** Choose a PDF or Word file. QUILL
+**Make a Page from a Document...** Choose a PDF or Word file. QUILL
 converts it on this computer, asks before it uploads anything, uploads the
 original to the Media Library, and
 opens the text as a new page draft with a link to the original at the top.

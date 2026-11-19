@@ -315,6 +315,8 @@ class Action:
     help: str
     run: Callable[[int | None], object]
     needs_row: bool = True
+    #: The label for the selected row, when it says which way a toggle goes (item 29).
+    label_for: Callable[[int | None], str] | None = None
 
 
 CLOSE = object()
@@ -368,7 +370,7 @@ class ListWindow(wx.Dialog):
         self.rows = wx.ListBox(self, choices=list(rows), style=wx.LB_SINGLE)
         self.rows.SetHelpText(list_help)
         self.rows.SetMinSize(dip_size(self, 520, 260))
-        self.rows.Bind(wx.EVT_LISTBOX, lambda _e: self._show_details())
+        self.rows.Bind(wx.EVT_LISTBOX, lambda _e: (self._show_details(), self._sync_buttons()))
         self.rows.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._run_enter())
         self.rows.Bind(wx.EVT_KEY_DOWN, self._on_row_key)
         labelled_row(sizer, self, list_label, self.rows)
@@ -453,6 +455,12 @@ class ListWindow(wx.Dialog):
         has_rows = self.rows.GetCount() > 0
         for action, button in zip(self._actions, self.buttons, strict=True):
             button.Enable(has_rows or not action.needs_row)
+            if action.label_for is not None:
+                from quill.core.workbench.menus import keep_access_key
+
+                label = keep_access_key(action.label, action.label_for(self.selected()))
+                if button.GetLabel() != label:
+                    button.SetLabel(label)
 
 
 def show_list_window(parent: wx.Window, show_modal: ShowModal, **kwargs: Any) -> ListWindow:

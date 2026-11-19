@@ -10,7 +10,7 @@ QUILL and QUILL Lite.
 * **Send a Folder as Drafts:** a folder of Markdown, text, web-page or Word files
   becomes drafts, each checked first, after one confirmation that gives the
   count.
-* **Coming Up** and **What Changed on My Sites:** one list across every
+* **Coming Up on All Sites** and **What Changed on My Sites:** one list across every
   connected site, read on request.
 """
 
@@ -174,7 +174,7 @@ class WordPressRouteArchive:
             window = dlg.show_list_window(
                 self.host.parent,
                 self.host.show_modal,
-                title="Coming Up",
+                title="Coming Up on All Sites",
                 purpose="Everything scheduled on your sites, soonest first.",
                 list_label="&Scheduled:",
                 list_help="When each item goes out, its title, and which site it is on.",
