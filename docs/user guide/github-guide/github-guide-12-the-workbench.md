@@ -664,6 +664,20 @@ watch and notification rows also have it on their context menu. It covers:
 Shift+F1 already says why a command is greyed, and a sheet says why a field
 is read-only beside the field.
 
+**Why?** explains something the Workbench did on its own, with no key from
+you. When there is something to explain, `Shift+F1` lists Why? first, and
+watch and notification rows also have it on their context menu. It covers:
+
+- **A watch:** what it looks for, how often it is checked, when it was last
+  checked, and what it found.
+- **A notification:** the reason GitHub gave for sending it, and what
+  decides that.
+- **A filter:** whether it went to GitHub as a search, or covers only the
+  rows already loaded, and how to read more when it does.
+
+Shift+F1 already says why a command is greyed, and a sheet says why a field
+is read-only beside the field.
+
 ## Dry Run
 
 **Tools > Dry Run** (`Ctrl+Alt+D`) is a switch for the whole Workbench.
