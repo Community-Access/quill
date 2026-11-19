@@ -277,12 +277,16 @@ def test_edit_picture_crops_by_numbers_after_a_preview_in_words(bench, monkeypat
     assert "The original is unchanged" in bench.said[-1]
 
 
-def test_edit_picture_scale_opens_wp_admin_and_sends_nothing(bench, monkeypatch) -> None:
+def test_edit_picture_scale_changes_it_here_and_sends_nothing_when_cancelled(
+    bench, monkeypatch
+) -> None:
+    """complete.md 2.3: Scale no longer opens wp-admin; it asks what to do, here."""
     monkeypatch.setattr(dlg, "ask_choice", lambda *_a, **k: k["rows"].index(wbp._SCALE))
+    asked: list[str] = []
+    monkeypatch.setattr(dlg, "ask_text", lambda *_a, **k: asked.append(k["title"]))
     bench.provider.do_edit_picture(None, _picture(bench))
-    assert bench.commands.host.opened == [
-        "https://radio.example/wp-admin/post.php?post=9&action=edit"
-    ]
+    assert asked and asked[0].endswith("on This Computer")
+    assert not bench.commands.host.opened
     assert not [w for w in bench.api.writes if w[1].endswith("/edit")]
 
 

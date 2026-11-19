@@ -36,6 +36,16 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress Workbench: scale a site's picture on this computer (2026-11-18)
+
+From complete.md 2.3: Edit Picture's Scale opened wp-admin, because WordPress
+has no route that scales an original. Now it changes the original here: type
+1200 wide, 800 high, 50%, turn 90, or crop and four percentages. QUILL
+downloads the picture, changes it with Pillow, says the size and weight before
+and after, sends it back through Replace File (in place where the site can,
+otherwise as a new file with every use pointed at it), and has WordPress make
+its smaller copies again.
+
 ### Forms: a Gravity Form's other notifications and confirmations (2026-11-18)
 
 From complete.md 2.3: QUILL's Gravity Forms editor changed the default

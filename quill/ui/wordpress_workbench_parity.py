@@ -36,7 +36,7 @@ from quill.ui import wordpress_workbench_dialogs as wdlg
 __all__ = ["WorkbenchParityCommands", "choose_save_path"]
 
 _CROP_BY_NUMBERS = "Crop by numbers, in percent..."
-_SCALE = "Scale the original to a size (opens wp-admin)..."
+_SCALE = "Scale, crop or turn the original on this computer, then send it back..."
 
 
 def choose_save_path(parent: Any, show_modal: Any, *, title: str, name: str) -> Path | None:
@@ -275,15 +275,15 @@ class WorkbenchParityCommands:
                 rows=labels,
                 help_text=(
                     f"The edits {picture.site} takes.{size} WordPress keeps the original and "
-                    "makes the edit a new picture. Scale opens wp-admin, because the REST "
-                    "route cannot scale."
+                    "makes the edit a new picture. The last row changes the original itself, "
+                    "on this computer, and sends it back with Replace File."
                 ),
             )
             if index is None:
                 return
             label = labels[index]
             if label == _SCALE:
-                self.do_dashboard_screen(None, picture)
+                self.scale_on_this_computer(picture)  # type: ignore[attr-defined]
                 return
             if label == _CROP_BY_NUMBERS:
                 text = dlg.ask_text(

@@ -132,12 +132,7 @@ The most useful to a site owner come first in each area. "Route" means the REST 
 
 ##### Media
 
-- **Scale or crop a picture on this computer, and send it back.** This was marked wp-admin only, and it need not be. WordPress has no route that scales an existing original in place, but QUILL can do the work locally and upload the result:
-  - Open the picture from the Media Library, scale it (to a width, a height, or a percentage, keeping its shape), crop or rotate it, with the size and file weight said before and after, using Pillow, which QUILL already ships.
-  - Send it back through the Replace File path already built: in place where the site lists a replace route, otherwise as a new file with every use pointed at it (previewed, with Ctrl+Z, and a redirect offered where Redirection is active).
-  - Then ask the site to make its sizes again (`POST wp/v2/media/{id}/post-process` with `action: create-image-subsizes`, WordPress 5.3 and later), so thumbnails match.
-  - For a quick rotate or crop of a site's picture without a local copy, `POST wp/v2/media/{id}/edit` (WordPress 5.5 and later) does it on the site and makes an edited copy; offer it where the site's index lists it.
-  - What stays wp-admin only: the site-wide media size settings (thumbnail, medium and large widths), because WordPress does not expose them to REST.
+- **Scale, crop or turn a picture on this computer, and send it back:** built 2026-11-18 (Edit Picture's last choice). What stays wp-admin only: the site-wide media size settings (thumbnail, medium and large widths), because WordPress does not expose them to REST.
 
 ##### Forms
 
