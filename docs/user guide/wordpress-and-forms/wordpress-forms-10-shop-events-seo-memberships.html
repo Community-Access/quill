@@ -333,6 +333,18 @@ you type the amount exactly. A refund is never part of a batch, and
 cannot be undone.</li>
 <li><strong>Resend Order Details…</strong> emails the customer the
 order’s details again, for when the receipt never came.</li>
+<li><strong>Change Items…</strong> changes a quantity, takes an item off
+(a quantity of 0) or adds a product. WooCommerce works out the total
+again; any refund or payment for the difference is yours to make. It
+cannot be undone here: Change Items again puts it back.</li>
+<li><strong>Change Address…</strong> changes the billing or the shipping
+address, sending only the fields you changed; Undo sends the old ones
+back.</li>
+<li><strong>New Order…</strong> (<code>Ctrl+N</code> on Shop Orders)
+takes an order by telephone: choose a customer, or a guest by name and
+email, then each product and its quantity, then whether it starts as
+Pending payment, Processing or On hold. QUILL never marks it paid. Undo
+moves it to the Trash.</li>
 <li><strong>Open in the Shop’s Dashboard</strong> opens the order in
 wp-admin.</li>
 </ul>
@@ -478,6 +490,14 @@ with <strong>Membership Levels</strong>, <strong>Orders</strong>,
 shown. <strong>Needs My Attention &gt; Membership Orders</strong> lists
 orders, on every site, that wait on a person: pending, in review,
 waiting on payment, or failed.</p>
+<p><strong>Levels.</strong> <strong>New Membership Level…</strong>
+(<code>Ctrl+N</code> on Membership Levels) and <strong>Edit Membership
+Level…</strong> ask the name, the initial payment, the recurring payment
+and how often it is taken, when membership expires, and whether new
+signups are allowed, then preview them. A change shows only what
+changes, old and new; new prices are for new signups, because Paid
+Memberships Pro does not change what members already pay. Undo puts it
+back, or deletes a level you just made.</p>
 <p><strong>Discount codes.</strong> <strong>Look Up a Discount
 Code…</strong> reads one code, and <strong>New Discount Code…</strong>
 makes one after a preview. Where the site cannot list every code, the
@@ -520,7 +540,21 @@ site.</li>
 <strong>Turn On or Off</strong> does what it says.</li>
 <li><strong>Delete Redirect…</strong> deletes it for good, because the
 plugin keeps no Trash.</li>
+<li><strong>Export Redirects…</strong> saves every redirect to a file on
+your computer: CSV, or the plugin’s own JSON with its groups.</li>
+<li><strong>Import Redirects…</strong> reads a CSV (from, to, and
+optionally a pattern flag and a code) or a Redirection JSON export, and
+previews every redirect it would add and every line it cannot use, with
+why: a line with no address, a code that is not a redirect, an address
+in the file twice, or one the site already redirects. Then it asks which
+group, and adds them one at a time.</li>
 </ul>
+<p><strong>Redirect Groups</strong>, under Redirects, lists the groups
+the plugin keeps redirects in, with how many each holds and whether it
+is on. <strong>New Group…</strong> (<code>Ctrl+N</code>),
+<strong>Rename…</strong> and <strong>Turn On or Off</strong> each
+preview first and can be undone. <strong>Delete Group…</strong> deletes
+its redirects with it, so it asks you to type the group’s name.</p>
 <p><strong>404 Log</strong>, under Redirects, lists addresses visitors
 asked for that were not found. <strong>Redirect This Address…</strong>
 sends one somewhere, after a preview.</p>

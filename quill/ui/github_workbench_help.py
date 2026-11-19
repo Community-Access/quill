@@ -112,8 +112,32 @@ class GitHubWorkbenchHelpMixin:
         elif target.startswith("mailto:"):
             if not webbrowser.open(target):
                 self._say("Write to support@community-access.org from your own email.")
+        elif target == catalogue.REPORT_TARGET:
+            self._report_help_problem()
         else:
             self.frame.details.SetFocus()
+
+    def _report_help_problem(self) -> None:
+        """A message in the person's own email, saying where they were (GH-R-117)."""
+        from quill import __version__
+
+        frame = self.frame
+        history = list(getattr(frame, "history", []))
+        place = next((r for r in reversed(history) if not r.key.startswith("help")), None)
+        where = ""
+        if place is not None:
+            try:
+                label = (
+                    self.tree.template_node(place.template, place.key)
+                    if place.template
+                    else self.tree.node(place.key)
+                ).label
+            except (KeyError, AttributeError):
+                label = place.key
+            where = f"{label}{f', {place.instance}' if place.instance else ''}"
+        link = catalogue.help_report_mailto(where, getattr(frame, "last_result", ""), __version__)
+        if not webbrowser.open(link):
+            self._say("Write to support@community-access.org from your own email.")
 
     def _do_take_me_there(self, _ref: Any, row: object) -> None:
         from quill.ui.workbench_frame import NodeRef

@@ -86,6 +86,16 @@ receipt, without the customer's email, telephone or billing address.
   exactly. A refund is never part of a batch, and cannot be undone.
 - **Resend Order Details...** emails the customer the order's details again,
   for when the receipt never came.
+- **Change Items...** changes a quantity, takes an item off (a quantity of
+  0) or adds a product. WooCommerce works out the total again; any refund or
+  payment for the difference is yours to make. It cannot be undone here:
+  Change Items again puts it back.
+- **Change Address...** changes the billing or the shipping address,
+  sending only the fields you changed; Undo sends the old ones back.
+- **New Order...** (`Ctrl+N` on Shop Orders) takes an order by telephone:
+  choose a customer, or a guest by name and email, then each product and
+  its quantity, then whether it starts as Pending payment, Processing or On
+  hold. QUILL never marks it paid. Undo moves it to the Trash.
 - **Open in the Shop's Dashboard** opens the order in wp-admin.
 
 These are shop orders. Membership orders, from Paid Memberships Pro, are a
@@ -217,6 +227,14 @@ Codes**. Card and billing details are never shown. **Needs My Attention >
 Membership Orders** lists orders, on every site, that wait on a person:
 pending, in review, waiting on payment, or failed.
 
+**Levels.** **New Membership Level...** (`Ctrl+N` on Membership Levels) and
+**Edit Membership Level...** ask the name, the initial payment, the
+recurring payment and how often it is taken, when membership expires, and
+whether new signups are allowed, then preview them. A change shows only what
+changes, old and new; new prices are for new signups, because Paid
+Memberships Pro does not change what members already pay. Undo puts it
+back, or deletes a level you just made.
+
 **Discount codes.** **Look Up a Discount Code...** reads one code, and **New
 Discount Code...** makes one after a preview. Where the site cannot list
 every code, the list says so and opens the wp-admin screen.
@@ -254,6 +272,20 @@ many times it was used, and whether it is on.
   what it says.
 - **Delete Redirect...** deletes it for good, because the plugin keeps no
   Trash.
+- **Export Redirects...** saves every redirect to a file on your computer:
+  CSV, or the plugin's own JSON with its groups.
+- **Import Redirects...** reads a CSV (from, to, and optionally a pattern
+  flag and a code) or a Redirection JSON export, and previews every redirect
+  it would add and every line it cannot use, with why: a line with no
+  address, a code that is not a redirect, an address in the file twice, or
+  one the site already redirects. Then it asks which group, and adds them
+  one at a time.
+
+**Redirect Groups**, under Redirects, lists the groups the plugin keeps
+redirects in, with how many each holds and whether it is on. **New
+Group...** (`Ctrl+N`), **Rename...** and **Turn On or Off** each preview
+first and can be undone. **Delete Group...** deletes its redirects with it,
+so it asks you to type the group's name.
 
 **404 Log**, under Redirects, lists addresses visitors asked for that were not
 found. **Redirect This Address...** sends one somewhere, after a preview.

@@ -50,6 +50,14 @@ SWEEP_MORE_NODES: tuple[NodeSpec, ...] = (
         row_type="not_found",
     ),
     _n(
+        "redirect_groups",
+        "Redirect Groups",
+        "redirects",
+        loader="sweep:redirect_groups",
+        columns=("name", "module", "redirects", "state"),
+        row_type="redirect_group",
+    ),
+    _n(
         "site_upkeep",
         "Search and Upkeep",
         "site",
@@ -70,6 +78,8 @@ SWEEP_MORE_NODES: tuple[NodeSpec, ...] = (
 SWEEP_NODE_HELP: Mapping[str, str] = {
     "redirects": "The Redirection plugin's redirects: add with Ctrl+N, change, test, turn off.",
     "not_found_log": "Addresses visitors asked for that were not found; redirect any of them.",
+    "redirect_groups": "The groups the Redirection plugin keeps redirects in: new with Ctrl+N, "
+    "rename, turn on or off, delete.",
     "site_upkeep": "Search visibility, the sitemap, missed schedules, the certificate and who "
     "is editing, each with where QUILL's answer comes from.",
     "admin_areas": "Every part of running a site: what QUILL does, and where the rest is.",
@@ -79,6 +89,7 @@ SWEEP_ROW_HELP: Mapping[str, str] = {
     "finding": "Something the audit found. Enter reads it; Show Where It Is Used comes "
     "before Move to Trash.",
     "redirect": "One redirect: from, to, its code and hits. Test an Address follows it.",
+    "redirect_group": "One group of redirects: its name, how many, and whether it is on.",
     "not_found": "An address that was not found. Redirect This Address sends it somewhere.",
     "privacy": "A wp-admin screen for privacy requests. Enter opens it in your browser.",
     "upkeep": "One upkeep check, ending with where its answer comes from.",
@@ -108,6 +119,19 @@ _ADD = _a(
     "add_redirect",
     "Add Redirect...",
     "A new redirect from an old address to a new one, after a preview. Ctrl+N on Redirects.",
+    tier=Tier.WRITE,
+    needs="manage_options",
+)
+
+_EXPORT = _a(
+    "export_redirects",
+    "Export Redirects...",
+    "Every redirect, saved to a CSV or Redirection JSON file on this computer.",
+)
+_IMPORT = _a(
+    "import_redirects",
+    "Import Redirects...",
+    "Add the redirects in a CSV or Redirection JSON file, after a preview of each.",
     tier=Tier.WRITE,
     needs="manage_options",
 )
@@ -157,7 +181,41 @@ def sweep_rows(read: ActionRow, sheet: ActionRow) -> Mapping[str, tuple[ActionRo
                 tier=Tier.DESTRUCTIVE,
                 needs="manage_options",
             ),
+            _EXPORT,
+            _IMPORT,
             open_site,
+            sheet,
+        ),
+        "redirect_group": (
+            read,
+            _a(
+                "new_redirect_group",
+                "New Group...",
+                "A group to keep redirects in, after a preview. Ctrl+N on Redirect Groups.",
+                tier=Tier.WRITE,
+                needs="manage_options",
+            ),
+            _a(
+                "rename_redirect_group",
+                "Rename...",
+                "Its redirects stay in it.",
+                tier=Tier.WRITE,
+                needs="manage_options",
+            ),
+            _a(
+                "toggle_redirect_group",
+                "Turn On or Off",
+                "Every redirect in it stops, or starts again.",
+                tier=Tier.WRITE,
+                needs="manage_options",
+            ),
+            _a(
+                "delete_redirect_group",
+                "Delete Group...",
+                "Deletes its redirects too, for good, after you type its name.",
+                tier=Tier.DESTRUCTIVE,
+                needs="manage_options",
+            ),
             sheet,
         ),
         "not_found": (
@@ -213,6 +271,12 @@ KEYLESS: dict[str, str] = {
     f"{_PREFIX}toggle_redirect": "Redirects are turned off rarely (rule 9).",
     f"{_PREFIX}delete_redirect": "A destructive, rare job: never a bare key (rule 4).",
     f"{_PREFIX}redirect_not_found": "Reviewing the 404 log is a monthly job (rule 9).",
+    f"{_PREFIX}export_redirects": "Saved before a move or a redesign, a few times a year (rule 9).",
+    f"{_PREFIX}import_redirects": "Run when a site moves, rarely, behind a preview (rule 9).",
+    f"{_PREFIX}new_redirect_group": "Ctrl+N (New Here) on Redirect Groups reaches it.",
+    f"{_PREFIX}rename_redirect_group": "Groups are renamed rarely (rule 9).",
+    f"{_PREFIX}toggle_redirect_group": "Groups are turned off rarely (rule 9).",
+    f"{_PREFIX}delete_redirect_group": "A destructive, rare job: never a bare key (rule 4).",
     f"{_PREFIX}open_privacy": "Enter opens it; privacy requests are rare (rule 9).",
     f"{_PREFIX}open_area": "Enter does it on the row.",
 }

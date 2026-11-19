@@ -253,7 +253,7 @@ MORE_ROWS: Mapping[str, tuple[ActionRow, ...]] = {
 """The rows for each kind these commands add."""
 
 MORE_EXTRA: Mapping[str, tuple[ActionRow, ...]] = {
-    "shop_order": (  # complete.md 2.3: "the receipt never came"
+    "shop_order": (  # complete.md 2.3: "the receipt never came", and phone orders
         _a(
             "resend_order_details",
             "Resend Order Details...",
@@ -261,6 +261,21 @@ MORE_EXTRA: Mapping[str, tuple[ActionRow, ...]] = {
             tier=Tier.WRITE,
             needs=_SHOP,
         ),
+        _a(
+            "change_order_items",
+            "Change Items...",
+            "Change a quantity, take an item off or add a product, after a preview.",
+            tier=Tier.WRITE,
+            needs=_SHOP,
+        ),
+        _a(
+            "change_order_address",
+            "Change Address...",
+            "The billing or shipping address, after a preview of old and new.",
+            tier=Tier.WRITE,
+            needs=_SHOP,
+        ),
+        _new("new_order", "New Order...", "An order taken by telephone"),
     ),
     "shop_product": (
         _a(
@@ -316,6 +331,9 @@ MORE_EXTRA: Mapping[str, tuple[ActionRow, ...]] = {
 """Rows added to existing kinds' menus, before Properties."""
 
 MORE_NEW_HERE: dict[str, str] = {
+    "shop_orders": "do_new_order",
+    "membership_levels": "do_new_membership_level",
+    "redirect_groups": "do_new_redirect_group",
     "shop_shipping": "do_new_zone",
     "shop_taxes": "do_new_tax_rate",
     "shop_tax_classes": "do_new_tax_class",
@@ -354,6 +372,9 @@ MORE_KEYLESS: dict[str, str] = {
     _c("run_shop_tool"): "Run when something is wrong, a few times a year, behind a preview "
     "(rule 9).",
     _c("resend_order_details"): "Sent when a customer asks, on a selected order (rule 9).",
+    _c("change_order_items"): "An order is corrected now and then, behind a preview (rule 9).",
+    _c("change_order_address"): "An address is corrected now and then, behind a preview (rule 9).",
+    _c("new_order"): _NEW,
     _c("new_webhook"): _NEW,
     _c("delete_webhook"): _GONE,
     _c("attribute_terms"): _RARE,

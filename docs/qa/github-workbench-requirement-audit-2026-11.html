@@ -246,11 +246,12 @@
 Workbench requirement audit, November 2026</h1>
 <p>Checked 2026-11-18 against main, updated the same day for the
 follow-up pull request. This is the record of the complete.md 1.3
-requirement audit: every id in Part E of the GitHub Workbench PRD
-(<code>docs/Product Requirement Documents and Specifications/github-workbench-prd.md</code>),
-with the code and the test behind each verdict.</p>
+requirement audit: every id in Part E of <a
+href="../Product Requirement Documents and Specifications/github-workbench-prd.md">the
+GitHub Workbench PRD</a>, with the code and the test behind each
+verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 68 are met, 24 are partly met and 8 are
+<p>Of the 100 live requirements, 69 are met, 23 are partly met and 8 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -265,8 +266,8 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>58</td>
-<td>16</td>
+<td>59</td>
+<td>15</td>
 <td>1</td>
 <td>75</td>
 </tr>
@@ -462,14 +463,6 @@ a count is always spoken</td>
 <td>Every outcome is spoken, so failures and counts always are; but the
 Workbench plays no sounds and ignores the <code>action_feedback</code>
 setting (only diff hearing has sounds, through sound events).</td>
-</tr>
-<tr>
-<td>GH-R-117</td>
-<td>Must</td>
-<td>Ask a Person and Report a Help Problem, never sending a secret</td>
-<td>Ask a Person node (mail to support, nothing sent by QUILL); no
-Report a Help Problem, and nothing “attached” about what you were
-doing.</td>
 </tr>
 <tr>
 <td>GH-R-119</td>
@@ -1483,11 +1476,14 @@ plain help</td>
 <tr>
 <td>GH-R-117</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Ask a Person and Report a Help Problem, never sending a secret</td>
-<td>Ask a Person node (mail to support, nothing sent by QUILL); no
-Report a Help Problem, and nothing “attached” about what you were
-doing.</td>
+<td>Ask a Person node (mail to support, nothing sent by QUILL); Report a
+Help Problem on every topic opens a mail with the place and the last
+thing said, scrubbed of secrets first
+(<code>workbench_help.help_report_mailto</code>,
+<code>redact_text_for_bundle</code>;
+<code>test_github_workbench_help_problem.py</code>).</td>
 </tr>
 <tr>
 <td>GH-R-118</td>

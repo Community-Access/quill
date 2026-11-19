@@ -96,12 +96,13 @@ The endpoint count is not the whole job. These rows from the Workbench delivery 
 
 #### Requirement audits
 
-Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against the code and tests, and the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. Of the 100 live ids, 68 are met, 24 partly met and 8 not met. What it found, the Musts first:
+Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against the code and tests, and the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. Of the 100 live ids, 68 are met, 24 partly met and 8 not met (now 70 and 22, with GH-R-117 and 035 done). What it found, the Musts first:
 
 - [ ] **GH-R-002, needs a Windows check:** every Workbench dialog uses `ShowModal()`, which in wx disables every top-level window, the editor included. Try it before acting: if the editor is blocked, the fix is window-modal or modeless dialogs throughout the Workbench.
 - [ ] **GH-R-010:** no counts after node names. A native tree speaks its item text, so a count there is always announced; decide whether the Alt+number readouts are the answer and say so in the PRD.
 - [x] **GH-R-035 (2026-11-18):** Issue type and Into branch are pickers now, with New Issue Type... and New Branch....
-- [ ] **GH-R-106, 107, 108, 117, 119 (help):** Tutorials and Tips nodes; Walk Me Through and Do It; Why? on automatic behaviours; Report a Help Problem; D20's timed sessions.
+- [ ] **GH-R-106, 107, 108, 119 (help):** Tutorials and Tips nodes; Walk Me Through and Do It; Why? on automatic behaviours; D20's timed sessions.
+- [x] **GH-R-117 (2026-11-18):** Report a Help Problem on every help topic, a mail with the place and the last thing said, with secrets scrubbed first.
 - [ ] **GH-R-113 and 083 (sound):** Workbench results through `action_feedback`, as the editors do.
 - [ ] **GH-R-131:** conditional requests (ETag) on item lists and sheet reloads.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists (with the 1.5 live rows).
@@ -181,7 +182,7 @@ took the money. What is left needs the test site and a person:
 
 ##### Shop (WooCommerce)
 
-- **Create an order, or change its items and addresses.** Who: shops taking phone orders. Route: `POST wc/v3/orders`, `POST wc/v3/orders/{id}`.
+Orders can now be made (New Order..., for telephone orders) and their items and addresses changed (2026-11-18); a live check is in 2.4.
 
 Many products can now be changed at once (Change Many Products..., `products/batch`, 2026-11-18). Also missing but less urgent: generating variations (`products/{id}/variations/generate`), shipping classes (`products/shipping_classes`), and Analytics (`wc-analytics/reports/*`). Scheduled Actions and the extensions marketplace are wp-admin only. Subscriptions and Bookings are paid extensions with their own routes, not in scope.
 
@@ -191,7 +192,8 @@ Many products can now be changed at once (Change Many Products..., `products/bat
 
 ##### Memberships (Paid Memberships Pro)
 
-- **Create or edit a membership level.** Who: the site owner changing a price or adding a tier. Route: PMPro's abilities, if the site offers a level-writing one, or `pmpro/v1/membership_level` (I believe it takes POST, unverified). Today levels are read only.
+Membership levels can now be made and changed (New Membership Level..., Edit Membership Level..., through `pmpro/v1/membership_level`, 2026-11-18); a live check is in 2.4.
+
 - **Members of a level, as a list.** Who: the owner emailing or counting one tier's members. Route: unverified. `pmpro/v1/recent_memberships` exists. Otherwise build it from users plus each person's levels, which is slow on big sites. Today you see a person's memberships one person at a time.
 - **Every discount code, as a list.** `pmpro/v1` reads one code at a time. The list works only where an ability offers it, and otherwise opens wp-admin, which QUILL says.
 
@@ -199,7 +201,7 @@ Many products can now be changed at once (Change Many Products..., `products/bat
 
 List, add, change, turn on and off, delete, test an address, and the 404 log are built from Redirection's documentation and have never met a real install.
 
-- **Groups, import and export, and Redirection's options.** Route: `redirection/v1/group`, `/import`, `/export`, `/setting` (from the plugin's docs, unverified). Coverage marks them planned.
+- **Redirection's options.** Route: `redirection/v1/setting` (from the plugin's docs, unverified). They stay in the plugin's own screen for now. Groups, import and export were built 2026-11-18: groups through `group` and `bulk/group`, import and export on this computer through the redirect routes already used (the plugin's own import takes an uploaded form file).
 
 ##### Maintenance
 
@@ -211,10 +213,13 @@ All of the following has tests over recorded or fake answers and none has met a 
 
 - The whole Workbench, W1 to W8 and packages 1 to 14. It is now the default, so this comes before the next release.
 - WooCommerce, The Events Calendar and Yoast SEO, signed in on the test site, which has all three. A refund only against a gateway's test mode.
+- New Order, Change Items and Change Address on a test order: especially that a quantity of 0 takes an item off, which WooCommerce's order controller documents but QUILL has only met in fakes.
 - Redirection, and the slug-change redirect offer.
+
+- Redirection, and the slug-change redirect offer, and Redirect Groups (new, rename, turn off, delete) and Import Redirects.
 - QAF on the test site (it still runs BAF), the QAF migration, and the spam settings with a live submission.
 - Gravity Forms building, conversion, feeds, results and test submissions. These need a licensed Gravity Forms with its REST API on.
-- Paid Memberships Pro 3.9 or later on WordPress 6.9 or later, with a role whose PMPro capabilities were changed.
+- Paid Memberships Pro 3.9 or later on WordPress 6.9 or later, with a role whose PMPro capabilities were changed; and New and Edit Membership Level on a test level.
 - Advanced Custom Fields read and write, and the QUILL Site Types plugin in a real WordPress.
 - Copy to Site and Compare Sites between two real sites, and Promote to Network on a real multisite.
 - The Practice Site from an installed build, not only from source.
