@@ -279,6 +279,14 @@ MORE_EXTRA: Mapping[str, tuple[ActionRow, ...]] = {
     ),
     "shop_product": (
         _a(
+            "bulk_edit_products",
+            "Change Many Products...",
+            "One change for every selected product: a sale, a price change, stock, status or a "
+            "category, previewed product by product.",
+            tier=Tier.WRITE,
+            needs=_SHOP,
+        ),
+        _a(
             "edit_variation",
             "Edit a Variation...",
             "One variation's price, sale price, stock and status, after a preview.",
@@ -375,6 +383,9 @@ MORE_KEYLESS: dict[str, str] = {
     _c("rename_event_term"): _RARE,
     _c("delete_event_term"): _GONE,
     _c("edit_variation"): "Prices and stock change now and then, behind a preview (rule 9).",
+    _c(
+        "bulk_edit_products"
+    ): "A sale or a price change across a range, a few times a year (rule 9).",
     _c("customer_details"): "Read when an order or a customer is in question (rule 9).",
     _c("edit_customer"): "A customer's details change rarely, behind a preview (rule 9).",
     _c("set_event_terms"): "An event's terms are set when it is made (rule 9).",
