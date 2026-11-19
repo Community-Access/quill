@@ -33,6 +33,13 @@ Three rules shape every decision in this document:
 Nothing reaches a public site without a deliberate Publish or Update, and
 nothing is ever deleted for good without a local copy first.
 
+**Plugin scope (Jeff, 2026-11-18).** The plugins QUILL integrates with as
+first-class parts of the Workbench are QUILL Accessible Forms, Gravity Forms,
+Paid Memberships Pro, **WooCommerce and Yoast SEO**. Rank Math is read only.
+Updates stay in the WordPress Dashboard, backups are snapshots and WXR, and
+there is no Security Review for now. The PRD's "Plugin scope decision" section
+is the record.
+
 ## 2. What already exists (2026-11-03)
 
 QUILL has a publishing framework, built and tested, but mostly switched off:

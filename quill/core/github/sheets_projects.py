@@ -160,7 +160,13 @@ PROJECT = SheetDef(
             page(
                 "views",
                 "Views",
-                ro("views", "Views", _K.TABLE, "Each saved view: its layout and filter."),
+                ro(
+                    "views",
+                    "Views",
+                    _K.TABLE,
+                    "Each saved view: its layout and filter. Read only: GitHub has no "
+                    "API to change a view, so change it on GitHub.",
+                ),
             ),
             page(
                 "items",
@@ -168,7 +174,17 @@ PROJECT = SheetDef(
                 ro("item_count", "Items", _K.NUMBER),
                 ro("items", "Items", _K.TABLE, "F2 or Change opens the item's own sheet."),
             ),
-            page("workflows", "Workflows", ro("workflows", "Built-in workflows", _K.TABLE)),
+            page(
+                "workflows",
+                "Workflows",
+                ro(
+                    "workflows",
+                    "Built-in workflows",
+                    _K.TABLE,
+                    "Each built-in workflow and whether it is on. Read only: GitHub has "
+                    "no API to turn one on or off, so change it on GitHub.",
+                ),
+            ),
             page("status", "Status Updates", ro("status_updates", "Status updates", _K.TABLE)),
             page(
                 "access",

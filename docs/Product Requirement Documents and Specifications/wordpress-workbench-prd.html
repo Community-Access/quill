@@ -299,6 +299,25 @@ features, but discovery alone does not promise a first-class integration
 for another plugin. The current delivery record is in the <a
 href="../planning/workbench-implementation-status.md">Workbench
 implementation status</a>.</p>
+<h2 id="plugin-scope-decision-jeff-2026-11-18">Plugin scope decision
+(Jeff, 2026-11-18)</h2>
+<p>This widens the 2026-11-10 decision above. <strong>WooCommerce and
+Yoast SEO are in scope</strong>, beside QAF, Gravity Forms and Paid
+Memberships Pro: the Shop node (<code>wc/v3</code>) and the SEO pages
+and post Properties (<code>yoast/v1</code>) are first-class
+integrations, built and tested like the forms plugins. Rank Math stays
+read only. Alongside that:</p>
+<ul>
+<li><strong>Updates</strong> stay in the WordPress Dashboard: QUILL
+opens Dashboard &gt; Updates, with no WP-CLI, MainWP or Jetpack
+route.</li>
+<li><strong>Backups</strong> are snapshots and WXR (WordPress’s export
+file) only.</li>
+<li><strong>Security Review</strong> is not built for now.</li>
+<li>Scheduled Actions and the WooCommerce extensions marketplace have no
+route and stay in wp-admin; WooCommerce Subscriptions and Bookings are
+paid extensions with their own routes and are not in scope.</li>
+</ul>
 <p>This accepted PRD is the canonical product scope for the WordPress
 Workbench. The earlier <a href="../design/wordpress.md">WordPress design
 and implementation log</a> is retained as history and links back here
