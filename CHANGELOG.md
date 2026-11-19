@@ -2,6 +2,37 @@
 
 ## 1.0.0
 
+### GitHub Workbench: issue types and fields in the lists (2026-11-19)
+
+An issue's type and its organization's issue fields now show in the
+Workbench's own lists:
+- **Columns.** Columns... offers **Issue type** and **Issue fields** on every
+  Issues list.
+- **Typed values.** A date reads as a date, a number as a number and a choice
+  by its name.
+- **Details and filters.** The details name the type and each field.
+  `type:Bug` and `field.priority:high` searches go to GitHub, Show Only and
+  Hide offer each value, and Group By Type works.
+- **Properties.** An issue's Properties has an Issue Fields page.
+- **Distinct states.** A field that is empty, not set, hidden from you, not
+  yet supported or could not be read each says so in its own words.
+### GitHub Workbench: Merge Selected, deployments and release evidence (2026-11-19)
+
+- **Merge Selected...** merges several pull requests at once. Each one is
+  checked on its own, with the reason given when it cannot be merged, and a
+  preview lists what will merge, what will join the merge queue and what will
+  not. They merge one at a time, each checked again just before. A failure
+  stops nothing else, and Retry Failed is there at the end. Merge... now offers
+  only the merge methods the repository allows.
+- An environment now shows its custom protection rules, branches and tags, how
+  many secrets and variables it has, and its newest deployments.
+  **Deployments...** lists them.
+- **Release Evidence...** on a release says whether it is a draft and whether
+  it is immutable. It names the tag's commit, which checks passed or failed,
+  which environments it was deployed to, and each file's attestations.
+  **Attestations...** on a release file lists them. QUILL does not verify the
+  signatures itself, and says so.
+
 ### GitHub Workbench: a You page for your own relationships (2026-11-19)
 
 Properties now has a **You** page, right after General, on repositories,
