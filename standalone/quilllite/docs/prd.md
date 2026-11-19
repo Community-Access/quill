@@ -2804,3 +2804,18 @@ search, My Keys, and the Webhooks, Deploy Keys and Autolinks
 settings, an organization's webhooks too, GitHub Sponsors, and the
 Wiki node with Clone Wiki..., an organization's
 packages, and runner administration
+
+## Family UX pilot (2026-11-19)
+
+QUILL Lite is one of the two pilots chosen in
+`docs/design/2026-11-19-family-ux-pilots.md`. Two things are accepted for it:
+
+- **The actual result, once (FUX-04).** Saving, exporting or recovering ends by
+  naming what happened and where, such as the file and its folder, or the draft
+  recovered and from when. It says nothing that the screen reader already says.
+- **Lists that stay still (FUX-06).** Recent files, recovered drafts and the
+  Problems list never move the selected row or focus when they refresh in the
+  background.
+
+Anything QUILL Lite gains this way goes in the shared package, and QUILL gets
+it in the same change (QUILL Lite may never be ahead of QUILL).
