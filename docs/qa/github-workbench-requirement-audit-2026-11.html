@@ -250,7 +250,7 @@ requirement audit: every id in Part E of the GitHub Workbench PRD
 (<code>docs/Product Requirement Documents and Specifications/github-workbench-prd.md</code>),
 with the code and the test behind each verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 67 are met, 25 are partly met and 8 are
+<p>Of the 100 live requirements, 68 are met, 24 are partly met and 8 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -265,8 +265,8 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>57</td>
-<td>17</td>
+<td>58</td>
+<td>16</td>
 <td>1</td>
 <td>75</td>
 </tr>
@@ -418,17 +418,6 @@ Searches node in the tree (<code>workbench_tree.py:186</code>);
 <code>test_the_filter_builder</code>… saves one,
 <code>test_go_lists_pins_favorites_and_saved_searches</code>. A saved
 search is a row in that node, not a node of its own.</td>
-</tr>
-<tr>
-<td>GH-R-063</td>
-<td>Must</td>
-<td>Every object with an access list has an Access page with Add, Change
-Role, Remove and pending invitations</td>
-<td>Access pages with Add…, Change Role…, Remove
-(<code>github_workbench_tools.py:459</code>);
-<code>test_an_access_change_is_previewed_sent_and_recorded</code>.
-Pending invitations are not on the Access page (repository invitations
-are a separate list).</td>
 </tr>
 <tr>
 <td>GH-R-093</td>
@@ -1084,14 +1073,18 @@ tier; GATE-GITHUB-PERM fails on one…</td>
 <tr>
 <td>GH-R-063</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Every object with an access list has an Access page with Add, Change
 Role, Remove and pending invitations</td>
-<td>Access pages with Add…, Change Role…, Remove
-(<code>github_workbench_tools.py:459</code>);
-<code>test_an_access_change_is_previewed_sent_and_recorded</code>.
-Pending invitations are not on the Access page (repository invitations
-are a separate list).</td>
+<td>Repository and organization Access pages list People, Teams and
+Pending invitations (<code>sheets_repo.py</code>,
+<code>sheets_orgs.py</code>) with Add…, Change… and Remove; on Pending
+invitations, Remove cancels the invitation and Change… changes the role
+a repository invitation offers (<code>access_invitations.py</code>,
+<code>github_workbench_invitations.py</code>);
+<code>tests/unit/core/github_workbench/test_access_invitations.py</code>.
+Team invitations are shown on the organization’s page, where GitHub
+cancels them.</td>
 </tr>
 <tr>
 <td>GH-R-064</td>

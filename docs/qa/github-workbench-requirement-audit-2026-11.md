@@ -4,11 +4,11 @@ Checked 2026-11-18 against main, updated the same day for the follow-up pull req
 
 ## Summary
 
-Of the 100 live requirements, 67 are met, 25 are partly met and 8 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 68 are met, 24 are partly met and 8 are not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
-| Must | 57 | 17 | 1 | 75 |
+| Must | 58 | 16 | 1 | 75 |
 | Should | 10 | 8 | 5 | 23 |
 | May | 0 | 0 | 2 | 2 |
 
@@ -36,7 +36,6 @@ Of the 100 live requirements, 67 are met, 25 are partly met and 8 are not met. G
 | GH-R-045 | Must | Projects (version 2): every field type, views, items, workflows and status updates are readable and editable | `sheets_projects.py`: every field type incl. iteration, items, status updates editable; views and workflows read only (GitHub has no API to change them; worth saying so in the PRD). |
 | GH-R-046 | Must | Every relationship (star, watch level, follow, subscribe, react, block, sponsor, pin) on a You page and in... | Star, watch level, follow, subscribe, react, sponsor, pin and block (`resource_specs_user`) each exist in their own places; no single You page holding them, and batch only where the multi-row sheet has the field. Needs a closer look. |
 | GH-R-053 | Must | Filters can be saved as searches and pinned as nodes | Save Search (`github_workbench_actions.py:158`), Saved Searches node in the tree (`workbench_tree.py:186`); `test_the_filter_builder`... saves one, `test_go_lists_pins_favorites_and_saved_searches`. A saved search is a row in that node, not a node of its own. |
-| GH-R-063 | Must | Every object with an access list has an Access page with Add, Change Role, Remove and pending invitations | Access pages with Add..., Change Role..., Remove (`github_workbench_tools.py:459`); `test_an_access_change_is_previewed_sent_and_recorded`. Pending invitations are not on the Access page (repository invitations are a separate list). |
 | GH-R-093 | Must | Every key is rebindable, and the rebinding follows into menus, the reference, Shift+F1 and the Key Describer | `bound_keys` puts the person's bindings over the defaults and the menu shows the rebound key (`tests/unit/ui/test_github_workbench_requirement_checks.py::test_a_rebound_key_is_the_one_the_menu_shows`); the generated reference is defaults by design; Shift+F1 and the Key Describer not checked. |
 | GH-R-106 | Must | Help and Learning in the tree, with every node of D11 | Help and Learning has Start Here, Do Something, The Guide, Words, Keys, What Changed, Ask a Person (`workbench_tree.py:287`); D11's Tutorials and Tips nodes are missing. |
 | GH-R-107 | Must | Take Me There and Walk Me Through It on every help topic and task; Do It where the answer is one command | Take Me There on Do Something tasks; no Walk Me Through, no Do It. |
@@ -131,7 +130,7 @@ Of the 100 live requirements, 67 are met, 25 are partly met and 8 are not met. G
 | GH-R-060 | Must | Met | Account > GitHub Permissions lists every scope the Workbench can use, what each unlocks, and whether you... | `test_github_permissions_lists_every_scope_and_adds_the_missing_in_one_step`, `test_every_scope_the_prd_names_is_in_the_catalogue`, `test_the_three_ways_to_add_missing_scopes` |
 | GH-R-061 | Must | Met | The viewer fields of Appendix F.1 are fetched with each object and drive greying with reasons | `test_a_load_reads_the_object_and_its_viewer_fields`, `test_an_optional_viewer_read_that_fails_leaves_the_rest` |
 | GH-R-062 | Must | Met | Every write command and editable field declares its requirement and tier; GATE-GITHUB-PERM fails on one... | GATE-GITHUB-PERM: `test_every_write_command_declares_a_requirement_and_a_tier`, `test_every_editable_field_has_a_write_with_requirement_and_tier` |
-| GH-R-063 | Must | Partly | Every object with an access list has an Access page with Add, Change Role, Remove and pending invitations | Access pages with Add..., Change Role..., Remove (`github_workbench_tools.py:459`); `test_an_access_change_is_previewed_sent_and_recorded`. Pending invitations are not on the Access page (repository invitations are a separate list). |
+| GH-R-063 | Must | Met | Every object with an access list has an Access page with Add, Change Role, Remove and pending invitations | Repository and organization Access pages list People, Teams and Pending invitations (`sheets_repo.py`, `sheets_orgs.py`) with Add..., Change... and Remove; on Pending invitations, Remove cancels the invitation and Change... changes the role a repository invitation offers (`access_invitations.py`, `github_workbench_invitations.py`); `tests/unit/core/github_workbench/test_access_invitations.py`. Team invitations are shown on the organization's page, where GitHub cancels them. |
 | GH-R-064 | Must | Met | Rulesets and branch protection expose every rule and setting GitHub offers, with a plain-words Summary page | `rulesets.py` every rule and a Summary page; `test_a_ruleset_reads_as_one_plain_sentence`, `test_a_ruleset_sheet_edits_rules_and_sends_the_whole_ruleset_back`, `test_classic_protection_reads_through_the_same_summary` |
 | GH-R-065 | Must | Met | Tier 2 changes preview in words; tier 3 adds typed confirmation; self-lockout is refused | Tier 2 preview, TypedConfirmDialog for tier 3 (`github_workbench_tier2.py:337`), `test_removing_your_own_admin_role_is_refused`, `test_destructive_writes_are_tier_3`... |
 | GH-R-066 | Must | Met | Read Only, Organize and Full per account; Safe Mode makes every account Read Only | `permissions.py:145`; `test_account_levels_and_safe_mode`, `test_safe_mode_and_read_only_lock_every_field_of_every_sheet`, `test_the_account_level_is_kept_and_read_only_locks_every_field` |

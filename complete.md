@@ -96,12 +96,11 @@ The endpoint count is not the whole job. These rows from the Workbench delivery 
 
 #### Requirement audits
 
-Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against the code and tests, and the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. Of the 100 live ids, 67 are met, 25 partly met and 8 not met. What it found, the Musts first:
+Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against the code and tests, and the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. Of the 100 live ids, 68 are met, 24 partly met and 8 not met. What it found, the Musts first:
 
 - [ ] **GH-R-002, needs a Windows check:** every Workbench dialog uses `ShowModal()`, which in wx disables every top-level window, the editor included. Try it before acting: if the editor is blocked, the fix is window-modal or modeless dialogs throughout the Workbench.
 - [ ] **GH-R-010:** no counts after node names. A native tree speaks its item text, so a count there is always announced; decide whether the Alt+number readouts are the answer and say so in the PRD.
 - [ ] **GH-R-035:** New... on the remaining pickers (issue type, branch).
-- [ ] **GH-R-063:** pending invitations on the Access page.
 - [ ] **GH-R-106, 107, 108, 117, 119 (help):** Tutorials and Tips nodes; Walk Me Through and Do It; Why? on automatic behaviours; Report a Help Problem; D20's timed sessions.
 - [ ] **GH-R-113 and 083 (sound):** Workbench results through `action_feedback`, as the editors do.
 - [ ] **GH-R-131:** conditional requests (ETag) on item lists and sheet reloads.
@@ -109,6 +108,7 @@ Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against t
 - [ ] **Shoulds and Mays:** Alt+Enter on a GitHub reference in a document (036), access templates (068), real permission evidence for the role views (069, the row above), team review requests in Needs My Attention (143), tutorials (105), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116), plain-language batches (086) and Ask How (118).
 - [x] **Built but untested, now tested (2026-11-18):** Switch to Editor (006), "has none" and Me (052), Or groups (054), no letter as a command (092), rebinding in the menus (093), the access matrix and bulk access (068, 142) and the role views (069), in `tests/unit/ui/test_github_workbench_requirement_checks.py`.
 - [x] **GH-R-004 (2026-11-18):** the window now keeps its size and the tree pane's width per account, with the place.
+- [x] **GH-R-063 (2026-11-18):** Remove on an Access page's Pending invitations cancels the invitation, and Change... changes the role a repository invitation offers. (The audit first missed that the list was already there.)
 - [ ] **PRD fixes:** GH-R-045, project views and workflows are read-only because GitHub has no API to change them; GH-R-004, columns and filters are not in 3.1's list.
 
 ### 1.4 Then: documentation as good as WordPress's

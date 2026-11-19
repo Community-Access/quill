@@ -46,6 +46,7 @@ from quill.core.github.permissions import (
     missing_scopes,
     scope_rows,
 )
+from quill.ui.github_workbench_invitations import GitHubWorkbenchInvitationsMixin
 
 __all__ = ["GitHubWorkbenchToolsMixin"]
 
@@ -69,7 +70,7 @@ _TABLE_SCOPES = {
 }
 
 
-class GitHubWorkbenchToolsMixin:
+class GitHubWorkbenchToolsMixin(GitHubWorkbenchInvitationsMixin):
     """Filter Builder, permissions, history and access, for the GitHub provider."""
 
     items: Any
@@ -463,6 +464,9 @@ class GitHubWorkbenchToolsMixin:
 
         def act(spec: Any, verb: str, row: str) -> None:
             scope = _TABLE_SCOPES.get(target.kind)
+            if spec.key == "invitations" and scope in ("repository", "organization"):
+                self.act_on_invitation(scope, state["ident"], verb, row, target.title())
+                return
             if scope is None or spec.key not in (
                 "collaborators",
                 "teams",
