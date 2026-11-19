@@ -44,6 +44,36 @@ def _rows(key: str, render: Any) -> Any:
 # -- environments and deployments -------------------------------------------------
 
 
+def _listed(source: str, key: str, render: Any) -> Any:
+    """GitHub's list under *source*, as the table field *key*."""
+
+    def extract(data: Mapping[str, Any]) -> dict[str, Value]:
+        return {key: tuple(render(row) for row in lst(data, source) if isinstance(row, Mapping))}
+
+    return extract
+
+
+def _counted(key: str, count_key: str, render: Any) -> Any:
+    """A list's rows and GitHub's ``total_count`` for it (the page holds the first 30)."""
+
+    def extract(data: Mapping[str, Any]) -> dict[str, Value]:
+        rows = tuple(render(row) for row in lst(data, key) if isinstance(row, Mapping))
+        return {key: rows, count_key: int(data.get("total_count") or len(rows))}
+
+    return extract
+
+
+def _custom_rule(raw: Mapping[str, Any]) -> str:
+    state = "on" if raw.get("enabled", True) else "off"
+    return f"{dig(raw, 'app', 'slug') or 'an app'}, {state}"
+
+
+def _deployment_line(raw: Mapping[str, Any]) -> str:
+    who = dig(raw, "creator", "login") or "someone"
+    sha = str(raw.get("sha") or "")[:7]
+    return f"{raw.get('ref', '')}, commit {sha}, by {who}, {when(raw.get('created_at'))}"
+
+
 def _environment(data: Mapping[str, Any]) -> dict[str, Value]:
     found: dict[str, Value] = {
         "name": str(data.get("name") or ""),
@@ -126,6 +156,13 @@ ENVIRONMENT = SheetDef(
                 ed("prevent_self_review", "Prevent self-review", _K.CHECK),
                 ed("wait_timer", "Wait timer in minutes", _K.NUMBER, "0 to 43200."),
                 ed("admins_bypass", "Allow administrators to bypass", _K.CHECK),
+                ro(
+                    "custom_rules",
+                    "Custom protection rules",
+                    _K.TABLE,
+                    "GitHub Apps that must approve each deployment. Protection Rules... "
+                    "on its row adds or removes one.",
+                ),
             ),
             page(
                 "branches",
@@ -136,13 +173,34 @@ ENVIRONMENT = SheetDef(
                     _K.CHOICE,
                     choices=("all branches", "protected branches", "selected branches and tags"),
                 ),
+                ro(
+                    "branch_policies",
+                    "Chosen branches and tags",
+                    _K.TABLE,
+                    "Branch Policies... on its row adds or removes one.",
+                ),
             ),
-            page("secrets", "Secrets", ro("secrets", "Secrets", _K.TABLE, "Names only.")),
-            page("variables", "Variables", ro("variables", "Variables", _K.TABLE)),
+            page(
+                "secrets",
+                "Secrets",
+                ro("secret_count", "How many", _K.NUMBER),
+                ro("secrets", "Secrets", _K.TABLE, "Names only."),
+            ),
+            page(
+                "variables",
+                "Variables",
+                ro("variable_count", "How many", _K.NUMBER),
+                ro("variables", "Variables", _K.TABLE),
+            ),
             page(
                 "deployments",
                 "Deployments",
-                ro("deployments_note", "Deployments", help="The Deployments node lists them."),
+                ro(
+                    "deployments",
+                    "Newest deployments",
+                    _K.TABLE,
+                    "Ref, commit, who and when. Deployments... on its row adds each one's state.",
+                ),
             ),
         ),
     ),
@@ -150,13 +208,37 @@ ENVIRONMENT = SheetDef(
         Read("/repos/{repo}/environments/{name}", _environment),
         Read(
             "/repos/{repo}/environments/{name}/secrets",
-            _rows("secrets", lambda r: str(r.get("name", ""))),
+            _counted("secrets", "secret_count", lambda r: str(r.get("name", ""))),
             optional=True,
         ),
         Read(
             "/repos/{repo}/environments/{name}/variables",
-            _rows("variables", lambda r: f"{r.get('name', '')} = {r.get('value', '')}"),
+            _counted(
+                "variables",
+                "variable_count",
+                lambda r: f"{r.get('name', '')} = {r.get('value', '')}",
+            ),
             optional=True,
+        ),
+        Read(
+            "/repos/{repo}/environments/{name}/deployment_protection_rules",
+            _listed("custom_deployment_protection_rules", "custom_rules", _custom_rule),
+            optional=True,
+        ),
+        Read(
+            "/repos/{repo}/environments/{name}/deployment-branch-policies",
+            _listed(
+                "branch_policies",
+                "branch_policies",
+                lambda r: f"{r.get('name', '')}, {r.get('type') or 'branch'}",
+            ),
+            optional=True,
+        ),
+        Read(
+            "/repos/{repo}/deployments",
+            _listed("items", "deployments", _deployment_line),
+            optional=True,
+            query=lambda ident: {"environment": ident["name"], "per_page": "10"},
         ),
     ),
     {
@@ -304,6 +386,7 @@ SECRET = SheetDef(
                 ed(
                     "secret_value",
                     "New value",
+                    _K.SECRET,
                     help="Write-only: GitHub never shows a secret's value, and neither "
                     "does QUILL. Type a new one to replace it; leave it empty to keep it.",
                 ),

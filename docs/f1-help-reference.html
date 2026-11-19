@@ -6400,7 +6400,7 @@ one.</p>
 every repository’s vulnerable dependencies in one list.</p>
 <p><strong>organization: Secret Scanning Alerts.</strong> Secret
 Scanning Alerts: secrets found in any repository. The secret itself is
-never shown here.</p>
+never asked for, so it is never shown here.</p>
 <p><strong>organization: Security Advisories.</strong> Security
 Advisories: the repository advisories across this organization.</p>
 <p><strong>organization: Recent Events.</strong> Recent Events: the
@@ -6783,6 +6783,9 @@ per file.</p>
 allows.</p>
 <p><strong>Why Can’t I Merge?.</strong> Whether it can merge, or each
 reason it cannot, for the commit it is at.</p>
+<p><strong>Merge Selected.</strong> Merge the selected pull requests one
+at a time, each checked on its own, after a preview of which will merge
+and which will not.</p>
 <p><strong>Auto-Merge.</strong> Have it merge itself when it can, or
 turn that off.</p>
 <p><strong>Reviews.</strong> Read, change, dismiss, submit or delete a
@@ -6811,6 +6814,9 @@ request itself once it is ready, and how.</p>
 request once its checks and reviews allow.</p>
 <p><strong>Turn Off Agent Merge.</strong> Stop Copilot merging this pull
 request.</p>
+<p><strong>Dependency Review.</strong> What this pull request changes in
+the dependencies: each one added or removed, its licence, and its known
+vulnerabilities.</p>
 <p><strong>Dependabot Commands.</strong> On a Dependabot pull request:
 rebase, recreate, merge, ignore a version, and more.</p>
 <p><strong>Jobs and Logs.</strong> The run’s jobs, steps and logs.</p>
@@ -6853,6 +6859,9 @@ counts.</p>
 changes.</p>
 <p><strong>Upload Asset.</strong> Add a file to the release.</p>
 <p><strong>React.</strong> Add or remove a reaction.</p>
+<p><strong>Release Evidence.</strong> Its commit, the checks that
+passed, where it deployed, whether it is immutable, and each file’s
+attestations.</p>
 <p><strong>Delete Release.</strong> Delete it, and its tag if you
 say.</p>
 <p><strong>Compare With Previous.</strong> Compare it with the one
@@ -6861,8 +6870,6 @@ before: the previous tag or release, or a commit’s parent.</p>
 branch: commits each way, files, any open pull request.</p>
 <p><strong>GitHub’s Release Notes.</strong> The notes GitHub writes from
 the changes since another tag.</p>
-<p><strong>Download.</strong> Download the file in your browser.</p>
-<p><strong>Delete Asset.</strong> Remove the file from the release.</p>
 <p><strong>Commits.</strong> The branch’s commits.</p>
 <p><strong>Compare Branches.</strong> Commits ahead and behind, and
 changed files.</p>
@@ -6927,7 +6934,7 @@ about this repository as read.</p>
 <p><strong>Set a Custom Property.</strong> Give one of the
 organization’s custom properties a value here.</p>
 <p><strong>Compare Dependencies.</strong> Which dependencies changed
-between two branches, tags or commits, and their known
+between two branches, tags or commits, their licences, and their known
 vulnerabilities.</p>
 <p><strong>SBOM Report.</strong> Ask GitHub to build a software bill of
 materials report, and read it.</p>
@@ -6967,6 +6974,9 @@ here may do, and what may start it.</p>
 organization’s agent secrets this repository may use (names only).</p>
 <p><strong>Agent Variables from the Organization.</strong> The
 organization’s agent variables this repository may use.</p>
+<p><strong>Allow a Blocked Secret.</strong> When push protection stopped
+your push, let that one secret through: give the placeholder id git push
+printed and say why.</p>
 <p><strong>Open.</strong> Select the person’s node in the tree.</p>
 <p><strong>Follow or Unfollow.</strong> Follow them, or stop.</p>
 <p><strong>Find Issues with Label.</strong> Issues and pull requests
@@ -7013,7 +7023,6 @@ Searches.</p>
 <p><strong>Unpin Node.</strong> Take its node away; the search
 stays.</p>
 <p><strong>Remove Saved Search.</strong> Forget it on this device.</p>
-<p><strong>Delete Deployment.</strong> Only an inactive one.</p>
 <p><strong>Open in Editor.</strong> Open the file in the editor, to read
 or edit.</p>
 <p><strong>Who Owns This?.</strong> Its code owners, from
@@ -7105,6 +7114,9 @@ sign-off.</p>
 activity in your feed.</p>
 <p><strong>Unfollow Organization.</strong> Stop seeing this organization
 in your feed.</p>
+<p><strong>Security Overview.</strong> Open Dependabot, code scanning
+and secret scanning alerts in every repository, counted by severity,
+worst first.</p>
 <p><strong>Open.</strong> Open the settings dialog for this; it asks
 before saving.</p>
 <p><strong>Edit Watch.</strong> Change what the watch looks at.</p>
@@ -7201,6 +7213,11 @@ deleted, after the preview.</p>
 topic, in every repository, after the preview.</p>
 <p><strong>Open Repository.</strong> Select the repository’s node in the
 tree.</p>
+<p><strong>Download.</strong> Download the file in your browser.</p>
+<p><strong>Attestations.</strong> The file’s digest and GitHub’s
+attestations for it, such as build provenance.</p>
+<p><strong>Delete Asset.</strong> Remove the file from the release.</p>
+<p><strong>Delete Deployment.</strong> Only an inactive one.</p>
 <p><strong>Open Section.</strong> List the categories in this
 section.</p>
 <p><strong>Find Discussions in Category.</strong> The repository’s
@@ -7213,6 +7230,8 @@ runner off its machine.</p>
 domain’s health.</p>
 <p><strong>Rebuild.</strong> Ask GitHub for a fresh build.</p>
 <p><strong>Turn Off Pages.</strong> Stop publishing, after asking.</p>
+<p><strong>Deployments.</strong> Its newest deployments, each with its
+latest state.</p>
 <p><strong>Secrets.</strong> Add, change or delete its secrets.</p>
 <p><strong>Variables.</strong> Add, change or delete them.</p>
 <p><strong>Branch Policies.</strong> Which branches and tags may

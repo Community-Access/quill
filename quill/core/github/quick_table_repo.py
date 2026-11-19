@@ -23,6 +23,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from quill.core.github.quick_actions import Ask, Quick, QuickError, bulleted, call, plain
+from quill.core.github.quick_table_security import dependency_changes
 
 __all__ = ["REPO_QUICK"]
 
@@ -56,19 +57,6 @@ def _stars(data: Any, _ctx: dict[str, str]) -> str:
         if isinstance(r, Mapping)
     ]
     return bulleted(lines, plain(data))
-
-
-def _compare(data: Any, _ctx: dict[str, str]) -> str:
-    rows = []
-    for d in data if isinstance(data, list) else ():
-        if isinstance(d, Mapping):
-            vulns = d.get("vulnerabilities") or []
-            rows.append(
-                f"{d.get('change_type')}: {d.get('name')} {d.get('version')} "
-                f"({d.get('ecosystem')}, {d.get('manifest')})"
-                + (f", {len(vulns)} known vulnerabilities" if vulns else "")
-            )
-    return bulleted(rows, "No dependency changed between those two.")
 
 
 def _sbom(api: Any, ctx: dict[str, str]) -> str:
@@ -210,11 +198,11 @@ REPO_QUICK: tuple[Quick, ...] = (
                 Ask("value", "Its value (empty clears it):", optional=True)),
           needs=("repo",), live="needs Jeff: an organization with a custom property"),
     Quick("compare_dependencies", "Compare Dependencies...", ("repository",), _REPO,
-          "Which dependencies changed between two branches, tags or commits, and their "
-          "known vulnerabilities.",
+          "Which dependencies changed between two branches, tags or commits, their "
+          "licences, and their known vulnerabilities.",
           ("GET /repos/{owner}/{repo}/dependency-graph/compare/{basehead}",),
           lambda api, ctx: call(api, "GET", "/repos/{repo}/dependency-graph/compare/{bh}", ctx),
-          _compare, report=True,
+          lambda data, _ctx: dependency_changes(data), report=True,
           asks=(Ask("bh", "Compare, as base...head (such as main...my-branch):"),),
           needs=("repo",)),
     Quick("sbom_report", "SBOM Report", ("repository",), _REPO,

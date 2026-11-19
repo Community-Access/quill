@@ -49,6 +49,25 @@ _OPEN_WEB = _a("open_on_github", "Open on GitHub", help="Open the item in your b
 
 #: Row types added for PRD 14.2 and 14.3, merged into the Workbench's table.
 ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
+    # Moved from item_actions.py to keep it under the module size budget.
+    "release_asset": (
+        _default("download", "Download", "Download the file in your browser."),
+        _COPY_LINK,
+        _a(
+            "asset_attestations",
+            "Attestations...",
+            help="The file's digest and GitHub's attestations for it, such as build provenance.",
+        ),
+        _a("delete_asset", "Delete Asset...", _D, "push", "Remove the file from the release."),
+        _PROPERTIES,
+    ),
+    "deployment": (
+        _default("open", "Open", "Read it in the details pane."),
+        _a("delete_deployment", "Delete Deployment...", _D, "push", "Only an inactive one."),
+        _COPY_LINK,
+        _OPEN_WEB,
+        _PROPERTIES,
+    ),
     # Repository > Discussions > Categories (quill/core/github/discussion_categories.py).
     "discussion_section": (
         _default("open_section", "Open Section", "List the categories in this section."),
@@ -84,6 +103,11 @@ ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
     ),
     "environment": (
         _default("show_details", "Show Details", "The environment's protection rules."),
+        _a(
+            "environment_deployments",
+            "Deployments...",
+            help="Its newest deployments, each with its latest state.",
+        ),
         _a(
             "environment_secrets", "Secrets...", _W, "sign_in", "Add, change or delete its secrets."
         ),
