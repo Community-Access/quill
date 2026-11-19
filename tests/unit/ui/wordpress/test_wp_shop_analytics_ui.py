@@ -122,6 +122,16 @@ def test_a_custom_range_asks_for_two_dates_and_refuses_one_it_cannot_read(shop) 
     assert shop.provider.analytics_period(SITE) == held
 
 
+def test_a_custom_range_into_the_future_stops_today(shop) -> None:
+    _open(shop, "shop_analytics_revenue")
+    shop.answers.choices += [8]
+    shop.answers.texts += ["2026-11-15", "2026-12-31"]
+    shop.provider.do_analytics_range(_ref("shop_analytics_revenue"), shop.rows[0])
+    assert shop.provider.analytics_period(SITE).end == date(2026, 11, 19)
+    assert any(s.startswith("The range ends after today, so it ends today: 2026-11-15 to 2026")
+               for s in shop.said)  # fmt: skip
+
+
 def test_a_cancelled_choice_changes_nothing(shop) -> None:
     _open(shop, "shop_analytics_revenue")
     asked = len(shop.asked)

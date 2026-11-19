@@ -122,10 +122,10 @@ class WorkbenchShopAnalyticsCommands:
                 return None
             days.append(day)
         first, last = min(days), max(days)
-        if last > today:
-            self.say(f"The range ends after today. {first.isoformat()} to {today.isoformat()} is "
-                     "used instead.")  # fmt: skip
-            last = max(first, today)
+        if last > today:  # nothing is sold tomorrow: the range stops today
+            first, last = min(first, today), today
+            self.say(f"The range ends after today, so it ends today: {first.isoformat()} to "
+                     f"{last.isoformat()}.")  # fmt: skip
         return wsp.Period("custom", held.interval, first, last)
 
     def do_analytics_interval(self, ref: Any, row: WbRow | None) -> None:
