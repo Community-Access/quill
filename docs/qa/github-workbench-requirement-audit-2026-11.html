@@ -251,7 +251,7 @@ href="../Product Requirement Documents and Specifications/github-workbench-prd.m
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 71 are met, 21 are partly met and 8 are
+<p>Of the 100 live requirements, 73 are met, 19 are partly met and 8 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -266,15 +266,15 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>61</td>
-<td>13</td>
+<td>62</td>
+<td>12</td>
 <td>1</td>
 <td>75</td>
 </tr>
 <tr>
 <td>Should</td>
-<td>10</td>
-<td>8</td>
+<td>11</td>
+<td>7</td>
 <td>5</td>
 <td>23</td>
 </tr>
@@ -446,15 +446,6 @@ behaviour</td>
 <code>explain_result</code>); no Why? on automatic behaviours.</td>
 </tr>
 <tr>
-<td>GH-R-113</td>
-<td>Must</td>
-<td>Sounds go through the shared action-feedback channels; a failure or
-a count is always spoken</td>
-<td>Every outcome is spoken, so failures and counts always are; but the
-Workbench plays no sounds and ignores the <code>action_feedback</code>
-setting (only diff hearing has sounds, through sound events).</td>
-</tr>
-<tr>
 <td>GH-R-119</td>
 <td>Must</td>
 <td>One source for every help surface (D19), and the measures of
@@ -511,17 +502,6 @@ access templates not built.</td>
 (<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_why_cant_they_names_the_role_needed_and_who_can_change_it</code>
 and others), but they read a fixed ability table, not GitHub’s real
 permissions (the open complete.md row).</td>
-</tr>
-<tr>
-<td>GH-R-083</td>
-<td>Should</td>
-<td>Watches with one-sentence results and sounds through the shared
-feedback channels</td>
-<td>Watches with one-sentence results
-(<code>test_a_first_check_learns_then_only_new_things_are_said</code>,
-<code>test_add_edit_pause_check_and_remove_a_watch</code>); no sounds at
-all, nothing in the GitHub Workbench uses
-<code>action_feedback</code>.</td>
 </tr>
 <tr>
 <td>GH-R-088</td>
@@ -1220,14 +1200,15 @@ never blocking</td>
 <tr>
 <td>GH-R-083</td>
 <td>Should</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Watches with one-sentence results and sounds through the shared
 feedback channels</td>
 <td>Watches with one-sentence results
 (<code>test_a_first_check_learns_then_only_new_things_are_said</code>,
-<code>test_add_edit_pause_check_and_remove_a_watch</code>); no sounds at
-all, nothing in the GitHub Workbench uses
-<code>action_feedback</code>.</td>
+<code>test_add_edit_pause_check_and_remove_a_watch</code>), and their
+results now play through the shared feedback channels like every
+Workbench result (<code>outcome_feedback.py</code>;
+<code>test_outcome_feedback.py</code>).</td>
 </tr>
 <tr>
 <td>GH-R-084</td>
@@ -1528,12 +1509,15 @@ passes (its announcement service, which brailles); GATE-BRAILLE in
 <tr>
 <td>GH-R-113</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Sounds go through the shared action-feedback channels; a failure or
 a count is always spoken</td>
-<td>Every outcome is spoken, so failures and counts always are; but the
-Workbench plays no sounds and ignores the <code>action_feedback</code>
-setting (only diff hearing has sounds, through sound events).</td>
+<td>Results go through <code>action_feedback</code>
+(<code>quill/core/github/outcome_feedback.py</code> plan,
+<code>quill/ui/github_workbench_feedback.py</code>): task-complete tone
+for a change that landed, error tone for a failure, a failure or a count
+always spoken, a bare acknowledgement by the setting
+(<code>test_outcome_feedback.py</code>).</td>
 </tr>
 <tr>
 <td>GH-R-114</td>
