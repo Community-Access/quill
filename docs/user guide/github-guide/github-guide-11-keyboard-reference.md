@@ -172,6 +172,11 @@ no AI menu, so here they belong to the Go row.
 | `Ctrl+Shift+F1` | Search all of help |
 | `Ctrl+Alt+P` | Practice on GitHub |
 | `Alt+Shift+F1` | Every key in the window |
+| `Ctrl+Alt+K` | Key Describer: keys say what they do instead of doing it, until `Escape` |
+
+If you rebind a key, the menus, `Shift+F1`, `Alt+Shift+F1` and the Key
+Describer all say your key. This chapter shows the keys the Workbench starts
+with.
 
 ### New Pull Request
 

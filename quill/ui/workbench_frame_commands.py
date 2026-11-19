@@ -304,6 +304,7 @@ class WorkbenchCommandsMixin:
             "guide_chapter": self.guide_chapter,
             "search_help": self.search_help,
             "keys": self.show_keys,
+            "key_describer": self.toggle_key_describer,
             "open_address": self.open_address,
             "repeat_result": self.repeat_result,
             "explain_result": self.explain_result,
@@ -411,6 +412,8 @@ class WorkbenchCommandsMixin:
             return
         plain = not event.HasAnyModifiers()
         on_lists = focused in (self.tree, self.list)
+        if self.describe_key(event):
+            return
         if code == wx.WXK_ESCAPE and plain and self.stop_walk():
             return
         if code == wx.WXK_ESCAPE and plain:

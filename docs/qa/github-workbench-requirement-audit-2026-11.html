@@ -251,7 +251,7 @@ href="../Product Requirement Documents and Specifications/github-workbench-prd.m
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 75 are met, 17 are partly met and 8 are
+<p>Of the 100 live requirements, 76 are met, 16 are partly met and 8 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -266,8 +266,8 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>64</td>
-<td>10</td>
+<td>65</td>
+<td>9</td>
 <td>1</td>
 <td>75</td>
 </tr>
@@ -409,17 +409,6 @@ Searches node in the tree (<code>workbench_tree.py:186</code>);
 <code>test_the_filter_builder</code>… saves one,
 <code>test_go_lists_pins_favorites_and_saved_searches</code>. A saved
 search is a row in that node, not a node of its own.</td>
-</tr>
-<tr>
-<td>GH-R-093</td>
-<td>Must</td>
-<td>Every key is rebindable, and the rebinding follows into menus, the
-reference, Shift+F1 and the Key Describer</td>
-<td><code>bound_keys</code> puts the person’s bindings over the defaults
-and the menu shows the rebound key
-(<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_a_rebound_key_is_the_one_the_menu_shows</code>);
-the generated reference is defaults by design; Shift+F1 and the Key
-Describer not checked.</td>
 </tr>
 <tr>
 <td>GH-R-106</td>
@@ -1287,14 +1276,15 @@ command</td>
 <tr>
 <td>GH-R-093</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Every key is rebindable, and the rebinding follows into menus, the
 reference, Shift+F1 and the Key Describer</td>
-<td><code>bound_keys</code> puts the person’s bindings over the defaults
-and the menu shows the rebound key
-(<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_a_rebound_key_is_the_one_the_menu_shows</code>);
-the generated reference is defaults by design; Shift+F1 and the Key
-Describer not checked.</td>
+<td><code>bound_keys</code> puts the person’s bindings over the
+defaults; the menus, Shift+F1, Alt+Shift+F1 and the Workbench’s Key
+Describer (Help, Ctrl+Alt+K) all say the bound key
+(<code>test_a_rebound_key_is_the_one_the_menu_shows</code>,
+<code>test_github_workbench_key_describer.py</code>); the published
+keyboard reference lists the defaults by design.</td>
 </tr>
 </tbody>
 </table>

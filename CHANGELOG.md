@@ -2,6 +2,14 @@
 
 ## 1.0.0
 
+### GitHub Workbench: a Key Describer, and your keys everywhere (2026-11-19)
+
+Help > Key Describer (`Ctrl+Alt+K`) in the GitHub Workbench makes each key
+say what it does here instead of doing it, until you press `Escape`. A key
+that has a command but cannot run it now says why, and a key with nothing
+behind it says so. A key you have rebound is the one the menus, `Shift+F1`,
+`Alt+Shift+F1` and the Key Describer all say. This meets GH-R-093.
+
 ### GitHub Workbench: Why? for what it did on its own (2026-11-19)
 
 **Why?** explains what the GitHub Workbench did without a key from you: why a
