@@ -70,6 +70,7 @@ def test_the_preview_before_saving_says_hidden_never_the_value() -> None:
         ),
         confirm_tier=lambda tier, words, name: previews.append(words) or False,
         _say=lambda _t: None,
+        _save_refused=lambda what, tier: False,  # the level gate allows (tested elsewhere)
     )
     target = Target("secret", {"repo": "o/r", "name": "TOKEN"})
     changes = [FieldChange("secret_value", "New value", "", VALUE)]
@@ -86,6 +87,7 @@ def test_a_batch_preview_of_secrets_says_hidden(monkeypatch: pytest.MonkeyPatch)
             host, target, changes
         ),
         confirm_tier=lambda tier, words, name: previews.append(words) or False,
+        _save_refused=lambda what, tier: False,  # the level gate allows (tested elsewhere)
     )
     items = [BatchItem("TOKEN", {"repo": "o/r", "name": n}, {}) for n in ("A", "B")]
     changes = [FieldChange("secret_value", "New value", "", VALUE)]
