@@ -39,6 +39,20 @@ from packaging.version import InvalidVersion, Version
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 
+#: Packages that must NOT be installed, with why. A requirement check only asks
+#: whether what is needed is there; it never noticed what should be gone.
+#: ``github-copilot-sdk`` 1.x and ``microsoft-copilot-sdk`` 2.x both install a
+#: top-level ``copilot`` package, so with both present PyInstaller bundles a mix
+#: of the two, and uninstalling either one deletes files the other needs. The
+#: committed runtime inventory still lists the 1.x distribution for exactly this
+#: reason (complete.md, "Copilot SDK 2.0 runtime verification").
+FORBIDDEN: dict[str, str] = {
+    "github-copilot-sdk": (
+        "the Copilot SDK 1.x, superseded by microsoft-copilot-sdk 2.0.1; both install "
+        "the same 'copilot' package"
+    ),
+}
+
 
 def _expand(group: str, optional: dict[str, list[str]], seen: set[str]) -> list[Requirement]:
     """Every requirement in ``group``, following ``quill[other]`` references.
@@ -122,6 +136,9 @@ def check(groups: list[str], python: str | None) -> list[str]:
             continue  # a local/editable version string we cannot compare
         if not ok:
             problems.append(f"{requirement.name}: installed {have}, needs {requirement.specifier}")
+    for name, why in FORBIDDEN.items():
+        if name in installed:
+            problems.append(f"{name}: installed {installed[name]}, must be removed ({why})")
     return problems
 
 
@@ -151,6 +168,12 @@ def main() -> int:
             f'Fix with: "{target}" -m pip install -e ".[{",".join(groups)}]"',
             file=sys.stderr,
         )
+        forbidden = [name for name in FORBIDDEN if any(p.startswith(f"{name}:") for p in problems)]
+        if forbidden:
+            print(
+                f'and first: "{target}" -m pip uninstall -y {" ".join(forbidden)}',
+                file=sys.stderr,
+            )
         return 1
     print(f"Build environment satisfies pyproject [{', '.join(groups)}].")
     return 0
