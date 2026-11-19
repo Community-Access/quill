@@ -18,7 +18,7 @@ from tests.unit.ui.wordpress.test_wp_workbench_lists import bench as _bench  # n
 
 def test_open_wordpress_workbench_is_first_in_tools_wordpress_with_a_key() -> None:
     rows = TOOLS_ROWS[1].rows  # type: ignore[union-attr]
-    assert rows[0] == ("wordpress.workbench", "Open WordPress Workbenc&h...", "cmd_workbench")
+    assert rows[0] == ("wordpress.workbench", "Open WordPress Workbench...", "cmd_workbench")
     assert LAYER_KEYS["H"] == "wordpress.workbench"
 
 

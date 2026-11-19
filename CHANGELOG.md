@@ -89,9 +89,9 @@ Review items 15 and 16:
   so do More and its rows, and Show Only and Hide.
 - Menu letters match the WordPress-layer keys where they can: File >
   WordPress > Publish or Update is P, New Page G and Plugin Fields U; Tools >
-  WordPress > Open WordPress Workbench is H (it had no letter at all), and
-  Check Before Publishing is K. Menu History and Site Health Check gave those
-  letters up and have none, rather than a duplicate.
+  WordPress > Check Before Publishing is K, Site Health Check is I and Plugin
+  Extras P. Open WordPress Workbench keeps its WordPress key, H, and no letter,
+  because every letter of its name belongs to a row with no key.
 
 ### WordPress: every editor command has a key or a reason (2026-11-18)
 
