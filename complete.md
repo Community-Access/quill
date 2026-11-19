@@ -248,7 +248,7 @@ Every item from the review of 2026-11-14 is fixed (the walkthrough is `docs/desi
 
 ## Part 3. Other work
 
-- [ ] **Copilot SDK 2.0 runtime verification:** build the QuillVille Runtime from a clean Windows environment, regenerate `standalone/runtime/runtime-inventory.json` with `python scripts/check_runtime_inventory.py <dist-dir> --write`, and verify the resulting inventory contains Microsoft Copilot SDK 2.0.1 but no `github-copilot-sdk` 1.x package. The committed inventory still names the legacy 1.x distribution; keep its notice entry until this build is verified.
+- [ ] **Copilot SDK 2.0 runtime verification (needs a Windows build):** the source is on SDK 2 everywhere (`pyproject.toml` and `uv.lock` pin `microsoft-copilot-sdk==2.0.1`; `copilot_runtime.py` pins its native runtime 1.0.114 by SHA-256; every SDK name and option QUILL uses was checked against 2.0.1 on 2026-11-19, and the 195 Copilot tests pass with it installed). What still names 1.x is the committed `standalone/runtime/runtime-inventory.json`, made from a build whose Python still had `github-copilot-sdk` installed; both packages install the same `copilot` folder. `scripts/check_build_env.py` now refuses that (2026-11-19), so the next runtime build stops and says so. On the build machine: `py -m pip uninstall -y github-copilot-sdk`, `py -m pip install -e ".[runtime,packaging]"`, build the runtime, run `python scripts/check_runtime_inventory.py <dist-dir> --write`, confirm the inventory names `microsoft-copilot-sdk` and not `github-copilot-sdk`, then drop the legacy notices entry (`github-copilot-sdk` in `quill/data/third_party/components.json`) and regenerate the notices.
 
 ### 3.1 Earshot parity, what is left
 

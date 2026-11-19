@@ -24,6 +24,13 @@ Two things were wrong, and both are fixed everywhere they occurred.
 - Settings for This Podcast's speed box now moves in steps of 0.05 with two
   decimals, matching Speed Up and Speed Down; it used to step 0.1 and show
   1.25x as 1.2.
+### Builds: the Copilot SDK 1.x can no longer slip into the runtime (2026-11-19)
+
+The Copilot SDK 1.x (`github-copilot-sdk`) and 2.0 (`microsoft-copilot-sdk`)
+both install a folder called `copilot`, so a build machine with both installed
+shipped a mix of the two. The build's environment check now stops a runtime
+build when the 1.x package is present, and says how to remove it. The code was
+already on 2.0.1; this makes sure what is built is too.
 
 ### GitHub Workbench: pin a saved search as a place in the tree (2026-11-19)
 
