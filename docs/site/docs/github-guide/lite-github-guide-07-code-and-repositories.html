@@ -560,6 +560,37 @@ percent, then “Uploaded” with the file’s name and size.</li>
 <li><strong>Delete Asset</strong>, inside a release’s file list, removes
 a file after asking. Its download count goes with it.</li>
 </ul>
+<h3 id="release-evidence-and-attestations">Release evidence and
+attestations</h3>
+<p><strong>Release Evidence…</strong>, on a release’s context menu,
+gathers what vouches for a release, and changes nothing. You hear one
+sentence, such as “v1.0: Immutable; 4 of 4 checks pass; 1 deployments; 2
+of 2 files attested.”, and a list follows with a line each:</p>
+<ul>
+<li>whether it is a draft or a pre-release, and when it was
+published;</li>
+<li>whether it is <strong>immutable</strong>: once GitHub has made a
+release immutable, its tag and files cannot change, so what you check
+now is what people download;</li>
+<li>the commit its tag points at (a draft whose tag does not exist yet
+has none);</li>
+<li>the checks on that commit, and which passed, failed or are still
+running;</li>
+<li>each deployment of that commit: which environment, its latest state,
+when and by whom;</li>
+<li>each file, by its digest, with GitHub’s <strong>artifact
+attestations</strong> for it, such as build provenance or a software
+bill of materials.</li>
+</ul>
+<p>QUILL reads GitHub’s attestation records but does not check their
+signatures; the list says so, and <code>gh attestation verify</code> is
+the tool that does. A part GitHub would not show you is said as “Could
+not read”, never as none, so a missing permission is never mistaken for
+missing evidence.</p>
+<p><strong>Attestations…</strong>, on one file in a release’s file list,
+is the same for that file alone. The release’s
+<strong>Properties…</strong> page says whether it is immutable, and a
+file’s says its digest.</p>
 <p>In QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub &gt; Create
 Release…</strong> makes a new release: a tag, an optional title, your
 own notes or GitHub’s, and whether to publish it now or keep it as a
@@ -611,8 +642,10 @@ that help people find it. The box starts with the current ones. Separate
 them with spaces or commas, or leave it empty to remove them all. Topics
 are lower-case letters, numbers and hyphens, up to 20 of them.</li>
 <li><strong>Create Repository from This Template…</strong> makes a new
-repository from a template repository. Give it a name, an optional
-description and organization, and choose whether it is private.</li>
+repository from a template repository. It opens Create Repository with
+the template filled in: give it a name, an optional description and
+owner, choose private or public, and whether to copy all of the
+template’s branches or only its default one.</li>
 </ul>
 <p><strong>Repository forks</strong>, in <strong>View:</strong>, lists a
 repository’s forks. In GitHub Items, <strong>View Upstream</strong>
@@ -684,9 +717,19 @@ scope too (Chapter 1).</li>
 All of them need you to be signed in, and offer to sign you in if you
 are not.</p>
 <ul>
-<li><strong>Create Repository…</strong>: a name, a description, private
-or public, and an optional organization. QUILL then offers to set up a
-folder on your computer that stays in step with it.</li>
+<li><strong>Create Repository…</strong> asks everything GitHub can set
+when a repository is made: the owner (blank for your own account, or an
+organization), the name, a description and a website, and private or
+public. (Internal repositories are a GitHub Enterprise Cloud feature,
+left to GitHub.) Then how it starts: from a <strong>template</strong>
+(owner/name), with or without all of the template’s branches; or fresh,
+with a README, a <strong>.gitignore template</strong> (Python, Node and
+the rest, or any name GitHub lists) and a <strong>licence</strong>. When
+GitHub would refuse a combination, such as a README as well as a
+template, the dialog stays open and the Problem box at its top says why,
+before anything is sent. QUILL then offers to set up a folder on your
+computer that stays in step with it. With the GitHub Workbench in use,
+this is the same dialog.</li>
 <li><strong>Fork Repository…</strong>, into your account or an
 organization.</li>
 <li><strong>Rename Repository…</strong>. GitHub forwards the old
@@ -717,15 +760,62 @@ things.</p>
 <p><strong>Transfer Repository…</strong> moves a repository to another
 person or to an organization, with its issues, pull requests, wiki,
 stars and watchers. It is on the GitHub Workbench’s Repository menu and
-on Repository Actions. QUILL Lite asks for the new owner, then asks you
-to type the repository’s full name, because you may lose access to it
-and only the new owner can move it back.</p>
+on Repository Actions. QUILL Lite asks for the new owner, then its name
+there (keep it as it is to leave it unchanged), then, for an
+organization, the teams there that should have access, by name,
+separated by commas. Last it asks you to type the repository’s full
+name, because you may lose access to it and only the new owner can move
+it back; the question says where it will land, such as “to
+community-access as community-access/notes, giving Docs Writers access”.
+A team the organization does not have is named before anything
+moves.</p>
 <p>Moving it to an organization you can create repositories in happens
 at once, and you hear the new name, such as “Transferred jeff/notes; it
 is now community-access/notes. The old address redirects.” Moving it to
 a person sends them a request they have a day to accept, and QUILL Lite
 says so. Only an owner or administrator of the repository can transfer
 it.</p>
+<h3 id="repository-settings-in-properties">Repository settings in
+Properties</h3>
+<p><code>Alt+Enter</code> on a repository opens its Properties, a page
+per part of GitHub’s settings. Besides the name, description, website,
+topics and default branch on General:</p>
+<ul>
+<li><strong>Features</strong> turns issues, projects, the wiki and
+discussions on or off, and whether web commits need a sign-off.
+<strong>Sponsor button links</strong> reads the links from the
+repository’s FUNDING.yml; whether the Sponsor button shows is a setting
+GitHub’s API cannot change, so the field only reads and says so; the
+sheet’s link to GitHub goes to the page that does.</li>
+<li><strong>Merging</strong> has the merge methods, auto-merge,
+suggesting branch updates and deleting head branches, and the default
+message of a squash merge and of a merge commit, in the words of
+GitHub’s own settings page: default message, pull request title, pull
+request title and commit details (squash only), or pull request title
+and description. GitHub keeps each as a title and a message that must be
+sent together, so each is one choice.</li>
+<li><strong>Pages</strong> is the website: its address, its status, the
+latest build (with GitHub’s message when it failed), how it is built
+(from a branch, or by a workflow), the branch and folder it is built
+from, such as <code>main /docs</code>, the custom domain, and Enforce
+HTTPS. Pages has to be turned on first, below.</li>
+<li><strong>Danger Zone</strong> changes the visibility and archives the
+repository.</li>
+</ul>
+<h3 id="github-pages">GitHub Pages</h3>
+<p><strong>Repository &gt; GitHub Pages</strong> in the GitHub Workbench
+lists the site and its recent builds. <code>Ctrl+N</code> there is
+<strong>Turn On Pages…</strong>: from a branch (which branch, and the
+top of it or <code>/docs</code>), or by a GitHub Actions workflow. On
+the site’s row, <strong>Check Site</strong> says how the latest build
+went and whether a custom domain points at GitHub Pages;
+<strong>Rebuild</strong> asks GitHub for a fresh build; <strong>Turn Off
+Pages…</strong> stops publishing the site after asking, and leaves the
+repository as it is. Everything else about the site is on the Pages page
+of the repository’s Properties. A site deployed by a workflow is
+deployed by the workflow’s <code>actions/deploy-pages</code> step, which
+has an identity a person does not, so QUILL Lite does not deploy one
+itself.</p>
 <h2 id="the-wiki">The wiki</h2>
 <p>A wiki is a repository’s own pages of documentation. GitHub keeps
 them as a git repository of their own, with no API for the pages, so
@@ -849,9 +939,15 @@ order.</p>
 GitHub</strong>.</li>
 <li><strong>Delete Package Version…</strong> lists the package’s
 versions, newest first, with their tags, such as “sha256:bbb, tagged
-latest, 1.2, updated 2026-11-12”. Choose one and QUILL Lite asks before
-deleting it. GitHub will not delete a package’s only version, or one
-downloaded more than 5,000 times, and QUILL Lite says so.</li>
+latest, 1.2, updated 2026-11-12”. Choose one, then type the package’s
+name to delete it (a version’s own name is often a long digest, so the
+package’s name is what you type). GitHub will not delete a package’s
+only version, or one downloaded more than 5,000 times, and QUILL Lite
+says so.</li>
+<li><strong>Show Versions</strong> lists every version in a window to
+read.</li>
+<li><strong>Restore Package Version…</strong> lists the versions deleted
+in the last 30 days and brings back the one chosen.</li>
 <li><strong>Delete Package…</strong> deletes the package and every
 version, after you type its name.</li>
 </ul>
@@ -862,8 +958,11 @@ deleting needs <code>delete:packages</code>; Sign In with GitHub asks
 for both, and an account signed in before November 2026 is told to sign
 in again rather than seeing an empty list.</p>
 <p>An organization’s packages are under <strong>Organizations
-&gt;</strong> the organization <strong>&gt; Packages</strong>, read and
-deleted the same way.</p>
+&gt;</strong> the organization <strong>&gt; Packages</strong>, and a
+repository’s own under <strong>Repository &gt; Packages</strong>: the
+packages its owner published from it, read and deleted the same way.
+Another person’s packages can be read, and their versions listed, but
+only they can change them.</p>
 <p><code>Ctrl+N</code> in My Packages, or in an organization’s Packages,
 brings back a package deleted in the last 30 days: QUILL Lite asks its
 type and name, and says “Restored the npm package left-pad.”, or that
@@ -915,6 +1014,8 @@ team access</strong>.</li>
 Label…</strong> on the context menu.</li>
 <li><strong>GitHub Pages and builds</strong>, for a repository with a
 website.</li>
+<li><strong>Repository packages</strong>, the packages published from
+the repository.</li>
 <li><strong>Repository health snapshot (opt-in)</strong>, a set of
 counts that stays on this computer and does not rank anybody.</li>
 </ul>

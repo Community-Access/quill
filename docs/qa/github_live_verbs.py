@@ -306,6 +306,79 @@ def merge_and_delete_branch(run: Any) -> str:
     return f"merged #{pull.number}, deleted {branch}"
 
 
+def _throwaway_pull(run: Any, name: str) -> tuple[int, str]:
+    """A one-file pull request into the default branch, on a branch of its own."""
+    import base64
+
+    branch = f"quill-live-{name}-{int(time.time())}"
+    base = run.ids["default_branch"]
+    sha = run.rest("GET", f"/repos/{run.repo}/git/ref/heads/{base}")["object"]["sha"]
+    run.rest("POST", f"/repos/{run.repo}/git/refs", {"ref": f"refs/heads/{branch}", "sha": sha})
+    run.rest(
+        "PUT",
+        f"/repos/{run.repo}/contents/merged/{branch}.md",
+        {"message": TAG, "content": base64.b64encode(TAG.encode()).decode(), "branch": branch},
+    )
+    pull = run.items.create_pull_request(run.repo, f"{TAG} {name}", TAG, branch, base)
+    return int(pull.number), branch
+
+
+def merge_selected(run: Any) -> str:
+    """Merge Selected... on two fresh pull requests: preview, then each re-checked and merged."""
+    from quill.core.github import batch_merge as bm
+    from quill.core.github.merge_automation import enqueue_pull_request
+    from quill.core.github.merge_readiness import load_readiness
+
+    made = [_throwaway_pull(run, f"batch-{n}") for n in (1, 2)]
+    targets = [bm.MergeTarget(run.repo, number) for number, _branch in made]
+    try:
+        readings = [(t, load_readiness(run.api, run.repo, t.number)) for t in targets]
+        plans = bm.plan(readings, "squash")
+        _expect(all(p.action == "merge" for p in plans), bm.preview(plans))
+
+        def enqueue(repo: str, number: int, head: str) -> str:
+            return enqueue_pull_request(run.items, repo, number, expected_head=head)
+
+        results = bm.run(run.api, plans, enqueue=enqueue)
+    finally:
+        for _number, branch in made:
+            if run.exists(f"/repos/{run.repo}/branches/{branch}") is not None:
+                run.rest("DELETE", f"/repos/{run.repo}/git/refs/heads/{branch}")
+    said = bm.summary(results)
+    # Both touch different files, so the second still merges after the first.
+    _expect([r.status for r in results] == ["Merged", "Merged"], bm.results_text(results))
+    return said
+
+
+def release_evidence(run: Any) -> str:
+    """Release Evidence... and Attestations... on the test release: reads only."""
+    from quill.core.github.release_evidence import load_release_evidence
+
+    found = load_release_evidence(run.api, run.repo, RELEASE_TAG)
+    _expect(bool(found.sha) and found.checks is not None, "no commit or checks for the release")
+    return found.sentence
+
+
+def environment_sheet_and_deployments(run: Any) -> str:
+    """An environment's sheet (counts, custom rules, branch policies) and its Deployments..."""
+    from quill.core.github.environments import fetch_environments
+    from quill.core.github.release_evidence import environment_deployments
+    from quill.core.github.sheet_engine import load
+    from quill.core.github.sheets_deploy import ENVIRONMENT
+
+    rows = fetch_environments(run.api, run.repo)
+    if not rows:
+        raise NotHere("the test repository has no environments")
+    name = rows[0].key
+    values = load(run.api, ENVIRONMENT, {"repo": run.repo, "name": name}).values
+    found = environment_deployments(run.api, run.repo, name, limit=5)
+    return (
+        f"{name}: {values.get('secret_count', 0)} secrets, {values.get('variable_count', 0)} "
+        f"variables, {len(values.get('custom_rules') or ())} custom rules; "
+        f"{len(found)} recent deployments"
+    )
+
+
 def revert_merged(run: Any) -> str:
     """Revert Pull Request on a freshly merged pull request, then close the revert."""
     import base64
@@ -1040,6 +1113,7 @@ VERBS: dict[str, Scenario | str] = {
     "mark_done": "needs Jeff: would mark one of your real notifications done",
     "mark_read": "needs Jeff: would mark one of your real notifications read",
     "merge": merge_and_delete_branch,
+    "merge_selected": merge_selected,
     "revert_pull": revert_merged,
     "workflow_state": workflow_state,
     "new_tag": tags_made_and_deleted,
@@ -1392,6 +1466,13 @@ FEATURES: dict[str, Scenario | str] = {
     "Viewed files in a pull request review (PRD 22.1)": review_viewed_files,
     "Open Patch in Editor: the whole change as one diff": open_patch,
     "Why Can't I Merge?, for the exact commit": why_cant_merge,
+    "Release Evidence: commit, checks, deployments, immutable, attestations (GX10)": (
+        release_evidence
+    ),
+    "An environment's sheet and its Deployments... (GX10)": environment_sheet_and_deployments,
+    "Merge Selected... with a branch that requires a merge queue": (
+        "not here: a merge queue needs an organization repository's ruleset"
+    ),
     "Runners and Export Software Bill of Materials (PRD 14.2)": runners_and_sbom,
     "Commit Activity as tables (PRD 14.2)": commit_activity,
     "My Packages, or the permission it needs said in words (PRD 14.2)": my_packages,

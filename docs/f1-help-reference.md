@@ -3250,6 +3250,8 @@ Control coverage: 390 audited sites (390 helped).
 
 **Why Can't I Merge?.** Whether it can merge, or each reason it cannot, for the commit it is at.
 
+**Merge Selected.** Merge the selected pull requests one at a time, each checked on its own, after a preview of which will merge and which will not.
+
 **Auto-Merge.** Have it merge itself when it can, or turn that off.
 
 **Reviews.** Read, change, dismiss, submit or delete a review.
@@ -3328,6 +3330,8 @@ Control coverage: 390 audited sites (390 helped).
 
 **React.** Add or remove a reaction.
 
+**Release Evidence.** Its commit, the checks that passed, where it deployed, whether it is immutable, and each file's attestations.
+
 **Delete Release.** Delete it, and its tag if you say.
 
 **Compare With Previous.** Compare it with the one before: the previous tag or release, or a commit's parent.
@@ -3335,10 +3339,6 @@ Control coverage: 390 audited sites (390 helped).
 **Compare With Default.** Compare it with the default branch: commits each way, files, any open pull request.
 
 **GitHub's Release Notes.** The notes GitHub writes from the changes since another tag.
-
-**Download.** Download the file in your browser.
-
-**Delete Asset.** Remove the file from the release.
 
 **Commits.** The branch's commits.
 
@@ -3517,8 +3517,6 @@ Control coverage: 390 audited sites (390 helped).
 **Unpin Node.** Take its node away; the search stays.
 
 **Remove Saved Search.** Forget it on this device.
-
-**Delete Deployment.** Only an inactive one.
 
 **Open in Editor.** Open the file in the editor, to read or edit.
 
@@ -3718,6 +3716,14 @@ Control coverage: 390 audited sites (390 helped).
 
 **Open Repository.** Select the repository's node in the tree.
 
+**Download.** Download the file in your browser.
+
+**Attestations.** The file's digest and GitHub's attestations for it, such as build provenance.
+
+**Delete Asset.** Remove the file from the release.
+
+**Delete Deployment.** Only an inactive one.
+
 **Open Section.** List the categories in this section.
 
 **Find Discussions in Category.** The repository's discussions in this category.
@@ -3733,6 +3739,8 @@ Control coverage: 390 audited sites (390 helped).
 **Rebuild.** Ask GitHub for a fresh build.
 
 **Turn Off Pages.** Stop publishing, after asking.
+
+**Deployments.** Its newest deployments, each with its latest state.
 
 **Secrets.** Add, change or delete its secrets.
 

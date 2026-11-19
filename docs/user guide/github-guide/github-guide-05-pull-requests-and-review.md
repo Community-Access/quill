@@ -352,8 +352,9 @@ and press `Ctrl+Shift+Enter`, or choose **Merge...** from its context menu.
 QUILL first asks GitHub whether the pull request can merge. If it cannot, you
 hear why, the same answer as **Why Can't I Merge?** below, and nothing else
 happens. If it can, QUILL asks how to merge: Squash and merge, Merge commit,
-or Rebase. Then it asks you to type the pull request's number to confirm, not
-just press Yes, and says what will happen: that it merges into the base
+or Rebase, offering only the ways the repository allows. Then it asks you to
+type the pull request's number to confirm, not just press Yes, and says what
+will happen: that it merges into the base
 branch, as of the commit QUILL checked, for example "as of commit 3f9a2c1",
 and that this changes the branch for everyone. You hear "Merged #42" and the
 start of the new commit.
@@ -363,6 +364,41 @@ between the check and your typing the number, GitHub refuses, nothing is
 merged, and QUILL says so: "Somebody pushed to #42 after commit 3f9a2c1 was
 checked, so nothing was merged." Check again and you are merging what you
 have actually read.
+
+When the base branch merges only through a merge queue, Merge... does not try
+to go around it: you hear that the pull request can join the queue, and **Add
+to or Remove from Merge Queue...** puts it there.
+
+### Merging several at once
+
+To merge more than one pull request, select them in the list (hold `Shift` or
+`Ctrl` with the arrow keys), then choose **Merge Selected...** from the
+context menu or the Item menu. It needs at least two open pull requests
+selected; anything else in the selection is left out.
+
+1. QUILL asks once how they should merge: Squash and merge, Merge commit, or
+   Rebase. Where a repository does not allow that way, QUILL uses one it does,
+   and the preview says which.
+2. It asks GitHub about each pull request on its own, with the same question
+   as **Why Can't I Merge?**. One that cannot merge does not hold up the
+   others.
+3. The preview lists every pull request: "#42: will merge into main by squash
+   and merge, commit 3f9a2c1.", "#43: will join the merge queue for main" when
+   its branch requires a queue, or "#44: will not merge." and the reasons.
+   The first line sums it up, such as "Of 3 pull requests: merge 2; 1 will
+   not." Press Enter to go on, or Escape to change nothing, and then type how
+   many will go in.
+4. QUILL merges them one at a time, about a second apart. Just before each
+   one it asks GitHub again, because merging one can make the next conflict or
+   put it behind its base. A pull request that can no longer merge, or that
+   has new commits since the preview, is left alone, and says why: you agreed
+   to merge the commit you were shown, not a later one. A failure stops
+   nothing else.
+
+At the end you hear one sentence with the counts, such as "Merged 2 of 3 pull
+requests, 1 not merged.", and the results list has a line for each pull
+request. **Copy Results** copies them, and **Retry Failed** (`F8`) starts again
+with only the ones that failed, preview and all.
 
 ### Why Can't I Merge?
 
