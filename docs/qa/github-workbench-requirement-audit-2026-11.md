@@ -1,14 +1,14 @@
 # GitHub Workbench requirement audit, November 2026
 
-Checked 2026-11-18 against main, updated the same day for the follow-up pull request. This is the record of the complete.md 1.3 requirement audit: every id in Part E of the GitHub Workbench PRD (`docs/Product Requirement Documents and Specifications/github-workbench-prd.md`), with the code and the test behind each verdict.
+Checked 2026-11-18 against main, updated the same day for the follow-up pull request. This is the record of the complete.md 1.3 requirement audit: every id in Part E of [the GitHub Workbench PRD](<../Product Requirement Documents and Specifications/github-workbench-prd.md>), with the code and the test behind each verdict.
 
 ## Summary
 
-Of the 100 live requirements, 68 are met, 24 are partly met and 8 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 70 are met, 22 are partly met and 8 are not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
-| Must | 58 | 16 | 1 | 75 |
+| Must | 60 | 14 | 1 | 75 |
 | Should | 10 | 8 | 5 | 23 |
 | May | 0 | 0 | 2 | 2 |
 
@@ -32,7 +32,6 @@ Of the 100 live requirements, 68 are met, 24 are partly met and 8 are not met. G
 | Id | Strength | Requirement | Evidence and what remains |
 | --- | --- | --- | --- |
 | GH-R-010 | Must | The tree is a native `wx.TreeCtrl`, at most four levels deep, loading lazily, with counts after names that... | Native wx.TreeCtrl (`workbench_frame.py:148`), `test_no_node_is_more_than_four_levels_deep`; rows load on selection. No counts after node names anywhere. |
-| GH-R-035 | Must | Every picker ends with New... that creates and uses the thing | New Label..., New Milestone..., New Project... (`sheets_items.py`; `github_workbench_properties.py:386`; `test_new_project_creates_one`...). Pickers for people/teams have Add, not New; other pickers (issue type, branch) have none. |
 | GH-R-045 | Must | Projects (version 2): every field type, views, items, workflows and status updates are readable and editable | `sheets_projects.py`: every field type incl. iteration, items, status updates editable; views and workflows read only (GitHub has no API to change them; worth saying so in the PRD). |
 | GH-R-046 | Must | Every relationship (star, watch level, follow, subscribe, react, block, sponsor, pin) on a You page and in... | Star, watch level, follow, subscribe, react, sponsor, pin and block (`resource_specs_user`) each exist in their own places; no single You page holding them, and batch only where the multi-row sheet has the field. Needs a closer look. |
 | GH-R-053 | Must | Filters can be saved as searches and pinned as nodes | Save Search (`github_workbench_actions.py:158`), Saved Searches node in the tree (`workbench_tree.py:186`); `test_the_filter_builder`... saves one, `test_go_lists_pins_favorites_and_saved_searches`. A saved search is a row in that node, not a node of its own. |
@@ -41,7 +40,6 @@ Of the 100 live requirements, 68 are met, 24 are partly met and 8 are not met. G
 | GH-R-107 | Must | Take Me There and Walk Me Through It on every help topic and task; Do It where the answer is one command | Take Me There on Do Something tasks; no Walk Me Through, no Do It. |
 | GH-R-108 | Must | Shift+F9 Explain That for every result, and Why? on every automatic behaviour | Shift+F9 Explain That (`workbench_window_menu.py`, frame `explain_result`); no Why? on automatic behaviours. |
 | GH-R-113 | Must | Sounds go through the shared action-feedback channels; a failure or a count is always spoken | Every outcome is spoken, so failures and counts always are; but the Workbench plays no sounds and ignores the `action_feedback` setting (only diff hearing has sounds, through sound events). |
-| GH-R-117 | Must | Ask a Person and Report a Help Problem, never sending a secret | Ask a Person node (mail to support, nothing sent by QUILL); no Report a Help Problem, and nothing "attached" about what you were doing. |
 | GH-R-119 | Must | One source for every help surface (D19), and the measures of D20 | One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the generated reference (GATE-GITHUB-HELP, `build_help_reference`); D20's measures (timed find-the-answer sessions) not done. |
 | GH-R-131 | Must | Conditional requests (ETag) for every repeated read (`conditional_requests.py`), and secondary rate limits... | Secondary limits respected in `rest_transport.py` (`secondary_wait_seconds`, `test_a_secondary_limit_stops_every_later_request_with_one_sentence`); ETag only in `explore.py`'s conditional read, `explore_extra_views`, `repo_activity` and `repo_insights`, not every repeated read (`items_provider` lists and sheets reload in full) |
 | GH-R-150 | Must | Across Repositories has a place for every kind in the 22.11 table, a row per name with its variants and... | Labels, Milestones, Topics, Rules and Branch Protection by name, and the Fleet; every other kind is a decided cell with a reason in `across_scope_matrix.py` (`test_no_cell_is_blank`, `test_the_decided_cells`), not yet a place. |
@@ -98,7 +96,7 @@ Of the 100 live requirements, 68 are met, 24 are partly met and 8 are not met. G
 | GH-R-032 | Must | Met | An editable field is editable exactly when the user may change it, and read-only with a reason otherwise | `test_fields_lock_with_a_reason_when_your_role_is_too_low`; sheet shows "Read only: reason" (`sheet.py:199`) |
 | GH-R-033 | Must | Met | A multiple selection opens one sheet with Mixed values and three-state check lists, saving only touched fields | `test_several_rows_open_one_sheet_with_three_state_lists`; `properties.py` Mixed; `test_a_plan_sends_only_changed_fields` |
 | GH-R-034 | Must | Met | Before saving, someone else's changes are detected and the user chooses per field; after saving, the... | `test_someone_else_s_change_stops_the_save_until_you_choose`, `test_save_verifies_and_reports_only_what_the_re_read_proves` |
-| GH-R-035 | Must | Partly | Every picker ends with New... that creates and uses the thing | New Label..., New Milestone..., New Project... (`sheets_items.py`; `github_workbench_properties.py:386`; `test_new_project_creates_one`...). Pickers for people/teams have Add, not New; other pickers (issue type, branch) have none. |
+| GH-R-035 | Must | Met | Every picker ends with New... that creates and uses the thing | New Label..., New Milestone..., New Project..., New Issue Type... and New Branch... (`github_workbench_create.py`; `test_new_project_creates_one`..., `test_github_workbench_picker_new.py`). Pickers for people and teams have Add..., since a person or team cannot be made from a sheet. |
 | GH-R-036 | Should | Not met | Alt+Enter on a GitHub reference in a document opens its sheet | No Alt+Enter on a GitHub reference in the editor (keymap has none); decision 23 recommends it. |
 
 ### E5. Editing
@@ -186,7 +184,7 @@ Of the 100 live requirements, 68 are met, 24 are partly met and 8 are not met. G
 | GH-R-109 | Should | Not met | Examples from the person's own data and situation | No examples drawn from the person's own data (D14). |
 | GH-R-115 | Should | Not met | Key cards in print and braille, the guide as a book, the spoken tour | No key cards, book edition of the guide beyond the EPUBs, or spoken tour (D15). The guide's EPUB siblings exist. |
 | GH-R-116 | Should | Not met | QUILLBert and QUILLBee tips at the right moment, with an option for plain help | No QUILLBert or QUILLBee tips in the GitHub Workbench (D16). |
-| GH-R-117 | Must | Partly | Ask a Person and Report a Help Problem, never sending a secret | Ask a Person node (mail to support, nothing sent by QUILL); no Report a Help Problem, and nothing "attached" about what you were doing. |
+| GH-R-117 | Must | Met | Ask a Person and Report a Help Problem, never sending a secret | Ask a Person node (mail to support, nothing sent by QUILL); Report a Help Problem on every topic opens a mail with the place and the last thing said, scrubbed of secrets first (`workbench_help.help_report_mailto`, `redact_text_for_bundle`; `test_github_workbench_help_problem.py`). |
 | GH-R-118 | May | Not met | Ask How through the family's AI, grounded only in the help catalogue | (May) no Ask How. |
 | GH-R-119 | Must | Partly | One source for every help surface (D19), and the measures of D20 | One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the generated reference (GATE-GITHUB-HELP, `build_help_reference`); D20's measures (timed find-the-answer sessions) not done. |
 

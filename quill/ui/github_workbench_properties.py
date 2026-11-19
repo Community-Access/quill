@@ -45,11 +45,11 @@ from quill.core.github.sheet_engine import (
 from quill.core.workbench.properties import (
     FieldChange,
     FieldKind,
-    FieldSpec,
     list_states,
     merge_values,
     say_value,
 )
+from quill.ui.github_workbench_create import GitHubWorkbenchCreateMixin
 from quill.ui.github_workbench_history import GitHubWorkbenchHistoryMixin
 
 __all__ = ["PAGE_FOR_VERB", "GitHubWorkbenchPropertiesMixin"]
@@ -75,7 +75,13 @@ PAGE_FOR_VERB: dict[str, tuple[str, str]] = {
 _NOUNS = {"issue": "issues", "pull_request": "pull requests", "repository": "repositories"}
 
 
-class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
+NEVER_EMPTY = {
+    "base": "A pull request always merges into a branch, so Into branch was left as it is.",
+}
+"""Picker fields that may not be set to "(none)", with what is said when someone tries."""
+
+
+class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenchCreateMixin):
     """Properties for :class:`~quill.ui.github_workbench_window.GitHubWorkbenchProvider`."""
 
     items: Any
@@ -238,7 +244,7 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
             on_apply=apply if sheet.writes else None,
             locked=locked_fields(sheet, self._context(target, loaded)),
             choices={k: list(v) for k, v in choices.items()},
-            on_create=lambda spec: self._create(target, spec, choices),
+            on_create=lambda spec: self._create(target, spec, choices, state["loaded"].values),
             on_table=self.table_action(target, state) if hasattr(self, "table_action") else None,
             on_reload=reload,
             open_web=(lambda: self._browse(url)) if url else None,
@@ -302,6 +308,13 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
         view: Any,
         close: bool,
     ) -> None:
+        kept = [c for c in changes if c.after not in (None, "") or c.key not in NEVER_EMPTY]
+        for change in changes:
+            if change not in kept:
+                self._say(NEVER_EMPTY[change.key])
+        if not kept:
+            return
+        changes = kept
         tier = self.tier_of(target, changes)
         words = f"{target.title()}: " + "; ".join(
             f"{c.label} to {say_value(c.after)}" for c in changes
@@ -379,93 +392,6 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin):
             if answer == wx.ID_YES:
                 theirs.add(change.key)
         return frozenset(theirs)
-
-    def _create(
-        self, target: Target, spec: FieldSpec, choices: dict[str, dict[str, object]]
-    ) -> str | None:
-        """New Label..., New Milestone...: make it on GitHub and use it at once (GH-R-035)."""
-        name = self._ask_text(spec.create.rstrip("."), f"{spec.create.rstrip('.')}: name")  # type: ignore[attr-defined]
-        if not name:
-            return None
-        repo = target.ident.get("repo", "")
-        if spec.key == "projects":
-            return self._create_project(repo, name, choices)
-        path, body = {
-            "labels": (f"/repos/{repo}/labels", {"name": name, "color": "ededed"}),
-            "milestone": (f"/repos/{repo}/milestones", {"title": name}),
-        }.get(spec.key, ("", {}))
-        if not path:
-            choices.setdefault(spec.key, {})[name] = name
-            return name
-        api = self.github_api()
-        try:
-            answer = api.rest("POST", path, body=body)
-        except Exception as exc:  # noqa: BLE001
-            from quill.core.github.rest_transport import is_already_exists
-
-            if not is_already_exists(exc):
-                self._say(f"Could not create {name}: {exc}")
-                return None
-            # It is there already: use it, which is what the person wanted.
-            value = self._existing_choice(api, spec.key, repo, name)
-            if value is None:
-                self._say(f"{name} already exists, but GitHub did not say where to find it.")
-                return None
-            choices.setdefault(spec.key, {})[name] = value
-            self._say(f"{name} already exists; using it.")
-            return name
-        data = answer.data if isinstance(answer.data, dict) else {}
-        choices.setdefault(spec.key, {})[name] = data.get("number", name)
-        self._say(f"Created {name}.")
-        return name
-
-    def _create_project(
-        self, repo: str, name: str, choices: dict[str, dict[str, object]]
-    ) -> str | None:
-        """New Project...: a Project (version 2) owned by the repository's owner, linked to it.
-
-        Checked at once on the sheet, so OK adds the item to it. A title already
-        in the list is used rather than made twice (GitHub allows duplicates,
-        which nobody can tell apart by ear).
-        """
-        from quill.core.github.sheets_items import CREATE_PROJECT, PROJECT_OWNER_QUERY
-
-        known = choices.setdefault("projects", {})
-        if name in known:
-            self._say(f"{name} already exists; using it.")
-            return name
-        owner, _, short = repo.partition("/")
-        api = self.github_api()
-        try:
-            found = api.graphql(PROJECT_OWNER_QUERY, {"owner": owner, "name": short})
-            repository = found.get("repository") or {}
-            owner_id = str((repository.get("owner") or {}).get("id") or "")
-            made = api.graphql(
-                CREATE_PROJECT,
-                {"owner": owner_id, "title": name, "repository": repository.get("id")},
-            )
-        except Exception as exc:  # noqa: BLE001 - said, never raised into the sheet
-            self._say(f"Could not create {name}: {exc}")
-            return None
-        project = (made.get("createProjectV2") or {}).get("projectV2") or {}
-        if not project.get("id"):
-            self._say(f"Could not create {name}: GitHub did not say it was made.")
-            return None
-        known[name] = project["id"]
-        self._say(f"Created {name}.")
-        return name
-
-    @staticmethod
-    def _existing_choice(api: Any, key: str, repo: str, name: str) -> object | None:
-        """The value an existing label (its name) or milestone (its number) is chosen by."""
-        if key == "labels":
-            return name
-        answer = api.rest(
-            "GET", f"/repos/{repo}/milestones", query={"state": "all", "per_page": "100"}
-        )
-        rows = answer.data if isinstance(answer.data, list) else []
-        found = next((r for r in rows if isinstance(r, dict) and r.get("title") == name), None)
-        return found.get("number") if found else None
 
     # -- several at once -----------------------------------------------------------
 

@@ -100,7 +100,7 @@ Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against t
 
 - [ ] **GH-R-002, needs a Windows check:** every Workbench dialog uses `ShowModal()`, which in wx disables every top-level window, the editor included. Try it before acting: if the editor is blocked, the fix is window-modal or modeless dialogs throughout the Workbench.
 - [ ] **GH-R-010:** no counts after node names. A native tree speaks its item text, so a count there is always announced; decide whether the Alt+number readouts are the answer and say so in the PRD.
-- [ ] **GH-R-035:** New... on the remaining pickers (issue type, branch).
+- [x] **GH-R-035 (2026-11-18):** Issue type and Into branch are pickers now, with New Issue Type... and New Branch....
 - [ ] **GH-R-106, 107, 108, 117, 119 (help):** Tutorials and Tips nodes; Walk Me Through and Do It; Why? on automatic behaviours; Report a Help Problem; D20's timed sessions.
 - [ ] **GH-R-113 and 083 (sound):** Workbench results through `action_feedback`, as the editors do.
 - [ ] **GH-R-131:** conditional requests (ETag) on item lists and sheet reloads.

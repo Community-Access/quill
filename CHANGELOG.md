@@ -2,6 +2,15 @@
 
 ## 1.0.0
 
+### GitHub Workbench: pick an issue type or a branch from a list (2026-11-18)
+
+On an issue's sheet, Issue type was a text box you had to spell into; on a
+pull request's sheet, so was Into branch. Both are now lists of what GitHub
+has, and each ends with a button to make a new one, as Labels and Milestone
+already did: New Issue Type... for the organization and New Branch... from
+the branch the pull request merges into now. "(none)" clears an issue type,
+and is refused for Into branch, with QUILL saying why. This meets GH-R-035.
+
 ### GitHub Workbench: requirements checked, and the window keeps its size (2026-11-18)
 
 Every requirement in the GitHub Workbench PRD was checked against the code
