@@ -439,6 +439,20 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     ),
     "saved_search": (
         _default("run_search", "Run", "Run the saved search."),
+        _a(
+            "pin_search",
+            "Pin as Node",
+            _O,
+            "local",
+            "Give it a node of its own under Saved Searches.",
+        ),
+        _a(
+            "unpin_search",
+            "Unpin Node",
+            _O,
+            "local",
+            "Take its node away; it stays a saved search.",
+        ),
         _a("remove_search", "Remove Saved Search", _O, "", "Forget it on this device."),
         _PROPERTIES,
     ),

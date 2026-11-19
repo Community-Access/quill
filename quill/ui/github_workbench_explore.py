@@ -147,7 +147,13 @@ def load_explore(
         view,
         repo=instance if node.scope in (Scope.REPOSITORY, Scope.ORGANIZATION) else "",
         person=instance if node.scope is Scope.PERSON else "",
-        query=render(query) if node.scope is Scope.QUERY else "",
+        query=(
+            instance  # a saved search pinned as a node: its name is its query (GH-R-053)
+            if dict(node.preset).get("search") == "instance"
+            else render(query)
+            if node.scope is Scope.QUERY
+            else ""
+        ),
         repositories=repositories,
         categories=categories,
         limit=limit,

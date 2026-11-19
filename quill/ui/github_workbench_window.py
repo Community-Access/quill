@@ -66,7 +66,7 @@ from quill.ui.github_workbench_explore import (
 )
 from quill.ui.github_workbench_help import HELP_PREFIX, GitHubWorkbenchHelpMixin
 from quill.ui.github_workbench_import import GitHubWorkbenchImportMixin
-from quill.ui.github_workbench_loaders import LOCAL_PREFIXES, load_local
+from quill.ui.github_workbench_loaders import LOCAL_PREFIXES, load_local, saved_items_for
 from quill.ui.github_workbench_place import GitHubWorkbenchPlaceMixin
 from quill.ui.github_workbench_properties import PAGE_FOR_VERB, GitHubWorkbenchPropertiesMixin
 from quill.ui.github_workbench_tools import GitHubWorkbenchToolsMixin
@@ -171,6 +171,8 @@ class GitHubWorkbenchProvider(
         return f"{self.name} - {instance}" if instance else self.name
 
     def instances(self, template: str) -> Sequence[str]:
+        if template == "pinned_search":
+            return tuple(saved_items_for(self.items).pinned_searches or [])
         found = {
             "repository": self._repositories,
             "person": self._people,

@@ -228,10 +228,41 @@ class GitHubWorkbenchWritesMixin:
         saved.save()
         self._say(f"Saved the search {text}.")
 
+    def _search_pinned(self, row: object) -> bool:
+        return isinstance(row, ExploreRow) and row.key in (self._saved().pinned_searches or [])
+
+    def _fits_pin_search(self, row: object) -> bool:
+        return isinstance(row, ExploreRow) and not self._search_pinned(row)
+
+    def _fits_unpin_search(self, row: object) -> bool:
+        return self._search_pinned(row)
+
+    def _do_pin_search(self, _ref: Any, row: object, pinned: bool = True) -> None:
+        """Pin as Node: the saved search gets a node of its own under Saved Searches."""
+        assert isinstance(row, ExploreRow)
+        if self._saved().pin_search(row.key, pinned):
+            self.frame.rebuild_tree()
+        self._say(
+            f"Pinned {row.key} under Saved Searches."
+            if pinned
+            else f"{row.key} is no longer a node; it stays a saved search."
+        )
+
+    def _do_unpin_search(self, ref: Any, row: object) -> None:
+        self._do_pin_search(ref, row, pinned=False)
+
     def _do_remove_search(self, _ref: Any, row: object) -> None:
         assert isinstance(row, ExploreRow)
         saved = self._saved()
         saved.remove_search(row.key)
         saved.save()
         self._say("Saved search removed.")
+        self.frame.rebuild_tree()  # a pinned node goes with it
         self.frame.reload()
+
+
+#: The saved-search rows' verbs, for the actions mixin's table of native verbs.
+SEARCH_VERBS = {
+    verb: frozenset({"saved_search"})
+    for verb in ("run_search", "remove_search", "pin_search", "unpin_search")
+}

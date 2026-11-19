@@ -2874,6 +2874,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **organization: Custom Property Values.** Custom Property Values: every repository's custom properties in one list. Change a repository's on its Properties.
 
+**pinned_search: Saved search.** A saved search pinned as a node: its list is the search's results, read afresh each time. Unpin Node, on its row in Saved Searches, takes the node away.
+
 ### Every menu row
 
 **File > New Here....** Something new where you are: an issue in Issues, a saved search in Saved Searches.
@@ -3503,6 +3505,10 @@ Control coverage: 384 audited sites (384 helped).
 **Delete Cache.** Delete this Actions cache.
 
 **Run.** Run the saved search.
+
+**Pin as Node.** Give it a node of its own under Saved Searches.
+
+**Unpin Node.** Take its node away; it stays a saved search.
 
 **Remove Saved Search.** Forget it on this device.
 

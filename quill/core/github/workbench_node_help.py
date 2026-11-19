@@ -176,6 +176,10 @@ NODE_HELP: dict[str, str] = {
         "The Guide: the GitHub Workbench Guide's chapters. Ctrl+F1 opens the guide "
         "at the chapter for where you are."
     ),
+    "pinned_search:pinned_search": (
+        "A saved search pinned as a node: its list is the search's results, read afresh "
+        "each time. Unpin Node, on its row in Saved Searches, takes the node away."
+    ),
     ":help_tutorials": (
         "Tutorials: the GitHub lessons, each with where you are in it. Enter opens one; "
         "Walk Me Through It says it here, one step at a time."
