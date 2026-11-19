@@ -47,6 +47,11 @@ class WindowManager:
         self._last_focus: dict[str, Any] = {}
         #: Per window: the "default control" callable for a first visit.
         self._default_focus: dict[str, Any] = {}
+        #: Per window: what a hidden window does to come up to date when
+        #: Ctrl+number, Ctrl+Tab or the Window menu shows it again (Chris,
+        #: 2026-11-19: Ctrl+2 showed Now Playing empty while an episode played,
+        #: because only its own opener ever refreshed it).
+        self._on_show: dict[str, Any] = {}
 
     # -- identity ----------------------------------------------------------------
 
@@ -57,18 +62,25 @@ class WindowManager:
 
     # -- membership --------------------------------------------------------------
 
-    def register(self, frame: Any, title: str, *, focus: Any = None) -> None:
+    def register(self, frame: Any, title: str, *, focus: Any = None, on_show: Any = None) -> None:
         """Add (or refresh the title of) *frame* in the shared window list.
 
         *focus*, when given, is a zero-argument callable that puts keyboard
         focus on the window's default control (the favorites tree, say) --
         used the first time the window is reached by traversal, before there
         is a remembered control to return to.
+
+        *on_show*, when given, is a zero-argument callable run when
+        :meth:`activate` shows the window *from hidden*, so a window that
+        hides on close and stops updating while hidden comes back current
+        however it is reached, not only through its own command.
         """
         key = self.key_for(frame)
         self._frames[key] = frame
         if focus is not None:
             self._default_focus[key] = focus
+        if on_show is not None:
+            self._on_show[key] = on_show
         self._registry.register(key, title)
 
     def unregister(self, frame: Any) -> None:
@@ -78,6 +90,7 @@ class WindowManager:
         self._window_menus.pop(key, None)
         self._default_focus.pop(key, None)
         self._last_focus.pop(key, None)
+        self._on_show.pop(key, None)
         self._registry.unregister(key)
 
     def __len__(self) -> int:
@@ -111,6 +124,10 @@ class WindowManager:
                     iconize(False)
             except Exception:  # noqa: BLE001 - a dying window must not crash traversal
                 return None
+        try:
+            was_hidden = not frame.IsShown()
+        except Exception:  # noqa: BLE001 - treat an unreadable state as shown
+            was_hidden = False
         for method in ("Show", "Raise"):
             call = getattr(frame, method, None)
             if callable(call):
@@ -118,6 +135,12 @@ class WindowManager:
                     call()
                 except Exception:  # noqa: BLE001 - a dying window must not crash traversal
                     return None
+        on_show = self._on_show.get(key)
+        if was_hidden and callable(on_show):
+            try:
+                on_show()
+            except Exception:  # noqa: BLE001 - a stale window beats no window
+                pass
         self._focus_into(key, frame)
         # And again once the activation has settled. On wxMSW, raising a window
         # that is not already the foreground one hands it the focus *after* this

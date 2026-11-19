@@ -510,3 +510,47 @@ def test_empty_notes_disable_the_buttons_and_say_so(reader) -> None:
     assert not reader.links_btn.IsEnabled()
     assert not reader.copy_btn.IsEnabled()
     assert reader._move_span(backwards=False) is False
+
+
+def test_ctrl_2_brings_back_the_episode_that_started_while_it_was_hidden(host) -> None:
+    """Chris, 2026-11-19: Enter on a podcast or a Queue row played it, and Ctrl+2
+    showed Now Playing without it. Ctrl+2, Ctrl+Tab and the Window menu show a
+    hidden window through the shared window list, which never ran the window's
+    own show() -- the only thing that loads what is playing and starts the clock."""
+    from quill.ui.window_menu import WindowManager
+
+    host._windows = WindowManager(wx)
+    host._windows.register(host.frame, "QUILL Cast")  # window 1, as in the app
+    window = _open(host)
+    window.hide()  # hidden, as after any visit
+    assert not window.frame.IsShown()
+
+    # A different episode starts while the window is hidden.
+    later = SimpleNamespace(guid="ep2", title="Friday's episode", description="", audio_url="")
+    show = host._podcast_library.find_show("show")
+    first = show.find_episode
+    show.find_episode = lambda guid: later if guid == "ep2" else first(guid)
+    host._podcast_controller.state = PodcastPlaybackState(
+        PodcastPlayerState.PLAYING, "show", "ep2", "Friday's episode"
+    )
+
+    host._windows.activate(host._windows.key_for(window.frame))  # Ctrl+2
+
+    assert window.frame.IsShown()
+    assert window._episode.GetLabel() == "Friday's episode"
+    assert window._podcast.GetLabel() == "The Daily"
+    assert window._tick.IsRunning()
+    window.hide()
+
+
+def test_a_window_already_showing_is_not_reloaded_by_ctrl_number(host) -> None:
+    from quill.ui.window_menu import WindowManager
+
+    host._windows = WindowManager(wx)
+    window = _open(host)
+    loads: list[bool] = []
+    window.show = lambda *, focus=True: loads.append(focus)  # type: ignore[method-assign]
+
+    host._windows.activate(host._windows.key_for(window.frame))
+
+    assert loads == []  # only a hidden window is brought up to date
