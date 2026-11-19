@@ -3506,9 +3506,9 @@ Control coverage: 384 audited sites (384 helped).
 
 **Run.** Run the saved search.
 
-**Pin as Node.** Give it a node of its own under Saved Searches.
+**Pin as Node.** A node of its own under Saved Searches.
 
-**Unpin Node.** Take its node away; it stays a saved search.
+**Unpin Node.** Take its node away; the search stays.
 
 **Remove Saved Search.** Forget it on this device.
 

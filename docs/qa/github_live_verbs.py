@@ -723,9 +723,11 @@ def save_and_remove_search(run: Any) -> str:
     saved.save_search(f"is:open label:{LABELS[0]}")
     saved.save()
     again = _saved(run)
+    _expect(again.pin_search(f"is:open label:{LABELS[0]}"), "not pinned")
+    _expect(again.pin_search(f"is:open label:{LABELS[0]}", False), "not unpinned")
     _expect(again.remove_search(f"is:open label:{LABELS[0]}"), "not saved")
     again.save()
-    return "saved, reloaded, removed"
+    return "saved, reloaded, pinned, unpinned, removed"
 
 
 def snooze(run: Any) -> str:
@@ -1069,6 +1071,8 @@ VERBS: dict[str, Scenario | str] = {
     "projects": "sheet:issue.projects",
     "react": "sheet:issue.reactions",
     "remove_search": "with save_search: saved, then removed",
+    "pin_search": "with save_search: the same local store, pinned and unpinned",
+    "unpin_search": "with save_search: the same local store, pinned and unpinned",
     "rerun": rerun,
     "rerun_failed": rerun_failed_and_delete,
     "run_workflow": run_workflow,
