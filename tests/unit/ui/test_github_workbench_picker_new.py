@@ -66,7 +66,7 @@ def test_none_clears_the_issue_type_rather_than_naming_an_empty_one() -> None:
     assert _type_encode("Bug", {}, {}) == {"type": "Bug"}
 
 
-def test_new_issue_type_creates_it_on_the_organization_and_uses_it(bench, monkeypatch) -> None:
+def test_new_issue_type_creates_it_on_the_organization_and_uses_it(bench, monkeypatch) -> None:  # noqa: F811
     api = bench.provider.api
     api.answer("GET", "/orgs/owner/issue-types", _TYPES)
     monkeypatch.setattr(bench.provider, "_ask_text", lambda *_a: "Task", raising=False)
