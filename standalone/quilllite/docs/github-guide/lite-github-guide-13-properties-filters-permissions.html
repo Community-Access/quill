@@ -296,6 +296,40 @@ Labels…</strong>, <strong>Assignees…</strong> and
 <strong>Milestone…</strong> open the sheet at the right page. There are
 no separate keys for single properties: <code>Alt+Enter</code>, then the
 page.</p>
+<h3 id="you-your-own-relationships">You: your own relationships</h3>
+<p>Anything you can have a relationship with has a <strong>You</strong>
+page, right after General: the second page, so <code>Ctrl+2</code>
+reaches it. It holds every relationship GitHub offers with that thing,
+each as a control you change like any other field, and saving sends only
+the ones you changed and says what happened in one sentence:
+“owner/name: starred on; watch level all activity.”</p>
+<ul>
+<li><strong>A repository:</strong> Starred, and Watch level (all
+activity, participating and mentions, or ignore).</li>
+<li><strong>A person:</strong> Following and Blocked.</li>
+<li><strong>An organization:</strong> Following, and Show my membership
+publicly.</li>
+<li><strong>An issue:</strong> Subscribed, your reactions (a check box
+for each of the eight), and Pinned to the repository.</li>
+<li><strong>A pull request:</strong> Subscribed and your reactions.</li>
+<li><strong>A discussion:</strong> Subscribed, your reactions and
+Upvoted.</li>
+<li><strong>A release:</strong> your reactions. <strong>A gist:</strong>
+Starred. <strong>A notification:</strong> Subscribed.</li>
+</ul>
+<p>Some relationships GitHub’s API cannot change, and those are
+read-only boxes whose <code>F1</code> says why in one sentence: whether
+something is <strong>Pinned to your profile</strong> (customize your
+pins on your GitHub profile page), whether you are
+<strong>Sponsoring</strong> someone (that spends money at a tier you
+choose, so it is done from their Sponsor node, never a check box),
+whether a pull request or a discussion is pinned (GitHub pins only
+issues through its API), and whether somebody follows you, which is
+theirs to change. The menu rows you already know, such as Star or
+Unstar, Watch or Unwatch, Follow or Unfollow, React… and Pin or Unpin
+Issue, send the same requests as the You page. Read Only and Safe Mode
+lock the You page like every other page, with the reason under each
+field.</p>
 <h3 id="saving-safely">Saving safely</h3>
 <ul>
 <li><strong>If somebody else changed it meanwhile,</strong> the sheet
@@ -327,6 +361,10 @@ off all of them, or leave it.</li>
 <li>Then a list of results, one line per item: Done, Skipped because it
 was already so, or Failed and why. Copy Results copies them, and Retry
 Failed (<code>F8</code>) runs the failed ones again.</li>
+<li>The You page works here too. Select twelve repositories in a search,
+press <code>Alt+Enter</code>, and check Starred or set Watch level on
+the You page: each repository is starred, or watched, with a result line
+for each.</li>
 </ul>
 <p>Batches pause a second between items, because GitHub limits how
 quickly one account may make changes.</p>
