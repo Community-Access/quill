@@ -13,6 +13,11 @@ Every later section assumes three things, so here they are first.
 - **Three panes.** The tree on the left says where you are. The list says
   what is there. The details say what the selected row is. `F6` moves from
   pane to pane and then to the status bar; `Shift+F6` goes the other way.
+  Once you have opened a place in the tree, its name says how many rows it
+  had, such as "Issues (12)", or "Issues (30 or more)" when GitHub had more
+  than one page. The count is added after you move away, so it is never read
+  out while you are on the place; you hear it the next time you arrive.
+  Searches have no count, because their rows depend on what you typed.
 - **Enter does the obvious thing.** On an issue it reads it, on a pull request
   it opens the review, on a run it shows the jobs, on a repository it opens
   the repository's own place in the tree.

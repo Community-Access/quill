@@ -96,10 +96,10 @@ The endpoint count is not the whole job. These rows from the Workbench delivery 
 
 #### Requirement audits
 
-Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against the code and tests, and the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. Of the 100 live ids, 68 are met, 24 partly met and 8 not met (now 77 and 15, with GH-R-117, 035, 131, 113, 083, 107, 108, 093 and 106 done). What it found, the Musts first:
+Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against the code and tests, and the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. Of the 100 live ids, 68 are met, 24 partly met and 8 not met (now 78 and 14, with GH-R-117, 035, 131, 113, 083, 107, 108, 093, 106 and 010 done). What it found, the Musts first:
 
 - [ ] **GH-R-002, needs a Windows check:** every Workbench dialog uses `ShowModal()`, which in wx disables every top-level window, the editor included. Try it before acting: if the editor is blocked, the fix is window-modal or modeless dialogs throughout the Workbench.
-- [ ] **GH-R-010:** no counts after node names. A native tree speaks its item text, so a count there is always announced; decide whether the Alt+number readouts are the answer and say so in the PRD.
+- [x] **GH-R-010 (2026-11-19):** counts after node names, as 3.3 asks: written as you leave a node, so never announced; "or more" when a list stopped at a page; none on searches.
 - [x] **GH-R-035 (2026-11-18):** Issue type and Into branch are pickers now, with New Issue Type... and New Branch....
 - [ ] **GH-R-119 (help):** D20's timed find-the-answer sessions, which need people.
 - [x] **GH-R-106 (2026-11-19):** Tutorials (the GitHub lessons with your progress; open or walk) and Tips (QUILLBert's) under Help and Learning (`quill/core/github/workbench_learning.py`).

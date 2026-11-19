@@ -219,9 +219,8 @@ class WorkbenchFrame(
         def add(parent: Any, node: NodeSpec, ref: NodeRef) -> None:
             if callable(shows) and not shows(node, ref):
                 return  # a plugin's branch on a site without the plugin (item 30)
-            item = tree.AppendItem(
-                parent, node.label if node.parent or not ref.instance else ref.instance
-            )
+            label = node.label if node.parent or not ref.instance else ref.instance
+            item = tree.AppendItem(parent, self.counted_label(ref, label))
             tree.SetItemData(item, ref)
             self._items[ref] = item
             if node.template:
@@ -314,6 +313,8 @@ class WorkbenchFrame(
             self._show_node(ref, remember=not self._navigating)
 
     def _show_node(self, ref: NodeRef, *, remember: bool) -> None:
+        if self.current is not None and self.current != ref:
+            self.write_count(self.current)  # on the node being left, so it is never announced
         if remember and self.current is not None and self.current != ref:
             self.history.append(self.current)
             self.forward.clear()
@@ -447,6 +448,7 @@ class WorkbenchFrame(
         self.loading = False
         self.loaded_at = time.strftime("%H:%M")
         self._loaded = list(rows)
+        self.remember_count(len(rows))
         self._fill_list()
         if self._report_for == generation:
             self._report_for = -1

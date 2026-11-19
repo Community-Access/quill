@@ -312,6 +312,20 @@ class GitHubWorkbenchViewMixin:
         pages[ref] = pages.get(ref, 1) + 1
         frame.reload(report=True)
 
+    def count_words(self, ref: Any, count: int) -> str:
+        """A node's count for the tree: "12", or "50 or more" when the list stopped at a page."""
+        from quill.core.github.items_provider_constants import DEFAULT_PAGE_LIMIT
+        from quill.ui.github_workbench_explore import EXPLORE_PAGE
+
+        try:
+            node = self.frame.node(ref)
+        except (KeyError, AttributeError):
+            return str(count)
+        default = EXPLORE_PAGE if node.loader.startswith("explore:") else DEFAULT_PAGE_LIMIT
+        return (
+            f"{count} or more" if count and count >= self.page_limit(ref, default) else str(count)
+        )
+
     def page_limit(self, ref: Any, default: int) -> int:
         """Rows to ask for: a page, a page more for each Load More, or Load All's thousand."""
         if ref is not None and ref == self._load_all_for:

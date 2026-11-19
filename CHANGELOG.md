@@ -2,6 +2,15 @@
 
 ## 1.0.0
 
+### GitHub Workbench: counts after the names in the tree (2026-11-19)
+
+A place in the GitHub Workbench's tree that you have opened now says how many
+rows it had: "Issues (12)", or "Issues (30 or more)" when there is another
+page. The count is written after you leave the place, so nothing changes
+while you are on it and nothing is announced; you hear it as part of the name
+when you come back. Searches have none, since their rows depend on what you
+typed. This meets GH-R-010.
+
 ### GitHub Workbench: Tutorials and Tips under Help and Learning (2026-11-19)
 
 Help and Learning now has every place it was designed with. **Tutorials**
