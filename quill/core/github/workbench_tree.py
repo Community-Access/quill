@@ -292,7 +292,9 @@ _FIXED: tuple[NodeSpec, ...] = (
             ("help_guide", "The Guide", "guide"),
             ("help_words", "Words", "words"),
             ("help_keys", "Keys", "keys"),
+            ("help_tutorials", "Tutorials", "tutorials"),
             ("help_changes", "What Changed", "changes"),
+            ("help_tips", "Tips", "tips"),
             ("help_ask", "Ask a Person", "ask"),
         )
     ),

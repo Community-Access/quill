@@ -176,7 +176,15 @@ NODE_HELP: dict[str, str] = {
         "The Guide: the GitHub Workbench Guide's chapters. Ctrl+F1 opens the guide "
         "at the chapter for where you are."
     ),
+    ":help_tutorials": (
+        "Tutorials: the GitHub lessons, each with where you are in it. Enter opens one; "
+        "Walk Me Through It says it here, one step at a time."
+    ),
     ":help_changes": "What Changed: what is new in the GitHub Workbench in this version.",
+    ":help_tips": (
+        "Tips: QUILLBert's tips, one short thing worth trying each. They wait here and "
+        "are never pushed at you."
+    ),
     ":help_ask": (
         "Ask a Person: write to support@community-access.org. Nothing is sent "
         "until you send it from your own email."

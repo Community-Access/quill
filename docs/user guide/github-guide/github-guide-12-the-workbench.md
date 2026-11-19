@@ -631,7 +631,14 @@ The last place in the tree is help you can walk through like any other list.
 - **The Guide** lists this book's chapters. Enter opens one.
 - **Words** is the GitHub glossary. Type a word to jump to it.
 - **Keys** has every key in the window, grouped by what it does.
+- **Tutorials** lists the GitHub lessons, each with where you are in it
+  ("done", "step 3 of 7"), and says how many you have done. Enter opens the
+  lesson in the editor's Tutorials window. Walk Me Through It, on the context
+  menu, says it here instead, one step at a time, with your keys. In QUILL
+  Lite, which has no GitHub lessons of its own, Enter walks it here too.
 - **What Changed** says what is new.
+- **Tips** holds QUILLBert's tips, one short thing worth trying in each.
+  They wait in this list and are never pushed at you.
 - **Ask a Person** says how to write to support@community-access.org, and
   has **Report a Help Problem**: for help that was wrong, missing or hard to
   follow. Enter opens a message in your own email, already saying where you

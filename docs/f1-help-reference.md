@@ -2582,7 +2582,11 @@ Control coverage: 384 audited sites (384 helped).
 
 **Keys.** Keys: every key in the Workbench, grouped by what it does.
 
+**Tutorials.** Tutorials: the GitHub lessons, each with where you are in it. Enter opens one; Walk Me Through It says it here, one step at a time.
+
 **What Changed.** What Changed: what is new in the GitHub Workbench in this version.
+
+**Tips.** Tips: QUILLBert's tips, one short thing worth trying each. They wait here and are never pushed at you.
 
 **Ask a Person.** Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email.
 

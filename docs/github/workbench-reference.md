@@ -592,7 +592,9 @@ Everything below is generated from the tables the window is built from. The GitH
 | The Guide (`:help_guide`) | help | The Guide: the GitHub Workbench Guide's chapters. Ctrl+F1 opens the guide at the chapter for where you are. |
 | Words (`:help_words`) | help | Words: the GitHub glossary. Type a word to jump to it; the details say what it means and where you meet it. |
 | Keys (`:help_keys`) | help | Keys: every key in the Workbench, grouped by what it does. |
+| Tutorials (`:help_tutorials`) | help | Tutorials: the GitHub lessons, each with where you are in it. Enter opens one; Walk Me Through It says it here, one step at a time. |
 | What Changed (`:help_changes`) | help | What Changed: what is new in the GitHub Workbench in this version. |
+| Tips (`:help_tips`) | help | Tips: QUILLBert's tips, one short thing worth trying each. They wait here and are never pushed at you. |
 | Ask a Person (`:help_ask`) | help | Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email. |
 | People and Organizations (`:search_people`) | search | Search People and Organizations: accounts whose name or login matches the filter box, such as jeff or type:org location:Tucson. Enter opens one. |
 | Topics (`:search_topics`) | search | Search Topics: GitHub topics matching the filter box, with what each is about. Add one to a repository on its Properties. |

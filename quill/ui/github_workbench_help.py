@@ -88,10 +88,41 @@ class GitHubWorkbenchHelpMixin(GitHubWorkbenchWhyMixin):
             for _spec, row in all_rows(getattr(self, "menu", ())):
                 label = row.label.replace("&", "").rstrip(".")
                 keys[row.command_id] = (label, bound.get(row.command_id, row.key))
+        if view in ("tutorials", "tips"):
+            return self._learning_rows(view)
         return [
             ExploreRow(topic.title, topic.body, "", "", "help_topic", topic.target)
             for topic in catalogue.help_rows(view, keys)
         ]
+
+    def _learning_rows(self, view: str) -> list[ExploreRow]:
+        """Tutorials (with your progress in QUILL) and Tips (D11, D16)."""
+        from quill.core.github import workbench_learning as learning
+
+        if view == "tips":
+            return [
+                ExploreRow(tip, detail, "", "", "help_topic", "")
+                for tip, detail in learning.tip_rows()
+            ]
+        lessons = _lessons()
+        store = self._tutorial_progress()
+        self.local_note = learning.tutorials_note(lessons, store)
+        return [
+            ExploreRow(label, detail, "", "", "help_topic", target)
+            for label, detail, target in learning.tutorial_rows(lessons, store)
+        ]
+
+    def _tutorial_progress(self) -> Any:
+        """QUILL's lesson progress; QUILL Lite has no GitHub lessons, so none."""
+        if getattr(self, "_guide_product", "quill") != "quill":
+            return None
+        try:
+            from quill.core.paths import data_dir
+            from quill.core.tutorials.progress import load_progress
+
+            return load_progress(data_dir(), "quill_tutorials.json")
+        except Exception:  # noqa: BLE001 - no progress is an empty one, never a failure
+            return None
 
     # -- the guide ------------------------------------------------------------
 
@@ -114,7 +145,9 @@ class GitHubWorkbenchHelpMixin(GitHubWorkbenchWhyMixin):
     def _do_open_topic(self, ref: Any, row: object) -> None:
         assert isinstance(row, ExploreRow)
         target = row.key
-        if target.startswith("chapter:"):
+        if target.startswith("tutorial:"):
+            self._open_tutorial(row)
+        elif target.startswith("chapter:"):
             self.open_guide(ref, target.removeprefix("chapter:"))
         elif target.startswith("mailto:"):
             if not webbrowser.open(target):
@@ -151,7 +184,7 @@ class GitHubWorkbenchHelpMixin(GitHubWorkbenchWhyMixin):
 
         assert isinstance(row, ExploreRow)
         template, _, key = row.key.partition(":")
-        if not key:
+        if not _place(row.key):
             self._say("This topic is not about one place.")
             return
         instance = next(iter(self.instances(template)), "") if template else ""  # type: ignore[attr-defined]
@@ -161,10 +194,30 @@ class GitHubWorkbenchHelpMixin(GitHubWorkbenchWhyMixin):
         if self.frame.select(NodeRef(template, key, instance)):
             self.frame.tree.SetFocus()
 
+    def _open_tutorial(self, row: ExploreRow) -> None:
+        """Enter on a lesson: the editor's Tutorials window at it, or a walk here."""
+        slug = row.key.removeprefix("tutorial:")
+        editor = getattr(self.frame, "_editor", None)
+        opener = getattr(editor, "open_quill_tutorials", None)
+        if getattr(self, "_guide_product", "quill") == "quill" and callable(opener):
+            opener(slug)
+            return
+        self._do_walk_me_through(None, row)
+
     def _do_walk_me_through(self, ref: Any, row: object) -> None:
         """Walk Me Through It: go where the task starts, then say its steps one at a time."""
         assert isinstance(row, ExploreRow)
-        if ":" in row.key and not row.key.startswith(("chapter:", "mailto:", "report:")):
+        if row.key.startswith("tutorial:"):
+            from quill.core.github.workbench_learning import lesson_steps
+
+            lesson = next((t for t in _lessons() if f"tutorial:{t.slug}" == row.key), None)
+            if lesson is not None:
+                keys = getattr(self.frame, "_keys", {})
+                self.frame.start_walk(
+                    lesson.title, "", lesson_steps(lesson, lambda c: keys.get(c, ""))
+                )
+            return
+        if _place(row.key):
             self._go_quietly(row.key)
         self.frame.start_walk(row.label, row.detail)
 
@@ -201,3 +254,20 @@ def _chapter_page(contents: Path, number: str) -> Path | None:
     stem = contents.stem  # github-guide or lite-github-guide
     found = sorted(contents.parent.glob(f"{stem}-{number}-*{contents.suffix}"))
     return found[0] if found else None
+
+
+def _place(target: str) -> bool:
+    """Whether a topic's target names a place in the tree ("repository:issues")."""
+    _template, colon, key = target.partition(":")
+    return bool(colon and key) and not target.startswith((
+        "chapter:",
+        "mailto:",
+        "report:",
+        "tutorial:",
+    ))
+
+
+def _lessons() -> tuple[Any, ...]:
+    from quill.core.tutorials.github_lessons import github_lessons
+
+    return github_lessons()

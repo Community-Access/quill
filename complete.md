@@ -96,12 +96,13 @@ The endpoint count is not the whole job. These rows from the Workbench delivery 
 
 #### Requirement audits
 
-Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against the code and tests, and the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. Of the 100 live ids, 68 are met, 24 partly met and 8 not met (now 76 and 16, with GH-R-117, 035, 131, 113, 083, 107, 108 and 093 done). What it found, the Musts first:
+Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against the code and tests, and the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. Of the 100 live ids, 68 are met, 24 partly met and 8 not met (now 77 and 15, with GH-R-117, 035, 131, 113, 083, 107, 108, 093 and 106 done). What it found, the Musts first:
 
 - [ ] **GH-R-002, needs a Windows check:** every Workbench dialog uses `ShowModal()`, which in wx disables every top-level window, the editor included. Try it before acting: if the editor is blocked, the fix is window-modal or modeless dialogs throughout the Workbench.
 - [ ] **GH-R-010:** no counts after node names. A native tree speaks its item text, so a count there is always announced; decide whether the Alt+number readouts are the answer and say so in the PRD.
 - [x] **GH-R-035 (2026-11-18):** Issue type and Into branch are pickers now, with New Issue Type... and New Branch....
-- [ ] **GH-R-106, 119 (help):** Tutorials and Tips nodes; D20's timed sessions.
+- [ ] **GH-R-119 (help):** D20's timed find-the-answer sessions, which need people.
+- [x] **GH-R-106 (2026-11-19):** Tutorials (the GitHub lessons with your progress; open or walk) and Tips (QUILLBert's) under Help and Learning (`quill/core/github/workbench_learning.py`).
 - [x] **GH-R-093 (2026-11-19):** a rebound key follows into Shift+F1, the key list and a new Workbench Key Describer (Help, Ctrl+Alt+K); the published reference keeps the defaults by design.
 - [x] **GH-R-108 (2026-11-19):** Why? on what the Workbench does on its own: a watch, a notification, a local filter (`quill/core/github/why.py`); Shift+F1 lists it first.
 - [x] **GH-R-107 (2026-11-19):** Walk Me Through It and Do It on every Do Something task (`quill/core/workbench/walk.py`; the walk is the shared frame's, so WordPress can use it too).
