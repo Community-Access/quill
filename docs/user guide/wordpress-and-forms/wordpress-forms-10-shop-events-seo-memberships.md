@@ -45,13 +45,19 @@ Each site with WooCommerce has a **Shop**. Its list is your products, with
 price, stock and status. Under it are **Draft Products**, **On Sale**, **Out
 of Stock**, **Shop Orders**, **Customers**, **Coupons**, **Shop Reports**,
 **Store Settings**, **Product Reviews**, **Shipping Zones**, **Tax Rates**,
-**Tax Classes**, **Attributes**, **Brands** and **Webhooks**.
+**Tax Classes**, **Attributes**, **Brands**, **Webhooks**, **Payment
+Gateways** and **System Status**.
 
 ### Products
 
 - **File > New Here...** (`Ctrl+N`) on Shop makes a new product, as a draft.
 - **Edit Product...** changes the regular and sale price, the stock, the
   status and the categories. Only what you changed is sent.
+- **Properties...** (`Alt+Enter`) on a product has every field WooCommerce
+  lets you change: SKU, description and short description, sale dates,
+  weight and dimensions, shipping and tax class, images, downloads, upsells
+  and cross-sells. A list or a group of values is a box of JSON that QUILL
+  checks before it saves.
 - **Show Its Variations** lists a product's variations, and **Edit a
   Variation...** changes one's price, sale price, stock, or whether it is for
   sale.
@@ -71,6 +77,8 @@ receipt, without the customer's email, telephone or billing address.
   to refund, warns you whether the payment gateway really returns the money
   or only the record changes, and sends only when you type the amount
   exactly. A refund is never part of a batch, and cannot be undone.
+- **Resend Order Details...** emails the customer the order's details again,
+  for when the receipt never came.
 - **Open in the Shop's Dashboard** opens the order in wp-admin.
 
 These are shop orders. Membership orders, from Paid Memberships Pro, are a
@@ -126,6 +134,16 @@ Trash...** removes it.
   the https address it goes to. WooCommerce makes the webhook's secret itself,
   and QUILL never reads it or says it. **Pause or Activate...** stops or starts
   one, and **Delete...** removes it for good.
+
+### Payment gateways and system status
+
+- **Payment Gateways** lists each way to pay, the ones turned on first, with
+  what customers see at checkout. **Turn On...** or **Turn Off...** changes
+  only that, after a preview, and Ctrl+Z turns it back. A gateway's settings
+  hold its keys, so they stay in WooCommerce > Settings > Payments.
+- **System Status** says the WooCommerce, WordPress, PHP and database versions,
+  then lists WooCommerce's maintenance tools, such as clearing its cached
+  data. **Run Tool...** runs one after a preview; it cannot be undone.
 
 In the editor, **Tools > WordPress > Plugin Extras > Shop Orders...** lists
 the newest orders, to read.

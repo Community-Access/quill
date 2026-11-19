@@ -130,6 +130,11 @@ class GravityFormEditor(wx.Dialog):
             ("Move Do&wn", lambda: self.move_selected(1), "Move the selected field down one."),
             ("&Remove Field", self.remove_selected, "Take the selected field out of the form."),
             ("Co&ndition...", self.condition_selected, "When the selected field shows."),
+            (
+                "Ot&her Notifications and Confirmations...",
+                self.other_messages,
+                "The form's other emails and thank-you messages (complete.md 2.3).",
+            ),
         ):
             button = wx.Button(self, label=label)
             button.SetHelpText(help_text)
@@ -272,6 +277,11 @@ class GravityFormEditor(wx.Dialog):
         self.refill(index)
 
     # -- the answer --------------------------------------------------------------
+
+    def other_messages(self) -> None:
+        from quill.ui.wordpress_gravity_messages import edit_messages
+
+        edit_messages(self, self.show_modal, self.form, self.announce)
 
     def result(self) -> dict[str, Any]:
         """The edited form, with the settings boxes written in."""

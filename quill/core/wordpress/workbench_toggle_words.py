@@ -32,7 +32,12 @@ def _auto_add(row: Any, _offered: Callable[[Any], bool]) -> str:
     return "Stop Adding New Pages Automatically..." if on else "Add New Pages Automatically..."
 
 
+def _gateway(row: Any, _offered: Callable[[Any], bool]) -> str:
+    return "Turn Off..." if row.status == "active" else "Turn On..."
+
+
 _WORDS: Mapping[str, Callable[[Any, Callable[[Any], bool]], str]] = {
+    "toggle_gateway": _gateway,
     "toggle_plugin": _plugin,
     "toggle_feed": _feed,
     "offer_to_ask": _offer,

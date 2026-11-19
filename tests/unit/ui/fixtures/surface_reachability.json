@@ -556,6 +556,7 @@
   "quill.ui.wordpress_family": "reachable",
   "quill.ui.wordpress_gravity_editor": "reachable",
   "quill.ui.wordpress_gravity_field_dialogs": "reachable",
+  "quill.ui.wordpress_gravity_messages": "reachable",
   "quill.ui.wordpress_item_dialogs": "reachable",
   "quill.ui.wordpress_media_dialogs": "reachable",
   "quill.ui.wordpress_player_window": "reachable",

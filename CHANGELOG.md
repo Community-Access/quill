@@ -56,6 +56,46 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress Workbench: scale a site's picture on this computer (2026-11-18)
+
+From complete.md 2.3: Edit Picture's Scale opened wp-admin, because WordPress
+has no route that scales an original. Now it changes the original here: type
+1200 wide, 800 high, 50%, turn 90, or crop and four percentages. QUILL
+downloads the picture, changes it with Pillow, says the size and weight before
+and after, sends it back through Replace File (in place where the site can,
+otherwise as a new file with every use pointed at it), and has WordPress make
+its smaller copies again.
+
+### Forms: a Gravity Form's other notifications and confirmations (2026-11-18)
+
+From complete.md 2.3: QUILL's Gravity Forms editor changed the default
+confirmation and the Admin Notification and kept the rest out of sight. Its
+new **Other Notifications and Confirmations...** lists every other email and
+thank-you message, and adds, changes, turns on or off and removes them. One
+that routes by an answer or uses logic is listed and can be turned on or off
+or removed, with its routing kept. The changes join the editor's Review and
+Save preview, one line each.
+
+### WordPress Workbench: every product field on Properties (2026-11-18)
+
+From complete.md 2.3: Edit Product changes price, stock, status and
+categories only. Properties on a product now reads WooCommerce's own route and
+its schema, so every field WooCommerce lets you change is there: SKU,
+descriptions, sale dates, weight and dimensions, shipping and tax class,
+images, downloads, upsells and cross-sells.
+
+### WordPress Workbench: payment gateways, system status, and resending an order (2026-11-18)
+
+From complete.md 2.3, three WooCommerce jobs that needed wp-admin:
+
+- **Shop > Payment Gateways** lists each gateway, on ones first, with what
+  customers see. Turn On or Off, after a preview, with Ctrl+Z; no setting is
+  read, because a gateway's settings hold its keys.
+- **Shop > System Status** says the WooCommerce, WordPress, PHP and database
+  versions, then WooCommerce's maintenance tools, each with Run Tool.
+- **Resend Order Details...** on a shop order emails the customer their order
+  details again.
+
 ### WordPress: menu changes can be undone (2026-11-18)
 
 Review item 20: the Menus window, which the Workbench's Arrange Items opens,

@@ -87,7 +87,8 @@ def test_the_shop_lists_woocommerce_products_read_only() -> None:
     api = ShopApi()
     rows = load(_ctx(api, "wp/v2", "wc/v3"), "shop:products", {}, {})
     assert [(r.kind, r.title, r.cell("price")) for r in rows] == [("shop_product", "Mug", "12.00")]
-    assert rows[0].link == "https://radio.example/mug" and not rows[0].route
+    assert rows[0].link == "https://radio.example/mug"
+    assert rows[0].route == "wc/v3/products/9"  # Properties edits every field (complete.md 2.3)
     assert api.reads[0][0] == "wc/v3/products"
 
 
@@ -283,3 +284,30 @@ def test_every_new_command_has_a_key_or_a_written_reason() -> None:
     for verb in verbs:
         assert KEYLESS[command(verb)]
     assert layer_chord("wordpress.this_post_in_workbench") == "Ctrl+Alt+Shift+Grave, Shift+H"
+
+
+def test_properties_on_a_product_offers_every_field_the_schema_lets_an_editor_change() -> None:
+    from quill.core.wordpress.workbench_sheets import sheet_for
+
+    (row,) = load(_ctx(ShopApi(), "wp/v2", "wc/v3"), "shop:products", {}, {})
+    schema = {
+        "id": {"type": "integer", "readonly": True, "context": ["view", "edit"]},
+        "sku": {"type": "string", "description": "Unique identifier.", "context": ["view", "edit"]},
+        "description": {"type": "string", "context": ["view", "edit"]},
+        "short_description": {"type": "string", "context": ["view", "edit"]},
+        "date_on_sale_from": {"type": ["null", "string"], "context": ["view", "edit"]},
+        "weight": {"type": "string", "context": ["view", "edit"]},
+        "tax_class": {"type": "string", "context": ["view", "edit"]},
+        "shipping_class": {"type": "string", "context": ["view", "edit"]},
+        "dimensions": {  # WooCommerce's own shape: three strings
+            "type": "object",
+            "context": ["view", "edit"],
+            "properties": {k: {"type": "string"} for k in ("length", "width", "height")},
+        },
+        "upsell_ids": {"type": "array", "items": {"type": "integer"}, "context": ["view", "edit"]},
+    }
+    sheet = sheet_for(row, schema=schema)
+    editable = {spec.key for spec in sheet.fields() if not spec.readonly}
+    assert {"sku", "description", "short_description", "date_on_sale_from", "weight"} <= editable
+    assert {"tax_class", "shipping_class", "dimensions", "upsell_ids"} <= editable
+    assert "id" not in editable
