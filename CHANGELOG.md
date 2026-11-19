@@ -2,6 +2,27 @@
 
 ## 1.0.0
 
+### GitHub Workbench: secrets stay secret, Dependency Review and Security Overview (2026-11-19)
+
+- **A secret is never shown.** A secret's new value in Properties was a plain
+  text field, so it was visible as you typed it, included in Copy as Text and
+  named in the preview before saving. It is now a password box that is emptied
+  after saving, and previews say "(hidden)". Values are sealed with the
+  repository's, environment's or organization's own key before they are sent,
+  never read back, and dropped from memory once the call ends.
+- **Changing secrets.** Change... on a secret sends a new value. For an
+  organization's secret, Change... can also just change who may use it: all,
+  private or selected repositories.
+- **Dependency Review** on a pull request lists each dependency it adds or
+  removes, with its licence and any known vulnerabilities, the vulnerable ones
+  first.
+- **Security Overview** on an organization counts open alerts of every kind
+  by repository and severity, worst first. A kind GitHub will not show you is
+  said, never counted as none.
+- **Allow a Blocked Secret...** answers GitHub's push protection, with a
+  reason. A private report waiting for review is called that, and can be
+  accepted or closed.
+
 ### GitHub Workbench: a You page for your own relationships (2026-11-19)
 
 Properties now has a **You** page, right after General, on repositories,

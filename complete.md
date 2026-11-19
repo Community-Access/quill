@@ -42,7 +42,6 @@ Each is done only with evidence: a test or a live run.
 - [ ] Repository and item-property checklists expose state in the row; Space changes it once, Enter saves, focus returns predictably, and JAWS/NVDA/VoiceOver do not hear a duplicate row.
 - [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle.
 - [ ] Live check on the GitHub test repository: Read Only, Organize, Full and Safe Mode refuse and allow as tested, and the permission explanations (greyed rows, Shift+F1, GitHub's own refusals) match what GitHub does.
-- [ ] Verify encrypted write-only secrets for repository/environment/organization scopes and selected-repository access.
 - [ ] Verify View As Role, Compare Roles, Why Can't They?, My Access Here, access reviews and bulk changes against actual server authority.
 - [ ] Grouping, sorting and the column chooser beyond issues and pull requests (filters, Show Only/Hide, Load More and Load All are done).
 - [ ] Plain-language query/batch commands through the shared catalogue, with resolved targets, editable previews and deterministic non-AI paths.
@@ -57,7 +56,6 @@ Each is done only with evidence: a test or a live run.
 - [ ] Batch merges of independently eligible pull requests (Merge Queue, Why Can't I Merge?, Auto-Merge and queue add/remove are done).
 - [ ] Environments, deployment protection and release/deployment evidence (Set Status... on a commit is done).
 - [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
-- [ ] Code/secret scanning, advisories, private reports, bypass/dismissal requests, Autofix/dependency review and organization security overview.
 - [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
 - [ ] Least-privilege advice based on observed usage with honest uncertainty; artifact attestations and immutable release evidence.
 - [ ] First-class by-name collections for every kind in product requirements document (PRD) 22.11 beyond Labels, Milestones, Topics, Rules and Branch Protection, and the Fleet; the other kinds are classified in `quill/core/github/across_scope_matrix.py`.
@@ -68,7 +66,8 @@ Each is done only with evidence: a test or a live run.
 - [ ] Saved replies/favorites/watch levels/stars, alerts/packages/Pages where supported.
 - [ ] Cross-repository coverage is complete only when the corresponding single-repository operation and batch behavior are complete; read-only category views are tracked separately from multi-target writes.
 - [ ] GX09 policy-aware merging; GX10 release/deployment evidence.
-- [ ] GX11 security/dependencies; GX12 collaboration/knowledge; GX13 administration.
+- [ ] GX11, what is left: a severity breakdown beyond the first 100 alerts of each kind in Security Overview, and a test that exporting an alert list leaves out sensitive fields. (Dismissal and bypass request review is Enterprise Cloud only and stays on GitHub, decided 2026-11-18.)
+- [ ] GX12 collaboration/knowledge; GX13 administration.
 - [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance; GX16 category-first cross-repository browsing.
 - [ ] Apply provider-neutral patterns: read long issue/pull request/discussion threads as one structured page; preserve the selected row on return; say the actual outcome once through QUILL's existing feedback settings.
 
@@ -93,6 +92,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 - [ ] Run `python docs/qa/github-live-run.py --create` after signing in again, and the live rows marked "needs Jeff".
 - [ ] GitHub live scenarios: multiple roles/accounts, protected branches, organization restrictions, rate limiting, private repositories, project fields, secrets, failure/retry and no-API fallbacks; the Copilot cloud agent commands on a Copilot plan.
 - [ ] Vote... in a real discussion poll, and the Pinned (spotlight) place, on the test repository.
+- [ ] Secrets on the test repository (create, change, list shows only the name, delete); Dependency Review on an open pull request and Security Overview on an organization repository; an organization secret in Community-Access set to selected with a repository added and removed, then back to private (confirms a visibility-only change is accepted); Allow a Blocked Secret... needs a real blocked push and its placeholder id.
 - [ ] **GH-R-119:** timed find-the-answer sessions with people.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists.
 - [ ] WordPress current candidate: run the documented live regression on an authorized test site and distinguish existing site-side failures from regressions.
