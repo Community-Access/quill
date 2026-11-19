@@ -125,7 +125,7 @@ class GitHubRepoAdminProvider:
         """Create a new repository, optionally under an organization.
 
         *options* are :func:`quill.core.github.repo_create.create_kwargs`'s
-        (website, README, .gitignore and licence templates, internal), which
+        (website, README, .gitignore and licence templates), which
         replace *private* and *description* when given. Naming your own
         login as *org* creates it on your account. Raises
         :class:`GitHubRepoAdminError` if the name is taken, invalid, or the
@@ -137,7 +137,6 @@ class GitHubRepoAdminProvider:
             if org and org.lower() != str(getattr(me, "login", "")).lower():
                 repo = self._gh.get_organization(org).create_repo(name, **chosen)
             else:
-                chosen.pop("visibility", None)  # only an organization's can be internal
                 repo = me.create_repo(name, **chosen)
         except Exception as exc:  # noqa: BLE001
             raise _translate(exc, context=f"Could not create repository {name!r}") from exc

@@ -1,7 +1,8 @@
 """New Repository's every option, checked before anything is sent (GitHub PRD 14.1).
 
 Create Repository... asks for the owner, the name, a description and a
-website, the visibility (private, public, or internal for an organization),
+website, the visibility (private or public; internal repositories belong to
+GitHub Enterprise Cloud, which the Workbench leaves to GitHub),
 and how the repository starts: empty, with a README, a .gitignore template
 and a licence (``POST /user/repos`` or ``POST /orgs/{org}/repos``), or as a
 copy of a template repository, optionally with all its branches
@@ -32,7 +33,7 @@ __all__ = [
     "template_kwargs",
 ]
 
-VISIBILITIES = ("private", "public", "internal")
+VISIBILITIES = ("private", "public")
 
 #: GitHub's commonest .gitignore templates (``GET /gitignore/templates`` has them all;
 #: any name it lists may be typed).
@@ -96,7 +97,7 @@ class NewRepository:
         return self.visibility != "public"
 
 
-def problem(new: NewRepository, *, viewer: str = "") -> str:
+def problem(new: NewRepository) -> str:
     """Why GitHub would refuse *new*, in one sentence, or "" when it would not."""
     name = new.name.strip()
     if not name:
@@ -107,18 +108,11 @@ def problem(new: NewRepository, *, viewer: str = "") -> str:
             "underscores and full stops, up to 100."
         )
     if new.visibility not in VISIBILITIES:
-        return "Choose private, public or internal."
-    personal = not new.owner.strip() or new.owner.strip().lower() == viewer.lower()
-    if new.visibility == "internal" and personal:
-        return "Only an organization's repository can be internal; choose the organization."
+        return "Choose private or public."
     if new.template.strip():
         if not _REPO.match(new.template.strip()):
             return f"{new.template.strip()} is not a template repository: type it as owner/name."
-        if new.visibility == "internal":
-            return (
-                "A repository made from a template is private or public; GitHub's API "
-                "cannot make it internal. Change it on its Danger Zone page afterwards."
-            )
+
         if new.auto_init or new.gitignore.strip() or new.license.strip():
             return (
                 "A template brings its own files, so a README, .gitignore or licence "
@@ -134,8 +128,7 @@ def problem(new: NewRepository, *, viewer: str = "") -> str:
 def create_kwargs(new: NewRepository) -> dict[str, object]:
     """What ``create_repo`` takes for *new*: only the options that were chosen."""
     found: dict[str, object] = {"private": new.private}
-    if new.owner.strip() and new.visibility == "internal":
-        found["visibility"] = "internal"
+
     for key, value in (
         ("description", new.description.strip()),
         ("homepage", new.homepage.strip()),
@@ -168,7 +161,12 @@ def generate_from_template(token: str, new: NewRepository) -> RemoteRepository:
 
     try:
         full_name, url = GitHubRepoActions(token).create_from_template(
-            new.template.strip(), new.name.strip(), **template_kwargs(new)
+            new.template.strip(),
+            new.name.strip(),
+            owner=new.owner.strip(),
+            description=new.description.strip(),
+            private=new.private,
+            include_all_branches=new.include_all_branches,
         )
     except GitHubItemsError as exc:
         raise GitHubRepoAdminError(str(exc)) from exc

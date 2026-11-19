@@ -52,9 +52,9 @@ def test_a_fresh_repository_takes_licence_gitignore_and_website(wx_session_app: 
         dialog._homepage_ctrl.SetValue("https://acme.example")
         dialog._gitignore_combo.SetValue("Python")
         dialog._license_choice.SetSelection(1)
-        dialog._visibility_choice.SetSelection(2)
+        dialog._visibility_choice.SetSelection(1)
         new = dialog._new()
-        assert new.owner == "acme" and new.visibility == "internal"
+        assert new.owner == "acme" and new.visibility == "public"
         assert (new.gitignore, new.license, new.homepage) == (
             "Python",
             "mit",

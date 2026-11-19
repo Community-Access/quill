@@ -6122,6 +6122,10 @@ commits, usually versions.</p>
 one was forked from. Forks only.</p>
 <p><strong>repository: Releases.</strong> Releases: published versions
 and their files. Enter lists the files.</p>
+<p><strong>repository: Packages.</strong> Packages: what this repository
+publishes, such as container images and npm packages. Show Versions
+lists each one’s versions; Delete Package Version asks you to type the
+package’s name.</p>
 <p><strong>repository: Labels.</strong> Labels: tags for issues and pull
 requests. Enter finds the issues.</p>
 <p><strong>repository: Milestones.</strong> Milestones: goals with a
@@ -6195,10 +6199,6 @@ and Variables… on a row are that environment’s own.</p>
 <p><strong>repository: Codespaces.</strong> Codespaces: your codespaces
 for this repository. Ctrl+N makes one on a branch you name, with the
 machine and dev container you choose.</p>
-<p><strong>repository: Packages.</strong> Packages: what this repository
-publishes, such as container images and npm packages. Show Versions
-lists each one’s versions; Delete Package Version asks you to type the
-package’s name.</p>
 <p><strong>repository: Pinned (spotlight).</strong> Pinned (spotlight):
 the discussions pinned at the top of Discussions, in GitHub’s order.
 Read only: GitHub’s API cannot pin, unpin or reorder one.</p>
@@ -8062,8 +8062,7 @@ repository is for. You can leave it empty.</li>
 <li><code>self._homepage_ctrl</code>: An address shown beside the
 description, such as the project’s site.</li>
 <li><code>self._visibility_choice</code>: Private: only people you add.
-Public: everyone. Internal: everyone in the organization’s enterprise,
-for an organization’s repository only.</li>
+Public: everyone.</li>
 <li><code>self._template_ctrl</code>: A template repository to copy, as
 owner/name. Leave it empty to start a new one.</li>
 <li><code>self._gitignore_combo</code>: Files Git should ignore, from

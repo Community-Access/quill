@@ -147,21 +147,16 @@ def test_pages_page_reads_status_build_type_and_the_latest_build() -> None:
     [
         (rc.NewRepository(""), "Type a name"),
         (rc.NewRepository("a b"), "is not a repository name"),
-        (rc.NewRepository("r", visibility="internal"), "Only an organization's"),
-        (rc.NewRepository("r", owner="jeff", visibility="internal"), "Only an organization's"),
+        (rc.NewRepository("r", visibility="internal"), "Choose private or public"),
         (rc.NewRepository("r", template="nope"), "type it as owner/name"),
         (rc.NewRepository("r", template="o/t", auto_init=True), "brings its own files"),
         (rc.NewRepository("r", template="o/t", license="mit"), "brings its own files"),
-        (
-            rc.NewRepository("r", owner="acme", template="o/t", visibility="internal"),
-            "cannot make it internal",
-        ),
         (rc.NewRepository("r", include_all_branches=True), "is for a repository made from"),
         (rc.NewRepository("r", license="wtfpl"), "not one of GitHub's licence keys"),
     ],
 )
 def test_problems_are_said_before_anything_is_sent(new: rc.NewRepository, words: str) -> None:
-    assert words in rc.problem(new, viewer="jeff")
+    assert words in rc.problem(new)
 
 
 def test_a_full_new_repository_sends_only_what_was_chosen() -> None:
@@ -170,14 +165,12 @@ def test_a_full_new_repository_sends_only_what_was_chosen() -> None:
         owner="acme",
         description=" Docs ",
         homepage="https://acme.example",
-        visibility="internal",
         gitignore="Python",
         license="MIT",
     )
-    assert rc.problem(new, viewer="jeff") == ""
+    assert rc.problem(new) == ""
     assert rc.create_kwargs(new) == {
         "private": True,
-        "visibility": "internal",
         "description": "Docs",
         "homepage": "https://acme.example",
         "gitignore_template": "Python",
@@ -302,9 +295,9 @@ def test_a_repositorys_packages_are_its_owners_published_from_it(
 
 
 def test_repository_packages_node_and_the_across_cell_say_where_it_lives() -> None:
-    from quill.core.github.workbench_tree_more import MORE_REPOSITORY
+    from quill.core.github.workbench_tree import GITHUB_TREE
 
-    node = next(n for n in MORE_REPOSITORY if n.key == "repo_packages")
+    node = GITHUB_TREE.template_node("repository", "repo_packages")
     assert node.loader == "explore:repo_packages" and node.row_type == "package"
     assert Need.SIGN_IN in node.needs
     cell = classify("by_name", "packages_pages", "repository_set", "list")

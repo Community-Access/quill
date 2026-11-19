@@ -2664,6 +2664,8 @@ Control coverage: 390 audited sites (390 helped).
 
 **repository: Releases.** Releases: published versions and their files. Enter lists the files.
 
+**repository: Packages.** Packages: what this repository publishes, such as container images and npm packages. Show Versions lists each one's versions; Delete Package Version asks you to type the package's name.
+
 **repository: Labels.** Labels: tags for issues and pull requests. Enter finds the issues.
 
 **repository: Milestones.** Milestones: goals with a date. Enter lists the issues and pull requests in one.
@@ -2725,8 +2727,6 @@ Control coverage: 390 audited sites (390 helped).
 **repository: Environments.** Environments: where this repository's workflows deploy, each with its protection rules. Secrets... and Variables... on a row are that environment's own.
 
 **repository: Codespaces.** Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you name, with the machine and dev container you choose.
-
-**repository: Packages.** Packages: what this repository publishes, such as container images and npm packages. Show Versions lists each one's versions; Delete Package Version asks you to type the package's name.
 
 **repository: Pinned (spotlight).** Pinned (spotlight): the discussions pinned at the top of Discussions, in GitHub's order. Read only: GitHub's API cannot pin, unpin or reorder one.
 
@@ -4223,7 +4223,7 @@ Control coverage: 390 audited sites (390 helped).
 - `self._name_ctrl`: The new repository's name, such as my-project.
 - `self._description_ctrl`: A short sentence about what the repository is for. You can leave it empty.
 - `self._homepage_ctrl`: An address shown beside the description, such as the project's site.
-- `self._visibility_choice`: Private: only people you add. Public: everyone. Internal: everyone in the organization's enterprise, for an organization's repository only.
+- `self._visibility_choice`: Private: only people you add. Public: everyone.
 - `self._template_ctrl`: A template repository to copy, as owner/name. Leave it empty to start a new one.
 - `self._gitignore_combo`: Files Git should ignore, from GitHub's templates, such as Python or Node. Type any template name GitHub lists, or leave it empty.
 - `self._license_choice`: The licence GitHub adds as a LICENSE file, or none. Not with a template.

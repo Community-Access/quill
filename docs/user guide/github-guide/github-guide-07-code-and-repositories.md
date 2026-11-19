@@ -447,9 +447,9 @@ signed in, and offer to sign you in if you are not.
 
 - **Create Repository...** asks everything GitHub can set when a repository
   is made: the owner (blank for your own account, or an organization), the
-  name, a description and a website, and the visibility: private, public, or
-  internal, which only an organization's repository can be. Then how it
-  starts: from a **template** (owner/name), with or without all of the
+  name, a description and a website, and private or public. (Internal
+  repositories are a GitHub Enterprise Cloud feature, left to GitHub.) Then how
+  it starts: from a **template** (owner/name), with or without all of the
   template's branches; or fresh, with a README, a **.gitignore template**
   (Python, Node and the rest, or any name GitHub lists) and a **licence**.
   When GitHub would refuse a combination, such as a README as well as a

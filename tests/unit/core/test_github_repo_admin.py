@@ -239,13 +239,12 @@ def test_create_repository_sends_every_chosen_option(
 ) -> None:
     from quill.core.github.repo_create import NewRepository, create_kwargs
 
-    new = NewRepository("site", owner="acme", visibility="internal", license="mit")
+    new = NewRepository("site", owner="acme", license="mit")
     provider.create_repository("site", org="acme", options=create_kwargs(new))
     org = provider._gh.get_organization("acme")
     assert org.created == {
         "name": "site",
         "private": True,
-        "visibility": "internal",
         "license_template": "mit",
         "auto_init": True,
     }
@@ -255,9 +254,7 @@ def test_naming_your_own_login_as_owner_creates_it_on_your_account(
     provider: GitHubRepoAdminProvider, repo: _FakeRepo
 ) -> None:
     provider._gh.user.login = "Me"
-    result = provider.create_repository(
-        "r", org="me", options={"private": False, "visibility": "internal"}
-    )
+    result = provider.create_repository("r", org="me", options={"private": False})
     assert result.full_name == "me/r"
     assert provider._gh.user.created == {"name": "r", "private": False}
 

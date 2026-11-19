@@ -633,6 +633,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Tags (`repository:tags`) | repository, code | Tags: names for particular commits, usually versions. |
 | Upstream (`repository:upstream`) | repository, code | Upstream: the repository this one was forked from. Forks only. |
 | Releases (`repository:releases`) | repository, repository | Releases: published versions and their files. Enter lists the files. |
+| Packages (`repository:repo_packages`) | repository, repository | Packages: what this repository publishes, such as container images and npm packages. Show Versions lists each one's versions; Delete Package Version asks you to type the package's name. |
 | Labels (`repository:labels`) | repository, repository | Labels: tags for issues and pull requests. Enter finds the issues. |
 | Milestones (`repository:milestones`) | repository, repository | Milestones: goals with a date. Enter lists the issues and pull requests in one. |
 | Templates (`repository:templates`) | repository, repository | Templates: issue forms, Markdown templates, the chooser, pull request templates, discussion forms and community files, including those inherited from the owner's .github repository. Enter builds or edits one; Ctrl+N starts a new one. |
@@ -664,7 +665,6 @@ Everything below is generated from the tables the window is built from. The GitH
 | Autolinks (`repository:autolinks`) | repository, settings | Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one. |
 | Environments (`repository:environments`) | repository, settings | Environments: where this repository's workflows deploy, each with its protection rules. Secrets... and Variables... on a row are that environment's own. |
 | Codespaces (`repository:repo_codespaces`) | repository, code | Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you name, with the machine and dev container you choose. |
-| Packages (`repository:repo_packages`) | repository, repository | Packages: what this repository publishes, such as container images and npm packages. Show Versions lists each one's versions; Delete Package Version asks you to type the package's name. |
 | Pinned (spotlight) (`repository:discussions_pinned`) | repository, discussions | Pinned (spotlight): the discussions pinned at the top of Discussions, in GitHub's order. Read only: GitHub's API cannot pin, unpin or reorder one. |
 | Categories (`repository:discussion_categories`) | repository, discussions | Categories: the repository's discussion categories, grouped by section where GitHub gives sections; Enter lists a category's discussions. |
 | Actions Variables (`repository:actions_variables`) | repository, settings | Actions Variables: values workflows read as vars.NAME. Ctrl+N adds one. |

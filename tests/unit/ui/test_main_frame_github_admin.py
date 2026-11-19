@@ -311,7 +311,7 @@ def test_rename_calls_provider_on_confirmation(monkeypatch: pytest.MonkeyPatch) 
     renamed = RemoteRepository(provider="github", full_name="owner/new-name")
     calls: list[tuple[str, str]] = []
     monkeypatch.setattr(
-        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
+        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             rename_repository=lambda full, new: calls.append((full, new)) or renamed,
             close=lambda: None,
@@ -340,7 +340,7 @@ def test_visibility_change_flips_and_confirms(monkeypatch: pytest.MonkeyPatch) -
     host._gh_admin_typed_confirm = lambda **kwargs: seen_messages.append(kwargs["message"]) or True
     updated = RemoteRepository(provider="github", full_name="owner/repo", is_private=True)
     monkeypatch.setattr(
-        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
+        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             set_visibility=lambda full, *, private: updated, close=lambda: None
         ),
@@ -400,7 +400,7 @@ def test_delete_branch_typed_confirm_and_call(monkeypatch: pytest.MonkeyPatch) -
     host = _Host()
     deleted: list[tuple[str, str]] = []
     monkeypatch.setattr(
-        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
+        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             delete_branch=lambda full, branch: deleted.append((full, branch)),
             close=lambda: None,
@@ -451,7 +451,7 @@ def test_fork_repository_calls_provider(monkeypatch: pytest.MonkeyPatch) -> None
     )
     calls: list[tuple[str, str]] = []
     monkeypatch.setattr(
-        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
+        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             fork_repository=lambda full, *, org: calls.append((full, org)) or forked,
             close=lambda: None,
@@ -474,7 +474,7 @@ def test_change_default_branch_calls_provider(monkeypatch: pytest.MonkeyPatch) -
     calls: list[tuple[str, str]] = []
     updated = RemoteRepository(provider="github", full_name="owner/repo", default_branch="develop")
     monkeypatch.setattr(
-        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
+        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             set_default_branch=lambda full, branch: calls.append((full, branch)) or updated,
             close=lambda: None,
@@ -513,7 +513,7 @@ def test_branch_protection_applies_rules(monkeypatch: pytest.MonkeyPatch) -> Non
     )
     calls: list[tuple[str, str, int, tuple, bool]] = []
     monkeypatch.setattr(
-        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
+        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             set_branch_protection=lambda full, branch, **kw: calls.append((
                 full,
@@ -549,7 +549,7 @@ def test_branch_protection_removal(monkeypatch: pytest.MonkeyPatch) -> None:
     )
     removed: list[tuple[str, str]] = []
     monkeypatch.setattr(
-        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
+        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             remove_branch_protection=lambda full, branch: removed.append((full, branch)),
             close=lambda: None,
@@ -590,7 +590,7 @@ def test_commit_multiple_files_reads_and_commits(
     host._gh_admin_confirm = lambda message, title: True
     calls: list[tuple[str, str, list, str]] = []
     monkeypatch.setattr(
-        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
+        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             commit_files=lambda full, branch, files, message: (
                 calls.append((full, branch, files, message)) or "abcdef1234567890"

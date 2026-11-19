@@ -123,7 +123,7 @@ class CreateRepositoryResult:
     """Every option asked, for :func:`quill.core.github.repo_create.create_kwargs`."""
 
 
-_VISIBILITY_WORDS = ("Private", "Public", "Internal (an organization's only)")
+_VISIBILITY_WORDS = ("Private", "Public")
 _NO_LICENSE = "No licence"
 
 
@@ -188,10 +188,7 @@ class CreateRepositoryDialog:
         grid.Add(wx.StaticText(panel, label="Visibility"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._visibility_choice = wx.Choice(panel, choices=list(_VISIBILITY_WORDS))
         self._visibility_choice.SetSelection(0)
-        self._visibility_choice.SetHelpText(
-            "Private: only people you add. Public: everyone. Internal: everyone in the "
-            "organization's enterprise, for an organization's repository only."
-        )
+        self._visibility_choice.SetHelpText("Private: only people you add. Public: everyone.")
         self._visibility_choice.SetName("Visibility")
         grid.Add(self._visibility_choice, 1, wx.EXPAND)
 
@@ -258,9 +255,7 @@ class CreateRepositoryDialog:
         self._name_ctrl.SetFocus()
 
     def _new(self) -> NewRepository:
-        visibility = ("private", "public", "internal")[
-            max(0, self._visibility_choice.GetSelection())
-        ]
+        visibility = ("private", "public")[max(0, self._visibility_choice.GetSelection())]
         return NewRepository(
             name=self._name_ctrl.GetValue().strip(),
             owner=self._org_ctrl.GetValue().strip().lstrip("@"),
