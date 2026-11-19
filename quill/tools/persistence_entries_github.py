@@ -8,6 +8,9 @@ workbench (2026-11-07) brought five write sites. Every one writes through
 from __future__ import annotations
 
 GITHUB_ENTRIES: dict[str, str] = {
+    # Help > GitHub Service Status: that the person agreed, once, to the status
+    # page being read. A marker, never anything the page said.
+    "core/github/service_status.py::record_consent": "marker",
     # The account list: non-secret login and host per account, schema-stamped.
     "core/github/accounts.py::_persist": "versioned",
     # Local issue and review drafts, kept until they are submitted or discarded.

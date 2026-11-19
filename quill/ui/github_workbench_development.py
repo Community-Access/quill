@@ -131,6 +131,11 @@ from quill.ui.github_workbench_scoped import (
     SCOPED_VERBS,
     GitHubWorkbenchScopedListsMixin,
 )
+from quill.ui.github_workbench_service_status import (
+    SERVICE_STATUS_REASONS,
+    SERVICE_STATUS_VERBS,
+    GitHubWorkbenchServiceStatusMixin,
+)
 from quill.ui.github_workbench_settings_lists import (
     SETTINGS_LIST_REASONS,
     SETTINGS_LIST_VERBS,
@@ -168,6 +173,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **INBOX_RULE_VERBS,
     **DRY_RUN_VERBS,
     **PRACTICE_VERBS,
+    **SERVICE_STATUS_VERBS,
     **TIER2_VERBS,
     **PACKAGE_VERBS,
     **STAR_LIST_VERBS,
@@ -200,6 +206,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **INBOX_RULE_REASONS,
     **DRY_RUN_REASONS,
     **PRACTICE_REASONS,
+    **SERVICE_STATUS_REASONS,
     **TIER2_REASONS,
     **PACKAGE_REASONS,
     **STAR_LIST_REASONS,
@@ -230,6 +237,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchInboxRulesMixin,
     GitHubWorkbenchDryRunMixin,
     GitHubWorkbenchPracticeMixin,
+    GitHubWorkbenchServiceStatusMixin,
     GitHubWorkbenchTier2Mixin,
     GitHubWorkbenchPackagesMixin,
     GitHubWorkbenchStarListsMixin,

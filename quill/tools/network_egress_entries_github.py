@@ -3,6 +3,18 @@
 from __future__ import annotations
 
 GITHUB_WORKBENCH_EGRESS: dict[str, str] = {
+    "core/github/service_status.py::read_status": (
+        "Help > GitHub Service Status... in GitHub Workbench (complete.md 1.3, "
+        "2026-11-18). One GET of GitHub's public status summary, the fixed URL "
+        "www.githubstatus.com/api/v2/summary.json, only when the person chooses the "
+        "command and only after they agree once (github_status_consent.json in the "
+        "data folder). Sends no token, no account, repository or document content: "
+        "only the request with a QUILL user agent. Receives the overall status, the "
+        "components that are not operational and any open incident with its latest "
+        "update, read to at most 512 KB. Verified system-store TLS, redirects "
+        "refused, 15-second timeout, on a worker thread; never at launch, on a "
+        "schedule, or in Safe Mode."
+    ),
     "core/github/oauth_sign_in.py::_github_opener": (
         "Sign In with GitHub (2026-11-07), the default way to add an account in "
         "Manage GitHub Accounts in QUILL and QUILL Lite. Two fixed endpoints, and "
