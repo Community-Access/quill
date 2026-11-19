@@ -489,6 +489,13 @@ _HELP = MenuSpec(
             "request and a failing run to learn on.",
         ),
         _row(
+            "service_status",
+            "GitHub Ser&vice Status...",
+            "Ctrl+Alt+F1",
+            "Whether GitHub says it is working, which parts are not, and any incident. Reads "
+            "www.githubstatus.com, only when you ask.",
+        ),
+        _row(
             "keys",
             "Workbench &Keys",
             "Alt+Shift+F1",

@@ -3152,6 +3152,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Help > Practice on GitHub....** Make, open or delete quill-practice, a private repository with issues, a pull request and a failing run to learn on.
 
+**Help > GitHub Service Status....** Whether GitHub says it is working, which parts are not, and any incident. Reads www.githubstatus.com, only when you ask.
+
 **Help > Workbench Keys.** Every key in this window, by family.
 
 **Help > Say Last Result Again.** Say the last result again.

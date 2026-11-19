@@ -931,6 +931,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | GitHub Workbench Guide | Ctrl+F1 | The guide, opened at the chapter for where you are. |
 | Search Help... | Ctrl+Shift+F1 | Type a few words to find a help topic, a command or a GitHub word. |
 | Practice on GitHub... | Ctrl+Alt+P | Make, open or delete quill-practice, a private repository with issues, a pull request and a failing run to learn on. |
+| GitHub Service Status... | Ctrl+Alt+F1 | Whether GitHub says it is working, which parts are not, and any incident. Reads www.githubstatus.com, only when you ask. |
 | Workbench Keys | Alt+Shift+F1 | Every key in this window, by family. |
 | Say Last Result Again | F9 | Say the last result again. |
 | Explain That | Shift+F9 | What the last result means and what you might do next. |
