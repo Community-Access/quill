@@ -251,7 +251,7 @@ href="../Product Requirement Documents and Specifications/github-workbench-prd.m
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 80 are met, 12 are partly met and 8 are
+<p>Of the 100 live requirements, 81 are met, 12 are partly met and 7 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -266,9 +266,9 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>69</td>
+<td>70</td>
 <td>5</td>
-<td>1</td>
+<td>0</td>
 <td>75</td>
 </tr>
 <tr>
@@ -288,9 +288,8 @@ not met. GH-R-042 is withdrawn.</p>
 </tbody>
 </table>
 <p>“Sampled” means a few cases of an “every” were checked, not all of
-them. The tests the audit cites pass; nothing here was checked on
-Windows or with a screen reader, so GH-R-002 (whether a Workbench dialog
-also blocks the editor) needs a live check before it is acted on.</p>
+them. The tests the audit cites pass; GH-R-002 was checked on Windows
+and fixed; nothing here was checked with a screen reader.</p>
 <h2 id="not-met">Not met</h2>
 <table>
 <thead>
@@ -302,15 +301,6 @@ also blocks the editor) needs a live check before it is acted on.</p>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>GH-R-002</td>
-<td>Must</td>
-<td>It never blocks the editor; its dialogs block only it</td>
-<td>The window is modeless, but every dialog goes through
-<code>dialog_contract.show_modal_dialog</code> to ShowModal(), which in
-wx disables every top-level window of the app, the editor included.
-Needs a live check.</td>
-</tr>
 <tr>
 <td>GH-R-036</td>
 <td>Should</td>
@@ -510,12 +500,18 @@ the one open window (one per app).
 <tr>
 <td>GH-R-002</td>
 <td>Must</td>
-<td>Not met</td>
+<td>Met</td>
 <td>It never blocks the editor; its dialogs block only it</td>
-<td>The window is modeless, but every dialog goes through
-<code>dialog_contract.show_modal_dialog</code> to ShowModal(), which in
-wx disables every top-level window of the app, the editor included.
-Needs a live check.</td>
+<td>Checked on Windows with wx 4.3.2 (2026-11-19): ShowModal disabled
+the editor. Fixed: the Workbench window is marked
+<code>_quill_modal_scope</code>, and
+<code>dialog_contract.show_modal_dialog</code> (through
+<code>modal_scope.py</code>) re-enables every window outside a scoped
+dialog’s own parent chain once its modal loop starts, so a Workbench
+dialog blocks the Workbench (and a dialog above it) and never the
+editor. <code>tests/unit/ui/test_workbench_dialog_scope.py</code>,
+including a real modal loop. Native message and file boxes are still
+Windows’ own.</td>
 </tr>
 <tr>
 <td>GH-R-003</td>

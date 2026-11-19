@@ -416,6 +416,7 @@ def show_modal_dialog(
 
     *search_announce* speaks Find a setting's match count when *announce* is
     withheld so the entry and exit cues stay silent."""
+    from quill.ui.modal_scope import keep_bystanders_usable
     from quill.ui.preferences_search import install_preferences_search
 
     settings_search = install_preferences_search(dialog, announce=search_announce or announce)
@@ -434,6 +435,7 @@ def show_modal_dialog(
         enter_region(label)
     if speak_transitions:
         announce(f"Entered {label} dialog")
+    keep_bystanders_usable(dialog)
     try:
         result = dialog.ShowModal()
     finally:

@@ -4,21 +4,20 @@ Checked 2026-11-18 against main, updated the same day for the follow-up pull req
 
 ## Summary
 
-Of the 100 live requirements, 80 are met, 12 are partly met and 8 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 81 are met, 12 are partly met and 7 are not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
-| Must | 69 | 5 | 1 | 75 |
+| Must | 70 | 5 | 0 | 75 |
 | Should | 11 | 7 | 5 | 23 |
 | May | 0 | 0 | 2 | 2 |
 
-"Sampled" means a few cases of an "every" were checked, not all of them. The tests the audit cites pass; nothing here was checked on Windows or with a screen reader, so GH-R-002 (whether a Workbench dialog also blocks the editor) needs a live check before it is acted on.
+"Sampled" means a few cases of an "every" were checked, not all of them. The tests the audit cites pass; GH-R-002 was checked on Windows and fixed; nothing here was checked with a screen reader.
 
 ## Not met
 
 | Id | Strength | Requirement | Evidence and what remains |
 | --- | --- | --- | --- |
-| GH-R-002 | Must | It never blocks the editor; its dialogs block only it | The window is modeless, but every dialog goes through `dialog_contract.show_modal_dialog` to ShowModal(), which in wx disables every top-level window of the app, the editor included. Needs a live check. |
 | GH-R-036 | Should | Alt+Enter on a GitHub reference in a document opens its sheet | No Alt+Enter on a GitHub reference in the editor (keymap has none); decision 23 recommends it. |
 | GH-R-109 | Should | Examples from the person's own data and situation | No examples drawn from the person's own data (D14). |
 | GH-R-114 | Should | A braille-shaped row option | No braille-shaped (short) row option. |
@@ -51,7 +50,7 @@ Of the 100 live requirements, 80 are met, 12 are partly met and 8 are not met. G
 | Id | Strength | Status | Requirement | Evidence |
 | --- | --- | --- | --- | --- |
 | GH-R-001 | Must | Met | The Workbench is a top-level frame with its own menu bar, status bar and taskbar button, one per app | `workbench_frame.py:133` a top-level wx.Frame with its own menu bar and status bar; `open_github_workbench` reuses the one open window (one per app). `test_every_github_door_opens_the_workbench`, `test_both_editors_reach_the_window_through_the_one_shared_call` |
-| GH-R-002 | Must | Not met | It never blocks the editor; its dialogs block only it | The window is modeless, but every dialog goes through `dialog_contract.show_modal_dialog` to ShowModal(), which in wx disables every top-level window of the app, the editor included. Needs a live check. |
+| GH-R-002 | Must | Met | It never blocks the editor; its dialogs block only it | Checked on Windows with wx 4.3.2 (2026-11-19): ShowModal disabled the editor. Fixed: the Workbench window is marked `_quill_modal_scope`, and `dialog_contract.show_modal_dialog` (through `modal_scope.py`) re-enables every window outside a scoped dialog's own parent chain once its modal loop starts, so a Workbench dialog blocks the Workbench (and a dialog above it) and never the editor. `tests/unit/ui/test_workbench_dialog_scope.py`, including a real modal loop. Native message and file boxes are still Windows' own. |
 | GH-R-003 | Must | Met | F6 and Shift+F6 cycle tree, filter, list and details | `test_f6_cycles_the_panes_in_order` (window test); `workbench_frame.py:392` |
 | GH-R-004 | Must | Met | It remembers size, panes, last node, expanded nodes, columns and filters per account | Last node, expanded nodes, repositories and people, and now the window's size and tree-pane width, per account (`navigation_state.WorkbenchPlace` size/sash, `workbench_frame_commands` `restore_layout/remember_layout`); `tests/unit/ui/test_github_workbench_requirement_checks.py::test_the_window_opens_at_last_times_size_and_remembers_it_on_close`. Columns and filters are not in PRD 3.1's list. |
 | GH-R-005 | Must | Met | Escape clears the filter, then goes Back, and never closes the window | `test_escape_clears_the_filter_then_goes_back`, `test_escape_in_details_returns`... |
