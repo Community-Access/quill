@@ -170,7 +170,7 @@ took the money. What is left needs the test site and a person:
 
 - **Create an order, or change its items and addresses.** Who: shops taking phone orders. Route: `POST wc/v3/orders`, `POST wc/v3/orders/{id}`.
 
-Also missing but less urgent: editing many products at once (`products/batch`), generating variations (`products/{id}/variations/generate`), shipping classes (`products/shipping_classes`), and Analytics (`wc-analytics/reports/*`). Scheduled Actions and the extensions marketplace are wp-admin only. Subscriptions and Bookings are paid extensions with their own routes, not in scope.
+Many products can now be changed at once (Change Many Products..., `products/batch`, 2026-11-18). Also missing but less urgent: generating variations (`products/{id}/variations/generate`), shipping classes (`products/shipping_classes`), and Analytics (`wc-analytics/reports/*`). Scheduled Actions and the extensions marketplace are wp-admin only. Subscriptions and Bookings are paid extensions with their own routes, not in scope.
 
 ##### SEO (Yoast SEO)
 
