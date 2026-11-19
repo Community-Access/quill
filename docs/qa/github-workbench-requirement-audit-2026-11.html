@@ -251,7 +251,7 @@ href="../Product Requirement Documents and Specifications/github-workbench-prd.m
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 69 are met, 23 are partly met and 8 are
+<p>Of the 100 live requirements, 70 are met, 22 are partly met and 8 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -266,8 +266,8 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>59</td>
-<td>15</td>
+<td>60</td>
+<td>14</td>
 <td>1</td>
 <td>75</td>
 </tr>
@@ -380,16 +380,6 @@ deep, loading lazily, with counts after names that…</td>
 <td>Native wx.TreeCtrl (<code>workbench_frame.py:148</code>),
 <code>test_no_node_is_more_than_four_levels_deep</code>; rows load on
 selection. No counts after node names anywhere.</td>
-</tr>
-<tr>
-<td>GH-R-035</td>
-<td>Must</td>
-<td>Every picker ends with New… that creates and uses the thing</td>
-<td>New Label…, New Milestone…, New Project…
-(<code>sheets_items.py</code>;
-<code>github_workbench_properties.py:386</code>;
-<code>test_new_project_creates_one</code>…). Pickers for people/teams
-have Add, not New; other pickers (issue type, branch) have none.</td>
 </tr>
 <tr>
 <td>GH-R-045</td>
@@ -855,13 +845,14 @@ chooses per field; after saving, the…</td>
 <tr>
 <td>GH-R-035</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Every picker ends with New… that creates and uses the thing</td>
-<td>New Label…, New Milestone…, New Project…
-(<code>sheets_items.py</code>;
-<code>github_workbench_properties.py:386</code>;
-<code>test_new_project_creates_one</code>…). Pickers for people/teams
-have Add, not New; other pickers (issue type, branch) have none.</td>
+<td>New Label…, New Milestone…, New Project…, New Issue Type… and New
+Branch… (<code>github_workbench_create.py</code>;
+<code>test_new_project_creates_one</code>…,
+<code>test_github_workbench_picker_new.py</code>). Pickers for people
+and teams have Add…, since a person or team cannot be made from a
+sheet.</td>
 </tr>
 <tr>
 <td>GH-R-036</td>
