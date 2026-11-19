@@ -32,6 +32,7 @@ from quill.core.github.sheet_fields import (
     toggle,
     when,
 )
+from quill.core.github.sheets_you import profile_pin_field, profile_pin_read
 from quill.core.workbench.properties import FieldKind, SheetSpec, Value
 
 __all__ = [
@@ -86,7 +87,12 @@ GIST = SheetDef(
                 ro("created", "Created", _K.DATE),
                 ro("url", "Address", _K.LINK),
             ),
-            page("you", "You", ed("starred", "Starred", _K.CHECK)),
+            page(
+                "you",
+                "You",
+                ed("starred", "Starred", _K.CHECK, "Star it to keep it in your stars."),
+                profile_pin_field(),
+            ),
             page("files", "Files", ro("files", "Files", _K.TABLE, "Edit Gist changes them.")),
             page("comments", "Comments", ro("comments", "Comments", _K.NUMBER)),
         ),
@@ -99,6 +105,7 @@ GIST = SheetDef(
             optional=True,
             fallback={"starred": False},
         ),
+        profile_pin_read("id"),
     ),
     {
         "description": patch("/gists/{id}", "sign_in+scope:gist", _V),

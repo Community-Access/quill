@@ -1,6 +1,7 @@
 """Sheets for releases, release assets and packages (GitHub PRD Appendix C, Phase 8).
 
-A release's tag, target, title, notes, draft, pre-release and latest flags;
+A release's tag, target, title, notes, draft, pre-release and latest flags,
+and its You page (your reactions, as on an issue);
 an asset's file name and label; a package's facts (GitHub changes a package's
 visibility and access on its settings page only, and the sheet says so).
 
@@ -15,6 +16,7 @@ from typing import Any
 from quill.core.github.permissions import WriteTier
 from quill.core.github.sheet_engine import Ident, Read, SheetDef
 from quill.core.github.sheet_fields import dig, ed, lst, page, patch, ro, when
+from quill.core.github.sheets_items import _FIXED_REACTIONS, _REACTIONS_WRITE, _YOU, your_reactions
 from quill.core.workbench.properties import FieldKind, SheetSpec, Value
 
 __all__ = ["PACKAGE", "RELEASE", "RELEASE_ASSET"]
@@ -51,6 +53,32 @@ def _release(data: Mapping[str, Any]) -> dict[str, Value]:
         ),
         "discussion": str(data.get("discussion_url") or ""),
         "url": str(data.get("html_url") or ""),
+        "immutable": _immutable(data.get("immutable")),
+    }
+
+
+def _immutable(value: object) -> str:
+    """Whether GitHub has locked the release's tag and files (immutable releases)."""
+    if value is True:
+        return "yes: its tag and files cannot change"
+    if value is False:
+        return "no: its tag and files can still change"
+    return "GitHub did not say"
+
+
+#: Your reactions to a release, which GitHub answers only in GraphQL.
+_RELEASE_YOU = (
+    "query($owner:String!,$name:String!,$tag:String!){repository(owner:$owner,name:$name){"
+    "release(tagName:$tag){id viewerCanReact reactionGroups{content viewerHasReacted}}}}"
+)
+
+
+def _release_you(data: Mapping[str, Any]) -> dict[str, Value]:
+    release = dig(data, "repository", "release") or {}
+    return {
+        "node_id": str(release.get("id") or ""),
+        "viewerCanReact": bool(release.get("viewerCanReact")),
+        "reactions": your_reactions(release.get("reactionGroups")),
     }
 
 
@@ -63,6 +91,7 @@ def _make_latest(value: Value, _c: Mapping[str, object], _i: Ident) -> dict[str,
 
 
 _REL = "/repos/{repo}/releases/{id}"
+_RELEASE_REACTIONS = next(spec for spec in _YOU.fields if spec.key == "reactions")
 
 RELEASE = SheetDef(
     "release",
@@ -81,8 +110,15 @@ RELEASE = SheetDef(
                 ed("latest", "Latest release", _K.CHECK),
                 ro("author", "Author"),
                 ro("published", "Published", _K.DATE),
+                ro(
+                    "immutable",
+                    "Immutable",
+                    help="An immutable release's tag and files cannot change once it is "
+                    "published. Release Evidence... says what vouches for it.",
+                ),
                 ro("url", "Address", _K.LINK),
             ),
+            page("you", "You", _RELEASE_REACTIONS),
             page("notes", "Notes", ed("notes", "Release notes", _K.MULTILINE, "Markdown.")),
             page(
                 "assets",
@@ -102,6 +138,16 @@ RELEASE = SheetDef(
         Read(
             "/repos/{repo}/releases/latest", pick=_latest, optional=True, fallback={"latest": False}
         ),
+        Read(
+            graphql=_RELEASE_YOU,
+            variables=lambda i: {
+                "owner": i["repo"].partition("/")[0],
+                "name": i["repo"].partition("/")[2],
+                "tag": i["tag"],
+            },
+            extract=_release_you,
+            optional=True,
+        ),
     ),
     {
         "name": patch(_REL, "repo:write", _V),
@@ -111,11 +157,13 @@ RELEASE = SheetDef(
         "prerelease": patch(_REL, "repo:write", _V),
         "latest": patch(_REL, "repo:write", _V, encode=_make_latest),
         "notes": patch(_REL, "repo:write", _V, "body"),
+        "reactions": _REACTIONS_WRITE,
     },
     title=lambda ident: f"Release {ident['tag']}",
     url=lambda ident: f"https://github.com/{ident['repo']}/releases/tag/{ident['tag']}",
-    adopt=("id",),
+    adopt=("id", "node_id"),
     renames=("tag", "tag"),
+    fixed=_FIXED_REACTIONS,
 )
 
 
@@ -131,6 +179,7 @@ def _asset(data: Mapping[str, Any], ident: Ident) -> dict[str, Value]:
                 "content_type": str(asset.get("content_type") or ""),
                 "updated": when(asset.get("updated_at")),
                 "url": str(asset.get("browser_download_url") or ""),
+                "digest": str(asset.get("digest") or "GitHub gives no digest for it"),
             }
     return {}
 
@@ -153,6 +202,12 @@ RELEASE_ASSET = SheetDef(
                 ro("content_type", "Content type"),
                 ro("updated", "Updated", _K.DATE),
                 ro("url", "Download address", _K.LINK),
+                ro(
+                    "digest",
+                    "Digest",
+                    help="The file's SHA-256, which its attestations are filed under. "
+                    "Attestations... lists them.",
+                ),
             ),
         ),
     ),

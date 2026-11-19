@@ -24,6 +24,7 @@ from typing import Any
 
 from quill.core.github.discussion_actions import POLL_FIELDS
 from quill.core.github.quick_actions import Ask, Quick, QuickError, bulleted, gql
+from quill.core.github.sheet_fields import input_mutation
 
 __all__ = ["DISCUSS_QUICK", "input_fields", "node_id"]
 
@@ -76,10 +77,8 @@ def node_id(api: Any, kind: str, ctx: Mapping[str, str], number: str = "") -> st
 
 
 def _mutate(api: Any, name: str, fields: Mapping[str, Any]) -> Any:
-    query = f"mutation($input: {name[0].upper()}{name[1:]}Input!) {{ {name}(input: $input) " + (
-        "{ clientMutationId } }"
-    )
-    return gql(api, query, {"input": dict(fields)})
+    # The very text a sheet's You page sends (sheet_fields.input_mutation).
+    return gql(api, input_mutation(name), {"input": dict(fields)})
 
 
 def _discussion(api: Any, ctx: dict[str, str]) -> str:

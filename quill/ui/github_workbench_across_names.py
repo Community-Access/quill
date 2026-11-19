@@ -371,20 +371,17 @@ class GitHubWorkbenchAcrossNamesMixin:
         """Check the account's level, preview, then run off the UI thread; one result each."""
         from quill.core.github.across_admin_changes import apply_admin, apply_promote
         from quill.core.github.across_changes import apply, results_summary
-        from quill.core.github.permissions import AccessLevel, WriteTier, level_allows
+        from quill.core.github.permissions import WriteTier
+        from quill.core.github.write_gate import command_title, refusal
         from quill.core.github.write_requirements import requirement_for
 
         declared = requirement_for(f"{_P}{verb}")
         tier = declared[1] if declared is not None else WriteTier.VISIBLE
         if plan.kind == "rules":
             tier = max(tier, WriteTier.ACCESS)  # rules decide who may change code
-        level = self.access_level()  # type: ignore[attr-defined]
-        if not level_allows(level, tier):
-            self._say(
-                "This account is read only in the Workbench."
-                if level is AccessLevel.READ_ONLY
-                else "This account is set to Organize in the Workbench, which does not allow this."
-            )
+        said = refusal(f"run {command_title(_P + verb)}", tier, self.access_level())  # type: ignore[attr-defined]
+        if said:  # the dispatcher checked the declared tier; a rules plan needs more
+            self._say(said)
             return
         if not plan.runnable:
             self.frame.details.ChangeValue(plan.preview())

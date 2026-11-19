@@ -315,38 +315,8 @@ def test_unlink_branch_on_an_issue_with_none_says_so() -> None:
     assert window.asked == []
 
 
-def test_read_only_refuses_unlink_before_reading_github(monkeypatch) -> None:
-    from quill.core.github.permissions import AccessLevel
-
-    monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
-    window = _link_window()
-    window.access_level = lambda: AccessLevel.READ_ONLY  # type: ignore[attr-defined]
-    window._do_unlink_branch(REF, _issue())
-    assert window.api.sent == []
-    assert window.said == [
-        "This account is read only in the Workbench. Workbench Options, Accounts changes it."
-    ]
-
-
-def test_safe_mode_refuses_unlink_and_says_why(monkeypatch) -> None:
-    from quill.core.github.permissions import AccessLevel, effective_level
-
-    monkeypatch.setenv("QUILL_SAFE_MODE", "1")
-    window = _link_window()
-    window.access_level = lambda: effective_level(AccessLevel.FULL)  # type: ignore[attr-defined]
-    window._do_unlink_branch(REF, _issue())
-    assert window.api.sent == []
-    assert window.said == ["QUILL is in Safe Mode, so the Workbench changes nothing on GitHub."]
-
-
-def test_organize_allows_unlink(monkeypatch) -> None:
-    from quill.core.github.permissions import AccessLevel
-
-    monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
-    window = _link_window()
-    window.access_level = lambda: AccessLevel.ORGANIZE  # type: ignore[attr-defined]
-    window._do_unlink_branch(REF, _issue())
-    assert window.said == ["Unlinked 42-fix from #42. The branch is still there."]
+# Read Only, Organize and Safe Mode for Unlink Branch are the dispatcher's one level
+# check now: tests/unit/ui/test_github_workbench_level_gate.py.
 
 
 # -- the issue sheet's Linked branches list ---------------------------------------------
@@ -408,11 +378,16 @@ def test_the_sheet_list_routes_to_the_linked_branch_commands() -> None:
     from quill.ui.github_workbench_tools import GitHubWorkbenchToolsMixin
 
     seen: list[tuple[Any, ...]] = []
-    host = SimpleNamespace(act_on_linked_branch=lambda *args: seen.append(args))
+    checked: list[str] = []
+    host = SimpleNamespace(
+        act_on_linked_branch=lambda *args: seen.append(args),
+        refused=lambda command_id: checked.append(command_id) or False,
+    )
     state = _sheet_state()
     act = GitHubWorkbenchToolsMixin.table_action(host, SimpleNamespace(kind="issue"), state)  # type: ignore[arg-type]
     act(SimpleNamespace(key="branches"), "remove", "b")
     assert seen == [(state, "remove", "b")]
+    assert checked == ["github.workbench.unlink_branch"]
 
 
 def test_not_a_duplicate_asks_the_original() -> None:

@@ -245,14 +245,14 @@
 <h1 id="github-workbench-requirement-audit-november-2026">GitHub
 Workbench requirement audit, November 2026</h1>
 <p>Checked 2026-11-18 against main, updated the same day for the
-follow-up pull request, and on 2026-11-19 for GH-R-086 and GH-R-157.
-This is the record of the complete.md 1.3 requirement audit: every id in
-Part E of <a
+follow-up pull request, and on 2026-11-19 for GH-R-046 (the You page),
+GH-R-086 and GH-R-157. This is the record of the complete.md 1.3
+requirement audit: every id in Part E of <a
 href="../Product Requirement Documents and Specifications/github-workbench-prd.md">the
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 82 are met, 12 are partly met and 6 are
+<p>Of the 100 live requirements, 83 are met, 11 are partly met and 6 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -267,8 +267,8 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>70</td>
-<td>5</td>
+<td>71</td>
+<td>4</td>
 <td>0</td>
 <td>75</td>
 </tr>
@@ -356,16 +356,6 @@ catalogue</td>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>GH-R-046</td>
-<td>Must</td>
-<td>Every relationship (star, watch level, follow, subscribe, react,
-block, sponsor, pin) on a You page and in…</td>
-<td>Star, watch level, follow, subscribe, react, sponsor, pin and block
-(<code>resource_specs_user</code>) each exist in their own places; no
-single You page holding them, and batch only where the multi-row sheet
-has the field. Needs a closer look.</td>
-</tr>
 <tr>
 <td>GH-R-119</td>
 <td>Must</td>
@@ -842,13 +832,24 @@ says.</td>
 <tr>
 <td>GH-R-046</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Every relationship (star, watch level, follow, subscribe, react,
 block, sponsor, pin) on a You page and in…</td>
-<td>Star, watch level, follow, subscribe, react, sponsor, pin and block
-(<code>resource_specs_user</code>) each exist in their own places; no
-single You page holding them, and batch only where the multi-row sheet
-has the field. Needs a closer look.</td>
+<td>A You page right after General on every sheet with a relationship
+(<code>sheets_you.py</code> <code>YOU_PAGES</code>): repository
+(Starred, Watch level), gist (Starred), person (Following, Blocked),
+organization (Following, public membership), issue (Subscribed,
+reactions, Pinned), pull request and discussion (Subscribed, reactions;
+Upvoted), release (reactions), notification (Subscribed). Writes are the
+menu rows’ own calls (Follow Organization and Upvote share
+<code>sheet_fields.input_mutation</code>), saved through the checked
+Properties path, so Read Only and Safe Mode lock them. Sponsoring, pins
+to your profile, custom watching and a pull request’s or discussion’s
+pin read only, each saying why. Batch: the multi-row sheet shows Mixed
+and changes each row.
+<code>tests/unit/core/workbench/test_github_you_page.py</code> (every
+kind, a write per kind, batch, read-only reasons, levels). Subscribe and
+Block have no menu row of their own; the You page is their row.</td>
 </tr>
 </tbody>
 </table>

@@ -1,7 +1,9 @@
 """Sheets for discussions, comments and issue types (GitHub PRD Appendix C).
 
-A discussion's title and body (GraphQL updateDiscussion) and its poll as a
-table (option, votes, percentage, your vote; Vote... casts one), a comment's body,
+A discussion's title and body (GraphQL updateDiscussion), its poll as a
+table (option, votes, percentage, your vote; Vote... casts one), and its You
+page (subscribed, your reactions and upvote, as on an issue; pinned only
+reads, because GitHub's API cannot pin a discussion), a comment's body,
 and an organization's issue type (name, description, colour, enabled; saved
 whole, as GitHub wants).
 
@@ -20,12 +22,21 @@ from quill.core.github.sheet_engine import Ident, Read, SheetDef, Write
 from quill.core.github.sheet_fields import (
     dig,
     ed,
+    gql_input_toggle,
     lst,
     page,
     patch,
     ro,
     when,
 )
+from quill.core.github.sheets_items import (
+    _FIXED_REACTIONS,
+    _REACTIONS_WRITE,
+    _SUBSCRIBE_WRITE,
+    _YOU,
+    your_reactions,
+)
+from quill.core.github.sheets_you import DISCUSSION_PIN_READ, discussion_pin_field
 from quill.core.workbench.properties import FieldKind, SheetSpec, Value
 
 __all__ = ["COMMENT", "DISCUSSION", "ISSUE_TYPE"]
@@ -43,7 +54,10 @@ _DISCUSSION_QUERY = (
     "query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){"
     "discussion(number:$number){id title body locked upvoteCount createdAt url "
     "category{name} author{login} answer{author{login}} comments{totalCount} "
-    "viewerCanUpdate viewerCanReact viewerCanSubscribe viewerSubscription " + POLL_FIELDS + "}}}"
+    "viewerCanUpdate viewerCanReact viewerCanSubscribe viewerSubscription "
+    "viewerCanUpvote viewerHasUpvoted reactionGroups{content viewerHasReacted} "
+    + POLL_FIELDS
+    + "}}}"
 )
 
 
@@ -67,6 +81,8 @@ def _discussion(data: Mapping[str, Any]) -> dict[str, Value]:
         "comments": int(dig(found, "comments", "totalCount") or 0),
         "locked": bool(found.get("locked")),
         "subscribed": found.get("viewerSubscription") == "SUBSCRIBED",
+        "upvoted": bool(found.get("viewerHasUpvoted")),
+        "reactions": your_reactions(found.get("reactionGroups")),
         "created": when(found.get("createdAt")),
         "url": str(found.get("url") or ""),
         **_poll_values(found),
@@ -106,8 +122,10 @@ DISCUSSION = SheetDef(
             page(
                 "you",
                 "You",
-                ro("subscribed", "Subscribed", _K.CHECK),
+                *_YOU.fields,
+                ed("upvoted", "Upvoted", _K.CHECK, "Your upvote helps it rise in the list."),
                 ro("upvotes", "Upvotes", _K.NUMBER),
+                discussion_pin_field(),
             ),
             page(
                 "category",
@@ -150,10 +168,21 @@ DISCUSSION = SheetDef(
             },
             extract=_discussion,
         ),
+        DISCUSSION_PIN_READ,
     ),
-    {"title": _update_discussion("title"), "body": _update_discussion("body")},
+    {
+        "title": _update_discussion("title"),
+        "body": _update_discussion("body"),
+        "subscribed": _SUBSCRIBE_WRITE,
+        "reactions": _REACTIONS_WRITE,
+        # Upvote and Remove Upvote on the discussion's row send these same mutations.
+        "upvoted": gql_input_toggle(
+            "addUpvote", "removeUpvote", "subjectId", "viewer:viewerCanUpvote", _O
+        ),
+    },
     title=lambda ident: f"Discussion #{ident['number']}",
     url=lambda ident: f"https://github.com/{ident['repo']}/discussions/{ident['number']}",
+    fixed=_FIXED_REACTIONS,
 )
 
 

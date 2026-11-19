@@ -302,6 +302,33 @@ Signed in, a release's context menu and **Actions...** have:
 - **Delete Asset**, inside a release's file list, removes a file after asking.
   Its download count goes with it.
 
+### Release evidence and attestations
+
+**Release Evidence...**, on a release's context menu, gathers what vouches for
+a release, and changes nothing. You hear one sentence, such as "v1.0:
+Immutable; 4 of 4 checks pass; 1 deployments; 2 of 2 files attested.", and a
+list follows with a line each:
+
+- whether it is a draft or a pre-release, and when it was published;
+- whether it is **immutable**: once GitHub has made a release immutable, its
+  tag and files cannot change, so what you check now is what people download;
+- the commit its tag points at (a draft whose tag does not exist yet has
+  none);
+- the checks on that commit, and which passed, failed or are still running;
+- each deployment of that commit: which environment, its latest state, when
+  and by whom;
+- each file, by its digest, with GitHub's **artifact attestations** for it,
+  such as build provenance or a software bill of materials.
+
+QUILL reads GitHub's attestation records but does not check their
+signatures; the list says so, and `gh attestation verify` is the tool that
+does. A part GitHub would not show you is said as "Could not read", never as
+none, so a missing permission is never mistaken for missing evidence.
+
+**Attestations...**, on one file in a release's file list, is the same for
+that file alone. The release's **Properties...** page says whether it is
+immutable, and a file's says its digest.
+
 In QUILL, **Tools > Git and GitHub > GitHub > Create Release...** makes a new
 release: a tag, an optional title, your own notes or GitHub's, and whether to
 publish it now or keep it as a draft.
