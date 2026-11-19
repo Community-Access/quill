@@ -53,6 +53,11 @@ Gateways** and **System Status**.
 - **File > New Here...** (`Ctrl+N`) on Shop makes a new product, as a draft.
 - **Edit Product...** changes the regular and sale price, the stock, the
   status and the categories. Only what you changed is sent.
+- **Properties...** (`Alt+Enter`) on a product has every field WooCommerce
+  lets you change: SKU, description and short description, sale dates,
+  weight and dimensions, shipping and tax class, images, downloads, upsells
+  and cross-sells. A list or a group of values is a box of JSON that QUILL
+  checks before it saves.
 - **Show Its Variations** lists a product's variations, and **Edit a
   Variation...** changes one's price, sale price, stock, or whether it is for
   sale.

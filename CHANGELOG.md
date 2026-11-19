@@ -36,6 +36,14 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress Workbench: every product field on Properties (2026-11-18)
+
+From complete.md 2.3: Edit Product changes price, stock, status and
+categories only. Properties on a product now reads WooCommerce's own route and
+its schema, so every field WooCommerce lets you change is there: SKU,
+descriptions, sale dates, weight and dimensions, shipping and tax class,
+images, downloads, upsells and cross-sells.
+
 ### WordPress Workbench: payment gateways, system status, and resending an order (2026-11-18)
 
 From complete.md 2.3, three WooCommerce jobs that needed wp-admin:

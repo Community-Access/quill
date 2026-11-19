@@ -152,6 +152,9 @@ def product_row(raw: Mapping[str, Any], site: str) -> WbRow:
             f"{facts['categories']}. Enter opens it on the site."
         ),
         link=str(raw.get("permalink", "") or ""),
+        # Properties reads the product's own route and its schema, so every field
+        # WooCommerce lets an editor change is on the sheet (complete.md 2.3, Shop).
+        route=product_route(product.id),
         status=status,
         subkind="woocommerce",
         raw=facts,
