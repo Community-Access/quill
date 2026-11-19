@@ -330,7 +330,11 @@ beside the pull requests that will close it.
 
 **Unlink Branch...** lists the branches linked to the issue and takes the one
 you choose off its Development, after asking. The branch itself stays, with
-its commits; only the link goes.
+its commits; only the link goes. The **Linked branches** list on the issue's
+Relationships page does the same from the sheet: select a branch and press
+Remove (or Delete) to unlink it, or Add (or Insert) to make a new one, and
+the list changes as soon as GitHub has answered. A Read Only account, or QUILL
+in Safe Mode, is told so and nothing is sent.
 
 An issue's task list is the lines of its description that start with a check
 box, `- [ ]` or `- [x]`.

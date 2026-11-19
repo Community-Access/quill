@@ -255,6 +255,7 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
             + (". Some pages need more access and are empty." if loaded.missing else ""),
         )
         holder["sheet"] = view
+        state["sheet"] = view  # a list's Add or Remove (table_action) shows its result here
         try:
             view.show()
         finally:

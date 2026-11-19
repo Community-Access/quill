@@ -51,6 +51,7 @@ __all__ = [
     "fine_grained_steps",
     "gh_refresh_command",
     "level_allows",
+    "level_refusal",
     "missing_scopes",
     "repo_role",
     "requirement_words",
@@ -101,6 +102,24 @@ def level_allows(level: AccessLevel, tier: WriteTier) -> bool:
     if level is AccessLevel.ORGANIZE:
         return tier <= WriteTier.VISIBLE
     return True
+
+
+def level_refusal(level: AccessLevel, tier: WriteTier) -> str:
+    """ "" when *level* allows a write of *tier*; else why not, in one or two sentences.
+
+    Safe Mode is named when it is what made the account Read Only, because
+    Workbench Options cannot change that; only starting QUILL normally does.
+    """
+    if level_allows(level, tier):
+        return ""
+    if level is AccessLevel.READ_ONLY and safe_mode_on():
+        return "QUILL is in Safe Mode, so the Workbench changes nothing on GitHub."
+    if level is AccessLevel.READ_ONLY:
+        return "This account is read only in the Workbench. Workbench Options, Accounts changes it."
+    return (
+        "This account is set to Organize in the Workbench, which allows organizing and "
+        "comments, not access, settings or deleting."
+    )
 
 
 def safe_mode_on() -> bool:
@@ -448,16 +467,9 @@ def _check_one(token: str, ctx: ViewerContext) -> str:
 
 def check(requirement: str, ctx: ViewerContext, tier: WriteTier | None = None) -> str:
     """ "" when *ctx* may do something needing *requirement*; else why not, in sentences."""
-    if tier is not None and not level_allows(ctx.level, tier):
-        if ctx.level is AccessLevel.READ_ONLY:
-            return (
-                "This account is read only in the Workbench. Workbench Options, "
-                "Accounts changes it."
-            )
-        return (
-            "This account is set to Organize in the Workbench, which allows organizing and "
-            "comments, not access, settings or deleting."
-        )
+    refused = level_refusal(ctx.level, tier) if tier is not None else ""
+    if refused:
+        return refused
     for token in (t for t in requirement.split("+") if t):
         reason = _check_one(token, ctx)
         if reason:
