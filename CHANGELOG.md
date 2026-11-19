@@ -2,6 +2,14 @@
 
 ## 1.0.0
 
+### GitHub Workbench: Why? for what it did on its own (2026-11-19)
+
+**Why?** explains what the GitHub Workbench did without a key from you: why a
+watch spoke (or has not), why a notification is in your inbox, and whether
+your filter covers all of GitHub or only the rows loaded. `Shift+F1` lists it
+first whenever there is something to explain, and watch and notification
+rows have it on their context menu. This meets GH-R-108.
+
 ### GitHub Workbench: help that walks with you (2026-11-19)
 
 The tasks under Help and Learning, Do Something, have two more choices on

@@ -3370,6 +3370,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Unsnooze Locally.** Show a snoozed notification again.
 
+**Why?.** Why this happened on its own, and what decides it.
+
 **Open.** Select the repository's node in the tree.
 
 **Star or Unstar.** Star it, or take the star away.

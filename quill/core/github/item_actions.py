@@ -358,6 +358,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a("unsubscribe", "Unsubscribe from Thread", _O, "sign_in", "Stop notifications for it."),
         _OPEN_WEB,
         _a("unsnooze", "Unsnooze Locally", _O, "", "Show a snoozed notification again."),
+        _a("why", "Why?", help="Why this happened on its own, and what decides it."),
         _PROPERTIES,
     ),
     "repository": (
@@ -551,6 +552,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
             help="Check every active watch now, without waiting for the next round.",
         ),
         _a("remove_watch", "Remove Watch", _O, "local", "Stop watching. Delete does the same."),
+        _a("why", "Why?", help="Why this happened on its own, and what decides it."),
         _OPEN_WEB,
         _PROPERTIES,
     ),
@@ -569,6 +571,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _default("refresh", "Refresh", "Load this view again. F5 does the same."),
         _OPEN_WEB,
         _a("help_view", "Help for This View", help="What this view shows. F1 does the same."),
+        _a("why", "Why?", help="Why this happened on its own, and what decides it."),
         _PROPERTIES,
     ),
     # Across Repositories (PRD 22.11, GX16): quill/core/github/across_actions.py.

@@ -134,6 +134,12 @@ class WorkbenchHelpMixin:
             if not able:
                 text += f", greyed: {self.reason(row.command_id)}"
             choices.append(ActionChoice(text, able, lambda c=row.command_id: self.run(c), row.help))
+        why = self._hook("why_text")  # D13: Why? comes first when something happened on its own
+        said = str(why() or "") if why else ""
+        if said:
+            choices.insert(
+                0, ActionChoice("Why?", True, lambda: self._announce(said), "Why this is so.")
+            )
         hook = self._hook("role_words")  # who you are here, when the provider knows (item 25)
         role = str(hook() or "") if hook else ""
         prompt = f"{role} Actions for the selection:".strip()
