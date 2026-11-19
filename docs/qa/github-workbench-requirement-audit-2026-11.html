@@ -251,7 +251,7 @@ href="../Product Requirement Documents and Specifications/github-workbench-prd.m
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 70 are met, 22 are partly met and 8 are
+<p>Of the 100 live requirements, 71 are met, 21 are partly met and 8 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -266,8 +266,8 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>60</td>
-<td>14</td>
+<td>61</td>
+<td>13</td>
 <td>1</td>
 <td>75</td>
 </tr>
@@ -463,19 +463,6 @@ D20</td>
 generated reference (GATE-GITHUB-HELP,
 <code>build_help_reference</code>); D20’s measures (timed
 find-the-answer sessions) not done.</td>
-</tr>
-<tr>
-<td>GH-R-131</td>
-<td>Must</td>
-<td>Conditional requests (ETag) for every repeated read
-(<code>conditional_requests.py</code>), and secondary rate limits…</td>
-<td>Secondary limits respected in <code>rest_transport.py</code>
-(<code>secondary_wait_seconds</code>,
-<code>test_a_secondary_limit_stops_every_later_request_with_one_sentence</code>);
-ETag only in <code>explore.py</code>’s conditional read,
-<code>explore_extra_views</code>, <code>repo_activity</code> and
-<code>repo_insights</code>, not every repeated read
-(<code>items_provider</code> lists and sheets reload in full)</td>
 </tr>
 <tr>
 <td>GH-R-150</td>
@@ -1628,16 +1615,16 @@ uncommitted, branch gh/service-status)</td>
 <tr>
 <td>GH-R-131</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Conditional requests (ETag) for every repeated read
 (<code>conditional_requests.py</code>), and secondary rate limits…</td>
 <td>Secondary limits respected in <code>rest_transport.py</code>
 (<code>secondary_wait_seconds</code>,
 <code>test_a_secondary_limit_stops_every_later_request_with_one_sentence</code>);
-ETag only in <code>explore.py</code>’s conditional read,
-<code>explore_extra_views</code>, <code>repo_activity</code> and
-<code>repo_insights</code>, not every repeated read
-(<code>items_provider</code> lists and sheets reload in full)</td>
+every repeated REST read is conditional: Workbench lists through
+<code>list_probe.py</code> (one If-None-Match read of the same window,
+rows kept on 304) and sheets, pickers and reloads through TokenApi.rest
+(<code>test_conditional_reads.py</code>). GraphQL has no ETag.</td>
 </tr>
 <tr>
 <td>GH-R-132</td>
