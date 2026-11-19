@@ -34,6 +34,40 @@
   on every repository, unset ones as "not set". All three filter and export
   like any other list.
 
+### GitHub Workbench: secrets stay secret, Dependency Review and Security Overview (2026-11-19)
+
+- **A secret is never shown.** A secret's new value in Properties was a plain
+  text field, so it was visible as you typed it, included in Copy as Text and
+  named in the preview before saving. It is now a password box that is emptied
+  after saving, and previews say "(hidden)". Values are sealed with the
+  repository's, environment's or organization's own key before they are sent,
+  never read back, and dropped from memory once the call ends.
+- **Changing secrets.** Change... on a secret sends a new value. For an
+  organization's secret, Change... can also just change who may use it: all,
+  private or selected repositories.
+- **Dependency Review** on a pull request lists each dependency it adds or
+  removes, with its licence and any known vulnerabilities, the vulnerable ones
+  first.
+- **Security Overview** on an organization counts open alerts of every kind
+  by repository and severity, worst first. A kind GitHub will not show you is
+  said, never counted as none.
+- **Allow a Blocked Secret...** answers GitHub's push protection, with a
+  reason. A private report waiting for review is called that, and can be
+  accepted or closed.
+### GitHub Workbench: issue types and fields in the lists (2026-11-19)
+
+An issue's type and its organization's issue fields now show in the
+Workbench's own lists:
+- **Columns.** Columns... offers **Issue type** and **Issue fields** on every
+  Issues list.
+- **Typed values.** A date reads as a date, a number as a number and a choice
+  by its name.
+- **Details and filters.** The details name the type and each field.
+  `type:Bug` and `field.priority:high` searches go to GitHub, Show Only and
+  Hide offer each value, and Group By Type works.
+- **Properties.** An issue's Properties has an Issue Fields page.
+- **Distinct states.** A field that is empty, not set, hidden from you, not
+  yet supported or could not be read each says so in its own words.
 ### GitHub Workbench: Merge Selected, deployments and release evidence (2026-11-19)
 
 - **Merge Selected...** merges several pull requests at once. Each one is

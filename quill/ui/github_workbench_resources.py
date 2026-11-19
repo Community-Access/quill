@@ -3,7 +3,8 @@
 The lists are described in :mod:`quill.core.github.resource_specs`; this
 mixin asks each :class:`~quill.core.github.resource_engine.Field` in turn:
 a text box, a multi-line box, a choice, a yes or no, or, for a secret, a
-password box whose answer is never said, shown or kept. Delete asks first.
+password box whose answer is never said, shown or kept: it is sealed, sent,
+and dropped from the answers once the call ends. Delete asks first.
 """
 
 from __future__ import annotations
@@ -96,7 +97,7 @@ class GitHubWorkbenchResourcesMixin:
         for one in fields:
             if one.kind == "secret":
                 found = self._ask_secret(title, one.prompt)
-                if not found:
+                if found is None or (not found and not one.optional):
                     return None
                 answers[one.key] = found
             elif one.kind in ("choice", "bool"):
@@ -132,7 +133,7 @@ class GitHubWorkbenchResourcesMixin:
         api, target = self.github_api(), ref.instance
         self._background(
             f"add the {spec.noun}",
-            lambda: create(api, spec, target, answers),
+            lambda: _then_forget(answers, spec.create, lambda: create(api, spec, target, answers)),
             self._then_reload_said,
         )
 
@@ -148,7 +149,9 @@ class GitHubWorkbenchResourcesMixin:
         api, target = self.github_api(), ref.instance
         self._background(
             f"change the {spec.noun}",
-            lambda: edit(api, spec, target, item_id, answers),
+            lambda: _then_forget(
+                answers, spec.edit, lambda: edit(api, spec, target, item_id, answers)
+            ),
             self._then_reload_said,
         )
 
@@ -232,3 +235,13 @@ class GitHubWorkbenchResourcesMixin:
             )
 
         self._background(f"read which repositories may use {item_id}", read, chosen)
+
+
+def _then_forget(answers: dict[str, str], fields: tuple[Any, ...], send: Callable[[], Any]) -> Any:
+    """Send, then drop every secret answer, whether GitHub took it or not (decision 12)."""
+    try:
+        return send()
+    finally:
+        for one in fields:
+            if one.kind == "secret":
+                answers.pop(one.key, None)

@@ -7,9 +7,10 @@ forum: questions, ideas and announcements, with threaded replies, answers and
 polls. Security alerts are GitHub telling a repository about a vulnerable
 package, a weakness in the code, or a secret committed by mistake. This
 chapter covers reading and taking part in both, a repository's security
-policy and advisories, reporting a vulnerability privately, searching GitHub's
-Advisory Database, and saving a software bill of materials for a security
-review.
+policy and advisories, reporting a vulnerability privately, letting a blocked
+secret through, reviewing a pull request's dependencies, an organization's
+security overview, setting secrets safely, searching GitHub's Advisory
+Database, and saving a software bill of materials for a security review.
 
 ## Discussions
 
@@ -167,6 +168,59 @@ Dismissed and fixed alerts have their own view, **Dismissed and resolved
 security alerts**. There, **Reopen Alert...** on the context menu asks first,
 then reopens the alert.
 
+### Copilot Autofix
+
+On a code scanning alert, **Copilot Autofix...** says whether Copilot has a
+suggested fix. When it has none, QUILL Lite offers to ask for one; when the fix is
+ready, it offers to commit it to a branch you name, with a commit message you
+may leave empty, so it can go through a pull request like any other change.
+**Show Every Place** lists each file and line the alert was found in.
+
+### Letting a blocked secret through
+
+When push protection is on, GitHub refuses a push that contains something
+that looks like a password or key, and `git push` prints a placeholder id for
+each one. If the secret is not real, is only used in tests, or you will fix
+it later, select the repository and choose **Allow a Blocked Secret...** on
+its context menu. QUILL Lite asks for the placeholder id, then why, from GitHub's
+three reasons: "It is not really a secret (a false positive)", "It is only
+used in tests", or "It is real, and I will fix it later". It asks once more,
+naming the repository, because the secret will stay in the repository's
+history. Then you hear how long the allowance lasts, such as "GitHub will let
+the GitHub personal access token through until 2026-11-19 at 18:00 UTC. Push
+again now; GitHub keeps an alert for it."
+
+### Requests to dismiss or bypass
+
+Some organizations want a security manager to approve each dismissal or
+push protection bypass. GitHub offers those requests, and reviewing them,
+only on GitHub Enterprise Cloud, which QUILL Lite does not support; review them on
+GitHub's own security page with **Open on GitHub**.
+
+## Dependency review on a pull request
+
+Before you merge a pull request, it helps to know what it does to your
+dependencies. On a pull request's context menu, **Dependency Review** compares
+the dependency graph at the pull request's base commit with its head commit
+and shows the answer in a window to read. The first line is the summary:
+"Added 3, removed 1. 1 added dependency has known vulnerabilities." Each
+change follows, the vulnerable ones first: "Added: lodash 4.17.20 (npm,
+package.json), licence MIT. Vulnerable: high, GHSA-p6mc-m468-83gw, Prototype
+Pollution in lodash." A repository whose dependency graph is off says so in
+words. **Compare Dependencies...** on a repository does the same between any
+two branches, tags or commits you type.
+
+## An organization's security overview
+
+On an organization's context menu, **Security Overview** counts the open
+alerts in every repository you can see there, worst first: "acme/web: 3
+Dependabot (1 critical, 2 high); 1 code scanning (high); 2 secret scanning."
+A totals line follows. If GitHub will not show you one kind, that kind is
+named and the reason given, never counted as none: missing permission is not
+the same as no risk. GitHub sends 100 alerts of a kind at a time; when a kind
+reaches that, QUILL Lite says so and points you to the organization's own alert
+lists, under the organization in the tree, for the rest.
+
 ## Security policy and reporting
 
 Found a security hole in someone's project? Do not open a public issue: tell
@@ -205,14 +259,45 @@ who is credited, and the full description.
 On an advisory's context menu:
 
 - **Publish or Close Advisory...** publishes it, closes it, or makes it a
-  draft again. Publishing makes it public for good, puts it in GitHub's
+  draft again. A report someone sent privately reads "private report to
+  review"; on it, the same command offers **Accept it**, which makes it a draft
+  advisory that you and the reporter work on, or **Close it**. Publishing makes it public for good, puts it in GitHub's
   Advisory Database and alerts the projects that depend on the package, so
   QUILL Lite asks you to type its GHSA id first.
 - **Request CVE...** asks GitHub for a CVE number for a draft. GitHub reviews
   each request, so the number comes later.
 
-Comments on a draft advisory, and the temporary private fork GitHub offers for
-working on the fix, are still on GitHub's own page: **Open on GitHub**.
+On a draft, **Advisory Comments**, **Comment on Advisory...** and **Edit an
+Advisory Comment...** are its private discussion, and **Make a Private Fork for
+the Fix** makes the temporary private fork GitHub offers for working on it.
+
+## Secrets
+
+A secret is a value a workflow, Dependabot, a codespace or the Copilot agent
+uses but nobody reads again, such as a deploy token. They are lists in the
+tree: a repository's **Settings**, an organization's own node, and an
+environment's **Secrets...** on its row. Each row says the secret's name and
+when it changed: "Secret DEPLOY_TOKEN, changed 2026-11-02. Its value is never
+shown."
+
+A secret's value only ever goes one way, to GitHub:
+
+- **New Here** (`Ctrl+N`) asks for its name, then its value in a password box.
+  QUILL Lite seals the value on this computer with that repository's,
+  environment's or organization's own public key (a libsodium sealed box, as
+  GitHub requires) and sends only the sealed form. The value is never read
+  back, said, shown, logged or kept: once the call ends, it is gone.
+- **Change...** on a secret's row sends a new value the same way. For an
+  organization's secret you may leave the value empty to keep it, and choose
+  which of the organization's repositories may use it: **all**, **private**,
+  or **selected**.
+- **Repositories Allowed...** on a selected secret checks the repositories
+  that may use it now; check or uncheck them, and QUILL Lite adds and removes them
+  one at a time, so a change somebody else made meanwhile is kept.
+- A repository's Actions secret also has a **Properties** sheet. Its **New
+  value** box is a password box that always opens empty; Copy as Text says
+  "hidden", the preview before it is sent says "(hidden)", the box is emptied
+  once GitHub has it, and Change History records only that it was set.
 
 ## Searching the Advisory Database
 

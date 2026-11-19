@@ -90,6 +90,8 @@ class Read:
     query: Callable[[Ident], dict[str, str]] | None = None
     pick: Callable[[Mapping[str, Any], Ident], dict[str, Value]] | None = None
     """Like *extract*, for a read that needs the ident (one asset out of a release's list)."""
+    fetch: Callable[[Any, Ident], dict[str, Value]] | None = None
+    """Reads of its own (an issue's fields: definitions, then values); says failures as values."""
 
 
 @dataclass(frozen=True)
@@ -220,6 +222,9 @@ def load(api: GitHubApi, sheet: SheetDef, ident: Ident) -> Loaded:
     viewer: dict[str, bool] = {}
     missing: list[str] = []
     for read in sheet.reads:
+        if read.fetch is not None:
+            values.update(read.fetch(api, ident))
+            continue
         try:
             if read.graphql:
                 variables = read.variables(ident) if read.variables else dict(ident)

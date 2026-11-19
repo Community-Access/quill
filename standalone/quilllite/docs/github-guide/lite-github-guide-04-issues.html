@@ -548,6 +548,42 @@ sub-issue in your browser.</li>
 </ul>
 <p>On a pull request, the submenu holds only Lock and Unlock, because
 the others are for issues.</p>
+<h2 id="issue-types-and-fields">Issue types and fields</h2>
+<p>An organization can give every issue extra values of its own, such as
+Priority, Points or Due date. In the GitHub Workbench, <strong>Issue
+Fields…</strong> on an issue’s context menu lists each one with this
+issue’s value, and choosing one sets or clears it; only that field is
+sent.</p>
+<p>Each value keeps its type: a date reads as a date (2026-12-31), a
+number as a number (3, or 2.5), a single choice as the choice’s name,
+several choices as their names, and text as text.</p>
+<ul>
+<li><strong>Columns.</strong> In a Workbench Issues list,
+<strong>Columns…</strong> (<code>Ctrl+Shift+U</code>, on the Workbench’s
+own View menu) offers <strong>Issue type</strong> and <strong>Issue
+fields</strong>. Neither shows until you choose it, because the fields
+cost GitHub one request an issue; with Issue fields chosen, QUILL Lite
+reads the first 30 issues of the list. A cell reads “Priority: High;
+Due: 2026-12-31; Notes: empty; Owner: not set”.</li>
+<li><strong>Details.</strong> An issue’s details name its type, and once
+its fields are read, each field in full, such as “Field Due (date, field
+2): 2026-12-31”.</li>
+<li><strong>Filters.</strong> GitHub’s own search answers
+<code>type:Bug</code> and <code>field.priority:high</code>, so type
+either in the filter box. <strong>Show Only</strong> and
+<strong>Hide</strong> on an issue offer its type and each field value.
+<strong>Group By</strong>, then <strong>Type</strong>, on the same menu
+groups the list by issue type.</li>
+<li><strong>Properties.</strong> An issue’s Properties sheet
+(<code>Alt+Enter</code>) has an <strong>Issue Fields</strong> page after
+Organize, with one read-only field each, of its own kind. <strong>Issue
+Fields…</strong> on the row changes them.</li>
+</ul>
+<p>The states never sound alike, so a missing permission never looks
+like an empty field: a value (“Priority: High”), set to nothing
+(“empty”), not set, hidden from you, a kind QUILL Lite does not edit yet
+(shown with “read only”), and a read that failed (“unreadable”, with
+why).</p>
 <h2 id="closing-branches-and-task-lists">Closing, branches and task
 lists</h2>
 <p>In the GitHub Workbench, Shift+F10 on an issue has these too.</p>

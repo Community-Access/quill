@@ -7,11 +7,15 @@ names are re-exported from ``sheet_engine``, which is where callers import them.
 
 from __future__ import annotations
 
+from collections.abc import Collection, Sequence
 from dataclasses import dataclass, field
 
 from quill.core.workbench.properties import MIXED, FieldChange, Value
 
-__all__ = ["SaveOutcome", "sentence"]
+__all__ = ["HIDDEN_CHANGE", "SaveOutcome", "mask_secrets", "sentence"]
+
+#: What a preview says for a write-only value instead of the value itself.
+HIDDEN_CHANGE = "(hidden)"
 
 
 @dataclass
@@ -78,3 +82,18 @@ def sentence(name: str, outcome: SaveOutcome) -> str:
         names = ", ".join(c.label.lower() for c in outcome.conflicts)
         parts.append(f"Changed on GitHub since you opened this: {names}. Nothing was saved.")
     return " ".join(parts) or f"{name}: nothing changed."
+
+
+def mask_secrets(
+    changes: Sequence[FieldChange], secret_fields: Collection[str]
+) -> list[FieldChange]:
+    """*changes* for a preview: a write-only field's typed value replaced by "(hidden)".
+
+    Decision 12: a secret is never shown or said, and that includes the
+    preview before it is sent. Only the words use these; the save is sent
+    the real changes.
+    """
+    return [
+        FieldChange(c.key, c.label, None, HIDDEN_CHANGE) if c.key in secret_fields else c
+        for c in changes
+    ]

@@ -2252,7 +2252,7 @@ list.</td>
 (<code>organization:org_secret_alerts</code>)</td>
 <td>organization, organization</td>
 <td>Secret Scanning Alerts: secrets found in any repository. The secret
-itself is never shown here.</td>
+itself is never asked for, so it is never shown here.</td>
 </tr>
 <tr>
 <td>Security Advisories (<code>organization:org_advisories</code>)</td>
@@ -3291,7 +3291,7 @@ Codespaces…, Commit Comments…, View Timeline…, Read as Document…,
 Summarize Discussion, React…, Labels…, Assignees…, Milestone…,
 Projects…, Edit Title…, Add to or Remove from Favorites, Re-request
 Review…, Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn
-Off Agent Merge…; Properties…</li>
+Off Agent Merge…, Dependency Review; Properties…</li>
 <li><strong>run</strong>: Jobs and Logs, What Failed…, Re-run Failed
 Jobs Only, Re-run Workflow, Cancel Run…, Re-run One Job…; More: Force
 Cancel…, Download Logs…, Delete Logs…, Approvals, Earlier Attempts…,
@@ -3332,7 +3332,7 @@ Agent Tasks, An Agent Task’s Progress…, Automations, New Automation…,
 Run an Automation…, Rename an Automation…, Delete an Automation…, An
 Automation’s History…, An Automation’s Tasks…, Automation Tools and
 Triggers, Agent Secrets from the Organization, Agent Variables from the
-Organization; Properties…</li>
+Organization, Allow a Blocked Secret…; Properties…</li>
 <li><strong>person</strong>: Open, Follow or Unfollow, Open on GitHub;
 Properties…</li>
 <li><strong>label</strong>: Find Issues with Label, Edit Label…, Delete
@@ -3379,8 +3379,8 @@ Repository…, Take a Repository from Dependabot…, Dependabot’s Default
 Access…, Make Someone an Outside Collaborator…, Define a Custom
 Property…, Set Repositories’ Custom Property…, New Team…, Accept
 Membership, Members Without Two-Factor, My Activity Here, Require
-Sign-off on Web Commits…, Follow Organization, Unfollow Organization;
-Properties…</li>
+Sign-off on Web Commits…, Follow Organization, Unfollow Organization,
+Security Overview; Properties…</li>
 <li><strong>favorite</strong>: Open, Copy Link, Open on GitHub, Add to
 or Remove from Favorites; Properties…</li>
 <li><strong>admin_action</strong>: Open; Properties…</li>
@@ -3747,7 +3747,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 852 yes, 0 planned, 288 not needed and 867 left to
+<p>In all: 853 yes, 0 planned, 288 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -12232,7 +12232,7 @@ repository’s Labels node already lists and filters them.</td>
 </tbody>
 </table>
 <h4 id="secret-scanning">Secret scanning</h4>
-<p>17 operations: 5 yes, 1 not needed, 11 left to github.</p>
+<p>17 operations: 6 yes, 1 not needed, 10 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -12342,10 +12342,8 @@ reads the list.</td>
 <tr>
 <td>Create a push protection bypass</td>
 <td><code>POST /repos/{owner}/{repo}/secret-scanning/push-protection-bypasses</code></td>
-<td>Left to GitHub</td>
-<td>A push that secret scanning blocks is let through from git push
-itself, with the link GitHub prints there; it is not a Workbench
-step.</td>
+<td>Yes</td>
+<td>context menu &gt; Allow a Blocked Secret…</td>
 </tr>
 <tr>
 <td>Get secret scanning scan history for a repository</td>

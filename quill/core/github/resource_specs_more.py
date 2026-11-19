@@ -131,6 +131,11 @@ def _alert(raw: Mapping[str, Any], what: str) -> str:
     return f"{where}: {what}, {raw.get('state') or 'open'}{_day(raw, 'created_at')}."
 
 
+def _advisory_state(raw: Mapping[str, Any]) -> str:
+    state = str(raw.get("state") or "draft")
+    return "private report to review" if state == "triage" else state
+
+
 MORE_SPECS: tuple[ResourceSpec, ...] = (
     # -- your account ------------------------------------------------------------------------
     ResourceSpec(
@@ -340,8 +345,9 @@ MORE_SPECS: tuple[ResourceSpec, ...] = (
         sentence=lambda raw: _alert(raw, str(raw.get("secret_type_display_name") or "a secret")),
         help=(
             "Secret Scanning Alerts: secrets found in any repository. The secret itself is "
-            "never shown here."
+            "never asked for, so it is never shown here."
         ),
+        query=(("hide_secret", "true"),),
         page="https://github.com/orgs/{target}/security/alerts/secret-scanning",
         delete=False,
     ),
@@ -355,7 +361,8 @@ MORE_SPECS: tuple[ResourceSpec, ...] = (
         id_field="ghsa_id",
         sentence=lambda raw: (
             f"{raw.get('ghsa_id')}: {raw.get('summary') or 'an advisory'}, "
-            f"{raw.get('severity') or 'unrated'}, {raw.get('state') or 'draft'}."
+            f"{raw.get('severity') or 'unrated'}, "
+            f"{_advisory_state(raw)}."
         ),
         help="Security Advisories: the repository advisories across this organization.",
         page="https://github.com/orgs/{target}/security",

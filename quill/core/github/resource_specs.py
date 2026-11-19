@@ -49,9 +49,23 @@ _SECRET_NEW = (
 )
 _VISIBILITY = Field(
     "visibility",
-    "Which of the organization's repositories may use it?",
+    "Which of the organization's repositories may use it? (selected: you choose them with "
+    "Repositories Allowed)",
     "choice",
-    ("all", "private"),
+    ("all", "private", "selected"),
+)
+#: A secret's value is write-only (decision 12): Change sends a new one, sealed, or for an
+#: organization's secret may keep it and change only which repositories may use it.
+_SECRET_CHANGE = (Field("value", "The new value. It is sealed before it leaves this computer:",
+                        kind="secret"),)  # fmt: skip
+_ORG_SECRET_CHANGE = (
+    Field(
+        "value",
+        "A new value, sealed before it leaves this computer (empty keeps the value it has):",
+        kind="secret",
+        optional=True,
+    ),
+    _VISIBILITY,
 )
 _VARIABLE_NEW = (
     Field("name", "The variable's name, such as RELEASE_CHANNEL:"),
@@ -79,6 +93,8 @@ def _secrets(
         create_method="PUT",
         create_path="{list}/{id}",
         seal=True,
+        edit=_ORG_SECRET_CHANGE if org else _SECRET_CHANGE,
+        edit_method="PUT",
         repositories="/repositories" if scope != "repository" else "",
     )
 
@@ -99,7 +115,11 @@ def _variables(
         help=help_,
         page=page,
         create=(*_VARIABLE_NEW, _VISIBILITY) if org else _VARIABLE_NEW,
-        edit=(Field("value", "The new value:"),),
+        edit=(
+            (Field("value", "The new value (empty keeps it):", optional=True), _VISIBILITY)
+            if org
+            else (Field("value", "The new value:"),)
+        ),
         repositories="/repositories" if org else "",
     )
 

@@ -259,7 +259,11 @@ class PropertiesSheet:
         style = 0 if self.editable(spec) else wx.TE_READONLY
         if spec.kind is FieldKind.MULTILINE:
             style |= wx.TE_MULTILINE | wx.TE_WORDWRAP
-        if mixed:
+        secret = spec.kind is FieldKind.SECRET
+        if secret:  # write-only (decision 12): a password box that always opens empty
+            style |= wx.TE_PASSWORD
+            text = ""
+        elif mixed:
             text = "Mixed"
         elif self.editable(spec) and isinstance(value, tuple):
             text = ", ".join(str(v) for v in value)
@@ -268,7 +272,7 @@ class PropertiesSheet:
         else:
             text = field_text(value)
         control = wx.TextCtrl(panel, value=text, style=style)
-        set_spoken_name(control, spec.label)
+        set_spoken_name(control, f"{spec.label}, hidden as you type" if secret else spec.label)
         control.SetHelpText(self._help(spec))
         if spec.kind is FieldKind.MULTILINE:
             control.SetMinSize(dip_size(panel, 400, 150))
@@ -378,7 +382,11 @@ class PropertiesSheet:
             return
         self.state.loaded.update(values)  # type: ignore[arg-type]
         for spec in self.sheet.fields():
-            if self.editable(spec) and spec.key in values:
+            if spec.kind is FieldKind.SECRET:  # sent: the typed value leaves the box
+                self.state.loaded.pop(spec.key, None)
+                self._set(spec, "")
+                self._initial[spec.key] = ""
+            elif self.editable(spec) and spec.key in values:
                 self._set(spec, values[spec.key])
                 self._initial[spec.key] = self.value_of(spec)
         self.status.SetValue(said)

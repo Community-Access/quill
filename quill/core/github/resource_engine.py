@@ -110,6 +110,7 @@ class ResourceSpec:
     # Refuses a delete that would lock you out: (api, target, id) to a sentence, or "".
     guard: Callable[[GitHubApi, str, str], str] | None = None
     typed_delete: bool = False  # Delete asks for the row's name typed (tier 3)
+    query: tuple[tuple[str, str], ...] = ()  # sent with every list read ("hide_secret")
 
     def base(self, target: str) -> str:
         return BASES[self.scope][0].replace("{target}", target)
@@ -186,7 +187,9 @@ def fetch(
         except GitHubRestError as exc:
             raise _refused(exc, f"read the {spec.label}") from exc
     try:
-        data = api.rest("GET", spec.path(target), query={"per_page": "100"}).data
+        data = api.rest(
+            "GET", spec.path(target), query={"per_page": "100", **dict(spec.query)}
+        ).data
     except GitHubRestError as exc:
         raise _refused(exc, f"list the {spec.noun}s") from exc
     items = data.get(spec.items_key) if spec.items_key and isinstance(data, Mapping) else data
@@ -364,7 +367,7 @@ def allowed_repositories(
         if exc.status == 409:
             raise ResourceError(
                 f"This {spec.noun} is available to all or to private repositories, not to a "
-                "chosen few. Change its visibility to Selected repositories first."
+                "chosen few. Change it on its row and choose Selected repositories first."
             ) from exc
         raise _refused(exc, f"read which repositories may use the {spec.noun}") from exc
     return sorted(_repos(reply.data), key=lambda repo: repo.name.lower())
