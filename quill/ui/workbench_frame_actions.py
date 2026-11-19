@@ -108,14 +108,18 @@ class WorkbenchActionsMixin:
             for row in rows:
                 label = lettered(self.toggle_words(row.command_id, row.label), used)  # item 29
                 key = keys.get(row.command_id, "")
-                item = target.Append(wx.ID_ANY, f"{label}\t{key}" if key else label, row.help)
-                item.Enable(self.can_run(row.command_id))
+                able = self.can_run(row.command_id)
+                said = row.help if able else f"{self.reason(row.command_id)} {row.help}".strip()
+                item = target.Append(wx.ID_ANY, f"{label}\t{key}" if key else label, said)
+                item.Enable(able)
                 target.Bind(wx.EVT_MENU, lambda _e, c=row.command_id: self.run(c), item)
 
         used: set[str] = set()
+        self.hear_greyed(menu)  # a dimmed row says why when you reach it (item 25)
         fill(menu, top[:-1], used)
         if more:
             sub = wx.Menu()
+            self.hear_greyed(sub)
             fill(sub, more, set())
             menu.AppendSubMenu(sub, lettered("More", used))
         self._cell_filters(menu, window, used)

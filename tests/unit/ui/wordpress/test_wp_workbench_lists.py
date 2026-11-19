@@ -330,3 +330,39 @@ def test_the_context_menu_gives_every_row_a_letter_and_its_key(bench, monkeypatc
         assert all(letters) and len(letters) == len(set(letters)), (name, rows)
     assert any(label.startswith("&More") or "&" in label for label in seen["top"])
     assert any("\tCtrl+Shift+P" in label for label in seen["top"] + seen.get("More", []))
+
+
+def test_a_greyed_row_says_why_and_shift_f1_says_who_you_are(bench, monkeypatch) -> None:
+    """Item 25: the reason is the provider's own, spoken when the row is reached."""
+    _posts(bench)
+    bench.focus_row(0)
+    said = bench.reason(command("toggle_plugin"))  # a plugin command, on a post
+    assert said == "It does not apply to this kind of row."
+    assert bench.provider.role_words().startswith("You are an Editor on ")
+    prompts: list[str] = []
+
+    class _Dialog:
+        def __init__(self, _parent, _title, prompt, _choices) -> None:
+            prompts.append(prompt)
+
+        def show(self) -> None:
+            return None
+
+    import quill.ui.workbench_frame_help as help_module
+
+    monkeypatch.setattr(help_module, "ActionListDialog", _Dialog)
+    bench.what_can_i_do()
+    assert prompts and prompts[0].startswith("You are an Editor on ")
+
+
+def test_reaching_a_dimmed_menu_row_speaks_its_reason(bench) -> None:
+    menu = wx.Menu()
+    bench.hear_greyed(menu)
+    dimmed = menu.Append(wx.ID_ANY, "&Install", "Installing needs the Administrator role.")
+    dimmed.Enable(False)
+    working = menu.Append(wx.ID_ANY, "&Read", "Read it.")
+    bench.said.clear()
+    for item in (working, dimmed, dimmed):
+        menu.ProcessEvent(wx.MenuEvent(wx.wxEVT_MENU_HIGHLIGHT, item.GetId(), menu))
+    assert bench.said == ["Installing needs the Administrator role."]  # once, dimmed only
+    menu.Destroy()

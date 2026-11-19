@@ -36,6 +36,16 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress Workbench: a dimmed row says why (2026-11-18)
+
+Review item 25: the reason a row was dimmed went to a status bar nobody hears,
+context menus gave none, and every dimmed row said "Not available here."
+Now arrowing to a dimmed row, in the menu bar or a context menu, speaks the
+Workbench's own reason once ("Publishing pages needs the Editor role or
+higher. You are an Author on Community Radio."), and Shift+F1, What Can I Do
+Here?, starts with who you are on the site and your Workbench access. The
+GitHub Workbench's dimmed rows speak their reasons the same way.
+
 ### WordPress: menu letters that work, and agree with the WordPress keys (2026-11-18)
 
 Review items 15 and 16:

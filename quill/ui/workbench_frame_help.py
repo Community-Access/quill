@@ -124,9 +124,10 @@ class WorkbenchHelpMixin:
             if not able:
                 text += f", greyed: {self.reason(row.command_id)}"
             choices.append(ActionChoice(text, able, lambda c=row.command_id: self.run(c), row.help))
-        ActionListDialog(
-            self.frame, "What Can I Do Here", "Actions for the selection:", choices
-        ).show()
+        hook = self._hook("role_words")  # who you are here, when the provider knows (item 25)
+        role = str(hook() or "") if hook else ""
+        prompt = f"{role} Actions for the selection:".strip()
+        ActionListDialog(self.frame, "What Can I Do Here", prompt, choices).show()
 
     def what_is_this(self) -> None:
         hook = self._hook("glossary_for")

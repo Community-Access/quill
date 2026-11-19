@@ -114,11 +114,13 @@ class WorkbenchCommandsMixin:
         bar = wx.MenuBar()
         for spec in self.provider.menu:
             menu = wx.Menu()
+            self.hear_greyed(menu)
             for row in spec.rows:
                 if row is None:
                     menu.AppendSeparator()
                 elif isinstance(row, MenuSub):
                     sub = wx.Menu()
+                    self.hear_greyed(sub)
                     if row.dynamic:
                         self._dynamic_menus[row.dynamic] = sub
                     for inner in row.rows:
@@ -162,6 +164,28 @@ class WorkbenchCommandsMixin:
             for index, (label, action) in enumerate(entries[:9], start=1):
                 item = sub.Append(wx.ID_ANY, f"&{index} {label}")
                 self.frame.Bind(wx.EVT_MENU, lambda _e, a=action: a(), item)
+
+    def hear_greyed(self, menu: Any) -> None:
+        """Say why a dimmed row is dimmed when it is highlighted (review item 25).
+
+        The screen reader says "unavailable" and nothing more, and the status bar
+        that would show the row's help is not where a listener is; so the reason,
+        which the app alone knows, is spoken -- once per row, never for a row that
+        works, which the reader already describes in full (GATE-13).
+        """
+        wx = self._wx
+
+        def highlighted(event: Any) -> None:
+            ident = event.GetMenuId()
+            item = menu.FindItemById(ident) if ident != wx.ID_NONE else None
+            if item is not None and not item.IsEnabled() and not item.IsSubMenu():
+                said = item.GetHelp() or self.reason("")
+                if said and said != getattr(self, "_greyed_said", ""):
+                    self._greyed_said = said
+                    self._say(said)
+            event.Skip()
+
+        menu.Bind(wx.EVT_MENU_HIGHLIGHT, highlighted)
 
     def _fill_row_actions(self, sub: Any) -> None:
         """Item > Commands for This Row: all the context menu has, More included (item 31)."""

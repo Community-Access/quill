@@ -248,7 +248,6 @@ Ten of the eleven are fixed (checked 2026-11-18; five by #1837, five by the Word
 
 ###### What is heard, and what is not
 
-25. The reason a row is greyed is never heard: menu help goes to a status pane that does not exist, context menus give no reason, and every greyed row says "Not available here." Shift+F1 opens a generic list instead of the provider's real "your role and what each action needs" view.
 
 ###### Structure and consistency
 
