@@ -23,8 +23,12 @@ def fill_inbox(host: Any, pairs: list[tuple[Any, Any]]) -> None:
     host._fill_episodes_from_pairs(loose, lead_rows=lead)
 
 
-def open_inbox_folder(host: Any, folder_id: str, *, keep: Any = None) -> None:
-    """Enter on an Inbox folder row: that folder's Inbox episodes, in place."""
+def open_inbox_folder(host: Any, folder_id: str, *, keep: Any = None, focus: bool = True) -> None:
+    """Enter on an Inbox folder row: that folder's Inbox episodes, in place.
+
+    *focus* is False for a refill of the folder already open (FUX-06): the
+    listener may be anywhere by then, and a refresh must not pull them back.
+    """
     from quill.core.podcasts.virtual_views import virtual_view_pairs
 
     library = host._podcast_library
@@ -41,4 +45,5 @@ def open_inbox_folder(host: Any, folder_id: str, *, keep: Any = None) -> None:
     pane.set_heading(f"Inbox: {name} ({len(pairs)})" if pairs else f"Inbox: {name}")
     host._refresh_selection_buttons()
     host._refresh_notes_pane()
-    pane.focus()
+    if focus:
+        pane.focus()
