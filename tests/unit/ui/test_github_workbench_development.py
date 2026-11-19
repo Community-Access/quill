@@ -137,6 +137,36 @@ def test_create_branch_cancel_or_a_bad_name_sends_nothing(
         assert "cannot be a branch name" in window.said[0]
 
 
+def test_add_on_the_sheets_linked_branches_makes_one_and_lists_it() -> None:
+    shown: list[tuple[str, tuple[str, ...]]] = []
+    sheet = SimpleNamespace(
+        state=SimpleNamespace(loaded={"branches": ("old",)}),
+        set_table=lambda key, rows: shown.append((key, rows)),
+    )
+    state = {
+        "ident": {"repo": "o/r", "number": "7"},
+        "loaded": SimpleNamespace(values={"title": "Fix the parser"}),
+        "sheet": sheet,
+    }
+    window = _Window(typed="7-fix-the-parser")
+    window.act_on_linked_branch(state, "add", "")
+    assert window.asked == [("Create Branch for This Issue", "7-fix-the-parser")]
+    assert shown == [("branches", ("old", "7-fix-the-parser"))]
+    assert window.said[0].startswith("Made branch 7-fix-the-parser from main, linked to #7.")
+
+
+def test_read_only_refuses_add_on_the_sheet(monkeypatch: pytest.MonkeyPatch) -> None:
+    from quill.core.github.permissions import AccessLevel
+
+    monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
+    window = _Window(typed="7-fix-the-parser")
+    window.access_level = lambda: AccessLevel.READ_ONLY  # type: ignore[attr-defined]
+    state = {"ident": {"repo": "o/r", "number": "7"}, "loaded": SimpleNamespace(values={})}
+    window.act_on_linked_branch(state, "add", "")
+    assert window.asked == [] and window.api.calls == []
+    assert "read only in the Workbench" in window.said[0]
+
+
 def test_create_branch_fits_an_issue_only_and_only_signed_in() -> None:
     window = _Window()
     assert window._fits_create_branch(ISSUE) and not window._fits_create_branch(PULL)

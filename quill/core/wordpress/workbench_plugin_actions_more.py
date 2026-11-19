@@ -1,5 +1,6 @@
-"""Context-menu rows for WooCommerce's reviews, shipping, taxes, webhooks, attributes, brands,
-customers and variations, The Events Calendar's categories and tags, and Yoast SEO's bulk editor.
+"""Context-menu rows for WooCommerce's reviews, shipping, shipping classes, taxes, webhooks,
+attributes, brands, customers and variations, The Events Calendar's categories and tags, and
+Yoast SEO's bulk editor.
 
 Split from :mod:`quill.core.wordpress.workbench_plugin_actions` (GATE-11), which
 merges these in: :data:`MORE_ROWS` are new row kinds, :data:`MORE_EXTRA` go
@@ -128,6 +129,26 @@ MORE_ROWS: Mapping[str, tuple[ActionRow, ...]] = {
         _new("new_zone", "New Shipping Zone...", "A zone"),
         _RENAME,
         _DELETE,
+        _SHEET,
+    ),
+    "shop_shipping_class": (  # complete.md 2.3
+        _READ,
+        _a(
+            "change_shipping_class",
+            "Change...",
+            "Its name, slug and description, after a preview of old and new.",
+            tier=Tier.WRITE,
+            needs=_SHOP,
+        ),
+        _new("new_shipping_class", "New Shipping Class...", "A class"),
+        _a(
+            "delete_shipping_class",
+            "Delete...",
+            "Gone for good, after a preview naming it and the site: its products are left with "
+            "no shipping class, and WooCommerce keeps no Trash for it.",
+            tier=Tier.DESTRUCTIVE,
+            needs=_SHOP,
+        ),
         _SHEET,
     ),
     "shop_tax_rate": (
@@ -293,6 +314,14 @@ MORE_EXTRA: Mapping[str, tuple[ActionRow, ...]] = {
             tier=Tier.WRITE,
             needs=_SHOP,
         ),
+        _a(
+            "generate_variations",
+            "Generate Variations...",
+            "A variable product: every combination of its attributes it does not have yet, "
+            "after a preview; says how many were made.",
+            tier=Tier.WRITE,
+            needs=_SHOP,
+        ),
     ),
     "shop_customer": (
         _a(
@@ -335,6 +364,7 @@ MORE_NEW_HERE: dict[str, str] = {
     "membership_levels": "do_new_membership_level",
     "redirect_groups": "do_new_redirect_group",
     "shop_shipping": "do_new_zone",
+    "shop_shipping_classes": "do_new_shipping_class",
     "shop_taxes": "do_new_tax_rate",
     "shop_tax_classes": "do_new_tax_class",
     "shop_webhooks": "do_new_webhook",
@@ -364,6 +394,11 @@ MORE_KEYLESS: dict[str, str] = {
     _c("new_zone"): _NEW,
     _c("rename_shop_item"): _RARE,
     _c("delete_shop_item"): _GONE,
+    _c("change_shipping_class"): _RARE,
+    _c("new_shipping_class"): _NEW,
+    _c("delete_shipping_class"): _GONE,
+    _c("generate_variations"): "Run when a variable product gains an attribute value, behind a "
+    "preview (rule 9).",
     _c("edit_tax_rate"): _RARE,
     _c("new_tax_rate"): _NEW,
     _c("new_tax_class"): _NEW,

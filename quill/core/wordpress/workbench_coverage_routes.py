@@ -138,6 +138,14 @@ COVERED: tuple[tuple[str, str], ...] = (
     ),
     (r"wc/v3/products/brands(/\(\?P<[a-z_]*id>[^)]*\))?$", "Sites > site > Shop > Brands"),
     (
+        r"wc/v3/products/shipping_classes(/\(\?P<id>[^)]*\))?$",
+        "Sites > site > Shop > Shipping Classes, and a product's Properties",
+    ),
+    (
+        r"wc/v3/products/\(\?P<product_id>[^)]*\)/variations/generate$",
+        "a Shop product's Generate Variations",
+    ),
+    (
         r"wc/v3/customers/\(\?P<[a-z_]*id>[^)]*\)$",
         "a Shop customer's Customer Details and Edit Customer",
     ),

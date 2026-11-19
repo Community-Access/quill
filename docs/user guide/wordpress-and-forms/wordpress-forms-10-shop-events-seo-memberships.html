@@ -285,9 +285,9 @@ Products</strong>, <strong>On Sale</strong>, <strong>Out of
 Stock</strong>, <strong>Shop Orders</strong>,
 <strong>Customers</strong>, <strong>Coupons</strong>, <strong>Shop
 Reports</strong>, <strong>Store Settings</strong>, <strong>Product
-Reviews</strong>, <strong>Shipping Zones</strong>, <strong>Tax
-Rates</strong>, <strong>Tax Classes</strong>,
-<strong>Attributes</strong>, <strong>Brands</strong>,
+Reviews</strong>, <strong>Shipping Zones</strong>, <strong>Shipping
+Classes</strong>, <strong>Tax Rates</strong>, <strong>Tax
+Classes</strong>, <strong>Attributes</strong>, <strong>Brands</strong>,
 <strong>Webhooks</strong>, <strong>Payment Gateways</strong> and
 <strong>System Status</strong>.</p>
 <h3 id="products">Products</h3>
@@ -308,11 +308,22 @@ old values back.</li>
 <li><strong>Properties…</strong> (<code>Alt+Enter</code>) on a product
 has every field WooCommerce lets you change: SKU, description and short
 description, sale dates, weight and dimensions, shipping and tax class,
-images, downloads, upsells and cross-sells. A list or a group of values
-is a box of JSON that QUILL checks before it saves.</li>
+images, downloads, upsells and cross-sells. The shipping class is chosen
+by name from the shop’s Shipping Classes, or No shipping class. A list
+or a group of values is a box of JSON that QUILL checks before it
+saves.</li>
 <li><strong>Show Its Variations</strong> lists a product’s variations,
 and <strong>Edit a Variation…</strong> changes one’s price, sale price,
 stock, or whether it is for sale.</li>
+<li><strong>Generate Variations…</strong> on a variable product makes a
+variation for every combination of its attributes that it does not have
+yet. The preview says how many combinations there are and how many
+variations it has now; afterwards QUILL says how many it made. Existing
+variations are never changed or removed. WooCommerce makes at most 50 at
+a time, so a large product may need it again. A new variation has no
+price until you give it one with Edit a Variation. Ctrl+Z deletes the
+ones it made. On a product that is not variable, or has no attribute
+used for variations, QUILL says why and sends nothing.</li>
 <li><strong>Duplicate…</strong> makes a copy, and <strong>Move to
 Trash…</strong> sends one to WooCommerce’s Trash.</li>
 </ul>
@@ -387,6 +398,14 @@ takes a list such as
 it on or off, change its cost or remove it, or add flat rate, free
 shipping or local pickup. <strong>Rename…</strong> and
 <strong>Delete…</strong> are there too.</li>
+<li><strong>Shipping Classes</strong> lists each class, such as Heavy
+items, with its slug and how many products are in it. Ctrl+N makes one:
+give it a name, and a slug and description if you want them.
+<strong>Change…</strong> changes its name, slug or description, and
+Ctrl+Z puts them back. <strong>Delete…</strong> removes a class for
+good, after a preview naming the class and the site: its products are
+left with no shipping class, and any rate a zone set for it stops
+applying. A product is put in a class from its Properties.</li>
 <li><strong>Tax Rates</strong>: Ctrl+N makes a rate, <strong>Edit Tax
 Rate…</strong> changes its name, percentage and where it applies, and
 <strong>Delete…</strong> removes one. A deleted rate comes back with

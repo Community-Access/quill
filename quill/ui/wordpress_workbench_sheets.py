@@ -193,6 +193,8 @@ class WorkbenchSheetCommands:
         values = values_for(row, fresh, term_names=term_names, author_names=author_names)
         if row.kind == "user" and hasattr(self, "with_access_page"):  # PMPro's Has Access
             sheet = self.with_access_page(ctx, sheet, values)
+        if row.kind == "shop_product" and hasattr(self, "with_shipping_classes"):  # by name
+            sheet = self.with_shipping_classes(api, sheet, values)
         if row.kind == "item":  # Author and Template as choices, as wp-admin offers (9.18)
             from quill.core.wordpress import workbench_parity as wpp
 
@@ -547,11 +549,7 @@ class WorkbenchSheetCommands:
                 ),
             }
 
-        self.background(
-            f"reading {site}",
-            work,
-            lambda values: self._site_editor(site, values).show(),
-        )
+        self.background(f"reading {site}", work, lambda v: self._site_editor(site, v).show())
 
     def _site_editor(self, site: str, values: dict[str, Any]) -> Any:
         parts = self.site_sheet_with_spam(site, SITE_SHEET, values)  # type: ignore[attr-defined]
