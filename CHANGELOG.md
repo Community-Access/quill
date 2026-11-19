@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### Plans: the family UX pilots are chosen (2026-11-19)
+
+The five open decisions from the family UX plan are made and written down in
+`docs/design/2026-11-19-family-ux-pilots.md`. The pilots are Quill Cast and
+QUILL Lite, and the work starts with truthful results and lists that stay
+still, though lost work or misdirected input always comes first. The one
+cross-app journey is "I heard something worth keeping", which runs from Cast
+to a saved place to QUILL. Each app owns its own audio, shared preferences
+stay narrow and opt-in, and dictated text goes only to the place it began.
+Both pilots' PRDs now carry what was accepted for them.
+
 ### Workbench: a dialog no longer blocks the editor (2026-11-19)
 
 Opening Properties, a picker or any other dialog from the GitHub or WordPress
