@@ -247,7 +247,39 @@ def test_search_and_upkeep_lists_each_check_with_its_source(bench) -> None:
     assert states["sitemap"] == "found"
     assert states["overdue:9"] == "overdue"
     assert states["certificate"] == "valid now"
+    assert states["cron"] == "not checked here"
     assert all("Where this comes from:" in r.detail for r in bench.rows)
+
+
+class _CrontrolApi(RedirectApi):
+    """The same site with WP Crontrol active (no REST route of its own is recorded)."""
+
+    def get(self, route: str, **params: Any) -> Any:
+        if route == "wp/v2/plugins":
+            return [{"plugin": "wp-crontrol/wp-crontrol", "status": "active"}]
+        return super().get(route, **params)
+
+
+def test_other_scheduled_tasks_open_wp_crontrol_where_it_is_active(
+    wx_session_app, tmp_path
+) -> None:
+    tx.clear_cache()
+    frame = _bench(_CrontrolApi(), tmp_path)
+    try:
+        _go(frame, NodeRef("site", "site_upkeep", SITE))
+        row = next(r for r in frame.rows if r.key == "cron")
+        assert row.cell("state") == "WP Crontrol active"
+        assert "Only scheduled posts and pages can be checked from here" in row.detail
+        assert row.link == (
+            "https://radio.example/wp-admin/tools.php?page=crontrol_admin_manage_page"
+        )
+        frame.provider.do_open_on_site(None, row)
+        assert frame.commands.host.opened[-1] == row.link
+        sent = [w for w in frame.api.writes if "crontrol" in str(w)]
+        assert not sent  # nothing is asked of a WP Crontrol route
+    finally:
+        frame.frame.Destroy()
+        tx.clear_cache()
 
 
 def test_administration_areas_have_every_row_and_go_there(bench) -> None:
