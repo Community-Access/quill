@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### GitHub Workbench: a You page for your own relationships (2026-11-19)
+
+Properties now has a **You** page, right after General, on repositories,
+gists, people, organizations, issues, pull requests, discussions, releases and
+notifications. It shows where you stand with the item: starred, watch level,
+following, blocked, subscribed, your reactions, upvoted and pinned. Each can be
+changed there, for one item or for many selected at once. What GitHub does not
+let QUILL change is shown with a sentence saying why: profile pins, custom
+watching, a pull request's pin, and sponsoring, which spends money and is done
+from the person's Sponsor place.
+
 ### GitHub Workbench: discussion polls, the spotlight and categories (2026-11-19)
 
 - A discussion's poll is now a table showing each option, its votes, its
