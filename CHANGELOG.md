@@ -2,6 +2,13 @@
 
 ## 1.0.0
 
+### Plans: the WordPress backlog (2026-11-19)
+
+The WordPress decisions still open have moved from the open-work list to a
+Backlog section in the WordPress Workbench PRD. They are which areas get
+first-class integrations, a WordPress-layer key for page commands, and a tree
+node for menu items. Rank Math staying read only is confirmed.
+
 ### Quill Cast: lists stay still while new episodes arrive (2026-11-19)
 
 A feed refresh, a finished download or a change to the queue no longer moves

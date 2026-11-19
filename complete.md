@@ -112,7 +112,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 - **Backups:** snapshots and WXR (WordPress's export file) only.
 - **Security:** no Security Review for now.
 - **Plugin scope:** WooCommerce and Yoast are in, with QAF, Gravity Forms and PMPro.
-- **Rank Math:** read only (assumed; Jeff did not answer).
+- **Rank Math:** read only (confirmed by Jeff, 2026-11-19).
 
 ### 2.3 Missing in QUILL
 
@@ -157,12 +157,6 @@ All of the following has tests over recorded or fake answers and none has met a 
 - [ ] **PMPro, live:** WordPress 6.9+ with PMPro 3.9+ and a role with customized PMPro capabilities (the card and billing field stripping is done).
 - [ ] **Payments, live:** QAF's and PMPro's PHP suites, Stripe test mode, a PayPal sandbox and a reachable webhook endpoint on the test site: webhook authenticity/replay/order, duplicate submission and accessible checkout acceptance.
 - [ ] **Practice Site from an installed build:** start/connect/reset/stop/restart with the bundled Node and payloads on a clean installation (the source run passes).
-- [ ] **Backups, restores, security/sign-ins/2FA/vulnerability data, caching/performance, multilingual content, consent, email, newsletters, courses, event attendance, analytics and social sharing:** each already has a disposition per site; Jeff decides which, if any, get first-class integration.
-
-### 2.6 Jeff's calls from the WordPress UX review
-
-- [ ] Whether page commands such as Check This Page should have a WordPress-layer key (they have a written reason, `wordpress/menu_unbound.py`).
-- [ ] Whether menu items want a Workbench tree node beside the Menus window's Undo.
 
 ## Part 3. Other work
 
