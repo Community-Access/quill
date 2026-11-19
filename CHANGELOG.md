@@ -36,6 +36,16 @@ than running when it cannot tell.
 
 ### WordPress
 
+### Forms: a Gravity Form's other notifications and confirmations (2026-11-18)
+
+From complete.md 2.3: QUILL's Gravity Forms editor changed the default
+confirmation and the Admin Notification and kept the rest out of sight. Its
+new **Other Notifications and Confirmations...** lists every other email and
+thank-you message, and adds, changes, turns on or off and removes them. One
+that routes by an answer or uses logic is listed and can be turned on or off
+or removed, with its routing kept. The changes join the editor's Review and
+Save preview, one line each.
+
 ### WordPress Workbench: every product field on Properties (2026-11-18)
 
 From complete.md 2.3: Edit Product changes price, stock, status and

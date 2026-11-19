@@ -152,9 +152,42 @@ def change_lines(before: Mapping[str, Any] | None, after: Mapping[str, Any]) -> 
     kept_new = [k for k in new_fields if k in old_fields]
     if kept_old != kept_new:
         lines.append("Fields move: " + ", ".join(field_name(new_fields[k]) for k in kept_new) + ".")
+    if not new:
+        lines += _message_lines(old, after)
     if not new and len(lines) == 0:
         lines.append("Nothing changes.")
     lines.append(ENTRIES_LINE)
+    return lines
+
+
+def _message_lines(before: Mapping[str, Any], after: Mapping[str, Any]) -> list[str]:
+    """The other notifications and confirmations added, removed or changed (complete.md 2.3)."""
+    lines = []
+    for kind, word in (("notifications", "notification"), ("confirmations", "confirmation")):
+
+        def by_id(form: Mapping[str, Any], kind: str = kind) -> dict[str, dict[str, Any]]:
+            found = form.get(kind)
+            values = found.values() if isinstance(found, dict) else found or []
+            return {str(r.get("id")): r for r in values if isinstance(r, dict)}
+
+        was, now = by_id(before), by_id(after)
+        for key, record in now.items():
+            name = str(record.get("name") or "Unnamed")
+            if key not in was:
+                lines.append(f"Add the {word} {name}.")
+                continue
+            old = was[key]
+            if bool(old.get("isActive", True)) != bool(record.get("isActive", True)):
+                state = "on" if record.get("isActive", True) else "off"
+                lines.append(f"Turn the {word} {name} {state}.")
+            changed = [
+                k for k in ("name", "to", "subject", "message") if old.get(k) != record.get(k)
+            ]
+            if changed:
+                lines.append(f"Change the {word} {name}: {', '.join(changed)}.")
+        for key, record in was.items():
+            if key not in now:
+                lines.append(f"Remove the {word} {record.get('name') or 'Unnamed'}.")
     return lines
 
 

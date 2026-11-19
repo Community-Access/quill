@@ -141,9 +141,8 @@ The most useful to a site owner come first in each area. "Route" means the REST 
 
 ##### Forms
 
-QAF is covered end to end: build, publish, settings, status, delete, entries, views, spam and spam settings. Gravity Forms is close.
+QAF is covered end to end: build, publish, settings, status, delete, entries, views, spam and spam settings, and so is Gravity Forms, notifications and confirmations included (2026-11-18).
 
-- **More than one notification or confirmation on a Gravity Form.** Who: forms that send different emails by answer. Route: the `notifications` and `confirmations` objects inside `gf/v2/forms/{id}`. Today QUILL's form editor edits the default confirmation and the Admin Notification and keeps the rest untouched.
 
 Gravity Forms' own settings, add-ons and licence are wp-admin only.
 
