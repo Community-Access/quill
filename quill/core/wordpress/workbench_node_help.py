@@ -131,8 +131,8 @@ NODE_HELP: Mapping[str, str] = {
     ),
     "membership_discount_codes": (
         "Paid Memberships Pro discount codes. Look Up a Discount Code reads one by its code; "
-        "New Discount Code makes one after a preview. The full list is in wp-admin unless the "
-        "site offers a discount-codes ability."
+        "New Discount Code makes one after a preview. Every code is listed where the site "
+        "offers a discount-codes ability; otherwise the list is in wp-admin, and Enter opens it."
     ),
     "shop": (
         "WooCommerce's products, from its wc/v3 routes. Ctrl+N makes one; the context menu "
@@ -234,7 +234,11 @@ ROW_HELP: Mapping[str, str] = {
     "gravity_result": "One answer's count in a quiz, poll or survey. Enter reads the question.",
     "pmpro": (
         "A Paid Memberships Pro level, membership order, subscription or discount code. "
-        "Alt+Enter reads its details."
+        "Alt+Enter reads its details. On a level, Members of This Level lists who holds it."
+    ),
+    "discount_note": (
+        "This site lists its discount codes only in wp-admin. Enter opens that screen in your "
+        "browser; Look Up a Discount Code reads one code here."
     ),
     "term": "A category, tag or term. Enter lists its posts; Merge Into folds it into another.",
     "user": (

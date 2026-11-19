@@ -25,7 +25,7 @@ from quill.core.wordpress.workbench_admin_actions import (
     THEME_ROWS,
     USER_ROWS,
 )
-from quill.core.wordpress.workbench_dashboard_places import MENU_ROWS, dashboard_rows
+from quill.core.wordpress.workbench_dashboard_places import MENU_ROWS, SCREEN_ROWS, dashboard_rows
 from quill.core.wordpress.workbench_dashboard_places import NODE_ROWS as ADMIN_NODE_ROWS
 from quill.core.wordpress.workbench_gap_actions import ITEM_VERSIONS, UPDATE_CHECK
 from quill.core.wordpress.workbench_gravity_actions import (
@@ -265,6 +265,8 @@ WORDPRESS_ACTIONS = ActionTable(
             _SHEET,
         ),
         "pmpro": (_READ, *PMPRO_ROWS, _SHEET),
+        # Discount Codes on a site with no ability: Enter opens wp-admin's list (complete.md 2.3).
+        "discount_note": (SCREEN_ROWS[0], *PMPRO_ROWS[:2], _READ_TOO, _SHEET),
         "term": (
             _a("show_posts", "Show Its Posts", default=True, help="The posts filed under it."),
             _a(

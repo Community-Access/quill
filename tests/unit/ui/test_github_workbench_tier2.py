@@ -244,8 +244,175 @@ def test_unlink_branch_chooses_then_asks(monkeypatch) -> None:
     window._choose = lambda *_a: 0
     assert window._fits_unlink_branch(_issue())
     window._do_unlink_branch(REF, _issue())
-    assert "Unlink 42-fix from #42?" in window.asked[0]
+    assert "Unlink branch 42-fix from #42?" in window.asked[0]
+    assert "The branch itself is kept" in window.asked[0]
+    assert "only its link to the issue is removed" in window.asked[0]
     assert window.said == ["Unlinked 42-fix from #42. The branch is still there."]
+
+
+class _TwoLinks:
+    """An issue with two linked branches; every GraphQL call is kept."""
+
+    def __init__(self) -> None:
+        self.sent: list[dict[str, Any]] = []
+
+    def graphql(self, query: str, variables: dict[str, Any]) -> dict[str, Any]:
+        self.sent.append(variables)
+        if "linkedBranches" in query:
+            nodes = [
+                {"id": "LB_1", "ref": {"name": "42-fix"}},
+                {"id": "LB_2", "ref": {"name": "b"}},
+            ]
+            return {"repository": {"issue": {"linkedBranches": {"nodes": nodes}}}}
+        return {}
+
+
+def _link_window(api: Any = None, *, yes: bool = True, pick: int = 0) -> _Window:
+    window = _Window(yes=yes)
+    window.api = api or _TwoLinks()
+    window.chosen = []  # type: ignore[attr-defined]
+    window._choose = lambda _t, _p, labels: window.chosen.append(labels) or pick  # type: ignore[attr-defined,method-assign]
+    return window
+
+
+def test_unlink_branch_with_several_asks_which_and_says_the_outcome_once() -> None:
+    window = _link_window(pick=1)
+    window._do_unlink_branch(REF, _issue())
+    assert window.chosen == [["42-fix", "b"]]  # type: ignore[attr-defined]
+    assert window.asked == [
+        "Unlink branch b from #42? The branch itself is kept, with its commits; only its "
+        "link to the issue is removed."
+    ]
+    assert window.api.sent[-1] == {"id": "LB_2"}
+    assert window.said == ["Unlinked b from #42. The branch is still there."]
+
+
+def test_unlink_branch_with_one_skips_the_chooser() -> None:
+    from tests.unit.core.github_workbench.test_issue_links import FakeApi as LinkApi
+
+    window = _link_window(LinkApi())
+    window._do_unlink_branch(REF, _issue())
+    assert window.chosen == []  # type: ignore[attr-defined]
+    assert window.api.sent[-1] == {"id": "LB_1"}
+
+
+def test_unlink_branch_declined_sends_nothing() -> None:
+    window = _link_window(yes=False)
+    window._do_unlink_branch(REF, _issue())
+    assert [v for v in window.api.sent if "id" in v] == []
+    assert window.said == []
+
+
+def test_unlink_branch_on_an_issue_with_none_says_so() -> None:
+    class _None(_TwoLinks):
+        def graphql(self, query: str, variables: dict[str, Any]) -> dict[str, Any]:
+            self.sent.append(variables)
+            return {"repository": {"issue": {"linkedBranches": {"nodes": []}}}}
+
+    window = _link_window(_None())
+    window._do_unlink_branch(REF, _issue())
+    assert window.said == ["#42 has no linked branches."]
+    assert window.asked == []
+
+
+def test_read_only_refuses_unlink_before_reading_github(monkeypatch) -> None:
+    from quill.core.github.permissions import AccessLevel
+
+    monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
+    window = _link_window()
+    window.access_level = lambda: AccessLevel.READ_ONLY  # type: ignore[attr-defined]
+    window._do_unlink_branch(REF, _issue())
+    assert window.api.sent == []
+    assert window.said == [
+        "This account is read only in the Workbench. Workbench Options, Accounts changes it."
+    ]
+
+
+def test_safe_mode_refuses_unlink_and_says_why(monkeypatch) -> None:
+    from quill.core.github.permissions import AccessLevel, effective_level
+
+    monkeypatch.setenv("QUILL_SAFE_MODE", "1")
+    window = _link_window()
+    window.access_level = lambda: effective_level(AccessLevel.FULL)  # type: ignore[attr-defined]
+    window._do_unlink_branch(REF, _issue())
+    assert window.api.sent == []
+    assert window.said == ["QUILL is in Safe Mode, so the Workbench changes nothing on GitHub."]
+
+
+def test_organize_allows_unlink(monkeypatch) -> None:
+    from quill.core.github.permissions import AccessLevel
+
+    monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
+    window = _link_window()
+    window.access_level = lambda: AccessLevel.ORGANIZE  # type: ignore[attr-defined]
+    window._do_unlink_branch(REF, _issue())
+    assert window.said == ["Unlinked 42-fix from #42. The branch is still there."]
+
+
+# -- the issue sheet's Linked branches list ---------------------------------------------
+
+
+class _Sheet:
+    def __init__(self, rows: tuple[str, ...]) -> None:
+        self.state = SimpleNamespace(loaded={"branches": rows})
+        self.shown: list[tuple[str, tuple[str, ...]]] = []
+
+    def set_table(self, key: str, rows: tuple[str, ...]) -> None:
+        self.shown.append((key, rows))
+        self.state.loaded[key] = rows
+
+
+def _sheet_state(rows: tuple[str, ...] = ("42-fix", "b")) -> dict[str, Any]:
+    loaded = SimpleNamespace(values={"title": "Crash", "branches": rows})
+    return {"ident": {"repo": "o/r", "number": "42"}, "loaded": loaded, "sheet": _Sheet(rows)}
+
+
+def test_remove_on_the_sheet_unlinks_that_branch_and_takes_it_off_the_list() -> None:
+    window = _link_window()
+    state = _sheet_state()
+    window.act_on_linked_branch(state, "remove", "b")
+    assert window.chosen == []  # type: ignore[attr-defined]
+    assert "Unlink branch b from #42?" in window.asked[0]
+    assert window.api.sent[-1] == {"id": "LB_2"}
+    assert state["sheet"].shown == [("branches", ("42-fix",))]
+    assert window.said == ["Unlinked b from #42. The branch is still there."]
+
+
+def test_remove_on_the_sheet_of_a_branch_unlinked_meanwhile_sends_nothing() -> None:
+    window = _link_window()
+    state = _sheet_state(("gone",))
+    window.act_on_linked_branch(state, "remove", "gone")
+    assert window.asked == [] and state["sheet"].shown == []
+    assert window.said == ["gone is no longer linked to #42. F5 reads the issue again."]
+
+
+def test_change_on_the_sheet_explains_what_a_link_offers() -> None:
+    window = _link_window()
+    window.act_on_linked_branch(_sheet_state(), "change", "b")
+    assert window.api.sent == []
+    assert window.said == [
+        "A linked branch has nothing to change: Remove unlinks it, and Add makes a new one."
+    ]
+
+
+def test_the_issue_sheet_shows_linked_branches_as_a_list_with_add_and_remove() -> None:
+    from quill.core.github.sheets_items import ISSUE
+    from quill.core.workbench.properties import FieldKind
+
+    spec = ISSUE.sheet.field("branches")
+    assert spec.kind is FieldKind.TABLE
+    assert "the branch itself is kept" in spec.help
+
+
+def test_the_sheet_list_routes_to_the_linked_branch_commands() -> None:
+    from quill.ui.github_workbench_tools import GitHubWorkbenchToolsMixin
+
+    seen: list[tuple[Any, ...]] = []
+    host = SimpleNamespace(act_on_linked_branch=lambda *args: seen.append(args))
+    state = _sheet_state()
+    act = GitHubWorkbenchToolsMixin.table_action(host, SimpleNamespace(kind="issue"), state)  # type: ignore[arg-type]
+    act(SimpleNamespace(key="branches"), "remove", "b")
+    assert seen == [(state, "remove", "b")]
 
 
 def test_not_a_duplicate_asks_the_original() -> None:

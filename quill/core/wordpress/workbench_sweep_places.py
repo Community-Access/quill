@@ -58,6 +58,14 @@ SWEEP_MORE_NODES: tuple[NodeSpec, ...] = (
         row_type="redirect_group",
     ),
     _n(
+        "redirect_options",
+        "Redirect Options",
+        "redirects",
+        loader="sweep:redirect_options",
+        columns=("option", "value"),
+        row_type="redirect_option",
+    ),
+    _n(
         "site_upkeep",
         "Search and Upkeep",
         "site",
@@ -80,6 +88,8 @@ SWEEP_NODE_HELP: Mapping[str, str] = {
     "not_found_log": "Addresses visitors asked for that were not found; redirect any of them.",
     "redirect_groups": "The groups the Redirection plugin keeps redirects in: new with Ctrl+N, "
     "rename, turn on or off, delete.",
+    "redirect_options": "The Redirection plugin's own options, such as matching, logs and HTTPS; "
+    "Alt+Enter changes them on one sheet, after a preview.",
     "site_upkeep": "Search visibility, the sitemap, missed schedules, the certificate and who "
     "is editing, each with where QUILL's answer comes from.",
     "admin_areas": "Every part of running a site: what QUILL does, and where the rest is.",
@@ -90,6 +100,8 @@ SWEEP_ROW_HELP: Mapping[str, str] = {
     "before Move to Trash.",
     "redirect": "One redirect: from, to, its code and hits. Test an Address follows it.",
     "redirect_group": "One group of redirects: its name, how many, and whether it is on.",
+    "redirect_option": "One of the Redirection plugin's options and its value. Enter or "
+    "Alt+Enter opens them all on one sheet.",
     "not_found": "An address that was not found. Redirect This Address sends it somewhere.",
     "privacy": "A wp-admin screen for privacy requests. Enter opens it in your browser.",
     "upkeep": "One upkeep check, ending with where its answer comes from.",
@@ -218,6 +230,17 @@ def sweep_rows(read: ActionRow, sheet: ActionRow) -> Mapping[str, tuple[ActionRo
             ),
             sheet,
         ),
+        "redirect_option": (
+            _a(
+                "redirect_options",
+                "Change Options...",
+                "Redirection's options on one sheet; the options that changed are previewed, "
+                "then sent. Enter.",
+                default=True,
+            ),
+            read_too,
+            sheet,
+        ),
         "not_found": (
             read,
             _a(
@@ -277,6 +300,7 @@ KEYLESS: dict[str, str] = {
     f"{_PREFIX}rename_redirect_group": "Groups are renamed rarely (rule 9).",
     f"{_PREFIX}toggle_redirect_group": "Groups are turned off rarely (rule 9).",
     f"{_PREFIX}delete_redirect_group": "A destructive, rare job: never a bare key (rule 4).",
+    f"{_PREFIX}redirect_options": "Enter on an option opens them; set once in a site's life.",
     f"{_PREFIX}open_privacy": "Enter opens it; privacy requests are rare (rule 9).",
     f"{_PREFIX}open_area": "Enter does it on the row.",
 }

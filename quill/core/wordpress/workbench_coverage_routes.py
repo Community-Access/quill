@@ -95,6 +95,10 @@ COVERED: tuple[tuple[str, str], ...] = (
     ),
     (r"redirection/v1/(redirect|404)(/.*)?$", "Sites > site > Redirects and its 404 Log"),
     (r"redirection/v1/bulk/redirect(/.*)?$", "Sites > site > Redirects (on, off, delete)"),
+    (
+        r"redirection/v1/setting$",
+        "Sites > site > Redirects > Redirect Options, as a Properties sheet",
+    ),
     # Packages 8 to 13 (2026-11-13): WooCommerce, The Events Calendar and Yoast SEO.
     (r"wc/v3/products(/\(\?P<id>[^)]*\))?$", "Sites > site > Shop: list, new, edit, trash"),
     (r"wc/v3/products/\(\?P<id>[^)]*\)/duplicate$", "a Shop product's Duplicate"),
@@ -138,6 +142,14 @@ COVERED: tuple[tuple[str, str], ...] = (
         "Sites > site > Shop > Attributes and their Terms",
     ),
     (r"wc/v3/products/brands(/\(\?P<[a-z_]*id>[^)]*\))?$", "Sites > site > Shop > Brands"),
+    (
+        r"wc/v3/products/shipping_classes(/\(\?P<id>[^)]*\))?$",
+        "Sites > site > Shop > Shipping Classes, and a product's Properties",
+    ),
+    (
+        r"wc/v3/products/\(\?P<product_id>[^)]*\)/variations/generate$",
+        "a Shop product's Generate Variations",
+    ),
     (
         r"wc/v3/customers/\(\?P<[a-z_]*id>[^)]*\)$",
         "a Shop customer's Customer Details and Edit Customer",

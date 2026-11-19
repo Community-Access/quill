@@ -75,8 +75,8 @@ PLUGIN_SCREENS: tuple[tuple[str, str, str, str, str, str, str], ...] = (
         "Tools > Redirection",
         "redirects",
         "both",
-        "Adding, changing and removing redirects is in Redirects; groups and Redirection's "
-        "options are in its own screens.",
+        "Redirects, their groups and the options QUILL knows are in Redirects; Redirection's "
+        "other options and its import from other plugins are in its own screens.",
         _REDIRECTION,
     ),
     (

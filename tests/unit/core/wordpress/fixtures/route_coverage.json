@@ -1,6 +1,6 @@
 {
  "_about": "Where the WordPress Workbench reaches each route of the test site's recorded index (PRD 12): covered, schema_built, planned, wp_admin_only or out_of_scope, with its home. Regenerate with python -m quill.tools.wordpress_coverage_audit --write and read the diff.",
- "summary": "217 covered, 33 built from their schema, 312 planned, 158 in wp-admin only, 82 out of scope",
+ "summary": "220 covered, 33 built from their schema, 309 planned, 158 in wp-admin only, 82 out of scope",
  "routes": {
   "/": "covered: the site's Overview, from its index",
   "/baf/v1": "planned: Sites > site > Forms, the builder",
@@ -508,7 +508,7 @@
   "/wc/v3/products/(?P<product_id>[\\d]+)/variations": "covered: Shop > Show Its Variations",
   "/wc/v3/products/(?P<product_id>[\\d]+)/variations/(?P<id>[\\d]+)": "covered: a Shop product's Edit a Variation",
   "/wc/v3/products/(?P<product_id>[\\d]+)/variations/batch": "planned: Sites > site > Shop",
-  "/wc/v3/products/(?P<product_id>[\\d]+)/variations/generate": "planned: Sites > site > Shop",
+  "/wc/v3/products/(?P<product_id>[\\d]+)/variations/generate": "covered: a Shop product's Generate Variations",
   "/wc/v3/products/attributes": "covered: Sites > site > Shop > Attributes and their Terms",
   "/wc/v3/products/attributes/(?P<attribute_id>[\\d]+)/terms": "covered: Sites > site > Shop > Attributes and their Terms",
   "/wc/v3/products/attributes/(?P<attribute_id>[\\d]+)/terms/(?P<id>[\\d]+)": "covered: Sites > site > Shop > Attributes and their Terms",
@@ -526,8 +526,8 @@
   "/wc/v3/products/reviews": "covered: Sites > site > Shop > Product Reviews",
   "/wc/v3/products/reviews/(?P<id>[\\d]+)": "covered: Sites > site > Shop > Product Reviews",
   "/wc/v3/products/reviews/batch": "planned: Sites > site > Shop",
-  "/wc/v3/products/shipping_classes": "planned: Sites > site > Shop",
-  "/wc/v3/products/shipping_classes/(?P<id>[\\d]+)": "planned: Sites > site > Shop",
+  "/wc/v3/products/shipping_classes": "covered: Sites > site > Shop > Shipping Classes, and a product's Properties",
+  "/wc/v3/products/shipping_classes/(?P<id>[\\d]+)": "covered: Sites > site > Shop > Shipping Classes, and a product's Properties",
   "/wc/v3/products/shipping_classes/batch": "planned: Sites > site > Shop",
   "/wc/v3/products/shipping_classes/slug-suggestion": "planned: Sites > site > Shop",
   "/wc/v3/products/suggested-products": "planned: Sites > site > Shop",

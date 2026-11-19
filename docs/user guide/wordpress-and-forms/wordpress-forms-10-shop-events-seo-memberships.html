@@ -285,9 +285,9 @@ Products</strong>, <strong>On Sale</strong>, <strong>Out of
 Stock</strong>, <strong>Shop Orders</strong>,
 <strong>Customers</strong>, <strong>Coupons</strong>, <strong>Shop
 Reports</strong>, <strong>Store Settings</strong>, <strong>Product
-Reviews</strong>, <strong>Shipping Zones</strong>, <strong>Tax
-Rates</strong>, <strong>Tax Classes</strong>,
-<strong>Attributes</strong>, <strong>Brands</strong>,
+Reviews</strong>, <strong>Shipping Zones</strong>, <strong>Shipping
+Classes</strong>, <strong>Tax Rates</strong>, <strong>Tax
+Classes</strong>, <strong>Attributes</strong>, <strong>Brands</strong>,
 <strong>Webhooks</strong>, <strong>Payment Gateways</strong> and
 <strong>System Status</strong>. Beside it is <strong>Shop
 Analytics</strong>, WooCommerce Analytics’ reports, described at the end
@@ -310,11 +310,22 @@ old values back.</li>
 <li><strong>Properties…</strong> (<code>Alt+Enter</code>) on a product
 has every field WooCommerce lets you change: SKU, description and short
 description, sale dates, weight and dimensions, shipping and tax class,
-images, downloads, upsells and cross-sells. A list or a group of values
-is a box of JSON that QUILL checks before it saves.</li>
+images, downloads, upsells and cross-sells. The shipping class is chosen
+by name from the shop’s Shipping Classes, or No shipping class. A list
+or a group of values is a box of JSON that QUILL checks before it
+saves.</li>
 <li><strong>Show Its Variations</strong> lists a product’s variations,
 and <strong>Edit a Variation…</strong> changes one’s price, sale price,
 stock, or whether it is for sale.</li>
+<li><strong>Generate Variations…</strong> on a variable product makes a
+variation for every combination of its attributes that it does not have
+yet. The preview says how many combinations there are and how many
+variations it has now; afterwards QUILL says how many it made. Existing
+variations are never changed or removed. WooCommerce makes at most 50 at
+a time, so a large product may need it again. A new variation has no
+price until you give it one with Edit a Variation. Ctrl+Z deletes the
+ones it made. On a product that is not variable, or has no attribute
+used for variations, QUILL says why and sends nothing.</li>
 <li><strong>Duplicate…</strong> makes a copy, and <strong>Move to
 Trash…</strong> sends one to WooCommerce’s Trash.</li>
 </ul>
@@ -389,6 +400,14 @@ takes a list such as
 it on or off, change its cost or remove it, or add flat rate, free
 shipping or local pickup. <strong>Rename…</strong> and
 <strong>Delete…</strong> are there too.</li>
+<li><strong>Shipping Classes</strong> lists each class, such as Heavy
+items, with its slug and how many products are in it. Ctrl+N makes one:
+give it a name, and a slug and description if you want them.
+<strong>Change…</strong> changes its name, slug or description, and
+Ctrl+Z puts them back. <strong>Delete…</strong> removes a class for
+good, after a preview naming the class and the site: its products are
+left with no shipping class, and any rate a zone set for it stops
+applying. A product is put in a class from its Properties.</li>
 <li><strong>Tax Rates</strong>: Ctrl+N makes a rate, <strong>Edit Tax
 Rate…</strong> changes its name, percentage and where it applies, and
 <strong>Delete…</strong> removes one. A deleted rate comes back with
@@ -552,10 +571,22 @@ signups are allowed, then preview them. A change shows only what
 changes, old and new; new prices are for new signups, because Paid
 Memberships Pro does not change what members already pay. Undo puts it
 back, or deletes a level you just made.</p>
-<p><strong>Discount codes.</strong> <strong>Look Up a Discount
-Code…</strong> reads one code, and <strong>New Discount Code…</strong>
-makes one after a preview. Where the site cannot list every code, the
-list says so and opens the wp-admin screen.</p>
+<p><strong>Members of This Level…</strong>, on a level, lists everyone
+who holds it now, with their email addresses, to count them or write to
+them. Paid Memberships Pro has no way to ask for a level’s members, so
+QUILL asks the site about each person in turn. Before it starts, it says
+how many people that is, and on a big site it says plainly that it is
+slow. It runs in the background; choose it again to stop, and the
+members found so far are kept. The members open in a list, where
+<strong>Copy Email Addresses</strong> copies every address, with a
+semicolon between, ready for the To box of a message.</p>
+<p><strong>Discount codes.</strong> Where the site offers Paid
+Memberships Pro’s discount-codes ability, <strong>Discount
+Codes</strong> lists every code. Elsewhere its one row says that this
+site lists its codes only in wp-admin, and Enter opens that screen in
+your browser. Either way, <strong>Look Up a Discount Code…</strong>
+reads one code, and <strong>New Discount Code…</strong> makes one after
+a preview.</p>
 <p><strong>A member.</strong> On a person in <strong>People &gt;
 Users</strong>:</p>
 <ul>
@@ -609,6 +640,18 @@ is on. <strong>New Group…</strong> (<code>Ctrl+N</code>),
 <strong>Rename…</strong> and <strong>Turn On or Off</strong> each
 preview first and can be undone. <strong>Delete Group…</strong> deletes
 its redirects with it, so it asks you to type the group’s name.</p>
+<p><strong>Redirect Options</strong>, under Redirects, lists the
+plugin’s own options that QUILL knows, each with its value: how
+addresses are matched (capital letters, a slash at the end, query
+parameters), how long the logs are kept, whether they keep visitors’ IP
+addresses, HTTPS and www, and how long browsers keep a redirect. The
+last row says how many more options stay in Tools &gt; Redirection &gt;
+Options. <strong>Change Options…</strong> (Enter), or
+<code>Alt+Enter</code>, opens them all on one Properties sheet; OK
+previews only the options you changed, sends only those, and checks what
+the site answers. Undo puts them back. A site whose Redirection does not
+offer its options to QUILL says so on its one row, and Enter opens the
+plugin’s Options screen in your browser.</p>
 <p><strong>404 Log</strong>, under Redirects, lists addresses visitors
 asked for that were not found. <strong>Redirect This Address…</strong>
 sends one somewhere, after a preview.</p>
