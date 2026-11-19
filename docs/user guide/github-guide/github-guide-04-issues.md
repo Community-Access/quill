@@ -301,6 +301,42 @@ the way its kind needs: a number, a date as year-month-day (2026-12-31), or
 text. Only that field is sent, so a value someone else set on another field is
 kept. You hear "Points is now 5 on #4."
 
+### Issue types and fields in the Workbench's lists
+
+Each value keeps its type: a date reads as a date (2026-12-31), a number as a
+number (3, or 2.5), a single choice as the choice's name, several choices as
+their names, and text as text.
+
+- **Columns.** In an Issues list, **View > Columns...** (`Ctrl+Shift+U`)
+  offers **Issue type** and **Issue fields**. Neither shows until you choose
+  it, because the fields cost GitHub one request an issue; with Issue fields
+  chosen, QUILL reads the first 30 issues of the list. A cell reads
+  "Priority: High; Due: 2026-12-31; Notes: empty; Owner: not set". A pull
+  request leaves both cells blank, and an issue with no type says "no type".
+- **Details.** An issue's details name its type, and once its fields are read,
+  each field in full, such as "Field Due (date, field 2): 2026-12-31".
+- **Filters.** GitHub's own search answers `type:Bug` and
+  `field.priority:high`, so type either in the filter box. **Show Only** and
+  **Hide** on an issue offer its type and each field value, which write those
+  qualifiers for you. A field whose name has a space is not offered there.
+  **View > Group By > Type** groups the list by issue type.
+- **Properties.** An issue's Properties sheet (`Alt+Enter`) has an **Issue
+  Fields** page after Organize: first how many fields the owner defines, then
+  one read-only field each, of its own kind. **Issue Fields...** on the row
+  changes them.
+
+The states never sound alike, so a missing permission never looks like an
+empty field:
+
+| State | In a cell | In details and Properties |
+|---|---|---|
+| A value | Priority: High | High |
+| Set to nothing | Priority: empty | set to nothing |
+| Not set | Priority: not set | not set |
+| Hidden from you | hidden from you | hidden from you |
+| A kind QUILL does not edit yet | Odd: shimmer (read only) | shimmer (read only) |
+| The read failed | unreadable, and why | could not be read, and why |
+
 ## Deleting an issue
 
 Closing an issue keeps it, its comments and its history; that is almost always

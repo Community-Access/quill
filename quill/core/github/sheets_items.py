@@ -17,6 +17,7 @@ import base64
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from quill.core.github.issue_fields_rows import sheet_values
 from quill.core.github.permissions import WriteTier, repo_role
 from quill.core.github.sheet_engine import Ident, Options, Read, SheetDef, Write
 from quill.core.github.sheet_fields import (
@@ -525,6 +526,7 @@ ISSUE = SheetDef(
     (
         Read(_ISSUE_PATH, _issue),
         Read(graphql=VIEWER_ITEM_QUERY, variables=item_variables, extract=_viewer, optional=True),
+        Read(fetch=sheet_values),  # the Issue Fields page (issue_fields_rows.with_field_page)
     ),
     {
         "title": patch(_ISSUE_PATH, "viewer:viewerCanUpdate", _V),
