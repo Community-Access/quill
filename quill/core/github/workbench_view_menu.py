@@ -203,6 +203,19 @@ ROLES_SUB = MenuSub(
         ),
         None,
         MenuRow(
+            f"{_P}compare_accounts",
+            "Compare Acc&ounts...",
+            help="Two of your signed-in accounts on this repository, side by side: each "
+            "one's role and sign-in, as GitHub answered that account.",
+        ),
+        MenuRow(
+            f"{_P}act_as",
+            "Act As Anot&her Account...",
+            help="One action sent as another signed-in account, such as approving your own "
+            "pull request: the account is named before and after, and held to its own level.",
+        ),
+        None,
+        MenuRow(
             f"{_P}account_level",
             "Workbench &Level for This Account...",
             help="Read Only, Organize or Full: what the Workbench may change with this "

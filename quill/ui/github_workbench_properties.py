@@ -109,10 +109,23 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
             account = None
         return str(getattr(account, "login", "") or "")
 
+    def level_key(self) -> str:
+        """The key this account's Workbench level is kept under (login, or login@host)."""
+        name = self.account_name()
+        try:
+            from quill.core.github.accounts import active_github_account
+
+            account = active_github_account()
+        except Exception:  # noqa: BLE001 - no registry is "no account"
+            account = None
+        if account is not None and account.login == name:
+            return str(account.level_key)
+        return name
+
     def access_level(self) -> Any:
         from quill.core.github.permissions import AccessStore, effective_level
 
-        return effective_level(AccessStore.load().level(self.account_name()))
+        return effective_level(AccessStore.load().level(self.level_key()))
 
     def refused(self, command_id: str) -> bool:
         """The one level check (:mod:`quill.core.github.write_gate`); True when refused.

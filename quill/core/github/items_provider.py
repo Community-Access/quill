@@ -47,6 +47,7 @@ from quill.core.github.branch_divergence import with_divergence
 from quill.core.github.discussion_actions import GitHubDiscussionActionsMixin
 from quill.core.github.dry_run import stop_if_dry
 from quill.core.github.github_provider import _get_gh_module, require_pygithub
+from quill.core.github.hosts import pygithub_host
 from quill.core.github.issue_comments import list_comments as _list_issue_comments
 from quill.core.github.items_errors import GitHubItemsError
 from quill.core.github.items_provider_constants import DEFAULT_PAGE_LIMIT
@@ -433,7 +434,7 @@ class GitHubItemsProvider(
     def __init__(self, token: str | None = None) -> None:
         gh = _get_gh_module()
         if token:
-            self._gh: Any = gh.Github(auth=gh.Auth.Token(token))
+            self._gh: Any = gh.Github(auth=gh.Auth.Token(token), **pygithub_host(token))
         else:
             self._gh = gh.Github()
         self._token = token

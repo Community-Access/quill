@@ -4,9 +4,10 @@ PyGithub covers most of the workbench, but a few endpoints it either lacks
 (``rerun-failed-jobs``, ``pending_deployments``, ``approve``, notification
 ``Done``) or hides the response headers of (``X-Poll-Interval`` on the
 notifications inbox). Those calls come through :func:`request_json` instead:
-one fixed host (``api.github.com``), verified TLS, a 20-second timeout, and no
-redirect following, so the bearer token can never be forwarded to another
-host. Failures raise :class:`GitHubRestError`, which carries the status,
+one fixed host per token (``api.github.com``, or the GitHub Enterprise Server
+the account was saved for: :mod:`quill.core.github.hosts`), verified TLS, a
+20-second timeout, and no redirect following, so the bearer token can never be
+forwarded to another host. Failures raise :class:`GitHubRestError`, which carries the status,
 headers and parsed body so :func:`rest_failure_message` can turn it into an
 action a person can take.
 
@@ -112,7 +113,11 @@ def request_json(
     opener: Any = None,
     tracker: RateLimitTracker | None = None,
 ) -> RestResponse:
-    """Send one request to ``api.github.com`` + *path* and return its reply.
+    """Send one request to the token's host + *path* and return its reply.
+
+    The host is ``api.github.com`` unless the token's account is on a GitHub
+    Enterprise Server (:func:`quill.core.github.hosts.api_url`); a 404 from such a
+    server says the server may not have the endpoint at all.
 
     A 304 (Not Modified) is returned, not raised, so a caller polling with
     ``If-Modified-Since`` or ``If-None-Match`` can keep what it already shows.
@@ -130,10 +135,13 @@ def request_json(
     limits = tracker if tracker is not None else RATE_LIMITS
     if wait := limits.wait_seconds():
         raise GitHubRestError(wait_message(wait), status=429, headers={"retry-after": str(wait)})
-    url = API_ROOT + path + (f"?{urlencode(query)}" if query else "")
+    from quill.core.github.hosts import API_VERSION, api_url, host_for_token, is_enterprise
+
+    host = host_for_token(token)
+    url = api_url(token, path) + (f"?{urlencode(query)}" if query else "")
     headers = {
         "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
+        "X-GitHub-Api-Version": API_VERSION,
         "User-Agent": "QUILL-GitHub-Workbench",
         **(extra_headers or {}),
     }
@@ -159,7 +167,7 @@ def request_json(
         if exc.code in (301, 302, 303, 307, 308):
             raise GitHubRestError(
                 "GitHub redirected the request; QUILL did not follow it, so your "
-                "token stayed on api.github.com.",
+                f"token stayed on {'api.github.com' if not is_enterprise(host) else host}.",
                 status=exc.code,
                 headers=error_headers,
             ) from exc
@@ -169,6 +177,10 @@ def request_json(
             error_body = b""
         data = _decode(error_body)
         message = data.get("message", "") if isinstance(data, dict) else ""
+        if exc.code == 404 and is_enterprise(host):
+            from quill.core.github.hosts import missing_endpoint_sentence
+
+            message = missing_endpoint_sentence(host, path)
         seconds = secondary_wait_seconds(exc.code, error_headers, str(message))
         if seconds is not None:
             limits.observe_secondary(seconds)
@@ -201,6 +213,14 @@ def rest_failure_message(action: str, exc: GitHubRestError) -> str:
         return str(exc.args[0])
     hint = github_exception_hint(exc)
     detail = str(exc.data.get("message", "")) if isinstance(exc.data, dict) else ""
+    if exc.status == 403:
+        # A fine-grained token's permissions are not listed anywhere; its refusal
+        # is where GitHub names the one it needed (X-Accepted-GitHub-Permissions).
+        from quill.core.github.role_evidence import refusal_needs
+
+        needs = refusal_needs(exc.headers or {})
+        if needs:
+            hint = f"{hint} {needs}".strip()
     if hint:
         reason = hint + (f" GitHub said: {detail}" if detail and exc.status == 403 else "")
     elif exc.status == 404:

@@ -94,7 +94,7 @@ class _NoRedirect(HTTPRedirectHandler):
 def _request(token: str, query: str, variables: dict[str, object]) -> dict[str, Any]:
     """One GraphQL read for the Discussions places; refusals said in words."""
     request = Request(
-        "https://api.github.com/graphql",
+        _graphql_address(token),
         data=json.dumps({"query": query, "variables": variables}).encode("utf-8"),
         headers={
             "Authorization": f"Bearer {token}",
@@ -314,3 +314,10 @@ __all__ = [
     "list_pinned_discussions",
     "map_discussion",
 ]
+
+
+def _graphql_address(token: str | None) -> str:
+    """GraphQL's address for *token*'s host: GitHub.com or its Enterprise Server."""
+    from quill.core.github.hosts import api_url
+
+    return api_url(token, "/graphql")

@@ -237,9 +237,33 @@ have added. From there:
   OAuth Apps**, and revoke QUILL there.
 - **Sign In with GitHub...** adds another account. **Add Token
   (Advanced)...** is the advanced road, in Chapter 10.
+- **Use GitHub CLI Sign-In...** adds an account you have already signed in to
+  with GitHub's command-line tool, `gh`, without signing in again. QUILL asks
+  which server (github.com unless you change it), asks `gh` for its sign-in
+  for that server with `gh auth token`, checks with GitHub whose it is, and
+  asks "Add your-name on github.com to QUILL with that sign-in?" before it
+  keeps anything. QUILL then keeps its own copy in your secure store, like any
+  other account: signing out of `gh` later does not sign QUILL out, and
+  removing the account in QUILL does not touch `gh`. QUILL never reads `gh`'s
+  own files. If `gh` is not installed or not signed in to that server, QUILL
+  says so and nothing changes.
 - **Done** closes the window. Escape does too.
 
-Only github.com accounts are supported. GitHub Enterprise servers are not, yet.
+### A GitHub Enterprise Server
+
+An account can be on your company's own GitHub Enterprise Server as well as on
+github.com. Add it with **Add Token (Advanced)...**: make a token on that
+server, paste it, and type the server's name, such as github.example.com, in
+**GitHub server**. Or, if `gh` is signed in to that server, use **Use GitHub
+CLI Sign-In...** and type the server's name. (Sign In with GitHub is for
+github.com only.) The account shows as "your-name (github.example.com)", and
+the same name on github.com is a separate account with its own Workbench
+level.
+
+QUILL sends that account's token to its own server and to nowhere else, and
+never sends a github.com token to the server. An older Enterprise Server lacks
+some things github.com has; when it answers "not found", QUILL says "This
+server's GitHub does not have" that, and names the server and its version.
 
 Each account keeps its own place. GitHub Items remembers the last repository
 and row separately for each account, and so do your local drafts and the

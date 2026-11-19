@@ -201,6 +201,10 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}copy_template": ("repo:write", _V),
     f"{_P}account_level": ("local", _O),
     f"{_P}bulk_access": ("repo:admin", _A),
+    # Act As (PRD 18.3): one write as another signed-in account. The gate holds
+    # the active account to Organize here; the action itself is then held to the
+    # other account's own level (quill.ui.github_workbench_roles._refused_for).
+    f"{_P}act_as": ("sign_in", _V),
     f"{_P}access_add": ("repo:admin", _A),
     f"{_P}access_change": ("repo:admin", _A),
     f"{_P}access_remove": ("repo:admin", _D),
