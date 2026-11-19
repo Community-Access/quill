@@ -2,6 +2,13 @@
 
 ## 1.0.0
 
+### GitHub Workbench: tell us when the help was wrong (2026-11-18)
+
+Help and Learning > Ask a Person has Report a Help Problem. Enter opens a
+message in your own email that already says where you were and the last
+thing the Workbench said, for you to change and send. QUILL sends nothing,
+and the message is checked for tokens and passwords first.
+
 ### WordPress Workbench: a sale across the shop in one go (2026-11-18)
 
 Change Many Products... on a selection of products puts them on sale at a

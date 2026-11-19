@@ -37,6 +37,7 @@ __all__ = [
     "NODE_HELP",
     "PREF_HELP",
     "PREF_PAGES",
+    "REPORT_TARGET",
     "RESULT_EXPLANATIONS",
     "ROW_TYPE_WORDS",
     "SURFACE_PURPOSES",
@@ -48,6 +49,7 @@ __all__ = [
     "empty_text_for",
     "explain_result",
     "gaps",
+    "help_report_mailto",
     "help_rows",
     "is_known_title",
     "node_help_for",
@@ -283,9 +285,47 @@ def help_rows(view: str, keys: Mapping[str, tuple[str, str]] | None = None) -> l
                 "Write to support@community-access.org from your own email. Say what you "
                 "were doing and what you expected. Nothing is sent by the Workbench.",
                 "mailto:support@community-access.org",
-            )
+            ),
+            HelpTopic(
+                "Report a Help Problem",
+                "Help that was wrong, missing or hard to follow. Enter opens a message in "
+                "your own email, already saying where you were and the last thing the "
+                "Workbench said, for you to read, change and send. Nothing is sent by the "
+                "Workbench, and no token or password is ever in it.",
+                REPORT_TARGET,
+            ),
         ]
     return []
+
+
+REPORT_TARGET = "report:help"
+SUPPORT = "support@community-access.org"
+
+
+def help_report_mailto(place: str, last_said: str, version: str) -> str:
+    """The Report a Help Problem message, as a mailto link the person sends themselves.
+
+    It names where they were and the last sentence the Workbench said, run
+    through the diagnostic bundle's redaction so no token or secret is in it.
+    """
+    from urllib.parse import quote
+
+    from quill.stability.redaction import redact_text_for_bundle
+
+    body = "\n".join((
+        "What help was wrong, missing or hard to follow:",
+        "",
+        "",
+        "What I expected:",
+        "",
+        "",
+        f"Where I was: {place or 'not known'}",
+        f"The last thing the Workbench said: {last_said or 'nothing yet'}",
+        f"QUILL version: {version}",
+    ))
+    body = redact_text_for_bundle(body)
+    subject = "GitHub Workbench help problem"
+    return f"mailto:{SUPPORT}?subject={quote(subject)}&body={quote(body)}"
 
 
 # ---------------------------------------------------------------------------
