@@ -89,6 +89,13 @@ may list the site, its sitemap, scheduled posts that missed their time, the
 site's certificate, and who is editing what. Every row ends with where
 QUILL's answer came from.
 
+Only scheduled posts and pages can be checked for a missed time from here.
+WordPress does not share its other scheduled tasks with QUILL, and the WP
+Crontrol plugin, which lists them all with any that are late, has no way in
+from outside either. The **Other scheduled tasks** row says so. Where WP
+Crontrol is active on the site, **Open Where It Is Checked** on that row
+opens its **Tools > Cron Events** screen in your browser.
+
 ## Site settings
 
 **Tools > WordPress > Site Settings...** opens the Workbench at the site's

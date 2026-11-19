@@ -114,6 +114,28 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
 
         return effective_level(AccessStore.load().level(self.account_name()))
 
+    def refused(self, command_id: str) -> bool:
+        """The one level check (:mod:`quill.core.github.write_gate`); True when refused.
+
+        Every Workbench command passes it in ``GitHubWorkbenchProvider.run``
+        before anything is read or sent; the refusal is said once, as a failure.
+        """
+        from quill.core.github.write_gate import command_refusal
+
+        said = command_refusal(command_id, self.access_level)
+        if said:
+            self._say(said)
+        return bool(said)
+
+    def _save_refused(self, what: str, tier: WriteTier) -> bool:
+        """A sheet's save, held to the account's level like a command (True when refused)."""
+        from quill.core.github.write_gate import refusal
+
+        said = refusal(f"save {what}", tier, self.access_level())
+        if said:
+            self._say(said)
+        return bool(said)
+
     def token_scopes(self) -> tuple[str, ...] | None:
         from quill.core.github.token_health import parse_scopes
 
@@ -319,6 +341,8 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
             return
         changes = kept
         tier = self.tier_of(target, changes)
+        if self._save_refused(target.sheet.title(target.ident) or target.kind, tier):
+            return
         words = f"{target.title()}: " + "; ".join(
             f"{c.label} to {say_value(c.after)}" for c in changes
         )
@@ -475,6 +499,8 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
 
         words = preview(noun, items, changes)
         target = Target(kind, items[0].ident)
+        if self._save_refused(f"{len(items)} {noun}", self.tier_of(target, changes)):
+            return
         tier = max(self.tier_of(target, changes), WriteTier.ACCESS)
         if not self.confirm_tier(tier, words, str(len(items))):
             return

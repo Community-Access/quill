@@ -45,6 +45,7 @@ __all__ = [
     "REMOVE_FROM_PROJECT",
     "VIEWER_ITEM_QUERY",
     "item_variables",
+    "your_reactions",
     "project_links",
     "project_links_text",
 ]
@@ -99,6 +100,15 @@ _REACTION_WORDS = {_REACTION_ENUM[api]: word for api, word in REACTIONS}
 _REACTION_CHOICES = tuple(word for _api, word in REACTIONS)
 
 
+def your_reactions(groups: object) -> tuple[str, ...]:
+    """Your reactions, said as words, from GraphQL ``reactionGroups``."""
+    return tuple(
+        _REACTION_WORDS.get(str(group.get("content")), str(group.get("content")).lower())
+        for group in (groups if isinstance(groups, list) else ())
+        if isinstance(group, Mapping) and group.get("viewerHasReacted")
+    )
+
+
 def item_variables(ident: Ident) -> dict[str, object]:
     owner, _, name = ident["repo"].partition("/")
     return {"owner": owner, "name": name, "number": int(ident["number"])}
@@ -123,11 +133,7 @@ def _viewer(data: Mapping[str, Any]) -> dict[str, Value]:
     found["node_id"] = str(item.get("id", ""))
     found["subscribed"] = item.get("viewerSubscription") == "SUBSCRIBED"
     found["pinned"] = bool(item.get("isPinned"))
-    found["reactions"] = tuple(
-        _REACTION_WORDS.get(str(group.get("content")), str(group.get("content")).lower())
-        for group in item.get("reactionGroups") or ()
-        if isinstance(group, Mapping) and group.get("viewerHasReacted")
-    )
+    found["reactions"] = your_reactions(item.get("reactionGroups"))
     links = [
         (
             str(dig(node, "project", "title") or ""),
@@ -407,6 +413,17 @@ _YOU = page(
         choices=_REACTION_CHOICES,
     ),
 )
+_ISSUE_YOU = page(
+    "you",
+    "You",
+    *_YOU.fields,
+    ed(
+        "pinned",
+        "Pinned to the repository",
+        _K.CHECK,
+        "A pinned issue shows at the top of the repository's Issues; up to three.",
+    ),
+)
 _ORGANIZE = page(
     "organize",
     "Organize",
@@ -453,17 +470,6 @@ _CONVERSATION = page(
     ro("lock_reason", "Lock reason"),
     ro("comments", "Comments", _K.NUMBER),
 )
-_ISSUE_CONVERSATION = page(
-    "conversation",
-    "Conversation",
-    *_CONVERSATION.fields,
-    ed(
-        "pinned",
-        "Pinned to the repository",
-        _K.CHECK,
-        "A pinned issue shows at the top of the repository's Issues; up to three.",
-    ),
-)
 _ACCESS = page(
     "access",
     "Access",
@@ -500,7 +506,7 @@ ISSUE = SheetDef(
                 ro("closed", "Closed", _K.DATE),
                 ro("url", "Address", _K.LINK, "Ctrl+C copies it."),
             ),
-            _YOU,
+            _ISSUE_YOU,
             _ORGANIZE,
             _PROJECTS_PAGE,
             _RELATIONSHIPS,
@@ -509,7 +515,7 @@ ISSUE = SheetDef(
                 "Description",
                 ed("body", "Description", _K.MULTILINE, "Markdown. Ctrl+Enter saves."),
             ),
-            _ISSUE_CONVERSATION,
+            _CONVERSATION,
             page(
                 "timeline",
                 "Timeline",

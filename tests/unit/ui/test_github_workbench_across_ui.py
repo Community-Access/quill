@@ -295,7 +295,7 @@ def test_a_read_only_account_writes_nothing(bench, monkeypatch) -> None:
     _go(bench, NodeRef("", "across_by_labels"))
     monkeypatch.setattr(provider, "_choose", lambda *_a: 0)
     provider._do_across_make_same(None, bench.rows[0])
-    assert api.sent == [] and "read only" in bench.said[-1]
+    assert api.sent == [] and "this account is Read Only" in bench.said[-1]
 
 
 def test_the_fleet_lists_every_repository_with_its_revision(bench, monkeypatch) -> None:

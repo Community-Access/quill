@@ -26,7 +26,9 @@ __all__ = [
     "colour_name",
     "dig",
     "ed",
+    "gql_input_toggle",
     "gql_toggle",
+    "input_mutation",
     "logins",
     "lst",
     "names",
@@ -127,6 +129,35 @@ def gql_toggle(on: str, off: str, requirement: str, tier: WriteTier) -> Write:
         return {"id": ident.get("node_id", "")}
 
     return Write(on, requirement, tier, "POST", "graphql", encode=encode, off_path=off)
+
+
+def input_mutation(name: str) -> str:
+    """GitHub's mutation *name* taking one ``$input`` of its ``<Name>Input`` type.
+
+    The quick commands (Follow Organization, Upvote) and the sheets' You pages
+    send this very text, so a menu row and a check box are one call, not two.
+    """
+    return (
+        f"mutation($input: {name[0].upper()}{name[1:]}Input!) "
+        f"{{ {name}(input: $input) {{ clientMutationId }} }}"
+    )
+
+
+def gql_input_toggle(on: str, off: str, id_field: str, requirement: str, tier: WriteTier) -> Write:
+    """:func:`input_mutation` *on* when checked and *off* when cleared, on the node id."""
+
+    def encode(_value: Value, _choices: Mapping[str, object], ident: Ident) -> dict[str, object]:
+        return {"input": {id_field: ident.get("node_id", "")}}
+
+    return Write(
+        input_mutation(on),
+        requirement,
+        tier,
+        "POST",
+        "graphql",
+        encode=encode,
+        off_path=input_mutation(off),
+    )
 
 
 def dig(data: Mapping[str, Any] | None, *path: str) -> Any:

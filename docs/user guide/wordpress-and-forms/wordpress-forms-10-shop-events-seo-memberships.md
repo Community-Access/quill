@@ -275,6 +275,17 @@ pages, with what to look at on each.
   both, right there in the list. Each is saved on its own, after a preview. It
   needs Yoast's manage options right, which administrators and Yoast's SEO
   Manager role have.
+- **Properties...**, on the row here or on the post in Posts or Pages, has an
+  **SEO** page with the **canonical address**, the **primary category** (a
+  post's, chosen by name from its own categories), and the **schema page
+  type** and **schema article type**. Yoast's bulk editor cannot change these,
+  so QUILL changes one only where your site shares that Yoast setting with
+  QUILL, and then it is saved like any other field, checked first and
+  afterwards. Most sites do not share them. Then the page shows what Yoast
+  tells search engines, read only, and one sentence says these are changed in
+  the post's Yoast panel.
+- **Open in wp-admin** opens the post's editor in your browser, where that
+  Yoast panel is.
 
 **Site SEO**, under SEO, gives the site's SEO and readability scores in words.
 **Open in Dashboard** goes to Yoast's own screens for everything else.
