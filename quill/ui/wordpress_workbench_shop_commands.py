@@ -25,11 +25,12 @@ from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.workbench.actions import Tier
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui import wordpress_workbench_dialogs as wdlg
+from quill.ui.wordpress_workbench_shop_bulk import WorkbenchShopBulkCommands
 
 _Ask = Callable[..., Any]
 
 
-class WorkbenchShopCommands:
+class WorkbenchShopCommands(WorkbenchShopBulkCommands):
     """The do_* handlers for shop rows; the provider supplies ctx, background and say."""
 
     # -- plumbing -------------------------------------------------------------------------

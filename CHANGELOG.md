@@ -2,6 +2,14 @@
 
 ## 1.0.0
 
+### WordPress Workbench: a sale across the shop in one go (2026-11-18)
+
+Change Many Products... on a selection of products puts them on sale at a
+percentage off, ends a sale, changes the price by a percentage, sets the
+stock status or the status, or adds or removes a category, through
+WooCommerce's batch route. The preview names every product's old and new
+value, and every product it leaves alone and why. Undo puts them back.
+
 ### GitHub Workbench: is it GitHub, or is it me? (2026-11-18)
 
 Help > GitHub Service Status... (Ctrl+Alt+F1) reads GitHub's public status
