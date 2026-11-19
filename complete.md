@@ -172,5 +172,6 @@ All of the following has tests over recorded or fake answers and none has met a 
 
 Decided on 2026-11-19 in `docs/design/2026-11-19-family-ux-pilots.md`: the pilots are Quill Cast and QUILL Lite, and the work starts with truthful results and stable lists. Lost work or misdirected input seen in a pilot jumps the queue.
 
-- [ ] FUX-04 (the actual result, once) and FUX-06 (lists that stay still) in Quill Cast and QUILL Lite, as written in each PRD. The QUILL Lite part goes in the shared package so QUILL has it too.
+- [ ] FUX-04 (the actual result, once) in Quill Cast and QUILL Lite, and FUX-06 (lists that stay still) in QUILL Lite, as written in each PRD. The QUILL Lite part goes in the shared package so QUILL has it too. (FUX-06 in Cast is done.)
+- [ ] Testers, with a screen reader, on Cast's still lists: one re-read, not two, when rows arrive above the selected episode; the list's changing name ("Inbox (9)") is not read again; QUILL's Play Queue window keeps its caret when an episode finishes (speech and braille); "3 new episodes in The Daily." is heard once.
 - [ ] Journey A, from Cast to a saved place to QUILL, once FUX-04 and FUX-06 are in.

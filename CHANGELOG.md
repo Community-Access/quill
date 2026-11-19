@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### Quill Cast: lists stay still while new episodes arrive (2026-11-19)
+
+A feed refresh, a finished download or a change to the queue no longer moves
+your place. In Inbox, New Episodes, Downloads, Continue Listening, the Play
+Queue and the other episode lists, the episode you were on stays selected and
+focused, on the same line of the screen, and nothing takes the keyboard focus.
+New episodes are said once, as "3 new episodes in The Daily.", and a refresh
+with nothing new says nothing. QUILL's Play Queue window, which used to act on
+the wrong episode once the one in front had played, now keeps up with the queue
+and keeps its caret on the same episode. This is the first part of the family
+UX pilot.
 ### GitHub Workbench: secrets stay secret, Dependency Review and Security Overview (2026-11-19)
 
 - **A secret is never shown.** A secret's new value in Properties was a plain

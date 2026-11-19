@@ -617,6 +617,24 @@ Two choices on the View menu change what every list shows:
   First**. Shortest First is a good way to find something that fits a short
   walk.
 
+#### When new episodes arrive while you are in a list
+
+Cast keeps working while you read a list. It checks your podcasts, finishes
+downloads, and takes the next episode off the Play Queue when one ends. None
+of that moves you. The episode you are on stays selected, and it stays on the
+same line of the screen, even when new rows arrive above it or another row
+goes. Your keyboard stays where it was too, so if you are in the search box or
+the Places list, a refresh does not pull you back to the episodes.
+
+New episodes wait for you to reach them. Cast says how many arrived once, for
+example "3 new episodes in The Daily." If a check finds nothing new, Cast says
+nothing.
+
+This holds in every list of episodes, the Play Queue and Continue Listening
+included, and in the Podcasts tree. When an episode ends and the next one
+leaves the front of the queue, the episode you had selected in the Play Queue
+is still the one selected, so Delete takes out the episode you chose.
+
 #### Working with several episodes at once
 
 Sorting a busy Inbox one episode at a time gets old fast. In any episode list,
