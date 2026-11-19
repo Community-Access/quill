@@ -122,6 +122,17 @@ PLUGIN_SCREENS: tuple[tuple[str, str, str, str, str, str, str], ...] = (
         _WC,
     ),
     (
+        "wc_analytics",
+        "admin.php?page=wc-admin&path=%2Fanalytics%2Foverview",
+        "Analytics",
+        "shop_analytics",
+        "both",
+        "Each report's totals, rows and comparison with the days before are in Shop "
+        "Analytics, read only; the charts, segments, advanced filters and Analytics' "
+        "settings are in WooCommerce's screens.",
+        "wc-analytics",
+    ),
+    (
         "wc_settings",
         "admin.php?page=wc-settings",
         "WooCommerce > Settings",
