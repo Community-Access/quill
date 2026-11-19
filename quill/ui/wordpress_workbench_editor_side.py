@@ -114,6 +114,7 @@ class WorkbenchEditorSide:
     def after_fill(self, frame: Any) -> None:
         """After a list fills: select the post This Post in the Workbench is looking for."""
         self._editor_side()
+        self.say_analytics_summary(frame)  # type: ignore[attr-defined]  # a report's sentence
         wanted = self._wanted
         if wanted is None or frame.current is None or self.site_of(frame.current) != wanted.site:
             return

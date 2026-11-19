@@ -21,6 +21,10 @@ from quill.core.wordpress.workbench_plugin_actions_more import (
     MORE_ROWS,
     MORE_TRASH,
 )
+from quill.core.wordpress.workbench_shop_analytics_places import (
+    ANALYTICS_ACTION_ROWS,
+    ANALYTICS_KEYLESS,
+)
 from quill.core.workbench.actions import ActionRow, Tier
 
 __all__ = [
@@ -200,6 +204,7 @@ PLUGIN_ACTION_ROWS: Mapping[str, tuple[ActionRow, ...]] = {
 PLUGIN_ACTION_ROWS = {  # reviews, shipping, taxes, webhooks, brands, event terms, bulk SEO
     **{k: (*v[:-1], *MORE_EXTRA.get(k, ()), v[-1]) for k, v in PLUGIN_ACTION_ROWS.items()},
     **MORE_ROWS,
+    **ANALYTICS_ACTION_ROWS,  # Shop Analytics: Date Range and Interval, read only
 }
 
 QAF_FORM_ROWS: tuple[ActionRow, ...] = (
@@ -286,3 +291,4 @@ KEYLESS: dict[str, str] = {
 }
 """Why each command here has no chord of its own (family rule 8)."""
 KEYLESS.update(MORE_KEYLESS)
+KEYLESS.update(ANALYTICS_KEYLESS)

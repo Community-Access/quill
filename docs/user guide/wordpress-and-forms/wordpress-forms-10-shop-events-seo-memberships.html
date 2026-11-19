@@ -289,7 +289,9 @@ Reviews</strong>, <strong>Shipping Zones</strong>, <strong>Tax
 Rates</strong>, <strong>Tax Classes</strong>,
 <strong>Attributes</strong>, <strong>Brands</strong>,
 <strong>Webhooks</strong>, <strong>Payment Gateways</strong> and
-<strong>System Status</strong>.</p>
+<strong>System Status</strong>. Beside it is <strong>Shop
+Analytics</strong>, WooCommerce Analytics’ reports, described at the end
+of this section.</p>
 <h3 id="products">Products</h3>
 <ul>
 <li><strong>File &gt; New Here…</strong> (<code>Ctrl+N</code>) on Shop
@@ -425,6 +427,58 @@ preview; it cannot be undone.</li>
 </ul>
 <p>In the editor, <strong>Tools &gt; WordPress &gt; Plugin Extras &gt;
 Shop Orders…</strong> lists the newest orders, to read.</p>
+<h3 id="shop-analytics">Shop Analytics</h3>
+<p>WooCommerce Analytics has its own menu in wp-admin, beside
+WooCommerce, and in the Workbench it is <strong>Shop Analytics</strong>,
+beside Shop. It is there when the site lists WooCommerce Analytics’
+routes; WooCommerce turns Analytics on in WooCommerce &gt; Settings &gt;
+Advanced &gt; Features. Nothing in it changes the site.</p>
+<p>Under it is one place for each report: <strong>Revenue</strong>,
+<strong>Orders</strong>, <strong>Products</strong>,
+<strong>Categories</strong>, <strong>Coupons</strong>,
+<strong>Taxes</strong>, <strong>Downloads</strong>,
+<strong>Stock</strong> and <strong>Customers</strong>. The first row of
+each is the total for the whole range. Then:</p>
+<ul>
+<li><strong>Revenue</strong>, <strong>Orders</strong> and
+<strong>Downloads</strong> have a row for each day, week or month.
+Revenue gives orders, gross sales, returns, coupons, net sales, taxes,
+shipping and total sales; Orders gives the orders, net sales, the
+average order and the items in each.</li>
+<li><strong>Products</strong>, <strong>Categories</strong>,
+<strong>Coupons</strong> and <strong>Taxes</strong> have a row for each
+product, category, coupon or tax rate that sold or was used, best
+first.</li>
+<li><strong>Stock</strong> lists every product’s stock as it is now, out
+of stock first.</li>
+<li><strong>Customers</strong> lists customers, biggest spenders first,
+with their orders, total spent, average order and when they were last
+active. Emails and addresses stay out of the list.</li>
+</ul>
+<p>When you arrive on a report, QUILL says its totals once, compared
+with the same number of days just before, for example “Revenue on Radio,
+last 7 days: $1,240 from 31 orders, up 12% on the 7 days before.”
+Amounts are written the way your store writes them, with its currency
+symbol and separators. F5 reads the report again without repeating the
+sentence.</p>
+<p>On any row of a report:</p>
+<ul>
+<li><strong>Date Range…</strong> chooses the days: Today, Yesterday,
+Last 7 Days, Last 30 Days, Month to Date, Last Month, This Year, Last
+Year, or <strong>Custom…</strong>, which asks for the first and last
+day, such as 2026-11-01. Last 7 Days is where it starts.</li>
+<li><strong>Interval…</strong> chooses a row for each day, week or
+month.</li>
+</ul>
+<p>Both are kept for every report on that site until you change them or
+close the Workbench, so Revenue and Orders always cover the same days.
+Stock and Customers say how things are now, so the range does not change
+them.</p>
+<p>To keep a report, <strong>Edit &gt; Export List…</strong>
+(Ctrl+Shift+X) writes the rows as shown, the total first, as an Excel
+workbook, a CSV file or a Markdown table. WooCommerce’s charts, segments
+and advanced filters stay in its own screens: <strong>wp-admin for This
+Place</strong> opens them.</p>
 <h2 id="events-the-events-calendar">Events: The Events Calendar</h2>
 <p>Each site with The Events Calendar has an <strong>Events
 Calendar</strong>, which lists the events coming up. Under it are

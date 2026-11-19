@@ -20,6 +20,10 @@ from quill.core.wordpress.workbench_dashboard_places import (
     DASHBOARD_ROW_HELP,
 )
 from quill.core.wordpress.workbench_plugin_nodes import PLUGIN_NODE_HELP, PLUGIN_ROW_HELP
+from quill.core.wordpress.workbench_shop_analytics_places import (
+    ANALYTICS_NODE_HELP,
+    ANALYTICS_ROW_HELP,
+)
 from quill.core.wordpress.workbench_sweep_places import SWEEP_NODE_HELP, SWEEP_ROW_HELP
 
 __all__ = ["NODE_HELP", "PLANNED_WORDS", "ROW_HELP", "node_help", "row_help"]
@@ -208,6 +212,7 @@ NODE_HELP: Mapping[str, str] = {
     **SWEEP_NODE_HELP,
     **DASHBOARD_NODE_HELP,
     **PLUGIN_NODE_HELP,  # Shop's other nodes, Events Calendar, SEO
+    **ANALYTICS_NODE_HELP,  # Shop Analytics and its reports
 }
 """One sentence per node key; status children and group nodes share their parent's."""
 
@@ -304,6 +309,7 @@ ROW_HELP: Mapping[str, str] = {
     **SWEEP_ROW_HELP,
     **DASHBOARD_ROW_HELP,
     **PLUGIN_ROW_HELP,  # shop, events and SEO rows
+    **ANALYTICS_ROW_HELP,  # a Shop Analytics report's rows
 }
 """One sentence per row type."""
 

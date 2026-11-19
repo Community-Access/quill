@@ -373,7 +373,8 @@ class WordPressWorkbenchProvider(
         # Forms: a Gravity Forms filter is sent to the site (gravity_load_scope).
         scope = self.gravity_load_scope(ref, node.loader, query)
         with page_limit(self.pages_for_ref(ref)), scope as left:
-            rows = load(ctx, node.loader, dict(node.preset), params, dynamic=dynamic)
+            preset = {**dict(node.preset), **self.analytics_params(ref, node)}  # Shop Analytics
+            rows = load(ctx, node.loader, preset, params, dynamic=dynamic)
             self.note_loaded(ref, len(rows))
             self.remember_rows(rows)  # the glossary's examples come from these
         rows = self.with_update_facts(

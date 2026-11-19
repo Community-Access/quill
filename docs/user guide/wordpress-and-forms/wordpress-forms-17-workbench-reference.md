@@ -59,6 +59,7 @@ Spam, Form Responses, Membership Orders and Watches.
 | Forms | Responses, Held as Spam, Feeds, Results | 13 |
 | Memberships | Membership Levels, Orders, Subscriptions, Renewals Due, Discount Codes | 10 |
 | Shop | Products and the shop's places | 10 |
+| Shop Analytics | Revenue, Orders, Products, Categories, Coupons, Taxes, Downloads, Stock, Customers | 10 |
 | Podcast | The site's episodes | 10 |
 | Events Calendar | Past Events, Venues, Organizers, Event Categories, Event Tags | 10 |
 | SEO | Each item's search appearance, and Site SEO | 10 |
@@ -164,6 +165,8 @@ last, and is left out below.
 - **Shop order:** Open in the Shop's Dashboard, Read in Full, Change
   Status..., Notes..., Refund....
 - **Shop customer:** Read in Full, Customer Details, Edit Customer....
+- **Shop Analytics row:** Read in Full, Date Range..., Interval.... Both
+  choices are kept for every report on the site.
 - **Coupon:** Read in Full, Edit Coupon..., New Coupon..., Move to Trash....
 - **Product review:** Read in Full, Approve, Hold, Mark as Spam, Reply...,
   Edit Review..., Move to Trash....

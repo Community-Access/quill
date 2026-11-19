@@ -22,6 +22,7 @@ __all__ = ["PLUGIN_BRANCHES", "shows"]
 #: Site node key -> the namespaces, any one of which means its plugin is there.
 PLUGIN_BRANCHES: Mapping[str, tuple[str, ...]] = {
     "shop": ("wc/v3",),
+    "shop_analytics": ("wc-analytics",),
     "memberships": ("pmpro/v1",),
     "events": (EVENTS_NAMESPACE,),
     "seo": tuple(SEO_NAMESPACES),
