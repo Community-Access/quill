@@ -2,6 +2,30 @@
 
 ## 1.0.0
 
+### GitHub Workbench: discussion polls, the spotlight and categories (2026-11-19)
+
+- A discussion's poll is now a table showing each option, its votes, its
+  percentage and your vote. **Vote...** casts your vote and says the new count.
+  If you have voted already it says which option you chose, and a Read Only
+  account is told why it cannot vote.
+- **Discussions > Pinned** lists the pinned discussions in GitHub's order.
+  GitHub has no way to pin or unpin from outside its own page, and the details
+  say so.
+- **Discussions > Categories** lists the repository's categories, and Enter
+  opens the discussions in one of them. GitHub does not yet report category
+  sections, so they are listed in GitHub's order.
+- Every quick command that changes something on GitHub now checks your
+  account's Workbench level before it reads or sends anything.
+
+### Quill Cast: Ctrl+2 shows the episode that is playing (2026-11-19)
+
+Reported by Chris: Enter on a podcast, or on an episode in the Queue, played
+it, and Ctrl+2 then brought up Now Playing without it. Now Playing only loaded
+the current episode, and started its clock, when it was opened through its own
+command. Ctrl+2, Ctrl+Tab and the Window menu showed the hidden window as it
+had been left, which was often "Nothing is playing". Every way of reaching it
+now brings it up to date first. Cast's other windows that hide rather than
+close, such as Statistics, now refresh the same way.
 ### WordPress Workbench: Shop Analytics (2026-11-19)
 
 A site with WooCommerce Analytics now has **Shop Analytics** beside its Shop:

@@ -1537,8 +1537,8 @@ inbox reads.</td>
 <tr>
 <td>Discussions (<code>repository:discussions</code>)</td>
 <td>repository, repository</td>
-<td>Discussions: the repository’s conversations that are not
-issues.</td>
+<td>Discussions: the repository’s conversations that are not issues. A
+poll shows in the details as a table; Vote… casts your vote.</td>
 </tr>
 <tr>
 <td>Merge Queue (<code>repository:merge_queue</code>)</td>
@@ -1791,6 +1791,20 @@ environment’s own.</td>
 <td>repository, code</td>
 <td>Codespaces: your codespaces for this repository. Ctrl+N makes one on
 a branch you name, with the machine and dev container you choose.</td>
+</tr>
+<tr>
+<td>Pinned (spotlight) (<code>repository:discussions_pinned</code>)</td>
+<td>repository, discussions</td>
+<td>Pinned (spotlight): the discussions pinned at the top of
+Discussions, in GitHub’s order. Read only: GitHub’s API cannot pin,
+unpin or reorder one.</td>
+</tr>
+<tr>
+<td>Categories (<code>repository:discussion_categories</code>)</td>
+<td>repository, discussions</td>
+<td>Categories: the repository’s discussion categories, grouped by
+section where GitHub gives sections; Enter lists a category’s
+discussions.</td>
 </tr>
 <tr>
 <td>Actions Variables (<code>repository:actions_variables</code>)</td>
@@ -3288,8 +3302,8 @@ History…, Forks…, Fork Gist; More: Copy Link, Open on GitHub, Delete
 Gist…; Properties…</li>
 <li><strong>discussion</strong>: Open Discussion Thread, Read as
 Document…, Copy Link, Open on GitHub, Close Discussion…, Reopen
-Discussion; More: Delete Discussion…, Upvote, Remove Upvote, Vote in the
-Poll…, Edit a Comment…, Delete a Comment…; Properties…</li>
+Discussion; More: Delete Discussion…, Upvote, Remove Upvote, Vote…, Edit
+a Comment…, Delete a Comment…; Properties…</li>
 <li><strong>security_alert</strong>: Open, Dismiss or Reopen Alert…,
 Copilot Autofix…, Show Every Place, Open on GitHub, Where It Was Found;
 Properties…</li>
@@ -3356,6 +3370,10 @@ More: Close Everywhere…, Move Open Work To…, Promote to Organization…,
 Delete Everywhere…; Properties…</li>
 <li><strong>fleet</strong>: Open Repository, Open on GitHub, Copy Link;
 Properties…</li>
+<li><strong>discussion_section</strong>: Open Section, Open on GitHub;
+Properties…</li>
+<li><strong>discussion_category</strong>: Find Discussions in Category,
+Copy Link, Open on GitHub; Properties…</li>
 <li><strong>runner</strong>: Show Details, Runner Labels…, Remove
 Runner…, Open on GitHub, Copy Link, Removal Commands…; Properties…</li>
 <li><strong>pages_site</strong>: Show Details, Check Site, Rebuild, Turn
@@ -3519,6 +3537,9 @@ only, for a server to clone, pull or push.</li>
 website.</li>
 <li><strong>Discussion</strong>: A conversation in a repository that is
 not an issue.</li>
+<li><strong>Discussion category</strong>: A kind of discussion, such as
+Q&amp;A or Ideas. Under Discussions, Categories, by section where GitHub
+gives sections; Enter lists its discussions.</li>
 <li><strong>Draft</strong>: A pull request that is not ready for review
 yet.</li>
 <li><strong>Environment</strong>: A named place code is deployed to,
@@ -3566,6 +3587,9 @@ code, such as a container image or an npm package, kept on GitHub
 Packages in versions.</li>
 <li><strong>Pin</strong>: A repository kept on this computer under
 Repositories, Pinned.</li>
+<li><strong>Poll</strong>: A question in a discussion with options to
+vote for. Its details show it as a table: option, votes, percentage and
+your vote. Vote… casts yours.</li>
 <li><strong>Project</strong>: A board or table for planning issues and
 pull requests.</li>
 <li><strong>Pull request</strong>: A proposed change: commits on one
@@ -3608,6 +3632,9 @@ or a secret in it is at risk.</li>
 <li><strong>Sponsorship</strong>: Money you pay someone through GitHub
 Sponsors for their open-source work, each month or once, at one of the
 tiers they offer.</li>
+<li><strong>Spotlight</strong>: The discussions pinned at the top of
+Discussions. Under Discussions, Pinned (spotlight); read only, because
+GitHub’s API cannot pin one.</li>
 <li><strong>Squash</strong>: Merging a pull request as one single
 commit, instead of all of its commits.</li>
 <li><strong>Star</strong>: A bookmark on a repository, which also shows
@@ -3665,7 +3692,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 848 yes, 0 planned, 290 not needed and 866 left to
+<p>In all: 849 yes, 0 planned, 290 not needed and 868 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -13281,7 +13308,7 @@ Workbench uses for it (already built); one route per operation.</td>
 <tr>
 <td><code>addDiscussionPollVote</code></td>
 <td>Yes</td>
-<td>context menu &gt; Vote in the Poll…</td>
+<td>context menu &gt; Vote…</td>
 </tr>
 <tr>
 <td><code>addUpvote</code></td>
@@ -15031,6 +15058,14 @@ twin</h3>
 </thead>
 <tbody>
 <tr>
+<td><code>DiscussionCategory section</code></td>
+<td>Left to GitHub</td>
+<td>GitHub’s GraphQL DiscussionCategory has no section field, so
+Discussions &gt; Categories lists the categories in GitHub’s order and
+says why, in the list’s note. Open on GitHub: the repository’s
+Discussions page.</td>
+</tr>
+<tr>
 <td><code>blockedBy</code></td>
 <td>Yes</td>
 <td>context menu &gt; Reorder Sub-issues…</td>
@@ -15058,7 +15093,8 @@ twin</h3>
 <tr>
 <td><code>discussionCategories</code></td>
 <td>Yes</td>
-<td>Navigator: Repository &gt; owner/name &gt; Discussions</td>
+<td>Navigator: Repository &gt; owner/name &gt; Discussions &gt;
+Categories</td>
 </tr>
 <tr>
 <td><code>discussions</code></td>
@@ -15089,6 +15125,20 @@ twin</h3>
 <td><code>mergeQueue</code></td>
 <td>Yes</td>
 <td>Item &gt; Merge… (Ctrl+Shift+Enter)</td>
+</tr>
+<tr>
+<td><code>pinDiscussion (pin, unpin, reorder)</code></td>
+<td>Left to GitHub</td>
+<td>GitHub’s GraphQL API reads pinned discussions
+(Repository.pinnedDiscussions) but has no mutation to pin, unpin or
+reorder one, so Discussions &gt; Pinned (spotlight) is read only and
+says so. Open on GitHub: the discussion’s page.</td>
+</tr>
+<tr>
+<td><code>pinnedDiscussions</code></td>
+<td>Yes</td>
+<td>Navigator: Repository &gt; owner/name &gt; Discussions &gt; Pinned
+(spotlight)</td>
 </tr>
 <tr>
 <td><code>pinnedItems</code></td>

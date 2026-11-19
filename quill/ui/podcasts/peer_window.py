@@ -91,8 +91,14 @@ def open_peer(
         window._peer_opener = opener
     windows = getattr(host, "_windows", None)
     if windows is not None:
+        # on_show: reached again by Ctrl+number or Ctrl+Tab rather than its own
+        # command, a hidden peer refreshes too, instead of showing what it held.
+        refresh_again = getattr(window, "refresh", None)
         windows.register(
-            window.frame, window.frame.GetTitle() or window.TITLE, focus=window.focus_target
+            window.frame,
+            window.frame.GetTitle() or window.TITLE,
+            focus=window.focus_target,
+            on_show=refresh_again if callable(refresh_again) else None,
         )
     from quill.ui.dialog_contract import show_modeless_surface
 

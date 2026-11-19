@@ -53,6 +53,23 @@ MORE_REPOSITORY: tuple[NodeSpec, ...] = (
         loader="explore:repo_codespaces",
         row_type="codespace",
     ),
+    # Under Discussions: the spotlight (read only: GitHub's API cannot pin one)
+    # and the categories, by section where GitHub gives sections.
+    *(
+        NodeSpec(
+            key,
+            label,
+            "discussions",
+            scope=Scope.REPOSITORY,
+            needs=_SIGN_IN,
+            loader=f"discussions:{view}",
+            row_type=row,
+        )
+        for key, label, view, row in (
+            ("discussions_pinned", "Pinned (spotlight)", "pinned", "discussion"),
+            ("discussion_categories", "Categories", "categories", "discussion_category"),
+        )
+    ),
 )
 
 #: A saved search pinned as a node of its own under Saved Searches (GH-R-053):

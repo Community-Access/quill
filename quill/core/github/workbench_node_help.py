@@ -209,7 +209,18 @@ NODE_HELP: dict[str, str] = {
     "repository:issues_and_pulls": (
         "Issues and Pull Requests: both in one list, newest first, the way an inbox reads."
     ),
-    "repository:discussions": "Discussions: the repository's conversations that are not issues.",
+    "repository:discussions": (
+        "Discussions: the repository's conversations that are not issues. A poll shows "
+        "in the details as a table; Vote... casts your vote."
+    ),
+    "repository:discussions_pinned": (
+        "Pinned (spotlight): the discussions pinned at the top of Discussions, in GitHub's "
+        "order. Read only: GitHub's API cannot pin, unpin or reorder one."
+    ),
+    "repository:discussion_categories": (
+        "Categories: the repository's discussion categories, grouped by section where "
+        "GitHub gives sections; Enter lists a category's discussions."
+    ),
     "repository:actions": "Actions: the repository's workflow runs, workflows and caches.",
     "repository:runs": (
         "Runs: each time a workflow ran. Enter shows its jobs and logs; Ctrl+Shift+W "

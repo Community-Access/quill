@@ -9,7 +9,9 @@
 For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claude.log`. The commands and gates are in `CLAUDE.md`.
 
 - **Screen-reader testing** is done by Jeff's testers and is not tracked here.
-- **Next:** Part 1 below, the GitHub Workbench: the open features and checks (1.3), then the documentation pass (1.4).
+- **Where it stands (2026-11-19, afternoon):** today's merged PRs are #1943 to #1949, which cover WordPress scope docs, GH-R-045, GH-R-002, the 3.2 decisions, unlinking a branch from the issue sheet, shipping classes and Generate Variations, PMPro members and discount codes, Redirection's options, and Shop Analytics. Open: #1950 (discussion polls, spotlight and categories) and #1951 (Chris's Cast Ctrl+2 fix). Being built: permission levels enforced on every Workbench write.
+- **Next:** finish 1.3 smallest first, then the documentation pass (1.4), then the rest of 2.3 and 3.2. A tester's defect report always comes first.
+- **Live testing waits until all code is done (Jeff, 2026-11-19).** That covers the WordPress test site over SSH (`ssh lp.csedesigns.com`, wp-cli through `~/app/wordpress-test/wpcli.sh`, which needs more PHP memory), installing QAF and the other plugins, the GitHub test repository, and the 1.5 and 2.4 rows. Gravity Forms waits until later.
 - **How to work here:**
   - Squash-merge with `gh api -X PUT repos/Community-Access/quill/pulls/N/merge -f merge_method=squash`.
   - Log each step to `claude.log`, with the time read from a clock.
@@ -18,9 +20,11 @@ For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claud
 
 ## The order of work
 
-1. **The GitHub Workbench (Part 1)**, above everything else.
-2. **WordPress (Part 2).**
-3. **Other work (Part 3):** Copilot runtime verification, then Earshot parity.
+1. **A tester's defect report**, whenever one arrives.
+2. **The GitHub Workbench (Part 1)**, code first.
+3. **WordPress (Part 2)**, code first.
+4. **Other work (Part 3):** the family UX pilots, Earshot parity, and the Copilot runtime build.
+5. **Then all live testing:** 1.5, 2.4 and 2.5, the test site and the GitHub test repository.
 
 ## Part 1. The GitHub Workbench
 
@@ -54,7 +58,6 @@ Each is done only with evidence: a test or a live run.
 - [ ] Environments, deployment protection and release/deployment evidence (Set Status... on a commit is done).
 - [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
 - [ ] Code/secret scanning, advisories, private reports, bypass/dismissal requests, Autofix/dependency review and organization security overview.
-- [ ] Discussion polls, spotlight and category sections.
 - [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
 - [ ] Least-privilege advice based on observed usage with honest uncertainty; artifact attestations and immutable release evidence.
 - [ ] First-class by-name collections for every kind in product requirements document (PRD) 22.11 beyond Labels, Milestones, Topics, Rules and Branch Protection, and the Fleet; the other kinds are classified in `quill/core/github/across_scope_matrix.py`.
@@ -89,6 +92,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 
 - [ ] Run `python docs/qa/github-live-run.py --create` after signing in again, and the live rows marked "needs Jeff".
 - [ ] GitHub live scenarios: multiple roles/accounts, protected branches, organization restrictions, rate limiting, private repositories, project fields, secrets, failure/retry and no-API fallbacks; the Copilot cloud agent commands on a Copilot plan.
+- [ ] Vote... in a real discussion poll, and the Pinned (spotlight) place, on the test repository.
 - [ ] **GH-R-119:** timed find-the-answer sessions with people.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists.
 - [ ] WordPress current candidate: run the documented live regression on an authorized test site and distinguish existing site-side failures from regressions.

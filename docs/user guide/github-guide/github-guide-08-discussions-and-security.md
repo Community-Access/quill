@@ -73,6 +73,50 @@ from the context menu.
 
 You hear "Started the discussion" with its title and category.
 
+### Polls as a table, and Vote...
+
+In the GitHub Workbench, **Repository > Discussions** lists the discussions.
+When one has a poll, its details end with the poll as a table: a line with
+the question, the total and whether you may vote, "Poll: Which sound pack?,
+25 votes in all. You may vote: Vote...", then "Option, votes, percent, your
+vote:" and a row for each option, "Classic, 15 votes, 60 percent, your vote:
+no". The discussion's **Properties...** has the same table on its **Poll**
+page, under the question.
+
+**Vote...** on the discussion's context menu, or **Add...** or **Change...**
+under the Poll page's table, lists the options with their votes. Choose one
+and you hear the outcome once, with the new count: "Voted for Classic. It has
+16 votes now, of 26 in all." GitHub keeps a poll vote once it is cast: if
+you have voted, Vote... says which option you chose, and **Remove** under
+the table says a vote cannot be taken back. An account set to Read Only in
+the Workbench (**Workbench Options**, Accounts) cannot vote: Vote... says so
+and sends nothing.
+
+### Pinned discussions: the spotlight
+
+**Repository > Discussions > Pinned (spotlight)** lists the discussions
+pinned at the top of the repository's Discussions page, first to last in
+GitHub's order: "1. #12 How do I turn off the sounds? (Q&A; Answered by
+alice)". The details begin "Pinned 1 of 3, by alice." Enter opens the
+thread, and Vote... and Properties work as in the main list. If nothing is
+pinned, the list is empty and the status bar says so.
+
+GitHub's API reads pinned discussions but cannot pin, unpin or reorder one,
+so this place is read only, and each pinned discussion's details say so. To
+pin one, use **Open on GitHub** and pin it on GitHub's own page.
+
+### Categories and their sections
+
+**Repository > Discussions > Categories** lists the repository's discussion
+categories. Where GitHub gives sections, each section is a row, "Section:
+Q&A (3 categories)", and Enter opens it: its categories follow a first row,
+**All sections**, which comes back. GitHub's API does not yet say which
+section a category is in, so today the place lists every category in
+GitHub's order, and the status bar says why once. Each category reads its
+name, and ", question and answer" when a reply can be marked the answer;
+Enter on one goes to Discussions with the list narrowed to that category's
+name.
+
 ## Security alerts
 
 ### Finding them
