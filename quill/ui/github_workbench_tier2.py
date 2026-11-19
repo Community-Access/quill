@@ -9,8 +9,10 @@
 * **Unlink Branch...** on an issue's row, and Remove (or Delete) on the
   Linked branches list of its sheet's Relationships page, take a branch off
   the issue's Development after asking; the branch itself is kept. The
-  account's Workbench level is checked first, so Read Only and Safe Mode
-  refuse it in a sentence. The work is :mod:`quill.core.github.issue_links`.
+  account's Workbench level is checked before either reaches here (the
+  dispatcher and the sheet's list, :mod:`quill.core.github.write_gate`), so
+  Read Only and Safe Mode refuse it in a sentence. The work is
+  :mod:`quill.core.github.issue_links`.
 """
 
 from __future__ import annotations
@@ -381,21 +383,6 @@ class GitHubWorkbenchTier2Mixin:
 
     _fits_not_duplicate = _fits_unlink_branch
 
-    def _write_refusal(self, verb: str) -> str:
-        """Why this account's Workbench level (or Safe Mode) refuses *verb*; "" when it may.
-
-        The tier is the one ``write_requirements`` declares for the command, so
-        the menu, Shift+F1 and this refusal agree.
-        """
-        from quill.core.github.permissions import level_refusal
-        from quill.core.github.write_requirements import requirement_for
-
-        declared = requirement_for(f"github.workbench.{verb}")
-        level = getattr(self, "access_level", None)
-        if declared is None or not callable(level):
-            return ""
-        return level_refusal(level(), declared[1])
-
     def _do_unlink_branch(self, ref: Any, row: object) -> None:
         self._unlink_from(ref.instance, int(getattr(row, "number", 0)))
 
@@ -413,10 +400,6 @@ class GitHubWorkbenchTier2Mixin:
         """
         from quill.core.github.issue_links import linked_branch_ids
 
-        refused = self._write_refusal("unlink_branch")
-        if refused:
-            self._say(refused)
-            return
         api = self.github_api()
         self._background(
             "read the linked branches",
@@ -492,10 +475,6 @@ class GitHubWorkbenchTier2Mixin:
                 after=lambda gone: shown(tuple(r for r in listed() if r != gone)),
             )
         elif verb == "add":
-            refused = self._write_refusal("create_branch")
-            if refused:
-                self._say(refused)
-                return
             title = str(state["loaded"].values.get("title") or "")
             self._create_branch_for(  # type: ignore[attr-defined]
                 repository, number, title, after=lambda made: shown((*listed(), made))
