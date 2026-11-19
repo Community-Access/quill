@@ -106,8 +106,8 @@ class FieldsDialog:
             control.SetHelpText(field.help or name)
             root.Add(control, 0, wx.ALL, 8)
             return control
-        root.Add(wx.StaticText(self.dialog, label=label), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         if field.kind == "checks":
+            root.Add(wx.StaticText(self.dialog, label=label), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
             # One real check box per choice (A11Y-SR-1): a check list's state
             # is not said as the reader moves through it.
             panel = wx.ScrolledWindow(self.dialog)
@@ -127,15 +127,19 @@ class FieldsDialog:
             panel.SetSizer(column)
             root.Add(panel, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
             return boxes
+        # Each caption is built just before its control: wxMSW's accessible name.
+        style = wx.TE_MULTILINE | wx.TE_DONTWRAP if field.kind == "multiline" else 0
         if field.kind == "choice":
+            caption = wx.StaticText(self.dialog, label=label)
             control = wx.Choice(self.dialog, choices=list(field.choices))
             value = str(field.value)
             control.SetSelection(field.choices.index(value) if value in field.choices else 0)
         else:
-            style = wx.TE_MULTILINE | wx.TE_DONTWRAP if field.kind == "multiline" else 0
+            caption = wx.StaticText(self.dialog, label=label)
             control = wx.TextCtrl(self.dialog, value=str(field.value), style=style)
         control.SetName(name)
         control.SetHelpText(field.help or name)
+        root.Add(caption, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         root.Add(control, 1 if field.kind == "multiline" else 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         return control
 

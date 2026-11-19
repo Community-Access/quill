@@ -24,8 +24,7 @@ order:
 Nothing falls back to the retired GitHub Items window. Anything that does not apply is
 greyed, and :meth:`reason` says why: the greyed row's help, and what Shift+F1 reads.
 
-Nothing here speaks on its own (GATE-13); what is said is the result of a
-write the person asked for, through the frame, so F9 can say it again.
+Nothing speaks on its own (GATE-13): what is said is a requested write's result, so F9 repeats it.
 """
 
 from __future__ import annotations
