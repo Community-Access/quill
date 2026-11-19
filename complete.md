@@ -229,26 +229,9 @@ All of the following has tests over recorded or fake answers and none has met a 
 - [ ] Redirects: verify the existing slug-change offer live; classify redirect lists/edit/test/404-log operations. *(Partly 2026-11-13: Sites > site > Redirects and 404 Log list, add (Ctrl+N), change, turn on/off, delete and test through `redirection/v1`; the slug-change offer path is verified in code and by a test; routes classified covered. Live check against a Redirection install remains; S:\QUILL, uncommitted on codex/workbench-combined-2026-11-10.)*
 - [ ] Backups, restores, security/sign-ins/2FA/vulnerability data, caching/performance, multilingual content, consent, email, newsletters, courses, event attendance, analytics and social sharing: account for discovered APIs, and separately decide first-class integration priority. *(Partly 2026-11-13: each is a `THIRD_SWEEP` row with a disposition per site (discovered namespace -> More from This Site, else Open in Dashboard) and the Administration Areas node; the first-class priority decision remains Jeff's; S:\QUILL, uncommitted on codex/workbench-combined-2026-11-10.)*
 
-### 2.6 The WordPress UX review: what matters most
+### 2.6 The WordPress UX review: done
 
-From the review of 2026-11-14 (the full notes are in git history; the walkthrough is `docs/design/wordpress-ux-walkthrough.md`). None of these has been confirmed fixed since.
-
-###### Safety: things that can change or lose data unexpectedly
-
-All eleven are fixed (five by #1837, five by the WordPress safety pull request, and the last, Change History for every write, on 2026-11-18).
-
-
-###### Keys that do not work, or teach the wrong thing
-
-
-###### Dead ends and lost features
-
-
-###### What is heard, and what is not
-
-
-###### Structure and consistency
-
+Every item from the review of 2026-11-14 is fixed (the walkthrough is `docs/design/wordpress-ux-walkthrough.md`; the items and their fixes are in git history and the CHANGELOG). The safety items by #1837 and the WordPress safety pull request; items 26 to 37 and 1, 15, 16, 20, 25 and 30 by the 2026-11-18 pull requests #1902 to #1921. Two calls are left to Jeff: whether page commands such as Check This Page should have a WordPress-layer key (they have a written reason, `wordpress/menu_unbound.py`), and whether menu items want a Workbench tree node beside the Menus window's Undo.
 
 ## Part 3. Other work
 
