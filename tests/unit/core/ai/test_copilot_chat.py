@@ -30,7 +30,6 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 import pytest
-from pydantic import BaseModel
 
 import quill.ai_packs.copilot as copilot_pack
 from quill.core.ai import connection_caps, copilot_auth, copilot_state
@@ -101,7 +100,7 @@ class Rec:
     slow: bool = False
     raise_on_wait: BaseException | None = None
     typed_reply: str = '{"title": "A useful title", "tags": ["alpha"]}'
-    typed_response_type: type[BaseModel] | None = None
+    typed_response_type: type[Any] | None = None
     typed_error: BaseException | None = None
     models: list[Any] = field(default_factory=list)
     models_error: BaseException | None = None
@@ -159,11 +158,11 @@ def _fake_sdk(rec: Rec) -> types.ModuleType:
         async def send_and_wait_typed(
             self,
             prompt: str,
-            response_type: type[BaseModel],
+            response_type: type[Any],
             *,
             attachments: list[dict[str, Any]] | None = None,
             timeout: float = 60.0,
-        ) -> BaseModel:
+        ) -> Any:
             rec.calls.append("send_and_wait_typed")
             rec.sent.append(prompt)
             rec.attachments.append(attachments)
@@ -382,6 +381,8 @@ def test_session_offers_no_tools_and_appends_the_family_line(rec: Rec, tmp_path:
 def test_ask_typed_validates_the_response_with_the_requested_model(
     rec: Rec, tmp_path: Path
 ) -> None:
+    BaseModel = pytest.importorskip("pydantic").BaseModel
+
     class Metadata(BaseModel):
         title: str
         tags: list[str]
@@ -403,6 +404,8 @@ def test_ask_typed_validates_the_response_with_the_requested_model(
 def test_ask_typed_surfaces_invalid_structured_output_as_a_failure(
     rec: Rec, tmp_path: Path
 ) -> None:
+    BaseModel = pytest.importorskip("pydantic").BaseModel
+
     class Metadata(BaseModel):
         title: str
 
@@ -413,6 +416,8 @@ def test_ask_typed_surfaces_invalid_structured_output_as_a_failure(
 
 
 def test_ask_typed_aborts_when_the_request_times_out(rec: Rec, tmp_path: Path) -> None:
+    BaseModel = pytest.importorskip("pydantic").BaseModel
+
     class Metadata(BaseModel):
         title: str
 
@@ -425,6 +430,8 @@ def test_ask_typed_aborts_when_the_request_times_out(rec: Rec, tmp_path: Path) -
 
 
 def test_ask_typed_rejects_non_pydantic_types_before_starting(rec: Rec, tmp_path: Path) -> None:
+    pytest.importorskip("pydantic")
+
     with pytest.raises(TypeError, match="Pydantic BaseModel"):
         _on_worker(lambda: _chat(tmp_path).ask_typed("Describe it.", dict))
     assert rec.clients == 0
