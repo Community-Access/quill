@@ -6,6 +6,11 @@
 * **Accept Invitation...** and **Decline Invitation...** on a row of Needs My
   Attention > Invitations answer it, each after asking. The work is
   :mod:`quill.core.github.repo_invitations`.
+* **Unlink Branch...** on an issue's row, and Remove (or Delete) on the
+  Linked branches list of its sheet's Relationships page, take a branch off
+  the issue's Development after asking; the branch itself is kept. The
+  account's Workbench level is checked first, so Read Only and Safe Mode
+  refuse it in a sentence. The work is :mod:`quill.core.github.issue_links`.
 """
 
 from __future__ import annotations
@@ -376,37 +381,129 @@ class GitHubWorkbenchTier2Mixin:
 
     _fits_not_duplicate = _fits_unlink_branch
 
+    def _write_refusal(self, verb: str) -> str:
+        """Why this account's Workbench level (or Safe Mode) refuses *verb*; "" when it may.
+
+        The tier is the one ``write_requirements`` declares for the command, so
+        the menu, Shift+F1 and this refusal agree.
+        """
+        from quill.core.github.permissions import level_refusal
+        from quill.core.github.write_requirements import requirement_for
+
+        declared = requirement_for(f"github.workbench.{verb}")
+        level = getattr(self, "access_level", None)
+        if declared is None or not callable(level):
+            return ""
+        return level_refusal(level(), declared[1])
+
     def _do_unlink_branch(self, ref: Any, row: object) -> None:
+        self._unlink_from(ref.instance, int(getattr(row, "number", 0)))
+
+    def _unlink_from(
+        self,
+        repository: str,
+        number: int,
+        name: str = "",
+        after: Callable[[str], None] | None = None,
+    ) -> None:
+        """Read #*number*'s linked branches afresh, then unlink *name* (or the one chosen).
+
+        *after* gets the unlinked branch's name: the issue's sheet takes it off
+        its Linked branches list.
+        """
         from quill.core.github.issue_links import linked_branch_ids
 
-        api, repository, number = self.github_api(), ref.instance, int(getattr(row, "number", 0))
+        refused = self._write_refusal("unlink_branch")
+        if refused:
+            self._say(refused)
+            return
+        api = self.github_api()
         self._background(
             "read the linked branches",
             lambda: linked_branch_ids(api, repository, number),
-            lambda found: self._pick_unlink(number, list(found)),
+            lambda found: self._pick_unlink(number, list(found), name, after),
         )
 
-    def _pick_unlink(self, number: int, found: list[Any]) -> None:
+    def _pick_unlink(
+        self,
+        number: int,
+        found: list[Any],
+        name: str = "",
+        after: Callable[[str], None] | None = None,
+    ) -> None:
         from quill.core.github.issue_links import unlink_branch
 
+        if name:
+            found = [branch for branch in found if branch.name == name]
+            if not found:
+                self._say(f"{name} is no longer linked to #{number}. F5 reads the issue again.")
+                return
         if not found:
             self._say(f"#{number} has no linked branches.")
             return
-        picked = self._choose(
-            "Unlink Branch",
-            f"Which branch to unlink from #{number}?",
-            [branch.name for branch in found],
-        )
+        picked = 0
+        if len(found) > 1:  # a chooser of one is a detour; the question names it
+            picked = self._choose(
+                "Unlink Branch",
+                f"Which branch to unlink from #{number}?",
+                [branch.name for branch in found],
+            )
         if picked < 0:
             return
         branch = found[picked]
         if not self._confirm(
             "Unlink Branch",
-            f"Unlink {branch.name} from #{number}? The branch stays; only the link goes.",
+            f"Unlink branch {branch.name} from #{number}? The branch itself is kept, with "
+            "its commits; only its link to the issue is removed.",
         ):
             return
         api = self.github_api()
-        self._background("unlink the branch", lambda: unlink_branch(api, number, branch), self._say)
+
+        def done(said: Any) -> None:
+            self._say(str(said))
+            if after is not None:
+                after(branch.name)
+
+        self._background("unlink the branch", lambda: unlink_branch(api, number, branch), done)
+
+    def act_on_linked_branch(self, state: dict[str, Any], verb: str, row: str) -> None:
+        """The issue sheet's Linked branches list: Add makes one, Remove unlinks one."""
+        ident = state["ident"]
+        repository, number = str(ident.get("repo", "")), int(ident.get("number", 0) or 0)
+
+        def shown(rows: tuple[str, ...]) -> None:
+            sheet = state.get("sheet")
+            try:
+                if sheet is not None:
+                    sheet.set_table("branches", rows)
+            except RuntimeError:  # the sheet was closed while GitHub answered
+                pass
+
+        def listed() -> tuple[str, ...]:
+            sheet = state.get("sheet")
+            rows = sheet.state.loaded.get("branches") if sheet is not None else None
+            return tuple(str(r) for r in rows) if isinstance(rows, tuple) else ()
+
+        if verb == "remove":
+            self._unlink_from(
+                repository,
+                number,
+                row,
+                after=lambda gone: shown(tuple(r for r in listed() if r != gone)),
+            )
+        elif verb == "add":
+            refused = self._write_refusal("create_branch")
+            if refused:
+                self._say(refused)
+                return
+            title = str(state["loaded"].values.get("title") or "")
+            self._create_branch_for(  # type: ignore[attr-defined]
+                repository, number, title, after=lambda made: shown((*listed(), made))
+            )
+        else:
+            self._say(
+                "A linked branch has nothing to change: Remove unlinks it, and Add makes a new one."
+            )
 
     def _do_not_duplicate(self, ref: Any, row: object) -> None:
         from quill.core.github.issue_links import not_a_duplicate

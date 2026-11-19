@@ -12,6 +12,13 @@
   its attributes that it is missing. It says how many it made, never changes or
   removes the variations already there, and Ctrl+Z deletes exactly the ones it
   made. A product that is not variable is told why, and nothing is sent.
+### GitHub Workbench: unlink a branch from the issue's own sheet (2026-11-19)
+
+An issue's Properties > Relationships now lists its linked branches. Delete
+removes the selected link after asking, and the question says the branch
+itself is kept, with its commits. Insert makes a new branch for the issue, as
+Create Branch for This Issue does. Unlinking and that Add now respect your
+account's level: Read Only refuses, and Safe Mode says it is the reason.
 ### Plans: the family UX pilots are chosen (2026-11-19)
 
 The five open decisions from the family UX plan are made and written down in
