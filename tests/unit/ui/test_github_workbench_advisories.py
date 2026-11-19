@@ -86,3 +86,19 @@ def test_publishing_wants_the_ghsa_typed(monkeypatch: Any) -> None:
     window = _Window([1])
     window._do_advisory_state(None, ROW)
     assert window.api.sent[-1][2] == {"state": "closed"}
+
+
+def test_a_private_report_is_accepted_as_a_draft_or_closed() -> None:
+    report = advisory_row("o/r", {**ADVISORY, "state": "triage"})
+    asked: list[list[str]] = []
+
+    def choose(_title: str, _question: str, labels: list[str]) -> int:
+        asked.append(labels)
+        return 0
+
+    window = _Window([])
+    window._choose = choose  # type: ignore[method-assign]
+    window._do_advisory_state(REF, report)
+    assert asked[0][0].startswith("Accept it") and len(asked[0]) == 2
+    assert window.api.sent[-1][2] == {"state": "draft"}
+    assert window.said[0].startswith("Accepted the report;")

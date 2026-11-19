@@ -83,6 +83,19 @@ VIEW_COLUMNS: dict[str, tuple[str, ...]] = {
     VIEW_RUNS: _RUN_COLUMNS,
 }
 
+
+def workbench_columns(view: str) -> tuple[str, ...]:
+    """A Workbench list's columns: the view's, and for issues the type and fields columns.
+
+    Those two are offered by Columns... but shown only once chosen
+    (``ISSUE_FIELD_COLUMNS``), because the fields cost a request an issue.
+    """
+    from quill.core.github.issue_fields_rows import ISSUE_FIELD_COLUMNS
+
+    extra = ISSUE_FIELD_COLUMNS if view == VIEW_ISSUES else ()
+    return (*VIEW_COLUMNS.get(view, ()), *extra)
+
+
 SORT_ORDERS: tuple[tuple[str, str], ...] = (
     ("number_desc", "Number (newest first)"),
     ("number_asc", "Number (oldest first)"),
@@ -157,6 +170,11 @@ def parse_repo_reference(text: str) -> str | None:
 def _cell(model: object, col: str) -> str:
     """Return the display string for one column of one model."""
     if isinstance(model, GitHubItem):
+        from quill.core.github.issue_fields_rows import cell
+
+        typed = cell(model, col)
+        if typed is not None:
+            return typed
         if col == "number":
             return str(model.number)
         if col == "type":
@@ -281,6 +299,9 @@ def item_detail(
     if item.assignees:
         lines.append(f"Assignees: {', '.join(item.assignees)}")
     lines.append(f"Comments: {item.comments}")
+    from quill.core.github.issue_fields_rows import detail_lines
+
+    lines.extend(detail_lines(item))  # an issue's type, and its fields once read
     if item.is_pr:
         lines.append(f"Draft: {'Yes' if item.is_draft else 'No'}")
         lines.append(f"Merged: {'Yes' if item.is_merged else 'No'}")

@@ -63,6 +63,8 @@ ENVIRONMENT_SPECS: tuple[ResourceSpec, ...] = (
         create_method="PUT",
         create_path="{list}/{id}",
         seal=True,
+        edit=(Field("value", "The new value:", "secret"),),
+        edit_method="PUT",
     ),
     ResourceSpec(
         key="environment_variables",

@@ -33,7 +33,9 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
+from datetime import date
 from typing import Any
+from urllib.parse import quote
 
 __all__ = [
     "FIELD_STATES",
@@ -42,10 +44,12 @@ __all__ = [
     "FieldDefinition",
     "FieldValue",
     "IssueExtras",
+    "TypedValue",
     "combine",
     "match",
     "parse_definitions",
     "parse_values",
+    "read_definitions",
     "read_issue_extras",
 ]
 
@@ -53,6 +57,9 @@ FIELD_STATES = ("value", "empty", "unset", "hidden", "unsupported", "unavailable
 KNOWN_TYPES = ("text", "number", "date", "single_select", "multi_select")
 #: Field values are one request per issue, so each repository reads at most this many.
 MAX_FIELD_READS = 30
+
+#: What :meth:`FieldValue.typed` gives: a date, a number, choices, text, or None.
+TypedValue = date | int | float | str | tuple[str, ...] | None
 
 _TYPE_WORDS = {
     "text": "text",
@@ -81,14 +88,57 @@ class FieldValue:
     values: tuple[str, ...] = ()
     reason: str = ""
 
+    def typed(self) -> TypedValue:
+        """The value as its type: a date, a number, a choice's name, choices, or text.
+
+        None unless the state is ``value``: an empty, unset, hidden, unsupported
+        or unreadable field has no typed value, and :meth:`words` says why. A
+        value that does not read as its declared type stays the text GitHub sent.
+        """
+        if self.state != "value" or not self.values:
+            return None
+        first = self.values[0]
+        if self.data_type == "multi_select":
+            return self.values
+        if self.data_type == "date":
+            try:
+                return date.fromisoformat(first[:10])
+            except ValueError:
+                return first
+        if self.data_type == "number":
+            try:
+                number = float(first)
+            except ValueError:
+                return first
+            return int(number) if number.is_integer() else number
+        return first
+
+    def shown(self) -> str:
+        """The typed value as text: 2026-12-31, 3, 2.5, High, or "Red, Blue"."""
+        typed = self.typed()
+        if isinstance(typed, tuple):
+            return ", ".join(typed)
+        if isinstance(typed, date):
+            return typed.isoformat()
+        return "" if typed is None else str(typed)
+
+    def short(self) -> str:
+        """The field in a list cell, "Priority: High"; every state has its own word."""
+        if self.state == "value":
+            return f"{self.name}: {self.shown()}"
+        if self.state == "unsupported":
+            return f"{self.name}: {', '.join(self.values) or 'no value'} (read only)"
+        said = {"empty": "empty", "unset": "not set", "hidden": "hidden"}
+        return f"{self.name}: {said.get(self.state, 'unreadable')}"
+
     def words(self) -> str:
         kind = _TYPE_WORDS.get(self.data_type, self.data_type or "unknown type")
         head = f"{self.name} ({kind}, field {self.field_id})"
         if self.state == "value":
-            return f"{head}: {', '.join(self.values)}"
+            return f"{head}: {self.shown()}"
         if self.state == "unsupported":
             shown = ", ".join(self.values) or "no value"
-            return f"{head}: {shown}, a field type QUILL does not know yet"
+            return f"{head}: {shown}, a field type QUILL does not edit yet, so read only"
         said = {
             "empty": "set to nothing",
             "unset": "not set",
@@ -231,6 +281,51 @@ def _reason(error: BaseException) -> str:
     return why_failed(error)
 
 
+def _status(error: BaseException) -> int | None:
+    status = getattr(error, "status", None)
+    if isinstance(status, int):
+        return status
+    return 404 if "404" in str(error) else None
+
+
+def _forbidden(error: BaseException) -> bool:
+    """GitHub refused this account (401 or 403): the fields are hidden, not unreadable."""
+    return getattr(error, "status", None) in (401, 403) or _reason(error) == "no access"
+
+
+def read_definitions(api: Any, owner: str) -> object:
+    """The fields *owner* defines: an organization's, else your own (``/user``).
+
+    A 404 on the organization read means *owner* is a person, so the fields
+    are the signed-in account's own; any other failure is raised.
+    """
+    try:
+        return api.rest("GET", f"/orgs/{quote(owner)}/issue-fields").data
+    except Exception as exc:
+        if _status(exc) != 404:
+            raise
+    return api.rest("GET", "/user/issue-fields").data
+
+
+def _read_types(api: Any, repository: str) -> tuple[dict[int, str], str]:
+    """Each issue's type from the repository's issue list, or why it could not be read."""
+    types: dict[int, str] = {}
+    try:
+        answer = api.rest(
+            "GET",
+            f"/repos/{repository}/issues",
+            query={"state": "all", "per_page": "100"},
+        )
+    except Exception as exc:  # noqa: BLE001 - one unreadable list is "unavailable", not "none"
+        return types, _reason(exc)
+    for entry in answer.data if isinstance(answer.data, list) else []:
+        if isinstance(entry, Mapping) and isinstance(entry.get("number"), int):
+            kind = entry.get("type")
+            name = kind.get("name") if isinstance(kind, Mapping) else kind
+            types[int(entry["number"])] = _text(name)
+    return types, ""
+
+
 def read_issue_extras(
     api: Any,
     repository: str,
@@ -238,36 +333,28 @@ def read_issue_extras(
     *,
     organization: str = "",
     can_see_fields: bool | None = None,
+    types: Mapping[int, str] | None = None,
 ) -> dict[int, IssueExtras]:
     """Type and fields for *numbers* in *repository*. Runs off the UI thread.
 
     *can_see_fields* is the repository's ``viewerCanSeeIssueFields`` when it
     is known; False makes every issue's fields ``hidden`` without a request.
+    *types* is each issue's type when the caller already has it (the
+    Workbench's issue rows carry it), which saves reading the issue list.
     """
     wanted = list(dict.fromkeys(numbers))
-    types: dict[int, str] = {}
     type_error = ""
-    try:
-        answer = api.rest(
-            "GET",
-            f"/repos/{repository}/issues",
-            query={"state": "all", "per_page": "100"},
-        )
-        for entry in answer.data if isinstance(answer.data, list) else []:
-            if isinstance(entry, Mapping) and isinstance(entry.get("number"), int):
-                kind = entry.get("type")
-                name = kind.get("name") if isinstance(kind, Mapping) else kind
-                types[int(entry["number"])] = _text(name)
-    except Exception as exc:  # noqa: BLE001 - one unreadable list is "unavailable", not "none"
-        type_error = _reason(exc)
+    if types is None:
+        types, type_error = _read_types(api, repository)
     definitions: list[FieldDefinition] = []
     fields_error = ""
     if can_see_fields is not False and organization:
         try:
-            answer = api.rest("GET", f"/orgs/{organization}/issue-fields")
-            definitions = parse_definitions(answer.data)
+            definitions = parse_definitions(read_definitions(api, organization))
         except Exception as exc:  # noqa: BLE001
             fields_error = _reason(exc)
+            if _forbidden(exc):
+                can_see_fields = False
     found: dict[int, IssueExtras] = {}
     for index, number in enumerate(wanted):
         type_name = types.get(number, "")
@@ -285,9 +372,8 @@ def read_issue_extras(
         try:
             answer = api.rest("GET", f"/repos/{repository}/issues/{number}/issue-field-values")
         except Exception as exc:  # noqa: BLE001
-            reason = _reason(exc)
-            state = "hidden" if reason == "no access" else "unavailable"
-            found[number] = _with(base, (), state, reason)
+            state = "hidden" if _forbidden(exc) else "unavailable"
+            found[number] = _with(base, (), state, _reason(exc))
             continue
         found[number] = _with(base, combine(definitions, parse_values(answer.data)), "read", "")
     return found

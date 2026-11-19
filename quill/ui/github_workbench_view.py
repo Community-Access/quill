@@ -56,6 +56,7 @@ def row_values(row: object) -> dict[str, object]:
             "review": row.review_status,
             "base": row.base_branch,
             "head": row.head_branch,
+            "issue_type": row.issue_type,
             "repository": "",
         }
     repo = str(getattr(row, "repo", "") or "")
@@ -164,8 +165,10 @@ class GitHubWorkbenchViewMixin:
 
     def cell_rows(self) -> list[tuple[str, str]]:
         """Show Only and Hide, for each value in the selected row (its context menu)."""
+        from quill.core.github.issue_fields_rows import field_choices
+
         row = self._selected_row()
-        return cell_choices(row_values(row)) if row is not None else []
+        return [*cell_choices(row_values(row)), *field_choices(row)] if row is not None else []
 
     def show_only_cell(self, qualifier: str, *, hide: bool = False) -> None:
         frame = self.frame
@@ -190,6 +193,24 @@ class GitHubWorkbenchViewMixin:
         if isinstance(row, GitHubItem) and row.is_pr:
             values["conflicts"] = getattr(self, "_merge_states", {}).get(row.number, "")
         return values
+
+    def enrich_issue_rows(
+        self, repository: str, rows: list[Any], local: list[tuple[str, str, bool]]
+    ) -> list[Any]:
+        """Off the UI thread: merge states for Has Conflicts, and the issue fields when shown.
+
+        The fields cost a request an issue, so they are read only while the
+        Issue fields column is chosen (Columns..., Ctrl+Shift+U).
+        """
+        if any(key == "conflicts" for key, _v, _n in local):
+            self.fetch_merge_states(repository, list(rows))
+        from quill.core.github.issue_fields_rows import read_row_fields
+        from quill.ui.github_items_view import VIEW_ISSUES, workbench_columns
+
+        shown = self.visible_columns(f"items:{VIEW_ISSUES}", workbench_columns(VIEW_ISSUES))
+        if "issue_fields" not in shown:
+            return rows
+        return read_row_fields(self.github_api(), repository, rows)  # type: ignore[attr-defined]
 
     def fetch_merge_states(self, repository: str, rows: list[object]) -> None:
         """Each loaded pull request's merge state, for Has Conflicts (off the UI thread)."""
@@ -253,14 +274,18 @@ class GitHubWorkbenchViewMixin:
     # -- columns, Load All, unread ------------------------------------------------
 
     def visible_columns(self, view: str, columns: tuple[str, ...]) -> tuple[str, ...]:
+        """The chosen columns; until a choice, every column but the issue type and fields."""
+        from quill.core.github.issue_fields_rows import ISSUE_FIELD_COLUMNS
+
+        default = tuple(c for c in columns if c not in ISSUE_FIELD_COLUMNS) or columns
         try:
             from quill.ui.github_workbench_loaders import saved_items_for
 
-            chosen = saved_items_for(self.items).get_columns(f"workbench:{view}", list(columns))
-        except Exception:  # noqa: BLE001 - unreadable choices show every column
-            return columns
+            chosen = saved_items_for(self.items).get_columns(f"workbench:{view}", list(default))
+        except Exception:  # noqa: BLE001 - unreadable choices show the default columns
+            return default
         kept = tuple(c for c in chosen if c in columns)
-        return kept or columns
+        return kept or default
 
     def choose_columns(self) -> None:
         frame = self.frame
