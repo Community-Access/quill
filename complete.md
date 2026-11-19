@@ -124,15 +124,6 @@ Scheduled Actions and the extensions marketplace are wp-admin only. Subscription
 
 - [ ] **Canonical address, primary category and schema type per post.** Route: only where Yoast registers that post meta for REST, which most sites do not. Not yet verified which of these the bulk editor routes carry. Otherwise they stay in the post's Yoast panel.
 
-##### Memberships (PMPro)
-
-- [ ] **Members of a level, as a list.** Who: the owner emailing or counting one tier's members. Route: unverified. `pmpro/v1/recent_memberships` exists. Otherwise build it from users plus each person's levels, which is slow on big sites.
-- [ ] **Every discount code, as a list.** `pmpro/v1` reads one code at a time. The list works only where an ability offers it, and otherwise opens wp-admin, which QUILL says.
-
-##### Redirects (Redirection)
-
-- [ ] **Redirection's options.** Route: `redirection/v1/setting` (from the plugin's docs, unverified). They stay in the plugin's own screen for now.
-
 ##### Maintenance
 
 - [ ] **Missed scheduled tasks beyond posts.** Search and Upkeep lists posts still Scheduled after their time. No other WP-Cron task is visible to REST. WP Crontrol is named as the plugin that lists them; whether it has a REST API is unverified.
@@ -150,6 +141,8 @@ All of the following has tests over recorded or fake answers and none has met a 
 - [ ] The whole Workbench, W1 to W8 and packages 1 to 14. It is now the default, so this comes before the next release.
 - [ ] WooCommerce, The Events Calendar and Yoast SEO, signed in on the test site, which has all three. A refund only against a gateway's test mode.
 - [ ] New Order, Change Items and Change Address on a test order: especially that a quantity of 0 takes an item off, which WooCommerce's order controller documents but QUILL has only met in fakes.
+- [ ] PMPro Members of This Level (built from users plus each person's levels: the `pmpro/member-memberships-get` ability or `pmpro/v1/get_membership_levels_for_user`), its speed on a big site, and the paged discount-code list.
+- [ ] Redirection's options (`redirection/v1/setting`, built from the plugin's documentation, never seen live).
 - [ ] Redirection: the slug-change redirect offer, the redirect list and 404 log, Redirect Groups (new, rename, turn off, delete) and Import Redirects.
 - [ ] QAF on the test site (it still runs BAF), the QAF migration, and the spam settings with a live submission.
 - [ ] Gravity Forms building, conversion, feeds, notifications and confirmations, results and test submissions. These need a licensed Gravity Forms with its REST API on.

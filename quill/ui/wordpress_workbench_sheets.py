@@ -3,21 +3,18 @@
 A mixin on :class:`quill.ui.wordpress_workbench_window.WordPressWorkbenchProvider`.
 
 - **Alt+Enter on one row** reads the object again (``context=edit``), with its
-  term and author names, its registered meta and, for anything without a
-  written sheet, its route's schema, then opens the shared editable sheet
+  term and author names, its registered meta and, without a written sheet, its
+  route's schema, then opens the shared sheet
   (:class:`quill.ui.workbench_sheet_editor.WorkbenchSheetEditor`). A field the
-  person's role or Workbench access cannot change is read only, with the
-  reason as its F1 help.
-- **Saving** is :func:`quill.core.wordpress.workbench_edit.save` (through
-  :func:`~quill.core.wordpress.field_plugins_cmb2.save_with_cmb2`): the conflict
-  check on ``modified_gmt``, the write, and the verify after it. A conflict
-  sends nothing and asks Use Mine or Keep Theirs.
+  person's role or access cannot change is read only, with why as its F1 help.
+- **Saving** is :func:`~quill.core.wordpress.field_plugins_cmb2.save_with_cmb2`: the
+  conflict check, the write and the verify. A conflict asks Use Mine or Keep Theirs.
 - **Alt+Enter on several rows** is the batch sheet (section 9): only the
   fields they share, Mixed where they differ, categories and tags added or
   removed; a preview names every item, and the change goes through
   ``batch/v1`` with a result per item and Try Again for any that failed.
-- **Alt+Enter on a site** (or Alt+Shift+Enter anywhere in it) is the Site sheet,
-  with its Spam page read only (13a.5).
+- **Alt+Enter on a site** (or Alt+Shift+Enter in it) is the Site sheet (13a.5); on a
+  Redirect Options row, Redirection's options (their own load and save).
 - **Ctrl+Z** undoes the newest change from Change History, off the UI thread.
 """
 
@@ -140,6 +137,8 @@ class WorkbenchSheetCommands:
         """Off the UI thread: the fresh object, its sheet, its values and term names."""
         if row.subkind == "gravity" and row.kind in _GRAVITY_SHEETS:
             return self.gravity_sheet(row)  # type: ignore[attr-defined]
+        if row.kind == "redirect_option":  # Redirection's options (complete.md 2.3)
+            return self.redirect_options_sheet(row)  # type: ignore[attr-defined]
         ctx = self.ensure(self.ctx(row.site))
         api = ctx.api
         fresh: dict[str, Any] = dict(row.raw)
@@ -293,6 +292,8 @@ class WorkbenchSheetCommands:
         with whether the save landed, so the sheet stays open until it knows."""
         if row.kind == "form_entry" and row.subkind == "gravity":
             return bool(self.gravity_entry_save(row, state))  # type: ignore[attr-defined]
+        if row.kind == "redirect_option":
+            return bool(self.save_redirect_options(row, state))  # type: ignore[attr-defined]
         try:
             body = body_for(
                 sheet,

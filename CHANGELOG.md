@@ -2,6 +2,20 @@
 
 ## 1.0.0
 
+### WordPress Workbench: a level's members, every discount code, and Redirection's options (2026-11-19)
+
+- **Members of This Level...** on a PMPro membership level lists everyone on
+  it, with Copy Email Addresses. A big site is slow, so it asks first and says
+  how many people it will read; choosing it again stops it and keeps what it
+  found.
+- **Discount codes** are now read page by page, so a site with more than 100
+  shows them all. Where a site lists them only in wp-admin, Enter on that row
+  now opens Memberships > Discount Codes, as the row always said it would.
+- **Redirects > Redirect Options** shows the Redirection plugin's settings
+  that QUILL understands and changes them as one Properties sheet, sending
+  only what changed, with Ctrl+Z to put them back. A site without that route
+  is told so, and is offered the plugin's own screen.
+
 ### WordPress Workbench: shipping classes, and Generate Variations (2026-11-19)
 
 - **Shop > Shipping Classes** lists a shop's shipping classes, each with how

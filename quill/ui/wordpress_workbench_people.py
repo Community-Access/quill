@@ -67,6 +67,7 @@ _EDIT_NEEDS = {
     "user": "edit_users",
     "plugin": "activate_plugins",
     "setting": "manage_options",
+    "redirect_option": "manage_options",
     "form_entry": "edit_posts",
     "gravity_form": "gravityforms_create_form",
     "menu": "edit_theme_options",

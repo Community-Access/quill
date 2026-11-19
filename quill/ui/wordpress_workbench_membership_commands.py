@@ -21,6 +21,7 @@ from quill.core.workbench.properties import FieldKind, FieldSpec, PageSpec, Shee
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui import wordpress_workbench_dialogs as wdlg
 from quill.ui.wordpress_workbench_pmpro_levels import WorkbenchPmproLevels
+from quill.ui.wordpress_workbench_pmpro_members import WorkbenchPmproMembers
 
 
 def _read_memberships(api: Any, row: WbRow) -> list[dict[str, Any]]:
@@ -85,7 +86,7 @@ _ASK_HELP = (
 )
 
 
-class WorkbenchMembershipCommands(WorkbenchPmproLevels):
+class WorkbenchMembershipCommands(WorkbenchPmproLevels, WorkbenchPmproMembers):
     # -- pmpro/v1: Change Membership Level and Cancel Membership (WP-C) ----------------
 
     def _membership_refused(self, verb: str, row: WbRow) -> bool:
