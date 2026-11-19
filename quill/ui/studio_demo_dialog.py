@@ -38,6 +38,7 @@ from quill.core.demo_recording import (
 from quill.core.studio_capture import CaptureTarget
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 from quill.ui.studio_demo_actions import DemoActionsMixin
 from quill.ui.studio_demo_picture import DemoPictureMixin
 from quill.ui.studio_demo_sources import DemoSourcesMixin, recordable
@@ -583,7 +584,7 @@ class RecordDemoDialog(DemoSourcesMixin, DemoPictureMixin, DemoActionsMixin, wx.
                 mirrored=self.mirrored.GetValue(),
             ),
             keep_stems=self.stems.GetValue(),
-            countdown=self.countdown.GetValue(),
+            countdown=spin_value(self.countdown),
             studio_process_id=self.callbacks.studio_pid,
             screen_reader=reader,
         )

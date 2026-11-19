@@ -54,6 +54,7 @@ from quill.core.podcasts.settings_types import (
     LEVEL_SHOW,
     SettingDef,
 )
+from quill.ui.spin_value import spin_value
 
 __all__ = ["SettingControl", "build_control"]
 
@@ -80,7 +81,7 @@ class SettingControl:
         if definition.kind == KIND_BOOL:
             return bool(self.control.GetValue())
         if definition.kind in (KIND_INT, KIND_FLOAT):
-            return definition.coerce(self.control.GetValue())
+            return definition.coerce(spin_value(self.control))  # what was typed, too
         if definition.kind == KIND_TEXT:
             return str(self.control.GetValue())
         return self.original
@@ -159,10 +160,10 @@ def build_control(
             parent,
             min=definition.minimum,
             max=definition.maximum or 100.0,
-            inc=0.1,
+            inc=definition.step or 0.1,
             initial=float(answer.value),  # type: ignore[arg-type]
         )
-        control.SetDigits(1)
+        control.SetDigits(definition.digits or 1)
     elif definition.kind == KIND_OPAQUE:
         # The button carries its own label and needs no help from a static text,
         # but the grid still wants a first column, so it keeps the one it had.

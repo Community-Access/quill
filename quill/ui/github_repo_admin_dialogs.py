@@ -19,6 +19,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
+from quill.ui.spin_value import spin_value
 
 # ---------------------------------------------------------------------------
 # Typed confirmation -- the stronger gate for the four highest-consequence
@@ -316,7 +317,7 @@ class BranchProtectionDialog:
             if not branch:
                 return None
             remove = self._remove_check.GetValue()
-            review_count = self._review_spin.GetValue()
+            review_count = spin_value(self._review_spin)
             checks = tuple(
                 part.strip() for part in self._checks_ctrl.GetValue().split(",") if part.strip()
             )

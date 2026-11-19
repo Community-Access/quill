@@ -28,6 +28,7 @@ from quill.core.podcasts.models_filters import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 
 #: The window title. Named in ``core/podcasts/surface_help.py`` so F1 answers
 #: here (GATE-CAST-HELP).
@@ -210,7 +211,7 @@ class EpisodeFilterRuleDialog:
             pattern_kind=kind,
             pattern=self._pattern.GetValue().strip(),
             case_sensitive=self._case.GetValue(),
-            min_duration_minutes=int(self._duration.GetValue()),
+            min_duration_minutes=int(spin_value(self._duration)),
             conditions=list(self._conditions),
             match_any=self._match_any.GetSelection() == 1,
         )

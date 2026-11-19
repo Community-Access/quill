@@ -24,7 +24,7 @@ def test_schedule_recording_offers_hours_and_minutes() -> None:
     assert "self._hours_ctrl" in src
     assert "self._minutes_ctrl" in src
     # The total stored is hours*60 + minutes.
-    assert "self._hours_ctrl.GetValue() * 60 + self._minutes_ctrl.GetValue()" in src
+    assert "spin_value(self._hours_ctrl) * 60 + spin_value(self._minutes_ctrl)" in src
     # Editing an existing entry splits the stored minutes back into H and M.
     assert "entry.duration_minutes // 60" in src
     assert "entry.duration_minutes % 60" in src

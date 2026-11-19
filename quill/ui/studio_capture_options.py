@@ -11,6 +11,7 @@ from quill.core.screenshot_workspaces import (
     workspace_target,
 )
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.spin_value import spin_value
 
 MODES = ("One screenshot", "Several screenshots", "Scrolling page (supported windows)")
 
@@ -48,7 +49,7 @@ class CaptureOptionsMixin:
         )
 
         def choose_mode(event):
-            if self.mode.GetSelection() and self.count.GetValue() == 1:
+            if self.mode.GetSelection() and spin_value(self.count) == 1:
                 self.count.SetValue(3)
             self._announce(
                 "Capture mode changed. Review the number of screenshots before starting."
@@ -134,8 +135,8 @@ class CaptureOptionsMixin:
     def capture_options(self):
         # Hiding Advanced also makes its modes inactive, without erasing saved values.
         if not self.extra_options.GetValue():
-            return "One screenshot", 1, self.interval.GetValue()
-        return self.mode.GetStringSelection(), self.count.GetValue(), self.interval.GetValue()
+            return "One screenshot", 1, spin_value(self.interval)
+        return self.mode.GetStringSelection(), spin_value(self.count), spin_value(self.interval)
 
     def _save_setup(self, event):
         try:

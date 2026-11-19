@@ -34,6 +34,7 @@ from quill.core.podcasts.models_playlists import (
     PLAYLIST_PROGRESS_MODES,
     PlaylistRules,
 )
+from quill.ui.spin_value import spin_value
 
 __all__ = ["ExtraRules"]
 
@@ -180,5 +181,5 @@ class ExtraRules:
             "has_note": PLAYLIST_NOTE_MODES[max(0, self._note.GetSelection())],
             "progress": PLAYLIST_PROGRESS_MODES[max(0, self._progress.GetSelection())],
             "text_contains": self._text.GetValue().strip(),
-            "item_limit": int(self._limit.GetValue()),
+            "item_limit": int(spin_value(self._limit)),
         }

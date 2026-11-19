@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import wx
 from quill.ui.dpi import dip, dip_size
+from quill.ui.spin_value import spin_value
 
 from quill_social.model import now_ms
 from quill_social.services import approvals as approvals_svc
@@ -220,7 +221,7 @@ class AgendaDialog(wx.Dialog):
         plans = self._store.list_plans()
         drafts = {d.draft_id: d for d in self._store.list_drafts()}
         campaigns = {c.campaign_id: c for c in self._store.list_campaigns()}
-        spacing = self.spacing.GetValue()
+        spacing = spin_value(self.spacing)
         entries = calendar_svc.agenda(
             plans,
             now=now_ms(),
@@ -479,8 +480,8 @@ class QueueScheduleDialog(wx.Dialog):
     def _on_add_slot(self) -> None:
         slot = Slot(
             weekday=self.slot_weekday.GetSelection(),
-            hour=self.slot_hour.GetValue(),
-            minute=self.slot_minute.GetValue(),
+            hour=spin_value(self.slot_hour),
+            minute=spin_value(self.slot_minute),
         )
         self.schedule.slots.append(slot)
         self._reload_slots()
@@ -533,8 +534,8 @@ class QueueScheduleDialog(wx.Dialog):
     def _apply_fields(self) -> None:
         self.schedule.name = self.name.GetValue().strip() or "New queue"
         self.schedule.timezone = self.timezone.GetValue().strip() or "UTC"
-        self.schedule.min_spacing_min = self.min_spacing.GetValue()
-        self.schedule.daily_limit = self.daily_limit.GetValue()
+        self.schedule.min_spacing_min = spin_value(self.min_spacing)
+        self.schedule.daily_limit = spin_value(self.daily_limit)
 
     def _refresh_preview(self) -> None:
         self._apply_fields()

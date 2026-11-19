@@ -39,6 +39,7 @@ from quill.ui.dialog_contract import (
     show_modal_dialog,
 )
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 
 __all__ = [
     "RecentDocumentsAnswer",
@@ -323,7 +324,7 @@ class RecentDocumentsWindow:
         show_modal_dialog(self.dialog, TITLE)
 
     def answer(self) -> RecentDocumentsAnswer:
-        limit = rd.clamp_limit(self.limit_spin.GetValue())
+        limit = rd.clamp_limit(spin_value(self.limit_spin))
         recent = self.recent[:limit]
         return RecentDocumentsAnswer(
             open_path=self.open_path,

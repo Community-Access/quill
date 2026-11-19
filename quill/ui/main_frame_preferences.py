@@ -39,6 +39,7 @@ from quill.ui.dialog_contract import (
 from quill.ui.dpi import dip_size
 from quill.ui.preferences_search import registry_page_index
 from quill.ui.preferences_search_registry import declare_hub_settings, declare_settings_pages
+from quill.ui.spin_value import spin_value
 from quill.ui.spoken_name import set_spoken_name
 
 
@@ -217,8 +218,7 @@ class PreferencesMixin:
             # Land initial focus on the category selector so arrow keys and
             # first-letter type-ahead work the instant the hub opens. The
             # selector (Listbook list) is not one of the generic preferred-focus
-            # classes, so opt out of the heuristic and keep this explicit focus
-            # on every platform.
+            # classes, so opt out of the heuristic and keep this explicit focus on every platform.
             book.SetFocus()
             dialog._quill_keep_initial_focus = True
 
@@ -839,7 +839,7 @@ class PreferencesMixin:
                     writers[spec.key] = lambda v, c=choice, m=label_for_value, ls=labels: (
                         c.SetStringSelection(m.get(str(v), ls[0]))
                     )
-                    readers["browse_mode_followon_custom_ms"] = lambda s=spin: int(s.GetValue())
+                    readers["browse_mode_followon_custom_ms"] = lambda s=spin: int(spin_value(s))
                     writers["browse_mode_followon_custom_ms"] = lambda v, s=spin: s.SetValue(int(v))
                     control_index[spec.key] = (page_index, choice)
                     control_index["browse_mode_followon_custom_ms"] = (page_index, spin)

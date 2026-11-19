@@ -26,6 +26,7 @@ from quill.core.streaming import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 from quill.ui.sync_guard import SyncGuard
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
@@ -315,8 +316,8 @@ class GoLiveDialog(wx.Dialog):
             return
         row = self._row()
         if row >= 0:
-            self.sources[row] = replace(self.sources[row], level_db=float(self.level.GetValue()))
-            self.list.SetItem(row, 2, f"{self.level.GetValue():+d} dB")
+            self.sources[row] = replace(self.sources[row], level_db=float(spin_value(self.level)))
+            self.list.SetItem(row, 2, f"{spin_value(self.level):+d} dB")
         self._stale(event)
 
     # -- settings and the check ---------------------------------------------------------
@@ -342,9 +343,9 @@ class GoLiveDialog(wx.Dialog):
         settings = StreamSettings(
             kind="icecast" if self.kind.GetSelection() == 0 else "shoutcast",
             host=self.host.GetValue().strip(),
-            port=self.port.GetValue(),
+            port=spin_value(self.port),
             mount=self.mount.GetValue().strip() or "/live",
-            stream_id=self.stream_id.GetValue(),
+            stream_id=spin_value(self.stream_id),
             user=self.user.GetValue().strip() or "source",
             secure=self.secure.GetValue(),
             title=self.title_field.GetValue().strip(),

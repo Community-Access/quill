@@ -16,6 +16,7 @@ from typing import Any
 
 from quill.core.podcasts import refresh_schedule as rs
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 
 __all__ = ["ScheduleDialog", "change_schedule"]
 
@@ -227,7 +228,7 @@ class ScheduleDialog:
         kind = self._current_kind()
         if kind == rs.INTERVAL:
             unit = (1, 60, 1440)[max(0, self._unit.GetSelection())]
-            return rs.Schedule(rs.INTERVAL, max(5, int(self._amount.GetValue()) * unit))
+            return rs.Schedule(rs.INTERVAL, max(5, int(spin_value(self._amount)) * unit))
         if kind == rs.TIMES:
             times = tuple(
                 part.strip() for part in self._times.GetValue().split(",") if part.strip()

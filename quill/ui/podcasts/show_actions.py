@@ -132,6 +132,9 @@ def start_episode_playback(
         auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
         finished_within_s=settings.finished_within_seconds,
     )
+    from quill.ui.podcasts.live_settings import remember_applied
+
+    remember_applied(controller, settings)  # so a later save reaches this episode
     if intro_ms:
         # Recorded only when the skip really happened, so an episode that was
         # resumed (and therefore not skipped) still gets its skip the first time

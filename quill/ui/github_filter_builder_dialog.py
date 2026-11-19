@@ -28,6 +28,7 @@ from quill.core.github.filter_builder import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_modal_dialog
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 from quill.ui.spoken_name import set_spoken_name
 
 __all__ = ["FilterBuilderDialog"]
@@ -166,7 +167,7 @@ class FilterBuilderDialog:
         if not values and operator not in ("has none", "has any"):
             self.value.SetFocus()
             return
-        self.rows.append(BuilderRow(spec.key, operator, values, self.group.GetValue() - 1))
+        self.rows.append(BuilderRow(spec.key, operator, values, spin_value(self.group) - 1))
         self.value.SetValue("")
         self.second.SetValue("")
         self._refresh()

@@ -14,6 +14,7 @@ from typing import Any
 from quill.core.podcasts.models import PLAYLIST_STATUS_MODES, PlaylistRules, PodcastShow
 from quill.core.podcasts.sorting import EPISODE_SORT_MODES
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 
 _STATUS_LABELS = ("Any status", "Unplayed", "In progress", "Played")
 _SORT_LABELS = (
@@ -239,9 +240,9 @@ class PlaylistRulesWindow:
         return PlaylistRules(
             show_ids=checked_show_ids,
             episode_status=PLAYLIST_STATUS_MODES[status_index] if status_index >= 0 else "any",
-            published_within_days=self._days_ctrl.GetValue(),
-            min_duration_minutes=self._min_minutes_ctrl.GetValue(),
-            max_duration_minutes=self._max_minutes_ctrl.GetValue(),
+            published_within_days=spin_value(self._days_ctrl),
+            min_duration_minutes=spin_value(self._min_minutes_ctrl),
+            max_duration_minutes=spin_value(self._max_minutes_ctrl),
             sort_mode=EPISODE_SORT_MODES[sort_index] if sort_index >= 0 else "date_newest",
             **self._extra.values(),
         )

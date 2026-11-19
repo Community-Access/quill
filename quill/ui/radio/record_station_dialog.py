@@ -13,6 +13,7 @@ from collections.abc import Callable
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.spin_value import spin_value
 
 
 class RecordStationDialog:
@@ -117,5 +118,5 @@ class RecordStationDialog:
             self._status.SetLabel("Pick a station first (add favorites from Browse Stations).")
             self._announce(self._status.GetLabel())
             return
-        self._result = (station, self._duration_ctrl.GetValue())
+        self._result = (station, spin_value(self._duration_ctrl))
         self.dialog.EndModal(self._wx.ID_OK)

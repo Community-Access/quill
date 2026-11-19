@@ -7,6 +7,7 @@ from collections.abc import Callable
 
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 from quill.ui.spoken_name import set_spoken_name
 
 _PRESET_MINUTES = (15, 30, 45, 60, 90)
@@ -149,5 +150,5 @@ class SleepTimerDialog:
         elif self._allow_end_of_episode and index == len(_PRESET_MINUTES):
             self._result = END_OF_EPISODE
         else:
-            self._result = self._custom_ctrl.GetValue()
+            self._result = spin_value(self._custom_ctrl)
         self.dialog.EndModal(self._wx.ID_OK)

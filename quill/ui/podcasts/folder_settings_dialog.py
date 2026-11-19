@@ -27,6 +27,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.spin_value import spin_value
 
 __all__ = ["FolderSettingsDialog"]
 
@@ -121,13 +122,13 @@ class FolderSettingsDialog:
 
     def _on_ok(self, event: Any) -> None:
         chosen: dict[str, Any] = {}
-        age = int(self._age.GetValue())
+        age = int(spin_value(self._age))
         if age >= 0:
             chosen["queue_age_limit_days"] = age
         inbox = _INBOX_VALUES[max(0, self._inbox.GetSelection())]
         if inbox is not None:
             chosen["route_to_inbox"] = inbox
-        speed = float(self._speed.GetValue())
+        speed = float(spin_value(self._speed))
         if speed > 0:
             chosen["speed"] = speed
         if not chosen:

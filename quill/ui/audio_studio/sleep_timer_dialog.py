@@ -14,6 +14,7 @@ import wx
 from quill.core.audio_studio.sleep_timer import SleepTimerSetting
 from quill.core.i18n import _
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.spin_value import spin_value
 
 _MIN_MINUTES = 1
 _MAX_MINUTES = 480
@@ -86,7 +87,7 @@ class SleepTimerDialog(wx.Dialog):
         """Read the controls into a fresh :class:`SleepTimerSetting`."""
         return SleepTimerSetting(
             enabled=self._enabled.GetValue(),
-            delay_minutes=float(self._minutes.GetValue()),
+            delay_minutes=float(spin_value(self._minutes)),
             end_of_chapter=self._end_of_chapter.GetValue(),
             last_started_at=self._setting.last_started_at,
         )

@@ -23,6 +23,7 @@ import wx
 
 from quill.core.external_change import forget_answers, forget_answers_sentence
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.spin_value import spin_value
 
 __all__ = ["GROUP_TITLE", "FileChangePrefs"]
 
@@ -138,7 +139,7 @@ class FileChangePrefs:
         settings.external_change_watch_enabled = bool(self.watch.GetValue())
         settings.external_change_auto_reload_when_clean = bool(self.auto_reload.GetValue())
         settings.external_change_prompt_on_conflict = bool(self.prompt.GetValue())
-        settings.external_change_debounce_ms = int(self.debounce.GetValue())
+        settings.external_change_debounce_ms = int(spin_value(self.debounce))
         forgotten = forget_answers(settings) if self._forget else 0
         after = (
             settings.external_change_watch_enabled,

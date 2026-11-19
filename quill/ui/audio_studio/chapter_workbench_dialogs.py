@@ -15,6 +15,7 @@ from quill.core.i18n import _
 from quill.core.speech.audio_tags import format_time_precise, parse_time
 from quill.core.speech.chapters import Chapter
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.spin_value import spin_value
 
 
 class SilenceParamsDialog(wx.Dialog):
@@ -87,7 +88,7 @@ class SilenceParamsDialog(wx.Dialog):
         self._noise.SetFocus()
 
     def values(self) -> tuple[float, float]:
-        return float(self._noise.GetValue()), float(self._min_silence.GetValue())
+        return float(spin_value(self._noise)), float(spin_value(self._min_silence))
 
 
 class AcxResultDialog(wx.Dialog):

@@ -17,6 +17,7 @@ from quill.core.ai.picture_batch import MAX_CEILING
 from quill.core.ai.vision_prompts import enabled_style_choices, resolve_prompt_text
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip
+from quill.ui.spin_value import spin_value
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -116,7 +117,7 @@ class _StyleAndDetails:
             "prompt": resolve_prompt_text(chosen["id"]),
             "details": self.details.GetValue(),
             "location": self.details.GetValue() and self.location.GetValue(),
-            "ceiling": int(self.ceiling.GetValue()),
+            "ceiling": int(spin_value(self.ceiling)),
         }
 
 

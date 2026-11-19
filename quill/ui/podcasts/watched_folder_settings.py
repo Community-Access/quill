@@ -13,6 +13,7 @@ from quill.core.podcasts.local_import import SUPPORTED_AUDIO_EXTENSIONS
 from quill.core.podcasts.speed_choices import OFFERED
 from quill.core.podcasts.watched_folders import ARRIVALS, ORIGINALS, TELLS, WatchedFolder
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 
 __all__ = ["TITLE", "WatchedFolderSettingsDialog", "edit_folder_settings"]
 
@@ -167,7 +168,7 @@ class WatchedFolderSettingsDialog:
         folder.original = ORIGINALS[max(0, self._original.GetSelection())][0]
         folder.arrivals = ARRIVALS[max(0, self._arrivals.GetSelection())][0]
         folder.tell = TELLS[max(0, self._tell.GetSelection())][0]
-        folder.min_seconds = int(self._min.GetValue())
+        folder.min_seconds = int(spin_value(self._min))
         index = self._speed.GetSelection()
         folder.speed = OFFERED[index - 1] if index >= 1 else 0.0
         folder.include_subfolders = self._subfolders.GetValue()

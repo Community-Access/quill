@@ -13,8 +13,7 @@ concrete, already-saved book. Three consent-gated sections:
   and downloads the results next to the book.
 
 The whole dialog is unavailable in Safe Mode. Long work runs on the
-background task pool; every outcome is announced.
-"""
+background task pool; every outcome is announced."""
 
 from __future__ import annotations
 
@@ -38,6 +37,7 @@ from quill.core.speech.book_file import BookFile
 from quill.ui.audio_studio.pages_base import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 from quill.ui.dpi import dip_size
+from quill.ui.spin_value import spin_value
 
 _log = logging.getLogger(__name__)
 
@@ -353,7 +353,7 @@ class PublishDialog(wx.Dialog):
             host=self._dest_host.GetValue().strip(),
             username=self._dest_user.GetValue().strip(),
             remote_dir=self._dest_dir.GetValue().strip() or "/",
-            port=int(self._dest_port.GetValue()),
+            port=int(spin_value(self._dest_port)),
             url_base=self._dest_url.GetValue().strip(),
         )
 
