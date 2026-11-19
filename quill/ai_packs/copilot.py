@@ -383,15 +383,12 @@ class CopilotHarness(SdkHarness):
 
     def is_available(self) -> tuple[bool, str | None]:
         """Report a missing SDK or runtime without trying to download either."""
-        available, reason = super().is_available()
-        if not available:
-            return available, reason
         try:
             if resolve_runtime_path() is None:
                 return False, "The in-process Copilot runtime is not installed with this build."
         except OSError:
             return False, "The in-process Copilot runtime could not be read."
-        return True, None
+        return super().is_available()
 
     def start_tool_session(
         self,

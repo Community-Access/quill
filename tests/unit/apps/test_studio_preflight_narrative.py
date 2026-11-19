@@ -79,6 +79,12 @@ class _Service:
             return self.sees
         return True
 
+    def request_connection(self, _requires: tuple[str, ...], on_error: Any) -> str:
+        if not self.can_do("agent_tools"):
+            on_error("This connection cannot run agent tasks.")
+            return ""
+        return self.connection_in_use
+
     def needs_label(self, capability: str) -> str:
         return "" if self.can_do(capability) else "(needs an AI that runs tasks)"
 

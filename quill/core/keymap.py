@@ -290,7 +290,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # rule 11).
     "tools.hosted_ai_which": "Ctrl+8",
     "tools.hosted_ai_choose": "Ctrl+4",
-    "tools.ai_hub": "Ctrl+Alt+Shift+H",
+    "tools.ai_hub": "Ctrl+Alt+Shift+?",  # Question mark is free in both editors.
     # Do a Document Task (codex.md 6.2): the last plain chord 10A.9 found free in
     # both editors and every APP_KEYMAPS app; core/lite/commands_ai.py says why.
     "tools.hosted_ai_task": "Ctrl+3",
