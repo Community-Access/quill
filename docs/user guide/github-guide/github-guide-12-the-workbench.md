@@ -648,6 +648,7 @@ The help keys work everywhere in the window:
 | `Ctrl+F1` | This guide, at the chapter for where you are |
 | `Ctrl+Shift+F1` | Search all of help: places, commands, words and tasks |
 | `Alt+Shift+F1` | Every key in the window |
+| `Ctrl+Alt+K` | Key Describer: press keys to hear what each does here, without doing it; `Escape` stops |
 
 **Why?** explains something the Workbench did on its own, with no key from
 you. When there is something to explain, `Shift+F1` lists Why? first, and

@@ -202,6 +202,44 @@ class WorkbenchHelpMixin:
         name = str(getattr(self.provider, "name", "") or "Workbench")
         HelpTextDialog(self.frame, f"{name} Keys", hook() if hook else "").show()
 
+    # -- the Key Describer (GitHub PRD 7.3) ----------------------------------------
+
+    describing_keys: bool = False
+
+    def toggle_key_describer(self) -> None:
+        """Ctrl+Alt+K: keys say what they do here instead of doing it, until Escape."""
+        self.describing_keys = not self.describing_keys
+        self._announce(
+            "Key Describer on. Press a key to hear what it does here; Escape stops."
+            if self.describing_keys
+            else "Key Describer off."
+        )
+
+    def describe_key(self, event: Any) -> bool:
+        """While the describer is on, say *event*'s key and swallow it; False otherwise."""
+        if not self.describing_keys:
+            return False
+        from quill.core.key_describer import describe
+        from quill.core.workbench.menus import all_rows
+
+        wx = self._wx
+        code = event.GetKeyCode()
+        if code == wx.WXK_ESCAPE and not event.HasAnyModifiers():
+            self.toggle_key_describer()
+            return True
+        accelerator = _accelerator(wx, event)
+        if not accelerator:
+            event.Skip()  # a modifier on its own: wait for the key it goes with
+            return True
+        keys = dict(getattr(self, "_keys", {}))
+        labels = {
+            row.command_id: row.label.replace("&", "").rstrip(".")
+            for _spec, row in all_rows(getattr(self.provider, "menu", ()))
+        }
+        why_not = {cmd: self.reason(cmd) for cmd in keys if not self.can_run(cmd)}
+        self._announce(describe(accelerator, keys, labels, why_not=why_not))
+        return True
+
     # -- Walk Me Through It (D12) ------------------------------------------------
 
     def start_walk(self, title: str, text: str) -> None:
@@ -238,3 +276,43 @@ class WorkbenchHelpMixin:
         if hook is None or self.current is None:
             return ""
         return str(hook(self.current, self.node(self.current)))
+
+
+def _accelerator(wx: Any, event: Any) -> str:
+    """*event* as the keymap writes keys ("Ctrl+Shift+M"), or "" for a bare modifier."""
+    code = event.GetKeyCode()
+    names = {
+        **{getattr(wx, f"WXK_F{n}", -100 - n): f"F{n}" for n in range(1, 13)},
+        wx.WXK_RETURN: "Enter",
+        wx.WXK_NUMPAD_ENTER: "Enter",
+        wx.WXK_TAB: "Tab",
+        wx.WXK_ESCAPE: "Escape",
+        wx.WXK_SPACE: "Space",
+        wx.WXK_BACK: "Backspace",
+        wx.WXK_DELETE: "Delete",
+        wx.WXK_INSERT: "Insert",
+        wx.WXK_HOME: "Home",
+        wx.WXK_END: "End",
+        wx.WXK_PAGEUP: "PageUp",
+        wx.WXK_PAGEDOWN: "PageDown",
+        wx.WXK_LEFT: "Left",
+        wx.WXK_RIGHT: "Right",
+        wx.WXK_UP: "Up",
+        wx.WXK_DOWN: "Down",
+        wx.WXK_CANCEL: "Pause",
+    }
+    if code in (wx.WXK_CONTROL, wx.WXK_SHIFT, wx.WXK_ALT, getattr(wx, "WXK_RAW_CONTROL", -1)):
+        return ""
+    name = names.get(code) or (chr(code).upper() if 33 <= code <= 126 else "")
+    if not name:
+        return ""
+    held = [
+        word
+        for word, down in (
+            ("Ctrl", event.ControlDown()),
+            ("Alt", event.AltDown()),
+            ("Shift", event.ShiftDown()),
+        )
+        if down
+    ]
+    return "+".join([*held, name])

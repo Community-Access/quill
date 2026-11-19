@@ -4,11 +4,11 @@ Checked 2026-11-18 against main, updated the same day for the follow-up pull req
 
 ## Summary
 
-Of the 100 live requirements, 75 are met, 17 are partly met and 8 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 76 are met, 16 are partly met and 8 are not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
-| Must | 64 | 10 | 1 | 75 |
+| Must | 65 | 9 | 1 | 75 |
 | Should | 11 | 7 | 5 | 23 |
 | May | 0 | 0 | 2 | 2 |
 
@@ -35,7 +35,6 @@ Of the 100 live requirements, 75 are met, 17 are partly met and 8 are not met. G
 | GH-R-045 | Must | Projects (version 2): every field type, views, items, workflows and status updates are readable and editable | `sheets_projects.py`: every field type incl. iteration, items, status updates editable; views and workflows read only (GitHub has no API to change them; worth saying so in the PRD). |
 | GH-R-046 | Must | Every relationship (star, watch level, follow, subscribe, react, block, sponsor, pin) on a You page and in... | Star, watch level, follow, subscribe, react, sponsor, pin and block (`resource_specs_user`) each exist in their own places; no single You page holding them, and batch only where the multi-row sheet has the field. Needs a closer look. |
 | GH-R-053 | Must | Filters can be saved as searches and pinned as nodes | Save Search (`github_workbench_actions.py:158`), Saved Searches node in the tree (`workbench_tree.py:186`); `test_the_filter_builder`... saves one, `test_go_lists_pins_favorites_and_saved_searches`. A saved search is a row in that node, not a node of its own. |
-| GH-R-093 | Must | Every key is rebindable, and the rebinding follows into menus, the reference, Shift+F1 and the Key Describer | `bound_keys` puts the person's bindings over the defaults and the menu shows the rebound key (`tests/unit/ui/test_github_workbench_requirement_checks.py::test_a_rebound_key_is_the_one_the_menu_shows`); the generated reference is defaults by design; Shift+F1 and the Key Describer not checked. |
 | GH-R-106 | Must | Help and Learning in the tree, with every node of D11 | Help and Learning has Start Here, Do Something, The Guide, Words, Keys, What Changed, Ask a Person (`workbench_tree.py:287`); D11's Tutorials and Tips nodes are missing. |
 | GH-R-119 | Must | One source for every help surface (D19), and the measures of D20 | One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the generated reference (GATE-GITHUB-HELP, `build_help_reference`); D20's measures (timed find-the-answer sessions) not done. |
 | GH-R-150 | Must | Across Repositories has a place for every kind in the 22.11 table, a row per name with its variants and... | Labels, Milestones, Topics, Rules and Branch Protection by name, and the Fleet; every other kind is a decided cell with a reason in `across_scope_matrix.py` (`test_no_cell_is_blank`, `test_the_decided_cells`), not yet a place. |
@@ -161,7 +160,7 @@ Of the 100 live requirements, 75 are met, 17 are partly met and 8 are not met. G
 | GH-R-090 | Must | Met | Every key in Part C passes the checks in C1 before adoption and lives in the Workbench's `APP_KEYMAPS` entry | `test_every_menu_key_is_the_app_keymap_entry_and_wx_can_bind_it`, `test_every_command_id_is_in_quills_keymap_and_has_no_chord`. The C1 checks themselves (screen reader and AltGr collisions) are only partly automated. |
 | GH-R-091 | Must | Met | The families of Part C hold: Ctrl+number goes, Alt+number says, F-keys keep Windows meanings, and... | `test_ctrl_numbers_go_to_places_and_ctrl_shift_numbers_to_repository_parts`, `test_alt_readouts_say_and_move_nothing`, `test_a_go_key_selects_its_node` |
 | GH-R-092 | Must | Met | Typing always moves through the tree and lists; no letter is ever a command | None of the Workbench keys is a bare or shifted letter or digit; `tests/unit/ui/test_github_workbench_requirement_checks.py::test_no_workbench_key_is_a_letter_or_digit_on_its_own` |
-| GH-R-093 | Must | Partly | Every key is rebindable, and the rebinding follows into menus, the reference, Shift+F1 and the Key Describer | `bound_keys` puts the person's bindings over the defaults and the menu shows the rebound key (`tests/unit/ui/test_github_workbench_requirement_checks.py::test_a_rebound_key_is_the_one_the_menu_shows`); the generated reference is defaults by design; Shift+F1 and the Key Describer not checked. |
+| GH-R-093 | Must | Met | Every key is rebindable, and the rebinding follows into menus, the reference, Shift+F1 and the Key Describer | `bound_keys` puts the person's bindings over the defaults; the menus, Shift+F1, Alt+Shift+F1 and the Workbench's Key Describer (Help, Ctrl+Alt+K) all say the bound key (`test_a_rebound_key_is_the_one_the_menu_shows`, `test_github_workbench_key_describer.py`); the published keyboard reference lists the defaults by design. |
 
 ### E11. Help
 

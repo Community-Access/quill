@@ -3156,6 +3156,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Help > Workbench Keys.** Every key in this window, by family.
 
+**Help > Key Describer.** Press keys to hear what each does here, without doing it. Escape stops.
+
 **Help > Say Last Result Again.** Say the last result again.
 
 **Help > Explain That.** What the last result means and what you might do next.

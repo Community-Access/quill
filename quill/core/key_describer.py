@@ -8,7 +8,7 @@ responsible only for turning a live key event into an accelerator string.
 
 from __future__ import annotations
 
-__all__ = ["command_for_accelerator", "normalize_accelerator"]
+__all__ = ["command_for_accelerator", "describe", "normalize_accelerator"]
 
 
 def normalize_accelerator(accelerator: str) -> str:
@@ -34,3 +34,26 @@ def command_for_accelerator(keymap: dict[str, str], accelerator: str) -> str | N
         if binding and normalize_accelerator(binding) == target:
             return command_id
     return None
+
+
+def describe(
+    accelerator: str,
+    keymap: dict[str, str],
+    labels: dict[str, str],
+    *,
+    why_not: dict[str, str] | None = None,
+) -> str:
+    """What *accelerator* does here, in a sentence, without doing it.
+
+    *keymap* is command id to the key bound now (the person's, not the
+    default), *labels* the command's name as its menu shows it, and *why_not*
+    the reason a command cannot run here right now, so a key that does
+    nothing here says what it would do and why it does not ("Ctrl+Shift+Enter:
+    Merge. Not now: select a pull request first.").
+    """
+    command = command_for_accelerator(keymap, accelerator)
+    if command is None:
+        return f"{accelerator}: nothing here."
+    name = labels.get(command, command.rsplit(".", 1)[-1].replace("_", " "))
+    reason = (why_not or {}).get(command, "")
+    return f"{accelerator}: {name}." + (f" Not now: {reason}" if reason else "")

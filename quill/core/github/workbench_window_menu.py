@@ -501,6 +501,12 @@ _HELP = MenuSpec(
             "Alt+Shift+F1",
             "Every key in this window, by family.",
         ),
+        _row(
+            "key_describer",
+            "Key &Describer",
+            "Ctrl+Alt+K",
+            "Press keys to hear what each does here, without doing it. Escape stops.",
+        ),
         None,
         _row("repeat_result", "Say &Last Result Again", "F9", "Say the last result again."),
         _row(
