@@ -168,7 +168,7 @@ took the money. What is left needs the test site and a person:
 
 ##### Shop (WooCommerce)
 
-- **Create an order, or change its items and addresses.** Who: shops taking phone orders. Route: `POST wc/v3/orders`, `POST wc/v3/orders/{id}`.
+Orders can now be made (New Order..., for telephone orders) and their items and addresses changed (2026-11-18); a live check is in 2.4.
 
 Also missing but less urgent: editing many products at once (`products/batch`), generating variations (`products/{id}/variations/generate`), shipping classes (`products/shipping_classes`), and Analytics (`wc-analytics/reports/*`). Scheduled Actions and the extensions marketplace are wp-admin only. Subscriptions and Bookings are paid extensions with their own routes, not in scope.
 
@@ -198,6 +198,7 @@ All of the following has tests over recorded or fake answers and none has met a 
 
 - The whole Workbench, W1 to W8 and packages 1 to 14. It is now the default, so this comes before the next release.
 - WooCommerce, The Events Calendar and Yoast SEO, signed in on the test site, which has all three. A refund only against a gateway's test mode.
+- New Order, Change Items and Change Address on a test order: especially that a quantity of 0 takes an item off, which WooCommerce's order controller documents but QUILL has only met in fakes.
 - Redirection, and the slug-change redirect offer.
 - QAF on the test site (it still runs BAF), the QAF migration, and the spam settings with a live submission.
 - Gravity Forms building, conversion, feeds, results and test submissions. These need a licensed Gravity Forms with its REST API on.

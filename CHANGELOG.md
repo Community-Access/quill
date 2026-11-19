@@ -2,6 +2,15 @@
 
 ## 1.0.0
 
+### WordPress Workbench: take an order by telephone, and fix one (2026-11-18)
+
+Shop Orders has New Order... (Ctrl+N): choose a customer, or a guest by name
+and email, then each product and its quantity, and whether it starts as
+Pending payment, Processing or On hold. QUILL never marks it paid, and Undo
+moves it to the Trash. On an order, Change Items... changes a quantity,
+takes an item off or adds a product, and Change Address... changes the
+billing or shipping address. Each is previewed first.
+
 ### GitHub Workbench: 116 more commands on rows, and every endpoint settled (2026-11-18)
 
 Repositories, commits, runs, pull requests, releases, alerts, advisories,

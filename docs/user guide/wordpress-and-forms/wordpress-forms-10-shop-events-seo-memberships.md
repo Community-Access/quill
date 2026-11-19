@@ -79,6 +79,16 @@ receipt, without the customer's email, telephone or billing address.
   exactly. A refund is never part of a batch, and cannot be undone.
 - **Resend Order Details...** emails the customer the order's details again,
   for when the receipt never came.
+- **Change Items...** changes a quantity, takes an item off (a quantity of
+  0) or adds a product. WooCommerce works out the total again; any refund or
+  payment for the difference is yours to make. It cannot be undone here:
+  Change Items again puts it back.
+- **Change Address...** changes the billing or the shipping address,
+  sending only the fields you changed; Undo sends the old ones back.
+- **New Order...** (`Ctrl+N` on Shop Orders) takes an order by telephone:
+  choose a customer, or a guest by name and email, then each product and
+  its quantity, then whether it starts as Pending payment, Processing or On
+  hold. QUILL never marks it paid. Undo moves it to the Trash.
 - **Open in the Shop's Dashboard** opens the order in wp-admin.
 
 These are shop orders. Membership orders, from Paid Memberships Pro, are a

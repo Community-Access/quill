@@ -325,6 +325,18 @@ you type the amount exactly. A refund is never part of a batch, and
 cannot be undone.</li>
 <li><strong>Resend Order Details…</strong> emails the customer the
 order’s details again, for when the receipt never came.</li>
+<li><strong>Change Items…</strong> changes a quantity, takes an item off
+(a quantity of 0) or adds a product. WooCommerce works out the total
+again; any refund or payment for the difference is yours to make. It
+cannot be undone here: Change Items again puts it back.</li>
+<li><strong>Change Address…</strong> changes the billing or the shipping
+address, sending only the fields you changed; Undo sends the old ones
+back.</li>
+<li><strong>New Order…</strong> (<code>Ctrl+N</code> on Shop Orders)
+takes an order by telephone: choose a customer, or a guest by name and
+email, then each product and its quantity, then whether it starts as
+Pending payment, Processing or On hold. QUILL never marks it paid. Undo
+moves it to the Trash.</li>
 <li><strong>Open in the Shop’s Dashboard</strong> opens the order in
 wp-admin.</li>
 </ul>
