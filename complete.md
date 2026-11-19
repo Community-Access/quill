@@ -116,8 +116,6 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 
 ##### Shop (WooCommerce)
 
-- [ ] Generating variations (`products/{id}/variations/generate`).
-- [ ] Shipping classes (`products/shipping_classes`).
 - [ ] Analytics (`wc-analytics/reports/*`).
 
 Scheduled Actions and the extensions marketplace are wp-admin only. Subscriptions and Bookings are paid extensions with their own routes, not in scope.

@@ -2,6 +2,16 @@
 
 ## 1.0.0
 
+### WordPress Workbench: shipping classes, and Generate Variations (2026-11-19)
+
+- **Shop > Shipping Classes** lists a shop's shipping classes, each with how
+  many products use it. You can add, change or delete them, and Ctrl+Z undoes
+  a new or changed class. A product's Properties now offers its shipping class
+  by name instead of a slug to type.
+- **Generate Variations...** on a variable product makes every combination of
+  its attributes that it is missing. It says how many it made, never changes or
+  removes the variations already there, and Ctrl+Z deletes exactly the ones it
+  made. A product that is not variable is told why, and nothing is sent.
 ### GitHub Workbench: unlink a branch from the issue's own sheet (2026-11-19)
 
 An issue's Properties > Relationships now lists its linked branches. Delete

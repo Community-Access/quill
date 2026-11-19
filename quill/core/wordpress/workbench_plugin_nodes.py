@@ -104,6 +104,13 @@ PLUGIN_NODES: tuple[NodeSpec, ...] = (
                 "shop_zone",
             ),
             (
+                "shop_shipping_classes",
+                "Shipping Classes",
+                "shipping_classes",
+                ("name", "slug", "products"),
+                "shop_shipping_class",
+            ),
+            (
                 "shop_taxes",
                 "Tax Rates",
                 "taxes",
@@ -240,6 +247,11 @@ PLUGIN_NODE_HELP: Mapping[str, str] = {
         "WooCommerce's shipping zones, each with its locations and methods. Ctrl+N makes a "
         "zone; Locations and Methods change them, each after a preview."
     ),
+    "shop_shipping_classes": (
+        "WooCommerce's shipping classes, such as Heavy items, with how many products are in "
+        "each. Ctrl+N makes one; Change changes its name, slug or description; a product's "
+        "Properties puts it in one by name."
+    ),
     "shop_taxes": "WooCommerce's tax rates. Ctrl+N makes one; Edit Tax Rate changes one.",
     "shop_tax_classes": (
         "WooCommerce's tax classes. Ctrl+N makes one; deleting one deletes its rates."
@@ -313,6 +325,10 @@ PLUGIN_ROW_HELP: Mapping[str, str] = {
         "Delete (to the Trash) are on its context menu, each after a preview; Ctrl+Z undoes."
     ),
     "shop_zone": "A shipping zone. Locations and Methods change it; Delete removes it for good.",
+    "shop_shipping_class": (
+        "A shipping class. Change alters its name, slug or description; Delete removes it for "
+        "good, and its products are left with none."
+    ),
     "shop_tax_rate": "A tax rate. Edit Tax Rate changes it; a deleted one comes back with Ctrl+Z.",
     "shop_tax_class": "A tax class. Delete removes it and every rate in it, for good.",
     "shop_webhook": (
