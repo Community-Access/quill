@@ -37,14 +37,14 @@ Each is done only with evidence: a test or a live run.
 - [ ] Preserve issue types and organization-defined issue fields as typed values on issue rows, details, filters and Properties. Hidden, unsupported, unset, empty and unreadable values stay distinct.
 - [ ] Repository and item-property checklists expose state in the row; Space changes it once, Enter saves, focus returns predictably, and JAWS/NVDA/VoiceOver do not hear a duplicate row.
 - [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle.
-- [ ] Verify per-account Read Only/Organize/Full, Safe Mode, tiers, typed confirmations, self-lockout prevention and permission explanations.
+- [ ] Verify per-account Read Only/Organize/Full, Safe Mode, tiers, typed confirmations, self-lockout prevention and permission explanations. Found 2026-11-19: row commands declare a tier but most do not check it when they run (only Unlink Branch and the issue sheet's Add Branch do, through `permissions.level_refusal`).
 - [ ] Verify encrypted write-only secrets for repository/environment/organization scopes and selected-repository access.
 - [ ] Verify View As Role, Compare Roles, Why Can't They?, My Access Here, access reviews and bulk changes against actual server authority.
 - [ ] Grouping, sorting and the column chooser beyond issues and pull requests (filters, Show Only/Hide, Load More and Load All are done).
 - [ ] Plain-language query/batch commands through the shared catalogue, with resolved targets, editable previews and deterministic non-AI paths.
 - [ ] Compare Accounts and one-action Act As with unambiguous identity and cache isolation.
 - [ ] Role comparison and learning workflows reach real permission evidence, not guessed privileges.
-- [ ] Organization issue fields, and unlinking a branch from an issue (close reasons, linked branches, branch for an issue and task lists are done).
+- [ ] Organization issue fields (close reasons, linked branches and unlinking them, branch for an issue and task lists are done).
 - [ ] Wiki, and cross-linked discussion → issue → pull request workflows (saved replies and repository invitations are done).
 - [ ] Repository General/features, complete creation/template options, transfer, topics and star lists (standalone tags are done).
 - [ ] Rulesets/protection management, organization/member/team access, custom roles and audit logs.

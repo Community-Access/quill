@@ -32,6 +32,7 @@ from quill.core.github.permissions import (
     fine_grained_steps,
     gh_refresh_command,
     level_allows,
+    level_refusal,
     missing_scopes,
     repo_role,
     scope_rows,
@@ -135,6 +136,20 @@ def test_account_levels_and_safe_mode(tmp_path: Path) -> None:
     assert AccessStore.load(tmp_path / "access.json").level("someone") is AccessLevel.FULL
     ctx = ViewerContext(repo_role="admin", level=AccessLevel.ORGANIZE)
     assert "set to Organize" in check("repo:admin", ctx, WriteTier.ACCESS)
+
+
+def test_a_level_refusal_names_safe_mode_when_that_is_the_cause(monkeypatch) -> None:
+    monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
+    assert level_refusal(AccessLevel.ORGANIZE, WriteTier.VISIBLE) == ""
+    assert "set to Organize" in level_refusal(AccessLevel.ORGANIZE, WriteTier.ACCESS)
+    assert level_refusal(AccessLevel.READ_ONLY, WriteTier.ORGANIZING).startswith(
+        "This account is read only in the Workbench."
+    )
+    monkeypatch.setenv("QUILL_SAFE_MODE", "1")
+    said = level_refusal(effective_level(AccessLevel.FULL), WriteTier.VISIBLE)
+    assert said == "QUILL is in Safe Mode, so the Workbench changes nothing on GitHub."
+    ctx = ViewerContext(repo_role="admin", level=effective_level(AccessLevel.FULL))
+    assert check("repo:write", ctx, WriteTier.VISIBLE) == said
 
 
 # -- Change History (18.5) ----------------------------------------------------------
