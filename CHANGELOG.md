@@ -2,6 +2,14 @@
 
 ## 1.0.0
 
+### GitHub Workbench: unlink a branch from the issue's own sheet (2026-11-19)
+
+An issue's Properties > Relationships now lists its linked branches. Delete
+removes the selected link after asking, and the question says the branch
+itself is kept, with its commits. Insert makes a new branch for the issue, as
+Create Branch for This Issue does. Unlinking and that Add now respect your
+account's level: Read Only refuses, and Safe Mode says it is the reason.
+
 ### Workbench: a dialog no longer blocks the editor (2026-11-19)
 
 Opening Properties, a picker or any other dialog from the GitHub or WordPress
