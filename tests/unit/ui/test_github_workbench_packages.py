@@ -47,11 +47,29 @@ def test_registered_and_fits_only_a_package() -> None:
     assert not window._fits_delete_package(None)
 
 
-def test_a_version_is_chosen_newest_first_then_deleted_after_asking() -> None:
+def _typed_messages(monkeypatch: Any, answer: bool) -> list[tuple[str, str]]:
+    seen: list[tuple[str, str]] = []
+
+    class Typed:
+        def __init__(self, _parent: Any, **kw: Any) -> None:
+            seen.append((kw["expected"], kw["message"]))
+
+        def show(self) -> bool:
+            return answer
+
+    monkeypatch.setattr("quill.ui.github_repo_admin_dialogs.TypedConfirmDialog", Typed)
+    return seen
+
+
+def test_a_version_is_chosen_newest_first_then_deleted_after_typing_the_name(
+    monkeypatch: Any,
+) -> None:
+    seen = _typed_messages(monkeypatch, True)
     window = _Window(pick=0)
     window._do_delete_package_version(None, ROW)
     assert window.asked[0].startswith("sha256:bbb, tagged latest, 1.2")
-    assert "Delete version sha256:bbb" in window.asked[1]
+    assert seen[0][0] == "quill-engine"
+    assert "Delete version sha256:bbb" in seen[0][1]
     assert window.api.sent[-1][:2] == (
         "DELETE",
         "/user/packages/container/quill-engine/versions/2",
@@ -59,10 +77,12 @@ def test_a_version_is_chosen_newest_first_then_deleted_after_asking() -> None:
     assert window.said[-1] == "(reloaded)"
 
 
-def test_no_at_the_question_deletes_nothing() -> None:
-    window = _Window(yes=False)
+def test_not_typing_the_name_deletes_no_version(monkeypatch: Any) -> None:
+    _typed_messages(monkeypatch, False)
+    window = _Window()
     window._do_delete_package_version(None, ROW)
     assert not any(method == "DELETE" for method, _p, _q in window.api.sent)
+    assert window.said == ["Cancelled; the version was not deleted."]
 
 
 def _typed(monkeypatch: Any, answer: bool) -> list[str]:
@@ -95,6 +115,7 @@ def test_delete_package_wants_the_typed_name(monkeypatch: Any) -> None:
 
 
 def test_an_organizations_package_rows_keep_the_organization(monkeypatch: Any) -> None:
+    _typed_messages(monkeypatch, True)
     window = _Window(pick=0)
     row = package_row(ENGINE, "community-access")
     window._do_delete_package_version(None, row)

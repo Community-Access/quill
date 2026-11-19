@@ -53,6 +53,15 @@ MORE_REPOSITORY: tuple[NodeSpec, ...] = (
         loader="explore:repo_codespaces",
         row_type="codespace",
     ),
+    NodeSpec(
+        "repo_packages",
+        "Packages",
+        "repository",
+        scope=Scope.REPOSITORY,
+        needs=_SIGN_IN,
+        loader="explore:repo_packages",
+        row_type="package",
+    ),
     # Under Discussions: the spotlight (read only: GitHub's API cannot pin one)
     # and the categories, by section where GitHub gives sections.
     *(

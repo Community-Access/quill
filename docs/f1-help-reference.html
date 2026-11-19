@@ -5689,7 +5689,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="github-workbench">GitHub Workbench</h2>
-<p>Control coverage: 384 audited sites (384 helped).</p>
+<p>Control coverage: 390 audited sites (390 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>Add GitHub Token.</strong> Paste a personal access token you
@@ -6195,6 +6195,10 @@ and Variables… on a row are that environment’s own.</p>
 <p><strong>repository: Codespaces.</strong> Codespaces: your codespaces
 for this repository. Ctrl+N makes one on a branch you name, with the
 machine and dev container you choose.</p>
+<p><strong>repository: Packages.</strong> Packages: what this repository
+publishes, such as container images and npm packages. Show Versions
+lists each one’s versions; Delete Package Version asks you to type the
+package’s name.</p>
 <p><strong>repository: Pinned (spotlight).</strong> Pinned (spotlight):
 the discussions pinned at the top of Discussions, in GitHub’s order.
 Read only: GitHub’s API cannot pin, unpin or reorder one.</p>
@@ -8047,12 +8051,30 @@ does the same.</li>
 id="createrepositorydialog-quilluigithub_repo_admin_dialogspy">CreateRepositoryDialog
 (<code>quill/ui/github_repo_admin_dialogs.py</code>)</h4>
 <ul>
+<li><code>self._problem_ctrl</code>: Why GitHub would refuse what is
+chosen, and what to change.</li>
+<li><code>self._org_ctrl</code>: An organization to create it in. Leave
+it empty to create it on your account.</li>
 <li><code>self._name_ctrl</code>: The new repository’s name, such as
 my-project.</li>
 <li><code>self._description_ctrl</code>: A short sentence about what the
 repository is for. You can leave it empty.</li>
-<li><code>self._org_ctrl</code>: An organization to create it in. Leave
-it empty to create it on your account.</li>
+<li><code>self._homepage_ctrl</code>: An address shown beside the
+description, such as the project’s site.</li>
+<li><code>self._visibility_choice</code>: Private: only people you add.
+Public: everyone. Internal: everyone in the organization’s enterprise,
+for an organization’s repository only.</li>
+<li><code>self._template_ctrl</code>: A template repository to copy, as
+owner/name. Leave it empty to start a new one.</li>
+<li><code>self._gitignore_combo</code>: Files Git should ignore, from
+GitHub’s templates, such as Python or Node. Type any template name
+GitHub lists, or leave it empty.</li>
+<li><code>self._license_choice</code>: The licence GitHub adds as a
+LICENSE file, or none. Not with a template.</li>
+<li><code>self._branches_check</code>: Copy every branch of the
+template, not only its default branch.</li>
+<li><code>self._readme_check</code>: Start with a first commit holding a
+README, so it can be cloned at once.</li>
 <li><code>ok_btn</code>: Do it on GitHub. This is the button that makes
 the change.</li>
 <li><code>cancel_button</code>: Close without changing anything. Escape

@@ -664,6 +664,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Autolinks (`repository:autolinks`) | repository, settings | Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one. |
 | Environments (`repository:environments`) | repository, settings | Environments: where this repository's workflows deploy, each with its protection rules. Secrets... and Variables... on a row are that environment's own. |
 | Codespaces (`repository:repo_codespaces`) | repository, code | Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you name, with the machine and dev container you choose. |
+| Packages (`repository:repo_packages`) | repository, repository | Packages: what this repository publishes, such as container images and npm packages. Show Versions lists each one's versions; Delete Package Version asks you to type the package's name. |
 | Pinned (spotlight) (`repository:discussions_pinned`) | repository, discussions | Pinned (spotlight): the discussions pinned at the top of Discussions, in GitHub's order. Read only: GitHub's API cannot pin, unpin or reorder one. |
 | Categories (`repository:discussion_categories`) | repository, discussions | Categories: the repository's discussion categories, grouped by section where GitHub gives sections; Enter lists a category's discussions. |
 | Actions Variables (`repository:actions_variables`) | repository, settings | Actions Variables: values workflows read as vars.NAME. Ctrl+N adds one. |
@@ -2363,7 +2364,7 @@ In all: 849 yes, 0 planned, 290 not needed and 868 left to GitHub.
 | Delete a GitHub Pages site | `DELETE /repos/{owner}/{repo}/pages` | Yes | context menu > Turn Off Pages... |
 | Get a GitHub Pages site | `GET /repos/{owner}/{repo}/pages` | Yes | Navigator: Repository > owner/name > GitHub Pages |
 | Create a GitHub Pages site | `POST /repos/{owner}/{repo}/pages` | Yes | Navigator: Repository > owner/name > GitHub Pages |
-| Update information about a GitHub Pages site | `PUT /repos/{owner}/{repo}/pages` | Yes | Navigator: Repository > owner/name > GitHub Pages |
+| Update information about a GitHub Pages site | `PUT /repos/{owner}/{repo}/pages` | Yes | Properties (Alt+Enter) on Repository: Branch and folder |
 | List GitHub Pages builds | `GET /repos/{owner}/{repo}/pages/builds` | Yes | Navigator: Repository > owner/name > GitHub Pages |
 | Request a GitHub Pages build | `POST /repos/{owner}/{repo}/pages/builds` | Yes | context menu > Rebuild |
 | Get latest Pages build | `GET /repos/{owner}/{repo}/pages/builds/latest` | Yes | context menu > Check Site |

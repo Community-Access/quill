@@ -310,6 +310,11 @@ NODE_HELP: dict[str, str] = {
         "Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you "
         "name, with the machine and dev container you choose."
     ),
+    "repository:repo_packages": (
+        "Packages: what this repository publishes, such as container images and npm "
+        "packages. Show Versions lists each one's versions; Delete Package Version asks you "
+        "to type the package's name."
+    ),
     "person:person_packages": (
         "Packages: this person's public packages. Show Versions lists each one's versions."
     ),

@@ -14,6 +14,7 @@ from typing import Any
 import pytest
 
 from quill.core.github.models import RemoteRepository
+from quill.core.github.repo_create import NewRepository
 from quill.ui.main_frame_github_admin import GitHubAdminMixin
 
 
@@ -149,7 +150,9 @@ def test_create_repository_calls_provider_and_offers_sync(
 ) -> None:
     _fake_token_store(monkeypatch, "tok")
     host = _Host()
-    create_result = SimpleNamespace(name="new-repo", description="d", private=True, org="")
+    create_result = SimpleNamespace(
+        name="new-repo", new=NewRepository("new-repo", description="d", visibility="private")
+    )
     monkeypatch.setattr(
         "quill.ui.github_repo_admin_dialogs.CreateRepositoryDialog",
         lambda parent: SimpleNamespace(show=lambda: create_result),
@@ -160,20 +163,20 @@ def test_create_repository_calls_provider_and_offers_sync(
         is_private=True,
         html_url="https://github.com/me/new-repo",
     )
-    calls: list[tuple[str, bool, str, str]] = []
+    calls: list[tuple[str, str, Any]] = []
 
     class _FakeAdmin:
         def __init__(self, token: str) -> None:
             self.token = token
 
-        def create_repository(self, name: str, *, private: bool, description: str, org: str):
-            calls.append((name, private, description, org))
+        def create_repository(self, name: str, *, org: str, options: Any):
+            calls.append((name, org, options))
             return created_repo
 
         def close(self) -> None:
             pass
 
-    monkeypatch.setattr("quill.ui.main_frame_github_admin.GitHubRepoAdminProvider", _FakeAdmin)
+    monkeypatch.setattr("quill.core.github.repo_admin.GitHubRepoAdminProvider", _FakeAdmin)
     host._gh_admin_confirm = lambda message, title: True  # accept the "sync now?" offer
     monkeypatch.setattr(
         "quill.core.git_sync.init_repo_with_remote",
@@ -182,7 +185,7 @@ def test_create_repository_calls_provider_and_offers_sync(
 
     host.github_create_repository()
 
-    assert calls == [("new-repo", True, "d", "")]
+    assert calls == [("new-repo", "", {"private": True, "description": "d"})]
     assert any("Created me/new-repo" in s for s in host.statuses)
     assert ("sync /synced/folder", None) in host.background_tasks
 
@@ -190,7 +193,7 @@ def test_create_repository_calls_provider_and_offers_sync(
 def test_create_repository_declines_local_sync(monkeypatch: pytest.MonkeyPatch) -> None:
     _fake_token_store(monkeypatch, "tok")
     host = _Host()
-    create_result = SimpleNamespace(name="r", description="", private=False, org="")
+    create_result = SimpleNamespace(name="r", new=NewRepository("r", visibility="public"))
     monkeypatch.setattr(
         "quill.ui.github_repo_admin_dialogs.CreateRepositoryDialog",
         lambda parent: SimpleNamespace(show=lambda: create_result),
@@ -199,7 +202,7 @@ def test_create_repository_declines_local_sync(monkeypatch: pytest.MonkeyPatch) 
         provider="github", full_name="me/r", html_url="https://github.com/me/r"
     )
     monkeypatch.setattr(
-        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
+        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             create_repository=lambda *a, **k: created_repo, close=lambda: None
         ),
@@ -209,6 +212,78 @@ def test_create_repository_declines_local_sync(monkeypatch: pytest.MonkeyPatch) 
     # Only the repo-creation task ran; no follow-up local-sync task was queued.
     assert len(host.background_tasks) == 1
     assert host.background_tasks[0][0] == "Creating r"
+
+
+def test_create_repository_sends_the_dialogs_options(monkeypatch: pytest.MonkeyPatch) -> None:
+    from quill.core.github.repo_create import NewRepository
+
+    _fake_token_store(monkeypatch, "tok")
+    host = _Host()
+    new = NewRepository("r", homepage="https://x.example", gitignore="Python")
+    result = SimpleNamespace(name="r", description="", private=True, org="", new=new)
+    monkeypatch.setattr(
+        "quill.ui.github_repo_admin_dialogs.CreateRepositoryDialog",
+        lambda parent: SimpleNamespace(show=lambda: result),
+    )
+    sent: list[dict[str, Any]] = []
+    created = RemoteRepository(provider="github", full_name="me/r", html_url="u")
+
+    class _FakeAdmin:
+        def __init__(self, token: str) -> None:
+            pass
+
+        def create_repository(self, name: str, **kwargs: Any) -> RemoteRepository:
+            sent.append(kwargs)
+            return created
+
+        def close(self) -> None:
+            pass
+
+    monkeypatch.setattr("quill.core.github.repo_admin.GitHubRepoAdminProvider", _FakeAdmin)
+    host._gh_admin_confirm = lambda message, title: False
+    host.github_create_repository()
+    assert sent[0]["options"] == {
+        "private": True,
+        "homepage": "https://x.example",
+        "gitignore_template": "Python",
+        "auto_init": True,
+    }
+
+
+def test_create_repository_from_a_template_uses_the_generate_route(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from quill.core.github.repo_create import NewRepository
+
+    _fake_token_store(monkeypatch, "tok")
+    host = _Host()
+    new = NewRepository("r", owner="acme", template="o/t", include_all_branches=True)
+    result = SimpleNamespace(name="r", description="", private=True, org="acme", new=new)
+    monkeypatch.setattr(
+        "quill.ui.github_repo_admin_dialogs.CreateRepositoryDialog",
+        lambda parent: SimpleNamespace(show=lambda: result),
+    )
+    asked: list[tuple[str, str, dict[str, Any]]] = []
+
+    class _Actions:
+        def __init__(self, token: str) -> None:
+            pass
+
+        def create_from_template(self, template: str, name: str, **kw: Any) -> tuple[str, str]:
+            asked.append((template, name, kw))
+            return "acme/r", "https://github.com/acme/r"
+
+    monkeypatch.setattr("quill.core.github.repo_actions.GitHubRepoActions", _Actions)
+    host._gh_admin_confirm = lambda message, title: False
+    host.github_create_repository()
+    assert asked == [
+        (
+            "o/t",
+            "r",
+            {"owner": "acme", "description": "", "private": True, "include_all_branches": True},
+        )
+    ]
+    assert any("Created acme/r" in s for s in host.statuses)
 
 
 # ---------------------------------------------------------------------------
@@ -236,7 +311,7 @@ def test_rename_calls_provider_on_confirmation(monkeypatch: pytest.MonkeyPatch) 
     renamed = RemoteRepository(provider="github", full_name="owner/new-name")
     calls: list[tuple[str, str]] = []
     monkeypatch.setattr(
-        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
+        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             rename_repository=lambda full, new: calls.append((full, new)) or renamed,
             close=lambda: None,
@@ -265,7 +340,7 @@ def test_visibility_change_flips_and_confirms(monkeypatch: pytest.MonkeyPatch) -
     host._gh_admin_typed_confirm = lambda **kwargs: seen_messages.append(kwargs["message"]) or True
     updated = RemoteRepository(provider="github", full_name="owner/repo", is_private=True)
     monkeypatch.setattr(
-        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
+        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             set_visibility=lambda full, *, private: updated, close=lambda: None
         ),
@@ -325,7 +400,7 @@ def test_delete_branch_typed_confirm_and_call(monkeypatch: pytest.MonkeyPatch) -
     host = _Host()
     deleted: list[tuple[str, str]] = []
     monkeypatch.setattr(
-        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
+        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             delete_branch=lambda full, branch: deleted.append((full, branch)),
             close=lambda: None,
@@ -376,7 +451,7 @@ def test_fork_repository_calls_provider(monkeypatch: pytest.MonkeyPatch) -> None
     )
     calls: list[tuple[str, str]] = []
     monkeypatch.setattr(
-        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
+        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             fork_repository=lambda full, *, org: calls.append((full, org)) or forked,
             close=lambda: None,
@@ -399,7 +474,7 @@ def test_change_default_branch_calls_provider(monkeypatch: pytest.MonkeyPatch) -
     calls: list[tuple[str, str]] = []
     updated = RemoteRepository(provider="github", full_name="owner/repo", default_branch="develop")
     monkeypatch.setattr(
-        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
+        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             set_default_branch=lambda full, branch: calls.append((full, branch)) or updated,
             close=lambda: None,
@@ -438,7 +513,7 @@ def test_branch_protection_applies_rules(monkeypatch: pytest.MonkeyPatch) -> Non
     )
     calls: list[tuple[str, str, int, tuple, bool]] = []
     monkeypatch.setattr(
-        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
+        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             set_branch_protection=lambda full, branch, **kw: calls.append((
                 full,
@@ -474,7 +549,7 @@ def test_branch_protection_removal(monkeypatch: pytest.MonkeyPatch) -> None:
     )
     removed: list[tuple[str, str]] = []
     monkeypatch.setattr(
-        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
+        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             remove_branch_protection=lambda full, branch: removed.append((full, branch)),
             close=lambda: None,
@@ -515,7 +590,7 @@ def test_commit_multiple_files_reads_and_commits(
     host._gh_admin_confirm = lambda message, title: True
     calls: list[tuple[str, str, list, str]] = []
     monkeypatch.setattr(
-        "quill.ui.main_frame_github_admin.GitHubRepoAdminProvider",
+        "quill.core.github.repo_admin.GitHubRepoAdminProvider",
         lambda token: SimpleNamespace(
             commit_files=lambda full, branch, files, message: (
                 calls.append((full, branch, files, message)) or "abcdef1234567890"

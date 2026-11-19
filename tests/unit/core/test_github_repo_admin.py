@@ -234,6 +234,34 @@ def test_create_repository_under_an_org(provider: GitHubRepoAdminProvider, repo:
     assert result.full_name == "acme/new-repo"
 
 
+def test_create_repository_sends_every_chosen_option(
+    provider: GitHubRepoAdminProvider, repo: _FakeRepo
+) -> None:
+    from quill.core.github.repo_create import NewRepository, create_kwargs
+
+    new = NewRepository("site", owner="acme", visibility="internal", license="mit")
+    provider.create_repository("site", org="acme", options=create_kwargs(new))
+    org = provider._gh.get_organization("acme")
+    assert org.created == {
+        "name": "site",
+        "private": True,
+        "visibility": "internal",
+        "license_template": "mit",
+        "auto_init": True,
+    }
+
+
+def test_naming_your_own_login_as_owner_creates_it_on_your_account(
+    provider: GitHubRepoAdminProvider, repo: _FakeRepo
+) -> None:
+    provider._gh.user.login = "Me"
+    result = provider.create_repository(
+        "r", org="me", options={"private": False, "visibility": "internal"}
+    )
+    assert result.full_name == "me/r"
+    assert provider._gh.user.created == {"name": "r", "private": False}
+
+
 def test_fork_repository(provider: GitHubRepoAdminProvider, repo: _FakeRepo) -> None:
     result = provider.fork_repository("owner/repo")
     assert result.full_name == "me/repo"

@@ -353,8 +353,9 @@ signed in.
   commas, or leave it empty to remove them all. Topics are lower-case letters,
   numbers and hyphens, up to 20 of them.
 - **Create Repository from This Template...** makes a new repository from a
-  template repository. Give it a name, an optional description and
-  organization, and choose whether it is private.
+  template repository. It opens Create Repository with the template filled in:
+  give it a name, an optional description and owner, choose private or public,
+  and whether to copy all of the template's branches or only its default one.
 
 **Repository forks**, in **View:**, lists a repository's forks. In GitHub
 Items, **View Upstream** (`Alt+U`) on a fork loads the repository it came
@@ -427,9 +428,18 @@ The **Repository Actions for** submenu also holds:
 **Tools > Git and GitHub > GitHub** has the rest. All of them need you to be
 signed in, and offer to sign you in if you are not.
 
-- **Create Repository...**: a name, a description, private or public, and an
-  optional organization. QUILL then offers to set up a folder on your computer
-  that stays in step with it.
+- **Create Repository...** asks everything GitHub can set when a repository
+  is made: the owner (blank for your own account, or an organization), the
+  name, a description and a website, and the visibility: private, public, or
+  internal, which only an organization's repository can be. Then how it
+  starts: from a **template** (owner/name), with or without all of the
+  template's branches; or fresh, with a README, a **.gitignore template**
+  (Python, Node and the rest, or any name GitHub lists) and a **licence**.
+  When GitHub would refuse a combination, such as a README as well as a
+  template, the dialog stays open and the Problem box at its top says why,
+  before anything is sent. QUILL then offers to set up a folder on your
+  computer that stays in step with it. With the GitHub Workbench in use, this
+  is the same dialog.
 - **Fork Repository...**, into your account or an organization.
 - **Rename Repository...**. GitHub forwards the old address, but anything that
   has the old name written into it will need changing. You confirm by typing
@@ -456,15 +466,56 @@ on one of these is much harder to put right than most things.
 **Transfer Repository...** moves a repository to another person or to an
 organization, with its issues, pull requests, wiki, stars and watchers. It is
 on the GitHub Workbench's Repository menu and on Repository
-Actions. QUILL Lite asks for the new owner, then asks you to type the
-repository's full name, because you may lose access to it and only the new
-owner can move it back.
+Actions. QUILL Lite asks for the new owner, then its
+name there (keep it as it is to leave it unchanged), then, for an
+organization, the teams there that should have access, by name, separated by
+commas. Last it asks you to type the repository's full name, because you may
+lose access to it and only the new owner can move it back; the question says
+where it will land, such as "to community-access as community-access/notes,
+giving Docs Writers access". A team the organization does not have is named
+before anything moves.
 
 Moving it to an organization you can create repositories in happens at once,
 and you hear the new name, such as "Transferred jeff/notes; it is now
 community-access/notes. The old address redirects." Moving it to a person
 sends them a request they have a day to accept, and QUILL Lite says so. Only an
 owner or administrator of the repository can transfer it.
+
+### Repository settings in Properties
+
+`Alt+Enter` on a repository opens its Properties, a page per part of GitHub's
+settings. Besides the name, description, website, topics and default branch
+on General:
+
+- **Features** turns issues, projects, the wiki and discussions on or off, and
+  whether web commits need a sign-off. **Sponsor button links** reads the
+  links from the repository's FUNDING.yml; whether the Sponsor button shows
+  is a setting GitHub's API cannot change, so the field only reads and says
+  so; the sheet's link to GitHub goes to the page that does.
+- **Merging** has the merge methods, auto-merge, suggesting branch updates and
+  deleting head branches, and the default message of a squash merge and of a
+  merge commit, in the words of GitHub's own settings page: default message,
+  pull request title, pull request title and commit details (squash only), or
+  pull request title and description. GitHub keeps each as a title and a
+  message that must be sent together, so each is one choice.
+- **Pages** is the website: its address, its status, the latest build (with
+  GitHub's message when it failed), how it is built (from a branch, or by a
+  workflow), the branch and folder it is built from, such as `main /docs`,
+  the custom domain, and Enforce HTTPS. Pages has to be turned on first, below.
+- **Danger Zone** changes the visibility and archives the repository.
+
+### GitHub Pages
+
+**Repository > GitHub Pages** in the GitHub Workbench lists the site and its
+recent builds. `Ctrl+N` there is **Turn On Pages...**: from a branch (which
+branch, and the top of it or `/docs`), or by a GitHub Actions workflow. On the
+site's row, **Check Site** says how the latest build went and whether a custom
+domain points at GitHub Pages; **Rebuild** asks GitHub for a fresh build;
+**Turn Off Pages...** stops publishing the site after asking, and leaves the
+repository as it is. Everything else about the site is on the Pages page of
+the repository's Properties. A site deployed by a workflow is deployed by the
+workflow's `actions/deploy-pages` step, which has an identity a person does
+not, so QUILL Lite does not deploy one itself.
 
 ## The wiki
 
@@ -588,9 +639,13 @@ A package's context menu has:
 - **Show Details** and **Open on GitHub**.
 - **Delete Package Version...** lists the package's versions, newest first,
   with their tags, such as "sha256:bbb, tagged latest, 1.2, updated
-  2026-11-12". Choose one and QUILL Lite asks before deleting it. GitHub will not
-  delete a package's only version, or one downloaded more than 5,000 times,
-  and QUILL Lite says so.
+  2026-11-12". Choose one, then type the package's name to delete it (a
+  version's own name is often a long digest, so the package's name is what you
+  type). GitHub will not delete a package's only version, or one downloaded
+  more than 5,000 times, and QUILL Lite says so.
+- **Show Versions** lists every version in a window to read.
+- **Restore Package Version...** lists the versions deleted in the last 30
+  days and brings back the one chosen.
 - **Delete Package...** deletes the package and every version, after you type
   its name.
 
@@ -601,7 +656,10 @@ with GitHub asks for both, and an account signed in before November 2026 is
 told to sign in again rather than seeing an empty list.
 
 An organization's packages are under **Organizations >** the organization **>
-Packages**, read and deleted the same way.
+Packages**, and a repository's own under **Repository > Packages**: the
+packages its owner published from it, read and deleted the same way. Another
+person's packages can be read, and their versions listed, but only they can
+change them.
 
 `Ctrl+N` in My Packages, or in an organization's Packages, brings back a
 package deleted in the last 30 days: QUILL Lite asks its type and name, and says
@@ -646,6 +704,7 @@ repository in **Repository:**:
 - **Deployments and environments**.
 - **Repository labels**, with **Create Label...** on the context menu.
 - **GitHub Pages and builds**, for a repository with a website.
+- **Repository packages**, the packages published from the repository.
 - **Repository health snapshot (opt-in)**, a set of counts that stays on this
   computer and does not rank anybody.
 

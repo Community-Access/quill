@@ -678,8 +678,10 @@ LEAVE_ALONE: dict[str, dict[str, str]] = {
     "pull_request": {"base": "changing the base retargets the pull request's whole diff"},
     "release": {"tag": "a release's tag is its address in the run", "target": "a tag's commit"},
     "repository": {
-        "pages_cname": "Pages is not turned on for the test repository",
-        "pages_https": "Pages is not turned on for the test repository",
+        **{
+            key: "Pages is not turned on for the test repository"
+            for key in ("pages_cname", "pages_https", "pages_build_type", "pages_source")
+        },
         "actions_enabled": "turning Actions off would stop the run's own workflow",
         "visibility": "changing visibility can lose plan features half way through the run",
     },

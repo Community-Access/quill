@@ -2336,7 +2336,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## GitHub Workbench
 
-Control coverage: 384 audited sites (384 helped).
+Control coverage: 390 audited sites (390 helped).
 
 ### Every window, and what it is for
 
@@ -2725,6 +2725,8 @@ Control coverage: 384 audited sites (384 helped).
 **repository: Environments.** Environments: where this repository's workflows deploy, each with its protection rules. Secrets... and Variables... on a row are that environment's own.
 
 **repository: Codespaces.** Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you name, with the machine and dev container you choose.
+
+**repository: Packages.** Packages: what this repository publishes, such as container images and npm packages. Show Versions lists each one's versions; Delete Package Version asks you to type the package's name.
 
 **repository: Pinned (spotlight).** Pinned (spotlight): the discussions pinned at the top of Discussions, in GitHub's order. Read only: GitHub's API cannot pin, unpin or reorder one.
 
@@ -4216,9 +4218,17 @@ Control coverage: 384 audited sites (384 helped).
 - `cancel_button`: Close without changing anything. Escape does the same.
 #### CreateRepositoryDialog (`quill/ui/github_repo_admin_dialogs.py`)
 
+- `self._problem_ctrl`: Why GitHub would refuse what is chosen, and what to change.
+- `self._org_ctrl`: An organization to create it in. Leave it empty to create it on your account.
 - `self._name_ctrl`: The new repository's name, such as my-project.
 - `self._description_ctrl`: A short sentence about what the repository is for. You can leave it empty.
-- `self._org_ctrl`: An organization to create it in. Leave it empty to create it on your account.
+- `self._homepage_ctrl`: An address shown beside the description, such as the project's site.
+- `self._visibility_choice`: Private: only people you add. Public: everyone. Internal: everyone in the organization's enterprise, for an organization's repository only.
+- `self._template_ctrl`: A template repository to copy, as owner/name. Leave it empty to start a new one.
+- `self._gitignore_combo`: Files Git should ignore, from GitHub's templates, such as Python or Node. Type any template name GitHub lists, or leave it empty.
+- `self._license_choice`: The licence GitHub adds as a LICENSE file, or none. Not with a template.
+- `self._branches_check`: Copy every branch of the template, not only its default branch.
+- `self._readme_check`: Start with a first commit holding a README, so it can be cloned at once.
 - `ok_btn`: Do it on GitHub. This is the button that makes the change.
 - `cancel_button`: Close without changing anything. Escape does the same.
 #### BranchProtectionDialog (`quill/ui/github_repo_admin_dialogs.py`)
