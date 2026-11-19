@@ -60,6 +60,37 @@ changes: **Edit Title...**, **Labels...**, **Assignees...**, **Milestone...**
 and **Projects...** open the sheet with focus already on that field. There
 are no separate keys for single properties: `Alt+Enter`, then the page.
 
+### You: your own relationships
+
+Anything you can have a relationship with has a **You** page, right after
+General: the second page, so `Ctrl+2` reaches it. It holds every relationship
+GitHub offers with that thing, each as a control you change like any other
+field, and saving sends only the ones you changed and says what happened in
+one sentence: "owner/name: starred on; watch level all activity."
+
+- **A repository:** Starred, and Watch level (all activity, participating and
+  mentions, or ignore).
+- **A person:** Following and Blocked.
+- **An organization:** Following, and Show my membership publicly.
+- **An issue:** Subscribed, your reactions (a check box for each of the
+  eight), and Pinned to the repository.
+- **A pull request:** Subscribed and your reactions.
+- **A discussion:** Subscribed, your reactions and Upvoted.
+- **A release:** your reactions. **A gist:** Starred. **A notification:**
+  Subscribed.
+
+Some relationships GitHub's API cannot change, and those are read-only boxes
+whose `F1` says why in one sentence: whether something is **Pinned to your
+profile** (customize your pins on your GitHub profile page), whether you are
+**Sponsoring** someone (that spends money at a tier you choose, so it is done
+from their Sponsor node, never a check box), whether a pull request or a
+discussion is pinned (GitHub pins only issues through its API), and whether
+somebody follows you, which is theirs to change. The menu rows you already
+know, such as Star or Unstar, Watch or Unwatch, Follow or Unfollow, React...
+and Pin or Unpin Issue, send the same requests as the You page. Read Only and
+Safe Mode lock the You page like every other page, with the reason under each
+field.
+
 ### Saving safely
 
 - **If somebody else changed it meanwhile,** the sheet says so before
@@ -93,6 +124,9 @@ issues".
 - Then a list of results, one line per item: Done, Skipped because it was
   already so, or Failed and why. Copy Results copies them, and Retry Failed
   (`F8`) runs the failed ones again.
+- The You page works here too. Select twelve repositories in a search,
+  press `Alt+Enter`, and check Starred or set Watch level on the You page:
+  each repository is starred, or watched, with a result line for each.
 
 Batches pause a second between items, because GitHub limits how quickly one
 account may make changes.
