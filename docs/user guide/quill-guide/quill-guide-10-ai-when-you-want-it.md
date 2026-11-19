@@ -796,7 +796,7 @@ one in use, and the window has five things in it, in Tab order:
 - **Connections**, a list. Each row says its name, then whether it is in use,
   signed in or not set up: "QUILL's free AI, in use", "My ChatGPT plan, signed
   in", "My GitHub Copilot, not set up", "Codex, for tasks, signed in", "My own
-  key, OpenAI, signed in".
+  key, OpenAI, signed in", "Auto, not set up".
 - **About this connection**, a short read-only line: what it can do, and who
   gets your text and what it costs. For example "Text and pictures, per model.
   Agent tasks: no. Goes to OpenAI and counts toward your ChatGPT plan."
@@ -852,7 +852,10 @@ GitHub sign-in QUILL uses for repository features.
 
 **Copilot options are in AI Hub > Sessions.** Auto priority is Efficiency,
 Balanced or Intelligence, and applies only when you choose Copilot Auto; it
-never changes which AI provider is in use. Session retention, long-task
+changes model priority within Copilot, not which AI provider is in use. This
+is separate from the **Auto** row in Choose Your AI, which you can explicitly
+select to let QUILL choose a ready provider that supports each action.
+Session retention, long-task
 context summaries and sharing enabled AI Library skills are all off until you
 opt in. Long-task summaries require retention and may use additional Copilot
 account usage. With retention on,
@@ -870,10 +873,28 @@ and Ask About an Image (on a Copilot model that can see) all go to Copilot on
 your plan. If Copilot answers with an error, you hear it once; QUILL does not
 try again and does not switch to another AI.
 
+**Auto is optional and never selected for you.** Choose **Auto** in the
+Connections list to use a ready provider that can perform each action. Before
+QUILL sends a request, it says which provider will receive it; for Ollama on
+this computer it says the request stays on your computer. A text request, an
+image request and a document task may therefore use different providers.
+Which AI Am I Using says when Auto is active. If no ready provider can do the
+action, nothing is sent.
+
+For a connectivity failure during a one-off request, conversation or image
+request, QUILL may offer one retry through another eligible provider. The
+confirmation says where the same request will go and that it may count toward
+that provider's limits or billing. **No** sends no retry. A limit, sign-in
+failure or document task is never automatically retried. When you select a
+specific provider instead of Auto, its failures never switch you to another
+provider.
+
 For multi-step tasks, choosing **My own key** can use the Copilot SDK with
 OpenAI-compatible or Gemini providers. Your selected provider's key, terms and
-billing apply; this does not use or require GitHub Copilot sign-in. Copilot
-Auto priority never chooses or switches providers for you.
+billing apply; this does not use or require GitHub Copilot sign-in. The Auto
+provider choice can also route a task, but only to a ready provider that can
+run tasks, and it tells you the destination before starting. Copilot Auto
+priority never chooses or switches providers for you.
 
 **Codex, for tasks** runs on your ChatGPT plan, with the same sign-in. Once you
 are signed in to your plan, **Use This** on the Codex row is the only key to
@@ -1421,14 +1442,18 @@ and **No** is the default button, so pressing Enter out of habit sends nothing.
   why, for example "Your ChatGPT plan sign-in has ended. Nothing was sent.
   Press Ctrl+4 to sign in again or choose another." If nothing is in use at
   all, you hear "No AI is in use. Choose one." and Choose Your AI opens. QUILL
-  never picks another AI for you; switching is always something you do.
+  never picks another AI for you when you chose a specific provider. If you
+  selected Auto, QUILL instead chooses a ready provider that supports the
+  action and announces it before sending.
 
 Changing the AI yourself is never questioned: signing in or out, choosing
 **Use This**, or saving or removing a key all count as your choice.
 
-**Limits.** A request that *fails* (no connection, a limit reached) is not a
-fallback: you hear why it failed, once, and Ask Quill may suggest switching to
-your on-device model, but it never switches for you.
+**Limits.** With a specific provider selected, a request that *fails* (no
+connection, a limit reached) is not a fallback: you hear why it failed, once,
+and Ask Quill may suggest switching to your on-device model, but it never
+switches for you. With Auto selected, only a connectivity failure may prompt
+one confirmed retry through another eligible provider; limits are never retried.
 
 ## Using your ChatGPT subscription
 

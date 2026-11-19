@@ -49,6 +49,10 @@ than running when it cannot tell.
 - Copilot's own file, shell and web tools remain off until enabled for a
   project. Each use requires approval; vendor edits bypass Review Changes and
   vendor shell commands run with the user's account permissions.
+- Choose Your AI now has an optional Auto provider choice. It selects a ready
+  provider with the capability each action needs and announces the destination
+  before sending. A connectivity retry requires confirmation; agent tasks
+  are never automatically retried. Explicitly selected providers do not switch.
 
 ### WordPress
 

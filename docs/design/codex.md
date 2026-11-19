@@ -10,10 +10,12 @@ record.
 Microsoft Copilot SDK 2.0.1. The current runtime, safety boundaries, and
 user-controlled SDK features are recorded in sections 2B.8 and 3.7;
 older 1.x rows below are dated research, not the shipped configuration.
+The shared AI layer also offers a separate, explicit Auto provider choice;
+that is not Copilot's Auto model-priority setting.
 
 ## 1. The short version
 
-Every QuillVille app will offer five connections in one Choose Your AI window: QUILL's free AI, My ChatGPT plan, My GitHub Copilot, Codex and My own key (section 10A), with one Ask conversation in every app (10C). Copilot comes before Codex (section 11).
+Every QuillVille app will offer five concrete connections and an Auto choice in one Choose Your AI window: QUILL's free AI, My ChatGPT plan, My GitHub Copilot, Codex, My own key, and Auto (section 10A), with one Ask conversation in every app (10C). Copilot comes before Codex (section 11).
 
 Four QUILL apps can already sign in to ChatGPT on their own:
 
@@ -314,7 +316,8 @@ The following describes the implementation shared by QUILL and QUILL Lite.
 - **Not enabled by design.** SDK memory, cross-session storage, config
   discovery, telemetry, proxy authentication callbacks, and SDK built-in tools
   remain disabled by default. Long-task compaction is separately opt-in and
-  requires retention. QUILL never switches providers automatically.
+  requires retention. Specifically selected providers never switch
+  automatically; explicit Auto routing is separate (section 10A.15).
   Structured output is available to internal callers, not as a separate user
   command.
 
@@ -1137,7 +1140,7 @@ The column is for the ChatGPT plan. Under Copilot the answers are the same in pr
 
 ## 10A. Choose Your AI: the connection layer
 
-Decided by Jeff on 2026-10-31. One window, shared by QUILL and QUILL Lite and then by every QuillVille app, built in the shared hosted-AI layer (`quill/ui/hosted_ai_*.py`) so neither editor is ahead (rule 10). The aim is "magical and simple": a person picks where their AI comes from once, hears which one is in use with one key, and is never surprised.
+Decided by Jeff on 2026-10-31. One window, shared by QUILL and QUILL Lite and then by every QuillVille app, built in the shared hosted-AI layer (`quill/ui/hosted_ai_*.py`) so neither editor is ahead (rule 10). The aim is "magical and simple": a person picks one provider or explicitly opts into Auto, hears which one is in use with one key, and is never surprised.
 
 ### 10A.1 Where we start: today's code
 
@@ -1151,7 +1154,7 @@ Decided by Jeff on 2026-10-31. One window, shared by QUILL and QUILL Lite and th
 - **Engines are a separate choice.** `quill/core/ai/quick_switch.py` keeps the preferred agent engine in `<app data>/ai/active-harness.json` (`:61-78`) and cycles among ready ones (`:149`). `HarnessCapabilities` (`quill/core/ai/harness/__init__.py:41-63`) already has `images`, `audio`, `tool_calling` and `streaming` flags.
 - **Copilot sign-in.** `quill/core/ai/copilot_auth.py`: device-flow URLs (`:44-45`), scope `read:user` (`:48`), client id from `QUILL_GITHUB_CLIENT_ID` (`:54-56`), token exported to `os.environ` (`:91-102`).
 
-### 10A.2 The five connections
+### 10A.2 The five connections and Auto choice
 
 | Row, as heard | Sign-in | What it is |
 |---|---|---|
@@ -1160,14 +1163,15 @@ Decided by Jeff on 2026-10-31. One window, shared by QUILL and QUILL Lite and th
 | My GitHub Copilot | GitHub device code, per app | Copilot SDK; availability and usage follow the user's GitHub plan |
 | Codex, for tasks | the same ChatGPT sign-in | the agent engine of section 2, on the plan |
 | My own key | paste a key, OpenAI or Gemini | billed per request by that company |
+| Auto | at least one ready connection | chooses a ready, capable connection per action; the user sees the destination first |
 
-Each is one keypress (free, Codex once ChatGPT is signed in) or one sign-in. Each app signs in separately, as the SIWC terms require. Jeff extended that to GitHub on 2026-10-31, which replaces the "one GitHub sign-in for the family" in section 5.4.
+Each concrete connection takes one keypress (free, Codex once ChatGPT is signed in) or one sign-in. Auto takes one keypress to opt in and needs at least one ready connection. Each app signs in separately, as the SIWC terms require. Jeff extended that to GitHub on 2026-10-31, which replaces the "one GitHub sign-in for the family" in section 5.4.
 
 ### 10A.3 The window, as a screen-reader user meets it
 
 Opened by Ctrl+4 (section 10A.9), or from AI > Choose Your AI. The title is "Choose Your AI". Focus lands on the connection list, on the row in use. There are five controls in tab order, and nothing else: no tabs, no Advanced page.
 
-1. **Connections** (`&Connections`): a single-column list. Each row reads as name, then state: "QUILL's free AI, in use"; "My ChatGPT plan, signed in"; "My GitHub Copilot, not set up"; "Codex, for tasks, not set up"; "My own key, OpenAI, signed in". Three states only: In use, Signed in, Not set up. A fourth, "Signed out by GitHub" (or OpenAI), appears after a revoked token (10A.5). Enter does the action button's job. Delete on a signed-in row signs it out, after a Yes/No with No as the default.
+1. **Connections** (`&Connections`): a single-column list. Each row reads as name, then state: "QUILL's free AI, in use"; "My ChatGPT plan, signed in"; "My GitHub Copilot, not set up"; "Codex, for tasks, not set up"; "My own key, OpenAI, signed in"; "Auto, in use". Three states only: In use, Signed in, Not Set Up. A fourth, "Signed out by GitHub" (or OpenAI), appears after a revoked token (10A.5). Enter does the action button's job. Delete on a signed-in row signs it out, after a Yes/No with No as the default.
 2. **About this connection**: a read-only line, two sentences at most, rewritten as the selection moves. Who receives the text, what it costs, and what it can do, from the capability registry: "Text and pictures. Agent tasks: yes. Billed to your Copilot plan."
 3. **Model** (`&Model`): a choice list filled from the selected connection's own discovery (10A.7). The first item is the service's recommendation, marked "(recommended)". Disabled with one item, "Sign in to see the models", when the row is not set up.
 4. **The action button.** One button whose label follows the row: "&Use This" on a signed-in row, "&Sign In..." on a row not set up, "Sign &Out" on the row in use. The three letters are distinct and collide with nothing else here (GATE-14).
@@ -1203,10 +1207,11 @@ ChatGPT and Codex use the existing loopback sign-in (`quill/core/ai/chatgpt_loop
 - **Sign Out of another row** changes nothing about which one is in use.
 - **A revoked token** (401 from OpenAI or GitHub, or a refresh that fails): nothing is sent, the row becomes "Signed out by OpenAI", and the app says "Your ChatGPT plan sign-in has ended. Nothing was sent. Press Ctrl+4 to sign in again or choose another." No retry and no fallback. The route guard (`:66-91`) stays as the backstop for any case this misses.
 - **A limit is reached:** the ChatGPT plan's 429 `subscription_sharing_usage_limit_exceeded`, Copilot's quota, the free AI's `GatewayQuota`, or an own key's 429. Spoken once, never retried, never switched: "Your ChatGPT plan's limit for QUILL is reached. Nothing was sent. Manage usage is in the Usage window." The 503 `subscription_sharing_usage_unavailable` gets the bounded retry OpenAI asks for (errors-and-recovery page), and then the same sentence.
+- Those no-switch guarantees describe an explicitly selected connection. Auto is a separate, explicit choice, never selected by default: it chooses only a ready provider that supports the action and announces the provider and destination before sending. Ask, conversations and image requests may offer one retry after a classified connectivity failure; the same request is sent only after confirmation, with destination and possible provider limits or billing stated. Declining preserves the original error. Agent tasks are never retried automatically because a provider may have performed an approved action before a failure. Copilot's Auto model-priority setting remains separate and never changes providers.
 
 ### 10A.6 Data model and settings
 
-- **One stored choice:** `ai_connection: str`, with values `free`, `chatgpt`, `copilot`, `codex`, `own_key`, and `""` meaning "not yet decided". The same field name in `quill/core/settings.py` and `quill/core/lite/settings.py`, so the settings-vocabulary gate (`quill/tools/settings_vocabulary_audit.py`, snapshot `tests/unit/ui/fixtures/settings_vocabulary_inventory.json`, line 42 of the audit) classifies it `shared`, not `missing`. Regenerate with `--write`.
+- **One stored choice:** `ai_connection: str`, with values `free`, `chatgpt`, `copilot`, `codex`, `own_key`, `auto`, and `""` meaning "not yet decided". The same field name in `quill/core/settings.py` and `quill/core/lite/settings.py`, so the settings-vocabulary gate (`quill/tools/settings_vocabulary_audit.py`, snapshot `tests/unit/ui/fixtures/settings_vocabulary_inventory.json`, line 42 of the audit) classifies it `shared`, not `missing`. Regenerate with `--write`.
 - **Per-connection model:** existing fields stay. ChatGPT is `ChatGptState.model`; the own key is `ai_own_key_model` (`settings.py:294`, `lite/settings.py:223`). New: `ai_copilot_model` and `ai_codex_model`, both editors, same names. The free AI has none.
 - **Migration, so nobody's behaviour changes:** on the first read where `ai_connection` is empty, it is set once to what `route` returns today (ChatGPT signed in, else own key active, else free), and saved through `write_json_atomic`. From then on `route` returns the stored choice, provided that connection is ready. If it is not ready, the request fails with the revoked-token sentence above; it does not fall through.
 - **Other apps:** each app's own settings get the same field name. Whether the vocabulary gate covers settings outside the editor pair: to verify.
@@ -1214,7 +1219,7 @@ ChatGPT and Codex use the existing loopback sign-in (`quill/core/ai/chatgpt_loop
 
 ### 10A.7 The capability registry
 
-New, wx-free and strict-typed: `quill/core/ai/connection_caps.py`. One record per connection, plus a per-model override when the service reports it.
+New, wx-free and strict-typed: `quill/core/ai/connection_caps.py`. One record per concrete connection, plus a per-model override when the service reports it. Auto has no capability record of its own; it resolves through this table for each action.
 
 | Capability | Free | ChatGPT plan | Copilot | Codex | Own key |
 |---|---|---|---|---|---|
@@ -1293,6 +1298,10 @@ One button, **Manage Usage**, opens the selected connection's own page (`USAGE_U
 
 **Everything is text (Jeff, 2026-10-31).** Usage is a spoken and brailled sentence or a list, never a chart: no meter, gauge, progress bar or colour carries a number, in this window or anywhere else (decision 13).
 
+Auto is an explicit provider-selection choice. Usage remains reported under
+the concrete provider for each request; QUILL does not invent an aggregate
+quota across providers.
+
 ### 10A.12 Copilot as a route
 
 - **Chat and pictures:** one-shot and streaming requests use the SDK 2 session API; images are sent only as attachments, and the selected model's vision capability gates image requests.
@@ -1304,6 +1313,7 @@ One button, **Manage Usage**, opens the selected connection's own page (`USAGE_U
   use still requires QUILL approval. Vendor edits bypass Review Changes, while
   QUILL's own edits remain reviewed. MCP and unsupported permissions are refused.
 - **Separate choices:** My own key and local models remain separate routes. Copilot is never used as an automatic fallback for another provider.
+- Copilot's **Auto** model-priority setting is independent of the Choose Your AI **Auto** provider choice.
 - **Verification still open:** the SDK integration has focused fake-SDK tests, but a real-account run and a regenerated runtime inventory from a completed runtime build remain unverified. Do not treat either as passed until performed.
 
 ### 10A.13 Codex as a route
@@ -1318,6 +1328,33 @@ One button, **Manage Usage**, opens the selected connection's own page (`USAGE_U
 - The window, the registry and the gating live in shared modules: `quill/ui/hosted_ai_connections.py` (new, the window), `quill/core/ai/connection_caps.py` (new), and `AiService.route` reading `ai_connection`. QUILL reaches them through `main_frame_hosted_ai.py`, which still has no commands of its own; the test that asserts that absence stays.
 - Parity-table rows in `quill/core/lite/parity.py`: `COMMAND_EQUIVALENTS` (`:170`) gains `cmd_ai_choose` to `tools.hosted_ai_choose` and `cmd_ai_which` to `tools.hosted_ai_which`; `SETTINGS_ALIASES` needs nothing, because the field names match.
 - Gates that will check it: bound-command and family rules (`tests/unit/core/test_family_rules_and_gates.py`), menu accelerators (`tests/unit/ui/test_menu_accelerators.py`), menu shape, documentation chords and GATE-DOCKEY for the guides, GATE-LITE-COVER (`quill/tools/lite_command_coverage.py --write`) for behavioural tests of both new handlers, the settings vocabulary, GATE-REACH for the new window, the F1 audits, GATE-13 and GATE-BRAILLE, and the new GATE-CAPS.
+
+### 10A.15 Explicit Auto provider routing
+
+Auto is an additional choice in Choose Your AI, not a default and not a
+background fallback. A person opts in by selecting its row. For each action,
+the shared capability registry selects the first ready provider that supports
+all required capabilities. For example, a text request can use a ready text
+provider while an agent task uses a different ready provider with agent tools;
+an image request must use a provider whose selected model can see. Copilot's
+own Auto model priority remains a separate setting within Copilot.
+
+Before any request leaves, QUILL or QUILL Lite announces the selected provider
+and destination. The local Ollama route explicitly says that the request stays
+on this computer. If no ready provider can perform the action, the action is
+not sent and the user is told what to set up. A connectivity failure on one
+ordinary request may offer one retry through another eligible provider; the
+confirmation says where the same request will go and that the provider may
+count it toward limits or billing. No means no retry. Limits, authorization
+failures, other errors and multi-step agent tasks are not retried
+automatically. A confirmed task is not restarted because a provider may have
+performed an approved action.
+
+The registry order is the stable tie-breaker, not a ranking of quality. Auto
+does not change model settings, combine provider histories or share
+credentials. Which AI Am I Using reports that Auto is active; the
+pre-send announcement names the concrete provider for each action. Provider
+terms, availability, usage and billing still belong to that provider.
 
 ## 10B. Pictures, video and sound across the family
 

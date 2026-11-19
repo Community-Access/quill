@@ -526,8 +526,14 @@ OpenAI-compatible and Gemini keys can use the Copilot SDK task harness without
 GitHub sign-in; your selected provider's key and billing apply. In AI Hub >
 Sessions, you can separately opt into keeping sessions on this computer,
 resuming or deleting them, sharing enabled AI Library skills, or summarizing
-older context for a longer Copilot task. These choices start off, and the
-provider never switches automatically.
+older context for a longer Copilot task. These choices start off. A
+specifically selected provider never switches automatically; Auto is a
+separate choice in Choose Your AI. Auto selects a ready AI that can do each action and
+says who receives your request before sending it. One connectivity retry for
+an ordinary request requires your confirmation and tells you where the same
+request will go and whether it may count toward limits or billing. Agent tasks
+are never automatically retried; with a specific provider selected, QUILL Lite
+never changes providers for you.
 
 ### Say what you want, in your own words
 

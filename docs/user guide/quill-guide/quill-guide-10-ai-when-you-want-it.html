@@ -1259,7 +1259,8 @@ window has five things in it, in Tab order:</p>
 <li><strong>Connections</strong>, a list. Each row says its name, then
 whether it is in use, signed in or not set up: “QUILL’s free AI, in
 use”, “My ChatGPT plan, signed in”, “My GitHub Copilot, not set up”,
-“Codex, for tasks, signed in”, “My own key, OpenAI, signed in”.</li>
+“Codex, for tasks, signed in”, “My own key, OpenAI, signed in”, “Auto,
+not set up”.</li>
 <li><strong>About this connection</strong>, a short read-only line: what
 it can do, and who gets your text and what it costs. For example “Text
 and pictures, per model. Agent tasks: no. Goes to OpenAI and counts
@@ -1317,7 +1318,10 @@ other AI choices available. Your Copilot sign-in is separate from QUILL
 Lite and from the GitHub sign-in QUILL uses for repository features.</p>
 <p><strong>Copilot options are in AI Hub &gt; Sessions.</strong> Auto
 priority is Efficiency, Balanced or Intelligence, and applies only when
-you choose Copilot Auto; it never changes which AI provider is in use.
+you choose Copilot Auto; it changes model priority within Copilot, not
+which AI provider is in use. This is separate from the
+<strong>Auto</strong> row in Choose Your AI, which you can explicitly
+select to let QUILL choose a ready provider that supports each action.
 Session retention, long-task context summaries and sharing enabled AI
 Library skills are all off until you opt in. Long-task summaries require
 retention and may use additional Copilot account usage. With retention
@@ -1335,11 +1339,28 @@ Prompt Library and Ask About an Image (on a Copilot model that can see)
 all go to Copilot on your plan. If Copilot answers with an error, you
 hear it once; QUILL does not try again and does not switch to another
 AI.</p>
+<p><strong>Auto is optional and never selected for you.</strong> Choose
+<strong>Auto</strong> in the Connections list to use a ready provider
+that can perform each action. Before QUILL sends a request, it says
+which provider will receive it; for Ollama on this computer it says the
+request stays on your computer. A text request, an image request and a
+document task may therefore use different providers. Which AI Am I Using
+says when Auto is active. If no ready provider can do the action,
+nothing is sent.</p>
+<p>For a connectivity failure during a one-off request, conversation or
+image request, QUILL may offer one retry through another eligible
+provider. The confirmation says where the same request will go and that
+it may count toward that provider’s limits or billing.
+<strong>No</strong> sends no retry. A limit, sign-in failure or document
+task is never automatically retried. When you select a specific provider
+instead of Auto, its failures never switch you to another provider.</p>
 <p>For multi-step tasks, choosing <strong>My own key</strong> can use
 the Copilot SDK with OpenAI-compatible or Gemini providers. Your
 selected provider’s key, terms and billing apply; this does not use or
-require GitHub Copilot sign-in. Copilot Auto priority never chooses or
-switches providers for you.</p>
+require GitHub Copilot sign-in. The Auto provider choice can also route
+a task, but only to a ready provider that can run tasks, and it tells
+you the destination before starting. Copilot Auto priority never chooses
+or switches providers for you.</p>
 <p><strong>Codex, for tasks</strong> runs on your ChatGPT plan, with the
 same sign-in. Once you are signed in to your plan, <strong>Use
 This</strong> on the Codex row is the only key to press. Codex is there
@@ -1885,15 +1906,19 @@ GitHub ended its sign-in), nothing is sent and you hear why, for example
 “Your ChatGPT plan sign-in has ended. Nothing was sent. Press Ctrl+4 to
 sign in again or choose another.” If nothing is in use at all, you hear
 “No AI is in use. Choose one.” and Choose Your AI opens. QUILL never
-picks another AI for you; switching is always something you do.</li>
+picks another AI for you when you chose a specific provider. If you
+selected Auto, QUILL instead chooses a ready provider that supports the
+action and announces it before sending.</li>
 </ul>
 <p>Changing the AI yourself is never questioned: signing in or out,
 choosing <strong>Use This</strong>, or saving or removing a key all
 count as your choice.</p>
-<p><strong>Limits.</strong> A request that <em>fails</em> (no
-connection, a limit reached) is not a fallback: you hear why it failed,
-once, and Ask Quill may suggest switching to your on-device model, but
-it never switches for you.</p>
+<p><strong>Limits.</strong> With a specific provider selected, a request
+that <em>fails</em> (no connection, a limit reached) is not a fallback:
+you hear why it failed, once, and Ask Quill may suggest switching to
+your on-device model, but it never switches for you. With Auto selected,
+only a connectivity failure may prompt one confirmed retry through
+another eligible provider; limits are never retried.</p>
 <h2 id="using-your-chatgpt-subscription">Using your ChatGPT
 subscription</h2>
 <p>If you already pay for ChatGPT, QUILL can run its AI commands on your

@@ -1227,23 +1227,26 @@ repository features.</p>
 an Image (on a Copilot model that can see) go to Copilot. <strong>Which
 AI Am I Using</strong> and <strong>Usage</strong> include GitHub’s own
 count, such as “41 of 300 premium requests this month, by GitHub’s
-count”; the first time, Ctrl+8 waits a moment for it. A Copilot error is
-said once; nothing is retried or switched.</p>
+count”; the first time, Ctrl+8 waits a moment for it. When Copilot is
+the specific provider in use, an error is said once; nothing is retried
+or switched.</p>
 <p><strong>Copilot options are in AI Hub &gt; Sessions.</strong> Auto
 priority is Efficiency, Balanced or Intelligence, and applies only when
-you choose Copilot Auto; it never changes which AI provider is in use.
-Session retention, long-task context summaries and sharing enabled AI
-Library skills are off until you opt in. Long-task summaries require
-retention and may use additional Copilot account usage. With retention
-on, Refresh lists saved local session IDs and update times. Choose
-<strong>Use selected session for the next task</strong>, save the AI Hub
-settings with <strong>OK</strong>, and the next Copilot task continues
-that conversation. Permanent deletion requires an explicit confirmation
-check box. Conversation content is not displayed in the list, and
-temporary work files are still cleared. You can turn retention off and
-start another Copilot task to remove retained session data.
-Credential-free system proxy settings are honored; QUILL Lite does not
-collect proxy credentials.</p>
+you choose Copilot Auto; it changes model priority within Copilot, not
+which AI provider is in use. This is separate from the optional
+<strong>Auto</strong> row in Choose Your AI, which selects a ready
+provider for each action. Session retention, long-task context summaries
+and sharing enabled AI Library skills are off until you opt in.
+Long-task summaries require retention and may use additional Copilot
+account usage. With retention on, Refresh lists saved local session IDs
+and update times. Choose <strong>Use selected session for the next
+task</strong>, save the AI Hub settings with <strong>OK</strong>, and
+the next Copilot task continues that conversation. Permanent deletion
+requires an explicit confirmation check box. Conversation content is not
+displayed in the list, and temporary work files are still cleared. You
+can turn retention off and start another Copilot task to remove retained
+session data. Credential-free system proxy settings are honored; QUILL
+Lite does not collect proxy credentials.</p>
 <p><strong>Codex, for tasks</strong> runs on your ChatGPT plan with the
 same sign-in, so once you are signed in to the plan, <strong>Use
 This</strong> on the Codex row is the only key to press. While Codex is
@@ -1256,6 +1259,19 @@ row says “not available yet”.</p>
 the Copilot SDK with OpenAI-compatible or Gemini providers. Your
 selected provider’s key, terms and billing apply; this does not use or
 require GitHub Copilot sign-in.</p>
+<p><strong>Auto is optional and never selected for you.</strong> Choose
+its row in Choose Your AI to use a ready provider that supports each
+action. Before QUILL Lite sends a request, it says which provider will
+receive it; for Ollama on this computer, it says the request stays on
+your computer. A text request, image request and document task may use
+different providers. If none can perform an action, nothing is sent.</p>
+<p>For a connectivity failure during a one-off request, conversation or
+image request, QUILL Lite may offer one retry through another eligible
+provider. The confirmation says where the same request will go and that
+it may count toward that provider’s limits or billing.
+<strong>No</strong> sends no retry. A limit, sign-in failure or document
+task is never automatically retried. Selecting a specific provider
+instead of Auto means failures never switch you to another provider.</p>
 <h3 id="what-you-learned-and-where-to-go-next-16">What you learned, and
 where to go next</h3>
 <p>Copilot signs in with a short code from GitHub, and Codex is one

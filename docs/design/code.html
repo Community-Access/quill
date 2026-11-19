@@ -674,8 +674,9 @@ AI Key can use SDK BYOK for agent tasks; those requests follow the
 selected provider’s terms and billing and do not borrow GitHub
 sign-in.</li>
 <li><strong>Provider choice:</strong> My GitHub Copilot is distinct from
-My own key and local models. The user selects a provider explicitly; the
-application does not silently route or fall back.</li>
+My own key and local models. Users can select a concrete provider or
+explicitly opt into Auto; Auto selects a capable, ready route per action
+and announces its destination before sending.</li>
 <li><strong>Agent tools:</strong> QUILL’s registered tools are available
 by default. Copilot’s own file, shell, and web tools are off until
 enabled per project, and every use requires QUILL approval. Vendor edits
@@ -689,8 +690,10 @@ resumption, and requires explicit confirmation to delete. Config
 discovery, memory, cross-session storage, and telemetry stay disabled.
 User-input requests use native accessible prompts; Cancel returns
 cancellation, and sanitized progress is announced.</li>
-<li><strong>Routing and network:</strong> the balanced Auto tier applies
-only when Copilot Auto is selected and never switches providers.
+<li><strong>Routing and network:</strong> Copilot Auto is a
+model-priority setting within Copilot. The separate Auto row in Choose
+Your AI is an explicit provider-routing choice. A connectivity retry
+requires confirmation; agent tasks are never retried automatically.
 Credential-free system proxy settings are honored without collecting
 proxy credentials. Event-history summaries contain event types and
 counts, not conversation or tool payloads.</li>

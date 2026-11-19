@@ -1046,8 +1046,8 @@ the same change, from the shared `quill/ui/hosted_ai_*.py` modules (family
 rule 10); QUILL reaches them through `quill/ui/main_frame_hosted_ai.py`, which
 has no commands of its own.
 
-**Five connections, one stored choice.** `ai_connection` (`free`, `chatgpt`,
-`copilot`, `codex`, `own_key`; empty means not yet decided) is the same field
+**Five connections and Auto, one stored choice.** `ai_connection` (`free`,
+`chatgpt`, `copilot`, `codex`, `own_key`, `auto`; empty means not yet decided) is the same field
 in `quill/core/settings.py` and `quill/core/lite/settings.py`. On the first
 read where it is empty it is set once to what the old silent precedence
 chose (ChatGPT signed in, else an own key, else free), so nobody's behaviour
@@ -1091,13 +1091,19 @@ ChatGPT plan (decision 24, never used to guess a limit), GitHub's quota for
 Copilot, and the provider's last rate-limit headers for an own key. Manage
 Usage opens the selected connection's page. Everything is text (decision 13).
 
-**No silent fall-back (decision 15).** Signing in is choosing. Sign Out of
+**No silent fall-back for an explicit connection (decision 15).** Signing in is choosing. Sign Out of
 the connection in use leaves none in use; the next AI command opens Choose
 Your AI and says once "No AI is in use. Choose one." A revoked token, a
 missing key or a reached limit is said once, nothing is sent, nothing is
-retried and nothing switches. This replaces the session route guard's
-"Send to a Different AI?" question for the hosted-AI commands; the guard
-stays only as a backstop.
+retried and nothing switches. Auto is a separate, explicit choice, never the
+default: it selects a ready connection that supports the action and announces
+the concrete provider and destination before sending. Ask, conversations and
+image requests may offer one retry after a classified connectivity failure;
+the same request is sent only after confirmation, with destination and
+possible provider limits or billing stated. Declining preserves the original
+error. Agent tasks are not automatically retried because a provider may have
+performed an approved action before a failure. Copilot's Auto model-priority
+setting remains separate and never changes providers.
 
 **Capability gating (GATE-CAPS).** `quill/core/ai/connection_caps.py` holds
 one record per connection, each claim naming its source. A gated command
@@ -1113,6 +1119,16 @@ a GitHub OAuth App client id per app (`copilot_auth.CLIENT_IDS`); while it is
 empty the row is "not available yet" and About says why in one sentence.
 Single requests, conversations and Ask About an Image (on a model that sees)
 go through the SDK; an error is said once.
+
+**Auto provider routing.** The additional Auto row in Choose Your AI is
+opt-in, not a default or silent fallback. The shared capability registry
+selects the first ready provider that supports every capability required by
+each action. The local Ollama route says it stays on this computer. The
+registry order is a stable tie-breaker, not a quality ranking; Auto does not
+change provider model settings, combine histories or share credentials.
+Which AI Am I Using reports that Auto is active, and a pre-send announcement
+identifies each request's concrete recipient. Usage remains tied to the
+provider that handled the request, with no fabricated cross-provider quota.
 
 **Codex** (decision 21) is one keypress once the ChatGPT plan is signed in.
 Single requests while Codex is in use go over the plan's direct route; the
@@ -2085,8 +2101,9 @@ the document task's tools, the family prompt list and the own key's providers,
 are in section 5.6e.
 
 **One window for where the AI comes from.** Choose Your AI (Tools > AI,
-**Ctrl+4**, `cmd_ai_choose`) lists five connections: QUILL's free AI, the
-ChatGPT plan, GitHub Copilot, Codex and the user's own key. The window is
+**Ctrl+4**, `cmd_ai_choose`) lists five connections and an Auto choice:
+QUILL's free AI, the ChatGPT plan, GitHub Copilot, Codex, the user's own key
+and Auto. The window is
 QUILL's, shared (`quill/ui/hosted_ai_connections.py`, with the rows in
 `quill/core/ai/connection_choice.py`); every sentence it can say comes from
 `quill/core/ai/connection_words.py`, so the two editors cannot word one moment

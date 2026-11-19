@@ -35,15 +35,20 @@ These say no, and do not run tasks:
 - **My own key** with any other provider: OpenAI, Google Gemini, OpenRouter,
   Ollama Cloud or a service of your own. These answer in text only.
 
-If the AI you have chosen cannot run tasks, nothing is sent: QUILL tells you,
-and offers to switch.
+If you chose a specific AI that cannot run tasks, nothing is sent: QUILL tells
+you and offers to switch. You can instead choose **Auto** in Choose Your AI.
+Auto is an opt-in provider choice; for a task it selects a ready AI that can
+run tasks and announces the provider and destination before the task starts.
 
 ## Choosing
 
 Press `Ctrl+4`, move to the row you want, and press **Use This**, or **Sign
 In...** if you have not signed in yet. For My own key, choose the provider and
-model in that row's own window. Your choice applies to Do a Document Task and
-Do a Project Task alike.
+model in that row's own window. Choose **Auto** only if you want each action
+to use a ready provider that supports it; QUILL announces the destination
+before sending. Your choice applies to Do a Document Task and Do a Project
+Task alike. A document or project task is never automatically retried after a
+failure because the provider may already have performed an approved action.
 
 Some plain advice:
 

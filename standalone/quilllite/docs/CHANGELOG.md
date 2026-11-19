@@ -104,6 +104,10 @@ so Ctrl+Z straight after one undoes an older change instead.
 - Copilot's own file, shell and web tools are off until enabled per project.
   Each use still asks first; vendor edits bypass Review Changes, and shell
   commands run with your account permissions.
+- Choose Your AI now has an optional Auto provider choice. It selects a ready
+  provider with the capability each action needs and announces the destination
+  before sending. A connectivity retry requires confirmation; agent tasks
+  are never automatically retried. Explicitly selected providers do not switch.
 
 ### Compare with Site marks each changed line, from Kelly Ford (2026-11-18)
 

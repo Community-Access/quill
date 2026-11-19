@@ -855,12 +855,15 @@ features.
 With Copilot in use, the pad, Ask, the Prompt Library and Ask About an Image
 (on a Copilot model that can see) go to Copilot. **Which AI Am I Using** and
 **Usage** include GitHub's own count, such as "41 of 300 premium requests this
-month, by GitHub's count"; the first time, Ctrl+8 waits a moment for it. A
-Copilot error is said once; nothing is retried or switched.
+month, by GitHub's count"; the first time, Ctrl+8 waits a moment for it. When
+Copilot is the specific provider in use, an error is said once; nothing is
+retried or switched.
 
 **Copilot options are in AI Hub > Sessions.** Auto priority is Efficiency,
 Balanced or Intelligence, and applies only when you choose Copilot Auto; it
-never changes which AI provider is in use. Session retention, long-task
+changes model priority within Copilot, not which AI provider is in use. This
+is separate from the optional **Auto** row in Choose Your AI, which selects a
+ready provider for each action. Session retention, long-task
 context summaries and sharing enabled AI Library skills are off until you opt
 in. Long-task summaries require retention and may use additional Copilot
 account usage. With retention on, Refresh
@@ -883,6 +886,20 @@ says "not available yet".
 For multi-step tasks, choosing **My own key** can use the Copilot SDK with
 OpenAI-compatible or Gemini providers. Your selected provider's key, terms and
 billing apply; this does not use or require GitHub Copilot sign-in.
+
+**Auto is optional and never selected for you.** Choose its row in Choose Your
+AI to use a ready provider that supports each action. Before QUILL Lite sends
+a request, it says which provider will receive it; for Ollama on this computer,
+it says the request stays on your computer. A text request, image request and
+document task may use different providers. If none can perform an action,
+nothing is sent.
+
+For a connectivity failure during a one-off request, conversation or image
+request, QUILL Lite may offer one retry through another eligible provider. The
+confirmation says where the same request will go and that it may count toward
+that provider's limits or billing. **No** sends no retry. A limit, sign-in
+failure or document task is never automatically retried. Selecting a specific
+provider instead of Auto means failures never switch you to another provider.
 
 ### What you learned, and where to go next
 

@@ -276,14 +276,21 @@ selection, but never runs an agent.</li>
 Gemini, OpenRouter, Ollama Cloud or a service of your own. These answer
 in text only.</li>
 </ul>
-<p>If the AI you have chosen cannot run tasks, nothing is sent: QUILL
-tells you, and offers to switch.</p>
+<p>If you chose a specific AI that cannot run tasks, nothing is sent:
+QUILL tells you and offers to switch. You can instead choose
+<strong>Auto</strong> in Choose Your AI. Auto is an opt-in provider
+choice; for a task it selects a ready AI that can run tasks and
+announces the provider and destination before the task starts.</p>
 <h2 id="choosing">Choosing</h2>
 <p>Press <code>Ctrl+4</code>, move to the row you want, and press
 <strong>Use This</strong>, or <strong>Sign In…</strong> if you have not
 signed in yet. For My own key, choose the provider and model in that
-row’s own window. Your choice applies to Do a Document Task and Do a
-Project Task alike.</p>
+row’s own window. Choose <strong>Auto</strong> only if you want each
+action to use a ready provider that supports it; QUILL announces the
+destination before sending. Your choice applies to Do a Document Task
+and Do a Project Task alike. A document or project task is never
+automatically retried after a failure because the provider may already
+have performed an approved action.</p>
 <p>Some plain advice:</p>
 <ul>
 <li><strong>Already pay for Copilot?</strong> Start there. It is the

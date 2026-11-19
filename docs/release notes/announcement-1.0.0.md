@@ -185,13 +185,24 @@ On Copilot, Codex or a supported provider you chose in My own key, **Do a
 Document Task** (Ctrl+3) works through a job with several steps, asking before
 each change. Every answer is text, never a chart.
 
+There is now an optional **Auto** choice in Choose Your AI. It is never picked
+for you. If you select it, QUILL chooses a ready AI that can do each action
+and tells you who will receive your request before sending. A connectivity
+problem on an ordinary request may offer one retry through another provider;
+QUILL tells you where the same request would go and that the provider may
+count it toward limits or billing, then waits for your yes. A document task is
+never automatically retried. Choose a specific provider and it stays the one
+you chose unless you change it.
+
 One rule runs through every AI feature: **the AI proposes, you dispose.** Every
 suggested edit stops at a review dialog you can judge by ear. Each change is
 announced as what it is, and you can hear the sentence before and after it, so you
 get the same context a sighted reviewer gets from a highlight. Nothing touches your
-document until you agree, and then the change is one undo step. QUILL never quietly
-changes which AI is answering you, and never switches between the cloud and your
-own computer.
+document until you agree, and then the change is one undo step. When you
+choose a specific AI, QUILL never quietly changes which one answers or switches
+between the cloud and your own computer. Auto is a separate choice for people
+who want QUILL to select a ready provider, with the destination spoken before
+each request.
 
 Copilot signs in with a short code your screen reader spells out, already on
 the clipboard, and the Copilot engine comes with QUILL, so there is nothing else

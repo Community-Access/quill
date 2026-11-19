@@ -602,6 +602,12 @@ against the matcher's 154 alone. The full report is
   Each row tells you whether it is in use, signed in or not set up, and one
   line says what it can do, who gets your text and what it costs. QUILL Lite
   speaks only what happened, such as "Now using My ChatGPT plan."
+- **Auto is a choice, not a default.** Choose the Auto row to use a ready
+  provider that supports each action. QUILL Lite says who will receive your
+  request before sending; for Ollama on this computer, it says nothing leaves
+  your computer. A connectivity retry for an ordinary request needs your
+  confirmation and names its destination and possible provider limits or
+  billing. Agent tasks are never automatically retried.
 - **GitHub Copilot.** Sign in with a short code from GitHub. The code is
   spaced so your screen reader reads it one character at a time, and it is
   already on the clipboard, so you only have to paste it on GitHub's page.
@@ -629,17 +635,19 @@ against the matcher's 154 alone. The full report is
 - **Copilot options in AI Hub > Sessions** let you opt into local session
   retention, resumption and deletion; sharing enabled AI Library skills; and
   longer tasks that summarize older context. These choices start off, and
-  context summaries may use additional Copilot account usage. The selected
-  provider never changes automatically.
+  context summaries may use additional Copilot account usage. A specifically
+  selected provider never changes automatically.
 - **No dead ends.** When the AI you are using cannot do something, the command
   stays where it was, its name says what it needs, and pressing it offers to
-  switch instead of failing quietly.
-- **Nothing switches by itself.** Sign out of the AI in use and no AI is in
+  switch instead of failing quietly. With Auto selected, it instead chooses a
+  ready provider that can perform the action and announces it before sending.
+- **An explicitly selected provider never switches by itself.** Sign out of the AI in use and no AI is in
   use until you choose one; the next AI command says "No AI is in use. Choose
   one." A missing key, an ended sign-in or a reached limit is said once, and
   nothing is sent anywhere else. If GitHub sign-in is unavailable or the
   bundled runtime cannot start, QUILL Lite says so and leaves the other AI
-  choices available.
+  choices available. Auto is a separate opt-in and announces its provider
+  before sending.
 - **Plan Options...**, beside your ChatGPT plan's row, holds Allow web search
   and Forget on This Computer. Every AI answer is text, never a chart.
 - **Shared with QUILL.** Use My Own AI Key (Alt+F2) now offers Anthropic

@@ -1152,11 +1152,20 @@ edits remain reviewed. The Copilot SDK also powers multi-step tasks for
 OpenAI-compatible and Gemini connections you choose in My own key, without
 GitHub sign-in; your selected provider's key and billing apply.
 
+**Auto, if you choose it.** Choose Your AI now has an optional Auto row. It
+selects a ready provider that supports the action and announces who will
+receive your request before sending. The local Ollama route says it stays on
+this computer. If an ordinary request, conversation or image request hits a
+connectivity problem, QUILL may offer one retry; the confirmation names the
+destination and says the provider may count the request toward limits or
+billing. A document task is never automatically retried. A specific provider
+never changes unless you choose another one.
+
 In **AI Hub > Sessions**, you can opt into keeping sessions on this computer,
 resume or delete one, share enabled AI Library skills, or let Copilot
 summarize older context for a longer task. These choices start off, and
 long-task summaries may use additional Copilot account usage. The provider you
-chose never changes on its own. GitHub controls Copilot access and billing;
+chose never changes on its own unless you explicitly select Auto. GitHub controls Copilot access and billing;
 QUILL does not provide or subsidize it.
 
 QUILL Lite has all of this, on the same keys, from the same code. Your saved
