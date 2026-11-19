@@ -149,7 +149,10 @@ last, and is left out below.
 - **Content Audit or Housekeeping finding:** Read in Full, Show Where It Is
   Used, Move to Trash..., Open on the Site.
 - **Redirect:** Read in Full, Test an Address..., Add Redirect..., Change
-  Redirect..., Turn On or Off, Delete Redirect..., Open on the Site.
+  Redirect..., Turn On or Off, Delete Redirect..., Export Redirects...,
+  Import Redirects..., Open on the Site.
+- **Redirect group:** Read in Full, New Group..., Rename..., Turn On or Off,
+  Delete Group....
 - **404 Log entry:** Read in Full, Redirect This Address..., Test an
   Address....
 - **Update:** Open Dashboard Updates in the Browser, Read in Full.

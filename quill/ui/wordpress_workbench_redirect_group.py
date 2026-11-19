@@ -13,11 +13,12 @@ from typing import Any
 
 from quill.core.wordpress.workbench_redirects import make_first_group
 from quill.ui import wordpress_dialogs as dlg
+from quill.ui.wordpress_workbench_redirect_files import WorkbenchRedirectFiles
 
 __all__ = ["WorkbenchRedirectGroup"]
 
 
-class WorkbenchRedirectGroup:
+class WorkbenchRedirectGroup(WorkbenchRedirectFiles):
     """The offer to make a Redirections group, then carry on with the redirect."""
 
     parent: Any

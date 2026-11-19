@@ -13,12 +13,16 @@ from typing import Any
 
 from quill.core.wordpress import workbench_shop_store as store
 from quill.core.wordpress.workbench_rows import WbRow
+from quill.ui.wordpress_workbench_shop_order_edit import WorkbenchShopOrderEditCommands
 
 __all__ = ["WorkbenchShopStoreCommands"]
 
 
-class WorkbenchShopStoreCommands:
-    """Mixed into the provider beside the other shop commands, whose helpers it uses."""
+class WorkbenchShopStoreCommands(WorkbenchShopOrderEditCommands):
+    """Mixed into the provider beside the other shop commands, whose helpers it uses.
+
+    New Order, Change Items and Change Address come from its base.
+    """
 
     say: Callable[[str], None]
     ctx: Callable[[str], Any]

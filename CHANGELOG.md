@@ -2,6 +2,31 @@
 
 ## 1.0.0
 
+### WordPress Workbench: take an order by telephone, and fix one (2026-11-18)
+
+Shop Orders has New Order... (Ctrl+N): choose a customer, or a guest by name
+and email, then each product and its quantity, and whether it starts as
+Pending payment, Processing or On hold. QUILL never marks it paid, and Undo
+moves it to the Trash. On an order, Change Items... changes a quantity,
+takes an item off or adds a product, and Change Address... changes the
+billing or shipping address. Each is previewed first.
+
+### WordPress Workbench: redirect groups, and redirects to and from a file (2026-11-18)
+
+Redirects has Redirect Groups under it: new, rename, turn on or off, each
+undoable, and delete after you type the group's name, because its redirects
+go with it. Export Redirects... saves every redirect to a CSV or the
+Redirection plugin's own JSON on your computer, and Import Redirects...
+reads one back, previewing each redirect it adds and each line it cannot
+use, with why.
+
+### GitHub Workbench: tell us when the help was wrong (2026-11-18)
+
+Help and Learning > Ask a Person has Report a Help Problem. Enter opens a
+message in your own email that already says where you were and the last
+thing the Workbench said, for you to change and send. QUILL sends nothing,
+and the message is checked for tokens and passwords first.
+
 ### GitHub Workbench: requirements checked, and the window keeps its size (2026-11-18)
 
 Every requirement in the GitHub Workbench PRD was checked against the code
@@ -19,6 +44,14 @@ percentage off, ends a sale, changes the price by a percentage, sets the
 stock status or the status, or adds or removes a category, through
 WooCommerce's batch route. The preview names every product's old and new
 value, and every product it leaves alone and why. Undo puts them back.
+
+### WordPress Workbench: membership levels you can change (2026-11-18)
+
+Membership Levels has New Membership Level... (Ctrl+N) and Edit Membership
+Level...: the name, the initial and recurring payment and its period, when
+membership expires, and whether new signups are allowed, previewed old and
+new. The preview says that new prices are for new signups, since Paid
+Memberships Pro does not change what members pay now. Undo puts it back.
 
 ### GitHub Workbench: is it GitHub, or is it me? (2026-11-18)
 
