@@ -120,6 +120,14 @@ PLUGIN_NODES: tuple[NodeSpec, ...] = (
                 ("name", "topic", "status", "delivery"),
                 "shop_webhook",
             ),
+            (
+                "shop_gateways",
+                "Payment Gateways",
+                "gateways",
+                ("name", "state", "title"),
+                "shop_gateway",
+            ),
+            ("shop_status", "System Status", "status", ("name", "value"), "shop_tool"),
         )
     ),
     NodeSpec(
@@ -248,6 +256,14 @@ PLUGIN_NODE_HELP: Mapping[str, str] = {
         "WooCommerce's webhooks: what each sends, where, and whether it is paused. Ctrl+N "
         "makes one; its secret is made by WooCommerce and never shown."
     ),
+    "shop_gateways": (
+        "WooCommerce's payment gateways, on ones first, with what customers see at checkout. "
+        "Turn On or Off changes only that; their settings hold keys and stay in wp-admin."
+    ),
+    "shop_status": (
+        "The versions behind the shop (WooCommerce, WordPress, PHP, the database), then "
+        "WooCommerce's maintenance tools; Run Tool runs one after a preview."
+    ),
     "events_categories": (
         "The Events Calendar's event categories, with how many events use each. Ctrl+N "
         "makes one; Categories and Tags on an event gives it some."
@@ -302,6 +318,8 @@ PLUGIN_ROW_HELP: Mapping[str, str] = {
     "shop_webhook": (
         "A WooCommerce webhook. Pause or Activate stops or starts it; its secret is never shown."
     ),
+    "shop_gateway": "A payment gateway. Turn On or Off, after a preview; Ctrl+Z turns it back.",
+    "shop_tool": "One of WooCommerce's maintenance tools. Run Tool runs it, after a preview.",
     "shop_attribute": "A product attribute. Terms changes its values; Rename and Delete too.",
     "shop_brand": "A WooCommerce brand. Rename changes it; Delete removes it for good.",
     "tribe_category": "An event category. Rename changes it; Delete removes it for good.",

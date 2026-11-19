@@ -240,6 +240,13 @@ def load_shop(ctx: Any, family: str, what: str, query: Mapping[str, object]) -> 
         return load_shop_orders(ctx, query)
     if what in ("customers", "coupons", "reports", "settings"):
         return _load_shop_more(ctx, what, query)
+    if what in ("gateways", "status"):  # complete.md 2.3: Payment Gateways, System Status
+        from quill.core.wordpress import workbench_shop_store as store
+
+        if not has_shop(ctx):
+            raise WordPressApiError(no_shop_words(ctx.name))
+        loader = store.load_gateways if what == "gateways" else store.load_status
+        return loader(ctx.api, ctx.name)
     if what in _SETUP:
         from quill.core.wordpress.workbench_shop_setup import load_shop_setup
 

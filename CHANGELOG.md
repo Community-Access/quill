@@ -36,6 +36,18 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress Workbench: payment gateways, system status, and resending an order (2026-11-18)
+
+From complete.md 2.3, three WooCommerce jobs that needed wp-admin:
+
+- **Shop > Payment Gateways** lists each gateway, on ones first, with what
+  customers see. Turn On or Off, after a preview, with Ctrl+Z; no setting is
+  read, because a gateway's settings hold its keys.
+- **Shop > System Status** says the WooCommerce, WordPress, PHP and database
+  versions, then WooCommerce's maintenance tools, each with Run Tool.
+- **Resend Order Details...** on a shop order emails the customer their order
+  details again.
+
 ### WordPress: menu changes can be undone (2026-11-18)
 
 Review item 20: the Menus window, which the Workbench's Arrange Items opens,

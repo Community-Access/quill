@@ -96,6 +96,7 @@ from quill.ui.wordpress_workbench_problems import WorkbenchProblemCommands
 from quill.ui.wordpress_workbench_roles import WorkbenchRolesCommands
 from quill.ui.wordpress_workbench_scope_more import WorkbenchScopeMoreCommands
 from quill.ui.wordpress_workbench_sheets import WorkbenchSheetCommands
+from quill.ui.wordpress_workbench_shop_store import WorkbenchShopStoreCommands
 from quill.ui.wordpress_workbench_site_check import WorkbenchSiteCheck
 from quill.ui.wordpress_workbench_site_editor import WorkbenchSiteEditorCommands
 from quill.ui.wordpress_workbench_site_types import WorkbenchSiteTypesCommands
@@ -137,6 +138,7 @@ class WordPressWorkbenchProvider(
     WorkbenchRolesCommands,  # ahead of WorkbenchListCommands: Roles through a role plugin
     WorkbenchListCommands,
     WorkbenchDiscoveredCommands,
+    WorkbenchShopStoreCommands,  # gateways, system status, resend order details
     WorkbenchOptionsCommands,
     WorkbenchBoldCommands,
     WorkbenchScopeMoreCommands,  # ahead of WorkbenchAcrossCommands: convert, merge, remove
