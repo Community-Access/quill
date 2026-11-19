@@ -2,6 +2,7 @@
 
 ## 1.0.0
 
+<<<<<<< HEAD
 ### WordPress Workbench: shipping classes, and Generate Variations (2026-11-19)
 
 - **Shop > Shipping Classes** lists a shop's shipping classes, each with how
@@ -12,6 +13,18 @@
   its attributes that it is missing. It says how many it made, never changes or
   removes the variations already there, and Ctrl+Z deletes exactly the ones it
   made. A product that is not variable is told why, and nothing is sent.
+=======
+### Plans: the family UX pilots are chosen (2026-11-19)
+
+The five open decisions from the family UX plan are made and written down in
+`docs/design/2026-11-19-family-ux-pilots.md`. The pilots are Quill Cast and
+QUILL Lite, and the work starts with truthful results and lists that stay
+still, though lost work or misdirected input always comes first. The one
+cross-app journey is "I heard something worth keeping", which runs from Cast
+to a saved place to QUILL. Each app owns its own audio, shared preferences
+stay narrow and opt-in, and dictated text goes only to the place it began.
+Both pilots' PRDs now carry what was accepted for them.
+>>>>>>> origin/main
 
 ### Workbench: a dialog no longer blocks the editor (2026-11-19)
 

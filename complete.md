@@ -186,12 +186,9 @@ The plan of record is `docs/design/earshot.md`.
 - [ ] **Sound Enhancements window:** a strength choice in the window itself, which means changing the editor Quill Radio shares; waits for a reason.
 - [ ] **Round three** starts from Earshot `c11dda93`: when Earshot's Listening Places starts reading other devices' files, check the records Cast writes against what it expects.
 
-### 3.2 Design decisions still open
+### 3.2 Family UX pilots
 
-Prioritization decisions for later; they block nothing.
+Decided on 2026-11-19 in `docs/design/2026-11-19-family-ux-pilots.md`: the pilots are Quill Cast and QUILL Lite, and the work starts with truthful results and stable lists. Lost work or misdirected input seen in a pilot jumps the queue.
 
-- [ ] Choose two packaged-app pilots and the real users/tasks to observe.
-- [ ] Confirm whether to start with truthful results/stable lists or a more urgent observed lost-work/input issue.
-- [ ] Choose one cross-app journey to make exceptional before adding more handoff types.
-- [ ] Confirm the shared behavior boundaries, especially audio ownership, preferences and target-app text insertion.
-- [ ] Promote only the accepted proposals into the relevant product PRDs and release backlogs.
+- [ ] FUX-04 (the actual result, once) and FUX-06 (lists that stay still) in Quill Cast and QUILL Lite, as written in each PRD. The QUILL Lite part goes in the shared package so QUILL has it too.
+- [ ] Journey A, from Cast to a saved place to QUILL, once FUX-04 and FUX-06 are in.
