@@ -251,7 +251,7 @@ href="../Product Requirement Documents and Specifications/github-workbench-prd.m
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 78 are met, 14 are partly met and 8 are
+<p>Of the 100 live requirements, 79 are met, 13 are partly met and 8 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -266,8 +266,8 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>67</td>
-<td>7</td>
+<td>68</td>
+<td>6</td>
 <td>1</td>
 <td>75</td>
 </tr>
@@ -390,16 +390,6 @@ block, sponsor, pin) on a You page and in…</td>
 (<code>resource_specs_user</code>) each exist in their own places; no
 single You page holding them, and batch only where the multi-row sheet
 has the field. Needs a closer look.</td>
-</tr>
-<tr>
-<td>GH-R-053</td>
-<td>Must</td>
-<td>Filters can be saved as searches and pinned as nodes</td>
-<td>Save Search (<code>github_workbench_actions.py:158</code>), Saved
-Searches node in the tree (<code>workbench_tree.py:186</code>);
-<code>test_the_filter_builder</code>… saves one,
-<code>test_go_lists_pins_favorites_and_saved_searches</code>. A saved
-search is a row in that node, not a node of its own.</td>
 </tr>
 <tr>
 <td>GH-R-119</td>
@@ -921,13 +911,14 @@ list attribute, Me as @me;
 <tr>
 <td>GH-R-053</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Filters can be saved as searches and pinned as nodes</td>
-<td>Save Search (<code>github_workbench_actions.py:158</code>), Saved
-Searches node in the tree (<code>workbench_tree.py:186</code>);
-<code>test_the_filter_builder</code>… saves one,
-<code>test_go_lists_pins_favorites_and_saved_searches</code>. A saved
-search is a row in that node, not a node of its own.</td>
+<td>Save Search (<code>github_workbench_actions.py</code>), Saved
+Searches node in the tree (<code>workbench_tree.py</code>), and Pin as
+Node / Unpin Node giving a saved search a node of its own under Saved
+Searches whose list is the search’s results
+(<code>workbench_tree_more.PINNED_SEARCH</code>;
+<code>test_github_workbench_pinned_search.py</code>).</td>
 </tr>
 <tr>
 <td>GH-R-054</td>
