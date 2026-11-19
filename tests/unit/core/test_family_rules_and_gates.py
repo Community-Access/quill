@@ -282,6 +282,33 @@ def test_every_editor_command_has_a_key_or_a_written_reason() -> None:
     )
 
 
+def _wordpress_editor_rows() -> dict[str, str]:
+    """Every editor WordPress row (both editors' menus) -> its menu path (item 37)."""
+    from quill.core.wordpress.menu import all_rows, spoken_path
+
+    return {row[0]: spoken_path(path) for path, row in all_rows()}
+
+
+def test_every_wordpress_editor_command_has_a_key_or_a_written_reason() -> None:
+    """Rule 8 for the WordPress rows that never reach DEFAULT_KEYMAP (review item 37)."""
+    from quill.core.wordpress.menu_unbound import UNBOUND_WORDPRESS
+
+    rows = _wordpress_editor_rows()
+    keyless = {c for c in rows if not str(DEFAULT_KEYMAP.get(c, "") or "").strip()}
+    missing = sorted(keyless - set(UNBOUND_WORDPRESS))
+    assert not missing, (
+        "WordPress commands with no key and no reason (rule 8) -- give each a layer key "
+        "in wordpress/menu.py LAYER_KEYS or a line in wordpress/menu_unbound.py:\n  "
+        + "\n  ".join(f"{c} ({rows[c]})" for c in missing)
+    )
+    stale = sorted(set(UNBOUND_WORDPRESS) - keyless)
+    assert not stale, "these have a key now, or no row, so their reasons are stale:\n  " + (
+        "\n  ".join(stale)
+    )
+    for command_id, reason in UNBOUND_WORDPRESS.items():
+        assert reason.startswith("Reached another way:") and reason.endswith("."), command_id
+
+
 def test_every_not_editor_family_has_a_command_in_it() -> None:
     """A prefix that matches nothing is an exemption nobody is using."""
     empty = sorted(

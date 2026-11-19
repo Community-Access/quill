@@ -36,6 +36,17 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress: every editor command has a key or a reason (2026-11-18)
+
+Review item 37: the rule 8 gate only read the editor keymap, and 77 WordPress
+menu rows are not in it, so they had neither a key nor a written reason and
+nothing noticed. The gate now walks every WordPress row in both editors, and
+each without a WordPress-layer key has its reason in
+`quill/core/wordpress/menu_unbound.py`, by kind: site windows the Workbench
+also reaches, once-a-document commands, page commands the layer's last free
+letters cannot teach, and the cross-site lists. A row that gains a key loses
+its line, and the gate says so.
+
 ### WordPress Workbench: shop, event and membership rows say who may (2026-11-18)
 
 Review item 34: these rows named no capability, so they were never dimmed, and

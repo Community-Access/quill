@@ -255,7 +255,6 @@ Ten of the eleven are fixed (checked 2026-11-18; five by #1837, five by the Word
 ###### Structure and consistency
 
 30. The site tree gives every site every plugin's branch whether installed or not (over 100 nodes per site), each selection reads the network, and discovery rebuilds the tree and collapses what you expanded.
-37. Dozens of editor WordPress commands have no key and no written reason; the rule 8 gate cannot see them because they are not in DEFAULT_KEYMAP.
 
 ## Part 3. Other work
 
