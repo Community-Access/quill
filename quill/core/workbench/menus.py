@@ -74,11 +74,19 @@ def access_letter(label: str) -> str:
 
 
 def rows(bar: Sequence[MenuSpec]) -> Iterator[tuple[MenuSpec, MenuRow]]:
-    """Every top-level row of every menu (the ones that carry keys); submenus skipped."""
+    """Every row that can carry a key: each top-level row, and a submenu row with one.
+
+    A chorded row may sit in a submenu for its access letter (the Gravity Forms
+    entry rows, review item 16); its chord is still the window's key.
+    """
     for menu in bar:
         for row in menu.rows:
             if isinstance(row, MenuRow):
                 yield menu, row
+            elif isinstance(row, MenuSub):
+                for inner in row.rows:
+                    if isinstance(inner, MenuRow) and inner.key:
+                        yield menu, inner
 
 
 def all_rows(bar: Sequence[MenuSpec]) -> Iterator[tuple[MenuSpec, MenuRow]]:

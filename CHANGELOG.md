@@ -36,6 +36,22 @@ than running when it cannot tell.
 
 ### WordPress
 
+### WordPress: menu letters that work, and agree with the WordPress keys (2026-11-18)
+
+Review items 15 and 16:
+
+- The four Gravity Forms entry rows (Entry Notes, Star or Unstar, Mark Read or
+  Unread, Resend Notifications) had no access letter, because every letter of
+  their names was taken in the Item menu. They are in Item > Gravity Forms
+  now, with letters, and their chords still work.
+- Every Workbench context menu row has its own letter and shows its key, and
+  so do More and its rows, and Show Only and Hide.
+- Menu letters match the WordPress-layer keys where they can: File >
+  WordPress > Publish or Update is P, New Page G and Plugin Fields U; Tools >
+  WordPress > Open WordPress Workbench is H (it had no letter at all), and
+  Check Before Publishing is K. Menu History and Site Health Check gave those
+  letters up and have none, rather than a duplicate.
+
 ### WordPress: every editor command has a key or a reason (2026-11-18)
 
 Review item 37: the rule 8 gate only read the editor keymap, and 77 WordPress

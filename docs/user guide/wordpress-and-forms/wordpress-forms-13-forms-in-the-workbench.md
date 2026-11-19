@@ -54,8 +54,8 @@ On a QUILL Accessible Forms form:
 On a response:
 
 - **Read in Full**, or Enter, reads every answer in the details pane.
-- **Item > Star or Unstar Entry** (`Ctrl+Alt+F`) stars it to come back to.
-- **Item > Mark Entry Read or Unread** (`Ctrl+Alt+U`) marks it.
+- **Item > Gravity Forms > Star or Unstar Entry** (`Ctrl+Alt+F`) stars it to come back to.
+- **Item > Gravity Forms > Mark Entry Read or Unread** (`Ctrl+Alt+U`) marks it.
 - **Spam** (`Ctrl+Shift+S`) and **Not Spam** (`Ctrl+Shift+A`) move it out of
   or into the responses. They go through QUILL Accessible Forms' own spam
   checks, so the site learns from them, and a held response's emails are sent
@@ -198,11 +198,11 @@ administrator has.
 
 On a Gravity Forms response:
 
-- **Item > Entry Notes...** (`Ctrl+Alt+N`) reads the entry's notes, and adds
+- **Item > Gravity Forms > Entry Notes...** (`Ctrl+Alt+N`) reads the entry's notes, and adds
   one.
-- **Item > Star or Unstar Entry** (`Ctrl+Alt+F`) and **Item > Mark Entry Read
-  or Unread** (`Ctrl+Alt+U`) do what they say, and Ctrl+Z undoes them.
-- **Item > Resend Notifications...** (`Ctrl+Alt+I`) works out who each of the
+- **Item > Gravity Forms > Star or Unstar Entry** (`Ctrl+Alt+F`) and **Item > Gravity Forms >
+  Mark Entry Read or Unread** (`Ctrl+Alt+U`) do what they say, and Ctrl+Z undoes them.
+- **Item > Gravity Forms > Resend Notifications...** (`Ctrl+Alt+I`) works out who each of the
   entry's emails goes to, lets you choose which to send, previews the
   recipients, then sends.
 - **Spam** and **Not Spam** work as for any response.

@@ -241,8 +241,6 @@ Ten of the eleven are fixed (checked 2026-11-18; five by #1837, five by the Word
 
 ###### Keys that do not work, or teach the wrong thing
 
-15. Menu letters and layer letters disagree for several rows (Check Before Publishing P against K; Media Library B against M; about eight across Tools and Forms).
-16. Four Gravity rows in the Workbench Item menu have no access letter; context-menu rows and "More" have none at all, and context menus show no chords.
 
 ###### Dead ends and lost features
 

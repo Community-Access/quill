@@ -303,3 +303,30 @@ def test_item_menu_reaches_every_context_menu_command(bench) -> None:
     labels = [item.GetItemLabel() for item in sub.GetMenuItems()]
     letters = [label.split("&", 1)[1][:1].lower() for label in labels if "&" in label]
     assert len(letters) == len(set(letters))  # no letter claimed twice (GATE-14)
+
+
+def test_the_context_menu_gives_every_row_a_letter_and_its_key(bench, monkeypatch) -> None:
+    """Item 16: context-menu rows, More and its rows each have a letter; keys show."""
+    _posts(bench)
+    bench.focus_row(0)
+    seen: dict[str, list[str]] = {}
+
+    def popup(menu) -> bool:
+        def walk(target, name):
+            seen[name] = []
+            for item in target.GetMenuItems():
+                seen[name].append(item.GetItemLabel())
+                if item.GetSubMenu() is not None:
+                    walk(item.GetSubMenu(), item.GetItemLabelText())
+
+        walk(menu, "top")
+        return True
+
+    monkeypatch.setattr(bench.list, "PopupMenu", popup)
+    bench.show_row_menu()
+    for name, labels in seen.items():
+        rows = [label for label in labels if label]
+        letters = [label.replace("&&", "").split("&", 1)[1][:1].lower() for label in rows]
+        assert all(letters) and len(letters) == len(set(letters)), (name, rows)
+    assert any(label.startswith("&More") or "&" in label for label in seen["top"])
+    assert any("\tCtrl+Shift+P" in label for label in seen["top"] + seen.get("More", []))

@@ -12,7 +12,7 @@ disagree. Wx-free.
 
 from __future__ import annotations
 
-from quill.core.wordpress.workbench_gravity_actions import GRAVITY_ITEM_ROWS, GRAVITY_SUB
+from quill.core.wordpress.workbench_gravity_actions import GRAVITY_SUB
 from quill.core.wordpress.workbench_site_files_actions import WXR_SUB
 from quill.core.workbench.menus import MenuRow, MenuSpec, MenuSub, rows
 
@@ -195,7 +195,6 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
                 "Ctrl+Alt+Shift+M",
                 "The selected post's comments, with how many it has.",
             ),
-            *GRAVITY_ITEM_ROWS,
             GRAVITY_SUB,
             MenuSub(
                 "Commands for T&his Row",

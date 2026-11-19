@@ -16,6 +16,18 @@ from quill.ui.dialog_contract import show_modal_dialog
 __all__ = ["WorkbenchActionsMixin"]
 
 
+def lettered(label: str, used: set[str]) -> str:
+    """*label* with the first access letter not in *used* (which it joins); "&" escaped."""
+    plain = label.replace("&", "&&")
+    for at, char in enumerate(label):
+        low = char.lower()
+        if low.isalnum() and low not in used:
+            used.add(low)
+            spot = len(label[:at].replace("&", "&&"))
+            return f"{plain[:spot]}&{plain[spot:]}"
+    return plain
+
+
 class WorkbenchActionsMixin:
     """Copying, the browser, Properties, the context menus and the address box."""
 
@@ -87,29 +99,33 @@ class WorkbenchActionsMixin:
         ).show()
 
     def _popup(self, window: Any, top: Sequence[ActionRow], more: Sequence[ActionRow]) -> None:
+        """The context menu: every row with its own letter and its key (item 16)."""
         wx = self._wx
         menu = wx.Menu()
+        keys = getattr(self, "_keys", {})
 
-        def fill(target: Any, rows: Sequence[ActionRow]) -> None:
+        def fill(target: Any, rows: Sequence[ActionRow], used: set[str]) -> None:
             for row in rows:
-                label = self.toggle_words(row.command_id, row.label)  # item 29
-                item = target.Append(wx.ID_ANY, label, row.help)
+                label = lettered(self.toggle_words(row.command_id, row.label), used)  # item 29
+                key = keys.get(row.command_id, "")
+                item = target.Append(wx.ID_ANY, f"{label}\t{key}" if key else label, row.help)
                 item.Enable(self.can_run(row.command_id))
                 target.Bind(wx.EVT_MENU, lambda _e, c=row.command_id: self.run(c), item)
 
-        fill(menu, top[:-1])
+        used: set[str] = set()
+        fill(menu, top[:-1], used)
         if more:
             sub = wx.Menu()
-            fill(sub, more)
-            menu.AppendSubMenu(sub, "More")
-        self._cell_filters(menu, window)
-        fill(menu, top[-1:])
+            fill(sub, more, set())
+            menu.AppendSubMenu(sub, lettered("More", used))
+        self._cell_filters(menu, window, used)
+        fill(menu, top[-1:], used)
         try:
             window.PopupMenu(menu)
         finally:
             menu.Destroy()
 
-    def _cell_filters(self, menu: Any, window: Any) -> None:
+    def _cell_filters(self, menu: Any, window: Any, used: set[str] | None = None) -> None:
         """Show Only and Hide for each value in the row (section 17.1, way 4)."""
         wx = self._wx
         hook = getattr(self.provider, "cell_rows", None)
@@ -119,12 +135,14 @@ class WorkbenchActionsMixin:
         found = list(hook())[:12]
         if not found:
             return
+        taken = used if used is not None else set()
         for title, hide in (("Show Only", False), ("Hide", True)):
             sub = wx.Menu()
+            inner: set[str] = set()
             for qualifier, words in found:
-                item = sub.Append(wx.ID_ANY, words, f"{title} {qualifier}")
+                item = sub.Append(wx.ID_ANY, lettered(words, inner), f"{title} {qualifier}")
                 sub.Bind(wx.EVT_MENU, lambda _e, q=qualifier, h=hide: apply(q, hide=h), item)
-            menu.AppendSubMenu(sub, title)
+            menu.AppendSubMenu(sub, lettered(title, taken))
 
     def show_row_menu(self) -> None:
         row = self.selected_row()
