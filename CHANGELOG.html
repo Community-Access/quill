@@ -245,6 +245,16 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="builds-the-copilot-sdk-1x-can-no-longer-slip-into-the-runtime-2026-11-19">Builds:
+the Copilot SDK 1.x can no longer slip into the runtime
+(2026-11-19)</h3>
+<p>The Copilot SDK 1.x (<code>github-copilot-sdk</code>) and 2.0
+(<code>microsoft-copilot-sdk</code>) both install a folder called
+<code>copilot</code>, so a build machine with both installed shipped a
+mix of the two. The build’s environment check now stops a runtime build
+when the 1.x package is present, and says how to remove it. The code was
+already on 2.0.1; this makes sure what is built is too.</p>
+<h3
 id="github-workbench-pin-a-saved-search-as-a-place-in-the-tree-2026-11-19">GitHub
 Workbench: pin a saved search as a place in the tree (2026-11-19)</h3>
 <p><strong>Pin as Node</strong>, on a row in Saved Searches, gives that

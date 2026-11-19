@@ -81,6 +81,30 @@ def test_a_satisfied_environment_reports_nothing(monkeypatch: pytest.MonkeyPatch
     assert check(["runtime"], None) == []
 
 
+def test_the_copilot_sdk_1x_beside_2x_fails_the_build(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Both install the same top-level ``copilot`` package, so a build bundles a mix.
+
+    That is why the committed runtime inventory still names github-copilot-sdk:
+    the requirement check asked only for what was needed and never for what
+    should be gone.
+    """
+    optional = _optional()
+    satisfying = {}
+    for requirement in _expand("runtime", optional, set()):
+        pinned = [s for s in requirement.specifier if s.operator in ("==", ">=", "~=")]
+        satisfying[requirement.name.lower().replace("_", "-")] = (
+            pinned[0].version if pinned else "99.0.0"
+        )
+    assert satisfying.get("microsoft-copilot-sdk") == "2.0.1"
+    legacy = {**satisfying, "github-copilot-sdk": "1.0.28"}
+    monkeypatch.setattr("scripts.check_build_env._installed", lambda python: legacy)
+    problems = check(["runtime"], None)
+    assert problems == [
+        "github-copilot-sdk: installed 1.0.28, must be removed (the Copilot SDK 1.x, "
+        "superseded by microsoft-copilot-sdk 2.0.1; both install the same 'copilot' package)"
+    ]
+
+
 def test_an_unknown_group_is_an_error() -> None:
     with pytest.raises(SystemExit, match="No such dependency group"):
         check(["not-a-real-group"], None)
