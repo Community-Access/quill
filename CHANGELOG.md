@@ -9,6 +9,16 @@ removes the selected link after asking, and the question says the branch
 itself is kept, with its commits. Insert makes a new branch for the issue, as
 Create Branch for This Issue does. Unlinking and that Add now respect your
 account's level: Read Only refuses, and Safe Mode says it is the reason.
+### Plans: the family UX pilots are chosen (2026-11-19)
+
+The five open decisions from the family UX plan are made and written down in
+`docs/design/2026-11-19-family-ux-pilots.md`. The pilots are Quill Cast and
+QUILL Lite, and the work starts with truthful results and lists that stay
+still, though lost work or misdirected input always comes first. The one
+cross-app journey is "I heard something worth keeping", which runs from Cast
+to a saved place to QUILL. Each app owns its own audio, shared preferences
+stay narrow and opt-in, and dictated text goes only to the place it began.
+Both pilots' PRDs now carry what was accepted for them.
 
 ### Workbench: a dialog no longer blocks the editor (2026-11-19)
 
