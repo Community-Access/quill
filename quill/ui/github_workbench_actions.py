@@ -322,10 +322,11 @@ class GitHubWorkbenchActionsMixin(
         return False
 
     def _run_editor(self, command_id: str) -> bool:
+        if self.refused(command_id):  # type: ignore[attr-defined]  # EDITOR_REQUIREMENTS
+            return True
         runner = self._editor_command
         if runner is None or not runner(command_id):
             self._say("The editor that opened this window does not have this command.")
-            return True
         return True
 
     def _say(self, text: str) -> None:

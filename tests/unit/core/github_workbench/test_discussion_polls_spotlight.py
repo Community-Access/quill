@@ -207,13 +207,25 @@ def test_vote_says_why_when_you_have_voted_or_may_not() -> None:
 
 
 def test_a_read_only_account_cannot_vote_and_nothing_is_sent() -> None:
-    api = _Api()
-    host = _Host(api, [], level=AccessLevel.READ_ONLY)
-    host._do_poll_vote(None, _ROW)
-    assert api.sent == []
-    assert host.said == [
-        "This account is read only in the Workbench. Workbench Options, Accounts changes it."
-    ]
+    """The level is the one write gate's: the dispatcher for a row (every gated quick
+    command at Read Only: tests/unit/ui/test_github_workbench_level_gate.py), and the
+    sheet list's buttons for the poll table, here."""
+    from types import SimpleNamespace
+
+    from quill.core.github.write_gate import command_refusal
+    from quill.ui.github_workbench_tools import GitHubWorkbenchToolsMixin
+
+    said = command_refusal("github.workbench.poll_vote", lambda: AccessLevel.READ_ONLY)
+    assert said.startswith("Cannot run Vote: it needs Organize in the Workbench")
+    checked: list[str] = []
+    host = SimpleNamespace(
+        refused=lambda command_id: checked.append(command_id) or True,
+        vote_from_sheet=lambda *_a: pytest.fail("voted past the level check"),
+    )
+    state = {"ident": {"repo": "o/r", "number": "4"}}
+    act = GitHubWorkbenchToolsMixin.table_action(host, SimpleNamespace(kind="discussion"), state)  # type: ignore[arg-type]
+    act(SimpleNamespace(key="poll"), "add", "")
+    assert checked == ["github.workbench.poll_vote"]
     assert QUICK_REQUIREMENTS["github.workbench.poll_vote"][0] == "sign_in"
     assert QUICK_LIVE["poll_vote"].startswith("needs Jeff")
 
@@ -370,9 +382,12 @@ def test_the_categories_node_opens_a_section_and_enter_finds_its_discussions() -
 
 
 def test_a_quick_write_is_refused_by_the_level_before_anything_is_read() -> None:
+    """The one write gate refuses it at the dispatcher, before the handler reads anything
+    (every gated quick command, run through the provider: test_github_workbench_level_gate)."""
+    from quill.core.github.write_gate import command_refusal, gated_tier
+
     close = next(q for q in QUICK if q.verb == "delete_discussion")
-    api = _Api()
-    host = _Host(api, [], level=AccessLevel.ORGANIZE)
-    host._do_delete_discussion(None, _ROW)
-    assert api.sent == [] and "Organize" in host.said[0]
     assert close.tier == "D"
+    assert gated_tier("github.workbench.delete_discussion") is not None
+    said = command_refusal("github.workbench.delete_discussion", lambda: AccessLevel.ORGANIZE)
+    assert "it needs Full in the Workbench, and this account is Organize" in said

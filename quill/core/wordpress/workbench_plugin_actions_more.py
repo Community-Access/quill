@@ -355,6 +355,12 @@ MORE_EXTRA: Mapping[str, tuple[ActionRow, ...]] = {
             tier=Tier.WRITE,
             needs="wpseo_manage_options",
         ),
+        _a(
+            "dashboard_screen",
+            "Open in wp-admin",
+            "The post's editor in your browser, whose Yoast panel changes the canonical "
+            "address, primary category and schema type where Properties shows them read only.",
+        ),
     ),
 }
 """Rows added to existing kinds' menus, before Properties."""
@@ -383,6 +389,7 @@ _GONE = "A delete for good, with no Trash: never a bare key (rule 4)."
 _RARE = "Set up once and changed a few times a year, behind a preview (rule 9)."
 
 MORE_KEYLESS: dict[str, str] = {
+    _c("dashboard_screen"): "Leaves QUILL for wp-admin, only for what REST cannot do (rule 9).",
     _c("approve_review"): "Reviews are moderated a few times a week, on a selection (rule 9).",
     _c("hold_review"): "Reviews are moderated a few times a week, on a selection (rule 9).",
     _c("spam_review"): "Reviews are moderated a few times a week, on a selection (rule 9).",

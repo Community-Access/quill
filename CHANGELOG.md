@@ -12,6 +12,28 @@ changed there, for one item or for many selected at once. What GitHub does not
 let QUILL change is shown with a sentence saying why: profile pins, custom
 watching, a pull request's pin, and sponsoring, which spends money and is done
 from the person's Sponsor place.
+### GitHub Workbench: your account's level is checked on every change (2026-11-19)
+
+Every command that changes something on GitHub now checks the account's
+Workbench level before it reads or sends anything: a menu row, a context-menu
+row, a key, a list's Add or Remove on a Properties sheet, a sheet's save, and
+the editor's own GitHub commands when the Workbench runs them. A Read Only or
+Organize account is refused in one sentence that names the command, the level
+it needs and where to change it (Account, Roles and Access, Workbench Level
+for This Account). When Safe Mode is the reason, the sentence says so.
+Commands that only read are never refused. Typed confirmations and the guard
+against removing your own admin access are now tested too.
+### WordPress Workbench: Yoast's canonical address, primary category and schema type, and other scheduled tasks (2026-11-19)
+
+- A post's Properties now has an **SEO** page on sites with Yoast SEO. It
+  shows the canonical address, the primary category (chosen by name from the
+  post's own categories) and the schema page and article type. They can be
+  changed where the site makes Yoast's settings available to QUILL. Elsewhere
+  they are shown as Yoast reports them, with one sentence saying they are
+  changed in the post's Yoast panel, which Open in wp-admin reaches.
+- **Search and Upkeep** has a new row, **Other scheduled tasks**. It says
+  plainly that only scheduled posts and pages can be checked from QUILL. When
+  WP Crontrol is active, the row opens its Cron Events screen.
 
 ### GitHub Workbench: discussion polls, the spotlight and categories (2026-11-19)
 

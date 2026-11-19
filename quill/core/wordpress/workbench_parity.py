@@ -395,6 +395,10 @@ _DASHBOARD_WHY = {
         "wp-admin's editor for it, which shows who is editing it now and takes over the "
         "lock; WordPress's REST API does not expose the edit lock."
     ),
+    "seo_item": (
+        "wp-admin's editor for it, whose Yoast panel changes the canonical address, primary "
+        "category and schema type wherever this site does not give them to the REST API."
+    ),
     "media": (
         "wp-admin's Edit Media screen, whose Edit Image scales the original to a width and "
         "height; WordPress's REST edit route only rotates, flips and crops."
