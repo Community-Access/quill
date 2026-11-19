@@ -10,10 +10,11 @@ which tone it gets and whether it is said:
   allows sounds, and is always said: no tone has ever carried "it did not
   work", or why.
 * **An action that landed** ("Saved ...", "Created ...", "Watching ...")
-  gets the task-complete tone. If the sentence carries a number it is always
-  said too, because no tone carries a count. A bare acknowledgement follows
-  the setting exactly as the editors' Ctrl+C does: tone, words, both or
-  neither, and a tone the pack lacks falls back to words.
+  gets the task-complete tone. A sentence that names or counts what changed
+  is always said too, because no tone carries a name or a number. Only a bare
+  acknowledgement (:data:`BARE`: "Saved.", "Copied.") follows the setting
+  exactly as the editors' Ctrl+C does: tone, words, both or neither, and a
+  tone the pack lacks falls back to words.
 * **Anything else** (a prompt, "There is nothing to ...", a description) is
   information. It is said, with no tone, whatever the setting.
 
@@ -33,7 +34,7 @@ from enum import StrEnum
 from quill.core.action_feedback import ActionFeedback, coerce, resolve
 from quill.core.sound_events import SoundEvent
 
-__all__ = ["Outcome", "Plan", "classify", "plan"]
+__all__ = ["BARE", "Outcome", "Plan", "classify", "plan"]
 
 
 class Outcome(StrEnum):
@@ -101,6 +102,24 @@ _DONE_STARTS = (
 )
 
 
+#: The only results a tone may stand in for: acknowledgements that name nothing.
+#: Every other sentence that reports a change names what changed, or counts it,
+#: and that is information no tone carries, so it is always said (with the tone
+#: as well, where the setting asks for sounds). Kept short on purpose: before
+#: GH-R-113 the Workbench said every result, and a setting nobody touched must
+#: not make it quieter about anything a person needs to hear.
+BARE = frozenset({
+    "saved.",
+    "copied.",
+    "deleted.",
+    "done.",
+    "removed.",
+    "closed.",
+    "reopened.",
+    "watch removed.",
+})
+
+
 def classify(text: str) -> Outcome:
     """Whether *text* reports a failure, an action that landed, or information."""
     said = text.strip().casefold()
@@ -133,7 +152,7 @@ def plan(text: str, mode: object, *, has_sound: frozenset[str] | set[str]) -> Pl
         tone = SoundEvent.ERROR if sounds_on and SoundEvent.ERROR in has_sound else ""
         return Plan(str(tone), True)
     event = SoundEvent.TASK_COMPLETE
-    if any(ch.isdigit() for ch in text):
+    if text.strip().casefold() not in BARE:
         return Plan(str(event) if sounds_on and event in has_sound else "", True)
     play, speak = resolve(mode, has_sound=event in has_sound)
     return Plan(str(event) if play else "", speak)

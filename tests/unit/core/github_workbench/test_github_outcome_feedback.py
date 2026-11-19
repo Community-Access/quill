@@ -48,8 +48,8 @@ def test_a_failure_is_always_said_and_gets_the_error_tone_where_sounds_are_on() 
     assert plan(text, "silent", has_sound=PACK) == Plan("", True)
 
 
-def test_a_count_is_always_said() -> None:
-    text = "Saved 3 changes to Issue #12."
+@pytest.mark.parametrize("text", ["Saved 3 changes to Issue #12.", "Created Task."])
+def test_a_result_that_names_or_counts_what_changed_is_always_said(text: str) -> None:
     assert plan(text, "sound", has_sound=PACK) == Plan(DONE, True)
     assert plan(text, "silent", has_sound=PACK) == Plan("", True)
 
@@ -99,6 +99,9 @@ def test_the_workbench_plays_and_says_through_the_frame(monkeypatch) -> None:
     announced: list[Any] = []
     github_workbench_feedback.say_result(frame, announced.append, "Saved.")
     assert (played, frame.said, frame.last_result) == ([DONE], [], "Saved.")
+    github_workbench_feedback.say_result(frame, announced.append, "Created Task.")
+    assert (played[-1], frame.said) == (DONE, ["Created Task."])
+    frame.said.clear()
     github_workbench_feedback.say_result(frame, announced.append, "Could not save: 500.")
     assert played[-1] == ERROR and frame.said == ["Could not save: 500."]
     github_workbench_feedback.say_result(None, announced.append, "Open a repository first.")
