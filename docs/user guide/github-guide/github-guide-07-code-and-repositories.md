@@ -386,6 +386,60 @@ present and missing; then one row each says "present" or "missing" for the
 README, licence, contributing guide, code of conduct, issue templates and pull
 request template.
 
+## Dependabot, code owners and configuration
+
+These live on **Repository > Templates**, beside the community files, and on
+**Repository Actions...** (`Ctrl+Shift+G`).
+
+### Dependabot
+
+The **Dependabot configuration** row opens `.github/dependabot.yml` as a
+list of entries, one row each: "pip in /, weekly on Monday at 09:00, up to 5
+pull requests, labels dependencies". **Edit Entry...** has the ecosystem, the
+directories, how often, the day, time and time zone, the most open pull
+requests and the target branch. Groups, ignore rules and registries are
+kept as they are and counted on the row. **What Dependabot would say** lists
+what it would refuse, such as two entries for the same ecosystem and folder,
+and Save refuses while any is listed. When the file is missing, the row
+starts one that keeps the repository's actions up to date.
+
+On a pull request Dependabot opened, **Dependabot Commands...** lists its
+commands with what each does: rebase, recreate, merge or squash and merge
+when checks pass, cancel merge, reopen, close, and ignore this dependency or
+this major, minor or patch version. The one you choose is posted as a
+comment after QUILL asks, and Dependabot answers in the thread.
+
+### Code owners
+
+The **CODEOWNERS** row opens a table of rules, one row each with its line,
+path pattern and owners. Order matters: **the last matching rule wins**, so
+**Move Up** and **Move Down** can change who reviews a folder. **Add
+Rule...** adds at the end, where a rule wins over everything above it. Notes
+in the file are kept. **Who owns this path** answers with the rule that
+wins, as GitHub decides. **Check Owners** asks GitHub whether each owner
+exists and can write. **Problems found** lists rules GitHub would skip by
+their shape, the problems GitHub itself reports for the file on the default
+branch, and what Check Owners found.
+
+**Who Owns This?** on a file or folder in the repository's files says its
+owners and the line of the rule that wins. From Repository Actions, **Who
+Owns This Path?...** asks for any path.
+
+### Comparing configuration with another repository
+
+**Compare Configuration With Another Repository...**, in Repository Actions,
+compares this repository's workflows, issue and pull request templates,
+discussion forms, community files, Dependabot file and CODEOWNERS with
+another repository, or with the owner's `.github` repository, which it
+offers first. From an organization's `.github` repository its starter
+workflows count too. The window checks every file that is missing here or
+differs, each with the lines added and removed, and shows the selected
+file's differences to read line by line. Files that are the same, or only
+here, are counted and kept. **Propose Update** asks once more, then opens one
+pull request with the checked files and a summary of each. Nothing changes
+until that pull request is merged; QUILL never pushes these to the default
+branch.
+
 ## Insights
 
 **Insights: traffic and contributors** gives a repository's last 14 days in
