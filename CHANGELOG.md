@@ -27,6 +27,16 @@ message in your own email that already says where you were and the last
 thing the Workbench said, for you to change and send. QUILL sends nothing,
 and the message is checked for tokens and passwords first.
 
+### GitHub Workbench: requirements checked, and the window keeps its size (2026-11-18)
+
+Every requirement in the GitHub Workbench PRD was checked against the code
+and its tests; the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`,
+and what is left is in complete.md. The window now opens at the size you
+left it, with the tree as wide as you made it, for each account. Nine
+requirements that worked but had no test now have one. On an Access page,
+Remove on a pending invitation cancels it, and Change... changes the role a
+repository invitation offers.
+
 ### WordPress Workbench: a sale across the shop in one go (2026-11-18)
 
 Change Many Products... on a selection of products puts them on sale at a

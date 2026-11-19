@@ -145,6 +145,7 @@ class WorkbenchFrame(
         wx = self._wx
         panel = wx.Panel(self.frame)
         splitter = wx.SplitterWindow(panel, style=wx.SP_LIVE_UPDATE)
+        self._splitter = splitter
         self.tree = wx.TreeCtrl(splitter, style=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT)
         set_spoken_name(self.tree, "Navigator")
         self.tree.SetHelpText(
@@ -561,6 +562,7 @@ class WorkbenchFrame(
         return run
 
     def show(self, ref: NodeRef | None = None) -> None:
+        self.restore_layout()
         self.frame.Show()
         self.frame.Raise()
         remembered = self.restore_place()
@@ -571,6 +573,7 @@ class WorkbenchFrame(
 
     def _on_close(self, event: Any) -> None:
         self.remember_place()
+        self.remember_layout()
         manager = getattr(self, "_task_manager", None)
         if manager is not None:
             manager.shutdown(wait=False, cancel_pending=True)

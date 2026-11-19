@@ -34,9 +34,9 @@ while it is open, and `Alt+Tab` moves between them. Inside the Workbench,
 Workbench; `Escape` never does. Escape clears the filter box first, and then
 goes back to where you were. In Details, it returns you to the list instead.
 
-The window remembers where you were for each account: the place you had
-selected, the branches of the tree you had open, and the repositories you
-visited. Next time it opens there, unless you have chosen Inbox or Start Here
+The window remembers where you were for each account: its size and how wide
+the tree is, the place you had selected, the branches of the tree you had
+open, and the repositories you visited. Next time it opens there, unless you have chosen Inbox or Start Here
 in Workbench Options.
 
 ## Start Here

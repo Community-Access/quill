@@ -63,16 +63,16 @@ The endpoint count is not the whole job. These rows from the Workbench delivery 
 - [ ] Saved replies, repository invitations, wiki and cross-linked discussion → issue → PR workflows. *(2026-11-18: saved replies insert in every comment box; repository invitations listed, accepted and declined (`repo_invitations.py`). Remaining: wiki, cross-linked workflows.)*
 - [ ] Repository General/features, complete creation/template options, transfer, standalone tags, topics and star lists. *(2026-11-18: standalone tags made and deleted (`tags.py`).)*
 - [ ] Rulesets/protection management, organization/member/team access, custom roles and audit logs.
-- [ ] Webhooks and deliveries/redelivery/ping; deploy keys; autolinks; organization secret/variable repository selection.
-- [ ] Account profile/status, SSH/GPG/signing keys, token-request administration, billing/usage and Sponsors where APIs permit. *(2026-11-18: status set and cleared (`user_status.py`).)*
+- [x] Webhooks and deliveries/redelivery/ping; deploy keys; autolinks; organization secret/variable repository selection. *(Settled 2026-11-18 by the 1.3 sweep: Repository and organization Webhooks with Ping, Recent Deliveries and redelivery, Deploy Keys and Autolinks (`repo_settings_lists.py`), and Repositories Allowed for organization secrets and variables (`resource_engine.py`, one repository at a time). `api_coverage.json` covers every route.)*
+- [x] Account profile/status, SSH/GPG/signing keys, token-request administration, billing/usage and Sponsors where APIs permit. *(2026-11-18: status set and cleared (`user_status.py`).)* *(Settled 2026-11-18 by the 1.3 sweep: Profile (`profile.py`), status (`user_status.py`), SSH, GPG and signing keys (`account_keys.py`), Sponsors (`sponsors.py`) and your own billing usage; token-request administration answers only to GitHub Apps and organization billing is classified out of scope, with reasons, in `api_coverage.json`.)*
 - [ ] Workflow enable/disable and accessible workflow authoring; triggers/jobs/steps/inputs/permissions/dependency graph as linear controls. *(2026-11-18: enable and disable on the sheet and as Turn Workflow On or Off... (`workflow_state.py`). Remaining: authoring.)*
 - [ ] Dependabot configuration and PR commands; CODEOWNERS editing/ownership lookup.
 - [ ] Merge queue as a place; required policy explanation, auto-merge and batch merges of independently eligible PRs. *(2026-11-17: Repository > Merge Queue, Why Can't I Merge? with every blocker for the exact head commit, Merge merging only the commit it checked, Auto-Merge... and Add to or Remove from Merge Queue... on the row (`merge_readiness.py`, `merge_queue.py`, `github_workbench_merge.py`). Remaining: batch merges.)*
 - [ ] Commit statuses, environments, deployment protection and release/deployment evidence. *(2026-11-18: Set Status... on a commit (`commit_status.py`).)*
-- [ ] Packages, runners, dependency graph/SBOM, insights/network/traffic/contributions as readable tables. *(2026-11-18: Runners, read-only, and Export Software Bill of Materials... (`runners_sbom.py`); Commit Activity as tables (`repo_activity.py`); My Packages (`packages.py`).)*
-- [ ] Git LFS storage/locks and account/organization export or migration capabilities with correct scope dispositions.
+- [x] Packages, runners, dependency graph/SBOM, insights/network/traffic/contributions as readable tables. *(2026-11-18: Runners, read-only, and Export Software Bill of Materials... (`runners_sbom.py`); Commit Activity as tables (`repo_activity.py`); My Packages (`packages.py`).)* *(Settled 2026-11-18 by the 1.3 sweep: Packages, Runners and the SBOM as above, Traffic (views, clones, paths, referrers) as a node, and contributions and commit activity through the stats routes; every route covered or classified in `api_coverage.json`.)*
+- [x] Git LFS storage/locks and account/organization export or migration capabilities with correct scope dispositions. *(Settled 2026-11-18 by the 1.3 sweep: GitHub has no LFS API for a person (the one route is the retired Source Imports API), and account and organization migrations are classified out of scope with reasons in `api_coverage.json`; there is nothing left to build.)*
 - [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
-- [ ] Installed/authorized Apps, repository grants, install requests, suspend/unsuspend and OIDC subject templates.
+- [x] Installed/authorized Apps, repository grants, install requests, suspend/unsuspend and OIDC subject templates. *(Settled 2026-11-18 by the 1.3 sweep: My Installations with each installation's repository grants added and removed (`resource_engine.py`); suspend, unsuspend, install requests and OIDC subject templates are App-token, Enterprise or company plumbing, each classified with its reason in `api_coverage.json`.)*
 - [ ] Code/secret scanning, advisories, private reports, bypass/dismissal requests, Autofix/dependency review and organization security overview.
 - [ ] Discussion polls, spotlight and category sections.
 - [x] GitHub service status with opt-in network access and a useful explanation. *(2026-11-18: Help > GitHub Service Status... (`Ctrl+Alt+F1`) reads www.githubstatus.com after asking once, never on its own or in Safe Mode, and says the overall status, the parts not working and any incident with its latest update (`service_status.py`, `github_workbench_service_status.py`).)*
@@ -96,7 +96,20 @@ The endpoint count is not the whole job. These rows from the Workbench delivery 
 
 #### Requirement audits
 
-About 99 GitHub requirement ids (GH-R-001 onward) were never checked off against the code. They are defined in `docs/Product Requirement Documents and Specifications/github-workbench-prd.md`; the checklist that listed them is in git history. Verify each against the code and tests, a section of the PRD at a time, and record the evidence in `docs/qa/`.
+Done 2026-11-18: every GH-R id in Part E of the GitHub PRD was checked against the code and tests, and the record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. Of the 100 live ids, 68 are met, 24 partly met and 8 not met. What it found, the Musts first:
+
+- [ ] **GH-R-002, needs a Windows check:** every Workbench dialog uses `ShowModal()`, which in wx disables every top-level window, the editor included. Try it before acting: if the editor is blocked, the fix is window-modal or modeless dialogs throughout the Workbench.
+- [ ] **GH-R-010:** no counts after node names. A native tree speaks its item text, so a count there is always announced; decide whether the Alt+number readouts are the answer and say so in the PRD.
+- [ ] **GH-R-035:** New... on the remaining pickers (issue type, branch).
+- [ ] **GH-R-106, 107, 108, 117, 119 (help):** Tutorials and Tips nodes; Walk Me Through and Do It; Why? on automatic behaviours; Report a Help Problem; D20's timed sessions.
+- [ ] **GH-R-113 and 083 (sound):** Workbench results through `action_feedback`, as the editors do.
+- [ ] **GH-R-131:** conditional requests (ETag) on item lists and sheet reloads.
+- [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists (with the 1.5 live rows).
+- [ ] **Shoulds and Mays:** Alt+Enter on a GitHub reference in a document (036), access templates (068), real permission evidence for the role views (069, the row above), team review requests in Needs My Attention (143), tutorials (105), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116), plain-language batches (086) and Ask How (118).
+- [x] **Built but untested, now tested (2026-11-18):** Switch to Editor (006), "has none" and Me (052), Or groups (054), no letter as a command (092), rebinding in the menus (093), the access matrix and bulk access (068, 142) and the role views (069), in `tests/unit/ui/test_github_workbench_requirement_checks.py`.
+- [x] **GH-R-004 (2026-11-18):** the window now keeps its size and the tree pane's width per account, with the place.
+- [x] **GH-R-063 (2026-11-18):** Remove on an Access page's Pending invitations cancels the invitation, and Change... changes the role a repository invitation offers. (The audit first missed that the list was already there.)
+- [ ] **PRD fixes:** GH-R-045, project views and workflows are read-only because GitHub has no API to change them; GH-R-004, columns and filters are not in 3.1's list.
 
 ### 1.4 Then: documentation as good as WordPress's
 
