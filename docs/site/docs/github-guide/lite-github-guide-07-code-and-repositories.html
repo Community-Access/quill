@@ -560,6 +560,37 @@ percent, then “Uploaded” with the file’s name and size.</li>
 <li><strong>Delete Asset</strong>, inside a release’s file list, removes
 a file after asking. Its download count goes with it.</li>
 </ul>
+<h3 id="release-evidence-and-attestations">Release evidence and
+attestations</h3>
+<p><strong>Release Evidence…</strong>, on a release’s context menu,
+gathers what vouches for a release, and changes nothing. You hear one
+sentence, such as “v1.0: Immutable; 4 of 4 checks pass; 1 deployments; 2
+of 2 files attested.”, and a list follows with a line each:</p>
+<ul>
+<li>whether it is a draft or a pre-release, and when it was
+published;</li>
+<li>whether it is <strong>immutable</strong>: once GitHub has made a
+release immutable, its tag and files cannot change, so what you check
+now is what people download;</li>
+<li>the commit its tag points at (a draft whose tag does not exist yet
+has none);</li>
+<li>the checks on that commit, and which passed, failed or are still
+running;</li>
+<li>each deployment of that commit: which environment, its latest state,
+when and by whom;</li>
+<li>each file, by its digest, with GitHub’s <strong>artifact
+attestations</strong> for it, such as build provenance or a software
+bill of materials.</li>
+</ul>
+<p>QUILL reads GitHub’s attestation records but does not check their
+signatures; the list says so, and <code>gh attestation verify</code> is
+the tool that does. A part GitHub would not show you is said as “Could
+not read”, never as none, so a missing permission is never mistaken for
+missing evidence.</p>
+<p><strong>Attestations…</strong>, on one file in a release’s file list,
+is the same for that file alone. The release’s
+<strong>Properties…</strong> page says whether it is immutable, and a
+file’s says its digest.</p>
 <p>In QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub &gt; Create
 Release…</strong> makes a new release: a tag, an optional title, your
 own notes or GitHub’s, and whether to publish it now or keep it as a

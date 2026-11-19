@@ -257,10 +257,12 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
 
             self._background("reload", lambda: load(self.github_api(), sheet, state["ident"]), done)
 
+        from quill.core.github.issue_fields_rows import with_field_page
+
         url = sheet.url(target.ident)
         view = PropertiesSheet(
             self.frame.frame,
-            sheet.sheet,
+            with_field_page(sheet.sheet, loaded.values),  # an issue's own fields, typed
             loaded.values,
             title=target.title(),
             copy_text=self.frame.copy_text,

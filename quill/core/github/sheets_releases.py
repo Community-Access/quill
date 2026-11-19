@@ -53,7 +53,17 @@ def _release(data: Mapping[str, Any]) -> dict[str, Value]:
         ),
         "discussion": str(data.get("discussion_url") or ""),
         "url": str(data.get("html_url") or ""),
+        "immutable": _immutable(data.get("immutable")),
     }
+
+
+def _immutable(value: object) -> str:
+    """Whether GitHub has locked the release's tag and files (immutable releases)."""
+    if value is True:
+        return "yes: its tag and files cannot change"
+    if value is False:
+        return "no: its tag and files can still change"
+    return "GitHub did not say"
 
 
 #: Your reactions to a release, which GitHub answers only in GraphQL.
@@ -100,6 +110,12 @@ RELEASE = SheetDef(
                 ed("latest", "Latest release", _K.CHECK),
                 ro("author", "Author"),
                 ro("published", "Published", _K.DATE),
+                ro(
+                    "immutable",
+                    "Immutable",
+                    help="An immutable release's tag and files cannot change once it is "
+                    "published. Release Evidence... says what vouches for it.",
+                ),
                 ro("url", "Address", _K.LINK),
             ),
             page("you", "You", _RELEASE_REACTIONS),
@@ -163,6 +179,7 @@ def _asset(data: Mapping[str, Any], ident: Ident) -> dict[str, Value]:
                 "content_type": str(asset.get("content_type") or ""),
                 "updated": when(asset.get("updated_at")),
                 "url": str(asset.get("browser_download_url") or ""),
+                "digest": str(asset.get("digest") or "GitHub gives no digest for it"),
             }
     return {}
 
@@ -185,6 +202,12 @@ RELEASE_ASSET = SheetDef(
                 ro("content_type", "Content type"),
                 ro("updated", "Updated", _K.DATE),
                 ro("url", "Download address", _K.LINK),
+                ro(
+                    "digest",
+                    "Digest",
+                    help="The file's SHA-256, which its attestations are filed under. "
+                    "Attestations... lists them.",
+                ),
             ),
         ),
     ),

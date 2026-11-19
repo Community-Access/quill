@@ -303,6 +303,37 @@ number. Signed in, it holds:
 On a pull request, the submenu holds only Lock and Unlock, because the others
 are for issues.
 
+## Issue types and fields
+
+An organization can give every issue extra values of its own, such as
+Priority, Points or Due date. In the GitHub Workbench, **Issue Fields...** on
+an issue's context menu lists each one with this issue's value, and choosing
+one sets or clears it; only that field is sent.
+
+Each value keeps its type: a date reads as a date (2026-12-31), a number as a
+number (3, or 2.5), a single choice as the choice's name, several choices as
+their names, and text as text.
+
+- **Columns.** In a Workbench Issues list, **Columns...** (`Ctrl+Shift+U`,
+  on the Workbench's own View menu) offers **Issue type** and **Issue fields**. Neither shows until you choose
+  it, because the fields cost GitHub one request an issue; with Issue fields
+  chosen, QUILL Lite reads the first 30 issues of the list. A cell reads
+  "Priority: High; Due: 2026-12-31; Notes: empty; Owner: not set".
+- **Details.** An issue's details name its type, and once its fields are read,
+  each field in full, such as "Field Due (date, field 2): 2026-12-31".
+- **Filters.** GitHub's own search answers `type:Bug` and
+  `field.priority:high`, so type either in the filter box. **Show Only** and
+  **Hide** on an issue offer its type and each field value. **Group By**,
+  then **Type**, on the same menu groups the list by issue type.
+- **Properties.** An issue's Properties sheet (`Alt+Enter`) has an **Issue
+  Fields** page after Organize, with one read-only field each, of its own
+  kind. **Issue Fields...** on the row changes them.
+
+The states never sound alike, so a missing permission never looks like an
+empty field: a value ("Priority: High"), set to nothing ("empty"), not set,
+hidden from you, a kind QUILL Lite does not edit yet (shown with "read only"),
+and a read that failed ("unreadable", with why).
+
 ## Closing, branches and task lists
 
 In the GitHub Workbench, Shift+F10 on an issue has these too.
