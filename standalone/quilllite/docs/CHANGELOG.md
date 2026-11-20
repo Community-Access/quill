@@ -2,6 +2,17 @@
 
 ## 2.0.0
 
+### The setting you chose last is the one that is saved (2026-11-20)
+
+Turning a View setting on and straight back off, such as Word Wrap, could save
+the first choice and lose the second, and a View change made just before OK in
+Preferences could be written after it. Either way the setting changed back
+after a restart, and nothing was said. Every settings save now goes through one
+queue, in the order you made the changes, so the last choice wins. A second
+QUILL Lite window's changes are still kept. A failed save is still reported and
+never called saved, and Retry in Activity (Shift+F9) saves your current
+settings rather than the older ones that failed.
+
 ### The actual result, once, and lists that stay still (2026-11-19)
 
 Part of the family UX pilot (FUX-04 and FUX-06), shared with QUILL. Saves name

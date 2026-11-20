@@ -31,7 +31,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from quill.stability.redaction import redact_command_arg, redact_text_for_bundle
+from quill.stability.redaction import (
+    redact_command_arg,
+    redact_outbound_line,
+    redact_text_for_bundle,
+)
 
 #: Spelled once so a scripted edit cannot turn it into a real line break.
 NEWLINE = chr(10)
@@ -279,6 +283,11 @@ def _synthesise_summary(exc_type: type[BaseException], exc_value: BaseException)
 
     The value is bounded and the trailing colon-collapse strips the
     empty case (``Exception: ''`` becomes just ``Exception``).
+
+    The subject leaves the machine exactly as the body does, so it is
+    redacted exactly as the body is. Until 2026-11 it was not: an exception
+    whose text carried a credential had it scrubbed from the preview and the
+    body and still sent in the email's subject line.
     """
     name = getattr(exc_type, "__name__", "Exception")
     raw = str(exc_value or "").strip()
@@ -287,7 +296,7 @@ def _synthesise_summary(exc_type: type[BaseException], exc_value: BaseException)
     short = raw if len(raw) <= _MAX_VALUE_CHARS else raw[:_MAX_VALUE_CHARS] + "…"
     # Collapse newlines so the summary is always a single line.
     short = re.sub(r"\s+", " ", short)
-    return f"{name}: {short}"
+    return redact_outbound_line(f"{name}: {short}", keep_prefix=f"{name}: ")
 
 
 def _format_traceback(

@@ -256,8 +256,7 @@ audit holds each GitHub requirement’s status. Rows built since
 it.</li>
 <li><strong>Part 0</strong> lists the defects the code review in plan.md
 found, worst harm first: settings that do not stick, Windows Radio
-recording, diagnostics and the Practice Site payload, then the wider
-review.</li>
+recording and the Practice Site payload, then the wider review.</li>
 <li><strong>A Backlog</strong>, not this release (Jeff): every macOS
 feature, including a runnable Mac Radio app and the launcher and Mac
 Radio defects; verifying attestation signatures inside QUILL; and a date
@@ -274,6 +273,39 @@ ripgrep is bundled but not yet used by the project index. code.md says
 the Claude tool fix and the Claude engine were built on 2026-11-04. The
 QUILL PRD and the agent instructions say Python 3.14 and wxPython
 4.3.2.</li>
+</ul>
+<h3
+id="crash-and-support-reports-what-is-sent-is-what-was-checked-2026-11-20">Crash
+and support reports: what is sent is what was checked (2026-11-20)</h3>
+<ul>
+<li><strong>A crash email’s subject is redacted like its body.</strong>
+A password or key in an error message was removed from the report you
+reviewed and still sent in the subject line. Every field of the message
+is now scrubbed: the subject, the version, the platform, the screen
+reader, the support facts, and the copy that goes to the clipboard.</li>
+<li><strong>A long subject no longer breaks the email.</strong> Only the
+body used to be shortened, so a long subject made a link your mail
+program refused. The subject is shortened too, counted after encoding so
+accented letters and emoji fit, and the complete message is still on
+your clipboard.</li>
+<li><strong>Save Diagnostics always writes a readable bundle.</strong> A
+long task name could leave <code>metadata.json</code> unreadable. Each
+value is now redacted and shortened on its own, and the file is checked
+before it is saved.</li>
+<li><strong>Work that must finish is never told to stop part
+way.</strong> Background writes marked as unsafe to cancel, such as
+saving Inkwell’s settings or a Word file in QUILL Lite, were signalled
+to stop while the cancel request reported that nothing had been
+cancelled. Now a write that has started runs to the end and the request
+says it was not cancelled; one that has not started is still
+cancelled.</li>
+<li><strong>The shared progress throttle cannot hang and keeps the last
+update.</strong> It could lock up when there was no window to report to,
+and could drop the final update. No shipping window was seen to freeze
+from this.</li>
+<li><strong>F1 on Check What QUILL Says</strong> explains the command
+and how to fill in its report, instead of saying no help is
+available.</li>
 </ul>
 <h3
 id="wordpress-local-writing-keeps-its-file-its-pictures-and-its-unsaved-text-2026-11-20">WordPress:
@@ -345,6 +377,24 @@ of saying five. The migration runbook lists all ten database migrations
 in order, a new migration (010) adds the per-person cost figure, and a
 new CI workflow tests every migration on a clean PostgreSQL
 database.</li>
+</ul>
+<h3
+id="quill-lite-the-setting-you-chose-last-is-the-one-that-is-saved-2026-11-20">QUILL
+Lite: the setting you chose last is the one that is saved
+(2026-11-20)</h3>
+<ul>
+<li>Turning a View setting on and straight back off, such as Word Wrap,
+could save the first choice and lose the second, while QUILL Lite said
+nothing was wrong. After a restart the setting had changed back.</li>
+<li>A View setting changed just before you pressed OK in Preferences
+could be written after the Preferences save, so the older choice
+won.</li>
+<li>Every settings save in QUILL Lite now goes through one queue, in the
+order you made the changes, and the last one always wins. Settings
+changed by a second QUILL Lite window are still kept.</li>
+<li>If a save fails, QUILL Lite still says so and does not say
+“Preferences saved”. Retry in Activity (Shift+F9) now saves your current
+settings, not the older ones that failed.</li>
 </ul>
 <h3
 id="github-workbench-roles-from-githubs-own-answers-two-accounts-side-by-side-and-gh-sign-in-2026-11-20">GitHub
