@@ -156,13 +156,6 @@ that act on it. Each one asks first, and the default answer is No.
 - **Review Pending Deployments...** and **Approvals**, below.
 - **Combined Check Status**, below.
 
-<!-- PR#1967 -->
-When GitHub refuses an Actions request, QUILL says why in words. It might
-need write access to Actions, or a log or artifact may have gone after the
-repository's retention period. This applies to turning a workflow on or
-off, starting or re-running it, reading a job's log and downloading an
-artifact.
-
 ## Combined check status
 
 **Combined Check Status** reads every check on the run's commit and says them

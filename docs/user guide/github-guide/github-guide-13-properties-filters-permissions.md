@@ -63,13 +63,6 @@ who can change that. `F1` on the field says the same.
   request merges into now, then selects it. "(none)" clears an issue type,
   but a pull request always merges into some branch, so choosing "(none)"
   there leaves it as it was and QUILL says so.
-<!-- PR#1974 -->
-- An issue's **Issue Fields** page edits its organization's issue fields,
-  each with its own kind of control: a date, a number, a single choice or
-  text. Saving sets only the fields you changed and reads the issue again to
-  check GitHub kept them; emptying a field clears it. A field with several
-  choices, or of a kind QUILL does not know, stays read only. Without triage
-  access the page says why each field is locked.
 - **OK** saves and closes, and Enter on a check box, a list or a one-line
   box is OK. **Apply**, or `Ctrl+S`, saves and keeps the sheet open, and
   focus comes back to the check box or field you were on. `Ctrl+Enter` is
@@ -110,38 +103,6 @@ know, such as Star or Unstar, Watch or Unwatch, Follow or Unfollow, React...
 and Pin or Unpin Issue, send the same requests as the You page. Read Only and
 Safe Mode lock the You page like every other page, with the reason under each
 field.
-
-<!-- PR#1974 -->
-The rest of the relationships, and every one as a row on the context menu
-too, each saying its outcome in one sentence:
-
-- **A repository's You page** also has **Star lists** (your lists, the ones
-  holding it checked, as Star Lists... sets them), **Forked by you** (check
-  it to fork the repository to your account; a fork is a repository of its
-  own, so clearing the box is refused and says where to delete it), and the
-  read-only **Sponsoring the owner**. The rows **Fork...** and **Sponsor the
-  Owner...** are on the repository's context menu: Sponsor the Owner opens the
-  owner's Sponsor tiers, and nothing is charged until you choose a tier with
-  Sponsor at This Tier... and type their name.
-- **In Favorites** and **Pinned in the Workbench** close a repository's You
-  page, and In Favorites an issue's and a pull request's. These live on this
-  computer, not on GitHub, so they change at once, as the Favorites and Pin
-  rows do.
-- **Subscribe or Unsubscribe...** on an issue, a pull request, a discussion
-  or a commit: all activity, or only when you take part or are mentioned.
-- **Block or Unblock...** on a person.
-- **Block from Organization...** on an organization (it asks whose account)
-  and on a member in its Members list; its Blocked People list unblocks.
-  **Leave Organization...** asks first. **Your Invitation** says whether the
-  organization has invited you: Accept Membership joins, and since GitHub's
-  API cannot decline an organization's invitation, it gives the page where
-  GitHub does. A repository's invitations have Accept and Decline rows.
-- **React to a Comment...** on an issue or a pull request (its conversation
-  and its line comments) and on a discussion (comments and replies): choose a
-  comment, then a reaction; one you gave already is taken back. On a commit,
-  **React to a Commit Comment...** reacts to its comments, and **Commit
-  Comments...** reads and adds them. GitHub's API reacts to a commit's
-  comments, never to a commit itself.
 
 ### Saving safely
 
@@ -276,36 +237,6 @@ Has Conflicts is the one GitHub's search cannot answer, so the Workbench
 checks the pull requests already loaded and the Items cell of the status bar
 says so. **View > Load All** (`Ctrl+Shift+Page Down`) loads every page to be
 sure.
-
-<!-- PR#1971 -->
-### Filtering every other list
-
-Branches, tags, commits, releases, workflows, runs and the other lists are
-read whole, so the words before a colon are checked here, over the rows
-already loaded. Each list answers its own:
-
-- **Branches:** `name:`, `protected:`, `ahead:`, `behind:`, `author:` (the
-  last commit's) and `committed:` (its date).
-- **Tags:** `name:` and `sha:`. **Commits:** `author:`, `committed:`,
-  `message:` (words in it) and `sha:`.
-- **Releases:** `tag:`, `name:`, `draft:`, `prerelease:` and `created:`.
-  **Release assets:** `name:`, `size:`, `downloads:`, `type:` and `updated:`.
-- **Workflows:** `name:`, `path:` and `state:`. **Runs:** `workflow:`,
-  `branch:`, `event:`, `status:`, `conclusion:`, `created:` and `sha:`.
-- **Every other list** (repositories, labels, milestones, notifications,
-  packages and the rest): `name:`, `repo:`, `owner:` and `updated:`.
-
-A name takes `*` as a pattern (`name:release-*`). A minus in front leaves
-those out (`-conclusion:success`). Numbers and dates take `>`, `<`, `>=`, `<=`
-and a range with two dots (`ahead:>=3`, `created:2026-01..2026-06`); a date
-can be just a year or a month. `no:repo` keeps the rows with none. The Items
-cell of the status bar says how many the filter kept of how many loaded, such
-as "Filtered here: 2 of 3 loaded. Load All to be sure.", and names any word
-this list cannot filter on, so nothing is quietly ignored.
-
-The Search place's lists send the whole box to GitHub instead, so there
-GitHub's own search terms work: `language:` and `stars:` for repositories,
-`committer:` for commits, `location:` for people.
 
 ### More rows
 

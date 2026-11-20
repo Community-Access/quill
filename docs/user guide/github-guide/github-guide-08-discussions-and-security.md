@@ -142,33 +142,6 @@ A discussion's context menu also has:
   asking, because it cannot be undone. It needs admin access to the
   repository.
 
-<!-- PR#1973 -->
-### From a discussion to an issue
-
-When a discussion turns into work, **Create Issue from Discussion...** on its
-row opens an issue for it. It reads the discussion first, then asks for the
-issue's title, the discussion's to start with, and its text, which begins
-with a link back to the discussion and quotes it; change either as you like.
-Last it asks how, naming the repository and your account: open the issue and
-comment on the discussion with the issue's link, or open the issue only.
-Nothing is sent until you answer.
-
-GitHub has no way, in its API, to turn an issue into a discussion or a
-discussion into an issue; its web page does that, through **Open on GitHub**.
-
-<!-- PR#1973 -->
-### What links to what: Related...
-
-**Related...** on a discussion, an issue or a pull request lists the items
-linked to it, each with its repository, its state and how it is linked: the
-pull requests that close an issue, the issues a pull request closes, what
-mentioned it, and the issues, pull requests and discussions its own text and
-comments link to. Enter opens the selected one on GitHub, and Copy Link
-copies its address. GitHub keeps no record of what links to a discussion, so
-a discussion's list is only what the discussion and its replies link to, and
-the list says so. When GitHub would not say what something is, the list says
-that part is unread, never that there is none.
-
 ## Security alerts
 
 ### Finding them
@@ -218,13 +191,6 @@ three things:
 
 Cancel at any step and nothing is sent. QUILL reports the dismissal only when
 GitHub sends the alert back in its new state.
-
-<!-- PR#1967 -->
-An alert's Properties sheet (`Alt+Enter`) closes it the same way. Each kind
-closes in its own words: a Dependabot or code scanning alert is dismissed, a
-secret is resolved, and the sheet offers only that kind's reasons. A choice
-that does not fit the kind is refused before anything is sent. GitHub marks
-an alert fixed itself, so the sheet does not offer that.
 
 ### Reopening an alert
 

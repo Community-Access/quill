@@ -143,12 +143,6 @@ invited you, write access". The details say when.
 An invitation expires after a week. An expired one ends in "expired", cannot
 be accepted, and can still be declined to clear it away.
 
-<!-- PR#1974 -->
-An organization's invitation is different. On an organization's row,
-**Your Invitation** says whether it has invited you. GitHub lets apps accept
-an organization's invitation but not decline one, so it also says where on
-GitHub to decline it. **Accept Membership**, on the same menu, joins you.
-
 ## Inbox rules
 
 Some notifications always get the same answer: a Dependabot update you will

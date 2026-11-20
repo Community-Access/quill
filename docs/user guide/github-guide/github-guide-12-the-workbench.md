@@ -719,12 +719,6 @@ own list, the commands you use most first and the rest under **More**, and
   Deployments, Approve Run from a Fork, and Delete Run.
 - **A workflow:** its Runs (Enter), Run Workflow on Branch, Turn Workflow On
   or Off, and Edit Workflow.
-<!-- PR#1967 -->
-- **A release:** its Assets (Enter), each with Download, Copy Link,
-  Attestations, Properties (to rename a file or change its label) and Delete
-  Asset; Edit Release; Draft Release Notes; Upload Asset; Release Evidence;
-  and Delete Release. A draft opens on its sheet too, and deleting one says
-  that a draft has no tag to delete.
 - **A branch:** its Commits (Enter), Compare With Default, Compare Branches,
   Merge Into, Download Source, Copy Name, and Delete Branch, which asks you to
   type the branch name.
@@ -884,13 +878,6 @@ and is never said or shown. Here they are by what you are doing.
   Status Update..., Link to Repository..., Unlink from Repository...,
   Template..., Copy Project..., Delete Project..., New View... and Items in a
   View....
-<!-- PR#1967 -->
-- **A Project, inside:** Rename a View..., Delete a View..., Rename a
-  Field..., Add an Issue Field..., Edit a Draft..., Make a Draft an
-  Issue..., Move an Item..., Archive an Item..., Restore an Archived
-  Item..., Remove an Item... (asks first), Edit a Status Update..., Delete a
-  Status Update..., Delete a Workflow..., Share the Project..., Link a
-  Team... and Unlink a Team....
 
 ### Your own account
 
@@ -912,16 +899,6 @@ and is never said or shown. Here they are by what you are doing.
   Agent Tasks and My Automations. These need a Copilot plan with the cloud
   agent, and GitHub calls them a preview: QUILL sends only what GitHub
   documents and reads you GitHub's own answer.
-<!-- PR#1973 -->
-- **Copilot in an organization:** Copilot Plan, Copilot Seats, A Member's
-  Copilot Seat..., Give Copilot Seats..., Take Copilot Seats Away..., Give
-  Teams Copilot..., Take Copilot from Teams..., Copilot Usage Report, Copilot
-  Agent Access and Copilot Content Exclusions. **On a repository:** Copilot
-  Agent Configuration and Copilot Review Settings. These are Copilot
-  Business's, which an organization buys on any GitHub plan. Giving or taking
-  a seat changes what the organization pays, so you need to own the
-  organization, and each asks first, naming the people and the organization.
-  Copilot's policies are read here and changed on GitHub's site.
 
 A few of these use parts of GitHub newer than the description QUILL was
 built against (closing references, a Project's views and issue fields).
@@ -978,52 +955,6 @@ The last place in the tree is help you can walk through like any other list.
   follow. Enter opens a message in your own email, already saying where you
   were and the last thing the Workbench said, for you to change and send.
   The Workbench sends nothing, and no token or password is ever in it.
-
-<!-- PR#1975 -->
-Once in a while a tip also comes to you at the right moment: the third time
-you do something the long way (arrow through a long list without the filter,
-open Properties on one row after another, press Load More again and again),
-the tip for the short way is added to the end of the details pane, once, and
-is not spoken, so it interrupts nothing. **Offer a tip when it would help**,
-in Workbench Options, General, turns those off; they all stay in Tips. Words
-are explained by QUILLBee, QUILLBert's friend, in one line each. **Plain
-help, without QUILLBert and QUILLBee**, in Workbench Options, General, says
-the same words without the two names.
-
-<!-- PR#1975 -->
-`F1` ends with an example from your own work when the window knows enough:
-the repository you are on and the row you have selected ("On
-Community-Access/quill, #42 Crash on start is selected: Alt+Enter opens
-everything about it"), or the account you are signed in as. It uses only what
-the window has already loaded, and sends nothing anywhere.
-
-<!-- PR#1975 -->
-**Help > Take the Tour** (`Alt+Shift+T`) is a spoken tour of the window, a
-pane at a time: what the pane is, and one thing to do there. `F6` moves on to
-the next pane and the next step, `F1` says the step again, `Shift+F1` lists
-the steps, and `Escape` skips the rest. The tour starts by itself the first
-time you open the Workbench, once, unless **Show First time here? help** is
-off.
-
-<!-- PR#1975 -->
-**Help > Ask How...** (`Alt+Shift+A`) takes a question in your own words,
-such as "how do I keep only the issues with a word in them?". The answer is
-built only from this help (the tasks, places, words and options, and every
-menu row with its key), by the AI you chose in the editor's Choose Your AI.
-When the help does not cover the question it says so, and when nothing in the
-help comes near the question the AI is not asked at all. The answer is shown
-in a list, with a **Do It** row for each command it names; nothing runs until
-you choose a row. Only your question and the help's own words are sent: no
-repository, token or GitHub content. It is greyed without an AI connection,
-and off in Safe Mode.
-
-<!-- PR#1975 -->
-The keys are also on a **key card** you can print or emboss, made from the
-same key table as the window: `docs/github/key-card.html` to print, and
-`docs/github/key-card-braille-ready.txt`, laid out 40 cells by 25 lines a
-page, for QUILL's Braille Mode or a braille translator to make the BRF. The
-whole of this guide is also one book, `github-guide-book.epub`, beside these
-pages.
 
 The help keys work everywhere in the window:
 
@@ -1143,14 +1074,6 @@ GitHub's preferences live in the Workbench, not in the editor's Options:
 - **Privacy:** whether Insights loads the repository Health Snapshot, and
   whether the first few visits to a place start with a short "First time
   here?" paragraph.
-
-<!-- PR#1975 -->
-Lists also has **Short rows for braille**: each list row becomes one short
-line for a braille display, the number and title first, no column names, and
-short words (`cl` for closed, `PR` for pull request, `3c` for three comments,
-`9 Nov` for a date). Nothing is cut off, and Details still says everything.
-Columns... still chooses what the line holds. General has **Offer a tip when
-it would help** and **Plain help, without QUILLBert and QUILLBee**.
 
 Each account's Workbench level, Read Only, Organize or Full, is not here: it
 is **Account > Roles and Access > Workbench Level for This Account...**

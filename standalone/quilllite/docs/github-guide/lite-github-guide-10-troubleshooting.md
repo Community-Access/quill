@@ -468,10 +468,6 @@ addresses are read, each only when you choose the command that reads it.
 - **AI** is used only where you ask for it, such as Summarize Discussion. It
   sends the text to the AI you chose, after the same questions as every AI
   feature.
-<!-- PR#1975 -->
-- **Help > Ask How...** (`Alt+Shift+A`) sends your question and the
-  Workbench's own help text to the AI you chose, and nothing about your
-  repositories. It is greyed without an AI and in Safe Mode.
 
 What stays on your computer and never goes to GitHub: your token (in the
 operating system's secure store), each account's Workbench level, your pins

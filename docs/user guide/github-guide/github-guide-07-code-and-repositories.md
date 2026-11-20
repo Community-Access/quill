@@ -114,18 +114,10 @@ GitHub > From This Line** (`L`). It opens the Workbench only when it must.
   comment, in Markdown, and posts it on these lines. If your copy and the pull
   request are at different commits, or the file has changes you have not
   committed, it says so and stops, because the line numbers would not match.
-<!-- PR#1975 -->
-- **Open the GitHub Reference at the Cursor** (`R`) opens the Properties
-  sheet of what is written where your cursor is, in the Workbench: `#42` or
-  `GH-42` in this repository, `owner/name#42` in another, a commit hash,
-  `@person`, or a GitHub address of an issue, pull request, discussion or
-  commit. A bare `#42` is read from GitHub first, to know whether it is an
-  issue or a pull request.
-<!-- PR#1975 -->
-- **`Alt+Enter` on a reference** does the same without the menu: with the
-  cursor on `#42`, `@person` or a GitHub address, `Alt+Enter` opens its
-  Properties sheet. Anywhere else in the document `Alt+Enter` does what it
-  always did.
+- **Open the GitHub Reference at the Cursor** (`R`) opens what is written
+  where your cursor is: `#42` or `GH-42` in this repository, `owner/name#42`
+  in another, or a commit hash, each in the Workbench with the list narrowed
+  to it; or `@person`, whose profile opens in your browser.
 
 The link points at the commit you have checked out. If that commit is not on
 GitHub yet, QUILL says the link will not open until you push; if the file has
@@ -388,21 +380,6 @@ none, so a missing permission is never mistaken for missing evidence.
 that file alone. The release's **Properties...** (`Alt+Enter`) says whether it
 is immutable, and a file's says its digest.
 
-<!-- PR#1970 -->
-### Checking a download
-
-**Check Download...**, on one file in a release's file list, checks the copy
-you downloaded. Download the file first (Enter opens it in your browser),
-then choose **Check Download...**: an Open box starts in your Downloads
-folder with the file's name filled in. QUILL works out the SHA-256 of your
-copy on this computer, compares it with the digest GitHub has for the file,
-read fresh, and says whether it matches. A copy that does not match is said
-so, with the start of both values: do not use it, download it again. A file
-GitHub keeps no digest for, one uploaded before GitHub kept them, is said as
-not checkable, never as a match. A match says the bytes are the ones GitHub
-holds; it does not say who built them, which is what the attestations'
-signatures are for.
-
 ## Searching
 
 **Search** (`Ctrl+3`) searches all of GitHub. Choose the kind of search under
@@ -448,22 +425,6 @@ letters, numbers and hyphens, up to 20. Clear the box to remove them all.
 
 A **template repository** is one other repositories can start from. Whether
 a repository is one is on the **Templates** page of its Properties.
-
-<!-- PR#1971 -->
-On a repository row's context menu (`Shift+F10`):
-
-<!-- PR#1971 -->
-- **Sync Fork with Upstream...** brings a fork up to date with the repository
-  it came from, after asking. QUILL counts the new commits first, so it can
-  say "Merged 3 commits from" the upstream, or "Already up to date with" it.
-<!-- PR#1963 -->
-- **Create Repository from This Template...** opens Create Repository with
-  the template filled in: give it a name, an optional description and owner,
-  choose private or public, and whether to copy all of the template's
-  branches or only its default one.
-<!-- PR#1971 -->
-- **Delete Repository...** is under
-  [Looking after a repository](#looking-after-a-repository).
 
 ## The community profile
 
@@ -542,9 +503,6 @@ QUILL says so and still lists the contributors.
 **Health Snapshot** is a set of counts that stays on this computer and ranks
 nobody. It loads only when **Load the repository Health Snapshot** is checked
 on the Privacy page of **Workbench Options** (`Ctrl+Shift+O`).
-<!-- PR#1973 -->
-It says how many ready pull requests are waiting for a review and how long
-the oldest has waited, without naming who was asked.
 
 **Community Profile** is described above.
 
@@ -586,35 +544,6 @@ Chapter 13 has how saving and undoing work.
 - **Fork** and **Templates**: above.
 - **Features**: issues, projects, the wiki and discussions on or off, and
   whether web commits need a sign-off.
-<!-- PR#1963 -->
-  **Sponsor button links** reads the links from the repository's
-  FUNDING.yml. Whether the Sponsor button shows is a setting GitHub's API
-  cannot change, so the field only reads and says so.
-- **Merging**: which merge methods are allowed, auto-merge, suggesting branch
-  updates, deleting head branches after merging, and the default title and
-  message of a squash merge and of a merge commit.
-- **Branches and Rules**, **Access**, **Actions** and **Security**: branch protection and
-  rulesets, who has access, whether Actions runs and what its token may do,
-  and Dependabot, private vulnerability reporting, secret scanning and push
-  protection. Chapter 13 covers rules and access.
-- **Pages**: the site's address and source, the custom domain and Enforce
-  HTTPS. See [GitHub Pages](#github-pages).
-- **Environments**, **Webhooks**, **Deploy Keys**, **Autolinks**, and
-  **Secrets and Variables**: tables of each, which are also lists of their own
-  in the tree.
-- **Insights**: stars, forks, watchers and open issues, read only.
-- **Danger Zone**: the visibility, private or public, and **Archived**. An
-  archived repository is read only for everyone until it is unarchived.
-  Making a repository public shows its whole history, and the save asks
-  first.
-
-<!-- PR#1971 -->
-**Delete Repository...**, on a repository row's context menu, deletes the
-repository and everything in it: code, issues, pull requests, wiki and
-releases. It cannot be undone, so you type the repository's full name,
-exactly, to confirm. Deleting needs the token's `delete_repo` scope, and
-QUILL says so if it is missing. Sign In with GitHub asks for it; a token you
-made yourself needs it too (Chapter 1).
 
 ### From the editor's Tools menu
 
@@ -635,17 +564,6 @@ there, so there is one way to do each thing:
 - **Create Repository...**, **Fork Repository...** and **Commit Multiple
   Files...** open their own windows, in front of the Workbench.
 
-<!-- PR#1963 -->
-**Create Repository...** asks everything GitHub can set when a repository is
-made: the owner (blank for your own account, or an organization), the name, a
-description and a website, and private or public. Then how it starts: from a
-**template** (owner/name), with or without all of the template's branches; or
-fresh, with a README, a **.gitignore template** and a **licence**. When
-GitHub would refuse a combination, such as a README as well as a template,
-the window stays open and the Problem box at its top says why, before
-anything is sent. QUILL then offers to set up a folder on your computer that
-stays in step with it.
-
 The riskiest commands, renaming, changing visibility, deleting a branch or a
 repository, and merging a pull request, all make you type a name or number.
 A stray Enter on one of these is much harder to put right than most things.
@@ -656,11 +574,6 @@ A stray Enter on one of these is much harder to put right than most things.
 organization, with its issues, pull requests, wiki, stars and watchers. It is
 on the Workbench's **Repository** menu (`Ctrl+Alt+T`) and in Repository
 Actions. QUILL asks for the new owner,
-<!-- PR#1963 -->
-then its name there (keep it to leave it unchanged), then, for an
-organization, the teams there that should have access, by name, separated by
-commas. A team the organization does not have is named before anything
-moves.
 
 Last it asks you to type the repository's full name, because you may lose
 access to it and only the new owner can move it back.
@@ -699,56 +612,9 @@ Repository menu) opens the Clone Repository window with the wiki's address
 filled in, such as `community-access/quill.wiki`. Its pages arrive as
 Markdown files, one for each page, named after the page's title.
 
-<!-- PR#1973 -->
-The Wiki row's context menu also edits it here:
-
-<!-- PR#1973 -->
-- **Edit Wiki Pages...** copies the wiki to QUILL's own folder the first
-  time, and brings that copy up to date after that, then lists its pages,
-  Home first. Enter on a page opens it in the editor. Change it and save it as
-  you would any file; nothing reaches GitHub yet.
-- **New Wiki Page...** asks for a title and makes the page's file, named the
-  way GitHub names one (spaces become hyphens), then opens it.
-- **Publish Wiki Changes...** says which pages changed and asks before it
-  sends them, naming the wiki and your account. It asks for a short
-  description of the change, commits the pages with it and pushes them, and
-  everyone who can read the wiki sees them at once. When someone else
-  changed the wiki meanwhile, your change goes on top of theirs. When you both
-  changed the same lines, nothing is forced: it says so, and your edits stay
-  committed in the copy for you to compare.
-
-<!-- PR#1973 -->
-GitHub makes a wiki's git repository only when its first page is saved on the
-web, so a brand-new wiki says to save its Home page there once first.
-
-These commands use git, which Git for Windows provides. A wiki that is turned
-off says so, and that its administrators turn it on in the repository's
+Cloning needs git, which Git for Windows provides. A wiki that is turned off
+says so, and that its administrators turn it on in the repository's
 Properties, on the Features page.
-
-<!-- PR#1973 -->
-## GitHub Models prompt files
-
-A prompt file is a `.prompt.yml` file that GitHub Models reads: the model and
-its settings, the messages with their `{{variables}}`, rows of test data, and
-the evaluators that judge each answer. **Prompt Files...** on a repository's
-row, or on the repository's own place, lists every prompt file on the default
-branch. The details read the selected one as its parts: its name, its model,
-each message by role, how many test rows it has, its evaluators, and any
-problem GitHub Models would trip on, such as a variable no test row fills.
-**Open in Editor** opens the file to edit, and saving it there commits it, as
-with any file you open from GitHub.
-
-QUILL does not run a prompt or an evaluation, because it has no GitHub
-Models client. Run one on the repository's Models page on GitHub, or with
-`gh models run` and `gh models eval`.
-
-<!-- PR#1973 -->
-## Opening github.dev
-
-**Open in github.dev**, on a file of a repository or on a pull request, opens
-GitHub's free web editor in your browser at exactly that file or pull
-request. Nothing is created and nothing costs money; a codespace, which can
-cost money, is Chapter 9.
 
 ## Webhooks, deploy keys and autolinks
 
@@ -866,15 +732,6 @@ A package's context menu has:
 - **Delete Package Version...** lists the versions, newest first, with their
   tags, such as "sha256:bbb, tagged latest, 1.2, updated 2026-11-12". Choose
   one, and QUILL asks before deleting it.
-<!-- PR#1963 -->
-  To confirm, you type the package's name, because a version's own name is
-  often a long digest.
-  GitHub will not delete a package's only version, or one downloaded more
-  than 5,000 times, and QUILL says so.
-- **Restore Package Version...** lists the versions deleted in the last 30
-  days and brings back the one you choose.
-- **Delete Package...** deletes the package and every version, after you type
-  its name.
 
 GitHub keeps a deleted package or version for 30 days. `Ctrl+N` in My
 Packages, or in an organization's Packages, brings back a whole deleted
@@ -887,10 +744,6 @@ empty list.
 
 An organization's packages are under **Packages** in the organization's
 place, and a person's under **Packages** in theirs.
-<!-- PR#1963 -->
-A repository's own are under **Packages** in the repository's place: the
-packages its owner published from it. Another person's packages can be read,
-and their versions listed, but only they can change them.
 
 ## Gists
 
