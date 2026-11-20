@@ -13,10 +13,17 @@ Notices.
 **Suite:** QuillVille accessible applications  
 **Sync platform:** QuillSync  
 **Document type:** Product Requirements Document and implementation blueprint  
-**Status:** Product concept for review  
-**Last updated:** July 15, 2026  
+**Status:** Current authority for what Beacon should do. Version 0.1.0 is
+built for Windows and its [release notes](release-notes-0.1.md) are written; it
+has no published GitHub release yet (checked 2026-11-20). Section 44.5 says
+what is built. What it does today, and what is still missing, is in the
+release notes' "Known limitations" and the [changelog](CHANGELOG.md); where
+this document and those disagree about what exists today, they are right
+and this document says what is planned.  
+**Last updated:** July 15, 2026 (status line: November 20, 2026)  
 **Product owner:** Jeff Bishop / QuillVille  
-**Primary platforms:** Windows and macOS  
+**Primary platforms:** Windows. macOS is planned, but all macOS features are
+in the backlog, not this release (Jeff, 2026-11-20).  
 **Planned platform:** iOS  
 **Future platform candidates:** iPadOS, Android, web companion, browser extensions
 

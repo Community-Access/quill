@@ -1635,7 +1635,7 @@ These are the destinations' own developer documents, cited so each adapter start
 
 - [`standalone/studio/docs/prd.md`](../../standalone/studio/docs/prd.md): what QUILL Studio already does; every *Delivered* line here points into it
 - [`docs/design/quill-studio-capture-milestone.md`](../design/quill-studio-capture-milestone.md): the screenshot milestone's implementation and verification ledger, including the acceptance runs still owed
-- [`docs/design/quill-studio-screenshot-coverage.md`](../design/quill-studio-screenshot-coverage.md): the earlier coverage audit; the earlier consolidated proposal is historical, not a live document
+- [`docs/design/quill-studio-screenshot-coverage.md`](../design/quill-studio-screenshot-coverage.md): the earlier coverage audit, superseded by this document and marked so at its top; the earlier consolidated proposal is historical, not a live document
 - [`docs/qa/screen-reader-checks-2026-10.md`](../qa/screen-reader-checks-2026-10.md): the family's open screen-reader checks
 - `quill/core/radio/playlist_formats.py`: Quill Radio's playlist formats, which PL-006 reuses for M3U
 - [`docs/Product Requirement Documents and Specifications/QUILL-PRD.md`](<../Product Requirement Documents and Specifications/QUILL-PRD.md>): the editor's PRD

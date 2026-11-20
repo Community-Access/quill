@@ -244,19 +244,24 @@
 <main id="main-content" tabindex="-1">
 <h1 id="github-and-wordpress-workbench-implementation-status">GitHub and
 WordPress Workbench implementation status</h1>
-<p><strong>Updated:</strong> 2026-11-17<br />
-<strong>Status:</strong> WordPress’s last requirements are in code
-(#1842). GitHub resumed on 2026-11-15 and is the current focus.</p>
+<p><strong>Updated:</strong> 2026-11-20<br />
+<strong>Status:</strong> Historical. This is the Workbench delivery log
+up to 2026-11-18. It does not list open work. What is still open for
+both Workbenches is in <code>complete.md</code> at the repository root
+(Parts 1 and 2), and the status of each GitHub requirement is in the <a
+href="../qa/github-workbench-requirement-audit-2026-11.md">requirement
+audit</a>. The “What is left” and “Remaining” lists below are kept as
+they were written and have been overtaken; see the note under each.</p>
 <p>The accepted specifications are the <a
 href="../Product%20Requirement%20Documents%20and%20Specifications/github-workbench-prd.md">GitHub
 Workbench PRD</a> and <a
 href="../Product%20Requirement%20Documents%20and%20Specifications/wordpress-workbench-prd.md">WordPress
 Workbench PRD</a>. This page records delivery state and later decisions;
 the PRDs remain the complete statement of accepted product requirements.
-The line-by-line checklist for both Workbenches is
-<code>complete.md</code> at the repository root (sections 7 and 10B);
-the WordPress progress log is section 18 of <a
-href="../design/wordpress.md">wordpress.md</a>.</p>
+The WordPress progress log is section 18 of <a
+href="../design/wordpress.md">wordpress.md</a>. (Older entries below
+cite <code>complete.md</code> sections 6, 7 and 10B; those numbers were
+retired on 2026-11-18 and resolve in git history.)</p>
 <h2 id="current-scope-decisions">Current scope decisions</h2>
 <ul>
 <li>WordPress plugin-specific integrations in this implementation are
@@ -503,6 +508,13 @@ live-account acceptance. The engineering checklist is in the <a
 href="./github-roadmap.md">GitHub Workbench roadmap</a>.</p>
 <h3 id="what-is-left-as-of-2026-11-18">What is left, as of
 2026-11-18</h3>
+<blockquote>
+<p><strong>Overtaken, 2026-11-20.</strong> Most of this was built
+between 2026-11-19 and 2026-11-20 (#1943 to #1976; see
+<code>CHANGELOG.md</code>). What is still open is in
+<code>complete.md</code> Part 1, and the live checks in its section
+1.5.</p>
+</blockquote>
 <p>The night of 2026-11-17 to 18 finished PRD sections 14.1 and 14.2 and
 everything in 14.3 that GitHub’s API allows to a person’s sign-in. What
 remains, in four kinds:</p>
@@ -539,8 +551,9 @@ lists each one with its intended home.</li>
 </ul>
 <h2 id="wordpress">WordPress</h2>
 <h3 id="done">Done</h3>
-<p>Everything below is in <code>S:\QUILL</code>, uncommitted on
-<code>codex/workbench-combined-2026-11-10</code>, as of 2026-11-13.</p>
+<p>Everything below was built on
+<code>codex/workbench-combined-2026-11-10</code> by 2026-11-13 and
+merged with WordPress’s last requirements (#1842).</p>
 <ul>
 <li><strong>Frame and doors.</strong> The Workbench has its own
 rebindable <code>APP_KEYMAPS</code> entry, built from its menu table
@@ -604,6 +617,13 @@ in QUILL. The 2026-11-13 source run passed start, handoff, sign-in,
 restart, Workbench close and reset.</li>
 </ul>
 <h3 id="remaining">Remaining</h3>
+<blockquote>
+<p><strong>Overtaken, 2026-11-20.</strong> The live WordPress regression
+ran on the test site on 2026-11-20 (#1976: 159 pass, 0 fail), with QAF
+1.0.0, Gravity Forms 3.2.3.1, PMPro 3.9.2 on WordPress 7.1.5, Advanced
+Custom Fields, QUILL Site Types and Redirection. What is still open is
+in <code>complete.md</code> sections 2.3 to 2.5.</p>
+</blockquote>
 <ul>
 <li>The Practice Site run from an installed build, and including
 <code>scripts/wp_playground/package-lock.json</code> with the source
