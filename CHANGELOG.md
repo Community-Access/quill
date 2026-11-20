@@ -2,6 +2,16 @@
 
 ## 1.0.0
 
+### A GitHub lesson on protecting a branch (2026-11-20)
+
+- **Help > Tutorials has a lesson on branch rules.** "Protect a branch", in
+  the GitHub track, walks you through protecting main on your practice
+  repository: Configure Branch Protection from Settings > Branch Protection
+  in the Workbench, one required review, reading the rules on the branch's
+  Protection page and in Settings > Rulesets, then taking the rule off again.
+  Each step says what to press and what you should hear. That makes all
+  eleven of the GitHub lessons the plan asked for.
+
 ### More settings that stick: Studio, Media Player, Transcribe, Beacon, Weather, Radio and QUILL's dialogs (2026-11-20)
 
 - **QUILL Studio, Quill Media Player and QUILL Transcribe tell you when a

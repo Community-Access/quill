@@ -828,14 +828,14 @@ permission; without it, QUILL says so and tells you where on GitHub to delete
 it yourself.
 
 **Help > Tutorials** in the editor, or in the Workbench (`Ctrl+F2`), has a
-track of thirteen lessons that use it, "GitHub, on a practice repository": make
-it and look round; label, comment on and close an issue; try a command with
-Dry Run; review and merge a pull request; read a failed run; triage your
+track of fourteen lessons that use it, "GitHub, on a practice repository":
+make it and look round; label, comment on and close an issue; try a command
+with Dry Run; review and merge a pull request; read a failed run; triage your
 inbox; build an issue form; file an issue with it; plan a milestone; organize
 a project board; give someone access, with an access template, stopping at
-the preview; use the API Console; and delete the repository. Each step says
-what to press and what you should hear. The lesson on writing a branch rule
-is still to come.
+the preview; protect a branch, read its rules and take the rule off again;
+use the API Console; and delete the repository. Each step says what to press
+and what you should hear.
 
 ## Is it GitHub, or is it me?
 

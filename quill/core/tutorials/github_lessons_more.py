@@ -4,20 +4,23 @@
 issue, Dry Run, a pull request, a failed run and the clean-up. These are the
 other lessons D8 lists, in teaching order: triage your inbox, build an issue
 form, file an issue with it, plan a milestone, organize a project board, give
-someone access and use the API Console. D8's branch rule lesson waits
-for a way to make a rule on one repository from the Workbench.
+someone access, write a branch rule
+(:mod:`quill.core.tutorials.github_lesson_branch_rule`) and use the API Console.
 
 All but the inbox happen on ``quill-practice``. The inbox lesson works on
 your real inbox, so it uses only what changes nothing on GitHub (Snooze is
 this computer's own) or what is harmless (marking one notification read).
 Giving someone access ends at the preview, because the practice repository
-has nobody else to give it to. Where GitHub may refuse a step (a project
-needs the project permission), the step says what to do.
+has nobody else to give it to. The branch rule lesson takes its rule off again
+at the end. Where GitHub may refuse a step (a project needs the project
+permission, a private repository's rule needs a paid plan), the step says
+what to do.
 """
 
 from __future__ import annotations
 
 from quill.core.github.practice_repository import PRACTICE_NAME
+from quill.core.tutorials.github_lesson_branch_rule import branch_rule_lesson
 from quill.core.tutorials.github_lessons import (
     GITHUB_TRACK_ID,
     _go_practice,
@@ -436,7 +439,7 @@ def _access() -> Tutorial:
             "On a real repository, the same preview's Yes sends each change and says how "
             "many worked. Change History has every one."
         ),
-        then=("github-api-console",),
+        then=("github-branch-rule",),
     )
 
 
@@ -505,5 +508,6 @@ def more_github_lessons() -> tuple[Tutorial, ...]:
         _milestone(),
         _project(),
         _access(),
+        branch_rule_lesson(),
         _api_console(),
     )

@@ -243,7 +243,7 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="quill-tutorials">QUILL Tutorials</h1>
-<p>Welcome. There are 81 short lessons here, about 459 minutes in all,
+<p>Welcome. There are 82 short lessons here, about 465 minutes in all,
 and you can take them in any order. Each one is a few small steps, and
 each step tells you what to press and what you should hear.</p>
 <p>This page is the lessons written out, so you can read them anywhere.
@@ -385,8 +385,8 @@ braille, and publish it to your site and read the responses.
 repository to practise on, then file and close an issue, try Dry Run,
 review and merge a pull request, read a failed run, triage your inbox,
 build and use an issue form, plan a milestone and a project, give
-someone access, use the API Console, and delete the repository when you
-finish.
+someone access, protect a branch, use the API Console, and delete the
+repository when you finish.
 <ul>
 <li>Make a repository to practise on (5 minutes)</li>
 <li>Label, comment on and close an issue (6 minutes)</li>
@@ -399,6 +399,7 @@ finish.
 <li>Plan a milestone (6 minutes)</li>
 <li>Organize a project board (8 minutes)</li>
 <li>Give someone access (6 minutes)</li>
+<li>Protect a branch (6 minutes)</li>
 <li>Use the API Console (6 minutes)</li>
 <li>Delete the practice repository (2 minutes)</li>
 </ul></li>
@@ -4111,8 +4112,8 @@ repository</h2>
 <p>Make a private repository to practise on, then file and close an
 issue, try Dry Run, review and merge a pull request, read a failed run,
 triage your inbox, build and use an issue form, plan a milestone and a
-project, give someone access, use the API Console, and delete the
-repository when you finish.</p>
+project, give someone access, protect a branch, use the API Console, and
+delete the repository when you finish.</p>
 <h3 id="make-a-repository-to-practise-on">Make a repository to practise
 on</h3>
 <p>Make quill-practice, a private repository with issues, a pull request
@@ -4678,6 +4679,86 @@ off again, so the changes you make for real are sent.</p>
 </ol>
 <p>On a real repository, the same preview’s Yes sends each change and
 says how many worked. Change History has every one.</p>
+<p>Next: Protect a branch.</p>
+<h3 id="protect-a-branch">Protect a branch</h3>
+<p>Make a rule that main takes changes only through a reviewed pull
+request, read the rules a branch has, and take the rule off again.</p>
+<p><em>9 steps, about 6 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Open the GitHub Workbench.</strong> The Workbench is the
+window for everything on GitHub. Open it from the editor’s GitHub menu,
+signed in with the account you want to practise in.</p>
+<ul>
+<li>You should hear: GitHub Workbench, and its tree.</li>
+</ul></li>
+<li><p><strong>Go to the practice repository.</strong> Choose Practice
+on GitHub from the Help menu, then Open It. The tree moves to
+quill-practice in your account.</p>
+<ul>
+<li>Keys: Ctrl+Alt+P</li>
+<li>You should hear: quill-practice is ready to practise on.</li>
+</ul></li>
+<li><p><strong>Go to Settings.</strong> Settings holds the repository’s
+own rules. You can change them because the practice repository is
+yours.</p>
+<ul>
+<li>Keys: Ctrl+Shift+9</li>
+<li>You should hear: Settings.</li>
+</ul></li>
+<li><p><strong>Open Branch Protection.</strong> Arrow down to Branch
+Protection and press Enter. Its list starts with Configure Branch
+Protection; press Enter on that.</p>
+<ul>
+<li>Keys: Down, Enter</li>
+<li>You should hear: Configure Branch Protection, Branch, main.</li>
+</ul></li>
+<li><p><strong>Choose the branch and the rule.</strong> Focus starts on
+Branch, already main. Tab past the Remove check box to Required
+approving reviews, and press Up to make it 1. Leave the rest.</p>
+<ul>
+<li>Keys: Tab, Up</li>
+<li>You should hear: Required approving reviews, 1.</li>
+</ul></li>
+<li><p><strong>Apply it.</strong> Tab to Apply and press Enter. QUILL
+asks first: Protect main in your-name/quill-practice? Say Yes.</p>
+<ul>
+<li>Keys: Tab, Enter</li>
+<li>You should hear: The status bar says Protected main in
+your-name/quill-practice.</li>
+<li>Worth knowing: On a free plan GitHub protects branches only in
+public repositories, so it may refuse here and say so. Nothing has
+changed; read on to know the steps.</li>
+</ul></li>
+<li><p><strong>Read the rules on main.</strong> Arrow to Branches, under
+Code, then to main, and press Alt+Enter. Ctrl+Tab to the Protection
+page: Rules that apply says each rule in words.</p>
+<ul>
+<li>Keys: Alt+Enter</li>
+<li>You should hear: Branch main, on the General page.</li>
+</ul></li>
+<li><p><strong>Look at Rulesets.</strong> Close the properties with
+Escape, press Ctrl+Shift+9 for Settings, and arrow down to Rulesets. It
+lists any rulesets, each as a sentence. Alt+Enter on one opens its
+sheet; its Summary page reads every rule.</p>
+<ul>
+<li>Keys: Escape, Ctrl+Shift+9, Down</li>
+<li>You should hear: Rulesets, and how many it has.</li>
+<li>Worth knowing: The practice repository has none, so the list is
+empty.</li>
+</ul></li>
+<li><p><strong>Take the rule off.</strong> Arrow up to Branch Protection
+and press Enter on Configure Branch Protection again. Tab to Remove all
+protection from this branch instead, press Space, then Apply, and say
+Yes.</p>
+<ul>
+<li>Keys: Up, Enter, Tab, Space</li>
+<li>You should hear: The status bar says Removed protection from main in
+your-name/quill-practice.</li>
+</ul></li>
+</ol>
+<p>You can now protect a branch and read the rules on it. In the editor,
+Configure Branch Protection is under Tools &gt; Git and GitHub &gt;
+GitHub.</p>
 <p>Next: Use the API Console.</p>
 <h3 id="use-the-api-console">Use the API Console</h3>
 <p>Ask GitHub anything it has an API for, and read the answer by arrow

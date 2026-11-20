@@ -87,7 +87,7 @@ The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. On main (
 - [ ] **The rest of PRD 16.7** (#1974): Subscribe and Block, star lists, Fork and Pin and Favorite on the You page, sponsoring a repository's owner, blocking from an organization, leaving an organization and answering an invitation, reactions on comments, and commits.
 - [ ] **GH-R-150 and 151:** more kinds under Across Repositories (see the by-name collections row above).
 - [ ] **Shoulds and Mays in #1975:** Alt+Enter on a GitHub reference in a document (036), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116) and Ask How (118).
-- [ ] **GH-R-105:** the branch rule tutorial, the eleventh lesson of D8. The ruleset and branch protection editing it needs is in (#1961). Not started.
+- [x] **GH-R-105:** the branch rule tutorial, the eleventh lesson of D8: Protect a Branch, on the practice repository, with Configure Branch Protection in Settings > Branch Protection, the branch's Protection page and Settings > Rulesets (`quill/core/tutorials/github_lesson_branch_rule.py`). Done 2026-11-20.
 
 ### 1.4 Then: documentation as good as WordPress's
 
