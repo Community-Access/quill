@@ -357,7 +357,8 @@ class GitHubAccountsFlow:
         try:
             token = read_gh_token(server)
         except GhSignInError as exc:
-            self.host.call_after(self.add_token_done, "", None, str(exc), ADDED_BY_GH_CLI, server)
+            said = str(exc.args[0]) if exc.args else str(exc)
+            self.host.call_after(self.add_token_done, "", None, said, ADDED_BY_GH_CLI, server)
             return
         self.verify_new_token(token, ADDED_BY_GH_CLI, server)
 
