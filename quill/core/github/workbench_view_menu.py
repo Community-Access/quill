@@ -27,6 +27,7 @@ __all__ = [
     "ACCOUNT_ROWS",
     "COLUMNS_ROW",
     "FILTER_SUB",
+    "GO_NODES",
     "GO_ROWS",
     "GROUP_COLUMN_ROW",
     "GROUP_SUB",
@@ -225,6 +226,18 @@ ROLES_SUB = MenuSub(
             "&Bulk Access Changes...",
             help="One team or person, many repositories: previewed, then a result per change.",
         ),
+        MenuRow(
+            f"{_P}access_templates",
+            "Access &Templates...",
+            help="Named sets of access, such as Contributor: write on these repositories "
+            "and member of a team. Kept on this computer for this account.",
+        ),
+        MenuRow(
+            f"{_P}apply_access_template",
+            "Appl&y Access Template...",
+            help="Give one person everything a template holds: previewed, then a result "
+            "per change.",
+        ),
         None,
         MenuRow(
             f"{_P}account_level",
@@ -267,3 +280,29 @@ ACCOUNT_ROWS: tuple[MenuRow | MenuSub | None, ...] = (
     ),
     ROLES_SUB,
 )
+
+
+GO_NODES: dict[str, tuple[str, str]] = {
+    f"{_P}go_start": ("", "start"),
+    f"{_P}go_inbox": ("", "inbox"),
+    f"{_P}go_repository": ("repository", "repository"),
+    f"{_P}go_search": ("", "search"),
+    f"{_P}go_people": ("", "people"),
+    f"{_P}go_gists": ("", "gists"),
+    f"{_P}go_projects": ("", "projects"),
+    f"{_P}go_watches": ("", "watches"),
+    f"{_P}go_saved_searches": ("", "saved_searches"),
+    f"{_P}go_across": ("", "across"),
+    f"{_P}go_issues": ("repository", "issues"),
+    f"{_P}go_pulls": ("repository", "pulls"),
+    f"{_P}go_discussions": ("repository", "discussions"),
+    f"{_P}go_runs": ("repository", "runs"),
+    f"{_P}go_files": ("repository", "files"),
+    f"{_P}go_releases": ("repository", "releases"),
+    f"{_P}go_repo_projects": ("repository", "repo_projects"),
+    f"{_P}go_security": ("repository", "security"),
+    f"{_P}go_settings": ("repository", "settings"),
+    f"{_P}go_insights": ("repository", "insights"),
+    f"{_P}help_tutorials": ("", "help_tutorials"),  # Help > Tutorials (GH-R-105)
+}
+"""Where each Go row lands: (template, node key); a template node is the current repository's."""

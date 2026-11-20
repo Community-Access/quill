@@ -65,7 +65,16 @@ FRAME_VERBS = frozenset({
     "guide_chapter",
     "search_help",
     "keys",
+    "command_key",  # quill/ui/command_key_workbench.py
+    "what_can_i_say_here",
 })
+
+
+def _command_key(frame: Any, *, help_list: bool = False) -> None:
+    """F11 and What Can I Say Here, in this window (quill/ui/command_key_workbench.py)."""
+    from quill.ui import command_key_workbench as host
+
+    (host.workbench_what_can_i_say_here if help_list else host.workbench_command_key)(frame)
 
 
 def bound_keys(keymap_id: str, defaults: dict[str, str]) -> dict[str, str]:
@@ -304,6 +313,8 @@ class WorkbenchCommandsMixin:
             "guide_chapter": self.guide_chapter,
             "search_help": self.search_help,
             "keys": self.show_keys,
+            "command_key": lambda: _command_key(self),
+            "what_can_i_say_here": lambda: _command_key(self, help_list=True),
             "key_describer": self.toggle_key_describer,
             "open_address": self.open_address,
             "repeat_result": self.repeat_result,

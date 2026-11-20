@@ -5414,6 +5414,12 @@ it asks first when there are more than twenty.</li>
 <strong>Mentions</strong>, <strong>My Open Pull Requests</strong> and
 <strong>My Open Issues</strong> are the same work split by why it is
 yours.</li>
+<li><strong>Review Requests</strong> holds two kinds: pull requests that
+ask you by name, and those that ask a team you belong to. A team’s row
+ends in “team review request”, so you know someone else on the team may
+take it; the pull request’s own sheet names the team under Team
+reviewers. GitHub’s search cannot say which team from the list itself.
+The Inbox marks them the same way.</li>
 <li><strong>My Activity Feed</strong> is what you did lately.</li>
 </ul>
 <p>When one of these is empty, the details pane says so and says what
@@ -5994,6 +6000,10 @@ one.</li>
 to it.</li>
 <li><strong>Keys</strong> has every key in the window, grouped by what
 it does.</li>
+<li><strong>Tutorials</strong> lists the GitHub lessons; Tutorials on
+the Workbench’s own Help menu (<code>Ctrl+F2</code>) goes there. Enter
+walks the selected lesson here, one step at a time, with your keys. Each
+lesson uses the practice repository below.</li>
 <li><strong>What Changed</strong> says what is new.</li>
 <li><strong>Tips</strong> holds QUILLBert’s tips, one short thing worth
 trying in each. They wait in this list and are never pushed at you. Once
@@ -6077,8 +6087,34 @@ BRF. The whole of this guide is also one book,
 <td><code>Alt+Shift+F1</code></td>
 <td>Every key in the window</td>
 </tr>
+<tr>
+<td><code>Ctrl+F2</code></td>
+<td>Help &gt; Tutorials: the GitHub lessons, under Help and
+Learning</td>
+</tr>
+<tr>
+<td><code>F11</code></td>
+<td>Say or Type a Command, in this window</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+F1</code></td>
+<td>What Can I Say Here: what F11 can do in this window</td>
+</tr>
 </tbody>
 </table>
+<h2 id="say-or-type-a-command">Say or Type a Command</h2>
+<p><code>F11</code> works here as it does in the editor, with this
+window’s own commands. Type what you want, such as “show the pull
+requests”, “what failed” or “how much rate limit is left”, and press
+<code>Enter</code>. Only the Workbench’s commands are offered, and each
+runs exactly as its menu row would: a change still asks and previews
+first, and a Read Only account is still refused. Commands that send a
+change by themselves, such as Merge or Close, are not offered from a
+sentence; their menu rows and keys still work.</p>
+<p><strong>Help &gt; What Can I Say Here?</strong>
+(<code>Ctrl+Alt+Shift+F1</code>) lists what you can ask for in this
+window, with an example for each. In this window, requests are matched
+on this computer only and are never sent anywhere.</p>
 <h2 id="dry-run">Dry Run</h2>
 <p><strong>Dry Run</strong>, on the Workbench’s Tools menu, is a switch
 for the whole Workbench (its key there is Ctrl+Alt+D). While it is on,
@@ -6237,6 +6273,15 @@ the Workbench reads the object again and says one sentence about what
 changed: “Issue #42: added bug, removed docs.” GitHub sometimes accepts
 a change it then ignores, usually because of access; when that happens
 the sentence names the field.</li>
+<li><strong>A field GitHub needs is never sent empty.</strong> Emptying
+a title, a name, a tag or a retention period leaves it as it is, and
+QUILL says so: “Title cannot be empty on GitHub, so it was left as it
+is.” A number box must hold a whole number; anything else is said before
+anything is sent.</li>
+<li><strong>Rulesets, branch protection and environments are sent
+whole,</strong> so each save rebuilds them from what GitHub has at that
+moment. A rule somebody else changed while your sheet was open is kept,
+including one you chose Keep Theirs for.</li>
 <li><strong>Access and settings are previewed.</strong> A change to who
 has access, or to a repository setting, is read back to you in words
 first, and Enter goes ahead. Anything hard to reverse, such as making a
@@ -6256,7 +6301,9 @@ off all of them, or leave it.</li>
 3 of them already have bug.” Enter goes ahead.</li>
 <li>Then a list of results, one line per item: Done, Skipped because it
 was already so, or Failed and why. Copy Results copies them, and Retry
-Failed (<code>F8</code>) runs the failed ones again.</li>
+Failed (<code>F8</code>) runs the failed ones again. Each is read from
+GitHub afresh first, so a field that took the first time counts as
+already done.</li>
 <li>The You page works here too. Select twelve repositories in a search,
 press <code>Alt+Enter</code>, and check Starred or set Watch level on
 the You page: each repository is starred, or watched, with a result line
@@ -6298,6 +6345,12 @@ on GitHub, where GitHub allows it, and <code>Ctrl+Y</code> makes it
 again. In a text box they undo and redo your typing as usual. The same
 commands are <strong>Edit &gt; Undo GitHub Change</strong> and
 <strong>Redo GitHub Change</strong>.</p>
+<p>Undo reads the object from GitHub first, so a milestone goes back as
+the milestone it was and a ruleset keeps its other rules. If somebody
+changed the field since, Undo stops and says so rather than overwrite
+them. A redone change can be undone again. A change GitHub cannot
+reverse says why in its preview, before you save it, and again if you
+ask to undo it: a secret’s old value, for one, is never given back.</p>
 <p><strong>Account &gt; Change History…</strong>
 (<code>Ctrl+Shift+H</code>) lists every change the Workbench has made,
 newest first: what, when, before and after, and whether GitHub confirmed
@@ -6475,7 +6528,22 @@ something, and who can change it;</li>
 <li><strong>Access Review…</strong>, every person and repository pair in
 an organization with their role, copied as CSV too;</li>
 <li><strong>Bulk Access Changes…</strong>, one team or person on many
-repositories at once, previewed, with a result per change.</li>
+repositories at once, previewed, with a result per change;</li>
+<li><strong>Access Templates…</strong>, named sets of access, such as
+Contributor: write on these repositories and member of a team. Choose
+New Template…, give it a name, and write one line for each place:
+<code>write on owner/name</code> (read, triage, write, maintain or
+admin), <code>member of org/team</code> or
+<code>maintainer of org/team</code>, and <code>member of org</code> or
+<code>owner of org</code>. A line it cannot read is said and left out.
+Templates are kept on this computer, for this account, and making one
+sends nothing;</li>
+<li><strong>Apply Access Template…</strong>, everything a template
+holds, given to one person by login in one batch: organization first,
+then teams, then repositories. The preview says every change in words
+and asks once; each change then has its own result and its own line in
+Change History. It needs Full for this account in the Workbench, as any
+access change does.</li>
 </ul>
 <h3 id="who-has-what-and-why">Who has what, and why</h3>
 <p>Under an organization in the tree, three lists answer “who can do

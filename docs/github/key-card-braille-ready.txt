@@ -117,17 +117,20 @@ Ctrl+Shift+E: Switch to Editor
 HELP
 F1: Help for This View
 Shift+F1: What Can I Do Here?
+F11: Say or Type a Command
+Ctrl+Alt+Shift+F1: What Can I Say Here?
 Alt+F1: What Is This?
 Ctrl+F1: GitHub Workbench Guide
 Ctrl+Shift+F1: Search Help
 Alt+Shift+T: Take the Tour
 Alt+Shift+A: Ask How
+Ctrl+F2: Tutorials
 Ctrl+Alt+P: Practice on GitHub
 Ctrl+Alt+F1: GitHub Service Status
+
 Alt+Shift+F1: Workbench Keys
 Ctrl+Alt+K: Key Describer
 F9: Say Last Result Again
-
 Shift+F9: Explain That
 
 ALSO

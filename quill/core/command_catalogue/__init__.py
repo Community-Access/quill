@@ -21,6 +21,7 @@ from functools import cache
 from quill.core.command_catalogue.editor import EDITOR_ROWS
 from quill.core.command_catalogue.radio import RADIO_ROWS
 from quill.core.command_catalogue.spec import Arg, ArgKind, CommandSpec, Kind, Risk
+from quill.core.command_catalogue.workbench import WORKBENCH_ROWS
 
 __all__ = [
     "APPS",
@@ -38,8 +39,9 @@ __all__ = [
     "rows_for_app",
 ]
 
-#: The apps with catalogue rows. ``lite`` is a view of ``quill``.
-APPS: tuple[str, ...] = ("quill", "lite", "radio")
+#: The apps with catalogue rows. ``lite`` is a view of ``quill``. Each Workbench
+#: window is its own app, whichever editor opened it (command-key.md 13.12).
+APPS: tuple[str, ...] = ("quill", "lite", "radio", "github_workbench", "wordpress_workbench")
 
 #: The prefix QUILL Lite's registry gives each handler (``lite_services``).
 LITE_PREFIX = "lite."
@@ -47,7 +49,7 @@ LITE_PREFIX = "lite."
 
 def all_rows() -> tuple[CommandSpec, ...]:
     """Every row, in table order."""
-    return EDITOR_ROWS + RADIO_ROWS
+    return EDITOR_ROWS + RADIO_ROWS + WORKBENCH_ROWS
 
 
 @cache

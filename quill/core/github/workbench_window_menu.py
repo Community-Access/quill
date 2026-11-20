@@ -34,6 +34,7 @@ from quill.core.github.workbench_view_menu import (
     ACCOUNT_ROWS,
     COLUMNS_ROW,
     FILTER_SUB,
+    GO_NODES,
     GO_ROWS,
     GROUP_SUB,
     LOAD_ALL_ROW,
@@ -41,7 +42,7 @@ from quill.core.github.workbench_view_menu import (
     SORT_SUB,
     STATE_SUB,
 )
-from quill.core.workbench.menus import MenuRow, MenuSpec, rows
+from quill.core.workbench.menus import MenuRow, MenuSpec, command_key_rows, rows
 
 __all__ = [
     "ALIAS_KEYS",
@@ -471,6 +472,7 @@ _HELP = MenuSpec(
             "Shift+F1",
             "Every action for the selection, its key, and why any is greyed.",
         ),
+        *command_key_rows(_P),  # F11 and Ctrl+Alt+Shift+F1, as in every family app
         _row("glossary", "What &Is This?", "Alt+F1", "The GitHub word for this row, explained."),
         _row(
             "guide_chapter",
@@ -486,7 +488,7 @@ _HELP = MenuSpec(
         ),
         _row(
             "tour",
-            "Take the &Tour",
+            "Take the T&our",
             "Alt+Shift+T",
             "A spoken tour of the window: each pane, and one thing to do there. F6 moves "
             "on, Escape stops.",
@@ -497,6 +499,12 @@ _HELP = MenuSpec(
             "Alt+Shift+A",
             "Ask in your own words how to do something here. The answer comes only from this help, "
             "through the AI you chose. A command it names runs only when you choose it.",
+        ),
+        _row(
+            "help_tutorials",
+            "&Tutorials",
+            "Ctrl+F2",
+            "The GitHub lessons, each on the practice repository, with what you have done.",
         ),
         _row(
             "practice",
@@ -548,30 +556,6 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
     _HELP,
 )
 """The bar, in order (GitHub PRD section 4)."""
-
-GO_NODES: dict[str, tuple[str, str]] = {
-    f"{_P}go_start": ("", "start"),
-    f"{_P}go_inbox": ("", "inbox"),
-    f"{_P}go_repository": ("repository", "repository"),
-    f"{_P}go_search": ("", "search"),
-    f"{_P}go_people": ("", "people"),
-    f"{_P}go_gists": ("", "gists"),
-    f"{_P}go_projects": ("", "projects"),
-    f"{_P}go_watches": ("", "watches"),
-    f"{_P}go_saved_searches": ("", "saved_searches"),
-    f"{_P}go_across": ("", "across"),
-    f"{_P}go_issues": ("repository", "issues"),
-    f"{_P}go_pulls": ("repository", "pulls"),
-    f"{_P}go_discussions": ("repository", "discussions"),
-    f"{_P}go_runs": ("repository", "runs"),
-    f"{_P}go_files": ("repository", "files"),
-    f"{_P}go_releases": ("repository", "releases"),
-    f"{_P}go_repo_projects": ("repository", "repo_projects"),
-    f"{_P}go_security": ("repository", "security"),
-    f"{_P}go_settings": ("repository", "settings"),
-    f"{_P}go_insights": ("repository", "insights"),
-}
-"""Where each Go row lands: (template, node key); a template node is the current repository's."""
 
 #: Second keys for a menu row's command, handled by the window itself: a menu
 #: label can show one key, so the other is here (and in the keyboard reference).

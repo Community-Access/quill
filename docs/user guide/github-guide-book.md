@@ -4363,6 +4363,12 @@ first place under it.
 - **Review Requests**, **Assigned to Me**, **Mentions**, **My Open Pull
   Requests** and **My Open Issues** are the same work split by why it is
   yours.
+- **Review Requests** holds two kinds: pull requests that ask you by name,
+  and those that ask a team you belong to. A team's row ends in "team review
+  request", so you know someone else on the team may take it; the pull
+  request's own sheet names the team under Team reviewers. GitHub's search
+  cannot say which team from the list itself. The Inbox marks them the same
+  way.
 - **My Activity Feed** is what you did lately.
 
 When one of these is empty, the details pane says so and says what would fill
@@ -5017,6 +5023,7 @@ The last place in the tree is help you can walk through like any other list.
   lesson in the editor's Tutorials window. Walk Me Through It, on the context
   menu, says it here instead, one step at a time, with your keys. In QUILL
   Lite, which has no GitHub lessons of its own, Enter walks it here too.
+  **Help > Tutorials** (`Ctrl+F2`) goes straight there.
 - **What Changed** says what is new.
 - **Tips** holds QUILLBert's tips, one short thing worth trying in each.
   They wait in this list and are never pushed at you. Once in a while a tip
@@ -5076,6 +5083,9 @@ The help keys work everywhere in the window:
 | `Ctrl+F1` | This guide, at the chapter for where you are |
 | `Ctrl+Shift+F1` | Search all of help: places, commands, words and tasks |
 | `Alt+Shift+F1` | Every key in the window |
+| `Ctrl+F2` | Help > Tutorials: the GitHub lessons, under Help and Learning |
+| `F11` | Say or Type a Command, in this window |
+| `Ctrl+Alt+Shift+F1` | What Can I Say Here: what F11 can do in this window |
 | `Ctrl+Alt+K` | Key Describer: press keys to hear what each does here, without doing it; `Escape` stops |
 
 **Why?** explains something the Workbench did on its own, with no key from
@@ -5105,6 +5115,20 @@ watch and notification rows also have it on their context menu. It covers:
 
 Shift+F1 already says why a command is greyed, and a sheet says why a field
 is read-only beside the field.
+
+## Say or Type a Command
+
+`F11` works here as it does in the editor, with this window's own commands.
+Type what you want, such as "show the pull requests", "what failed" or "how
+much rate limit is left", and press `Enter`. Only the Workbench's commands are
+offered, and each runs exactly as its menu row would: a change still asks and
+previews first, and a Read Only account is still refused. Commands that send
+a change by themselves, such as Merge or Close, are not offered from a
+sentence; their menu rows and keys still work.
+
+**Help > What Can I Say Here?** (`Ctrl+Alt+Shift+F1`) lists what you can ask
+for in this window, with an example for each. In this window, requests are
+matched on this computer only and are never sent anywhere.
 
 ## Dry Run
 
@@ -5142,11 +5166,15 @@ delete a repository only when you signed in with the `delete_repo`
 permission; without it, QUILL says so and tells you where on GitHub to delete
 it yourself.
 
-**Help > Tutorials** in the editor has a track of six lessons that use it,
-"GitHub, on a practice repository": make it and look round; label, comment on
-and close an issue; try a command with Dry Run; review and merge a pull
-request; read a failed run; and delete the repository. Each step says what to
-press and what you should hear.
+**Help > Tutorials** in the editor, or in the Workbench (`Ctrl+F2`), has a
+track of thirteen lessons that use it, "GitHub, on a practice repository": make
+it and look round; label, comment on and close an issue; try a command with
+Dry Run; review and merge a pull request; read a failed run; triage your
+inbox; build an issue form; file an issue with it; plan a milestone; organize
+a project board; give someone access, with an access template, stopping at
+the preview; use the API Console; and delete the repository. Each step says
+what to press and what you should hear. The lesson on writing a branch rule
+is still to come.
 
 ## Is it GitHub, or is it me?
 
@@ -5371,6 +5399,14 @@ field.
   the object again and says one sentence about what changed: "Issue #42:
   added bug, removed docs." GitHub sometimes accepts a change it then ignores,
   usually because of access; when that happens the sentence names the field.
+- **A field GitHub needs is never sent empty.** Emptying a title, a name, a
+  tag or a retention period leaves it as it is, and QUILL says so: "Title
+  cannot be empty on GitHub, so it was left as it is." A number box must hold
+  a whole number; anything else is said before anything is sent.
+- **Rulesets, branch protection and environments are sent whole,** so each
+  save rebuilds them from what GitHub has at that moment. A rule somebody
+  else changed while your sheet was open is kept, including one you chose
+  Keep Theirs for.
 - **Access and settings are previewed.** A change to who has access, or to a
   repository setting, is read back to you in words first, and Enter goes
   ahead. Anything hard to reverse, such as making a private repository
@@ -5391,7 +5427,8 @@ issues".
   them already have bug." Enter goes ahead.
 - Then a list of results, one line per item: Done, Skipped because it was
   already so, or Failed and why. Copy Results copies them, and Retry Failed
-  (`F8`) runs the failed ones again.
+  (`F8`) runs the failed ones again. Each is read from GitHub afresh first,
+  so a field that took the first time counts as already done.
 - The You page works here too. Select twelve repositories in a search,
   press `Alt+Enter`, and check Starred or set Watch level on the You page:
   each repository is starred, or watched, with a result line for each.
@@ -5435,6 +5472,14 @@ WordPress Workbench's Plain-Language Batch reads ages the same way.
 GitHub allows it, and `Ctrl+Y` makes it again. In a text box they undo and
 redo your typing as usual. The same commands are **Edit > Undo GitHub
 Change** and **Redo GitHub Change**.
+
+Undo reads the object from GitHub first, so a milestone goes back as the
+milestone it was and a ruleset keeps its other rules. If somebody changed the
+field since, Undo stops and says so rather than overwrite them. A redone
+change can be undone again. A change GitHub cannot reverse says why in its
+preview, before you save it, and again if you ask to undo it: a secret's old
+value is never given back, and taking an item out of a Project deletes its
+field values there.
 
 **Account > Change History...** (`Ctrl+Shift+H`) lists every change the
 Workbench has made, newest first: what, when, before and after, and whether
@@ -5618,7 +5663,19 @@ invitation's role, so for one of those, Remove it and invite them again.
 - **Access Review...**, every person and repository pair in an organization
   with their role, copied as CSV too;
 - **Bulk Access Changes...**, one team or person on many repositories at
-  once, previewed, with a result per change.
+  once, previewed, with a result per change;
+- **Access Templates...**, named sets of access, such as Contributor: write
+  on these repositories and member of a team. Choose New Template..., give it
+  a name, and write one line for each place: `write on owner/name` (read,
+  triage, write, maintain or admin), `member of org/team` or `maintainer of
+  org/team`, and `member of org` or `owner of org`. A line it cannot read is
+  said and left out. Templates are kept on this computer, for this account,
+  and making one sends nothing;
+- **Apply Access Template...**, everything a template holds, given to one
+  person by login in one batch: organization first, then teams, then
+  repositories. The preview says every change in words and asks once; each
+  change then has its own result and its own line in Change History. It
+  needs Full for this account in the Workbench, as any access change does.
 
 ### Who has what, and why
 

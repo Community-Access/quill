@@ -537,7 +537,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Inbox (`:inbox`) | attention | Inbox: one list of what needs you, from notifications, review requests, assignments and mentions. Enter opens a row; Delete marks it done. |
 | Notifications (`:notifications`) | attention | Notifications: what GitHub has told you about, unread first. Ctrl+Q marks one read, Delete marks it done, and Ctrl+Shift+Q marks the whole view read. |
 | Invitations (`:invitations`) | attention | Invitations: repositories you have been invited to, who invited you and with what access. Accept or Decline from a row's context menu. |
-| Review Requests (`:review_requests`) | attention | Review Requests: pull requests somebody asked you to review. Enter opens the review. |
+| Review Requests (`:review_requests`) | attention | Review Requests: pull requests somebody asked you, or a team you are on, to review. A team's ends in team review request. Enter opens the review. |
 | Assigned to Me (`:assigned`) | attention | Assigned to Me: issues and pull requests assigned to you, anywhere. |
 | Mentions (`:mentions`) | attention | Mentions: issues and pull requests where somebody wrote your name. |
 | My Open Pull Requests (`:my_pulls`) | attention | My Open Pull Requests: pull requests you opened that are still open. |
@@ -929,6 +929,8 @@ Everything below is generated from the tables the window is built from. The GitH
 | Roles and Access > Why Can't They?... | (submenu letter) | Name a person and an action; hear what stops them and who can fix it. |
 | Roles and Access > Access Review... | (submenu letter) | Every person and repository pair in an organization, with role and source: filterable, exportable as CSV. |
 | Roles and Access > Bulk Access Changes... | (submenu letter) | One team or person, many repositories: previewed, then a result per change. |
+| Roles and Access > Access Templates... | (submenu letter) | Named sets of access, such as Contributor: write on these repositories and member of a team. Kept on this computer for this account. |
+| Roles and Access > Apply Access Template... | (submenu letter) | Give one person everything a template holds: previewed, then a result per change. |
 | Roles and Access > Workbench Level for This Account... | (submenu letter) | Read Only, Organize or Full: what the Workbench may change with this account, whatever GitHub would allow. |
 | Roles and Access > Least Privilege Advice... | (submenu letter) | The smallest token scopes, fine-grained permissions and Workbench level that cover what QUILL saw this account do here, and what it cannot know. Changes nothing. |
 
@@ -953,11 +955,14 @@ Everything below is generated from the tables the window is built from. The GitH
 | --- | --- | --- |
 | Help for This View | F1 | What this view and control do. |
 | What Can I Do Here?... | Shift+F1 | Every action for the selection, its key, and why any is greyed. |
+| Say or Type a Command... | F11 | Type what you want this window to do, such as show the issues; only this window's commands, matched on this computer. |
+| What Can I Say Here? | Ctrl+Alt+Shift+F1 | What Say or Type a Command can do in this window, with an example for each. |
 | What Is This? | Alt+F1 | The GitHub word for this row, explained. |
 | GitHub Workbench Guide | Ctrl+F1 | The guide, opened at the chapter for where you are. |
 | Search Help... | Ctrl+Shift+F1 | Type a few words to find a help topic, a command or a GitHub word. |
 | Take the Tour | Alt+Shift+T | A spoken tour of the window: each pane, and one thing to do there. F6 moves on, Escape stops. |
 | Ask How... | Alt+Shift+A | Ask in your own words how to do something here. The answer comes only from this help, through the AI you chose. A command it names runs only when you choose it. |
+| Tutorials | Ctrl+F2 | The GitHub lessons, each on the practice repository, with what you have done. |
 | Practice on GitHub... | Ctrl+Alt+P | Make, open or delete quill-practice, a private repository with issues, a pull request and a failing run to learn on. |
 | GitHub Service Status... | Ctrl+Alt+F1 | Whether GitHub says it is working, which parts are not, and any incident. Reads www.githubstatus.com, only when you ask. |
 | Workbench Keys | Alt+Shift+F1 | Every key in this window, by family. |

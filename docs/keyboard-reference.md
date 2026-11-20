@@ -1037,6 +1037,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+N | Inbox Rules... | `github.workbench.inbox_rules` |
 | Ctrl+Alt+P | Practice on GitHub... | `github.workbench.practice` |
 | Ctrl+Alt+S | Set Your Status... | `github.workbench.user_status` |
+| Ctrl+Alt+Shift+F1 | What Can I Say Here? | `github.workbench.what_can_i_say_here` |
 | Ctrl+Alt+T | Transfer Repository... | `github.workbench.transfer_repository` |
 | Ctrl+Alt+W | Clone Wiki... | `github.workbench.clone_wiki` |
 | Ctrl+B | Compare With Default | `github.workbench.compare_default` |
@@ -1046,6 +1047,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+E | Filter... | `github.workbench.filter` |
 | Ctrl+Enter | Open in Editor | `github.workbench.open_in_editor` |
 | Ctrl+F1 | GitHub Workbench Guide | `github.workbench.guide_chapter` |
+| Ctrl+F2 | Tutorials | `github.workbench.help_tutorials` |
 | Ctrl+F5 | Refresh Ignoring Cache | `github.workbench.refresh_uncached` |
 | Ctrl+G | Go to Number... | `github.workbench.go_to_number` |
 | Ctrl+L | Open GitHub Address... | `github.workbench.open_address` |
@@ -1094,6 +1096,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Z | Undo GitHub Change | `github.workbench.undo_change` |
 | Delete | Remove, safely (in the list) | `github.workbench.remove` |
 | F1 | Help for This View | `github.workbench.help_view` |
+| F11 | Say or Type a Command... | `github.workbench.command_key` |
 | F5 | Refresh | `github.workbench.refresh` |
 | F6 | Next Pane | `github.workbench.next_pane` |
 | F9 | Say Last Result Again | `github.workbench.repeat_result` |
@@ -1147,6 +1150,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+D | Move to Another Day... | `wordpress.workbench.move_day` |
 | Ctrl+Alt+Shift+E | Empty Comment Trash... | `wordpress.workbench.empty_comment_trash` |
 | Ctrl+Alt+Shift+F | Forget a Saved Request... | `wordpress.workbench.forget_saved` |
+| Ctrl+Alt+Shift+F1 | What Can I Say Here? | `wordpress.workbench.what_can_i_say_here` |
 | Ctrl+Alt+Shift+I | Import a Folder of Documents... | `wordpress.workbench.import_folder` |
 | Ctrl+Alt+Shift+M | Show Its Comments | `wordpress.workbench.show_comments` |
 | Ctrl+Alt+Shift+P | Your Profile... | `wordpress.workbench.your_profile` |
@@ -1195,6 +1199,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Z | Undo WordPress Change | `wordpress.workbench.undo` |
 | Delete | Move to Trash | `wordpress.workbench.trash` |
 | F1 | Help for This View | `wordpress.workbench.help_view` |
+| F11 | Say or Type a Command... | `wordpress.workbench.command_key` |
 | F5 | Refresh | `wordpress.workbench.refresh` |
 | F6 | Next Pane | `wordpress.workbench.next_pane` |
 | F9 | Say Last Result Again | `wordpress.workbench.repeat_result` |
