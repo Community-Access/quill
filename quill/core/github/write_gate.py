@@ -131,6 +131,8 @@ _OWN_TITLES: dict[str, str] = {
             ("upload_sarif", "Upload SARIF"),
             ("codespace_new", "New Codespace"),
             ("pages_turn_on", "Turn On GitHub Pages"),
+            ("new_workflow", "New Workflow"),
+            ("compare_config", "Compare Configuration With Another Repository"),
         )
     },
     "github.fork_repository": "Fork Repository",
