@@ -266,15 +266,17 @@ def thread_markdown(doc: ThreadDocument) -> str:
     Emoji shortcodes outside code are read by name (``:tada:``, party popper),
     since this is a document for reading (:mod:`quill.core.github.emoji_names`).
     """
+    from quill.core.counted import plural
     from quill.core.github.emoji_names import name_shortcodes
 
     kind = doc.kind.capitalize()
+    posts = plural(len(doc.entries), "post")
     lines = [
         f"# {kind} {doc.repository}#{doc.number}: {doc.title}",
         "",
-        f"State: {doc.state or 'unknown'}. {len(doc.entries)} posts. Source: <{doc.url}>"
+        f"State: {doc.state or 'unknown'}. {posts}. Source: <{doc.url}>"
         if doc.url
-        else f"State: {doc.state or 'unknown'}. {len(doc.entries)} posts.",
+        else f"State: {doc.state or 'unknown'}. {posts}.",
     ]
     lines.extend(f"\n{warning}" for warning in doc.warnings)
     for entry in doc.entries:
