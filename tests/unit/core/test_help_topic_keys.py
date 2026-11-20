@@ -34,8 +34,10 @@ def test_every_command_topic_lists_its_default_key() -> None:
 #: Chords a topic may name that the editor's keymap does not bind: keys inside
 #: a dialog or list (access keys, Enter-style keys, native text-control keys),
 #: and Quill Radio's Winamp keys, which live in the recordings window's own table.
+#: Alt+Enter is the editors' key on a GitHub reference (GH-R-036), answered by
+#: their key handlers rather than the keymap, so it is taken nowhere else.
 _LOCAL = re.compile(
-    r"^(Alt\+[A-Z]|Alt\+arrows|Ctrl\+[ACVX]|Ctrl\+Insert|Ctrl\+Enter|Ctrl\+Tab|"
+    r"^(Alt\+[A-Z]|Alt\+Enter|Alt\+arrows|Ctrl\+[ACVX]|Ctrl\+Insert|Ctrl\+Enter|Ctrl\+Tab|"
     r"Ctrl\+Shift\+Tab|Shift\+(Left|Right|Tab|F10|V)|Ctrl\+(Up|Down|J|T))$"
 )
 _CHORD = re.compile(
