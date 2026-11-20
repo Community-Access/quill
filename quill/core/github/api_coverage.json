@@ -958,7 +958,7 @@
   "DELETE /repos/{owner}/{repo}/pages": {"status": "covered", "home": "command:github.workbench.pages_turn_off", "via": "quill/core/github/pages_tools.py"},
   "GET /repos/{owner}/{repo}/pages": {"status": "covered", "home": "node:repository:pages", "via": "quill/core/github/explore.py"},
   "POST /repos/{owner}/{repo}/pages": {"status": "covered", "home": "node:repository:pages", "via": "quill/core/github/pages_tools.py"},
-  "PUT /repos/{owner}/{repo}/pages": {"status": "covered", "home": "node:repository:pages", "via": "quill/core/github/sheets_repo.py"},
+  "PUT /repos/{owner}/{repo}/pages": {"status": "covered", "home": "sheet:repository.pages_source", "via": "quill/core/github/sheets_repo_more.py"},
   "GET /repos/{owner}/{repo}/pages/builds": {"status": "covered", "home": "node:repository:pages", "via": "quill/core/github/explore.py"},
   "POST /repos/{owner}/{repo}/pages/builds": {"status": "covered", "home": "command:github.workbench.pages_rebuild", "via": "quill/core/github/pages_tools.py"},
   "GET /repos/{owner}/{repo}/pages/builds/latest": {"status": "covered", "home": "command:github.workbench.pages_check", "via": "quill/core/github/pages_tools.py"},

@@ -167,6 +167,27 @@ what shipped.
   counted one ordinary link twice, so it said a one-link comment would be
   held under the two-link rule.
 
+### GitHub Workbench: repository settings, Create Repository, Transfer, Pages and Packages (2026-11-20)
+
+- **Create Repository...**, in the editor and the Workbench, asks for every
+  option GitHub takes: owner, name, description, website, private or public,
+  and either a template (with all its branches or only the default) or a
+  README, a .gitignore template and a licence. When GitHub would refuse the
+  combination, the dialog stays open and its Problem box says why.
+- **Transfer Repository...** also asks for a new name and, for an
+  organization, which teams get access. The typed confirmation says where the
+  repository will land.
+- The **Merging** page sets the default title and message of squash and merge
+  commits as one choice each, in the words of GitHub's settings page, so
+  changing only the message is no longer refused.
+- The **Pages** page shows the site's status and latest build, and sets how it
+  is built, the branch and folder, the custom domain and Enforce HTTPS.
+- **Repository > Packages** lists the packages published from the
+  repository. **Delete Package Version...** asks you to type the package's
+  name.
+- The Features page shows the Sponsor button's links. GitHub's API cannot turn
+  the button on or off, and its help says so.
+
 ### Hosted AI service: accounting you can trust, and one sign-in per code (2026-11-20)
 
 These are fixes to the free AI service itself (`quill-ai-gateway/`), found

@@ -34,6 +34,7 @@ import os
 from typing import Any
 
 from quill.core.github.repo_admin import GitHubRepoAdminError, GitHubRepoAdminProvider
+from quill.core.github.repo_create import create
 from quill.core.github.token_store import load_github_token
 
 
@@ -130,20 +131,11 @@ class GitHubAdminMixin:
         if result is None:
             self._set_status("Repository creation cancelled")
             return
-
-        def work(_progress: object) -> object:
-            provider = GitHubRepoAdminProvider(token)
-            try:
-                return provider.create_repository(
-                    result.name,
-                    private=result.private,
-                    description=result.description,
-                    org=result.org,
-                )
-            finally:
-                provider.close()
-
-        self._gh_admin_run(f"Creating {result.name}", work, self._on_github_repo_created)
+        self._gh_admin_run(
+            f"Creating {result.name}",
+            lambda _progress: create(token, result.new),
+            self._on_github_repo_created,
+        )
 
     def _on_github_repo_created(self, repo: Any) -> None:
         self._set_status(f"Created {repo.full_name} at {repo.html_url}")

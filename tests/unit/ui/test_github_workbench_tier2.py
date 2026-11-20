@@ -150,7 +150,8 @@ def test_transfer_asks_the_owner_then_the_typed_name(monkeypatch) -> None:
     seen = _typed(monkeypatch, True)
     window = _Window()
     window.api = TransferApi({"full_name": "team/r"})
-    window._ask_text = lambda *_a, **_k: "@team"
+    answers = iter(["@team", "r", ""])  # owner, name kept, no teams
+    window._ask_text = lambda *_a, **_k: next(answers)
     window.frame.frame = None
     window.frame.current = SimpleNamespace(template="repository")
     assert window._fits_transfer_repository(None)
@@ -166,11 +167,57 @@ def test_transfer_cancelled_at_the_typed_name_sends_nothing(monkeypatch) -> None
     _typed(monkeypatch, False)
     window = _Window()
     window.api = TransferApi()
-    window._ask_text = lambda *_a, **_k: "team"
+    answers = iter(["team", "", ""])
+    window._ask_text = lambda *_a, **_k: next(answers)
     window.frame.frame = None
     window._do_transfer_repository(REF, None)
     assert window.api.sent == []
     assert window.said == ["Cancelled; the repository was not transferred."]
+
+
+def test_transfer_renames_and_gives_teams_access_in_the_preview(monkeypatch) -> None:
+    from tests.unit.core.github_workbench.test_repo_transfer import FakeApi as TransferApi
+
+    _typed(monkeypatch, True)
+    shown: list[str] = []
+
+    class Typed:
+        def __init__(self, _parent: Any, **kw: Any) -> None:
+            shown.append(kw["message"])
+
+        def show(self) -> bool:
+            return True
+
+    monkeypatch.setattr("quill.ui.github_repo_admin_dialogs.TypedConfirmDialog", Typed)
+    window = _Window()
+    window.api = TransferApi({"id": 7, "full_name": "team/site"})
+    answers = iter(["team", "site", "Docs Writers"])
+    window._ask_text = lambda *_a, **_k: next(answers)
+    window.frame.frame = None
+    window._do_transfer_repository(REF, None)
+    assert "to team as team/site, giving Docs Writers access" in shown[0]
+    assert window.api.sent[0] == ("GET", "/orgs/team/teams/docs-writers", None)
+    assert window.api.sent[1] == (
+        "POST",
+        "/repos/o/r/transfer",
+        {"new_owner": "team", "new_name": "site", "team_ids": [7]},
+    )
+
+
+def test_transfer_refuses_a_bad_new_name_before_asking_to_type(monkeypatch) -> None:
+    from tests.unit.core.github_workbench.test_repo_transfer import FakeApi as TransferApi
+
+    seen = _typed(monkeypatch, True)
+    window = _Window()
+    window.api = TransferApi()
+    answers = iter(["team", "a b", ""])
+    window._ask_text = lambda *_a, **_k: next(answers)
+    window.frame.frame = None
+    window._do_transfer_repository(REF, None)
+    assert seen == [] and window.api.sent == []
+    assert window.said == [
+        "a b is not a repository name: use letters, digits, hyphens, underscores and full stops."
+    ]
 
 
 def test_delete_tag_names_the_release_built_on_it_first() -> None:

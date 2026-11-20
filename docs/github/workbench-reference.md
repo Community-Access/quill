@@ -645,6 +645,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Tags (`repository:tags`) | repository, code | Tags: names for particular commits, usually versions. |
 | Upstream (`repository:upstream`) | repository, code | Upstream: the repository this one was forked from. Forks only. |
 | Releases (`repository:releases`) | repository, repository | Releases: published versions and their files. Enter lists the files. |
+| Packages (`repository:repo_packages`) | repository, repository | Packages: what this repository publishes, such as container images and npm packages. Show Versions lists each one's versions; Delete Package Version asks you to type the package's name. |
 | Labels (`repository:labels`) | repository, repository | Labels: tags for issues and pull requests. Enter finds the issues. |
 | Milestones (`repository:milestones`) | repository, repository | Milestones: goals with a date. Enter lists the issues and pull requests in one. |
 | Templates (`repository:templates`) | repository, repository | Templates: issue forms, Markdown templates, the chooser, pull request templates, discussion forms and community files, including those inherited from the owner's .github repository. Enter builds or edits one; Ctrl+N starts a new one. |
@@ -2395,7 +2396,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 | Delete a GitHub Pages site | `DELETE /repos/{owner}/{repo}/pages` | Yes | context menu > Turn Off Pages... |
 | Get a GitHub Pages site | `GET /repos/{owner}/{repo}/pages` | Yes | Navigator: Repository > owner/name > GitHub Pages |
 | Create a GitHub Pages site | `POST /repos/{owner}/{repo}/pages` | Yes | Navigator: Repository > owner/name > GitHub Pages |
-| Update information about a GitHub Pages site | `PUT /repos/{owner}/{repo}/pages` | Yes | Navigator: Repository > owner/name > GitHub Pages |
+| Update information about a GitHub Pages site | `PUT /repos/{owner}/{repo}/pages` | Yes | Properties (Alt+Enter) on Repository: Branch and folder |
 | List GitHub Pages builds | `GET /repos/{owner}/{repo}/pages/builds` | Yes | Navigator: Repository > owner/name > GitHub Pages |
 | Request a GitHub Pages build | `POST /repos/{owner}/{repo}/pages/builds` | Yes | context menu > Rebuild |
 | Get latest Pages build | `GET /repos/{owner}/{repo}/pages/builds/latest` | Yes | context menu > Check Site |

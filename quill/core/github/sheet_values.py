@@ -54,6 +54,9 @@ NEVER_EMPTY: dict[tuple[str, str], str] = {
     ("repository", "retention_days"): "",
     ("organization", "org_retention_days"): "",
     ("team", "review_count"): "",
+    ("repository", "pages_source"): (
+        "GitHub Pages always builds from a branch and folder, so it was left as it is."
+    ),
 }
 
 

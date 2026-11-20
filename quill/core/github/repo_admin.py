@@ -21,7 +21,7 @@ exact repository/branch/action, exactly like the existing
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -121,19 +121,24 @@ class GitHubRepoAdminProvider:
         private: bool = True,
         description: str = "",
         org: str = "",
+        options: Mapping[str, object] | None = None,
     ) -> RemoteRepository:
         """Create a new repository, optionally under an organization.
 
-        Raises :class:`GitHubRepoAdminError` if the name is taken, invalid,
-        or the token lacks the ``repo`` scope.
+        *options* are :func:`quill.core.github.repo_create.create_kwargs`'s
+        (website, README, .gitignore and licence templates), which
+        replace *private* and *description* when given. Naming your own
+        login as *org* creates it on your account. Raises
+        :class:`GitHubRepoAdminError` if the name is taken, invalid, or the
+        token lacks the ``repo`` scope.
         """
+        chosen: dict[str, Any] = dict(options or {"private": private, "description": description})
         try:
-            if org:
-                owner = self._gh.get_organization(org)
-                repo = owner.create_repo(name, private=private, description=description)
+            me = self._gh.get_user()
+            if org and org.lower() != str(getattr(me, "login", "")).lower():
+                repo = self._gh.get_organization(org).create_repo(name, **chosen)
             else:
-                user = self._gh.get_user()
-                repo = user.create_repo(name, private=private, description=description)
+                repo = me.create_repo(name, **chosen)
         except Exception as exc:  # noqa: BLE001
             raise _translate(exc, context=f"Could not create repository {name!r}") from exc
         return _to_repository(repo)
