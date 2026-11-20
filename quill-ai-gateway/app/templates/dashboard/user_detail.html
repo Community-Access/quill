@@ -99,11 +99,14 @@
       <label for="status">Set status</label>
       <select id="status" name="status" aria-describedby="status-help">
         <option value="active" {{ "selected" if user.status == "active" }}>Active — normal use</option>
-        <option value="reduced" {{ "selected" if user.status == "reduced" }}>Reduced quota</option>
+        <option value="reduced" {{ "selected" if user.status == "reduced" }}>Reduced quota — {{ reduced_cap }} requests a month</option>
         <option value="review" {{ "selected" if user.status == "review" }}>Under review — a smaller daily limit</option>
         <option value="blocked" {{ "selected" if user.status == "blocked" }}>Paused — no requests at all</option>
       </select>
       <p id="status-help" class="field-description">All four are reversible.
+        <em>Reduced quota</em> gives a smaller monthly allowance, set on the
+        Limits page; a number in <em>Requests per month</em> (under Give this
+        person different limits) still wins.
         <em>Under review</em> is the soft option: a smaller daily limit, and the
         person is told it applies and told to contact support. <em>Paused</em>
         stops every request immediately; setting it back to active restores

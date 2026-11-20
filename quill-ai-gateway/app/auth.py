@@ -118,10 +118,15 @@ def _save_grant(app, grant: dict, ttl_seconds: int) -> None:
     _redis(app).set(_grant_key(grant["device_code"]), json.dumps(grant), ex=max(1, ttl_seconds))
 
 
+def _poll_key(device_code: str) -> str:
+    return f"devpoll:{device_code}"
+
+
 def _drop_grant(app, grant: dict) -> None:
     client = _redis(app)
     client.delete(_grant_key(grant["device_code"]))
     client.delete(_user_code_key(grant["user_code"]))
+    client.delete(_poll_key(grant["device_code"]))
 
 
 def _seconds_left(grant: dict, now: datetime) -> int:
@@ -129,13 +134,19 @@ def _seconds_left(grant: dict, now: datetime) -> int:
     return int((expires_at - now).total_seconds())
 
 
-def start_device_flow(app) -> dict:
+def start_device_flow(app, network: str = "") -> dict:
     """``POST /v1/device/code``: mint a new device/user code pair.
 
     The caller is responsible for having passed
     :func:`app.limits.check_registration_allowed` first -- this function does
     the minting, not the gatekeeping, so that the throttle's refusal can be
     shaped by the route that knows how to say it.
+
+    *network* is the address :func:`app.limits.check_device_budget` was just
+    checked against. It rides on the grant so the device is counted against
+    that same address when it is confirmed -- not against wherever the
+    confirmation page happens to be opened, which is often a phone on another
+    network -- and released against it when the device is signed out.
     """
     expires_seconds = app.config["DEVICE_CODE_EXPIRES_SECONDS"]
     interval = app.config["DEVICE_CODE_POLL_INTERVAL_SECONDS"]
@@ -151,7 +162,7 @@ def start_device_flow(app) -> dict:
         "status": "pending",
         "device_id": None,
         "token": None,
-        "last_poll_at": None,
+        "network": (network or "").strip(),
     }
     _save_grant(app, grant, expires_seconds)
     # The reverse index is what lets /connect find a grant from the eight
@@ -169,7 +180,7 @@ def start_device_flow(app) -> dict:
     }
 
 
-def confirm_device_code(app, user_code: str) -> bool:
+def confirm_device_code(app, user_code: str, confirming_network: str = "") -> bool:
     """Called by the Gateway-hosted confirmation page when a human clicks
     Confirm after typing or reading their code.
 
@@ -177,8 +188,28 @@ def confirm_device_code(app, user_code: str) -> bool:
     code is unknown, already used, or expired -- the page says the same thing
     for all three on purpose, since distinguishing them would let somebody probe
     which codes exist.
+
+    **Single use, claimed atomically.** The user code is taken out of Redis
+    with one ``GETDEL`` before anything is written, so of two confirmations of
+    the same code -- a double-click, two tabs, a retry racing the original --
+    exactly one gets the device code back and the other is told the code is not
+    recognised. This used to read the pending grant, create the user and device,
+    and only then write the grant back: two confirmations in that window both
+    succeeded, two accounts and two devices were created and counted against the
+    network, and only one token was ever delivered.
+
+    **A failure gives the claim back.** If writing the rows fails, the user code
+    is restored for the rest of its life, so the person's retry works instead of
+    being told a perfectly good code is not recognised.
+
+    On success the device is counted against the network the code was minted
+    from (*confirming_network* only when the grant predates that being
+    recorded), and that network is remembered for when it is signed out.
     """
-    device_code = _redis(app).get(_user_code_key(user_code))
+    from app.limits import note_device_registered
+
+    client = _redis(app)
+    device_code = client.getdel(_user_code_key(user_code))
     if device_code is None:
         return False
     grant = _load_grant(app, device_code)
@@ -190,18 +221,29 @@ def confirm_device_code(app, user_code: str) -> bool:
         _drop_grant(app, grant)
         return False
 
-    token = _generate_opaque_token()
-    user = User()
-    db.session.add(user)
-    db.session.flush()  # populate user.id before creating the device row
-    device = Device(user_id=user.id, token_hash=hash_token(token), label="QUILL desktop")
-    db.session.add(device)
-    db.session.commit()
+    try:
+        token = _generate_opaque_token()
+        user = User()
+        db.session.add(user)
+        db.session.flush()  # populate user.id before creating the device row
+        device = Device(user_id=user.id, token_hash=hash_token(token), label="QUILL desktop")
+        db.session.add(device)
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        left = _seconds_left(grant, datetime.now(UTC))
+        if left > 0:
+            client.set(_user_code_key(user_code), device_code, ex=left, nx=True)
+        raise
 
     grant["status"] = "authorized"
     grant["device_id"] = device.id
     grant["token"] = token
     _save_grant(app, grant, max(1, _seconds_left(grant, now)))
+
+    # Counted here rather than at /v1/device/code: a code that is minted and
+    # never confirmed has cost nobody a slot.
+    note_device_registered(app, grant.get("network") or confirming_network, device_id=device.id)
     return True
 
 
@@ -218,22 +260,26 @@ def poll_device_token(app, device_code: str) -> tuple[int, dict]:
         _drop_grant(app, grant)
         return 410, {"status": "expired"}
 
-    last_poll = grant.get("last_poll_at")
-    if last_poll is not None:
-        since = (now - datetime.fromisoformat(last_poll)).total_seconds()
-        if since < grant["interval"]:
-            return 429, {"status": "slow_down"}
-    grant["last_poll_at"] = now.isoformat()
-    _save_grant(app, grant, remaining)
+    # The poll interval is its own key, set only if absent, so a poll never
+    # writes the grant back. It used to stamp ``last_poll_at`` on its copy and
+    # save the whole grant -- and a confirmation landing between that read and
+    # that write was overwritten by the stale "pending" copy, losing the token
+    # of a device that had just been created.
+    client = _redis(app)
+    if not client.set(_poll_key(device_code), "1", nx=True, ex=max(1, int(grant["interval"]))):
+        return 429, {"status": "slow_down"}
 
     if grant["status"] == "authorized":
-        result = {
+        # Single-use delivery: only the poll that deletes the grant gets the
+        # token, so two polls racing each other cannot both receive it.
+        if not client.delete(_grant_key(device_code)):
+            return 410, {"status": "expired"}
+        client.delete(_poll_key(device_code))
+        return 200, {
             "status": "authorized",
             "token": grant["token"],
             "device_id": grant["device_id"],
         }
-        _drop_grant(app, grant)  # single-use: the code cannot be replayed
-        return 200, result
     if grant["status"] == "denied":
         _drop_grant(app, grant)
         return 410, {"status": "denied"}
