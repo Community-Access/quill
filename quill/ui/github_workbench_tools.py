@@ -45,6 +45,7 @@ from quill.core.github.permissions import (
 )
 from quill.ui.github_workbench_access_pages import GitHubWorkbenchAccessPagesMixin
 from quill.ui.github_workbench_access_templates import GitHubWorkbenchAccessTemplatesMixin
+from quill.ui.github_workbench_least_privilege import GitHubWorkbenchLeastPrivilegeMixin
 
 __all__ = ["GitHubWorkbenchToolsMixin"]
 
@@ -62,11 +63,14 @@ _TOOLS = frozenset({
     "access_templates",  # GH-R-068: github_workbench_access_templates.py
     "apply_access_template",
     "account_level",
+    "least_privilege",
 })
 
 
 class GitHubWorkbenchToolsMixin(
-    GitHubWorkbenchAccessPagesMixin, GitHubWorkbenchAccessTemplatesMixin
+    GitHubWorkbenchAccessPagesMixin,
+    GitHubWorkbenchAccessTemplatesMixin,
+    GitHubWorkbenchLeastPrivilegeMixin,
 ):
     """Filter Builder, permissions, history and access, for the GitHub provider."""
 

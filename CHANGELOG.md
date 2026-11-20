@@ -19,6 +19,24 @@
   window's own commands, including the Plain-Language Batch, through the same
   checks as the menu. What Can I Say Here (Ctrl+Alt+Shift+F1) lists them.
 
+### GitHub Workbench: every alert counted, safe alert exports and Least Privilege Advice (2026-11-20)
+
+- **Security Overview reads every page.** It used to count only the first 100
+  alerts of each kind and say there might be more. It now follows GitHub's
+  pages to the end, so the counts by repository and severity cover every open
+  alert. A Cancel button stops a long read, and then nothing is shown, because
+  part of a count would read as all of it. How much was read is said once, at
+  the end.
+- **Exporting an alert list leaves secrets out.** Export List on a security
+  alert list never had a secret's value to write, and now any token GitHub
+  quoted in an alert's own text is replaced with [TOKEN] before it reaches
+  the file. The outcome says how many values were held back.
+- **Least Privilege Advice** (Account > Roles and Access) suggests the
+  smallest classic token scopes, fine-grained permissions and Workbench level
+  that cover what QUILL saw this account do on this computer, and says
+  plainly what it cannot know, such as anything done outside QUILL. It
+  changes nothing.
+
 ### The actual result, said once, and lists that stay still in QUILL Lite and QUILL (2026-11-19)
 
 The second part of the family UX pilot (FUX-04 and FUX-06).

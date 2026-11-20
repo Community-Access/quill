@@ -932,6 +932,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Roles and Access > Access Templates... | (submenu letter) | Named sets of access, such as Contributor: write on these repositories and member of a team. Kept on this computer for this account. |
 | Roles and Access > Apply Access Template... | (submenu letter) | Give one person everything a template holds: previewed, then a result per change. |
 | Roles and Access > Workbench Level for This Account... | (submenu letter) | Read Only, Organize or Full: what the Workbench may change with this account, whatever GitHub would allow. |
+| Roles and Access > Least Privilege Advice... | (submenu letter) | The smallest token scopes, fine-grained permissions and Workbench level that cover what QUILL saw this account do here, and what it cannot know. Changes nothing. |
 
 #### Tools
 

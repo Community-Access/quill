@@ -567,6 +567,14 @@ columns you have hidden, because those are left out. It works on any list:
 issues, pull requests, runs, alerts, people, Change History. The WordPress
 Workbench's Export List is the same command.
 
+An alert list exports without anything secret in it. The Workbench never asks
+GitHub for a secret scanning alert's value, so it is in neither the list nor
+the file. Text GitHub wrote into an alert, such as a code scanning message
+quoting a hard-coded password, passes the same redaction Change History uses
+before it is written: a value shaped like a token or key becomes `[TOKEN]`,
+and a link's user name and password are dropped. When that happens, the
+Workbench says how many values it held back.
+
 ### Bringing issues in
 
 Two rows on the Workbench's File menu make many issues at once in the

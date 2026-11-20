@@ -266,6 +266,28 @@ Plain-Language Batch, through the same checks as the menu. What Can I
 Say Here (Ctrl+Alt+Shift+F1) lists them.</li>
 </ul>
 <h3
+id="github-workbench-every-alert-counted-safe-alert-exports-and-least-privilege-advice-2026-11-20">GitHub
+Workbench: every alert counted, safe alert exports and Least Privilege
+Advice (2026-11-20)</h3>
+<ul>
+<li><strong>Security Overview reads every page.</strong> It used to
+count only the first 100 alerts of each kind and say there might be
+more. It now follows GitHub’s pages to the end, so the counts by
+repository and severity cover every open alert. A Cancel button stops a
+long read, and then nothing is shown, because part of a count would read
+as all of it. How much was read is said once, at the end.</li>
+<li><strong>Exporting an alert list leaves secrets out.</strong> Export
+List on a security alert list never had a secret’s value to write, and
+now any token GitHub quoted in an alert’s own text is replaced with
+[TOKEN] before it reaches the file. The outcome says how many values
+were held back.</li>
+<li><strong>Least Privilege Advice</strong> (Account &gt; Roles and
+Access) suggests the smallest classic token scopes, fine-grained
+permissions and Workbench level that cover what QUILL saw this account
+do on this computer, and says plainly what it cannot know, such as
+anything done outside QUILL. It changes nothing.</li>
+</ul>
+<h3
 id="the-actual-result-said-once-and-lists-that-stay-still-in-quill-lite-and-quill-2026-11-19">The
 actual result, said once, and lists that stay still in QUILL Lite and
 QUILL (2026-11-19)</h3>

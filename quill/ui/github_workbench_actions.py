@@ -379,45 +379,9 @@ class GitHubWorkbenchActionsMixin(
 
     def _do_export_list(self, _ref: Any, _row: object) -> None:
         """File > Export List: the list as shown, as Excel, CSV or a Markdown table."""
-        from pathlib import Path
+        from quill.ui.github_workbench_export_list import export_list
 
-        from quill.core.workbench.export import (
-            EXPORT_WILDCARD,
-            export_rows,
-            hidden_columns_sentence,
-        )
-
-        frame = self.frame
-        if frame is None or not frame.rows:
-            self._say("There is nothing in the list to export.")
-            return
-        wx = frame._wx
-        style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
-        with wx.FileDialog(
-            frame.frame, "Export List", wildcard=EXPORT_WILDCARD, style=style
-        ) as box:
-            if show_modal_dialog(box, "Export List") != wx.ID_OK:
-                return
-            path = Path(box.GetPath())
-        node = frame.node(frame.current)
-        columns = tuple(self.columns(node))  # type: ignore[attr-defined]
-        heading = [name.replace("_", " ").capitalize() for name in columns]
-        try:
-            count = export_rows(path, heading, [self.cells(r, columns) for r in frame.rows])  # type: ignore[attr-defined]
-        except OSError as exc:
-            self._say(f"Could not export the list: {exc}")
-            return
-        every = [str(n).replace("_", " ").capitalize() for n in getattr(node, "columns", ()) or ()]
-        said = f"Exported {count} {'row' if count == 1 else 'rows'} to {path.name}."
-        left_out = hidden_columns_sentence(heading, every)
-        self._say(f"{said} {left_out}".strip())
-        opener = getattr(self, "_open_document", None)
-        if (
-            path.suffix.lower() == ".md"
-            and callable(opener)
-            and self._confirm("Export List", f"Open {path.name} in the editor, as a table?")
-        ):
-            opener(path)
+        export_list(self)
 
     def _explore_client(self) -> Any:
         if getattr(self, "_explore", None) is None:
