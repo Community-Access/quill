@@ -814,6 +814,80 @@ def copy_template(run: Any) -> str:
     return f"copied to {run.second}, then removed"
 
 
+# -- workflow authoring and configuration (PRD 22.1, 22.11) ------------------------------
+
+
+def _close_pull(run: Any, repo: str, number: int, branch: str) -> None:
+    run.rest("PATCH", f"/repos/{repo}/pulls/{number}", {"state": "closed"})
+    run.rest("DELETE", f"/repos/{repo}/git/refs/heads/{branch}")
+
+
+def edit_workflow(run: Any) -> str:
+    """Change the live workflow's name through a pull request, read it back, close it."""
+    from quill.core.github.template_catalog import read_entry_text
+    from quill.core.github.template_save import plan_save, save_template
+    from quill.core.github.workflow_authoring import dump_workflow, load_workflow
+    from quill.core.github.workflow_checks import check_workflow
+
+    path = ".github/workflows/quill-live.yml"
+    repo = run.items.template_repository(run.repo)
+    text, sha = read_entry_text(repo, path)
+    draft = load_workflow(text)
+    _expect(check_workflow(draft) == [], "the live workflow already has problems")
+    draft.data["name"] = f"{draft.data.get('name', 'quill-live')} ({TAG})"
+    made = save_template(
+        repo,
+        plan_save(repo, run.repo, path),
+        dump_workflow(draft),
+        expected_sha=sha,
+        use_pull_request=True,
+        message=TAG,
+    )
+    held = run.rest("GET", f"/repos/{run.repo}/contents/{path}", ref=made.branch)
+    _close_pull(run, run.repo, made.pull_request_number, made.branch)
+    _expect(bool(held), "the branch did not hold the workflow")
+    return f"saved through pull request #{made.pull_request_number}, read back, closed"
+
+
+def new_workflow(run: Any) -> str:
+    """Propose the starter workflow as a pull request, then close it unmerged."""
+    from quill.core.github.template_save import plan_save, save_template
+    from quill.core.github.workflow_authoring import dump_workflow
+    from quill.core.github.workflow_authoring import new_workflow as starter
+    from quill.core.github.workflow_checks import check_workflow
+
+    path = ".github/workflows/quill-live-new.yml"
+    repo = run.items.template_repository(run.repo)
+    draft = starter(TAG)
+    _expect(check_workflow(draft) == [], "the starter has problems")
+    plan = plan_save(repo, run.repo, path)
+    _expect(not plan.current_sha, f"{path} is left over from an earlier run")
+    made = save_template(
+        repo, plan, dump_workflow(draft), expected_sha="", use_pull_request=True, message=TAG
+    )
+    _close_pull(run, run.repo, made.pull_request_number, made.branch)
+    return f"the starter opened as pull request #{made.pull_request_number}, then closed"
+
+
+def compare_config(run: Any) -> str:
+    """Compare with the second repository, propose one file, close the pull request."""
+    from quill.core.github.config_compare import compare_files, propose_update
+
+    diffs = compare_files(
+        run.items.template_repository(run.second),
+        run.second,
+        run.items.template_repository(run.repo),
+        run.repo,
+    )
+    chosen = [d for d in diffs if d.can_update][:1]
+    if not chosen:
+        return f"{run.repo} already matches {run.second}; nothing to propose"
+    repo = run.items.template_repository(run.repo)
+    made = propose_update(repo, run.repo, run.second, chosen)
+    _close_pull(run, run.repo, made.pull_request_number, made.branch)
+    return f"{len(diffs)} files compared; {chosen[0].path} proposed and closed"
+
+
 # -- local lists (this device) ----------------------------------------------------------
 
 
@@ -1261,6 +1335,12 @@ VERBS: dict[str, Scenario | str] = {
     "open_template": open_template,
     "convert_template": convert_template,
     "copy_template": copy_template,
+    "edit_workflow": edit_workflow,
+    "new_workflow": new_workflow,
+    "compare_config": compare_config,
+    "dependabot_command": (
+        "needs Jeff: posts a command Dependabot acts on, on a pull request Dependabot opened"
+    ),
     "account_level": account_level,
     "bulk_access": "not here: needs a second GitHub account to give access to",
     "access_add": "not here: needs a second GitHub account to give access to",
