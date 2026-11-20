@@ -17,6 +17,7 @@ Re-exported from ``history`` so no caller had to move with it.
 from __future__ import annotations
 
 import json
+import math
 from copy import deepcopy
 from pathlib import Path
 
@@ -42,13 +43,65 @@ def _store_path(data_dir: Path) -> Path:
     return data_dir / _FILE_NAME
 
 
+def _not_finite(value: object) -> bool:
+    """A number no setting can use: ``Infinity``, ``-Infinity``, ``NaN``, or too big."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return False
+    try:
+        return not math.isfinite(float(value))
+    except OverflowError:  # an integer past any float
+        return True
+
+
+def _finite_only(value: object) -> tuple[object, bool]:
+    """*value* with every unusable number left out, and whether there was one.
+
+    Left out rather than replaced, so each field falls back to its own default
+    exactly as if it had never been saved.
+    """
+    if isinstance(value, dict):
+        kept: dict[object, object] = {}
+        found = False
+        for key, item in value.items():
+            if _not_finite(item):
+                found = True
+                continue
+            kept[key], inner = _finite_only(item)
+            found = found or inner
+        return kept, found
+    if isinstance(value, list):
+        items: list[object] = []
+        found = False
+        for item in value:
+            if _not_finite(item):
+                found = True
+                continue
+            cleaned, inner = _finite_only(item)
+            items.append(cleaned)
+            found = found or inner
+        return items, found
+    return value, False
+
+
 def load_history(data_dir: Path) -> RadioHistory:
-    """Read history (an absent or broken file reads as empty)."""
+    """Read history (an absent or broken file reads as empty).
+
+    JSON allows ``Infinity`` and ``NaN``, and turning one into an ``int`` raised
+    while Radio was being built, so Radio would not open (the family settings
+    audit, 2026-11-20). Such a number now keeps its default, the file is kept
+    beside itself before anything can save over it, and Radio says so once its
+    window is up (:mod:`quill.core.settings_recovery`).
+    """
     try:
         raw = json.loads(_store_path(data_dir).read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return RadioHistory()
     history = RadioHistory()
+    raw, damaged = _finite_only(raw)
+    if damaged:
+        from quill.core.settings_recovery import keep_damaged
+
+        keep_damaged(_store_path(data_dir), app="Quill Radio")
     if isinstance(raw, dict):
         history.resume_on_launch = bool(raw.get("resume_on_launch", False))
         history.announce_track_titles = bool(raw.get("announce_track_titles", False))

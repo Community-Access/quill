@@ -81,6 +81,11 @@ def schedule(app: Any, wx: Any, *, safe_mode: bool = False) -> Any:
     from quill.apps.radio_shutdown import radio_launch_notice
 
     wx.CallAfter(radio_launch_notice, app)
+    # A settings file with numbers Radio could not use (Infinity, NaN), kept
+    # beside itself when it was read: said once, naming the copy.
+    from quill.core.settings_recovery import announce_later
+
+    announce_later("Quill Radio", app._announce, wx.CallAfter)
     # 6. **Reminders**, armed here for the same reason the feed check is: the
     #    timer has to exist before anything can set one, and its first look is
     #    what makes a reminder missed while the app was closed still speak.
