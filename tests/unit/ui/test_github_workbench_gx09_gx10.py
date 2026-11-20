@@ -51,7 +51,7 @@ class _Window(GitHubWorkbenchMergeMixin, GitHubWorkbenchEvidenceMixin):
     def _background(self, _name: str, work: Any, done: Any) -> None:
         done(work())
 
-    def _pick_download(self, name: str) -> Path | None:
+    def _pick_checked_download(self, name: str) -> Path | None:
         return self.picked
 
 

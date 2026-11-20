@@ -70,7 +70,7 @@ class GitHubWorkbenchEvidenceMixin:
 
     _fits_check_download = _fits_asset_attestations
 
-    def _pick_download(self, name: str) -> Any:
+    def _pick_checked_download(self, name: str) -> Any:
         """The downloaded file to check, chosen in an Open box that starts in Downloads."""
         from pathlib import Path
 
@@ -94,7 +94,7 @@ class GitHubWorkbenchEvidenceMixin:
 
         ident, api = self._release_ident(row, ref, "release_asset"), self.github_api()
         repo, tag, name = ident.get("repo", ""), ident.get("tag", ""), ident.get("name", "")
-        path = self._pick_download(name)
+        path = self._pick_checked_download(name)
         if path is None:
             return
 
