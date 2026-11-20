@@ -41,6 +41,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}convert_tasks": ("repo:triage", _V),
     f"{_P}clone": ("local", _O),
     f"{_P}close_reopen": ("viewer:viewerCanClose", _V),
+    # Each item's own field write is checked again as it is sent (labels are
+    # Organizing, state Visible); the sentence as a whole asks for Visible.
+    f"{_P}plain_batch": ("repo:triage", _V),
     f"{_P}comment": ("sign_in", _V),
     f"{_P}delete_asset": ("repo:write", _D),
     f"{_P}delete_branch": ("repo:write", _D),

@@ -437,6 +437,14 @@ _TOOLS = MenuSpec(
             "then stops before sending and says what it would have sent.",
         ),
         _row(
+            "plain_batch",
+            "Plain-&Language Batch...",
+            "Ctrl+Shift+S",
+            "Say a change to many issues or pull requests in words, such as close every "
+            "issue labelled duplicate older than 90 days; check the exact items it found, "
+            "then send them. No AI: the same words always mean the same thing.",
+        ),
+        _row(
             "api_console",
             "GitHub &API Console...",
             "Ctrl+Shift+J",

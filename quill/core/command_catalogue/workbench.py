@@ -10,8 +10,8 @@ here, so no sentence can reach it; it stays on its menu and its key.
 
 The ids are the windows' own menu ids, so the Workbench's dispatcher runs
 them, through its write gate, exactly as the menu would. A row whose command
-the window does not have yet (GitHub's Plain-Language Batch arrives in its
-own pull request) is simply not offered there until it does.
+the window does not have is simply not offered there; a test holds every row
+to its window's bar.
 
 Both editors open the same Workbench windows, so QUILL and QUILL Lite reach
 these rows together; neither can be ahead of the other.

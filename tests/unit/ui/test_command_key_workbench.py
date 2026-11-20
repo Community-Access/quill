@@ -46,14 +46,12 @@ def test_both_workbenches_have_the_family_keys_on_their_help_menus() -> None:
         assert keys[f"{prefix}.workbench.what_can_i_say_here"] == "Ctrl+Alt+Shift+F1"
 
 
-def test_every_row_is_on_its_windows_bar_or_is_the_batch_still_to_land() -> None:
+def test_every_row_is_on_its_windows_bar() -> None:
     bars = {"github_workbench": GITHUB_MENU, "wordpress_workbench": WP_MENU}
     for app, bar in bars.items():
         ids = {row.command_id for _menu, row in all_rows(bar)}
         missing = [s.id for s in rows_for_app(app) if s.id not in ids]
-        # GitHub's Plain-Language Batch arrives with its own pull request (#1960);
-        # until then its row is simply not offered in that window.
-        assert missing in ([], ["github.workbench.plain_batch"]), app
+        assert missing == [], app
 
 
 def test_no_row_sends_to_github_by_itself() -> None:

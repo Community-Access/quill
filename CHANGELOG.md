@@ -2,6 +2,43 @@
 
 ## 1.0.0
 
+### GitHub Workbench: access templates, more tutorials, team review requests, and the Command Key in the Workbench (2026-11-20)
+
+- **Access templates.** Account > Roles and Access > Access Templates... keeps
+  named sets of team and repository roles for each account, and Apply Access
+  Template... gives one person a whole set as one batch, previewed before it
+  is sent.
+- **Ten GitHub tutorials.** Help > Tutorials (Ctrl+F2) opens the GitHub
+  lessons: triage, building and using an issue form, milestones, projects,
+  access and the API Console join the earlier lessons, each on the practice
+  repository.
+- **Team review requests in Needs My Attention.** Review Requests and the
+  Inbox now include pull requests waiting on a team you are in, marked
+  "team review request".
+- **Say or Type a Command (F11) in both Workbench windows.** It runs that
+  window's own commands, including the Plain-Language Batch, through the same
+  checks as the menu. What Can I Say Here (Ctrl+Alt+Shift+F1) lists them.
+
+### Plans: the WordPress backlog (2026-11-19)
+
+The WordPress decisions still open have moved from the open-work list to a
+Backlog section in the WordPress Workbench PRD. They are which areas get
+first-class integrations, a WordPress-layer key for page commands, and a tree
+node for menu items. Rank Math staying read only is confirmed.
+### GitHub Workbench: sort and group any list, keep your place, and say it in words (2026-11-19)
+
+- **Sort By and Group By on every list.** View > Sort By > By Column... and
+  Group By > By Column... now work on every Workbench list, not only issues.
+  Numbers sort as numbers, and each list remembers your choice.
+- **Your place is kept.** Back, Forward or a reload returns you to the row you
+  left, not the top of the list. The WordPress Workbench gets this too.
+- **Checklist rows say their state** ("Issues, on", "docs, on 3 of 5"). Space
+  changes them once, Enter saves, and focus stays where it was.
+- **Plain-Language Batch...** (Ctrl+Shift+S) lets you type what you want, such
+  as "close every issue labelled duplicate older than 90 days". It finds the
+  items without AI, shows them for you to check, and then runs the usual batch
+  with its preview and Retry Failed.
+
 ### Quill Cast: lists stay still while new episodes arrive (2026-11-19)
 
 A feed refresh, a finished download or a change to the queue no longer moves
