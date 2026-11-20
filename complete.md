@@ -62,8 +62,6 @@ Each is done only with evidence: a test or a live run.
 - [ ] Cross-repository coverage is complete only when the corresponding single-repository operation and batch behavior are complete; read-only category views are tracked separately from multi-target writes.
 - [ ] GX11, what is left: a severity breakdown beyond the first 100 alerts of each kind in Security Overview, and a test that exporting an alert list leaves out sensitive fields. (Dismissal and bypass request review is Enterprise Cloud only and stays on GitHub, decided 2026-11-18.)
 - [ ] GX12 collaboration/knowledge; GX13 administration.
-- [ ] GX09: Why Can't I Merge? and Merge Selected... do not yet name the specific ruleset or CODEOWNERS rule that blocks (only the review window's Check Merge Policy does), and nothing watches a pull request to say when its readiness changes.
-- [ ] GX10: attestation signatures are not verified in QUILL (it points to gh attestation verify), and a downloaded release file is not checked against its digest.
 - [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance; GX16 category-first cross-repository browsing.
 
 #### Documentation at the end of each delivery batch
