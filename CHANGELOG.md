@@ -2,6 +2,37 @@
 
 ## 1.0.0
 
+### AI: nothing goes to an AI you did not choose (2026-11-20)
+
+- **AI set to Off is honoured.** Ask Quill's chat setup can no longer send
+  text to a cloud AI while the AI connection is Off. Only the model on this
+  computer is used.
+- **Signing out of Ollama on this computer** now means no AI is in use, as
+  QUILL says. It used to switch you to OpenAI, so with an OpenAI key saved
+  your next request went to the cloud.
+- **Switching AI reaches every feature at once.** Improve Reading Order,
+  the watch folder, Train Writing Style, chapter inference and Studio's
+  chapter titles used the AI you had before the switch until you restarted.
+- **Ask About an Image** names the company that will receive the picture,
+  for whichever AI you use, and asks the first-picture question first.
+  No, the default, sends nothing. Under Auto, it names the AI Auto will use.
+- **Offline means offline.** Generate Captions (Offline), Transcribe Audio
+  (Offline) and offline dictation in QUILL and QUILL Studio never use a cloud
+  transcriber. If you chose one in the Speech Hub, they use the speech engine
+  on this computer instead.
+- **Review Dictation** names who will receive your words under Auto, in the
+  same words the picture question uses. If no AI is ready, it says so and
+  asks nothing.
+- **An agent engine that is not set up** no longer falls back to another
+  company with only a status line. QUILL asks first and names the company,
+  with No as the default. Falling back to Ollama on this computer is said,
+  not asked.
+- **Signing out of your own key** also clears the copy in QUILL's older key
+  store, so the advanced AI commands stop sending to that provider.
+- **A saved key goes only to its own company.** After the AI connection moved
+  to another provider, the older saved key could be sent with it. Now it is
+  used only for the provider it was saved for.
+
 ### GitHub Workbench: roles from GitHub's own answers, two accounts side by side, and gh sign-in (2026-11-20)
 
 - **My Access Here**, **Why Can't They?**, **Access Review** and **Bulk

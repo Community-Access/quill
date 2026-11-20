@@ -67,20 +67,17 @@ class OwnKeyRouteMixin:
 
     def own_key_sign_out(self) -> None:
         """Sign out of My own key: forget the chosen provider's key. Ollama on this
-        computer has none to forget, so it stops being the choice instead."""
-        from quill.core.ai.own_key_providers import OPENAI, needs_key
+        computer has none to forget, so it is marked signed out instead, and stays
+        the chosen provider: moving the choice to OpenAI would send the next
+        request to the cloud while the app said no AI was in use (audit gap 3)."""
+        from quill.core.ai.own_key_providers import OPENAI, needs_key, sign_out_local
         from quill.core.assistant_ai import clear_provider_api_key
 
         provider = self.own_key_provider or OPENAI
         if needs_key(provider):
             clear_provider_api_key(provider)
             return
-        settings = getattr(self._app, "settings", None)
-        if settings is not None:
-            settings.ai_own_key_provider = OPENAI
-            save = getattr(self._app, "save_settings", None)
-            if callable(save):
-                save()
+        sign_out_local(provider)
 
 
 __all__ = ["OwnKeyRouteMixin"]

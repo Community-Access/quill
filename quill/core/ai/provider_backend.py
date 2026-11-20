@@ -18,11 +18,27 @@ from quill.core.assistant_ai import (
     AssistantConnectionSettings,
     generate_assistant_response,
     generate_assistant_response_stream,
-    load_assistant_api_key,
     load_assistant_connection_settings,
     load_provider_api_key,
     provider_requires_api_key,
+    stored_assistant_api_key,
 )
+
+
+def provider_api_key(provider: str) -> str:
+    """The key requests to *provider* carry: its own, never another company's.
+
+    The per-provider key is unambiguous. The older single-key store is shared
+    across providers, so after a switch it can hold a *different* company's
+    key; it is used only when it is *provider*'s (2026-11 audit, gap 13).
+    """
+    from quill.core.ai.legacy_key_owner import belongs_to
+
+    target = provider.strip().lower()
+    own = load_provider_api_key(target)
+    if own:
+        return own
+    return stored_assistant_api_key() if belongs_to(target) else ""
 
 
 class ProviderChatBackend(AIBackend):
@@ -39,13 +55,7 @@ class ProviderChatBackend(AIBackend):
         if api_key is not None:
             self._api_key = api_key
         else:
-            # Prefer the active provider's own key. The legacy active-key store is shared
-            # across providers, so after a provider switch it can hold a *different*
-            # provider's key (-> 401 "authentication failed") or be empty (-> "no key
-            # configured"). The per-provider key is unambiguous; fall back to the active
-            # store only for older installs that have just the one key.
-            provider = self._settings.provider.strip().lower()
-            self._api_key = load_provider_api_key(provider) or load_assistant_api_key()
+            self._api_key = provider_api_key(self._settings.provider)
 
     @property
     def settings(self) -> AssistantConnectionSettings:

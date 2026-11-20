@@ -363,10 +363,10 @@ def chosen_model(settings: Any = None) -> str:
 def has_own_key(provider: str = OWN_KEY_PROVIDER) -> bool:
     """Whether *provider*'s key is stored (or set in the environment).
 
-    A provider that needs no key (Ollama on this computer) always has one.
+    Ollama on this computer needs none, so has one until signed out of.
     """
     if not _providers.needs_key(provider):
-        return True
+        return not _providers.signed_out(provider)
     from quill.core.assistant_ai import load_provider_api_key
 
     try:

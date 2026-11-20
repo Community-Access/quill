@@ -10026,10 +10026,17 @@ class MainFrame(
         return None
 
     def _get_assistant(self) -> Assistant:
+        # Rebuilt when the provider or its key changed, so Improve Reading Order,
+        # the watch folder, Train Writing Style and chapter inference never keep
+        # sending to the provider in use before a switch (2026-11 audit, gap 1).
+        from quill.core.ai.backend_signature import default_backend_signature
+
+        signature = default_backend_signature()
         assistant = getattr(self, "_assistant", None)
-        if assistant is None:
+        if assistant is None or getattr(self, "_assistant_signature", None) != signature:
             assistant = Assistant()
             self._assistant = assistant
+            self._assistant_signature = signature
             self._apply_style_to_assistant()
         return assistant
 

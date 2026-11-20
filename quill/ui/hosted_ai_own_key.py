@@ -83,6 +83,7 @@ from quill.core.ai.own_key_providers import (
     LOCAL_ABOUT,
     host_for,
     is_local,
+    mark_set_up,
     needs_key,
     save_host,
     use_for_advanced_features,
@@ -481,6 +482,8 @@ class OwnKeyDialog(wx.Dialog):
                 return f"The server address could not be saved, so {name} keeps the old one."
         if typed and not save_provider_api_key(provider, typed):
             return "The key could not be stored securely on this computer, so it was not saved."
+        if not needs_key(provider):
+            mark_set_up(provider)  # chosen again after a sign-out
         if not has_own_key(provider):
             return f"No {name} key is saved, so this route cannot be used until one is."
         try:  # the advanced AI features follow the same choice (decision 20)
