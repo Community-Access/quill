@@ -148,14 +148,37 @@ class CoalescedUiReporter:
         self._scheduled = False
 
     def report(self, *args: Any, **kwargs: Any) -> None:
+        """Remember *args* as the latest value and make sure it is delivered.
+
+        Two faults fixed in 2026-11 (plan.md, "Shared diagnostics and
+        background-runtime review"):
+
+        * The flush is scheduled **after** the lock is released. Without
+          ``wx.CallAfter``, :func:`call_ui_safely` runs the flush on this
+          thread, and the flush takes the same (non-reentrant) lock -- so
+          scheduling it while holding the lock deadlocked the reporter.
+        * A value reported inside the throttle interval used to be stored and
+          never scheduled, so the *last* progress report -- the one that says
+          100 percent -- could be stranded. It is now delivered once the
+          interval has passed, by a timer.
+        """
         now = time.monotonic()
         with self._lock:
             self._pending = (args, kwargs)
             if self._scheduled:
                 return
-            if now - self._last_emit >= self.min_interval_seconds:
-                self._scheduled = True
-                call_ui_safely(self._flush)
+            self._scheduled = True
+            delay = self.min_interval_seconds - (now - self._last_emit)
+        if delay <= 0:
+            call_ui_safely(self._flush)
+            return
+        timer = threading.Timer(delay, self._schedule_flush)
+        timer.daemon = True
+        timer.start()
+
+    def _schedule_flush(self) -> None:
+        # Looked up when the timer fires, not when it was armed.
+        call_ui_safely(self._flush)
 
     def _flush(self) -> None:
         with self._lock:
