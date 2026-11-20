@@ -56,8 +56,9 @@ def save_preferences(host: Any, changes: dict[str, object]) -> Any:
                 on_success=lambda _result: finish(latest),
                 failure_message=_FAILURE,
             )
-        elif generation == getattr(host, "_cast_preferences_generation", None):
-            host._announce("Application preferences saved.")
+        # Nothing is said when the write lands: Preferences already said the
+        # changes are in use, and saying "saved" as well was a second sentence
+        # for one OK (FUX-04, once). A write that fails still says so.
 
     return record_tasks.submit(
         host,

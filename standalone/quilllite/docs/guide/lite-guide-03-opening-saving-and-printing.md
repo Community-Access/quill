@@ -525,7 +525,10 @@ says "Row 2: Ann".
 
 - **Ctrl+S** writes the Word document. A long document can take a moment, so
   the save runs in the background: the status bar says "Saving report.docx",
-  and you hear "Saved report.docx" when it is written. If you press **Ctrl+S**
+  and you hear "Saved report.docx in Documents" (the file and its folder) when
+  it is written. If you kept typing while it saved, you hear "What you typed
+  while it saved is not in it yet" as well, and the window stays unsaved until
+  you save again. If you press **Ctrl+S**
   again before then, you hear "Still saving report.docx" and nothing else
   happens; QUILL Lite never starts a second save over the first. Closing the
   window in that moment waits too: answer the question again once you have
@@ -567,13 +570,13 @@ says "Row 2: Ann".
    Actions".
 3. Press **Ctrl+End** to go to the end of the agenda, press **Enter**, and type
    "Book the room by Friday."
-4. Press **Ctrl+S**. You hear "Saved agenda.docx".
+4. Press **Ctrl+S**. You hear "Saved agenda.docx in Documents".
 5. Open `agenda.docx` in Word. "Actions" is still a Heading 2 in the
    navigation pane, and "Book the room by Friday." is the last paragraph.
 
 The same document with a comment in it would first have asked the question
 above. Choosing **Edit as Rich Text** and saving would have said "Backed up the
-original to agenda.backup-...docx" before "Saved agenda.docx", and the comment
+original to agenda.backup-...docx" before "Saved agenda.docx in Documents", and the comment
 would still be in that copy.
 
 ## Importing and converting a document
@@ -982,6 +985,17 @@ buttons:
 You can change your mind about that last one later. In Preferences, turn on
 **Offer untitled unsaved work back after a crash**.
 
+**Discard Checked** takes away only the rows you checked. The rows that are left
+stay as you left them, checked or not, and you land on the row after the first
+one that went, not back at the top.
+
+When the work comes back you hear one sentence saying what is now true. For
+one document it names the document and when its copy was made, like "Recovered
+notes.txt, as it was today at 2:02 PM. It is not saved yet." For several, it
+names each one. If one of them could not be brought back, its own window says
+so, and the sentence counts only the ones that did: "Recovered 1 of 2:
+notes.txt." QUILL says the same sentence after its own crash recovery.
+
 ### Text looks blurry, or a window is the wrong size
 
 QUILL Lite scales itself for each monitor. Text stays sharp at 125, 150 or 200
@@ -1006,8 +1020,8 @@ twenty are kept for each document. After that, the oldest go.
 
 The copy is made just after your file is saved, so a copy that cannot be made
 never stops the save. It is not kept quiet, though. If the backups folder is
-full or cannot be written to, you hear "Saved notes.txt, but could not write a
-backup" instead of the usual "Saved notes.txt", and your braille display shows
+full or cannot be written to, you hear "Saved notes.txt in Documents, but could
+not write a backup" instead of the usual "Saved notes.txt in Documents", and your braille display shows
 the same. Your file is saved either way. The reason, such as a full disk or a
 folder you do not have permission to write to, is written to QUILL Lite's log
 in its `logs` folder, so support can find it later if you ask why a backup is
@@ -1181,6 +1195,11 @@ to one and press **Enter** to open it. In the same window you can:
 - **Forget missing files when the app starts** (**Alt+M**) tidies away files
   that have been deleted from this computer. A file on a USB drive or a network
   share is kept, because it is usually just unplugged.
+
+If you save a document while this window is open, for example a Word document
+that finishes saving in the background, its row appears at the top. The row you
+are on stays selected, on the same line, and focus does not move. Nothing is
+said, because the save already said what it did.
 
 If a file has been moved or deleted, its row says "not found". It stays in the
 window so you know what happened, and Remove from List tidies it away. The Open

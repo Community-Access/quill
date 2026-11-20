@@ -20,6 +20,36 @@
   plainly what it cannot know, such as anything done outside QUILL. It
   changes nothing.
 
+### The actual result, said once, and lists that stay still in QUILL Lite and QUILL (2026-11-19)
+
+The second part of the family UX pilot (FUX-04 and FUX-06).
+
+- **Saves say where.** A save now names the file and its folder, as "Saved
+  notes.txt in Documents.", in QUILL Lite and QUILL. A Word save that ran in the
+  background while you kept typing adds "What you typed while it saved is not in
+  it yet." instead of letting "Saved" suggest the window is clean.
+- **Recovered drafts say from when.** Recovering one draft says which, when it
+  was last written ("as it was today at 3:42 PM") and that it is not saved yet.
+  Recovering several names each one. The count is of the documents that really
+  came back, so a restore that failed is no longer counted as a success. QUILL's
+  crash recovery uses the same sentence.
+- **Quill Cast says what is heard.** Changing a podcast's speed, in Settings for
+  This Podcast, Playback Speed or Preferences, is reported after the change is
+  saved, and when the episode playing kept its own rate the sentence says so
+  ("The episode playing stays at 1x."). Preferences says one sentence for one
+  OK, not three, and does not say "saved" before the write lands. Backups,
+  exported audio, OPML exports, import reports and transcripts say the folder
+  too. A restored backup that could not refresh the view now says so aloud;
+  it used to end in silence because the reload named a module that does not
+  exist.
+- **Lists that stay still.** An open Recent Documents window takes a file saved
+  elsewhere without moving your row, and never brings back one you removed. The
+  Problems list keeps you on your problem when a quiet check refills it, follows
+  it when lines are typed above it, and moves to the next one when it is fixed.
+  Discarding drafts in the recovery window keeps the check you gave every other
+  row and puts focus on the next one, not the first. Focus never moves and
+  nothing extra is said.
+
 ### GitHub Workbench: write workflows, Dependabot and CODEOWNERS (2026-11-19)
 
 - **Edit Workflow...** and **New Workflow...**

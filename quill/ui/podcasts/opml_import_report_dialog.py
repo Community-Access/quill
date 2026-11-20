@@ -303,10 +303,12 @@ class OpmlImportReportDialog:
             )
             path.write_text(report, encoding="utf-8")
 
+        from quill.core.action_feedback import written_result
+
         self._task_manager.submit(
             "opml-export-report",
             write,
-            on_success=lambda _op, _result: self._announce(f"Saved report to {path.name}"),
+            on_success=lambda _op, _result: self._announce(written_result("Saved report", path)),
             on_failure=lambda _op, error: self._announce(f"Could not save the report: {error}"),
         )
 
