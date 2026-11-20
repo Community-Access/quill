@@ -1,5 +1,14 @@
 # QUILL Studio screenshot requirements: coverage and remaining work
 
+> **Superseded (2026-11-20).** This audit of 2026-10-26 predates the capture
+> work in commit `5cc0023f`, and the
+> [QUILL Studio PRD](../planning/QUILL-Studio-PRD.md) (decision 6) names it
+> superseded. It is kept for history. For screenshot requirements and what is
+> still open, read the Studio PRD; for what was built, read
+> [the capture milestone ledger](quill-studio-capture-milestone.md) and
+> [Studio's changelog](../../standalone/studio/docs/CHANGELOG.md). The
+> statuses below are as they were on 2026-10-26.
+
 Audit date: 2026-10-26. Target application version: **2.0.0**. This is an implementation audit, not release certification.
 
 ## Answer and scope

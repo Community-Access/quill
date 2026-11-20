@@ -247,13 +247,15 @@ Workbench requirement audit, November 2026</h1>
 <p>Checked 2026-11-18 against main, updated the same day for the
 follow-up pull request, and on 2026-11-19 for GH-R-046 (the You page),
 GH-R-086 and GH-R-157, and for GH-R-068, GH-R-105, GH-R-143 and the
-Command Key in the Workbench windows (GH-R-086). This is the record of
-the complete.md 1.3 requirement audit: every id in Part E of <a
+Command Key in the Workbench windows (GH-R-086); and on 2026-11-20 for
+GH-R-069 (#1965), when the tallies were checked against the rows below.
+This is the record of the complete.md 1.3 requirement audit: every id in
+Part E of <a
 href="../Product Requirement Documents and Specifications/github-workbench-prd.md">the
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 85 are met, 9 are partly met and 6 are
+<p>Of the 100 live requirements, 86 are met, 8 are partly met and 6 are
 not met. GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -275,8 +277,8 @@ not met. GH-R-042 is withdrawn.</p>
 </tr>
 <tr>
 <td>Should</td>
-<td>13</td>
-<td>5</td>
+<td>14</td>
+<td>4</td>
 <td>5</td>
 <td>23</td>
 </tr>
@@ -413,21 +415,12 @@ the JAWS, NVDA and VoiceOver checks it names are live checks not yet
 recorded.</td>
 </tr>
 <tr>
-<td>GH-R-069</td>
-<td>Should</td>
-<td>View As Role, Compare Roles and Why Can’t They?</td>
-<td>View As Role, Compare Roles, Why Can’t They? now tested
-(<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_why_cant_they_names_the_role_needed_and_who_can_change_it</code>
-and others), but they read a fixed ability table, not GitHub’s real
-permissions (the open complete.md row).</td>
-</tr>
-<tr>
 <td>GH-R-088</td>
 <td>Should</td>
 <td>The GitHub features listed in 22.1, each as the coverage gate
 schedules it</td>
-<td>Ongoing: the 22.1 features are the 43 open rows of complete.md
-1.3.</td>
+<td>Ongoing: what is left of the 22.1 features is the open rows of
+complete.md 1.3.</td>
 </tr>
 <tr>
 <td>GH-R-105</td>
@@ -1039,12 +1032,15 @@ gate and <code>_run_changes</code>
 <tr>
 <td>GH-R-069</td>
 <td>Should</td>
-<td>Partly</td>
+<td>Met</td>
 <td>View As Role, Compare Roles and Why Can’t They?</td>
-<td>View As Role, Compare Roles, Why Can’t They? now tested
-(<code>tests/unit/ui/test_github_workbench_requirement_checks.py::test_why_cant_they_names_the_role_needed_and_who_can_change_it</code>
-and others), but they read a fixed ability table, not GitHub’s real
-permissions (the open complete.md row).</td>
+<td>View As Role and Compare Roles say they show GitHub’s documented
+defaults and list who on this repository has each role; Why Can’t They?
+reads the person’s real role and names the rule that stops them (#1965;
+<code>tests/unit/core/test_github_role_reports.py::test_why_cant_they_reads_the_real_role_not_a_typed_one</code>,
+<code>test_why_cant_they_names_the_rule_that_stops_an_allowed_role</code>,
+<code>test_view_as_role_says_its_source_and_who_has_the_role_here</code>).
+The live check against real permissions is in complete.md 1.5.</td>
 </tr>
 </tbody>
 </table>
@@ -1209,8 +1205,8 @@ network), <code>test_dry_run.py</code>,
 <td>Partly</td>
 <td>The GitHub features listed in 22.1, each as the coverage gate
 schedules it</td>
-<td>Ongoing: the 22.1 features are the 43 open rows of complete.md
-1.3.</td>
+<td>Ongoing: what is left of the 22.1 features is the open rows of
+complete.md 1.3.</td>
 </tr>
 </tbody>
 </table>

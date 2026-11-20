@@ -122,6 +122,7 @@ QUILL Lite has the document task (Ctrl+3, `quill/core/lite/commands_ai.py`), Cho
 ### 1.5 Two defects found on the way
 
 - **The Claude pack does not do what its docstring says.** `quill/ai_packs/claude.py` runs the Claude Agent SDK "text-only" with `ClaudeAgentOptions(allowed_tools=[])`. Anthropic's permissions page says `allowed_tools` only pre-approves; it does not hide anything. To remove a built-in tool you name it in `disallowed_tools`, and `disallowed_tools=["*"]` removes them all. In practice recent Claude Code starts in `default` mode and denies unapproved calls when there is no callback, so the risk is refusals and wasted tokens rather than writes. Worth a small fix whatever else happens. Source: https://code.claude.com/docs/en/agent-sdk/permissions.md
+  **Fixed 2026-11-04:** the pack now passes `TEXT_ONLY_OPTIONS` (`disallowed_tools=["*"]`, `allowed_tools=[]`, `permission_mode="default"`), tested by `tests/unit/core/ai/test_claude_pack_text_only.py`. See the progress log entry for that date.
 - **Review AI Changes is tuned for prose.** Its word-level detail ("changed 'quick' to 'rapid'" with the sentence around it) is exactly right for writing. Code needs line numbers, indentation spoken as a count, and a token-level diff rather than a sentence-level one. See section 5.4.
 
 ### 1.6 The honest one-paragraph answer
@@ -187,7 +188,7 @@ Why it is the primary path:
 
 Recommendation: keep Codex on QUILL's tools with its own sandbox at `read-only`, exactly as for document tasks. Codex models are trained on their own `apply_patch` and shell tools, so give our edit tool a patch-shaped input (section 4.2) to play to that training. Revisit Codex's own `workspace-write` sandbox only if G3-style measurements show our tools are clearly worse for it.
 
-### 3.3 Claude (Agent SDK): own key only, later
+### 3.3 Claude (Agent SDK): own key only (built 2026-11-04)
 
 - **Confirmed:** the Agent SDK embeds Claude Code's loop, tools, permissions, sessions and hooks in Python or TypeScript. Source: https://code.claude.com/docs/en/agent-sdk/overview
 - **Confirmed:** "Unless previously approved, Anthropic does not allow third party developers to offer claude.ai login or rate limits for their products, including agents built on the Claude Agent SDK." Same page. So QUILL cannot offer "use my Claude subscription" the way it offers ChatGPT and Copilot; it is an API key, billed per token.
@@ -195,6 +196,8 @@ Recommendation: keep Codex on QUILL's tools with its own sandbox at `read-only`,
 - **Confirmed:** branding rules: QUILL may say "Claude Agent" or "Powered by Claude", never "Claude Code". Same overview page.
 
 Recommendation: after Copilot and Codex, as a My own key provider (decision 20 of `codex.md` already plans Anthropic there). Run it with `disallowed_tools=["*"]` plus QUILL's tools as an in-process MCP server, `permission_mode="default"`, and our approver in `can_use_tool`.
+
+**As built (2026-11-04):** `quill/ai_packs/claude_tool_session.py`. One change from the recommendation: a `"*"` deny would also deny QUILL's own MCP tools, because deny rules win, so every Claude Code built-in is denied **by name** instead and only QUILL's tools are in `allowed_tools`. The text-only pack (`quill/ai_packs/claude.py`) does use `disallowed_tools=["*"]`, since it has no tools of ours. See the progress log for 2026-11-04.
 
 ### 3.4 OpenAI Agents SDK
 
@@ -221,7 +224,7 @@ The free gateway is paid for by Jeff. A coding task makes many model calls a tur
 |---|---|---|---|---|
 | Copilot SDK | User's own GitHub plan and allowance | QUILL's Python handlers only | SDK 2.0.1, bundled runtime | primary |
 | Codex app-server | ChatGPT plan | ours, dynamicTools | preview, bundled | second |
-| Claude Agent SDK | own API key | ours, as in-process MCP | GA | later |
+| Claude Agent SDK | own API key | ours, as in-process MCP | GA | built 2026-11-04, own key |
 | Ollama, native loop | none | ours | shipped loop | practice |
 | Free AI | Jeff | none | shipped | not for agents |
 
@@ -551,7 +554,7 @@ Sizes: small is days, medium is one to two weeks, large is several weeks, for th
 
 ### Phase 0: groundwork (small)
 
-- Fix the Claude pack's `allowed_tools=[]` to `disallowed_tools=["*"]` (1.5), with a fake-SDK test.
+- Fix the Claude pack's `allowed_tools=[]` to `disallowed_tools=["*"]` (1.5), with a fake-SDK test. (Done 2026-11-04.)
 - Close the open screen-reader checks for Do a Document Task with NVDA, JAWS and Narrator. Everything after this builds on that window, so its acceptance matters first.
 - Decide the open questions in section 9.
 - Tests: the existing agent window and document task tests stay green; one new test for the Claude options.

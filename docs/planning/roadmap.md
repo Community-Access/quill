@@ -1,5 +1,14 @@
 # QUILL — Plan of Record (outstanding work)
 
+> **Historical, kept for reference (2026-11-20).** This was the plan of record
+> until July 2026; it was last consolidated on 2026-07-05 and last edited on
+> 2026-09-25. It is no longer where open work is tracked: that is `complete.md`
+> at the repository root, the one list of open work. Rows below may since have
+> shipped, been dropped or moved; check `CHANGELOG.md` and `complete.md` before
+> acting on any of them. Two later decisions in particular: all macOS features
+> are in `complete.md`'s Backlog, not this release (Jeff, 2026-11-20), and the
+> Audio Studio is now QUILL Studio (`docs/planning/QUILL-Studio-PRD.md`).
+
 > **The single planning document — it tracks only what is still open**, plus the
 > register of **locked / hidden** features (consolidated here from the retired
 > `deferred-locked-features.md`). Shipped work is not listed here; once something
@@ -11,7 +20,8 @@
 > The Accessible Vault plan has been **retired**: Phases 0–7 shipped (feature-complete
 > for 0.9.0, no open work) and the feature now lives in `QUILL-PRD.md` §5.89d and the
 > user guide. The Audio Studio shipped the same way (PRD, user guide, release notes;
-> only the human validation pass remains, in `audio-studio-roadmap.md`).
+> only the human validation pass remains, in [`docs/qa/audio-studio-validation.md`](../qa/audio-studio-validation.md),
+> where `audio-studio-roadmap.md` moved on 2026-07-11).
 >
 > **Operating principle:** everything here is in scope to **ship** for 1.0 (except
 > rows explicitly marked 2.0). Simplicity for the screen-reader user is king. QUILL
@@ -329,7 +339,7 @@ profiles (#426)**.
 | Table Studio (§1.5) | **Shipped 0.9.0 (experimental opt-in).** Open follow-ups: CSV as an editable document tab; real screen-reader validation pass. |
 | ElevenLabs 2.0 extras (§1.6) | Live streaming Read Aloud, voice management, Tier-3 — all §5. |
 | Internet Radio (§1.7) | **Shipped 0.9.0 Beta 3** (incl. recording + scheduling). Open: ACB Media events/meetings calendar feed. |
-| Audio Studio | **Shipped during the beta (all ten roadmap items).** Open: the human validation pass (`audio-studio-roadmap.md`) + episode-24 audio regeneration. |
+| Audio Studio | **Shipped during the beta (all ten roadmap items).** Open: the human validation pass ([`audio-studio-validation.md`](../qa/audio-studio-validation.md)) + episode-24 audio regeneration. |
 | Locked features (§2) | Voice Commands, Rich Text Lens, Publishing (send), Third-Party Plugins (`bw_whisperer` kept locked/inert — not removed). |
 
 ---
