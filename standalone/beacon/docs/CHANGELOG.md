@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- **Settings survive a full disk or a crash while saving** (2026-11-20).
+  Accessibility, external player, routing and sync settings, and the sync
+  conflicts waiting for review, are now written to a temporary file first
+  and then put in place, so a save that fails part-way leaves your previous
+  settings instead of an empty file.
 - **A second sound scheme: VS Code Signals** (2026-11-02). QuillBeacon plays
   the QUILL family's sound scheme, and there are now two: Ink, still the
   default, and VS Code Signals, the accessibility signal sounds from Visual

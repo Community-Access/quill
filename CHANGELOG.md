@@ -2,6 +2,31 @@
 
 ## 1.0.0
 
+### More settings that stick: Studio, Media Player, Transcribe, Beacon, Weather, Radio and QUILL's dialogs (2026-11-20)
+
+- **QUILL Studio, Quill Media Player and QUILL Transcribe tell you when a
+  setting cannot be saved.** A full disk or a locked file used to be ignored:
+  book volume, the sleep timer, the play queue, the library, Preferences,
+  streaming, capture keys, the output device, Transcribe's keys and Dictation
+  Settings all carried on as if saved, and were gone at the next start. Now
+  Activity says so once, with Retry and Open Folder, Retry saves what is
+  current, and nothing says "saved" when it was not.
+- **Beacon's settings survive a full disk or a crash while saving.** Its
+  accessibility, external player, routing and sync settings are now written
+  the safe way, so a save that fails part-way leaves your previous settings
+  in place instead of an empty file.
+- **Weather Center's Settings no longer undo a tray choice.** If you changed
+  Close to Tray or Start in Tray from the tray while Weather Center was open,
+  saving Weather Center's Settings put the old choice back. The newest choice
+  now wins.
+- **Changes in QUILL's AI Hub, Assistant, image prompts and chapter
+  workbench take effect at once, and stay.** These saved a separate copy of
+  QUILL's settings that the main window never saw, so the change waited for a
+  restart, and the window's next save could put the old value back.
+- **A settings file containing Infinity or NaN no longer stops Quill Radio
+  starting.** Radio keeps every choice it can use, uses defaults for the
+  rest, copies the file beside itself, and says once where the copy is.
+
 ### Settings that stick, in every app (2026-11-20)
 
 - **The newest choice is the one saved, everywhere.** QUILL Lite's fix is now

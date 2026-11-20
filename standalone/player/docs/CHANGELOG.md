@@ -8,6 +8,13 @@ Quill Media Player runs the same player code as QUILL from the shared `quill` pa
 
 ## Unreleased
 
+### A setting that cannot be saved is said (2026-11-20)
+
+- If the output device you choose cannot be saved (a full disk or a
+  locked file), Activity now says so once, with Retry and Open Folder,
+  instead of forgetting it silently at the next start. The device stays
+  in use for this session, and Retry keeps the player's other settings.
+
 ### Opening
 
 - **Play a web address.** Give Quill Media Player an https address, on the
