@@ -260,14 +260,20 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
         from quill.core.github.issue_fields_rows import with_field_page
 
         url = sheet.url(target.ident)
+        from quill.core.github.you_local import local_values, with_local_fields
+
+        spec = with_field_page(sheet.sheet, loaded.values)  # an issue's own fields, typed
+        spec = with_local_fields(spec, sheet.kind)  # Favorite and Pin, kept on this device
+        loaded.values.update(local_values(self._local_store(), sheet.kind, target.ident, url))
+        keys = [field.key for field in spec.fields()]
         view = PropertiesSheet(
             self.frame.frame,
-            with_field_page(sheet.sheet, loaded.values),  # an issue's own fields, typed
+            spec,
             loaded.values,
             title=target.title(),
             copy_text=self.frame.copy_text,
             on_apply=apply if sheet.writes else None,
-            locked=locked_fields(sheet, self._context(target, loaded)),
+            locked=locked_fields(sheet, self._context(target, loaded), keys),
             choices={k: list(v) for k, v in choices.items()},
             on_create=lambda spec: self._create(target, spec, choices, state["loaded"].values),
             on_table=self.table_action(target, state) if hasattr(self, "table_action") else None,
@@ -295,8 +301,8 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
     # -- saving ------------------------------------------------------------------
 
     def tier_of(self, target: Target, changes: Sequence[FieldChange]) -> WriteTier:
-        tiers = [target.sheet.writes[c.key].tier for c in changes if c.key in target.sheet.writes]
-        return max(tiers, default=WriteTier.ORGANIZING)
+        writes = [target.sheet.write_for(c.key) for c in changes]
+        return max((w.tier for w in writes if w is not None), default=WriteTier.ORGANIZING)
 
     def confirm_tier(self, tier: WriteTier, words: str, name: str) -> bool:
         """Tier 2: a preview in words; tier 3: the preview, then the name typed (18.4)."""
@@ -325,6 +331,11 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
             return False
         return True
 
+    def _local_store(self) -> Any:
+        from quill.ui.github_workbench_loaders import saved_items_for
+
+        return saved_items_for(self.items)
+
     def _apply_one(
         self,
         target: Target,
@@ -334,6 +345,20 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
         view: Any,
         close: bool,
     ) -> None:
+        from quill.core.github.you_local import apply_local
+
+        url, title = target.sheet.url(target.ident), target.title()
+        asked = {c.key: c.after for c in changes}
+        said, changes = apply_local(
+            self._local_store(), target.kind, target.ident, url, title, changes
+        )
+        if said:  # this device's Favorites and pins: no GitHub write, so no gate
+            done = {k: v for k, v in asked.items() if k not in {c.key for c in changes}}
+            words = " ".join(said)
+            self._say(words)
+            view.saved(done, words, close=close and not changes)
+            if not changes:
+                return
         kept = [c for c in changes if c.after not in (None, "") or c.key not in NEVER_EMPTY]
         for change in changes:
             if change not in kept:
@@ -457,9 +482,13 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
             for spec in sheet.sheet.fields()
             if spec.kind is FieldKind.CHECKLIST
         }
+        from quill.core.github.issue_fields_rows import with_field_page_many
+
+        spec = with_field_page_many(sheet.sheet, objects)  # issue fields: Mixed where they differ
+        keys = [field.key for field in spec.fields()]
         locked: dict[str, str] = {}
         for target, found in zip(targets, loads, strict=True):
-            locked.update(locked_fields(sheet, self._context(target, found)))
+            locked.update(locked_fields(sheet, self._context(target, found), keys))
         noun = _NOUNS.get(sheet.kind, f"{sheet.sheet.title.lower()}s")
         items = [
             BatchItem(sheet.title(t.ident) or t.kind, t.ident, found.values)
@@ -472,7 +501,7 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
 
         view = PropertiesSheet(
             self.frame.frame,
-            sheet.sheet,
+            spec,
             merged,
             title=f"Properties of {len(targets)} {noun}",
             copy_text=self.frame.copy_text,

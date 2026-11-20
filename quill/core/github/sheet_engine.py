@@ -130,6 +130,11 @@ class Write:
     """For a toggle whose off request is not a DELETE (a workflow's PUT .../disable)."""
     encode_item: Callable[[str, bool, Mapping[str, object], Ident], dict[str, object]] | None = None
     """For ``set_graphql``: (item, added?, choices, ident) to the mutation's variables."""
+    request: (
+        Callable[[FieldChange, Value, Ident], tuple[str, str, dict[str, object] | None]] | None
+    ) = None
+    """A field that builds its own one request, (method, path, body): an issue field's
+    value is a POST, and clearing it a DELETE of that field alone (issue_admin.field_request)."""
 
 
 def is_set(write: Write) -> bool:
@@ -182,6 +187,16 @@ class SheetDef:
     """Loaded values a save needs in its ident too (a GraphQL node id, a release's id)."""
     renames: tuple[str, str] = ("", "")
     """(field, ident key): changing that field moves the object (a label's name)."""
+    prefixed: Mapping[str, Write] = field(default_factory=dict)
+    """Writes for fields named only once loaded, by key prefix: ``issue_field:`` is every
+    field an issue's owner defines (issue_fields_rows.with_field_page)."""
+
+    def write_for(self, key: str) -> Write | None:
+        """How the field *key* is saved: its own write, or its prefix's; None when it is not."""
+        found = self.writes.get(key)
+        if found is None:
+            found = next((w for p, w in self.prefixed.items() if key.startswith(p)), None)
+        return found
 
     def ident_after(self, ident: Ident, done: Sequence[FieldChange]) -> dict[str, str]:
         """*ident* after a save that may have renamed the object."""
@@ -287,11 +302,15 @@ def _with_owner(ident: Ident) -> dict[str, str]:
     return found
 
 
-def locked_fields(sheet: SheetDef, ctx: ViewerContext) -> dict[str, str]:
-    """Each editable field the person may not change, with the reason (GH-R-032)."""
+def locked_fields(sheet: SheetDef, ctx: ViewerContext, keys: Sequence[str] = ()) -> dict[str, str]:
+    """Each editable field the person may not change, with the reason (GH-R-032).
+
+    *keys* adds the fields a sheet names only once loaded (an issue's own fields).
+    """
     locked: dict[str, str] = {}
-    for key, write in sheet.writes.items():
-        reason = check(write.requirement, ctx, write.tier)
+    found = [(key, sheet.write_for(key)) for key in keys if key not in sheet.writes]
+    for key, write in [*sheet.writes.items(), *found]:
+        reason = check(write.requirement, ctx, write.tier) if write is not None else ""
         if reason:
             locked[key] = reason
     return locked
@@ -345,13 +364,17 @@ def plan(
     grouped: dict[tuple[str, str], tuple[dict[str, object], list[str]]] = {}
     requests: list[Request] = []
     for change in changed:
-        write = sheet.writes.get(change.key)
+        write = sheet.write_for(change.key)
         if write is None:
             raise SheetSaveError(f"{change.label} cannot be changed from this sheet.")
         value = change.after
         if isinstance(value, ListDelta):
             before = change.before if isinstance(change.before, tuple) else ()
             value = apply_delta(before, value)
+        if write.request is not None:
+            method, path, body = write.request(change, value, ident)
+            requests.append(Request(method, path, body, (change.key,)))
+            continue
         picked = picks.get(change.key, {})
         if write.kind in ("set", "set_graphql"):
             requests.extend(_set_requests(change, write, value, picked, ident))
@@ -498,7 +521,7 @@ def save(
     pending = [change for change in changed if change.key not in keep_theirs]
     # A set (labels, reviewers, projects) is sent as additions and removals, so
     # somebody else's change to the same list is no conflict: it is kept.
-    whole = [c for c in pending if not (c.key in sheet.writes and is_set(sheet.writes[c.key]))]
+    whole = [c for c in pending if not ((w := sheet.write_for(c.key)) and is_set(w))]
     if check_conflicts and whole:
         current = load(api, sheet, ident).values
         found = conflicts(whole, dict(loaded), current)
@@ -522,7 +545,7 @@ def save(
         if isinstance(intended, ListDelta):
             before = change.before if isinstance(change.before, tuple) else ()
             intended = apply_delta(before, intended)
-        write = sheet.writes.get(change.key)
+        write = sheet.write_for(change.key)
         if change.key in sheet.secret_fields:
             outcome.done.append(FieldChange(change.key, change.label, None, "(set)"))
         elif write is not None and is_set(write):
@@ -542,7 +565,7 @@ def inverse(sheet: SheetDef, done: Sequence[FieldChange]) -> tuple[list[FieldCha
     back: list[FieldChange] = []
     cannot: list[str] = []
     for change in done:
-        write = sheet.writes.get(change.key)
+        write = sheet.write_for(change.key)
         if write is None or not write.undo:
             cannot.append(change.label)
             continue

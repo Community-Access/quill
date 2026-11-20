@@ -321,9 +321,16 @@ their names, and text as text.
   qualifiers for you. A field whose name has a space is not offered there.
   **View > Group By > Type** groups the list by issue type.
 - **Properties.** An issue's Properties sheet (`Alt+Enter`) has an **Issue
-  Fields** page after Organize: first how many fields the owner defines, then
-  one read-only field each, of its own kind. **Issue Fields...** on the row
-  changes them.
+  Fields** page after Organize: first how many fields the owner defines and
+  which are not set or set to nothing, then one field each, of its own kind.
+  A date (typed as 2026-12-31), a number, a single choice (a list, with
+  "(none)" to clear it) and text are edited right there; leaving one empty
+  clears it. Saving sends the very request **Issue Fields...** on the row
+  sends, then reads the issue again and says only what GitHub kept. Several
+  choices, and field types QUILL does not know yet, stay read only. Select
+  several issues and press `Alt+Enter` to set a field on all of them: a field
+  whose values differ shows Mixed, and each issue is changed and checked on
+  its own, with a result per issue. Changing a field needs triage access.
 
 The states never sound alike, so a missing permission never looks like an
 empty field:

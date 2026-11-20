@@ -390,6 +390,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
             "Choose which of your star lists it is on.",
         ),
         _FAVORITE,
+        _a("sponsor_owner", "Sponsor the Owner...", help="Open the owner's Sponsor tiers."),
         _OPEN_WEB,
         _CODESPACES,
         _a(

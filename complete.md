@@ -38,7 +38,6 @@ Each is done only with evidence: a test or a live run.
 
 - [ ] Complete Appendix A/B "nothing dropped" mapping and Appendix C object/sheet/filter mapping.
 - [ ] Verify every editable field, mixed value, field removal, batch operation, conflict resolution, verify-after-save, history and supported undo/redo.
-- [ ] Edit issue fields directly on the Properties sheet's Issue Fields page (today read only; Issue Fields... on the row edits them).
 - [ ] Repository and item-property checklists expose state in the row; Space changes it once, Enter saves, focus returns predictably, and JAWS/NVDA/VoiceOver do not hear a duplicate row.
 - [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle.
 - [ ] Live check on the GitHub test repository: Read Only, Organize, Full and Safe Mode refuse and allow as tested, and the permission explanations (greyed rows, Shift+F1, GitHub's own refusals) match what GitHub does.
@@ -77,7 +76,6 @@ Each is done only with evidence: a test or a live run.
 
 The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`: 82 of 100 GH-R ids met, 11 partly met, 7 not met; every Must is at least partly met.
 
-- [ ] **The rest of PRD 16.7:** a menu row for Subscribe and Block, star lists, Fork and Pin and Favorite on the You page, sponsoring a repository's owner from the repository, blocking from an organization, leaving an organization and answering an invitation, reactions on comments, and commits.
 - [ ] **GH-R-150 and 151:** more kinds under Across Repositories (see the by-name collections row above).
 - [ ] **Shoulds and Mays:** Alt+Enter on a GitHub reference in a document (036), access templates (068), real permission evidence for the role views (069), team review requests in Needs My Attention (143), tutorials (105), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116), plain-language batches (086) and Ask How (118).
 

@@ -237,7 +237,8 @@ REPO_QUICK: tuple[Quick, ...] = (
           _reactions, report=True, pick=_comments, pick_key="comment",
           pick_question="Which comment?", needs=("repo", "sha")),
     Quick("react_commit_comment", "React to a Commit Comment...", ("commit",),
-          frozenset({"commit"}), "Add a reaction to a comment on this commit.",
+          frozenset({"commit"}), "Add a reaction to a comment on this commit. GitHub's API "
+          "reacts to a commit's comments, never to the commit itself.",
           ("POST /repos/{owner}/{repo}/comments/{comment_id}/reactions",),
           lambda api, ctx: call(api, "POST", "/repos/{repo}/comments/{comment}/reactions", ctx,
                                 {"content": ctx["reaction"]}),

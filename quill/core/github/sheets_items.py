@@ -17,7 +17,7 @@ import base64
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from quill.core.github.issue_fields_rows import sheet_values
+from quill.core.github.issue_fields_rows import FIELD_WRITES, sheet_values
 from quill.core.github.permissions import WriteTier, repo_role
 from quill.core.github.sheet_engine import Ident, Options, Read, SheetDef, Write
 from quill.core.github.sheet_fields import (
@@ -558,4 +558,5 @@ ISSUE = SheetDef(
     url=lambda ident: f"https://github.com/{ident['repo']}/issues/{ident['number']}",
     fixed=_FIXED_REACTIONS,
     adopt=("node_id", "project_items"),
+    prefixed=FIELD_WRITES,  # the Issue Fields page: each field the owner defines
 )

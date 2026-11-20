@@ -29,6 +29,17 @@ from quill.core.github.sheet_rows import (
     team_row,
 )
 from quill.core.github.sheets_you import profile_pin_field, profile_pin_read
+from quill.core.github.sheets_you_repo import (
+    FORK_READ,
+    FORK_WRITE,
+    OWNER_SPONSOR_READ,
+    STAR_LISTS_OPTIONS,
+    STAR_LISTS_READ,
+    STAR_LISTS_WRITE,
+    forked_field,
+    owner_sponsoring_field,
+    star_lists_field,
+)
 from quill.core.workbench.properties import FieldKind, SheetSpec, Value
 
 __all__ = ["REPOSITORY", "VIEWER_REPO_QUERY", "WATCH_LEVELS", "repo_variables"]
@@ -244,6 +255,8 @@ _YOU = page(
         "All activity, only when participating or mentioned, or ignore it.",
         choices=WATCH_LEVELS,
     ),
+    star_lists_field(),
+    forked_field(),
     ro(
         "custom_watch",
         "Custom watching",
@@ -252,6 +265,7 @@ _YOU = page(
         "Open on GitHub, Shift+Enter, goes there.",
     ),
     profile_pin_field(),
+    owner_sponsoring_field(),
     ro("your_access", "Your access", help="Your role, as GitHub reports it."),
 )
 _FORK = page(
@@ -440,6 +454,9 @@ REPOSITORY = SheetDef(
         Read(_REPO, _repo),
         Read(graphql=VIEWER_REPO_QUERY, variables=repo_variables, extract=_viewer, optional=True),
         profile_pin_read("repo"),
+        STAR_LISTS_READ,
+        FORK_READ,
+        OWNER_SPONSOR_READ,
         Read(
             _REPO + "/subscription",
             _watch,
@@ -532,6 +549,8 @@ REPOSITORY = SheetDef(
         "push_protection": _admin_patch(encode=_security_encode("secret_scanning_push_protection")),
         "starred": toggle("/user/starred/{repo}", "sign_in", _O),
         "watch": Write(_REPO + "/subscription", "sign_in", _O, "PUT", "put", encode=_watch_encode),
+        "star_lists": STAR_LISTS_WRITE,
+        "forked": FORK_WRITE,
         "interaction_limit": Write(
             _REPO + "/interaction-limits", _ADMIN, _A, "PUT", "put", encode=_limit_encode
         ),
@@ -561,6 +580,7 @@ REPOSITORY = SheetDef(
         "pages_cname": patch(_REPO + "/pages", _ADMIN, _A, "cname", method="PUT"),
         "pages_https": patch(_REPO + "/pages", _ADMIN, _A, "https_enforced", method="PUT"),
     },
+    {"star_lists": STAR_LISTS_OPTIONS},
     title=lambda ident: ident["repo"],
     url=lambda ident: f"https://github.com/{ident['repo']}",
     renames=("name", "repo"),

@@ -3,7 +3,9 @@
 The lists are Explore views (:mod:`quill.core.github.sponsors`). **Sponsor at
 This Tier...** says the price and asks public or private, then has you type
 the person's login before GitHub charges anything. **Cancel Sponsorship...**
-asks first.
+asks first. **Sponsor the Owner...** on a repository opens the owner's Sponsor
+node, the same tiers, so money is only ever spent from a tier and after the
+typed name, never from a repository row or a check box (PRD 16.7).
 """
 
 from __future__ import annotations
@@ -18,11 +20,13 @@ __all__ = ["SPONSOR_REASONS", "SPONSOR_VERBS", "GitHubWorkbenchSponsorsMixin"]
 SPONSOR_VERBS: dict[str, frozenset[str]] = {
     "sponsor": frozenset({"sponsor_tier"}),
     "cancel_sponsorship": frozenset({"sponsorship"}),
+    "sponsor_owner": frozenset({"repo", "view"}),
 }
 
 SPONSOR_REASONS: dict[str, str] = {
     "sponsor": "Sponsor at This Tier is for one of a person's tiers, while you are signed in.",
     "cancel_sponsorship": "Cancel Sponsorship is for someone you sponsor.",
+    "sponsor_owner": "Sponsor the Owner is for a repository.",
 }
 
 
@@ -37,8 +41,38 @@ class GitHubWorkbenchSponsorsMixin:
     def github_api(self) -> Any:
         raise NotImplementedError
 
+    def add_instance(self, template: str, address: str) -> Any:
+        raise NotImplementedError
+
     def _fits_sponsor(self, row: object) -> bool:
         return self.signed_in and isinstance(row, ExploreRow) and row.kind == "sponsor_tier"
+
+    def _sponsor_owner_of(self, row: object) -> str:
+        if isinstance(row, ExploreRow) and row.kind == "repo" and "/" in row.repo:
+            return row.repo.split("/", 1)[0]
+        current = getattr(self.frame, "current", None)
+        instance = str(getattr(current, "instance", "") or "")
+        return instance.split("/", 1)[0] if getattr(current, "template", "") == "repository" else ""
+
+    def _fits_sponsor_owner(self, row: object) -> bool:
+        return bool(self._sponsor_owner_of(row))
+
+    def _do_sponsor_owner(self, _ref: Any, row: object) -> None:
+        """The owner's Sponsor node: their tiers, where Sponsor at This Tier... asks and charges."""
+        from quill.ui.workbench_frame import NodeRef
+
+        owner = self._sponsor_owner_of(row)
+        if not owner or self.add_instance("person", owner) is None:
+            self._say("This repository's owner could not be found.")
+            return
+        frame = self.frame
+        frame.rebuild_tree()
+        frame.select(NodeRef("person", "person_sponsor", owner))
+        frame.tree.SetFocus()
+        self._say(
+            f"{owner}'s Sponsor tiers. Nothing is charged until you choose one with Sponsor at "
+            f"This Tier... and type {owner}."
+        )
 
     def _fits_cancel_sponsorship(self, row: object) -> bool:
         return self.signed_in and isinstance(row, ExploreRow) and row.kind == "sponsorship"

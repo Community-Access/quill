@@ -2,6 +2,30 @@
 
 ## 1.0.0
 
+### GitHub Workbench: issue fields edited in Properties, and You and the object (2026-11-19)
+
+- **Issue fields are edited on the sheet.** The Properties sheet's Issue
+  Fields page now edits a date, a number, a single choice and text, each with
+  its own kind of control. Saving sends the same request Issue Fields... on
+  the row sends, sets only the fields you changed, and reads the issue again
+  to check GitHub kept them; emptying a field clears it. Several issues at
+  once show Mixed where they differ. Fields with several choices, and types
+  QUILL does not know, stay read only. Without triage access the page says
+  why each field is locked.
+- **Menu rows for your relationships.** Subscribe or Unsubscribe... on an
+  issue, a pull request, a discussion or a commit; Block or Unblock... on a
+  person; Fork... on a repository; Block from Organization... on an
+  organization and on a member; Leave Organization... (asks first); and Your
+  Invitation, which says whether an organization invited you and, since
+  GitHub's API cannot decline one, where to decline it on GitHub.
+- **A repository's You page** adds Star lists (check the lists it is on),
+  Forked by you (ticking it forks the repository, checked afterwards), In
+  Favorites and Pinned in the Workbench (kept on this computer, the same as
+  the menu rows), and whether you sponsor the owner. **Sponsor the Owner...**
+  opens the owner's Sponsor tiers; nothing is charged until you choose a tier
+  and type their name.
+- **React to a Comment...** on an issue, a pull request (including review
+  comments) and a discussion adds a reaction, or takes back one you gave.
 ### Quill Cast: lists stay still while new episodes arrive (2026-11-19)
 
 A feed refresh, a finished download or a change to the queue no longer moves
