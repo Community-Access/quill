@@ -125,6 +125,14 @@ too, each saying its outcome in one sentence:
   the object again and says one sentence about what changed: "Issue #42:
   added bug, removed docs." GitHub sometimes accepts a change it then ignores,
   usually because of access; when that happens the sentence names the field.
+- **A field GitHub needs is never sent empty.** Emptying a title, a name, a
+  tag or a retention period leaves it as it is, and QUILL says so: "Title
+  cannot be empty on GitHub, so it was left as it is." A number box must hold
+  a whole number; anything else is said before anything is sent.
+- **Rulesets, branch protection and environments are sent whole,** so each
+  save rebuilds them from what GitHub has at that moment. A rule somebody
+  else changed while your sheet was open is kept, including one you chose
+  Keep Theirs for.
 - **Access and settings are previewed.** A change to who has access, or to a
   repository setting, is read back to you in words first, and Enter goes
   ahead. Anything hard to reverse, such as making a private repository
@@ -145,7 +153,8 @@ issues".
   them already have bug." Enter goes ahead.
 - Then a list of results, one line per item: Done, Skipped because it was
   already so, or Failed and why. Copy Results copies them, and Retry Failed
-  (`F8`) runs the failed ones again.
+  (`F8`) runs the failed ones again. Each is read from GitHub afresh first,
+  so a field that took the first time counts as already done.
 - The You page works here too. Select twelve repositories in a search,
   press `Alt+Enter`, and check Starred or set Watch level on the You page:
   each repository is starred, or watched, with a result line for each.
@@ -188,6 +197,13 @@ each one needs the issue it duplicates; close those one at a time with
 GitHub allows it, and `Ctrl+Y` makes it again. In a text box they undo and
 redo your typing as usual. The same commands are **Edit > Undo GitHub
 Change** and **Redo GitHub Change**.
+
+Undo reads the object from GitHub first, so a milestone goes back as the
+milestone it was and a ruleset keeps its other rules. If somebody changed the
+field since, Undo stops and says so rather than overwrite them. A redone
+change can be undone again. A change GitHub cannot reverse says why in its
+preview, before you save it, and again if you ask to undo it: a secret's old
+value, for one, is never given back.
 
 **Account > Change History...** (`Ctrl+Shift+H`) lists every change the
 Workbench has made, newest first: what, when, before and after, and whether

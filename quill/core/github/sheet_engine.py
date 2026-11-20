@@ -31,6 +31,7 @@ from urllib.parse import quote
 from quill.core.error_codes import CodedError
 from quill.core.github.permissions import ViewerContext, WriteTier, check
 from quill.core.github.sheet_outcome import SaveOutcome, sentence
+from quill.core.github.sheet_values import as_sent
 from quill.core.github.workbench_api import GitHubApi, fill_path
 from quill.core.workbench.properties import (
     MIXED,
@@ -135,6 +136,8 @@ class Write:
     ) = None
     """A field that builds its own one request, (method, path, body): an issue field's
     value is a POST, and clearing it a DELETE of that field alone (issue_admin.field_request)."""
+    why_no_undo: str = ""
+    """With ``undo=False``: why, in words, said before the save and again on Undo."""
 
 
 def is_set(write: Write) -> bool:
@@ -357,6 +360,9 @@ def plan(
 ) -> list[Request]:
     """The requests that send *changed*: patches grouped per endpoint, the rest one each."""
     picks = {**sheet.fixed, **(choices or {})}
+    changed = as_sent(sheet.sheet, changed)
+    if not changed:  # every field kept as theirs: an object sent whole is not sent at all
+        return []
     if sheet.compose is not None:
         # A picker's word becomes what the API wants (a parent team's name, its id).
         loaded = choices or {}
@@ -501,13 +507,22 @@ def _set_took(before: object, intended: object, found: object) -> bool:
     return all(item in now for item in added) and not any(item in now for item in removed)
 
 
-def adopted(sheet: SheetDef, ident: Ident, loaded: Mapping[str, Value]) -> dict[str, str]:
-    """*ident* with the loaded values a save needs (``node_id``, a release's ``id``)."""
+def adopted(
+    sheet: SheetDef, ident: Ident, loaded: Mapping[str, Value], *, fresh: bool = False
+) -> dict[str, str]:
+    """*ident* with the loaded values a save needs (``node_id``, a release's ``id``).
+
+    *fresh* values (read just now) replace older ones, so an object GitHub
+    replaces whole is rebuilt from what it is now, not from when the sheet opened.
+    """
     found = dict(ident)
     for key in sheet.adopt:
         value = loaded.get(key)
         if isinstance(value, (str, int, bool)) and str(value):
-            found.setdefault(key, str(value))
+            if fresh:
+                found[key] = str(value)
+            else:
+                found.setdefault(key, str(value))
     return found
 
 
@@ -531,16 +546,21 @@ def save(
     """
     outcome = SaveOutcome()
     ident = adopted(sheet, ident, loaded)
-    pending = [change for change in changed if change.key not in keep_theirs]
+    pending = as_sent(sheet.sheet, [c for c in changed if c.key not in keep_theirs])
     # A set (labels, reviewers, projects) is sent as additions and removals, so
     # somebody else's change to the same list is no conflict: it is kept.
     whole = [c for c in pending if not ((w := sheet.write_for(c.key)) and is_set(w))]
-    if check_conflicts and whole:
+    if (check_conflicts and whole) or sheet.compose is not None:
         current = load(api, sheet, ident).values
-        found = conflicts(whole, dict(loaded), current)
-        if found:
-            outcome.conflicts = found
-            return outcome
+        if check_conflicts and whole:
+            found = conflicts(whole, dict(loaded), current)
+            if found:
+                outcome.conflicts = found
+                return outcome
+        # An object sent whole (a ruleset, a protection) is rebuilt from what
+        # GitHub has now, so a field somebody else changed, or one kept as
+        # theirs, is sent as it is now rather than put back as it was.
+        ident = adopted(sheet, ident, current, fresh=True)
     for request in plan(sheet, ident, pending, choices):
         try:
             _send(api, request)

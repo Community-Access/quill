@@ -43,6 +43,8 @@ from quill.core.github.sheet_engine import (
     sentence,
 )
 from quill.core.github.sheet_outcome import mask_secrets
+from quill.core.github.sheet_replay import undo_notes
+from quill.core.github.sheet_values import emptied_refusal
 from quill.core.workbench.properties import (
     FieldChange,
     FieldKind,
@@ -74,12 +76,6 @@ PAGE_FOR_VERB: dict[str, tuple[str, str]] = {
 }
 
 _NOUNS = {"issue": "issues", "pull_request": "pull requests", "repository": "repositories"}
-
-
-NEVER_EMPTY = {
-    "base": "A pull request always merges into a branch, so Into branch was left as it is.",
-}
-"""Picker fields that may not be set to "(none)", with what is said when someone tries."""
 
 
 class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenchCreateMixin):
@@ -366,10 +362,10 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
             view.saved(done, words, close=close and not changes)
             if not changes:
                 return
-        kept = [c for c in changes if c.after not in (None, "") or c.key not in NEVER_EMPTY]
+        kept = [c for c in changes if not emptied_refusal(target.kind, c)]
         for change in changes:
-            if change not in kept:
-                self._say(NEVER_EMPTY[change.key])
+            if change not in kept:  # GitHub needs a value here (sheet_values.NEVER_EMPTY)
+                self._say(emptied_refusal(target.kind, change))
         if not kept:
             return
         changes = kept
@@ -380,6 +376,10 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
             f"{c.label} to {say_value(c.after)}"
             for c in mask_secrets(changes, target.sheet.secret_fields)
         )
+        notes = undo_notes(target.sheet, changes)
+        if notes:  # said before it happens, never after (16.5), so it is always previewed
+            words += ". " + " ".join(notes)
+            tier = max(tier, WriteTier.ACCESS)
         name = target.ident.get("repo") or target.ident.get("name") or target.title()
         if not self.confirm_tier(tier, words, name):
             return
@@ -424,7 +424,8 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
             said = sentence(name, outcome)
             self._say(said)
             if outcome.done:
-                self.record_change(target, outcome.done, said, outcome.ok)
+                here = Target(target.kind, state["ident"])
+                self.record_change(here, outcome.done, said, outcome.ok)
             state["ident"] = sheet.ident_after(state["ident"], outcome.done)
             state["loaded"].values.update(outcome.after)
             view.saved(outcome.after, said, close=close and outcome.ok)
@@ -532,10 +533,12 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
         choices: dict[str, dict[str, object]],
         view: Any,
         close: bool,
+        reload: bool = False,
     ) -> None:
         from quill.core.github.batch import run
 
         words = preview(noun, items, mask_secrets(changes, SHEETS[kind].secret_fields))
+        words = " ".join([words, *undo_notes(SHEETS[kind], changes)])
         target = Target(kind, items[0].ident)
         if self._save_refused(f"{len(items)} {noun}", self.tier_of(target, changes)):
             return
@@ -559,6 +562,7 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
                 choices=choices,
                 pace=self.batch_pace,
                 done=record,
+                reload=reload,
             )
 
         def finished(results: Any) -> None:
@@ -567,8 +571,8 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
             failed = {r.name for r in results if r.status == "Failed"}
             again = [item for item in items if item.name in failed]
 
-            def retry() -> None:
-                self._apply_many(kind, noun, again, changes, choices, view, close)
+            def retry() -> None:  # read afresh: what took the first time is not a conflict
+                self._apply_many(kind, noun, again, changes, choices, view, close, reload=True)
 
             self.show_results(f"Changed {len(items)} {noun}", text, retry if again else None)
             view.saved({}, text.rsplit("\n", 1)[-1], close=close)
