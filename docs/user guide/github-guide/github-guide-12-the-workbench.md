@@ -64,6 +64,12 @@ first place under it.
 - **Review Requests**, **Assigned to Me**, **Mentions**, **My Open Pull
   Requests** and **My Open Issues** are the same work split by why it is
   yours.
+- **Review Requests** holds two kinds: pull requests that ask you by name,
+  and those that ask a team you belong to. A team's row ends in "team review
+  request", so you know someone else on the team may take it; the pull
+  request's own sheet names the team under Team reviewers. GitHub's search
+  cannot say which team from the list itself. The Inbox marks them the same
+  way.
 - **My Activity Feed** is what you did lately.
 
 When one of these is empty, the details pane says so and says what would fill
@@ -561,6 +567,14 @@ columns you have hidden, because those are left out. It works on any list:
 issues, pull requests, runs, alerts, people, Change History. The WordPress
 Workbench's Export List is the same command.
 
+An alert list exports without anything secret in it. The Workbench never asks
+GitHub for a secret scanning alert's value, so it is in neither the list nor
+the file. Text GitHub wrote into an alert, such as a code scanning message
+quoting a hard-coded password, passes the same redaction Change History uses
+before it is written: a value shaped like a token or key becomes `[TOKEN]`,
+and a link's user name and password are dropped. When that happens, the
+Workbench says how many values it held back.
+
 ### Bringing issues in
 
 Two rows on the Workbench's File menu make many issues at once in the
@@ -712,6 +726,7 @@ The last place in the tree is help you can walk through like any other list.
   lesson in the editor's Tutorials window. Walk Me Through It, on the context
   menu, says it here instead, one step at a time, with your keys. In QUILL
   Lite, which has no GitHub lessons of its own, Enter walks it here too.
+  **Help > Tutorials** (`Ctrl+F2`) goes straight there.
 - **What Changed** says what is new.
 - **Tips** holds QUILLBert's tips, one short thing worth trying in each.
   They wait in this list and are never pushed at you.
@@ -731,6 +746,9 @@ The help keys work everywhere in the window:
 | `Ctrl+F1` | This guide, at the chapter for where you are |
 | `Ctrl+Shift+F1` | Search all of help: places, commands, words and tasks |
 | `Alt+Shift+F1` | Every key in the window |
+| `Ctrl+F2` | Help > Tutorials: the GitHub lessons, under Help and Learning |
+| `F11` | Say or Type a Command, in this window |
+| `Ctrl+Alt+Shift+F1` | What Can I Say Here: what F11 can do in this window |
 | `Ctrl+Alt+K` | Key Describer: press keys to hear what each does here, without doing it; `Escape` stops |
 
 **Why?** explains something the Workbench did on its own, with no key from
@@ -760,6 +778,20 @@ watch and notification rows also have it on their context menu. It covers:
 
 Shift+F1 already says why a command is greyed, and a sheet says why a field
 is read-only beside the field.
+
+## Say or Type a Command
+
+`F11` works here as it does in the editor, with this window's own commands.
+Type what you want, such as "show the pull requests", "what failed" or "how
+much rate limit is left", and press `Enter`. Only the Workbench's commands are
+offered, and each runs exactly as its menu row would: a change still asks and
+previews first, and a Read Only account is still refused. Commands that send
+a change by themselves, such as Merge or Close, are not offered from a
+sentence; their menu rows and keys still work.
+
+**Help > What Can I Say Here?** (`Ctrl+Alt+Shift+F1`) lists what you can ask
+for in this window, with an example for each. In this window, requests are
+matched on this computer only and are never sent anywhere.
 
 ## Dry Run
 
@@ -797,11 +829,15 @@ delete a repository only when you signed in with the `delete_repo`
 permission; without it, QUILL says so and tells you where on GitHub to delete
 it yourself.
 
-**Help > Tutorials** in the editor has a track of six lessons that use it,
-"GitHub, on a practice repository": make it and look round; label, comment on
-and close an issue; try a command with Dry Run; review and merge a pull
-request; read a failed run; and delete the repository. Each step says what to
-press and what you should hear.
+**Help > Tutorials** in the editor, or in the Workbench (`Ctrl+F2`), has a
+track of thirteen lessons that use it, "GitHub, on a practice repository": make
+it and look round; label, comment on and close an issue; try a command with
+Dry Run; review and merge a pull request; read a failed run; triage your
+inbox; build an issue form; file an issue with it; plan a milestone; organize
+a project board; give someone access, with an access template, stopping at
+the preview; use the API Console; and delete the repository. Each step says
+what to press and what you should hear. The lesson on writing a branch rule
+is still to come.
 
 ## Is it GitHub, or is it me?
 

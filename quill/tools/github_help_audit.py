@@ -67,6 +67,15 @@ TITLE_EXEMPT: dict[str, str] = {
         "One base for the chooser and community-file sheets; each subclass's title "
         "is a class attribute with its purpose in SURFACE_PURPOSES."
     ),
+    "quill/ui/github_authoring_form.py::FieldsDialog.__init__": (
+        "One form window for the workflow editor's triggers, inputs, steps, jobs and "
+        "permissions, the Dependabot entry and the CODEOWNERS rule, titled by its caller "
+        '("Step", "Job: build"); each title has its purpose in SURFACE_PURPOSES.'
+    ),
+    "quill/ui/github_authoring_form.py::ItemsDialog.__init__": (
+        "One list window for a workflow's inputs and a job's steps (\"Inputs\", "
+        '"Steps: Build"); each title has its purpose in SURFACE_PURPOSES.'
+    ),
     "quill/ui/github_template_field_dialog.py::FieldDialog.__init__": (
         'Titled after the field kind ("Form Field: Add drop-down"); its purpose is the '
         '"Form Field:" entry in SURFACE_PURPOSES.'

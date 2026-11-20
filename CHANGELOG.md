@@ -45,6 +45,154 @@ removed, with tests. What that found:
 The live halves are rows in the live-run table; the ones that need an
 organization or a second account wait for the test organization.
 
+### GitHub Workbench: access templates, more tutorials, team review requests, and the Command Key in the Workbench (2026-11-20)
+
+- **Access templates.** Account > Roles and Access > Access Templates... keeps
+  named sets of team and repository roles for each account, and Apply Access
+  Template... gives one person a whole set as one batch, previewed before it
+  is sent.
+- **Ten GitHub tutorials.** Help > Tutorials (Ctrl+F2) opens the GitHub
+  lessons: triage, building and using an issue form, milestones, projects,
+  access and the API Console join the earlier lessons, each on the practice
+  repository.
+- **Team review requests in Needs My Attention.** Review Requests and the
+  Inbox now include pull requests waiting on a team you are in, marked
+  "team review request".
+- **Say or Type a Command (F11) in both Workbench windows.** It runs that
+  window's own commands, including the Plain-Language Batch, through the same
+  checks as the menu. What Can I Say Here (Ctrl+Alt+Shift+F1) lists them.
+
+### GitHub Workbench: every field proved, and Undo that puts things back (2026-11-20)
+
+Every editable field on every Properties sheet now has a test that checks
+what is sent, that the save is read back, that it lands in Change History and
+that Undo works or says why not. That found these, now fixed:
+- **Undo and Redo put things back properly.** Undo read nothing fresh first,
+  so a milestone went back as no milestone, a ruleset, branch protection or
+  environment was rebuilt from nothing, and a project field could not be
+  undone at all. Undo now reads the object again, stops if someone has
+  changed it since, and then saves. A renamed label or repository can be
+  undone, and a redone change can be undone again.
+- **Number fields save.** A number was sent as text, so every number field
+  said it did not change.
+- **Your change no longer undoes someone else's.** Saving a ruleset or
+  protection put back fields another person had changed since you opened
+  the sheet, including ones you chose to keep as theirs.
+- **Retry Failed works** on a field that took the first time.
+- **A required field left empty is refused** before anything is sent, such
+  as a title, a name, a tag or a retention period.
+- **A change that cannot be undone says so** in its preview, before it
+  happens, such as a secret or taking an item out of a project.
+
+### GitHub Workbench: every alert counted, safe alert exports and Least Privilege Advice (2026-11-20)
+
+- **Security Overview reads every page.** It used to count only the first 100
+  alerts of each kind and say there might be more. It now follows GitHub's
+  pages to the end, so the counts by repository and severity cover every open
+  alert. A Cancel button stops a long read, and then nothing is shown, because
+  part of a count would read as all of it. How much was read is said once, at
+  the end.
+- **Exporting an alert list leaves secrets out.** Export List on a security
+  alert list never had a secret's value to write, and now any token GitHub
+  quoted in an alert's own text is replaced with [TOKEN] before it reaches
+  the file. The outcome says how many values were held back.
+- **Least Privilege Advice** (Account > Roles and Access) suggests the
+  smallest classic token scopes, fine-grained permissions and Workbench level
+  that cover what QUILL saw this account do on this computer, and says
+  plainly what it cannot know, such as anything done outside QUILL. It
+  changes nothing.
+
+### The actual result, said once, and lists that stay still in QUILL Lite and QUILL (2026-11-19)
+
+The second part of the family UX pilot (FUX-04 and FUX-06).
+
+- **Saves say where.** A save now names the file and its folder, as "Saved
+  notes.txt in Documents.", in QUILL Lite and QUILL. A Word save that ran in the
+  background while you kept typing adds "What you typed while it saved is not in
+  it yet." instead of letting "Saved" suggest the window is clean.
+- **Recovered drafts say from when.** Recovering one draft says which, when it
+  was last written ("as it was today at 3:42 PM") and that it is not saved yet.
+  Recovering several names each one. The count is of the documents that really
+  came back, so a restore that failed is no longer counted as a success. QUILL's
+  crash recovery uses the same sentence.
+- **Quill Cast says what is heard.** Changing a podcast's speed, in Settings for
+  This Podcast, Playback Speed or Preferences, is reported after the change is
+  saved, and when the episode playing kept its own rate the sentence says so
+  ("The episode playing stays at 1x."). Preferences says one sentence for one
+  OK, not three, and does not say "saved" before the write lands. Backups,
+  exported audio, OPML exports, import reports and transcripts say the folder
+  too. A restored backup that could not refresh the view now says so aloud;
+  it used to end in silence because the reload named a module that does not
+  exist.
+- **Lists that stay still.** An open Recent Documents window takes a file saved
+  elsewhere without moving your row, and never brings back one you removed. The
+  Problems list keeps you on your problem when a quiet check refills it, follows
+  it when lines are typed above it, and moves to the next one when it is fixed.
+  Discarding drafts in the recovery window keeps the check you gave every other
+  row and puts focus on the next one, not the first. Focus never moves and
+  nothing extra is said.
+
+### WordPress Workbench: the shop, memberships and Gravity Forms tried on a real site (2026-11-20)
+
+Every plugin feature built since the last live run was tried on the test site
+(WordPress 7.1.5 with WooCommerce 11.3.1, Yoast SEO 28.9, Paid Memberships Pro
+3.9.2, Gravity Forms 3.2.3.1, QUILL Accessible Forms 1.0.0, Advanced Custom
+Fields 6.8.12 and Redirection 5.10.1). What it found is fixed:
+
+- **Edit Membership Level made a second level** instead of changing the one
+  you chose, because Paid Memberships Pro makes a new level for every POST. It
+  now changes the level in place. After New or Edit Membership Level, QUILL
+  reads the level back and names anything Paid Memberships Pro did not keep
+  (its REST API drops the billing and expiry periods), and Ctrl+Z on a new
+  level explains that Paid Memberships Pro does not allow deleting a level
+  through its REST API, and where to delete it instead.
+- **Members of This Level** says plainly when your account cannot list the
+  site's people, and shows when each member joined as a date.
+- **Change Items** keeps a line's price per item when you change its quantity.
+  WooCommerce kept the old line total, so 3 mugs still cost the price of 1.
+  A quantity of 0 does take the line off the order.
+- **Shop Analytics** says on its total row how many orders WooCommerce has not
+  imported into Analytics yet, so the figures do not look complete when they
+  are not.
+- **Yoast SEO:** where Yoast gives no canonical address because the site asks
+  search engines not to index it, the SEO page says so and shows the post's
+  address, instead of "none given".
+- **Gravity Forms:** Submit a Test Entry used an example.com address, which
+  Gravity Forms 2.9.15 and later turn away as spam. It now uses one Gravity
+  Forms accepts. Ctrl+Z now moves the test entry to the Trash again, because
+  QUILL finds the entry itself when Gravity Forms does not say which one it
+  made. On a site with no feed add-on, Feeds is empty instead of showing an
+  error as if it were a feed.
+- **The Watch for new form responses** works with QUILL Accessible Forms,
+  whose responses are listed one form at a time; before this it skipped the
+  site with "Missing parameter(s): form_id".
+- **QUILL Site Types:** a post type you define keeps its fields in the REST
+  API. Before this, the values you saved were dropped without a word.
+- **WP Crontrol:** Open Cron Events opens WP Crontrol 2.0's real page.
+
+The live run (`docs/qa/wordpress-live-run.py`) gains tests 127 to 143 for
+these features, and `--only` to run just some of them.
+
+### GitHub Workbench: write workflows, Dependabot and CODEOWNERS (2026-11-19)
+
+- **Edit Workflow...** and **New Workflow...**
+  - **The editor.** It lays a workflow out as plain controls: its triggers and
+    their inputs, permissions, jobs, and each job's steps. The order jobs run
+    in is said in words ("Build runs after Test and Lint").
+  - **Checks before saving.** A "What GitHub would say" box lists anything
+    GitHub would refuse, and Save waits until the list is empty.
+  - **Saving.** Changes are saved to the default branch, or as a pull request
+    when the branch is protected. Comments at the top of the file are kept;
+    comments inside it are not, and the window says so.
+- **dependabot.yml** opens as a sheet, and **Dependabot Commands...** on a
+  Dependabot pull request posts the command you choose.
+- **CODEOWNERS** is now a table with Add, Edit, Remove and Move. GitHub's
+  errors for the file are shown with it. **Who Owns This?** on a file or folder
+  says which rule wins.
+- **Compare Configuration With Another Repository...** compares workflows,
+  templates, community files, Dependabot and CODEOWNERS with another
+  repository, and proposes the files you choose as one pull request.
+
 ### GitHub Workbench: tags, branches, secrets, webhooks and more across repositories (2026-11-20)
 
 - Across Repositories has eight more places by name, grouped by category:
@@ -106,6 +254,7 @@ The WordPress decisions still open have moved from the open-work list to a
 Backlog section in the WordPress Workbench PRD. They are which areas get
 first-class integrations, a WordPress-layer key for page commands, and a tree
 node for menu items. Rank Math staying read only is confirmed.
+
 ### GitHub Workbench: sort and group any list, keep your place, and say it in words (2026-11-19)
 
 - **Sort By and Group By on every list.** View > Sort By > By Column... and

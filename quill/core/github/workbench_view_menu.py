@@ -225,12 +225,31 @@ ROLES_SUB = MenuSub(
             "&Bulk Access Changes...",
             help="One team or person, many repositories: previewed, then a result per change.",
         ),
+        MenuRow(
+            f"{_P}access_templates",
+            "Access &Templates...",
+            help="Named sets of access, such as Contributor: write on these repositories "
+            "and member of a team. Kept on this computer for this account.",
+        ),
+        MenuRow(
+            f"{_P}apply_access_template",
+            "Appl&y Access Template...",
+            help="Give one person everything a template holds: previewed, then a result "
+            "per change.",
+        ),
         None,
         MenuRow(
             f"{_P}account_level",
             "Workbench &Level for This Account...",
             help="Read Only, Organize or Full: what the Workbench may change with this "
             "account, whatever GitHub would allow.",
+        ),
+        MenuRow(
+            f"{_P}least_privilege",
+            "Least &Privilege Advice...",
+            help="The smallest token scopes, fine-grained permissions and Workbench level "
+            "that cover what QUILL saw this account do here, and what it cannot know. "
+            "Changes nothing.",
         ),
     ),
     help="Who may do what, and changing it (sections 18.2 to 18.3.2).",

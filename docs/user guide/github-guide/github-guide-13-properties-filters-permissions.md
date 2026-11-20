@@ -107,6 +107,14 @@ field.
   the object again and says one sentence about what changed: "Issue #42:
   added bug, removed docs." GitHub sometimes accepts a change it then ignores,
   usually because of access; when that happens the sentence names the field.
+- **A field GitHub needs is never sent empty.** Emptying a title, a name, a
+  tag or a retention period leaves it as it is, and QUILL says so: "Title
+  cannot be empty on GitHub, so it was left as it is." A number box must hold
+  a whole number; anything else is said before anything is sent.
+- **Rulesets, branch protection and environments are sent whole,** so each
+  save rebuilds them from what GitHub has at that moment. A rule somebody
+  else changed while your sheet was open is kept, including one you chose
+  Keep Theirs for.
 - **Access and settings are previewed.** A change to who has access, or to a
   repository setting, is read back to you in words first, and Enter goes
   ahead. Anything hard to reverse, such as making a private repository
@@ -127,7 +135,8 @@ issues".
   them already have bug." Enter goes ahead.
 - Then a list of results, one line per item: Done, Skipped because it was
   already so, or Failed and why. Copy Results copies them, and Retry Failed
-  (`F8`) runs the failed ones again.
+  (`F8`) runs the failed ones again. Each is read from GitHub afresh first,
+  so a field that took the first time counts as already done.
 - The You page works here too. Select twelve repositories in a search,
   press `Alt+Enter`, and check Starred or set Watch level on the You page:
   each repository is starred, or watched, with a result line for each.
@@ -171,6 +180,14 @@ WordPress Workbench's Plain-Language Batch reads ages the same way.
 GitHub allows it, and `Ctrl+Y` makes it again. In a text box they undo and
 redo your typing as usual. The same commands are **Edit > Undo GitHub
 Change** and **Redo GitHub Change**.
+
+Undo reads the object from GitHub first, so a milestone goes back as the
+milestone it was and a ruleset keeps its other rules. If somebody changed the
+field since, Undo stops and says so rather than overwrite them. A redone
+change can be undone again. A change GitHub cannot reverse says why in its
+preview, before you save it, and again if you ask to undo it: a secret's old
+value is never given back, and taking an item out of a Project deletes its
+field values there.
 
 **Account > Change History...** (`Ctrl+Shift+H`) lists every change the
 Workbench has made, newest first: what, when, before and after, and whether
@@ -278,6 +295,31 @@ someone else's organization. Organize allows labels, assignees, comments and
 the like, but not access, settings or deleting. Full allows everything your
 access allows. Safe Mode makes every account Read Only.
 
+### The smallest permissions that would do
+
+**Account > Roles and Access > Least Privilege Advice...** is a report: it
+changes no token and no setting. It is based on what the Workbench saw this
+account do on this computer: the kinds of request it sent (never which
+repository or person), the changes that passed the Workbench level check and
+how far each reached, Change History, the scopes GitHub names for a classic
+token, and every time GitHub refused a request and said which permission it
+wanted. From those it suggests:
+
+- the smallest Workbench level that covers what you did (Read Only, Organize
+  or Full);
+- for a classic token, the scopes that are enough, the ones it has that were
+  never used, and a broad scope where a narrower one would do, with a link to
+  GitHub's new-token page with just those checked;
+- for a fine-grained token, the permissions by GitHub's own names, read-only
+  or read and write, and what no fine-grained token can reach.
+
+It then says what it cannot know. It saw only this computer's use, not
+another computer, the `gh` command or GitHub's website. GitHub does not list a
+fine-grained token's exact permissions, so the report can say only what
+worked and what was refused. And it cannot tell whether a repository is
+private, so `repo` is suggested only where that would matter. To change a
+token, use GitHub's Settings, Developer settings.
+
 ### Who else has access
 
 A repository's sheet has an Access page: the people with access, the teams,
@@ -329,7 +371,19 @@ invitation's role, so for one of those, Remove it and invite them again.
 - **Access Review...**, every person and repository pair in an organization
   with their role, copied as CSV too;
 - **Bulk Access Changes...**, one team or person on many repositories at
-  once, previewed, with a result per change.
+  once, previewed, with a result per change;
+- **Access Templates...**, named sets of access, such as Contributor: write
+  on these repositories and member of a team. Choose New Template..., give it
+  a name, and write one line for each place: `write on owner/name` (read,
+  triage, write, maintain or admin), `member of org/team` or `maintainer of
+  org/team`, and `member of org` or `owner of org`. A line it cannot read is
+  said and left out. Templates are kept on this computer, for this account,
+  and making one sends nothing;
+- **Apply Access Template...**, everything a template holds, given to one
+  person by login in one batch: organization first, then teams, then
+  repositories. The preview says every change in words and asks once; each
+  change then has its own result and its own line in Change History. It
+  needs Full for this account in the Workbench, as any access change does.
 
 ### Who has what, and why
 

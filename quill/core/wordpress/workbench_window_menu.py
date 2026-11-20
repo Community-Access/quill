@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from quill.core.wordpress.workbench_gravity_actions import GRAVITY_SUB
 from quill.core.wordpress.workbench_site_files_actions import WXR_SUB
-from quill.core.workbench.menus import MenuRow, MenuSpec, MenuSub, rows
+from quill.core.workbench.menus import MenuRow, MenuSpec, MenuSub, command_key_rows, rows
 
 __all__ = [
     "GO_NODES",
@@ -342,6 +342,7 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
                 "Type a few words to find a place, a command, a WordPress word or a task.",
             ),
             _row("keys", "Workbench &Keys", "Alt+Shift+F1", "Every key in this window."),
+            *command_key_rows(PREFIX),  # F11 and Ctrl+Alt+Shift+F1, as in every family app
             None,
             _row("repeat_result", "Say &Last Result Again", "F9", "Say the last result again."),
             _row(

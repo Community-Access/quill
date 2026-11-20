@@ -21,12 +21,10 @@ order:
    :mod:`~quill.ui.github_workbench_releases` and
    :mod:`~quill.ui.github_workbench_community`.
 
-Nothing falls back to the retired GitHub Items window. Anything that does not
-apply is greyed, and :meth:`reason` says why in a sentence: the help string of
-the greyed row and what Shift+F1 reads.
+Nothing falls back to the retired GitHub Items window. Anything that does not apply is
+greyed, and :meth:`reason` says why: the greyed row's help, and what Shift+F1 reads.
 
-Nothing here speaks on its own (GATE-13); what is said is the result of a
-write the person asked for, through the frame, so F9 can say it again.
+Nothing speaks on its own (GATE-13): what is said is a requested write's result, so F9 repeats it.
 """
 
 from __future__ import annotations
@@ -50,6 +48,7 @@ from quill.core.github.workbench_window_menu import PLACEHOLDER_COMMANDS
 from quill.ui import github_workbench_development as _development
 from quill.ui.dialog_contract import show_modal_dialog
 from quill.ui.github_workbench_across import ACROSS_REASONS, ACROSS_VERBS
+from quill.ui.github_workbench_authoring import AUTHORING_ACTIONS
 from quill.ui.github_workbench_community import (
     COMMUNITY_REASONS,
     COMMUNITY_VERBS,
@@ -125,6 +124,7 @@ REPOSITORY_ACTIONS: tuple[tuple[str, str], ...] = (
     ("Configure Branch Protection...", "github.configure_branch_protection"),
     ("Delete Branch...", "github.delete_branch"),
     ("Commit Multiple Files...", "github.commit_multiple_files"),
+    *AUTHORING_ACTIONS,
     ("Create Repository...", "github.create_repository"),
     ("Browse Organization Repositories...", "github.browse_organization"),
 )
@@ -379,45 +379,9 @@ class GitHubWorkbenchActionsMixin(
 
     def _do_export_list(self, _ref: Any, _row: object) -> None:
         """File > Export List: the list as shown, as Excel, CSV or a Markdown table."""
-        from pathlib import Path
+        from quill.ui.github_workbench_export_list import export_list
 
-        from quill.core.workbench.export import (
-            EXPORT_WILDCARD,
-            export_rows,
-            hidden_columns_sentence,
-        )
-
-        frame = self.frame
-        if frame is None or not frame.rows:
-            self._say("There is nothing in the list to export.")
-            return
-        wx = frame._wx
-        style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
-        with wx.FileDialog(
-            frame.frame, "Export List", wildcard=EXPORT_WILDCARD, style=style
-        ) as box:
-            if show_modal_dialog(box, "Export List") != wx.ID_OK:
-                return
-            path = Path(box.GetPath())
-        node = frame.node(frame.current)
-        columns = tuple(self.columns(node))  # type: ignore[attr-defined]
-        heading = [name.replace("_", " ").capitalize() for name in columns]
-        try:
-            count = export_rows(path, heading, [self.cells(r, columns) for r in frame.rows])  # type: ignore[attr-defined]
-        except OSError as exc:
-            self._say(f"Could not export the list: {exc}")
-            return
-        every = [str(n).replace("_", " ").capitalize() for n in getattr(node, "columns", ()) or ()]
-        said = f"Exported {count} {'row' if count == 1 else 'rows'} to {path.name}."
-        left_out = hidden_columns_sentence(heading, every)
-        self._say(f"{said} {left_out}".strip())
-        opener = getattr(self, "_open_document", None)
-        if (
-            path.suffix.lower() == ".md"
-            and callable(opener)
-            and self._confirm("Export List", f"Open {path.name} in the editor, as a table?")
-        ):
-            opener(path)
+        export_list(self)
 
     def _explore_client(self) -> Any:
         if getattr(self, "_explore", None) is None:

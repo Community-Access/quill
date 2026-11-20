@@ -236,10 +236,11 @@ def _compose_type(
     ident: Ident, edits: Mapping[str, Value]
 ) -> list[tuple[str, str, dict[str, object]]]:
     raw = json.loads(ident.get("raw_json") or "{}")
-    body = {
+    body: dict[str, object] = {
         "name": str(edits.get("name", raw.get("name", ""))),
         "description": str(edits.get("description", raw.get("description") or "")),
-        "color": str(edits.get("colour", raw.get("color") or "gray")),
+        # An emptied colour is null: GitHub's own "no colour" (a type's colour is optional).
+        "color": str(edits.get("colour", raw.get("color") or "gray")) or None,
         "is_enabled": bool(edits.get("enabled", raw.get("is_enabled", True))),
     }
     return [("PUT", f"/orgs/{ident['org']}/issue-types/{ident['id']}", body)]

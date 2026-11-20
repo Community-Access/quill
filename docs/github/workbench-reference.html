@@ -1032,8 +1032,9 @@ and with what access. Accept or Decline from a row’s context menu.</td>
 <tr>
 <td>Review Requests (<code>:review_requests</code>)</td>
 <td>attention</td>
-<td>Review Requests: pull requests somebody asked you to review. Enter
-opens the review.</td>
+<td>Review Requests: pull requests somebody asked you, or a team you are
+on, to review. A team’s ends in team review request. Enter opens the
+review.</td>
 </tr>
 <tr>
 <td>Assigned to Me (<code>:assigned</code>)</td>
@@ -3210,10 +3211,30 @@ source: filterable, exportable as CSV.</td>
 change.</td>
 </tr>
 <tr>
+<td>Roles and Access &gt; Access Templates…</td>
+<td>(submenu letter)</td>
+<td>Named sets of access, such as Contributor: write on these
+repositories and member of a team. Kept on this computer for this
+account.</td>
+</tr>
+<tr>
+<td>Roles and Access &gt; Apply Access Template…</td>
+<td>(submenu letter)</td>
+<td>Give one person everything a template holds: previewed, then a
+result per change.</td>
+</tr>
+<tr>
 <td>Roles and Access &gt; Workbench Level for This Account…</td>
 <td>(submenu letter)</td>
 <td>Read Only, Organize or Full: what the Workbench may change with this
 account, whatever GitHub would allow.</td>
+</tr>
+<tr>
+<td>Roles and Access &gt; Least Privilege Advice…</td>
+<td>(submenu letter)</td>
+<td>The smallest token scopes, fine-grained permissions and Workbench
+level that cover what QUILL saw this account do here, and what it cannot
+know. Changes nothing.</td>
 </tr>
 </tbody>
 </table>
@@ -3295,6 +3316,18 @@ as a tree.</td>
 <td>Every action for the selection, its key, and why any is greyed.</td>
 </tr>
 <tr>
+<td>Say or Type a Command…</td>
+<td>F11</td>
+<td>Type what you want this window to do, such as show the issues; only
+this window’s commands, matched on this computer.</td>
+</tr>
+<tr>
+<td>What Can I Say Here?</td>
+<td>Ctrl+Alt+Shift+F1</td>
+<td>What Say or Type a Command can do in this window, with an example
+for each.</td>
+</tr>
+<tr>
 <td>What Is This?</td>
 <td>Alt+F1</td>
 <td>The GitHub word for this row, explained.</td>
@@ -3309,6 +3342,12 @@ as a tree.</td>
 <td>Ctrl+Shift+F1</td>
 <td>Type a few words to find a help topic, a command or a GitHub
 word.</td>
+</tr>
+<tr>
+<td>Tutorials</td>
+<td>Ctrl+F2</td>
+<td>The GitHub lessons, each on the practice repository, with what you
+have done.</td>
 </tr>
 <tr>
 <td>Practice on GitHub…</td>
@@ -3399,7 +3438,8 @@ Codespaces…, Commit Comments…, View Timeline…, Read as Document…,
 Summarize Discussion, React…, Labels…, Assignees…, Milestone…,
 Projects…, Edit Title…, Add to or Remove from Favorites, Re-request
 Review…, Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn
-Off Agent Merge…, Dependency Review; Properties…</li>
+Off Agent Merge…, Dependency Review, Dependabot Commands…;
+Properties…</li>
 <li><strong>run</strong>: Jobs and Logs, What Failed…, Re-run Failed
 Jobs Only, Re-run Workflow, Cancel Run…, Re-run One Job…; More: Force
 Cancel…, Download Logs…, Delete Logs…, Approvals, Earlier Attempts…,
@@ -3407,7 +3447,8 @@ View Artifacts…, Open on GitHub, Combined Check Status, Review Pending
 Deployments…, Approve Run from a Fork…, Delete Run…, Copy Link, Read a
 Step’s Log…; Properties…</li>
 <li><strong>workflow</strong>: Runs, Run Workflow on Branch…, Turn
-Workflow On or Off…, Open on GitHub, Copy Link; Properties…</li>
+Workflow On or Off…, Open on GitHub, Copy Link, Edit Workflow…;
+Properties…</li>
 <li><strong>release</strong>: Assets, Edit Release…, Draft Release
 Notes…, Upload Asset…, React…, Release Evidence…; More: Delete Release…,
 Compare With Previous, Compare With Default, Copy Link, Open on GitHub,
@@ -3461,10 +3502,10 @@ Properties…</li>
 Saved Search; Properties…</li>
 <li><strong>result</strong>: Open, Copy Link, Open on GitHub;
 Properties…</li>
-<li><strong>file</strong>: Open in Editor, Copy Link, Open on GitHub;
-Properties…</li>
-<li><strong>folder</strong>: Open Folder, Open on GitHub;
-Properties…</li>
+<li><strong>file</strong>: Open in Editor, Copy Link, Open on GitHub,
+Who Owns This?; Properties…</li>
+<li><strong>folder</strong>: Open Folder, Open on GitHub, Who Owns
+This?; Properties…</li>
 <li><strong>milestone</strong>: Find Issues in Milestone, Delete
 Milestone…, Copy Link, Open on GitHub; Properties…</li>
 <li><strong>template</strong>: Open Template…, Convert Form or

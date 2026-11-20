@@ -223,9 +223,15 @@ alerts in every repository you can see there, worst first: "acme/web: 3
 Dependabot (1 critical, 2 high); 1 code scanning (high); 2 secret scanning."
 A totals line follows. If GitHub will not show you one kind, that kind is
 named and the reason given, never counted as none: missing permission is not
-the same as no risk. GitHub sends 100 alerts of a kind at a time; when a kind
-reaches that, QUILL says so and points you to the organization's own alert
-lists, under the organization in the tree, for the rest.
+the same as no risk.
+
+GitHub sends 100 alerts of a kind at a time, so the overview reads every page
+of each list, however many there are. A small window shows that it is
+reading, with Cancel (or `Escape`) to stop before the next page. Nothing is
+said while it reads; at the end the report's last line says how much it read:
+"Read every page: 351 alerts in 6 pages." If you stop it, the Workbench says
+how many it had read and shows nothing, because part of a count would read as
+the whole of it.
 
 ## Security policy and reporting
 

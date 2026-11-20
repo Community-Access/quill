@@ -11,9 +11,12 @@
   with its severity and advisory (``GET .../dependency-graph/compare``).
 * An organization: **Security Overview** counts the open Dependabot, code
   scanning and secret scanning alerts in every repository, worst first, from
-  the organization's alert lists. A kind GitHub will not show you is said in
-  words, never counted as none (GX11: missing permission never means zero
-  risk), and a secret's value is never asked for (``hide_secret``).
+  the organization's alert lists, every page of them (GX11: following
+  GitHub's ``next`` links, so a count is never of the first hundred only).
+  The reading can be stopped, and how much was read is said once, at the
+  end. A kind GitHub will not show you is said in words, never counted as
+  none (missing permission never means zero risk), and a secret's value is
+  never asked for (``hide_secret``).
 
 wx-free and strict-typed.
 """
@@ -23,7 +26,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from quill.core.github.quick_actions import Ask, Quick, QuickError, call
+from quill.core.github.every_page import Paging, read_every_page
+from quill.core.github.quick_actions import Ask, Quick, QuickError, call, fill, refusal
+from quill.core.github.rest_transport import GitHubRestError
 
 __all__ = ["BYPASS_REASONS", "SECURITY_QUICK", "dependency_changes", "security_overview"]
 
@@ -169,34 +174,35 @@ def _tally(words: list[str]) -> str:
     return " (" + ", ".join(f"{counts[w]} {w}" for w in ranked) + ")"
 
 
-def security_overview(api: Any, ctx: dict[str, str]) -> str:
-    """Open alerts by repository and kind, worst first; a refused kind said, never zero."""
+def security_overview(api: Any, ctx: dict[str, str], paging: Paging | None = None) -> str:
+    """Open alerts by repository and kind, worst first; a refused kind said, never zero.
+
+    Every page of each list is read (*paging* stops it: :class:`PagingStopped`).
+    """
+    state = paging if paging is not None else Paging()
     seen: dict[str, dict[str, list[str]]] = {}
     refused: list[str] = []
     refused_keys: set[str] = set()
-    full: list[str] = []
     for key, label in _KINDS:
-        query = f"?state=open&per_page={_PAGE}" + (
-            "&hide_secret=true" if key == "secret-scanning" else ""
-        )
+        query = {"state": "open", "per_page": str(_PAGE)}
+        if key == "secret-scanning":
+            query["hide_secret"] = "true"
         try:
-            alerts = call(api, "GET", f"/orgs/{{org}}/{key}/alerts{query}", ctx)
-        except QuickError as exc:
+            alerts = read_every_page(api, fill(f"/orgs/{{org}}/{key}/alerts", ctx), query, state)
+        except GitHubRestError as exc:
             refused_keys.add(key)
             refused.append(
                 f"{label.capitalize()}: GitHub would not show these to you, so this is not a "
-                f"zero. {exc}"
+                f"zero. {refusal(exc)}"
             )
             continue
-        listed = [a for a in alerts if isinstance(a, Mapping)] if isinstance(alerts, list) else []
-        if len(listed) >= _PAGE:
-            full.append(label)
-        for alert in listed:
+        for alert in (a for a in alerts if isinstance(a, Mapping)):
             repo = _text(_mapping(alert.get("repository")).get("full_name")) or "a repository"
             seen.setdefault(repo, {}).setdefault(key, []).append(_severity(key, alert))
     org = ctx.get("org", "the organization")
+    read = _read_sentence(state)
     if not seen and not refused:
-        return f"No open security alerts in {org}'s repositories."
+        return f"No open security alerts in {org}'s repositories. {read}"
 
     def weight(repo: str) -> tuple[int, int, str]:
         words = [w for kinds in seen[repo].values() for w in kinds]
@@ -217,12 +223,15 @@ def security_overview(api: Any, ctx: dict[str, str]) -> str:
     ]
     where = f"{len(seen)} {'repository' if len(seen) == 1 else 'repositories'}"
     lines.append(f"Totals: {', '.join(totals) or 'none GitHub would show'}, in {where}.")
-    if full:
-        lines.append(
-            f"GitHub sends {_PAGE} alerts at a time; {', '.join(full)} has at least that many. "
-            "Open the organization's alert list for the rest."
-        )
+    lines.append(read)
     return "\n".join(lines + refused)
+
+
+def _read_sentence(state: Paging) -> str:
+    """How much was read, said once at the end: "Read every page: 250 alerts in 4 pages."."""
+    alerts = f"{state.rows} {'alert' if state.rows == 1 else 'alerts'}"
+    pages = f"{state.pages} {'page' if state.pages == 1 else 'pages'}"
+    return f"Read every page: {alerts} in {pages}."
 
 
 _ORG = frozenset({"org"})
@@ -253,5 +262,6 @@ SECURITY_QUICK: tuple[Quick, ...] = (
           "counted by severity, worst first.",
           ("GET /orgs/{org}/dependabot/alerts", "GET /orgs/{org}/code-scanning/alerts",
            "GET /orgs/{org}/secret-scanning/alerts"),
-          security_overview, lambda text, _ctx: str(text), report=True, needs=("org",)),
+          security_overview, lambda text, _ctx: str(text), report=True, needs=("org",),
+          paged=security_overview),
 )  # fmt: skip

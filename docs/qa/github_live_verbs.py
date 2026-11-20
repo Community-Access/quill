@@ -404,6 +404,36 @@ def environment_sheet_and_deployments(run: Any) -> str:
     )
 
 
+def undo_and_redo_over_a_fresh_read(run: Any) -> str:
+    """Rename a label, Undo it at its new name, Redo it at its old one, then put it back."""
+    from quill.core.github.sheet_catalog import SHEETS
+    from quill.core.github.sheet_engine import load, save
+    from quill.core.github.sheet_replay import redo, undo
+    from quill.core.workbench.properties import FieldChange
+
+    sheet = SHEETS["label"]
+    old, new = f"quill-live-undo-{int(time.time())}", f"quill-live-redo-{int(time.time())}"
+    run.rest("POST", f"/repos/{run.repo}/labels", {"name": old, "color": "ededed"})
+    try:
+        ident = {"repo": run.repo, "name": old}
+        loaded = load(run.api, sheet, ident).values
+        done = save(
+            run.api, sheet, ident, [FieldChange("name", "Name", old, new)], loaded=loaded
+        ).done
+        where = sheet.ident_after(ident, done)
+        undone = undo(run.api, sheet, where, done)
+        redone = redo(run.api, sheet, where, done)
+        if not (done and undone.ok and redone.ok):
+            raise AssertionError(f"undo {undone.ok}, redo {redone.ok}")
+        return f"{old} renamed, undone at {new}, redone at {old}"
+    finally:
+        for name in (new, old):
+            try:
+                run.rest("DELETE", f"/repos/{run.repo}/labels/{name}")
+            except Exception:  # noqa: BLE001 - only one of the two names exists
+                pass
+
+
 def revert_merged(run: Any) -> str:
     """Revert Pull Request on a freshly merged pull request, then close the revert."""
     import base64
@@ -784,6 +814,80 @@ def copy_template(run: Any) -> str:
     return f"copied to {run.second}, then removed"
 
 
+# -- workflow authoring and configuration (PRD 22.1, 22.11) ------------------------------
+
+
+def _close_pull(run: Any, repo: str, number: int, branch: str) -> None:
+    run.rest("PATCH", f"/repos/{repo}/pulls/{number}", {"state": "closed"})
+    run.rest("DELETE", f"/repos/{repo}/git/refs/heads/{branch}")
+
+
+def edit_workflow(run: Any) -> str:
+    """Change the live workflow's name through a pull request, read it back, close it."""
+    from quill.core.github.template_catalog import read_entry_text
+    from quill.core.github.template_save import plan_save, save_template
+    from quill.core.github.workflow_authoring import dump_workflow, load_workflow
+    from quill.core.github.workflow_checks import check_workflow
+
+    path = ".github/workflows/quill-live.yml"
+    repo = run.items.template_repository(run.repo)
+    text, sha = read_entry_text(repo, path)
+    draft = load_workflow(text)
+    _expect(check_workflow(draft) == [], "the live workflow already has problems")
+    draft.data["name"] = f"{draft.data.get('name', 'quill-live')} ({TAG})"
+    made = save_template(
+        repo,
+        plan_save(repo, run.repo, path),
+        dump_workflow(draft),
+        expected_sha=sha,
+        use_pull_request=True,
+        message=TAG,
+    )
+    held = run.rest("GET", f"/repos/{run.repo}/contents/{path}", ref=made.branch)
+    _close_pull(run, run.repo, made.pull_request_number, made.branch)
+    _expect(bool(held), "the branch did not hold the workflow")
+    return f"saved through pull request #{made.pull_request_number}, read back, closed"
+
+
+def new_workflow(run: Any) -> str:
+    """Propose the starter workflow as a pull request, then close it unmerged."""
+    from quill.core.github.template_save import plan_save, save_template
+    from quill.core.github.workflow_authoring import dump_workflow
+    from quill.core.github.workflow_authoring import new_workflow as starter
+    from quill.core.github.workflow_checks import check_workflow
+
+    path = ".github/workflows/quill-live-new.yml"
+    repo = run.items.template_repository(run.repo)
+    draft = starter(TAG)
+    _expect(check_workflow(draft) == [], "the starter has problems")
+    plan = plan_save(repo, run.repo, path)
+    _expect(not plan.current_sha, f"{path} is left over from an earlier run")
+    made = save_template(
+        repo, plan, dump_workflow(draft), expected_sha="", use_pull_request=True, message=TAG
+    )
+    _close_pull(run, run.repo, made.pull_request_number, made.branch)
+    return f"the starter opened as pull request #{made.pull_request_number}, then closed"
+
+
+def compare_config(run: Any) -> str:
+    """Compare with the second repository, propose one file, close the pull request."""
+    from quill.core.github.config_compare import compare_files, propose_update
+
+    diffs = compare_files(
+        run.items.template_repository(run.second),
+        run.second,
+        run.items.template_repository(run.repo),
+        run.repo,
+    )
+    chosen = [d for d in diffs if d.can_update][:1]
+    if not chosen:
+        return f"{run.repo} already matches {run.second}; nothing to propose"
+    repo = run.items.template_repository(run.repo)
+    made = propose_update(repo, run.repo, run.second, chosen)
+    _close_pull(run, run.repo, made.pull_request_number, made.branch)
+    return f"{len(diffs)} files compared; {chosen[0].path} proposed and closed"
+
+
 # -- local lists (this device) ----------------------------------------------------------
 
 
@@ -871,6 +975,23 @@ def sets(run: Any) -> str:
     _expect(again.delete(renamed), "not deleted")
     again.save()
     return "made, filtered, renamed, chosen, reloaded, deleted"
+
+
+def access_templates(run: Any) -> str:
+    from quill.core.github.access_templates import template_plan
+    from quill.ui.github_workbench_access_templates import _templates_for
+
+    name = f"{TAG} template"
+    store = _templates_for(run.items)
+    problem, _rejected = store.set_template(name, f"write on {run.repo}; triage on {run.second}")
+    _expect(not problem, problem)
+    store.save()
+    again = _templates_for(run.items)
+    plan = template_plan(again.grants(name), run.login)
+    _expect(len(plan) == 2 and all(c.method == "PUT" for c in plan), "the plan is not two adds")
+    _expect(again.delete(name), "not deleted")
+    again.save()
+    return "made, reloaded, planned (not sent), deleted"
 
 
 def api_console(run: Any) -> str:
@@ -1231,8 +1352,16 @@ VERBS: dict[str, Scenario | str] = {
     "open_template": open_template,
     "convert_template": convert_template,
     "copy_template": copy_template,
+    "edit_workflow": edit_workflow,
+    "new_workflow": new_workflow,
+    "compare_config": compare_config,
+    "dependabot_command": (
+        "needs Jeff: posts a command Dependabot acts on, on a pull request Dependabot opened"
+    ),
     "account_level": account_level,
     "bulk_access": "not here: needs a second GitHub account to give access to",
+    "access_templates": access_templates,
+    "apply_access_template": "not here: needs a second GitHub account to give access to",
     "access_add": "not here: needs a second GitHub account to give access to",
     "access_change": "not here: needs a second GitHub account to give access to",
     "access_remove": "not here: needs a second GitHub account to give access to",
@@ -1609,6 +1738,9 @@ FEATURES: dict[str, Scenario | str] = {
         "not here: a merge queue needs an organization repository's ruleset"
     ),
     "Runners and Export Software Bill of Materials (PRD 14.2)": runners_and_sbom,
+    "Undo and Redo GitHub Change over a fresh read, at a renamed label (PRD 16.5)": (
+        undo_and_redo_over_a_fresh_read
+    ),
     "Commit Activity as tables (PRD 14.2)": commit_activity,
     "My Packages, or the permission it needs said in words (PRD 14.2)": my_packages,
     "My Profile, with the contribution calendar as numbers (PRD 14.2)": my_profile,

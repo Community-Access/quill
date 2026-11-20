@@ -455,9 +455,9 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/copy_tray.py::_save": "content",
     "core/favorite_folders.py::save": "content",
     "core/header_footer_store.py::save": "content",
-    # GitHub Items pinned repos + favorites (GHManage parity): local bookmarks
-    # keyed by owner/repo and URL — user content, tolerant loader (unknown
-    # fields ignored, corrupt file degrades to empty).
+    # GitHub Workbench access templates (GH-R-068) and GitHub Items pinned repos +
+    # favorites: user content, tolerant loaders (corrupt file degrades to empty).
+    "core/github/access_templates.py::save": "content",
     "core/github/saved_items.py::save": "content",
     # Emoji picker recently-used + favorites: same shape and same tolerance as
     # saved_items.py above (a corrupt file degrades to empty, unknown fields

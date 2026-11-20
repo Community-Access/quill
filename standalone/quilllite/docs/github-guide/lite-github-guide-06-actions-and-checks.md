@@ -59,6 +59,46 @@ repository's retention period. This applies to turning a workflow on or
 off, starting or re-running it, reading a job's log and downloading an
 artifact.
 
+### Editing a workflow
+
+**Edit Workflow...** on a workflow's context menu opens the workflow file as a
+form you read from top to bottom instead of YAML. **New Workflow...**, in
+**Repository Actions...** (`Ctrl+Shift+G`), starts one from a starter that
+runs on a push to main and by hand.
+
+- **Triggers** is a list, one row per event: "On a push, branches main, paths
+  ignore docs/\*\*", "Run by hand, 2 inputs", "On a schedule: 30 5 \* \* 1".
+  **Add Trigger...** asks for the event, then its settings: branches, tags and
+  paths for a push or pull request, one cron line per time for a schedule,
+  and for Run by hand a list of inputs, each with its type, whether it is
+  required, its default and, for a choice, its options.
+- **Workflow Permissions...** sets what the workflow's token may do: not set,
+  read everything, write everything, none, or one level per scope.
+- **Jobs** is a list, one row per job: "Build (build), runs on ubuntu-latest,
+  runs after Test and Lint, 4 steps". **Edit Job...** has its id, name,
+  runner and a check box for each job it runs after; renaming a job carries
+  every other job's needs with it. **Job Steps...** lists the steps, each a
+  form with the action it uses or the commands it runs, its inputs (one
+  `name: value` per line), variables and condition. **Job Permissions...**
+  is the same form as the workflow's, for one job.
+- **When jobs run** reads the whole dependency graph in words: "First Test
+  and Lint, together. Then Build."
+- **What GitHub would say** lists everything GitHub would reject the file
+  for, kept current as you change it: a key GitHub does not know, a job that
+  needs a job that does not exist, jobs that wait for each other in a loop, a
+  step that both uses an action and runs commands, an action with no
+  version, a permission GitHub does not have. Save refuses while any is
+  listed.
+
+Save asks first, naming the file, the repository and your account, then
+commits to the default branch, or to a new branch with a pull request when
+the default branch is protected or **Save through a pull request** is
+checked. If someone changed the file on GitHub since you opened it, nothing
+is overwritten and the editor opens again with your draft. Comments at the
+top of the file are kept; comments inside it are not, because QUILL's YAML
+reader cannot keep them, and the window says so. A file you did not change is
+never rewritten.
+
 ## What Failed
 
 This is the command to learn first. Select a failed run in **Workflow Runs**
