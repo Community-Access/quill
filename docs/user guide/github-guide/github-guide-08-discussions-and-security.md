@@ -217,6 +217,12 @@ three things:
 Cancel at any step and nothing is sent. QUILL reports the dismissal only when
 GitHub sends the alert back in its new state.
 
+An alert's Properties sheet (Alt+Enter) closes it the same way. Each kind
+closes in its own words: a Dependabot or code scanning alert is dismissed,
+a secret is resolved, and the sheet offers only that kind's reasons. A
+choice that does not fit the kind is refused before anything is sent.
+GitHub marks an alert fixed itself, so the sheet does not offer that.
+
 ### Reopening an alert
 
 Dismissed and fixed alerts have their own place, **Security > Dismissed and

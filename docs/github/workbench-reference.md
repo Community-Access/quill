@@ -1006,7 +1006,7 @@ Keys the window answers that are not menu rows:
 - **folder**: Open Folder, Open on GitHub, Who Owns This?; Properties...
 - **milestone**: Find Issues in Milestone, Delete Milestone..., Copy Link, Open on GitHub; Properties...
 - **template**: Open Template..., Convert Form or Template..., Copy to Repositories..., Copy Link, Open on GitHub; Properties...
-- **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link, New View..., Items in a View..., Rename a View..., Delete a View..., Rename a Field..., Add an Issue Field..., Edit a Draft..., Make a Draft an Issue..., Move an Item..., Edit a Status Update..., Delete a Status Update..., Delete a Workflow..., Share the Project..., Link a Team..., Unlink a Team...; Properties...
+- **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link, New View..., Items in a View..., Rename a View..., Delete a View..., Rename a Field..., Add an Issue Field..., Edit a Draft..., Make a Draft an Issue..., Move an Item..., Archive an Item..., Restore an Archived Item..., Remove an Item..., Edit a Status Update..., Delete a Status Update..., Delete a Workflow..., Share the Project..., Link a Team..., Unlink a Team...; Properties...
 - **team**: Members and Access..., Copy Link, Open on GitHub, Delete Team..., Pending Invitations; Properties...
 - **organization**: Open, Roles..., Rulesets..., Open on GitHub, Fork Workflow Settings, Fork Workflows from Private Repositories...; More: Dependabot Repository Access, Give Dependabot a Repository..., Take a Repository from Dependabot..., Dependabot's Default Access..., Make Someone an Outside Collaborator..., Define a Custom Property..., Set Repositories' Custom Property..., New Team..., Accept Membership, Members Without Two-Factor, My Activity Here, Require Sign-off on Web Commits..., Follow Organization, Unfollow Organization, Security Overview, Copilot Plan, Copilot Seats, A Member's Copilot Seat..., Give Copilot Seats..., Take Copilot Seats Away..., Give Teams Copilot..., Take Copilot from Teams..., Copilot Usage Report, Copilot Agent Access, Copilot Content Exclusions; Properties...
 - **favorite**: Open, Copy Link, Open on GitHub, Add to or Remove from Favorites; Properties...
@@ -3064,7 +3064,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 | --- | --- | --- |
 | `addProjectV2DraftIssue` | Yes | context menu > Add Draft Issue... |
 | `addProjectV2ItemById` | Yes | Properties (Alt+Enter) on Issue: Projects |
-| `archiveProjectV2Item` | Yes | Properties (Alt+Enter) on Project |
+| `archiveProjectV2Item` | Yes | context menu > Archive an Item... |
 | `clearProjectV2ItemFieldValue` | Yes | Properties (Alt+Enter) on Project |
 | `convertProjectV2DraftIssueItemToIssue` | Yes | context menu > Make a Draft an Issue... |
 | `copyProjectV2` | Yes | context menu > Copy Project... |
@@ -3082,7 +3082,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 | `linkProjectV2ToRepository` | Yes | context menu > Link to Repository... |
 | `linkProjectV2ToTeam` | Yes | context menu > Link a Team... |
 | `markProjectV2AsTemplate` | Yes | context menu > Template... |
-| `unarchiveProjectV2Item` | Yes | Properties (Alt+Enter) on Project |
+| `unarchiveProjectV2Item` | Yes | context menu > Restore an Archived Item... |
 | `unlinkProjectV2FromRepository` | Yes | context menu > Unlink from Repository... |
 | `unlinkProjectV2FromTeam` | Yes | context menu > Unlink a Team... |
 | `unmarkProjectV2AsTemplate` | Yes | context menu > Template... |

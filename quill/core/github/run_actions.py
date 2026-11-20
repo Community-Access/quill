@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from typing import Any, Protocol
 from urllib.parse import quote
 
+from quill.core.github.actions_refusals import actions_refusal
 from quill.core.github.items_errors import GitHubItemsError
 from quill.core.github.rest_transport import (
     GitHubRestError,
@@ -26,6 +27,11 @@ from quill.core.github.rest_transport import (
     rest_failure_message,
 )
 
+#: Why a run, workflow or artifact is not there any more.
+_GONE = (
+    "it was deleted, it expired after the repository's retention period, "
+    "or this account cannot see it"
+)
 _PASSING = frozenset({"success", "neutral", "skipped"})
 _FAILING = frozenset({
     "failure",
@@ -211,6 +217,11 @@ def _post(provider: _RunAccess, action: str, path: str, expect: tuple[int, ...])
 
 class GitHubRunActionsMixin:
     """REST-only run and check writes, each confirmed by GitHub's status code."""
+
+    @staticmethod
+    def _refusal(doing: str, exc: object) -> str:
+        """Why an Actions call through PyGithub or a download failed, in plain words."""
+        return actions_refusal(doing, exc, gone=_GONE)
 
     def rerun_failed_jobs(self: _RunAccess, full_name: str, run_id: int) -> None:
         path = f"{repo_path(full_name)}/actions/runs/{_positive(run_id, 'run')}/rerun-failed-jobs"

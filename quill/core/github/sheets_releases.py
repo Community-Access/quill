@@ -57,6 +57,13 @@ def _release(data: Mapping[str, Any]) -> dict[str, Value]:
     }
 
 
+def _found(api: Any, ident: Ident) -> Mapping[str, Any]:
+    """The release, a draft's included: GitHub's by-tag read cannot see a draft."""
+    from quill.core.github.release_admin import release_data
+
+    return release_data(api, ident["repo"], ident["tag"])
+
+
 def _immutable(value: object) -> str:
     """Whether GitHub has locked the release's tag and files (immutable releases)."""
     if value is True:
@@ -134,7 +141,7 @@ RELEASE = SheetDef(
         ),
     ),
     (
-        Read("/repos/{repo}/releases/tags/{tag}", _release),
+        Read(fetch=lambda api, ident: _release(_found(api, ident))),
         Read(
             "/repos/{repo}/releases/latest", pick=_latest, optional=True, fallback={"latest": False}
         ),
@@ -211,7 +218,7 @@ RELEASE_ASSET = SheetDef(
             ),
         ),
     ),
-    (Read("/repos/{repo}/releases/tags/{tag}", pick=_asset),),
+    (Read(fetch=lambda api, ident: _asset(_found(api, ident), ident)),),
     {"name": patch(_ASSET, "repo:write", _V), "label": patch(_ASSET, "repo:write", _V)},
     title=lambda ident: f"Asset {ident['name']}",
     adopt=("asset_id",),

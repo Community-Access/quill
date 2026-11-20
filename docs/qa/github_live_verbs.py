@@ -1828,6 +1828,28 @@ def security_reads(run: Any) -> str:
     return " ".join(said)
 
 
+def draft_release_lifecycle(run: Any) -> str:
+    """A draft: made, opened on its sheet (GitHub cannot read a draft by tag), renamed, deleted."""
+    from quill.core.github.row_admin import delete_release
+    from quill.core.github.sheet_engine import load, save
+    from quill.core.github.sheets_releases import RELEASE
+    from quill.core.workbench.properties import FieldChange
+
+    tag = f"v0.0.0-quill-draft-{int(time.time()) % 100000}"
+    body = {"tag_name": tag, "name": f"{TAG} draft", "body": TAG, "draft": True}
+    run.rest("POST", f"/repos/{run.repo}/releases", body=body)
+    ident = {"repo": run.repo, "tag": tag}
+    try:
+        loaded = load(run.api, RELEASE, ident)
+        _expect(loaded.values.get("draft") is True, "the draft did not open on its sheet")
+        change = FieldChange("name", "Title", f"{TAG} draft", f"{TAG} draft (renamed)")
+        outcome = save(run.api, RELEASE, ident, [change], loaded=loaded.values)
+        _expect(not outcome.failed, f"the rename failed: {outcome.failed}")
+    finally:
+        gone = delete_release(run.api, run.repo, tag)
+    return f"{tag}: opened as a draft, renamed and read back. {gone}"
+
+
 def discussion_places(run: Any) -> str:
     """Pinned (spotlight), Categories by section, and each poll as a table: reads only."""
     from quill.core.github.discussion_categories import category_rows
@@ -1931,6 +1953,35 @@ FEATURES: dict[str, Scenario | str] = {
         "remove a repository with Repositories Allowed..., then back to private"
     ),
     "Dependency Review on a pull request, and Security Overview (GX11)": security_reads,
+    # complete.md 1.3, "Verify ... object lifecycles": each family's offline proof is
+    # tests/unit/core/github_workbench/test_lifecycle_<family>.py; these are the live halves.
+    "A draft release: opened, renamed and deleted with no tag claimed": draft_release_lifecycle,
+    "Projects: every field type set and cleared, items archived, restored and removed": (
+        "needs Jeff: a throwaway Project with a text, number, date, single select and "
+        "iteration field; set and clear each on one item, archive, restore and remove it, "
+        "and post, edit and delete a status update"
+    ),
+    "Branches: rename, default branch, a ruleset and classic protection, put back": (
+        "needs Jeff: a throwaway branch on the test repository; rename it, make it the "
+        "default and back, change a ruleset's enforcement and approvals, and configure "
+        "protection twice to hear that who may push and linear history are kept"
+    ),
+    "Actions refusals said in words: an expired log, a deleted run, a workflow off": (
+        "needs Jeff: an old run whose logs have expired, and a second account with read "
+        "access, to hear the 404/410 and 403 sentences"
+    ),
+    "Security Alert sheet: dismiss or resolve each kind with its own reason, then reopen": (
+        "needs Jeff: one open Dependabot, code scanning and secret scanning alert on the "
+        "test repository; close each from its sheet with one reason, then reopen it"
+    ),
+    "Organization sheet, members, invitations and blocks, and your emails and socials": (
+        "needs Jeff: an organization he owns and a throwaway invitee; invite and cancel, "
+        "block and unblock, add and delete an email address and a social account"
+    ),
+    "Team lifecycle: create, rename, members, repositories, parent and delete": (
+        "needs Jeff: an organization he owns; a throwaway team made, renamed, given a member "
+        "and a repository, put under a parent, then deleted with its child"
+    ),
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

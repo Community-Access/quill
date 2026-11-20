@@ -20,10 +20,11 @@ from typing import Any
 from quill.core.github.permissions import WriteTier
 from quill.core.github.sheet_engine import Read, SheetDef
 from quill.core.github.sheet_fields import dig, ed, lst, page, patch, ro, toggle, when
+from quill.core.github.sheets_teams import team_privacy
 from quill.core.github.sheets_you import FOLLOW_ORGANIZATION, ORG_YOU_READ, sponsoring_field
 from quill.core.workbench.properties import FieldKind, SheetSpec, Value
 
-__all__ = ["ORGANIZATION"]
+__all__ = ["ORGANIZATION", "team_privacy"]
 
 _O, _V, _A = WriteTier.ORGANIZING, WriteTier.VISIBLE, WriteTier.ACCESS
 _K = FieldKind
@@ -268,7 +269,7 @@ ORGANIZATION = SheetDef(
         ),
         Read(
             _ORG + "/teams",
-            _items("teams", lambda r: f"{r.get('name', '')}, {r.get('privacy', '')}"),
+            _items("teams", lambda r: f"{r.get('name', '')}, {team_privacy(r)}"),
             optional=True,
         ),
         Read(_ORG + "/outside_collaborators", _items("outside_logins", _login), optional=True),

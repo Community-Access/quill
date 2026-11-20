@@ -1051,7 +1051,7 @@ class GitHubItemsProvider(
             run = repo.get_workflow_run(run_id)
             run.rerun()
         except Exception as exc:  # noqa: BLE001
-            raise GitHubItemsError(f"Could not re-run workflow run {run_id}: {exc}") from exc
+            raise GitHubItemsError(self._refusal(f"re-run workflow run {run_id}", exc)) from exc
 
     def fetch_workflow_jobs(
         self, full_name: str, run_id: int, *, attempt_number: int | None = None
@@ -1158,7 +1158,7 @@ class GitHubItemsProvider(
                     final_request = urllib.request.Request(location)
                     probe = urllib.request.urlopen(final_request, timeout=60, context=ctx)  # noqa: S310
                 else:
-                    raise GitHubItemsError(f"Could not download artifact: {exc}") from exc
+                    raise GitHubItemsError(self._refusal("download the artifact", exc)) from exc
             with probe as response:
                 total = int(response.headers.get("Content-Length") or artifact.size_bytes or 0)
                 downloaded = 0
@@ -1196,7 +1196,7 @@ class GitHubItemsProvider(
             workflow = repo.get_workflow(workflow_id)
             ok = workflow.create_dispatch(ref, inputs=inputs or {})
         except Exception as exc:  # noqa: BLE001
-            raise GitHubItemsError(f"Could not dispatch workflow {workflow_id}: {exc}") from exc
+            raise GitHubItemsError(self._refusal(f"start {workflow_id} on {ref}", exc)) from exc
         if not ok:
             raise GitHubItemsError(
                 f"GitHub declined to dispatch {workflow_id} on {ref!r} "

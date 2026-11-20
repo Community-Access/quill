@@ -357,6 +357,49 @@ by a review of it. Nothing changes in QUILL or QUILL Lite.
   ready pull requests are waiting for a review and how long the oldest has
   waited. It never names who was asked.
 
+### GitHub Workbench: every object's lifecycle checked, and what was wrong fixed (2026-11-20)
+
+Projects, branches, releases, Actions, security alerts, organizations, teams
+and your own account were each taken through being made, read, changed and
+removed, with tests. What that found:
+
+- **Branch protection kept.** Protect Branch... used to reset every setting
+  it did not name, because GitHub replaces protection whole: who may push,
+  linear history, force pushes, deletion and the reviewers' own settings were
+  lost. They are now read first and sent back as they were.
+- **Draft releases.** A draft could not be opened on its sheet or deleted,
+  because GitHub cannot find a draft by its tag. Both work now, and deleting a
+  draft says that it had no tag to delete.
+- **Project fields.** Text, number and date fields read back as they were
+  saved, including a 0 or an empty value; a number reads 3, not 3.0, and a
+  word typed in a number field is refused in plain words. An item on a
+  finished iteration says which. Delete a Field... offers only the fields
+  people made, never Title or Assignees. A Project or item that is gone, or
+  hidden from you, says so rather than showing an empty sheet.
+- **Project items.** Archive an Item..., Restore an Archived Item... and
+  Remove an Item... on a Project's row. Status update dates are checked
+  before anything is sent.
+- **Refusals in words.** A refused Projects or Actions request says why in one
+  sentence: the sign-in lacks the project scope, a log has passed the
+  repository's retention period, a run was deleted, a workflow cannot be
+  turned off in its present state. A failed field on any sheet gives GitHub's
+  reason without the support code.
+- **Security alerts.** The Reason box offers only the reasons that kind of
+  alert takes, spelled as GitHub spells them, and an alert is never set to
+  fixed or auto-dismissed from the sheet, which only GitHub can do.
+- **Teams.** Lists say visible rather than GitHub's "closed". An organization
+  owner can change a team they are not on. Members and repositories past the
+  first 30 are listed. The Danger Zone now says deleting a team deletes the
+  teams inside it.
+- **People.** Adding someone to an organization or team says they were
+  invited, since they are not in it until they accept.
+- **Also.** An artifact, variable or secret row opens its own sheet; a cache
+  past the first 30 opens; and the Assets window has Properties... to rename a
+  file or change its label.
+
+The live halves are rows in the live-run table; the ones that need an
+organization or a second account wait for the test organization.
+
 ### GitHub Workbench: access templates, more tutorials, team review requests, and the Command Key in the Workbench (2026-11-20)
 
 - **Access templates.** Account > Roles and Access > Access Templates... keeps

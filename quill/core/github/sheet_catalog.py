@@ -309,7 +309,8 @@ def _install_finders() -> None:
         return Target("discussion", {"repo": repo, "number": number}) if number else None
 
     def resource(row: object, repo: str) -> Target | None:
-        """A row of a listed setting whose object has a sheet: a ruleset, a person's access."""
+        """A row of a listed setting whose object has a sheet: a ruleset, a person's
+        access, an artifact, a variable or a secret."""
         spec, _, item = attr(row, "key").partition(":")
         if spec == "repo_rulesets" and item and "/" in repo:
             return Target("ruleset", {"repo": repo, "id": item, "name": attr(row, "title")})
@@ -317,6 +318,12 @@ def _install_finders() -> None:
             return Target("org_ruleset", {"org": repo, "id": item, "name": attr(row, "title")})
         if spec == "access_people" and item:
             return Target("person", {"login": item.split(":", 1)[0]})
+        if not item or "/" not in repo:
+            return None
+        if spec == "artifacts":
+            return Target("artifact", {"repo": repo, "id": item, "name": attr(row, "title")})
+        if spec in ("actions_variables", "actions_secrets"):
+            return Target(spec.removeprefix("actions_")[:-1], {"repo": repo, "name": item})
         return None
 
     add_finder(kind="security", finder=alert)

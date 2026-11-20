@@ -61,8 +61,10 @@ def _why(exc: GitHubRestError, doing: str) -> RowAdminError:
 
 def delete_release(api: GitHubApi, repo: str, tag: str, *, delete_tag: bool = False) -> str:
     """Delete the release for *tag*; with *delete_tag*, the tag itself as well."""
+    from quill.core.github.release_admin import release_data
+
     try:
-        data = api.rest("GET", f"{_repo(repo)}/releases/tags/{quote(tag, safe='')}").data
+        data = release_data(api, repo, tag)  # a draft has no by-tag address yet
     except GitHubRestError as exc:
         raise _why(exc, f"find the release {tag}") from exc
     release_id = data.get("id") if isinstance(data, Mapping) else None
@@ -72,6 +74,8 @@ def delete_release(api: GitHubApi, repo: str, tag: str, *, delete_tag: bool = Fa
         api.rest("DELETE", f"{_repo(repo)}/releases/{int(release_id)}")
     except GitHubRestError as exc:
         raise _why(exc, f"delete the release {tag}") from exc
+    if data.get("draft"):
+        return f"Deleted the draft release {tag}. A draft has no tag yet, so none was deleted."
     if not delete_tag:
         return f"Deleted the release {tag}. The tag {tag} stays."
     try:

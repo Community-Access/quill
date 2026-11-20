@@ -3678,7 +3678,6 @@
     "PATCH",
     "/repos/owner/repo/dependabot/alerts/7",
     {
-     "dismissed_comment": "",
      "dismissed_reason": "inaccurate",
      "state": "dismissed"
     }
@@ -3691,7 +3690,6 @@
     "PATCH",
     "/repos/owner/repo/dependabot/alerts/7",
     {
-     "dismissed_comment": "",
      "dismissed_reason": "tolerable_risk",
      "state": "dismissed"
     }

@@ -12,8 +12,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from quill.core.github.alert_triage import DISMISS_REASONS, alert_kind_for
 from quill.core.github.permissions import WriteTier
-from quill.core.github.sheet_engine import Ident, Read, SheetDef, Write
+from quill.core.github.sheet_engine import Ident, Read, SheetDef, SheetSaveError, Write
 from quill.core.github.sheet_fields import (
     dig,
     ed,
@@ -42,7 +43,31 @@ ALERT_PATHS: dict[str, str] = {
 }
 
 
+def _word(reason: str) -> str:
+    """One spelling for a reason: GitHub writes code scanning's with spaces, secrets' with _."""
+    return reason.strip().lower().replace("_", " ").replace("'", "")
+
+
+#: How the sheet says each of GitHub's reasons; code scanning and secret scanning
+#: share "false positive", "won't fix" and "used in tests", spelled two ways.
+_SAID: dict[str, str] = {
+    _word(value): value
+    for value in (
+        "fix_started",
+        "inaccurate",
+        "no_bandwidth",
+        "not_used",
+        "tolerable_risk",
+        "false positive",
+        "won't fix",
+        "used in tests",
+        "revoked",
+    )
+}
+
+
 def _alert(data: Mapping[str, Any]) -> dict[str, Value]:
+    reason = str(data.get("dismissed_reason") or data.get("resolution") or "")
     return {
         "number": int(data.get("number") or 0),
         "state": str(data.get("state") or ""),
@@ -58,7 +83,7 @@ def _alert(data: Mapping[str, Any]) -> dict[str, Value]:
             dig(data, "rule", "description") or dig(data, "secret_type_display_name") or ""
         ),
         "tool": str(dig(data, "tool", "name") or ""),
-        "reason": str(data.get("dismissed_reason") or data.get("resolution") or ""),
+        "reason": _SAID.get(_word(reason), reason),
         "comment": str(data.get("dismissed_comment") or data.get("resolution_comment") or ""),
         "location": str(dig(data, "most_recent_instance", "location", "path") or ""),
         "created": when(data.get("created_at")),
@@ -70,22 +95,45 @@ def _alert(data: Mapping[str, Any]) -> dict[str, Value]:
 def _compose_alert(
     ident: Ident, edits: Mapping[str, Value]
 ) -> list[tuple[str, str, dict[str, object]]]:
-    kind = "secret_scanning" if ident.get("alert_path", "").startswith("secret") else "other"
-    path = f"/repos/{ident['repo']}/{ident.get('alert_path', '')}/{ident['number']}"
-    state = str(edits.get("state") or ident.get("state") or "open")
-    reason = str(edits.get("reason") or ident.get("reason") or "")
-    comment = str(edits.get("comment") or "")
-    if kind == "secret_scanning":
-        body: dict[str, object] = {"state": "resolved" if state == "resolved" else "open"}
-        if state == "resolved":
-            body.update({"resolution": reason or "false_positive", "resolution_comment": comment})
-    else:
-        body = {"state": "dismissed" if state == "dismissed" else "open"}
-        if state == "dismissed":
-            body.update({
-                "dismissed_reason": reason or "tolerable_risk",
-                "dismissed_comment": comment,
-            })
+    """The one PATCH for the alert's kind, or a plain refusal before anything is sent.
+
+    Each kind closes its own way (a secret is resolved, the others dismissed)
+    and takes only its own reasons, so a choice that fits another kind is
+    refused rather than sent; GitHub decides fixed and auto-dismissed itself.
+    """
+    alert_path = ident.get("alert_path", "")
+    kind = alert_kind_for(alert_path.split("/", 1)[0])
+    path = f"/repos/{ident['repo']}/{alert_path}/{ident['number']}"
+    current = str(ident.get("state") or "open")
+    state = str(edits.get("state") or current)
+    # Only GitHub moves an alert to fixed or auto-dismissed, and nothing moves it back.
+    by_github = ("fixed", "auto_dismissed")
+    if current in by_github or state not in ("open", kind.closed_state):
+        settled = current if current in by_github else state
+        raise SheetSaveError(
+            f"A {kind.label.lower()} alert is open or {kind.closed_state}, never set to "
+            f"{settled} from here; GitHub marks an alert {settled} itself."
+            if settled in ("fixed", "auto_dismissed")
+            else f"A {kind.label.lower()} alert is {kind.closed_state}, not {settled}: "
+            f"choose open or {kind.closed_state}."
+        )
+    if state == "open":
+        if current == "open":
+            raise SheetSaveError(
+                f"A reason and a comment go with {kind.closed_state} alerts: set State to "
+                f"{kind.closed_state} too."
+            )
+        return [("PATCH", path, {"state": "open"})]
+    allowed = {_word(value): value for value, _words in DISMISS_REASONS[kind.key]}
+    chosen = str(edits.get("reason") or ident.get("reason") or "")
+    if _word(chosen) not in allowed:
+        said = ", ".join(_SAID.get(word, word) for word in allowed)
+        raise SheetSaveError(
+            f"Choose one of GitHub's reasons for a {kind.label.lower()} alert: {said}."
+        )
+    body: dict[str, object] = {"state": state, kind.reason_field: allowed[_word(chosen)]}
+    if "comment" in edits:
+        body[kind.comment_field] = str(edits.get("comment") or "")
     return [("PATCH", path, body)]
 
 
@@ -110,21 +158,8 @@ SECURITY_ALERT = SheetDef(
                     "reason",
                     "Reason",
                     _K.CHOICE,
-                    "GitHub's own reasons.",
-                    choices=(
-                        "fix_started",
-                        "inaccurate",
-                        "no_bandwidth",
-                        "not_used",
-                        "tolerable_risk",
-                        "false positive",
-                        "won't fix",
-                        "used in tests",
-                        "false_positive",
-                        "wont_fix",
-                        "revoked",
-                        "used_in_tests",
-                    ),
+                    "GitHub's own reasons; each kind of alert takes its own.",
+                    choices=tuple(_SAID.values()),
                 ),
                 ed("comment", "Comment", _K.MULTILINE),
                 ro("severity", "Severity"),
