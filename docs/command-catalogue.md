@@ -486,7 +486,7 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "turn dry run on or off"; "practice without sending"; "toggle dry run".
 - **GitHub API Console (Ctrl+Shift+J).** Ask GitHub anything it has an API for.
   Say: "open the api console"; "make an api request"; "github api console".
-- **Plain-Language Batch.** Change many issues or pull requests by saying it in words, checked before it is sent.
+- **Plain-Language Batch (Ctrl+Shift+S).** Change many issues or pull requests by saying it in words, checked before it is sent.
   Say: "plain language batch"; "change many issues in words"; "do a batch change by sentence".
 
 ### The GitHub Workbench: View
