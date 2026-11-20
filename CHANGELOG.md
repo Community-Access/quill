@@ -83,6 +83,20 @@ by a review of it. Nothing changes in QUILL or QUILL Lite.
   migration (010) adds the per-person cost figure, and a new CI workflow
   tests every migration on a clean PostgreSQL database.
 
+### QUILL Lite: the setting you chose last is the one that is saved (2026-11-20)
+
+- Turning a View setting on and straight back off, such as Word Wrap, could
+  save the first choice and lose the second, while QUILL Lite said nothing
+  was wrong. After a restart the setting had changed back.
+- A View setting changed just before you pressed OK in Preferences could be
+  written after the Preferences save, so the older choice won.
+- Every settings save in QUILL Lite now goes through one queue, in the order
+  you made the changes, and the last one always wins. Settings changed by a
+  second QUILL Lite window are still kept.
+- If a save fails, QUILL Lite still says so and does not say "Preferences
+  saved". Retry in Activity (Shift+F9) now saves your current settings, not
+  the older ones that failed.
+
 ### GitHub Workbench: roles from GitHub's own answers, two accounts side by side, and gh sign-in (2026-11-20)
 
 - **My Access Here**, **Why Can't They?**, **Access Review** and **Bulk
