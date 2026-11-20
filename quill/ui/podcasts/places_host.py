@@ -117,6 +117,7 @@ class CastPlacesHostMixin(CastPlaceContentMixin):
                 pane.focus()
             return True
         self._current_place = place_id
+        self._list_anchor = None  # a refill's anchor never outlives a move to a place
         self._place_opened_inbox_folder = ""
         self._place_opened_show_id = ""
         self._place_opened_playlist_id = ""
@@ -143,6 +144,12 @@ class CastPlacesHostMixin(CastPlaceContentMixin):
         key = self._selected_tree_data() if keep else None  # type: ignore[attr-defined]
         episodes = getattr(self, "_episodes", None)
         self._list_previous_index = episodes.GetFirstSelected() if keep and episodes else -1
+        from quill.ui.list_stay_still import NO_ANCHOR, capture_report
+
+        # Lists that stay still (FUX-06): the row and the view, so the refill
+        # can put the same episode back on the same line.
+        listing = keep and episodes is not None and self._content_is_list()  # type: ignore[attr-defined]
+        self._list_anchor = capture_report(episodes) if listing else NO_ANCHOR
         if self._podcast_library_is_large():  # type: ignore[attr-defined]
             self._request_cast_view_preparation(self._current_place, keep=key)  # type: ignore[attr-defined]
             return
@@ -152,7 +159,8 @@ class CastPlacesHostMixin(CastPlaceContentMixin):
         if getattr(self, "_place_opened_inbox_folder", ""):
             from quill.ui.podcasts.inbox_view import open_inbox_folder
 
-            open_inbox_folder(self, self._place_opened_inbox_folder, keep=key)
+            # focus=False: a refill never takes focus from another control.
+            open_inbox_folder(self, self._place_opened_inbox_folder, keep=key, focus=False)
             return
         if self._place_opened_show_id:
             show = self._podcast_library.find_show(self._place_opened_show_id)  # type: ignore[attr-defined]

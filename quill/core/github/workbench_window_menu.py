@@ -1,34 +1,30 @@
 """The GitHub Workbench window's own menu bar, as a table (GitHub PRD section 4, Part C).
 
-The whole bar: File, Edit, View, Go, Item, Repository, Account, Tools,
-Window and Help. :func:`quill.core.workbench.menus.problems` keeps it inside
-the accelerator and access-key rules (a test fails on any breach), and
-:data:`WORKBENCH_KEYS` is the window's ``keymap.APP_KEYMAPS`` entry
-(decision 7), so the keyboard reference and the Key Describer are generated
-from the same rows.
+The whole bar: File, Edit, View, Go, Item, Repository, Account, Tools, Window and Help.
+:func:`quill.core.workbench.menus.problems` keeps it inside the accelerator and access-key rules (a
+test fails on any breach), and :data:`WORKBENCH_KEYS` is the window's ``keymap.APP_KEYMAPS`` entry
+(decision 7), so the keyboard reference and the Key Describer are generated from the same rows.
 
 How the keys were chosen (Part C, C1):
 
-- **Ctrl+number goes** to a top-level place, **Ctrl+Shift+number** to a part of
-  the current repository, and **Alt+number says** something without moving.
+- **Ctrl+number goes** to a top-level place, **Ctrl+Shift+number** to a part of the current
+  repository, and **Alt+number says** something without moving.
 - **F-keys keep their Windows meanings:** F1 help, F5 refresh, F6 pane.
-- **Plain letters are always type-ahead** in the tree and the lists, so no
-  row is ever a bare letter, and there is no option to make one (decision 11).
-- **No key sets a single property:** Alt+Enter opens Properties and the sheet
-  does the rest (decisions 10 and 11).
-- **Nothing a screen reader or the family owns system-wide**: no Insert or
-  Caps Lock, no Ctrl+Alt+arrows, nothing with the Windows key, and no
-  Ctrl+Alt+letter on anything pressed while a text box has focus, except the
-  Filter Builder, which a text box never needs (C1.7). The family's free-chord
-  gate (``tests/unit/ui/test_global_hotkeys.py``) holds the table against
-  every system-wide key, because this entry is part of ``APP_KEYMAPS``.
+- **Plain letters are always type-ahead** in the tree and the lists, so no row is ever a bare
+  letter, and there is no option to make one (decision 11).
+- **No key sets a single property:** Alt+Enter opens Properties and the sheet does the rest
+  (decisions 10 and 11).
+- **Nothing a screen reader or the family owns system-wide**: no Insert or Caps Lock, no
+  Ctrl+Alt+arrows, nothing with the Windows key, and no Ctrl+Alt+letter on anything pressed while a
+  text box has focus, except the Filter Builder, which a text box never needs (C1.7). The family's
+  free-chord gate (``tests/unit/ui/test_global_hotkeys.py``) holds the table against every
+  system-wide key, because this entry is part of ``APP_KEYMAPS``.
 
-The Item menu holds the actions that have a key; every other action of the
-selected row is on its context menu and in What Can I Do Here? (Shift+F1),
-which lists all of them from the same action table, so none is reachable only
-by right-clicking. Keys that belong to the focused control (Enter, Delete,
-Backspace, Escape) are not menu rows; the window handles them itself and
-lists them in :data:`CONTROL_KEYS`.
+The Item menu holds the actions that have a key; every other action of the selected row is on its
+context menu and in What Can I Do Here? (Shift+F1), which lists all of them from the same action
+table, so none is reachable only by right-clicking. Keys that belong to the focused control (Enter,
+Delete, Backspace, Escape) are not menu rows; the window handles them itself and lists them in
+:data:`CONTROL_KEYS`.
 """
 
 from __future__ import annotations
@@ -220,9 +216,8 @@ _VIEW = MenuSpec(
     ),
 )
 
-#: Ctrl+1 to Ctrl+0 are this window's Go row (PRD). Ctrl+3, Ctrl+4 and Ctrl+8
-#: are the family's AI chords elsewhere (codex.md 10A.9); this window has no AI
-#: menu, so they do nothing here and the row keeps all ten digits. Decided
+#: Ctrl+1 to Ctrl+0 are this window's Go row (PRD). Ctrl+3, Ctrl+4 and Ctrl+8 are the family's AI
+#: chords elsewhere (codex.md 10A.9); with no AI menu here the row keeps all ten digits. Decided
 #: 2026-11-13; tests/unit/ui/test_main_frame_hosted_ai.py names the exemption.
 _GO = MenuSpec(
     "&Go",
@@ -437,6 +432,14 @@ _TOOLS = MenuSpec(
             "then stops before sending and says what it would have sent.",
         ),
         _row(
+            "plain_batch",
+            "Plain-&Language Batch...",
+            "Ctrl+Shift+S",
+            "Say a change to many issues or pull requests in words, such as close every "
+            "issue labelled duplicate older than 90 days; check the exact items it found, "
+            "then send them. No AI: the same words always mean the same thing.",
+        ),
+        _row(
             "api_console",
             "GitHub &API Console...",
             "Ctrl+Shift+J",
@@ -492,9 +495,8 @@ _HELP = MenuSpec(
             "ask_how",
             "&Ask How...",
             "Alt+Shift+A",
-            "Ask in your own words how to do something here. The answer comes only from "
-            "this help, through the AI you chose, and says when the help does not cover it. "
-            "It never acts: a command it names runs only when you choose it.",
+            "Ask in your own words how to do something here. The answer comes only from this help, "
+            "through the AI you chose. A command it names runs only when you choose it.",
         ),
         _row(
             "practice",
@@ -579,9 +581,8 @@ ALIAS_KEYS: dict[str, str] = {
     f"{_P}refresh_alias": "Ctrl+R",
 }
 
-#: Keys the focused control owns, which the window answers only in the tree or
-#: the list (C2, C3): Delete removes safely and Ctrl+Break cancels a run,
-#: asking first. Enter, Backspace and Escape are listed in the reference.
+#: Keys the focused control owns, answered only in the tree or the list (C2, C3): Delete removes
+#: safely, Ctrl+Break cancels a run after asking. Enter, Backspace and Escape are in the reference.
 CONTROL_KEYS: dict[str, str] = {
     f"{_P}remove": "Delete",
     f"{_P}cancel_run": "Ctrl+Cancel",

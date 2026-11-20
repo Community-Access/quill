@@ -244,7 +244,7 @@ class GitHubWorkbenchProvider(
 
     # -- rows ---------------------------------------------------------------------
 
-    def load(self, ref: NodeRef, node: NodeSpec, query: Query) -> list[object]:
+    def load_rows(self, ref: NodeRef, node: NodeSpec, query: Query) -> list[object]:
         """Fetch a node's rows off the UI thread, with Items' and Explore's own calls."""
         self.local_note = ""
         if node.loader.startswith(EXPLORE_PREFIX):
@@ -407,7 +407,7 @@ class GitHubWorkbenchProvider(
             from quill.ui.github_pr_review_dialog import GitHubPullReviewDialog
 
             GitHubPullReviewDialog(
-                frame.frame, self.items, ref.instance, row.number, announce_cb=self._announce
+                frame.frame, self.items, ref.instance, row.number, announce_cb=self._say
             ).show()
             return True
         return self.run_action(command_id, ref, row)

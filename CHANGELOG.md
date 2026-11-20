@@ -21,6 +21,57 @@
 - **Ask How...** (Alt+Shift+A) asks your chosen AI, using only the GitHub
   help. A command it names can be run from the answer.
 
+### Plans: the WordPress backlog (2026-11-19)
+
+The WordPress decisions still open have moved from the open-work list to a
+Backlog section in the WordPress Workbench PRD. They are which areas get
+first-class integrations, a WordPress-layer key for page commands, and a tree
+node for menu items. Rank Math staying read only is confirmed.
+### GitHub Workbench: sort and group any list, keep your place, and say it in words (2026-11-19)
+
+- **Sort By and Group By on every list.** View > Sort By > By Column... and
+  Group By > By Column... now work on every Workbench list, not only issues.
+  Numbers sort as numbers, and each list remembers your choice.
+- **Your place is kept.** Back, Forward or a reload returns you to the row you
+  left, not the top of the list. The WordPress Workbench gets this too.
+- **Checklist rows say their state** ("Issues, on", "docs, on 3 of 5"). Space
+  changes them once, Enter saves, and focus stays where it was.
+- **Plain-Language Batch...** (Ctrl+Shift+S) lets you type what you want, such
+  as "close every issue labelled duplicate older than 90 days". It finds the
+  items without AI, shows them for you to check, and then runs the usual batch
+  with its preview and Retry Failed.
+
+### Quill Cast: lists stay still while new episodes arrive (2026-11-19)
+
+A feed refresh, a finished download or a change to the queue no longer moves
+your place. In Inbox, New Episodes, Downloads, Continue Listening, the Play
+Queue and the other episode lists, the episode you were on stays selected and
+focused, on the same line of the screen, and nothing takes the keyboard focus.
+New episodes are said once, as "3 new episodes in The Daily.", and a refresh
+with nothing new says nothing. QUILL's Play Queue window, which used to act on
+the wrong episode once the one in front had played, now keeps up with the queue
+and keeps its caret on the same episode. This is the first part of the family
+UX pilot.
+### GitHub Workbench: secrets stay secret, Dependency Review and Security Overview (2026-11-19)
+
+- **A secret is never shown.** A secret's new value in Properties was a plain
+  text field, so it was visible as you typed it, included in Copy as Text and
+  named in the preview before saving. It is now a password box that is emptied
+  after saving, and previews say "(hidden)". Values are sealed with the
+  repository's, environment's or organization's own key before they are sent,
+  never read back, and dropped from memory once the call ends.
+- **Changing secrets.** Change... on a secret sends a new value. For an
+  organization's secret, Change... can also just change who may use it: all,
+  private or selected repositories.
+- **Dependency Review** on a pull request lists each dependency it adds or
+  removes, with its licence and any known vulnerabilities, the vulnerable ones
+  first.
+- **Security Overview** on an organization counts open alerts of every kind
+  by repository and severity, worst first. A kind GitHub will not show you is
+  said, never counted as none.
+- **Allow a Blocked Secret...** answers GitHub's push protection, with a
+  reason. A private report waiting for review is called that, and can be
+  accepted or closed.
 ### GitHub Workbench: issue types and fields in the lists (2026-11-19)
 
 An issue's type and its organization's issue fields now show in the

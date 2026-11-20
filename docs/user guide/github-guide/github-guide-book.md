@@ -3074,9 +3074,10 @@ forum: questions, ideas and announcements, with threaded replies, answers and
 polls. Security alerts are GitHub telling a repository about a vulnerable
 package, a weakness in the code, or a secret committed by mistake. This
 chapter covers reading and taking part in both, a repository's security
-policy and advisories, reporting a vulnerability privately, searching GitHub's
-Advisory Database, and saving a software bill of materials for a security
-review.
+policy and advisories, reporting a vulnerability privately, letting a blocked
+secret through, reviewing a pull request's dependencies, an organization's
+security overview, setting secrets safely, searching GitHub's Advisory
+Database, and saving a software bill of materials for a security review.
 
 ## Discussions
 
@@ -3234,6 +3235,59 @@ Dismissed and fixed alerts have their own view, **Dismissed and resolved
 security alerts**. There, **Reopen Alert...** on the context menu asks first,
 then reopens the alert.
 
+### Copilot Autofix
+
+On a code scanning alert, **Copilot Autofix...** says whether Copilot has a
+suggested fix. When it has none, QUILL offers to ask for one; when the fix is
+ready, it offers to commit it to a branch you name, with a commit message you
+may leave empty, so it can go through a pull request like any other change.
+**Show Every Place** lists each file and line the alert was found in.
+
+### Letting a blocked secret through
+
+When push protection is on, GitHub refuses a push that contains something
+that looks like a password or key, and `git push` prints a placeholder id for
+each one. If the secret is not real, is only used in tests, or you will fix
+it later, select the repository and choose **Allow a Blocked Secret...** on
+its context menu. QUILL asks for the placeholder id, then why, from GitHub's
+three reasons: "It is not really a secret (a false positive)", "It is only
+used in tests", or "It is real, and I will fix it later". It asks once more,
+naming the repository, because the secret will stay in the repository's
+history. Then you hear how long the allowance lasts, such as "GitHub will let
+the GitHub personal access token through until 2026-11-19 at 18:00 UTC. Push
+again now; GitHub keeps an alert for it."
+
+### Requests to dismiss or bypass
+
+Some organizations want a security manager to approve each dismissal or
+push protection bypass. GitHub offers those requests, and reviewing them,
+only on GitHub Enterprise Cloud, which QUILL does not support; review them on
+GitHub's own security page with **Open on GitHub**.
+
+## Dependency review on a pull request
+
+Before you merge a pull request, it helps to know what it does to your
+dependencies. On a pull request's context menu, **Dependency Review** compares
+the dependency graph at the pull request's base commit with its head commit
+and shows the answer in a window to read. The first line is the summary:
+"Added 3, removed 1. 1 added dependency has known vulnerabilities." Each
+change follows, the vulnerable ones first: "Added: lodash 4.17.20 (npm,
+package.json), licence MIT. Vulnerable: high, GHSA-p6mc-m468-83gw, Prototype
+Pollution in lodash." A repository whose dependency graph is off says so in
+words. **Compare Dependencies...** on a repository does the same between any
+two branches, tags or commits you type.
+
+## An organization's security overview
+
+On an organization's context menu, **Security Overview** counts the open
+alerts in every repository you can see there, worst first: "acme/web: 3
+Dependabot (1 critical, 2 high); 1 code scanning (high); 2 secret scanning."
+A totals line follows. If GitHub will not show you one kind, that kind is
+named and the reason given, never counted as none: missing permission is not
+the same as no risk. GitHub sends 100 alerts of a kind at a time; when a kind
+reaches that, QUILL says so and points you to the organization's own alert
+lists, under the organization in the tree, for the rest.
+
 ## Security policy and reporting
 
 Found a security hole in someone's project? Do not open a public issue: tell
@@ -3272,14 +3326,45 @@ who is credited, and the full description.
 On an advisory's context menu:
 
 - **Publish or Close Advisory...** publishes it, closes it, or makes it a
-  draft again. Publishing makes it public for good, puts it in GitHub's
+  draft again. A report someone sent privately reads "private report to
+  review"; on it, the same command offers **Accept it**, which makes it a draft
+  advisory that you and the reporter work on, or **Close it**. Publishing makes it public for good, puts it in GitHub's
   Advisory Database and alerts the projects that depend on the package, so
   QUILL asks you to type its GHSA id first.
 - **Request CVE...** asks GitHub for a CVE number for a draft. GitHub reviews
   each request, so the number comes later.
 
-Comments on a draft advisory, and the temporary private fork GitHub offers for
-working on the fix, are still on GitHub's own page: **Open on GitHub**.
+On a draft, **Advisory Comments**, **Comment on Advisory...** and **Edit an
+Advisory Comment...** are its private discussion, and **Make a Private Fork for
+the Fix** makes the temporary private fork GitHub offers for working on it.
+
+## Secrets
+
+A secret is a value a workflow, Dependabot, a codespace or the Copilot agent
+uses but nobody reads again, such as a deploy token. They are lists in the
+tree: a repository's **Settings**, an organization's own node, and an
+environment's **Secrets...** on its row. Each row says the secret's name and
+when it changed: "Secret DEPLOY_TOKEN, changed 2026-11-02. Its value is never
+shown."
+
+A secret's value only ever goes one way, to GitHub:
+
+- **New Here** (`Ctrl+N`) asks for its name, then its value in a password box.
+  QUILL seals the value on this computer with that repository's,
+  environment's or organization's own public key (a libsodium sealed box, as
+  GitHub requires) and sends only the sealed form. The value is never read
+  back, said, shown, logged or kept: once the call ends, it is gone.
+- **Change...** on a secret's row sends a new value the same way. For an
+  organization's secret you may leave the value empty to keep it, and choose
+  which of the organization's repositories may use it: **all**, **private**,
+  or **selected**.
+- **Repositories Allowed...** on a selected secret checks the repositories
+  that may use it now; check or uncheck them, and QUILL adds and removes them
+  one at a time, so a change somebody else made meanwhile is kept.
+- A repository's Actions secret also has a **Properties** sheet. Its **New
+  value** box is a password box that always opens empty; Copy as Text says
+  "hidden", the preview before it is sent says "(hidden)", the box is emptied
+  once GitHub has it, and Change History records only that it was set.
 
 ## Searching the Advisory Database
 
@@ -4511,8 +4596,11 @@ repository offers.
   setting itself to "chosen repositories" on the organization's Properties
   first.
 - **Dependabot Alerts**, **Secret Scanning Alerts**, **Security Advisories:**
-  every repository's, in one list. A secret's value is never shown. Open a
-  repository's Alerts to dismiss or resolve one.
+  every repository's, in one list. A secret's value is never asked for, so it
+  is never shown. Open a repository's Alerts to dismiss or resolve one.
+- **Actions, Dependabot, Codespaces and Copilot Agent Secrets:** Change... on
+  one sends a new value, sealed, or keeps it, and chooses all, private or
+  selected repositories; Repositories Allowed... picks the selected ones.
 - **Recent Events:** the organization's public activity, newest first.
 - **Custom Property Values:** every repository's custom properties in one list.
 
@@ -4917,15 +5005,18 @@ and is never said or shown.
 
 - **A repository:** Languages, License, Star History, Mark Its Notifications
   Read, Set a Custom Property..., Compare Dependencies... (between two
-  branches, tags or commits, with known vulnerabilities), SBOM Report,
-  Ruleset History..., Secret Scanning History, Fork Workflow Settings and
-  Fork Workflows from Private Repositories....
+  branches, tags or commits, with licences and known vulnerabilities), SBOM
+  Report, Ruleset History..., Secret Scanning History, Allow a Blocked
+  Secret... (the placeholder id `git push` printed, and why), Fork Workflow
+  Settings and Fork Workflows from Private Repositories....
 - **A commit:** Branches at This Commit, Check Run Details... (a check's
   summary and every annotation), Re-run a Check Suite..., and the reactions
   on its comments: Reactions on a Commit Comment..., React to a Commit
   Comment..., Remove My Reaction from a Commit Comment....
 - **A workflow run:** Read a Step's Log..., one step at a time.
-- **A pull request:** Re-request Review.... **A release:** GitHub's Release
+- **A pull request:** Re-request Review... and Dependency Review (what it
+  changes in the dependencies, with licences and known vulnerabilities).
+  **A release:** GitHub's Release
   Notes..., the notes GitHub writes from the changes since another tag.
 - **A secret scanning alert:** Where It Was Found. **A security advisory:**
   Advisory Comments, Comment on Advisory..., Edit an Advisory Comment...,
@@ -4941,7 +5032,9 @@ and is never said or shown.
   Repository..., Take a Repository from Dependabot..., Dependabot's Default
   Access..., Make Someone an Outside Collaborator..., Define a Custom
   Property..., Set Repositories' Custom Property..., New Team..., Accept
-  Membership and My Activity Here.
+  Membership, My Activity Here and Security Overview (open alerts in every
+  repository, worst first; a kind GitHub will not show you is said, never
+  counted as none).
 - **A team:** Pending Invitations and Delete Team.... **An invitation to an
   organization:** Teams It Adds To.
 - **A Project:** New View... and Items in a View....
@@ -5040,9 +5133,12 @@ allowed to change is read-only, and the line under it says why, for example
 who can change that. `F1` on the field says the same.
 
 - Labels, assignees, reviewers, Projects and your reactions are lists of
-  check boxes. Space checks or clears one. Unchecking a Project takes the
-  item out of it, along with whatever the project's own fields said about
-  it, so that one cannot be undone.
+  check boxes, and a repository's features (Issues, Projects, Wiki,
+  Discussions) are check boxes too. Each one says its state in its own
+  words, "bug, on" or "Issues, off", and Space checks or clears it once; the
+  words change with it, and nothing else is said. Unchecking a Project takes
+  the item out of it, along with whatever the project's own fields said
+  about it, so that one cannot be undone.
 - New Label..., New Milestone... and New Project... beside their lists make
   a new one on GitHub and check it straight away. If one by that name is
   already there, that is not a failure: QUILL says "bug already exists;
@@ -5054,9 +5150,10 @@ who can change that. `F1` on the field says the same.
   request merges into now, then selects it. "(none)" clears an issue type,
   but a pull request always merges into some branch, so choosing "(none)"
   there leaves it as it was and QUILL says so.
-- **OK** saves and closes. **Apply**, or `Ctrl+S`, saves and keeps the sheet
-  open. `Ctrl+Enter` is OK from anywhere, even in a long text box. Escape is
-  Cancel.
+- **OK** saves and closes, and Enter on a check box, a list or a one-line
+  box is OK. **Apply**, or `Ctrl+S`, saves and keeps the sheet open, and
+  focus comes back to the check box or field you were on. `Ctrl+Enter` is
+  OK from anywhere, even in a long text box. Escape is Cancel.
 
 The context menu of an issue or pull request still names the common
 changes: **Edit Title...**, **Labels...**, **Assignees...**, **Milestone...**
@@ -5134,6 +5231,36 @@ issues".
 Batches pause a second between items, because GitHub limits how quickly one
 account may make changes.
 
+### Saying it in words
+
+**Tools > Plain-Language Batch...** (`Ctrl+Shift+S`) takes the change as a
+sentence, for the repository you are in:
+
+- "close every issue labelled duplicate older than 90 days"
+- "close all issues labeled stale that nobody touched in 90 days as not
+  planned"
+- "add label triage to every issue with no label", or "remove label wontfix
+  from all closed issues"
+- "assign alice to every open issue labelled bug", or "unassign me from all
+  pull requests"
+- "which pull requests are waiting on me, oldest first?" shows them in the
+  list, and "how many issues are labelled bug?" says how many. Neither
+  changes anything.
+
+There is no AI in it. QUILL reads a fixed set of words: labelled, without
+label, with no label, by, assigned to, unassigned, in milestone, waiting on
+me, mentioning me, open or closed, an age ("older than 90 days", "updated
+before March 2024"), and oldest or newest first. The same sentence always
+means the same thing, and a word it does not know is never guessed: it says
+what it does read, and gives you your sentence back to correct.
+
+It then searches GitHub and shows every item it found as a checked list.
+Uncheck any you want left alone, and OK goes on to the same preview and
+results as any batch above: "Change 12 issues: state to closed as
+completed." Closing as a duplicate is not a batch, because each one needs the
+issue it duplicates; close those one at a time with `Delete` on the row. The
+WordPress Workbench's Plain-Language Batch reads ages the same way.
+
 ## Undoing a change
 
 `Ctrl+Z` in the list or the tree undoes your last change on GitHub, where
@@ -5201,6 +5328,17 @@ rest.", so a short list is never mistaken for the whole of it.
 - **View > Group By** puts the groups in the tree as nodes: by label,
   milestone, assignee, author, type, state, repository or review state. Each
   node reads with its count, and selecting it shows that group.
+- Those orders and groups are an issue's. Every other list (branches, tags,
+  releases, workflows, runs, discussions, notifications, alerts, people,
+  teams, repositories and the rest) has **Sort By > By Column...** and
+  **Group By > By Column...** instead: any of its columns, first to last or
+  last to first, and for a list of one column its name, repository, kind or
+  last update. Each list remembers its own choice, for this account, as it
+  remembers its columns.
+- **Your place is kept.** Coming back to a list, with Back (`Backspace`) or
+  from a sheet, a dialog or a document, puts you on the row you left, even
+  if it has moved; a refresh while you are in a group keeps you in that
+  group, on that row.
 - **Go > Next Unread** (`Ctrl+Period`) and **Previous Unread**
   (`Ctrl+Shift+Period`) move between unread notifications. Go also has
   submenus for your pinned repositories, favorites and saved searches.

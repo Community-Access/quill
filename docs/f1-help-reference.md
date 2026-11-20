@@ -2870,7 +2870,7 @@ Control coverage: 384 audited sites (384 helped).
 
 **organization: Dependabot Alerts.** Dependabot Alerts: every repository's vulnerable dependencies in one list.
 
-**organization: Secret Scanning Alerts.** Secret Scanning Alerts: secrets found in any repository. The secret itself is never shown here.
+**organization: Secret Scanning Alerts.** Secret Scanning Alerts: secrets found in any repository. The secret itself is never asked for, so it is never shown here.
 
 **organization: Security Advisories.** Security Advisories: the repository advisories across this organization.
 
@@ -2950,6 +2950,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **View > Most Comments.** Order the list this way.
 
+**View > By Column....** Order this list by one of its columns, first to last or last to first; remembered for this list. For lists other than Issues, which GitHub orders.
+
 **View > Assigned to Me.** Show only items assigned to me. Checked when it is on; it combines with the others and with what you type in the filter box.
 
 **View > Assigned To....** Show only items assigned to someone you name. Checked when it is on; it combines with the others and with what you type in the filter box.
@@ -3001,6 +3003,8 @@ Control coverage: 384 audited sites (384 helped).
 **View > Repository.** Put the list's groups in the tree, one node per repository.
 
 **View > Review State.** Put the list's groups in the tree, one node per review state.
+
+**View > By Column....** Group this list by one of its columns, the groups as tree nodes; remembered for this list. For lists other than Issues, which group by the rows above.
 
 **View > Columns....** Choose which columns this list shows, and their order.
 
@@ -3146,6 +3150,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Tools > Dry Run.** Turn Dry Run on or off. While it is on, every write asks and previews as usual, then stops before sending and says what it would have sent.
 
+**Tools > Plain-Language Batch....** Say a change to many issues or pull requests in words, such as close every issue labelled duplicate older than 90 days; check the exact items it found, then send them. No AI: the same words always mean the same thing.
+
 **Tools > GitHub API Console....** Send any GitHub REST request or GraphQL query: completion from GitHub's API description, what it does and needs said first, the answer as a tree.
 
 **Window > Switch to Editor.** Bring forward the editor that opened this window.
@@ -3162,7 +3168,7 @@ Control coverage: 384 audited sites (384 helped).
 
 **Help > Take the Tour.** A spoken tour of the window: each pane, and one thing to do there. F6 moves on, Escape stops.
 
-**Help > Ask How....** Ask in your own words how to do something here. The answer comes only from this help, through the AI you chose, and says when the help does not cover it. It never acts: a command it names runs only when you choose it.
+**Help > Ask How....** Ask in your own words how to do something here. The answer comes only from this help, through the AI you chose. A command it names runs only when you choose it.
 
 **Help > Practice on GitHub....** Make, open or delete quill-practice, a private repository with issues, a pull request and a failing run to learn on.
 
@@ -3281,6 +3287,8 @@ Control coverage: 384 audited sites (384 helped).
 **Turn On Agent Merge.** Let Copilot merge this pull request once its checks and reviews allow.
 
 **Turn Off Agent Merge.** Stop Copilot merging this pull request.
+
+**Dependency Review.** What this pull request changes in the dependencies: each one added or removed, its licence, and its known vulnerabilities.
 
 **Jobs and Logs.** The run's jobs, steps and logs.
 
@@ -3418,7 +3426,7 @@ Control coverage: 384 audited sites (384 helped).
 
 **Set a Custom Property.** Give one of the organization's custom properties a value here.
 
-**Compare Dependencies.** Which dependencies changed between two branches, tags or commits, and their known vulnerabilities.
+**Compare Dependencies.** Which dependencies changed between two branches, tags or commits, their licences, and their known vulnerabilities.
 
 **SBOM Report.** Ask GitHub to build a software bill of materials report, and read it.
 
@@ -3457,6 +3465,8 @@ Control coverage: 384 audited sites (384 helped).
 **Agent Secrets from the Organization.** The organization's agent secrets this repository may use (names only).
 
 **Agent Variables from the Organization.** The organization's agent variables this repository may use.
+
+**Allow a Blocked Secret.** When push protection stopped your push, let that one secret through: give the placeholder id git push printed and say why.
 
 **Open.** Select the person's node in the tree.
 
@@ -3621,6 +3631,8 @@ Control coverage: 384 audited sites (384 helped).
 **Follow Organization.** See this organization's public activity in your feed.
 
 **Unfollow Organization.** Stop seeing this organization in your feed.
+
+**Security Overview.** Open Dependabot, code scanning and secret scanning alerts in every repository, counted by severity, worst first.
 
 **Open.** Open the settings dialog for this; it asks before saving.
 
@@ -4409,7 +4421,7 @@ Control coverage: 384 audited sites (384 helped).
 - `self.notebook`: The sheet's pages. Ctrl+Tab moves to the next page.
 - `self.status`: When the sheet was loaded from GitHub, and what the last save did.
 - `cancel`: Close the sheet without saving. Escape does the same.
-- `ok`: Save what you changed and close the sheet. Ctrl+Enter too.
+- `ok`: Save what you changed and close the sheet. Enter and Ctrl+Enter too.
 - `apply`: Save what you changed and keep the sheet open. Ctrl+S too.
 #### WorkbenchSheetEditor (`quill/ui/workbench_sheet_editor.py`)
 

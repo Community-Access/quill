@@ -397,8 +397,11 @@ repository offers.
   setting itself to "chosen repositories" on the organization's Properties
   first.
 - **Dependabot Alerts**, **Secret Scanning Alerts**, **Security Advisories:**
-  every repository's, in one list. A secret's value is never shown. Open a
-  repository's Alerts to dismiss or resolve one.
+  every repository's, in one list. A secret's value is never asked for, so it
+  is never shown. Open a repository's Alerts to dismiss or resolve one.
+- **Actions, Dependabot, Codespaces and Copilot Agent Secrets:** Change... on
+  one sends a new value, sealed, or keeps it, and chooses all, private or
+  selected repositories; Repositories Allowed... picks the selected ones.
 - **Recent Events:** the organization's public activity, newest first.
 - **Custom Property Values:** every repository's custom properties in one list.
 
@@ -803,15 +806,18 @@ and is never said or shown.
 
 - **A repository:** Languages, License, Star History, Mark Its Notifications
   Read, Set a Custom Property..., Compare Dependencies... (between two
-  branches, tags or commits, with known vulnerabilities), SBOM Report,
-  Ruleset History..., Secret Scanning History, Fork Workflow Settings and
-  Fork Workflows from Private Repositories....
+  branches, tags or commits, with licences and known vulnerabilities), SBOM
+  Report, Ruleset History..., Secret Scanning History, Allow a Blocked
+  Secret... (the placeholder id `git push` printed, and why), Fork Workflow
+  Settings and Fork Workflows from Private Repositories....
 - **A commit:** Branches at This Commit, Check Run Details... (a check's
   summary and every annotation), Re-run a Check Suite..., and the reactions
   on its comments: Reactions on a Commit Comment..., React to a Commit
   Comment..., Remove My Reaction from a Commit Comment....
 - **A workflow run:** Read a Step's Log..., one step at a time.
-- **A pull request:** Re-request Review.... **A release:** GitHub's Release
+- **A pull request:** Re-request Review... and Dependency Review (what it
+  changes in the dependencies, with licences and known vulnerabilities).
+  **A release:** GitHub's Release
   Notes..., the notes GitHub writes from the changes since another tag.
 - **A secret scanning alert:** Where It Was Found. **A security advisory:**
   Advisory Comments, Comment on Advisory..., Edit an Advisory Comment...,
@@ -827,7 +833,9 @@ and is never said or shown.
   Repository..., Take a Repository from Dependabot..., Dependabot's Default
   Access..., Make Someone an Outside Collaborator..., Define a Custom
   Property..., Set Repositories' Custom Property..., New Team..., Accept
-  Membership and My Activity Here.
+  Membership, My Activity Here and Security Overview (open alerts in every
+  repository, worst first; a kind GitHub will not show you is said, never
+  counted as none).
 - **A team:** Pending Invitations and Delete Team.... **An invitation to an
   organization:** Teams It Adds To.
 - **A Project:** New View... and Items in a View....

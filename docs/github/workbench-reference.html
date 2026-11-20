@@ -2241,7 +2241,7 @@ list.</td>
 (<code>organization:org_secret_alerts</code>)</td>
 <td>organization, organization</td>
 <td>Secret Scanning Alerts: secrets found in any repository. The secret
-itself is never shown here.</td>
+itself is never asked for, so it is never shown here.</td>
 </tr>
 <tr>
 <td>Security Advisories (<code>organization:org_advisories</code>)</td>
@@ -2491,6 +2491,13 @@ everything.</td>
 <td>Order the list this way.</td>
 </tr>
 <tr>
+<td>Sort By &gt; By Column…</td>
+<td>(submenu letter)</td>
+<td>Order this list by one of its columns, first to last or last to
+first; remembered for this list. For lists other than Issues, which
+GitHub orders.</td>
+</tr>
+<tr>
 <td>Quick Filters &gt; Assigned to Me</td>
 <td>(submenu letter)</td>
 <td>Show only items assigned to me. Checked when it is on; it combines
@@ -2638,6 +2645,13 @@ combines with the others and with what you type in the filter box.</td>
 <td>Group By &gt; Review State</td>
 <td>(submenu letter)</td>
 <td>Put the list’s groups in the tree, one node per review state.</td>
+</tr>
+<tr>
+<td>Group By &gt; By Column…</td>
+<td>(submenu letter)</td>
+<td>Group this list by one of its columns, the groups as tree nodes;
+remembered for this list. For lists other than Issues, which group by
+the rows above.</td>
 </tr>
 <tr>
 <td>Columns…</td>
@@ -3099,6 +3113,14 @@ previews as usual, then stops before sending and says what it would have
 sent.</td>
 </tr>
 <tr>
+<td>Plain-Language Batch…</td>
+<td>Ctrl+Shift+S</td>
+<td>Say a change to many issues or pull requests in words, such as close
+every issue labelled duplicate older than 90 days; check the exact items
+it found, then send them. No AI: the same words always mean the same
+thing.</td>
+</tr>
+<tr>
 <td>GitHub API Console…</td>
 <td>Ctrl+Shift+J</td>
 <td>Send any GitHub REST request or GraphQL query: completion from
@@ -3170,9 +3192,8 @@ F6 moves on, Escape stops.</td>
 <td>Ask How…</td>
 <td>Alt+Shift+A</td>
 <td>Ask in your own words how to do something here. The answer comes
-only from this help, through the AI you chose, and says when the help
-does not cover it. It never acts: a command it names runs only when you
-choose it.</td>
+only from this help, through the AI you chose. A command it names runs
+only when you choose it.</td>
 </tr>
 <tr>
 <td>Practice on GitHub…</td>
@@ -3263,7 +3284,7 @@ Codespaces…, Commit Comments…, View Timeline…, Read as Document…,
 Summarize Discussion, React…, Labels…, Assignees…, Milestone…,
 Projects…, Edit Title…, Add to or Remove from Favorites, Re-request
 Review…, Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn
-Off Agent Merge…; Properties…</li>
+Off Agent Merge…, Dependency Review; Properties…</li>
 <li><strong>run</strong>: Jobs and Logs, What Failed…, Re-run Failed
 Jobs Only, Re-run Workflow, Cancel Run…, Re-run One Job…; More: Force
 Cancel…, Download Logs…, Delete Logs…, Approvals, Earlier Attempts…,
@@ -3304,7 +3325,7 @@ Agent Tasks, An Agent Task’s Progress…, Automations, New Automation…,
 Run an Automation…, Rename an Automation…, Delete an Automation…, An
 Automation’s History…, An Automation’s Tasks…, Automation Tools and
 Triggers, Agent Secrets from the Organization, Agent Variables from the
-Organization; Properties…</li>
+Organization, Allow a Blocked Secret…; Properties…</li>
 <li><strong>person</strong>: Open, Follow or Unfollow, Open on GitHub;
 Properties…</li>
 <li><strong>label</strong>: Find Issues with Label, Edit Label…, Delete
@@ -3351,7 +3372,7 @@ Repository…, Take a Repository from Dependabot…, Dependabot’s Default
 Access…, Make Someone an Outside Collaborator…, Define a Custom
 Property…, Set Repositories’ Custom Property…, New Team…, Accept
 Membership, My Activity Here, Require Sign-off on Web Commits…, Follow
-Organization, Unfollow Organization; Properties…</li>
+Organization, Unfollow Organization, Security Overview; Properties…</li>
 <li><strong>favorite</strong>: Open, Copy Link, Open on GitHub, Add to
 or Remove from Favorites; Properties…</li>
 <li><strong>admin_action</strong>: Open; Properties…</li>
@@ -3742,7 +3763,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 850 yes, 0 planned, 290 not needed and 867 left to
+<p>In all: 851 yes, 0 planned, 290 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -12226,7 +12247,7 @@ repository’s Labels node already lists and filters them.</td>
 </tbody>
 </table>
 <h4 id="secret-scanning">Secret scanning</h4>
-<p>17 operations: 5 yes, 1 not needed, 11 left to github.</p>
+<p>17 operations: 6 yes, 1 not needed, 10 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -12336,10 +12357,8 @@ reads the list.</td>
 <tr>
 <td>Create a push protection bypass</td>
 <td><code>POST /repos/{owner}/{repo}/secret-scanning/push-protection-bypasses</code></td>
-<td>Left to GitHub</td>
-<td>A push that secret scanning blocks is let through from git push
-itself, with the link GitHub prints there; it is not a Workbench
-step.</td>
+<td>Yes</td>
+<td>context menu &gt; Allow a Blocked Secret…</td>
 </tr>
 <tr>
 <td>Get secret scanning scan history for a repository</td>

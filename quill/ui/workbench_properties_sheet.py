@@ -123,9 +123,15 @@ class PropertiesSheet:
             grid = wx.FlexGridSizer(cols=2, vgap=6, hgap=8)
             grid.AddGrowableCol(1, 1)
             for spec in page.fields:
-                label = wx.StaticText(panel, label=f"{spec.label}:")
+                # A check box says its own name and state ("Issues, on"); a label
+                # beside it as well would be read as a second row (GH-R-157).
+                alone = self.editable(spec) and spec.kind is FieldKind.CHECK
+                label = None if alone else wx.StaticText(panel, label=f"{spec.label}:")
                 cell = self._cell(panel, spec)
-                grid.Add(label, 0, wx.ALIGN_TOP | wx.TOP, 3)
+                if label is None:
+                    grid.Add((0, 0))
+                else:
+                    grid.Add(label, 0, wx.ALIGN_TOP | wx.TOP, 3)
                 grid.Add(cell, 1, wx.EXPAND)
             outer = wx.BoxSizer(wx.VERTICAL)
             outer.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
@@ -212,12 +218,13 @@ class PropertiesSheet:
         if self.editable(spec) and spec.kind is FieldKind.CHECK:
             style = wx.CHK_3STATE | wx.CHK_ALLOW_3RD_STATE_FOR_USER if mixed else 0
             control = wx.CheckBox(panel, label=spec.label, style=style)
-            set_spoken_name(control, spec.label)
             control.SetHelpText(self._help(spec))
             if mixed:
                 control.Set3StateValue(wx.CHK_UNDETERMINED)
             else:
                 control.SetValue(bool(value))
+            self._relabel_check(control, spec.label)
+            control.Bind(wx.EVT_CHECKBOX, lambda e, c=control, s=spec: self._checked(e, c, s))
             return control
         if self.editable(spec) and spec.kind is FieldKind.CHOICE:
             items = list(self._choices.get(spec.key, spec.choices))
@@ -259,7 +266,11 @@ class PropertiesSheet:
         style = 0 if self.editable(spec) else wx.TE_READONLY
         if spec.kind is FieldKind.MULTILINE:
             style |= wx.TE_MULTILINE | wx.TE_WORDWRAP
-        if mixed:
+        secret = spec.kind is FieldKind.SECRET
+        if secret:  # write-only (decision 12): a password box that always opens empty
+            style |= wx.TE_PASSWORD
+            text = ""
+        elif mixed:
             text = "Mixed"
         elif self.editable(spec) and isinstance(value, tuple):
             text = ", ".join(str(v) for v in value)
@@ -268,11 +279,27 @@ class PropertiesSheet:
         else:
             text = field_text(value)
         control = wx.TextCtrl(panel, value=text, style=style)
-        set_spoken_name(control, spec.label)
+        set_spoken_name(control, f"{spec.label}, hidden as you type" if secret else spec.label)
         control.SetHelpText(self._help(spec))
         if spec.kind is FieldKind.MULTILINE:
             control.SetMinSize(dip_size(panel, 400, 150))
         return control
+
+    def _relabel_check(self, control: Any, label: str) -> None:
+        """A check box's text says its state: "Issues, on", "Issues, off" (GH-R-157)."""
+        wx = self._wx
+        if control.Is3State() and control.Get3StateValue() == wx.CHK_UNDETERMINED:
+            text = f"{label}, mixed"
+        else:
+            text = f"{label}, {'on' if control.GetValue() else 'off'}"
+        if control.GetLabel() != text.replace("&", "&&"):
+            control.SetLabel(text.replace("&", "&&"))
+            set_spoken_name(control, text)
+
+    def _checked(self, event: Any, control: Any, spec: FieldSpec) -> None:
+        """Space changed the box, once, natively; its text follows, and nothing is said."""
+        self._relabel_check(control, spec.label)
+        event.Skip()
 
     def _buttons(self, copy_link: Callable[[], None] | None, open_web: Any) -> Any:
         wx = self._wx
@@ -294,8 +321,9 @@ class PropertiesSheet:
         row.AddStretchSpacer()
         if self._on_apply is not None:
             ok = wx.Button(self.dialog, wx.ID_OK, "OK")
-            ok.SetHelpText("Save what you changed and close the sheet. Ctrl+Enter too.")
+            ok.SetHelpText("Save what you changed and close the sheet. Enter and Ctrl+Enter too.")
             ok.Bind(wx.EVT_BUTTON, lambda _e: self.apply(close=True))
+            ok.SetDefault()  # Enter saves from a check box, a choice or a one-line box
             row.Add(ok, 0, wx.RIGHT, 6)
         cancel = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel" if self._on_apply else "Close")
         cancel.SetHelpText("Close the sheet without saving. Escape does the same.")
@@ -361,6 +389,8 @@ class PropertiesSheet:
     # -- acting ---------------------------------------------------------------------
 
     def apply(self, *, close: bool) -> None:
+        # Where focus is, so it comes back to the same row after the save (GH-R-157).
+        self._return_to = self._wx.Window.FindFocus()
         changes = self.pending()
         if not changes:
             if close:
@@ -378,10 +408,27 @@ class PropertiesSheet:
             return
         self.state.loaded.update(values)  # type: ignore[arg-type]
         for spec in self.sheet.fields():
-            if self.editable(spec) and spec.key in values:
+            if spec.kind is FieldKind.SECRET:  # sent: the typed value leaves the box
+                self.state.loaded.pop(spec.key, None)
+                self._set(spec, "")
+                self._initial[spec.key] = ""
+            elif self.editable(spec) and spec.key in values:
                 self._set(spec, values[spec.key])
                 self._initial[spec.key] = self.value_of(spec)
         self.status.SetValue(said)
+        self.focus_back()
+
+    def focus_back(self) -> None:
+        """Focus on the control it was on when the save began, if it is still here."""
+        before, self._return_to = getattr(self, "_return_to", None), None
+        if before is None or not self.dialog:
+            return
+        try:
+            if before and before.GetTopLevelParent() is self.dialog:
+                if self._wx.Window.FindFocus() is not before:
+                    before.SetFocus()
+        except RuntimeError:
+            return  # the control went away with the save (a row removed)
 
     def reloaded(self, values: Mapping[str, object], loaded_at: str) -> None:
         self.state.loaded.update(values)  # type: ignore[arg-type]
@@ -397,6 +444,7 @@ class PropertiesSheet:
         control = self.controls[spec.key]
         if isinstance(control, wx.CheckBox):
             control.SetValue(bool(value))
+            self._relabel_check(control, spec.label)
         elif isinstance(control, wx.Choice):
             items = self._items.get(spec.key, [])
             text = str(value or "")
@@ -460,7 +508,11 @@ class PropertiesSheet:
         if ctrl and not event.ShiftDown() and code in (ord("S"), ord("s")):
             self.apply(close=False)
             return
-        if ctrl and code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+        if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER) and (
+            ctrl or (isinstance(focused, wx.CheckBox) and not event.HasAnyModifiers())
+        ):
+            # Ctrl+Enter anywhere; plain Enter on a check box saves too (GH-R-157),
+            # where Windows would otherwise press nothing.
             self.apply(close=True)
             return
         if code == wx.WXK_F5 and self._on_reload is not None:

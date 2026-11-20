@@ -42,6 +42,7 @@ from quill.core.github.sheet_engine import (
     locked_fields,
     sentence,
 )
+from quill.core.github.sheet_outcome import mask_secrets
 from quill.core.workbench.properties import (
     FieldChange,
     FieldKind,
@@ -346,7 +347,8 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
         if self._save_refused(target.sheet.title(target.ident) or target.kind, tier):
             return
         words = f"{target.title()}: " + "; ".join(
-            f"{c.label} to {say_value(c.after)}" for c in changes
+            f"{c.label} to {say_value(c.after)}"
+            for c in mask_secrets(changes, target.sheet.secret_fields)
         )
         name = target.ident.get("repo") or target.ident.get("name") or target.title()
         if not self.confirm_tier(tier, words, name):
@@ -499,7 +501,7 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
     ) -> None:
         from quill.core.github.batch import run
 
-        words = preview(noun, items, changes)
+        words = preview(noun, items, mask_secrets(changes, SHEETS[kind].secret_fields))
         target = Target(kind, items[0].ident)
         if self._save_refused(f"{len(items)} {noun}", self.tier_of(target, changes)):
             return

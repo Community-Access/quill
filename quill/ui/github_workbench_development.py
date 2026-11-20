@@ -101,6 +101,11 @@ from quill.ui.github_workbench_pages import (
     PAGES_VERBS,
     GitHubWorkbenchPagesMixin,
 )
+from quill.ui.github_workbench_plain_batch import (
+    PLAIN_BATCH_REASONS,
+    PLAIN_BATCH_VERBS,
+    GitHubWorkbenchPlainBatchMixin,
+)
 from quill.ui.github_workbench_practice import (
     PRACTICE_REASONS,
     PRACTICE_VERBS,
@@ -199,6 +204,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **EVIDENCE_VERBS,
     **INBOX_RULE_VERBS,
     **DRY_RUN_VERBS,
+    **PLAIN_BATCH_VERBS,
     **PRACTICE_VERBS,
     **SERVICE_STATUS_VERBS,
     **ASK_HOW_VERBS,
@@ -237,6 +243,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **EVIDENCE_REASONS,
     **INBOX_RULE_REASONS,
     **DRY_RUN_REASONS,
+    **PLAIN_BATCH_REASONS,
     **PRACTICE_REASONS,
     **SERVICE_STATUS_REASONS,
     **ASK_HOW_REASONS,
@@ -273,6 +280,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchEvidenceMixin,
     GitHubWorkbenchInboxRulesMixin,
     GitHubWorkbenchDryRunMixin,
+    GitHubWorkbenchPlainBatchMixin,
     GitHubWorkbenchPracticeMixin,
     GitHubWorkbenchServiceStatusMixin,
     GitHubWorkbenchAskHowMixin,

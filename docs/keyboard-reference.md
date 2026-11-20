@@ -1085,6 +1085,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+PageDown | Load All | `github.workbench.load_all` |
 | Ctrl+Shift+Q | Mark All Read in View | `github.workbench.mark_all_read` |
 | Ctrl+Shift+R | Run Workflow on Branch... | `github.workbench.run_workflow` |
+| Ctrl+Shift+S | Plain-Language Batch... | `github.workbench.plain_batch` |
 | Ctrl+Shift+T | Start in Local Worktree... | `github.workbench.start_worktree` |
 | Ctrl+Shift+U | Columns... | `github.workbench.columns` |
 | Ctrl+Shift+W | What Failed... | `github.workbench.what_failed` |

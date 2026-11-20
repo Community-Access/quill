@@ -736,7 +736,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Actions: Allowed Repositories (`organization:org_actions_repos`) | organization, organization | Actions: Allowed Repositories: which repositories may run Actions, when the organization allows chosen repositories only. Ctrl+N adds one. |
 | Self-hosted Runners: Allowed Repositories (`organization:org_runner_repos`) | organization, organization | Self-hosted Runners: Allowed Repositories: which repositories may use the organization's self-hosted runners. Ctrl+N adds one. |
 | Dependabot Alerts (`organization:org_dependabot_alerts`) | organization, organization | Dependabot Alerts: every repository's vulnerable dependencies in one list. |
-| Secret Scanning Alerts (`organization:org_secret_alerts`) | organization, organization | Secret Scanning Alerts: secrets found in any repository. The secret itself is never shown here. |
+| Secret Scanning Alerts (`organization:org_secret_alerts`) | organization, organization | Secret Scanning Alerts: secrets found in any repository. The secret itself is never asked for, so it is never shown here. |
 | Security Advisories (`organization:org_advisories`) | organization, organization | Security Advisories: the repository advisories across this organization. |
 | Recent Events (`organization:org_events`) | organization, organization | Recent Events: the organization's public activity, newest first. |
 | Custom Property Values (`organization:org_property_values`) | organization, organization | Custom Property Values: every repository's custom properties in one list. Change a repository's on its Properties. |
@@ -792,6 +792,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Sort By > Recently Updated | (submenu letter) | Order the list this way. |
 | Sort By > Least Recently Updated | (submenu letter) | Order the list this way. |
 | Sort By > Most Comments | (submenu letter) | Order the list this way. |
+| Sort By > By Column... | (submenu letter) | Order this list by one of its columns, first to last or last to first; remembered for this list. For lists other than Issues, which GitHub orders. |
 | Quick Filters > Assigned to Me | (submenu letter) | Show only items assigned to me. Checked when it is on; it combines with the others and with what you type in the filter box. |
 | Quick Filters > Assigned To... | (submenu letter) | Show only items assigned to someone you name. Checked when it is on; it combines with the others and with what you type in the filter box. |
 | Quick Filters > Opened by Me | (submenu letter) | Show only items opened by me. Checked when it is on; it combines with the others and with what you type in the filter box. |
@@ -818,6 +819,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Group By > State | (submenu letter) | Put the list's groups in the tree, one node per state. |
 | Group By > Repository | (submenu letter) | Put the list's groups in the tree, one node per repository. |
 | Group By > Review State | (submenu letter) | Put the list's groups in the tree, one node per review state. |
+| Group By > By Column... | (submenu letter) | Group this list by one of its columns, the groups as tree nodes; remembered for this list. For lists other than Issues, which group by the rows above. |
 | Columns... | Ctrl+Shift+U | Choose which columns this list shows, and their order. |
 | Back | Alt+Left | The view you were on before. Backspace too. |
 | Forward | Alt+Right | The view you went back from. |
@@ -918,6 +920,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | --- | --- | --- |
 | Workbench Options... | Ctrl+Shift+O | Where the Workbench opens, how notifications check, lists and privacy. |
 | Dry Run | Ctrl+Alt+D | Turn Dry Run on or off. While it is on, every write asks and previews as usual, then stops before sending and says what it would have sent. |
+| Plain-Language Batch... | Ctrl+Shift+S | Say a change to many issues or pull requests in words, such as close every issue labelled duplicate older than 90 days; check the exact items it found, then send them. No AI: the same words always mean the same thing. |
 | GitHub API Console... | Ctrl+Shift+J | Send any GitHub REST request or GraphQL query: completion from GitHub's API description, what it does and needs said first, the answer as a tree. |
 
 #### Window
@@ -936,7 +939,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | GitHub Workbench Guide | Ctrl+F1 | The guide, opened at the chapter for where you are. |
 | Search Help... | Ctrl+Shift+F1 | Type a few words to find a help topic, a command or a GitHub word. |
 | Take the Tour | Alt+Shift+T | A spoken tour of the window: each pane, and one thing to do there. F6 moves on, Escape stops. |
-| Ask How... | Alt+Shift+A | Ask in your own words how to do something here. The answer comes only from this help, through the AI you chose, and says when the help does not cover it. It never acts: a command it names runs only when you choose it. |
+| Ask How... | Alt+Shift+A | Ask in your own words how to do something here. The answer comes only from this help, through the AI you chose. A command it names runs only when you choose it. |
 | Practice on GitHub... | Ctrl+Alt+P | Make, open or delete quill-practice, a private repository with issues, a pull request and a failing run to learn on. |
 | GitHub Service Status... | Ctrl+Alt+F1 | Whether GitHub says it is working, which parts are not, and any incident. Reads www.githubstatus.com, only when you ask. |
 | Workbench Keys | Alt+Shift+F1 | Every key in this window, by family. |
@@ -957,7 +960,7 @@ Keys the window answers that are not menu rows:
 ### Context menus, by row type
 
 - **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Relationships..., Issue Fields..., Delete Issue..., Add to or Remove from Favorites, Link a Pull Request That Closes It..., Unlink a Pull Request...; Properties...
-- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Merge Selected...; More: Auto-Merge..., Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites, Re-request Review..., Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn Off Agent Merge...; Properties...
+- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Merge Selected...; More: Auto-Merge..., Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites, Re-request Review..., Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn Off Agent Merge..., Dependency Review; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., Re-run One Job...; More: Force Cancel..., Download Logs..., Delete Logs..., Approvals, Earlier Attempts..., View Artifacts..., Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link, Read a Step's Log...; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link; Properties...
 - **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., React..., Release Evidence...; More: Delete Release..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub, GitHub's Release Notes...; Properties...
@@ -966,7 +969,7 @@ Keys the window answers that are not menu rows:
 - **tag**: Open, Delete Tag..., Read Tag Message, Download Source..., Commit Comments..., Compare With Previous; More: Compare With Default, Copy Link, Open on GitHub; Properties...
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub; More: Unsnooze Locally, Why?; Properties...
-- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Send Repository Dispatch..., Pin; More: Star Lists..., Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List..., Fork Workflow Settings, Fork Workflows from Private Repositories..., Languages, License, Star History, Mark Its Notifications Read, Set a Custom Property..., Compare Dependencies..., SBOM Report, Ruleset History..., Secret Scanning History, Require Sign-off on Web Commits..., Sponsor Links, Dependency Manifests, Start an Agent Task..., Agent Tasks, An Agent Task's Progress..., Automations, New Automation..., Run an Automation..., Rename an Automation..., Delete an Automation..., An Automation's History..., An Automation's Tasks..., Automation Tools and Triggers, Agent Secrets from the Organization, Agent Variables from the Organization; Properties...
+- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Send Repository Dispatch..., Pin; More: Star Lists..., Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List..., Fork Workflow Settings, Fork Workflows from Private Repositories..., Languages, License, Star History, Mark Its Notifications Read, Set a Custom Property..., Compare Dependencies..., SBOM Report, Ruleset History..., Secret Scanning History, Require Sign-off on Web Commits..., Sponsor Links, Dependency Manifests, Start an Agent Task..., Agent Tasks, An Agent Task's Progress..., Automations, New Automation..., Run an Automation..., Rename an Automation..., Delete an Automation..., An Automation's History..., An Automation's Tasks..., Automation Tools and Triggers, Agent Secrets from the Organization, Agent Variables from the Organization, Allow a Blocked Secret...; Properties...
 - **person**: Open, Follow or Unfollow, Open on GitHub; Properties...
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
 - **gist**: Edit Gist..., Star or Unstar, Comments..., History..., Forks..., Fork Gist; More: Copy Link, Open on GitHub, Delete Gist...; Properties...
@@ -981,7 +984,7 @@ Keys the window answers that are not menu rows:
 - **template**: Open Template..., Convert Form or Template..., Copy to Repositories..., Copy Link, Open on GitHub; Properties...
 - **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link, New View..., Items in a View..., Rename a View..., Delete a View..., Rename a Field..., Add an Issue Field..., Edit a Draft..., Make a Draft an Issue..., Move an Item..., Edit a Status Update..., Delete a Status Update..., Delete a Workflow..., Share the Project..., Link a Team..., Unlink a Team...; Properties...
 - **team**: Members and Access..., Copy Link, Open on GitHub, Delete Team..., Pending Invitations; Properties...
-- **organization**: Open, Roles..., Rulesets..., Open on GitHub, Fork Workflow Settings, Fork Workflows from Private Repositories...; More: Dependabot Repository Access, Give Dependabot a Repository..., Take a Repository from Dependabot..., Dependabot's Default Access..., Make Someone an Outside Collaborator..., Define a Custom Property..., Set Repositories' Custom Property..., New Team..., Accept Membership, My Activity Here, Require Sign-off on Web Commits..., Follow Organization, Unfollow Organization; Properties...
+- **organization**: Open, Roles..., Rulesets..., Open on GitHub, Fork Workflow Settings, Fork Workflows from Private Repositories...; More: Dependabot Repository Access, Give Dependabot a Repository..., Take a Repository from Dependabot..., Dependabot's Default Access..., Make Someone an Outside Collaborator..., Define a Custom Property..., Set Repositories' Custom Property..., New Team..., Accept Membership, My Activity Here, Require Sign-off on Web Commits..., Follow Organization, Unfollow Organization, Security Overview; Properties...
 - **favorite**: Open, Copy Link, Open on GitHub, Add to or Remove from Favorites; Properties...
 - **admin_action**: Open; Properties...
 - **watch**: Edit Watch..., Pause or Resume Watch, Check Watches Now, Remove Watch, Why?, Open on GitHub; Properties...
@@ -1121,7 +1124,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 850 yes, 0 planned, 290 not needed and 867 left to GitHub.
+In all: 851 yes, 0 planned, 290 not needed and 866 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -2621,7 +2624,7 @@ In all: 850 yes, 0 planned, 290 not needed and 867 left to GitHub.
 
 #### Secret scanning
 
-17 operations: 5 yes, 1 not needed, 11 left to github.
+17 operations: 6 yes, 1 not needed, 10 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2640,7 +2643,7 @@ In all: 850 yes, 0 planned, 290 not needed and 867 left to GitHub.
 | List repository custom patterns | `GET /repos/{owner}/{repo}/secret-scanning/custom-patterns` | Left to GitHub | Custom secret patterns need paid GitHub Advanced Security. |
 | Bulk create repository custom patterns | `POST /repos/{owner}/{repo}/secret-scanning/custom-patterns` | Left to GitHub | Custom secret patterns need paid GitHub Advanced Security. |
 | Update a repository custom pattern | `PATCH /repos/{owner}/{repo}/secret-scanning/custom-patterns/{pattern_id}` | Left to GitHub | Custom secret patterns need paid GitHub Advanced Security. |
-| Create a push protection bypass | `POST /repos/{owner}/{repo}/secret-scanning/push-protection-bypasses` | Left to GitHub | A push that secret scanning blocks is let through from git push itself, with the link GitHub prints there; it is not a Workbench step. |
+| Create a push protection bypass | `POST /repos/{owner}/{repo}/secret-scanning/push-protection-bypasses` | Yes | context menu > Allow a Blocked Secret... |
 | Get secret scanning scan history for a repository | `GET /repos/{owner}/{repo}/secret-scanning/scan-history` | Yes | context menu > Secret Scanning History |
 
 #### Security advisories
