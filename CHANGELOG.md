@@ -2,6 +2,26 @@
 
 ## 1.0.0
 
+### GitHub help, the GitHub PRD and the release notes describe the Workbench (2026-11-20)
+
+- **F1 on the editor's GitHub commands** describes the GitHub Workbench. 44
+  help topics still taught the GitHub Items and Explore GitHub windows, their
+  buttons and their Alt keys. Each now says which Workbench place or window
+  the command opens, its keys there, what it asks and what it says.
+- **The Workbench's own help** no longer names GitHub Items, and says what
+  three commands really do: Open GitHub Address (Ctrl+L) opens a repository
+  or a compare link, not an issue by number; a snoozed notification is a note
+  on this computer and stays in the list; and a change others will see is
+  saved at once, with no option to ask first.
+- **The GitHub PRD** starts with where it stands on 2026-11-20: what shipped,
+  by area, what was taken out (features only GitHub Enterprise Cloud has),
+  and what is left. Its features list and phases now match what was built.
+- **The release notes, the announcements and What's New** in both editors
+  describe the Workbench rather than GitHub Items, with corrected routes:
+  QUILL Lite's is File > GitHub Workbench..., batches are Alt+Enter on several
+  rows or Plain-Language Batch, and Ask Copilot to Review is on the pull
+  request's row.
+
 ### Plans: one list of open work, and the planning documents put right (2026-11-20)
 
 - **complete.md** says who owns what: it is the list of open work,

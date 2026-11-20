@@ -2956,7 +2956,7 @@ Control coverage: 402 audited sites (402 helped).
 
 **File > New....** Choose what to create, wherever you are.
 
-**File > Open GitHub Address....** Type or paste owner/name, #42, owner/name#42 or any GitHub link to go there.
+**File > Open GitHub Address....** Open a repository by owner/name or link; a compare link opens the comparison.
 
 **File > Go to Number....** Go to an issue or pull request in this repository by its number.
 
@@ -3474,11 +3474,11 @@ Control coverage: 402 audited sites (402 helped).
 
 **Mark Done.** Clear it from your notifications.
 
-**Snooze for One Day.** Hide it here until tomorrow.
+**Snooze for One Day.** Note on this computer that you put it off until tomorrow; GitHub is not told.
 
 **Unsubscribe from Thread.** Stop notifications for it.
 
-**Unsnooze Locally.** Show a snoozed notification again.
+**Unsnooze Locally.** Take the snooze off again.
 
 **Why?.** Why this happened on its own, and what decides it.
 
@@ -3956,7 +3956,7 @@ Control coverage: 402 audited sites (402 helped).
 
 **General: Open the Workbench on.** Where the window opens when no menu row asks for a place: Inbox (Start Here until you have signed in), Start Here, or wherever you were last time.
 
-**General: List shows.** Quick lists show a few columns, fast to arrow through; Full lists show every column GitHub Items knows for that view.
+**General: List shows.** Quick lists show a few columns, fast to arrow through; Full lists show every column the Workbench has for that list.
 
 **General: Sort issues and pull requests by.** The order a list of issues and pull requests opens in. Newest first is the usual choice.
 

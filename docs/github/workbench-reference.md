@@ -767,7 +767,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | --- | --- | --- |
 | New Here... | Ctrl+N | Something new where you are: an issue in Issues, a saved search in Saved Searches. |
 | New... | Ctrl+Shift+N | Choose what to create, wherever you are. |
-| Open GitHub Address... | Ctrl+L | Type or paste owner/name, #42, owner/name#42 or any GitHub link to go there. |
+| Open GitHub Address... | Ctrl+L | Open a repository by owner/name or link; a compare link opens the comparison. |
 | Go to Number... | Ctrl+G | Go to an issue or pull request in this repository by its number. |
 | Open on GitHub | Shift+Enter | Open the selected row, or the node, in your browser. |
 | Open in Editor | Ctrl+Enter | Open the selected file in the editor that opened this window. |
@@ -1042,7 +1042,7 @@ Keys the window answers that are not menu rows:
 | Setting | Page | Label | What it does |
 | --- | --- | --- | --- |
 | `open_on` | General | Open the Workbench on | Where the window opens when no menu row asks for a place: Inbox (Start Here until you have signed in), Start Here, or wherever you were last time. |
-| `list_mode` | General | List shows | Quick lists show a few columns, fast to arrow through; Full lists show every column GitHub Items knows for that view. |
+| `list_mode` | General | List shows | Quick lists show a few columns, fast to arrow through; Full lists show every column the Workbench has for that list. |
 | `default_sort` | General | Sort issues and pull requests by | The order a list of issues and pull requests opens in. Newest first is the usual choice. |
 | `default_state` | General | Show issues that are | Open, closed or all, when a list opens. The filter box can always say is:open or is:closed for one list. |
 | `poll_interval_minutes` | Notifications and Inbox | Check for new notifications every (minutes) | How often GitHub is checked for new notifications, from 5 minutes to a day. GitHub may ask for longer, and then it gets longer. |
