@@ -86,6 +86,47 @@ def test_changing_items_sends_ids_for_old_lines_and_product_ids_for_new() -> Non
     assert "QUILL does not move money here" in lines[-1]
 
 
+#: Two lines of a real order on the test site (WooCommerce 11.3.1, 2026-11-19), as
+#: ``wc/v3/orders/{id}`` answers them, trimmed to the keys QUILL reads.
+LIVE_ORDER = {
+    "id": 589,
+    "line_items": [
+        {"id": 4, "name": "Braille Mug", "product_id": 562, "variation_id": 0, "quantity": 1,
+         "subtotal": "12.00", "total": "12.00", "price": 12},
+        {"id": 5, "name": "QUILL T-shirt - Small", "product_id": 564, "variation_id": 565,
+         "quantity": 2, "subtotal": "36.00", "total": "32.40", "price": 18},
+    ],
+}  # fmt: skip
+
+
+def test_a_new_quantity_carries_the_lines_price_because_woocommerce_keeps_the_old_one() -> None:
+    # Live, a POST with only {"id", "quantity": 3} left the mug at 12.00 and the
+    # order's total wrong; sent with subtotal and total it came back right.
+    items = edit.order_items(LIVE_ORDER)
+    assert (items[1].subtotal, items[1].total) == ("36.00", "32.40")
+    changes = [
+        edit.ItemChange(4, 562, "Braille Mug", 3),
+        edit.ItemChange(5, 565, "QUILL T-shirt - Small", 1),
+    ]
+    assert edit.items_body(changes, items)["line_items"] == [
+        {"id": 4, "product_id": 562, "quantity": 3, "subtotal": "36.00", "total": "36.00"},
+        {"id": 5, "product_id": 565, "quantity": 1, "subtotal": "18.00", "total": "16.20"},
+    ]
+    lines = edit.items_preview("589", items, changes, "Shop")
+    assert "keeps its price per item" in lines[-1]
+
+
+def test_a_removed_line_or_an_unreadable_price_sends_the_quantity_alone() -> None:
+    items = [edit.OrderItem(4, 562, "Mug", 2, "12.00", "12.00"), edit.OrderItem(6, 9, "Cap", 1)]
+    body = edit.items_body(
+        [edit.ItemChange(4, 562, "Mug", 0), edit.ItemChange(6, 9, "Cap", 2)], items
+    )
+    assert body["line_items"] == [
+        {"id": 4, "product_id": 562, "quantity": 0},
+        {"id": 6, "product_id": 9, "quantity": 2},
+    ]
+
+
 def test_no_item_changes_is_said() -> None:
     with pytest.raises(ShopValueError, match="Nothing about the items"):
         edit.items_body([])

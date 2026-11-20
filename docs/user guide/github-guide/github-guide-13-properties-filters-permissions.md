@@ -401,7 +401,19 @@ invitation's role, so for one of those, Remove it and invite them again.
 - **Access Review...**, every person and repository pair in an organization
   with their role, copied as CSV too;
 - **Bulk Access Changes...**, one team or person on many repositories at
-  once, previewed, with a result per change.
+  once, previewed, with a result per change;
+- **Access Templates...**, named sets of access, such as Contributor: write
+  on these repositories and member of a team. Choose New Template..., give it
+  a name, and write one line for each place: `write on owner/name` (read,
+  triage, write, maintain or admin), `member of org/team` or `maintainer of
+  org/team`, and `member of org` or `owner of org`. A line it cannot read is
+  said and left out. Templates are kept on this computer, for this account,
+  and making one sends nothing;
+- **Apply Access Template...**, everything a template holds, given to one
+  person by login in one batch: organization first, then teams, then
+  repositories. The preview says every change in words and asks once; each
+  change then has its own result and its own line in Change History. It
+  needs Full for this account in the Workbench, as any access change does.
 
 ### Who has what, and why
 

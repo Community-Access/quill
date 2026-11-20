@@ -270,9 +270,7 @@ def test_other_scheduled_tasks_open_wp_crontrol_where_it_is_active(
         row = next(r for r in frame.rows if r.key == "cron")
         assert row.cell("state") == "WP Crontrol active"
         assert "Only scheduled posts and pages can be checked from here" in row.detail
-        assert row.link == (
-            "https://radio.example/wp-admin/tools.php?page=crontrol_admin_manage_page"
-        )
+        assert row.link == ("https://radio.example/wp-admin/tools.php?page=wp-crontrol")
         frame.provider.do_open_on_site(None, row)
         assert frame.commands.host.opened[-1] == row.link
         sent = [w for w in frame.api.writes if "crontrol" in str(w)]

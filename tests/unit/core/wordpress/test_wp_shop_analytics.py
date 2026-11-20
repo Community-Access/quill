@@ -164,6 +164,7 @@ def test_the_routes_used_are_covered_and_the_rest_stay_planned() -> None:
         "/wc-analytics/reports/downloads/stats",
         "/wc-analytics/reports/stock/stats",
         "/wc-analytics/reports/customers",
+        "/wc-analytics/reports/import/totals",
     ):
         assert classify(route).status == "covered", route
     assert classify("/wc-analytics/reports/orders").status == "planned"
@@ -399,6 +400,34 @@ def test_customers_keep_their_email_and_address_out_of_the_rows() -> None:
     assert rows[0].raw["summary"] == (
         "Customers on Radio: 1 customer, averaging 3.0 orders and $90 spent each."
     )
+
+
+def test_orders_not_yet_in_analytics_are_said_on_the_total_row() -> None:
+    # The test site's answers (WooCommerce 11.3.1, 2026-11-19): an order made while
+    # Analytics imported on a schedule was in no report, and import/totals with
+    # skip_existing counted it; after the import the same route said 0.
+    api = _api(revenue__stats={"totals": {}, "intervals": []})
+    api.answers["wc-analytics/reports/import/totals"] = {"customers": 1, "orders": 1}
+    rows = _load(api, "revenue", range="today")
+    said = rows[0].raw["summary"]
+    assert said.endswith(
+        "1 order is not in WooCommerce Analytics yet, so these figures leave it out; Import "
+        "historical data, under WooCommerce > Settings > Advanced > Analytics, brings them in."
+    )
+    assert rows[0].raw["unimported"] == 1 and said in rows[0].detail
+    route, params = api.asked[-1]
+    assert route == wsa.IMPORT_TOTALS and params == {"skip_existing": "true"}
+    api.answers["wc-analytics/reports/import/totals"] = {"customers": 0, "orders": 0}
+    assert "not in WooCommerce Analytics" not in _load(api, "revenue")[0].raw["summary"]
+
+
+def test_stock_never_asks_about_imports_and_a_refused_count_says_nothing() -> None:
+    api = _api(stock=[], stock__stats={"totals": {"products": 0}})
+    _load(api, "stock")
+    assert all(route != wsa.IMPORT_TOTALS for route, _params in api.asked)
+    refused = _api(revenue__stats={"totals": {}, "intervals": []})
+    refused.answers[wsa.IMPORT_TOTALS] = WordPressApiError("Sorry", status=403)
+    assert "Analytics yet" not in _load(refused, "revenue")[0].raw["summary"]
 
 
 def test_an_empty_range_still_says_its_total() -> None:

@@ -40,7 +40,6 @@ Each is done only with evidence: a test or a live run.
 - [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle.
 - [ ] Live check on the GitHub test repository: Read Only, Organize, Full and Safe Mode refuse and allow as tested, and the permission explanations (greyed rows, Shift+F1, GitHub's own refusals) match what GitHub does.
 - [ ] Verify View As Role, Compare Roles, Why Can't They?, My Access Here, access reviews and bulk changes against actual server authority.
-- [ ] Command Key rows for the GitHub and WordPress Plain-Language Batch (Command Key has no Workbench-window host yet; both Workbenches take the sentence in their own window).
 - [ ] Compare Accounts and one-action Act As with unambiguous identity and cache isolation.
 - [ ] Role comparison and learning workflows reach real permission evidence, not guessed privileges.
 - [ ] Wiki, and cross-linked discussion → issue → pull request workflows (saved replies and repository invitations are done).
@@ -65,7 +64,7 @@ The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`: 82 of 100
 
 - [ ] **The rest of PRD 16.7:** a menu row for Subscribe and Block, star lists, Fork and Pin and Favorite on the You page, sponsoring a repository's owner from the repository, blocking from an organization, leaving an organization and answering an invitation, reactions on comments, and commits.
 - [ ] **GH-R-150 and 151:** more kinds under Across Repositories (see the by-name collections row above).
-- [ ] **Shoulds and Mays:** Alt+Enter on a GitHub reference in a document (036), access templates (068), real permission evidence for the role views (069), team review requests in Needs My Attention (143), tutorials (105), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116), plain-language batches (086) and Ask How (118).
+- [ ] **Shoulds and Mays:** Alt+Enter on a GitHub reference in a document (036), real permission evidence for the role views (069), the branch rule tutorial (105; the ruleset and branch protection editing it needs is now in, #1961), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116) and Ask How (118).
 
 ### 1.4 Then: documentation as good as WordPress's
 
@@ -121,28 +120,23 @@ Scheduled Actions and the extensions marketplace are wp-admin only. Subscription
 
 ### 2.4 Built but not yet tried live
 
-All of the following has tests over recorded or fake answers and none has met a real site. The checklist is `docs/qa/wordpress-regression-testing.md` (the Workbench section and the Live run section), and wordpress.md section 19 keeps the list.
+What is left here has tests over recorded or fake answers but has not been checked on a real site yet. The shop orders, shipping classes, variations, Shop Analytics, Yoast's fields, PMPro members and levels, Redirection, Gravity Forms building and submissions, ACF and Site Types passed live on 2026-11-20 (159 pass, 0 fail). The checklist is `docs/qa/wordpress-regression-testing.md` (the Workbench section and the Live run section), and wordpress.md section 19 keeps the list.
 
 - [ ] The whole Workbench, W1 to W8 and packages 1 to 14. It is now the default, so this comes before the next release.
-- [ ] WooCommerce, The Events Calendar and Yoast SEO, signed in on the test site, which has all three. A refund only against a gateway's test mode.
-- [ ] New Order, Change Items and Change Address on a test order: especially that a quantity of 0 takes an item off, which WooCommerce's order controller documents but QUILL has only met in fakes.
-- [ ] PMPro Members of This Level (built from users plus each person's levels: the `pmpro/member-memberships-get` ability or `pmpro/v1/get_membership_levels_for_user`), its speed on a big site, and the paged discount-code list.
-- [ ] Shop Analytics against a real store: the `wc-analytics` answer shapes, a store that has not imported its order history, and whether Customers should take a date range.
-- [ ] Yoast's canonical address, primary category and schema type: whether the test site registers those meta keys for REST (expect read only), the `yoast_head_json` schema shape, and Open in wp-admin landing on the Yoast panel. WP Crontrol's Cron Events page slug and plugin name.
-- [ ] Redirection's options (`redirection/v1/setting`, built from the plugin's documentation, never seen live).
-- [ ] Redirection: the slug-change redirect offer, the redirect list and 404 log, Redirect Groups (new, rename, turn off, delete) and Import Redirects.
-- [ ] QAF on the test site (it still runs BAF), the QAF migration, and the spam settings with a live submission.
-- [ ] Gravity Forms building, conversion, feeds, notifications and confirmations, results and test submissions. These need a licensed Gravity Forms with its REST API on.
-- [ ] PMPro 3.9 or later on WordPress 6.9 or later, with a role whose PMPro capabilities were changed; and New and Edit Membership Level on a test level.
-- [ ] Advanced Custom Fields read and write, and the QUILL Site Types plugin in a real WordPress.
+- [ ] A WooCommerce refund, only against a gateway's test mode: the test site has no gateway in test mode yet (only Cash on Delivery).
+- [ ] PMPro Members of This Level on a big site (it asks about each person; the test site has 10), and the paged discount-code list past one page.
+- [ ] Shop Analytics: whether Customers should take a date range (Jeff).
+- [ ] Yoast: Open in wp-admin landing on the Yoast panel (needs a browser).
+- [ ] QAF's spam settings with a live submission. (QAF 1.0.0 now runs on the test site, BAF is inactive, and the Forms tests 63 to 66 pass against it.)
+- [ ] Gravity Forms feeds and results: they need a feed add-on and the Quiz, Poll or Survey add-on on the test site (building, conversion, notifications, confirmations and test submissions pass live).
+- [ ] PMPro with a role whose PMPro capabilities were changed (quill-members, Membership Manager, needs an application password). PMPro 3.9.2's level route drops the billing and expiry periods and refuses DELETE; QUILL now says so.
 - [ ] Copy to Site and Compare Sites between two real sites, and Promote to Network on a real multisite.
 - [ ] The Practice Site from an installed build, not only from source.
 - [ ] WordPress.com sign-in, which waits on the app's client ID.
 
 ### 2.5 Open rows from the WordPress delivery checklist
 
-- [ ] **QAF name migration, live:** both halves are built and tested; deploy QAF to the test site, which still runs BAF, and check its forms, entries, pages and Forms node after the migration.
-- [ ] **Test environments:** install QAF, Gravity Forms 2.x with REST API v2 enabled, and PMPro 3.9+ on WordPress 6.9+ on an authorized test site, with an account per role, and record exact versions and capabilities.
+- [ ] **QAF name migration, live:** QAF is deployed and BAF inactive on the test site; check that BAF's old forms, entries and pages came across (the run only uses forms QAF made).
 - [ ] **QAF spam, live:** the five spam guarantees are proven in QAF's PHPUnit suite; what is left is a live submission on the test site once QAF is deployed there.
 - [ ] **PMPro, live:** WordPress 6.9+ with PMPro 3.9+ and a role with customized PMPro capabilities (the card and billing field stripping is done).
 - [ ] **Payments, live:** QAF's and PMPro's PHP suites, Stripe test mode, a PayPal sandbox and a reachable webhook endpoint on the test site: webhook authenticity/replay/order, duplicate submission and accessible checkout acceptance.

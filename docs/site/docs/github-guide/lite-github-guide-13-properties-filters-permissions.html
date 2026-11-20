@@ -642,7 +642,22 @@ something, and who can change it;</li>
 <li><strong>Access Review…</strong>, every person and repository pair in
 an organization with their role, copied as CSV too;</li>
 <li><strong>Bulk Access Changes…</strong>, one team or person on many
-repositories at once, previewed, with a result per change.</li>
+repositories at once, previewed, with a result per change;</li>
+<li><strong>Access Templates…</strong>, named sets of access, such as
+Contributor: write on these repositories and member of a team. Choose
+New Template…, give it a name, and write one line for each place:
+<code>write on owner/name</code> (read, triage, write, maintain or
+admin), <code>member of org/team</code> or
+<code>maintainer of org/team</code>, and <code>member of org</code> or
+<code>owner of org</code>. A line it cannot read is said and left out.
+Templates are kept on this computer, for this account, and making one
+sends nothing;</li>
+<li><strong>Apply Access Template…</strong>, everything a template
+holds, given to one person by login in one batch: organization first,
+then teams, then repositories. The preview says every change in words
+and asks once; each change then has its own result and its own line in
+Change History. It needs Full for this account in the Workbench, as any
+access change does.</li>
 </ul>
 <h3 id="who-has-what-and-why">Who has what, and why</h3>
 <p>Under an organization in the tree, three lists answer “who can do
