@@ -80,7 +80,7 @@ The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`: 82 of 100
 
 - [ ] **The rest of PRD 16.7:** a menu row for Subscribe and Block, star lists, Fork and Pin and Favorite on the You page, sponsoring a repository's owner from the repository, blocking from an organization, leaving an organization and answering an invitation, reactions on comments, and commits.
 - [ ] **GH-R-150 and 151:** more kinds under Across Repositories (see the by-name collections row above).
-- [ ] **Shoulds and Mays:** Alt+Enter on a GitHub reference in a document (036), access templates (068), real permission evidence for the role views (069), team review requests in Needs My Attention (143), tutorials (105), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116), plain-language batches (086) and Ask How (118).
+- [ ] **Shoulds and Mays:** access templates (068), real permission evidence for the role views (069), team review requests in Needs My Attention (143), tutorials (105) and plain-language batches (086).
 
 ### 1.4 Then: documentation as good as WordPress's
 

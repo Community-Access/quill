@@ -1,16 +1,16 @@
 # GitHub Workbench requirement audit, November 2026
 
-Checked 2026-11-18 against main, updated the same day for the follow-up pull request, and on 2026-11-19 for GH-R-046 (the You page). This is the record of the complete.md 1.3 requirement audit: every id in Part E of [the GitHub Workbench PRD](<../Product Requirement Documents and Specifications/github-workbench-prd.md>), with the code and the test behind each verdict.
+Checked 2026-11-18 against main, updated the same day for the follow-up pull request, and on 2026-11-19 for GH-R-046 (the You page) and for GH-R-036, 109, 114, 115, 116 and 118. This is the record of the complete.md 1.3 requirement audit: every id in Part E of [the GitHub Workbench PRD](<../Product Requirement Documents and Specifications/github-workbench-prd.md>), with the code and the test behind each verdict.
 
 ## Summary
 
-Of the 100 live requirements, 82 are met, 11 are partly met and 7 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 88 are met, 11 are partly met and 1 is not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
 | Must | 71 | 4 | 0 | 75 |
-| Should | 11 | 7 | 5 | 23 |
-| May | 0 | 0 | 2 | 2 |
+| Should | 16 | 7 | 0 | 23 |
+| May | 1 | 0 | 1 | 2 |
 
 "Sampled" means a few cases of an "every" were checked, not all of them. The tests the audit cites pass; GH-R-002 was checked on Windows and fixed; nothing here was checked with a screen reader.
 
@@ -18,13 +18,7 @@ Of the 100 live requirements, 82 are met, 11 are partly met and 7 are not met. G
 
 | Id | Strength | Requirement | Evidence and what remains |
 | --- | --- | --- | --- |
-| GH-R-036 | Should | Alt+Enter on a GitHub reference in a document opens its sheet | No Alt+Enter on a GitHub reference in the editor (keymap has none); decision 23 recommends it. |
-| GH-R-109 | Should | Examples from the person's own data and situation | No examples drawn from the person's own data (D14). |
-| GH-R-114 | Should | A braille-shaped row option | No braille-shaped (short) row option. |
-| GH-R-115 | Should | Key cards in print and braille, the guide as a book, the spoken tour | No key cards, book edition of the guide beyond the EPUBs, or spoken tour (D15). The guide's EPUB siblings exist. |
-| GH-R-116 | Should | QUILLBert and QUILLBee tips at the right moment, with an option for plain help | No QUILLBert or QUILLBee tips in the GitHub Workbench (D16). |
 | GH-R-086 | May | Plain-language batches through the Command Key work | (May) no plain-language batches for GitHub; WordPress has its own. |
-| GH-R-118 | May | Ask How through the family's AI, grounded only in the help catalogue | (May) no Ask How. |
 
 ## Partly met
 
@@ -85,7 +79,7 @@ Of the 100 live requirements, 82 are met, 11 are partly met and 7 are not met. G
 | GH-R-033 | Must | Met | A multiple selection opens one sheet with Mixed values and three-state check lists, saving only touched fields | `test_several_rows_open_one_sheet_with_three_state_lists`; `properties.py` Mixed; `test_a_plan_sends_only_changed_fields` |
 | GH-R-034 | Must | Met | Before saving, someone else's changes are detected and the user chooses per field; after saving, the... | `test_someone_else_s_change_stops_the_save_until_you_choose`, `test_save_verifies_and_reports_only_what_the_re_read_proves` |
 | GH-R-035 | Must | Met | Every picker ends with New... that creates and uses the thing | New Label..., New Milestone..., New Project..., New Issue Type... and New Branch... (`github_workbench_create.py`; `test_new_project_creates_one`..., `test_github_workbench_picker_new.py`). Pickers for people and teams have Add..., since a person or team cannot be made from a sheet. |
-| GH-R-036 | Should | Not met | Alt+Enter on a GitHub reference in a document opens its sheet | No Alt+Enter on a GitHub reference in the editor (keymap has none); decision 23 recommends it. |
+| GH-R-036 | Should | Met | Alt+Enter on a GitHub reference in a document opens its sheet | Both editors' key handlers ask one shared call first (`github_editor_line.alt_enter_on_reference`, from `main_frame._on_editor_char_hook` and QUILL Lite's `lite_window_typing._on_key_down`): with the caret on `#42`, `owner/name#42`, `@person`, a commit hash or a GitHub issue, pull request, discussion or commit address (`editor_line.references_in`, `sheet_request`), Alt+Enter opens that object's Properties sheet in the Workbench (the `properties:` door, `github_workbench_reference_sheet.py`; a bare `#42` is read first to choose issue or pull request); anywhere else the key goes on as before. Not a keymap chord, so Alt+Enter is taken nowhere else (rules 1 and 7; the reason is in `keymap.py` and `workbench_menu.line_key_bindings`); the same key in both editors, so no parity divergence. Open the GitHub Reference at the Cursor now opens the sheet too. `tests/unit/ui/test_github_editor_line.py::test_alt_enter_opens_the_sheet_only_on_a_reference`, `tests/unit/ui/test_github_reference_sheet.py`, `tests/unit/core/github_workbench/test_editor_line.py::test_addresses_are_references_with_their_kind` |
 
 ### E5. Editing
 
@@ -169,11 +163,11 @@ Of the 100 live requirements, 82 are met, 11 are partly met and 7 are not met. G
 | GH-R-106 | Must | Met | Help and Learning in the tree, with every node of D11 | Help and Learning has Start Here, Do Something, The Guide, Words, Keys, Tutorials (the GitHub lessons with progress; open in the Tutorials window or walk here), What Changed, Tips (QUILLBert's, keys checked against the bindings) and Ask a Person (`workbench_tree.py`; `workbench_learning.py`; `test_github_workbench_learning.py`). |
 | GH-R-107 | Must | Met | Take Me There and Walk Me Through It on every help topic and task; Do It where the answer is one command | Take Me There, Walk Me Through It (`quill/core/workbench/walk.py`; the shared frame's `start_walk`, F1 repeats, Shift+F1 lists, Escape stops) and Do It where the task is one command (`workbench_help.DO_IT`, greyed otherwise) on every Do Something task (`test_github_workbench_walk.py`). |
 | GH-R-108 | Must | Met | Shift+F9 Explain That for every result, and Why? on every automatic behaviour | Shift+F9 Explain That (`workbench_window_menu.py`, frame `explain_result`), and Why? on what happens on its own: a watch, a notification, a filter applied locally (`quill/core/github/why.py`, `github_workbench_why.py`), listed first by Shift+F1; greyed commands and read-only fields already say why (`test_github_workbench_why.py`). |
-| GH-R-109 | Should | Not met | Examples from the person's own data and situation | No examples drawn from the person's own data (D14). |
-| GH-R-115 | Should | Not met | Key cards in print and braille, the guide as a book, the spoken tour | No key cards, book edition of the guide beyond the EPUBs, or spoken tour (D15). The guide's EPUB siblings exist. |
-| GH-R-116 | Should | Not met | QUILLBert and QUILLBee tips at the right moment, with an option for plain help | No QUILLBert or QUILLBee tips in the GitHub Workbench (D16). |
+| GH-R-109 | Should | Met | Examples from the person's own data and situation | F1 in the Workbench ends with an example built from what the window has loaded: the repository, the selected row and the signed-in account ("On Community-Access/quill, #42 Crash on start is selected: Alt+Enter opens everything about it"); none when it knows too little; nothing is read or sent for it (`help_examples.example_for`, the provider's `help_example` hook in `workbench_frame_help.show_layered_help`). `tests/unit/core/github_workbench/test_help_examples.py` |
+| GH-R-115 | Should | Met | Key cards in print and braille, the guide as a book, the spoken tour | Key cards generated from the window's key table: `docs/github/key-card.html` (an accessible print card) and `docs/github/key-card-braille-ready.txt` (ASCII, 40 cells by 25 lines, form feeds) by `python -m quill.tools.build_github_key_card`, drift-gated (`tests/unit/tools/test_github_key_card.py`). The whole guide as one book for each editor, `github-guide-book.md/.epub` and `lite-github-guide-book.md/.epub`, by `python -m quill.tools.build_github_guide_book`, drift-gated (`tests/unit/tools/test_github_guide_book.py`). The spoken tour: Help > Take the Tour (Alt+Shift+T), and once on the first visit, a step per pane through the announcements, F6 on, Escape skips (`workbench_tour.py`, `github_workbench_tour.py`, on the Walk Me Through It engine). D15's Word and DAISY editions and recorded audio of the guide are not made. |
+| GH-R-116 | Should | Met | QUILLBert and QUILLBee tips at the right moment, with an option for plain help | A tip is offered in the details pane, unspoken, the third time a slow way is done (a long list without the filter, Properties one row at a time, Load More again and again), once per tip, remembered per person (`workbench_tips.TipMoments`, `offer_tip` in `github_workbench_view.py`); Workbench Options, General: Offer a tip when it would help, and Plain help, without QUILLBert and QUILLBee (Tips and Words drop the names: `workbench_tips.voice`). Words are QUILLBee's. `tests/unit/core/github_workbench/test_workbench_tips.py` |
 | GH-R-117 | Must | Met | Ask a Person and Report a Help Problem, never sending a secret | Ask a Person node (mail to support, nothing sent by QUILL); Report a Help Problem on every topic opens a mail with the place and the last thing said, scrubbed of secrets first (`workbench_help.help_report_mailto`, `redact_text_for_bundle`; `test_github_workbench_help_problem.py`). |
-| GH-R-118 | May | Not met | Ask How through the family's AI, grounded only in the help catalogue | (May) no Ask How. |
+| GH-R-118 | May | Met | Ask How through the family's AI, grounded only in the help catalogue | Help > Ask How... (Alt+Shift+A): the help records and menu rows that meet the question (`ask_how.passages` over `ask_how.corpus`) go with an instruction to answer only from them and otherwise to say "The GitHub help does not cover that."; when no help meets it, no request is made. Sent through the opening editor's Choose Your AI (`github_workbench_ask_how.ask_through_editor`: the hosted-AI readiness and capability gates and `AiService.ask`), the same in both editors; the answer is a list with a Do It row per command it names, run only when chosen. Greyed without an AI connection and in Safe Mode. `tests/unit/core/github_workbench/test_ask_how.py` |
 | GH-R-119 | Must | Partly | One source for every help surface (D19), and the measures of D20 | One help catalogue behind F1, Shift+F1, Alt+F1, Search Help and the generated reference (GATE-GITHUB-HELP, `build_help_reference`); D20's measures (timed find-the-answer sessions) not done. |
 
 ### E12. Speech, braille and sound
@@ -184,7 +178,7 @@ Of the 100 live requirements, 82 are met, 11 are partly met and 7 are not met. G
 | GH-R-111 | Must | Met | Every announcement is also brailled | The Workbench speaks only through the announce callback the editor passes (its announcement service, which brailles); GATE-BRAILLE in `platform_report` |
 | GH-R-112 | Must | Met | One sentence per outcome, naming what changed | (sampled) one-sentence results across the window tests, e.g. `test_saving_sends_only_the_change_verifies_it_and_says_one_sentence`, `test_comment_posts_through_items_and_says_one_result` |
 | GH-R-113 | Must | Met | Sounds go through the shared action-feedback channels; a failure or a count is always spoken | Results go through `action_feedback` (`quill/core/github/outcome_feedback.py` plan, `quill/ui/github_workbench_feedback.py`): task-complete tone for a change that landed, error tone for a failure, a failure or a count always spoken, a bare acknowledgement by the setting (`test_outcome_feedback.py`). |
-| GH-R-114 | Should | Not met | A braille-shaped row option | No braille-shaped (short) row option. |
+| GH-R-114 | Should | Met | A braille-shaped row option | Workbench Options, Lists, Short rows for braille (`braille_rows`): each list is one column whose text is the row shaped for a braille display, number and title first, no column names, abbreviations (cl, PR, 3c, 9 Nov), nothing cut off; Columns... still chooses what the line holds (`core/workbench/braille_rows.py`, `github_workbench_view.shaped_columns/shaped_cells`). `tests/unit/core/workbench/test_github_braille_rows.py` |
 
 ### E13. Settings
 

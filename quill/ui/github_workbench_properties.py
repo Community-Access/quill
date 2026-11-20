@@ -168,6 +168,8 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
             self._say("Select rows of one kind for one sheet: these are of different kinds.")
             return
         if len(found) == 1:
+            if len(getattr(self.frame, "rows", ())) > 1 and not page:
+                self.offer_tip("properties_one_at_a_time")  # type: ignore[attr-defined]
             self._open_one(found[0], page, field)
         else:
             self._open_many(found, page, field)

@@ -362,11 +362,15 @@ def _walk(entries: Iterable[Entry]) -> Iterable[Row]:
 def line_key_bindings() -> dict[str, str]:
     """From This Line's new commands for the keymap, all keyless (PRD 22.3).
 
-    Keyless like every GitHub command (rule 7). The PRD asks for Alt+Enter on
-    a reference; rule 1 gives Alt+Enter to Redo, which both editors have (Word
-    repeats the last action on it), so the reference command is on the menu
-    and the Command Palette instead. Who Changed This Line? is Local Git's
-    ``localgit.blame_at_cursor`` and keeps its own row in the keymap.
+    Keyless like every GitHub command (rule 7). Open the GitHub Reference at
+    the Cursor is also Alt+Enter, but only with the caret on a reference
+    (decision 23, PRD C9, GH-R-036): both editors' key handlers ask
+    :func:`quill.ui.github_editor_line.alt_enter_on_reference` first, and off
+    a reference the key goes on exactly as before. It is not a keymap chord,
+    because a chord would take Alt+Enter everywhere, and rule 1 keeps the
+    chord itself for Word's Repeat should either editor ever bind it. Who
+    Changed This Line? is Local Git's ``localgit.blame_at_cursor`` and keeps
+    its own row in the keymap.
     """
     return {
         row.command_id: ""

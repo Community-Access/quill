@@ -45,9 +45,10 @@ TIPS: tuple[str, ...] = (
 )
 
 
-def tip_rows() -> list[tuple[str, str]]:
-    """Each tip as a row: its words, and its detail."""
-    return [(tip, f"QUILLBert's tip {n} of {len(TIPS)}: {tip}") for n, tip in enumerate(TIPS, 1)]
+def tip_rows(*, plain: bool = False) -> list[tuple[str, str]]:
+    """Each tip as a row: its words, and its detail (plainly "Tip 1 of 11" with Plain help)."""
+    who = "Tip" if plain else "QUILLBert's tip"
+    return [(tip, f"{who} {n} of {len(TIPS)}: {tip}") for n, tip in enumerate(TIPS, 1)]
 
 
 def _where(lesson: Tutorial, store: TutorialProgressStore | None) -> str:

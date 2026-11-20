@@ -1010,8 +1010,10 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+Left | Back | `github.workbench.back` |
 | Alt+PageDown | Load More | `github.workbench.load_more` |
 | Alt+Right | Forward | `github.workbench.forward` |
+| Alt+Shift+A | Ask How... | `github.workbench.ask_how` |
 | Alt+Shift+B | Compare With Previous | `github.workbench.compare_previous` |
 | Alt+Shift+F1 | Workbench Keys | `github.workbench.keys` |
+| Alt+Shift+T | Take the Tour | `github.workbench.tour` |
 | Alt+Up | Parent Node | `github.workbench.go_parent` |
 | Ctrl+. | Next Unread | `github.workbench.next_unread` |
 | Ctrl+0 | Across Repositories | `github.workbench.go_across` |

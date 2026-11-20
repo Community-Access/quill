@@ -360,11 +360,18 @@ these lines of that pull request. If your copy and the pull request are
 at different commits, or the file has changes you have not committed, it
 says so and stops, because the line numbers would not match.</li>
 <li><strong>Open the GitHub Reference at the Cursor</strong>
-(<code>R</code>) opens what is written where your cursor is:
-<code>#42</code> or <code>GH-42</code> in this repository,
-<code>owner/name#42</code> in another, or a commit hash, each in the
-Workbench with the list narrowed to it; or <code>@person</code>, whose
-profile opens in your browser.</li>
+(<code>R</code>) opens the Properties sheet of what is written where
+your cursor is, in the Workbench: <code>#42</code> or <code>GH-42</code>
+in this repository, <code>owner/name#42</code> in another, a commit
+hash, <code>@person</code>, or a GitHub address of an issue, pull
+request, discussion or commit. A bare <code>#42</code> is read from
+GitHub first, to know whether it is an issue or a pull request.</li>
+<li><strong><code>Alt+Enter</code> on a reference</strong> does the same
+without the menu: with the cursor on <code>#42</code>,
+<code>@person</code> or a GitHub address, <code>Alt+Enter</code> opens
+its Properties sheet. Anywhere else in the document
+<code>Alt+Enter</code> does what it always did, so it costs you nothing
+where there is no reference.</li>
 </ul>
 <p>The link points at the commit you have checked out. If that commit is
 not on GitHub yet, QUILL says the link will not open until you push; if

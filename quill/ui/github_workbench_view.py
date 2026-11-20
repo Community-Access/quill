@@ -37,6 +37,7 @@ from quill.core.github.filter_menu import (
     toggle_words,
 )
 from quill.core.github.items_provider import GitHubItem
+from quill.core.github.workbench_tips import LONG_LIST
 
 __all__ = ["GitHubWorkbenchViewMixin", "row_values"]
 
@@ -244,6 +245,32 @@ class GitHubWorkbenchViewMixin:
             self.apply_grouping()
         if current is not None and current.key.startswith("across"):
             self.across_after_fill(frame)  # type: ignore[attr-defined]  # ] [ and Back's place
+        long_list = len(frame.rows) >= LONG_LIST and not frame.filter.GetValue().strip()
+        if long_list and current is not None and current != getattr(self, "_long_list_at", None):
+            self._long_list_at = current  # once per visit, not once per refresh
+            self.offer_tip("long_list_no_filter")
+        first_tour = getattr(self, "maybe_first_tour", None)
+        if callable(first_tour):
+            first_tour()  # the first visit's spoken tour, once (GH-R-115)
+
+    def save_tip_moments(self) -> None:
+        """Keep the tip counts and the tour's mark, if this window used them (on close)."""
+        moments = getattr(self, "_tip_moments", None)
+        if moments is not None:
+            moments.save()
+
+    def offer_tip(self, moment_id: str) -> None:
+        """Count a slow way; on its third time, its tip in the details pane, unspoken (D16)."""
+        from quill.core.github.workbench_prefs import load_prefs
+        from quill.core.github.workbench_tips import TipMoments
+
+        prefs = load_prefs()
+        moments = getattr(self, "_tip_moments", None) or TipMoments.load()
+        self._tip_moments = moments
+        words = moments.record(moment_id, enabled=prefs.tips_when_useful, plain=prefs.plain_help)
+        frame = getattr(self, "frame", None)
+        if words and frame is not None:
+            frame.details.ChangeValue(f"{frame.details.GetValue()}\n\n{words}".strip())
 
     # -- grouping ----------------------------------------------------------------
 
@@ -287,6 +314,29 @@ class GitHubWorkbenchViewMixin:
         kept = tuple(c for c in chosen if c in columns)
         return kept or default
 
+    def shaped_columns(self, visible: tuple[str, ...]) -> tuple[str, ...]:
+        """*visible*, or the one braille column when Short rows for braille is on (GH-R-114)."""
+        from quill.core.github.workbench_prefs import load_prefs
+        from quill.core.workbench.braille_rows import BRAILLE_COLUMN
+
+        self._braille_source = visible
+        if len(visible) < 2 or not load_prefs().braille_rows:
+            return visible
+        return (BRAILLE_COLUMN,)
+
+    def shaped_cells(self, row: object, columns: tuple[str, ...]) -> list[str]:
+        """A row's cells under *columns*; under the braille column, one short line."""
+        from quill.core.github.explore_models import ExploreRow
+        from quill.core.workbench.braille_rows import BRAILLE_COLUMN, braille_row
+        from quill.ui.github_items_view import row_cells
+
+        if isinstance(row, ExploreRow):
+            return [row.label]
+        if columns != (BRAILLE_COLUMN,):
+            return row_cells(row, columns, full=False)
+        source = getattr(self, "_braille_source", ())
+        return [braille_row(row_cells(row, source, full=False), source)]
+
     def choose_columns(self) -> None:
         frame = self.frame
         if frame.current is None:
@@ -299,7 +349,8 @@ class GitHubWorkbenchViewMixin:
         wx = frame._wx
         from quill.ui.dialog_contract import show_modal_dialog
 
-        shown = set(frame._columns)
+        # Under Short rows for braille, the columns chosen are what the one line holds.
+        shown = set(getattr(self, "_braille_source", ()) or frame._columns)
         labels = [name.replace("_", " ").capitalize() for name in everything]
         with wx.MultiChoiceDialog(
             frame.frame, "Columns to show, in order:", "Columns", labels
@@ -327,6 +378,7 @@ class GitHubWorkbenchViewMixin:
     def load_more(self) -> None:
         """Load More: one more page of this view, up to Load All's thousand."""
         frame = self.frame
+        self.offer_tip("load_more_again")
         ref = frame.current
         pages = getattr(self, "_more_pages", None)
         if pages is None:

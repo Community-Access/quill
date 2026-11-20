@@ -81,6 +81,26 @@ PREF_HELP: dict[str, tuple[str, str, str]] = {
         "Put each column's name before its value in a list row, as in Number 42, "
         "Title Crash on start. Off keeps rows short.",
     ),
+    "braille_rows": (
+        "Lists",
+        "Short &rows for braille",
+        "Each list row as one short line for a braille display: the number and title "
+        "first, no column names, and short words (cl for closed, PR for pull request, "
+        "3c for three comments, 9 Nov for a date). Details still says everything.",
+    ),
+    "tips_when_useful": (
+        "General",
+        "Offer a &tip when it would help",
+        "Now and then, after you do something a longer way, the details pane offers "
+        "one tip on a shorter way, once per tip. Off keeps tips in Help and Learning, "
+        "Tips, only.",
+    ),
+    "plain_help": (
+        "General",
+        "&Plain help, without QUILLBert and QUILLBee",
+        "Help and tips without the two characters' names: the same words, said "
+        "plainly, as Tip and Help.",
+    ),
     "health_snapshot_opt_in": (
         "Privacy",
         "Load the repository &Health Snapshot",

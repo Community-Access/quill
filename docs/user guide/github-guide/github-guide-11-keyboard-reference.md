@@ -54,7 +54,7 @@ workbench mode is off; in QUILL Lite its rows are in the GitHub menu itself.
 | `N` | New Issue from Selection... |
 | `F` | Issues Mentioning This File |
 | `T` | Comment on This Line in the Open Pull Request... |
-| `R` | Open the GitHub Reference at the Cursor |
+| `R` | Open the GitHub Reference at the Cursor (or `Alt+Enter` with the cursor on a reference) |
 
 ### Clone Repository
 
@@ -171,6 +171,8 @@ no AI menu, so here they belong to the Go row.
 | `Ctrl+F1` | This guide, at the right chapter |
 | `Ctrl+Shift+F1` | Search all of help |
 | `Ctrl+Alt+P` | Practice on GitHub |
+| `Alt+Shift+T` | Take the Tour: a spoken tour of the window, a pane at a time |
+| `Alt+Shift+A` | Ask How: a question in your own words, answered from this help by the AI you chose |
 | `Alt+Shift+F1` | Every key in the window |
 | `Ctrl+Alt+K` | Key Describer: keys say what they do instead of doing it, until `Escape` |
 

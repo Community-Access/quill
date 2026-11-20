@@ -482,6 +482,21 @@ _HELP = MenuSpec(
             "Type a few words to find a help topic, a command or a GitHub word.",
         ),
         _row(
+            "tour",
+            "Take the &Tour",
+            "Alt+Shift+T",
+            "A spoken tour of the window: each pane, and one thing to do there. F6 moves "
+            "on, Escape stops.",
+        ),
+        _row(
+            "ask_how",
+            "&Ask How...",
+            "Alt+Shift+A",
+            "Ask in your own words how to do something here. The answer comes only from "
+            "this help, through the AI you chose, and says when the help does not cover it. "
+            "It never acts: a command it names runs only when you choose it.",
+        ),
+        _row(
             "practice",
             "&Practice on GitHub...",
             "Ctrl+Alt+P",

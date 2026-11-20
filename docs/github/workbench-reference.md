@@ -935,6 +935,8 @@ Everything below is generated from the tables the window is built from. The GitH
 | What Is This? | Alt+F1 | The GitHub word for this row, explained. |
 | GitHub Workbench Guide | Ctrl+F1 | The guide, opened at the chapter for where you are. |
 | Search Help... | Ctrl+Shift+F1 | Type a few words to find a help topic, a command or a GitHub word. |
+| Take the Tour | Alt+Shift+T | A spoken tour of the window: each pane, and one thing to do there. F6 moves on, Escape stops. |
+| Ask How... | Alt+Shift+A | Ask in your own words how to do something here. The answer comes only from this help, through the AI you chose, and says when the help does not cover it. It never acts: a command it names runs only when you choose it. |
 | Practice on GitHub... | Ctrl+Alt+P | Make, open or delete quill-practice, a private repository with issues, a pull request and a failing run to learn on. |
 | GitHub Service Status... | Ctrl+Alt+F1 | Whether GitHub says it is working, which parts are not, and any incident. Reads www.githubstatus.com, only when you ask. |
 | Workbench Keys | Alt+Shift+F1 | Every key in this window, by family. |
@@ -1022,6 +1024,9 @@ Keys the window answers that are not menu rows:
 | `poll_interrupt_speech` | Notifications and Inbox | New notifications interrupt speech | Say a new notification at once, cutting across what is being said. Off means it waits its turn. |
 | `include_read_notifications` | Notifications and Inbox | Include read notifications | Show notifications you have already read, as well as unread ones, in Notifications. |
 | `speak_column_names` | Lists | Say column names before values | Put each column's name before its value in a list row, as in Number 42, Title Crash on start. Off keeps rows short. |
+| `braille_rows` | Lists | Short rows for braille | Each list row as one short line for a braille display: the number and title first, no column names, and short words (cl for closed, PR for pull request, 3c for three comments, 9 Nov for a date). Details still says everything. |
+| `tips_when_useful` | General | Offer a tip when it would help | Now and then, after you do something a longer way, the details pane offers one tip on a shorter way, once per tip. Off keeps tips in Help and Learning, Tips, only. |
+| `plain_help` | General | Plain help, without QUILLBert and QUILLBee | Help and tips without the two characters' names: the same words, said plainly, as Tip and Help. |
 | `health_snapshot_opt_in` | Privacy | Load the repository Health Snapshot | Insights, Health Snapshot reads extra data from GitHub about a repository's activity. It loads only when this is checked. |
 | `first_time_help` | Privacy | Show First time here? help | The first few times you visit a place, its details start with a short paragraph on what it is for. |
 

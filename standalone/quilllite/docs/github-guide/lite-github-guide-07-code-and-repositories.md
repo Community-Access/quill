@@ -107,10 +107,16 @@ From This Line.
   If your copy and the pull request are at different commits, or the file has
   changes you have not committed, it says so and stops, because the line
   numbers would not match.
-- **Open the GitHub Reference at the Cursor** (`R`) opens what is written
-  where your cursor is: `#42` or `GH-42` in this repository, `owner/name#42`
-  in another, or a commit hash, each in the Workbench with the list narrowed
-  to it; or `@person`, whose profile opens in your browser.
+- **Open the GitHub Reference at the Cursor** (`R`) opens the Properties
+  sheet of what is written where your cursor is, in the Workbench: `#42` or
+  `GH-42` in this repository, `owner/name#42` in another, a commit hash,
+  `@person`, or a GitHub address of an issue, pull request, discussion or
+  commit. A bare `#42` is read from GitHub first, to know whether it is an
+  issue or a pull request.
+- **`Alt+Enter` on a reference** does the same without the menu: with the
+  cursor on `#42`, `@person` or a GitHub address, `Alt+Enter` opens its
+  Properties sheet. Anywhere else in the document `Alt+Enter` does what it
+  always did, so it costs you nothing where there is no reference.
 
 The link points at the commit you have checked out. If that commit is not on
 GitHub yet, QUILL says the link will not open until you push; if the file has
