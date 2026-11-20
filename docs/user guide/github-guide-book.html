@@ -3751,10 +3751,15 @@ counts the open alerts in every repository you can see there, worst
 first: “acme/web: 3 Dependabot (1 critical, 2 high); 1 code scanning
 (high); 2 secret scanning.” A totals line follows. If GitHub will not
 show you one kind, that kind is named and the reason given, never
-counted as none: missing permission is not the same as no risk. GitHub
-sends 100 alerts of a kind at a time; when a kind reaches that, QUILL
-says so and points you to the organization’s own alert lists, under the
-organization in the tree, for the rest.</p>
+counted as none: missing permission is not the same as no risk.</p>
+<p>GitHub sends 100 alerts of a kind at a time, so the overview reads
+every page of each list, however many there are. A small window shows
+that it is reading, with Cancel (or <code>Escape</code>) to stop before
+the next page. Nothing is said while it reads; at the end the report’s
+last line says how much it read: “Read every page: 351 alerts in 6
+pages.” If you stop it, the Workbench says how many it had read and
+shows nothing, because part of a count would read as the whole of
+it.</p>
 <h2 id="security-policy-and-reporting">Security policy and
 reporting</h2>
 <p>Found a security hole in someone’s project? Do not open a public
@@ -6287,6 +6292,14 @@ rows it wrote, and names any columns you have hidden, because those are
 left out. It works on any list: issues, pull requests, runs, alerts,
 people, Change History. The WordPress Workbench’s Export List is the
 same command.</p>
+<p>An alert list exports without anything secret in it. The Workbench
+never asks GitHub for a secret scanning alert’s value, so it is in
+neither the list nor the file. Text GitHub wrote into an alert, such as
+a code scanning message quoting a hard-coded password, passes the same
+redaction Change History uses before it is written: a value shaped like
+a token or key becomes <code>[TOKEN]</code>, and a link’s user name and
+password are dropped. When that happens, the Workbench says how many
+values it held back.</p>
 <h3 id="bringing-issues-in">Bringing issues in</h3>
 <p>Two rows on the Workbench’s File menu make many issues at once in the
 repository you are in. Neither sends anything before you have read a
@@ -7033,6 +7046,33 @@ demonstrating or looking around someone else’s organization. Organize
 allows labels, assignees, comments and the like, but not access,
 settings or deleting. Full allows everything your access allows. Safe
 Mode makes every account Read Only.</p>
+<h3 id="the-smallest-permissions-that-would-do">The smallest permissions
+that would do</h3>
+<p><strong>Account &gt; Roles and Access &gt; Least Privilege
+Advice…</strong> is a report: it changes no token and no setting. It is
+based on what the Workbench saw this account do on this computer: the
+kinds of request it sent (never which repository or person), the changes
+that passed the Workbench level check and how far each reached, Change
+History, the scopes GitHub names for a classic token, and every time
+GitHub refused a request and said which permission it wanted. From those
+it suggests:</p>
+<ul>
+<li>the smallest Workbench level that covers what you did (Read Only,
+Organize or Full);</li>
+<li>for a classic token, the scopes that are enough, the ones it has
+that were never used, and a broad scope where a narrower one would do,
+with a link to GitHub’s new-token page with just those checked;</li>
+<li>for a fine-grained token, the permissions by GitHub’s own names,
+read-only or read and write, and what no fine-grained token can
+reach.</li>
+</ul>
+<p>It then says what it cannot know. It saw only this computer’s use,
+not another computer, the <code>gh</code> command or GitHub’s website.
+GitHub does not list a fine-grained token’s exact permissions, so the
+report can say only what worked and what was refused. And it cannot tell
+whether a repository is private, so <code>repo</code> is suggested only
+where that would matter. To change a token, use GitHub’s Settings,
+Developer settings.</p>
 <h3 id="who-else-has-access">Who else has access</h3>
 <p>A repository’s sheet has an Access page: the people with access, the
 teams, and pending invitations. Select a row and use Add…, Change… or

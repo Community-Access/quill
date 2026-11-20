@@ -126,6 +126,10 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
         said = command_refusal(command_id, self.access_level)
         if said:
             self._say(said)
+        else:
+            from quill.core.github.observed_use import observe_gated
+
+            observe_gated(getattr(self.items, "token", None), command_id)
         return bool(said)
 
     def _save_refused(self, what: str, tier: WriteTier) -> bool:

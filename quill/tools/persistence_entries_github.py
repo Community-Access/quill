@@ -63,4 +63,8 @@ GITHUB_ENTRIES: dict[str, str] = {
     # Workbench tips (GH-R-116): how often each slow way was used and which
     # tips were offered. Losing it only means a tip is offered again.
     "core/github/workbench_tips.py::save": "cache",
+    # What the Workbench saw an account use, for Least Privilege Advice: request
+    # areas, refusals and gated commands per one-way account key, never a token or
+    # an object name. Rebuilt by using the Workbench again; losing it is harmless.
+    "core/github/observed_use.py::_change": "cache",
 }

@@ -199,6 +199,7 @@ def test_the_overview_counts_by_repository_and_severity_worst_first() -> None:
         "acme/web: 3 Dependabot (1 critical, 2 high); 1 code scanning (1 high).",
         "acme/api: 1 Dependabot (1 medium); 2 secret scanning.",
         "Totals: 4 Dependabot, 1 code scanning, 2 secret scanning, in 2 repositories.",
+        "Read every page: 7 alerts in 3 pages.",
     ]
     queries = {p: q for _m, p, _b, q in api.sent}
     assert queries["/orgs/acme/secret-scanning/alerts"] == {
@@ -221,14 +222,15 @@ def test_a_kind_github_will_not_show_is_said_never_counted_as_none() -> None:
     assert "Code scanning: GitHub would not show these to you, so this is not a zero." in said
 
 
-def test_an_organization_with_nothing_open_says_so_and_a_full_page_says_there_is_more() -> None:
+def test_an_organization_with_nothing_open_says_so_and_how_much_it_read() -> None:
     empty = Api({})
     assert security_overview(empty, {"org": "acme"}) == (
-        "No open security alerts in acme's repositories."
+        "No open security alerts in acme's repositories. Read every page: 0 alerts in 3 pages."
     )
     many = Api({"/orgs/acme/dependabot/alerts": [_alert("acme/web")] * 100})
     said = security_overview(many, {"org": "acme"})
-    assert "Dependabot has at least that many" in said
+    assert "at least" not in said  # no next link: the hundred are all of them
+    assert "Read every page: 100 alerts in 3 pages." in said
 
 
 # -- an organization's secret alerts, and private reports ---------------------------------------
