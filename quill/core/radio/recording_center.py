@@ -75,6 +75,23 @@ def _relative_day(when: datetime, now: datetime) -> str:
     return when.strftime("%Y-%m-%d")
 
 
+def _in_frame_of(when: datetime, now: datetime) -> datetime:
+    """*when* expressed on the same clock as *now*, so the two can be compared.
+
+    ``next_occurrence`` returns an aware moment (each entry resolves its own
+    zone) while the Recordings window passes a naive ``datetime.now()``.
+    Subtracting one from the other raised ``TypeError`` for every enabled
+    schedule, which stopped the window's refresh (plan.md, Windows Radio
+    review). Naive means system-local, the same rule ``recording_schedule``
+    uses; the wall-clock time then reads in the listener's own zone.
+    """
+    if (when.tzinfo is None) == (now.tzinfo is None):
+        return when
+    if now.tzinfo is not None:
+        return when.astimezone(now.tzinfo)
+    return when.astimezone().replace(tzinfo=None)
+
+
 def describe_next(next_up: NextUp | None, now: datetime) -> str:
     """ "KFI at 11:00 tomorrow", or "" when nothing is scheduled.
 
@@ -83,7 +100,7 @@ def describe_next(next_up: NextUp | None, now: datetime) -> str:
     """
     if next_up is None:
         return ""
-    when = next_up.starts_at
+    when = _in_frame_of(next_up.starts_at, now)
     clock = when.strftime("%H:%M")
     soon = when - now
     # Inside the hour, minutes are more use than a wall-clock time: "in 12
@@ -180,6 +197,9 @@ def summary_from_rows(
                 started_at=started,
                 minutes=int(getattr(row, "scheduled_minutes", 0) or 0),
                 duration_requested=bool(getattr(row, "duration_requested", False)),
+                ends_at=ends
+                if isinstance(ends := getattr(row, "ends_at", None), datetime)
+                else None,
             )
         )
     return summary_line(
@@ -226,7 +246,7 @@ def next_from_entries(entries: list[object], now: datetime) -> NextUp | None:
             continue
         if when is None or _to_absolute(when) < now_abs:
             continue
-        if best is None or when < best.starts_at:
+        if best is None or _to_absolute(when) < _to_absolute(best.starts_at):
             best = NextUp(
                 station_name=str(getattr(entry, "station_name", "") or "a station"),
                 starts_at=when,
