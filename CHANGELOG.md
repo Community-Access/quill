@@ -23,6 +23,54 @@
 - The Features page shows the Sponsor button's links. GitHub's API cannot turn
   the button on or off, and its help says so.
 
+### GitHub Workbench: every alert counted, safe alert exports and Least Privilege Advice (2026-11-20)
+
+- **Security Overview reads every page.** It used to count only the first 100
+  alerts of each kind and say there might be more. It now follows GitHub's
+  pages to the end, so the counts by repository and severity cover every open
+  alert. A Cancel button stops a long read, and then nothing is shown, because
+  part of a count would read as all of it. How much was read is said once, at
+  the end.
+- **Exporting an alert list leaves secrets out.** Export List on a security
+  alert list never had a secret's value to write, and now any token GitHub
+  quoted in an alert's own text is replaced with [TOKEN] before it reaches
+  the file. The outcome says how many values were held back.
+- **Least Privilege Advice** (Account > Roles and Access) suggests the
+  smallest classic token scopes, fine-grained permissions and Workbench level
+  that cover what QUILL saw this account do on this computer, and says
+  plainly what it cannot know, such as anything done outside QUILL. It
+  changes nothing.
+
+### The actual result, said once, and lists that stay still in QUILL Lite and QUILL (2026-11-19)
+
+The second part of the family UX pilot (FUX-04 and FUX-06).
+
+- **Saves say where.** A save now names the file and its folder, as "Saved
+  notes.txt in Documents.", in QUILL Lite and QUILL. A Word save that ran in the
+  background while you kept typing adds "What you typed while it saved is not in
+  it yet." instead of letting "Saved" suggest the window is clean.
+- **Recovered drafts say from when.** Recovering one draft says which, when it
+  was last written ("as it was today at 3:42 PM") and that it is not saved yet.
+  Recovering several names each one. The count is of the documents that really
+  came back, so a restore that failed is no longer counted as a success. QUILL's
+  crash recovery uses the same sentence.
+- **Quill Cast says what is heard.** Changing a podcast's speed, in Settings for
+  This Podcast, Playback Speed or Preferences, is reported after the change is
+  saved, and when the episode playing kept its own rate the sentence says so
+  ("The episode playing stays at 1x."). Preferences says one sentence for one
+  OK, not three, and does not say "saved" before the write lands. Backups,
+  exported audio, OPML exports, import reports and transcripts say the folder
+  too. A restored backup that could not refresh the view now says so aloud;
+  it used to end in silence because the reload named a module that does not
+  exist.
+- **Lists that stay still.** An open Recent Documents window takes a file saved
+  elsewhere without moving your row, and never brings back one you removed. The
+  Problems list keeps you on your problem when a quiet check refills it, follows
+  it when lines are typed above it, and moves to the next one when it is fixed.
+  Discarding drafts in the recovery window keeps the check you gave every other
+  row and puts focus on the next one, not the first. Focus never moves and
+  nothing extra is said.
+
 ### GitHub Workbench: write workflows, Dependabot and CODEOWNERS (2026-11-19)
 
 - **Edit Workflow...** and **New Workflow...**

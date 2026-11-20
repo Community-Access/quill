@@ -130,6 +130,11 @@ class RecentDocumentsMixin:
     def _record_recent(self, path: Path) -> None:
         self.recent_files = add_recent_file(path, self.settings.recent_files_limit)
         self._refresh_recent_menu()
+        # An open Recent Documents window takes the new row without moving
+        # (FUX-06): QUILL Lite's ``_remember`` does the same.
+        from quill.ui.recent_documents_dialog import follow_recent_change
+
+        follow_recent_change([str(p) for p in self.recent_files])
 
     def open_recent_documents(self) -> None:
         """File > Recent Documents... (Alt+Shift+0): the list as a window."""

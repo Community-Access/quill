@@ -545,7 +545,9 @@ def test_a_failed_backup_is_said_and_the_save_still_lands(
     assert target.read_text(encoding="utf-8") == "hello"
     assert win.modified is False
     # Through the window's voice, which is the path braille mirrors.
-    assert win.app.voice.said[-1] == "Saved note.txt, but could not write a backup"
+    assert win.app.voice.said[-1] == (
+        f"Saved note.txt in {tmp_path.name}, but could not write a backup."
+    )
     assert any(
         "Could not write a backup of note.txt" in record.getMessage() for record in caplog.records
     )
@@ -556,7 +558,8 @@ def test_a_backup_that_was_written_is_not_mentioned(lite_window, tmp_path):
     win = lite_window("hello")
     win.path = target
     win.cmd_save()
-    assert win.app.voice.said[-1] == "Saved note.txt"
+    # The file and its folder (FUX-04): "Saved note.txt" did not say which one.
+    assert win.app.voice.said[-1] == f"Saved note.txt in {tmp_path.name}."
 
 
 def test_a_failed_backup_after_a_word_save_is_said_too(lite_window, tmp_path, monkeypatch):
@@ -565,4 +568,6 @@ def test_a_failed_backup_after_a_word_save_is_said_too(lite_window, tmp_path, mo
     target.write_bytes(b"docx")
     win = lite_window("body", mode="rich")
     win._finish_word_save(target, win.control.GetValue())  # noqa: SLF001
-    assert win.app.voice.said[-1] == "Saved report.docx, but could not write a backup"
+    assert win.app.voice.said[-1] == (
+        f"Saved report.docx in {tmp_path.name}, but could not write a backup."
+    )

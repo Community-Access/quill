@@ -3218,6 +3218,8 @@ Control coverage: 406 audited sites (406 helped).
 
 **Account > Workbench Level for This Account....** Read Only, Organize or Full: what the Workbench may change with this account, whatever GitHub would allow.
 
+**Account > Least Privilege Advice....** The smallest token scopes, fine-grained permissions and Workbench level that cover what QUILL saw this account do here, and what it cannot know. Changes nothing.
+
 **Tools > Workbench Options....** Where the Workbench opens, how notifications check, lists and privacy.
 
 **Tools > Dry Run.** Turn Dry Run on or off. While it is on, every write asks and previews as usual, then stops before sending and says what it would have sent.

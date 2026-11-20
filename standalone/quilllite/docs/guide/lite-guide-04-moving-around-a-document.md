@@ -501,6 +501,10 @@ which argument you're on inside a call, and
   moment's pause in typing if you check **Check after a pause** beside the
   choosers (it starts off). You hear only the new count, and only when it
   changes.
+- A check like that never moves you. If you are in the list, you stay on the
+  same problem, even when problems above it were fixed or new ones arrived,
+  and it stays on the same line of the screen. If your problem was fixed, you
+  are on the one that took its place. Focus stays wherever it was.
 
 The pane has no shortcut key; Ctrl+Shift+M, the usual one, is Set Mark here
 and in QUILL. You can give it one in the Keyboard Manager.
