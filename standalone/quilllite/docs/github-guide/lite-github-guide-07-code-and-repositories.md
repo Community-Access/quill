@@ -372,6 +372,13 @@ menu, which acts on the selected repository row, or on the repository in
 **Repository:** when you are in one of the repository views. You need to be
 signed in.
 
+In the GitHub Workbench, **Sync Fork with Upstream...**, **Create Repository
+from This Template...** and **Delete Repository...** are on a repository
+row's context menu (`Shift+F10`): Sync Fork asks first, Create asks the new
+name, its owner and whether it is private, and Delete asks you to type the
+repository's full name. Topics, Archived and the watch level are on the
+repository's Properties sheet (`Alt+Enter`): General, Danger Zone and You.
+
 - **Sync Fork with Upstream...** brings a fork up to date with the repository
   it was forked from. QUILL counts the new commits first, so it can say
   "Merged 3 commits from" the upstream, or "Already up to date with" it.

@@ -3,7 +3,9 @@
 * A repository: **Languages**, **License**, **Star History**, **Mark Its
   Notifications Read**, **Set a Custom Property...**, **Compare
   Dependencies...**, **SBOM Report**, **Ruleset History...**, **Secret
-  Scanning History**.
+  Scanning History**, **Sync Fork with Upstream...**, **Create Repository from
+  This Template...** and **Delete Repository...** (Appendix B: once only in the
+  retired Explore GitHub window).
 * A commit: **Branches at This Commit**, and the reactions on its comments:
   **Reactions on a Commit Comment...**, **React to a Commit Comment...**,
   **Remove My Reaction...**.
@@ -160,6 +162,37 @@ def _advisory_comments(api: Any, ctx: dict[str, str]) -> list[tuple[str, str]]:
     ] if isinstance(data, list) else []  # fmt: skip
 
 
+def _sync_fork(api: Any, ctx: dict[str, str]) -> str:
+    """Merge the upstream default branch into this fork's (Appendix B: Sync Fork with Upstream)."""
+    from quill.core.github.repo_actions import sync_sentence
+
+    info = call(api, "GET", "/repos/{repo}", ctx)
+    info = info if isinstance(info, Mapping) else {}
+    parent = info.get("parent") if isinstance(info.get("parent"), Mapping) else None
+    if not parent:
+        raise QuickError(f"{ctx['repo']} is not a fork, so there is no upstream to sync from.")
+    branch = str(info.get("default_branch") or "main")
+    reply = call(api, "POST", "/repos/{repo}/merge-upstream", ctx, {"branch": branch})
+    reply = reply if isinstance(reply, Mapping) else {}
+    upstream = str(reply.get("base_branch") or parent.get("full_name") or "the upstream")
+    return sync_sentence(
+        str(reply.get("merge_type") or ""), None, upstream, str(reply.get("message") or "")
+    )
+
+
+def _use_template(api: Any, ctx: dict[str, str]) -> Any:
+    body: dict[str, object] = {"name": ctx["new_name"].strip(), "private": ctx["private"] == "true"}
+    if ctx.get("owner", "").strip():
+        body["owner"] = ctx["owner"].strip()
+    return call(api, "POST", "/repos/{repo}/generate", ctx, body)
+
+
+def _delete_repository(api: Any, ctx: dict[str, str]) -> Any:
+    if ctx["typed"].strip().casefold() != ctx["repo"].casefold():
+        raise QuickError(f"That is not {ctx['repo']}; nothing was deleted.")
+    return call(api, "DELETE", "/repos/{repo}", ctx)
+
+
 _REPO = frozenset({"repo"})
 _ADVISORY = frozenset({"advisory"})
 
@@ -221,6 +254,33 @@ REPO_QUICK: tuple[Quick, ...] = (
           ("GET /repos/{owner}/{repo}/secret-scanning/scan-history",),
           lambda api, ctx: call(api, "GET", "/repos/{repo}/secret-scanning/scan-history", ctx),
           report=True, needs=("repo",)),
+    Quick("sync_fork", "Sync Fork with Upstream...", ("repository",), _REPO,
+          "Bring this fork's default branch up to date with the repository it was forked from.",
+          ("POST /repos/{owner}/{repo}/merge-upstream",),
+          _sync_fork, lambda text, _ctx: str(text), tier="V", need="repo:write",
+          confirm="Merge the upstream's changes into {name}'s default branch?",
+          needs=("repo",), reload=True, live="needs Jeff: a fork that is behind its upstream"),
+    Quick("use_template", "Create Repository from This Template...", ("repository",), _REPO,
+          "A new repository with this template repository's files. Only a template "
+          "repository can be used; its General page says whether it is one.",
+          ("POST /repos/{template_owner}/{template_repo}/generate",),
+          _use_template,
+          lambda data, _ctx: f"Created {(data or {}).get('full_name', 'the repository')}.",
+          tier="V", need="sign_in",
+          asks=(Ask("new_name", "The new repository's name:"),
+                Ask("owner", "Its owner, a person or organization (empty: you):", optional=True),
+                Ask("private", "Make it private?", "yesno")),
+          needs=("repo",), live="needs Jeff: a template repository, and a name to make"),
+    Quick("delete_repository", "Delete Repository...", ("repository",), _REPO,
+          "Delete this repository and everything in it: code, issues, pull requests, wiki "
+          "and releases. It cannot be undone; you type its full name to confirm.",
+          ("DELETE /repos/{owner}/{repo}",),
+          _delete_repository, lambda _d, ctx: f"Deleted {ctx['repo']}.",
+          tier="D", need="repo:admin",
+          asks=(Ask("typed", "This cannot be undone. Type the repository's full name, "
+                    "owner/name, to delete it:"),),
+          needs=("repo",), reload=True,
+          live="needs Jeff: a throwaway repository made for the run"),
     Quick("branches_at_commit", "Branches at This Commit", ("commit",), frozenset({"commit"}),
           "Which branches end at this commit.",
           ("GET /repos/{owner}/{repo}/commits/{commit_sha}/branches-where-head",),

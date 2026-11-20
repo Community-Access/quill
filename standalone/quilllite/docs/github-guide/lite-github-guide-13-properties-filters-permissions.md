@@ -163,6 +163,36 @@ checks the pull requests already loaded and the Items cell of the status bar
 says so. **Load All** on the Workbench's View menu (`Ctrl+Shift+Page Down`) loads
 every page to be sure.
 
+### Filtering every other list
+
+Branches, tags, commits, releases, workflows, runs and the other lists are
+read whole, so the words before a colon are checked here, over the rows
+already loaded. Each list answers its own:
+
+- **Branches:** `name:`, `protected:`, `ahead:`, `behind:`, `author:` (the
+  last commit's) and `committed:` (its date).
+- **Tags:** `name:` and `sha:`. **Commits:** `author:`, `committed:`,
+  `message:` (words in it) and `sha:`.
+- **Releases:** `tag:`, `name:`, `draft:`, `prerelease:` and `created:`.
+  **Release assets:** `name:`, `size:`, `downloads:`, `type:` and `updated:`.
+- **Workflows:** `name:`, `path:` and `state:`. **Runs:** `workflow:`,
+  `branch:`, `event:`, `status:`, `conclusion:`, `created:` and `sha:`.
+- **Every other list** (repositories, labels, milestones, notifications,
+  packages and the rest): `name:`, `repo:`, `owner:` and `updated:`.
+
+A name takes `*` as a pattern (`name:release-*`). A minus in front leaves
+those out (`-conclusion:success`). Numbers and dates take `>`, `<`, `>=`, `<=`
+and a range with two dots (`ahead:>=3`, `created:2026-01..2026-06`); a date
+can be just a year or a month. `no:repo` keeps the rows with none. The Items
+cell of the status bar says how many the filter kept of how many loaded, and
+names any word this list cannot filter on, so nothing is quietly ignored.
+
+The Search node's lists send the whole box to GitHub instead, so there
+GitHub's own search terms work: `language:` and `stars:` for repositories,
+`committer:` for commits, `location:` for people. Appendix C of the GitHub
+Workbench requirements lists every object's filters, and says which are not
+built yet.
+
 ### More rows
 
 Every list starts with one page: 30 issues or pull requests, 50 rows of

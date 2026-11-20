@@ -248,7 +248,7 @@ class GitHubWorkbenchProvider(
 
     # -- rows ---------------------------------------------------------------------
 
-    def load(self, ref: NodeRef, node: NodeSpec, query: Query) -> list[object]:
+    def load_rows(self, ref: NodeRef, node: NodeSpec, query: Query) -> list[object]:
         """Fetch a node's rows off the UI thread, with Items' and Explore's own calls."""
         self.local_note = ""
         if node.loader.startswith(EXPLORE_PREFIX):

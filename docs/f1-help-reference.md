@@ -3424,6 +3424,12 @@ Control coverage: 384 audited sites (384 helped).
 
 **Secret Scanning History.** When GitHub last scanned this repository for secrets, and how.
 
+**Sync Fork with Upstream.** Bring this fork's default branch up to date with the repository it was forked from.
+
+**Create Repository from This Template.** A new repository with this template repository's files. Only a template repository can be used; its General page says whether it is one.
+
+**Delete Repository.** Delete this repository and everything in it: code, issues, pull requests, wiki and releases. It cannot be undone; you type its full name to confirm.
+
 **Require Sign-off on Web Commits.** Whether commits made on GitHub's site must carry a sign-off.
 
 **Sponsor Links.** Where people can sponsor this repository, from its FUNDING.yml.
