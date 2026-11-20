@@ -1,16 +1,16 @@
 # GitHub Workbench requirement audit, November 2026
 
-Checked 2026-11-18 against main, updated the same day for the follow-up pull request, and on 2026-11-19 for GH-R-046 (the You page). This is the record of the complete.md 1.3 requirement audit: every id in Part E of [the GitHub Workbench PRD](<../Product Requirement Documents and Specifications/github-workbench-prd.md>), with the code and the test behind each verdict.
+Checked 2026-11-18 against main, updated the same day for the follow-up pull request, and on 2026-11-19 for GH-R-046 (the You page) and for GH-R-068, GH-R-086, GH-R-105 and GH-R-143. This is the record of the complete.md 1.3 requirement audit: every id in Part E of [the GitHub Workbench PRD](<../Product Requirement Documents and Specifications/github-workbench-prd.md>), with the code and the test behind each verdict.
 
 ## Summary
 
-Of the 100 live requirements, 82 are met, 11 are partly met and 7 are not met. GH-R-042 is withdrawn.
+Of the 100 live requirements, 84 are met, 10 are partly met and 6 are not met. GH-R-042 is withdrawn.
 
 | Strength | Met | Partly met | Not met | Total |
 | --- | --- | --- | --- | --- |
 | Must | 71 | 4 | 0 | 75 |
-| Should | 11 | 7 | 5 | 23 |
-| May | 0 | 0 | 2 | 2 |
+| Should | 13 | 5 | 5 | 23 |
+| May | 0 | 1 | 1 | 2 |
 
 "Sampled" means a few cases of an "every" were checked, not all of them. The tests the audit cites pass; GH-R-002 was checked on Windows and fixed; nothing here was checked with a screen reader.
 
@@ -23,7 +23,6 @@ Of the 100 live requirements, 82 are met, 11 are partly met and 7 are not met. G
 | GH-R-114 | Should | A braille-shaped row option | No braille-shaped (short) row option. |
 | GH-R-115 | Should | Key cards in print and braille, the guide as a book, the spoken tour | No key cards, book edition of the guide beyond the EPUBs, or spoken tour (D15). The guide's EPUB siblings exist. |
 | GH-R-116 | Should | QUILLBert and QUILLBee tips at the right moment, with an option for plain help | No QUILLBert or QUILLBee tips in the GitHub Workbench (D16). |
-| GH-R-086 | May | Plain-language batches through the Command Key work | (May) no plain-language batches for GitHub; WordPress has its own. |
 | GH-R-118 | May | Ask How through the family's AI, grounded only in the help catalogue | (May) no Ask How. |
 
 ## Partly met
@@ -34,11 +33,10 @@ Of the 100 live requirements, 82 are met, 11 are partly met and 7 are not met. G
 | GH-R-150 | Must | Across Repositories has a place for every kind in the 22.11 table, a row per name with its variants and... | Labels, Milestones, Topics, Rules and Branch Protection by name, and the Fleet; every other kind is a decided cell with a reason in `across_scope_matrix.py` (`test_no_cell_is_blank`, `test_the_decided_cells`), not yet a place. |
 | GH-R-151 | Must | Every operation a kind allows in one repository is offered across a scope, with the preview and a result... | Preview and a result per repository for labels, milestones, topics, rulesets (`test_labels_by_name_make_the_same_with_a_preview_and_a_result_each`, `test_a_change_previews_permission_and_conflict_then_reports_each_repository`); environments, secrets, variables, webhooks, keys, autolinks remain. |
 | GH-R-157 | Must | Repository and item-property checklists announce a Space toggle once, save from Enter, return focus... | `test_the_checklist_checks_adds_once_and_returns_the_checked`; the JAWS, NVDA and VoiceOver checks it names are live checks not yet recorded. |
-| GH-R-068 | Should | The access matrix, bulk access changes and access templates | Access matrix as CSV and bulk access changes, now tested (`tests/unit/ui/test_github_workbench_requirement_checks.py::test_the_access_matrix_is_one_sorted_row_per_person_and_repository`, `test_bulk_access_gives_a_team_a_role_on_each_repository_with_an_undo`); access templates not built. |
 | GH-R-069 | Should | View As Role, Compare Roles and Why Can't They? | View As Role, Compare Roles, Why Can't They? now tested (`tests/unit/ui/test_github_workbench_requirement_checks.py::test_why_cant_they_names_the_role_needed_and_who_can_change_it` and others), but they read a fixed ability table, not GitHub's real permissions (the open complete.md row). |
 | GH-R-088 | Should | The GitHub features listed in 22.1, each as the coverage gate schedules it | Ongoing: the 22.1 features are the 43 open rows of complete.md 1.3. |
-| GH-R-105 | Should | The GitHub tutorials of D8 | One GitHub lesson (practice repository) in docs/user guide/tutorials.md; D8 plans eleven, and there is no Help > Tutorials. |
-| GH-R-143 | Should | People > My Teams and team review requests in Needs My Attention | People > My Teams (`load_teams`, "teams:mine"); team review requests are a filter attribute but are not in Needs My Attention. |
+| GH-R-105 | Should | The GitHub tutorials of D8 | Help > Tutorials (Ctrl+F2) goes to Help and Learning > Tutorials; ten of D8's eleven lessons are in the GitHub track (`quill/core/tutorials/github_lessons.py`, `github_lessons_more.py`; `tests/unit/core/github_workbench/test_github_more_lessons.py`). Left: the branch rule lesson, because the Workbench cannot yet make a ruleset or branch protection on one repository (its Rules page is read only). |
+| GH-R-086 | May | Plain-language batches through the Command Key work | Say or Type a Command (F11) and What Can I Say Here (Ctrl+Alt+Shift+F1) in both Workbench windows, running the window's own commands through its dispatcher and write gate (`quill/ui/command_key_workbench.py`, `quill/core/command_catalogue/workbench.py`; `tests/unit/ui/test_command_key_workbench.py`); WordPress's Plain-Language Batch is a row. GitHub's row waits for GitHub's Plain-Language Batch itself (PR #1960); it is offered once that command is on the bar. |
 | GH-R-153 | Should | Promote to Organization wherever GitHub has a shared form | Rulesets only (`test_promote_creates_the_organization_ruleset_before_deleting_copies`); labels cannot be promoted (no GitHub API) |
 | GH-R-154 | Should | The fourth sweep of 22.12, each as the coverage gate schedules it | Ongoing, as the coverage gate schedules it. |
 
@@ -121,7 +119,7 @@ Of the 100 live requirements, 82 are met, 11 are partly met and 7 are not met. G
 | GH-R-065 | Must | Met | Tier 2 changes preview in words; tier 3 adds typed confirmation; self-lockout is refused | Tier 2 preview, TypedConfirmDialog for tier 3 (`github_workbench_tier2.py:337`), `test_removing_your_own_admin_role_is_refused`, `test_destructive_writes_are_tier_3`... |
 | GH-R-066 | Must | Met | Read Only, Organize and Full per account; Safe Mode makes every account Read Only | `permissions.py:145`; `test_account_levels_and_safe_mode`, `test_safe_mode_and_read_only_lock_every_field_of_every_sheet`, `test_the_account_level_is_kept_and_read_only_locks_every_field` |
 | GH-R-067 | Must | Met | Change History records every write, with before and after, and never a secret | `change_log.py` (atomic, redacted, before/after); `test_change_history_is_atomic_kept_ninety_days_and_never_holds_a_token`, `test_change_history_lists_changes_and_undoes_one`. "Every write" sampled, not proven. |
-| GH-R-068 | Should | Partly | The access matrix, bulk access changes and access templates | Access matrix as CSV and bulk access changes, now tested (`tests/unit/ui/test_github_workbench_requirement_checks.py::test_the_access_matrix_is_one_sorted_row_per_person_and_repository`, `test_bulk_access_gives_a_team_a_role_on_each_repository_with_an_undo`); access templates not built. |
+| GH-R-068 | Should | Met | The access matrix, bulk access changes and access templates | Access matrix as CSV and bulk access changes (`tests/unit/ui/test_github_workbench_requirement_checks.py::test_the_access_matrix_is_one_sorted_row_per_person_and_repository`, `test_bulk_access_gives_a_team_a_role_on_each_repository_with_an_undo`); access templates: Account > Roles and Access > Access Templates... and Apply Access Template..., named sets kept per account (`quill/core/github/access_templates.py`), applied to one person as one previewed batch through `plan_add`, the write gate and `_run_changes` (`quill/ui/github_workbench_access_templates.py`; `tests/unit/core/github_workbench/test_github_access_templates.py`, `tests/unit/ui/test_github_workbench_access_templates.py`). |
 | GH-R-069 | Should | Partly | View As Role, Compare Roles and Why Can't They? | View As Role, Compare Roles, Why Can't They? now tested (`tests/unit/ui/test_github_workbench_requirement_checks.py::test_why_cant_they_names_the_role_needed_and_who_can_change_it` and others), but they read a fixed ability table, not GitHub's real permissions (the open complete.md row). |
 
 ### E8. Templates
@@ -143,7 +141,7 @@ Of the 100 live requirements, 82 are met, 11 are partly met and 7 are not met. G
 | GH-R-083 | Should | Met | Watches with one-sentence results and sounds through the shared feedback channels | Watches with one-sentence results (`test_a_first_check_learns_then_only_new_things_are_said`, `test_add_edit_pause_check_and_remove_a_watch`), and their results now play through the shared feedback channels like every Workbench result (`outcome_feedback.py`; `test_outcome_feedback.py`). |
 | GH-R-084 | Should | Met | The editor commands of 22.3 | `editor_line.py` / `github_editor_line.py` in both editors; `test_editor_line.py`. (Alt+Enter on a reference, C9, is the missing part, see 036.) |
 | GH-R-085 | Should | Met | Export of any list; import of issues from CSV | `test_github_workbench_export.py` (any list, as shown), `test_issue_import.py` and `test_github_workbench_import.py` (CSV and Excel) |
-| GH-R-086 | May | Not met | Plain-language batches through the Command Key work | (May) no plain-language batches for GitHub; WordPress has its own. |
+| GH-R-086 | May | Partly | Plain-language batches through the Command Key work | Say or Type a Command (F11) and What Can I Say Here (Ctrl+Alt+Shift+F1) in both Workbench windows, running the window's own commands through its dispatcher and write gate (`quill/ui/command_key_workbench.py`, `quill/core/command_catalogue/workbench.py`; `tests/unit/ui/test_command_key_workbench.py`); WordPress's Plain-Language Batch is a row. GitHub's row waits for GitHub's Plain-Language Batch itself (PR #1960); it is offered once that command is on the bar. |
 | GH-R-087 | Should | Met | Dry Run and the practice repository | `dry_run.py` (REST, GraphQL, PyGithub stop before the network), `test_dry_run.py`, `test_github_workbench_dry_run.py`; practice repository `test_practice_repository.py`, `test_github_workbench_practice.py` |
 | GH-R-088 | Should | Partly | The GitHub features listed in 22.1, each as the coverage gate schedules it | Ongoing: the 22.1 features are the 43 open rows of complete.md 1.3. |
 
@@ -165,7 +163,7 @@ Of the 100 live requirements, 82 are met, 11 are partly met and 7 are not met. G
 | GH-R-102 | Must | Met | Alt+F1 glossary, Ctrl+F1 guide chapter, Ctrl+Shift+F1 Search Help | `test_alt_f1_explains_the_word_for_the_row`, `test_a_chapter_topic_opens_the_guide`, `test_search_help_finds_places_commands_words_and_tasks` |
 | GH-R-103 | Must | Met | Empty states, greyed rows, previews and errors carry help | (sampled) `test_an_empty_list_says_why`, `test_placeholders_explain_themselves_and_are_greyed`, greyed rows with reasons (020); every coded error having help not checked |
 | GH-R-104 | Must | Met | GATE-GITHUB-HELP at zero and the help tests of D10 green | `tests/unit/tools/test_github_help_audit.py` passes (inventory matches, nothing missing, catalogue has no gaps), with the window help tests |
-| GH-R-105 | Should | Partly | The GitHub tutorials of D8 | One GitHub lesson (practice repository) in docs/user guide/tutorials.md; D8 plans eleven, and there is no Help > Tutorials. |
+| GH-R-105 | Should | Partly | The GitHub tutorials of D8 | Help > Tutorials (Ctrl+F2) goes to Help and Learning > Tutorials; ten of D8's eleven lessons are in the GitHub track (`quill/core/tutorials/github_lessons.py`, `github_lessons_more.py`; `tests/unit/core/github_workbench/test_github_more_lessons.py`). Left: the branch rule lesson, because the Workbench cannot yet make a ruleset or branch protection on one repository (its Rules page is read only). |
 | GH-R-106 | Must | Met | Help and Learning in the tree, with every node of D11 | Help and Learning has Start Here, Do Something, The Guide, Words, Keys, Tutorials (the GitHub lessons with progress; open in the Tutorials window or walk here), What Changed, Tips (QUILLBert's, keys checked against the bindings) and Ask a Person (`workbench_tree.py`; `workbench_learning.py`; `test_github_workbench_learning.py`). |
 | GH-R-107 | Must | Met | Take Me There and Walk Me Through It on every help topic and task; Do It where the answer is one command | Take Me There, Walk Me Through It (`quill/core/workbench/walk.py`; the shared frame's `start_walk`, F1 repeats, Shift+F1 lists, Escape stops) and Do It where the task is one command (`workbench_help.DO_IT`, greyed otherwise) on every Do Something task (`test_github_workbench_walk.py`). |
 | GH-R-108 | Must | Met | Shift+F9 Explain That for every result, and Why? on every automatic behaviour | Shift+F9 Explain That (`workbench_window_menu.py`, frame `explain_result`), and Why? on what happens on its own: a watch, a notification, a filter applied locally (`quill/core/github/why.py`, `github_workbench_why.py`), listed first by Shift+F1; greyed commands and read-only fields already say why (`test_github_workbench_why.py`). |
@@ -210,7 +208,7 @@ Of the 100 live requirements, 82 are met, 11 are partly met and 7 are not met. G
 | GH-R-140 | Must | Met | Teams are created, edited, nested, filled, given repository and project roles, and deleted, from the Team... | New Team and Delete Team (`quick_tables.py`), Team sheet (`sheets_orgs.py`), members and repositories through `access.py`; `api_coverage` marks POST/PATCH/DELETE /orgs/{org}/teams covered. Team creation itself has no test of its own. |
 | GH-R-141 | Must | Met | Team code review assignment is readable and editable | `test_team_code_review_is_one_mutation_with_every_setting` |
 | GH-R-142 | Should | Met | Batch membership and batch repository roles across teams | Bulk Access Changes (`access.bulk_plan`) for team memberships and team repositories; `tests/unit/ui/test_github_workbench_requirement_checks.py::test_bulk_team_membership_and_its_removal` |
-| GH-R-143 | Should | Partly | People > My Teams and team review requests in Needs My Attention | People > My Teams (`load_teams`, "teams:mine"); team review requests are a filter attribute but are not in Needs My Attention. |
+| GH-R-143 | Should | Met | People > My Teams and team review requests in Needs My Attention | People > My Teams (`load_teams`, "teams:mine"); Needs My Attention > Review Requests and the Inbox search `user-review-requested:` and `review-requested:`, and a row only the second finds is marked "team review request" (`quill/core/github/review_requests.py`; `tests/unit/core/github_workbench/test_github_team_review_requests.py`). The search cannot say which team; the pull request's sheet names it. |
 
 ### E16. Across repositories
 

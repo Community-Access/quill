@@ -11,7 +11,8 @@
   Undo on any row GitHub allows, Copy, Save as CSV, Clear.
 - **Roles and Access:** My Access Here, View As Role, Compare Roles, Why Can't
   They?, Access Review (the access matrix, as CSV too), Bulk Access Changes
-  (previewed, a result per change) and this account's Workbench level.
+  (previewed, a result per change), Access Templates and Apply Access
+  Template (GH-R-068) and this account's Workbench level.
 - **Access pages:** Add..., Change Role... and Remove on a sheet's list, each
   previewed in words, refused when it would lock you out (18.4), and recorded.
 """
@@ -46,6 +47,7 @@ from quill.core.github.permissions import (
     missing_scopes,
     scope_rows,
 )
+from quill.ui.github_workbench_access_templates import GitHubWorkbenchAccessTemplatesMixin
 from quill.ui.github_workbench_invitations import GitHubWorkbenchInvitationsMixin
 
 __all__ = ["GitHubWorkbenchToolsMixin"]
@@ -61,6 +63,8 @@ _TOOLS = frozenset({
     "why_cant_they",
     "access_matrix",
     "bulk_access",
+    "access_templates",  # GH-R-068: github_workbench_access_templates.py
+    "apply_access_template",
     "account_level",
 })
 _TABLE_SCOPES = {
@@ -80,7 +84,9 @@ def _table_command(key: str, verb: str) -> str:
     return f"{_P}access_{verb}" if key in _ACCESS_LISTS else ""
 
 
-class GitHubWorkbenchToolsMixin(GitHubWorkbenchInvitationsMixin):
+class GitHubWorkbenchToolsMixin(
+    GitHubWorkbenchInvitationsMixin, GitHubWorkbenchAccessTemplatesMixin
+):
     """Filter Builder, permissions, history and access, for the GitHub provider."""
 
     items: Any

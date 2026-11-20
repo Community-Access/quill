@@ -434,3 +434,116 @@ These are never done from a sentence, because they send, delete, sign in, change
 - Say or Type a Command: the Help menu, Alt+F11.
 - Suggest a Station: the AI menu.
 - Update the Station Catalogue: the Stations menu.
+
+## The GitHub Workbench
+
+20 commands can be asked for in a sentence here.
+
+### The GitHub Workbench: Account
+
+- **Change History (Ctrl+Shift+H).** See every change I made from the Workbench.
+  Say: "show change history"; "what did i change"; "list my changes".
+- **GitHub API Rate Limit (Ctrl+Shift+L).** Hear how many GitHub requests I have left.
+  Say: "how much rate limit is left"; "say the rate limit"; "am i near the api limit".
+- **GitHub Permissions (Ctrl+Shift+P).** See what my GitHub sign-in may do.
+  Say: "what permissions do i have"; "show my token scopes"; "github permissions".
+
+### The GitHub Workbench: File
+
+- **New Here (Ctrl+N).** Make something new where I am, such as an issue in Issues; nothing is sent until I press OK.
+  Say: "new issue"; "file a bug"; "make something new here".
+
+### The GitHub Workbench: Go
+
+- **Actions Runs (Ctrl+Shift+4).** List this repository's workflow runs.
+  Say: "show the workflow runs"; "list the actions runs"; "go to runs".
+- **Current Repository (Ctrl+2).** Go to the repository I am working in.
+  Say: "go to the repository"; "back to this repository"; "show the repository".
+- **Inbox (Ctrl+1).** See everything waiting on me across GitHub.
+  Say: "show my inbox"; "what needs my attention"; "what is waiting for me".
+- **Issues (Ctrl+Shift+1).** List this repository's issues.
+  Say: "show the issues"; "list the open issues"; "go to issues".
+- **Projects (Ctrl+6).** List my project boards.
+  Say: "show my projects"; "go to projects"; "list my project boards".
+- **Pull Requests (Ctrl+Shift+2).** List this repository's pull requests.
+  Say: "show the pull requests"; "list pull requests"; "go to pull requests".
+- **Search (Ctrl+3).** Search all of GitHub.
+  Say: "search github"; "go to search"; "look for something on github".
+
+### The GitHub Workbench: Help
+
+- **Tutorials (Ctrl+F2).** Learn GitHub with a short lesson.
+  Say: "open the tutorials"; "show me the lessons"; "teach me github".
+
+### The GitHub Workbench: Item
+
+- **What Failed (Ctrl+Shift+W).** Read why the selected run failed.
+  Say: "what failed"; "why did the run fail"; "show me the failure".
+
+### The GitHub Workbench: Tools
+
+- **Dry Run (Ctrl+Alt+D).** Practise a change without sending it to GitHub.
+  Say: "turn dry run on or off"; "practice without sending"; "toggle dry run".
+- **GitHub API Console (Ctrl+Shift+J).** Ask GitHub anything it has an API for.
+  Say: "open the api console"; "make an api request"; "github api console".
+- **Plain-Language Batch.** Change many issues or pull requests by saying it in words, checked before it is sent.
+  Say: "plain language batch"; "change many issues in words"; "do a batch change by sentence".
+
+### The GitHub Workbench: View
+
+- **Refresh (F5).** Get the latest from GitHub for this list.
+  Say: "refresh"; "reload this list"; "get the latest".
+- **Say Counts (Alt+4).** Hear how many rows this list has.
+  Say: "how many are there"; "say the counts"; "count the rows".
+- **Where Am I (Alt+1).** Hear where I am in the Workbench.
+  Say: "where am i"; "say where i am"; "what place is this".
+
+### The GitHub Workbench: Window
+
+- **Switch to Editor (Ctrl+Shift+E).** Go back to my document.
+  Say: "back to the editor"; "switch to my document"; "go to the editor".
+
+## The WordPress Workbench
+
+13 commands can be asked for in a sentence here.
+
+### The WordPress Workbench: Edit
+
+- **Change History (Ctrl+Shift+H).** See every change I made from the Workbench.
+  Say: "show change history"; "what did i change"; "list my changes".
+
+### The WordPress Workbench: Go
+
+- **Comments (Ctrl+Shift+4).** List this site's comments.
+  Say: "show the comments"; "list comments"; "go to comments".
+- **Current Site (Ctrl+2).** Go to the site I am working on.
+  Say: "go to the site"; "back to this site"; "show the site".
+- **Media (Ctrl+Shift+3).** List this site's pictures and files.
+  Say: "show the media"; "list the pictures"; "go to media".
+- **Needs My Attention (Ctrl+1).** See what waits on every connected site.
+  Say: "what needs my attention"; "show what is waiting"; "go to needs my attention".
+- **Pages (Ctrl+Shift+2).** List this site's pages.
+  Say: "show the pages"; "list pages"; "go to pages".
+- **Posts (Ctrl+Shift+1).** List this site's posts.
+  Say: "show the posts"; "list posts"; "go to posts".
+- **Site Health (Ctrl+Shift+9).** See what is wrong with this site.
+  Say: "show site health"; "is the site healthy"; "go to site health".
+
+### The WordPress Workbench: Tools
+
+- **Plain-Language Batch (Ctrl+Alt+B).** Change many posts or comments by saying it in words, checked before it is sent.
+  Say: "plain language batch"; "change many posts in words"; "do a batch change by sentence".
+- **REST Console (Ctrl+Shift+T).** Ask the site anything its REST API answers.
+  Say: "open the rest console"; "make a rest request"; "wordpress rest console".
+
+### The WordPress Workbench: View
+
+- **Refresh (F5).** Get the latest from the site for this list.
+  Say: "refresh"; "reload this list"; "get the latest".
+- **Where Am I (Alt+1).** Hear where I am in the Workbench.
+  Say: "where am i"; "say where i am"; "what place is this".
+
+### The WordPress Workbench: Window
+
+- **Switch to Editor (Ctrl+Shift+E).** Go back to my document.
+  Say: "back to the editor"; "switch to my document"; "go to the editor".

@@ -45,7 +45,7 @@ from quill.core.github.workbench_view_menu import (
     SORT_SUB,
     STATE_SUB,
 )
-from quill.core.workbench.menus import MenuRow, MenuSpec, rows
+from quill.core.workbench.menus import MenuRow, MenuSpec, command_key_rows, rows
 
 __all__ = [
     "ALIAS_KEYS",
@@ -468,6 +468,7 @@ _HELP = MenuSpec(
             "Shift+F1",
             "Every action for the selection, its key, and why any is greyed.",
         ),
+        *command_key_rows(_P),  # F11 and Ctrl+Alt+Shift+F1, as in every family app
         _row("glossary", "What &Is This?", "Alt+F1", "The GitHub word for this row, explained."),
         _row(
             "guide_chapter",
@@ -480,6 +481,12 @@ _HELP = MenuSpec(
             "&Search Help...",
             "Ctrl+Shift+F1",
             "Type a few words to find a help topic, a command or a GitHub word.",
+        ),
+        _row(
+            "help_tutorials",
+            "&Tutorials",
+            "Ctrl+F2",
+            "The GitHub lessons, each on the practice repository, with what you have done.",
         ),
         _row(
             "practice",
@@ -553,6 +560,7 @@ GO_NODES: dict[str, tuple[str, str]] = {
     f"{_P}go_security": ("repository", "security"),
     f"{_P}go_settings": ("repository", "settings"),
     f"{_P}go_insights": ("repository", "insights"),
+    f"{_P}help_tutorials": ("", "help_tutorials"),  # Help > Tutorials (GH-R-105)
 }
 """Where each Go row lands: (template, node key); a template node is the current repository's."""
 

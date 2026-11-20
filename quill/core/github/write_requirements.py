@@ -202,6 +202,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}copy_template": ("repo:write", _V),
     f"{_P}account_level": ("local", _O),
     f"{_P}bulk_access": ("repo:admin", _A),
+    f"{_P}access_templates": ("local", _O),  # this device's templates only
+    f"{_P}apply_access_template": ("repo:admin", _A),
     f"{_P}access_add": ("repo:admin", _A),
     f"{_P}access_change": ("repo:admin", _A),
     f"{_P}access_remove": ("repo:admin", _D),
