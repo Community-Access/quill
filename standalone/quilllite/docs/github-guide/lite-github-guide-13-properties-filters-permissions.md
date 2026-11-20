@@ -263,6 +263,31 @@ someone else's organization. Organize allows labels, assignees, comments and
 the like, but not access, settings or deleting. Full allows everything your
 access allows. Safe Mode makes every account Read Only.
 
+### The smallest permissions that would do
+
+**Account > Roles and Access > Least Privilege Advice...** is a report: it
+changes no token and no setting. It is based on what the Workbench saw this
+account do on this computer: the kinds of request it sent (never which
+repository or person), the changes that passed the Workbench level check and
+how far each reached, Change History, the scopes GitHub names for a classic
+token, and every time GitHub refused a request and said which permission it
+wanted. From those it suggests:
+
+- the smallest Workbench level that covers what you did (Read Only, Organize
+  or Full);
+- for a classic token, the scopes that are enough, the ones it has that were
+  never used, and a broad scope where a narrower one would do, with a link to
+  GitHub's new-token page with just those checked;
+- for a fine-grained token, the permissions by GitHub's own names, read-only
+  or read and write, and what no fine-grained token can reach.
+
+It then says what it cannot know. It saw only this computer's use, not
+another computer, the `gh` command or GitHub's website. GitHub does not list a
+fine-grained token's exact permissions, so the report can say only what
+worked and what was refused. And it cannot tell whether a repository is
+private, so `repo` is suggested only where that would matter. To change a
+token, use GitHub's Settings, Developer settings.
+
 ### Who else has access
 
 A repository's sheet has an Access page: the people with access, the teams,

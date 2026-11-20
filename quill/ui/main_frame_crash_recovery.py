@@ -448,7 +448,7 @@ class CrashRecoveryMixin:
                 else:
                     self._location_ring.record(0)
                 self._refresh_title()
-                status = "Recovered latest autosave snapshot"
+                status = _recovered_sentence(offer.snapshot)
                 if had_replacements:
                     status += " (some bytes replaced — check notifications)"
                 self._set_status(status)
@@ -456,3 +456,21 @@ class CrashRecoveryMixin:
                 return
         finally:
             dialog.Destroy()
+
+
+def _recovered_sentence(snapshot: Path) -> str:
+    """What a crash recovery ends with: from when, and that it is not saved (FUX-04).
+
+    The same sentence QUILL Lite says after restoring one document
+    (:func:`quill.core.action_feedback.recovered_result`), so the two editors
+    describe a recovered draft identically.
+    """
+    from datetime import datetime
+
+    from quill.core.action_feedback import recovered_result
+
+    try:
+        when: datetime | None = datetime.fromtimestamp(Path(snapshot).stat().st_mtime)
+    except (OSError, ValueError):
+        when = None
+    return recovered_result(["the autosaved document"], asked=1, when=when)
