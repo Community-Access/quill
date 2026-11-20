@@ -27,9 +27,8 @@ import re
 import subprocess
 import threading
 import uuid
-from collections import deque
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -37,7 +36,7 @@ from quill.core import http_client
 from quill.core import paths as _paths
 from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.error_codes import CodedError
-from quill.core.radio import radio_logging, recording_outcome, recording_report
+from quill.core.radio import radio_logging, recording_job, recording_outcome, recording_report
 from quill.core.radio.local_clock import local_now
 from quill.core.radio.models import _coerce_int, is_somafm_url
 from quill.core.radio.recording_commands import (
@@ -53,6 +52,7 @@ from quill.core.radio.recording_commands import (
     uniquify,
 )
 from quill.core.radio.recording_exact import apply_exact_optilab
+from quill.core.radio.recording_job import JobSnapshot, RecordingJob
 from quill.core.radio.recording_join import describe_join, join_recording_parts
 from quill.core.radio.recording_liveness import await_stop as _await_stop
 from quill.core.radio.recording_liveness import wait_for_exit
@@ -103,6 +103,15 @@ class RecordingError(CodedError):
     """A recording could not be started or ffmpeg is unavailable."""
 
     code = "QUILL-RADIO-RECORDING-FAILED"
+
+
+class RecordingCancelledError(RecordingError):
+    """A start was abandoned before it registered, because the work it was for
+    was withdrawn meanwhile: Stop or Stop All reached a reconnect while it was
+    handing off to its continuation, or the schedule entry that asked for it
+    was deleted or changed while ffmpeg was being prepared."""
+
+    code = "QUILL-RADIO-RECORDING-CANCELLED"
 
 
 class RecordingLimitError(RecordingError):
@@ -208,101 +217,6 @@ class RecordingSettings:
             # 0 (unlimited) is the floor -- a negative saved value coerces to it.
             max_concurrent_recordings=max(0, _coerce_int(data.get("max_concurrent_recordings"), 0)),
             split_at_song_changes=bool(data.get("split_at_song_changes", False)),
-        )
-
-
-@dataclass(slots=True)
-class JobSnapshot:
-    """An immutable, lock-free view of one active recording.
-
-    The multi-recording replacement for the recorder's old scalar
-    ``current_*`` getters: :meth:`RadioRecorder.active_jobs` returns one of
-    these per running recording so the Recordings list, the resume marker, and
-    the tray can each see every capture, not just "the" one.
-    """
-
-    job_id: str
-    station_name: str
-    stream_url: str
-    destination: Path
-    final_destination: Path
-    started_at: datetime
-    minutes: int
-    filter_graph: str
-    entry_id: str = ""
-    #: True when the listener asked for this length, false when ``minutes`` is
-    #: ``settings.max_duration_minutes`` standing in as a safety cap. Only the
-    #: first kind may be counted down to -- see ``radio.recording_progress``,
-    #: which explains why showing "142 min left" to somebody who pressed Record
-    #: Now announces an intention they never expressed.
-    duration_requested: bool = False
-
-
-@dataclass
-class RecordingJob:
-    """Everything one in-flight recording owns (concurrent recording).
-
-    One recording == one job. Each job has its own ffmpeg process, its own
-    recent-stderr tail (so two recordings can never cross-contaminate each
-    other's fatal/transient reconnect verdict), its own reconnect counter and
-    user-stopped flag, and its own Windows kill-on-close handle. Jobs live in
-    :attr:`RadioRecorder._jobs` keyed by :attr:`job_id`. A reconnect reuses the
-    same ``job_id`` (and the original ``started_at``/``scheduled_end``) so the
-    Recordings row and the resume marker keep a stable identity across a drop.
-    """
-
-    job_id: str
-    process: subprocess.Popen[bytes]
-    destination: Path
-    final_destination: Path
-    station_name: str
-    stream_url: str
-    settings: RecordingSettings
-    minutes: int
-    filter_graph: str
-    extension: str
-    started_at: datetime
-    scheduled_end: datetime
-    entry_id: str = ""
-    #: Carried onto every snapshot; see ``JobSnapshot.duration_requested``. A
-    #: continuation inherits it rather than re-deriving it, because a reconnect
-    #: is handed the *remaining* minutes as an explicit duration and would
-    #: otherwise promote an open-ended capture into one with a deadline.
-    duration_requested: bool = False
-    #: The exact-OptiLab pass to run over the finished file, or None (the
-    #: default) for "leave it as recorded". Carried on the job, not read from
-    #: settings at the end, so a recording is post-processed the way it was
-    #: started even if the listener changes their settings while it runs.
-    exact: ExactOptilab | None = None
-    #: Recent ffmpeg stderr (R4/13.3), inspected on a drop to decide fatal vs
-    #: transient. Per-job so a second recording's stderr never poisons this
-    #: job's verdict.
-    stderr_tail: deque[str] = field(default_factory=lambda: deque(maxlen=32))
-    #: Guards ``stderr_tail`` -- the drain thread appends/clears it while
-    #: _monitor snapshots it, so both sides take this to avoid a "deque mutated
-    #: during iteration" RuntimeError. (self._lock does not cover it: the drain
-    #: thread never holds self._lock.)
-    stderr_lock: threading.Lock = field(default_factory=threading.Lock)
-    #: Windows kill-on-close job handle (R4/13.5); one per recording.
-    win_job: object | None = None
-    reconnect_attempt: int = 0
-    #: The stderr drain thread; _monitor lets it finish so ffmpeg's last words
-    #: (which say whether the stream dropped) are in the tail before it is read.
-    drain: threading.Thread | None = None
-    user_stopped: bool = False
-
-    def snapshot(self) -> JobSnapshot:
-        return JobSnapshot(
-            job_id=self.job_id,
-            station_name=self.station_name,
-            stream_url=self.stream_url,
-            destination=self.destination,
-            final_destination=self.final_destination,
-            started_at=self.started_at,
-            minutes=self.minutes,
-            filter_graph=self.filter_graph,
-            entry_id=self.entry_id,
-            duration_requested=self.duration_requested,
         )
 
 
@@ -479,6 +393,8 @@ class RadioRecorder:
         _started_at: datetime | None = None,
         _scheduled_end: datetime | None = None,
         _duration_requested: bool | None = None,
+        _predecessor: RecordingJob | None = None,
+        admit: Callable[[], bool] | None = None,
     ) -> Path:
         """Start recording *stream_url* as a new concurrent job; returns where
         ffmpeg is writing. Raises :class:`RecordingError` if ffmpeg is
@@ -498,7 +414,19 @@ class RadioRecorder:
         ``_``-prefixed parameters are internal to the reconnect
         path: a continuation reuses the dropped recording's ``_job_id`` and its
         original ``_started_at``/``_scheduled_end`` so identity and the
-        remaining-time math survive a drop.
+        remaining-time math survive a drop. ``_predecessor`` is the dropped job
+        itself: the continuation inherits its deadline and planned length, and
+        is abandoned if Stop reached the predecessor at any point up to the
+        moment the continuation registers (the hand-off is atomic, so Stop All
+        can never fall between the two).
+
+        ``admit`` is asked, under the recorder's lock at the moment the new job
+        would register (and at each slow step before that), whether this start
+        is still wanted; ``False`` abandons it with
+        :class:`RecordingCancelledError`. The scheduler uses it so a schedule
+        deleted during a slow start never records. Lock order: the recorder's
+        lock is taken first, so ``admit`` may take its own lock but must never
+        call back into the recorder.
         """
         if is_somafm_url(stream_url):
             raise RecordingError(
@@ -516,8 +444,24 @@ class RadioRecorder:
         )
 
         def _at_cap() -> bool:
+            # Caller holds self._lock. A recording waiting to reconnect still
+            # owns its slot (it is a recording the listener has not stopped,
+            # only paused by the network), so it counts: otherwise a second
+            # start takes the slot and the continuation then exceeds the cap.
+            live = sum(1 for j in self._jobs.values() if j.process.poll() is None)
+            return live + len(self._reconnect_pending) >= cap
+
+        def _abandoned() -> bool:
             # Caller holds self._lock.
-            return sum(1 for j in self._jobs.values() if j.process.poll() is None) >= cap
+            if _predecessor is not None and _predecessor.user_stopped:
+                return True
+            return admit is not None and not admit()
+
+        def _check_abandoned() -> None:
+            with self._lock:
+                gone = _abandoned()
+            if gone:
+                raise RecordingCancelledError("The recording was cancelled before it started.")
 
         # Cheap pre-check so we don't do ~10s of ffprobe/spawn work only to refuse
         # (the authoritative re-check happens under the lock at insert time). The
@@ -538,6 +482,7 @@ class RadioRecorder:
         # durable page URL (identity, reconnects, the resume marker); only ffmpeg
         # sees the short-lived one. A non-YouTube URL passes straight through.
         capture_url = _resolve_capture_url(stream_url)
+        _check_abandoned()
         dest_root = Path(settings.destination_root) if settings.destination_root else _default_dir()
         try:
             dest_root.mkdir(parents=True, exist_ok=True)
@@ -586,6 +531,7 @@ class RadioRecorder:
         else:
             extension = settings.format
             record_filter = filter_graph
+        _check_abandoned()
         # Reserve the output name(s) under the lock, consulting both the disk and
         # other still-starting jobs, so two same-name recordings never collide in
         # the window before either file exists. Reservations are released in
@@ -603,9 +549,15 @@ class RadioRecorder:
                 reserved_here.append(destination)
             else:
                 destination = final_destination
-        minutes = (
+        # This part's length (what ffmpeg is told) and the recording's planned
+        # length are different numbers for a continuation: the part is the
+        # remaining time, while the recording is still the show it was. The
+        # job and its snapshots carry the planned length, so a display or a
+        # resume marker built from them describes the whole recording.
+        part_minutes = (
             duration_minutes if duration_minutes is not None else settings.max_duration_minutes
         )
+        minutes = _predecessor.minutes if _predecessor is not None else part_minutes
         # Whether that length is a decision or a safety cap. A continuation
         # passes the original answer in, because it is always handed an
         # explicit `duration_minutes` (the remaining time) and re-deriving it
@@ -620,7 +572,7 @@ class RadioRecorder:
             destination,
             format=settings.format,
             bitrate_kbps=settings.bitrate_kbps,
-            duration_seconds=max(60, minutes * 60),
+            duration_seconds=max(60, part_minutes * 60),
             reconnect_delay_max=(
                 settings.reconnect_wait_seconds if settings.reconnect_enabled else 0
             ),
@@ -632,6 +584,11 @@ class RadioRecorder:
         if os.name == "nt":
             extra_kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
         logger.info("Starting radio recording: %s", format_args_for_log(args))
+        try:
+            _check_abandoned()
+        except RecordingCancelledError:
+            self._release_reserved(reserved_here)
+            raise
         try:
             # stderr is a PIPE (not DEVNULL) so a drain thread can log
             # ffmpeg's own diagnostics (quill-radio #4/#5) -- and so the OS
@@ -663,6 +620,15 @@ class RadioRecorder:
             if (is_continuation and _scheduled_end is not None)
             else started_at + timedelta(minutes=minutes)
         )
+        # The deadline proper: elapsed time on the monotonic clock, plus the
+        # same end as an absolute UTC moment for display. Inherited unchanged
+        # by a continuation; never derived from the local wall clock.
+        if _predecessor is not None and _predecessor.deadline is not None:
+            deadline = _predecessor.deadline
+            ends_at = _predecessor.ends_at
+        else:
+            deadline = recording_job.monotonic() + minutes * 60
+            ends_at = recording_job.utc_now() + timedelta(minutes=minutes)
         job = RecordingJob(
             job_id=job_id,
             process=process,
@@ -680,6 +646,8 @@ class RadioRecorder:
             duration_requested=duration_requested,
             win_job=win_job,
             reconnect_attempt=_continuation_part,
+            deadline=deadline,
+            ends_at=ends_at,
             # Raw capture is never decoded, so it can never be post-processed
             # without ceasing to be a raw capture. Dropped here rather than in
             # the caller so every entry point gets the same answer.
@@ -688,13 +656,20 @@ class RadioRecorder:
         # Authoritative cap re-check + registration under the lock. If another
         # start won the last slot while we were spawning, kill the process we just
         # started and refuse, so the cap is never exceeded.
+        # A continuation registers in the same critical section that retires
+        # its predecessor from the reconnect-pending set, so at every instant
+        # one of the two is visible to stop()/stop_all()/shutdown().
+        refusal: RecordingError | None = None
         with self._lock:
-            if not is_continuation and cap and _at_cap():
-                lost_race = True
+            if _abandoned():
+                refusal = RecordingCancelledError("The recording was cancelled before it started.")
+            elif not is_continuation and cap and _at_cap():
+                refusal = RecordingLimitError(cap_message)
             else:
                 self._jobs[job_id] = job
-                lost_race = False
-        if lost_race:
+                if _predecessor is not None and self._reconnect_pending.get(job_id) is _predecessor:
+                    del self._reconnect_pending[job_id]
+        if refusal is not None:
             try:
                 process.terminate()
             except OSError:
@@ -702,7 +677,7 @@ class RadioRecorder:
             if win_job is not None:
                 close_job_handle(win_job)
             self._release_reserved(reserved_here)
-            raise RecordingLimitError(cap_message)
+            raise refusal
         if not is_continuation:
             self._openings.begin(job_id, stream_url, capture_url)
         self._songs.connection(
@@ -814,8 +789,33 @@ class RadioRecorder:
             # per recording.
             win_job = job.win_job
             job.win_job = None
+            if failed and not fatal and job.settings.reconnect_enabled:
+                # From the instant its process is gone, a recording that may
+                # reconnect is pending: Stop All can reach it, and it keeps its
+                # concurrency slot, with no gap before _maybe_reconnect runs.
+                self._reconnect_pending[job.job_id] = job
         if win_job is not None:
             close_job_handle(win_job)
+        try:
+            self._finish_part(job, failed=failed, fatal=fatal, tail_snapshot=tail_snapshot)
+        finally:
+            # However this part ended -- no reconnect, a refused or cancelled
+            # continuation, or an exception -- it no longer holds a slot. A
+            # continuation that registered has already retired this entry.
+            with self._lock:
+                if self._reconnect_pending.get(job.job_id) is job:
+                    del self._reconnect_pending[job.job_id]
+
+    def _finish_part(
+        self,
+        job: RecordingJob,
+        *,
+        failed: bool,
+        fatal: bool,
+        tail_snapshot: list[str],
+    ) -> None:
+        """Everything after one part's ffmpeg has exited: move it home, report
+        an empty capture, reconnect or finalize (split out of ``_monitor``)."""
         # Move the finished file from the temp dir to its home (#5). Done for
         # both a clean stop and a failed/partial recording, so a partial is
         # never stranded in temp -- it lands where the user looks for it, then
@@ -930,9 +930,18 @@ class RadioRecorder:
         continuation file (reusing the same job id), up to the attempt budget.
 
         R4/13.1: a continuation records only the *remaining* time to the
-        original scheduled end (``job.scheduled_end``), never a fresh full
-        duration -- a 60-minute show that drops at minute 50 records a ~10
-        minute continuation, not another 60.
+        original end, never a fresh full duration -- a 60-minute show that
+        drops at minute 50 records a ~10 minute continuation, not another 60.
+        "Remaining" is measured on the monotonic clock (``job.deadline``), so a
+        time-zone or daylight-saving change during the recording cannot
+        stretch or shrink it.
+
+        The job stays in ``_reconnect_pending`` from the moment its process
+        exited (``_monitor``) until its continuation registers in ``_jobs`` --
+        through the wait, the YouTube resolve, the probe and the spawn -- so a
+        Stop or Stop All at any point in the hand-off reaches it and the
+        continuation is abandoned. While pending it also keeps its concurrency
+        slot.
 
         Returns whether a continuation actually started. ``False`` means this
         recording is over, which is the recorder's cue to finalize -- and so to
@@ -941,16 +950,10 @@ class RadioRecorder:
         if not settings.reconnect_enabled:
             return False
         attempt = job.reconnect_attempt + 1
-        scheduled_end = job.scheduled_end
-        # R4/13.1: remaining minutes to the absolute end, floored at 1 so a
-        # reconnect that fires just before the end still records something; a
-        # drop discovered after the scheduled end gives up (the show is over).
-        if scheduled_end is None:
-            remaining = settings.max_duration_minutes
-        else:
-            # Same clock basis as started_at/scheduled_end (local_now),
-            # so the remaining-minutes math stays consistent across a zone change.
-            remaining = math.ceil((scheduled_end - local_now()).total_seconds() / 60)
+        # R4/13.1: remaining minutes to the deadline, rounded up so a reconnect
+        # that fires just before the end still records something; a drop
+        # discovered after the end gives up (the show is over).
+        remaining = math.ceil(job.seconds_left() / 60)
         if remaining <= 0:
             logger.info(
                 "Radio recording of %s dropped past its scheduled end; not reconnecting.",
@@ -964,6 +967,11 @@ class RadioRecorder:
                 attempt - 1,
             )
             return False
+        with self._lock:
+            if job.user_stopped:
+                return False
+            # Normally already registered by _monitor; idempotent either way.
+            self._reconnect_pending[job.job_id] = job
         self._on_reconnect(attempt, settings.reconnect_max_attempts)
         logger.info(
             "Radio recording of %s dropped; reconnect attempt %d/%d in %ds (remaining %d min).",
@@ -973,18 +981,8 @@ class RadioRecorder:
             settings.reconnect_wait_seconds,
             remaining,
         )
-        # Register as reconnect-pending *before* the wait so a Stop/Stop All/
-        # shutdown during the delay can cancel it: the job is no longer in
-        # self._jobs (its process died), so without this stop() could not set
-        # user_stopped and a continuation would start anyway.
+        recording_job.reconnect_wait(max(1, settings.reconnect_wait_seconds))
         with self._lock:
-            if job.user_stopped:
-                return False
-            self._reconnect_pending[job.job_id] = job
-        stop_signal = threading.Event()
-        stop_signal.wait(max(1, settings.reconnect_wait_seconds))
-        with self._lock:
-            self._reconnect_pending.pop(job.job_id, None)
             existing = self._jobs.get(job.job_id)
             if job.user_stopped:
                 return False
@@ -993,17 +991,16 @@ class RadioRecorder:
                 # owns the finalize (and so the join), not this one.
                 return True
         # Recompute the remaining time *after* the wait: the value computed
-        # before the sleep is stale by up to reconnect_wait_seconds, so using it
-        # would overshoot the scheduled end. Give up if the show ended meanwhile.
-        if scheduled_end is not None:
-            remaining = math.ceil((scheduled_end - local_now()).total_seconds() / 60)
-            if remaining <= 0:
-                logger.info(
-                    "Radio recording of %s dropped past its scheduled end during the "
-                    "reconnect wait; not reconnecting.",
-                    job.station_name,
-                )
-                return False
+        # before it is stale by up to reconnect_wait_seconds, so using it would
+        # overshoot the end. Give up if the show ended meanwhile.
+        remaining = math.ceil(job.seconds_left() / 60)
+        if remaining <= 0:
+            logger.info(
+                "Radio recording of %s dropped past its scheduled end during the "
+                "reconnect wait; not reconnecting.",
+                job.station_name,
+            )
+            return False
         try:
             self.start(
                 station_name=job.station_name,
@@ -1019,7 +1016,11 @@ class RadioRecorder:
                 _started_at=job.started_at,
                 _scheduled_end=job.scheduled_end,
                 _duration_requested=job.duration_requested,
+                _predecessor=job,
             )
+        except RecordingCancelledError:
+            logger.info("Reconnect of %s cancelled by Stop during hand-off.", job.station_name)
+            return False
         except RecordingError as error:
             logger.warning("Reconnect attempt %d could not start: %s", attempt, error)
             job.reconnect_attempt = attempt

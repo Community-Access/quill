@@ -6,12 +6,12 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from pathlib import Path
 
+from quill.core.radio.recording_missed import missed_occurrences
 from quill.core.radio.recording_schedule import (
     RecordingScheduleEntry,
     due_entries,
     is_due,
     load_schedule,
-    missed_occurrences,
     new_id,
     next_occurrence,
     save_schedule,
@@ -118,7 +118,7 @@ def test_missed_occurrences_weekly_only_on_its_weekday() -> None:
 
 
 def test_describe_missed_summary_and_empty() -> None:
-    from quill.core.radio.recording_schedule import describe_missed
+    from quill.core.radio.recording_missed import describe_missed
 
     assert describe_missed([]) == ""
     entry = _entry(station_name="WQXR", recurrence="once", run_at="2026-07-14T08:00:00")

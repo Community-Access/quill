@@ -37,6 +37,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from quill.core.radio.recording import (
     RadioRecorder,
+    RecordingCancelledError,
     RecordingError,
     RecordingLimitError,
     RecordingSettings,
@@ -325,111 +326,6 @@ def remaining_minutes(entry: RecordingScheduleEntry, now: datetime) -> int:
     return max(1, left)
 
 
-#: Cap the missed-occurrence look-back so a long-dormant install (or an empty
-#: "last seen") never reports months of daily occurrences at once (#4).
-_MAX_MISSED_LOOKBACK_DAYS = 62
-
-
-def _occurrences_between(
-    entry: RecordingScheduleEntry, since_abs: datetime, now_abs: datetime
-) -> list[datetime]:
-    """Absolute moments *entry* would have fired in ``(since_abs, now_abs]``.
-
-    Interprets the entry's wall-clock time in its own zone (local when unset),
-    the same frame :func:`is_due` uses. An occurrence on or before
-    ``last_fired_date`` is treated as already handled and skipped.
-    """
-    zone = _entry_zone(entry)
-    if entry.recurrence == "once":
-        if entry.last_fired_date:
-            return []
-        try:
-            target = datetime.fromisoformat(entry.run_at)
-        except ValueError:
-            return []
-        if zone is not None and target.tzinfo is None:
-            target = target.replace(tzinfo=zone)
-        target_abs = _to_absolute(target)
-        return [target_abs] if since_abs < target_abs <= now_abs else []
-    time_of_day = _time_of_day(entry.run_at)
-    if time_of_day is None:
-        return []
-    hour, minute = time_of_day
-    # Walk each calendar date in the entry's zone across the window.
-    start_local = since_abs.astimezone(zone) if zone is not None else since_abs.astimezone()
-    end_local = now_abs.astimezone(zone) if zone is not None else now_abs.astimezone()
-    day = start_local.date()
-    last_day = end_local.date()
-    if (last_day - day).days > _MAX_MISSED_LOOKBACK_DAYS:
-        day = last_day - timedelta(days=_MAX_MISSED_LOOKBACK_DAYS)
-    occurrences: list[datetime] = []
-    while day <= last_day:
-        if entry.recurrence == "weekly" and day.weekday() != entry.weekday:
-            day += timedelta(days=1)
-            continue
-        if entry.last_fired_date and day.isoformat() <= entry.last_fired_date:
-            day += timedelta(days=1)
-            continue
-        occ = datetime(day.year, day.month, day.day, hour, minute, tzinfo=start_local.tzinfo)
-        occ_abs = _to_absolute(occ)
-        if since_abs < occ_abs <= now_abs:
-            occurrences.append(occ_abs)
-        day += timedelta(days=1)
-    return occurrences
-
-
-def missed_occurrences(
-    entries: list[RecordingScheduleEntry], *, since: datetime, now: datetime
-) -> list[tuple[RecordingScheduleEntry, datetime]]:
-    """Enabled schedule occurrences that fell in ``(since, now]`` (#4), excluding
-    any whose window is still open at *now* (R2/11.7: those will start late on
-    launch, so they are not "missed").
-
-    Used at startup to report recordings whose time passed while the app was
-    closed (``since`` = when it was last running). Returns (entry, moment)
-    pairs, earliest first; an empty or future ``since`` yields nothing.
-    """
-    since_abs = _to_absolute(since)
-    now_abs = _to_absolute(now)
-    if since_abs >= now_abs:
-        return []
-    missed: list[tuple[RecordingScheduleEntry, datetime]] = []
-    for entry in entries:
-        if not entry.enabled:
-            continue
-        for moment in _occurrences_between(entry, since_abs, now_abs):
-            # R2/11.7: if the window is still open, the scheduler will start it
-            # late on this launch -- do not also announce it as missed.
-            if now_abs < moment + timedelta(minutes=max(1, entry.duration_minutes)):
-                continue
-            missed.append((entry, moment))
-    missed.sort(key=lambda pair: pair[1])
-    return missed
-
-
-def describe_missed(missed: list[tuple[RecordingScheduleEntry, datetime]]) -> str:
-    """A spoken one-line summary of *missed* occurrences, or "" when none (#4).
-
-    Names up to three stations with the local time each was due; more than
-    three collapses to a count so the announcement stays short.
-    """
-    if not missed:
-        return ""
-
-    def _when(moment: datetime) -> str:
-        return moment.astimezone().strftime("%a %b %d %I:%M %p").replace(" 0", " ")
-
-    parts = [f"{entry.station_name} at {_when(moment)}" for entry, moment in missed[:3]]
-    extra = len(missed) - 3
-    if extra > 0:
-        parts.append(f"and {extra} more")
-    count = len(missed)
-    noun, verb = ("recording", "was") if count == 1 else ("recordings", "were")
-    return f"{count} scheduled {noun} {verb} missed while Quill Radio was closed: " + "; ".join(
-        parts
-    )
-
-
 def _store_path(data_dir: Path) -> Path:
     return data_dir / _FILE_NAME
 
@@ -534,14 +430,38 @@ class RecordingScheduler:
                 now = datetime.now()
                 with self._lock:
                     snapshot = list(self.entries)
+                    versions = {id(entry): entry.to_dict() for entry in snapshot}
                 for entry in due_entries(snapshot, now):
                     if self._stop_event.is_set():
                         break
-                    self._fire(entry, now)
+                    self._fire(entry, now, version=versions.get(id(entry)))
             except Exception:  # noqa: BLE001 - scheduler thread must never die
                 logger.exception("Radio scheduler iteration failed; continuing.")
 
-    def _fire(self, entry: RecordingScheduleEntry, now: datetime) -> None:
+    def _still_current(
+        self, entry: RecordingScheduleEntry, version: dict[str, object] | None
+    ) -> bool:
+        """Whether *entry* is still in the schedule, unchanged since this
+        worker's snapshot (the same object, the same saved fields).
+
+        A start can take many seconds (a YouTube resolve, a codec probe, the
+        ffmpeg spawn), and the listener may delete or edit the entry meanwhile.
+        Deleting it is a promise that it will not record; an edited entry is a
+        different object and fires on its own terms at the next poll.
+        """
+        with self._lock:
+            return any(
+                live is entry and (version is None or live.to_dict() == version)
+                for live in self.entries
+            )
+
+    def _fire(
+        self,
+        entry: RecordingScheduleEntry,
+        now: datetime,
+        *,
+        version: dict[str, object] | None = None,
+    ) -> None:
         """Start *entry* now, recording only the remaining minutes (R2).
 
         With concurrent recording the recorder no longer refuses a second start,
@@ -552,7 +472,13 @@ class RecordingScheduler:
         failure (ffmpeg missing, etc.) is also retried within the window without
         stamping (11.2). Only a successful start stamps ``last_fired_date`` (and
         disables a once-entry).
+
+        The recorder re-asks :meth:`_still_current` at each slow step and,
+        authoritatively, as the recording registers, so an entry removed from
+        the schedule after this worker's snapshot never starts recording.
         """
+        if version is None:
+            version = entry.to_dict()
         try:
             self._recorder.start(
                 station_name=entry.station_name,
@@ -561,7 +487,13 @@ class RecordingScheduler:
                 duration_minutes=remaining_minutes(entry, now),
                 filter_graph=self._filter_graph_provider(),
                 entry_id=entry.id,
+                admit=lambda: self._still_current(entry, version),
             )
+        except RecordingCancelledError:
+            # Deleted or edited while it was starting: exactly what the
+            # listener asked for, so nothing is announced or stamped.
+            logger.info("Scheduled radio recording %s withdrawn before it started.", entry.id)
+            return
         except RecordingLimitError:
             # Concurrency cap reached: hold the entry pending and retry within
             # its window instead of burning the occurrence (R2/11.3). Announce
