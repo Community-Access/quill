@@ -1139,7 +1139,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 853 yes, 0 planned, 288 not needed and 866 left to GitHub.
+In all: 866 yes, 0 planned, 287 not needed and 854 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1797,7 +1797,7 @@ In all: 853 yes, 0 planned, 288 not needed and 866 left to GitHub.
 
 #### Copilot
 
-44 operations: 44 left to github.
+44 operations: 12 yes, 32 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1812,38 +1812,38 @@ In all: 853 yes, 0 planned, 288 not needed and 866 left to GitHub.
 | Set the coding agent policy for an enterprise | `PUT /enterprises/{enterprise}/copilot/policies/coding_agent` | Left to GitHub | Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings. Organizations > org > Enterprise (Open on GitHub). |
 | Remove organizations from the enterprise coding agent policy | `DELETE /enterprises/{enterprise}/copilot/policies/coding_agent/organizations` | Left to GitHub | Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings. Organizations > org > Enterprise (Open on GitHub). |
 | Add organizations to the enterprise coding agent policy | `POST /enterprises/{enterprise}/copilot/policies/coding_agent/organizations` | Left to GitHub | Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings. Organizations > org > Enterprise (Open on GitHub). |
-| Get Copilot seat information and settings for an organization | `GET /orgs/{org}/copilot/billing` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| List all Copilot seat assignments for an organization | `GET /orgs/{org}/copilot/billing/seats` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Remove teams from the Copilot subscription for an organization | `DELETE /orgs/{org}/copilot/billing/selected_teams` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Add teams to the Copilot subscription for an organization | `POST /orgs/{org}/copilot/billing/selected_teams` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Remove users from the Copilot subscription for an organization | `DELETE /orgs/{org}/copilot/billing/selected_users` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Add users to the Copilot subscription for an organization | `POST /orgs/{org}/copilot/billing/selected_users` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
+| Get Copilot seat information and settings for an organization | `GET /orgs/{org}/copilot/billing` | Yes | context menu > Copilot Plan |
+| List all Copilot seat assignments for an organization | `GET /orgs/{org}/copilot/billing/seats` | Yes | context menu > Copilot Seats |
+| Remove teams from the Copilot subscription for an organization | `DELETE /orgs/{org}/copilot/billing/selected_teams` | Yes | context menu > Take Copilot from Teams... |
+| Add teams to the Copilot subscription for an organization | `POST /orgs/{org}/copilot/billing/selected_teams` | Yes | context menu > Give Teams Copilot... |
+| Remove users from the Copilot subscription for an organization | `DELETE /orgs/{org}/copilot/billing/selected_users` | Yes | context menu > Take Copilot Seats Away... |
+| Add users to the Copilot subscription for an organization | `POST /orgs/{org}/copilot/billing/selected_users` | Yes | context menu > Give Copilot Seats... |
 | Get the Copilot code review runner configuration for an organization | `GET /orgs/{org}/copilot/code-review/runner` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 | Set the Copilot code review runner configuration for an organization | `PUT /orgs/{org}/copilot/code-review/runner` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 | Get Copilot code review settings for an organization | `GET /orgs/{org}/copilot/code-review/settings` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 | Update Copilot code review settings for an organization | `PATCH /orgs/{org}/copilot/code-review/settings` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
-| Get Copilot cloud agent permissions for an organization | `GET /orgs/{org}/copilot/coding-agent/permissions` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
+| Get Copilot cloud agent permissions for an organization | `GET /orgs/{org}/copilot/coding-agent/permissions` | Yes | context menu > Copilot Agent Access |
 | Set Copilot cloud agent permissions for an organization | `PUT /orgs/{org}/copilot/coding-agent/permissions` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | List repositories enabled for Copilot cloud agent in an organization | `GET /orgs/{org}/copilot/coding-agent/permissions/repositories` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Set selected repositories for Copilot cloud agent in an organization | `PUT /orgs/{org}/copilot/coding-agent/permissions/repositories` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Disable a repository for Copilot cloud agent in an organization | `DELETE /orgs/{org}/copilot/coding-agent/permissions/repositories/{repository_id}` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Enable a repository for Copilot cloud agent in an organization | `PUT /orgs/{org}/copilot/coding-agent/permissions/repositories/{repository_id}` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Get Copilot content exclusion rules for an organization | `GET /orgs/{org}/copilot/content_exclusion` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
+| Get Copilot content exclusion rules for an organization | `GET /orgs/{org}/copilot/content_exclusion` | Yes | context menu > Copilot Content Exclusions |
 | Set Copilot content exclusion rules for an organization | `PUT /orgs/{org}/copilot/content_exclusion` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Get Copilot organization usage metrics for a specific day | `GET /orgs/{org}/copilot/metrics/reports/organization-1-day` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Get Copilot organization usage metrics | `GET /orgs/{org}/copilot/metrics/reports/organization-28-day/latest` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
+| Get Copilot organization usage metrics | `GET /orgs/{org}/copilot/metrics/reports/organization-28-day/latest` | Yes | context menu > Copilot Usage Report |
 | Get Copilot organization repository report for a specific day | `GET /orgs/{org}/copilot/metrics/reports/repos-1-day` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Get Copilot organization user-teams report for a specific day | `GET /orgs/{org}/copilot/metrics/reports/user-teams-1-day` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Get Copilot organization users usage metrics for a specific day | `GET /orgs/{org}/copilot/metrics/reports/users-1-day` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Get Copilot organization users usage metrics | `GET /orgs/{org}/copilot/metrics/reports/users-28-day/latest` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Get the Copilot code review policy for an organization | `GET /orgs/{org}/copilot/policies/code-review` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 | Set the Copilot code review policy for an organization | `PUT /orgs/{org}/copilot/policies/code-review` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
-| Get Copilot seat assignment details for a user | `GET /orgs/{org}/members/{username}/copilot` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
+| Get Copilot seat assignment details for a user | `GET /orgs/{org}/members/{username}/copilot` | Yes | context menu > A Member's Copilot Seat... |
 | Delete Copilot customizations for a team | `DELETE /orgs/{org}/teams/{team_slug}/copilot/customizations` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Get Copilot customizations for a team | `GET /orgs/{org}/teams/{team_slug}/copilot/customizations` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Set Copilot customizations for a team | `PUT /orgs/{org}/teams/{team_slug}/copilot/customizations` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Get Copilot cloud agent configuration for a repository | `GET /repos/{owner}/{repo}/copilot/cloud-agent/configuration` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Get Copilot code review settings for a repository | `GET /repos/{owner}/{repo}/copilot/code-review/settings` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
+| Get Copilot cloud agent configuration for a repository | `GET /repos/{owner}/{repo}/copilot/cloud-agent/configuration` | Yes | context menu > Copilot Agent Configuration |
+| Get Copilot code review settings for a repository | `GET /repos/{owner}/{repo}/copilot/code-review/settings` | Yes | context menu > Copilot Review Settings |
 | Update Copilot code review settings for a repository | `PATCH /repos/{owner}/{repo}/copilot/code-review/settings` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 
 #### Copilot Spaces
@@ -2011,7 +2011,7 @@ In all: 853 yes, 0 planned, 288 not needed and 866 left to GitHub.
 
 #### Git database
 
-13 operations: 10 yes, 3 not needed.
+13 operations: 11 yes, 2 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2027,7 +2027,7 @@ In all: 853 yes, 0 planned, 288 not needed and 866 left to GitHub.
 | Create a tag object | `POST /repos/{owner}/{repo}/git/tags` | Yes | Navigator: Repository > owner/name > Code > Tags |
 | Get a tag | `GET /repos/{owner}/{repo}/git/tags/{tag_sha}` | Yes | context menu > Read Tag Message |
 | Create a tree | `POST /repos/{owner}/{repo}/git/trees` | Yes | editor GitHub menu > Commit Multiple Files... |
-| Get a tree | `GET /repos/{owner}/{repo}/git/trees/{tree_sha}` | Not needed | Git objects (blobs, trees, commits) are plumbing beneath commands that write files. Plumbing under Commit Multiple Files. |
+| Get a tree | `GET /repos/{owner}/{repo}/git/trees/{tree_sha}` | Yes | context menu > Prompt Files... |
 
 #### Gitignore
 

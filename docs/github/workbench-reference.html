@@ -3876,7 +3876,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 853 yes, 0 planned, 288 not needed and 866 left to
+<p>In all: 866 yes, 0 planned, 287 not needed and 854 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -7656,7 +7656,7 @@ reads them.</td>
 </tbody>
 </table>
 <h4 id="copilot">Copilot</h4>
-<p>44 operations: 44 left to github.</p>
+<p>44 operations: 12 yes, 32 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -7758,44 +7758,38 @@ org &gt; Enterprise (Open on GitHub).</td>
 <tr>
 <td>Get Copilot seat information and settings for an organization</td>
 <td><code>GET /orgs/{org}/copilot/billing</code></td>
-<td>Left to GitHub</td>
-<td>Copilot Business seat, policy and usage administration is for
-companies that buy Copilot seats, managed on GitHub’s site.</td>
+<td>Yes</td>
+<td>context menu &gt; Copilot Plan</td>
 </tr>
 <tr>
 <td>List all Copilot seat assignments for an organization</td>
 <td><code>GET /orgs/{org}/copilot/billing/seats</code></td>
-<td>Left to GitHub</td>
-<td>Copilot Business seat, policy and usage administration is for
-companies that buy Copilot seats, managed on GitHub’s site.</td>
+<td>Yes</td>
+<td>context menu &gt; Copilot Seats</td>
 </tr>
 <tr>
 <td>Remove teams from the Copilot subscription for an organization</td>
 <td><code>DELETE /orgs/{org}/copilot/billing/selected_teams</code></td>
-<td>Left to GitHub</td>
-<td>Copilot Business seat, policy and usage administration is for
-companies that buy Copilot seats, managed on GitHub’s site.</td>
+<td>Yes</td>
+<td>context menu &gt; Take Copilot from Teams…</td>
 </tr>
 <tr>
 <td>Add teams to the Copilot subscription for an organization</td>
 <td><code>POST /orgs/{org}/copilot/billing/selected_teams</code></td>
-<td>Left to GitHub</td>
-<td>Copilot Business seat, policy and usage administration is for
-companies that buy Copilot seats, managed on GitHub’s site.</td>
+<td>Yes</td>
+<td>context menu &gt; Give Teams Copilot…</td>
 </tr>
 <tr>
 <td>Remove users from the Copilot subscription for an organization</td>
 <td><code>DELETE /orgs/{org}/copilot/billing/selected_users</code></td>
-<td>Left to GitHub</td>
-<td>Copilot Business seat, policy and usage administration is for
-companies that buy Copilot seats, managed on GitHub’s site.</td>
+<td>Yes</td>
+<td>context menu &gt; Take Copilot Seats Away…</td>
 </tr>
 <tr>
 <td>Add users to the Copilot subscription for an organization</td>
 <td><code>POST /orgs/{org}/copilot/billing/selected_users</code></td>
-<td>Left to GitHub</td>
-<td>Copilot Business seat, policy and usage administration is for
-companies that buy Copilot seats, managed on GitHub’s site.</td>
+<td>Yes</td>
+<td>context menu &gt; Give Copilot Seats…</td>
 </tr>
 <tr>
 <td>Get the Copilot code review runner configuration for an
@@ -7834,9 +7828,8 @@ deleting a whole organization), done on GitHub’s site.</td>
 <tr>
 <td>Get Copilot cloud agent permissions for an organization</td>
 <td><code>GET /orgs/{org}/copilot/coding-agent/permissions</code></td>
-<td>Left to GitHub</td>
-<td>Copilot Business seat, policy and usage administration is for
-companies that buy Copilot seats, managed on GitHub’s site.</td>
+<td>Yes</td>
+<td>context menu &gt; Copilot Agent Access</td>
 </tr>
 <tr>
 <td>Set Copilot cloud agent permissions for an organization</td>
@@ -7878,9 +7871,8 @@ companies that buy Copilot seats, managed on GitHub’s site.</td>
 <tr>
 <td>Get Copilot content exclusion rules for an organization</td>
 <td><code>GET /orgs/{org}/copilot/content_exclusion</code></td>
-<td>Left to GitHub</td>
-<td>Copilot Business seat, policy and usage administration is for
-companies that buy Copilot seats, managed on GitHub’s site.</td>
+<td>Yes</td>
+<td>context menu &gt; Copilot Content Exclusions</td>
 </tr>
 <tr>
 <td>Set Copilot content exclusion rules for an organization</td>
@@ -7899,9 +7891,8 @@ companies that buy Copilot seats, managed on GitHub’s site.</td>
 <tr>
 <td>Get Copilot organization usage metrics</td>
 <td><code>GET /orgs/{org}/copilot/metrics/reports/organization-28-day/latest</code></td>
-<td>Left to GitHub</td>
-<td>Copilot Business seat, policy and usage administration is for
-companies that buy Copilot seats, managed on GitHub’s site.</td>
+<td>Yes</td>
+<td>context menu &gt; Copilot Usage Report</td>
 </tr>
 <tr>
 <td>Get Copilot organization repository report for a specific day</td>
@@ -7950,9 +7941,8 @@ deleting a whole organization), done on GitHub’s site.</td>
 <tr>
 <td>Get Copilot seat assignment details for a user</td>
 <td><code>GET /orgs/{org}/members/{username}/copilot</code></td>
-<td>Left to GitHub</td>
-<td>Copilot Business seat, policy and usage administration is for
-companies that buy Copilot seats, managed on GitHub’s site.</td>
+<td>Yes</td>
+<td>context menu &gt; A Member’s Copilot Seat…</td>
 </tr>
 <tr>
 <td>Delete Copilot customizations for a team</td>
@@ -7978,17 +7968,14 @@ companies that buy Copilot seats, managed on GitHub’s site.</td>
 <tr>
 <td>Get Copilot cloud agent configuration for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/copilot/cloud-agent/configuration</code></td>
-<td>Left to GitHub</td>
-<td>Copilot Business seat, policy and usage administration is for
-companies that buy Copilot seats, managed on GitHub’s site.</td>
+<td>Yes</td>
+<td>context menu &gt; Copilot Agent Configuration</td>
 </tr>
 <tr>
 <td>Get Copilot code review settings for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/copilot/code-review/settings</code></td>
-<td>Left to GitHub</td>
-<td>Company administration or a paid feature (Copilot Business policies,
-AI scanning, security products, verified domains, billing minutes,
-deleting a whole organization), done on GitHub’s site.</td>
+<td>Yes</td>
+<td>context menu &gt; Copilot Review Settings</td>
 </tr>
 <tr>
 <td>Update Copilot code review settings for a repository</td>
@@ -8824,7 +8811,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="git-database">Git database</h4>
-<p>13 operations: 10 yes, 3 not needed.</p>
+<p>13 operations: 11 yes, 2 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -8912,9 +8899,8 @@ that write files. Plumbing under Commit Multiple Files.</td>
 <tr>
 <td>Get a tree</td>
 <td><code>GET /repos/{owner}/{repo}/git/trees/{tree_sha}</code></td>
-<td>Not needed</td>
-<td>Git objects (blobs, trees, commits) are plumbing beneath commands
-that write files. Plumbing under Commit Multiple Files.</td>
+<td>Yes</td>
+<td>context menu &gt; Prompt Files…</td>
 </tr>
 </tbody>
 </table>
