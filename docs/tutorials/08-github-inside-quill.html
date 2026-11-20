@@ -245,47 +245,48 @@
 <h1 id="tutorial-8-github-inside-quill-and-quill-lite">Tutorial 8:
 GitHub inside QUILL and QUILL Lite</h1>
 <p><strong>Goal:</strong> learn what QUILL can do with GitHub and with
-Git on your own computer: browse and save files, work with issues and
-pull requests, manage a repository, and sort out a merge conflict,
-without opening a browser or a terminal.</p>
-<p>QUILL Lite opens the same GitHub Items viewer through <strong>File
-&gt; GitHub Workbench…</strong> (<strong>Alt+F</strong>, then
-<strong>G</strong>). Sections about that viewer, including PR review,
-apply to both apps. QUILL’s file opening, repository administration, and
-Local Git commands described elsewhere in this tutorial are not yet in
-Lite.</p>
-<p>There are three parts, and you can use any of them on its own:</p>
+Git on your own computer: open and save files, work with issues and pull
+requests in the GitHub Workbench, look after a repository, and sort out
+a merge conflict, without opening a browser or a terminal.</p>
+<p>The GitHub Workbench is one window for everything GitHub, and it is
+the same window in QUILL and QUILL Lite. In QUILL Lite you open it with
+<strong>File &gt; GitHub Workbench…</strong> (<code>Alt+F</code>, then
+<code>G</code>). QUILL’s file opening, repository commands on the Tools
+menu and Local Git commands, in parts 1, 4, 5 and 6, are QUILL’s
+own.</p>
+<p>There are three kinds of work here, and you can use any of them on
+its own:</p>
 <ul>
-<li><strong>GitHub browsing and the Items viewer</strong>: read/write
-issues, PRs, branches, commits, releases, workflow runs. Needs a GitHub
-account for anything beyond public browsing.</li>
-<li><strong>Repository administration</strong>: create, fork, rename,
-and configure repositories from QUILL. Needs a signed-in account for
-everything.</li>
+<li><strong>The GitHub Workbench</strong>: your inbox, issues, pull
+requests, runs, releases and repositories. Reading public repositories
+needs no account; anything that changes GitHub needs you to sign
+in.</li>
+<li><strong>Repository commands in QUILL</strong>: create, fork and
+configure repositories, and commit several files at once.</li>
 <li><strong>Local Git</strong>: accessible merge-conflict resolution and
-interactive rebase. Needs no GitHub account at all; works on any local
-repository.</li>
+interactive rebase. It needs no GitHub account at all, and works on any
+repository on your computer.</li>
 </ul>
 <p><strong>A shorter way to all of it.</strong> Turn on <strong>View
 &gt; GitHub Workbench Mode</strong> (<code>Alt+V</code>, then
 <code>K</code>), in either app. A <strong>GitHub</strong> menu joins the
 menu bar after Tools (<code>Alt+G</code>), with the doors into the
-GitHub Workbench: <strong>Inbox</strong>, <strong>This Repository’s
-Issues</strong>, <strong>This Repository’s Pull Requests</strong>,
-<strong>Actions Runs</strong> and <strong>Open GitHub Workbench</strong>
-itself. The menu paths in this tutorial are the ones you see with the
-mode off; with it on, look in the GitHub menu instead. While it’s on,
-the status bar has a <strong>Workbench</strong> cell naming the
-repository you’re working in; press <code>F6</code> and arrow to it to
-check. Turn the mode off from the same place, or with <strong>GitHub
-&gt; Leave Workbench Mode</strong>.</p>
+Workbench: <strong>Open GitHub Workbench</strong>,
+<strong>Inbox</strong>, <strong>This Repository’s Issues</strong>,
+<strong>This Repository’s Pull Requests</strong> and <strong>Actions
+Runs</strong>. The menu paths in this tutorial are the ones you see with
+the mode off; with it on, look in the GitHub menu instead. Turn the mode
+off from the same place, with <strong>GitHub &gt; Leave Workbench
+Mode</strong>.</p>
+<p>The <a href="../user%20guide/github-guide/github-guide.md">GitHub
+Guide</a> has the whole story; each part below names the chapter to read
+next.</p>
 <h2 id="0-sign-in-once">0. Sign in (once)</h2>
-<p>The first time you touch any GitHub feature, QUILL shows a one-time
-consent dialog telling you it will connect to api.github.com. Accept it,
-then:</p>
+<p>The first time you touch any GitHub feature, QUILL asks once whether
+it may connect to GitHub. Choose <strong>Continue</strong>, then:</p>
 <ol type="1">
 <li><strong>File &gt; Open from Remote &gt; Manage GitHub
-Accounts…</strong> In QUILL Lite it’s <strong>File &gt; Manage GitHub
+Accounts…</strong> In QUILL Lite it is <strong>File &gt; Manage GitHub
 Accounts…</strong> (<code>Alt+F</code>, then <code>H</code>).</li>
 <li><strong>Sign In with GitHub…</strong>, the first button. QUILL puts
 a short code on the clipboard, opens github.com/login/device in your
@@ -294,388 +295,277 @@ time.</li>
 <li>In the browser, paste the code, choose <strong>Continue</strong>,
 then <strong>Authorize</strong>.</li>
 <li>Come back to QUILL. The window closes by itself and you hear “Added
-and switched to GitHub account” and your username. What GitHub gave
-QUILL is kept safely in Windows Credential Manager or the macOS
-Keychain, never in a plain file.</li>
+and switched to GitHub account” and your username. Your sign-in is kept
+in Windows Credential Manager or the macOS Keychain, never in a plain
+file.</li>
 </ol>
-<p>The code lasts about fifteen minutes; if it runs out, choose Sign In
-with GitHub again for a new one. If your organization makes members ask
-before an app can see its repositories, approve QUILL once on GitHub,
-under <strong>Settings &gt; Applications &gt; Authorized OAuth
-Apps</strong> (chapter 10 of the GitHub guide has the details).</p>
-<p>That’s all most people ever need. There is also an <strong>Add Token
-(Advanced)…</strong> button, for a few special cases such as an
-organization that blocks sign-in apps; chapter 10 of the GitHub guide,
-“Advanced: using a token”, explains when and how.</p>
-<p>You can browse public repositories without signing in, though GitHub
-limits how many requests you can make. Everything that <em>writes</em>
-to GitHub needs an account; if you try a write command without one,
-QUILL offers to sign you in right there instead of just refusing.</p>
-<h2 id="1-browse-open-and-save-a-file">1. Browse, open, and save a
-file</h2>
+<p>The code lasts about fifteen minutes; if it runs out, choose
+<strong>Sign In with GitHub…</strong> again for a new one. If you
+already use GitHub’s command-line tool, <strong>Use GitHub CLI
+Sign-In…</strong> adds the account <code>gh</code> is signed in to
+instead. <a
+href="../user%20guide/github-guide/github-guide-01-getting-started.md">Chapter
+1 of the GitHub Guide</a> covers more than one account, Enterprise
+Server and how much the Workbench may change.</p>
+<h2 id="1-open-edit-and-save-a-file-quill">1. Open, edit and save a file
+(QUILL)</h2>
 <ol type="1">
 <li><strong>File &gt; Open from Remote &gt; GitHub
 Repository…</strong></li>
-<li>Type an <code>owner/repo</code> (try
+<li>Type an <code>owner/name</code> (try
 <code>octocat/Hello-World</code> if you don’t have one handy) and press
 Enter.</li>
 <li>Arrow through the file list: folders first, then files. Enter opens
 a folder or a file.</li>
-<li>Edit the file, then <strong>File &gt; Open from Remote &gt; Commit
-to GitHub…</strong> and type a commit message. QUILL commits straight to
-the same repository, branch, and path.</li>
+<li>Edit the file, then choose <strong>File &gt; Open from Remote &gt;
+Commit to GitHub…</strong> and type a commit message. QUILL commits to
+the same repository, branch and path. Pressing <code>Ctrl+S</code> never
+does this for you.</li>
 </ol>
+<p>If you already have the address, <strong>File &gt; Open from Remote
+&gt; GitHub File URL…</strong> skips the browsing: paste a
+<code>github.com/owner/name/blob/branch/path</code> link.</p>
 <p>To work on a whole repository in a folder of your own, <strong>File
 &gt; Open from Remote &gt; Clone Repository…</strong> copies it to your
 computer: type <code>owner/name</code>, choose a folder, and press
-Clone. QUILL Lite has it as <strong>File &gt; Clone Repository…</strong>
-(<code>Alt+F</code>, then <code>Y</code>). When it is done you can open
-a file from the new folder.</p>
-<p>If you already have the URL, <strong>File &gt; Open from Remote &gt;
-GitHub File URL…</strong> skips the browsing. Paste a
-<code>github.com/owner/repo/blob/branch/path</code> link and QUILL
-fetches it directly.</p>
-<h2 id="2-the-items-viewer-issues-prs-branches-and-everything-else">2.
-The Items viewer: issues, PRs, branches, and everything else</h2>
+<strong>Clone</strong>. QUILL Lite has it as <strong>File &gt; Clone
+Repository…</strong> (<code>Alt+F</code>, then <code>Y</code>).</p>
+<h2 id="2-the-github-workbench">2. The GitHub Workbench</h2>
 <p><strong>File &gt; Open from Remote &gt; GitHub Items…</strong> opens
-a list, with details underneath, of one repository’s issues, pull
-requests, branches, commits, tags, releases, workflows and workflow
-runs. Many of its ideas come from <a
+the GitHub Workbench. The row keeps its old name; the window is the
+Workbench. Many of its ideas come from <a
 href="https://github.com/kellylford/GHManage">GHManage</a>, Kelly Ford’s
 free GitHub browser for screen reader users, and we are grateful for
 it.</p>
+<p>The window has a tree on the left that says where you are, a list of
+what is there, and the details of the row you are on. <code>F6</code>
+moves between them.</p>
 <ol type="1">
-<li>Type <code>owner/repo</code>, an
-<code>https://github.com/owner/repo</code> URL, or a
-<code>git@github.com:owner/repo.git</code> remote, then press
-<strong>Load</strong>. QUILL understands all three. (If your current
-document lives inside a git checkout whose origin points at GitHub, the
-field is already filled in.)</li>
-<li>Pick a <strong>View</strong>. Start with Issues &amp; PRs.
-<strong>Show</strong>, <strong>State</strong>, and <strong>Sort</strong>
-filter that view further. <strong>Columns…</strong> picks which fields
-show as columns in the list. Uncheck the ones you do not need, and QUILL
-remembers your choice.</li>
-<li>Select a row; the details pane loads its full text, then its comment
-thread. <strong>Alt+N</strong> / <strong>Alt+P</strong> jump between
-comments, and QUILL tells you “Comment 2 of 5.”</li>
-<li>Press <strong>M</strong> to toggle <strong>List mode</strong>
-between Quick (compact) and Full (every cell spoken as
-<code>field: value</code>).</li>
+<li>Open the Workbench. Signed in, you land on <strong>Inbox</strong>;
+signed out, on <strong>Start Here</strong>.</li>
+<li>Press <code>Ctrl+L</code>, type <code>owner/name</code> or paste a
+GitHub link, and press Enter. The repository gets a place of its own in
+the tree, and you are on it.</li>
+<li>Press <code>Ctrl+Shift+1</code> for its <strong>Issues</strong>,
+then <code>F6</code> to the list. Arrow through the rows, and press
+<code>F6</code> again to read the selected issue in the details.</li>
+<li>Press <code>Ctrl+Shift+2</code> for its <strong>Pull
+Requests</strong>, <code>Ctrl+Shift+4</code> for its Actions runs, and
+<code>Ctrl+Shift+6</code> for its releases. Every repository has the
+same places, in the same order.</li>
+<li>Press <code>Shift+F1</code> on any row. You hear everything you can
+do with it, with each key, and why anything greyed is greyed.</li>
 </ol>
-<p>On a selected row, <strong>Shift+F10</strong>, the
-<strong>Applications</strong> key, or right-click opens a context menu
-at the row. Every item offers <strong>Open on GitHub</strong>,
-<strong>Copy Link</strong>, <strong>Copy Details</strong>, and
-<strong>Add to or Remove from Favorites</strong>. PRs add <strong>Open
-Review</strong> and <strong>Open File Differences</strong>; branches add
-<strong>Compare Branches</strong>; workflow runs add <strong>View
-Artifacts</strong>. Issues and PRs offer <strong>Summarize
-Discussion</strong> when AI is available. A signed-in session also
-offers <strong>More Write Actions</strong>. With no row selected, the
-menu offers <strong>Refresh</strong> and, in Issues &amp; PRs when
-signed in, <strong>New Issue</strong> and <strong>New Pull
-Request</strong>. The same menu works from the details field, so reading
-a long item does not force you to return to the row before opening its
-actions.</p>
-<p><strong>Search</strong> (Ctrl+F) takes full GitHub search syntax for
-the loaded repo: try <code>label:bug is:open</code>. <strong>Quick
-filter</strong> (Ctrl+Shift+F) is different. It narrows the list you
-already have as you type, without going online. Escape clears it.
-<strong>Pinned…</strong> keeps a short list of repos you jump back to
-often; <strong>Ctrl+D</strong> favorites the selected row from any repo,
-and <strong>Favorites…</strong> lists everything you’ve bookmarked
-across all of them.</p>
-<h3 id="running-a-workflow">Running a workflow</h3>
-<p>Switch to the <strong>Workflows</strong> view to see the repository’s
-workflow definitions (the <code>.yml</code> files themselves, not their
-run history). Select one and press <strong>Enter</strong> (or
-<strong>Actions… &gt; Run … on Branch…</strong>) to run it. QUILL asks
-for the branch, checks with you, and tells you whether GitHub started
-the run. You need to be signed in. If a workflow cannot be run by hand
-(<code>workflow_dispatch</code>), QUILL tells you so. The separate
-<strong>Workflow Runs</strong> view still shows run history and lets you
-re-run or inspect artifacts from a past run.</p>
-<h3 id="reading-a-pull-requests-actual-changes">Reading a pull request’s
-actual changes</h3>
-<p>Select a PR row and press <strong>Diff…</strong>. QUILL fetches both
-sides of every changed file and runs them through the same compare tool
-as <strong>Compare Documents</strong>. You move through the changes one
-at a time, hearing things like “Difference 2 of 5, text changed at line
-41”, instead of reading a raw patch.</p>
-<h3 id="reading-and-responding-to-a-pull-request-review">Reading and
-responding to a pull request review</h3>
-<p>In <strong>Issues &amp; PRs</strong>, select a pull request and
-choose <strong>Review…</strong>. The header states merge readiness, the
-current approval decision, check status, and the number of review
-threads. The main control is a native <strong>Pull request
-outline</strong>. It is a tree: the PR contains <strong>Changed
-files</strong>, optional <strong>General conversations</strong>, and
-<strong>Checks</strong>. Each file contains its review threads. A thread
-announces its line, author, reply count, and whether GitHub marks its
-original hunk outdated. Files without comments still appear when GitHub
-supplies the changed-file inventory.</p>
+<p><code>Ctrl+E</code> moves to the filter box. Plain words narrow the
+rows already loaded; GitHub’s own words, such as
+<code>is:open label:bug</code>, ask GitHub. <code>Alt+Enter</code> shows
+everything about the selected row on one sheet, where you can change it.
+Backspace goes back to where you were, and <code>Shift+Enter</code>
+opens the row on GitHub. <code>Ctrl+Shift+I</code> opens an issue or
+pull request in the editor as one document, a heading per post.</p>
+<p><a
+href="../user%20guide/github-guide/github-guide-02-getting-around.md">Chapter
+2 of the GitHub Guide</a> is a full tour of the window.</p>
+<h3 id="reading-and-reviewing-a-pull-request">Reading and reviewing a
+pull request</h3>
+<p>Select a pull request and press Enter. The review window opens with
+the whole pull request in one sentence: its review decision, its checks,
+its open threads and how far behind it is. Below that is the
+<strong>Pull request outline</strong>, a tree of the changed files, the
+conversations on each file, and the checks.</p>
 <ol type="1">
-<li>Start on the PR node. Press <strong>Right Arrow</strong> to expand
-or <strong>Left Arrow</strong> to collapse a branch. <strong>Up
-Arrow</strong> and <strong>Down Arrow</strong> move among visible nodes.
-Expanding a file exposes its threads. The outline is the place to
-navigate; the adjacent, read-only details field follows the
-selection.</li>
-<li>Select a thread, then press <strong>Tab</strong> to read its
-complete conversation in order. Use your screen reader’s normal text
-reading keys. <strong>Shift+Tab</strong> returns to the outline. The
-detail field is copyable and never posts merely because you read it.
-<strong>Enter</strong> on a thread moves focus into that field.</li>
-<li><strong>Ctrl+R</strong> on a selected thread or in its details opens
-a reply prompt. Type your reply and accept to post it.
-<strong>Shift+F10</strong>, the <strong>Applications</strong> key, or
-right-click opens the same context menu: <strong>Reply to
-Thread</strong>, <strong>Copy Conversation</strong>, <strong>Copy Thread
-Link</strong>, <strong>Open File Differences</strong>, and <strong>Open
-Thread on GitHub</strong>, and <strong>Resolve Thread</strong> or
-<strong>Reopen Thread</strong> when GitHub grants permission.
-<strong>Ctrl+Shift+R</strong> toggles the selected thread’s resolution
-after confirmation. Reply is unavailable when you are signed out or the
-PR is closed or merged.</li>
-<li>Select a file and press <strong>Enter</strong> or use its context
-menu’s <strong>Open File Differences</strong> action. That opens the
-accessible compare window for the PR’s changed files. <strong>Copy File
-Name</strong> is also in the file menu. A thread’s file and line are
-announced in the outline and details. From a thread, <strong>Open File
-Differences</strong> selects its file and points to that exact changed
-line when GitHub supplies a current patch position. For an outdated or
-missing position, QUILL says it cannot locate the line and leaves the
-file readable.</li>
-<li>Expand <strong>Checks</strong>, select a check, and read its state
-and summary in the details field. <strong>Enter</strong> or <strong>Open
-Check on GitHub</strong> in its context menu opens the job when GitHub
-provides a link. <strong>Copy Check Details</strong> copies the selected
-detail text. The separate Checks list also offers the runs.</li>
-<li>On the PR or a category node, the context menu offers <strong>Submit
-Review</strong>, <strong>Request Reviewers</strong>, <strong>Convert to
-Draft</strong> or <strong>Mark Ready</strong>, <strong>Update
-Branch</strong>, <strong>Copy Review Summary</strong>, <strong>Copy Pull
-Request Link</strong>, and <strong>Open Pull Request on GitHub</strong>.
-The visible buttons offer these review actions as well. The summary
-field remains separately readable and copyable.</li>
+<li>Right Arrow opens a branch of the outline and Left Arrow closes
+it.</li>
+<li>Select a thread and press Tab to read the whole conversation.
+Shift+Tab comes back.</li>
+<li><code>Ctrl+R</code> replies to the selected thread, and
+<code>Ctrl+Shift+R</code> resolves it or reopens it.</li>
+<li>Enter on a file opens its diff. Press <code>Alt+P</code> for the
+patch lines and arrow through them; <code>F8</code> jumps to the next
+change, and Enter on a line comments on it.</li>
+<li><strong>Compose Review…</strong> (<code>Alt+C</code>) sends your
+review: Approve, Request changes or Comment, with your pending line
+comments.</li>
 </ol>
-<p><strong>Submit Review</strong> asks you to choose Approve, Request
-changes, or Comment. Changes requested and comment reviews need a
-message. Updating a branch merges the base branch into the PR branch
-after confirmation; check the destination before accepting. Review
-actions are disabled for a closed or merged PR.</p>
-<p>The outline announces whether each thread is resolved or unresolved.
-QUILL loads that state through GitHub’s review-thread API for signed-in
-accounts. When the API cannot supply it, the conversation remains
-readable and the details explain why its resolution actions are
-unavailable. Refresh after a teammate changes a thread on GitHub.</p>
-<h3 id="explore-github-across-repositories">Explore GitHub across
-repositories</h3>
-<p>From <strong>GitHub Items</strong>, choose <strong>Explore…</strong>.
-This second native window uses a results list above a copyable detail
-field. Arrow through results, Tab into details, and Shift+Tab back to
-the list. Enter or <strong>Open on GitHub</strong> opens a result in
-your browser; <strong>Use Repository</strong> loads a selected
-repository into the Items viewer. Shift+F10, the Applications key, or
-right-click exposes actions for the selected row.</p>
-<p>Choose <strong>Global issue and PR search</strong> and enter GitHub
-search terms such as <code>is:open review-requested:@me</code>.
-<strong>Save Search</strong> stores that query on this computer;
-<strong>Saved Searches…</strong> lets you run or remove one. <strong>My
-Work</strong> brings together items you authored, are assigned, were
-asked to review, or were mentioned in. <strong>My activity feed</strong>
-lists recent account events. <strong>Repository chooser</strong> starts
-with pinned and recent repositories; other views show your repositories,
-starred and watched repositories, people, gists, notifications, and a
-person’s public activity and connections.</p>
-<p>For a repository, choose <strong>Overview</strong>,
-<strong>Activity</strong>, <strong>People</strong>,
-<strong>Forks</strong>, <strong>Labels</strong>, <strong>GitHub Pages
-and builds</strong>, or <strong>Security Alerts</strong> and type its
-<code>owner/repo</code>. The context menu offers star/watch changes and
-label management when you are signed in and GitHub allows them.
-Notifications can be marked read. GitHub Pages and security views may be
-unavailable for a repository; the status field reports the API error
-instead of inventing data.</p>
-<p>In <strong>Workflow Runs</strong>, open <strong>Jobs and
-Logs</strong> for a selected run to inspect each job and read its text
-log. <strong>View Artifacts</strong> shows available downloads. These
-commands use GitHub’s run ID even when the displayed run number
-differs.</p>
+<p>From the Workbench’s list, <strong>File Differences…</strong>
+(<code>Ctrl+Shift+D</code>) opens the diff straight away. <a
+href="../user%20guide/github-guide/github-guide-05-pull-requests-and-review.md">Chapter
+5 of the GitHub Guide</a> covers reviews in full.</p>
+<h3 id="finding-out-why-a-run-failed">Finding out why a run failed</h3>
+<p>In a repository’s Actions runs (<code>Ctrl+Shift+4</code>), select a
+failed run and press <code>Ctrl+Shift+W</code> for <strong>What
+Failed…</strong>. You hear the failed jobs and steps, the errors with
+their file and line, and the last lines of each failed step’s log. Enter
+on a run opens its jobs and logs. <code>Ctrl+Shift+F5</code> runs only
+the failed jobs again. <a
+href="../user%20guide/github-guide/github-guide-06-actions-and-checks.md">Chapter
+6 of the GitHub Guide</a> has the rest.</p>
 <h3 id="comparing-two-branches">Comparing two branches</h3>
-<p>Switch to the <strong>Branches</strong> view, select one, and press
-<strong>Compare…</strong> (or <strong>Ctrl+Shift+B</strong>). This works
-without signing in, because it never changes anything on GitHub. Type
-the base branch, then the branch to compare against it (the selected row
-prefills the second prompt). QUILL tells you how far apart the two are
-and lists every commit between them. On the <strong>Changed
-Files</strong> tab, you can go through each file’s changes the same way
-as with <strong>Diff…</strong>. Enter on a branch drills into its
-<strong>Commits</strong>; <strong>Backspace</strong> in the Commits view
-steps back out to the branch list.</p>
-<h3 id="getting-a-tldr">Getting a TL;DR</h3>
-<p>Select a long issue or PR and press <strong>Summarize</strong>.
-QUILL’s AI sums up the whole discussion: what it is about, where it
-stands, and what is still open. It uses the AI you have already set up.
-If you have not set one up, it offers to help you do that.</p>
-<h2 id="3-writing-back-the-actions-and-batch-menus">3. Writing back: the
-Actions and Batch menus</h2>
-<p>Everything so far works read-only. Signed in, two more buttons
-appear.</p>
-<p><strong>Batch…</strong> applies close, reopen, or add-label to every
-checked row at once (hold Shift or Ctrl to check several). A
-confirmation names the exact action and the exact item numbers before
-anything changes.</p>
-<p><strong>Actions…</strong> is context-sensitive to what you’re looking
-at:</p>
+<p>In a repository’s <strong>Branches</strong>, select one and press
+<code>Ctrl+B</code> to compare it with the default branch, or
+<strong>Compare Branches…</strong> (<code>Ctrl+Shift+B</code>) to choose
+the other branch. The window has two tabs: Commits, and Changed Files,
+where you read each file’s changes the same way as a pull request’s
+diff.</p>
+<h3 id="across-github">Across GitHub</h3>
+<p><code>Ctrl+1</code> goes to your <strong>Inbox</strong>:
+notifications, review requests, assignments and mentions in one list.
+<code>Ctrl+3</code> goes to <strong>Search</strong>, for issues, code,
+commits, repositories, people and topics across GitHub.
+<code>Ctrl+4</code> goes to <strong>People</strong>, and
+<code>Ctrl+0</code> to <strong>Across Repositories</strong>, one kind of
+thing, such as releases or failed runs, from several repositories in one
+list.</p>
+<h2 id="3-changing-things-on-github">3. Changing things on GitHub</h2>
+<p>Everything so far only reads. Signed in, the same rows change things,
+and QUILL asks more the bigger the change:</p>
 <ul>
-<li>In <strong>Issues &amp; PRs</strong>: <strong>New Issue…</strong> /
-<strong>New Pull Request…</strong> prompt for a title, body, and (for a
-PR) head/base branches. With a single unmerged PR selected,
-<strong>Merge Pull Request #N…</strong> also appears. Retype the PR
-number to confirm, because a merge is hard to undo.</li>
-<li>With a comment thread loaded: <strong>Reply to Thread…</strong>
-posts a new comment. Navigate to a specific comment with Alt+N/Alt+P
-first, and <strong>Edit This Comment…</strong> / <strong>Delete This
-Comment…</strong> also appear (GitHub only lets you edit or delete your
-own comments).</li>
-<li>In <strong>Branches</strong>: select one and <strong>Delete
-Branch…</strong> appears. Retype the branch name to confirm.</li>
-<li>In <strong>Workflow Runs</strong>: select one and <strong>Re-run
-Workflow</strong> appears.</li>
+<li><strong>Organizing changes</strong>, such as a label or an assignee,
+are saved at once, and <code>Ctrl+Z</code> takes them back.</li>
+<li><strong>Changes other people will see</strong>, such as a comment,
+are saved at once.</li>
+<li><strong>Access and settings</strong> show a preview in words
+first.</li>
+<li><strong>Anything hard to reverse</strong>, such as a merge or
+deleting a branch, has you type its name or number to confirm.</li>
 </ul>
-<p>Try it: load a repo you maintain, select <strong>New Issue…</strong>,
-give it a title, and watch it appear in the list after you confirm.</p>
-<h2 id="4-repository-administration-tools--git-and-github--github">4.
-Repository administration (Tools &gt; Git and GitHub &gt; GitHub)</h2>
-<p>Everything above works on repositories that already exist.
-<strong>Tools &gt; GitHub</strong> creates and configures them.</p>
+<p>Try these on a repository of your own, or on the practice repository
+in <a href="11-practise-github-safely.md">Tutorial 11</a>:</p>
+<ul>
+<li><strong>A new issue.</strong> In Issues, press <code>Ctrl+N</code>.
+Choose a template or a blank issue, write the title and body, and choose
+<strong>Create Issue</strong>. Nothing is sent until you do.</li>
+<li><strong>A comment.</strong> On an issue or pull request, press
+<code>Ctrl+Shift+M</code>, write, and press <code>Ctrl+Enter</code> to
+post it.</li>
+<li><strong>Labels on many issues at once.</strong> Select several
+issues with Shift or Ctrl and the arrows, press <code>Alt+Enter</code>,
+and change the labels on the one sheet. <strong>Account &gt; Change
+History…</strong> (<code>Ctrl+Shift+H</code>) lists what you changed,
+with Undo.</li>
+<li><strong>Merge.</strong> On a pull request, press
+<code>Ctrl+Shift+Enter</code>, choose how to merge, and type the pull
+request’s number. <strong>Why Can’t I Merge?</strong>, on its context
+menu, says first whether it can.</li>
+<li><strong>Close.</strong> <code>Delete</code> on an issue closes it,
+after asking.</li>
+</ul>
+<p><strong>Tools &gt; Dry Run</strong> (<code>Ctrl+Alt+D</code>) lets
+you try any of these without sending anything: every command asks and
+previews as usual, then says what it would have sent. Press it again to
+turn it off.</p>
+<h2 id="4-repository-commands-in-quill-tools--git-and-github--github">4.
+Repository commands in QUILL (Tools &gt; Git and GitHub &gt;
+GitHub)</h2>
+<p><strong>Tools &gt; Git and GitHub &gt; GitHub</strong> has the
+commands that work on a whole repository.</p>
 <ol type="1">
-<li><strong>Create Repository…</strong>: name, description, private or
-public, and an optional organization. As soon as it is created, QUILL
-asks whether to set up a folder on your computer that stays in step with
-it. Say yes, pick a folder, and you are ready to go.</li>
-<li><strong>Fork Repository…</strong>: same local-sync offer
-afterward.</li>
+<li><strong>Create Repository…</strong>: a name, a description, private
+or public, and an organization if you want one. As soon as it is made,
+QUILL asks whether to set up a folder on your computer that stays in
+step with it.</li>
+<li><strong>Fork Repository…</strong>: the same offer of a folder
+afterwards.</li>
 <li><strong>Rename Repository…</strong>, <strong>Change Repository
-Visibility…</strong>, <strong>Change Default Branch…</strong>,
-<strong>Delete Branch…</strong>: for renaming, changing visibility and
-deleting a branch, you type the name again to confirm; visibility
-changes warn extra loudly when you’re about to make something
-public.</li>
-<li><strong>Configure Branch Protection…</strong>: pick a branch, then
-either set required approving reviews and required status checks, or
-check “remove all protection instead” to clear existing rules.</li>
-<li><strong>Commit Multiple Files…</strong>: pick several local files
-with a file browser, choose a branch and a commit message, and QUILL
-commits all of them together. This is different from <strong>Commit to
-GitHub</strong> (section 1), which only ever handles the one document
-you have open.</li>
+Visibility…</strong>, <strong>Change Default Branch…</strong> and
+<strong>Configure Branch Protection…</strong> open the Workbench on that
+repository’s Properties sheet, at the right page. Change what you need
+and choose <strong>OK</strong>; anything about access or settings shows
+a preview first.</li>
+<li><strong>Delete Branch…</strong> opens the repository’s Branches in
+the Workbench. Select the branch and press <code>Delete</code>; you type
+its name to confirm. The default branch is never deleted.</li>
+<li><strong>Commit Multiple Files…</strong>: pick several files on your
+computer, choose a branch and a commit message, and QUILL commits them
+together. This is different from <strong>Commit to GitHub…</strong> in
+part 1, which saves only the document you have open.</li>
 </ol>
-<p>All eight commands are in the Command Palette and ship default
-keyboard shortcuts through the QUILL Key (press your QUILL Key, then the
-listed letter): Create = Shift+K, Fork = Shift+F, Rename = Shift+E,
-Visibility = Shift+V, Default Branch = Shift+B, Branch Protection =
-Shift+L, Delete Branch = Shift+X, Commit Multiple Files = Shift+U.</p>
-<h3
-id="organizations-releases-workflows-notifications-security">Organizations,
-releases, workflows, notifications, security</h3>
-<p>There are five more commands in <strong>Tools &gt; Git and GitHub
-&gt; GitHub</strong>:</p>
-<ul>
-<li><strong>Browse Organization Repositories…</strong>: pick an
-organization you belong to, then one of its repositories, and QUILL
-opens it straight into the Items viewer.</li>
-<li><strong>Create Release…</strong>: a tag, optional title, and either
-your own notes or GitHub’s auto-generated notes from merged PRs since
-the last release.</li>
-<li><strong>Dispatch Workflow…</strong>: run a workflow on a branch or
-tag, the same as clicking “Run workflow” on github.com.</li>
-<li><strong>Notifications…</strong>: an inbox for every repository you
-have access to, not just the one you have loaded. Selecting one opens it
-and marks it read.</li>
-<li><strong>Security Alerts…</strong>: a repository’s open Dependabot
-alerts: severity, affected package, and a summary, so you know what
-needs attention without a browser.</li>
-</ul>
-<h2 id="5-local-git-resolving-conflicts-and-rebasing-out-loud">5. Local
-Git: resolving conflicts and rebasing, out loud</h2>
+<p>The same submenu has <strong>Browse Organization
+Repositories…</strong>, <strong>Create Release…</strong>,
+<strong>Dispatch Workflow…</strong>, <strong>Notifications…</strong> and
+<strong>Security Alerts…</strong>. Each opens the Workbench at the
+matching place. None of these commands has a key out of the box; find
+them in the Command Palette (<code>Ctrl+Shift+P</code>), or give one a
+key in the Keymap Editor. <a
+href="../user%20guide/github-guide/github-guide-07-code-and-repositories.md">Chapter
+7 of the GitHub Guide</a> covers looking after a repository.</p>
+<h2 id="5-local-git-resolving-conflicts-and-rebasing-out-loud-quill">5.
+Local Git: resolving conflicts and rebasing, out loud (QUILL)</h2>
 <p>This part is different. <strong>Tools &gt; Git and GitHub &gt; Local
 Git</strong> needs no GitHub account and does not go online. It works on
 any Git repository on your computer. It is here because two everyday Git
 jobs, sorting out a merge conflict and reordering commits with an
 interactive rebase, are very hard with a screen reader in most other
 tools.</p>
-<p>Try this with a real (or throwaway test) repository:</p>
+<p>Try this with a real or a throwaway repository:</p>
 <ol type="1">
-<li><strong>Uncommitted Changes…</strong>: lists everything you’ve
+<li><strong>Uncommitted Changes…</strong> lists everything you have
 changed since your last commit, staged and unstaged. Select a file to
-hear what changed in it (the same way Compare Documents reads changes);
-<strong>Stage</strong> / <strong>Unstage</strong> it, or <strong>Stage
-All</strong>.</li>
-<li><strong>Switch Branch…</strong>: pick a local branch from a list. If
+hear what changed in it; <strong>Stage</strong> or
+<strong>Unstage</strong> it, or <strong>Stage All</strong>.</li>
+<li><strong>Switch Branch…</strong> picks a local branch from a list. If
 you have uncommitted changes, QUILL asks whether to switch anyway and
 bring them with you. It never throws them away.</li>
-<li><strong>Stash Changes…</strong> / <strong>Manage Stashes…</strong>:
-put work aside with a name, then list, apply, or drop it later.</li>
-<li><strong>Who Changed This Line?</strong> (now on <strong>GitHub &gt;
-From This Line</strong>, or <strong>Tools &gt; Git and GitHub &gt;
-GitHub &gt; From This Line</strong>): with your cursor on a line in an
-open file that’s part of a git repo, this speaks who last touched that
-line, when, and the commit’s summary. Press it again to open the pull
+<li><strong>Stash Changes…</strong> and <strong>Manage Stashes…</strong>
+put work aside with a name, then list, apply or drop it later.</li>
+<li><strong>Who Changed This Line?</strong>, on <strong>GitHub &gt; From
+This Line</strong> in workbench mode or <strong>Tools &gt; Git and
+GitHub &gt; GitHub &gt; From This Line</strong> with it off, says who
+last touched the line your cursor is on, when, and the commit’s summary.
+<strong>Open the Pull Request for This Line</strong> opens the pull
 request that brought it.</li>
-<li><strong>Start Bisect…</strong>: give it a known-bad and a known-good
-commit, and QUILL checks out the midpoint and asks “Is this version good
-or bad?” Answer, and it narrows down to the exact commit that introduced
-the problem. <strong>End Bisect</strong> when you’re done.</li>
+<li><strong>Start Bisect…</strong> takes a known bad and a known good
+commit, checks out the midpoint and asks “Is this version good or bad?”
+Answer, and it narrows down to the commit that brought the problem in.
+<strong>End Bisect</strong> when you are done.</li>
 </ol>
 <h3 id="resolving-a-merge-conflict-without-decoding-markers">Resolving a
 merge conflict without decoding markers</h3>
-<p>Create a real conflict (or find one) and run <strong>Resolve
+<p>Create a conflict, or find one, and run <strong>Resolve
 Conflicts…</strong>. Instead of
-<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>/<code>=======</code>/<code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>
-markers, you get: “Conflict 1 of 3 in <code>file.py</code>: your version
-says X, their version says Y,” with <strong>your version</strong> /
-<strong>their version</strong> / <strong>both</strong> / <strong>edit
-manually</strong> as your choice. Work through every conflict in every
-affected file; QUILL writes the resolved content back and stages it. The
-same walker opens automatically if a rebase (next) or a <strong>Sync
-Folder with GitHub</strong> stops on a conflict, so you never have to
-switch to another tool halfway through.</p>
+<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code> and
+<code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> markers, you hear “Conflict 1
+of 3 in <code>file.py</code>”: your version, their version, and a choice
+of <strong>your version</strong>, <strong>their version</strong>,
+<strong>both</strong> or <strong>edit manually</strong>. Work through
+every conflict in every file; QUILL writes the result back and stages
+it. The same walker opens by itself when a rebase or <strong>Sync Folder
+with GitHub…</strong> stops on a conflict, and when you choose
+<strong>Resolve Conflicts in a Worktree…</strong> on a pull request in
+the Workbench.</p>
 <h3 id="interactive-rebase-as-a-real-dialog">Interactive rebase, as a
 real dialog</h3>
 <p><strong>Interactive Rebase…</strong> asks which commit to rebase
 onto, then shows every commit since then as a list, instead of a text
-file you have to edit by hand. Pick an action per row (pick, squash,
-reword, drop) from a dropdown, and reorder with <strong>Move Up</strong>
-/ <strong>Move Down</strong>. Press <strong>Start Rebase</strong>. If a
-step conflicts, the conflict walker above opens automatically; resolve
-it and the rebase continues on its own. <strong>Abort Rebase</strong>
-restores your branch exactly as it was if you change your mind.</p>
-<p>The ten Local Git commands do not have keyboard shortcuts to start
-with, because every letter after the QUILL Key is already in use. All
-ten are in the Command Palette and the <strong>Tools &gt; Git and GitHub
-&gt; Local Git</strong> menu, and you can assign your own shortcuts in
-<strong>Preferences &gt; Keyboard Shortcuts</strong>.</p>
-<h2 id="6-syncing-a-whole-folder">6. Syncing a whole folder</h2>
-<p>One more command: <strong>Tools &gt; Sync Folder with
+file you edit by hand. Choose an action for each row (pick, squash,
+reword or drop) and reorder with <strong>Move Up</strong> and
+<strong>Move Down</strong>. Press <strong>Start Rebase</strong>. If a
+step conflicts, the conflict walker opens; resolve it and the rebase
+carries on. <strong>Abort Rebase</strong> puts your branch back exactly
+as it was.</p>
+<p>The Local Git commands have no keys out of the box. All of them are
+in the Command Palette and the <strong>Tools &gt; Git and GitHub &gt;
+Local Git</strong> menu, and you can give them keys in the Keymap
+Editor.</p>
+<h2 id="6-syncing-a-whole-folder-quill">6. Syncing a whole folder
+(QUILL)</h2>
+<p><strong>Tools &gt; Git and GitHub &gt; GitHub &gt; Sync Folder with
 GitHub…</strong> keeps a whole folder in step with GitHub, such as a
 writing project or a notes folder. It works the same way as <strong>Sync
 Vault</strong> in <a href="05-start-a-vault.md">Start an Accessible
 Vault</a>, but on any folder you choose.</p>
 <h2 id="in-short">In short</h2>
-<p>Browse and save individual files without an account; sign in once for
-everything else. The Items viewer’s <strong>Batch…</strong> and
-<strong>Actions…</strong> menus cover everyday work on issues and pull
-requests. <strong>Tools &gt; Git and GitHub &gt; GitHub</strong> creates
-and manages repositories. <strong>Tools &gt; Git and GitHub &gt; Local
-Git</strong> covers the Git work on your own computer, like merge
-conflicts and interactive rebase.</p>
+<p>Open and save single files without an account; sign in once for
+everything else. The GitHub Workbench is where you read and change
+issues, pull requests, runs and repositories, and <code>Shift+F1</code>
+always says what you can do. <strong>Tools &gt; Git and GitHub &gt;
+GitHub</strong> creates and configures repositories, and <strong>Tools
+&gt; Git and GitHub &gt; Local Git</strong> covers the Git work on your
+own computer, such as merge conflicts and interactive rebase.</p>
 <p>To try all of this somewhere nothing can go wrong, <a
-href="11-practise-github-safely.md">Practise GitHub safely</a> gives you
+href="11-practise-github-safely.md">Practise GitHub safely</a> makes you
 a practice repository and walks you through reviewing, merging and
-fixing a failing check in your own copy.</p>
+reading a failed run in it.</p>
 </main>
 </body>
 </html>

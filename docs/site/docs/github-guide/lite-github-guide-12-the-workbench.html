@@ -246,17 +246,28 @@
 GitHub Workbench, place by place</h1>
 <h2 id="what-this-chapter-covers">What this chapter covers</h2>
 <p>The GitHub Workbench is one window for everything GitHub: what needs
-you, your repositories, searches, people, gists and projects. This
-chapter walks through it the way the window is laid out, one place at a
-time, starting with Start Here. By the end you will know where each
-thing lives, how to get there in one key, and how to ask the window what
-you can do wherever you are.</p>
+you, your repositories, searches, people, gists, projects and watches.
+The other chapters are about jobs, such as reviewing a pull request.
+This one is about the window itself, so you can find any place in it and
+know what is there.</p>
+<p>It walks through the tree the way it is laid out, one place at a
+time, starting with Start Here. Then it covers what you can do to a
+selected row, the help keys, Dry Run, the practice repository and
+Workbench Options.</p>
+<p>By the end you will know where each thing lives, how to get there in
+one key, and how to ask the window what you can do wherever you are.</p>
 <p>Every later section assumes three things, so here they are first.</p>
 <ul>
 <li><strong>Three panes.</strong> The tree on the left says where you
 are. The list says what is there. The details say what the selected row
-is. <code>F6</code> moves from pane to pane and then to the status bar;
-<code>Shift+F6</code> goes the other way.</li>
+is. <code>F6</code> moves from pane to pane, through the filter box, and
+then to the status bar; <code>Shift+F6</code> goes the other way. Once
+you have opened a place in the tree, its name says how many rows it had,
+such as “Issues (12)”, or “Issues (30 or more)” when GitHub had more
+than one page. The count is added after you move away, so it is never
+read out while you are on the place; you hear it the next time you
+arrive. Searches have no count, because their rows depend on what you
+typed.</li>
 <li><strong>Enter does the obvious thing.</strong> On an issue it reads
 it, on a pull request it opens the review, on a run it shows the jobs,
 on a repository it opens the repository’s own place in the tree.</li>
@@ -271,17 +282,21 @@ Mode</strong> (<code>Alt+V</code>, then <code>K</code>), and the GitHub
 menu (<code>Alt+G</code>) has the doors in: the Workbench itself, Inbox,
 this repository’s issues, its pull requests and its Actions runs. Each
 door opens the window at that place. If the window is already open, the
-door brings it forward instead of opening a second one.</p>
+door brings it forward instead of opening a second one. Chapter 1 has
+the other ways in.</p>
 <p>The Workbench is a window of its own, not a dialog. The editor stays
-usable while it is open, and <code>Alt+Tab</code> moves between them.
-Inside the Workbench, <code>Ctrl+Shift+E</code> brings back the editor
-that opened it. <code>Alt+F4</code> closes the Workbench;
-<code>Escape</code> never does. Escape clears the filter box first, and
-then goes back to where you were.</p>
-<p>The window remembers where you were for each account: the place you
-had selected, the branches of the tree you had open, and the
-repositories you visited. Next time it opens there, unless you have
-chosen Inbox or Start Here in Workbench Options.</p>
+usable while it is open, and <code>Alt+Tab</code> moves between them. A
+smaller window the Workbench opens, such as a run’s logs, blocks only
+the Workbench, never the editor. Inside the Workbench,
+<code>Ctrl+Shift+E</code> brings back the editor that opened it.
+<code>Alt+F4</code> closes the Workbench; <code>Escape</code> never
+does. Escape clears the filter box first, and then goes back to where
+you were. In Details, it returns you to the list instead.</p>
+<p>The window remembers where you were for each account: its size and
+how wide the tree is, the place you had selected, the branches of the
+tree you had open, and the repositories you visited. Next time it opens
+there, unless you have chosen Inbox or Start Here in Workbench Options.
+When you come back to a list, the row you were on is selected again.</p>
 <h2 id="start-here">Start Here</h2>
 <p>The first place in the tree, and the place the window opens until you
 have signed in. Its details pane says what the window is, whether you
@@ -299,6 +314,9 @@ requests, assignments and mentions, in one list.</li>
 <code>Ctrl+Q</code> marks the selected one read, <code>Delete</code>
 marks it done, and <code>Ctrl+Shift+Q</code> marks the whole list read;
 it asks first when there are more than twenty.</li>
+<li><strong>Invitations</strong> lists repositories you have been
+invited to, who invited you and with what access. Accept or Decline is
+on a row’s context menu.</li>
 <li><strong>Review Requests</strong>, <strong>Assigned to Me</strong>,
 <strong>Mentions</strong>, <strong>My Open Pull Requests</strong> and
 <strong>My Open Issues</strong> are the same work split by why it is
@@ -313,17 +331,24 @@ The Inbox marks them the same way.</li>
 </ul>
 <p>When one of these is empty, the details pane says so and says what
 would fill it, so an empty list never leaves you wondering whether it
-loaded.</p>
+loaded. Chapter 3 covers working through them.</p>
 <h2 id="repositories">Repositories</h2>
 <p>The repository you are working in comes first, then Pinned,
-Favorites, your own repositories, Starred, Watched and your
-organizations. <code>Ctrl+2</code> goes to the repository you are
-working in. <code>Ctrl+L</code> opens any other one: type
-<code>owner/name</code>, or paste a link, and it gets a place of its own
-here.</p>
+Favorites, your own repositories, Starred, Star Lists, Watched, My
+Packages, My Codespaces and your organizations. Three of GitHub’s own
+lists, read only, are here too: <strong>Licences</strong>,
+<strong>.gitignore Templates</strong> and <strong>Codes of
+Conduct</strong>, the choices a new repository offers.</p>
+<p><code>Ctrl+2</code> goes to the repository you are working in.
+<code>Ctrl+L</code> opens any other one: type <code>owner/name</code>,
+or paste a link, and it gets a place of its own here.</p>
 <p>Every repository has the same places under it, in the same order, so
-once you know one you know them all. <code>Ctrl+Shift+1</code> to
-<code>Ctrl+Shift+0</code> jump to them:</p>
+once you know one you know them all: Overview, Issues, Pull Requests,
+Issues and Pull Requests, Discussions, Merge Queue, Actions, Code,
+Releases, Labels, Milestones, Templates, Projects, Activity, People,
+Insights, Deployments and Environments, Wiki, GitHub Pages, Security and
+Settings. <code>Ctrl+Shift+1</code> to <code>Ctrl+Shift+0</code> jump to
+ten of them:</p>
 <table>
 <thead>
 <tr>
@@ -376,19 +401,36 @@ once you know one you know them all. <code>Ctrl+Shift+1</code> to
 </table>
 <p>A few things worth knowing:</p>
 <ul>
+<li><strong>Overview</strong> reads the repository’s README, description
+and community profile.</li>
 <li><strong>Issues and Pull Requests</strong> has both in one list,
 newest first, if you prefer reading them the way an inbox reads.</li>
 <li><strong>Merge Queue</strong> lists the default branch’s merge queue
 in order, when the repository has one: “2. #57 Fix the parser, running
 its checks”, with who queued it and the commit it was queued at in the
-details. A repository without a merge queue lists nothing; the node’s
+details. A repository without a merge queue lists nothing; the place’s
 note says why. Chapter 5 has the merge queue.</li>
+<li><strong>Actions</strong> holds Runs, Workflows, Runners, Caches and
+Artifacts (Chapter 6). <strong>Code</strong> holds Files, Branches,
+Commits, Tags, Commit Comments, Codespaces, and Upstream on a fork
+(Chapter 7).</li>
 <li><strong>Files</strong> lists the default branch a folder at a time.
 Enter on a folder opens it, and the first row, Up one folder, comes back
 out. Enter on a file opens it in the editor.</li>
-<li><strong>Settings</strong> lists the settings you can change, General
-and Branch Protection. Enter on one opens the same dialog the editor has
-always used, and that dialog asks before anything changes.</li>
+<li><strong>People</strong> holds Contributors and People, Forks,
+Collaborators and Team Access, Watchers and Invitations.
+<strong>Activity</strong> holds All Issue Comments, Push Activity and My
+Notifications Here.</li>
+<li><strong>Security</strong> holds Policy, Alerts, Dismissed and
+Resolved Alerts, Advisories, Code Scanning Analyses and CodeQL Databases
+(Chapter 8).</li>
+<li><strong>Settings</strong> holds General (the name, visibility and
+default branch), Branch Protection, Rulesets, Rule Insights, Secret and
+Variable Names, each kind of secret and variable, Environments,
+Webhooks, Deploy Keys, Autolinks, Issue Types, Custom Property Values
+and CODEOWNERS Problems. Enter on General or Branch Protection opens
+that setting, which asks before anything changes. Chapter 13 covers
+rulesets and branch protection.</li>
 <li><strong>Repository Actions</strong>, <code>Ctrl+Shift+G</code>,
 lists everything else you can do with the repository: star it, fork it,
 clone it, Codespaces, and its administration. It also opens three
@@ -403,16 +445,15 @@ not say, the cell is blank rather than guessed.</li>
 </ul>
 <p><code>Ctrl+N</code> makes something new where you are: an issue in
 Issues, a pull request in Pull Requests, a gist in My Gists, a saved
-search under Saved Searches, a pin under Pinned, and the repositories to
-read in Across Repositories. <code>Ctrl+Shift+N</code> asks what to
-make.</p>
+search under Saved Searches, a pin under Pinned, a watch under Watches,
+and a repository set under Repository Sets. <code>Ctrl+Shift+N</code>
+asks what to make.</p>
 <h3 id="a-new-issue-and-issue-forms">A new issue, and issue forms</h3>
 <p><code>Ctrl+N</code> in Issues reads the repository’s issue templates
 first, then asks which to start from: Blank issue, or one of the
-templates, each with its own description. That list now includes
-GitHub’s issue forms, the ones written in YAML that show as a form with
-boxes on the website. Choose one and QUILL Lite fills it as a real
-form:</p>
+templates, each with its own description. That list includes GitHub’s
+issue forms, the ones written in YAML that show as a form with boxes on
+the website. Choose one and QUILL fills it as a real form:</p>
 <ul>
 <li>Each field is its own labelled control: a text box, a larger text
 box for longer answers, a drop-down list, or a group of check boxes. A
@@ -427,8 +468,8 @@ sent until you say yes. The issue GitHub receives reads exactly like one
 filed from the form on the website, with each answer under its own
 heading.</li>
 </ul>
-<p>If a repository has a form QUILL Lite cannot fill, it says so once
-and leaves that one off the list; it is still there on GitHub, and Blank
+<p>If a repository has a form QUILL cannot fill, it says so once and
+leaves that one off the list; it is still there on GitHub, and Blank
 issue and the other templates are still offered.</p>
 <h3 id="a-new-pull-request">A new pull request</h3>
 <p><code>Ctrl+N</code> in Pull Requests opens <strong>New Pull
@@ -449,8 +490,8 @@ be merged and asks nobody to review it until you mark it ready.</li>
 anything.</li>
 </ul>
 <p>If the two branches are the same, or Merge from has nothing that
-Merge into does not already have, QUILL Lite says so instead of opening
-the window. If the branch already has an open pull request into the same
+Merge into does not already have, QUILL says so instead of opening the
+window. If the branch already has an open pull request into the same
 branch, you are taken to that one rather than making a second, and your
 text is kept. <strong>Cancel</strong> keeps what you typed too, for the
 rest of the session: open New Pull Request on the same two branches and
@@ -462,19 +503,105 @@ does not, on two tabs: Commits and Changed Files. Commits are newest
 first. GitHub gives at most 250 commits for one comparison, so when
 there are more the tab says so, for example “Commits (250 of 1,204,
 newest)”, and you know you are reading the most recent ones, not all of
-them.</p>
+them. <strong>Compare With Default</strong> (<code>Ctrl+B</code>)
+compares the selected branch, tag, release or commit with the default
+branch, and <strong>Compare With Previous</strong>
+(<code>Alt+Shift+B</code>) compares a tag or release with the one before
+it, or a commit with its parent.</p>
+<h3 id="templates-and-community-files">Templates and community
+files</h3>
+<p>A repository’s <strong>Templates</strong> place lists everything
+GitHub reads to shape new issues, pull requests and discussions: issue
+forms, Markdown issue templates, the template chooser, pull request
+templates, discussion forms, and the community files (code of conduct,
+contributing guide, security policy, support, governance, funding,
+citation and code owners). Each row says whether the file is the
+repository’s own, inherited from the organization’s <code>.github</code>
+repository, or missing.</p>
+<ul>
+<li><strong>Open Template…</strong> (Enter) opens an issue or discussion
+form in the builder, with every option labelled, and anything else as
+text. A missing community file starts from a short starter. Before
+<strong>Save</strong>, QUILL checks the form the way GitHub will, and
+each problem is named on its line. Save says where the file will go, the
+default branch or a new branch with a pull request when the branch is
+protected, and asks before it commits. Templates only take effect once
+they are on the default branch.</li>
+<li><strong>New Template…</strong> (<code>Ctrl+N</code> on Templates)
+makes an issue form, a discussion form, a pull request template or the
+chooser. An issue form can start from a starter (bug report, feature
+request, accessibility bug report, or a blank form) or <strong>From a
+SurveyJS or XLSForm file…</strong>: choose a SurveyJS form
+(<code>.json</code>) or an XLSForm (<code>.xlsx</code>), name the form,
+and it opens in the builder converted, with a sentence for every
+question type GitHub forms cannot hold, such as a signature.</li>
+<li><strong>Write it as plain text.</strong> In a form document,
+<strong>Tools &gt; Forms &gt; Save As GitHub Issue Form…</strong> saves
+the form, written in QUILL’s form language, as an issue form, after
+listing anything GitHub’s forms cannot hold. <strong>Open GitHub Issue
+Form…</strong> reads an issue form back into the form language, and
+keeps the labels, title prefix and ids so a later save gives them back.
+Chapter 12 of the WordPress and Forms guide has the details.</li>
+<li><strong>Convert Form or Template…</strong> turns a Markdown issue
+template into an issue form (each heading becomes a long text field), or
+an issue form into Markdown, after saying what the Markdown version
+loses.</li>
+<li><strong>Copy to Repositories…</strong> copies a template, or the
+whole set with its chooser, to other repositories, after a preview of
+each one.</li>
+</ul>
+<p>Three community files have a window of their own fields:
+<strong>FUNDING.yml</strong> (sponsor platforms and names),
+<strong>CITATION.cff</strong> (title, authors, version and DOI), and
+<strong>CODEOWNERS</strong>. In Code Owners, type a path in <strong>Who
+owns this path</strong> and press <strong>Look Up</strong> to hear which
+rule owns it and its owners. Press <strong>Check Owners</strong> to ask
+GitHub whether every owner exists and can write to the repository.
+GitHub quietly skips an owner who cannot, so a rule meant to protect a
+folder can protect nothing. Each owner gets one line in <strong>What the
+check found</strong>, problems first: no such account, no such team, or
+access below write. An email address cannot be checked from here and is
+listed as unchecked rather than passed, and so is any owner GitHub did
+not answer for.</p>
 <h2 id="search">Search</h2>
 <p>Choose a search, press <code>Ctrl+E</code> to move to the filter box,
 type, and press Enter. Plain words narrow the list you are looking at;
 GitHub’s own words, such as <code>is:open author:@me label:bug</code>,
-ask GitHub. <code>Ctrl+8</code> goes to Saved Searches, and
-<code>Ctrl+N</code> in a search keeps it there.</p>
+ask GitHub. <code>Ctrl+3</code> goes to Search, and <code>Ctrl+8</code>
+to Saved Searches; <code>Ctrl+N</code> in a search keeps it there.</p>
+<p>A search you use all the time can have a place of its own in the
+tree. In Saved Searches, choose <strong>Pin as Node</strong> on its
+context menu: it appears under Saved Searches, named by the search, and
+opening it asks GitHub for the results afresh. <strong>Unpin
+Node</strong> takes the place away and keeps the saved search;
+<strong>Remove Saved Search</strong> takes both.</p>
+<p>Besides issues and pull requests, code, commits, security advisories
+and repositories, Search has:</p>
+<ul>
+<li><strong>People and Organizations:</strong> accounts whose name or
+login matches, such as <code>jeff</code>, or with GitHub’s words,
+<code>type:org location:Tucson</code>. Each row says whether it is a
+person or an organization; Enter opens one.</li>
+<li><strong>Topics:</strong> GitHub topics, with what each is about and
+whether GitHub features it, such as “Accessibility: For everyone
+(featured)”.</li>
+</ul>
 <h2 id="people-gists-and-projects">People, Gists and Projects</h2>
-<p><code>Ctrl+4</code> goes to People: who you follow and who follows
-you. Enter on a person gives them a place in the tree, with their
-repositories and activity. Follow or Unfollow is on a person’s context
-menu. <code>Ctrl+6</code> goes to Projects; each repository’s own
-Projects are under it.</p>
+<p><code>Ctrl+4</code> goes to People: your profile, your keys,
+sponsorships, who you follow, who follows you, your teams, your billing,
+and <strong>Find a Person…</strong>. Enter on a person gives them a
+place in the tree, with their repositories and activity. Follow or
+Unfollow is on a person’s context menu.</p>
+<p>A person’s place also lists what GitHub shows of them publicly, read
+only: <strong>SSH Keys</strong>, <strong>GPG Keys</strong> and
+<strong>SSH Signing Keys</strong> (check one before giving them access
+to a server: “SSH key 4, ending abcdefgh.”), <strong>Social
+Accounts</strong>, <strong>Gists</strong>, <strong>Starred</strong>,
+<strong>Watching</strong>, <strong>Projects</strong>,
+<strong>Packages</strong>, and <strong>People They Follow:
+Activity</strong>.</p>
+<p><code>Ctrl+6</code> goes to Projects; each repository’s own Projects
+are under it, <code>Ctrl+Shift+7</code>. Chapter 4 covers Projects.</p>
 <h3 id="profiles">Profiles</h3>
 <p><strong>People &gt; My Profile</strong> is your own profile, and
 every person’s place in the tree starts with <strong>Profile</strong>,
@@ -492,6 +619,9 @@ contribution yet does not end the current streak.</li>
 <li>What they pinned: “Pinned: community-access/quill, An editor, 12
 stars.” These are repository rows, so Enter opens the repository.</li>
 </ul>
+<p><strong>Set Your Status…</strong> (<code>Ctrl+Alt+S</code>) sets your
+own GitHub status: a message, an emoji, busy or not, and when it
+clears.</p>
 <h3 id="my-keys">My Keys</h3>
 <p><strong>People &gt; My Keys</strong> lists the keys GitHub keeps for
 you, all three kinds together, one sentence each:</p>
@@ -507,8 +637,8 @@ So does an SSH signing key.</li>
 <p>The SHA256 fingerprint is the same one <code>ssh-keygen -lf</code>
 prints for the key on your computer, so you can tell which key is which
 without reading the key itself.</p>
-<p><code>Ctrl+N</code> there adds a key. QUILL Lite asks which kind,
-then whether to read it from a file, starting in your <code>.ssh</code>
+<p><code>Ctrl+N</code> there adds a key. QUILL asks which kind, then
+whether to read it from a file, starting in your <code>.ssh</code>
 folder, or paste it, then a name, suggesting the name written at the end
 of the key. It checks the key before sending: an SSH key where a GPG key
 belongs, or anything that is a private key, is refused with a sentence
@@ -526,7 +656,7 @@ sponsors you: $25 once, since 2026-03-04.”</p>
 first row says whether they take sponsorships, whether you sponsor them
 already, and what they say about it; each row after it is one of their
 tiers, with its price: “$5 a month: Coffee. Keeps the lights on.”</p>
-<p>Sponsoring spends real money, so QUILL Lite is careful:</p>
+<p>Sponsoring spends real money, so QUILL is careful:</p>
 <ul>
 <li><strong>Sponsor at This Tier…</strong> on a tier asks whether
 everyone may see it or only them, then says the price again, and that
@@ -564,24 +694,146 @@ is sent.</li>
 gist and opens it in the same window. If you change nothing, nothing is
 sent.</li>
 <li><strong>Star or Unstar</strong> is on the context menu.</li>
+<li><strong>Comments…</strong> lists the gist’s comments, oldest first,
+with “Add a comment…” at the top; choose one of yours to change or
+delete it.</li>
+<li><strong>History…</strong> lists every saved version, newest first:
+“2026-11-02 by jeff: 3 lines added, 1 removed.”</li>
+<li><strong>Forks…</strong> lists who copied it, and <strong>Fork
+Gist</strong> copies someone else’s gist to your own, where you can
+change it.</li>
 <li><strong>Delete Gist…</strong> (<code>Delete</code> on a gist) asks
 first, because a deleted gist, its files and its history cannot be
 brought back.</li>
+<li><strong>Gists I Starred</strong>, under Gists, lists the gists you
+starred, with who wrote each.</li>
 </ul>
+<h2 id="lists-of-settings">Lists of settings</h2>
+<p>Many of the things GitHub keeps as lists, such as secrets, issue
+types or the repositories a setting covers, are places in the tree that
+all work the same way. Each row reads as a sentence. <code>Ctrl+N</code>
+adds one, where GitHub allows it; <strong>Change…</strong> on the
+context menu changes the selected one; <code>Delete</code> deletes it,
+after asking. Where a list can only be read, it says so when it is
+empty, and the context menu has no Add or Delete.</p>
+<p><strong>Under People, for your own account:</strong></p>
+<ul>
+<li><strong>My Issue Fields:</strong> values your own repositories’
+issues can carry, such as Priority or Due date. <code>Ctrl+N</code> asks
+for its name, its kind (text, number, date, or single select), its
+choices for a single select, separated by commas, and a
+description.</li>
+<li><strong>My Installed Apps:</strong> the GitHub Apps installed where
+you can manage them, and whether each reaches all repositories or chosen
+ones. <strong>Repositories…</strong> on a row checks which repositories
+it may reach; QUILL adds and removes them one at a time, so a change
+someone else made meanwhile is kept.</li>
+<li><strong>My Email Addresses</strong>, <strong>My Social
+Accounts</strong>, <strong>Blocked People</strong>, <strong>My Issue
+Types</strong>, <strong>My Organizations’ Memberships</strong> and
+<strong>My Codespaces Secrets</strong>.</li>
+<li><strong>My Public Email Addresses</strong> and <strong>Repositories
+I Watch:</strong> read only.</li>
+</ul>
+<p><strong>Under an organization:</strong></p>
+<ul>
+<li><strong>Issue Fields:</strong> the organization’s issue fields, the
+same way as yours, plus who may see their values (everyone, or members
+only).</li>
+<li><strong>Failed Invitations</strong>, <strong>Public Members</strong>
+and <strong>Installed Apps:</strong> read only.</li>
+<li><strong>Immutable Releases: Repositories</strong>, <strong>Actions:
+Allowed Repositories</strong> and <strong>Self-hosted Runners: Allowed
+Repositories:</strong> the repositories a setting applies to when the
+organization chooses them one by one. <code>Ctrl+N</code> asks for a
+repository, as its name or owner/name; <code>Delete</code> takes one
+off. Set the setting itself to “chosen repositories” on the
+organization’s Properties first.</li>
+<li><strong>Dependabot Alerts</strong>, <strong>Secret Scanning
+Alerts</strong>, <strong>Code Scanning Alerts</strong> and
+<strong>Security Advisories:</strong> every repository’s, in one list. A
+secret’s value is never asked for, so it is never shown. Open a
+repository’s Alerts to dismiss or resolve one.</li>
+<li><strong>Actions, Dependabot, Codespaces and Copilot Agent
+Secrets:</strong> Change… on one sends a new value, sealed, or keeps it,
+and chooses all, private or selected repositories; Repositories Allowed…
+picks the selected ones.</li>
+<li><strong>Recent Events:</strong> the organization’s public activity,
+newest first.</li>
+<li><strong>Custom Property Values:</strong> every repository’s custom
+properties in one list.</li>
+<li><strong>Members</strong>, <strong>Invitations</strong>,
+<strong>Outside Collaborators</strong>, <strong>Security
+Managers</strong>, <strong>Teams</strong>, <strong>Organization
+Roles</strong>, <strong>Rulesets</strong>, <strong>Rule
+Insights</strong>, <strong>Access Review: People</strong> and
+<strong>Access Review: Teams:</strong> who is in the organization and
+what they may do. Chapter 13 covers them.</li>
+</ul>
+<p><strong>Under a repository:</strong></p>
+<ul>
+<li><strong>Activity &gt; All Issue Comments</strong>, <strong>Push
+Activity</strong> (pushes, force pushes, merges and branch changes) and
+<strong>My Notifications Here:</strong> read only.</li>
+<li><strong>Code &gt; Commit Comments:</strong> comments on commits.
+Change… rewrites one of yours; <code>Delete</code> deletes it.</li>
+<li><strong>People &gt; Watchers:</strong> who gets notifications for
+it.</li>
+<li><strong>Settings &gt; CODEOWNERS Problems:</strong> lines in the
+CODEOWNERS file GitHub could not use, with its suggestion.</li>
+<li><strong>Settings &gt; Rule Insights:</strong> recent pushes its
+rulesets passed, blocked or let through on a bypass.</li>
+<li><strong>Settings &gt; Custom Property Values:</strong> the
+organization’s properties as this repository has them.</li>
+</ul>
+<h2 id="watches">Watches</h2>
+<p><code>Ctrl+7</code> goes to Watches: rules, kept on this computer,
+that tell you when something happens on GitHub. Each row is one rule: a
+run finishes on a repository or branch, a review arrives on a pull
+request, a new release, or a new comment.</p>
+<ul>
+<li><code>Ctrl+N</code> adds one, Enter edits it, and
+<code>Delete</code> removes it.</li>
+<li><strong>Pause or Resume Watch</strong> stops a watch for a while
+without losing it.</li>
+<li><strong>Check Watches Now</strong> checks every watch at once,
+rather than waiting.</li>
+<li><strong>Why?</strong> says what the watch looks for, how often it is
+checked, when it was last checked, and what it found.</li>
+</ul>
+<p>Watches are checked on the same interval as notifications, set in
+Workbench Options, while the Workbench is open, and each row says when
+it was last checked. A watch never marks a notification read, and it
+changes nothing on GitHub. It is not the same as watching a repository
+on GitHub, which is <strong>Watch or Unwatch</strong> on a repository’s
+context menu and sends notifications.</p>
+<h2 id="why-ctrl3-ctrl4-and-ctrl8-go-places-here">Why Ctrl+3, Ctrl+4 and
+Ctrl+8 go places here</h2>
+<p>Elsewhere in the family, <code>Ctrl+3</code>, <code>Ctrl+4</code> and
+<code>Ctrl+8</code> are AI keys: a document task, Choose Your AI, and
+Which AI Am I Using. The Workbench has no AI menu, so here they keep
+their place in the Go row with the other digits: <code>Ctrl+3</code> is
+Search, <code>Ctrl+4</code> is People and <code>Ctrl+8</code> is Saved
+Searches. Switch back to the editor (<code>Ctrl+Shift+E</code>) and they
+are AI keys again.</p>
 <h2 id="across-repositories">Across Repositories</h2>
 <p><code>Ctrl+0</code> goes to Across Repositories: one kind of thing
 from several repositories, in one list. It is for questions such as
 “what has been released across all my projects this month?” or “which
 runs failed anywhere?”.</p>
-<p>The first time, press <code>Ctrl+N</code> there to choose the
-repositories. Type them one per line, as <code>owner/name</code> or as a
-link; anything that is not a repository is left out, and QUILL Lite
-tells you which. Cancel keeps the list you had. The place itself then
-lists the repositories you chose, and <code>Ctrl+N</code> changes them
-whenever you like. The list belongs to the account you are signed in
-with.</p>
-<p>Under it are eight lists, each drawn from every chosen repository at
-once:</p>
+<p>The repositories you read come from a <strong>repository
+set</strong>. <strong>Repository Sets</strong>, under Across
+Repositories, lists your named sets. <code>Ctrl+N</code> there makes
+one: choose repositories from a checklist, make the set from a filter
+such as <code>org:name topic:x</code>, or take every repository you can
+reach. Enter on a set uses it; <strong>Rename Set…</strong>,
+<strong>Edit Repositories…</strong> and <strong>Set Filter…</strong>
+change it, and <code>Delete</code> forgets it after asking. Sets stay on
+this computer, for the account you are signed in with.
+<code>Ctrl+N</code> on Across Repositories itself edits the repositories
+of the set in use.</p>
+<p>Under it are eight lists, each drawn from every repository in the set
+at once:</p>
 <ul>
 <li>Issues and Pull Requests</li>
 <li>Releases</li>
@@ -596,13 +848,21 @@ once:</p>
 crash”, and the details pane names the repository too, so Enter,
 Shift+Enter, Comment and the other commands act on the right one. Rows
 are newest first. Each repository gives at most 100 rows to a list, so
-one busy repository cannot crowd out the rest.</p>
+one busy repository cannot crowd out the rest. <strong>Next
+Repository</strong> and <strong>Previous Repository</strong>, on a row’s
+context menu, jump to the next repository’s rows, and <strong>View More
+from This Repository</strong> reads more of one.</p>
 <p>The status bar says how many rows came from how many repositories,
 and names every repository that could not be read and why, such as “not
 found, or no access” or “Discussions are off”. A repository never just
-goes missing from the list. A fork whose upstream you also chose adds no
-issues of its own, because on GitHub a fork’s issues are its upstream’s;
-the status bar says so, and you read them once, under the upstream.</p>
+goes missing from the list. A fork whose upstream is also in the set
+adds no issues of its own, because on GitHub a fork’s issues are its
+upstream’s; the status bar says so, and you read them once, under the
+upstream.</p>
+<p><strong>Fleet</strong> has one line per repository in the set: the
+exact revision of its default branch, its checks, open pull requests,
+latest release and alerts, and when it was read. A repository that could
+not be read keeps its line, with the reason.</p>
 <h3 id="each-name-across-the-set">Each name across the set</h3>
 <p>GitHub keeps a label, a tag or a secret inside one repository, but
 you think of them by name across many: “the bug label”, “the v3.2.0
@@ -647,6 +907,13 @@ No secret’s old value can be read, by anyone.</li>
 <li><strong>Rename Everywhere</strong> (labels, branches). For a branch
 the preview says where it is the default branch, where its protection
 moves with it, and how many open pull requests GitHub retargets.</li>
+<li><strong>Merge Into</strong> (labels): move every item to another
+label, then delete this one.</li>
+<li><strong>Close Everywhere</strong> and <strong>Move Open Work
+To</strong> (milestones): close every open copy of a milestone, or move
+each repository’s open items to another milestone of its own.</li>
+<li><strong>Find Uses</strong> searches every issue and pull request
+that has it, across the set.</li>
 <li><strong>Turn On or Off Everywhere</strong> (webhooks).</li>
 <li><strong>Delete Everywhere</strong> (labels, topics, tags,
 environments, secrets, variables, webhooks, deploy keys, autolinks). A
@@ -664,23 +931,14 @@ GitHub, so they are not promoted.</li>
 <p>Secrets, environments, webhooks, deploy keys and rules decide who may
 deploy, what is kept secret or where data is sent, so changing them
 across repositories needs Full in the Workbench.</p>
-<h2 id="watches-and-why-ctrl3-ctrl4-and-ctrl8-go-places-here">Watches,
-and why Ctrl+3, Ctrl+4 and Ctrl+8 go places here</h2>
-<p>Watches (<code>Ctrl+7</code>) is shown but not built yet, so its key
-already lands on a place that says what it will hold.</p>
-<p>Elsewhere in the family, <code>Ctrl+3</code>, <code>Ctrl+4</code> and
-<code>Ctrl+8</code> are AI keys: a document task, Choose Your AI, and
-Which AI Am I Using. The Workbench has no AI menu, so here they keep
-their place in the Go row with the other digits: <code>Ctrl+3</code> is
-Search, <code>Ctrl+4</code> is People and <code>Ctrl+8</code> is Saved
-Searches. Switch back to the editor (<code>Ctrl+Shift+E</code>) and they
-are AI keys again.</p>
 <h2 id="doing-things-to-what-is-selected">Doing things to what is
 selected</h2>
 <p>Enter does the obvious thing; the Applications key, or
 <code>Shift+F10</code>, opens the context menu, with the obvious thing
 first and Properties last; and <code>Alt+Enter</code> shows everything
-about the selected row on one sheet.</p>
+about the selected row on one sheet (Chapter 13). The
+<strong>Item</strong> menu (<code>Alt+I</code>) has the same commands as
+the context menu.</p>
 <p>The keys you will use most:</p>
 <table>
 <thead>
@@ -693,6 +951,11 @@ about the selected row on one sheet.</p>
 <tr>
 <td><code>Ctrl+Shift+M</code></td>
 <td>Comment on the selected issue or pull request</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+I</code></td>
+<td>Read the selected issue, pull request or discussion as one
+document</td>
 </tr>
 <tr>
 <td><code>Ctrl+Shift+D</code></td>
@@ -719,6 +982,10 @@ about the selected row on one sheet.</p>
 <td>Assign the selected issue to Copilot</td>
 </tr>
 <tr>
+<td><code>Ctrl+Shift+T</code></td>
+<td>Start the selected issue or pull request in a local worktree</td>
+</tr>
+<tr>
 <td><code>Ctrl+D</code></td>
 <td>Keep the selected row under Favorites, or take it out</td>
 </tr>
@@ -737,6 +1004,11 @@ asking</td>
 </tr>
 </tbody>
 </table>
+<p><code>Delete</code> always does the safe thing for the kind of row,
+and asks first whenever it cannot be undone: on a branch, a label, a
+release’s file, a gist, an Actions cache or a workflow run it deletes
+that one thing, after asking. It never deletes the repository’s default
+branch. Enter never deletes anything.</p>
 <h3 id="taking-a-list-with-you">Taking a list with you</h3>
 <p><strong>Export List…</strong> (<code>Ctrl+Shift+X</code>), on the
 Workbench’s File menu, saves the list you are looking at, as it is
@@ -782,64 +1054,78 @@ them sub-issues of an issue, by number; leave it empty for none.</li>
 </ul>
 <p>Afterwards a window lists each row or line with the issue it made, or
 why GitHub refused it, and Change History has each issue made.</p>
-<p><code>Delete</code> always does the safe thing for the kind of row,
-and asks first whenever it cannot be undone: on a branch, a label, a
-release’s file, a gist, an Actions cache or a workflow run it deletes
-that one thing, after asking. It never deletes the repository’s default
-branch. Enter never deletes anything.</p>
-<h3 id="everything-is-done-here-now">Everything is done here now</h3>
-<p>The old GitHub Items window is retired, and nothing hands you over to
-it. What it did, the Workbench does itself, on the selected row; where a
-job needs a window, such as a run’s logs, that window opens in front of
-the Workbench and blocks only the Workbench, never the editor. Each
-row’s context menu has its own list, and <code>Shift+F1</code> reads it
+<h3 id="each-kind-of-rows-own-commands">Each kind of row’s own
+commands</h3>
+<p>Everything happens in the Workbench, on the selected row; where a job
+needs a window, such as a run’s logs, that window opens in front of the
+Workbench and blocks only the Workbench, never the editor. Each row’s
+context menu has its own list, the commands you use most first and the
+rest under <strong>More</strong>, and <code>Shift+F1</code> reads it
 with the keys:</p>
 <ul>
 <li><strong>An issue:</strong> Comment, Close or Reopen, Labels,
-Assignees, Milestone, View Timeline, Assign to Copilot, Lock or Unlock
+Assignees, Milestone, Projects, Edit Title, React, View Timeline, Read
+as Document, Summarize Discussion, Assign to Copilot, Lock or Unlock
 Conversation, Pin or Unpin, Transfer Issue to another repository with
-the same owner, Set Issue Type, and Reorder Sub-issues.</li>
+the same owner, Check or Uncheck a Task, Convert Tasks to Sub-issues,
+Create Branch for This Issue, Unlink Branch, Set Issue Type, Reorder
+Sub-issues, Relationships, Issue Fields, Delete Issue, and Start in
+Local Worktree.</li>
 <li><strong>A pull request:</strong> Review (Enter), File Differences,
-Merge, View Timeline and the rest. Merge asks how (Squash and merge,
+Comment, Merge, Why Can’t I Merge?, Merge Selected, Auto-Merge, Reviews,
+the merge queue, Open Patch in Editor, Revert Pull Request, Resolve
+Conflicts in a Worktree, and the rest. Merge asks how (Squash and merge,
 Merge commit or Rebase), then asks you to type the pull request’s number
 before anything happens, because a merge changes the branch for
 everyone.</li>
 <li><strong>A workflow run:</strong> Jobs and Logs (Enter), What Failed,
-Re-run Failed Jobs Only, Re-run Workflow, Cancel Run, View Artifacts,
-Combined Check Status, Review Pending Deployments, Approve Run from a
-Fork, and Delete Run.</li>
-<li><strong>A workflow:</strong> its Runs (Enter), and Run Workflow on
-Branch.</li>
-<li><strong>A release:</strong> its Assets (Enter), each with Download,
-Copy Link and Delete Asset; Edit Release; Draft Release Notes; and
-Upload Asset.</li>
-<li><strong>A branch:</strong> its Commits (Enter), Compare Branches,
-Copy Name, and Delete Branch, which asks you to type the branch
-name.</li>
-<li><strong>A commit or a tag:</strong> Open, and Commit Comments, to
-read and write comments on the commit and its lines.</li>
-<li><strong>A tag</strong>, besides: Read Tag Message, and Delete
-Tag.</li>
+Re-run Failed Jobs Only, Re-run Workflow, Re-run One Job, Cancel Run
+(<code>Ctrl+Cancel</code>, the Ctrl+Break key), Force Cancel, Download
+Logs, Delete Logs, Earlier Attempts, View Artifacts, Combined Check
+Status, Review Pending Deployments, Approve Run from a Fork, and Delete
+Run.</li>
+<li><strong>A workflow:</strong> its Runs (Enter), Run Workflow on
+Branch, Turn Workflow On or Off, and Edit Workflow.</li>
+<li><strong>A branch:</strong> its Commits (Enter), Compare With
+Default, Compare Branches, Merge Into, Download Source, Copy Name, and
+Delete Branch, which asks you to type the branch name.</li>
+<li><strong>A commit or a tag:</strong> Open, Commit Comments, to read
+and write comments on the commit and its lines, and Compare With
+Previous. A commit also has Set Status.</li>
+<li><strong>A tag</strong>, besides: Read Tag Message, Download Source,
+and Delete Tag.</li>
 <li><strong>A label:</strong> Find Issues with Label (Enter), Edit Label
 and Delete Label.</li>
-<li><strong>A security alert:</strong> Open, and Dismiss or Reopen
-Alert, with a reason.</li>
+<li><strong>A milestone:</strong> Find Issues in Milestone (Enter), and
+Delete Milestone.</li>
+<li><strong>A security alert:</strong> Open, Dismiss or Reopen Alert,
+with a reason, Copilot Autofix, and Show Every Place.</li>
 <li><strong>A discussion:</strong> Open Discussion Thread, to read and
-reply.</li>
+reply, and Read as Document.</li>
+<li><strong>A file or folder:</strong> Open in Editor or Open Folder,
+and Who Owns This?, which names the CODEOWNERS rule.</li>
 <li><strong>An Actions cache:</strong> Show Details and Delete
 Cache.</li>
 <li><strong>A runner:</strong> Show Details, Runner Labels, Remove
 Runner, Open on GitHub (its settings page) and Copy Link.</li>
-<li><strong>A package:</strong> Show Details, Open on GitHub, Delete
-Package Version and Delete Package.</li>
+<li><strong>A package:</strong> Show Details, Show Versions, Restore
+Package Version, Delete Package Version and Delete Package.</li>
 <li><strong>A security advisory:</strong> Show Details, Publish or Close
 Advisory, Request CVE, Open on GitHub and Copy Link.</li>
 <li><strong>A key:</strong> Show Details, Delete Key and Open on
 GitHub.</li>
-<li><strong>A webhook:</strong> Show Details, Ping, Recent Deliveries,
-Change Address or Secret, and Delete Webhook.</li>
+<li><strong>A webhook:</strong> Show Details, Ping, Send Test Push, Turn
+On or Off, Recent Deliveries, Change Address or Secret, and Delete
+Webhook.</li>
 <li><strong>A deploy key or an autolink:</strong> Show Details, Delete,
 and Open on GitHub.</li>
+<li><strong>An environment:</strong> Show Details, Deployments, Secrets,
+Variables, Branch Policies, Protection Rules, and Delete.</li>
+<li><strong>A codespace:</strong> Show Details, Start, Stop, Change
+Machine, Export to a Branch, Publish to a New Repository, and
+Delete.</li>
+<li><strong>A GitHub Pages site:</strong> Show Details, Check Site,
+Rebuild and Turn Off Pages.</li>
 <li><strong>The wiki:</strong> Open on GitHub and Clone Wiki.</li>
 <li><strong>A sponsorship:</strong> Show Details and Cancel Sponsorship.
 <strong>A sponsor tier:</strong> Show Details and Sponsor at This
@@ -848,17 +1134,161 @@ Tier.</li>
 Unsubscribe from Thread, and Snooze for One Day. Snoozing hides it in
 the Workbench on this computer until tomorrow and changes nothing on
 GitHub; Unsnooze Locally brings it back.</li>
+<li><strong>An invitation:</strong> Accept Invitation and Decline
+Invitation.</li>
 <li><strong>A repository:</strong> Open, Star or Unstar, Watch or
-Unwatch, Clone, Pin, and Star Lists; in Star Lists, Rename or Delete
-Star List too.</li>
+Unwatch, Clone, Send Repository Dispatch, Pin, and Star Lists; in Star
+Lists, Rename or Delete Star List too.</li>
 <li><strong>A person:</strong> Open, and Follow or Unfollow.</li>
+<li><strong>A team:</strong> Members and Access, Pending Invitations and
+Delete Team.</li>
+<li><strong>An organization:</strong> Open, Roles, and Rulesets (Chapter
+13).</li>
+<li><strong>A watch:</strong> Edit Watch, Pause or Resume Watch, Check
+Watches Now, Remove Watch and Why?.</li>
 </ul>
-<p>Summarize Discussion and Start in Local Worktree are QUILL’s: they
-use its AI connection and its local Git. In QUILL Lite those two rows
-are greyed, and <code>Shift+F1</code> says why.</p>
+<p>Summarize Discussion uses the AI connection of the editor that opened
+the Workbench, and Start in Local Worktree uses its local Git. When the
+editor has not given the Workbench either one, the row is greyed and
+says why.</p>
+<h3 id="what-you-hear-afterwards">What you hear afterwards</h3>
 <p>Every change asks first when it cannot be undone, runs without
 freezing the window, and says one sentence about what GitHub confirmed.
 <code>F9</code> says it again.</p>
+<p>Those sentences follow the same setting as the editor’s copy and
+paste, <strong>When a command does something, give me</strong> (QUILL
+Guide, chapter 11):</p>
+<ul>
+<li>A change that worked plays the task-complete sound. If its sentence
+names or counts what changed, such as “Created bug” or “Saved 3 changes
+to Issue #12”, it is always spoken as well, because no sound can carry a
+name or a number. Only a bare acknowledgement, such as “Saved.” or
+“Copied.”, follows the setting: the sound, the words, both or neither,
+as it does for <code>Ctrl+C</code>.</li>
+<li>Something that did not work, starting “Could not”, plays the error
+sound when sounds are on, and is always spoken, whatever the setting, so
+you always hear why.</li>
+<li>Everything else, such as “Open a repository first”, is spoken with
+no sound.</li>
+</ul>
+<p><code>F9</code> says the last result even when you only heard its
+sound. Chapter 10 lists the refusals and what to do about each.</p>
+<h2 id="more-commands-on-rows">More commands on rows</h2>
+<p>Many rows also have commands that make one call to GitHub and say
+what came back, or show a longer answer in a window to read and copy.
+They are on the row’s context menu (<code>Shift+F10</code>, under More
+when the menu is long) and on the Item menu. Each asks before it changes
+anything, and anything that holds a token (a runner’s setup or removal
+commands) goes to the clipboard and is never said or shown. Here they
+are by what you are doing.</p>
+<h3 id="learning-about-a-repository">Learning about a repository</h3>
+<ul>
+<li><strong>A repository:</strong> Languages, License, Star History,
+Sponsor Links (its FUNDING.yml), Dependency Manifests, SBOM Report, and
+Compare Dependencies… (between two branches, tags or commits, with
+licences and known vulnerabilities).</li>
+<li><strong>A commit:</strong> Branches at This Commit, and Check Run
+Details… (a check’s summary and every annotation).</li>
+<li><strong>A release:</strong> GitHub’s Release Notes…, the notes
+GitHub writes from the changes since another tag.</li>
+</ul>
+<h3 id="looking-after-a-repository">Looking after a repository</h3>
+<ul>
+<li><strong>A repository:</strong> Mark Its Notifications Read, Set a
+Custom Property…, Ruleset History…, Require Sign-off on Web Commits…,
+Fork Workflow Settings and Fork Workflows from Private
+Repositories….</li>
+<li><strong>An environment:</strong> Pin Environment, Unpin Environment
+and Move Environment….</li>
+</ul>
+<h3 id="builds-and-runners">Builds and runners</h3>
+<ul>
+<li><strong>A workflow run:</strong> Read a Step’s Log…, one step at a
+time.</li>
+<li><strong>A commit:</strong> Re-run a Check Suite….</li>
+<li><strong>Runners:</strong> in a repository’s Runners or an
+organization’s, Just-in-Time Runner… (a runner that takes one job) and
+Is a Runner Version Retiring?…; in an organization’s, New Organization
+Runner…; on a runner, Removal Commands…, and on an organization’s runner
+Add Runner Label… and Remove Runner Label…. <strong>A runner
+group:</strong> Runners in This Group, Hosted Runners in This Group, Add
+a Runner to This Group…, Remove a Runner from This Group….</li>
+</ul>
+<h3 id="reviews-issues-and-discussions">Reviews, issues and
+discussions</h3>
+<ul>
+<li><strong>A pull request:</strong> Re-request Review…, Dependency
+Review (what it changes in the dependencies, with licences and known
+vulnerabilities), and Dependabot Commands….</li>
+<li><strong>An issue:</strong> Link a Pull Request That Closes It… and
+Unlink a Pull Request….</li>
+<li><strong>A discussion:</strong> Close Discussion… (resolved, outdated
+or a duplicate), Reopen Discussion, Delete Discussion…, Upvote, Remove
+Upvote, Vote… (in its poll), Edit a Comment… and Delete a Comment….</li>
+<li><strong>A commit:</strong> the reactions on its comments: Reactions
+on a Commit Comment…, React to a Commit Comment…, Remove My Reaction
+from a Commit Comment….</li>
+</ul>
+<h3 id="security">Security</h3>
+<ul>
+<li><strong>A repository:</strong> Secret Scanning History, and Allow a
+Blocked Secret… (the placeholder id <code>git push</code> printed, and
+why).</li>
+<li><strong>A secret scanning alert:</strong> Where It Was Found.</li>
+<li><strong>A security advisory:</strong> Advisory Comments, Comment on
+Advisory…, Edit an Advisory Comment…, Make a Private Fork for the
+Fix.</li>
+<li><strong>An organization:</strong> Security Overview (open alerts in
+every repository, worst first; a kind GitHub will not show you is said,
+never counted as none), and Members Without Two-Factor.</li>
+</ul>
+<h3 id="organizations-and-teams">Organizations and teams</h3>
+<ul>
+<li><strong>An organization:</strong> Dependabot Repository Access, Give
+Dependabot a Repository…, Take a Repository from Dependabot…,
+Dependabot’s Default Access…, Make Someone an Outside Collaborator…,
+Define a Custom Property…, Set Repositories’ Custom Property…, New
+Team…, Accept Membership, My Activity Here, Require Sign-off on Web
+Commits…, and Follow Organization and Unfollow Organization.</li>
+<li><strong>A team:</strong> Pending Invitations and Delete Team….
+<strong>An invitation to an organization:</strong> Teams It Adds
+To.</li>
+</ul>
+<h3 id="projects">Projects</h3>
+<ul>
+<li><strong>A Project:</strong> Add Draft Issue…, New Field…, Delete
+Field…, Post Status Update…, Link to Repository…, Unlink from
+Repository…, Template…, Copy Project…, Delete Project…, New View… and
+Items in a View….</li>
+</ul>
+<h3 id="your-own-account">Your own account</h3>
+<ul>
+<li><strong>Your sponsorships:</strong> Set Up a Sponsors Profile…, New
+Sponsor Tier… and Patreon Sponsorships…; on a sponsorship, Sponsorship
+Preferences…; on one of your tiers, Publish Tier and Retire Tier….</li>
+<li><strong>Your emails:</strong> Email Visibility…. <strong>Your
+profile:</strong> Interaction Limits, Limit Interactions… and Lift
+Interaction Limits.</li>
+</ul>
+<h3 id="copilot">Copilot</h3>
+<ul>
+<li><strong>Copilot’s cloud agent, on a repository:</strong> Start an
+Agent Task…, Agent Tasks, An Agent Task’s Progress…, Automations, New
+Automation…, Run an Automation…, Rename an Automation…, Delete an
+Automation…, An Automation’s History…, An Automation’s Tasks…,
+Automation Tools and Triggers, Agent Secrets from the Organization and
+Agent Variables from the Organization. <strong>On a pull
+request:</strong> Ask Copilot to Review, Agent Merge, Turn On Agent
+Merge and Turn Off Agent Merge…. <strong>On your profile:</strong> My
+Agent Tasks and My Automations. These need a Copilot plan with the cloud
+agent, and GitHub calls them a preview: QUILL sends only what GitHub
+documents and reads you GitHub’s own answer.</li>
+</ul>
+<p>A few of these use parts of GitHub newer than the description QUILL
+was built against (closing references, a Project’s views and issue
+fields). Those first read from GitHub what the change needs, and if
+GitHub has changed it, they send nothing and say to use Open on GitHub
+instead.</p>
 <h2 id="hearing-where-you-are">Hearing where you are</h2>
 <p><code>Alt+1</code> to <code>Alt+9</code> say something and move
 nothing: where you are, what is selected, the selected item’s state, the
@@ -874,28 +1304,50 @@ and in <strong>Read as Document…</strong>, QUILL reads each one by its
 name instead: “Shipped <span class="emoji" data-emoji="tada">🎉</span>”
 is “Shipped party popper”, and <code>:+1:</code> is “thumbs up”. A
 shortcode inside code, between backticks or in a code block, is left as
-typed, since there it is code, and so is one QUILL Lite does not
-know.</p>
+typed, since there it is code, and so is one QUILL does not know.</p>
 <h2 id="help-and-learning">Help and Learning</h2>
 <p>The last place in the tree is help you can walk through like any
 other list.</p>
 <ul>
 <li><strong>Do Something</strong> has tasks in plain words, such as Fix
-a failed run. Enter reads the steps; Take Me There, on the context menu,
-goes to the place.</li>
+a failed run. Enter reads the steps. The context menu has three more:
+<ul>
+<li><strong>Take Me There</strong> goes to the place the task is
+about.</li>
+<li><strong>Walk Me Through It</strong> goes there too, then says the
+first step only. When you have done it, the next step is said, and so on
+to the end. <code>F1</code> says the step again, <code>Shift+F1</code>
+lists all the steps with where you are, and <code>Escape</code> stops
+the walk. A step that only moves the selection, such as “Arrow down the
+list”, counts as done when you run the next command.</li>
+<li><strong>Do It</strong> runs the one command a task comes down to,
+where it belongs, with its usual dialog: File an issue opens New Issue
+in the repository’s Issues. It is greyed on tasks that take more than
+one command.</li>
+</ul></li>
 <li><strong>The Guide</strong> lists this book’s chapters. Enter opens
 one.</li>
 <li><strong>Words</strong> is the GitHub glossary. Type a word to jump
 to it.</li>
 <li><strong>Keys</strong> has every key in the window, grouped by what
 it does.</li>
-<li><strong>Tutorials</strong> lists the GitHub lessons; Tutorials on
-the Workbench’s own Help menu (<code>Ctrl+F2</code>) goes there. Enter
-walks the selected lesson here, one step at a time, with your keys. Each
-lesson uses the practice repository below.</li>
+<li><strong>Tutorials</strong> lists the GitHub lessons, each with where
+you are in it (“done”, “step 3 of 7”), and says how many you have done.
+Enter opens the lesson in the editor’s Tutorials window. Walk Me Through
+It, on the context menu, says it here instead, one step at a time, with
+your keys. In QUILL Lite, which has no GitHub lessons of its own, Enter
+walks it here too. <strong>Help &gt; Tutorials</strong>
+(<code>Ctrl+F2</code>) goes straight there.</li>
 <li><strong>What Changed</strong> says what is new.</li>
+<li><strong>Tips</strong> holds QUILLBert’s tips, one short thing worth
+trying in each. They wait in this list and are never pushed at you.</li>
 <li><strong>Ask a Person</strong> says how to write to <a
-href="mailto:support@community-access.org">support@community-access.org</a>.</li>
+href="mailto:support@community-access.org">support@community-access.org</a>,
+and has <strong>Report a Help Problem</strong>: for help that was wrong,
+missing or hard to follow. Enter opens a message in your own email,
+already saying where you were and the last thing the Workbench said, for
+you to change and send. The Workbench sends nothing, and no token or
+password is ever in it.</li>
 </ul>
 <p>The help keys work everywhere in the window:</p>
 <table>
@@ -943,8 +1395,28 @@ Learning</td>
 <td><code>Ctrl+Alt+Shift+F1</code></td>
 <td>What Can I Say Here: what F11 can do in this window</td>
 </tr>
+<tr>
+<td><code>Ctrl+Alt+K</code></td>
+<td>Key Describer: press keys to hear what each does here, without doing
+it; <code>Escape</code> stops</td>
+</tr>
 </tbody>
 </table>
+<p><strong>Why?</strong> explains something the Workbench did on its
+own, with no key from you. When there is something to explain,
+<code>Shift+F1</code> lists Why? first, and watch and notification rows
+also have it on their context menu. It covers:</p>
+<ul>
+<li><strong>A watch:</strong> what it looks for, how often it is
+checked, when it was last checked, and what it found.</li>
+<li><strong>A notification:</strong> the reason GitHub gave for sending
+it, and what decides that.</li>
+<li><strong>A filter:</strong> whether it went to GitHub as a search, or
+covers only the rows already loaded, and how to read more when it
+does.</li>
+</ul>
+<p>Shift+F1 already says why a command is greyed, and a sheet says why a
+field is read-only beside the field.</p>
 <h2 id="say-or-type-a-command">Say or Type a Command</h2>
 <p><code>F11</code> works here as it does in the editor, with this
 window’s own commands. Type what you want, such as “show the pull
@@ -958,25 +1430,39 @@ sentence; their menu rows and keys still work.</p>
 (<code>Ctrl+Alt+Shift+F1</code>) lists what you can ask for in this
 window, with an example for each. In this window, requests are matched
 on this computer only and are never sent anywhere.</p>
+<p>For a change to many items at once, described in words, use
+<strong>Tools &gt; Plain-Language Batch…</strong>
+(<code>Ctrl+Shift+S</code>) instead. Chapter 13 covers it.</p>
 <h2 id="dry-run">Dry Run</h2>
-<p><strong>Dry Run</strong>, on the Workbench’s Tools menu, is a switch
-for the whole Workbench (its key there is Ctrl+Alt+D). While it is on,
-every command still asks its questions and shows its preview exactly as
-usual, and then, at the moment it would change something on GitHub, it
-stops and says what it would have sent: “Dry run: QUILL would send PATCH
+<p><strong>Tools &gt; Dry Run</strong> (<code>Ctrl+Alt+D</code>) is a
+switch for the whole Workbench. While it is on, every command still asks
+its questions and shows its preview exactly as usual, and then, at the
+moment it would change something on GitHub, it stops and says what it
+would have sent: “Dry run: QUILL would send PATCH
 /repos/octo/app/issues/7 (state, state_reason). Nothing was changed.”
 Lists, sheets, previews and everything else that only reads keep
 working.</p>
 <p>It is for learning a command without consequences, and for checking a
 big batch twice before you send it for real. The Account cell of the
 status bar says “Dry Run: nothing is sent” while it is on, and it stays
-on until you turn it off again or close QUILL Lite. Local Git work, such
-as making a worktree, does not touch GitHub and is not stopped.</p>
+on until you press <code>Ctrl+Alt+D</code> again or close QUILL. Local
+Git work, such as making a worktree, does not touch GitHub and is not
+stopped.</p>
+<h2 id="the-github-api-console">The GitHub API Console</h2>
+<p><strong>Tools &gt; GitHub API Console…</strong>
+(<code>Ctrl+Shift+J</code>) sends any GitHub REST request or GraphQL
+query you type, for the times no command does what you need. It
+completes paths from GitHub’s own description of its API, says what a
+request does and what it needs before you send it, and shows the answer
+as a tree you can arrow through. A <code>GET</code> only reads. Any
+other method changes something, so it needs Full in the Workbench and
+asks you to type the method before it sends. Dry Run stops it like any
+other change.</p>
 <h2 id="practice-on-github">Practice on GitHub</h2>
-<p><strong>Practice on GitHub…</strong>, on the Workbench’s Help menu
-(Ctrl+Alt+P there), makes a private repository in your own account,
-<code>quill-practice</code>, to learn the writes on, where nothing
-matters. After asking, QUILL Lite fills it with:</p>
+<p><strong>Help &gt; Practice on GitHub…</strong>
+(<code>Ctrl+Alt+P</code>) makes a private repository in your own
+account, <code>quill-practice</code>, to learn the writes on, where
+nothing matters. After asking, QUILL fills it with:</p>
 <ul>
 <li>three issues: a typo to label, assign and close; a task list to
 check off and turn into sub-issues; and a question to answer and close
@@ -992,19 +1478,85 @@ repository. The next time, the same command offers <strong>Open
 It</strong>, <strong>Delete It and Start Over…</strong> and
 <strong>Delete It…</strong>; both deletions ask first. GitHub lets an
 app delete a repository only when you signed in with the
-<code>delete_repo</code> permission; without it, QUILL Lite says so and
-tells you where on GitHub to delete it yourself.</p>
+<code>delete_repo</code> permission; without it, QUILL says so and tells
+you where on GitHub to delete it yourself.</p>
+<h2 id="is-it-github-or-is-it-me">Is it GitHub, or is it me?</h2>
+<p>When GitHub is slow or failing, the Workbench’s errors can look like
+your own mistake. <strong>Help &gt; GitHub Service Status…</strong>
+(<code>Ctrl+Alt+F1</code>) reads GitHub’s public status page, <a
+href="http://www.githubstatus.com">www.githubstatus.com</a>, and says
+whether GitHub says everything is working, which parts are slow or down,
+and any incident GitHub is working on, with its latest update. It asks
+the first time, reads the page only when you choose the command, and is
+greyed in Safe Mode. Chapter 10 has more.</p>
 <h2 id="workbench-options">Workbench Options</h2>
 <p>GitHub’s preferences live in the Workbench, not in the editor’s
-Options: <strong>Workbench Options…</strong>, on the Workbench window’s
-own Tools menu. It has five pages. General says where the window opens
-and how lists start. Notifications and Inbox says how often GitHub is
-checked, whether each check plays a sound, and whether a new
-notification may interrupt speech. Lists, Repositories (your pinned
-repositories and favorites) and Privacy follow. Privacy is also where
-you can go back to the classic GitHub Items and Explore GitHub windows
-for this release, by checking Use the classic GitHub windows.</p>
-<p>You never have to open it: the Workbench works as it comes.</p>
+Options: <strong>Tools &gt; Workbench Options…</strong>,
+<code>Ctrl+Shift+O</code>. It has five pages:</p>
+<ul>
+<li><strong>General:</strong> where the window opens (Inbox, Start Here,
+or wherever you were last time), whether lists show a few columns or
+every column, and the order and state issues and pull requests open
+in.</li>
+<li><strong>Notifications and Inbox:</strong> how often GitHub is
+checked, from 5 minutes to a day, whether each check plays a short
+sound, whether a new notification may interrupt speech, and whether read
+notifications are listed too.</li>
+<li><strong>Lists:</strong> whether each column’s name is said before
+its value.</li>
+<li><strong>Repositories:</strong> your pinned repositories and
+favorites.</li>
+<li><strong>Privacy:</strong> whether Insights loads the repository
+Health Snapshot, and whether the first few visits to a place start with
+a short “First time here?” paragraph.</li>
+</ul>
+<p>Each account’s Workbench level, Read Only, Organize or Full, is not
+here: it is <strong>Account &gt; Roles and Access &gt; Workbench Level
+for This Account…</strong> (Chapter 13).</p>
+<p>You never have to open Workbench Options: the Workbench works as it
+comes.</p>
+<h2 id="a-walk-through-finding-your-way-on-the-practice-repository">A
+walk-through: finding your way on the practice repository</h2>
+<p>This takes about five minutes and changes nothing on GitHub. If you
+have not made the practice repository yet, press <code>Ctrl+Alt+P</code>
+first and say yes.</p>
+<ol type="1">
+<li>Open the Workbench from <strong>GitHub &gt; Open GitHub
+Workbench</strong>. You hear “GitHub Workbench” and the place it opened
+on.</li>
+<li>Press <code>Ctrl+9</code>. You are on Start Here; <code>F6</code>
+and then the arrow keys read its details. Press <code>Shift+F6</code> to
+come back to the tree.</li>
+<li>Press <code>Ctrl+L</code>, type <code>quill-practice</code>, with
+your login in front, such as <code>jeff/quill-practice</code>, and press
+Enter. The repository gets a place of its own and you are on it.</li>
+<li>Press <code>Ctrl+Shift+1</code>. You are on its Issues, and the list
+loads three issues. Press <code>F6</code> to reach the list.</li>
+<li>Arrow to the typo issue and press <code>Shift+F1</code>. You hear
+what you can do with an issue, with each key.</li>
+<li>Press <code>Alt+Enter</code>. Its Properties sheet opens;
+<code>Escape</code> closes it without changing anything.</li>
+<li>Press <code>Ctrl+Shift+4</code>. You are on Actions, Runs, with the
+practice run that failed on purpose. Press <code>Ctrl+Shift+W</code> to
+hear what failed.</li>
+<li>Press <code>Alt+1</code>. You hear where you are. Press
+<code>Backspace</code> to go back to the issues, with the typo issue
+selected again.</li>
+<li>Press <code>Ctrl+F1</code>. This guide opens at the chapter for
+where you are.</li>
+</ol>
+<h2 id="learn-it-with-a-guided-lesson">Learn it with a guided
+lesson</h2>
+<p><strong>Help &gt; Tutorials</strong> (<code>Ctrl+F2</code>) has the
+GitHub lessons. For this chapter:</p>
+<ul>
+<li><strong>Make a repository to practise on:</strong> makes
+<code>quill-practice</code> and looks round it.</li>
+<li><strong>Try a command without sending it:</strong> turns Dry Run on,
+tries closing an issue, and turns it off again.</li>
+<li><strong>Use the API Console:</strong> a read with the GitHub API
+Console.</li>
+</ul>
 <hr />
 <ul>
 <li>Previous: <a

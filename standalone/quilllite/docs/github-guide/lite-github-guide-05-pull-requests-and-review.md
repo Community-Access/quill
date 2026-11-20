@@ -2,29 +2,55 @@
 
 ## What this chapter covers
 
-Reviewing a pull request on the website means a long page of code with
-comments wedged between the lines. QUILL turns it into an outline you can
-walk: the pull request, its changed files, the conversations on each file, and
-its checks. This chapter covers reading a pull request, the diff, commenting
-on a line or a range, suggesting a change, sending a review, replying and
-resolving, asking Copilot for a review, everything that gets a pull request
-merged, and the whole patch, a revert and conflicts.
+Somebody has asked you to review their change, or you want to get your own
+change merged. On the website that means a long page of code with comments
+wedged between the lines, and a merge box that speaks in colours and icons.
+
+In this chapter you find the pull requests that need you, read one as an
+outline you can walk, read its changes line by line, comment on a line or a
+range, suggest a change, and send your review. Then you find out whether it
+can merge, and why not, and merge it, one or several at a time.
+
+By the end you will know how to review a pull request from start to finish
+without the website, and how to get one merged safely.
 
 Reading works signed out. Everything that writes needs a signed-in account.
+Merging, re-running and the other changes also need your account's Workbench
+level to allow them: Organize or Full. Chapter 13 explains the levels.
 
-**In QUILL Lite**, a guest can read every part of a review, and the commands
-that write say they need a signed-in account. Sign in with **File > Manage
-GitHub Accounts...** (`Alt+F`, then `H`) and they work as they do in QUILL.
+**In QUILL Lite**, which works as a guest, you can read every part of a
+review. The commands that write say they need a signed-in account.
+
+## Finding the pull requests that need you
+
+Pull requests live in three places in the GitHub Workbench's tree:
+
+- **Needs My Attention > Review Requests** lists every pull request someone
+  has asked you to review, in any repository. It holds two kinds: those that
+  ask you by name, and those that ask a team you belong to. A team's row ends
+  in "team review request", so you know someone else on the team may take
+  it. The pull request's own sheet names the team under Team reviewers.
+  `Ctrl+1` goes to Inbox, just above it, which marks them the same way.
+- **Needs My Attention > My Open Pull Requests** lists the ones you opened
+  that are still open.
+- A repository's **Pull Requests**, `Ctrl+Shift+2`, lists that repository's
+  open ones. Its **Merge Queue** lists the default branch's merge queue in
+  order, when the repository has one.
+
+**View > Quick Filters** narrows a list of pull requests without typing:
+Review Requested from Me, Reviewed by Me, Drafts, Has Conflicts and Checks
+Failing are there, with the others. Each is checked while it is on, and they
+combine. Chapter 13 covers filtering in full.
 
 ## Opening a pull request
 
-In GitHub Items, select a pull request and press **Review...** (`Alt+R`), or
-choose **Open Review...** from its context menu. A pull request link pasted
-into **Open Link...** opens straight into its review, and so does a pull
-request in your notifications.
+Select a pull request and press Enter. That is **Review...**, the first row of
+its context menu, and it opens the review window described below. A pull
+request link pasted into **File > Open GitHub Address...** (`Ctrl+L`) goes
+straight to it, and so does a pull request in your notifications.
 
-**Diff...** (`Alt+D`) skips the outline and opens the changed files on their
-own. More on that below.
+**File Differences...** (`Ctrl+Shift+D`, on the Item menu) skips the outline
+and opens the changed files on their own. More on that below.
 
 ## The one-sentence summary
 
@@ -127,7 +153,7 @@ ends with its state: "src/status.py, viewed", "src/status.py, not viewed", or
 you looked. The status line says how many you have viewed, such as "3 of 12
 files viewed."
 
-Shift+F10 on a file has:
+`Shift+F10` on a file has:
 
 - **Mark as Viewed**, or **Mark as Not Viewed** on one you have viewed. It is
   the same mark GitHub's Files tab shows, and you hear the new count.
@@ -156,9 +182,10 @@ every file again.
 
 ## The diff
 
-Enter on a file, **Open File Differences** on a file's or thread's context
-menu, or **Diff...** in GitHub Items, opens the diff window, **PR #42 diff:**
-and the title.
+Enter on a file in the outline, **Open File Differences** on a file's or
+thread's context menu, or **File Differences...** (`Ctrl+Shift+D`) on a pull
+request in the Workbench, opens the diff window, **PR #42 diff:** and the
+title.
 
 - **Changed files**: one row per file, "modified: src/status.py +12 -3".
   Select one to hear its changes.
@@ -168,30 +195,45 @@ and the title.
 - **Selected review hunk** shows the part of the file a thread is about, when
   you came here from a thread.
 - **Line marks:** (`Alt+M`) chooses how changed lines are marked in the patch
-  list: **Words** ("Added line 12", "Removed line 9", "Unchanged line 13") or
-  **Symbols** (plus and minus). Symbols are shorter, but your screen reader
-  says them only when it reads punctuation, and QUILL reminds you of that when
-  you choose them. Your choice is kept.
-- **Changed Lines Only** (`Alt+H`), beside it, leaves the unchanged lines
-  around each change out of the patch list, so the arrows go from change to
-  change. The hunk headings stay, so each change still says where it is. You
-  hear how many changed lines there are and how many unchanged ones were left
-  out; uncheck it to see them again.
-- **Hide Whitespace Changes**, beside it, leaves out changed lines that differ
+  list, from four styles designed by Kelly Ford for GHManage and The Chat
+  Place: **Words** ("Added line 12", "Removed line 9", "Unchanged line 13"),
+  **Short words** ("Add 12", "Del 9", "Same 13"), **Diff symbols** ("+ 12",
+  "- 9", "= 13"), or **Diff symbols with changed lines**, where a removed line
+  is followed straight away by the line that replaced it, marked "!-" and "!+",
+  so each change is heard old then new. Symbols are shorter, but your screen
+  reader says them only when it reads punctuation, and QUILL reminds you of
+  that when you choose them. Your choice is kept, and it is the same choice
+  Compare Files, Compare with File and WordPress's Compare with Site use.
+- **Next and previous change**: in the patch list, `Alt+N` and `Alt+P` (the
+  keys Kelly Ford's GHManage uses), or `F8` and `Shift+F8` (as in Compare
+  Files), move to the first line of the next or previous change and say
+  where you are: "Change 2 of 5, at new line 41: 1 line removed, 1 added."
+  When a few lines were replaced by as many, it also says which words
+  changed: "Changed Thursday to Friday."
+- **Changed Lines Only** (`Alt+H`) leaves the unchanged lines around each
+  change out of the patch list, so the arrows go from change to change. The
+  hunk headings stay, so each change still says where it is. You hear how
+  many changed lines there are and how many unchanged ones were left out;
+  uncheck it to see them again.
+- **Hide Whitespace Changes** (`Alt+W`) leaves out changed lines that differ
   from their partner only in spaces, tabs or blank lines, such as a block
   that was only reindented, so what is left is what really changed. You hear
   how many lines it left out.
-- **Choose Commit...** reviews one commit of the pull request at a time. It
-  lists them oldest first, "3f9a2c1 Fix the parser, by ann", with "All
-  commits: the whole pull request" at the top to come back. The file list,
-  the differences and the patch lines then show only that commit's change,
-  against the commit before it, and the summary at the top says which commit
-  you are on.
+- **Choose Commit...** (`Alt+T`) reviews one commit of the pull request at a
+  time. It lists them oldest first, "3f9a2c1 Fix the parser, by ann", with
+  "All commits: the whole pull request" at the top to come back. The file
+  list, the differences and the patch lines then show only that commit's
+  change, against the commit before it, and the summary at the top says which
+  commit you are on.
 - **Patch lines:** (`Alt+P`), the patch one line to a row. This is where you
   comment.
 - **Comment on This Line...** (`Alt+L`), **Comment on Lines...** (`Alt+S`),
   **Copy Diff** (`Alt+C`) and **Open Diff in Default App** (`Alt+O`).
 - Under them, how many of your line comments are waiting to be sent.
+- **Explain Selected Change with AI**, beside **Close**, sends the selected
+  file's change to the AI connection you chose in QUILL, after asking, and
+  says what it does. The answer names the file and the commit it read. It is
+  greyed until you select a file, and when no AI is set up.
 
 Opened from a thread, the diff goes straight to that thread's lines and says
 "Review comment at" the file and line. If the line is no longer in the patch,
@@ -206,7 +248,9 @@ have a short sound of their own, so you can hear the shape of a change before
 the words arrive. They are the sounds **Arrived on an added line of a diff**
 and **Arrived on a removed line of a diff** in the Sound Scheme window, where
 either can be previewed, changed or switched off, and they follow your sound
-setting like every other QUILL Lite sound. Unchanged lines and headings are silent.
+setting like every other QUILL sound. Unchanged lines and headings are silent.
+
+Escape closes the diff and takes you back to where you opened it.
 
 ## Commenting on a line or a range
 
@@ -282,6 +326,10 @@ Submit Review is the only thing that sends. Request changes asks once more
 before it goes. You hear "Review submitted on pull request #42." and how many
 line comments GitHub took with it.
 
+GitHub never lets you approve your own pull request. If you keep a second
+account for that, see [Approving with another of your
+accounts](#approving-with-another-of-your-accounts) below.
+
 ### When the pull request moves under you
 
 Comments are written against one version of the code. If new commits arrive
@@ -307,7 +355,21 @@ The thread's context menu has these, plus **React to a Comment...**,
 **Copy Conversation**, **Copy Thread Link**, **Open File Differences** and
 **Open Thread on GitHub**.
 
-`Ctrl+R` replies here, in the review window. In GitHub Items it refreshes.
+`Ctrl+R` replies only here, in the review window. In the Workbench it
+refreshes the list.
+
+## Reviews already sent
+
+**Reviews...**, on a pull request's context menu in the Workbench (under
+More), lists every review the pull request has had, with who sent it and its
+verdict. Choose one, then what to do with it: read its comments, and change
+or delete one of them; change its summary; dismiss it, when GitHub lets you;
+or, for a review still pending, submit it or delete it. Anything that changes
+a review asks first.
+
+**Re-request Review...** asks people who have already reviewed to look
+again, after you have pushed changes. Give their GitHub names, separated by
+commas.
 
 ## Getting a pull request merged
 
@@ -324,40 +386,52 @@ The thread's context menu has these, plus **React to a Comment...**,
 
 ### Asking Copilot for a review
 
-**Request Copilot Review**, on the pull request's context menu (`Shift+F10` on
-the outline), asks Copilot code review to review the pull request. It has no
-button or access key. You hear "Copilot review requested on pull request #4."
-only when GitHub lists Copilot among the reviewers. GitHub sometimes accepts the
-request and leaves Copilot off the list, which is how it answers an account or a
-repository without Copilot code review; QUILL says that plainly rather than
-telling you a request went in when it did not. Copilot's review arrives as
-review comments, like anyone else's, and the outline shows them after a refresh.
+**Request Copilot Review**, on the pull request's context menu in the review
+window (`Shift+F10` on the outline), asks Copilot code review to review the
+pull request. It has no button or access key. You hear "Copilot review
+requested on pull request #4." only when GitHub lists Copilot among the
+reviewers. GitHub sometimes accepts the request and leaves Copilot off the
+list, which is how it answers an account or a repository without Copilot code
+review; QUILL says that plainly rather than telling you a request went in
+when it did not. Copilot's review arrives as review comments, like anyone
+else's, and the outline shows them after a refresh.
+
+In the Workbench, **Ask Copilot to Review**, on a pull request's context menu
+under More, does the same from the list. The same menu has **Agent Merge**,
+**Turn On Agent Merge** and **Turn Off Agent Merge...**, which let Copilot's
+cloud agent merge the pull request once its checks and reviews allow. These
+need a Copilot plan with the cloud agent; Chapter 12 has the rest of
+Copilot's commands.
 
 ### Merging
 
 Merging is in the Workbench, not the review window, because it is the one
 thing here that changes the base branch for everyone. Select the pull request
-and press `Ctrl+Shift+Enter`, or choose **Merge...** from its context menu.
+and press `Ctrl+Shift+Enter`, or choose **Merge...** from its context menu or
+the Item menu.
 
-QUILL Lite first asks GitHub whether the pull request can merge. If it cannot, you
+QUILL first asks GitHub whether the pull request can merge. If it cannot, you
 hear why, the same answer as **Why Can't I Merge?** below, and nothing else
-happens. If it can, QUILL Lite asks how to merge: Squash and merge, Merge commit,
+happens. If it can, QUILL asks how to merge: Squash and merge, Merge commit,
 or Rebase, offering only the ways the repository allows. Then it asks you to
 type the pull request's number to confirm, not just press Yes, and says what
-will happen: that it merges into the base
-branch, as of the commit QUILL Lite checked, for example "as of commit 3f9a2c1",
-and that this changes the branch for everyone. You hear "Merged #42" and the
+will happen: that it merges into the base branch, as of the commit QUILL
+checked, for example "as of commit 3f9a2c1", and that this changes the branch
+for everyone and cannot be undone from QUILL. You hear "Merged #42" and the
 start of the new commit.
 
 That commit is the one that merges. If somebody pushes to the pull request
 between the check and your typing the number, GitHub refuses, nothing is
-merged, and QUILL Lite says so: "Somebody pushed to #42 after commit 3f9a2c1 was
+merged, and QUILL says so: "Somebody pushed to #42 after commit 3f9a2c1 was
 checked, so nothing was merged." Check again and you are merging what you
 have actually read.
 
 When the base branch merges only through a merge queue, Merge... does not try
 to go around it: you hear that the pull request can join the queue, and **Add
 to or Remove from Merge Queue...** puts it there.
+
+A merge cannot be taken back with `Ctrl+Z`. To undo one, use **Revert Pull
+Request...**, below.
 
 ### Merging several at once
 
@@ -398,16 +472,22 @@ hear either that it can merge, "#42 can merge into main, as of commit
 3f9a2c1.", or each reason it cannot, each with what to do:
 
 - It is a draft: mark it ready for review first.
-- It conflicts with its base: in QUILL, **Resolve Conflicts in a
-  Worktree...** takes the conflicts to your computer.
+- It conflicts with its base: **Resolve Conflicts in a Worktree...**, in
+  QUILL, takes the conflicts to your computer.
 - It is behind its base, and the branch's rules want it up to date: update
   the branch.
 - A reviewer requested changes, or it needs an approving review.
 - A required check failed, or has not finished, named: "Required checks test
   and lint failed. Re-run or fix it." A check that failed but is not
   required is mentioned as not required, and does not stop the merge.
-- A rule on the base branch blocks it for another reason: **Check Merge
-  Policy** in the review window names the rules.
+
+- how many approving reviews a rule wants, and how many there are;
+- when a rule wants a code owner's review, which line of the CODEOWNERS file
+  is waiting, with its pattern, who could approve, and a changed file it
+  covers: "none from @docs-team has approved: .github/CODEOWNERS line 3,
+  /docs/, owns 2 changed files, such as docs/guide.md." A team counts as
+  approved when one of its members has;
+- which rule makes the branch merge only through its merge queue.
 
 It also says when auto-merge is on, and its place when the pull request is
 in the merge queue. The answer is always for one commit, which it names, so
@@ -418,10 +498,10 @@ you know a push after you asked may change it.
 On a pull request's row in the Workbench, **Auto-Merge...** turns auto-merge
 on, after telling you what it would be waiting for and asking how to merge,
 or offers to turn it off when it is on. A pull request that can merge now has
-nothing to wait for, and QUILL Lite says so rather than switching it on. **Add to
+nothing to wait for, and QUILL says so rather than switching it on. **Add to
 or Remove from Merge Queue...** adds the pull request to its branch's queue,
 naming the commit, or offers to take it out when it is in, saying its place.
-The repository's **Merge Queue** node lists the whole queue in order.
+The repository's **Merge Queue** place lists the whole queue in order.
 
 In the review window, **Auto-Merge and Queue...** (`Alt+A`) opens a menu:
 
@@ -443,13 +523,13 @@ is nothing for auto-merge to wait for.
 
 ### Merge policy
 
-**Check Merge Policy** reads the rules on the base branch: required reviews,
-required checks, code owners and the merge queue. It adds them to the review
-summary, and from then on the readiness and the combined check status count
-only the checks that are required ("3 of 4 required checks pass"). The rules
-are read for the current version of the pull request; refresh the review after
-new commits to check again. GitHub always has the last word, and QUILL says
-so.
+**Check Merge Policy**, in the review window, reads the rules on the base
+branch: required reviews, required checks, code owners and the merge queue. It
+adds them to the review summary, and from then on the readiness and the
+combined check status count only the checks that are required ("3 of 4
+required checks pass"). The rules are read for the current version of the
+pull request; refresh the review after new commits to check again. GitHub
+always has the last word, and QUILL says so.
 
 ### A check that needs another run
 
@@ -457,6 +537,22 @@ On a check in the outline, the context menu has **Re-request Check...**,
 which asks GitHub to run that check again. Some checks are older-style commit
 statuses rather than check runs, and those cannot be re-run from outside;
 QUILL says so. Chapter 6 covers checks and workflow runs in full.
+
+### Approving with another of your accounts
+
+GitHub never lets the author approve their own pull request. If you keep two
+accounts in QUILL, say a personal one and one for the project, **Account >
+Roles and Access > Act As Another Account...** sends one action as the other
+account. Select the pull request first. QUILL lists your other signed-in
+accounts, then the actions that fit: **Approve this pull request**, **Comment
+on it**, or **Close or reopen it**. It checks whose token it really is before
+sending, names the account in the question, and names it again in the result:
+"Approved pull request #42 in owner/name as jeff-project." The other account's
+own Workbench level applies, so a Read Only account sends nothing.
+
+**Compare Accounts...**, on the same submenu, shows two of your accounts side
+by side on this repository: each one's role, as GitHub answered that account.
+Chapter 13 has both in full.
 
 ## The whole patch, a revert, and conflicts
 
@@ -498,12 +594,46 @@ You hear "Opened pull request #57, which reverts #42." A pull request that
 is not merged has nothing to revert; the command is greyed, and its help says
 why. You need write access to the repository.
 
-### Conflicts
+### Resolve Conflicts in a Worktree
 
-QUILL Lite has no local Git, so it does not resolve conflicts on your
-computer. **Resolve Conflicts in a Worktree...** is in QUILL, where it fetches
-the pull request into a folder of its own, merges its base there and walks
-each conflicted file; in QUILL Lite the row is greyed and says so.
+When a pull request cannot merge because it conflicts with its base branch,
+**Resolve Conflicts in a Worktree...** gets the conflicts onto your own
+computer without touching the folder you are working in:
+
+1. QUILL asks which local checkout of the repository to use, if the document
+   you have open is not in one, and finds the remote that is that
+   repository on GitHub.
+2. It asks first, naming the remote and both branches. This is the one step
+   that uses the network, and it is your own Git that does it, with your own
+   sign-in, as `git fetch` from a terminal would.
+3. It makes a new folder beside your checkout, a Git worktree, on a new branch
+   called `pr-<number>-conflicts` made from the pull request's branch, and
+   merges the base branch into it there. Nothing is committed.
+4. You hear how many files conflict and their names, and the editor's
+   **Resolve Conflicts** walks each one, the same window as QUILL's
+   **Tools > Git and GitHub > Local Git > Resolve Conflicts...**: each conflict in turn, with your version and theirs
+   read out, and a choice for each.
+
+When the files are resolved, commit in that folder and push the branch to the
+pull request's branch; QUILL says the exact command, for example
+`git push origin pr-42-conflicts:fix-parser`. The new folder stays until you
+remove it with **Tools > Git and GitHub > Local Git > Worktrees...**.
+
+A pull request from a fork is the exception: its branch lives in the fork,
+not in the repository, so QUILL says so and leaves it to a checkout of the
+fork, or to its author. If the base merges with no conflicts, QUILL says that
+instead, and the merge is left staged, not committed.
+
+This one is QUILL's alone. **In QUILL Lite**, which has no Local Git, the row
+is greyed and says why.
+
+## Dependabot's pull requests
+
+A pull request Dependabot opened, to update a package, has **Dependabot
+Commands...** on its context menu. It lists the commands Dependabot answers in
+a comment, such as rebase, recreate, merge, or ignore this version, each with
+what it does. Choosing one posts it as a comment, after asking, and Dependabot
+does the rest.
 
 ## Writing a new pull request
 
@@ -514,6 +644,43 @@ Create as a draft check box. The title and description start from the
 commits you are proposing, a branch that already has an open pull request is
 taken to that one instead of making a second, and Cancel keeps your text for
 the session. [Chapter 12](lite-github-guide-12-the-workbench.html) walks through it.
+
+## A walk-through: reviewing and merging the practice pull request
+
+The practice repository has a branch, `fix-greeting`, with a pull request
+waiting for you. Make it first with **Help > Practice on GitHub...**
+(`Ctrl+Alt+P`) if you have not. Nothing here matters if it goes wrong.
+
+1. In the Workbench, press `Ctrl+L`, type `quill-practice` and press Enter.
+   You arrive on the repository's own place in the tree.
+2. Press `Ctrl+Shift+2` for its Pull Requests, then F6 to the list. You hear
+   the pull request that fixes the greeting.
+3. Press Enter. The review window opens, and you hear "Review loaded for pull
+   request" and the one sentence.
+4. Arrow down to **Changed files**, press Right Arrow, and press Enter on the
+   file. The diff opens.
+5. Press `Alt+P` for the patch lines and `Alt+H` to check Changed Lines Only.
+   Arrow down: an added line and a removed line each have their own sound.
+   `F8` jumps to the next change.
+6. Press Escape to close the diff, and Escape again to close the review.
+7. Back on the pull request in the Workbench, press `Shift+F10` and choose
+   **Why Can't I Merge?**. You hear that it can merge into main, as of a
+   commit it names. The practice run fails on purpose, but it is not a
+   required check, so it does not stop the merge.
+8. Press `Ctrl+Shift+Enter`. Choose Squash and merge, type the pull request's
+   number, and press Enter. You hear "Merged" and the new commit.
+
+You made the pull request yourself, so GitHub would not have let you approve
+it. On someone else's, Compose Review (`Alt+C`) in step 6 is where you send
+Approve.
+
+## Learn it with a guided lesson
+
+**Help > Tutorials** (`Ctrl+F2`) has **Review and merge a pull request**, on
+the practice repository: list the pull requests, read the change, ask whether
+it can merge, and merge it. Each step says what to press and what you should
+hear. **Try a command without sending it** shows Dry Run, which lets you try
+Merge... and see what it would send without sending it.
 
 ---
 

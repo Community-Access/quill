@@ -246,39 +246,220 @@
 <h2 id="what-this-chapter-covers">What this chapter covers</h2>
 <p>GitHub Actions runs a repository’s builds and tests. When a run
 fails, the website gives you a page of collapsed boxes and a log
-thousands of lines long. This chapter shows you how to get from “the
-build failed” to the line that broke it in a few keys: the run list,
-What Failed, jobs and logs, and the commands that rerun, cancel, delete
-and approve runs. It also covers combined check status, deployments
-waiting for approval, artifacts, caches, self-hosted runners, and the
-names of a repository’s secrets.</p>
+thousands of lines long. You want the line that broke, and you want it
+quickly.</p>
+<p>In this chapter you find a repository’s runs, get from “the build
+failed” to the failing step in one key, read jobs and logs, and rerun,
+cancel, delete and approve runs. Then you start, turn on and off, and
+edit workflows, approve deployments that are waiting, and look after
+artifacts, caches, runners and the names of a repository’s secrets.</p>
+<p>By the end you will know how to find out why any run failed, and how
+to do something about it, without opening a browser.</p>
 <p>Reading runs and logs works signed out for a public repository.
-Anything that changes a run needs a signed-in account.</p>
-<h2 id="workflows-and-workflow-runs">Workflows and workflow runs</h2>
-<p>GitHub Items has two views for Actions, both in
-<strong>View:</strong> (<code>Alt+I</code>):</p>
+Anything that changes a run needs a signed-in account, and a Workbench
+level that allows it: Organize for rerunning, cancelling and starting
+runs, and Full for approving deployments and fork runs and for deleting.
+Chapter 13 explains the levels.</p>
+<h2 id="finding-a-repositorys-runs">Finding a repository’s runs</h2>
+<p>Every repository in the GitHub Workbench’s tree has an
+<strong>Actions</strong> place. <code>Ctrl+Shift+4</code> goes straight
+to its <strong>Runs</strong>. Under Actions are:</p>
 <ul>
-<li><strong>Workflows</strong> lists the repository’s workflow
-definitions: name, whether it is active, and its file.</li>
-<li><strong>Workflow Runs</strong> lists recent runs, newest first. Each
-row reads the workflow’s name, its status (“completed”, “in_progress”,
+<li><strong>Runs</strong>: each time a workflow ran, newest first. A row
+reads the workflow’s name, its status (“completed”, “in_progress”,
 “queued”), its result (“success”, “failure”, “cancelled”), the branch,
 what started it (“push”, “pull_request”, “schedule”) and the run number.
-These are GitHub’s own words, as GitHub sends them.</li>
+These are GitHub’s own words, as GitHub sends them. The details pane
+gives the same in full, one line each, with when it started and its
+link.</li>
+<li><strong>Workflows</strong>: the repository’s workflow definitions,
+with whether each is active, and its file. Enter on a workflow lists its
+runs.</li>
+<li><strong>Artifacts</strong>: files the runs kept, such as builds and
+test reports.</li>
+<li><strong>Caches</strong>: files Actions kept between runs.</li>
+<li><strong>Runners</strong>: the repository’s own machines, for its
+administrators.</li>
 </ul>
-<p>Details on a run gives the same in full, one line each, with when it
-started and its link.</p>
+<p><strong>Across Repositories &gt; Workflow Runs</strong>
+(<code>Ctrl+0</code>) lists the runs of every repository in your set in
+one list, newest first, for “which runs failed anywhere?”. Chapter 12
+has Across Repositories.</p>
+<h2 id="what-failed">What Failed</h2>
+<p>This is the command to learn first. Select a failed run in
+<strong>Runs</strong> and press <code>Ctrl+Shift+W</code>, or choose
+<strong>What Failed…</strong> from its context menu or the Item
+menu.</p>
+<p>A window titled <strong>What Failed:</strong> and the run opens.
+While it loads you hear “Loading what failed…”. When it is ready, focus
+lands at the top of a read-only text field, <strong>What failed</strong>
+(<code>Alt+W</code>), and QUILL says “What failed is ready.” and the
+first line of the summary.</p>
+<p>The text is one digest of everything you would otherwise dig for:</p>
+<ul>
+<li>How many jobs failed, such as “2 of 7 jobs failed.”</li>
+<li>For each failed job, “Job 1 of 2:” with its name and result, then
+its failed steps by number and name.</li>
+<li>The job’s annotations: the errors and warnings the tools reported,
+each with its file and line, such as “src/status.py:41: error: name is
+not defined”.</li>
+<li>The last 40 meaningful lines of each failed step’s log.</li>
+</ul>
+<p>The log lines are cleaned up for listening. Timestamps and colour
+codes are taken out, and GitHub’s markers become words: “ERROR:”,
+“WARNING:”, “NOTE:”, “Command:”. QUILL finds each failed step’s lines by
+the times GitHub recorded for that step. If GitHub gave no times, the
+digest says so and uses the end of the job’s log instead.</p>
+<p>Up to ten failed jobs are shown; a run with more says how many are
+left and suggests opening the run on GitHub.</p>
+<p><strong>Copy All</strong> (<code>Alt+C</code>) copies the whole
+digest, ready to paste into a comment or a message.
+<strong>Refresh</strong> (<code>Alt+R</code>) reads it again, for a run
+that is still going. Escape closes the window.</p>
+<h2 id="jobs-and-logs">Jobs and logs</h2>
+<p>For the whole picture, press Enter on a run, or choose <strong>Jobs
+and Logs</strong> from its context menu. The window <strong>Jobs
+for</strong> and the run has, in Tab order:</p>
+<ul>
+<li><strong>Attempt:</strong> (<code>Alt+A</code>). A rerun makes a new
+attempt, and the earlier ones are kept. The current one is marked
+“(current)”; up to the latest 20 are offered.</li>
+<li><strong>Workflow jobs</strong>, one row per job: its result, then
+its name, such as “failure: test (windows)”.</li>
+<li><strong>Job details and log</strong>, a read-only text field: the
+job’s status and result, when it started and finished, the attempt, the
+commit, and every step with its result. After you load the log, the log
+is here too.</li>
+<li>The status line, then the buttons:
+<ul>
+<li><strong>Load Log</strong> (<code>Alt+L</code>) loads the selected
+job’s log as plain text. Enter on a job does the same. Focus moves to
+the details when it arrives.</li>
+<li><strong>Load Annotations</strong> (<code>Alt+N</code>) loads the
+errors and warnings the job’s tools reported. If GitHub refuses, QUILL
+says so, rather than suggesting there were none.</li>
+<li><strong>Open Job on GitHub</strong> (<code>Alt+J</code>) and
+<strong>Open Run on GitHub</strong> (<code>Alt+R</code>).</li>
+<li><strong>What Failed…</strong> (<code>Alt+F</code>), the digest
+above, for the attempt you chose.</li>
+<li><strong>Re-request Check</strong> (<code>Alt+C</code>), see
+below.</li>
+<li><strong>Follow This Job</strong> (<code>Alt+W</code>), see
+below.</li>
+<li><strong>Close</strong>. Escape closes too.</li>
+</ul></li>
+</ul>
+<p>A log over 4 MB is cut off there, with a line saying so and
+suggesting the job page on GitHub. Annotations stop at 100, also with a
+line saying so.</p>
+<p>On a run’s context menu, under More, three more read the logs another
+way: <strong>Read a Step’s Log…</strong> reads one step at a time,
+<strong>Download Logs…</strong> saves every log of the run as a zip
+file, and <strong>Earlier Attempts…</strong> says how an earlier attempt
+went, or reads its logs.</p>
+<h3 id="following-a-job-while-it-runs">Following a job while it
+runs</h3>
+<p>GitHub shows a running job’s log only on its own web page; the log
+QUILL can load arrives when the job has finished. What QUILL can follow
+while it runs is its steps. Select a running job and check
+<strong>Follow This Job</strong> (<code>Alt+W</code>): you hear where it
+is, for example “build: On step 3 of 9, Run tests; 2 done”, and from
+then on, every few seconds, each step as it starts and as it finishes,
+“Step 3, Run tests, failed.”, without your having to look. When the job
+ends you hear how, “build failed. Load Log reads its whole log.”, and
+following stops by itself. Uncheck the box to stop sooner.</p>
+<p>At any moment in this window, <code>Alt+8</code> says how far along
+the selected job is: the step it is on, how many are done, and any that
+have failed so far.</p>
+<p>To hear when a whole run finishes without keeping a window open, add
+a watch under <strong>Watches</strong> (<code>Ctrl+7</code>). Chapter 12
+has Watches.</p>
+<h2 id="doing-something-about-a-run">Doing something about a run</h2>
+<p>On a run in <strong>Runs</strong>, the context menu and the Item menu
+hold the commands that act on it. Each one asks first, and the default
+answer is No.</p>
+<ul>
+<li><strong>Re-run Failed Jobs Only</strong>
+(<code>Ctrl+Shift+F5</code>) reruns just the jobs that failed, which is
+usually what you want after fixing a flaky test. You hear “GitHub
+started a re-run of the failed jobs of” and the run. Pressing it twice
+never starts two reruns. On a run where nothing failed, GitHub refuses,
+and QUILL passes on its reason.</li>
+<li><strong>Re-run Workflow</strong> reruns every job in the run. You
+hear “Re-running” and the workflow.</li>
+<li><strong>Re-run One Job…</strong> reruns a single job, with debug
+logs if you ask for them.</li>
+<li><strong>Cancel Run…</strong> stops a run that is still going. GitHub
+only promises to stop it, so QUILL says “GitHub accepted the cancel
+request and is stopping” the run. Refresh (<code>F5</code>) to check.
+<strong>Force Cancel…</strong>, under More, is for a run that Cancel has
+not stopped.</li>
+<li><strong>Delete Run…</strong> deletes the run for good. The question
+names the run, its branch and its result, and says its logs and
+artifacts go with it and that this cannot be undone. <strong>Delete
+Logs…</strong> deletes only its logs; the run stays.</li>
+<li><strong>Approve Run from a Fork…</strong> lets a run from someone
+else’s fork go ahead. GitHub holds these until a maintainer approves
+them, because the code in them has not been reviewed. The question says
+so: approve only code you have read, since it runs with this
+repository’s permissions. You hear “GitHub approved” the run, and that
+it will start shortly.</li>
+<li><strong>Review Pending Deployments…</strong> and
+<strong>Approvals</strong>, below.</li>
+<li><strong>Combined Check Status</strong>, below.</li>
+</ul>
+<h2 id="combined-check-status">Combined check status</h2>
+<p><strong>Combined Check Status</strong> reads every check on the run’s
+commit and says them in one sentence: “Commit 1a2b3c4: 3 of 4 checks
+pass; failing: test.” If some are still going it adds how many, and it
+names any that have not reported yet. It reads only, so it works signed
+out.</p>
+<p>The review window has the same command (Chapter 5). There, after
+<strong>Check Merge Policy</strong>, it counts only the checks the
+branch requires.</p>
+<p>A commit’s own row, under Code, has two more: <strong>Check Run
+Details…</strong>, a check’s summary and every annotation, and
+<strong>Re-run a Check Suite…</strong>.</p>
+<h2 id="re-requesting-a-check">Re-requesting a check</h2>
+<p>A check that failed for reasons outside the code, a network blip,
+say, can be asked to run again on its own. In <strong>Jobs and
+Logs</strong>, select the job and press <strong>Re-request
+Check</strong> (<code>Alt+C</code>). QUILL asks first, then says “GitHub
+queued the check for” and the job “to run again.” The review window’s
+Checks branch has <strong>Re-request Check…</strong> on each check’s
+context menu too.</p>
+<h2 id="starting-a-workflow">Starting a workflow</h2>
 <h3 id="running-a-workflow-by-hand">Running a workflow by hand</h3>
-<p>Some workflows are set up to be started by hand. Select one in
-<strong>Workflows</strong> and press Enter, or choose <strong>Run
-Workflow on Branch…</strong> from its context menu. QUILL asks which
-branch or tag to run it on, starting with <code>main</code>, then
-confirms: “Run workflow” and its name, “on” the branch, “in” the
-repository. You hear “Dispatched” and the workflow and branch.</p>
-<p>QUILL asks only for the branch. A workflow that needs other inputs
-before it can start has to be run from GitHub’s own page.</p>
-<p>In QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub &gt; Dispatch
-Workflow…</strong> does the same without opening GitHub Items.</p>
+<p>Some workflows are set up to be started by hand. Choose <strong>Run
+Workflow on Branch…</strong> (<code>Ctrl+Shift+R</code>) from the
+Repository menu, or from a workflow’s context menu in
+<strong>Workflows</strong>. QUILL asks three things: the repository, as
+<code>owner/name</code>, filled in with the repository of the document
+you are editing; the workflow’s file name, such as <code>ci.yml</code>;
+and the branch or tag, starting with <code>main</code>. Then it asks
+“Dispatch” the workflow “on” the branch “in” the repository, and the
+editor’s status bar says “Dispatched” and the workflow and branch.</p>
+<p>It does not yet take the workflow or the repository from the row you
+selected, so type them as the workflow’s file name says. QUILL asks only
+for the branch, not for a workflow’s other inputs; a workflow that needs
+those before it can start has to be run from GitHub’s own page.</p>
+<p><strong>Run Workflow on Branch…</strong> is the editor’s
+<strong>Dispatch Workflow…</strong>, which is also in the Workbench’s
+<strong>Repository Actions…</strong> (<code>Ctrl+Shift+G</code>), and in
+QUILL’s <strong>Tools &gt; Git and GitHub &gt; GitHub</strong> submenu.
+<strong>In QUILL Lite</strong>, which has no such command, the row is
+greyed and says the editor that opened the window does not have it.</p>
+<h3 id="starting-workflows-from-outside">Starting workflows from
+outside</h3>
+<p>A workflow can start on <code>repository_dispatch</code>, an event
+sent on purpose rather than by a push. <strong>Send Repository
+Dispatch…</strong>, on a repository’s context menu, sends one: give the
+event’s name, as the workflow’s <code>types</code> list says, such as
+<code>deploy</code>, and optionally extra values as JSON, such as
+<code>{"env": "test"}</code>, which the workflow reads as
+<code>github.event.client_payload</code>. You hear “Sent deploy.” and
+the run appears under Actions.</p>
+<h2 id="looking-after-workflows">Looking after workflows</h2>
 <h3 id="turning-a-workflow-on-or-off">Turning a workflow on or off</h3>
 <p>A workflow that is turned off runs on nothing: not on a push, not on
 a schedule, not even Run Workflow. GitHub turns off a scheduled workflow
@@ -287,8 +468,8 @@ a common reason a nightly job quietly stopped. <strong>Turn Workflow On
 or Off…</strong> on a workflow’s context menu says its state in words
 first, “on”, “turned off” or “turned off by GitHub after 60 days without
 activity”, and asks before changing it. You hear “Turned on” and its
-name, or “Turned off”. The workflow’s Properties sheet has the same
-switch as its Enabled field.</p>
+name, or “Turned off”. The workflow’s Properties sheet
+(<code>Alt+Enter</code>) has the same switch as its Enabled field.</p>
 <h3 id="editing-a-workflow">Editing a workflow</h3>
 <p><strong>Edit Workflow…</strong> on a workflow’s context menu opens
 the workflow file as a form you read from top to bottom instead of YAML.
@@ -332,133 +513,11 @@ since you opened it, nothing is overwritten and the editor opens again
 with your draft. Comments at the top of the file are kept; comments
 inside it are not, because QUILL’s YAML reader cannot keep them, and the
 window says so. A file you did not change is never rewritten.</p>
-<h2 id="what-failed">What Failed</h2>
-<p>This is the command to learn first. Select a failed run in
-<strong>Workflow Runs</strong> and press <code>Ctrl+Shift+W</code>, or
-choose <strong>What Failed…</strong> from <strong>Actions…</strong> or
-the context menu. <code>Ctrl+Shift+W</code> works only in that view;
-elsewhere in QUILL it is another command.</p>
-<p>A window titled <strong>What Failed:</strong> and the run opens.
-While it loads you hear “Loading what failed…”. When it is ready, focus
-lands at the top of a read-only text field, <strong>What failed</strong>
-(<code>Alt+W</code>), and QUILL says “What failed is ready.” and the
-first line of the summary.</p>
-<p>The text is one digest of everything you would otherwise dig for:</p>
-<ul>
-<li>How many jobs failed, such as “2 of 7 jobs failed.”</li>
-<li>For each failed job, “Job 1 of 2:” with its name and result, then
-its failed steps by number and name.</li>
-<li>The job’s annotations: the errors and warnings the tools reported,
-each with its file and line, such as “src/status.py:41: error: name is
-not defined”.</li>
-<li>The last 40 meaningful lines of each failed step’s log.</li>
-</ul>
-<p>The log lines are cleaned up for listening. Timestamps and colour
-codes are taken out, and GitHub’s markers become words: “ERROR:”,
-“WARNING:”, “NOTE:”, “Command:”. QUILL finds each failed step’s lines by
-the times GitHub recorded for that step. If GitHub gave no times, the
-digest says so and uses the end of the job’s log instead.</p>
-<p>Up to ten failed jobs are shown; a run with more says how many are
-left and suggests opening the run on GitHub.</p>
-<p><strong>Copy All</strong> (<code>Alt+C</code>) copies the whole
-digest, ready to paste into a comment or a message.
-<strong>Refresh</strong> (<code>Alt+R</code>) reads it again, for a run
-that is still going. Escape closes the window.</p>
-<h2 id="jobs-and-logs">Jobs and logs</h2>
-<p>For the whole picture, choose <strong>View Jobs and Logs…</strong> on
-a run. The window <strong>Jobs for</strong> and the run has, in Tab
-order:</p>
-<ul>
-<li><strong>Attempt:</strong> (<code>Alt+A</code>). A rerun makes a new
-attempt, and the earlier ones are kept. The current one is marked
-“(current)”; up to the latest 20 are offered.</li>
-<li><strong>Workflow jobs</strong>, one row per job: its result, then
-its name, such as “failure: test (windows)”.</li>
-<li><strong>Job details and log</strong>, a read-only text field: the
-job’s status and result, when it started and finished, the attempt, the
-commit, and every step with its result. After you load the log, the log
-is here too.</li>
-<li>The status line, then the buttons:
-<ul>
-<li><strong>Load Log</strong> (<code>Alt+L</code>) loads the selected
-job’s log as plain text. Enter on a job does the same. Focus moves to
-the details when it arrives.</li>
-<li><strong>Load Annotations</strong> (<code>Alt+N</code>) loads the
-errors and warnings the job’s tools reported. If GitHub refuses, QUILL
-says so, rather than suggesting there were none.</li>
-<li><strong>Open Job on GitHub</strong> (<code>Alt+J</code>) and
-<strong>Open Run on GitHub</strong> (<code>Alt+R</code>).</li>
-<li><strong>What Failed…</strong> (<code>Alt+F</code>), the digest
-above, for the attempt you chose.</li>
-<li><strong>Re-request Check</strong> (<code>Alt+C</code>), see
-below.</li>
-<li><strong>Follow This Job</strong> (<code>Alt+W</code>), see
-below.</li>
-<li><strong>Close</strong>. Escape closes too.</li>
-</ul></li>
-</ul>
-<p>A log over 4 MB is cut off there, with a line saying so and
-suggesting the job page on GitHub. Annotations stop at 100, also with a
-line saying so.</p>
-<h3 id="following-a-job-while-it-runs">Following a job while it
-runs</h3>
-<p>GitHub shows a running job’s log only on its own web page; the log
-QUILL Lite can load arrives when the job has finished. What QUILL Lite
-can follow while it runs is its steps. Select a running job and check
-<strong>Follow This Job</strong> (<code>Alt+W</code>): you hear where it
-is, for example “build: On step 3 of 9, Run tests; 2 done”, and from
-then on, every few seconds, each step as it starts and as it finishes,
-“Step 3, Run tests, failed.”, without your having to look. When the job
-ends you hear how, “build failed. Load Log reads its whole log.”, and
-following stops by itself. Uncheck the box to stop sooner.</p>
-<p>At any moment, <code>Alt+8</code> says how far along the selected job
-is: the step it is on, how many are done, and any that have failed so
-far.</p>
-<h2 id="doing-something-about-a-run">Doing something about a run</h2>
-<p>On a run in <strong>Workflow Runs</strong>, <strong>Actions…</strong>
-and the context menu hold the commands that act on it. Each one asks
-first, and the default answer is No. Answering No to most of them says
-“Cancelled; nothing was sent to GitHub.”</p>
-<ul>
-<li><strong>Re-run Workflow</strong> reruns every job in the run.</li>
-<li><strong>Re-run Failed Jobs Only</strong> reruns just the jobs that
-failed, which is usually what you want after fixing a flaky test. You
-hear “GitHub started a re-run of the failed jobs of” and the run. On a
-run where nothing failed, GitHub refuses, and QUILL passes on its
-reason.</li>
-<li><strong>Cancel Run…</strong> stops a run that is still going. GitHub
-only promises to stop it, so QUILL says “GitHub accepted the cancel
-request and is stopping” the run, “Refresh to check.”</li>
-<li><strong>Delete Run…</strong> deletes the run for good. The
-confirmation names the run, its branch and its result, and says its logs
-and artifacts go with it and that this cannot be undone.</li>
-<li><strong>Approve Run from a Fork…</strong> lets a run from someone
-else’s fork go ahead. GitHub holds these until a maintainer approves
-them, because the code in them has not been reviewed. The confirmation
-says so: approve only code you have read, since it runs with this
-repository’s permissions.</li>
-<li><strong>Review Pending Deployments…</strong>, below.</li>
-<li><strong>Combined Check Status</strong>, below.</li>
-</ul>
-<h2 id="combined-check-status">Combined check status</h2>
-<p><strong>Combined Check Status</strong> reads every check on the run’s
-commit and says them in one sentence: “Commit 1a2b3c4: 3 of 4 checks
-pass; failing: test.” If some are still going it adds how many, and it
-names any that have not reported yet. It reads only, so it works signed
-out.</p>
-<p>The review window has the same command (Chapter 5). There, after
-<strong>Check Merge Policy</strong>, it counts only the checks the
-branch requires.</p>
-<h2 id="re-requesting-a-check">Re-requesting a check</h2>
-<p>A check that failed for reasons outside the code, a network blip,
-say, can be asked to run again on its own. In <strong>Jobs and
-Logs</strong>, select the job and press <strong>Re-request
-Check</strong> (<code>Alt+C</code>). QUILL asks first, then says “GitHub
-queued the check for” and the job “to run again.” The review window’s
-Checks branch has <strong>Re-request Check…</strong> on each check’s
-context menu too.</p>
-<h2 id="deployments-waiting-for-approval">Deployments waiting for
-approval</h2>
+<p>Chapter 7 has Dependabot’s configuration, code owners, and comparing
+a repository’s configuration with another’s.</p>
+<h2 id="deployments-and-environments">Deployments and environments</h2>
+<h3 id="deployments-waiting-for-approval">Deployments waiting for
+approval</h3>
 <p>A workflow can stop before deploying to an environment, such as
 production, until someone approves. <strong>Review Pending
 Deployments…</strong> on the run opens the window <strong>Pending
@@ -478,9 +537,13 @@ are allowed to approve start checked.</li>
 QUILL asks once more, naming the environments, and then says which ones
 GitHub approved or rejected. If nothing is waiting, the window says
 “This run is not waiting on any deployment review.”</p>
-<h2 id="an-environments-rules">An environment’s rules</h2>
-<p>An environment’s row, under Repository &gt; Deployments, has these on
-its context menu, beside Secrets… and Variables…:</p>
+<p><strong>Approvals</strong>, on the run’s context menu, says who
+approved or rejected its deployments afterwards.</p>
+<h3 id="an-environments-rules">An environment’s rules</h3>
+<p>A repository’s environments are listed under <strong>Settings &gt;
+Environments</strong>. An environment’s row has these on its context
+menu, beside <strong>Secrets…</strong> and <strong>Variables…</strong>,
+which are that environment’s own:</p>
 <ul>
 <li><strong>Branch Policies…:</strong> which branches and tags may
 deploy to it, when it allows chosen ones only. Add one by name or with a
@@ -496,15 +559,29 @@ commit 3f9a2c1).” You hear how many there are and the newest one’s
 state; the list has a line each. To approve or reject a deployment that
 is waiting, use <strong>Review Pending Deployments…</strong> on the run
 that is waiting, above.</li>
+<li><strong>Pin Environment</strong>, <strong>Unpin Environment</strong>
+and <strong>Move Environment…</strong>, under More, choose the order
+GitHub shows environments in.</li>
 </ul>
-<p>An environment’s properties (Alt+Enter) put its protection on one
-sheet: the required reviewers, prevent self-review, the wait timer and
-whether administrators may bypass, with the custom protection rules (the
-apps) listed under them; which branches and tags may deploy, with the
-chosen ones listed; how many secrets and variables it has, with their
-names; and its newest deployments. The protection, the wait timer and
-the branch choice can be changed there; the lists are read only, and the
+<p>An environment’s <strong>Properties…</strong>
+(<code>Alt+Enter</code>) puts its protection on one sheet: the required
+reviewers, prevent self-review, the wait timer and whether
+administrators may bypass, with the custom protection rules (the apps)
+listed under them; which branches and tags may deploy, with the chosen
+ones listed; how many secrets and variables it has, with their names;
+and its newest deployments. The protection, the wait timer and the
+branch choice can be changed there; the lists are read only, and the
 commands above change them.</p>
+<p>To compare an environment’s rules across many repositories, or make
+them the same, use <strong>Across Repositories &gt; Actions by Name &gt;
+Environments by Name</strong> (Chapter 12).</p>
+<h3 id="deleting-a-deployment">Deleting a deployment</h3>
+<p>The repository’s <strong>Deployments and Environments</strong> place
+lists where the code was deployed. A deployment’s context menu has
+<strong>Delete Deployment…</strong>, which removes it from the history
+after asking. GitHub deletes only an inactive deployment; a newer
+deployment to the same environment makes the older one inactive, and
+QUILL says so if you try too early.</p>
 <h2 id="artifacts">Artifacts</h2>
 <p>A run can leave files behind: a built installer, a test report. On a
 run, choose <strong>View Artifacts…</strong>. The window lists them with
@@ -524,47 +601,48 @@ making artifacts.</li>
 <p>GitHub hands each download to a short-lived address on another
 server. QUILL fetches that without your token, so the token is only ever
 sent to GitHub.</p>
+<p>The repository’s <strong>Actions &gt; Artifacts</strong> place lists
+every run’s artifacts together.</p>
 <h2 id="caches">Caches</h2>
 <p>Workflows keep caches to run faster: downloaded packages, build
-outputs. They are listed in Explore. Choose <strong>Actions
-caches</strong> in <strong>View:</strong>, with the repository in
-<strong>Repository:</strong>. The first row sums them up, such as “12
-Actions caches in community-access/quill” and their total size. Each row
-after it reads the cache’s key, size, branch and when it was last used,
-newest first.</p>
+outputs. They are listed in the repository’s <strong>Actions &gt;
+Caches</strong>. The first row sums them up, such as “12 Actions caches
+in community-access/quill” and how much space the listed ones use. Each
+row after it reads the cache’s key, size, branch and when it was last
+used, newest first.</p>
 <p>A stale or broken cache can make a build fail in strange ways. On a
-cache’s row, <strong>Delete Cache…</strong> removes it after asking.
-Workflows build it again the next time they need it.</p>
+cache’s row, <strong>Delete Cache…</strong>, or the Delete key, removes
+it after asking. Workflows build it again the next time they need
+it.</p>
 <h2 id="self-hosted-runners">Self-hosted runners</h2>
 <p>A runner is the machine a workflow’s jobs run on. GitHub lends its
 own, and a repository can bring its own as well, called self-hosted: a
 lab machine with a graphics card, a Mac for signing, a build server
 inside a company network. When those jobs sit waiting forever, the first
 question is whether the machine is even there.</p>
-<p>In the GitHub Workbench, <strong>Repository &gt; Actions &gt;
-Runners</strong> lists them. Each row reads the runner’s name, its state
-and its system, such as “lab-1: online, busy, Linux” or “old-mac:
-offline, macOS”. “Online, idle” means it is there and waiting for work;
-“online, busy” means it is running a job now; “offline” means GitHub has
-not heard from it, which is why jobs that ask for it never start. The
-details pane adds the runner’s labels, the words a workflow’s
-<code>runs-on:</code> line asks for, so you can check that the job and
-the machine agree. Enter, or <strong>Open on GitHub</strong>, opens the
-repository’s runner settings page.</p>
+<p>The repository’s <strong>Actions &gt; Runners</strong> lists them.
+Each row reads the runner’s name, its state and its system, such as
+“lab-1: online, busy, Linux” or “old-mac: offline, macOS”. “Online,
+idle” means it is there and waiting for work; “online, busy” means it is
+running a job now; “offline” means GitHub has not heard from it, which
+is why jobs that ask for it never start. The details pane adds the
+runner’s labels, the words a workflow’s <code>runs-on:</code> line asks
+for, so you can check that the job and the machine agree. <strong>Open
+on GitHub</strong> opens the repository’s runner settings page.</p>
 <p>GitHub shows runners only to the repository’s administrators. Anyone
 else hears “GitHub shows owner/name’s runners only to its
-administrators.” in the node’s note, rather than an empty list that
+administrators.” in the place’s note, rather than an empty list that
 looks like there are none. A repository that uses only GitHub’s own
 runners lists nothing.</p>
 <p>Adding and removing runners needs you to administer the
 repository:</p>
 <ul>
 <li><strong>New Runner…</strong>: press <code>Ctrl+N</code> in Runners.
-QUILL Lite asks which system the machine runs, such as Linux x64 or
-Windows x64, then puts the commands that set it up on the clipboard and
-says so. Paste them into a terminal on that machine. They download the
-runner, check its SHA-256 checksum, and register it with a token that
-works for an hour. The token is never said or shown in a list.</li>
+QUILL asks which system the machine runs, such as Linux x64 or Windows
+x64, then puts the commands that set it up on the clipboard and says so.
+Paste them into a terminal on that machine. They download the runner,
+check its SHA-256 checksum, and register it with a token that works for
+an hour. The token is never said or shown in a list.</li>
 <li><strong>Runner Labels…</strong> on a runner adds a label, such as
 <code>gpu</code>, or takes away one that someone added. The labels
 GitHub gives every runner, such as <code>self-hosted</code> and
@@ -572,18 +650,59 @@ GitHub gives every runner, such as <code>self-hosted</code> and
 <li><strong>Remove Runner…</strong>, or the Delete key, asks first, then
 GitHub forgets the runner and the program on that machine gets no more
 jobs.</li>
+<li><strong>Removal Commands…</strong> puts the commands that unregister
+a runner on its own machine on the clipboard, again without saying or
+showing the token.</li>
 </ul>
+<p>An organization’s runners, runner groups and larger runners are under
+the organization in the tree. Chapter 12 lists the commands on them,
+such as <strong>Just-in-Time Runner…</strong> and <strong>Is a Runner
+Version Retiring?…</strong>.</p>
 <h2 id="secret-and-variable-names">Secret and variable names</h2>
-<p><strong>Secret and variable names</strong>, also in Explore, lists
-the names of the repository’s secrets and variables, and those of each
-environment, with when each was last updated: “Repository secret:
-DEPLOY_KEY, updated 2026-10-02”. It answers “is that secret set?”
-without anyone needing to see it.</p>
+<p>A repository’s <strong>Settings &gt; Secret and Variable
+Names</strong> lists the names of the repository’s secrets and
+variables, and those of each environment, with when each was last
+updated: “Repository secret: DEPLOY_KEY, updated 2026-10-02”. It answers
+“is that secret set?” without anyone needing to see it.</p>
 <p>The names are all you get. QUILL never reads a secret’s or variable’s
-value, and it drops any value GitHub sends before it reaches the
-screen.</p>
-<p>Both of these views need a signed-in account with access to the
+value, and it drops any value GitHub sends before it reaches the screen.
+Reading the names needs a signed-in account with access to the
 repository’s settings.</p>
+<p>To set a secret’s value, or add, change and delete variables, use
+<strong>Settings &gt; Actions Secrets</strong> and <strong>Actions
+Variables</strong>. Chapter 8 covers secrets, and how a value is sealed
+on your computer before it is sent.</p>
+<h2 id="a-walk-through-reading-the-practice-repositorys-failed-run">A
+walk-through: reading the practice repository’s failed run</h2>
+<p>The practice repository has a workflow that fails on purpose. Make it
+first with <strong>Help &gt; Practice on GitHub…</strong>
+(<code>Ctrl+Alt+P</code>) if you have not.</p>
+<ol type="1">
+<li>In the Workbench, press <code>Ctrl+L</code>, type
+<code>quill-practice</code> and press Enter.</li>
+<li>Press <code>Ctrl+Shift+4</code> for its Runs, then F6 to the list.
+You hear a row starting “failure, Practice checks”.</li>
+<li>Press <code>Ctrl+Shift+W</code>. The What Failed window opens, and
+you hear “What failed is ready.” and the first line. Arrow down: the
+failing step is called Fail on purpose, and its last log lines
+follow.</li>
+<li>Press Escape to close it.</li>
+<li>Press Enter on the same run. The jobs window opens. Arrow to the
+failed job and press <code>Alt+L</code> to load its whole log. Press
+Escape when you are done.</li>
+<li>Press <code>Ctrl+Shift+F5</code> and answer Yes. You hear that
+GitHub started a re-run of the failed jobs. It fails again, which is the
+point here; in a real repository you would fix it first.</li>
+<li>Press <code>F5</code> after a minute to refresh the list and hear
+the new attempt.</li>
+</ol>
+<h2 id="learn-it-with-a-guided-lesson">Learn it with a guided
+lesson</h2>
+<p><strong>Help &gt; Tutorials</strong> (<code>Ctrl+F2</code>) has
+<strong>Read a failed run</strong>, on the practice repository: list the
+runs, read what failed, and run only the failure again. <strong>Try a
+command without sending it</strong> shows Dry Run, so you can try Delete
+Run… and hear what it would send without sending it.</p>
 <hr />
 <ul>
 <li>Previous: <a

@@ -245,15 +245,74 @@
 <h1 id="chapter-11-keyboard-reference">Chapter 11: Keyboard
 reference</h1>
 <h2 id="what-this-chapter-covers">What this chapter covers</h2>
-<p>Every key the workbench answers to, one window at a time. Keys marked
-as access keys are the underlined letters of a control, pressed with
-Alt; they work while that window has focus. Keys that open the windows
-themselves are in Chapter 1. QUILL’s GitHub menu commands have no keys
-out of the box, and you can give them some in the Keymap Editor.</p>
-<p>Throughout, Shift+F10 or the Applications key opens the context menu
-of whatever has focus, and Escape closes the window you are in. The
-Workbench itself is the exception: Escape never closes it, and
-<code>Alt+F4</code> does.</p>
+<p>You know what you want to do and want the key for it. This chapter
+lists every key the GitHub Workbench and the windows it opens answer to,
+one window at a time, so you can look one up without reading a whole
+chapter.</p>
+<p>It starts with the GitHub menu in the editors, then the Workbench’s
+own keys grouped by what they do, then each smaller window. By the end
+you will have the few keys worth learning first, and know where to find
+the rest.</p>
+<p>Keys marked as access keys are the underlined letters of a control,
+pressed with Alt; they work while that window has focus. The GitHub
+menu’s rows have no keys out of the box, and you can give them some in
+the Keymap Editor.</p>
+<p>Throughout, <code>Shift+F10</code> or the Applications key opens the
+context menu of whatever has focus, and Escape closes the smaller window
+you are in. The Workbench itself is the exception: Escape never closes
+it, and <code>Alt+F4</code> does.</p>
+<h3 id="the-ten-to-learn-first">The ten to learn first</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>F6</code></td>
+<td>Move between the tree, the filter, the list, the details and the
+status bar</td>
+</tr>
+<tr>
+<td>Enter</td>
+<td>Do the obvious thing with the selected row</td>
+</tr>
+<tr>
+<td><code>Backspace</code></td>
+<td>Go back to where you were</td>
+</tr>
+<tr>
+<td><code>Alt+Enter</code></td>
+<td>Everything about the selected row, on one sheet</td>
+</tr>
+<tr>
+<td><code>Shift+F1</code></td>
+<td>What you can do here, with each key</td>
+</tr>
+<tr>
+<td><code>F1</code></td>
+<td>What this place and control are for</td>
+</tr>
+<tr>
+<td><code>Ctrl+E</code></td>
+<td>Filter the list</td>
+</tr>
+<tr>
+<td><code>Ctrl+1</code></td>
+<td>Inbox</td>
+</tr>
+<tr>
+<td><code>Ctrl+L</code></td>
+<td>Go to any repository, issue or link</td>
+</tr>
+<tr>
+<td><code>F9</code></td>
+<td>Say the last result again</td>
+</tr>
+</tbody>
+</table>
 <h2 id="the-github-menu-in-workbench-mode">The GitHub menu, in workbench
 mode</h2>
 <p>GitHub Workbench Mode is <strong>View &gt; GitHub Workbench
@@ -371,10 +430,6 @@ is off; in QUILL Lite its rows are in the GitHub menu itself.</p>
 <td><code>T</code></td>
 <td>Comment on This Line in the Open Pull Request…</td>
 </tr>
-<tr>
-<td><code>R</code></td>
-<td>Open the GitHub Reference at the Cursor</td>
-</tr>
 </tbody>
 </table>
 <h3 id="clone-repository">Clone Repository</h3>
@@ -411,9 +466,9 @@ is off; in QUILL Lite its rows are in the GitHub menu itself.</p>
 <h2 id="the-github-workbench-window">The GitHub Workbench window</h2>
 <p>These are the Workbench’s own keys. Chapter 12 explains the places
 they take you to. Every one of them can be changed in the Keymap Editor,
-and the menus always show the key that is really bound. The old GitHub
-Items and Explore GitHub windows are retired; everything they did is
-here.</p>
+and the menus, <code>Shift+F1</code>, <code>Alt+Shift+F1</code> and the
+Key Describer always say the key that is really bound. This chapter
+shows the keys the Workbench starts with.</p>
 <h3 id="going-places">Going places</h3>
 <table>
 <thead>
@@ -454,7 +509,7 @@ bar</td>
 </tr>
 <tr>
 <td><code>Ctrl+7</code></td>
-<td>Watches, not built yet</td>
+<td>Watches</td>
 </tr>
 <tr>
 <td><code>Ctrl+8</code></td>
@@ -479,7 +534,7 @@ Runs, Files, Releases, Projects, Security, Settings and Insights</td>
 </tr>
 <tr>
 <td><code>Alt+Left</code>, <code>Alt+Right</code></td>
-<td>Back and Forward</td>
+<td>Back and Forward (<code>Backspace</code> goes back too)</td>
 </tr>
 <tr>
 <td><code>Ctrl+L</code></td>
@@ -492,7 +547,7 @@ Runs, Files, Releases, Projects, Security, Settings and Insights</td>
 </tr>
 <tr>
 <td><code>Ctrl+Period</code>, <code>Ctrl+Shift+Period</code></td>
-<td>Next or previous unread notification</td>
+<td>Next or previous unread row</td>
 </tr>
 <tr>
 <td><code>Ctrl+Shift+E</code></td>
@@ -523,6 +578,10 @@ jobs, a branch’s commits, a release’s files</td>
 <td>Properties: everything about it, on one sheet</td>
 </tr>
 <tr>
+<td><code>Shift+F10</code> or the Applications key</td>
+<td>The row’s context menu</td>
+</tr>
+<tr>
 <td><code>Shift+Enter</code></td>
 <td>Open it on GitHub, in your browser</td>
 </tr>
@@ -544,6 +603,11 @@ repositories for Across Repositories</td>
 <td>Comment</td>
 </tr>
 <tr>
+<td><code>Ctrl+Shift+I</code></td>
+<td>Read as Document: an issue, pull request or discussion as one
+document</td>
+</tr>
+<tr>
 <td><code>Ctrl+Shift+D</code></td>
 <td>A pull request’s changed files</td>
 </tr>
@@ -554,6 +618,16 @@ repositories for Across Repositories</td>
 <tr>
 <td><code>Ctrl+Shift+B</code></td>
 <td>Compare a branch with another</td>
+</tr>
+<tr>
+<td><code>Ctrl+B</code></td>
+<td>Compare the selected branch, tag, release or commit with the default
+branch</td>
+</tr>
+<tr>
+<td><code>Alt+Shift+B</code></td>
+<td>Compare a tag or release with the one before it, or a commit with
+its parent</td>
 </tr>
 <tr>
 <td><code>Ctrl+Shift+A</code></td>
@@ -570,6 +644,10 @@ repositories for Across Repositories</td>
 <tr>
 <td><code>Ctrl+Shift+F5</code></td>
 <td>Re-run a run’s failed jobs only</td>
+</tr>
+<tr>
+<td><code>Ctrl+Cancel</code> (the Ctrl+Break key)</td>
+<td>Cancel the selected run, after asking (in the list)</td>
 </tr>
 <tr>
 <td><code>Ctrl+Shift+R</code></td>
@@ -597,7 +675,7 @@ repositories for Across Repositories</td>
 </tr>
 <tr>
 <td><code>Ctrl+Alt+N</code></td>
-<td>Inbox Rules…</td>
+<td>Inbox Rules</td>
 </tr>
 <tr>
 <td><code>Ctrl+D</code></td>
@@ -609,8 +687,8 @@ repositories for Across Repositories</td>
 </tr>
 <tr>
 <td>Delete</td>
-<td>The safe removal for the row, asking first when it cannot be
-undone</td>
+<td>The safe removal for the row, asking first when it cannot be undone
+(in the list)</td>
 </tr>
 <tr>
 <td><code>Ctrl+Z</code>, <code>Ctrl+Y</code></td>
@@ -645,7 +723,7 @@ list</td>
 <td>Select every row</td>
 </tr>
 <tr>
-<td><code>F5</code></td>
+<td><code>F5</code>, <code>Ctrl+R</code></td>
 <td>Refresh</td>
 </tr>
 <tr>
@@ -679,6 +757,8 @@ table</td>
 </tr>
 </tbody>
 </table>
+<p>Sort By, Group By, Quick Filters and Show are on the View menu
+(<code>Alt+V</code>). Their rows have letters, not keys.</p>
 <h3 id="account-and-tools">Account and tools</h3>
 <table>
 <thead>
@@ -688,6 +768,14 @@ table</td>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><code>Ctrl+Shift+K</code></td>
+<td>Manage GitHub Accounts</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+L</code></td>
+<td>GitHub’s remaining hourly allowance</td>
+</tr>
 <tr>
 <td><code>Ctrl+Shift+P</code></td>
 <td>GitHub Permissions</td>
@@ -701,14 +789,6 @@ table</td>
 <td>Set Your Status</td>
 </tr>
 <tr>
-<td><code>Ctrl+Shift+K</code></td>
-<td>Manage GitHub Accounts</td>
-</tr>
-<tr>
-<td><code>Ctrl+Shift+L</code></td>
-<td>GitHub’s remaining hourly allowance</td>
-</tr>
-<tr>
 <td><code>Ctrl+Shift+O</code></td>
 <td>Workbench Options</td>
 </tr>
@@ -717,11 +797,25 @@ table</td>
 <td>Dry Run on or off</td>
 </tr>
 <tr>
+<td><code>Ctrl+Shift+S</code></td>
+<td>Plain-Language Batch</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+J</code></td>
+<td>GitHub API Console</td>
+</tr>
+<tr>
 <td><code>Alt+F4</code></td>
 <td>Close the Workbench</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Account &gt; Roles and Access</strong> (My Access Here, View
+As Role, Compare Roles, Why Can’t They?, Access Review, Bulk Access
+Changes, Access Templates, Apply Access Template, Compare Accounts, Act
+As Another Account, Workbench Level for This Account, and Least
+Privilege Advice) has no keys out of the box; its rows have letters.
+Chapter 13 covers them.</p>
 <h3 id="hearing-where-you-are-and-help">Hearing where you are, and
 help</h3>
 <table>
@@ -762,12 +856,29 @@ the allowance, the filter, what is loading, the account</td>
 <td>Search all of help</td>
 </tr>
 <tr>
+<td><code>Alt+Shift+F1</code></td>
+<td>Every key in the window</td>
+</tr>
+<tr>
+<td><code>Ctrl+F2</code></td>
+<td>Tutorials: the GitHub lessons</td>
+</tr>
+<tr>
 <td><code>Ctrl+Alt+P</code></td>
 <td>Practice on GitHub</td>
 </tr>
 <tr>
-<td><code>Alt+Shift+F1</code></td>
-<td>Every key in the window</td>
+<td><code>Ctrl+Alt+F1</code></td>
+<td>GitHub Service Status</td>
+</tr>
+<tr>
+<td><code>F11</code></td>
+<td>Say or Type a Command, in this window</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+F1</code></td>
+<td>What Can I Say Here: what <code>F11</code> can do in this
+window</td>
 </tr>
 <tr>
 <td><code>Ctrl+Alt+K</code></td>
@@ -776,9 +887,6 @@ the allowance, the filter, what is loading, the account</td>
 </tr>
 </tbody>
 </table>
-<p>If you rebind a key, the menus, <code>Shift+F1</code>,
-<code>Alt+Shift+F1</code> and the Key Describer all say your key. This
-chapter shows the keys the Workbench starts with.</p>
 <h3 id="new-pull-request">New Pull Request</h3>
 <table>
 <thead>
@@ -914,7 +1022,7 @@ branch</td>
 </tr>
 <tr>
 <td><code>Alt+D</code></td>
-<td>Convert to Draft</td>
+<td>Convert to Draft, on a pull request that is not a draft</td>
 </tr>
 <tr>
 <td><code>Alt+B</code></td>
@@ -943,6 +1051,10 @@ and has none either.</p>
 <td>Review message</td>
 </tr>
 <tr>
+<td><code>Alt+W</code></td>
+<td>Comment Window…, to write the message in a larger window</td>
+</tr>
+<tr>
 <td>Escape</td>
 <td>Save Draft and Close</td>
 </tr>
@@ -965,9 +1077,9 @@ Tab.</p>
 changed lines</td>
 </tr>
 <tr>
-<td><code>Alt+N</code> / <code>Alt+P</code></td>
-<td>Next / previous change in the patch list, “Change 2 of 5”
-(<code>F8</code> / <code>Shift+F8</code> too)</td>
+<td><code>Alt+N</code> / <code>Alt+P</code>, in the patch lines</td>
+<td>Next / previous change, “Change 2 of 5” (<code>F8</code> /
+<code>Shift+F8</code> too)</td>
 </tr>
 <tr>
 <td><code>Alt+H</code></td>
@@ -982,8 +1094,8 @@ changed lines</td>
 <td>Choose Commit</td>
 </tr>
 <tr>
-<td><code>Alt+P</code></td>
-<td>Patch lines</td>
+<td><code>Alt+P</code>, from anywhere else</td>
+<td>Move to the patch lines</td>
 </tr>
 <tr>
 <td>Shift with the arrows</td>
@@ -1035,6 +1147,10 @@ changed lines</td>
 <tr>
 <td><code>Alt+P</code></td>
 <td>Post Now</td>
+</tr>
+<tr>
+<td><code>Alt+W</code></td>
+<td>Comment Window…, to write the comment in a larger window</td>
 </tr>
 </tbody>
 </table>
@@ -1629,6 +1745,10 @@ changed lines</td>
 </thead>
 <tbody>
 <tr>
+<td><code>Alt+P</code></td>
+<td>Open Pull Request</td>
+</tr>
+<tr>
 <td><code>Alt+G</code></td>
 <td>Open on GitHub</td>
 </tr>
@@ -1642,9 +1762,9 @@ changed lines</td>
 <ul>
 <li>Previous: <a href="github-guide-10-troubleshooting.html">Chapter 10:
 Troubleshooting, privacy and help</a></li>
-<li><a href="github-guide.html">Contents</a></li>
 <li>Next: <a href="github-guide-12-the-workbench.html">Chapter 12: The
 GitHub Workbench, place by place</a></li>
+<li><a href="github-guide.html">Contents</a></li>
 </ul>
 </main>
 </body>

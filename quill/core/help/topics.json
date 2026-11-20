@@ -1978,7 +1978,7 @@
     "id": "github.repository_actions",
     "title": "Repository Actions in Explore",
     "body": "On a repository row in Explore, or a repository typed in a repository view, the context menu's Repository Actions submenu has Sync Fork with Upstream (QUILL says Already up to date or Merged 3 commits), Set Topics, Watch Level, Archive and Unarchive, Create Repository from This Template, and Delete Repository, which asks you to type the repository's full name first. The Actions caches view lists caches and Delete Cache removes one; the Secret and variable names view lists names only, never values. A person's row has Follow and Unfollow. Each write asks first and says what GitHub confirmed.",
-    "user_guide_section": "repository-actions-in-explore"
+    "user_guide_section": "repository-actions-in-the-workbench"
   },
   {
     "id": "github.manage_release",
@@ -2020,7 +2020,7 @@
     "id": "github.gists",
     "title": "Writing and Editing Gists",
     "body": "In Explore's My gists view, the context menu has New Gist, which starts from the document you are editing or its selection, and on a gist Edit Gist, Star Gist, Unstar Gist and Delete Gist. The gist window has Description (Alt+D), Public gist (Alt+B) for a new gist, Files (Alt+F), File text (Alt+T), Add File (Alt+A), Rename File (Alt+N) and Delete File (Alt+L). Deleting a file or a gist asks first, nothing is sent until Create Gist or Save Gist, and QUILL says what GitHub confirmed. A secret gist is unlisted, not private.",
-    "user_guide_section": "gists-in-explore"
+    "user_guide_section": "gists-in-the-workbench"
   },
   {
     "id": "github.attention_queue_summaries",

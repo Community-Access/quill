@@ -364,17 +364,19 @@ KEY_FAMILIES: tuple[tuple[str, str], ...] = (
 #: (chapter number, title) of the GitHub Guide, in order.
 GUIDE_CHAPTERS: tuple[tuple[str, str], ...] = (
     ("01", "Getting started"),
-    ("02", "Getting around"),
-    ("03", "Inbox and your work"),
+    ("02", "A tour of the GitHub Workbench"),
+    ("03", "Your inbox and your work"),
     ("04", "Issues"),
     ("05", "Pull requests and review"),
     ("06", "Actions and checks"),
     ("07", "Code and repositories"),
     ("08", "Discussions and security"),
-    ("09", "Codespaces and the command line"),
-    ("10", "Troubleshooting"),
+    ("09", "Codespaces and the GitHub CLI"),
+    ("10", "Troubleshooting, privacy and help"),
     ("11", "Keyboard reference"),
     ("12", "The GitHub Workbench, place by place"),
+    ("13", "Properties, filters and permissions"),
+    ("14", "GitHub in QUILL Lite"),
 )
 
 _CHAPTER_FOR: dict[str, str] = {

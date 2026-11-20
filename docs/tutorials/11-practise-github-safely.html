@@ -245,36 +245,14 @@
 <h1 id="tutorial-11-practise-github-safely">Tutorial 11: Practise GitHub
 safely</h1>
 <p><strong>Goal:</strong> get comfortable with GitHub in QUILL or QUILL
-Lite by working on a practice project where nothing you do can go wrong.
-You’ll read a real-looking project, make a copy of your own, and then
-review, comment, merge and fix a failing check in it.</p>
+Lite by working on a practice repository of your own, where nothing you
+do can go wrong. You’ll make it, look round it, try a change without
+sending it, then label and close an issue, review and merge a pull
+request, and find out why a check failed.</p>
 <p>This lesson works the same in <strong>QUILL</strong> and
-<strong>QUILL Lite</strong>. Where the two differ, both are given. It
-takes about twenty minutes, plus as long as you like afterwards.</p>
-<h2 id="what-youre-practising-on">What you’re practising on</h2>
-<p>Community Access keeps a practice repository on GitHub, <a
-href="https://github.com/Community-Access/quill-github-practice">Community-Access/quill-github-practice</a>.
-It holds a tiny Python project called Tally, which counts the words in
-some text. The code hardly matters. What matters is everything around
-it, already set up for you:</p>
-<ul>
-<li>six issues, with labels, an assignee, a milestone and a closed
-one;</li>
-<li>a pull request, “Add a line count”, with a review that has a line
-comment and a suggested change;</li>
-<li>a draft pull request, “Speed up word counting”, whose check fails on
-purpose;</li>
-<li>a release, <code>v0.1.0</code>, with a file attached;</li>
-<li>a discussion with replies;</li>
-<li>a security policy, a code of conduct, and issue and pull request
-templates.</li>
-</ul>
-<p>The practice repository is the example everyone reads, so it’s
-locked: you can read everything in it, but only Community Access can
-change it. Everything you do that writes something happens in
-<strong>your own copy</strong>, which you make in part 2. Nobody else
-sees your copy unless you want them to, and you can delete it when
-you’re done.</p>
+<strong>QUILL Lite</strong>, because both open the same GitHub
+Workbench. Where the two differ, both are given. It takes about twenty
+minutes, plus as long as you like afterwards.</p>
 <h2 id="what-you-need">What you need</h2>
 <ul>
 <li>A GitHub account. A free one is fine.</li>
@@ -282,177 +260,212 @@ you’re done.</p>
 signed in yet: in QUILL, choose <strong>File &gt; Open from Remote &gt;
 Manage GitHub Accounts…</strong>. In QUILL Lite, choose <strong>File
 &gt; Manage GitHub Accounts…</strong> (<code>Alt+F</code>, then
-<code>H</code>). The GitHub Guide’s chapter 1 explains signing in.</li>
+<code>H</code>). <a
+href="../user%20guide/github-guide/github-guide-01-getting-started.md">Chapter
+1 of the GitHub Guide</a> explains signing in.</li>
 <li>In QUILL, GitHub Remote Access, which is on in most profiles. If the
-GitHub rows aren’t on the File menu, turn it on in <strong>Profiles and
-Features…</strong>, or press <code>Alt+Shift+P</code> and choose
-Developer.</li>
-<li>If you like, <strong>View &gt; GitHub Workbench Mode</strong>
-(<code>Alt+V</code>, then <code>K</code>). It puts everything this
-tutorial uses in one <strong>GitHub</strong> menu (<code>Alt+G</code>),
-in both apps. The steps below give both routes.</li>
+GitHub rows aren’t on the File menu, press <code>Alt+Shift+P</code> and
+choose a profile that has it, such as Developer.</li>
 </ul>
-<h2 id="1-read-the-practice-repository">1. Read the practice
+<h2 id="what-youre-practising-on">What you’re practising on</h2>
+<p><strong>Help &gt; Practice on GitHub…</strong>
+(<code>Ctrl+Alt+P</code>), in the Workbench, makes a private repository
+in your own account called <code>quill-practice</code>. Nobody else sees
+it, and you can delete it when you’re done. QUILL fills it with:</p>
+<ul>
+<li>three issues: “Practice: the greeting has a typo”, to label, assign
+and close; “Practice: a task list to work through”, to check off and
+turn into sub-issues; and “Practice: should we add a changelog?”, to
+answer and close as not planned;</li>
+<li>two labels, “practice: bug” and “practice: question”;</li>
+<li>a branch, <code>fix-greeting</code>, with a pull request to review
+and merge;</li>
+<li>a workflow, “Practice checks”, whose last step fails on purpose, so
+there is a failure to read.</li>
+</ul>
+<p>Every lesson in <strong>Help &gt; Tutorials</strong>
+(<code>Ctrl+F2</code> in the Workbench) that changes something uses this
+repository. The steps below are the same ground, at your own pace.</p>
+<h2 id="1-make-the-practice-repository">1. Make the practice
 repository</h2>
 <ol type="1">
-<li>Open GitHub Items. In QUILL, choose <strong>File &gt; Open from
-Remote &gt; GitHub Items…</strong>. In QUILL Lite, choose <strong>File
-&gt; GitHub Workbench…</strong> (<code>Alt+F</code>, then
-<code>G</code>). In workbench mode, in either app, choose <strong>GitHub
-&gt; Repository Items…</strong> (<code>Alt+G</code>, then
-<code>T</code>).</li>
-<li>In <strong>Repository:</strong>, type
-<code>Community-Access/quill-github-practice</code> and press Enter. The
-issues load.</li>
-<li>Arrow to “Word count is off by one when text ends with a space” and
-press Enter. Read it from the top. It has one comment, suggesting the
-fix.</li>
-<li>Go back to the list and open “Question: what counts as a word?”.
-Press <code>Alt+N</code> to move from comment to comment, and
-<code>Alt+P</code> to go back.</li>
-<li>Switch <strong>View:</strong> (<code>Alt+I</code>) to the pull
-requests and open “Add a line count”. You hear its one-sentence summary
-first.</li>
-<li>Open it in the review window. Move through the outline, then from
-thread to thread. One thread has a suggested change: it shows what the
-reviewer thinks <code>line_count</code> should say instead.</li>
+<li>Open the GitHub Workbench. In QUILL, choose <strong>File &gt; Open
+from Remote &gt; GitHub Items…</strong>. In QUILL Lite, choose
+<strong>File &gt; GitHub Workbench…</strong> (<code>Alt+F</code>, then
+<code>G</code>). You land on Inbox.</li>
+<li>Press <code>Ctrl+Alt+P</code> for <strong>Help &gt; Practice on
+GitHub…</strong>. QUILL says what it will make and asks first. Choose
+<strong>Yes</strong>.</li>
+<li>You hear each part as it is made, then the Workbench opens the new
+repository, with you on its place in the tree.</li>
 </ol>
-<p>That’s the read-only part. Everything you just did works in any
-public repository, signed in or not.</p>
-<h2 id="2-make-your-own-copy">2. Make your own copy</h2>
-<p>The practice repository is a template, which means GitHub can make a
-fresh copy of it for you, with its own history.</p>
+<p>If you have made it before, the same command offers <strong>Open
+It</strong>, <strong>Delete It and Start Over…</strong> and
+<strong>Delete It…</strong>.</p>
+<h2 id="2-look-round">2. Look round</h2>
 <ol type="1">
-<li>In GitHub Items, press <code>Alt+E</code> for
-<strong>Explore…</strong>.</li>
-<li>In <strong>Repository:</strong> (<code>Alt+R</code>), type
-<code>Community-Access/quill-github-practice</code> and load it.</li>
-<li>Open the context menu (the Applications key, or
-<code>Shift+F10</code>), then the <strong>Repository Actions for
-Community-Access/quill-github-practice</strong> submenu, and choose
-<strong>Create Repository from This Template…</strong>.</li>
-<li>Name it, say <code>my-github-practice</code>. Leave the organization
-empty so the copy goes in your own account. It can be private if you’d
-rather nobody saw it.</li>
-<li>Confirm. When it’s made, QUILL says so.</li>
+<li>Press <code>Ctrl+Shift+1</code> for its Issues, then <code>F6</code>
+to the list. Arrow through the three issues.</li>
+<li>Press <code>F6</code> again to read the selected issue in the
+details, and <code>Shift+F6</code> to come back.</li>
+<li>Press <code>Ctrl+Shift+2</code> for its Pull Requests. There is one,
+from the <code>fix-greeting</code> branch.</li>
+<li>Press <code>Ctrl+Shift+4</code> for its Actions runs. The “Practice
+checks” run failed, on purpose.</li>
+<li>Press <code>Alt+1</code> at any time to hear where you are, and
+<code>Shift+F1</code> on any row to hear what you can do with it.</li>
 </ol>
-<p>If you’d rather use the web: on the practice repository’s page,
-choose <strong>Use this template</strong>, then <strong>Create a new
-repository</strong>.</p>
-<h2 id="3-fill-your-copy-with-practice-items">3. Fill your copy with
-practice items</h2>
-<p>GitHub copies the files, but not the issues or pull requests. Your
-copy comes with a workflow called <strong>Set up practice</strong> that
-makes them.</p>
-<p>First, two settings, once. These are on GitHub’s website, in your
-copy’s Settings:</p>
-<ul>
-<li><strong>Settings &gt; Actions &gt; General &gt; Workflow
-permissions:</strong> check <strong>Allow GitHub Actions to create and
-approve pull requests</strong>, then choose Save.</li>
-<li><strong>Settings &gt; General &gt; Features:</strong> check
-<strong>Discussions</strong>.</li>
-</ul>
-<p>Then run the workflow from QUILL:</p>
+<h2 id="3-try-a-change-without-sending-it">3. Try a change without
+sending it</h2>
 <ol type="1">
-<li>In GitHub Items, load your copy, such as
-<code>your-name/my-github-practice</code>.</li>
-<li>Set <strong>View:</strong> to <strong>Workflows</strong>.</li>
-<li>Select <strong>Set up practice</strong> and press Enter, or choose
-<strong>Run Workflow on Branch…</strong> from its context menu. Keep
-<code>main</code> as the branch and confirm. You hear “Dispatched”.</li>
-<li>Set <strong>View:</strong> to <strong>Workflow Runs</strong>. After
-a minute, the Set up practice run says “completed” and “success”.</li>
+<li>Press <code>Ctrl+Alt+D</code> for <strong>Tools &gt; Dry
+Run</strong>. The status bar’s Account cell now says “Dry Run: nothing
+is sent”.</li>
+<li>Go back to Issues (<code>Ctrl+Shift+1</code>), select “Practice: the
+greeting has a typo”, and press <code>Delete</code> to close it. QUILL
+asks as usual, then stops and says what it would have sent. Nothing
+changed on GitHub.</li>
+<li>Press <code>Ctrl+Alt+D</code> again to turn Dry Run off.</li>
 </ol>
-<p>Your copy now has the same issues, pull requests, release and
-discussion as the practice repository. If you forgot a setting, the run
-fails instead, and its summary says which setting to turn on. Turn it on
-and run it again. It never makes anything twice, so you can run it
-whenever you want a fresh start.</p>
-<h2 id="4-review-and-merge-a-pull-request">4. Review and merge a pull
-request</h2>
-<p>Everything from here is in your copy.</p>
+<p>Use Dry Run whenever you want to see what a command would do before
+you let it.</p>
+<h2 id="4-label-comment-on-and-close-an-issue">4. Label, comment on and
+close an issue</h2>
 <ol type="1">
-<li>Open the pull request “Add a line count” in the review window.</li>
-<li>Go to the thread with the suggested change. Reply to it, saying you
-agree with the suggestion, then resolve the thread.</li>
-<li>Comment on a line of the diff of your own choosing. Your comment
-waits as pending until you send your review.</li>
-<li>Send your review as a comment.</li>
-<li>Merge the pull request. The issue “Add a line count to the summary”
-closes by itself, because the pull request said it would.</li>
+<li>In Issues, select “Practice: the greeting has a typo”.</li>
+<li>Press <code>Alt+Enter</code> for its Properties sheet. On its
+Organize page, check the label “practice: bug” if it is not already, and
+assign it to yourself. Choose <strong>OK</strong>. You hear what was
+saved.</li>
+<li>Press <code>Ctrl+Shift+M</code>, write a short comment, and press
+<code>Ctrl+Enter</code> to post it.</li>
+<li>Press <code>Delete</code> to close it. Choose “completed” as the
+reason.</li>
+<li>Press <code>Ctrl+Shift+H</code> for <strong>Account &gt; Change
+History…</strong>. It lists what you just changed, newest first, with
+before and after, and Undo on each change GitHub lets QUILL take back. A
+comment, once sent, is not one of them.</li>
 </ol>
-<p>QUILL doesn’t commit a suggested change for you. On GitHub’s website,
-the suggestion has a <strong>Commit suggestion</strong> button, if you
-want to try that too.</p>
-<h2 id="5-find-out-why-a-check-failed">5. Find out why a check
+<h2 id="5-review-and-merge-the-pull-request">5. Review and merge the
+pull request</h2>
+<ol type="1">
+<li>Press <code>Ctrl+Shift+2</code> for Pull Requests, select the one
+from <code>fix-greeting</code>, and press Enter. The review window opens
+with the pull request in one sentence.</li>
+<li>Arrow to <strong>Changed files</strong>, press Right Arrow, and
+press Enter on the file. The diff opens. Press <code>Alt+P</code> for
+the patch lines and arrow through them; added and removed lines each
+have their own sound.</li>
+<li>Press Escape to close the diff, and Escape again to close the
+review.</li>
+<li>Back in the Workbench, press <code>Shift+F10</code> on the pull
+request and choose <strong>Why Can’t I Merge?</strong>. You hear whether
+it can merge, as of the commit it names.</li>
+<li>Press <code>Ctrl+Shift+Enter</code>, choose <strong>Squash and
+merge</strong>, type the pull request’s number, and press Enter. You
+hear “Merged” and the new commit.</li>
+</ol>
+<p>You made this pull request yourself, so GitHub will not let the same
+account approve it. On someone else’s, <strong>Compose Review…</strong>
+(<code>Alt+C</code>) in the review window is where you send Approve. <a
+href="../user%20guide/github-guide/github-guide-05-pull-requests-and-review.md">Chapter
+5 of the GitHub Guide</a> has the rest of reviewing.</p>
+<h2 id="6-find-out-why-a-check-failed">6. Find out why a check
 failed</h2>
 <ol type="1">
-<li>Set <strong>View:</strong> to <strong>Workflow Runs</strong> and
-select the failed <strong>Tests</strong> run for the branch
-<code>practice/speed-up-word-counting</code>. Set up practice started it
-for you.</li>
-<li>In your copy, the draft pull request’s own check may say it’s
-waiting for approval, because a workflow opened the pull request rather
-than a person. You don’t need it for this part: the run you just
-selected tested the same code.</li>
+<li>Press <code>Ctrl+Shift+4</code> for Actions runs and select the
+failed “Practice checks” run.</li>
 <li>Press <code>Ctrl+Shift+W</code> for <strong>What Failed…</strong>.
-You hear how many jobs failed, then the failed step, and then the lines
-that matter: the test <code>test_counts_hyphenated_words</code> expected
-3 words and got 4.</li>
-<li>That’s the whole story. The change splits on hyphens, so
-“screen-reader” counts as two words, and the issue “Question: what
-counts as a word?” settled that it should be one.</li>
-<li>From the run’s <strong>Actions…</strong> menu, rerun the failed
-jobs. They’ll fail again, of course, because the code hasn’t changed.
-Rerunning is for failures that come from GitHub, not from the code.</li>
+You hear which job failed, the step “Fail on purpose”, and the last
+lines of its log, which say it fails on purpose.</li>
+<li>Press Escape, then <code>Ctrl+Shift+F5</code> to run only the failed
+jobs again. It will fail again, because nothing in the workflow changed.
+Running again is for failures that come from GitHub, not from the
+code.</li>
 </ol>
-<h2 id="6-work-with-issues">6. Work with issues</h2>
-<ol type="1">
-<li>Add the label <code>accessibility</code> to “CONTRIBUTING should
-explain how to write a test”.</li>
-<li>Write a new issue using the <strong>Bug report</strong> template. It
-doesn’t have to be a real bug.</li>
-<li>Put your new issue in the milestone “Practice milestone 1”.</li>
-<li>Close “Typo in the module docstring”, then reopen it.</li>
-<li>React to the first comment on “Question: what counts as a
-word?”.</li>
-</ol>
-<h2 id="7-clone-your-copy">7. Clone your copy</h2>
-<p>To have your copy’s files on your computer, clone it.</p>
+<p><a
+href="../user%20guide/github-guide/github-guide-06-actions-and-checks.md">Chapter
+6 of the GitHub Guide</a> covers jobs, logs and the rest of a run.</p>
+<h2 id="7-clone-your-practice-repository">7. Clone your practice
+repository</h2>
+<p>To have its files on your computer, clone it.</p>
 <ol type="1">
 <li>In QUILL, choose <strong>File &gt; Open from Remote &gt; Clone
 Repository…</strong>. In QUILL Lite, choose <strong>File &gt; Clone
 Repository…</strong> (<code>Alt+F</code>, then <code>Y</code>). In
 workbench mode, choose <strong>GitHub &gt; Clone Repository…</strong>
 (<code>Alt+G</code>, then <code>C</code>).</li>
-<li>In <strong>Repository</strong>, type your copy’s name, such as
-<code>your-name/my-github-practice</code>.</li>
+<li>In <strong>Repository</strong>, type
+<code>your-name/quill-practice</code>.</li>
 <li>In <strong>Into this folder</strong>, keep the folder QUILL
 suggests, or choose <strong>Browse…</strong>.</li>
 <li>Press <strong>Clone</strong>. You hear “Cloning”, then “Cloned” when
-it’s done.</li>
-<li>When you’re offered a file from the new folder, take it, and open
-<code>PRACTICE.md</code>.</li>
+it is done.</li>
 </ol>
-<p>Your copy can be private: cloning uses the account you signed in
-with, and nothing in the new folder keeps your token.</p>
+<p>The repository is private: cloning uses the account you signed in
+with, and nothing in the new folder keeps your sign-in.</p>
+<h2 id="learn-it-with-the-guided-lessons">Learn it with the guided
+lessons</h2>
+<p><strong>Help &gt; Tutorials</strong> (<code>Ctrl+F2</code> in the
+Workbench) has the same ground as lessons that tell you, at each step,
+what to press and what you should hear:</p>
+<table>
+<thead>
+<tr>
+<th>Lesson</th>
+<th>What it covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Make a repository to practise on</td>
+<td>Making <code>quill-practice</code> and looking round</td>
+</tr>
+<tr>
+<td>Label, comment on and close an issue</td>
+<td>Part 4 above</td>
+</tr>
+<tr>
+<td>Try a command without sending it</td>
+<td>Dry Run</td>
+</tr>
+<tr>
+<td>Review and merge a pull request</td>
+<td>Part 5 above</td>
+</tr>
+<tr>
+<td>Read a failed run</td>
+<td>Part 6 above</td>
+</tr>
+<tr>
+<td>Triage your inbox</td>
+<td>Notifications, review requests and marking read</td>
+</tr>
+<tr>
+<td>Delete the practice repository</td>
+<td>Cleaning up</td>
+</tr>
+</tbody>
+</table>
+<p>In QUILL, a lesson notices when you have done each step. In QUILL
+Lite, Enter on a lesson walks it in the Workbench, and you move on
+yourself.</p>
 <h2 id="where-to-go-next">Where to go next</h2>
 <ul>
-<li>The practice repository’s <code>PRACTICE.md</code> has a set of
-exercises for every chapter of the GitHub Guide, including releases,
-discussions, codespaces and the command line.</li>
 <li><a href="../user%20guide/github-guide/github-guide.md">The GitHub
 Guide</a> explains every command used here, and many more. It comes with
 both QUILL and QUILL Lite.</li>
 <li><a href="08-github-inside-quill.md">Tutorial 8: GitHub inside QUILL
-and QUILL Lite</a> covers opening and saving files on GitHub, managing
-repositories and resolving merge conflicts.</li>
+and QUILL Lite</a> covers opening and saving files on GitHub, repository
+commands and resolving merge conflicts.</li>
 </ul>
-<p>When you’ve finished with your copy, you can delete it: in Explore,
-its <strong>Repository Actions</strong> submenu has <strong>Delete
-Repository…</strong>. Or keep it, and run Set up practice again whenever
-you want to start over.</p>
+<p>When you’ve finished, <strong>Help &gt; Practice on GitHub…</strong>
+offers <strong>Delete It…</strong>, which asks first. GitHub lets QUILL
+delete a repository only when you signed in with permission to delete
+repositories, which Sign In with GitHub asks for; if it cannot, QUILL
+says where on GitHub to delete it yourself. Or keep it, and choose
+<strong>Delete It and Start Over…</strong> whenever you want a fresh
+start.</p>
 </main>
 </body>
 </html>
