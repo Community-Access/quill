@@ -97,7 +97,9 @@ def test_blocked_history_write_does_not_block_the_ui_or_receive_live_history(hos
 
     assert writes[-1].resume_on_launch is True
     assert writes[-1].episodes == host._podcast_history.episodes
-    assert host.spoken == ["Application preferences saved."]
+    # Preferences already said the changes are in use; the write landing says
+    # nothing more (FUX-04: the actual result, once).
+    assert host.spoken == []
 
 
 def test_success_is_not_announced_when_persistence_fails(host, monkeypatch):
@@ -133,7 +135,7 @@ def test_joining_sharing_does_not_overwrite_a_later_explicit_choice(host):
     family.set_sharing(host.data_dir, "newcomer", True, newcomer)
     assert newcomer.announce_dialog_transitions is True
     assert newcomer.action_feedback == "sound"
-    assert host.spoken.count("Application preferences saved.") == 1
+    assert "Application preferences saved." not in host.spoken  # said once, by Preferences
 
 
 def test_a_replaced_history_cannot_be_restored_by_an_old_save_completion(host):

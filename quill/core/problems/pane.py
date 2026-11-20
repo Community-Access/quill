@@ -18,6 +18,7 @@ The filter row has two choosers:
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, replace
 from pathlib import Path
 
@@ -32,6 +33,7 @@ __all__ = [
     "PaneFilter",
     "count_sentence",
     "filter_problems",
+    "follow_row",
     "pane_row",
     "source_choices",
 ]
@@ -163,3 +165,38 @@ def count_sentence(total: int, shown: int | None = None) -> str:
     if shown is None or shown == total:
         return head
     return f"{head}, {shown} shown"
+
+
+def follow_row(previous: Problem | None, previous_row: int, shown: Sequence[Problem]) -> int:
+    """Which row of a refilled list is the reader's, by the problem rather than its place.
+
+    Lists that stay still (FUX-06, the QUILL Lite PRD's "Family UX pilot"). A
+    quiet check after a pause or a save refills the pane while somebody may be
+    standing in it, and the row number they were on now belongs to another
+    problem whenever one above it was fixed or a new one arrived. So, in order:
+
+    * the **same problem** -- equal in every field -- wherever it now is;
+    * the same problem **moved**, because lines were typed or deleted above it:
+      same document, severity, message and checker, on the nearest line;
+    * the problem was fixed: the row **that took its place**, so the reader is
+      at the next problem down rather than thrown back to the first.
+
+    ``-1`` for an empty list. Never speaks and never decides focus; that is
+    the widget's business, and the rule there is to leave focus alone.
+    """
+    if not shown:
+        return -1
+    if previous is None:
+        return min(max(previous_row, 0), len(shown) - 1)
+    for row, problem in enumerate(shown):
+        if problem == previous:
+            return row
+    moved = [
+        (abs(problem.line - previous.line), row)
+        for row, problem in enumerate(shown)
+        if (problem.document, problem.severity, problem.message, problem.source)
+        == (previous.document, previous.severity, previous.message, previous.source)
+    ]
+    if moved:
+        return min(moved)[1]
+    return min(max(previous_row, 0), len(shown) - 1)

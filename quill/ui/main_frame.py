@@ -6768,7 +6768,9 @@ class MainFrame(
         if error is not None:
             self._report_save_failure(self.document.name, error, "Save")
             return
-        self._set_status(f"Saved {self.document.name}")
+        from quill.core.action_feedback import saved_result
+
+        self._set_status(saved_result(path))  # the file and its folder (FUX-04)
         from quill.core.sound_events import SoundEvent
         from quill.ui.sound_manager import post_sound
 

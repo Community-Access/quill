@@ -2,6 +2,15 @@
 
 ## 2.0.0
 
+### The actual result, once, and lists that stay still (2026-11-19)
+
+Part of the family UX pilot (FUX-04 and FUX-06), shared with QUILL. Saves name
+the file and its folder ("Saved notes.txt in Documents."). A background Word save
+you typed through says that what you typed is not in it yet. Recovering a draft
+says which, from when and that it is not saved yet, and counts only the drafts
+that really came back. An open Recent Documents window, the Problems list and
+the recovery window keep your row, its place on the screen and focus when they
+refresh, and say nothing extra.
 ### WordPress: Properties keeps your edits when a save fails (2026-11-18)
 
 The WordPress Workbench's Properties sheet closed on OK the moment it sent

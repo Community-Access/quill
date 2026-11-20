@@ -45,6 +45,7 @@ __all__ = [
     "RecentDocumentsAnswer",
     "RecentDocumentsWindow",
     "confirm_clear_recent",
+    "follow_recent_change",
     "show_recent_documents",
 ]
 
@@ -118,6 +119,10 @@ class RecentDocumentsWindow:
         self._confirm_clear = confirm_clear
         self._reveal = reveal
         self._rows: tuple[rd.RecentEntry, ...] = ()
+        #: Every path this window has been told about, so a change made
+        #: elsewhere adds only what is new and never undoes a removal made here.
+        self._known: list[str] = [*self.recent, *self.pinned]
+        _OPEN.append(self)
 
         dialog = wx.Dialog(parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self.dialog = dialog
@@ -229,6 +234,53 @@ class RecentDocumentsWindow:
         self.listbox.SetSelection(target)
         self._sync_buttons()
 
+    def follow(self, recent: Sequence[str]) -> None:
+        """Take in documents added elsewhere while this window is open (FUX-06).
+
+        A Word document finishing its save in the background, or the clipboard
+        collector's quiet save, puts a file at the head of the recent list while
+        somebody may be arrowing through this one. The new rows go in, and the
+        reader stays where they were: the same document selected, on the same
+        line of the screen, keyboard focus untouched, and nothing said -- the
+        save that added the row has already said what it did (GATE-13). A
+        document removed in this window is not brought back, and the window's
+        answer carries the new rows, so closing it does not drop them.
+        """
+        added = [
+            path for path in recent if not any(rd.same_file(path, known) for known in self._known)
+        ]
+        if not added:
+            return
+        self._known.extend(added)
+        kept = [p for p in self.recent if not any(rd.same_file(p, new) for new in added)]
+        self.recent = [*added, *kept]
+        self._refill_still()
+
+    def _refill_still(self) -> None:
+        """Rebuild the rows without moving the reader: by identity, on the same line."""
+        from quill.ui.list_stay_still import capture_listbox, restore_listbox
+
+        row = self.selected()
+        anchor = capture_listbox(self.listbox)
+        self._rows = rd.entries(self.recent, self.pinned)
+        labels = [entry.label for entry in self._rows] or ["No recent documents"]
+        if labels != [self.listbox.GetString(i) for i in range(self.listbox.GetCount())]:
+            self.listbox.Set(labels)
+        has_rows = bool(self._rows)
+        for button in (self.open_button, self.pin_button, self.remove_button, self.folder_button):
+            button.Enable(has_rows)
+        self.clear_button.Enable(any(not entry.pinned for entry in self._rows))
+        index = next(
+            (
+                i
+                for i, entry in enumerate(self._rows)
+                if row is not None and rd.same_file(entry.path, row.path)
+            ),
+            0,
+        )
+        restore_listbox(self.listbox, anchor, [index], index)
+        self._sync_buttons()
+
     def _sync_buttons(self) -> None:
         row = self.selected()
         pinned = row is not None and row.pinned
@@ -336,6 +388,28 @@ class RecentDocumentsWindow:
         )
 
 
+#: The Recent Documents windows open now, for :func:`follow_recent_change`.
+_OPEN: list[RecentDocumentsWindow] = []
+
+
+def follow_recent_change(recent: Sequence[str]) -> None:
+    """Tell an open Recent Documents window that the recent list changed elsewhere.
+
+    Called by both editors where they put a file at the head of their list
+    (QUILL's ``_record_recent``, QUILL Lite's ``_remember``). A window that has
+    closed is dropped here rather than asked.
+    """
+    for window in list(_OPEN):
+        try:
+            alive = bool(window.dialog)
+        except RuntimeError:
+            alive = False
+        if not alive:
+            _OPEN.remove(window)
+            continue
+        window.follow(recent)
+
+
 def show_recent_documents(
     parent: wx.Window | None,
     recent: Sequence[str],
@@ -363,4 +437,6 @@ def show_recent_documents(
         window.show()
         return window.answer()
     finally:
+        if window in _OPEN:
+            _OPEN.remove(window)
         window.dialog.Destroy()
