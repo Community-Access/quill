@@ -13,6 +13,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.wordpress import workbench_pmpro_levels as lv
+from quill.core.wordpress.api import WordPressApiError
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui import wordpress_workbench_dialogs as wdlg
@@ -145,19 +146,30 @@ class WorkbenchPmproLevels:
             return
         api = self.ctx(site).api
 
-        def done(answer: Any) -> None:
+        def work() -> tuple[int, list[str]]:
+            answer = lv.save_level(api, body)
             made = int((answer or {}).get("id") or 0) if isinstance(answer, dict) else 0
+            stored = api.get(lv.LEVEL_ROUTE, id=made) if made else {}
+            return made, lv.not_saved(body, stored if isinstance(stored, dict) else {})
+
+        def done(found: tuple[int, list[str]]) -> None:
+            made, missed = found
             said = f"Made the membership level {spec.name} on {site}."
 
             def undo() -> str:
-                api.delete(lv.LEVEL_ROUTE, id=made)
+                try:
+                    api.delete(lv.LEVEL_ROUTE, id=made)
+                except WordPressApiError as exc:
+                    if exc.status not in (401, 403, 405):
+                        raise
+                    return lv.delete_refused_words(spec.name, site)
                 return f"The membership level {spec.name} on {site} is deleted again."
 
-            self.say(said)
+            self.say(said + _missed_words(missed, site))
             self.step(site, said.rstrip("."), undo if made else None)
             self.refresh()
 
-        self.background("making a membership level", lambda: api.post(lv.LEVEL_ROUTE, body), done)
+        self.background("making a membership level", work, done)
 
     def do_edit_membership_level(self, _ref: Any, row: WbRow | None) -> None:
         if row is None or row.kind != "pmpro" or row.subkind != "level" or not row.object_id:
@@ -194,12 +206,27 @@ class WorkbenchPmproLevels:
         said = f"Saved the membership level {spec.name} on {row.site}."
 
         def undo() -> str:
-            api.post(lv.LEVEL_ROUTE, back)
+            lv.save_level(api, back)
             return f"The membership level {old.name} on {row.site} is as it was."
 
-        def done(_answer: Any) -> None:
-            self.say(said)
+        def work() -> list[str]:
+            lv.save_level(api, body)
+            stored = api.get(lv.LEVEL_ROUTE, id=row.object_id)
+            return lv.not_saved(body, stored if isinstance(stored, dict) else {})
+
+        def done(missed: list[str]) -> None:
+            self.say(said + _missed_words(missed, row.site))
             self.step(row.site, said.rstrip("."), undo)
             self.refresh()
 
-        self.background("saving a membership level", lambda: api.post(lv.LEVEL_ROUTE, body), done)
+        self.background("saving a membership level", work, done)
+
+
+def _missed_words(missed: list[str], site: str) -> str:
+    """The sentence a save gains when the site did not keep everything sent."""
+    if not missed:
+        return ""
+    return (
+        f" {site} did not keep: {', '.join(missed)}. Paid Memberships Pro's REST API leaves "
+        "those out; set them under Memberships > Settings > Levels in wp-admin."
+    )

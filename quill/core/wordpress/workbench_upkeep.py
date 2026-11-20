@@ -213,9 +213,10 @@ def overdue_rows(
     return rows
 
 
-CRON_EVENTS = "tools.php?page=crontrol_admin_manage_page"
-"""WP Crontrol's Tools > Cron Events. The plugin's own menu slug, from its source; it has not
-been read from a live site yet."""
+CRON_EVENTS = "tools.php?page=wp-crontrol"
+"""WP Crontrol's Tools > Cron Events: the menu slug its ``add_management_page`` call registers,
+read from WP Crontrol 2.0.0 on the test site (2026-11-19). The older
+``crontrol_admin_manage_page`` is not registered there and opens nothing."""
 _CRONTROL = "wp-crontrol/"
 """The start of WP Crontrol's id in ``wp/v2/plugins`` (its folder)."""
 

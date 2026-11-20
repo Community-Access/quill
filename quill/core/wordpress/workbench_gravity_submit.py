@@ -15,7 +15,7 @@ from __future__ import annotations
 import re
 import time
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 from urllib.parse import urlsplit
 
@@ -70,7 +70,10 @@ _SAMPLES = {
     "text": "QUILL test",
     "hidden": "QUILL test",
     "textarea": "A test submission sent from QUILL's WordPress Workbench.",
-    "email": "test@example.com",
+    # Not example.com: Gravity Forms 2.9.15 and later reject an address at example.com or
+    # domain.com as spam ("The email address entered is invalid", seen on the test site,
+    # Gravity Forms 3.2.3.1, 2026-11-20). example.org is reserved as well and is not refused.
+    "email": "quill-test@example.org",
     "phone": "555-0100",
     "website": "https://example.com",
     "number": "1",
@@ -154,19 +157,43 @@ def _answer(payload: Any, problem: str = "") -> SubmitAnswer:
     )
 
 
+def _newest_entry(api: Any, form_id: str) -> int:
+    """The form's newest entry id, or 0 (none, or the entries cannot be read)."""
+    params = {"sorting[key]": "id", "sorting[direction]": "DESC", "paging[page_size]": 1}
+    try:
+        found = api.get(f"{NS}/forms/{form_id}/entries", **params, _field_ids="id")
+    except WordPressApiError:
+        return 0
+    rows = found.get("entries") if isinstance(found, Mapping) else found
+    first = rows[0] if isinstance(rows, list) and rows and isinstance(rows[0], Mapping) else {}
+    text = str(first.get("id", "") or "")
+    return int(text) if text.isdigit() else 0
+
+
 def submit(
     api: Any, form_id: str, values: Mapping[str, str], *, validate_only: bool
 ) -> SubmitAnswer:
-    """Validate (no entry is made) or submit *values*; a refusal comes back as the answer."""
+    """Validate (no entry is made) or submit *values*; a refusal comes back as the answer.
+
+    Gravity Forms' submissions route does not say which entry it made (3.2.3.1 on
+    the test site answers ``is_valid`` and the confirmation, no ``entry_id``), so a
+    real submission reads the form's newest entry before and after: the new one is
+    the entry Ctrl+Z moves to the Trash.
+    """
     route = f"{NS}/forms/{form_id}/submissions" + ("/validation" if validate_only else "")
+    before = 0 if validate_only else _newest_entry(api, form_id)
     try:
-        return _answer(api.post(route, dict(values)))
+        answer = _answer(api.post(route, dict(values)))
     except WordPressApiError as exc:
         if exc.status == 400 and isinstance(exc.body, dict):
             return _answer(exc.body)
         if exc.status == 400:
             return _answer({}, exc.plain)
         raise
+    if validate_only or not answer.valid or answer.entry_id:
+        return answer
+    after = _newest_entry(api, form_id)
+    return replace(answer, entry_id=str(after)) if after > before else answer
 
 
 def is_practice_site(url: str, name: str = "") -> bool:

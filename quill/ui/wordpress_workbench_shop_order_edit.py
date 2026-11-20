@@ -245,7 +245,7 @@ class WorkbenchShopOrderEditCommands(WorkbenchShopAnalyticsCommands):
                 changes = [c for c in changes if c.item_id != item.item_id]
                 changes.append(edit.ItemChange(item.item_id, item.product_id, item.name, quantity))
         try:
-            body = edit.items_body(changes)
+            body = edit.items_body(changes, items)
         except ShopValueError as exc:
             self.say(str(exc))
             return

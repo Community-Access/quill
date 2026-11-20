@@ -225,6 +225,18 @@ ROLES_SUB = MenuSub(
             "&Bulk Access Changes...",
             help="One team or person, many repositories: previewed, then a result per change.",
         ),
+        MenuRow(
+            f"{_P}access_templates",
+            "Access &Templates...",
+            help="Named sets of access, such as Contributor: write on these repositories "
+            "and member of a team. Kept on this computer for this account.",
+        ),
+        MenuRow(
+            f"{_P}apply_access_template",
+            "Appl&y Access Template...",
+            help="Give one person everything a template holds: previewed, then a result "
+            "per change.",
+        ),
         None,
         MenuRow(
             f"{_P}account_level",
