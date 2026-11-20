@@ -1246,8 +1246,8 @@ Delete removes. Watches never mark notifications read.</td>
 <td>the top</td>
 <td>Across Repositories: the Repository Set in use, and under it its
 named sets, one kind of thing from every repository in the set, each
-name across the set, and the Fleet. Ctrl+N here edits the set’s
-repositories.</td>
+name across the set grouped as Planning, Code, Actions and Settings, and
+the Fleet. Ctrl+N here edits the set’s repositories.</td>
 </tr>
 <tr>
 <td>Repository Sets (<code>:across_sets</code>)</td>
@@ -1303,47 +1303,6 @@ each, or every release from the row’s menu.</td>
 in.</td>
 </tr>
 <tr>
-<td>Labels by Name (<code>:across_by_labels</code>)</td>
-<td>across</td>
-<td>Labels by Name: each label name across the set, where its colour and
-description differ and where it is missing. Make the copies the same,
-add it where missing, rename, merge or delete it everywhere, each with a
-preview and a result per repository.</td>
-</tr>
-<tr>
-<td>Milestones by Name (<code>:across_by_milestones</code>)</td>
-<td>across</td>
-<td>Milestones by Name: each milestone title across the set, its due
-dates, descriptions and progress. Make them the same, close them
-everywhere, move their open work to another milestone or add the missing
-ones, each with a preview and a result per repository.</td>
-</tr>
-<tr>
-<td>Topics by Name (<code>:across_by_topics</code>)</td>
-<td>across</td>
-<td>Topics by Name: each topic across the set and the repositories that
-lack it. Add it to the missing or remove it everywhere, with a preview
-and a result per repository; each repository’s other topics are
-kept.</td>
-</tr>
-<tr>
-<td>Rules and Branch Protection (<code>:across_by_rules</code>)</td>
-<td>across</td>
-<td>Rules and Branch Protection: each ruleset by name, and each default
-branch’s protection, compared across the set. Make them the same as the
-winner, add a ruleset where it is missing, or promote one to an
-organization ruleset; each needs admin access and shows a preview
-first.</td>
-</tr>
-<tr>
-<td>Fleet (<code>:across_fleet</code>)</td>
-<td>across</td>
-<td>Fleet: one line per repository in the set: the exact revision of its
-default branch, checks, open pull requests, latest release and alerts,
-and when it was read. A repository that could not be read keeps its
-line, with the reason.</td>
-</tr>
-<tr>
 <td>Help and Learning (<code>:help</code>)</td>
 <td>the top</td>
 <td>Help and Learning: the guide, the GitHub words, the keys, what
@@ -1396,6 +1355,133 @@ here and are never pushed at you.</td>
 <td>Ask a Person: write to <a
 href="mailto:support@community-access.org">support@community-access.org</a>.
 Nothing is sent until you send it from your own email.</td>
+</tr>
+<tr>
+<td>Planning by Name (<code>:across_planning</code>)</td>
+<td>across</td>
+<td>Planning by Name: labels, milestones and topics, each by name across
+the set.</td>
+</tr>
+<tr>
+<td>Labels by Name (<code>:across_by_labels</code>)</td>
+<td>across_planning</td>
+<td>Labels by Name: each label name across the set, where its colour and
+description differ and where it is missing. Make the copies the same,
+add it where missing, rename, merge or delete it everywhere, each with a
+preview and a result per repository.</td>
+</tr>
+<tr>
+<td>Milestones by Name (<code>:across_by_milestones</code>)</td>
+<td>across_planning</td>
+<td>Milestones by Name: each milestone title across the set, its due
+dates, descriptions and progress. Make them the same, close them
+everywhere, move their open work to another milestone or add the missing
+ones, each with a preview and a result per repository.</td>
+</tr>
+<tr>
+<td>Topics by Name (<code>:across_by_topics</code>)</td>
+<td>across_planning</td>
+<td>Topics by Name: each topic across the set and the repositories that
+lack it. Add it to the missing or remove it everywhere, with a preview
+and a result per repository; each repository’s other topics are
+kept.</td>
+</tr>
+<tr>
+<td>Code by Name (<code>:across_code</code>)</td>
+<td>across</td>
+<td>Code by Name: tags, branches, and rules and branch protection, each
+by name across the set.</td>
+</tr>
+<tr>
+<td>Tags by Name (<code>:across_by_tags</code>)</td>
+<td>across_code</td>
+<td>Tags by Name: each tag across the set and the commit it is on in
+each repository. Release Train makes it, or it and a release, where it
+is missing, and never moves an existing tag; Delete Everywhere keeps a
+tag a release is built on.</td>
+</tr>
+<tr>
+<td>Branches by Name (<code>:across_by_branches</code>)</td>
+<td>across_code</td>
+<td>Branches by Name: each branch across the set, where it is the
+default and where it is protected. Rename Everywhere uses GitHub’s
+rename; its preview says where the default changes, where protection
+moves and how many open pull requests are retargeted.</td>
+</tr>
+<tr>
+<td>Rules and Branch Protection (<code>:across_by_rules</code>)</td>
+<td>across_code</td>
+<td>Rules and Branch Protection: each ruleset by name, and each default
+branch’s protection, compared across the set. Make them the same as the
+winner, add a ruleset where it is missing, or promote one to an
+organization ruleset; each needs admin access and shows a preview
+first.</td>
+</tr>
+<tr>
+<td>Actions by Name (<code>:across_actions</code>)</td>
+<td>across</td>
+<td>Actions by Name: environments, secrets and variables, each by name
+across the set. Reading them needs admin access in each repository.</td>
+</tr>
+<tr>
+<td>Environments by Name (<code>:across_by_environments</code>)</td>
+<td>across_actions</td>
+<td>Environments by Name: wait timer, reviewers, self-review and which
+branches may deploy, compared across the set. Make them the same as the
+winner, or delete one everywhere. GitHub has no organization
+environments.</td>
+</tr>
+<tr>
+<td>Secrets by Name (<code>:across_by_secrets</code>)</td>
+<td>across_actions</td>
+<td>Secrets by Name: each Actions secret across the set, by name only,
+because GitHub never shows a secret’s value. Set Secret Everywhere takes
+one new value, typed once and sealed for each repository; Promote to
+Organization makes one organization secret for those repositories.</td>
+</tr>
+<tr>
+<td>Variables by Name (<code>:across_by_variables</code>)</td>
+<td>across_actions</td>
+<td>Variables by Name: each Actions variable and its values across the
+set. Make them the same, add the missing, delete everywhere, or promote
+to one organization variable for those repositories.</td>
+</tr>
+<tr>
+<td>Settings by Name (<code>:across_settings</code>)</td>
+<td>across</td>
+<td>Settings by Name: webhooks, deploy keys and autolinks, each by name
+across the set. Reading them needs admin access in each repository.</td>
+</tr>
+<tr>
+<td>Webhooks by Name (<code>:across_by_webhooks</code>)</td>
+<td>across_settings</td>
+<td>Webhooks by Name: each webhook by its address, with its events, on
+or off and content type. Make them the same, add the missing, turn them
+on or off, delete, or promote to one organization webhook, which GitHub
+sends for every repository in the organization. A webhook’s secret is
+never readable.</td>
+</tr>
+<tr>
+<td>Deploy Keys by Name (<code>:across_by_deploy_keys</code>)</td>
+<td>across_settings</td>
+<td>Deploy Keys by Name: each deploy key by title, with its fingerprint
+and access. Delete Everywhere removes it; GitHub accepts a deploy key in
+one repository only, so one cannot be added to more.</td>
+</tr>
+<tr>
+<td>Autolinks by Name (<code>:across_by_autolinks</code>)</td>
+<td>across_settings</td>
+<td>Autolinks by Name: each autolink by its prefix, with its address.
+Add the missing or delete everywhere; GitHub cannot change an autolink
+in place.</td>
+</tr>
+<tr>
+<td>Fleet (<code>:across_fleet</code>)</td>
+<td>across</td>
+<td>Fleet: one line per repository in the set: the exact revision of its
+default branch, checks, open pull requests, latest release and alerts,
+and when it was read. A repository that could not be read keeps its
+line, with the reason.</td>
 </tr>
 <tr>
 <td>People and Organizations (<code>:search_people</code>)</td>
@@ -3302,8 +3388,9 @@ Conversation…, Pin or Unpin Issue, Transfer Issue…, Check or Uncheck a
 Task…, Convert Tasks to Sub-issues…, Create Branch for This Issue…,
 Unlink Branch…, Not a Duplicate…, Set Issue Type…, Reorder Sub-issues…,
 Relationships…, Issue Fields…, Delete Issue…, Add to or Remove from
-Favorites, Link a Pull Request That Closes It…, Unlink a Pull Request…;
-Properties…</li>
+Favorites, Link a Pull Request That Closes It…, Unlink a Pull Request…,
+Related…, Start Pull Request for This Issue…, Draft Task Breakdown with
+AI…, Draft Release Notes with AI…; Properties…</li>
 <li><strong>pull_request</strong>: Review…, File Differences…, Comment…,
 Merge…, Why Can’t I Merge?, Merge Selected…; More: Auto-Merge…,
 Reviews…, Open in a Codespace, Add to or Remove from Merge Queue…, Open
@@ -3313,7 +3400,9 @@ Codespaces…, Commit Comments…, View Timeline…, Read as Document…,
 Summarize Discussion, React…, Labels…, Assignees…, Milestone…,
 Projects…, Edit Title…, Add to or Remove from Favorites, Re-request
 Review…, Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn
-Off Agent Merge…, Dependency Review; Properties…</li>
+Off Agent Merge…, Dependency Review, Dependabot Commands…, Related…,
+Open in github.dev, Draft Description with AI…, Draft Reviewer Brief
+with AI…, Draft Release Notes with AI…; Properties…</li>
 <li><strong>run</strong>: Jobs and Logs, What Failed…, Re-run Failed
 Jobs Only, Re-run Workflow, Cancel Run…, Re-run One Job…; More: Force
 Cancel…, Download Logs…, Delete Logs…, Approvals, Earlier Attempts…,
@@ -3321,7 +3410,8 @@ View Artifacts…, Open on GitHub, Combined Check Status, Review Pending
 Deployments…, Approve Run from a Fork…, Delete Run…, Copy Link, Read a
 Step’s Log…; Properties…</li>
 <li><strong>workflow</strong>: Runs, Run Workflow on Branch…, Turn
-Workflow On or Off…, Open on GitHub, Copy Link; Properties…</li>
+Workflow On or Off…, Open on GitHub, Copy Link, Edit Workflow…;
+Properties…</li>
 <li><strong>release</strong>: Assets, Edit Release…, Draft Release
 Notes…, Upload Asset…, React…, Release Evidence…; More: Delete Release…,
 Compare With Previous, Compare With Default, Copy Link, Open on GitHub,
@@ -3354,7 +3444,8 @@ Agent Tasks, An Agent Task’s Progress…, Automations, New Automation…,
 Run an Automation…, Rename an Automation…, Delete an Automation…, An
 Automation’s History…, An Automation’s Tasks…, Automation Tools and
 Triggers, Agent Secrets from the Organization, Agent Variables from the
-Organization, Allow a Blocked Secret…; Properties…</li>
+Organization, Allow a Blocked Secret…, Copilot Agent Configuration,
+Copilot Review Settings, Prompt Files…; Properties…</li>
 <li><strong>person</strong>: Open, Follow or Unfollow, Open on GitHub;
 Properties…</li>
 <li><strong>label</strong>: Find Issues with Label, Edit Label…, Delete
@@ -3365,7 +3456,8 @@ Gist…; Properties…</li>
 <li><strong>discussion</strong>: Open Discussion Thread, Read as
 Document…, Copy Link, Open on GitHub, Close Discussion…, Reopen
 Discussion; More: Delete Discussion…, Upvote, Remove Upvote, Vote…, Edit
-a Comment…, Delete a Comment…; Properties…</li>
+a Comment…, Delete a Comment…, Related…, Create Issue from Discussion…;
+Properties…</li>
 <li><strong>security_alert</strong>: Open, Dismiss or Reopen Alert…,
 Copilot Autofix…, Show Every Place, Open on GitHub, Where It Was Found;
 Properties…</li>
@@ -3375,10 +3467,10 @@ Properties…</li>
 Saved Search; Properties…</li>
 <li><strong>result</strong>: Open, Copy Link, Open on GitHub;
 Properties…</li>
-<li><strong>file</strong>: Open in Editor, Copy Link, Open on GitHub;
-Properties…</li>
-<li><strong>folder</strong>: Open Folder, Open on GitHub;
-Properties…</li>
+<li><strong>file</strong>: Open in Editor, Copy Link, Open on GitHub,
+Who Owns This?, Open in github.dev; Properties…</li>
+<li><strong>folder</strong>: Open Folder, Open on GitHub, Who Owns
+This?; Properties…</li>
 <li><strong>milestone</strong>: Find Issues in Milestone, Delete
 Milestone…, Copy Link, Open on GitHub; Properties…</li>
 <li><strong>template</strong>: Open Template…, Convert Form or
@@ -3402,7 +3494,10 @@ Access…, Make Someone an Outside Collaborator…, Define a Custom
 Property…, Set Repositories’ Custom Property…, New Team…, Accept
 Membership, Members Without Two-Factor, My Activity Here, Require
 Sign-off on Web Commits…, Follow Organization, Unfollow Organization,
-Security Overview; Properties…</li>
+Security Overview, Copilot Plan, Copilot Seats, A Member’s Copilot
+Seat…, Give Copilot Seats…, Take Copilot Seats Away…, Give Teams
+Copilot…, Take Copilot from Teams…, Copilot Usage Report, Copilot Agent
+Access, Copilot Content Exclusions; Properties…</li>
 <li><strong>favorite</strong>: Open, Copy Link, Open on GitHub, Add to
 or Remove from Favorites; Properties…</li>
 <li><strong>admin_action</strong>: Open; Properties…</li>
@@ -3415,7 +3510,8 @@ Why?, New Organization Runner…, Just-in-Time Runner…; More: Just-in-Time
 Runner…, Is a Runner Version Retiring?…, Is a Runner Version Retiring?…,
 Email Visibility…, Interaction Limits, Limit Interactions…, Lift
 Interaction Limits, Set Up a Sponsors Profile…, New Sponsor Tier…,
-Patreon Sponsorships…, My Agent Tasks, My Automations; Properties…</li>
+Patreon Sponsorships…, My Agent Tasks, My Automations, Prompt Files…;
+Properties…</li>
 <li><strong>across_item</strong>: Open in Its Repository, Next
 Repository, Previous Repository, View More from This Repository, Read
 Issue Type and Fields, Every Release or Latest Only; More: Open on
@@ -3428,6 +3524,7 @@ Set Filter…, New Set…, Rename Set…, Delete Set…; Properties…</li>
 <li><strong>by_name</strong>: Variants and Missing From, Make Them the
 Same…, Add to Missing…, Find Uses, Rename Everywhere…, Merge Into…;
 More: Close Everywhere…, Move Open Work To…, Promote to Organization…,
+Release Train…, Set Secret Everywhere…, Turn On or Off Everywhere…,
 Delete Everywhere…; Properties…</li>
 <li><strong>fleet</strong>: Open Repository, Open on GitHub, Copy Link;
 Properties…</li>
@@ -3471,8 +3568,8 @@ Allowed…, Delete…, Open on GitHub, Copy Link; More: Removal Commands…,
 Add Runner Label…, Remove Runner Label…, Runners in This Group, Hosted
 Runners in This Group, Add a Runner to This Group…, Remove a Runner from
 This Group…, Teams It Adds To; Properties…</li>
-<li><strong>wiki</strong>: Open on GitHub, Clone Wiki…, Copy Link;
-Properties…</li>
+<li><strong>wiki</strong>: Open on GitHub, Edit Wiki Pages…, New Wiki
+Page…, Publish Wiki Changes…, Clone Wiki…, Copy Link; Properties…</li>
 <li><strong>sponsorship</strong>: Show Details, Cancel Sponsorship…,
 Open on GitHub, Sponsorship Preferences…; Properties…</li>
 <li><strong>sponsor_tier</strong>: Show Details, Sponsor at This Tier…,
@@ -3599,6 +3696,9 @@ repository ready to work on. It can cost money.</li>
 repository.</li>
 <li><strong>Commit</strong>: A saved change, with a message saying why.
 Under Code, Commits.</li>
+<li><strong>Copilot seat</strong>: One person’s Copilot Business, paid
+for by an organization. Copilot Seats on an organization lists
+them.</li>
 <li><strong>Deploy key</strong>: An SSH key that reaches one repository
 only, for a server to clone, pull or push.</li>
 <li><strong>Deployment</strong>: Code sent to an environment, such as a
@@ -3666,6 +3766,9 @@ vote for. Its details show it as a table: option, votes, percentage and
 your vote. Vote… casts yours.</li>
 <li><strong>Project</strong>: A board or table for planning issues and
 pull requests.</li>
+<li><strong>Prompt file</strong>: A .prompt.yml file GitHub Models
+reads: a model, messages and test data. Prompt Files… on a repository
+reads each as its parts.</li>
 <li><strong>Pull request</strong>: A proposed change: commits on one
 branch that somebody asks to merge into another, with a review. Under a
 repository’s Pull Requests.</li>
@@ -3742,11 +3845,15 @@ repository on GitHub, which sends notifications.</li>
 something happens in a repository, such as a push. Continuous
 integration and chat bots use them.</li>
 <li><strong>Wiki</strong>: A repository’s own pages of documentation,
-kept by GitHub as a git repository of their own, owner/name.wiki.</li>
+kept by GitHub as a git repository of their own, owner/name.wiki. Edit
+Wiki Pages… on the Wiki row edits them; Publish Wiki Changes… sends
+them.</li>
 <li><strong>Workflow</strong>: One automation, defined in a file in the
 repository. Under Actions, Workflows.</li>
 <li><strong>Workflow dispatch</strong>: Starting a workflow by hand, on
 a branch you choose.</li>
+<li><strong>github.dev</strong>: GitHub’s free editor in the browser.
+Open in github.dev on a file or a pull request.</li>
 </ul>
 <!-- END GENERATED -->
 

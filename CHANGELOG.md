@@ -35,6 +35,49 @@
   ready pull requests are waiting for a review and how long the oldest has
   waited. It never names who was asked.
 
+### GitHub Workbench: write workflows, Dependabot and CODEOWNERS (2026-11-19)
+
+- **Edit Workflow...** and **New Workflow...**
+  - **The editor.** It lays a workflow out as plain controls: its triggers and
+    their inputs, permissions, jobs, and each job's steps. The order jobs run
+    in is said in words ("Build runs after Test and Lint").
+  - **Checks before saving.** A "What GitHub would say" box lists anything
+    GitHub would refuse, and Save waits until the list is empty.
+  - **Saving.** Changes are saved to the default branch, or as a pull request
+    when the branch is protected. Comments at the top of the file are kept;
+    comments inside it are not, and the window says so.
+- **dependabot.yml** opens as a sheet, and **Dependabot Commands...** on a
+  Dependabot pull request posts the command you choose.
+- **CODEOWNERS** is now a table with Add, Edit, Remove and Move. GitHub's
+  errors for the file are shown with it. **Who Owns This?** on a file or folder
+  says which rule wins.
+- **Compare Configuration With Another Repository...** compares workflows,
+  templates, community files, Dependabot and CODEOWNERS with another
+  repository, and proposes the files you choose as one pull request.
+
+### GitHub Workbench: tags, branches, secrets, webhooks and more across repositories (2026-11-20)
+
+- Across Repositories has eight more places by name, grouped by category:
+  Tags and Branches under Code, Environments, Secrets and Variables under
+  Actions, and Webhooks, Deploy Keys and Autolinks under Settings. Each row
+  is a name, with its variants and the repositories that lack it. A
+  repository that will not let you read it is named apart, never counted as
+  missing.
+- **Release Train...** makes a tag, with a draft or published release if you
+  want one, on each chosen repository. It skips a repository that already
+  has the tag and never moves a tag. **Rename Everywhere** renames a branch
+  and its preview says where the default branch, protection and open pull
+  requests change.
+- **Set Secret Everywhere...** asks for the value once. The value is never
+  shown in the plan, the preview or Change History.
+- Environments, variables and webhooks can be made the same, added where
+  missing and deleted everywhere. Webhooks can be turned on or off
+  everywhere.
+- **Promote to Organization** for secrets, variables and webhooks makes the
+  organization's copy first and only then deletes each repository's own.
+  Environments, deploy keys and autolinks have no organization form on
+  GitHub, and QUILL says so.
+
 ### GitHub Workbench: rulesets, branch protection, members, teams and access reviews (2026-11-19)
 
 - A repository's **Rulesets** list, under its settings, and an organization's
@@ -73,6 +116,7 @@ The WordPress decisions still open have moved from the open-work list to a
 Backlog section in the WordPress Workbench PRD. They are which areas get
 first-class integrations, a WordPress-layer key for page commands, and a tree
 node for menu items. Rank Math staying read only is confirmed.
+
 ### GitHub Workbench: sort and group any list, keep your place, and say it in words (2026-11-19)
 
 - **Sort By and Group By on every list.** View > Sort By > By Column... and

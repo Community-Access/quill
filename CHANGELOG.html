@@ -245,6 +245,411 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="github-workbench-the-wiki-discussion-to-issue-to-pull-request-copilot-seats-prompt-files-and-ai-drafts-2026-11-20">GitHub
+Workbench: the wiki, discussion to issue to pull request, Copilot seats,
+prompt files and AI drafts (2026-11-20)</h3>
+<ul>
+<li><strong>The wiki.</strong> Edit Wiki Pages… copies a repository’s
+wiki to your computer, or brings your copy up to date, and lists its
+pages with Home first. Enter opens a page in the editor. New Wiki Page…
+makes one, and Publish Wiki Changes… names the pages and the account,
+asks for a message and sends them. Nothing is ever forced: if someone
+else changed the wiki first, QUILL puts your changes on top of theirs,
+and if that conflicts it undoes the attempt and says so.</li>
+<li><strong>From a discussion to a pull request.</strong> Create Issue
+from Discussion… opens an issue that quotes and links the discussion.
+Start Pull Request for This Issue… makes a linked branch and a draft
+pull request that closes the issue. Related… lists everything that links
+to an issue, pull request or discussion, with its repository.</li>
+<li><strong>Copilot for an organization.</strong> Copilot Plan, Copilot
+Seats, A Member’s Copilot Seat…, giving and taking seats from people and
+teams (owners only, and it asks first), the usage report, agent access
+and content exclusions. On a repository, Copilot Agent Configuration and
+Copilot Review Settings. Nothing here needs GitHub Enterprise
+Cloud.</li>
+<li><strong>Prompt files.</strong> Prompt Files… lists a repository’s
+GitHub Models prompts and reads each one as its model, settings,
+messages, test rows and evaluators, with any problems. Open in Editor
+edits one.</li>
+<li><strong>Open in github.dev</strong> on a file or a pull request,
+GitHub’s free editor in the browser.</li>
+<li><strong>AI drafts you check first.</strong> Draft Description and
+Reviewer Brief on a pull request, Draft Task Breakdown on an issue, and
+Draft Release Notes on the rows you choose. Each draft opens in the
+editor with the sources it used and anything it left out. They use your
+own AI connection, and are greyed with a reason when there is none.</li>
+<li><strong>Where review is stuck.</strong> The repository health
+snapshot now says how many ready pull requests are waiting for a review
+and how long the oldest has waited. It never names who was asked.</li>
+</ul>
+<h3
+id="github-workbench-write-workflows-dependabot-and-codeowners-2026-11-19">GitHub
+Workbench: write workflows, Dependabot and CODEOWNERS (2026-11-19)</h3>
+<ul>
+<li><strong>Edit Workflow…</strong> and <strong>New Workflow…</strong>
+<ul>
+<li><strong>The editor.</strong> It lays a workflow out as plain
+controls: its triggers and their inputs, permissions, jobs, and each
+job’s steps. The order jobs run in is said in words (“Build runs after
+Test and Lint”).</li>
+<li><strong>Checks before saving.</strong> A “What GitHub would say” box
+lists anything GitHub would refuse, and Save waits until the list is
+empty.</li>
+<li><strong>Saving.</strong> Changes are saved to the default branch, or
+as a pull request when the branch is protected. Comments at the top of
+the file are kept; comments inside it are not, and the window says
+so.</li>
+</ul></li>
+<li><strong>dependabot.yml</strong> opens as a sheet, and
+<strong>Dependabot Commands…</strong> on a Dependabot pull request posts
+the command you choose.</li>
+<li><strong>CODEOWNERS</strong> is now a table with Add, Edit, Remove
+and Move. GitHub’s errors for the file are shown with it. <strong>Who
+Owns This?</strong> on a file or folder says which rule wins.</li>
+<li><strong>Compare Configuration With Another Repository…</strong>
+compares workflows, templates, community files, Dependabot and
+CODEOWNERS with another repository, and proposes the files you choose as
+one pull request.</li>
+</ul>
+<h3
+id="github-workbench-tags-branches-secrets-webhooks-and-more-across-repositories-2026-11-20">GitHub
+Workbench: tags, branches, secrets, webhooks and more across
+repositories (2026-11-20)</h3>
+<ul>
+<li>Across Repositories has eight more places by name, grouped by
+category: Tags and Branches under Code, Environments, Secrets and
+Variables under Actions, and Webhooks, Deploy Keys and Autolinks under
+Settings. Each row is a name, with its variants and the repositories
+that lack it. A repository that will not let you read it is named apart,
+never counted as missing.</li>
+<li><strong>Release Train…</strong> makes a tag, with a draft or
+published release if you want one, on each chosen repository. It skips a
+repository that already has the tag and never moves a tag.
+<strong>Rename Everywhere</strong> renames a branch and its preview says
+where the default branch, protection and open pull requests change.</li>
+<li><strong>Set Secret Everywhere…</strong> asks for the value once. The
+value is never shown in the plan, the preview or Change History.</li>
+<li>Environments, variables and webhooks can be made the same, added
+where missing and deleted everywhere. Webhooks can be turned on or off
+everywhere.</li>
+<li><strong>Promote to Organization</strong> for secrets, variables and
+webhooks makes the organization’s copy first and only then deletes each
+repository’s own. Environments, deploy keys and autolinks have no
+organization form on GitHub, and QUILL says so.</li>
+</ul>
+<h3
+id="github-workbench-rulesets-branch-protection-members-teams-and-access-reviews-2026-11-19">GitHub
+Workbench: rulesets, branch protection, members, teams and access
+reviews (2026-11-19)</h3>
+<ul>
+<li>A repository’s <strong>Rulesets</strong> list, under its settings,
+and an organization’s <strong>Rulesets</strong> list each ruleset in a
+sentence. Alt+Enter opens its sheet. The Rules page now lists every rule
+with every setting GitHub sent, including rule types QUILL has no check
+box for yet. The Bypass page has a check list of the roles that may
+bypass the rules, and keeps teams and apps as they were. An organization
+ruleset has a Repositories page that says which repositories it covers
+and lets you choose them by name. Delete asks you to type the ruleset’s
+name. <strong>Rule Insights</strong> is now under an organization
+too.</li>
+<li>Saving a branch’s classic protection no longer wipes who may push,
+who may dismiss reviews and who may skip the pull request. The sheet now
+has every setting GitHub offers, signed commits included, and a Who
+page.</li>
+<li>An organization’s members now read with their role and whether
+two-factor sign-in is on (GitHub shows that to owners). <strong>Members
+Without Two-Factor</strong> lists only those. Making a member an outside
+collaborator, and removing an outside collaborator or a member, ask you
+to type their name.</li>
+<li>A team’s parent can be changed on its sheet, <strong>New
+Team…</strong> asks for the parent and whether mentions notify the team,
+and a team’s Repositories page can add, change and remove
+repositories.</li>
+<li>QUILL refuses, before sending anything, a change that would leave
+you or the organization with nobody to manage it: removing the last
+owner or your own ownership, making yourself an outside collaborator,
+the last maintainer leaving a team, or taking admin away from the team
+that is your way into a repository.</li>
+<li><strong>Access Review: People</strong> and <strong>Access Review:
+Teams</strong>, under an organization, list every person or team and
+repository with the role they have and where it comes from: “jeff on
+quill: Admin, from team Maintainers; also Write directly.”
+<strong>Custom Property Values</strong> now shows every property on
+every repository, unset ones as “not set”. All three filter and export
+like any other list.</li>
+</ul>
+<h3 id="plans-the-wordpress-backlog-2026-11-19">Plans: the WordPress
+backlog (2026-11-19)</h3>
+<p>The WordPress decisions still open have moved from the open-work list
+to a Backlog section in the WordPress Workbench PRD. They are which
+areas get first-class integrations, a WordPress-layer key for page
+commands, and a tree node for menu items. Rank Math staying read only is
+confirmed.</p>
+<h3
+id="github-workbench-sort-and-group-any-list-keep-your-place-and-say-it-in-words-2026-11-19">GitHub
+Workbench: sort and group any list, keep your place, and say it in words
+(2026-11-19)</h3>
+<ul>
+<li><strong>Sort By and Group By on every list.</strong> View &gt; Sort
+By &gt; By Column… and Group By &gt; By Column… now work on every
+Workbench list, not only issues. Numbers sort as numbers, and each list
+remembers your choice.</li>
+<li><strong>Your place is kept.</strong> Back, Forward or a reload
+returns you to the row you left, not the top of the list. The WordPress
+Workbench gets this too.</li>
+<li><strong>Checklist rows say their state</strong> (“Issues, on”,
+“docs, on 3 of 5”). Space changes them once, Enter saves, and focus
+stays where it was.</li>
+<li><strong>Plain-Language Batch…</strong> (Ctrl+Shift+S) lets you type
+what you want, such as “close every issue labelled duplicate older than
+90 days”. It finds the items without AI, shows them for you to check,
+and then runs the usual batch with its preview and Retry Failed.</li>
+</ul>
+<h3
+id="quill-cast-lists-stay-still-while-new-episodes-arrive-2026-11-19">Quill
+Cast: lists stay still while new episodes arrive (2026-11-19)</h3>
+<p>A feed refresh, a finished download or a change to the queue no
+longer moves your place. In Inbox, New Episodes, Downloads, Continue
+Listening, the Play Queue and the other episode lists, the episode you
+were on stays selected and focused, on the same line of the screen, and
+nothing takes the keyboard focus. New episodes are said once, as “3 new
+episodes in The Daily.”, and a refresh with nothing new says nothing.
+QUILL’s Play Queue window, which used to act on the wrong episode once
+the one in front had played, now keeps up with the queue and keeps its
+caret on the same episode. This is the first part of the family UX
+pilot.</p>
+<h3
+id="github-workbench-secrets-stay-secret-dependency-review-and-security-overview-2026-11-19">GitHub
+Workbench: secrets stay secret, Dependency Review and Security Overview
+(2026-11-19)</h3>
+<ul>
+<li><strong>A secret is never shown.</strong> A secret’s new value in
+Properties was a plain text field, so it was visible as you typed it,
+included in Copy as Text and named in the preview before saving. It is
+now a password box that is emptied after saving, and previews say
+“(hidden)”. Values are sealed with the repository’s, environment’s or
+organization’s own key before they are sent, never read back, and
+dropped from memory once the call ends.</li>
+<li><strong>Changing secrets.</strong> Change… on a secret sends a new
+value. For an organization’s secret, Change… can also just change who
+may use it: all, private or selected repositories.</li>
+<li><strong>Dependency Review</strong> on a pull request lists each
+dependency it adds or removes, with its licence and any known
+vulnerabilities, the vulnerable ones first.</li>
+<li><strong>Security Overview</strong> on an organization counts open
+alerts of every kind by repository and severity, worst first. A kind
+GitHub will not show you is said, never counted as none.</li>
+<li><strong>Allow a Blocked Secret…</strong> answers GitHub’s push
+protection, with a reason. A private report waiting for review is called
+that, and can be accepted or closed.</li>
+</ul>
+<h3
+id="github-workbench-issue-types-and-fields-in-the-lists-2026-11-19">GitHub
+Workbench: issue types and fields in the lists (2026-11-19)</h3>
+<p>An issue’s type and its organization’s issue fields now show in the
+Workbench’s own lists:</p>
+<ul>
+<li><strong>Columns.</strong> Columns… offers <strong>Issue
+type</strong> and <strong>Issue fields</strong> on every Issues
+list.</li>
+<li><strong>Typed values.</strong> A date reads as a date, a number as a
+number and a choice by its name.</li>
+<li><strong>Details and filters.</strong> The details name the type and
+each field. <code>type:Bug</code> and <code>field.priority:high</code>
+searches go to GitHub, Show Only and Hide offer each value, and Group By
+Type works.</li>
+<li><strong>Properties.</strong> An issue’s Properties has an Issue
+Fields page.</li>
+<li><strong>Distinct states.</strong> A field that is empty, not set,
+hidden from you, not yet supported or could not be read each says so in
+its own words.</li>
+</ul>
+<h3
+id="github-workbench-merge-selected-deployments-and-release-evidence-2026-11-19">GitHub
+Workbench: Merge Selected, deployments and release evidence
+(2026-11-19)</h3>
+<ul>
+<li><strong>Merge Selected…</strong> merges several pull requests at
+once. Each one is checked on its own, with the reason given when it
+cannot be merged, and a preview lists what will merge, what will join
+the merge queue and what will not. They merge one at a time, each
+checked again just before. A failure stops nothing else, and Retry
+Failed is there at the end. Merge… now offers only the merge methods the
+repository allows.</li>
+<li>An environment now shows its custom protection rules, branches and
+tags, how many secrets and variables it has, and its newest deployments.
+<strong>Deployments…</strong> lists them.</li>
+<li><strong>Release Evidence…</strong> on a release says whether it is a
+draft and whether it is immutable. It names the tag’s commit, which
+checks passed or failed, which environments it was deployed to, and each
+file’s attestations. <strong>Attestations…</strong> on a release file
+lists them. QUILL does not verify the signatures itself, and says
+so.</li>
+</ul>
+<h3
+id="github-workbench-a-you-page-for-your-own-relationships-2026-11-19">GitHub
+Workbench: a You page for your own relationships (2026-11-19)</h3>
+<p>Properties now has a <strong>You</strong> page, right after General,
+on repositories, gists, people, organizations, issues, pull requests,
+discussions, releases and notifications. It shows where you stand with
+the item: starred, watch level, following, blocked, subscribed, your
+reactions, upvoted and pinned. Each can be changed there, for one item
+or for many selected at once. What GitHub does not let QUILL change is
+shown with a sentence saying why: profile pins, custom watching, a pull
+request’s pin, and sponsoring, which spends money and is done from the
+person’s Sponsor place.</p>
+<h3
+id="github-workbench-your-accounts-level-is-checked-on-every-change-2026-11-19">GitHub
+Workbench: your account’s level is checked on every change
+(2026-11-19)</h3>
+<p>Every command that changes something on GitHub now checks the
+account’s Workbench level before it reads or sends anything: a menu row,
+a context-menu row, a key, a list’s Add or Remove on a Properties sheet,
+a sheet’s save, and the editor’s own GitHub commands when the Workbench
+runs them. A Read Only or Organize account is refused in one sentence
+that names the command, the level it needs and where to change it
+(Account, Roles and Access, Workbench Level for This Account). When Safe
+Mode is the reason, the sentence says so. Commands that only read are
+never refused. Typed confirmations and the guard against removing your
+own admin access are now tested too.</p>
+<h3
+id="wordpress-workbench-yoasts-canonical-address-primary-category-and-schema-type-and-other-scheduled-tasks-2026-11-19">WordPress
+Workbench: Yoast’s canonical address, primary category and schema type,
+and other scheduled tasks (2026-11-19)</h3>
+<ul>
+<li>A post’s Properties now has an <strong>SEO</strong> page on sites
+with Yoast SEO. It shows the canonical address, the primary category
+(chosen by name from the post’s own categories) and the schema page and
+article type. They can be changed where the site makes Yoast’s settings
+available to QUILL. Elsewhere they are shown as Yoast reports them, with
+one sentence saying they are changed in the post’s Yoast panel, which
+Open in wp-admin reaches.</li>
+<li><strong>Search and Upkeep</strong> has a new row, <strong>Other
+scheduled tasks</strong>. It says plainly that only scheduled posts and
+pages can be checked from QUILL. When WP Crontrol is active, the row
+opens its Cron Events screen.</li>
+</ul>
+<h3
+id="github-workbench-discussion-polls-the-spotlight-and-categories-2026-11-19">GitHub
+Workbench: discussion polls, the spotlight and categories
+(2026-11-19)</h3>
+<ul>
+<li>A discussion’s poll is now a table showing each option, its votes,
+its percentage and your vote. <strong>Vote…</strong> casts your vote and
+says the new count. If you have voted already it says which option you
+chose, and a Read Only account is told why it cannot vote.</li>
+<li><strong>Discussions &gt; Pinned</strong> lists the pinned
+discussions in GitHub’s order. GitHub has no way to pin or unpin from
+outside its own page, and the details say so.</li>
+<li><strong>Discussions &gt; Categories</strong> lists the repository’s
+categories, and Enter opens the discussions in one of them. GitHub does
+not yet report category sections, so they are listed in GitHub’s
+order.</li>
+<li>Every quick command that changes something on GitHub now checks your
+account’s Workbench level before it reads or sends anything.</li>
+</ul>
+<h3
+id="quill-cast-ctrl2-shows-the-episode-that-is-playing-2026-11-19">Quill
+Cast: Ctrl+2 shows the episode that is playing (2026-11-19)</h3>
+<p>Reported by Chris: Enter on a podcast, or on an episode in the Queue,
+played it, and Ctrl+2 then brought up Now Playing without it. Now
+Playing only loaded the current episode, and started its clock, when it
+was opened through its own command. Ctrl+2, Ctrl+Tab and the Window menu
+showed the hidden window as it had been left, which was often “Nothing
+is playing”. Every way of reaching it now brings it up to date first.
+Cast’s other windows that hide rather than close, such as Statistics,
+now refresh the same way.</p>
+<h3 id="wordpress-workbench-shop-analytics-2026-11-19">WordPress
+Workbench: Shop Analytics (2026-11-19)</h3>
+<p>A site with WooCommerce Analytics now has <strong>Shop
+Analytics</strong> beside its Shop: Revenue, Orders, Products,
+Categories, Coupons, Taxes, Downloads, Stock and Customers. Each report
+starts with the range’s total, and arriving says it once, for example
+“Revenue on Radio, last 7 days: $1,240 from 31 orders, up 12% on the 7
+days before.” Date Range and Interval apply to every report on the site,
+money follows the store’s currency settings, and Export List saves the
+report as shown. Nothing is changed on the site.</p>
+<h3
+id="wordpress-workbench-a-levels-members-every-discount-code-and-redirections-options-2026-11-19">WordPress
+Workbench: a level’s members, every discount code, and Redirection’s
+options (2026-11-19)</h3>
+<ul>
+<li><strong>Members of This Level…</strong> on a PMPro membership level
+lists everyone on it, with Copy Email Addresses. A big site is slow, so
+it asks first and says how many people it will read; choosing it again
+stops it and keeps what it found.</li>
+<li><strong>Discount codes</strong> are now read page by page, so a site
+with more than 100 shows them all. Where a site lists them only in
+wp-admin, Enter on that row now opens Memberships &gt; Discount Codes,
+as the row always said it would.</li>
+<li><strong>Redirects &gt; Redirect Options</strong> shows the
+Redirection plugin’s settings that QUILL understands and changes them as
+one Properties sheet, sending only what changed, with Ctrl+Z to put them
+back. A site without that route is told so, and is offered the plugin’s
+own screen.</li>
+</ul>
+<h3
+id="wordpress-workbench-shipping-classes-and-generate-variations-2026-11-19">WordPress
+Workbench: shipping classes, and Generate Variations (2026-11-19)</h3>
+<ul>
+<li><strong>Shop &gt; Shipping Classes</strong> lists a shop’s shipping
+classes, each with how many products use it. You can add, change or
+delete them, and Ctrl+Z undoes a new or changed class. A product’s
+Properties now offers its shipping class by name instead of a slug to
+type.</li>
+<li><strong>Generate Variations…</strong> on a variable product makes
+every combination of its attributes that it is missing. It says how many
+it made, never changes or removes the variations already there, and
+Ctrl+Z deletes exactly the ones it made. A product that is not variable
+is told why, and nothing is sent.</li>
+</ul>
+<h3
+id="github-workbench-unlink-a-branch-from-the-issues-own-sheet-2026-11-19">GitHub
+Workbench: unlink a branch from the issue’s own sheet (2026-11-19)</h3>
+<p>An issue’s Properties &gt; Relationships now lists its linked
+branches. Delete removes the selected link after asking, and the
+question says the branch itself is kept, with its commits. Insert makes
+a new branch for the issue, as Create Branch for This Issue does.
+Unlinking and that Add now respect your account’s level: Read Only
+refuses, and Safe Mode says it is the reason.</p>
+<h3 id="plans-the-family-ux-pilots-are-chosen-2026-11-19">Plans: the
+family UX pilots are chosen (2026-11-19)</h3>
+<p>The five open decisions from the family UX plan are made and written
+down in <code>docs/design/2026-11-19-family-ux-pilots.md</code>. The
+pilots are Quill Cast and QUILL Lite, and the work starts with truthful
+results and lists that stay still, though lost work or misdirected input
+always comes first. The one cross-app journey is “I heard something
+worth keeping”, which runs from Cast to a saved place to QUILL. Each app
+owns its own audio, shared preferences stay narrow and opt-in, and
+dictated text goes only to the place it began. Both pilots’ PRDs now
+carry what was accepted for them.</p>
+<h3
+id="workbench-a-dialog-no-longer-blocks-the-editor-2026-11-19">Workbench:
+a dialog no longer blocks the editor (2026-11-19)</h3>
+<p>Opening Properties, a picker or any other dialog from the GitHub or
+WordPress Workbench used to freeze the editor too, until the dialog
+closed: wx’s ShowModal disables every window in the app. Now a Workbench
+dialog blocks only the Workbench, so you can Alt+Tab to your document,
+keep typing and come back (GH-R-002, checked on Windows). A dialog
+opened from a Workbench dialog still waits for its own answer, as
+before.</p>
+<h3
+id="documents-woocommerce-and-yoast-are-in-scope-and-the-github-prd-says-what-github-cannot-change-2026-11-19">Documents:
+WooCommerce and Yoast are in scope, and the GitHub PRD says what GitHub
+cannot change (2026-11-19)</h3>
+<ul>
+<li>The WordPress Workbench PRD and the WordPress design document now
+record Jeff’s 2026-11-18 decisions: WooCommerce and Yoast SEO are
+first-class integrations beside QAF, Gravity Forms and PMPro; Rank Math
+is read only; updates stay in the Dashboard; backups are snapshots and
+WXR.</li>
+<li>GitHub Workbench PRD: a project’s views and built-in workflows are
+read only, because GitHub has no API to change them, and a project’s
+sheet now says so on those pages (GH-R-045, now met). The window
+remembers each list’s columns; a filter is kept as a saved search rather
+than restored on open (GH-R-004’s wording now matches section 3.1).</li>
+</ul>
+<h3
 id="quill-cast-and-quill-a-saved-podcast-speed-plays-straight-away-and-typed-numbers-are-kept-2026-11-19">Quill
 Cast and QUILL: a saved podcast speed plays straight away, and typed
 numbers are kept (2026-11-19)</h3>

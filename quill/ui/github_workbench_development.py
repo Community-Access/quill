@@ -30,6 +30,11 @@ from quill.ui.github_workbench_advisories import (
     ADVISORY_VERBS,
     GitHubWorkbenchAdvisoriesMixin,
 )
+from quill.ui.github_workbench_authoring import (
+    AUTHORING_REASONS,
+    AUTHORING_VERBS,
+    GitHubWorkbenchAuthoringMixin,
+)
 from quill.ui.github_workbench_batch_merge import (
     BATCH_MERGE_REASONS,
     BATCH_MERGE_VERBS,
@@ -231,6 +236,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **SCOPED_VERBS,
     **QUICK_VERBS,
     **DISCUSSION_VERBS,
+    **AUTHORING_VERBS,
 }
 
 DEVELOPMENT_REASONS: dict[str, str] = {
@@ -270,6 +276,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **SCOPED_REASONS,
     **QUICK_REASONS,
     **DISCUSSION_REASONS,
+    **AUTHORING_REASONS,
 }
 
 
@@ -307,6 +314,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchScopedListsMixin,
     GitHubWorkbenchQuickMixin,
     GitHubWorkbenchDiscussionsMixin,
+    GitHubWorkbenchAuthoringMixin,
 ):
     items: Any
     frame: Any

@@ -5689,13 +5689,21 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="github-workbench">GitHub Workbench</h2>
-<p>Control coverage: 384 audited sites (384 helped).</p>
+<p>Control coverage: 400 audited sites (400 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
+<p><strong>Add Entry.</strong> A new Dependabot entry: ecosystem,
+folders, schedule and limits.</p>
 <p><strong>Add GitHub Token.</strong> Paste a personal access token you
 made yourself, such as one limited to a few repositories, or go on
 without signing in. Sign In with GitHub is the easier road for most
 people.</p>
+<p><strong>Add Job.</strong> A new job: its id, name, runner and the
+jobs it runs after.</p>
+<p><strong>Add Rule.</strong> A new CODEOWNERS rule at the end, where it
+wins: a pattern and its owners.</p>
+<p><strong>Add Trigger.</strong> Choose an event that starts the
+workflow, then its settings.</p>
 <p><strong>Add Watch.</strong> What to watch for: a run finishing, a
 review, a release or a comment. Then you name the repository, or the
 issue or pull request.</p>
@@ -5712,13 +5720,18 @@ Mine saves yours over it.</p>
 folder on this computer: which repository, which folder, then OK. The
 copy runs in the background and you hear once how it went.</p>
 <p><strong>Code Owners (CODEOWNERS).</strong> Who reviews changes to
-which paths, and a lookup for who owns a path.</p>
+which paths, as a table of pattern and owners where the last matching
+rule wins; a lookup for who owns a path; and the problems GitHub reports
+for the file.</p>
 <p><strong>Columns.</strong> Choose which columns this list shows. Space
 checks or clears one.</p>
 <p><strong>Comment on.</strong> Write a comment for GitHub. Insert
 Mention, Insert Reference, Insert Emoji and Insert Saved Reply put what
 you choose at the cursor; Preview reads the comment as GitHub will show
 it. Ctrl+Enter or Post sends it, after the check if it is on.</p>
+<p><strong>Compare Configuration.</strong> The files that differ from
+the source, checked to update, and the differences of the selected one;
+Propose Update opens one pull request.</p>
 <p><strong>Configure Branch Protection.</strong> Pick a branch, then
 protect it with the rules you choose, or clear the protection it already
 has.</p>
@@ -5728,6 +5741,9 @@ send it; anything else sends nothing.</p>
 <p><strong>Create GitHub Repository.</strong> Make a new repository on
 GitHub: its name, a description, public or private, and optionally the
 organization it belongs to.</p>
+<p><strong>Dependabot Configuration.</strong> dependabot.yml as a list
+of entries: each ecosystem and folder, how often, and how many pull
+requests, with what Dependabot would refuse listed before Save.</p>
 <p><strong>Discussion #.</strong> One discussion thread: read it, and
 reply if you are signed in.</p>
 <p><strong>Draft Release Notes.</strong> Write release notes from the
@@ -5736,6 +5752,8 @@ no release is made on GitHub.</p>
 <p><strong>Edit Release.</strong> Change a release’s name, notes, and
 whether it is a draft or a prerelease. Nothing is sent until Save;
 publishing a draft asks first, because watchers are told.</p>
+<p><strong>Entry.</strong> One Dependabot entry: ecosystem, folders,
+schedule and limits.</p>
 <p><strong>Export JSON.</strong> Where to save GitHub’s answer as a JSON
 file.</p>
 <p><strong>Filter Builder.</strong> Build a filter one condition at a
@@ -5772,6 +5790,12 @@ shows everything about the selection.</p>
 Workbench, grouped by what it does.</p>
 <p><strong>How to Cite (CITATION.cff).</strong> How people should cite
 the project: title, version, DOI and the authors.</p>
+<p><strong>Input.</strong> One input: its name, description, type,
+default and whether it is required.</p>
+<p><strong>Inputs.</strong> What a person fills in when they run the
+workflow by hand, in order.</p>
+<p><strong>Job:.</strong> One job: its id, name, runner, the jobs it
+runs after, and its condition.</p>
 <p><strong>Jobs for.</strong> A run’s jobs and steps, with each job’s
 log and annotations.</p>
 <p><strong>Manage GitHub Accounts.</strong> The GitHub accounts kept on
@@ -5796,6 +5820,8 @@ another: the two branches, a title, a description and whether it is a
 draft. Nothing reaches GitHub until you press Create Pull Request.</p>
 <p><strong>Pending Deployments.</strong> Deployments waiting on you:
 approve or reject each one.</p>
+<p><strong>Permissions:.</strong> What GITHUB_TOKEN may do in one job,
+scope by scope.</p>
 <p><strong>Preview.</strong> What is about to change on GitHub, in
 words. Enter goes ahead; Escape changes nothing.</p>
 <p><strong>Preview Form.</strong> A template’s form as people will meet
@@ -5832,6 +5858,8 @@ request reviewers or write your review.</p>
 one. Choose a role to list its people and teams; Give to Person and Give
 to Team add one, and Take Away removes this role or every role from the
 selected one.</p>
+<p><strong>Rule.</strong> One CODEOWNERS rule: a path pattern and its
+owners.</p>
 <p><strong>Rulesets in.</strong> An organization’s rulesets, each read
 in plain words in Details. Enforcement makes one Active, Evaluate or
 Disabled; History and Rule Insights show its changes and the pushes it
@@ -5842,17 +5870,25 @@ for this account on this device.</p>
 document.</p>
 <p><strong>Saved Commands.</strong> Console requests you saved. Enter
 fills the console with one.</p>
+<p><strong>Schedule.</strong> The times a scheduled workflow runs, one
+cron line each, in UTC.</p>
 <p><strong>Search Help.</strong> Type a few words to find a help topic,
 a place, a command or a GitHub word. Enter goes there, runs it or reads
 it.</p>
 <p><strong>Sponsor Platforms (FUNDING.yml).</strong> Where people can
 sponsor the project: one box per platform GitHub knows.</p>
+<p><strong>Step.</strong> One step: the action it uses or the commands
+it runs, its inputs and variables.</p>
+<p><strong>Steps:.</strong> A job’s steps, run one after another; add,
+edit, remove and reorder them.</p>
 <p><strong>Template Chooser.</strong> Whether blank issues are allowed,
 the contact links, and the order the templates appear in. Nothing
 reaches GitHub until you save and confirm.</p>
 <p><strong>Template:.</strong> Build or edit a template: its keys, its
 fields as a list, its source and a preview, with the problems GitHub
 would report listed before Save.</p>
+<p><strong>Trigger:.</strong> One trigger’s filters: branches, tags,
+paths and activity types.</p>
 <p><strong>Type to Confirm.</strong> This change is hard to reverse, so
 it waits for the name typed exactly. Anything else changes nothing.</p>
 <p><strong>Watch.</strong> The repository as owner/name, or the issue or
@@ -5869,6 +5905,11 @@ language, with where you meet it.</p>
 preferences: where it opens, how lists start, how often notifications
 are checked, your pinned repositories and favorites, and privacy. OK
 saves, Cancel changes nothing.</p>
+<p><strong>Workflow Editor.</strong> A workflow file as lists: its
+triggers, permissions and jobs, each job’s steps and what it runs after,
+when the jobs run, and what GitHub would reject before Save.</p>
+<p><strong>Workflow Permissions.</strong> What GITHUB_TOKEN may do in
+every job, scope by scope.</p>
 <h3 id="every-place-in-the-tree">Every place in the tree</h3>
 <p><strong>Start Here.</strong> Start Here: what the Workbench is,
 whether you are signed in, and the five keys to learn first.</p>
@@ -5967,8 +6008,9 @@ adds one, Enter edits, Delete removes. Watches never mark notifications
 read.</p>
 <p><strong>Across Repositories.</strong> Across Repositories: the
 Repository Set in use, and under it its named sets, one kind of thing
-from every repository in the set, each name across the set, and the
-Fleet. Ctrl+N here edits the set’s repositories.</p>
+from every repository in the set, each name across the set grouped as
+Planning, Code, Actions and Settings, and the Fleet. Ctrl+N here edits
+the set’s repositories.</p>
 <p><strong>Repository Sets.</strong> Repository Sets: your named lists
 of repositories, each chosen from a checklist, made by a filter such as
 org:name topic:x, or every repository you can reach. Enter uses one;
@@ -5991,29 +6033,6 @@ set.</p>
 the set that has them on.</p>
 <p><strong>Security Alerts.</strong> Security alerts from every
 repository in the set you may read them in.</p>
-<p><strong>Labels by Name.</strong> Labels by Name: each label name
-across the set, where its colour and description differ and where it is
-missing. Make the copies the same, add it where missing, rename, merge
-or delete it everywhere, each with a preview and a result per
-repository.</p>
-<p><strong>Milestones by Name.</strong> Milestones by Name: each
-milestone title across the set, its due dates, descriptions and
-progress. Make them the same, close them everywhere, move their open
-work to another milestone or add the missing ones, each with a preview
-and a result per repository.</p>
-<p><strong>Topics by Name.</strong> Topics by Name: each topic across
-the set and the repositories that lack it. Add it to the missing or
-remove it everywhere, with a preview and a result per repository; each
-repository’s other topics are kept.</p>
-<p><strong>Rules and Branch Protection.</strong> Rules and Branch
-Protection: each ruleset by name, and each default branch’s protection,
-compared across the set. Make them the same as the winner, add a ruleset
-where it is missing, or promote one to an organization ruleset; each
-needs admin access and shows a preview first.</p>
-<p><strong>Fleet.</strong> Fleet: one line per repository in the set:
-the exact revision of its default branch, checks, open pull requests,
-latest release and alerts, and when it was read. A repository that could
-not be read keeps its line, with the reason.</p>
 <p><strong>Help and Learning.</strong> Help and Learning: the guide, the
 GitHub words, the keys, what changed, and tasks in plain words that take
 you to the place.</p>
@@ -6036,6 +6055,73 @@ trying each. They wait here and are never pushed at you.</p>
 <p><strong>Ask a Person.</strong> Ask a Person: write to <a
 href="mailto:support@community-access.org">support@community-access.org</a>.
 Nothing is sent until you send it from your own email.</p>
+<p><strong>Planning by Name.</strong> Planning by Name: labels,
+milestones and topics, each by name across the set.</p>
+<p><strong>Labels by Name.</strong> Labels by Name: each label name
+across the set, where its colour and description differ and where it is
+missing. Make the copies the same, add it where missing, rename, merge
+or delete it everywhere, each with a preview and a result per
+repository.</p>
+<p><strong>Milestones by Name.</strong> Milestones by Name: each
+milestone title across the set, its due dates, descriptions and
+progress. Make them the same, close them everywhere, move their open
+work to another milestone or add the missing ones, each with a preview
+and a result per repository.</p>
+<p><strong>Topics by Name.</strong> Topics by Name: each topic across
+the set and the repositories that lack it. Add it to the missing or
+remove it everywhere, with a preview and a result per repository; each
+repository’s other topics are kept.</p>
+<p><strong>Code by Name.</strong> Code by Name: tags, branches, and
+rules and branch protection, each by name across the set.</p>
+<p><strong>Tags by Name.</strong> Tags by Name: each tag across the set
+and the commit it is on in each repository. Release Train makes it, or
+it and a release, where it is missing, and never moves an existing tag;
+Delete Everywhere keeps a tag a release is built on.</p>
+<p><strong>Branches by Name.</strong> Branches by Name: each branch
+across the set, where it is the default and where it is protected.
+Rename Everywhere uses GitHub’s rename; its preview says where the
+default changes, where protection moves and how many open pull requests
+are retargeted.</p>
+<p><strong>Rules and Branch Protection.</strong> Rules and Branch
+Protection: each ruleset by name, and each default branch’s protection,
+compared across the set. Make them the same as the winner, add a ruleset
+where it is missing, or promote one to an organization ruleset; each
+needs admin access and shows a preview first.</p>
+<p><strong>Actions by Name.</strong> Actions by Name: environments,
+secrets and variables, each by name across the set. Reading them needs
+admin access in each repository.</p>
+<p><strong>Environments by Name.</strong> Environments by Name: wait
+timer, reviewers, self-review and which branches may deploy, compared
+across the set. Make them the same as the winner, or delete one
+everywhere. GitHub has no organization environments.</p>
+<p><strong>Secrets by Name.</strong> Secrets by Name: each Actions
+secret across the set, by name only, because GitHub never shows a
+secret’s value. Set Secret Everywhere takes one new value, typed once
+and sealed for each repository; Promote to Organization makes one
+organization secret for those repositories.</p>
+<p><strong>Variables by Name.</strong> Variables by Name: each Actions
+variable and its values across the set. Make them the same, add the
+missing, delete everywhere, or promote to one organization variable for
+those repositories.</p>
+<p><strong>Settings by Name.</strong> Settings by Name: webhooks, deploy
+keys and autolinks, each by name across the set. Reading them needs
+admin access in each repository.</p>
+<p><strong>Webhooks by Name.</strong> Webhooks by Name: each webhook by
+its address, with its events, on or off and content type. Make them the
+same, add the missing, turn them on or off, delete, or promote to one
+organization webhook, which GitHub sends for every repository in the
+organization. A webhook’s secret is never readable.</p>
+<p><strong>Deploy Keys by Name.</strong> Deploy Keys by Name: each
+deploy key by title, with its fingerprint and access. Delete Everywhere
+removes it; GitHub accepts a deploy key in one repository only, so one
+cannot be added to more.</p>
+<p><strong>Autolinks by Name.</strong> Autolinks by Name: each autolink
+by its prefix, with its address. Add the missing or delete everywhere;
+GitHub cannot change an autolink in place.</p>
+<p><strong>Fleet.</strong> Fleet: one line per repository in the set:
+the exact revision of its default branch, checks, open pull requests,
+latest release and alerts, and when it was read. A repository that could
+not be read keeps its line, with the reason.</p>
 <p><strong>People and Organizations.</strong> Search People and
 Organizations: accounts whose name or login matches the filter box, such
 as jeff or type:org location:Tucson. Enter opens one.</p>
@@ -6820,6 +6906,8 @@ request.</p>
 <p><strong>Dependency Review.</strong> What this pull request changes in
 the dependencies: each one added or removed, its licence, and its known
 vulnerabilities.</p>
+<p><strong>Dependabot Commands.</strong> On a Dependabot pull request:
+rebase, recreate, merge, ignore a version, and more.</p>
 <p><strong>Open in github.dev.</strong> GitHub’s free web editor, at
 exactly this; nothing is created.</p>
 <p><strong>Draft Description with AI.</strong> A description drafted by
@@ -6857,6 +6945,8 @@ downloading the whole run’s.</p>
 <p><strong>Run Workflow on Branch.</strong> Start it on a branch.</p>
 <p><strong>Turn Workflow On or Off.</strong> Turn it off so nothing
 starts it, or back on.</p>
+<p><strong>Edit Workflow.</strong> Its triggers, jobs, steps, inputs and
+permissions as forms; saving asks first.</p>
 <p><strong>Assets.</strong> The release’s files and their download
 counts.</p>
 <p><strong>Edit Release.</strong> Change its notes, name and flags.</p>
@@ -7038,6 +7128,8 @@ stays.</p>
 <p><strong>Remove Saved Search.</strong> Forget it on this device.</p>
 <p><strong>Open in Editor.</strong> Open the file in the editor, to read
 or edit.</p>
+<p><strong>Who Owns This?.</strong> Its code owners, from
+CODEOWNERS.</p>
 <p><strong>Find Issues in Milestone.</strong> Its issues and pull
 requests.</p>
 <p><strong>Delete Milestone.</strong> Its issues stay, without it.</p>
@@ -7231,19 +7323,27 @@ preview shows each repository, then each result.</p>
 choose that lack it, after the preview.</p>
 <p><strong>Find Uses.</strong> Search every issue and pull request with
 it, across the set.</p>
-<p><strong>Rename Everywhere.</strong> Rename the label in every
-repository; a clash is shown, not merged.</p>
+<p><strong>Rename Everywhere.</strong> Rename the label or branch in
+every repository; a clash is shown, not merged, and a branch’s preview
+says what follows from GitHub’s rename.</p>
 <p><strong>Merge Into.</strong> Move every item to another label, then
 delete this one, after the preview.</p>
 <p><strong>Close Everywhere.</strong> Close every open copy of the
 milestone, after the preview.</p>
 <p><strong>Move Open Work To.</strong> Move each repository’s open items
 to another milestone of its own, after the preview.</p>
-<p><strong>Promote to Organization.</strong> One organization ruleset
-for the set’s repositories in that organization, then their own copies
-deleted, after the preview.</p>
-<p><strong>Delete Everywhere.</strong> Delete the label, or remove the
-topic, in every repository, after the preview.</p>
+<p><strong>Promote to Organization.</strong> One organization ruleset,
+secret, variable or webhook for the set’s repositories in that
+organization, then their own copies deleted, after the preview.</p>
+<p><strong>Release Train.</strong> Make this tag, or the tag and a
+release, in the repositories you choose; one that has the tag is skipped
+and its tag never moved.</p>
+<p><strong>Set Secret Everywhere.</strong> Type one new value once; it
+is sealed for each repository you choose and set there.</p>
+<p><strong>Turn On or Off Everywhere.</strong> Turn the webhook on or
+off in every repository that has it, after the preview.</p>
+<p><strong>Delete Everywhere.</strong> Delete it, or remove the topic,
+in every repository that has it, after the preview.</p>
 <p><strong>Open Repository.</strong> Select the repository’s node in the
 tree.</p>
 <p><strong>Download.</strong> Download the file in your browser.</p>
@@ -7428,6 +7528,17 @@ browser.</li>
 <li><code>cancel_button</code>: Close without changing anything. Escape
 does the same.</li>
 </ul>
+<h4 id="fieldsdialog-quilluigithub_authoring_formpy">FieldsDialog
+(<code>quill/ui/github_authoring_form.py</code>)</h4>
+<ul>
+<li><code>ok</code>: Keep what is in this form.</li>
+<li><code>cancel</code>: Close the form without changing anything.</li>
+</ul>
+<h4 id="itemsdialog-quilluigithub_authoring_formpy">ItemsDialog
+(<code>quill/ui/github_authoring_form.py</code>)</h4>
+<ul>
+<li><code>cancel</code>: Close without changing anything.</li>
+</ul>
 <h4
 id="clonerepositorydialog-quilluigithub_clonepy">CloneRepositoryDialog
 (<code>quill/ui/github_clone.py</code>)</h4>
@@ -7500,6 +7611,42 @@ browser.</li>
 between these two, in your browser. Greyed when there is none.</li>
 <li><code>close_btn</code>: Close this window. Escape does the
 same.</li>
+</ul>
+<h4
+id="configcomparedialog-quilluigithub_config_compare_dialogpy">ConfigCompareDialog
+(<code>quill/ui/github_config_compare_dialog.py</code>)</h4>
+<ul>
+<li><code>self.diff</code>: A unified diff: lines starting with + come
+from the source, lines starting with - are what this repository has
+now.</li>
+<li><code>ok</code>: Ask, then open one pull request with the checked
+files.</li>
+<li><code>cancel</code>: Close without changing anything.</li>
+<li><code>box</code>: Checked files go into one pull request. Its
+differences show below while it has focus.</li>
+</ul>
+<h4
+id="dependabotdialog-quilluigithub_config_sheets_dialogpy">DependabotDialog
+(<code>quill/ui/github_config_sheets_dialog.py</code>)</h4>
+<ul>
+<li><code>self.checks</code>: Each reason Dependabot would refuse this
+file, or that it is fine.</li>
+</ul>
+<h4
+id="codeownersdialog-quilluigithub_config_sheets_dialogpy">CodeownersDialog
+(<code>quill/ui/github_config_sheets_dialog.py</code>)</h4>
+<ul>
+<li><code>self.table</code>: Each rule: its line, the path pattern, and
+its owners. A later rule wins over an earlier one for the same path.
+Enter edits the selected rule.</li>
+<li><code>look</code>: Say which rule owns the path above, and its
+owners.</li>
+<li><code>self.findings</code>: Rules GitHub would skip by their shape,
+the problems GitHub reports for the file on the default branch, and what
+Check Owners found.</li>
+<li><code>check</code>: Ask GitHub whether every owner exists and can
+write to this repository. GitHub skips one that cannot, without saying
+so.</li>
 </ul>
 <h4 id="githubconsentdialog-quilluigithub_dialogspy">GitHubConsentDialog
 (<code>quill/ui/github_dialogs.py</code>)</h4>
@@ -8354,19 +8501,6 @@ id="chooserdialog-quilluigithub_template_sheets_dialogpy">ChooserDialog
 choosing a template.</li>
 </ul>
 <h4
-id="codeownersdialog-quilluigithub_template_sheets_dialogpy">CodeownersDialog
-(<code>quill/ui/github_template_sheets_dialog.py</code>)</h4>
-<ul>
-<li><code>look</code>: Say which rule owns the path above, and its
-owners.</li>
-<li><code>check</code>: Ask GitHub whether every owner exists and can
-write to this repository. GitHub skips one that cannot, without saying
-so.</li>
-<li><code>self.findings</code>: One line for each owner: whether it
-exists and can write, what to fix if not, and any that could not be
-checked.</li>
-</ul>
-<h4
 id="githubtimelinedialog-quilluigithub_timeline_dialogpy">GitHubTimelineDialog
 (<code>quill/ui/github_timeline_dialog.py</code>)</h4>
 <ul>
@@ -8423,6 +8557,16 @@ same.</li>
 <li><code>close</code>: Close the results.</li>
 <li><code>again</code>: Run the failed items again. F8 does the
 same.</li>
+</ul>
+<h4
+id="workfloweditordialog-quilluigithub_workflow_editor_dialogpy">WorkflowEditorDialog
+(<code>quill/ui/github_workflow_editor_dialog.py</code>)</h4>
+<ul>
+<li><code>self.pull</code>: Commit to a new branch and open a pull
+request, so the change is reviewed first. Always on when the default
+branch is protected.</li>
+<li><code>self.permissions</code>: What GITHUB_TOKEN may do in every
+job, unless a job sets its own.</li>
 </ul>
 <h4
 id="workflowjobfollowmixin-quilluigithub_workflow_job_followpy">WorkflowJobFollowMixin

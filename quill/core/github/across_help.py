@@ -14,8 +14,9 @@ __all__ = ["ACROSS_NODE_HELP"]
 ACROSS_NODE_HELP: dict[str, str] = {
     ":across": (
         "Across Repositories: the Repository Set in use, and under it its named sets, "
-        "one kind of thing from every repository in the set, each name across the set, "
-        "and the Fleet. Ctrl+N here edits the set's repositories."
+        "one kind of thing from every repository in the set, each name across the set "
+        "grouped as Planning, Code, Actions and Settings, and the Fleet. Ctrl+N here edits "
+        "the set's repositories."
     ),
     ":across_sets": (
         "Repository Sets: your named lists of repositories, each chosen from a checklist, "
@@ -60,6 +61,63 @@ ACROSS_NODE_HELP: dict[str, str] = {
         "protection, compared across the set. Make them the same as the winner, add a "
         "ruleset where it is missing, or promote one to an organization ruleset; each needs "
         "admin access and shows a preview first."
+    ),
+    ":across_planning": (
+        "Planning by Name: labels, milestones and topics, each by name across the set."
+    ),
+    ":across_code": (
+        "Code by Name: tags, branches, and rules and branch protection, each by name across "
+        "the set."
+    ),
+    ":across_actions": (
+        "Actions by Name: environments, secrets and variables, each by name across the set. "
+        "Reading them needs admin access in each repository."
+    ),
+    ":across_settings": (
+        "Settings by Name: webhooks, deploy keys and autolinks, each by name across the set. "
+        "Reading them needs admin access in each repository."
+    ),
+    ":across_by_tags": (
+        "Tags by Name: each tag across the set and the commit it is on in each repository. "
+        "Release Train makes it, or it and a release, where it is missing, and never moves "
+        "an existing tag; Delete Everywhere keeps a tag a release is built on."
+    ),
+    ":across_by_branches": (
+        "Branches by Name: each branch across the set, where it is the default and where it "
+        "is protected. Rename Everywhere uses GitHub's rename; its preview says where the "
+        "default changes, where protection moves and how many open pull requests are "
+        "retargeted."
+    ),
+    ":across_by_environments": (
+        "Environments by Name: wait timer, reviewers, self-review and which branches may "
+        "deploy, compared across the set. Make them the same as the winner, or delete one "
+        "everywhere. GitHub has no organization environments."
+    ),
+    ":across_by_secrets": (
+        "Secrets by Name: each Actions secret across the set, by name only, because GitHub "
+        "never shows a secret's value. Set Secret Everywhere takes one new value, typed once "
+        "and sealed for each repository; Promote to Organization makes one organization "
+        "secret for those repositories."
+    ),
+    ":across_by_variables": (
+        "Variables by Name: each Actions variable and its values across the set. Make them "
+        "the same, add the missing, delete everywhere, or promote to one organization "
+        "variable for those repositories."
+    ),
+    ":across_by_webhooks": (
+        "Webhooks by Name: each webhook by its address, with its events, on or off and "
+        "content type. Make them the same, add the missing, turn them on or off, delete, or "
+        "promote to one organization webhook, which GitHub sends for every repository in "
+        "the organization. A webhook's secret is never readable."
+    ),
+    ":across_by_deploy_keys": (
+        "Deploy Keys by Name: each deploy key by title, with its fingerprint and access. "
+        "Delete Everywhere removes it; GitHub accepts a deploy key in one repository only, "
+        "so one cannot be added to more."
+    ),
+    ":across_by_autolinks": (
+        "Autolinks by Name: each autolink by its prefix, with its address. Add the missing "
+        "or delete everywhere; GitHub cannot change an autolink in place."
     ),
     ":across_fleet": (
         "Fleet: one line per repository in the set: the exact revision of its default "

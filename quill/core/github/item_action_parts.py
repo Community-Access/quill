@@ -13,6 +13,7 @@ from quill.core.workbench.actions import ActionRow, Tier
 
 __all__ = [
     "ACCOUNT_ROWS",
+    "AUTHORING_ROWS",
     "COLLAB_ROWS",
     "PROJECT_ROWS",
     "PROPERTIES_COMMAND",
@@ -371,4 +372,30 @@ COLLAB_ROWS: dict[str, tuple[ActionRow, ...]] = {
     "file": (_GITHUB_DEV,),
     "repository": (_PROMPT_FILES,),
     "node": (_PROMPT_FILES,),
+}
+
+
+#: Workflow authoring, Dependabot's commands and Who Owns This? (PRD 22.1), each
+#: merged into its row type before Properties (quill/ui/github_workbench_authoring.py).
+AUTHORING_ROWS: dict[str, tuple[ActionRow, ...]] = {
+    "workflow": (
+        _a(
+            "edit_workflow",
+            "Edit Workflow...",
+            _W,
+            "push",
+            "Its triggers, jobs, steps, inputs and permissions as forms; saving asks first.",
+        ),
+    ),
+    "pull_request": (
+        _a(
+            "dependabot_command",
+            "Dependabot Commands...",
+            _W,
+            "sign_in",
+            "On a Dependabot pull request: rebase, recreate, merge, ignore a version, and more.",
+        ),
+    ),
+    "file": (_a("who_owns", "Who Owns This?", help="Its code owners, from CODEOWNERS."),),
+    "folder": (_a("who_owns", "Who Owns This?", help="Its code owners, from CODEOWNERS."),),
 }

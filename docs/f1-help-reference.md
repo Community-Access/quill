@@ -2336,11 +2336,19 @@ Control coverage: 127 audited sites (127 helped).
 
 ## GitHub Workbench
 
-Control coverage: 384 audited sites (384 helped).
+Control coverage: 400 audited sites (400 helped).
 
 ### Every window, and what it is for
 
+**Add Entry.** A new Dependabot entry: ecosystem, folders, schedule and limits.
+
 **Add GitHub Token.** Paste a personal access token you made yourself, such as one limited to a few repositories, or go on without signing in. Sign In with GitHub is the easier road for most people.
+
+**Add Job.** A new job: its id, name, runner and the jobs it runs after.
+
+**Add Rule.** A new CODEOWNERS rule at the end, where it wins: a pattern and its owners.
+
+**Add Trigger.** Choose an event that starts the workflow, then its settings.
 
 **Add Watch.** What to watch for: a run finishing, a review, a release or a comment. Then you name the repository, or the issue or pull request.
 
@@ -2352,11 +2360,13 @@ Control coverage: 384 audited sites (384 helped).
 
 **Clone Repository.** Copy a GitHub repository to a folder on this computer: which repository, which folder, then OK. The copy runs in the background and you hear once how it went.
 
-**Code Owners (CODEOWNERS).** Who reviews changes to which paths, and a lookup for who owns a path.
+**Code Owners (CODEOWNERS).** Who reviews changes to which paths, as a table of pattern and owners where the last matching rule wins; a lookup for who owns a path; and the problems GitHub reports for the file.
 
 **Columns.** Choose which columns this list shows. Space checks or clears one.
 
 **Comment on.** Write a comment for GitHub. Insert Mention, Insert Reference, Insert Emoji and Insert Saved Reply put what you choose at the cursor; Preview reads the comment as GitHub will show it. Ctrl+Enter or Post sends it, after the check if it is on.
+
+**Compare Configuration.** The files that differ from the source, checked to update, and the differences of the selected one; Propose Update opens one pull request.
 
 **Configure Branch Protection.** Pick a branch, then protect it with the rules you choose, or clear the protection it already has.
 
@@ -2364,11 +2374,15 @@ Control coverage: 384 audited sites (384 helped).
 
 **Create GitHub Repository.** Make a new repository on GitHub: its name, a description, public or private, and optionally the organization it belongs to.
 
+**Dependabot Configuration.** dependabot.yml as a list of entries: each ecosystem and folder, how often, and how many pull requests, with what Dependabot would refuse listed before Save.
+
 **Discussion #.** One discussion thread: read it, and reply if you are signed in.
 
 **Draft Release Notes.** Write release notes from the changes between two points, then edit and copy them. This only drafts: no release is made on GitHub.
 
 **Edit Release.** Change a release's name, notes, and whether it is a draft or a prerelease. Nothing is sent until Save; publishing a draft asks first, because watchers are told.
+
+**Entry.** One Dependabot entry: ecosystem, folders, schedule and limits.
 
 **Export JSON.** Where to save GitHub's answer as a JSON file.
 
@@ -2392,6 +2406,12 @@ Control coverage: 384 audited sites (384 helped).
 
 **How to Cite (CITATION.cff).** How people should cite the project: title, version, DOI and the authors.
 
+**Input.** One input: its name, description, type, default and whether it is required.
+
+**Inputs.** What a person fills in when they run the workflow by hand, in order.
+
+**Job:.** One job: its id, name, runner, the jobs it runs after, and its condition.
+
 **Jobs for.** A run's jobs and steps, with each job's log and annotations.
 
 **Manage GitHub Accounts.** The GitHub accounts kept on this computer: switch to one, add another, or remove one and forget its token.
@@ -2409,6 +2429,8 @@ Control coverage: 384 audited sites (384 helped).
 **New Pull Request.** Propose merging one branch into another: the two branches, a title, a description and whether it is a draft. Nothing reaches GitHub until you press Create Pull Request.
 
 **Pending Deployments.** Deployments waiting on you: approve or reject each one.
+
+**Permissions:.** What GITHUB_TOKEN may do in one job, scope by scope.
 
 **Preview.** What is about to change on GitHub, in words. Enter goes ahead; Escape changes nothing.
 
@@ -2432,6 +2454,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Roles in.** An organization's roles and who holds each one. Choose a role to list its people and teams; Give to Person and Give to Team add one, and Take Away removes this role or every role from the selected one.
 
+**Rule.** One CODEOWNERS rule: a path pattern and its owners.
+
 **Rulesets in.** An organization's rulesets, each read in plain words in Details. Enforcement makes one Active, Evaluate or Disabled; History and Rule Insights show its changes and the pushes it judged; Delete asks for its name.
 
 **Save Command.** A name for this console request, kept for this account on this device.
@@ -2440,13 +2464,21 @@ Control coverage: 384 audited sites (384 helped).
 
 **Saved Commands.** Console requests you saved. Enter fills the console with one.
 
+**Schedule.** The times a scheduled workflow runs, one cron line each, in UTC.
+
 **Search Help.** Type a few words to find a help topic, a place, a command or a GitHub word. Enter goes there, runs it or reads it.
 
 **Sponsor Platforms (FUNDING.yml).** Where people can sponsor the project: one box per platform GitHub knows.
 
+**Step.** One step: the action it uses or the commands it runs, its inputs and variables.
+
+**Steps:.** A job's steps, run one after another; add, edit, remove and reorder them.
+
 **Template Chooser.** Whether blank issues are allowed, the contact links, and the order the templates appear in. Nothing reaches GitHub until you save and confirm.
 
 **Template:.** Build or edit a template: its keys, its fields as a list, its source and a preview, with the problems GitHub would report listed before Save.
+
+**Trigger:.** One trigger's filters: branches, tags, paths and activity types.
 
 **Type to Confirm.** This change is hard to reverse, so it waits for the name typed exactly. Anything else changes nothing.
 
@@ -2459,6 +2491,10 @@ Control coverage: 384 audited sites (384 helped).
 **What Is This.** A GitHub word, explained in plain language, with where you meet it.
 
 **Workbench Options.** The GitHub Workbench's own preferences: where it opens, how lists start, how often notifications are checked, your pinned repositories and favorites, and privacy. OK saves, Cancel changes nothing.
+
+**Workflow Editor.** A workflow file as lists: its triggers, permissions and jobs, each job's steps and what it runs after, when the jobs run, and what GitHub would reject before Save.
+
+**Workflow Permissions.** What GITHUB_TOKEN may do in every job, scope by scope.
 
 ### Every place in the tree
 
@@ -2542,7 +2578,7 @@ Control coverage: 384 audited sites (384 helped).
 
 **Watches.** Watches: tell me when something happens. Each row is a rule: a run finishes on a repository or branch, a review arrives on a pull request, a new release, a new comment. They are checked on the notification check's interval in Workbench Options while this window is open, and each row says when it was last checked. Ctrl+N adds one, Enter edits, Delete removes. Watches never mark notifications read.
 
-**Across Repositories.** Across Repositories: the Repository Set in use, and under it its named sets, one kind of thing from every repository in the set, each name across the set, and the Fleet. Ctrl+N here edits the set's repositories.
+**Across Repositories.** Across Repositories: the Repository Set in use, and under it its named sets, one kind of thing from every repository in the set, each name across the set grouped as Planning, Code, Actions and Settings, and the Fleet. Ctrl+N here edits the set's repositories.
 
 **Repository Sets.** Repository Sets: your named lists of repositories, each chosen from a checklist, made by a filter such as org:name topic:x, or every repository you can reach. Enter uses one; Ctrl+N makes one; Delete forgets one after asking. They stay on this computer.
 
@@ -2562,16 +2598,6 @@ Control coverage: 384 audited sites (384 helped).
 
 **Security Alerts.** Security alerts from every repository in the set you may read them in.
 
-**Labels by Name.** Labels by Name: each label name across the set, where its colour and description differ and where it is missing. Make the copies the same, add it where missing, rename, merge or delete it everywhere, each with a preview and a result per repository.
-
-**Milestones by Name.** Milestones by Name: each milestone title across the set, its due dates, descriptions and progress. Make them the same, close them everywhere, move their open work to another milestone or add the missing ones, each with a preview and a result per repository.
-
-**Topics by Name.** Topics by Name: each topic across the set and the repositories that lack it. Add it to the missing or remove it everywhere, with a preview and a result per repository; each repository's other topics are kept.
-
-**Rules and Branch Protection.** Rules and Branch Protection: each ruleset by name, and each default branch's protection, compared across the set. Make them the same as the winner, add a ruleset where it is missing, or promote one to an organization ruleset; each needs admin access and shows a preview first.
-
-**Fleet.** Fleet: one line per repository in the set: the exact revision of its default branch, checks, open pull requests, latest release and alerts, and when it was read. A repository that could not be read keeps its line, with the reason.
-
 **Help and Learning.** Help and Learning: the guide, the GitHub words, the keys, what changed, and tasks in plain words that take you to the place.
 
 **Do Something.** Do Something: tasks in plain words. Enter reads one; Take Me There, on its context menu, goes to the place it is about.
@@ -2589,6 +2615,40 @@ Control coverage: 384 audited sites (384 helped).
 **Tips.** Tips: QUILLBert's tips, one short thing worth trying each. They wait here and are never pushed at you.
 
 **Ask a Person.** Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email.
+
+**Planning by Name.** Planning by Name: labels, milestones and topics, each by name across the set.
+
+**Labels by Name.** Labels by Name: each label name across the set, where its colour and description differ and where it is missing. Make the copies the same, add it where missing, rename, merge or delete it everywhere, each with a preview and a result per repository.
+
+**Milestones by Name.** Milestones by Name: each milestone title across the set, its due dates, descriptions and progress. Make them the same, close them everywhere, move their open work to another milestone or add the missing ones, each with a preview and a result per repository.
+
+**Topics by Name.** Topics by Name: each topic across the set and the repositories that lack it. Add it to the missing or remove it everywhere, with a preview and a result per repository; each repository's other topics are kept.
+
+**Code by Name.** Code by Name: tags, branches, and rules and branch protection, each by name across the set.
+
+**Tags by Name.** Tags by Name: each tag across the set and the commit it is on in each repository. Release Train makes it, or it and a release, where it is missing, and never moves an existing tag; Delete Everywhere keeps a tag a release is built on.
+
+**Branches by Name.** Branches by Name: each branch across the set, where it is the default and where it is protected. Rename Everywhere uses GitHub's rename; its preview says where the default changes, where protection moves and how many open pull requests are retargeted.
+
+**Rules and Branch Protection.** Rules and Branch Protection: each ruleset by name, and each default branch's protection, compared across the set. Make them the same as the winner, add a ruleset where it is missing, or promote one to an organization ruleset; each needs admin access and shows a preview first.
+
+**Actions by Name.** Actions by Name: environments, secrets and variables, each by name across the set. Reading them needs admin access in each repository.
+
+**Environments by Name.** Environments by Name: wait timer, reviewers, self-review and which branches may deploy, compared across the set. Make them the same as the winner, or delete one everywhere. GitHub has no organization environments.
+
+**Secrets by Name.** Secrets by Name: each Actions secret across the set, by name only, because GitHub never shows a secret's value. Set Secret Everywhere takes one new value, typed once and sealed for each repository; Promote to Organization makes one organization secret for those repositories.
+
+**Variables by Name.** Variables by Name: each Actions variable and its values across the set. Make them the same, add the missing, delete everywhere, or promote to one organization variable for those repositories.
+
+**Settings by Name.** Settings by Name: webhooks, deploy keys and autolinks, each by name across the set. Reading them needs admin access in each repository.
+
+**Webhooks by Name.** Webhooks by Name: each webhook by its address, with its events, on or off and content type. Make them the same, add the missing, turn them on or off, delete, or promote to one organization webhook, which GitHub sends for every repository in the organization. A webhook's secret is never readable.
+
+**Deploy Keys by Name.** Deploy Keys by Name: each deploy key by title, with its fingerprint and access. Delete Everywhere removes it; GitHub accepts a deploy key in one repository only, so one cannot be added to more.
+
+**Autolinks by Name.** Autolinks by Name: each autolink by its prefix, with its address. Add the missing or delete everywhere; GitHub cannot change an autolink in place.
+
+**Fleet.** Fleet: one line per repository in the set: the exact revision of its default branch, checks, open pull requests, latest release and alerts, and when it was read. A repository that could not be read keeps its line, with the reason.
 
 **People and Organizations.** Search People and Organizations: accounts whose name or login matches the filter box, such as jeff or type:org location:Tucson. Enter opens one.
 
@@ -3304,6 +3364,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Dependency Review.** What this pull request changes in the dependencies: each one added or removed, its licence, and its known vulnerabilities.
 
+**Dependabot Commands.** On a Dependabot pull request: rebase, recreate, merge, ignore a version, and more.
+
 **Open in github.dev.** GitHub's free web editor, at exactly this; nothing is created.
 
 **Draft Description with AI.** A description drafted by AI from the changed files; opens as a draft.
@@ -3349,6 +3411,8 @@ Control coverage: 384 audited sites (384 helped).
 **Run Workflow on Branch.** Start it on a branch.
 
 **Turn Workflow On or Off.** Turn it off so nothing starts it, or back on.
+
+**Edit Workflow.** Its triggers, jobs, steps, inputs and permissions as forms; saving asks first.
 
 **Assets.** The release's files and their download counts.
 
@@ -3560,6 +3624,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **Open in Editor.** Open the file in the editor, to read or edit.
 
+**Who Owns This?.** Its code owners, from CODEOWNERS.
+
 **Find Issues in Milestone.** Its issues and pull requests.
 
 **Delete Milestone.** Its issues stay, without it.
@@ -3766,7 +3832,7 @@ Control coverage: 384 audited sites (384 helped).
 
 **Find Uses.** Search every issue and pull request with it, across the set.
 
-**Rename Everywhere.** Rename the label in every repository; a clash is shown, not merged.
+**Rename Everywhere.** Rename the label or branch in every repository; a clash is shown, not merged, and a branch's preview says what follows from GitHub's rename.
 
 **Merge Into.** Move every item to another label, then delete this one, after the preview.
 
@@ -3774,9 +3840,15 @@ Control coverage: 384 audited sites (384 helped).
 
 **Move Open Work To.** Move each repository's open items to another milestone of its own, after the preview.
 
-**Promote to Organization.** One organization ruleset for the set's repositories in that organization, then their own copies deleted, after the preview.
+**Promote to Organization.** One organization ruleset, secret, variable or webhook for the set's repositories in that organization, then their own copies deleted, after the preview.
 
-**Delete Everywhere.** Delete the label, or remove the topic, in every repository, after the preview.
+**Release Train.** Make this tag, or the tag and a release, in the repositories you choose; one that has the tag is skipped and its tag never moved.
+
+**Set Secret Everywhere.** Type one new value once; it is sealed for each repository you choose and set there.
+
+**Turn On or Off Everywhere.** Turn the webhook on or off in every repository that has it, after the preview.
+
+**Delete Everywhere.** Delete it, or remove the topic, in every repository that has it, after the preview.
 
 **Open Repository.** Select the repository's node in the tree.
 
@@ -3956,6 +4028,13 @@ Control coverage: 384 audited sites (384 helped).
 - `self._refresh_btn`: Load the list again from GitHub.
 - `self._browser_btn`: Open this on GitHub in your browser.
 - `cancel_button`: Close without changing anything. Escape does the same.
+#### FieldsDialog (`quill/ui/github_authoring_form.py`)
+
+- `ok`: Keep what is in this form.
+- `cancel`: Close the form without changing anything.
+#### ItemsDialog (`quill/ui/github_authoring_form.py`)
+
+- `cancel`: Close without changing anything.
 #### CloneRepositoryDialog (`quill/ui/github_clone.py`)
 
 - `self._repo`: The repository to copy to this computer: owner/name, such as octocat/hello-world, or its address from GitHub's Code button.
@@ -3989,6 +4068,21 @@ Control coverage: 384 audited sites (384 helped).
 - `self._browser_btn`: Open this on GitHub in your browser.
 - `self._pull_btn`: Open the pull request already open between these two, in your browser. Greyed when there is none.
 - `close_btn`: Close this window. Escape does the same.
+#### ConfigCompareDialog (`quill/ui/github_config_compare_dialog.py`)
+
+- `self.diff`: A unified diff: lines starting with + come from the source, lines starting with - are what this repository has now.
+- `ok`: Ask, then open one pull request with the checked files.
+- `cancel`: Close without changing anything.
+- `box`: Checked files go into one pull request. Its differences show below while it has focus.
+#### DependabotDialog (`quill/ui/github_config_sheets_dialog.py`)
+
+- `self.checks`: Each reason Dependabot would refuse this file, or that it is fine.
+#### CodeownersDialog (`quill/ui/github_config_sheets_dialog.py`)
+
+- `self.table`: Each rule: its line, the path pattern, and its owners. A later rule wins over an earlier one for the same path. Enter edits the selected rule.
+- `look`: Say which rule owns the path above, and its owners.
+- `self.findings`: Rules GitHub would skip by their shape, the problems GitHub reports for the file on the default branch, and what Check Owners found.
+- `check`: Ask GitHub whether every owner exists and can write to this repository. GitHub skips one that cannot, without saying so.
 #### GitHubConsentDialog (`quill/ui/github_dialogs.py`)
 
 - `ok_btn`: Agree and go on. QUILL then talks to GitHub for you.
@@ -4391,11 +4485,6 @@ Control coverage: 384 audited sites (384 helped).
 #### ChooserDialog (`quill/ui/github_template_sheets_dialog.py`)
 
 - `self.blank`: Whether people may open an issue without choosing a template.
-#### CodeownersDialog (`quill/ui/github_template_sheets_dialog.py`)
-
-- `look`: Say which rule owns the path above, and its owners.
-- `check`: Ask GitHub whether every owner exists and can write to this repository. GitHub skips one that cannot, without saying so.
-- `self.findings`: One line for each owner: whether it exists and can write, what to fix if not, and any that could not be checked.
 #### GitHubTimelineDialog (`quill/ui/github_timeline_dialog.py`)
 
 - `self._text`: One line per event with its date and who did it, newest last. The last line says whether this is the whole history.
@@ -4424,6 +4513,10 @@ Control coverage: 384 audited sites (384 helped).
 - `copy`: Copy every line as text. Ctrl+C does the same.
 - `close`: Close the results.
 - `again`: Run the failed items again. F8 does the same.
+#### WorkflowEditorDialog (`quill/ui/github_workflow_editor_dialog.py`)
+
+- `self.pull`: Commit to a new branch and open a pull request, so the change is reviewed first. Always on when the default branch is protected.
+- `self.permissions`: What GITHUB_TOKEN may do in every job, unless a job sets its own.
 #### WorkflowJobFollowMixin (`quill/ui/github_workflow_job_follow.py`)
 
 - `self._follow_box`: While checked, QUILL reads the selected job again every few seconds and says each step as it starts and finishes, and the job's end. Alt+8 says how far along it is at any time.
