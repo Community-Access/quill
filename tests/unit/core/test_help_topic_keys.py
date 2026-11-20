@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import re
 
+from quill.core.github.workbench_window_menu import WORKBENCH_KEYS
 from quill.core.help.renderer import load_topics
 from quill.core.keymap import DEFAULT_KEYMAP
 from quill.core.keymap_format import format_binding_for_display
@@ -47,12 +48,15 @@ _CHORD = re.compile(
 
 def test_every_chord_a_topic_names_is_bound() -> None:
     bound = {format_binding_for_display(v) for v in DEFAULT_KEYMAP.values() if v}
+    # A GitHub topic may teach a key of the Workbench window, which has its own table.
+    workbench = {format_binding_for_display(v) for v in WORKBENCH_KEYS.values() if v}
     unbound = []
     for topic in load_topics().values():
+        here = bound | workbench if topic.id.startswith("github.") else bound
         for text in [topic.body, *topic.keystrokes]:
             for match in _CHORD.finditer(text):
                 chord = match.group(1)
-                if chord in bound or _LOCAL.match(chord):
+                if chord in here or _LOCAL.match(chord):
                     continue
                 # "Ctrl+Alt+1..6", "Ctrl+Alt+Shift+1..9": the first of a family.
                 if text[match.end() : match.end() + 2] == "..":
