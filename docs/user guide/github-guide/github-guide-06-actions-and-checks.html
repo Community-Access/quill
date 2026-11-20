@@ -408,6 +408,11 @@ it will start shortly.</li>
 <strong>Approvals</strong>, below.</li>
 <li><strong>Combined Check Status</strong>, below.</li>
 </ul>
+<p>When GitHub refuses an Actions request, QUILL says why in words. It
+might need write access to Actions, or a log or artifact may have gone
+after the repository’s retention period. This applies to turning a
+workflow on or off, starting or re-running it, reading a job’s log and
+downloading an artifact.</p>
 <h2 id="combined-check-status">Combined check status</h2>
 <p><strong>Combined Check Status</strong> reads every check on the run’s
 commit and says them in one sentence: “Commit 1a2b3c4: 3 of 4 checks
@@ -470,11 +475,6 @@ first, “on”, “turned off” or “turned off by GitHub after 60 days witho
 activity”, and asks before changing it. You hear “Turned on” and its
 name, or “Turned off”. The workflow’s Properties sheet
 (<code>Alt+Enter</code>) has the same switch as its Enabled field.</p>
-<p>When GitHub refuses an Actions request, QUILL says why in words. It
-might need write access to Actions, or a log or artifact may have gone
-after the repository’s retention period. This applies to turning a
-workflow on or off, starting or re-running it, reading a job’s log and
-downloading an artifact.</p>
 <h3 id="editing-a-workflow">Editing a workflow</h3>
 <p><strong>Edit Workflow…</strong> on a workflow’s context menu opens
 the workflow file as a form you read from top to bottom instead of YAML.

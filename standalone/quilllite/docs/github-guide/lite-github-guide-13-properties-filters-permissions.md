@@ -63,6 +63,12 @@ who can change that. `F1` on the field says the same.
   request merges into now, then selects it. "(none)" clears an issue type,
   but a pull request always merges into some branch, so choosing "(none)"
   there leaves it as it was and QUILL says so.
+- An issue's **Issue Fields** page edits its organization's issue fields,
+  each with its own kind of control: a date, a number, a single choice or
+  text. Saving sets only the fields you changed and reads the issue again to
+  check GitHub kept them; emptying a field clears it. A field with several
+  choices, or of a kind QUILL does not know, stays read only. Without triage
+  access the page says why each field is locked.
 - **OK** saves and closes, and Enter on a check box, a list or a one-line
   box is OK. **Apply**, or `Ctrl+S`, saves and keeps the sheet open, and
   focus comes back to the check box or field you were on. `Ctrl+Enter` is
@@ -123,7 +129,7 @@ too, each saying its outcome in one sentence:
   or a commit: all activity, or only when you take part or are mentioned.
 - **Block or Unblock...** on a person.
 - **Block from Organization...** on an organization (it asks whose account)
-  and on a member in its Members list; its Blocked Users list unblocks.
+  and on a member in its Members list; its Blocked People list unblocks.
   **Leave Organization...** asks first. **Your Invitation** says whether the
   organization has invited you: Accept Membership joins, and since GitHub's
   API cannot decline an organization's invitation, it gives the page where
@@ -290,14 +296,13 @@ A name takes `*` as a pattern (`name:release-*`). A minus in front leaves
 those out (`-conclusion:success`). Numbers and dates take `>`, `<`, `>=`, `<=`
 and a range with two dots (`ahead:>=3`, `created:2026-01..2026-06`); a date
 can be just a year or a month. `no:repo` keeps the rows with none. The Items
-cell of the status bar says how many the filter kept of how many loaded, and
-names any word this list cannot filter on, so nothing is quietly ignored.
+cell of the status bar says how many the filter kept of how many loaded, such
+as "Filtered here: 2 of 3 loaded. Load All to be sure.", and names any word
+this list cannot filter on, so nothing is quietly ignored.
 
-The Search node's lists send the whole box to GitHub instead, so there
+The Search place's lists send the whole box to GitHub instead, so there
 GitHub's own search terms work: `language:` and `stars:` for repositories,
-`committer:` for commits, `location:` for people. Appendix C of the GitHub
-Workbench requirements lists every object's filters, and says which are not
-built yet.
+`committer:` for commits, `location:` for people.
 
 ### More rows
 

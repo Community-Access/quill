@@ -3336,6 +3336,10 @@ Control coverage: 408 audited sites (408 helped).
 
 **Unlink a Pull Request.** Take a pull request off the ones that close this issue.
 
+**Subscribe or Unsubscribe.** Hear of all its activity, or only when you take part or are mentioned.
+
+**React to a Comment.** Add a reaction to one of its comments, or take back one you gave.
+
 **Related.** The issues, pull requests and discussions linked to it, and how each is linked.
 
 **Start Pull Request for This Issue.** A linked branch and a draft pull request that closes the issue; asks first.
@@ -3480,7 +3484,7 @@ Control coverage: 408 audited sites (408 helped).
 
 **Reactions on a Commit Comment.** Who reacted to a comment on this commit, and how.
 
-**React to a Commit Comment.** Add a reaction to a comment on this commit.
+**React to a Commit Comment.** Add a reaction to a comment on this commit. GitHub's API reacts to a commit's comments, never to the commit itself.
 
 **Remove My Reaction from a Commit Comment.** Take back a reaction you gave a comment on this commit.
 
@@ -3517,6 +3521,8 @@ Control coverage: 408 audited sites (408 helped).
 **Pin.** Keep it under Repositories > Pinned.
 
 **Star Lists.** Choose which of your star lists it is on.
+
+**Sponsor the Owner.** Open the owner's Sponsor tiers.
 
 **Rename or Delete Star List.** In Star Lists: rename the list this row is on, change who sees it, or delete it.
 
@@ -3586,11 +3592,15 @@ Control coverage: 408 audited sites (408 helped).
 
 **Copilot Review Settings.** Whether Copilot reviews pull requests here on its own, and how.
 
+**Fork.** Make your own copy of this repository, in your account or an organization's.
+
 **Prompt Files.** A repository's GitHub Models prompt files, each read as model, messages and tests.
 
 **Open.** Select the person's node in the tree.
 
 **Follow or Unfollow.** Follow them, or stop.
+
+**Block or Unblock.** Block them from following you and from your repositories, or lift the block.
 
 **Find Issues with Label.** Issues and pull requests with it.
 
@@ -3629,6 +3639,8 @@ Control coverage: 408 audited sites (408 helped).
 **Edit a Comment.** Change a comment you may edit.
 
 **Delete a Comment.** Delete a comment you may delete.
+
+**React to a Comment.** Add a reaction to one of its comments or replies, or take back one you gave.
 
 **Create Issue from Discussion.** An issue that links back to the discussion; asks first.
 
@@ -3785,6 +3797,12 @@ Control coverage: 408 audited sites (408 helped).
 **Copilot Agent Access.** Which of the organization's repositories Copilot's cloud agent may work in.
 
 **Copilot Content Exclusions.** Files Copilot is kept away from in the organization's repositories.
+
+**Block from Organization.** Stop an account from taking part in this organization's repositories.
+
+**Leave Organization.** Stop being a member of this organization.
+
+**Your Invitation.** Whether this organization has invited you, and how to answer.
 
 **Open.** Open the settings dialog for this; it asks before saving.
 
@@ -4003,6 +4021,8 @@ Control coverage: 408 audited sites (408 helped).
 **Remove a Runner from This Group.** Take a runner out of this group; it goes back to the Default group.
 
 **Teams It Adds To.** The teams this invitation puts the person in when they accept.
+
+**Block from Organization.** Stop this member's account from taking part in the organization's repositories.
 
 **Edit Wiki Pages.** Copy the wiki here or bring the copy up to date, list its pages, open one.
 

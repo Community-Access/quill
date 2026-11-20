@@ -480,7 +480,16 @@ hear either that it can merge, "#42 can merge into main, as of commit
 - A required check failed, or has not finished, named: "Required checks test
   and lint failed. Re-run or fix it." A check that failed but is not
   required is mentioned as not required, and does not stop the merge.
+- A rule on the base branch blocks it for another reason: the rule is
+  named, as below.
 
+Each blocking rule is said by name, so you know whom to ask or what to fix.
+QUILL reads the rules that apply to the base branch (its rulesets, and its
+branch protection when you can read it) and says:
+
+- which required check failed, has not finished, or has not reported on
+  the commit, and which ruleset wants it: "Check build, which the ruleset
+  "Protect main" requires, failed. Re-run or fix it."
 - how many approving reviews a rule wants, and how many there are;
 - when a rule wants a code owner's review, which line of the CODEOWNERS file
   is waiting, with its pattern, who could approve, and a changed file it
@@ -489,9 +498,27 @@ hear either that it can merge, "#42 can merge into main, as of commit
   approved when one of its members has;
 - which rule makes the branch merge only through its merge queue.
 
+What QUILL could not read, such as branch protection without admin access,
+is said at the end, so a missing permission never sounds like "no rule".
+GitHub's answer is the one that counts: naming the rules never turns "can
+merge" into "cannot". **Merge Selected...** names the rules the same way in
+its preview, for each pull request that will not merge.
+
 It also says when auto-merge is on, and its place when the pull request is
 in the merge queue. The answer is always for one commit, which it names, so
 you know a push after you asked may change it.
+
+### Watch Readiness
+
+**Watch Readiness**, on an open pull request's context menu in the
+Workbench, adds a watch (under Watches, `Ctrl+7`) that tells you once when
+the pull request becomes able to merge, and once when it stops, naming the
+rule that blocks it then. It is checked with your other watches, on the same
+interval, and said the same way. The first check only learns where it
+stands, and while GitHub is still working out whether it can merge, nothing
+is said. You can also add one from Watches with **Add Watch...**, choosing "A
+pull request becomes able to merge, or stops being able to". The watch is
+kept on this computer only; nothing is changed on GitHub.
 
 ### Auto-merge and the merge queue
 
@@ -639,15 +666,22 @@ does the rest.
 
 A few more commands on a pull request's row:
 
-- **Draft Description with AI...**, **Draft Reviewer Brief with AI...** and,
-  on selected issues and pull requests, **Draft Release Notes with AI...** are
-  QUILL's: they use QUILL's AI connection. In QUILL Lite they are greyed, and
-  `Shift+F1` says why. **Draft Release Notes...** on a release drafts notes
-  without AI in both.
+- **Draft Description with AI...** and **Draft Reviewer Brief with AI...**
+  send the pull request's changed files and their patches, at its head
+  commit, to the AI connection you chose in QUILL, and open the draft in the
+  editor. The draft is headed as one, lists its sources (each file at that
+  commit, and the commit itself), and says when part of the change was left
+  out because it was too long. It never claims tests ran unless the evidence
+  says so. QUILL posts nothing: paste what you keep into the description or
+  a comment.
+- **Draft Release Notes with AI...** on selected issues and pull requests
+  drafts notes from those rows only. **Draft Release Notes...** on a release
+  drafts them without AI.
+- Without an AI connection these rows are greyed, and `Shift+F1` says why.
 - **Open in github.dev** opens the pull request in GitHub's free web editor,
   in your browser; nothing is created and nothing costs money.
 - **Related...** lists the issues it closes, what mentioned it, and what its
-  text links to (chapter 8).
+  text links to (Chapter 8).
 
 ## Writing a new pull request
 
@@ -658,6 +692,10 @@ Create as a draft check box. The title and description start from the
 commits you are proposing, a branch that already has an open pull request is
 taken to that one instead of making a second, and Cancel keeps your text for
 the session. [Chapter 12](lite-github-guide-12-the-workbench.html) walks through it.
+
+On an issue, **Start Pull Request for This Issue...** makes a branch linked
+to the issue and a draft pull request that closes it, in one step. Chapter 4
+has it.
 
 ## A walk-through: reviewing and merging the practice pull request
 

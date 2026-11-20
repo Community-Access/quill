@@ -308,6 +308,13 @@ Branch… makes a branch from the one the pull request merges into now,
 then selects it. “(none)” clears an issue type, but a pull request
 always merges into some branch, so choosing “(none)” there leaves it as
 it was and QUILL says so.</li>
+<li>An issue’s <strong>Issue Fields</strong> page edits its
+organization’s issue fields, each with its own kind of control: a date,
+a number, a single choice or text. Saving sets only the fields you
+changed and reads the issue again to check GitHub kept them; emptying a
+field clears it. A field with several choices, or of a kind QUILL does
+not know, stays read only. Without triage access the page says why each
+field is locked.</li>
 <li><strong>OK</strong> saves and closes, and Enter on a check box, a
 list or a one-line box is OK. <strong>Apply</strong>, or
 <code>Ctrl+S</code>, saves and keeps the sheet open, and focus comes
@@ -377,7 +384,7 @@ part or are mentioned.</li>
 <li><strong>Block or Unblock…</strong> on a person.</li>
 <li><strong>Block from Organization…</strong> on an organization (it
 asks whose account) and on a member in its Members list; its Blocked
-Users list unblocks. <strong>Leave Organization…</strong> asks first.
+People list unblocks. <strong>Leave Organization…</strong> asks first.
 <strong>Your Invitation</strong> says whether the organization has
 invited you: Accept Membership joins, and since GitHub’s API cannot
 decline an organization’s invitation, it gives the page where GitHub
@@ -559,15 +566,13 @@ notifications, packages and the rest): <code>name:</code>,
 <code>&lt;=</code> and a range with two dots (<code>ahead:&gt;=3</code>,
 <code>created:2026-01..2026-06</code>); a date can be just a year or a
 month. <code>no:repo</code> keeps the rows with none. The Items cell of
-the status bar says how many the filter kept of how many loaded, and
-names any word this list cannot filter on, so nothing is quietly
-ignored.</p>
-<p>The Search node’s lists send the whole box to GitHub instead, so
+the status bar says how many the filter kept of how many loaded, such as
+“Filtered here: 2 of 3 loaded. Load All to be sure.”, and names any word
+this list cannot filter on, so nothing is quietly ignored.</p>
+<p>The Search place’s lists send the whole box to GitHub instead, so
 there GitHub’s own search terms work: <code>language:</code> and
 <code>stars:</code> for repositories, <code>committer:</code> for
-commits, <code>location:</code> for people. Appendix C of the GitHub
-Workbench requirements lists every object’s filters, and says which are
-not built yet.</p>
+commits, <code>location:</code> for people.</p>
 <h3 id="more-rows">More rows</h3>
 <p>Every list starts with one page: 30 issues or pull requests, 50 rows
 of anything else. <strong>Load More</strong>

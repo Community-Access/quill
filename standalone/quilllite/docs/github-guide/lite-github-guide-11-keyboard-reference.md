@@ -75,6 +75,7 @@ workbench mode is off; in QUILL Lite its rows are in the GitHub menu itself.
 | `N` | New Issue from Selection... |
 | `F` | Issues Mentioning This File |
 | `T` | Comment on This Line in the Open Pull Request... |
+| `R` | Open the GitHub Reference at the Cursor (or `Alt+Enter` with the cursor on a reference) |
 
 ### Clone Repository
 
@@ -213,6 +214,8 @@ have letters. Chapter 13 covers them.
 | `F11` | Say or Type a Command, in this window |
 | `Ctrl+Alt+Shift+F1` | What Can I Say Here: what `F11` can do in this window |
 | `Ctrl+Alt+K` | Key Describer: keys say what they do instead of doing it, until `Escape` |
+| `Alt+Shift+T` | Take the Tour: a spoken tour of the window, a pane at a time |
+| `Alt+Shift+A` | Ask How: a question in your own words, answered from this help by the AI you chose |
 
 ### New Pull Request
 

@@ -15,7 +15,7 @@
 For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claude.log`. The commands and gates are in `CLAUDE.md`.
 
 - **Screen-reader testing** is done by Jeff's testers and is not tracked here.
-- **Where it stands (2026-11-20):** merged since 2026-11-19: #1943 to #1962, #1964 to #1966, #1968, #1969, #1972, #1976, #1977 and #1979 to #1983. Built and waiting to merge: #1963, #1967, #1970, #1971, #1973, #1974 and #1975. Rule (Jeff): nothing Enterprise Cloud only; organization-only checks run in a test organization.
+- **Where it stands (2026-11-20):** merged since 2026-11-19: #1943 to #1962, #1964 to #1966, #1968, #1969, #1972, #1976, #1977 and #1979 to #1983. Merged in the 2026-11-20 merge train: #1963, #1967, #1970, #1971, #1973, #1974 and #1975. Rule (Jeff): nothing Enterprise Cloud only; organization-only checks run in a test organization.
 - **Next (Jeff, 2026-11-20):** the known defects in Part 0 come first, worst harm first. Screen-reader testing is a given on everything. A tester's defect report always comes first.
 - **Live testing runs alongside.** On 2026-11-19 Jeff said live testing waits until all code is done. On 2026-11-20 he changed that: the known defects are fixed while live testing goes on, and documentation and live testing run side by side once the code is in. The WordPress live run (#1976) followed that. The test site is reached over SSH (`ssh lp.csedesigns.com`, wp-cli through `~/app/wordpress-test/wpcli.sh`, which needs more PHP memory). Gravity Forms 3.2.3.1 is licensed there with its REST API v2 on.
 - **How to work here:**
@@ -61,18 +61,6 @@ Each is done only with evidence: a test or a live run.
 
 #### Features and verification
 
-Built and waiting to merge (delete each row when its pull request merges):
-
-- [ ] Appendix A/B "nothing dropped" mapping and Appendix C object/sheet/filter mapping (#1971). It found that 128 of 290 Appendix C filter words are not built yet, and that Choose Categories, Save Current Filter and Find Possible Duplicates have no Workbench home.
-- [ ] Edit issue fields directly on the Properties sheet's Issue Fields page (#1974).
-- [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle (#1967).
-- [ ] Wiki, cross-linked discussion → issue → pull request workflows, Copilot seats and settings, and GitHub Models prompt files (#1973). This is most of GX12.
-- [ ] Repository General/features, complete creation/template options, transfer, Pages and packages (#1963); watch levels, stars and star lists (#1974).
-- [ ] GX09: the rule that blocks a merge, by name, and Watch Readiness (#1970).
-- [ ] GX10: a downloaded release file checked against its digest (#1970). Verifying attestation signatures inside QUILL is in the Backlog.
-
-Not started:
-
 - [ ] First-class by-name collections for the PRD 22.11 kinds still "not yet" in `quill/core/github/across_scope_matrix.py`: workflows, templates, Dependabot and CODEOWNERS, people, settings and packages.
 - [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance.
 
@@ -82,11 +70,9 @@ Not started:
 
 #### Requirement audit: what is still open
 
-The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. On main (2026-11-20) it counts 86 of 100 GH-R ids met, 8 partly met and 6 not met; every Must is at least partly met. The six not met are all in #1975.
+The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. After the 2026-11-20 merge train it counts 92 of 100 GH-R ids met and 8 partly met; none is not met.
 
-- [ ] **The rest of PRD 16.7** (#1974): Subscribe and Block, star lists, Fork and Pin and Favorite on the You page, sponsoring a repository's owner, blocking from an organization, leaving an organization and answering an invitation, reactions on comments, and commits.
 - [ ] **GH-R-150 and 151:** more kinds under Across Repositories (see the by-name collections row above).
-- [ ] **Shoulds and Mays in #1975:** Alt+Enter on a GitHub reference in a document (036), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116) and Ask How (118).
 - [ ] **GH-R-105:** the branch rule tutorial, the eleventh lesson of D8. The ruleset and branch protection editing it needs is in (#1961). Not started.
 
 ### 1.5 Waiting on Jeff and the testers

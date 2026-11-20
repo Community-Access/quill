@@ -725,32 +725,56 @@ colours and icons. You hear either that it can merge, “#42 can merge
 into main, as of commit 3f9a2c1.”, or each reason it cannot, each with
 what to do:</p>
 <ul>
-<li><p>It is a draft: mark it ready for review first.</p></li>
-<li><p>It conflicts with its base: <strong>Resolve Conflicts in a
-Worktree…</strong>, in QUILL, takes the conflicts to your
-computer.</p></li>
-<li><p>It is behind its base, and the branch’s rules want it up to date:
-update the branch.</p></li>
-<li><p>A reviewer requested changes, or it needs an approving
-review.</p></li>
-<li><p>A required check failed, or has not finished, named: “Required
+<li>It is a draft: mark it ready for review first.</li>
+<li>It conflicts with its base: <strong>Resolve Conflicts in a
+Worktree…</strong>, in QUILL, takes the conflicts to your computer.</li>
+<li>It is behind its base, and the branch’s rules want it up to date:
+update the branch.</li>
+<li>A reviewer requested changes, or it needs an approving review.</li>
+<li>A required check failed, or has not finished, named: “Required
 checks test and lint failed. Re-run or fix it.” A check that failed but
 is not required is mentioned as not required, and does not stop the
-merge.</p></li>
-<li><p>how many approving reviews a rule wants, and how many there
-are;</p></li>
-<li><p>when a rule wants a code owner’s review, which line of the
+merge.</li>
+<li>A rule on the base branch blocks it for another reason: the rule is
+named, as below.</li>
+</ul>
+<p>Each blocking rule is said by name, so you know whom to ask or what
+to fix. QUILL reads the rules that apply to the base branch (its
+rulesets, and its branch protection when you can read it) and says:</p>
+<ul>
+<li>which required check failed, has not finished, or has not reported
+on the commit, and which ruleset wants it: “Check build, which the
+ruleset “Protect main” requires, failed. Re-run or fix it.”</li>
+<li>how many approving reviews a rule wants, and how many there
+are;</li>
+<li>when a rule wants a code owner’s review, which line of the
 CODEOWNERS file is waiting, with its pattern, who could approve, and a
 changed file it covers: “none from @docs-team has approved:
 .github/CODEOWNERS line 3, /docs/, owns 2 changed files, such as
 docs/guide.md.” A team counts as approved when one of its members
-has;</p></li>
-<li><p>which rule makes the branch merge only through its merge
-queue.</p></li>
+has;</li>
+<li>which rule makes the branch merge only through its merge queue.</li>
 </ul>
+<p>What QUILL could not read, such as branch protection without admin
+access, is said at the end, so a missing permission never sounds like
+“no rule”. GitHub’s answer is the one that counts: naming the rules
+never turns “can merge” into “cannot”. <strong>Merge Selected…</strong>
+names the rules the same way in its preview, for each pull request that
+will not merge.</p>
 <p>It also says when auto-merge is on, and its place when the pull
 request is in the merge queue. The answer is always for one commit,
 which it names, so you know a push after you asked may change it.</p>
+<h3 id="watch-readiness">Watch Readiness</h3>
+<p><strong>Watch Readiness</strong>, on an open pull request’s context
+menu in the Workbench, adds a watch (under Watches, <code>Ctrl+7</code>)
+that tells you once when the pull request becomes able to merge, and
+once when it stops, naming the rule that blocks it then. It is checked
+with your other watches, on the same interval, and said the same way.
+The first check only learns where it stands, and while GitHub is still
+working out whether it can merge, nothing is said. You can also add one
+from Watches with <strong>Add Watch…</strong>, choosing “A pull request
+becomes able to merge, or stops being able to”. The watch is kept on
+this computer only; nothing is changed on GitHub.</p>
 <h3 id="auto-merge-and-the-merge-queue">Auto-merge and the merge
 queue</h3>
 <p>On a pull request’s row in the Workbench,
@@ -897,17 +921,24 @@ posts it as a comment, after asking, and Dependabot does the rest.</p>
 Related</h2>
 <p>A few more commands on a pull request’s row:</p>
 <ul>
-<li><strong>Draft Description with AI…</strong>, <strong>Draft Reviewer
-Brief with AI…</strong> and, on selected issues and pull requests,
-<strong>Draft Release Notes with AI…</strong> are QUILL’s: they use
-QUILL’s AI connection. In QUILL Lite they are greyed, and
-<code>Shift+F1</code> says why. <strong>Draft Release Notes…</strong> on
-a release drafts notes without AI in both.</li>
+<li><strong>Draft Description with AI…</strong> and <strong>Draft
+Reviewer Brief with AI…</strong> send the pull request’s changed files
+and their patches, at its head commit, to the AI connection you chose in
+QUILL, and open the draft in the editor. The draft is headed as one,
+lists its sources (each file at that commit, and the commit itself), and
+says when part of the change was left out because it was too long. It
+never claims tests ran unless the evidence says so. QUILL posts nothing:
+paste what you keep into the description or a comment.</li>
+<li><strong>Draft Release Notes with AI…</strong> on selected issues and
+pull requests drafts notes from those rows only. <strong>Draft Release
+Notes…</strong> on a release drafts them without AI.</li>
+<li>Without an AI connection these rows are greyed, and
+<code>Shift+F1</code> says why.</li>
 <li><strong>Open in github.dev</strong> opens the pull request in
 GitHub’s free web editor, in your browser; nothing is created and
 nothing costs money.</li>
 <li><strong>Related…</strong> lists the issues it closes, what mentioned
-it, and what its text links to (chapter 8).</li>
+it, and what its text links to (Chapter 8).</li>
 </ul>
 <h2 id="writing-a-new-pull-request">Writing a new pull request</h2>
 <p>In a repository’s <strong>Pull Requests</strong>, press
@@ -920,6 +951,9 @@ request is taken to that one instead of making a second, and Cancel
 keeps your text for the session. <a
 href="lite-github-guide-12-the-workbench.html">Chapter 12</a> walks
 through it.</p>
+<p>On an issue, <strong>Start Pull Request for This Issue…</strong>
+makes a branch linked to the issue and a draft pull request that closes
+it, in one step. Chapter 4 has it.</p>
 <h2
 id="a-walk-through-reviewing-and-merging-the-practice-pull-request">A
 walk-through: reviewing and merging the practice pull request</h2>

@@ -3545,6 +3545,7 @@ a door gains something no row maps.
 | Person's packages | Person > Packages | `explore:person_packages` |
 | My codespaces | Repositories > My Codespaces | `explore:my_codespaces` |
 | Repository codespaces | Repository > Code > Codespaces | `explore:repo_codespaces` |
+| Repository packages | Repository > Packages | `explore:repo_packages` |
 | Repository environments | Repository > Settings > Environments | `explore:repo_environments` |
 | Repository overview | Repository > Overview | `explore:repo_overview` |
 | Repository activity | Repository > Activity | `explore:repo_activity` |
@@ -3818,7 +3819,7 @@ Generated from `quill/core/github/appendix_c_rows.py`, the sheet catalogue, the 
 | Secret and variable | `secret`: General; `variable`: General | its resource lists | `name:`, `updated:` | None | visibility: its list's rows do not carry it yet; its Properties sheet shows it |
 | Release | `release`: General, You, Notes, Assets, Discussion | Repository > Releases | `draft:`, `prerelease:`, `created:`, `tag:`, `name:` | None | latest, author: its list's rows do not carry it yet; its Properties sheet shows it |
 | Release asset | `release_asset`: General | None | `name:`, `size:`, `downloads:`, `type:` | None | None |
-| Package | `package`: General, Versions, Access, Repository | Repositories > My Packages, Person > Packages, Organization > Packages | `name:`, `repo:`, `updated:` | None | type, visibility, version tag: its list's rows do not carry it yet; its Properties sheet shows it |
+| Package | `package`: General, Versions, Access, Repository | Repositories > My Packages, Repository > Packages, Person > Packages, Organization > Packages | `name:`, `repo:`, `updated:` | None | type, visibility, version tag: its list's rows do not carry it yet; its Properties sheet shows it |
 | Person | `person`: General, You, Profile, Repositories, Followers, Following, Organizations | People > People I Follow, People > My Followers, Search > People and Organizations, Repository > People > Contributors and People, and 3 more | `name:` | `location:`, `followers:`, `repos:`, `type:` | company, your relationship (following, follows you, blocked): its list's rows do not carry it yet; its Properties sheet shows it |
 | Organization | `organization`: General, You, Members, Teams, Outside Collaborators, Invitations, Roles, Member Privileges, Repositories, Actions, Webhooks, Secrets and Variables, Issue Types, Custom Properties, Token Requests, Audit Log, Actions Rules, Safety | Repositories > Organizations | `name:` | None | members' role, members' two-factor, membership public or private, team: there is no list of these to filter yet |
 | Team | `team`: General, Members, Repositories, Projects, Child Teams, Code Review, Identity Provider, Danger Zone | People > My Teams, Organization > Teams | `name:` | None | privacy, parent, member, repository, role: its list's rows do not carry it yet; its Properties sheet shows it |

@@ -153,7 +153,7 @@ comment on the discussion with the issue's link, or open the issue only.
 Nothing is sent until you answer.
 
 GitHub has no way, in its API, to turn an issue into a discussion or a
-discussion into an issue; its web page does that, through Open on GitHub.
+discussion into an issue; its web page does that, through **Open on GitHub**.
 
 ### What links to what: Related...
 
@@ -217,11 +217,11 @@ three things:
 Cancel at any step and nothing is sent. QUILL reports the dismissal only when
 GitHub sends the alert back in its new state.
 
-An alert's Properties sheet (Alt+Enter) closes it the same way. Each kind
-closes in its own words: a Dependabot or code scanning alert is dismissed,
-a secret is resolved, and the sheet offers only that kind's reasons. A
-choice that does not fit the kind is refused before anything is sent.
-GitHub marks an alert fixed itself, so the sheet does not offer that.
+An alert's Properties sheet (`Alt+Enter`) closes it the same way. Each kind
+closes in its own words: a Dependabot or code scanning alert is dismissed, a
+secret is resolved, and the sheet offers only that kind's reasons. A choice
+that does not fit the kind is refused before anything is sent. GitHub marks
+an alert fixed itself, so the sheet does not offer that.
 
 ### Reopening an alert
 

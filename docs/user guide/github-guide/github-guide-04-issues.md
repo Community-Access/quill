@@ -131,6 +131,16 @@ comments, and Chapter 8 a discussion's.
 up, thumbs down, laugh, hooray, confused, heart, rocket and eyes, checked when
 you have given it. Check or clear one and save.
 
+**React to a Comment...** reacts to one of the issue's comments instead. It
+asks which comment, then which reaction; choosing one you already gave takes
+it back. You hear "Added a heart to ann's comment." or "Took back your heart
+from ann's comment."
+
+**Subscribe or Unsubscribe...** chooses how much you hear about the issue:
+**All activity**, or **Only when you take part or are mentioned**. You hear,
+for example, "Subscribed to #12: you hear of all its activity." The same is
+the **Subscribed** check box on the You page.
+
 ## The timeline
 
 Comments are only part of an issue's story. Labels are added, people are
@@ -383,6 +393,18 @@ their names, and text as text.
   qualifiers for you. A field whose name has a space is not offered there.
   **View > Group By > Type** groups the list by issue type.
 
+- **Properties.** An issue's Properties sheet (`Alt+Enter`) has an **Issue
+  Fields** page after Organize: first how many fields the owner defines and
+  which are not set or set to nothing, then one field each, of its own kind.
+  A date (typed as 2026-12-31), a number, a single choice (a list, with
+  "(none)" to clear it) and text are changed right there; leaving one empty
+  clears it. Saving sends the same request **Issue Fields...** on the row
+  sends, then reads the issue again and says only what GitHub kept. Several
+  choices, and field types QUILL does not know yet, stay read only. Select
+  several issues and press `Alt+Enter` to set a field on all of them: a field
+  whose values differ shows Mixed, and each issue is changed and checked on
+  its own, with a result for each. Changing a field needs triage access.
+
 The states never sound alike, so a missing permission never sounds like an
 empty field:
 
@@ -437,12 +459,33 @@ Both read the description again just before saving. If somebody changed it on
 GitHub while you were choosing, nothing is saved and you are told to try
 again, so nobody's edit is lost.
 
+## From an issue to a pull request
+
+**Start Pull Request for This Issue...** on an open issue does the first steps
+of the work at once. It asks for a branch name, starting with the one GitHub
+would suggest (`42-fix-the-parser`), then says what it will do and asks
+first:
+
+1. Make the branch from the default branch, linked to the issue as its
+   Development. A branch of that name that already exists is used as it is.
 2. Add one empty commit, "Start work on #42", when the branch has no commit of
    its own, because GitHub will not open a pull request with nothing to
    compare.
 3. Open a draft pull request whose text begins `Closes #42`, so merging it
    closes the issue. A repository without draft pull requests gets an
    ordinary one, and the sentence afterwards says so.
+
+To work on it, fetch the branch and switch to it, or use Start in Local
+Worktree, below.
+
+**Related...** on an issue lists the pull requests that close it, what
+mentioned it, and what its text links to (Chapter 8).
+
+**Draft Task Breakdown with AI...** sends the issue's title and text to the AI
+connection you chose in QUILL, and opens what comes back in the editor as a
+draft of small, ordered tasks. The draft is headed as one, cites the issue's
+link, and says when part of the text had to be left out. Nothing is posted:
+copy what you keep into a comment or into sub-issues yourself.
 
 ## Relationships: parents, sub-issues and what blocks what
 

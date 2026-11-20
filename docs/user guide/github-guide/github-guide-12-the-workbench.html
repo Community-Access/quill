@@ -1086,6 +1086,11 @@ Status, Review Pending Deployments, Approve Run from a Fork, and Delete
 Run.</li>
 <li><strong>A workflow:</strong> its Runs (Enter), Run Workflow on
 Branch, Turn Workflow On or Off, and Edit Workflow.</li>
+<li><strong>A release:</strong> its Assets (Enter), each with Download,
+Copy Link, Attestations, Properties (to rename a file or change its
+label) and Delete Asset; Edit Release; Draft Release Notes; Upload
+Asset; Release Evidence; and Delete Release. A draft opens on its sheet
+too, and deleting one says that a draft has no tag to delete.</li>
 <li><strong>A branch:</strong> its Commits (Enter), Compare With
 Default, Compare Branches, Merge Into, Download Source, Copy Name, and
 Delete Branch, which asks you to type the branch name.</li>
@@ -1260,6 +1265,12 @@ To.</li>
 Field…, Post Status Update…, Link to Repository…, Unlink from
 Repository…, Template…, Copy Project…, Delete Project…, New View… and
 Items in a View….</li>
+<li><strong>A Project, inside:</strong> Rename a View…, Delete a View…,
+Rename a Field…, Add an Issue Field…, Edit a Draft…, Make a Draft an
+Issue…, Move an Item…, Archive an Item…, Restore an Archived Item…,
+Remove an Item… (asks first), Edit a Status Update…, Delete a Status
+Update…, Delete a Workflow…, Share the Project…, Link a Team… and Unlink
+a Team….</li>
 </ul>
 <h3 id="your-own-account">Your own account</h3>
 <ul>
@@ -1283,6 +1294,16 @@ Merge and Turn Off Agent Merge…. <strong>On your profile:</strong> My
 Agent Tasks and My Automations. These need a Copilot plan with the cloud
 agent, and GitHub calls them a preview: QUILL sends only what GitHub
 documents and reads you GitHub’s own answer.</li>
+<li><strong>Copilot in an organization:</strong> Copilot Plan, Copilot
+Seats, A Member’s Copilot Seat…, Give Copilot Seats…, Take Copilot Seats
+Away…, Give Teams Copilot…, Take Copilot from Teams…, Copilot Usage
+Report, Copilot Agent Access and Copilot Content Exclusions. <strong>On
+a repository:</strong> Copilot Agent Configuration and Copilot Review
+Settings. These are Copilot Business’s, which an organization buys on
+any GitHub plan. Giving or taking a seat changes what the organization
+pays, so you need to own the organization, and each asks first, naming
+the people and the organization. Copilot’s policies are read here and
+changed on GitHub’s site.</li>
 </ul>
 <p>A few of these use parts of GitHub newer than the description QUILL
 was built against (closing references, a Project’s views and issue
@@ -1349,6 +1370,47 @@ already saying where you were and the last thing the Workbench said, for
 you to change and send. The Workbench sends nothing, and no token or
 password is ever in it.</li>
 </ul>
+<p>Once in a while a tip also comes to you at the right moment: the
+third time you do something the long way (arrow through a long list
+without the filter, open Properties on one row after another, press Load
+More again and again), the tip for the short way is added to the end of
+the details pane, once, and is not spoken, so it interrupts nothing.
+<strong>Offer a tip when it would help</strong>, in Workbench Options,
+General, turns those off; they all stay in Tips. Words are explained by
+QUILLBee, QUILLBert’s friend, in one line each. <strong>Plain help,
+without QUILLBert and QUILLBee</strong>, in Workbench Options, General,
+says the same words without the two names.</p>
+<p><code>F1</code> ends with an example from your own work when the
+window knows enough: the repository you are on and the row you have
+selected (“On Community-Access/quill, #42 Crash on start is selected:
+Alt+Enter opens everything about it”), or the account you are signed in
+as. It uses only what the window has already loaded, and sends nothing
+anywhere.</p>
+<p><strong>Help &gt; Take the Tour</strong> (<code>Alt+Shift+T</code>)
+is a spoken tour of the window, a pane at a time: what the pane is, and
+one thing to do there. <code>F6</code> moves on to the next pane and the
+next step, <code>F1</code> says the step again, <code>Shift+F1</code>
+lists the steps, and <code>Escape</code> skips the rest. The tour starts
+by itself the first time you open the Workbench, once, unless
+<strong>Show First time here? help</strong> is off.</p>
+<p><strong>Help &gt; Ask How…</strong> (<code>Alt+Shift+A</code>) takes
+a question in your own words, such as “how do I keep only the issues
+with a word in them?”. The answer is built only from this help (the
+tasks, places, words and options, and every menu row with its key), by
+the AI you chose in the editor’s Choose Your AI. When the help does not
+cover the question it says so, and when nothing in the help comes near
+the question the AI is not asked at all. The answer is shown in a list,
+with a <strong>Do It</strong> row for each command it names; nothing
+runs until you choose a row. Only your question and the help’s own words
+are sent: no repository, token or GitHub content. It is greyed without
+an AI connection, and off in Safe Mode.</p>
+<p>The keys are also on a <strong>key card</strong> you can print or
+emboss, made from the same key table as the window:
+<code>docs/github/key-card.html</code> to print, and
+<code>docs/github/key-card-braille-ready.txt</code>, laid out 40 cells
+by 25 lines a page, for QUILL’s Braille Mode or a braille translator to
+make the BRF. The whole of this guide is also one book,
+<code>github-guide-book.epub</code>, beside these pages.</p>
 <p>The help keys work everywhere in the window:</p>
 <table>
 <thead>
@@ -1510,6 +1572,14 @@ favorites.</li>
 Health Snapshot, and whether the first few visits to a place start with
 a short “First time here?” paragraph.</li>
 </ul>
+<p>Lists also has <strong>Short rows for braille</strong>: each list row
+becomes one short line for a braille display, the number and title
+first, no column names, and short words (<code>cl</code> for closed,
+<code>PR</code> for pull request, <code>3c</code> for three comments,
+<code>9 Nov</code> for a date). Nothing is cut off, and Details still
+says everything. Columns… still chooses what the line holds. General has
+<strong>Offer a tip when it would help</strong> and <strong>Plain help,
+without QUILLBert and QUILLBee</strong>.</p>
 <p>Each account’s Workbench level, Read Only, Organize or Full, is not
 here: it is <strong>Account &gt; Roles and Access &gt; Workbench Level
 for This Account…</strong> (Chapter 13).</p>

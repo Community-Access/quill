@@ -308,6 +308,13 @@ Branch… makes a branch from the one the pull request merges into now,
 then selects it. “(none)” clears an issue type, but a pull request
 always merges into some branch, so choosing “(none)” there leaves it as
 it was and QUILL says so.</li>
+<li>An issue’s <strong>Issue Fields</strong> page edits its
+organization’s issue fields, each with its own kind of control: a date,
+a number, a single choice or text. Saving sets only the fields you
+changed and reads the issue again to check GitHub kept them; emptying a
+field clears it. A field with several choices, or of a kind QUILL does
+not know, stays read only. Without triage access the page says why each
+field is locked.</li>
 <li><strong>OK</strong> saves and closes, and Enter on a check box, a
 list or a one-line box is OK. <strong>Apply</strong>, or
 <code>Ctrl+S</code>, saves and keeps the sheet open, and focus comes
@@ -377,7 +384,7 @@ part or are mentioned.</li>
 <li><strong>Block or Unblock…</strong> on a person.</li>
 <li><strong>Block from Organization…</strong> on an organization (it
 asks whose account) and on a member in its Members list; its Blocked
-Users list unblocks. <strong>Leave Organization…</strong> asks first.
+People list unblocks. <strong>Leave Organization…</strong> asks first.
 <strong>Your Invitation</strong> says whether the organization has
 invited you: Accept Membership joins, and since GitHub’s API cannot
 decline an organization’s invitation, it gives the page where GitHub
@@ -526,6 +533,46 @@ Search also keeps it under Saved Searches.</li>
 Workbench checks the pull requests already loaded and the Items cell of
 the status bar says so. <strong>View &gt; Load All</strong>
 (<code>Ctrl+Shift+Page Down</code>) loads every page to be sure.</p>
+<h3 id="filtering-every-other-list">Filtering every other list</h3>
+<p>Branches, tags, commits, releases, workflows, runs and the other
+lists are read whole, so the words before a colon are checked here, over
+the rows already loaded. Each list answers its own:</p>
+<ul>
+<li><strong>Branches:</strong> <code>name:</code>,
+<code>protected:</code>, <code>ahead:</code>, <code>behind:</code>,
+<code>author:</code> (the last commit’s) and <code>committed:</code>
+(its date).</li>
+<li><strong>Tags:</strong> <code>name:</code> and <code>sha:</code>.
+<strong>Commits:</strong> <code>author:</code>, <code>committed:</code>,
+<code>message:</code> (words in it) and <code>sha:</code>.</li>
+<li><strong>Releases:</strong> <code>tag:</code>, <code>name:</code>,
+<code>draft:</code>, <code>prerelease:</code> and <code>created:</code>.
+<strong>Release assets:</strong> <code>name:</code>, <code>size:</code>,
+<code>downloads:</code>, <code>type:</code> and
+<code>updated:</code>.</li>
+<li><strong>Workflows:</strong> <code>name:</code>, <code>path:</code>
+and <code>state:</code>. <strong>Runs:</strong> <code>workflow:</code>,
+<code>branch:</code>, <code>event:</code>, <code>status:</code>,
+<code>conclusion:</code>, <code>created:</code> and
+<code>sha:</code>.</li>
+<li><strong>Every other list</strong> (repositories, labels, milestones,
+notifications, packages and the rest): <code>name:</code>,
+<code>repo:</code>, <code>owner:</code> and <code>updated:</code>.</li>
+</ul>
+<p>A name takes <code>*</code> as a pattern
+(<code>name:release-*</code>). A minus in front leaves those out
+(<code>-conclusion:success</code>). Numbers and dates take
+<code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>,
+<code>&lt;=</code> and a range with two dots (<code>ahead:&gt;=3</code>,
+<code>created:2026-01..2026-06</code>); a date can be just a year or a
+month. <code>no:repo</code> keeps the rows with none. The Items cell of
+the status bar says how many the filter kept of how many loaded, such as
+“Filtered here: 2 of 3 loaded. Load All to be sure.”, and names any word
+this list cannot filter on, so nothing is quietly ignored.</p>
+<p>The Search place’s lists send the whole box to GitHub instead, so
+there GitHub’s own search terms work: <code>language:</code> and
+<code>stars:</code> for repositories, <code>committer:</code> for
+commits, <code>location:</code> for people.</p>
 <h3 id="more-rows">More rows</h3>
 <p>Every list starts with one page: 30 issues or pull requests, 50 rows
 of anything else. <strong>Load More</strong>
