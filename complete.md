@@ -142,14 +142,12 @@ Scheduled Actions and the extensions marketplace are wp-admin only. Subscription
 
 ### 2.4 Built but not yet tried live
 
-What is left here has tests over recorded or fake answers but has not been checked on a real site yet. The shop orders, shipping classes, variations, Shop Analytics, Yoast's fields, PMPro members and levels, Redirection, Gravity Forms building and submissions, ACF and Site Types passed live on 2026-11-20 (159 pass, 0 fail). The checklist is `docs/qa/wordpress-regression-testing.md` (the Workbench section and the Live run section), and wordpress.md section 19 keeps the list.
+What is left here has tests over recorded or fake answers but has not been checked on a real site yet. The shop orders, shipping classes, variations, Shop Analytics, Yoast's fields, PMPro members and levels, Redirection, Gravity Forms building and submissions, ACF and Site Types passed live on 2026-11-20 (159 pass, 0 fail). A second pass the same day added every Gravity Forms field type, entry edits, messages and conversion both ways (144 to 150), QAF's spam checks with real submissions (151), the move from BAF to QAF (152), PMPro's discount codes past PMPro's 20 (153) and Members of This Level at 260 people (154), and test 86 with a menu it makes. The checklist is `docs/qa/wordpress-regression-testing.md` (the Workbench section and the Live run section), and wordpress.md section 19 keeps the list.
 
 - [ ] The whole Workbench, W1 to W8 and packages 1 to 14. It is now the default, so this comes before the next release.
 - [ ] A WooCommerce refund, only against a gateway's test mode: the test site has no gateway in test mode yet (only Cash on Delivery).
-- [ ] PMPro Members of This Level on a big site (it asks about each person; the test site has 10), and the paged discount-code list past one page.
 - [ ] Yoast: Open in wp-admin landing on the Yoast panel (needs a browser).
-- [ ] QAF's spam settings with a live submission. (QAF 1.0.0 now runs on the test site, BAF is inactive, and the Forms tests 63 to 66 pass against it.)
-- [ ] Gravity Forms feeds and results: they need a feed add-on and the Quiz, Poll or Survey add-on on the test site (building, conversion, notifications, confirmations and test submissions pass live).
+- [ ] Gravity Forms feeds and results (tests 140 and the Results half of 141): Jeff installs, from Forms > Add-Ons on the test site, the Gravity Forms Webhooks Add-On (a feed add-on with no outside account) and the Gravity Forms Quiz, Polls and Survey Add-Ons. Everything else in Gravity Forms passed live on 2026-11-20 (tests 104 to 108, 123 to 126, 139, 141 and 144 to 150).
 - [ ] PMPro with a role whose PMPro capabilities were changed (quill-members, Membership Manager, needs an application password). PMPro 3.9.2's level route drops the billing and expiry periods and refuses DELETE; QUILL now says so.
 - [ ] Copy to Site and Compare Sites between two real sites, and Promote to Network on a real multisite.
 - [ ] The Practice Site from an installed build, not only from source.
@@ -157,8 +155,6 @@ What is left here has tests over recorded or fake answers but has not been check
 
 ### 2.5 Open rows from the WordPress delivery checklist
 
-- [ ] **QAF name migration, live:** QAF is deployed and BAF inactive on the test site; check that BAF's old forms, entries and pages came across (the run only uses forms QAF made).
-- [ ] **QAF spam, live:** the five spam guarantees are proven in QAF's PHPUnit suite; what is left is a live submission on the test site, where QAF 1.0.0 now runs.
 - [ ] **PMPro, live:** WordPress 6.9+ with PMPro 3.9+ and a role with customized PMPro capabilities (the card and billing field stripping is done).
 - [ ] **Payments, live:** QAF's and PMPro's PHP suites, Stripe test mode, a PayPal sandbox and a reachable webhook endpoint on the test site: webhook authenticity/replay/order, duplicate submission and accessible checkout acceptance.
 - [ ] **Practice Site from an installed build:** start/connect/reset/stop/restart with the bundled Node and payloads on a clean installation (the source run passes).
