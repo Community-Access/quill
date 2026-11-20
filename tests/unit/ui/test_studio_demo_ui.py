@@ -598,7 +598,7 @@ def test_picture_request_refused_when_provider_cannot_draw(parent, monkeypatch):
     failures = []
     host._request_picture(["A cover"], "square", lambda *_a: None, failures.append)
     assert failures == ["No picture was made."]
-    assert "does not make pictures" in host.spoken[0]
+    assert "can't make pictures" in host.spoken[0]  # follows Choose Your AI (gap 9)
 
 
 def test_go_live_window_builds_settings_and_gates_on_the_check(parent):

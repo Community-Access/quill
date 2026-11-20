@@ -20,7 +20,7 @@
   the AI Hub's provider and key move to My own key in Choose Your AI, if My
   own key was not set up yet. QUILL says so once.
 - **A new app asks before its first AI request.** It no longer starts using
-  your own key or ChatGPT plan without a word. It names the AI and asks, and
+  the family's saved own key without a word. It names the AI and asks, and
   after that it follows your choice.
 - **Explain Selected Change** sends its own question, instead of wrapping it
   inside the discussion-summary question. Its help no longer promises a

@@ -120,7 +120,7 @@ class ConnectionRouteMixin:
             chatgpt_signed_in=self._chatgpt_signed_in,
             own_key_ready=lambda: bool(self.own_key_ready),
             save=self._save_settings,
-            ask_first=(CHATGPT, OWN_KEY),
+            ask_first=(OWN_KEY,),  # the family-wide key; a plan sign-in is this app's own
         )
 
     def _first_choice_pending(self) -> bool:
