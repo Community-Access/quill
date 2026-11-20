@@ -106,4 +106,11 @@ def edit_playback_speed(host: Any, show: Any) -> None:
     speed = clamp_speed(chosen)
     host._library.apply_show_override(show, speed=speed)
     host._on_library_changed()
-    host._announce(ss.describe_speed(speed))
+    # After the save, which is what reaches the episode playing (FUX-04): when
+    # it could not, the sentence says the speed that is really heard.
+    from quill.core.action_feedback import speed_still_playing
+    from quill.ui.podcasts.speed import speed_not_in_force
+
+    held = speed_not_in_force(host, speed, show)
+    said = ss.describe_speed(speed)
+    host._announce(f"{said} {speed_still_playing(held)}" if held is not None else said)

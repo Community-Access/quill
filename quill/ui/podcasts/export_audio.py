@@ -222,7 +222,9 @@ def _save_now(
         except OSError as error:
             announce(f"Could not save the audio: {error}")
             return False
-        announce(f"Saved {episode.title} to {destination.name}")
+        from quill.core.action_feedback import written_result
+
+        announce(written_result(f"Saved {episode.title}", destination))  # FUX-04: and where
         return True
     finally:
         if on_finished is not None:

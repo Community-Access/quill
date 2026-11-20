@@ -52,6 +52,7 @@ from quill.core.problems.pane import (
     PaneFilter,
     count_sentence,
     filter_problems,
+    follow_row,
     pane_row,
     source_choices,
 )
@@ -106,6 +107,9 @@ class ProblemsPane:
         self._set_pause_enabled = set_pause_enabled
         self._set_all_files = set_all_files
         self._report: CheckReport | None = None
+        #: The report the rows on screen were built from, so a refill can find
+        #: the reader's problem in it after ``_report`` has been replaced.
+        self._report_before: CheckReport | None = None
         self._filter = PaneFilter()
         #: For each list row, the problem's index in the report, or ``None``
         #: for the placeholder row.
@@ -251,35 +255,69 @@ class ProblemsPane:
     def _refresh_sources(self) -> None:
         current = self._filter.source
         choices = source_choices(self._report)
-        self._source.Set(list(choices))
+        if list(choices) != [self._source.GetString(i) for i in range(self._source.GetCount())]:
+            # Only when the choices really changed: refilling a chooser the
+            # reader may be on, with the same words, is a change they hear.
+            self._source.Set(list(choices))
         if current not in choices:
             current = ALL_SOURCES
             self._filter = PaneFilter(show=self._filter.show, source=current)
-        self._source.SetSelection(choices.index(current))
+        if self._source.GetSelection() != choices.index(current):
+            self._source.SetSelection(choices.index(current))
 
     def _fill(self) -> None:
+        """Refill the list, keeping the reader's row, its line and focus (FUX-06).
+
+        A quiet check after a pause or a save calls this while somebody may be
+        arrowing through the list. The row is followed by the problem it shows
+        (:func:`quill.core.problems.pane.follow_row`), the list is rewritten only
+        when its words changed, the row stays on the same line of the screen
+        (:mod:`quill.ui.list_stay_still`), and focus is never touched. Nothing
+        is said here: the host says the count once when it changes.
+        """
+        from quill.ui.list_stay_still import capture_listbox
+
         previous = self._selected_problem_index()
+        previous_problem = (
+            self._report_before.problems[previous]
+            if previous is not None
+            and self._report_before is not None
+            and 0 <= previous < len(self._report_before.problems)
+            else None
+        )
+        previous_row = self._list.GetSelection()
+        anchor = capture_listbox(self._list)
+        self._report_before = self._report
         if self._report is None:
-            self._row_indices = [None]
-            self._list.Set([NOT_CHECKED_ROW])
-            self._list.SetSelection(0)
+            self._set_rows([None], [NOT_CHECKED_ROW], anchor, 0)
             return
         shown = filter_problems(self._report.problems, self._filter)
         if not self._report.checked:
             # "No checker for Go", not "No problems": nothing looked.
-            self._row_indices = [None]
-            self._list.Set([summarize(self._report)])
-            self._list.SetSelection(0)
+            self._set_rows([None], [summarize(self._report)], anchor, 0)
             return
         if not shown:
-            self._row_indices = [None]
-            self._list.Set([self.count_sentence() + "."])
-            self._list.SetSelection(0)
+            self._set_rows([None], [self.count_sentence() + "."], anchor, 0)
             return
-        self._row_indices = [index for index, _problem in shown]
-        self._list.Set([pane_row(problem) for _index, problem in shown])
-        row = self._row_indices.index(previous) if previous in self._row_indices else 0
-        self._list.SetSelection(row)
+        row = follow_row(previous_problem, previous_row, [problem for _i, problem in shown])
+        self._set_rows(
+            [index for index, _problem in shown],
+            [pane_row(problem) for _index, problem in shown],
+            anchor,
+            row,
+        )
+
+    def _set_rows(
+        self, indices: list[int | None], labels: list[str], anchor: Any, row: int
+    ) -> None:
+        """Write *labels* only if they differ, then put the selection back on *row*."""
+        from quill.ui.list_stay_still import restore_listbox
+
+        self._row_indices = indices
+        current = [self._list.GetString(i) for i in range(self._list.GetCount())]
+        if labels != current:
+            self._list.Set(labels)
+        restore_listbox(self._list, anchor, [row], row)
 
     def _selected_problem_index(self) -> int | None:
         row = self._list.GetSelection() if self._row_indices else -1

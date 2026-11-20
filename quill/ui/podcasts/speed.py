@@ -70,6 +70,40 @@ def current_speed(host: Any) -> float:
     return own or float(getattr(settings, "speed", 1.0) or 1.0)
 
 
+def speed_not_in_force(host: Any, saved: float, show: Any = None) -> float | None:
+    """The rate actually playing, when a speed just saved did not reach it (FUX-04).
+
+    ``None`` when nothing is playing, when the change was not meant to reach
+    what is playing (another show, or a show with a speed of its own under a
+    shared-default change), or when the player is at *saved*. Otherwise the
+    rate the player is really at -- a scan in progress, or an imported file
+    with its own speed, keeps its rate, and the sentence that reports the save
+    must say so rather than let the saved number stand for what is heard.
+    Called after the save, which is when :mod:`quill.ui.podcasts.live_settings`
+    has pushed whatever it could.
+    """
+    # The app frame and the Podcast Manager both call this; they name the two
+    # things it needs differently.
+    controller = getattr(host, "_podcast_controller", None) or getattr(host, "_controller", None)
+    library = getattr(host, "_podcast_library", None) or getattr(host, "_library", None)
+    playing_id = getattr(getattr(controller, "state", None), "show_id", None)
+    if controller is None or library is None or not playing_id:
+        return None
+    if show is not None and getattr(show, "id", None) != playing_id:
+        return None
+    playing_show = library.find_show(playing_id)
+    settings = (
+        library.effective_settings(playing_show) if playing_show is not None else library.settings
+    )
+    if abs(float(getattr(settings, "speed", 1.0) or 1.0) - saved) >= 0.005:
+        return None  # the playing show keeps a speed of its own; this change is not for it
+    try:
+        rate = float(controller.rate)
+    except Exception:  # noqa: BLE001 - a controller that cannot say: claim nothing
+        return None
+    return rate if abs(rate - saved) >= 0.005 else None
+
+
 def apply_speed(host: Any, speed: float) -> None:
     """Set the speed in whichever scope is in force, and say which.
 

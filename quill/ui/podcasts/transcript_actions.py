@@ -161,7 +161,9 @@ def _write(host: Any, target: str, text: str) -> None:
     except OSError as error:
         host._announce(f"Could not save the transcript: {error}")
         return
-    host._announce(f"Transcript saved to {Path(target).name}")
+    from quill.core.action_feedback import written_result
+
+    host._announce(written_result("Transcript saved", target))  # FUX-04: and where
 
 
 def open_in_editor(host: Any, show: Any, episode: Any) -> None:
