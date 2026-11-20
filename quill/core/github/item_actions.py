@@ -24,6 +24,7 @@ from quill.core.github.item_action_parts import (
     _R,
     _W,
     ACCOUNT_ROWS,
+    AUTHORING_ROWS,
     PROJECT_ROWS,
     PROPERTIES_COMMAND,
     _a,
@@ -584,7 +585,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
 
 _ROWS.update(ACCOUNT_ROWS)
 # The quick commands (quill/core/github/quick_tables.py): each goes before Properties.
-for _type, _extra in QUICK_ROWS.items():
+for _type, _extra in (*QUICK_ROWS.items(), *AUTHORING_ROWS.items()):
     _have = _ROWS.get(_type, (_PROPERTIES,))
     _ROWS[_type] = (*_have[:-1], *_extra, _have[-1])
 
