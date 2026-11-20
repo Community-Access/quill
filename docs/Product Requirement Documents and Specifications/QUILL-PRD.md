@@ -8,8 +8,8 @@ Owner: Community Access
 Independence notice: QUILL for All is developed independently of any assistive-technology vendor. Vendor and screen-reader names appear throughout this document for compatibility and certification purposes only; they remain the property of their respective owners.
 Target platform: Windows 10 and Windows 11
 Target screen readers: NVDA (primary), JAWS, Narrator
-UI framework: wxPython (wxWidgets 3.2 or newer)
-Language: Python 3.13 or newer
+UI framework: wxPython 4.3.2 (wxWidgets 3.3), pinned in `pyproject.toml`
+Language: Python 3.14 or newer (`requires-python = ">=3.14"` in `pyproject.toml`)
 
 ### Runtime and distribution correction (QUILL 1.0.0, 2026-10-27 to 2026-10-31)
 
@@ -9678,7 +9678,7 @@ All JSON files validate against schemas in `quill/core/schemas/`. All writes are
 
 ### 10.7 Build and dev environment
 
-- **Python 3.13** pinned via `uv python install`.
+- **Python 3.14** (`requires-python = ">=3.14"` in `pyproject.toml`), with wxPython 4.3.2 pinned exactly.
 - **Lockfile**: `uv.lock` committed; `uv sync` reproduces the dev environment exactly.
 - **Dev install**: `uv sync --all-extras` plus `pre-commit install` for hooks.
 - **Pre-commit**: ruff format, ruff lint, mypy on `core/` and `io/`, controlled-vocabulary linter, contrast checker, tab-order snapshot check, license-notice generator.
@@ -9688,7 +9688,7 @@ All JSON files validate against schemas in `quill/core/schemas/`. All writes are
 ### 10.8 Continuous integration and delivery
 
 - **Provider**: GitHub Actions.
-- **Matrix**: Windows 10 22H2, Windows 11 24H2; Python 3.13; wxPython current stable.
+- **Matrix**: Windows 10 22H2, Windows 11 24H2; Python 3.14; wxPython 4.3.2.
 - **Jobs**:
   1. **Lint** (ruff, mypy, jsonschema validation of bundled schemas).
   2. **Unit tests** (`pytest tests/unit -n auto`).
@@ -9963,7 +9963,7 @@ Right-to-left UI; additional languages; optional split view (still standard cont
 
 ## 17. Backlog and deferred items
 
-> **Plan of record.** The authoritative, continuously-updated view of all open work — workstreams (shipped/open), phase outcomes, the release gap list, and the open-issue ledger — lives in [`docs/planning/roadmap.md`](../../planning/roadmap.md). (Shipped workstreams' specs — offline speech-to-text #617, the braille suite, batch document-to-speech, Structured List Studio, the verbosity system, the ElevenLabs integration, and Table Studio (now PRD §5.4.14) — were retired to git history once delivered; their status lives in the roadmap and user guide, and the verbosity 2.0 backlog is consolidated in roadmap §6.) The current direction is that these items **ship** (the older 2.0-deferral framing is dropped); the tables below are retained as the format-support reference.
+> **Open work.** The one list of open work is `complete.md` at the repository root (since 2026-11-18). [`docs/planning/roadmap.md`](../../planning/roadmap.md) was the plan of record until July 2026 and is kept for history: its workstreams, phase outcomes, release gap list and open-issue ledger are not kept up to date. (Shipped workstreams' specs — offline speech-to-text #617, the braille suite, batch document-to-speech, Structured List Studio, the verbosity system, the ElevenLabs integration, and Table Studio (now PRD §5.4.14) — were retired to git history once delivered; their status lives in the roadmap and user guide, and the verbosity 2.0 backlog is consolidated in roadmap §6.) The current direction is that these items **ship** (the older 2.0-deferral framing is dropped); the tables below are retained as the format-support reference.
 
 Everything below is intentionally out of v1.0. Each item is either yellow (achievable but requires more engineering than the v1.0 quality bar permits in time) or red (depends on unstable third-party formats, large native dependencies, or research-flavoured uplift we will not promise without measurement).
 
@@ -13106,7 +13106,7 @@ The macOS build reuses the cross-platform wxPython core plus the
 
 ## Prerequisites
 
-- macOS 12+ (Apple Silicon or Intel), Python 3.13+
+- macOS 12+ (Apple Silicon or Intel), Python 3.14+
 - `pip install -e ".[ui,macos]"` (wxPython, comtypes on Windows, pyobjc, py2app)
 - For distribution: an Apple **Developer ID Application** certificate and a
   `notarytool` keychain profile (`xcrun notarytool store-credentials`).
@@ -13234,7 +13234,7 @@ work stands after the triage and Phase 3 hardening pass.
 
 ## Triage outcome
 
-A live audit on the Windows wx 4.2.5 (Phoenix, wxWidgets 3.2.9) runtime, plus a
+A live audit on the Windows wx 4.2.5 (Phoenix, wxWidgets 3.2.9) runtime of the time (QUILL now pins wxPython 4.3.2), plus a
 source scan for custom-drawn paint code
 (`EVT_PAINT` / `wx.lib.agw` / `OnPaint` / `wx.PaintDC` / owner-draw / `wx.html2`),
 returned **zero** custom-drawn dialogs. Every `hardened_custom` surface is already
@@ -14344,7 +14344,7 @@ The workflow produces three artifacts:
 - `quill-portable` — standalone folder, no installer required
 - `quill-release-artifacts` — checksums, SBOM, update feed stub
 
-To build locally (requires Inno Setup 6 and Python 3.13):
+To build locally (requires Inno Setup 6 and Python 3.14):
 
 ```powershell
 pip install -e .[ui,spellcheck,dev]

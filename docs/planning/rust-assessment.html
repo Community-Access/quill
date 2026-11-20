@@ -247,7 +247,9 @@ plan</title>
 id="rewriting-quill-in-rust-honest-assessment-and-staged-plan">Rewriting
 QUILL in Rust: honest assessment and staged plan</h1>
 <p>Date: 2026-08-02 Status: analysis / decision document. Nothing here
-is committed work.</p>
+is committed work. Historical: written 2026-08-02. Version numbers below
+are as of that date; QUILL now pins wxPython 4.3.2 and needs Python 3.14
+(<code>pyproject.toml</code>).</p>
 <h2 id="1-verdict-first">1. Verdict first</h2>
 <p>A full Rust rewrite of QUILL would be a <strong>large negative-value
 project</strong>, and the “save space” motivation is the weakest of the
@@ -547,10 +549,10 @@ what it can see; everything else needs explicit
 <code>--include-module</code> / <code>--include-package</code>, and the
 failure shows up at runtime as import errors, not at compile time.</li>
 <li><strong>wxPython standalone.</strong> The <code>wx</code> plugin
-exists, but wx 4.2.5 plus <code>wx.html2</code> (WebView2),
-<code>wx.stc</code>, and the accessibility layer is a heavy standalone
-case; typical symptom is a clean compile and a runtime failure on
-missing DLLs or data files.</li>
+exists, but wx (4.2.5 then, 4.3.2 now) plus <code>wx.html2</code>
+(WebView2), <code>wx.stc</code>, and the accessibility layer is a heavy
+standalone case; typical symptom is a clean compile and a runtime
+failure on missing DLLs or data files.</li>
 <li><strong>Screen-reader bridges load DLLs by relative path.</strong>
 prismatoid and accessible_output2 (via libloader) resolve native
 libraries relative to their package directory, which does not survive
@@ -591,7 +593,8 @@ justify rewriting QUILL; it would justify choosing Rust for something
 greenfield.</li>
 <li><strong>wxWidgets stagnating or wxPython falling behind Python
 releases</strong> would be a real forcing function. It has not happened;
-wxPython 4.2.5 is current and we are on 3.12/3.13. Watch it, do not
+wxPython 4.2.5 was current and we were on 3.12/3.13 when this was
+written (2026-08). Today it is 4.3.2 on Python 3.14. Watch it, do not
 pre-empt it.</li>
 <li><strong>Windows itself deprecating the classic common
 controls</strong> would break the bet. There is no sign of it, and

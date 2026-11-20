@@ -32,6 +32,30 @@
   your other Quill apps. Radio also picks up a newer shared choice when it
   starts, and says so.
 
+### Plans: one list of open work, and the planning documents put right (2026-11-20)
+
+- **complete.md** says who owns what: it is the list of open work,
+  `status.md` is the live count, and the requirement audit holds each GitHub
+  requirement's status. Rows built since 2026-11-19 are gone, and rows waiting
+  on an open pull request name it.
+- **Part 0** lists the defects the code review in plan.md found, worst harm
+  first: settings that do not stick and the Practice Site payload,
+  then the wider review.
+- **A Backlog**, not this release (Jeff): every macOS feature, including a
+  runnable Mac Radio app and the launcher and Mac Radio defects; verifying
+  attestation signatures inside QUILL; and a date range for Shop Analytics'
+  Customers report, which is also in the WordPress Workbench PRD's Backlog.
+- **The GitHub requirement audit** counts 86 met, 8 partly met and 6 not
+  met, matching its own rows. View As Role, Compare Roles and Why Can't They?
+  (GH-R-069) are met since #1965.
+- **Planning documents** now say what they are. The July roadmap is marked
+  historical and points to where the Audio Studio checklist moved. The old
+  Studio screenshot audit is marked superseded. The Beacon and Media Player
+  PRDs say what is built. intellisense.md says ripgrep is bundled but not yet
+  used by the project index. code.md says the Claude tool fix and the Claude
+  engine were built on 2026-11-04. The QUILL PRD and the agent instructions
+  say Python 3.14 and wxPython 4.3.2.
+
 ### Crash and support reports: what is sent is what was checked (2026-11-20)
 
 - **A crash email's subject is redacted like its body.** A password or key

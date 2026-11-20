@@ -1,16 +1,21 @@
 # GitHub and WordPress Workbench implementation status
 
-**Updated:** 2026-11-17  
-**Status:** WordPress's last requirements are in code (#1842). GitHub resumed
-on 2026-11-15 and is the current focus.
+**Updated:** 2026-11-20  
+**Status:** Historical. This is the Workbench delivery log up to
+2026-11-18. It does not list open work. What is still open for both
+Workbenches is in `complete.md` at the repository root (Parts 1 and 2), and
+the status of each GitHub requirement is in the
+[requirement audit](../qa/github-workbench-requirement-audit-2026-11.md).
+The "What is left" and "Remaining" lists below are kept as they were written
+and have been overtaken; see the note under each.
 
 The accepted specifications are the [GitHub Workbench PRD](../Product%20Requirement%20Documents%20and%20Specifications/github-workbench-prd.md)
 and [WordPress Workbench PRD](../Product%20Requirement%20Documents%20and%20Specifications/wordpress-workbench-prd.md).
 This page records delivery state and later decisions; the PRDs remain the
-complete statement of accepted product requirements. The line-by-line
-checklist for both Workbenches is `complete.md` at the repository root
-(sections 7 and 10B); the WordPress progress log is section 18 of
-[wordpress.md](../design/wordpress.md).
+complete statement of accepted product requirements. The WordPress progress
+log is section 18 of [wordpress.md](../design/wordpress.md). (Older entries
+below cite `complete.md` sections 6, 7 and 10B; those numbers were retired on
+2026-11-18 and resolve in git history.)
 
 ## Current scope decisions
 
@@ -245,6 +250,10 @@ in the [GitHub Workbench roadmap](./github-roadmap.md).
 
 ### What is left, as of 2026-11-18
 
+> **Overtaken, 2026-11-20.** Most of this was built between 2026-11-19 and
+> 2026-11-20 (#1943 to #1976; see `CHANGELOG.md`). What is still open is in
+> `complete.md` Part 1, and the live checks in its section 1.5.
+
 The night of 2026-11-17 to 18 finished PRD sections 14.1 and 14.2 and
 everything in 14.3 that GitHub's API allows to a person's sign-in. What
 remains, in four kinds:
@@ -277,8 +286,8 @@ remains, in four kinds:
 
 ### Done
 
-Everything below is in `S:\QUILL`, uncommitted on
-`codex/workbench-combined-2026-11-10`, as of 2026-11-13.
+Everything below was built on `codex/workbench-combined-2026-11-10` by
+2026-11-13 and merged with WordPress's last requirements (#1842).
 
 - **Frame and doors.** The Workbench has its own rebindable `APP_KEYMAPS`
   entry, built from its menu table (`workbench_window_menu.py`). Delete,
@@ -336,6 +345,12 @@ Everything below is in `S:\QUILL`, uncommitted on
   run passed start, handoff, sign-in, restart, Workbench close and reset.
 
 ### Remaining
+
+> **Overtaken, 2026-11-20.** The live WordPress regression ran on the test
+> site on 2026-11-20 (#1976: 159 pass, 0 fail), with QAF 1.0.0, Gravity Forms
+> 3.2.3.1, PMPro 3.9.2 on WordPress 7.1.5, Advanced Custom Fields, QUILL Site
+> Types and Redirection. What is still open is in `complete.md` sections 2.3
+> to 2.5.
 
 - The Practice Site run from an installed build, and including
   `scripts/wp_playground/package-lock.json` with the source change.
