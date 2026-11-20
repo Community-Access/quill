@@ -45,7 +45,7 @@ SHEETS: dict[str, SheetDef] = {
 def _phase_8_sheets() -> tuple[SheetDef, ...]:
     """Every other object's sheet (Appendix C), loaded with the catalogue."""
     from quill.core.github.sheets_actions import ARTIFACT, CACHE, JOB, RUN, WORKFLOW
-    from quill.core.github.sheets_code import BRANCH, BRANCH_PROTECTION, COMMIT, FILE, RULESET, TAG
+    from quill.core.github.sheets_code import BRANCH, COMMIT, FILE, TAG
     from quill.core.github.sheets_deploy import DEPLOYMENT, ENVIRONMENT, RUNNER, SECRET, VARIABLE
     from quill.core.github.sheets_misc import (
         CODESPACE,
@@ -54,12 +54,14 @@ def _phase_8_sheets() -> tuple[SheetDef, ...]:
         NOTIFICATION,
         WEBHOOK,
     )
-    from quill.core.github.sheets_orgs import ORGANIZATION, TEAM
+    from quill.core.github.sheets_orgs import ORGANIZATION
     from quill.core.github.sheets_people import COLLABORATOR, INVITATION, PERSON
     from quill.core.github.sheets_projects import PROJECT
     from quill.core.github.sheets_releases import PACKAGE, RELEASE, RELEASE_ASSET
+    from quill.core.github.sheets_rules import BRANCH_PROTECTION, ORG_RULESET, RULESET
     from quill.core.github.sheets_security import SECURITY_ALERT
     from quill.core.github.sheets_talk import COMMENT, DISCUSSION, ISSUE_TYPE
+    from quill.core.github.sheets_teams import TEAM
 
     return (
         BRANCH,
@@ -67,6 +69,7 @@ def _phase_8_sheets() -> tuple[SheetDef, ...]:
         COMMIT,
         FILE,
         RULESET,
+        ORG_RULESET,
         TAG,
         WORKFLOW,
         RUN,
@@ -305,8 +308,20 @@ def _install_finders() -> None:
         number = _number_at_end(attr(row, "url"))
         return Target("discussion", {"repo": repo, "number": number}) if number else None
 
+    def resource(row: object, repo: str) -> Target | None:
+        """A row of a listed setting whose object has a sheet: a ruleset, a person's access."""
+        spec, _, item = attr(row, "key").partition(":")
+        if spec == "repo_rulesets" and item and "/" in repo:
+            return Target("ruleset", {"repo": repo, "id": item, "name": attr(row, "title")})
+        if spec == "org_rulesets" and item and repo:
+            return Target("org_ruleset", {"org": repo, "id": item, "name": attr(row, "title")})
+        if spec == "access_people" and item:
+            return Target("person", {"login": item.split(":", 1)[0]})
+        return None
+
     add_finder(kind="security", finder=alert)
     add_finder(kind="discussion", finder=discussion)
+    add_finder(kind="resource", finder=resource)
 
 
 def target_for_node(template: str, key: str, instance: str) -> Target | None:
