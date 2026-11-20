@@ -606,20 +606,22 @@ class AIHubDialog:
 
     def _on_save_services(self, _event: object) -> None:
         from quill.core.datalab_ocr import save_datalab_api_key
-        from quill.core.settings import load_settings, save_settings
+        from quill.core.live_settings import change_and_save
 
         values = self._services_values()
         endpoint = str(values["endpoint"])
         if endpoint and not endpoint.lower().startswith("https://"):
             self._announce(str(_("The endpoint must start with https:// - not saved.")))
             return
-        stored = load_settings()
-        stored.datalab_enabled = bool(values["enabled"])
-        stored.datalab_endpoint = endpoint or "https://www.datalab.to"
-        stored.datalab_mode = str(values["mode"])
-        stored.datalab_output = str(values["output"])
-        stored.datalab_paginate = bool(values["paginate"])
-        save_settings(stored)
+
+        def change(stored) -> None:  # the window's own copy: in effect now
+            stored.datalab_enabled = bool(values["enabled"])
+            stored.datalab_endpoint = endpoint or "https://www.datalab.to"
+            stored.datalab_mode = str(values["mode"])
+            stored.datalab_output = str(values["output"])
+            stored.datalab_paginate = bool(values["paginate"])
+
+        change_and_save(change)
         if not save_datalab_api_key(str(values["key"])):
             self._announce(
                 str(
@@ -1164,19 +1166,15 @@ class AIHubDialog:
                     self._vision_overrides[img_style_id] = text
                 else:
                     self._vision_overrides.pop(img_style_id, None)
-            from quill.core.settings import (
-                load_settings as _load_settings2,
-            )
-            from quill.core.settings import (
-                save_settings as _save_settings,
-            )
+            from quill.core.live_settings import change_and_save
 
-            _vsettings = _load_settings2()
-            _vsettings.vision_disabled_builtin_styles = sorted(self._vision_disabled)
-            _vsettings.vision_builtin_overrides = dict(self._vision_overrides)
-            if _vsettings.vision_default_prompt_style in self._vision_disabled:
-                _vsettings.vision_default_prompt_style = "accessibility"
-            _save_settings(_vsettings)
+            def change(vision) -> None:  # the window's own copy: in effect now
+                vision.vision_disabled_builtin_styles = sorted(self._vision_disabled)
+                vision.vision_builtin_overrides = dict(self._vision_overrides)
+                if vision.vision_default_prompt_style in self._vision_disabled:
+                    vision.vision_default_prompt_style = "accessibility"
+
+            change_and_save(change)
 
         self._announce(_("AI Hub closed.") if self._lite_mode else _("AI Hub settings saved."))
         self.dialog.EndModal(self._wx.ID_OK)

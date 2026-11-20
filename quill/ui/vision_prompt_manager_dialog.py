@@ -18,7 +18,7 @@ from quill.core.ai.vision_prompts import (
     BUILTIN_PROMPT_STYLES,
     BUILTIN_STYLE_IDS,
 )
-from quill.core.settings import save_settings
+from quill.core.live_settings import change_and_save
 from quill.ui.dialog_contract import (
     apply_modal_ids,
     ok_cancel_platform_order,
@@ -305,19 +305,29 @@ class VisionPromptManagerDialog:
         self._update_button_states()
 
     def _on_close(self, _event: object) -> None:
-        """Write changes to settings and close."""
-        self._settings.vision_disabled_builtin_styles = sorted(self._disabled)
-        self._settings.vision_custom_prompts = self._custom
-        # Reset the default style if it is no longer reachable: a built-in was
-        # disabled, a custom prompt was deleted, or a custom prompt's title was
-        # edited (which regenerates its ID).
-        current_default = self._settings.vision_default_prompt_style
+        """Write changes to settings and close.
+
+        Onto the main window's own settings too (quill.core.live_settings): the
+        copy this dialog was handed is often a fresh load the window never sees,
+        and the window's next save would put the old prompts back.
+        """
         surviving_custom_ids = {e.get("id", "") for e in self._custom}
-        if current_default in self._disabled or (
-            current_default not in BUILTIN_STYLE_IDS and current_default not in surviving_custom_ids
-        ):
-            self._settings.vision_default_prompt_style = "accessibility"
-        save_settings(self._settings)
+
+        def change(settings: Settings) -> None:
+            settings.vision_disabled_builtin_styles = sorted(self._disabled)
+            settings.vision_custom_prompts = list(self._custom)
+            # Reset the default style if it is no longer reachable: a built-in
+            # was disabled, a custom prompt was deleted, or a custom prompt's
+            # title was edited (which regenerates its ID).
+            current_default = settings.vision_default_prompt_style
+            if current_default in self._disabled or (
+                current_default not in BUILTIN_STYLE_IDS
+                and current_default not in surviving_custom_ids
+            ):
+                settings.vision_default_prompt_style = "accessibility"
+
+        change(self._settings)
+        change_and_save(change)
         self.dialog.EndModal(wx.ID_CLOSE)
 
     # ------------------------------------------------------------------

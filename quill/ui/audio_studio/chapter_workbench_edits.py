@@ -323,11 +323,10 @@ class ChapterEditsMixin:
             return
         self.settings_nudge_ms = NUDGE_STEPS_MS[selection]
         try:
-            from quill.core.settings import load_settings, save_settings
+            from quill.core.live_settings import change_and_save
 
-            settings = load_settings()
-            settings.audio_studio_chapter_nudge_ms = self.settings_nudge_ms
-            save_settings(settings)
+            step = self.settings_nudge_ms  # onto the window's own copy, which saves it
+            change_and_save(lambda s: setattr(s, "audio_studio_chapter_nudge_ms", step))
         except Exception:  # noqa: BLE001 - failing to persist must not block editing
             pass
 
