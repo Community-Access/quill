@@ -32,6 +32,7 @@
 - **A saved key goes only to its own company.** After the AI connection moved
   to another provider, the older saved key could be sent with it. Now it is
   used only for the provider it was saved for.
+
 ### Crash and support reports: what is sent is what was checked (2026-11-20)
 
 - **A crash email's subject is redacted like its body.** A password or key
