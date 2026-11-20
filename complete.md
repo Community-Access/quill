@@ -46,7 +46,6 @@ Each is done only with evidence: a test or a live run.
 - [ ] Compare Accounts and one-action Act As with unambiguous identity and cache isolation.
 - [ ] Role comparison and learning workflows reach real permission evidence, not guessed privileges.
 - [ ] Repository General/features, complete creation/template options, transfer, topics and star lists (standalone tags are done).
-- [ ] Rulesets/protection management, organization/member/team access, custom roles and audit logs.
 - [ ] Accessible workflow authoring: triggers/jobs/steps/inputs/permissions/dependency graph as linear controls (turning a workflow on or off is done).
 - [ ] Dependabot configuration and pull request commands; CODEOWNERS editing/ownership lookup.
 - [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
@@ -55,11 +54,10 @@ Each is done only with evidence: a test or a live run.
 - [ ] Tags, release trains and branch renames across repositories: comparison, publishing, feature-specific safeguards (topics are done).
 - [ ] Align or promote to organization, where supported: environments, secrets, variables, webhooks, keys and autolinks (rulesets and default-branch protection are done; labels cannot be promoted).
 - [ ] Workflow/template/community/Dependabot/CODEOWNERS content: compare and update through reviewable pull requests.
-- [ ] People/teams/settings/custom properties/issue types: access and setting matrices with inherited-role explanations.
 - [ ] Saved replies/favorites/watch levels/stars, alerts/packages/Pages where supported.
 - [ ] Cross-repository coverage is complete only when the corresponding single-repository operation and batch behavior are complete; read-only category views are tracked separately from multi-target writes.
 - [ ] GX11, what is left: a severity breakdown beyond the first 100 alerts of each kind in Security Overview, and a test that exporting an alert list leaves out sensitive fields. (Dismissal and bypass request review is Enterprise Cloud only and stays on GitHub, decided 2026-11-18.)
-- [ ] GX13 administration.
+- [ ] GX13: account-aware repository switching (Compare Accounts and Act As, still open).
 - [ ] GX09: Why Can't I Merge? and Merge Selected... do not yet name the specific ruleset or CODEOWNERS rule that blocks (only the review window's Check Merge Policy does), and nothing watches a pull request to say when its readiness changes.
 - [ ] GX10: attestation signatures are not verified in QUILL (it points to gh attestation verify), and a downloaded release file is not checked against its digest.
 - [ ] GX16 category-first cross-repository browsing.
@@ -88,6 +86,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 - [ ] Secrets on the test repository (create, change, list shows only the name, delete); Dependency Review on an open pull request and Security Overview on an organization repository; an organization secret in Community-Access set to selected with a repository added and removed, then back to private (confirms a visibility-only change is accepted); Allow a Blocked Secret... needs a real blocked push and its placeholder id.
 - [ ] Issue types and fields in an organization that has them: typed values in the Issue fields column (a date, a number, a choice), `type:Bug` and `field.priority:high` searches, the Properties Issue Fields page, "hidden from you" for an account that cannot see fields, a person's repository (`/user/issue-fields`).
 - [ ] Merge Selected... on two throwaway pull requests, and Release Evidence on `v0.0.1-quill-live`, on the test repository; Merge Selected on a queue-only branch needs an organization repository with a merge-queue ruleset; confirm GitHub's `immutable` and asset `digest` fields.
+- [ ] Rulesets, members and teams on GitHub: the organization ruleset sheet on a throwaway organization; push restrictions and signed commits surviving a branch protection save; members' two-factor as an owner and as a member; making a member an outside collaborator and removing one; a team's parent and repository changes; the team-admin guard; and Access Review: People and Teams against real permissions.
 - [ ] **GH-R-119:** timed find-the-answer sessions with people.
 - [ ] Plain-Language Batch on the test repository (assign, then unassign, by sentence; GitHub's search may need a moment to index a new issue), and Ctrl+Shift+S in the real window.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists.

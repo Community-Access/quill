@@ -1940,6 +1940,14 @@ only.</td>
 here.</td>
 </tr>
 <tr>
+<td>Rulesets (<code>repository:repo_rulesets</code>)</td>
+<td>repository, settings</td>
+<td>Rulesets: every ruleset on this repository, its own and the
+organization’s. Alt+Enter opens one’s sheet: its target, every rule and
+setting, who may bypass it, and a Summary in plain words. Delete removes
+one after its name is typed.</td>
+</tr>
+<tr>
 <td>person (<code>person:person</code>)</td>
 <td>person</td>
 <td>A person: their repositories, activity, followers and who they
@@ -2129,8 +2137,10 @@ for.</td>
 <tr>
 <td>Members (<code>organization:org_members</code>)</td>
 <td>organization, organization</td>
-<td>Members: the organization’s people. Ctrl+N invites someone; Delete
-removes them.</td>
+<td>Members: the organization’s people, each an owner or a member, with
+two-factor sign-in on or off where you may see it. Ctrl+N invites
+someone; Delete removes them, after their name is typed, and never
+removes the last owner or your own ownership.</td>
 </tr>
 <tr>
 <td>Invitations (<code>organization:org_invitations</code>)</td>
@@ -2149,7 +2159,8 @@ repositories.</td>
 (<code>organization:outside_collaborators</code>)</td>
 <td>organization, organization</td>
 <td>Outside Collaborators: people with access to repositories but not
-members.</td>
+members. Delete takes away every repository they have here, after their
+name is typed.</td>
 </tr>
 <tr>
 <td>Security Managers (<code>organization:security_managers</code>)</td>
@@ -2259,8 +2270,39 @@ first.</td>
 <td>Custom Property Values
 (<code>organization:org_property_values</code>)</td>
 <td>organization, organization</td>
-<td>Custom Property Values: every repository’s custom properties in one
-list. Change a repository’s on its Properties.</td>
+<td>Custom Property Values: every repository and every custom property,
+a row a repository, with unset properties said as not set. Change a
+repository’s on its Properties, or several at once with Set
+Repositories’ Custom Property… on the organization.</td>
+</tr>
+<tr>
+<td>Rulesets (<code>organization:org_rulesets</code>)</td>
+<td>organization, organization</td>
+<td>Rulesets: the organization’s rulesets, which apply across its
+repositories. Alt+Enter opens one’s sheet, with the repositories it
+covers by name or property; Delete removes it from every repository
+after its name is typed.</td>
+</tr>
+<tr>
+<td>Rule Insights (<code>organization:org_rule_insights</code>)</td>
+<td>organization, organization</td>
+<td>Rule Insights: recent pushes the organization’s rulesets passed,
+blocked or let through, in every repository.</td>
+</tr>
+<tr>
+<td>Access Review: People (<code>organization:access_people</code>)</td>
+<td>organization, organization</td>
+<td>Access Review: People: every person and repository pair, a row each,
+with the effective role and where it comes from: being an owner, the
+base permission, a team or direct access, and the others after ‘also’.
+Filter it by a name, a role or a team; File, Export List saves it.</td>
+</tr>
+<tr>
+<td>Access Review: Teams (<code>organization:access_teams</code>)</td>
+<td>organization, organization</td>
+<td>Access Review: Teams: every team and repository pair, a row each,
+with the team’s role there and how many people it reaches. File, Export
+List saves it.</td>
 </tr>
 <tr>
 <td>Saved search (<code>pinned_search:pinned_search</code>)</td>
@@ -3260,9 +3302,8 @@ Conversation…, Pin or Unpin Issue, Transfer Issue…, Check or Uncheck a
 Task…, Convert Tasks to Sub-issues…, Create Branch for This Issue…,
 Unlink Branch…, Not a Duplicate…, Set Issue Type…, Reorder Sub-issues…,
 Relationships…, Issue Fields…, Delete Issue…, Add to or Remove from
-Favorites, Link a Pull Request That Closes It…, Unlink a Pull Request…,
-Related…, Start Pull Request for This Issue…, Draft Task Breakdown with
-AI…, Draft Release Notes with AI…; Properties…</li>
+Favorites, Link a Pull Request That Closes It…, Unlink a Pull Request…;
+Properties…</li>
 <li><strong>pull_request</strong>: Review…, File Differences…, Comment…,
 Merge…, Why Can’t I Merge?, Merge Selected…; More: Auto-Merge…,
 Reviews…, Open in a Codespace, Add to or Remove from Merge Queue…, Open
@@ -3272,9 +3313,7 @@ Codespaces…, Commit Comments…, View Timeline…, Read as Document…,
 Summarize Discussion, React…, Labels…, Assignees…, Milestone…,
 Projects…, Edit Title…, Add to or Remove from Favorites, Re-request
 Review…, Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn
-Off Agent Merge…, Dependency Review, Related…, Open in github.dev, Draft
-Description with AI…, Draft Reviewer Brief with AI…, Draft Release Notes
-with AI…; Properties…</li>
+Off Agent Merge…, Dependency Review; Properties…</li>
 <li><strong>run</strong>: Jobs and Logs, What Failed…, Re-run Failed
 Jobs Only, Re-run Workflow, Cancel Run…, Re-run One Job…; More: Force
 Cancel…, Download Logs…, Delete Logs…, Approvals, Earlier Attempts…,
@@ -3315,8 +3354,7 @@ Agent Tasks, An Agent Task’s Progress…, Automations, New Automation…,
 Run an Automation…, Rename an Automation…, Delete an Automation…, An
 Automation’s History…, An Automation’s Tasks…, Automation Tools and
 Triggers, Agent Secrets from the Organization, Agent Variables from the
-Organization, Allow a Blocked Secret…, Copilot Agent Configuration,
-Copilot Review Settings, Prompt Files…; Properties…</li>
+Organization, Allow a Blocked Secret…; Properties…</li>
 <li><strong>person</strong>: Open, Follow or Unfollow, Open on GitHub;
 Properties…</li>
 <li><strong>label</strong>: Find Issues with Label, Edit Label…, Delete
@@ -3327,8 +3365,7 @@ Gist…; Properties…</li>
 <li><strong>discussion</strong>: Open Discussion Thread, Read as
 Document…, Copy Link, Open on GitHub, Close Discussion…, Reopen
 Discussion; More: Delete Discussion…, Upvote, Remove Upvote, Vote…, Edit
-a Comment…, Delete a Comment…, Related…, Create Issue from Discussion…;
-Properties…</li>
+a Comment…, Delete a Comment…; Properties…</li>
 <li><strong>security_alert</strong>: Open, Dismiss or Reopen Alert…,
 Copilot Autofix…, Show Every Place, Open on GitHub, Where It Was Found;
 Properties…</li>
@@ -3338,8 +3375,8 @@ Properties…</li>
 Saved Search; Properties…</li>
 <li><strong>result</strong>: Open, Copy Link, Open on GitHub;
 Properties…</li>
-<li><strong>file</strong>: Open in Editor, Copy Link, Open on GitHub,
-Open in github.dev; Properties…</li>
+<li><strong>file</strong>: Open in Editor, Copy Link, Open on GitHub;
+Properties…</li>
 <li><strong>folder</strong>: Open Folder, Open on GitHub;
 Properties…</li>
 <li><strong>milestone</strong>: Find Issues in Milestone, Delete
@@ -3363,12 +3400,9 @@ Repositories…; More: Dependabot Repository Access, Give Dependabot a
 Repository…, Take a Repository from Dependabot…, Dependabot’s Default
 Access…, Make Someone an Outside Collaborator…, Define a Custom
 Property…, Set Repositories’ Custom Property…, New Team…, Accept
-Membership, My Activity Here, Require Sign-off on Web Commits…, Follow
-Organization, Unfollow Organization, Security Overview, Copilot Plan,
-Copilot Seats, A Member’s Copilot Seat…, Give Copilot Seats…, Take
-Copilot Seats Away…, Give Teams Copilot…, Take Copilot from Teams…,
-Copilot Usage Report, Copilot Agent Access, Copilot Content Exclusions;
-Properties…</li>
+Membership, Members Without Two-Factor, My Activity Here, Require
+Sign-off on Web Commits…, Follow Organization, Unfollow Organization,
+Security Overview; Properties…</li>
 <li><strong>favorite</strong>: Open, Copy Link, Open on GitHub, Add to
 or Remove from Favorites; Properties…</li>
 <li><strong>admin_action</strong>: Open; Properties…</li>
@@ -3381,8 +3415,7 @@ Why?, New Organization Runner…, Just-in-Time Runner…; More: Just-in-Time
 Runner…, Is a Runner Version Retiring?…, Is a Runner Version Retiring?…,
 Email Visibility…, Interaction Limits, Limit Interactions…, Lift
 Interaction Limits, Set Up a Sponsors Profile…, New Sponsor Tier…,
-Patreon Sponsorships…, My Agent Tasks, My Automations, Prompt Files…;
-Properties…</li>
+Patreon Sponsorships…, My Agent Tasks, My Automations; Properties…</li>
 <li><strong>across_item</strong>: Open in Its Repository, Next
 Repository, Previous Repository, View More from This Repository, Read
 Issue Type and Fields, Every Release or Latest Only; More: Open on
@@ -3438,8 +3471,8 @@ Allowed…, Delete…, Open on GitHub, Copy Link; More: Removal Commands…,
 Add Runner Label…, Remove Runner Label…, Runners in This Group, Hosted
 Runners in This Group, Add a Runner to This Group…, Remove a Runner from
 This Group…, Teams It Adds To; Properties…</li>
-<li><strong>wiki</strong>: Open on GitHub, Edit Wiki Pages…, New Wiki
-Page…, Publish Wiki Changes…, Clone Wiki…, Copy Link; Properties…</li>
+<li><strong>wiki</strong>: Open on GitHub, Clone Wiki…, Copy Link;
+Properties…</li>
 <li><strong>sponsorship</strong>: Show Details, Cancel Sponsorship…,
 Open on GitHub, Sponsorship Preferences…; Properties…</li>
 <li><strong>sponsor_tier</strong>: Show Details, Sponsor at This Tier…,
@@ -3566,9 +3599,6 @@ repository ready to work on. It can cost money.</li>
 repository.</li>
 <li><strong>Commit</strong>: A saved change, with a message saying why.
 Under Code, Commits.</li>
-<li><strong>Copilot seat</strong>: One person’s Copilot Business, paid
-for by an organization. Copilot Seats on an organization lists
-them.</li>
 <li><strong>Deploy key</strong>: An SSH key that reaches one repository
 only, for a server to clone, pull or push.</li>
 <li><strong>Deployment</strong>: Code sent to an environment, such as a
@@ -3636,9 +3666,6 @@ vote for. Its details show it as a table: option, votes, percentage and
 your vote. Vote… casts yours.</li>
 <li><strong>Project</strong>: A board or table for planning issues and
 pull requests.</li>
-<li><strong>Prompt file</strong>: A .prompt.yml file GitHub Models
-reads: a model, messages and test data. Prompt Files… on a repository
-reads each as its parts.</li>
 <li><strong>Pull request</strong>: A proposed change: commits on one
 branch that somebody asks to merge into another, with a review. Under a
 repository’s Pull Requests.</li>
@@ -3715,15 +3742,11 @@ repository on GitHub, which sends notifications.</li>
 something happens in a repository, such as a push. Continuous
 integration and chat bots use them.</li>
 <li><strong>Wiki</strong>: A repository’s own pages of documentation,
-kept by GitHub as a git repository of their own, owner/name.wiki. Edit
-Wiki Pages… on the Wiki row edits them; Publish Wiki Changes… sends
-them.</li>
+kept by GitHub as a git repository of their own, owner/name.wiki.</li>
 <li><strong>Workflow</strong>: One automation, defined in a file in the
 repository. Under Actions, Workflows.</li>
 <li><strong>Workflow dispatch</strong>: Starting a workflow by hand, on
 a branch you choose.</li>
-<li><strong>github.dev</strong>: GitHub’s free editor in the browser.
-Open in github.dev on a file or a pull request.</li>
 </ul>
 <!-- END GENERATED -->
 
@@ -3746,7 +3769,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 864 yes, 0 planned, 289 not needed and 854 left to
+<p>In all: 853 yes, 0 planned, 288 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -6112,7 +6135,7 @@ QUILL is a writing and coding tool, not an accounts console.</td>
 </tbody>
 </table>
 <h4 id="branches">Branches</h4>
-<p>38 operations: 8 yes, 30 not needed.</p>
+<p>38 operations: 10 yes, 28 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -6145,13 +6168,13 @@ QUILL is a writing and coding tool, not an accounts console.</td>
 <td>Get branch protection</td>
 <td><code>GET /repos/{owner}/{repo}/branches/{branch}/protection</code></td>
 <td>Yes</td>
-<td>editor GitHub menu &gt; Configure Branch Protection…</td>
+<td>Properties (Alt+Enter) on Branch Protection</td>
 </tr>
 <tr>
 <td>Update branch protection</td>
 <td><code>PUT /repos/{owner}/{repo}/branches/{branch}/protection</code></td>
 <td>Yes</td>
-<td>editor GitHub menu &gt; Configure Branch Protection…</td>
+<td>Properties (Alt+Enter) on Branch Protection: Approvals needed</td>
 </tr>
 <tr>
 <td>Delete admin branch protection</td>
@@ -6198,9 +6221,9 @@ the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 <tr>
 <td>Delete commit signature protection</td>
 <td><code>DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures</code></td>
-<td>Not needed</td>
-<td>Changes one part of branch protection; the Workbench reads and sets
-the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Branch Protection: Require signed
+commits</td>
 </tr>
 <tr>
 <td>Get commit signature protection</td>
@@ -6212,9 +6235,9 @@ the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 <tr>
 <td>Create commit signature protection</td>
 <td><code>POST /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures</code></td>
-<td>Not needed</td>
-<td>Changes one part of branch protection; the Workbench reads and sets
-the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Branch Protection: Require signed
+commits</td>
 </tr>
 <tr>
 <td>Remove status check protection</td>
@@ -7526,7 +7549,7 @@ reads them.</td>
 </tbody>
 </table>
 <h4 id="copilot">Copilot</h4>
-<p>44 operations: 12 yes, 32 left to github.</p>
+<p>44 operations: 44 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -7628,38 +7651,44 @@ org &gt; Enterprise (Open on GitHub).</td>
 <tr>
 <td>Get Copilot seat information and settings for an organization</td>
 <td><code>GET /orgs/{org}/copilot/billing</code></td>
-<td>Yes</td>
-<td>context menu &gt; Copilot Plan</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>List all Copilot seat assignments for an organization</td>
 <td><code>GET /orgs/{org}/copilot/billing/seats</code></td>
-<td>Yes</td>
-<td>context menu &gt; Copilot Seats</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Remove teams from the Copilot subscription for an organization</td>
 <td><code>DELETE /orgs/{org}/copilot/billing/selected_teams</code></td>
-<td>Yes</td>
-<td>context menu &gt; Take Copilot from Teams…</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Add teams to the Copilot subscription for an organization</td>
 <td><code>POST /orgs/{org}/copilot/billing/selected_teams</code></td>
-<td>Yes</td>
-<td>context menu &gt; Give Teams Copilot…</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Remove users from the Copilot subscription for an organization</td>
 <td><code>DELETE /orgs/{org}/copilot/billing/selected_users</code></td>
-<td>Yes</td>
-<td>context menu &gt; Take Copilot Seats Away…</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Add users to the Copilot subscription for an organization</td>
 <td><code>POST /orgs/{org}/copilot/billing/selected_users</code></td>
-<td>Yes</td>
-<td>context menu &gt; Give Copilot Seats…</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get the Copilot code review runner configuration for an
@@ -7698,8 +7727,9 @@ deleting a whole organization), done on GitHub’s site.</td>
 <tr>
 <td>Get Copilot cloud agent permissions for an organization</td>
 <td><code>GET /orgs/{org}/copilot/coding-agent/permissions</code></td>
-<td>Yes</td>
-<td>context menu &gt; Copilot Agent Access</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Set Copilot cloud agent permissions for an organization</td>
@@ -7741,8 +7771,9 @@ companies that buy Copilot seats, managed on GitHub’s site.</td>
 <tr>
 <td>Get Copilot content exclusion rules for an organization</td>
 <td><code>GET /orgs/{org}/copilot/content_exclusion</code></td>
-<td>Yes</td>
-<td>context menu &gt; Copilot Content Exclusions</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Set Copilot content exclusion rules for an organization</td>
@@ -7761,8 +7792,9 @@ companies that buy Copilot seats, managed on GitHub’s site.</td>
 <tr>
 <td>Get Copilot organization usage metrics</td>
 <td><code>GET /orgs/{org}/copilot/metrics/reports/organization-28-day/latest</code></td>
-<td>Yes</td>
-<td>context menu &gt; Copilot Usage Report</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot organization repository report for a specific day</td>
@@ -7811,8 +7843,9 @@ deleting a whole organization), done on GitHub’s site.</td>
 <tr>
 <td>Get Copilot seat assignment details for a user</td>
 <td><code>GET /orgs/{org}/members/{username}/copilot</code></td>
-<td>Yes</td>
-<td>context menu &gt; A Member’s Copilot Seat…</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Delete Copilot customizations for a team</td>
@@ -7838,14 +7871,17 @@ companies that buy Copilot seats, managed on GitHub’s site.</td>
 <tr>
 <td>Get Copilot cloud agent configuration for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/copilot/cloud-agent/configuration</code></td>
-<td>Yes</td>
-<td>context menu &gt; Copilot Agent Configuration</td>
+<td>Left to GitHub</td>
+<td>Copilot Business seat, policy and usage administration is for
+companies that buy Copilot seats, managed on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Get Copilot code review settings for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/copilot/code-review/settings</code></td>
-<td>Yes</td>
-<td>context menu &gt; Copilot Review Settings</td>
+<td>Left to GitHub</td>
+<td>Company administration or a paid feature (Copilot Business policies,
+AI scanning, security products, verified domains, billing minutes,
+deleting a whole organization), done on GitHub’s site.</td>
 </tr>
 <tr>
 <td>Update Copilot code review settings for a repository</td>
@@ -8681,7 +8717,7 @@ reads the list.</td>
 </tbody>
 </table>
 <h4 id="git-database">Git database</h4>
-<p>13 operations: 11 yes, 2 not needed.</p>
+<p>13 operations: 10 yes, 3 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -8769,8 +8805,9 @@ that write files. Plumbing under Commit Multiple Files.</td>
 <tr>
 <td>Get a tree</td>
 <td><code>GET /repos/{owner}/{repo}/git/trees/{tree_sha}</code></td>
-<td>Yes</td>
-<td>context menu &gt; Prompt Files…</td>
+<td>Not needed</td>
+<td>Git objects (blobs, trees, commits) are plumbing beneath commands
+that write files. Plumbing under Commit Multiple Files.</td>
 </tr>
 </tbody>
 </table>
@@ -10425,7 +10462,7 @@ publicly</td>
 <td>Get all organization repository rulesets</td>
 <td><code>GET /orgs/{org}/rulesets</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>Navigator: Organization &gt; organization &gt; Rulesets</td>
 </tr>
 <tr>
 <td>Create an organization repository ruleset</td>
@@ -10437,7 +10474,7 @@ publicly</td>
 <td>List organization rule suites</td>
 <td><code>GET /orgs/{org}/rulesets/rule-suites</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>Navigator: Organization &gt; organization &gt; Rule Insights</td>
 </tr>
 <tr>
 <td>Get an organization rule suite</td>
@@ -10450,19 +10487,20 @@ reads the list.</td>
 <td>Delete an organization repository ruleset</td>
 <td><code>DELETE /orgs/{org}/rulesets/{ruleset_id}</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get an organization repository ruleset</td>
 <td><code>GET /orgs/{org}/rulesets/{ruleset_id}</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>Properties (Alt+Enter) on Organization Ruleset</td>
 </tr>
 <tr>
 <td>Update an organization repository ruleset</td>
 <td><code>PUT /orgs/{org}/rulesets/{ruleset_id}</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>Properties (Alt+Enter) on Organization Ruleset: Repository names to
+include</td>
 </tr>
 <tr>
 <td>Get organization ruleset history</td>
@@ -12009,8 +12047,8 @@ reads the list.</td>
 <td>Get all repository rulesets</td>
 <td><code>GET /repos/{owner}/{repo}/rulesets</code></td>
 <td>Yes</td>
-<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Branch
-Protection</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt;
+Rulesets</td>
 </tr>
 <tr>
 <td>Create a repository ruleset</td>
@@ -12048,7 +12086,7 @@ reads the list.</td>
 <td>Update a repository ruleset</td>
 <td><code>PUT /repos/{owner}/{repo}/rulesets/{ruleset_id}</code></td>
 <td>Yes</td>
-<td>Properties (Alt+Enter) on Ruleset: Approvals needed</td>
+<td>Properties (Alt+Enter) on Ruleset: Rules</td>
 </tr>
 <tr>
 <td>Get repository ruleset history</td>
@@ -12482,7 +12520,7 @@ reads the list.</td>
 <td>Update a team</td>
 <td><code>PATCH /orgs/{org}/teams/{team_slug}</code></td>
 <td>Yes</td>
-<td>Properties (Alt+Enter) on Team: Description</td>
+<td>Properties (Alt+Enter) on Team: Parent team</td>
 </tr>
 <tr>
 <td>List pending team invitations</td>
