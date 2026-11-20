@@ -357,8 +357,37 @@ SURFACE_PURPOSES: dict[str, str] = {
         "How people should cite the project: title, version, DOI and the authors."
     ),
     "Code Owners (CODEOWNERS)": (
-        "Who reviews changes to which paths, and a lookup for who owns a path."
+        "Who reviews changes to which paths, as a table of pattern and owners where the "
+        "last matching rule wins; a lookup for who owns a path; and the problems GitHub "
+        "reports for the file."
     ),
+    "Workflow Editor": (
+        "A workflow file as lists: its triggers, permissions and jobs, each job's steps and "
+        "what it runs after, when the jobs run, and what GitHub would reject before Save."
+    ),
+    "Dependabot Configuration": (
+        "dependabot.yml as a list of entries: each ecosystem and folder, how often, and how "
+        "many pull requests, with what Dependabot would refuse listed before Save."
+    ),
+    "Compare Configuration": (
+        "The files that differ from the source, checked to update, and the differences of "
+        "the selected one; Propose Update opens one pull request."
+    ),
+    "Add Trigger": "Choose an event that starts the workflow, then its settings.",
+    "Trigger:": "One trigger's filters: branches, tags, paths and activity types.",
+    "Schedule": "The times a scheduled workflow runs, one cron line each, in UTC.",
+    "Inputs": "What a person fills in when they run the workflow by hand, in order.",
+    "Input": "One input: its name, description, type, default and whether it is required.",
+    "Add Job": "A new job: its id, name, runner and the jobs it runs after.",
+    "Job:": "One job: its id, name, runner, the jobs it runs after, and its condition.",
+    "Steps:": "A job's steps, run one after another; add, edit, remove and reorder them.",
+    "Step": "One step: the action it uses or the commands it runs, its inputs and variables.",
+    "Workflow Permissions": "What GITHUB_TOKEN may do in every job, scope by scope.",
+    "Permissions:": "What GITHUB_TOKEN may do in one job, scope by scope.",
+    "Add Entry": "A new Dependabot entry: ecosystem, folders, schedule and limits.",
+    "Entry": "One Dependabot entry: ecosystem, folders, schedule and limits.",
+    "Add Rule": "A new CODEOWNERS rule at the end, where it wins: a pattern and its owners.",
+    "Rule": "One CODEOWNERS rule: a path pattern and its owners.",
     "Form Field:": (
         "One field of a form: its label, id, description and, for its kind, "
         "placeholder, options, default and whether it is required."

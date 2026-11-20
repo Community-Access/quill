@@ -2000,6 +2000,46 @@ workflow's context menu says its state in words first, "on", "turned off" or
 changing it. You hear "Turned on" and its name, or "Turned off". The
 workflow's Properties sheet has the same switch as its Enabled field.
 
+### Editing a workflow
+
+**Edit Workflow...** on a workflow's context menu opens the workflow file as a
+form you read from top to bottom instead of YAML. **New Workflow...**, in
+**Repository Actions...** (`Ctrl+Shift+G`), starts one from a starter that
+runs on a push to main and by hand.
+
+- **Triggers** is a list, one row per event: "On a push, branches main, paths
+  ignore docs/\*\*", "Run by hand, 2 inputs", "On a schedule: 30 5 \* \* 1".
+  **Add Trigger...** asks for the event, then its settings: branches, tags and
+  paths for a push or pull request, one cron line per time for a schedule,
+  and for Run by hand a list of inputs, each with its type, whether it is
+  required, its default and, for a choice, its options.
+- **Workflow Permissions...** sets what the workflow's token may do: not set,
+  read everything, write everything, none, or one level per scope.
+- **Jobs** is a list, one row per job: "Build (build), runs on ubuntu-latest,
+  runs after Test and Lint, 4 steps". **Edit Job...** has its id, name,
+  runner and a check box for each job it runs after; renaming a job carries
+  every other job's needs with it. **Job Steps...** lists the steps, each a
+  form with the action it uses or the commands it runs, its inputs (one
+  `name: value` per line), variables and condition. **Job Permissions...**
+  is the same form as the workflow's, for one job.
+- **When jobs run** reads the whole dependency graph in words: "First Test
+  and Lint, together. Then Build."
+- **What GitHub would say** lists everything GitHub would reject the file
+  for, kept current as you change it: a key GitHub does not know, a job that
+  needs a job that does not exist, jobs that wait for each other in a loop, a
+  step that both uses an action and runs commands, an action with no
+  version, a permission GitHub does not have. Save refuses while any is
+  listed.
+
+Save asks first, naming the file, the repository and your account, then
+commits to the default branch, or to a new branch with a pull request when
+the default branch is protected or **Save through a pull request** is
+checked. If someone changed the file on GitHub since you opened it, nothing
+is overwritten and the editor opens again with your draft. Comments at the
+top of the file are kept; comments inside it are not, because QUILL's YAML
+reader cannot keep them, and the window says so. A file you did not change is
+never rewritten.
+
 ## What Failed
 
 This is the command to learn first. Select a failed run in **Workflow Runs**
@@ -2644,6 +2684,60 @@ for the files GitHub recommends. The first row says the score and what is
 present and missing; then one row each says "present" or "missing" for the
 README, licence, contributing guide, code of conduct, issue templates and pull
 request template.
+
+## Dependabot, code owners and configuration
+
+These live on **Repository > Templates**, beside the community files, and on
+**Repository Actions...** (`Ctrl+Shift+G`).
+
+### Dependabot
+
+The **Dependabot configuration** row opens `.github/dependabot.yml` as a
+list of entries, one row each: "pip in /, weekly on Monday at 09:00, up to 5
+pull requests, labels dependencies". **Edit Entry...** has the ecosystem, the
+directories, how often, the day, time and time zone, the most open pull
+requests and the target branch. Groups, ignore rules and registries are
+kept as they are and counted on the row. **What Dependabot would say** lists
+what it would refuse, such as two entries for the same ecosystem and folder,
+and Save refuses while any is listed. When the file is missing, the row
+starts one that keeps the repository's actions up to date.
+
+On a pull request Dependabot opened, **Dependabot Commands...** lists its
+commands with what each does: rebase, recreate, merge or squash and merge
+when checks pass, cancel merge, reopen, close, and ignore this dependency or
+this major, minor or patch version. The one you choose is posted as a
+comment after QUILL asks, and Dependabot answers in the thread.
+
+### Code owners
+
+The **CODEOWNERS** row opens a table of rules, one row each with its line,
+path pattern and owners. Order matters: **the last matching rule wins**, so
+**Move Up** and **Move Down** can change who reviews a folder. **Add
+Rule...** adds at the end, where a rule wins over everything above it. Notes
+in the file are kept. **Who owns this path** answers with the rule that
+wins, as GitHub decides. **Check Owners** asks GitHub whether each owner
+exists and can write. **Problems found** lists rules GitHub would skip by
+their shape, the problems GitHub itself reports for the file on the default
+branch, and what Check Owners found.
+
+**Who Owns This?** on a file or folder in the repository's files says its
+owners and the line of the rule that wins. From Repository Actions, **Who
+Owns This Path?...** asks for any path.
+
+### Comparing configuration with another repository
+
+**Compare Configuration With Another Repository...**, in Repository Actions,
+compares this repository's workflows, issue and pull request templates,
+discussion forms, community files, Dependabot file and CODEOWNERS with
+another repository, or with the owner's `.github` repository, which it
+offers first. From an organization's `.github` repository its starter
+workflows count too. The window checks every file that is missing here or
+differs, each with the lines added and removed, and shows the selected
+file's differences to read line by line. Files that are the same, or only
+here, are counted and kept. **Propose Update** asks once more, then opens one
+pull request with the checked files and a summary of each. Nothing changes
+until that pull request is merged; QUILL never pushes these to the default
+branch.
 
 ## Insights
 
