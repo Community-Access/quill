@@ -185,6 +185,11 @@ the editor's Custom Fields uses. What you keep goes back into the box, and
 OK or Apply sends it. Parts of a group the site does not describe are kept
 as they were. A list inside a list has no button and stays as JSON.
 
+On a page or post, Properties' **Meta** page lists the site's own fields and
+Yoast SEO's. Fields another plugin adds to every item, such as The Events
+Calendar's event and venue fields, are on a page of their own, **Fields
+Plugins Add to Every Item**, after the rest; each says whose it is.
+
 Field plugins get a page of their own, each only when the site has it:
 
 - **Advanced Custom Fields**, for field groups with Show in REST API on.

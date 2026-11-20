@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING, Any
 
 from quill.core.counted import a_or_an, plural
 from quill.core.wordpress import comments as cm
+from quill.core.wordpress import custom_field_owners as owners
 from quill.core.wordpress import custom_fields as cf
 from quill.core.wordpress import site_features as sf
 from quill.ui import wordpress_block_dialogs as bdlg
@@ -51,7 +52,15 @@ class WordPressApiWritingCommands(
         """Called by Properties once it closes with OK: the site's fields, if it has any."""
         self._custom_fields(copy, profile, quiet=True)
 
-    def _custom_fields(self, copy: lc.WorkingCopy, profile: st.SiteProfile, *, quiet: bool) -> None:
+    def _custom_fields(
+        self,
+        copy: lc.WorkingCopy,
+        profile: st.SiteProfile,
+        *,
+        quiet: bool,
+        show_all: bool = False,
+    ) -> None:
+        """Another plugin's fields are hidden until Show All Fields (wordpress.md 9.15)."""
         kind, item_id = copy.kind, int(copy.remote_id or 0)
 
         def work(api: Any, _index: Any, _account: Any) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -62,13 +71,16 @@ class WordPressApiWritingCommands(
             schema, values = found
             fresh = self.local.copy_for_path(self.host.current_path()) or copy  # type: ignore[attr-defined]
             kept = dict(fresh.properties.get("meta") or {})
-            form = cf.build_form(schema, values, kept)
-            if not form.fields and not form.structured:
+            form = cf.build_form(schema, values, kept, show_all=show_all)
+            if not form.fields and not form.structured and not form.hidden:
                 if not quiet:
                     self.host.announce(f"{profile.name} has no custom fields for {a_or_an(kind)}.")
                 return
-            if not form.fields:
-                self.edit_lists_and_groups(form, fresh, profile)
+            if not form.fields and (form.structured or quiet):
+                # Lists and groups go straight to their own pages; a page holding only
+                # the Show All Fields box is offered by the command, not after Properties.
+                if form.structured:
+                    self.edit_lists_and_groups(form, fresh, profile)
                 return
             more = (
                 f" {form.left_alone} more are lists or groups QUILL leaves as they are."
@@ -79,19 +91,21 @@ class WordPressApiWritingCommands(
                 lists = len(form.structured)
                 noun = "list or group comes" if lists == 1 else "lists and groups come"
                 more += f" {lists} {noun} next, one at a time."
+            hidden = f" {owners.hidden_sentence(form.hidden)}" if form.hidden else ""
             answers = bdlg.ask_fields(
                 self.host.parent,
                 self.host.show_modal,
                 title="Custom Fields",
                 purpose=(
                     f"The fields {profile.name} adds to {a_or_an(kind)}, from its plugins and "
-                    f"theme, such as an SEO title or an event date.{more} Changes go to the site "
-                    "with your next Save Draft to Site or Publish."
+                    f"theme, such as an SEO title or an event date.{more}{hidden} Changes go to "
+                    "the site with your next Save Draft to Site or Publish."
                 ),
-                fields=form.fields,
+                fields=cf.with_show_all(form),
             )
             if answers is None:
                 return
+            wants_all = bool(answers.pop(cf.SHOW_ALL_KEY, False))
             try:
                 changed = cf.changes(form, answers)
             except cf.FieldValueError as exc:
@@ -101,6 +115,9 @@ class WordPressApiWritingCommands(
                 return
             fresh.properties["meta"] = cf.merge_kept(kept, form, changed)
             self.local.save(fresh)  # type: ignore[attr-defined]
+            if wants_all:  # the same page again, with every field; what was typed is kept
+                self._custom_fields(fresh, profile, quiet=False, show_all=True)
+                return
             count = len(changed)
             if not count:
                 self.host.announce("No custom fields changed.")

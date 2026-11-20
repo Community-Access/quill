@@ -711,21 +711,33 @@ def _forms_ns(ctx: Ctx) -> str:
     return f"{namespace}, {len(routes)} routes; QUILL module {module}"
 
 
-@check("Site and routes", "17a", "Forms route takes the model QUILL sends")
+@check("Site and routes", "17a", "Forms route takes the model QUILL sends", who=ADMIN, writes=True)
 def _forms_model_arg(ctx: Ctx) -> str:
-    namespace = forms_namespace(ctx.anon) or "baf/v1"
+    """Judged by what the site does with a model, not by the arguments it lists.
+
+    QAF 1.0.0 reads ``model`` on create and update (``apply_model``) without
+    listing it among the route's arguments, so the listing alone said "needs
+    Jeff" on a site that takes the model. A draft form is sent with a model of
+    one question; the site's copy must come back with that question.
+    """
+    from quill.core.forms import bfl_document as bd
+
+    api = ctx.api(ADMIN)
+    namespace = forms_namespace(api)
+    expect(namespace, "the site has no forms plugin")
     entry = ctx.index.routes.get(f"/{namespace}/forms", {})
     args: set[str] = set()
     for endpoint in entry.get("endpoints", []) if isinstance(entry, dict) else []:
         if "POST" in endpoint.get("methods", []) and isinstance(endpoint.get("args"), dict):
             args |= set(endpoint["args"])
-    if "model" not in args:
-        raise NeedsJeff(
-            f"POST /{namespace}/forms lists {', '.join(sorted(args))} but not model; the "
-            "plugin on the site may predate set_model (BAF 045c682). Test 65 shows whether "
-            "a published form has its fields"
-        )
-    return "model is a listed argument"
+    fs = forms_site()
+    source = f'form "{ctx.title("model probe")}"\n  text #probe "Probe question"\n'
+    made = fs.create_form(api, fs.publish_body(bd.read_form(source), source, status="draft"))
+    ctx.later(f"delete form {made.id}", lambda: api.delete(f"{namespace}/forms/{made.id}"))
+    labels = list(fs.get_form(api, made.id).question_labels().values())
+    expect("Probe question" in labels, f"sent a model, the site's copy has {labels}")
+    listed = "listed" if "model" in args else "not listed among the route's arguments, but read"
+    return f"model {listed}: form {made.id} came back with its question"
 
 
 @check("Site and routes", "9.16", "Every 9.16 route QUILL needs (routes.unavailable)")
@@ -922,15 +934,21 @@ def _custom_fields_public(ctx: Ctx) -> str:
         "_yoast_wpseo_title" in seo and "_yoast_wpseo_metadesc" in seo,
         f"Yoast's fields are not in the schema (found {seo})",
     )
+    # Jeff, 2026-11-20: another plugin's fields are hidden until Show All Fields.
     form = cf.build_form(schema, {}, {})
-    events = [f.key for f in form.fields if f.key.startswith(("_Event", "_Venue", "_Organizer"))]
-    if events:
-        raise NeedsJeff(
-            f"Properties would show {len(form.fields)} fields on every post, {len(events)} of "
-            "them The Events Calendar's event, venue and organizer fields; Yoast's title and "
-            "description are among the rest. Decide whether to hide another plugin's fields"
-        )
-    return f"{len(form.fields)} fields, including Yoast's"
+    keys = [f.key for f in form.fields]
+    expect(
+        not [k for k in keys if k.startswith(("_Event", "_Venue", "_Organizer"))],
+        f"The Events Calendar's fields are shown: {keys}",
+    )
+    expect("_yoast_wpseo_title" in keys, f"Yoast's title is hidden: {keys}")
+    every = cf.build_form(schema, {}, {}, show_all=True)
+    expect(len(every.fields) > len(form.fields), "Show All Fields shows nothing more")
+    box = cf.with_show_all(form)[0]
+    return (
+        f"{len(form.fields)} shown, Yoast's among them; {cell(box.help, 120)} Show All Fields: "
+        f"{len(every.fields)}"
+    )
 
 
 OPEN_BY_ADDRESS = (
