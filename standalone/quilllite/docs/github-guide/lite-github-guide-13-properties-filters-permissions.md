@@ -36,15 +36,19 @@ allowed to change is read-only, and the line under it says why, for example
 "changing this needs triage access to owner/name; you have read access", and
 who can change that. `F1` on the field says the same.
 
-- Labels, assignees, reviewers and your reactions are lists of check boxes.
-  Space checks or clears one.
+- Labels, assignees, reviewers and your reactions are lists of check boxes,
+  and a repository's features (Issues, Projects, Wiki, Discussions) are
+  check boxes too. Each one says its state in its own words, "bug, on" or
+  "Issues, off", and Space checks or clears it once; the words change with
+  it, and nothing else is said.
 - New Label... and New Milestone... beside their lists make a new one on
   GitHub and check it straight away. If one by that name is already there,
   that is not a failure: QUILL Lite says "bug already exists; using it" and
   checks the one GitHub has.
-- **OK** saves and closes. **Apply**, or `Ctrl+S`, saves and keeps the sheet
-  open. `Ctrl+Enter` is OK from anywhere, even in a long text box. Escape is
-  Cancel.
+- **OK** saves and closes, and Enter on a check box, a list or a one-line
+  box is OK. **Apply**, or `Ctrl+S`, saves and keeps the sheet open, and
+  focus comes back to the check box or field you were on. `Ctrl+Enter` is
+  OK from anywhere, even in a long text box. Escape is Cancel.
 
 The menus still name the common changes. **Item > Labels...**,
 **Assignees...** and **Milestone...** open the sheet at the right page.
@@ -118,6 +122,35 @@ issues".
 Batches pause a second between items, because GitHub limits how quickly one
 account may make changes.
 
+### Saying it in words
+
+**Plain-Language Batch...**, on the Workbench's Tools menu (`Ctrl+Shift+S`
+there), takes the change as a sentence, for the repository you are in:
+
+- "close every issue labelled duplicate older than 90 days"
+- "close all issues labeled stale that nobody touched in 90 days as not
+  planned"
+- "add label triage to every issue with no label", or "remove label wontfix
+  from all closed issues"
+- "assign alice to every open issue labelled bug", or "unassign me from all
+  pull requests"
+- "which pull requests are waiting on me, oldest first?" shows them in the
+  list, and "how many issues are labelled bug?" says how many. Neither
+  changes anything.
+
+There is no AI in it. QUILL Lite reads a fixed set of words: labelled,
+without label, with no label, by, assigned to, unassigned, in milestone,
+waiting on me, mentioning me, open or closed, an age ("older than 90 days",
+"updated before March 2024"), and oldest or newest first. The same sentence
+always means the same thing, and a word it does not know is never guessed:
+it says what it does read, and gives you your sentence back to correct.
+
+It then searches GitHub and shows every item it found as a checked list.
+Uncheck any you want left alone, and OK goes on to the same preview and
+results as any batch above. Closing as a duplicate is not a batch, because
+each one needs the issue it duplicates; close those one at a time with
+`Delete` on the row.
+
 ## Undoing a change
 
 `Ctrl+Z` in the list or the tree undoes your last change on GitHub, where
@@ -184,6 +217,17 @@ rest.", so a short list is never mistaken for the whole of it.
 - **Group By**, also on the View menu, puts the groups in the tree as nodes: by label,
   milestone, assignee, author, type, state, repository or review state. Each
   node reads with its count, and selecting it shows that group.
+- Those orders and groups are an issue's. Every other list (branches, tags,
+  releases, workflows, runs, discussions, notifications, alerts, people,
+  teams, repositories and the rest) has **By Column...** at the end of Sort
+  By and of Group By instead: any of its columns, first to last or last to
+  first, and for a list of one column its name, repository, kind or last
+  update. Each list remembers its own choice, for this account, as it
+  remembers its columns.
+- **Your place is kept.** Coming back to a list, with Back (`Backspace`) or
+  from a sheet, a dialog or a document, puts you on the row you left, even
+  if it has moved; a refresh while you are in a group keeps you in that
+  group, on that row.
 - **Go > Next Unread** (`Ctrl+Period`) and **Previous Unread**
   (`Ctrl+Shift+Period`) move between unread notifications. Go also has
   submenus for your pinned repositories, favorites and saved searches.
@@ -228,6 +272,27 @@ and recorded in Change History. The Workbench refuses to remove your own admin
 access or the last owner, and says who else could do it. Organization and
 team sheets work the same way for members and maintainers.
 
+On an organization's sheet, each member reads with their role and whether
+two-factor sign-in is on: "kim, person, member, direct, two-factor off".
+GitHub shows two-factor only to owners; anyone else hears "two-factor not
+shown to you". Change... on a member offers member, owner, or outside
+collaborator; making someone an outside collaborator takes them out of the
+organization and its teams, so QUILL Lite asks you to type their name first.
+On the Outside Collaborators page, Add makes a member an outside
+collaborator, Change... invites one to be a member, and Remove takes away
+every repository they have here, again after their name is typed. You cannot
+make yourself an outside collaborator, remove yourself while you are the last
+owner, or remove the last owner.
+
+A team's Repositories page lists every repository the team reaches with its
+role there: Add, Change... and Remove work on it too. The last maintainer
+cannot remove themselves, and taking admin away from a team you are on is
+refused when that team is how you administer the repository. The General
+page's **Parent team** moves the team under another, and **New Team...** asks
+for the parent and whether mentions notify the team. The organization's
+**Members** list reads "kim, member, two-factor off.", and **Members Without
+Two-Factor** on the organization's row lists only those, for owners.
+
 **Account > Roles and Access** also has:
 
 - **My Access Here...**, your role on this repository and where it comes from;
@@ -239,6 +304,25 @@ team sheets work the same way for members and maintainers.
 - **Bulk Access Changes...**, one team or person on many repositories at
   once, previewed, with a result per change.
 
+### Who has what, and why
+
+Under an organization in the tree, three lists answer "who can do what here"
+a row at a time:
+
+- **Access Review: People**: "jeff on quill: Admin, from team Maintainers;
+  also Write directly; also Read from the organization's base permission."
+  The highest role comes first, and every other way they have access follows
+  "also".
+- **Access Review: Teams**: "Docs on site: Reviewer, for 3 members, a child
+  team of Maintainers."
+- **Custom Property Values**: a row a repository with every custom property,
+  unset ones said as "not set".
+
+The filter box and Show Only narrow them, and **Export List...**
+(`Ctrl+Shift+X`), on the Workbench's File menu, saves what is shown. When GitHub will not show part of the answer, the status bar
+says which. **Set Repositories' Custom Property...** on the organization's
+row sets one property in several repositories at once.
+
 ### Rules in plain words
 
 A ruleset's sheet, and a branch's protection, list every rule as a check box
@@ -246,6 +330,16 @@ with its settings, and a Summary page reads the whole thing as sentences: "On
 the default branch: changes need a pull request with 2 approvals including a
 code owner; checks build and test must pass; force pushes are blocked." Read
 that page first.
+
+A repository's **Settings > Rulesets** list, and an organization's
+**Rulesets**, show each ruleset as a sentence; Alt+Enter opens its sheet, and
+Delete removes it after you type its name. The sheet's Rules page also lists
+every rule with every setting GitHub sent; its Bypass page has a check list of
+the roles that may bypass the rules, keeping teams and apps as they are; and
+an organization ruleset's Repositories page says which repositories it covers
+and lets you choose them by name. A branch's classic protection sheet has
+every setting GitHub offers, and its **Who** page says who may push, dismiss
+reviews and skip the pull request; saving keeps those lists as they were.
 
 ---
 
