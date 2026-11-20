@@ -290,7 +290,7 @@ class GitHubRepoAdminProvider:
     # ------------------------------------------------------------------
     # Organizations. Teams are managed in full by the GitHub Workbench's Team
     # sheet and Access pages (GitHub PRD 18.3.3, GH-R-140):
-    # quill/core/github/sheets_orgs.py and quill/core/github/access.py.
+    # quill/core/github/sheets_teams.py and quill/core/github/access.py.
 
     def list_organizations(self) -> list[str]:
         """Organization logins the authenticated account belongs to."""

@@ -716,6 +716,10 @@ def sheet_idents(run: Run) -> dict[str, dict[str, str] | str]:
         "invitation": "nobody is invited to the test repository; inviting needs a second account",
         "webhook": _with(ids, "hook", {"repo": repo}, "id", "the webhook could not be made"),
         "ruleset": _with(ids, "ruleset", {"repo": repo}, "id", "no ruleset: see the seed result"),
+        "org_ruleset": (
+            "needs Jeff: an organization ruleset changes every repository it covers, so it is "
+            "tried by hand on a throwaway organization"
+        ),
         "deploy_key": _with(
             ids, "deploy_key", {"repo": repo}, "id", "no deploy key: see the seed result"
         ),

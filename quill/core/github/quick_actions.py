@@ -84,6 +84,9 @@ class Quick:
     copies: str = ""  # the answer holds a secret: put it on the clipboard, and say this
     #: Reads every page, stoppable: called as ``paged(api, ctx, paging)`` behind a Cancel button.
     paged: Callable[[Any, dict[str, str], Any], Any] | None = None
+    # Asked just before the call, off the UI thread: a sentence refuses it (no self-lockout).
+    guard: Callable[[Any, dict[str, str]], str] | None = None
+    typed: str = ""  # a context key whose value must be typed to go ahead (tier 3)
 
     @property
     def writes(self) -> bool:

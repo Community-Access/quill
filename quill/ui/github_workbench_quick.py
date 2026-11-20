@@ -153,12 +153,25 @@ class GitHubWorkbenchQuickMixin:
             ctx[ask.key] = typed.lstrip("#") if ask.kind == "number" else typed
         if quick.confirm and not self._confirm(title, quick.confirm.format_map(_Blank(ctx))):
             return
+        if quick.typed:
+            expected = ctx.get(quick.typed, "")
+            typed = self._ask_text(
+                "Type to Confirm", f"This is hard to reverse. Type {expected} to go ahead:"
+            ).strip()
+            if not expected or typed != expected:
+                if typed:
+                    self._say("The name did not match. Nothing changed.")
+                return
         api = self.github_api()
         if quick.paged is not None:
             self._quick_paged(quick, ctx, api)
             return
 
         def work() -> Any:
+            if quick.guard is not None:
+                problem = quick.guard(api, ctx)
+                if problem:
+                    return problem  # said instead of acting: nothing is sent
             return quick.said(quick.run(api, ctx), ctx)
 
         self._background(title.lower(), work, lambda said: self._quick_done(quick, str(said)))

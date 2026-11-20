@@ -6246,6 +6246,10 @@ pushes the rulesets here passed, blocked or let through.</p>
 Here: your notifications from this repository only.</p>
 <p><strong>repository: Custom Property Values.</strong> Custom Property
 Values: the organization’s custom properties, as set here.</p>
+<p><strong>repository: Rulesets.</strong> Rulesets: every ruleset on
+this repository, its own and the organization’s. Alt+Enter opens one’s
+sheet: its target, every rule and setting, who may bypass it, and a
+Summary in plain words. Delete removes one after its name is typed.</p>
 <p><strong>person: person.</strong> A person: their repositories,
 activity, followers and who they follow.</p>
 <p><strong>person: Profile.</strong> Profile: who this person is, their
@@ -6317,13 +6321,18 @@ own machines that run jobs.</p>
 <p><strong>organization: Larger Runners.</strong> Larger Runners:
 GitHub’s bigger machines the organization pays for.</p>
 <p><strong>organization: Members.</strong> Members: the organization’s
-people. Ctrl+N invites someone; Delete removes them.</p>
+people, each an owner or a member, with two-factor sign-in on or off
+where you may see it. Ctrl+N invites someone; Delete removes them, after
+their name is typed, and never removes the last owner or your own
+ownership.</p>
 <p><strong>organization: Invitations.</strong> Invitations: people asked
 to join the organization who have not answered.</p>
 <p><strong>organization: Blocked People.</strong> Blocked People: who
 cannot take part in the organization’s repositories.</p>
 <p><strong>organization: Outside Collaborators.</strong> Outside
-Collaborators: people with access to repositories but not members.</p>
+Collaborators: people with access to repositories but not members.
+Delete takes away every repository they have here, after their name is
+typed.</p>
 <p><strong>organization: Security Managers.</strong> Security Managers:
 teams that see and manage every security alert.</p>
 <p><strong>organization: Custom Properties.</strong> Custom Properties:
@@ -6365,8 +6374,25 @@ Advisories: the repository advisories across this organization.</p>
 <p><strong>organization: Recent Events.</strong> Recent Events: the
 organization’s public activity, newest first.</p>
 <p><strong>organization: Custom Property Values.</strong> Custom
-Property Values: every repository’s custom properties in one list.
-Change a repository’s on its Properties.</p>
+Property Values: every repository and every custom property, a row a
+repository, with unset properties said as not set. Change a repository’s
+on its Properties, or several at once with Set Repositories’ Custom
+Property… on the organization.</p>
+<p><strong>organization: Rulesets.</strong> Rulesets: the organization’s
+rulesets, which apply across its repositories. Alt+Enter opens one’s
+sheet, with the repositories it covers by name or property; Delete
+removes it from every repository after its name is typed.</p>
+<p><strong>organization: Rule Insights.</strong> Rule Insights: recent
+pushes the organization’s rulesets passed, blocked or let through, in
+every repository.</p>
+<p><strong>organization: Access Review: People.</strong> Access Review:
+People: every person and repository pair, a row each, with the effective
+role and where it comes from: being an owner, the base permission, a
+team or direct access, and the others after ‘also’. Filter it by a name,
+a role or a team; File, Export List saves it.</p>
+<p><strong>organization: Access Review: Teams.</strong> Access Review:
+Teams: every team and repository pair, a row each, with the team’s role
+there and how many people it reaches. File, Export List saves it.</p>
 <p><strong>pinned_search: Saved search.</strong> A saved search pinned
 as a node: its list is the search’s results, read afresh each time.
 Unpin Node, on its row in Saved Searches, takes the node away.</p>
@@ -7072,6 +7098,8 @@ property one value in several repositories.</p>
 <p><strong>New Team.</strong> Make a team in this organization.</p>
 <p><strong>Accept Membership.</strong> Join this organization, when it
 has invited you.</p>
+<p><strong>Members Without Two-Factor.</strong> Members who have not
+turned on two-factor sign-in. GitHub shows this to owners.</p>
 <p><strong>My Activity Here.</strong> What you have done lately in this
 organization’s repositories.</p>
 <p><strong>Require Sign-off on Web Commits.</strong> Whether commits
