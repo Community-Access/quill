@@ -28,6 +28,35 @@
   counted one ordinary link twice, so it said a one-link comment would be
   held under the two-link rule.
 
+### Hosted AI service: accounting you can trust, and one sign-in per code (2026-11-20)
+
+These are fixes to the free AI service itself (`quill-ai-gateway/`), found
+by a review of it. Nothing changes in QUILL or QUILL Lite.
+
+- **A web search no longer costs you its search fee overnight.** The search
+  fee belongs to the service's own budget, not your monthly limit, but the
+  nightly tidy-up moved it onto you: a search that cost $0.001 counted as
+  $0.031 by morning. Each request now records both figures.
+- **Confirming a code twice makes one connection.** Pressing Confirm twice,
+  or in two tabs, used to make two accounts and use two of your network's
+  places, and only one of them ever reached QUILL.
+- **Limits survive a restart.** The service now keeps its usage counts and
+  spending on disk, and rebuilds them from its records if they are lost.
+  Before, a restart could give everybody a fresh month.
+- **Signing a computer out frees its place on the right network,** the one
+  it was connected from, not the one you are on when you sign out.
+- **A garbled answer from the AI provider is an error, and costs nothing,**
+  like any other failed request.
+- **"Reduced quota" now reduces your allowance** (25 requests a month unless
+  an administrator sets another number). Before, it changed nothing.
+- **For administrators:** the console says the money limits are estimates.
+  Requests already being answered when a limit is reached still finish, so a
+  month can end slightly above a limit, and the console shows by how much.
+  The Switches page counts its features instead of saying five. The
+  migration runbook lists all ten database migrations in order, a new
+  migration (010) adds the per-person cost figure, and a new CI workflow
+  tests every migration on a clean PostgreSQL database.
+
 ### GitHub Workbench: roles from GitHub's own answers, two accounts side by side, and gh sign-in (2026-11-20)
 
 - **My Access Here**, **Why Can't They?**, **Access Review** and **Bulk

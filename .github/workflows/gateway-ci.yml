@@ -1,0 +1,61 @@
+name: Gateway CI
+
+# The hosted AI gateway (quill-ai-gateway/) is a separate Flask service with its
+# own tests, which nothing else in CI runs. This runs them, with a throwaway
+# PostgreSQL service so tests/test_migrations.py can initialise a clean
+# database through every file in migrations/ -- the production path that the
+# SQLite unit fixture cannot exercise. No deployed service and no real provider
+# is contacted: the provider calls are faked and Redis is fakeredis.
+
+on:
+  pull_request:
+    paths:
+      - "quill-ai-gateway/**"
+      - ".github/workflows/gateway-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "quill-ai-gateway/**"
+      - ".github/workflows/gateway-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gateway-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: gateway-ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: quill-ai-gateway
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          # The image the gateway ships in (quill-ai-gateway/Dockerfile).
+          python-version: "3.13"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - name: Run the gateway tests
+        env:
+          GATEWAY_TEST_POSTGRES_URL: postgresql://postgres:gateway-ci@localhost:5432/postgres
+        run: python -m pytest -p no:cacheprovider -q -rs
