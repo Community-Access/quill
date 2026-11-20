@@ -1,17 +1,21 @@
 """By name across repositories, and the Fleet, in the GitHub Workbench (PRD 22.11, 22.12).
 
-Across Repositories > Labels by Name, Milestones by Name, Topics by Name and
-Rules and Branch Protection each list one row per name across the Repository
-Set in use ("bug: in 14 of 16 repositories, 3 colours, missing from 2"); the
+Across Repositories groups its by-name places category first (GX16): Planning
+(labels, milestones, topics), Code (tags, branches, rules and branch
+protection), Actions (environments, secrets, variables) and Settings
+(webhooks, deploy keys, autolinks). Each lists one row per name across the
+Repository Set in use ("bug: in 14 of 16 repositories, 3 colours, missing from 2"); the
 details are its **Variants** (each set of properties with the repositories
 that have it) and **Missing From** (the repositories that answered and lack
 it), and a repository that could not be read is named apart, never counted
-as missing. Labels, milestones, topics and rules can then be changed everywhere at once:
+as missing. Each kind can then be changed everywhere at once, as far as GitHub allows:
 choose the winning variant, see the preview repository by repository -- what
 changes, and what is blocked by permission or by a conflict -- and get one
 result per repository, each kept in Change History (undoable where a
 Properties sheet can reverse it). A ruleset can also be promoted to one
-organization ruleset.
+organization ruleset, and a secret, variable or webhook to the organization's
+own. Release Train, Set Secret Everywhere and Turn On or Off Everywhere are
+:mod:`quill.ui.github_workbench_across_more`.
 
 The Fleet lists each repository once: the exact revision it describes, its
 checks, open pull requests, latest release and alerts, and when it was read;
@@ -29,17 +33,47 @@ import time
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.github.across_more_changes import MORE_KINDS
 from quill.core.github.explore_models import ExploreRow
+from quill.core.github.workbench_tree_more import ACROSS_GROUPS
+from quill.ui.github_workbench_across_more import (
+    MORE_REASONS,
+    MORE_VERBS,
+    GitHubWorkbenchAcrossMoreMixin,
+    kind_of,
+)
 
 __all__ = ["NAME_LOADERS", "NAME_REASONS", "NAME_VERBS", "GitHubWorkbenchAcrossNamesMixin"]
 
 #: Loader -> the by-name kind it reads.
-NAME_LOADERS = {
-    "across:by_labels": "labels",
-    "across:by_milestones": "milestones",
-    "across:by_topics": "topics",
-    "across:by_rules": "rules",
+NAME_LOADERS = {f"across:by_{kind}": kind for _k, _l, kinds in ACROSS_GROUPS for kind, _n in kinds}
+
+#: The by-name kinds each shared command fits (the rest say why not, NAME_REASONS).
+_FITS: dict[str, frozenset[str]] = {
+    "make_same": frozenset({
+        "labels",
+        "milestones",
+        "rules",
+        "environments",
+        "variables",
+        "webhooks",
+    }),
+    "add_missing": frozenset({
+        "labels",
+        "milestones",
+        "topics",
+        "rules",
+        "variables",
+        "webhooks",
+        "autolinks",
+    }),
+    "rename": frozenset({"labels", "branches"}),
+    "delete": frozenset({"labels", "topics", *MORE_KINDS} - {"branches"}),
+    "promote": frozenset({"secrets", "variables", "webhooks"}),
 }
+#: Kinds whose writes decide who may change code or deploy, hold secrets, or send
+#: data out: Full only, whatever the command's own tier.
+_ACCESS_KINDS = frozenset({"rules", "environments", "secrets", "webhooks", "deploy_keys"})
 
 NAME_VERBS: dict[str, frozenset[str]] = {
     "across_variants": frozenset({"by_name"}),
@@ -53,32 +87,40 @@ NAME_VERBS: dict[str, frozenset[str]] = {
     "across_open_repository": frozenset({"fleet"}),
     "across_move_open": frozenset({"by_name"}),
     "across_promote_org": frozenset({"by_name"}),
+    **MORE_VERBS,
 }
 NAME_REASONS: dict[str, str] = {
-    "across_make_same": "A topic has no variants: Add to Missing or Delete Everywhere.",
-    "across_add_missing": "Branch protection is per branch: Make Them the Same covers it.",
-    "across_rename_name": "Only a label is renamed everywhere so far.",
+    **MORE_REASONS,
+    "across_make_same": (
+        "Not for this kind: a topic, tag, branch or deploy key has nothing to make the same, "
+        "a secret is set with Set Secret Everywhere, and GitHub cannot change an autolink."
+    ),
+    "across_add_missing": (
+        "Not for this kind: branch protection is per branch, a tag is made by Release Train, "
+        "a secret by Set Secret Everywhere, GitHub takes a deploy key in one repository only, "
+        "and an environment waits for New Environment in one repository."
+    ),
+    "across_rename_name": "Only a label or a branch is renamed everywhere so far.",
     "across_merge_label": "Only labels are merged.",
-    "across_delete_name": "Labels are deleted, and topics removed, everywhere; not this kind.",
+    "across_delete_name": (
+        "Not for this kind: a milestone, rule set or branch is deleted in its own repository."
+    ),
     "across_close_milestone": "Only a milestone can be closed.",
     "across_find_uses": "Only labels and milestones are on issues to find.",
     "across_move_open": "Only a milestone's open work moves to another milestone.",
     "across_promote_org": (
-        "Only a ruleset can become an organization ruleset; GitHub has no organization "
-        "form for labels, milestones, topics or classic branch protection."
+        "GitHub has an organization form only for rulesets, secrets, variables and webhooks; "
+        "not for this kind, or for classic branch protection."
     ),
 }
 _P = "github.workbench."
 _SEARCH_MAX = 250  # GitHub's search box takes 256 characters
 
 
-def _kind_of(row: object) -> str:
-    if isinstance(row, ExploreRow) and row.kind == "by_name":
-        return row.key.partition(":")[0]
-    return ""
+_kind_of = kind_of
 
 
-class GitHubWorkbenchAcrossNamesMixin:
+class GitHubWorkbenchAcrossNamesMixin(GitHubWorkbenchAcrossMoreMixin):
     """The by-name sheets and the Fleet over the Repository Set in use."""
 
     items: Any
@@ -142,20 +184,21 @@ class GitHubWorkbenchAcrossNamesMixin:
     # -- what fits which row ---------------------------------------------------------
 
     def _fits_across_make_same(self, row: object) -> bool:
-        return _kind_of(row) in ("labels", "milestones", "rules")
+        return _kind_of(row) in _FITS["make_same"]
 
     def _fits_across_add_missing(self, row: object) -> bool:
         if _kind_of(row) == "rules":
             return isinstance(row, ExploreRow) and not row.title.startswith("Branch protection on ")
-        return _kind_of(row) in ("labels", "milestones", "topics")
+        return _kind_of(row) in _FITS["add_missing"]
 
     def _fits_across_rename_name(self, row: object) -> bool:
+        return _kind_of(row) in _FITS["rename"]
+
+    def _fits_across_merge_label(self, row: object) -> bool:
         return _kind_of(row) == "labels"
 
-    _fits_across_merge_label = _fits_across_rename_name
-
     def _fits_across_delete_name(self, row: object) -> bool:
-        return _kind_of(row) in ("labels", "topics")
+        return _kind_of(row) in _FITS["delete"]
 
     def _fits_across_close_milestone(self, row: object) -> bool:
         return _kind_of(row) == "milestones"
@@ -166,7 +209,7 @@ class GitHubWorkbenchAcrossNamesMixin:
         return _kind_of(row) in ("labels", "milestones")
 
     def _fits_across_promote_org(self, row: object) -> bool:
-        return _fits_across_add_missing_rules(row)
+        return _fits_across_add_missing_rules(row) or _kind_of(row) in _FITS["promote"]
 
     # -- reading ---------------------------------------------------------------------
 
@@ -237,6 +280,11 @@ class GitHubWorkbenchAcrossNamesMixin:
         winner = self._winner(hit, "Make Them the Same")
         if winner is None:
             return
+        if found.kind in MORE_KINDS:
+            from quill.core.github.across_more_changes import plan_more_same
+
+            self._run_plan("across_make_same", plan_more_same(found, hit, winner), "Make the Same")
+            return
         planner = plan_rules_same if found.kind == "rules" else plan_make_same
         self._run_plan("across_make_same", planner(found, hit, winner), "Make the Same")
 
@@ -262,6 +310,14 @@ class GitHubWorkbenchAcrossNamesMixin:
         winner = self._winner(hit, "Add to Missing")
         if winner is None:
             return
+        if found.kind in MORE_KINDS:
+            from quill.core.github.across_more_changes import plan_more_add
+
+            secret = self._hook_secret(found.kind, "Add to Missing")
+            if secret is not None:
+                plan = plan_more_add(found, hit, winner, targets)
+                self._run_plan("across_add_missing", plan, "Add", secret=secret)
+            return
         planner = plan_rules_add_missing if found.kind == "rules" else plan_copy_missing
         self._run_plan("across_add_missing", planner(found, hit, winner, targets), "Add")
 
@@ -273,8 +329,14 @@ class GitHubWorkbenchAcrossNamesMixin:
             return
         found, hit = pair
         new = self._ask_text("Rename Everywhere", f"New name for {hit.name}:", value=hit.name)
-        if new and new != hit.name:
-            self._run_plan("across_rename_name", plan_rename(found, hit, new), "Rename")
+        if not new or new == hit.name:
+            return
+        if found.kind == "branches":
+            from quill.core.github.across_more_changes import plan_branch_rename
+
+            self._run_plan("across_rename_name", plan_branch_rename(found, hit, new), "Rename")
+            return
+        self._run_plan("across_rename_name", plan_rename(found, hit, new), "Rename")
 
     def _do_across_merge_label(self, _ref: Any, row: object) -> None:
         from quill.core.github.across_changes import plan_merge
@@ -298,7 +360,11 @@ class GitHubWorkbenchAcrossNamesMixin:
         pair = self._survey_row(row)
         if pair is None:
             return
-        if pair[0].kind == "topics":
+        if pair[0].kind in MORE_KINDS:
+            from quill.core.github.across_more_changes import plan_more_delete
+
+            self._run_plan("across_delete_name", plan_more_delete(*pair), "Delete")
+        elif pair[0].kind == "topics":
             self._run_plan("across_delete_name", plan_topic_remove(*pair), "Remove")
         else:
             self._run_plan("across_delete_name", plan_delete(*pair), "Delete")
@@ -331,9 +397,13 @@ class GitHubWorkbenchAcrossNamesMixin:
         if index < 0:
             return
         winner = self._winner(hit, "Promote to Organization")
-        if winner is not None:
-            plan = plan_promote(found, hit, winner, owners[index])
-            self._run_plan("across_promote_org", plan, "Promote")
+        if winner is None:
+            return
+        if found.kind in MORE_KINDS:
+            self._promote_more(found, hit, winner, owners[index])
+            return
+        plan = plan_promote(found, hit, winner, owners[index])
+        self._run_plan("across_promote_org", plan, "Promote")
 
     def _do_across_close_milestone(self, _ref: Any, row: object) -> None:
         from quill.core.github.across_changes import plan_close
@@ -367,7 +437,7 @@ class GitHubWorkbenchAcrossNamesMixin:
             yes=yes,
         )
 
-    def _run_plan(self, verb: str, plan: Any, yes: str) -> None:
+    def _run_plan(self, verb: str, plan: Any, yes: str, *, secret: str = "") -> None:
         """Check the account's level, preview, then run off the UI thread; one result each."""
         from quill.core.github.across_admin_changes import apply_admin, apply_promote
         from quill.core.github.across_changes import apply, results_summary
@@ -377,8 +447,8 @@ class GitHubWorkbenchAcrossNamesMixin:
 
         declared = requirement_for(f"{_P}{verb}")
         tier = declared[1] if declared is not None else WriteTier.VISIBLE
-        if plan.kind == "rules":
-            tier = max(tier, WriteTier.ACCESS)  # rules decide who may change code
+        if plan.kind in _ACCESS_KINDS:
+            tier = max(tier, WriteTier.ACCESS)
         said = refusal(f"run {command_title(_P + verb)}", tier, self.access_level())  # type: ignore[attr-defined]
         if said:  # the dispatcher checked the declared tier; a rules plan needs more
             self._say(said)
@@ -390,7 +460,13 @@ class GitHubWorkbenchAcrossNamesMixin:
         if not self._preview(f"{yes}: {plan.name}", plan, yes):
             return
         api = self.github_api()
-        if verb == "across_promote_org":
+        if plan.kind in MORE_KINDS:
+            from quill.core.github.across_more_changes import apply_more
+            from quill.core.github.across_more_promote import apply_more_promote
+
+            run = apply_more_promote if verb == "across_promote_org" else apply_more
+            work = lambda: run(api, plan, secret=secret)  # noqa: E731
+        elif verb == "across_promote_org":
             work = lambda: apply_promote(api, plan)  # noqa: E731
         elif plan.kind in ("topics", "rules"):
             work = lambda: apply_admin(api, plan)  # noqa: E731
