@@ -262,6 +262,10 @@ class DocumentFileMixin(DocumentWordMixin):
         self.app.settings.remember_recent(str(path))
         self.app._queue_settings_save()
         self.app.refresh_all_menus()
+        # An open Recent Documents window takes the new row without moving (FUX-06).
+        from quill.ui.recent_documents_dialog import follow_recent_change
+
+        follow_recent_change(list(self.app.settings.recent_files))
 
     # ------------------------------------------------------------------ #
     # Save
@@ -325,7 +329,7 @@ class DocumentFileMixin(DocumentWordMixin):
         self._announce(saved)
         return True
 
-    def _back_up_saved(self, destination: Path, text: str) -> str:
+    def _back_up_saved(self, destination: Path, text: str, *, changed_since: bool = False) -> str:
         """Keep a backup of what was just saved; the sentence that reports the save.
 
         After the real write, never before: a backup that fails must not be able
@@ -335,15 +339,20 @@ class DocumentFileMixin(DocumentWordMixin):
         otherwise go unnoticed until then. So the save is reported as done, in
         the same sentence that says the backup was not, through the window's
         voice so braille gets it too. ``write_backup`` has already logged why.
-        """
-        saved = f"Saved {destination.name}"
-        if not self.app.feature_enabled("backups"):
-            return saved
-        from quill.core.lite.backups import write_backup
 
-        if write_backup(destination, text) is None:
-            return f"{saved}, but could not write a backup"
-        return saved
+        The sentence itself is :func:`quill.core.action_feedback.saved_result`
+        (FUX-04): the file *and its folder*, and, for a background save the
+        person kept typing through (*changed_since*), that what they typed is
+        not in the file yet -- "Saved" alone would say the window is clean.
+        """
+        from quill.core.action_feedback import saved_result
+
+        backup_failed = False
+        if self.app.feature_enabled("backups"):
+            from quill.core.lite.backups import write_backup
+
+            backup_failed = write_backup(destination, text) is None
+        return saved_result(destination, backup_failed=backup_failed, changed_since=changed_since)
 
     def refuse_word_target(self, destination: Path) -> bool:
         """A Word name from a window that cannot write it: refuse rather than write text.

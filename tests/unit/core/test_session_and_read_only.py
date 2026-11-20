@@ -142,7 +142,8 @@ def test_the_question_names_what_it_found() -> None:
 
     source = inspect.getsource(QuillLiteApp._offer_recovery)
     assert "ask_recovery" in source
-    assert "describe_restored" in source
+    # What came back, from when, and that it is unsaved (FUX-04).
+    assert "recovered_result" in source
     label = inspect.getsource(row_label)
     assert "identical copies, kept as one" in label
 

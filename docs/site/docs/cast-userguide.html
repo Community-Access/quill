@@ -951,6 +951,23 @@ like: newest first, oldest first, by title, or by length with
 Shortest First is a good way to find something that fits a short
 walk.</li>
 </ul>
+<h4 id="when-new-episodes-arrive-while-you-are-in-a-list">When new
+episodes arrive while you are in a list</h4>
+<p>Cast keeps working while you read a list. It checks your podcasts,
+finishes downloads, and takes the next episode off the Play Queue when
+one ends. None of that moves you. The episode you are on stays selected,
+and it stays on the same line of the screen, even when new rows arrive
+above it or another row goes. Your keyboard stays where it was too, so
+if you are in the search box or the Places list, a refresh does not pull
+you back to the episodes.</p>
+<p>New episodes wait for you to reach them. Cast says how many arrived
+once, for example “3 new episodes in The Daily.” If a check finds
+nothing new, Cast says nothing.</p>
+<p>This holds in every list of episodes, the Play Queue and Continue
+Listening included, and in the Podcasts tree. When an episode ends and
+the next one leaves the front of the queue, the episode you had selected
+in the Play Queue is still the one selected, so Delete takes out the
+episode you chose.</p>
 <h4 id="working-with-several-episodes-at-once">Working with several
 episodes at once</h4>
 <p>Sorting a busy Inbox one episode at a time gets old fast. In any
@@ -1459,6 +1476,12 @@ and you never have to change it again.</p>
 <p>Press the same keys with nothing playing and you set the speed for
 every podcast that does not have its own. Cast tells you which one you
 changed.</p>
+<p>A speed set anywhere else, in Settings for This Podcast, Change Speed
+in the Podcast Manager or the shared default in Preferences, reaches the
+episode playing as soon as you save it. When it cannot, because a scan
+is holding the speed or an imported file has a speed of its own, Cast
+says so in the same sentence: “The episode playing stays at 1x.” It
+never says the speed is saved while the old one goes on playing.</p>
 <blockquote>
 <p><strong>QUILLBee wants you to know:</strong> If an episode plays at a
 speed you didn’t expect, its podcast probably has a speed of its own.
@@ -3828,9 +3851,11 @@ caught-up podcasts</strong> changes which rows are visible; other
 preference changes and closing without changes do not trigger that
 reload. Cast applies your choices before writing the podcast library,
 application history, and any changed shared-family choices in the
-background. An applied-changes message is not a saved-to-disk
-confirmation. If a write fails, Cast tells you which save failed instead
-of reporting that everything saved.</p>
+background. You hear one sentence when you press Save, such as
+“Preferences changed: 2 changes, in use now.” That is true the moment
+you hear it; it does not claim the files are written yet, and nothing
+more is said when they are. If a write fails, Cast tells you which save
+failed instead.</p>
 <p>Two sections have a shortcut by name. In the Command Palette
 (Ctrl+Shift+P), <strong>Fetching Preferences</strong> opens Preferences
 on Fetching, and <strong>Playing Preferences</strong> opens it on
@@ -4878,9 +4903,9 @@ starts at No. Downloads can be huge, and Cast can fetch them again. Say
 Yes only if you want the audio files too.</li>
 <li>Choose where to save the file and press Save.</li>
 </ol>
-<p>Cast tells you when the backup is written. Do it now, while you think
-of it. Then do it again whenever you have spent an evening sorting
-folders.</p>
+<p>Cast tells you when the backup is written, and where: “Backup saved
+to podcasts.qcbackup in Documents.” Do it now, while you think of it.
+Then do it again whenever you have spent an evening sorting folders.</p>
 <h4 id="restoring-from-a-backup">Restoring from a backup</h4>
 <p>When you need your library back, from a backup you made earlier:</p>
 <ol type="1">
@@ -4891,8 +4916,10 @@ Backup, an Advanced row).</li>
 how many podcasts it holds. If that is the one you meant, confirm.</li>
 </ol>
 <p>The backup replaces the library on this computer. Anything playing
-stops first, and your podcasts are back straight away, with no
-restart.</p>
+stops first, and your podcasts are back straight away, with no restart.
+Cast says what came back. If the files were restored but the window
+could not show them, it says that too, and asks you to restart Cast to
+see your library.</p>
 <h4 id="exporting-your-data-to-read">Exporting your data to read</h4>
 <p>Sometimes you want to look at your data, or use it in another
 program. In Advanced mode, <strong>Podcasts &gt; Export My Data</strong>

@@ -50,14 +50,23 @@ def test_the_field_carries_an_accessible_name_and_help(chooser: str) -> None:
     assert "summary.SetHelpText(" in chooser
 
 
-def test_every_checkbox_updates_the_field(chooser: str) -> None:
-    """Including the ones rebuilt after a row is removed.
+def test_every_checkbox_updates_the_field(request, chooser: str) -> None:
+    """Including the ones left after a row is removed.
 
-    Twice, deliberately: once for the boxes the window opens with, and once
-    inside the rebuild. The rebuild is where this goes wrong, because the
-    original binding is destroyed with the box that carried it.
+    The session chooser binds twice, deliberately: once for the boxes the
+    window opens with, and once inside its rebuild, because the original
+    binding is destroyed with the box that carried it. The recovery chooser no
+    longer rebuilds (FUX-06, lists that stay still): a discard detaches only
+    the discarded rows, so the boxes left keep their binding, their check and
+    their place, and there is no second binding to write.
     """
-    assert chooser.count("box.Bind(wx.EVT_CHECKBOX, _refresh_summary)") == 2
+    binds = chooser.count("box.Bind(wx.EVT_CHECKBOX, _refresh_summary)")
+    if request.node.callspec.params["chooser"] == "recovery":
+        assert binds == 1
+        assert "rows.Detach(box)" in chooser
+        assert chooser.count("wx.CheckBox(") == 1
+    else:
+        assert binds == 2
 
 
 def test_the_field_is_filled_before_the_window_is_shown(chooser: str) -> None:

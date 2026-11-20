@@ -88,6 +88,10 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}accept_invitation": ("sign_in", _A),
     f"{_P}decline_invitation": ("sign_in", _V),
     f"{_P}workflow_state": ("repo:write", _V),
+    f"{_P}edit_workflow": ("repo:write", _V),
+    f"{_P}new_workflow": ("repo:write", _V),
+    f"{_P}dependabot_command": ("sign_in", _V),
+    f"{_P}compare_config": ("repo:write", _V),
     f"{_P}new_tag": ("repo:write", _V),
     f"{_P}delete_tag": ("repo:write", _D),
     f"{_P}transfer_repository": ("repo:admin", _D),
@@ -232,6 +236,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}across_delete_name": ("repo:write", _D),
     f"{_P}across_move_open": ("repo:write", _V),
     f"{_P}across_promote_org": ("org:owner+repo:admin", _D),
+    f"{_P}across_release_train": ("repo:write", _V),
+    f"{_P}across_set_secret": ("repo:admin", _A),
+    f"{_P}across_hooks_on_off": ("repo:admin", _V),
 }
 
 
