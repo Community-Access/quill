@@ -494,6 +494,26 @@ these features, and `--only` to run just some of them.
   organization's copy first and only then deletes each repository's own.
   Environments, deploy keys and autolinks have no organization form on
   GitHub, and QUILL says so.
+### GitHub Workbench: every list filters, and nothing from the old windows is lost (2026-11-20)
+
+- **Filters on every list.** Typing a filter such as `protected:true`,
+  `ahead:>=3`, `name:release-*`, `draft:false` or `-repo:acme/app` now narrows
+  branches, tags, releases, workflow runs, people and the other lists, not
+  only issues and pull requests. The rows already loaded are filtered, and the
+  status line says so: "Filtered here: 2 of 3 loaded. Load All to be sure." A
+  word the list does not understand is named once instead of silently
+  matching nothing.
+- **Three repository commands moved in from the retired Explore GitHub
+  window:** Sync Fork with Upstream..., Create Repository from This
+  Template..., and Delete Repository..., which asks you to type the
+  repository's full name before anything is deleted.
+- **Clearer list names.** Explore lists read as words: "Organization Custom
+  Properties" and "My Email Addresses", not "custom propertys" and "email
+  addresss".
+- The GitHub PRD's appendices, which say where every old view, button and
+  command now lives and what each object's Properties sheet and filters are,
+  are now generated from the code and checked by a test, so they cannot fall
+  out of date.
 
 ### GitHub Workbench: rulesets, branch protection, members, teams and access reviews (2026-11-19)
 

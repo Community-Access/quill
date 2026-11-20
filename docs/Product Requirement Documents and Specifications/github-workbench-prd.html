@@ -5497,172 +5497,61 @@ already takes it.</li>
 <h2 id="appendices">Appendices</h2>
 <h2 id="appendix-a-every-feature-and-its-new-home">Appendix A: every
 feature and its new home</h2>
+<p>Generated from the code (2026-11-19): the views from their own
+registries with the node that is each one’s home, and every other row
+from <code>quill/core/github/appendix_ab_rows.py</code>, each with the
+refs <code>python -m quill.tools.github_appendix_reference</code>
+resolves against the tree, the menus, the context menus, the sheets and
+Workbench Options. The gate fails when a home disappears, and when a
+retired window, the editor’s GitHub menu or a door gains something no
+row maps.</p>
+<!-- BEGIN GENERATED appendix-a: python -m quill.tools.github_appendix_reference --write -->
+
 <h3 id="github-items-views">GitHub Items’ views</h3>
 <table>
 <thead>
 <tr>
 <th>Today</th>
 <th>New home</th>
+<th>Loader</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Issues &amp; PRs</td>
-<td>Repository &gt; Issues; &gt; Pull Requests; &gt; Issues and Pull
-Requests</td>
+<td>Repository &gt; Issues and Pull Requests (narrowed: Repository &gt;
+Issues, Repository &gt; Pull Requests)</td>
+<td><code>items:issues</code></td>
 </tr>
 <tr>
 <td>Branches</td>
 <td>Repository &gt; Code &gt; Branches</td>
+<td><code>items:branches</code></td>
 </tr>
 <tr>
 <td>Commits</td>
 <td>Repository &gt; Code &gt; Commits</td>
+<td><code>items:commits</code></td>
 </tr>
 <tr>
 <td>Tags</td>
 <td>Repository &gt; Code &gt; Tags</td>
+<td><code>items:tags</code></td>
 </tr>
 <tr>
 <td>Releases</td>
 <td>Repository &gt; Releases</td>
+<td><code>items:releases</code></td>
 </tr>
 <tr>
 <td>Workflows</td>
 <td>Repository &gt; Actions &gt; Workflows</td>
+<td><code>items:workflows</code></td>
 </tr>
 <tr>
 <td>Workflow Runs</td>
 <td>Repository &gt; Actions &gt; Runs</td>
-</tr>
-</tbody>
-</table>
-<h3 id="github-items-buttons-and-choices">GitHub Items’ buttons and
-choices</h3>
-<table>
-<thead>
-<tr>
-<th>Today</th>
-<th>New home</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Repository box and Load</td>
-<td>The Repositories node; File &gt; Open a Repository…; Open GitHub
-Address…</td>
-</tr>
-<tr>
-<td>Pinned…</td>
-<td>Repositories &gt; Pinned; Tools &gt; Workbench Options &gt;
-Repositories</td>
-</tr>
-<tr>
-<td>Favorites…</td>
-<td>Repositories &gt; Favorites; Item &gt; Add to or Remove from
-Favorites</td>
-</tr>
-<tr>
-<td>Explore…</td>
-<td>Gone as a window: everything is in the tree</td>
-</tr>
-<tr>
-<td>Projects…</td>
-<td>Projects node; Repository &gt; Projects</td>
-</tr>
-<tr>
-<td>View Upstream</td>
-<td>Repository &gt; Code &gt; Upstream; Repository &gt; View
-Upstream</td>
-</tr>
-<tr>
-<td>Files…</td>
-<td>Repository &gt; Code &gt; Files; Repository &gt; Browse Files</td>
-</tr>
-<tr>
-<td>Milestones…</td>
-<td>Repository &gt; Milestones</td>
-</tr>
-<tr>
-<td>Search box and Search</td>
-<td>Filter box; the Search branch</td>
-</tr>
-<tr>
-<td>Open Link…</td>
-<td>File &gt; Open GitHub Address… (Ctrl+L)</td>
-</tr>
-<tr>
-<td>Quick filter</td>
-<td>Filter box</td>
-</tr>
-<tr>
-<td>View choice</td>
-<td>The tree</td>
-</tr>
-<tr>
-<td>Show choice</td>
-<td>Issues and Pull Requests nodes; View &gt; Show</td>
-</tr>
-<tr>
-<td>State, Sort</td>
-<td>View &gt; State; View &gt; Sort</td>
-</tr>
-<tr>
-<td>List mode</td>
-<td>View &gt; Quick or Full list</td>
-</tr>
-<tr>
-<td>Columns…</td>
-<td>View &gt; Columns… (current list); Tools &gt; Workbench Options &gt;
-Lists (defaults)</td>
-</tr>
-<tr>
-<td>Back, Forward</td>
-<td>View &gt; Back, Forward; Backspace, Alt+Left, Alt+Right</td>
-</tr>
-<tr>
-<td>Refresh</td>
-<td>View &gt; Refresh (F5, Ctrl+R)</td>
-</tr>
-<tr>
-<td>View More</td>
-<td>View &gt; Load More</td>
-</tr>
-<tr>
-<td>Open in Browser</td>
-<td>File &gt; Open on GitHub; on every context menu</td>
-</tr>
-<tr>
-<td>Go To #…</td>
-<td>File &gt; Go to Number…</td>
-</tr>
-<tr>
-<td>Diff…</td>
-<td>Item &gt; File Differences…; PR context menu</td>
-</tr>
-<tr>
-<td>Review…</td>
-<td>Item &gt; Review…; default action for a PR</td>
-</tr>
-<tr>
-<td>Summarize</td>
-<td>Item &gt; Summarize Discussion</td>
-</tr>
-<tr>
-<td>Compare…</td>
-<td>Repository &gt; Compare Branches…; branch context menu</td>
-</tr>
-<tr>
-<td>Batch…</td>
-<td>Item &gt; Batch (multiple selection)</td>
-</tr>
-<tr>
-<td>Actions…</td>
-<td>The Item menu</td>
-</tr>
-<tr>
-<td>Close</td>
-<td>File &gt; Close Workbench; Alt+F4</td>
+<td><code>items:runs</code></td>
 </tr>
 </tbody>
 </table>
@@ -5672,143 +5561,909 @@ Lists (defaults)</td>
 <tr>
 <th>Today</th>
 <th>New home</th>
+<th>Loader</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Global issue and PR search</td>
-<td>Search &gt; Issues and Pull Requests</td>
+<td>Search &gt; Issues and Pull Requests (narrowed: Saved search)</td>
+<td><code>explore:search</code></td>
 </tr>
 <tr>
 <td>Code search</td>
 <td>Search &gt; Code</td>
+<td><code>explore:code_search</code></td>
 </tr>
 <tr>
 <td>Commit search</td>
 <td>Search &gt; Commits</td>
+<td><code>explore:commit_search</code></td>
 </tr>
 <tr>
 <td>Repository search</td>
 <td>Search &gt; Repositories</td>
+<td><code>explore:repo_search</code></td>
+</tr>
+<tr>
+<td>People search</td>
+<td>Search &gt; People and Organizations</td>
+<td><code>explore:user_search</code></td>
+</tr>
+<tr>
+<td>Topic search</td>
+<td>Search &gt; Topics</td>
+<td><code>explore:topic_search</code></td>
 </tr>
 <tr>
 <td>My Work</td>
-<td>Needs My Attention &gt; Review Requests, Assigned to Me, Mentions,
-My Open Pull Requests, My Open Issues</td>
+<td>Needs My Attention &gt; Review Requests (narrowed: Needs My
+Attention &gt; Assigned to Me, Needs My Attention &gt; Mentions, Needs
+My Attention &gt; My Open Pull Requests, Needs My Attention &gt; My Open
+Issues)</td>
+<td><code>explore:my_work</code></td>
 </tr>
 <tr>
 <td>Attention queue</td>
 <td>Needs My Attention &gt; Inbox</td>
+<td><code>explore:attention</code></td>
 </tr>
 <tr>
 <td>My activity feed</td>
 <td>Needs My Attention &gt; My Activity Feed</td>
+<td><code>explore:activity</code></td>
 </tr>
 <tr>
 <td>My repositories</td>
 <td>Repositories &gt; My Repositories</td>
+<td><code>explore:repositories</code></td>
 </tr>
 <tr>
 <td>Starred repositories</td>
 <td>Repositories &gt; Starred</td>
+<td><code>explore:starred</code></td>
 </tr>
 <tr>
 <td>Watched repositories</td>
 <td>Repositories &gt; Watched</td>
+<td><code>explore:watched</code></td>
 </tr>
 <tr>
 <td>People I follow</td>
 <td>People &gt; People I Follow</td>
+<td><code>explore:following</code></td>
 </tr>
 <tr>
 <td>My followers</td>
 <td>People &gt; My Followers</td>
+<td><code>explore:followers</code></td>
 </tr>
 <tr>
 <td>My gists</td>
 <td>Gists &gt; My Gists</td>
+<td><code>explore:gists</code></td>
 </tr>
 <tr>
 <td>GitHub notifications</td>
 <td>Needs My Attention &gt; Notifications</td>
+<td><code>explore:notifications</code></td>
 </tr>
 <tr>
 <td>Repository chooser</td>
-<td>The Repositories branch itself</td>
+<td>Repositories</td>
+<td><code>explore:chooser</code></td>
 </tr>
 <tr>
-<td>Person’s repositories, public activity, followers, people
-followed</td>
-<td>People &gt; person &gt; Repositories, Activity, Followers,
-Following</td>
+<td>Person’s profile</td>
+<td>Person &gt; Profile</td>
+<td><code>explore:person_profile</code></td>
+</tr>
+<tr>
+<td>Sponsor a person</td>
+<td>Person &gt; Sponsor</td>
+<td><code>explore:person_sponsor</code></td>
+</tr>
+<tr>
+<td>Person’s repositories</td>
+<td>Person &gt; Repositories</td>
+<td><code>explore:person_repos</code></td>
+</tr>
+<tr>
+<td>Person’s public activity</td>
+<td>Person &gt; Activity</td>
+<td><code>explore:person_activity</code></td>
+</tr>
+<tr>
+<td>Person’s followers</td>
+<td>Person &gt; Followers</td>
+<td><code>explore:person_followers</code></td>
+</tr>
+<tr>
+<td>People followed by person</td>
+<td>Person &gt; Following</td>
+<td><code>explore:person_following</code></td>
+</tr>
+<tr>
+<td>Person’s packages</td>
+<td>Person &gt; Packages</td>
+<td><code>explore:person_packages</code></td>
+</tr>
+<tr>
+<td>My codespaces</td>
+<td>Repositories &gt; My Codespaces</td>
+<td><code>explore:my_codespaces</code></td>
+</tr>
+<tr>
+<td>Repository codespaces</td>
+<td>Repository &gt; Code &gt; Codespaces</td>
+<td><code>explore:repo_codespaces</code></td>
+</tr>
+<tr>
+<td>Repository environments</td>
+<td>Repository &gt; Settings &gt; Environments</td>
+<td><code>explore:repo_environments</code></td>
 </tr>
 <tr>
 <td>Repository overview</td>
 <td>Repository &gt; Overview</td>
+<td><code>explore:repo_overview</code></td>
 </tr>
 <tr>
 <td>Repository activity</td>
 <td>Repository &gt; Activity</td>
+<td><code>explore:repo_activity</code></td>
 </tr>
 <tr>
 <td>Repository people</td>
 <td>Repository &gt; People &gt; Contributors and People</td>
+<td><code>explore:repo_people</code></td>
 </tr>
 <tr>
 <td>Repository forks</td>
 <td>Repository &gt; People &gt; Forks</td>
+<td><code>explore:repo_forks</code></td>
 </tr>
 <tr>
 <td>Collaborators and team access</td>
 <td>Repository &gt; People &gt; Collaborators and Team Access</td>
+<td><code>explore:repo_access</code></td>
 </tr>
 <tr>
 <td>Deployments and environments</td>
 <td>Repository &gt; Deployments and Environments</td>
+<td><code>explore:deployments</code></td>
 </tr>
 <tr>
 <td>Repository health snapshot (opt-in)</td>
 <td>Repository &gt; Insights &gt; Health Snapshot</td>
+<td><code>explore:metrics</code></td>
 </tr>
 <tr>
 <td>Repository labels</td>
 <td>Repository &gt; Labels</td>
+<td><code>explore:labels</code></td>
 </tr>
 <tr>
 <td>GitHub Pages and builds</td>
 <td>Repository &gt; GitHub Pages</td>
+<td><code>explore:pages</code></td>
 </tr>
 <tr>
 <td>Repository Discussions</td>
 <td>Repository &gt; Discussions</td>
+<td><code>explore:discussions</code></td>
 </tr>
 <tr>
 <td>Repository security alerts</td>
 <td>Repository &gt; Security &gt; Alerts</td>
+<td><code>explore:security</code></td>
 </tr>
 <tr>
 <td>Insights: traffic and contributors</td>
 <td>Repository &gt; Insights &gt; Traffic and Contributors</td>
+<td><code>explore:insights</code></td>
 </tr>
 <tr>
 <td>Community profile checklist</td>
 <td>Repository &gt; Insights &gt; Community Profile</td>
+<td><code>explore:community</code></td>
+</tr>
+<tr>
+<td>Commit activity as tables</td>
+<td>Repository &gt; Insights &gt; Commit Activity</td>
+<td><code>explore:commit_stats</code></td>
+</tr>
+<tr>
+<td>Security policy and reporting</td>
+<td>Repository &gt; Security &gt; Policy</td>
+<td><code>explore:security_policy</code></td>
+</tr>
+<tr>
+<td>Repository security advisories</td>
+<td>Repository &gt; Security &gt; Advisories</td>
+<td><code>explore:advisories</code></td>
+</tr>
+<tr>
+<td>Repository webhooks</td>
+<td>Repository &gt; Settings &gt; Webhooks</td>
+<td><code>explore:webhooks</code></td>
+</tr>
+<tr>
+<td>Repository deploy keys</td>
+<td>Repository &gt; Settings &gt; Deploy Keys</td>
+<td><code>explore:deploy_keys</code></td>
+</tr>
+<tr>
+<td>Repository autolinks</td>
+<td>Repository &gt; Settings &gt; Autolinks</td>
+<td><code>explore:autolinks</code></td>
+</tr>
+<tr>
+<td>Organization webhooks</td>
+<td>Organization &gt; Webhooks</td>
+<td><code>explore:org_webhooks</code></td>
+</tr>
+<tr>
+<td>Organization packages</td>
+<td>Organization &gt; Packages</td>
+<td><code>explore:org_packages</code></td>
+</tr>
+<tr>
+<td>Repository wiki</td>
+<td>Repository &gt; Wiki</td>
+<td><code>explore:wiki</code></td>
+</tr>
+<tr>
+<td>GitHub Advisory Database</td>
+<td>Search &gt; Security Advisories</td>
+<td><code>explore:advisory_search</code></td>
 </tr>
 <tr>
 <td>Actions caches</td>
 <td>Repository &gt; Actions &gt; Caches</td>
+<td><code>explore:actions_caches</code></td>
 </tr>
 <tr>
 <td>Secret and variable names</td>
 <td>Repository &gt; Settings &gt; Secret and Variable Names</td>
+<td><code>explore:secrets</code></td>
+</tr>
+<tr>
+<td>Merge queue</td>
+<td>Repository &gt; Merge Queue</td>
+<td><code>explore:merge_queue</code></td>
+</tr>
+<tr>
+<td>Repository invitations</td>
+<td>Needs My Attention &gt; Invitations</td>
+<td><code>explore:invitations</code></td>
+</tr>
+<tr>
+<td>My packages</td>
+<td>Repositories &gt; My Packages</td>
+<td><code>explore:my_packages</code></td>
+</tr>
+<tr>
+<td>Star lists</td>
+<td>Repositories &gt; Star Lists</td>
+<td><code>explore:star_lists</code></td>
+</tr>
+<tr>
+<td>My profile</td>
+<td>People &gt; My Profile</td>
+<td><code>explore:my_profile</code></td>
+</tr>
+<tr>
+<td>My SSH and GPG keys</td>
+<td>People &gt; My Keys</td>
+<td><code>explore:my_keys</code></td>
+</tr>
+<tr>
+<td>My sponsorships</td>
+<td>People &gt; Sponsorships</td>
+<td><code>explore:sponsorships</code></td>
+</tr>
+<tr>
+<td>Self-hosted runners</td>
+<td>Repository &gt; Actions &gt; Runners</td>
+<td><code>explore:runners</code></td>
+</tr>
+<tr>
+<td>Billing and usage</td>
+<td>People &gt; My Billing and Usage</td>
+<td><code>explore:billing_usage</code></td>
 </tr>
 <tr>
 <td>Dismissed and resolved security alerts</td>
 <td>Repository &gt; Security &gt; Dismissed and Resolved Alerts</td>
+<td><code>explore:security_closed</code></td>
+</tr>
+<tr>
+<td>Repository Actions Variables</td>
+<td>Repository &gt; Settings &gt; Actions Variables</td>
+<td><code>explore:res_actions_variables</code></td>
+</tr>
+<tr>
+<td>Repository Actions Secrets</td>
+<td>Repository &gt; Settings &gt; Actions Secrets</td>
+<td><code>explore:res_actions_secrets</code></td>
+</tr>
+<tr>
+<td>Repository Dependabot Secrets</td>
+<td>Repository &gt; Settings &gt; Dependabot Secrets</td>
+<td><code>explore:res_dependabot_secrets</code></td>
+</tr>
+<tr>
+<td>Repository Codespaces Secrets</td>
+<td>Repository &gt; Settings &gt; Codespaces Secrets</td>
+<td><code>explore:res_codespaces_secrets</code></td>
+</tr>
+<tr>
+<td>Repository Copilot Agent Secrets</td>
+<td>Repository &gt; Settings &gt; Copilot Agent Secrets</td>
+<td><code>explore:res_agent_secrets</code></td>
+</tr>
+<tr>
+<td>Repository Copilot Agent Variables</td>
+<td>Repository &gt; Settings &gt; Copilot Agent Variables</td>
+<td><code>explore:res_agent_variables</code></td>
+</tr>
+<tr>
+<td>Repository Artifacts</td>
+<td>Repository &gt; Actions &gt; Artifacts</td>
+<td><code>explore:res_artifacts</code></td>
+</tr>
+<tr>
+<td>Repository Invitations</td>
+<td>Repository &gt; People &gt; Invitations</td>
+<td><code>explore:res_repo_invitations</code></td>
+</tr>
+<tr>
+<td>Repository Issue Types</td>
+<td>Repository &gt; Settings &gt; Issue Types</td>
+<td><code>explore:res_repo_issue_types</code></td>
+</tr>
+<tr>
+<td>Organization Actions Variables</td>
+<td>Organization &gt; Actions Variables</td>
+<td><code>explore:res_org_actions_variables</code></td>
+</tr>
+<tr>
+<td>Organization Actions Secrets</td>
+<td>Organization &gt; Actions Secrets</td>
+<td><code>explore:res_org_actions_secrets</code></td>
+</tr>
+<tr>
+<td>Organization Dependabot Secrets</td>
+<td>Organization &gt; Dependabot Secrets</td>
+<td><code>explore:res_org_dependabot_secrets</code></td>
+</tr>
+<tr>
+<td>Organization Codespaces Secrets</td>
+<td>Organization &gt; Codespaces Secrets</td>
+<td><code>explore:res_org_codespaces_secrets</code></td>
+</tr>
+<tr>
+<td>Organization Copilot Agent Secrets</td>
+<td>Organization &gt; Copilot Agent Secrets</td>
+<td><code>explore:res_org_agent_secrets</code></td>
+</tr>
+<tr>
+<td>Organization Copilot Agent Variables</td>
+<td>Organization &gt; Copilot Agent Variables</td>
+<td><code>explore:res_org_agent_variables</code></td>
+</tr>
+<tr>
+<td>Organization Runner Groups</td>
+<td>Organization &gt; Runner Groups</td>
+<td><code>explore:res_runner_groups</code></td>
+</tr>
+<tr>
+<td>Organization Runners</td>
+<td>Organization &gt; Runners</td>
+<td><code>explore:res_org_runners</code></td>
+</tr>
+<tr>
+<td>Organization Larger Runners</td>
+<td>Organization &gt; Larger Runners</td>
+<td><code>explore:res_hosted_runners</code></td>
+</tr>
+<tr>
+<td>Organization Members</td>
+<td>Organization &gt; Members</td>
+<td><code>explore:res_org_members</code></td>
+</tr>
+<tr>
+<td>Organization Invitations</td>
+<td>Organization &gt; Invitations</td>
+<td><code>explore:res_org_invitations</code></td>
+</tr>
+<tr>
+<td>Organization Blocked People</td>
+<td>Organization &gt; Blocked People</td>
+<td><code>explore:res_org_blocks</code></td>
+</tr>
+<tr>
+<td>Organization Outside Collaborators</td>
+<td>Organization &gt; Outside Collaborators</td>
+<td><code>explore:res_outside_collaborators</code></td>
+</tr>
+<tr>
+<td>Organization Security Managers</td>
+<td>Organization &gt; Security Managers</td>
+<td><code>explore:res_security_managers</code></td>
+</tr>
+<tr>
+<td>Organization Custom Properties</td>
+<td>Organization &gt; Custom Properties</td>
+<td><code>explore:res_custom_properties</code></td>
+</tr>
+<tr>
+<td>Organization Issue Types</td>
+<td>Organization &gt; Issue Types</td>
+<td><code>explore:res_org_issue_types</code></td>
+</tr>
+<tr>
+<td>Organization Organization Roles</td>
+<td>Organization &gt; Organization Roles</td>
+<td><code>explore:res_org_roles</code></td>
+</tr>
+<tr>
+<td>My Codespaces Secrets</td>
+<td>People &gt; My Codespaces Secrets</td>
+<td><code>explore:res_my_codespaces_secrets</code></td>
+</tr>
+<tr>
+<td>Repository Code Scanning Analyses</td>
+<td>Repository &gt; Security &gt; Code Scanning Analyses</td>
+<td><code>explore:res_code_scanning_analyses</code></td>
+</tr>
+<tr>
+<td>Repository CodeQL Databases</td>
+<td>Repository &gt; Security &gt; CodeQL Databases</td>
+<td><code>explore:res_codeql_databases</code></td>
+</tr>
+<tr>
+<td>Organization Code Scanning Alerts</td>
+<td>Organization &gt; Code Scanning Alerts</td>
+<td><code>explore:res_org_code_scanning_alerts</code></td>
+</tr>
+<tr>
+<td>Repository Organization Secrets Here</td>
+<td>Repository &gt; Settings &gt; Organization Secrets Here</td>
+<td><code>explore:res_repo_org_secrets</code></td>
+</tr>
+<tr>
+<td>Repository Organization Variables Here</td>
+<td>Repository &gt; Settings &gt; Organization Variables Here</td>
+<td><code>explore:res_repo_org_variables</code></td>
+</tr>
+<tr>
+<td>My Email Addresses</td>
+<td>People &gt; My Email Addresses</td>
+<td><code>explore:res_my_emails</code></td>
+</tr>
+<tr>
+<td>My Social Accounts</td>
+<td>People &gt; My Social Accounts</td>
+<td><code>explore:res_my_social_accounts</code></td>
+</tr>
+<tr>
+<td>Blocked People</td>
+<td>People &gt; Blocked People</td>
+<td><code>explore:res_my_blocks</code></td>
+</tr>
+<tr>
+<td>My Followers</td>
+<td>People &gt; My Followers</td>
+<td><code>explore:res_my_followers</code></td>
+</tr>
+<tr>
+<td>My Issue Types</td>
+<td>People &gt; My Issue Types</td>
+<td><code>explore:res_my_issue_types</code></td>
+</tr>
+<tr>
+<td>My Organizations’ Memberships</td>
+<td>People &gt; My Organizations’ Memberships</td>
+<td><code>explore:res_my_org_memberships</code></td>
+</tr>
+<tr>
+<td>My Issue Fields</td>
+<td>People &gt; My Issue Fields</td>
+<td><code>explore:res_my_issue_fields</code></td>
+</tr>
+<tr>
+<td>My Installed Apps</td>
+<td>People &gt; My Installed Apps</td>
+<td><code>explore:res_my_installations</code></td>
+</tr>
+<tr>
+<td>My Public Email Addresses</td>
+<td>People &gt; My Public Email Addresses</td>
+<td><code>explore:res_my_public_emails</code></td>
+</tr>
+<tr>
+<td>Repositories I Watch</td>
+<td>People &gt; Repositories I Watch</td>
+<td><code>explore:res_my_watching</code></td>
+</tr>
+<tr>
+<td>Gists I Starred</td>
+<td>Gists &gt; Gists I Starred</td>
+<td><code>explore:res_my_starred_gists</code></td>
+</tr>
+<tr>
+<td>Organization Issue Fields</td>
+<td>Organization &gt; Issue Fields</td>
+<td><code>explore:res_org_issue_fields</code></td>
+</tr>
+<tr>
+<td>Organization Failed Invitations</td>
+<td>Organization &gt; Failed Invitations</td>
+<td><code>explore:res_org_failed_invitations</code></td>
+</tr>
+<tr>
+<td>Organization Public Members</td>
+<td>Organization &gt; Public Members</td>
+<td><code>explore:res_org_public_members</code></td>
+</tr>
+<tr>
+<td>Organization Installed Apps</td>
+<td>Organization &gt; Installed Apps</td>
+<td><code>explore:res_org_installations</code></td>
+</tr>
+<tr>
+<td>Organization Immutable Releases: Repositories</td>
+<td>Organization &gt; Immutable Releases: Repositories</td>
+<td><code>explore:res_org_immutable_release_repos</code></td>
+</tr>
+<tr>
+<td>Organization Actions: Allowed Repositories</td>
+<td>Organization &gt; Actions: Allowed Repositories</td>
+<td><code>explore:res_org_actions_repos</code></td>
+</tr>
+<tr>
+<td>Organization Self-hosted Runners: Allowed Repositories</td>
+<td>Organization &gt; Self-hosted Runners: Allowed Repositories</td>
+<td><code>explore:res_org_runner_repos</code></td>
+</tr>
+<tr>
+<td>Organization Dependabot Alerts</td>
+<td>Organization &gt; Dependabot Alerts</td>
+<td><code>explore:res_org_dependabot_alerts</code></td>
+</tr>
+<tr>
+<td>Organization Secret Scanning Alerts</td>
+<td>Organization &gt; Secret Scanning Alerts</td>
+<td><code>explore:res_org_secret_alerts</code></td>
+</tr>
+<tr>
+<td>Organization Security Advisories</td>
+<td>Organization &gt; Security Advisories</td>
+<td><code>explore:res_org_advisories</code></td>
+</tr>
+<tr>
+<td>Organization Recent Events</td>
+<td>Organization &gt; Recent Events</td>
+<td><code>explore:res_org_events</code></td>
+</tr>
+<tr>
+<td>Organization Custom Property Values</td>
+<td>Organization &gt; Custom Property Values</td>
+<td><code>explore:res_org_property_values</code></td>
+</tr>
+<tr>
+<td>Repository All Issue Comments</td>
+<td>Repository &gt; Activity &gt; All Issue Comments</td>
+<td><code>explore:res_repo_issue_comments</code></td>
+</tr>
+<tr>
+<td>Repository Commit Comments</td>
+<td>Repository &gt; Code &gt; Commit Comments</td>
+<td><code>explore:res_commit_comments</code></td>
+</tr>
+<tr>
+<td>Repository Watchers</td>
+<td>Repository &gt; People &gt; Watchers</td>
+<td><code>explore:res_repo_watchers</code></td>
+</tr>
+<tr>
+<td>Repository Push Activity</td>
+<td>Repository &gt; Activity &gt; Push Activity</td>
+<td><code>explore:res_repo_push_activity</code></td>
+</tr>
+<tr>
+<td>Repository CODEOWNERS Problems</td>
+<td>Repository &gt; Settings &gt; CODEOWNERS Problems</td>
+<td><code>explore:res_codeowners_errors</code></td>
+</tr>
+<tr>
+<td>Repository Rule Insights</td>
+<td>Repository &gt; Settings &gt; Rule Insights</td>
+<td><code>explore:res_repo_rule_insights</code></td>
+</tr>
+<tr>
+<td>Repository My Notifications Here</td>
+<td>Repository &gt; Activity &gt; My Notifications Here</td>
+<td><code>explore:res_repo_my_notifications</code></td>
+</tr>
+<tr>
+<td>Repository Custom Property Values</td>
+<td>Repository &gt; Settings &gt; Custom Property Values</td>
+<td><code>explore:res_repo_property_values</code></td>
+</tr>
+<tr>
+<td>Person’s SSH Keys</td>
+<td>Person &gt; SSH Keys</td>
+<td><code>explore:res_person_keys</code></td>
+</tr>
+<tr>
+<td>Person’s GPG Keys</td>
+<td>Person &gt; GPG Keys</td>
+<td><code>explore:res_person_gpg_keys</code></td>
+</tr>
+<tr>
+<td>Person’s SSH Signing Keys</td>
+<td>Person &gt; SSH Signing Keys</td>
+<td><code>explore:res_person_signing_keys</code></td>
+</tr>
+<tr>
+<td>Person’s Social Accounts</td>
+<td>Person &gt; Social Accounts</td>
+<td><code>explore:res_person_social</code></td>
+</tr>
+<tr>
+<td>Person’s Gists</td>
+<td>Person &gt; Gists</td>
+<td><code>explore:res_person_gists</code></td>
+</tr>
+<tr>
+<td>Person’s Starred</td>
+<td>Person &gt; Starred</td>
+<td><code>explore:res_person_starred</code></td>
+</tr>
+<tr>
+<td>Person’s Watching</td>
+<td>Person &gt; Watching</td>
+<td><code>explore:res_person_watching</code></td>
+</tr>
+<tr>
+<td>Person’s Projects</td>
+<td>Person &gt; Projects</td>
+<td><code>explore:res_person_projects</code></td>
+</tr>
+<tr>
+<td>Person’s People They Follow: Activity</td>
+<td>Person &gt; People They Follow: Activity</td>
+<td><code>explore:res_person_feed</code></td>
+</tr>
+<tr>
+<td>Licences</td>
+<td>Repositories &gt; Licences</td>
+<td><code>explore:res_licenses</code></td>
+</tr>
+<tr>
+<td>.gitignore Templates</td>
+<td>Repositories &gt; .gitignore Templates</td>
+<td><code>explore:res_gitignore_templates</code></td>
+</tr>
+<tr>
+<td>Codes of Conduct</td>
+<td>Repositories &gt; Codes of Conduct</td>
+<td><code>explore:res_codes_of_conduct</code></td>
+</tr>
+<tr>
+<td>Repository Rulesets</td>
+<td>Repository &gt; Settings &gt; Rulesets</td>
+<td><code>explore:res_repo_rulesets</code></td>
+</tr>
+<tr>
+<td>Organization Rulesets</td>
+<td>Organization &gt; Rulesets</td>
+<td><code>explore:res_org_rulesets</code></td>
+</tr>
+<tr>
+<td>Organization Rule Insights</td>
+<td>Organization &gt; Rule Insights</td>
+<td><code>explore:res_org_rule_insights</code></td>
+</tr>
+<tr>
+<td>Organization Access Review: People</td>
+<td>Organization &gt; Access Review: People</td>
+<td><code>explore:res_access_people</code></td>
+</tr>
+<tr>
+<td>Organization Access Review: Teams</td>
+<td>Organization &gt; Access Review: Teams</td>
+<td><code>explore:res_access_teams</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="github-items-and-explore-githubs-buttons-and-choices">GitHub
+Items’ and Explore GitHub’s buttons and choices</h3>
+<table>
+<thead>
+<tr>
+<th>Today</th>
+<th>New home</th>
+<th>In the code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repository box and Load</td>
+<td>The Repositories node; File &gt; Open GitHub Address… (Ctrl+L) takes
+owner/name.</td>
+<td><code>node:repositories</code>, <code>menu:open_address</code></td>
+</tr>
+<tr>
+<td>Pinned…</td>
+<td>Repositories &gt; Pinned; Tools &gt; Workbench Options &gt;
+Repositories.</td>
+<td><code>node:pinned</code>, <code>prefpage:Repositories</code>,
+<code>row:repository.pin_repository</code></td>
+</tr>
+<tr>
+<td>Favorites…</td>
+<td>Repositories &gt; Favorites; Item &gt; Add to or Remove from
+Favorites (Ctrl+D).</td>
+<td><code>node:favorites</code>, <code>menu:favorite</code></td>
+</tr>
+<tr>
+<td>Explore…</td>
+<td>Gone as a window: each of its views is a node (above). Explore
+GitHub was a second window; its views are nodes.</td>
+<td><code>node:search</code></td>
+</tr>
+<tr>
+<td>Projects…</td>
+<td>The Projects node; Repository &gt; Projects; Repository Actions…
+&gt; Projects….</td>
+<td><code>node:projects</code>,
+<code>node:repository.repo_projects</code>,
+<code>repoaction:github.workbench.projects_window</code></td>
+</tr>
+<tr>
+<td>View Upstream</td>
+<td>Repository &gt; Code &gt; Upstream (a fork’s own node).</td>
+<td><code>node:repository.upstream</code></td>
+</tr>
+<tr>
+<td>Files…</td>
+<td>Repository &gt; Code &gt; Files; Go &gt; Files (Ctrl+Shift+5);
+Repository Actions… &gt; Files, History and Blame….</td>
+<td><code>node:repository.files</code>, <code>menu:go_files</code>,
+<code>repoaction:github.workbench.files_window</code></td>
+</tr>
+<tr>
+<td>Milestones…</td>
+<td>Repository &gt; Milestones; Repository Actions… &gt;
+Milestones….</td>
+<td><code>node:repository.milestones</code>,
+<code>repoaction:github.workbench.milestones_window</code></td>
+</tr>
+<tr>
+<td>Search box and Search</td>
+<td>The filter box (Ctrl+E); the Search branch.</td>
+<td><code>menu:filter</code>, <code>node:search</code></td>
+</tr>
+<tr>
+<td>Open Link…</td>
+<td>File &gt; Open GitHub Address… (Ctrl+L).</td>
+<td><code>menu:open_address</code></td>
+</tr>
+<tr>
+<td>Quick filter</td>
+<td>The filter box (Ctrl+E); Edit &gt; Filter Builder…
+(Ctrl+Alt+F).</td>
+<td><code>menu:filter</code>, <code>menu:filter_builder</code></td>
+</tr>
+<tr>
+<td>View and Person choices</td>
+<td>The tree: each view is a node; People &gt; Find a Person… opens
+anyone’s.</td>
+<td><code>node:repository.code</code>,
+<code>node:find_person</code></td>
+</tr>
+<tr>
+<td>Show choice</td>
+<td>The Issues, Pull Requests and Issues and Pull Requests nodes; View
+&gt; Issues, Pull Requests, Both.</td>
+<td><code>node:repository.issues</code>,
+<code>node:repository.pulls</code>, <code>menu:show_issues</code>,
+<code>menu:show_prs</code>, <code>menu:show_both</code></td>
+</tr>
+<tr>
+<td>State, Sort</td>
+<td>View &gt; Open, Closed, All; View &gt; Newest First and the other
+sorts.</td>
+<td><code>menu:state_open</code>, <code>menu:state_closed</code>,
+<code>menu:state_all</code>, <code>menu:sort_number_desc</code></td>
+</tr>
+<tr>
+<td>List mode</td>
+<td>Tools &gt; Workbench Options &gt; General: the list mode.</td>
+<td><code>pref:list_mode</code></td>
+</tr>
+<tr>
+<td>Columns…</td>
+<td>View &gt; Columns… (Ctrl+Shift+U) for this list; Tools &gt;
+Workbench Options &gt; Lists for the defaults.</td>
+<td><code>menu:columns</code>, <code>prefpage:Lists</code></td>
+</tr>
+<tr>
+<td>Back, Forward</td>
+<td>View &gt; Back (Alt+Left, Backspace), Forward (Alt+Right).</td>
+<td><code>menu:back</code>, <code>menu:forward</code></td>
+</tr>
+<tr>
+<td>Refresh</td>
+<td>View &gt; Refresh (F5).</td>
+<td><code>menu:refresh</code></td>
+</tr>
+<tr>
+<td>View More</td>
+<td>View &gt; Load More (Alt+Page Down), Load All.</td>
+<td><code>menu:load_more</code>, <code>menu:load_all</code></td>
+</tr>
+<tr>
+<td>Open in Browser</td>
+<td>File &gt; Open on GitHub (Shift+Enter); on every context menu.</td>
+<td><code>menu:open_on_github</code></td>
+</tr>
+<tr>
+<td>Go To #…</td>
+<td>File &gt; Go to Number… (Ctrl+G).</td>
+<td><code>menu:go_to_number</code></td>
+</tr>
+<tr>
+<td>Diff…</td>
+<td>Item &gt; File Differences… (Ctrl+Shift+D); the pull request’s
+context menu.</td>
+<td><code>menu:diff</code>, <code>row:pull_request.diff</code></td>
+</tr>
+<tr>
+<td>Review…</td>
+<td>Review… on a pull request’s context menu; its default action.</td>
+<td><code>row:pull_request.review</code></td>
+</tr>
+<tr>
+<td>Summarize</td>
+<td>Summarize Discussion on an issue’s or pull request’s context
+menu.</td>
+<td><code>row:issue.summarize</code>,
+<code>row:pull_request.summarize</code></td>
+</tr>
+<tr>
+<td>Compare…</td>
+<td>Repository &gt; Compare Branches… (Ctrl+Shift+B); a branch’s context
+menu.</td>
+<td><code>menu:compare</code>, <code>row:branch.compare</code></td>
+</tr>
+<tr>
+<td>Batch…</td>
+<td>Select several rows, then Item &gt; Properties… (Alt+Enter) edits
+them together; Merge Selected… on pull requests.</td>
+<td><code>menu:properties</code>,
+<code>row:pull_request.merge_selected</code></td>
+</tr>
+<tr>
+<td>Actions…</td>
+<td>The Item menu, and each row’s context menu (Shift+F10).</td>
+<td><code>menu:properties</code>, <code>menu:comment</code></td>
 </tr>
 <tr>
 <td>Saved Searches…, Save Search</td>
-<td>Search &gt; Saved Searches; filter box &gt; Save Search</td>
+<td>Search &gt; Saved Searches; New Here (Ctrl+N) in a search saves
+it.</td>
+<td><code>node:saved_searches</code>, <code>new:search_issues</code>,
+<code>menu:go_saved_searches</code></td>
+</tr>
+<tr>
+<td>Close</td>
+<td>File &gt; Close Workbench (Alt+F4).</td>
+<td><code>menu:close</code></td>
 </tr>
 </tbody>
 </table>
@@ -5819,65 +6474,166 @@ menu rows (Workbench Mode)</h3>
 <tr>
 <th>Today</th>
 <th>New home</th>
+<th>In the code</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Leave Workbench Mode</td>
-<td>Stays</td>
+<td>Stays.</td>
+<td><code>editor:view.github_workbench_mode</code></td>
+</tr>
+<tr>
+<td>GitHub Items…, Repository Items…</td>
+<td>Open GitHub Workbench (the same command).</td>
+<td><code>editor:file.open_github_items</code>,
+<code>door:file.open_github_items</code></td>
 </tr>
 <tr>
 <td>Inbox…</td>
-<td>Stays: opens Needs My Attention &gt; Inbox</td>
+<td>Stays: opens Needs My Attention &gt; Inbox.</td>
+<td><code>editor:github.workbench_inbox</code>,
+<code>door:github.workbench_inbox</code>, <code>node:inbox</code></td>
 </tr>
 <tr>
 <td>My Work…, Notifications…</td>
-<td>Command ids kept, open their nodes; rows leave the menu</td>
+<td>Command ids kept, each opening its node; the rows left the
+menu.</td>
+<td><code>editor:github.workbench_my_work</code>,
+<code>door:github.workbench_my_work</code>,
+<code>editor:github.view_notifications</code>,
+<code>door:github.view_notifications</code>,
+<code>node:notifications</code></td>
 </tr>
 <tr>
 <td>Issues and Pull Requests…</td>
-<td>Becomes This Repository’s Issues and This Repository’s Pull
-Requests</td>
+<td>This Repository’s Issues and This Repository’s Pull Requests.</td>
+<td><code>editor:github.workbench_issues</code>,
+<code>door:github.workbench_issues</code>,
+<code>editor:github.workbench_pulls</code>,
+<code>door:github.workbench_pulls</code></td>
 </tr>
 <tr>
 <td>Actions Runs…</td>
-<td>Stays</td>
+<td>Stays: opens the repository’s Actions &gt; Runs.</td>
+<td><code>editor:github.workbench_actions_runs</code>,
+<code>door:github.workbench_actions_runs</code></td>
 </tr>
 <tr>
-<td>Releases…, Repository Items…, Explore GitHub…</td>
-<td>Command ids kept, open their nodes; Open GitHub Workbench replaces
-the rows</td>
+<td>Releases…, Explore GitHub…</td>
+<td>Command ids kept, opening Releases and Search; Open GitHub Workbench
+replaces the rows.</td>
+<td><code>editor:github.workbench_releases</code>,
+<code>door:github.workbench_releases</code>,
+<code>editor:github.workbench_explore</code>,
+<code>door:github.workbench_explore</code></td>
 </tr>
 <tr>
 <td>Open GitHub Reference…, GitHub File URL…</td>
-<td>Open GitHub Address…</td>
+<td>Open GitHub Address… in the editor; File &gt; Open GitHub Address…
+(Ctrl+L) in the Workbench.</td>
+<td><code>editor:file.open_github_reference</code>,
+<code>editor:file.open_github_file_url</code>,
+<code>menu:open_address</code></td>
 </tr>
 <tr>
 <td>Open a Repository…, Clone Repository…</td>
-<td>Clone stays; Open a Repository moves to Workbench &gt; File</td>
+<td>Clone stays; Open a Repository is File &gt; Open GitHub Address…
+(Ctrl+L) in the Workbench.</td>
+<td><code>editor:file.open_github_repository</code>,
+<code>editor:github.clone_repository</code>,
+<code>menu:open_address</code></td>
 </tr>
 <tr>
 <td>Commit to GitHub…, Sync Folder with GitHub…</td>
-<td>Stay (QUILL only)</td>
+<td>Stay (QUILL only).</td>
+<td><code>editor:file.github_save_back</code>,
+<code>editor:sync.sync_folder</code></td>
 </tr>
 <tr>
 <td>Repository Admin submenu</td>
-<td>Workbench &gt; Repository &gt; Settings, Fork, Create Repository
-(File &gt; Create Repository…), Browse Organization Repositories
-(Repositories &gt; Organizations), Create Release (File), Dispatch
-Workflow, Security Alerts</td>
-</tr>
-<tr>
-<td>Local Git submenu</td>
-<td>Stays in the editor</td>
+<td>Repository &gt; Repository Actions… (Ctrl+Shift+G) lists every one;
+with the Workbench in use each opens its node or sheet page.</td>
+<td><code>editor:github.create_repository</code>,
+<code>editor:github.fork_repository</code>,
+<code>editor:github.rename_repository</code>,
+<code>editor:github.change_repository_visibility</code>,
+<code>editor:github.change_default_branch</code>,
+<code>editor:github.configure_branch_protection</code>,
+<code>editor:github.delete_branch</code>,
+<code>editor:github.commit_multiple_files</code>,
+<code>editor:github.browse_organization</code>,
+<code>editor:github.create_release</code>,
+<code>editor:github.dispatch_workflow</code>,
+<code>editor:github.view_security_alerts</code>,
+<code>door:github.create_repository</code>,
+<code>door:github.fork_repository</code>,
+<code>door:github.rename_repository</code>,
+<code>door:github.change_repository_visibility</code>,
+<code>door:github.change_default_branch</code>,
+<code>door:github.configure_branch_protection</code>,
+<code>door:github.delete_branch</code>,
+<code>door:github.commit_multiple_files</code>,
+<code>door:github.browse_organization</code>,
+<code>door:github.create_release</code>,
+<code>door:github.dispatch_workflow</code>,
+<code>door:github.view_security_alerts</code>,
+<code>repoaction:github.create_repository</code>,
+<code>repoaction:github.fork_repository</code>,
+<code>repoaction:github.rename_repository</code>,
+<code>repoaction:github.change_repository_visibility</code>,
+<code>repoaction:github.change_default_branch</code>,
+<code>repoaction:github.configure_branch_protection</code>,
+<code>repoaction:github.delete_branch</code>,
+<code>repoaction:github.commit_multiple_files</code>,
+<code>repoaction:github.browse_organization</code>,
+<code>repoaction:github.create_release</code>,
+<code>repoaction:github.dispatch_workflow</code>,
+<code>repoaction:github.view_security_alerts</code></td>
 </tr>
 <tr>
 <td>Codespaces submenu</td>
-<td>Workbench &gt; Repository &gt; Codespaces</td>
+<td>Repository &gt; Code &gt; Codespaces; Repository Actions….</td>
+<td><code>editor:github.list_codespaces</code>,
+<code>editor:github.create_codespace</code>,
+<code>door:github.list_codespaces</code>,
+<code>door:github.create_codespace</code>,
+<code>node:repository.repo_codespaces</code></td>
+</tr>
+<tr>
+<td>From This Line submenu</td>
+<td>Stays in the editor (PRD 22.3).</td>
+<td><code>editor:github.copy_line_link</code>,
+<code>editor:localgit.blame_at_cursor</code>,
+<code>editor:github.open_line_pull</code>,
+<code>editor:github.open_line</code>,
+<code>editor:github.issue_from_selection</code>,
+<code>editor:github.issues_mentioning_file</code>,
+<code>editor:github.comment_on_line</code>,
+<code>editor:github.open_reference_at_cursor</code></td>
+</tr>
+<tr>
+<td>Local Git submenu</td>
+<td>Stays in the editor.</td>
+<td><code>editor:localgit.uncommitted_changes</code>,
+<code>editor:localgit.switch_branch</code>,
+<code>editor:localgit.stash_changes</code>,
+<code>editor:localgit.manage_stashes</code>,
+<code>editor:localgit.bisect_start</code>,
+<code>editor:localgit.bisect_reset</code>,
+<code>editor:localgit.resolve_conflicts</code>,
+<code>editor:localgit.interactive_rebase</code>,
+<code>editor:localgit.rebase_abort</code>,
+<code>editor:localgit.worktrees</code>,
+<code>editor:localgit.new_worktree</code></td>
 </tr>
 <tr>
 <td>Manage GitHub Accounts…, Open GitHub Guide</td>
-<td>Stay</td>
+<td>Stay; also Account &gt; Manage GitHub Accounts… (Ctrl+Shift+K) and
+Help &gt; GitHub Workbench Guide (Ctrl+F1).</td>
+<td><code>editor:file.github_manage_accounts</code>,
+<code>editor:help.github_guide</code>,
+<code>menu:manage_accounts</code>, <code>menu:guide_chapter</code></td>
 </tr>
 </tbody>
 </table>
@@ -5887,227 +6643,324 @@ Workflow, Security Alerts</td>
 <tr>
 <th>Today</th>
 <th>New home</th>
+<th>In the code</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Notification poll interval, sound on each check, interrupt speech
-(main Settings)</td>
-<td>Tools &gt; Workbench Options &gt; Notifications and Inbox</td>
+<td>Notification poll interval, sound on each check, interrupt
+speech</td>
+<td>Tools &gt; Workbench Options &gt; Notifications and Inbox.</td>
+<td><code>pref:poll_interval_minutes</code>,
+<code>pref:poll_audible_tick</code>,
+<code>pref:poll_interrupt_speech</code></td>
 </tr>
 <tr>
-<td>Queue Options…, Choose Categories…, Choose Repositories…, Save
-Current Filter…</td>
-<td>Tools &gt; Workbench Options &gt; Notifications and Inbox; Account
-&gt; Notification and Inbox Options</td>
+<td>Queue Options… (Choose Repositories…, Choose Categories…, Save
+Current Filter…)</td>
+<td>Item &gt; Inbox Rules… (Ctrl+Alt+N); on the Inbox, the filter box
+(repo:, owner:) narrows by repository. Choose Categories and Save
+Current Filter have no Workbench home yet: the Inbox reads the choices
+the classic window saved.</td>
+<td><code>menu:inbox_rules</code>, <code>node:inbox</code>,
+<code>code:quill/ui/github_explore_queue.py#Choose Categories</code></td>
 </tr>
 <tr>
 <td>Include read notifications</td>
-<td>Tools &gt; Workbench Options &gt; Notifications and Inbox</td>
+<td>Tools &gt; Workbench Options &gt; Notifications and Inbox.</td>
+<td><code>pref:include_read_notifications</code></td>
 </tr>
 <tr>
 <td>Health snapshot opt-in</td>
-<td>Tools &gt; Workbench Options &gt; Privacy and opt-ins</td>
+<td>Tools &gt; Workbench Options &gt; Privacy.</td>
+<td><code>pref:health_snapshot_opt_in</code></td>
 </tr>
 <tr>
 <td>Columns, list mode, sort, state defaults</td>
-<td>Tools &gt; Workbench Options &gt; General and Lists</td>
+<td>Tools &gt; Workbench Options &gt; General and Lists.</td>
+<td><code>pref:list_mode</code>, <code>pref:default_sort</code>,
+<code>pref:default_state</code>, <code>prefpage:Lists</code></td>
 </tr>
 <tr>
 <td>Last view, filter, selection, history (resume state)</td>
-<td>Stays in <code>github_items_context.json</code>; cleared from
-Privacy and opt-ins</td>
+<td>Kept on this computer; Tools &gt; Workbench Options &gt; Privacy
+&gt; Forget Where I Was clears it.</td>
+<td><code>prefpage:Privacy</code>,
+<code>code:quill/ui/github_workbench_options.py#Forget &amp;Where I Was</code></td>
 </tr>
 </tbody>
 </table>
+<!-- END GENERATED appendix-a -->
+
 <h2 id="appendix-b-existing-actions-not-covered-above">Appendix B:
 existing actions not covered above</h2>
 <p>Found in the GitHub UI modules on a second pass. Each keeps its
 handler. Its menu home is decided here, and (Jeff, 2026-11-09: “all of
 this needs to be covered as well”) each one also has a place on its
 object’s Properties sheet, so Alt+Enter reaches every one of them.</p>
+<!-- BEGIN GENERATED appendix-b: python -m quill.tools.github_appendix_reference --write -->
+
 <table>
 <thead>
 <tr>
 <th>Existing action</th>
 <th>New home</th>
 <th>On the Properties sheet</th>
+<th>In the code</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Set Topics…</td>
-<td>Repository &gt; Settings &gt; General</td>
+<td>Repository Properties (Alt+Enter), General: Topics.</td>
 <td>Repository &gt; General: Topics</td>
+<td><code>sheet:repository.general.topics</code>,
+<code>sheet:repository.general.topics</code></td>
 </tr>
 <tr>
 <td>Sync Fork with Upstream…</td>
-<td>Repository menu; Repository &gt; Code &gt; Upstream context
-menu</td>
-<td>Repository &gt; Fork: Sync with Upstream, with ahead and behind
-counts</td>
+<td>Sync Fork with Upstream… on a repository’s context menu; Repository
+&gt; Code &gt; Upstream.</td>
+<td>Repository &gt; Fork: the fork, its parent and source</td>
+<td><code>row:repository.sync_fork</code>,
+<code>node:repository.upstream</code>,
+<code>sheet:repository.fork.parent</code></td>
 </tr>
 <tr>
 <td>Archive Repository…, Unarchive Repository…</td>
-<td>Repository &gt; Settings</td>
+<td>Repository Properties, Danger Zone: Archived.</td>
 <td>Repository &gt; Danger Zone: Archived</td>
+<td><code>sheet:repository.danger.archived</code>,
+<code>sheet:repository.danger.archived</code></td>
 </tr>
 <tr>
 <td>Delete Repository…</td>
-<td>Repository &gt; Settings (last, with its typed confirmation)</td>
-<td>Repository &gt; Danger Zone: Delete (tier 3)</td>
+<td>Delete Repository… on a repository’s context menu, with its typed
+confirmation (tier 3).</td>
+<td>Repository &gt; Danger Zone</td>
+<td><code>row:repository.delete_repository</code>,
+<code>sheet:repository.danger</code></td>
 </tr>
 <tr>
 <td>Create Repository from This Template…</td>
-<td>Repository menu, shown only for template repositories</td>
-<td>Repository &gt; General: Template repository, and Use This
-Template…</td>
+<td>Create Repository from This Template… on a repository’s context
+menu.</td>
+<td>Repository &gt; Templates: Template repository</td>
+<td><code>row:repository.use_template</code>,
+<code>sheet:repository.templates.is_template</code></td>
 </tr>
 <tr>
 <td>Watch Level…</td>
-<td>Repository &gt; Watch Level… (replaces the bare Watch and Unwatch
-pair on the menu bar; both stay on context menus)</td>
-<td>Repository &gt; You: Watch level, with custom events</td>
+<td>Watch or Unwatch on a repository’s context menu; the level on its
+sheet.</td>
+<td>Repository &gt; You: Watch, with custom events</td>
+<td><code>row:repository.watch</code>,
+<code>sheet:repository.you.custom_watch</code>,
+<code>sheet:repository.you.watch</code>,
+<code>sheet:repository.you.custom_watch</code></td>
 </tr>
 <tr>
 <td>Use Repository</td>
-<td>Gone: selecting the repository’s node is “use”</td>
+<td>Gone: selecting the repository’s node is “use”. Selecting a
+repository’s node uses it.</td>
 <td>Not needed</td>
+<td><code>node:repository.repository</code></td>
 </tr>
 <tr>
 <td>Add Blocker…, Remove Blocker…, Add Sub-issue…, Remove
 Sub-issue…</td>
-<td>Item &gt; Relationships submenu</td>
-<td>Issue &gt; Relationships: parent, sub-issues in order, blocked by,
-blocking</td>
+<td>Relationships… and Reorder Sub-issues… on an issue’s context
+menu.</td>
+<td>Issue &gt; Relationships: parent, sub-issues, linked</td>
+<td><code>row:issue.relationships</code>,
+<code>row:issue.sub_issues</code>,
+<code>sheet:issue.relationships.parent</code>,
+<code>sheet:issue.relationships.sub_issues</code></td>
 </tr>
 <tr>
 <td>Next Unblocked</td>
-<td>Go &gt; Next Unblocked (Projects and Dependencies)</td>
-<td>Issue &gt; Relationships: “Unblocked” line, and Go to Next
-Unblocked</td>
+<td>Repository Actions… &gt; Projects… (the board): Next Unblocked.</td>
+<td>Issue &gt; Relationships</td>
+<td><code>repoaction:github.workbench.projects_window</code>,
+<code>code:quill/ui/github_projects_dialog.py#&amp;Next Unblocked</code>,
+<code>sheet:issue.relationships</code></td>
 </tr>
 <tr>
 <td>Possible Duplicate Issues (check when filing)</td>
-<td>Stays in New Issue…; also Item &gt; Find Possible Duplicates</td>
-<td>Issue &gt; Relationships: Possible duplicates, and Close as
-Duplicate of…</td>
+<td>Close or Reopen… closes as a duplicate of an issue named; Not a
+Duplicate… on an issue’s context menu. Find Possible Duplicates is not
+built in the Workbench yet; the check when filing runs in the classic
+New Issue form only.</td>
+<td>Issue &gt; Relationships: linked</td>
+<td><code>row:issue.close_reopen</code>,
+<code>row:issue.not_duplicate</code>,
+<code>code:quill/ui/github_items_dialog_issue_templates.py#Possible Duplicate Issues</code>,
+<code>sheet:issue.relationships.linked</code></td>
 </tr>
 <tr>
 <td>Projects and Dependencies, Edit Project Field…, Refresh Board</td>
-<td>The Projects node (board as a list, linear order); Item &gt; Edit
-Project Field…</td>
-<td>Issue or PR &gt; Projects: every field of every project; Project
-sheet (section 16.6)</td>
+<td>The Projects node; Projects… on an issue or pull request; Repository
+Actions… &gt; Projects….</td>
+<td>Issue or pull request &gt; Projects; the Project sheet</td>
+<td><code>node:projects</code>, <code>row:issue.projects</code>,
+<code>repoaction:github.workbench.projects_window</code>,
+<code>code:quill/ui/github_projects_dialog.py#Edit Project Field...</code>,
+<code>sheet:issue.projects.projects</code>,
+<code>sheet:project.fields</code></td>
 </tr>
 <tr>
 <td>Compose Review…, Request Changes, Request Reviewers…, Request
 Copilot Review</td>
-<td>PR context menu &gt; Review…; Item &gt; Review submenu</td>
-<td>Pull request &gt; Reviews: reviewers and teams, their states,
-Request, Remove, Request Copilot Review</td>
+<td>Review… and Reviews… on a pull request; Ask Copilot to Review.</td>
+<td>Pull request &gt; Reviews: reviewers and teams</td>
+<td><code>row:pull_request.review</code>,
+<code>row:pull_request.manage_reviews</code>,
+<code>row:pull_request.copilot_code_review</code>,
+<code>sheet:pull_request.reviews.reviewers</code>,
+<code>sheet:pull_request.reviews.team_reviewers</code></td>
 </tr>
 <tr>
 <td>Mark Ready, convert to draft</td>
-<td>Item &gt; Mark Ready for Review / Convert to Draft</td>
+<td>Pull request Properties, General: Draft; Mark Ready in Review….</td>
 <td>Pull request &gt; General: Draft</td>
+<td><code>sheet:pull_request.general.draft</code>,
+<code>code:quill/ui/github_pr_review_dialog.py#&amp;Mark Ready</code>,
+<code>sheet:pull_request.general.draft</code></td>
 </tr>
 <tr>
 <td>Update Branch…</td>
-<td>Item &gt; Update Branch…</td>
-<td>Pull request &gt; Branches: base, head, behind by n, Update Branch
-(merge or rebase)</td>
+<td>Review… on a pull request: Update Branch.</td>
+<td>Pull request &gt; Branches: base and head</td>
+<td><code>row:pull_request.review</code>,
+<code>code:quill/ui/github_pr_review_dialog.py#_update_branch</code>,
+<code>sheet:pull_request.branches.base</code></td>
 </tr>
 <tr>
 <td>Enable Auto-Merge…, Disable Auto-Merge…</td>
-<td>Item &gt; Merge submenu</td>
-<td>Pull request &gt; Merge: auto-merge and its method</td>
+<td>Auto-Merge… on a pull request.</td>
+<td>Pull request &gt; Merge: auto-merge</td>
+<td><code>row:pull_request.auto_merge</code>,
+<code>sheet:pull_request.merge.auto_merge</code></td>
 </tr>
 <tr>
 <td>Add to Merge Queue…, Remove from Merge Queue…</td>
-<td>Item &gt; Merge submenu</td>
-<td>Pull request &gt; Merge: merge queue position</td>
+<td>Add to or Remove from Merge Queue… on a pull request.</td>
+<td>Pull request &gt; Merge</td>
+<td><code>row:pull_request.merge_queue</code>,
+<code>sheet:pull_request.merge</code></td>
 </tr>
 <tr>
 <td>Check Merge Policy</td>
-<td>Item &gt; Merge submenu &gt; Why Can’t I Merge?; the PR’s details
-pane</td>
-<td>Pull request &gt; Merge: every requirement, met or not, in words.
-<em>Built 2026-11-17:</em> Why Can’t I Merge? on the pull request’s row
-(<code>quill/core/github/merge_readiness.py</code>): each blocker in
-words with what to do, for the head commit it names; Merge asks it first
-and merges only that commit (REST <code>sha</code>, 409 said as
-“somebody pushed”); Auto-Merge… and Add to or Remove from Merge Queue…
-on the row too</td>
+<td>Why Can’t I Merge? on a pull request.</td>
+<td>Pull request &gt; Merge: merged</td>
+<td><code>row:pull_request.why_cant_merge</code>,
+<code>sheet:pull_request.merge.merged</code></td>
 </tr>
 <tr>
 <td>Re-request Check…, Copy Check Details</td>
-<td>Item &gt; Checks submenu</td>
-<td>Pull request &gt; Checks: each check, state, duration, Re-run, Copy
-Details</td>
+<td>Inside Review…, unchanged.</td>
+<td>Pull request &gt; Checks</td>
+<td><code>row:pull_request.review</code>,
+<code>code:quill/ui/github_pr_review_menus.py#Re-request Check...</code>,
+<code>code:quill/ui/github_pr_review_menus.py#Copy Check Details</code>,
+<code>sheet:pull_request.checks</code></td>
 </tr>
 <tr>
 <td>Next Unresolved, Reply to Thread…, Copy Thread Link</td>
-<td>Inside PR review, unchanged</td>
-<td>Review thread sheet: file, line, state, Resolve or Reopen,
-Reply</td>
+<td>Inside Review…, unchanged.</td>
+<td>Pull request &gt; Reviews: review comments</td>
+<td><code>row:pull_request.review</code>,
+<code>code:quill/ui/github_pr_review_dialog.py#Next &amp;Unresolved</code>,
+<code>code:quill/ui/github_pr_review_menus.py#Reply to Thread...</code>,
+<code>code:quill/ui/github_pr_review_menus.py#Copy Thread Link</code>,
+<code>sheet:pull_request.reviews.review_comments</code></td>
 </tr>
 <tr>
 <td>Pending comment edit and delete</td>
-<td>Inside PR review, unchanged</td>
-<td>Comment sheet: body, Edit, Delete (pending review comments)</td>
+<td>Inside Review…, unchanged.</td>
+<td>Not needed</td>
+<td><code>row:pull_request.review</code>,
+<code>code:quill/ui/github_pr_review_menus.py#Edit Pending Comment...</code>,
+<code>code:quill/ui/github_pr_review_menus.py#Delete Pending Comment...</code></td>
 </tr>
 <tr>
 <td>Copy Conversation, Copy Review Summary, Copy File Name, Copy Pull
 Request Link</td>
-<td>Edit &gt; Copy submenu (rows greyed where they do not apply)</td>
-<td>Every sheet: Copy as Text, Copy Link</td>
+<td>Inside Review…; Edit &gt; Copy (Ctrl+C) and Copy Link (Ctrl+Shift+C)
+everywhere.</td>
+<td>Not needed</td>
+<td><code>menu:copy</code>, <code>menu:copy_link</code>,
+<code>code:quill/ui/github_pr_review_menus.py#Copy Conversation</code>,
+<code>code:quill/ui/github_pr_review_menus.py#Copy Review Summary</code>,
+<code>code:quill/ui/github_pr_review_menus.py#Copy File Name</code>,
+<code>code:quill/ui/github_pr_review_menus.py#Copy Pull Request Link</code></td>
 </tr>
 <tr>
 <td>React to Pull Request…, React to a Comment…</td>
-<td>Item &gt; React…</td>
-<td>Issue, PR, comment and discussion &gt; You: reactions, each with its
-count and whether it is yours</td>
+<td>React… on an issue or pull request.</td>
+<td>Issue, pull request and discussion &gt; You: reactions</td>
+<td><code>row:issue.react</code>, <code>row:pull_request.react</code>,
+<code>sheet:issue.you.reactions</code>,
+<code>sheet:pull_request.you.reactions</code>,
+<code>sheet:discussion.you.reactions</code></td>
 </tr>
 <tr>
 <td>Mark discussion answer, unmark answer</td>
-<td>Discussion comment context menu</td>
-<td>Discussion comment sheet: Answer</td>
+<td>Open Discussion Thread: Mark as Answer.</td>
+<td>Discussion &gt; Answer</td>
+<td><code>row:discussion.discussion_thread</code>,
+<code>code:quill/ui/github_discussion_dialog.py#&amp;Mark as Answer...</code>,
+<code>sheet:discussion.answer.answered_by</code></td>
 </tr>
 <tr>
 <td>Create milestone</td>
-<td>Repository &gt; Milestones node context menu &gt; New
-Milestone…</td>
-<td>Milestone sheet: title, description, due date, state, progress; New…
-in every milestone picker</td>
+<td>New Milestone… in every milestone picker; Repository Actions… &gt;
+Milestones….</td>
+<td>Milestone sheet: title, description, due date, state, progress</td>
+<td><code>sheet:issue.organize.milestone</code>,
+<code>repoaction:github.workbench.milestones_window</code>,
+<code>sheet:milestone.general</code>,
+<code>sheet:milestone.progress</code></td>
 </tr>
 <tr>
 <td>Lock Conversation… (with reason), Unlock Conversation</td>
-<td>Item &gt; Lock Conversation…</td>
-<td>Issue or PR &gt; Conversation: Locked, with reason</td>
+<td>Lock or Unlock Conversation… on an issue.</td>
+<td>Issue or pull request &gt; Conversation: Locked, with reason</td>
+<td><code>row:issue.lock</code>,
+<code>sheet:issue.conversation.locked</code>,
+<code>sheet:pull_request.conversation.locked</code></td>
 </tr>
 <tr>
 <td>Dependabot, code scanning and secret scanning alerts; Dismiss
 Alert…, Reopen Alert…</td>
-<td>Repository &gt; Security &gt; Alerts (one list, a Kind column);
-alert context menu</td>
-<td>Alert sheet: kind, severity, package or rule, location, state,
-Dismiss with reason and comment, Reopen, Assign</td>
+<td>Repository &gt; Security &gt; Alerts; Dismiss or Reopen Alert… on an
+alert.</td>
+<td>Security alert sheet: state, reason, severity, location</td>
+<td><code>node:repository.alerts</code>,
+<code>row:security_alert.dismiss_alert</code>,
+<code>sheet:security_alert.general.state</code>,
+<code>sheet:security_alert.location</code></td>
 </tr>
 <tr>
 <td>Pull request and issue templates and forms</td>
-<td>New Issue… and New Pull Request…, which now fill issue forms
-natively (section 21.7)</td>
-<td>Repository &gt; Templates: a sheet per template with a field
-builder, preview and checks (section 21)</td>
+<td>Repository &gt; Templates; New Here (Ctrl+N) in Issues fills a
+form.</td>
+<td>Repository &gt; Templates</td>
+<td><code>node:repository.templates</code>,
+<code>row:template.open_template</code>, <code>new:issues</code>,
+<code>sheet:repository.templates</code></td>
 </tr>
 <tr>
 <td>Thread subscription (Unsubscribe from Thread)</td>
-<td>Notification context menu, unchanged</td>
-<td>Notification and item &gt; You: Subscribed, with reason</td>
+<td>Unsubscribe from Thread on a notification.</td>
+<td>Notification &gt; You: Subscribed</td>
+<td><code>row:notification.unsubscribe</code>,
+<code>sheet:notification.you.subscribed</code></td>
 </tr>
 </tbody>
 </table>
+<!-- END GENERATED appendix-b -->
+
 <h2
 id="appendix-c-every-object-its-properties-sheet-and-its-filters">Appendix
 C: every object, its Properties sheet, and its filters</h2>
@@ -6119,6 +6972,505 @@ editing. <strong>Filter</strong> is what its list can be filtered and
 sorted on, every one of which also has “has none” where the attribute is
 a list. Every entry also has Copy as Text, Copy Link, Open on GitHub and
 F1 on every field, which are not repeated.</p>
+<!-- BEGIN GENERATED appendix-c: python -m quill.tools.github_appendix_reference --write -->
+
+<h3 id="the-map-from-the-code">The map, from the code</h3>
+<p>Generated from <code>quill/core/github/appendix_c_rows.py</code>, the
+sheet catalogue, the tree and
+<code>quill/core/github/object_filters.py</code>. Every qualifier is
+typed in a list’s filter box. <em>Here</em> is checked over the rows the
+list loaded; <em>GitHub’s search</em> is sent to GitHub: an issue or
+pull request list sends it, and so does the Search node for
+repositories, commits or people; <em>not yet</em> says why.</p>
+<table>
+<thead>
+<tr>
+<th>Object</th>
+<th>Sheet: its pages</th>
+<th>Its lists</th>
+<th>Filters here</th>
+<th>GitHub’s search</th>
+<th>Not yet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repository</td>
+<td><code>repository</code>: General, You, Fork, Features, Merging,
+Branches and Rules, Access, Actions, Environments, Security, Pages,
+Webhooks, Deploy Keys, Autolinks, Secrets and Variables, Templates,
+Insights, Danger Zone, Actions Rules, Releases and Scanning</td>
+<td>Repositories, Repositories &gt; Pinned, Repositories &gt; My
+Repositories, Repositories &gt; Starred, and 7 more</td>
+<td><code>owner:</code>, <code>name:</code>, <code>updated:</code></td>
+<td><code>topic:</code>, <code>language:</code>, <code>is:</code>,
+<code>fork:</code>, <code>archived:</code>, <code>template:</code>,
+<code>stars:</code>, <code>forks:</code>, <code>size:</code>,
+<code>license:</code>, <code>created:</code>, <code>pushed:</code></td>
+<td>open issues, has issues, has wiki, has discussions, has Pages, your
+role, custom properties: its list’s rows do not carry it yet; its
+Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Branch</td>
+<td><code>branch</code>: General, Protection, Commits</td>
+<td>Repository &gt; Code &gt; Branches</td>
+<td><code>name:</code>, <code>protected:</code>, <code>ahead:</code>,
+<code>behind:</code>, <code>committed:</code>, <code>author:</code></td>
+<td>None</td>
+<td>has an open pull request, merged: its list’s rows do not carry it
+yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Tag</td>
+<td><code>tag</code>: General, Commit, Release</td>
+<td>Repository &gt; Code &gt; Tags</td>
+<td><code>name:</code>, <code>sha:</code></td>
+<td>None</td>
+<td>date, has release, annotated: its list’s rows do not carry it yet;
+its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Commit</td>
+<td><code>commit</code>: General, Files, Checks, Comments, Branches and
+Tags</td>
+<td>Repository &gt; Code &gt; Commits</td>
+<td><code>author:</code>, <code>committed:</code>,
+<code>message:</code>, <code>sha:</code></td>
+<td><code>committer:</code>, <code>author-date:</code>,
+<code>committer-date:</code>, <code>merge:</code></td>
+<td>path, branch, verified signature, check state: its list’s rows do
+not carry it yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>File and folder</td>
+<td><code>file</code>: General, History, Code Owners</td>
+<td>Repository &gt; Code &gt; Files</td>
+<td><code>name:</code></td>
+<td>None</td>
+<td>extension, path, size, last changed: its list’s rows do not carry it
+yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Ruleset and branch protection rule</td>
+<td><code>ruleset</code>: General, Target, Bypass, Rules, Summary,
+History; <code>org_ruleset</code>: General, Target, Repositories,
+Bypass, Rules, Summary, History; <code>branch_protection</code>:
+General, Who, Summary</td>
+<td>The Repository sheet’s Branches and Rules page; Across Repositories
+&gt; Rules and Branch Protection</td>
+<td>None</td>
+<td>None</td>
+<td>target, enforcement, rule kind, bypass actor: there is no list of
+these to filter yet</td>
+</tr>
+<tr>
+<td>Issue</td>
+<td><code>issue</code>: General, You, Organize, Projects, Relationships,
+Description, Conversation, Timeline, Access</td>
+<td>Needs My Attention &gt; My Open Issues, Repository &gt; Issues</td>
+<td>None</td>
+<td><code>is:</code>, <code>reason:</code>, <code>type:</code>,
+<code>label:</code>, <code>milestone:</code>, <code>assignee:</code>,
+<code>author:</code>, <code>mentions:</code>, <code>commenter:</code>,
+<code>involves:</code>, <code>team:</code>, <code>project:</code>,
+<code>parent-issue:</code>, <code>has:</code>, <code>linked:</code>,
+<code>created:</code>, <code>updated:</code>, <code>closed:</code>,
+<code>merged:</code>, <code>comments:</code>, <code>reactions:</code>,
+<code>interactions:</code>, <code>archived:</code>, <code>draft:</code>,
+<code>review:</code>, <code>review-requested:</code>,
+<code>team-review-requested:</code>, <code>reviewed-by:</code>,
+<code>base:</code>, <code>head:</code>, <code>status:</code>,
+<code>language:</code>, <code>in:</code></td>
+<td>None</td>
+</tr>
+<tr>
+<td>Pull request</td>
+<td><code>pull_request</code>: General, You, Organize, Projects,
+Branches, Reviews, Checks, Merge, Files, Commits, Relationships,
+Description, Conversation, Timeline</td>
+<td>Needs My Attention &gt; Review Requests, Needs My Attention &gt; My
+Open Pull Requests, Repository &gt; Pull Requests</td>
+<td><code>conflicts:</code></td>
+<td><code>is:</code>, <code>reason:</code>, <code>type:</code>,
+<code>label:</code>, <code>milestone:</code>, <code>assignee:</code>,
+<code>author:</code>, <code>mentions:</code>, <code>commenter:</code>,
+<code>involves:</code>, <code>team:</code>, <code>project:</code>,
+<code>parent-issue:</code>, <code>has:</code>, <code>linked:</code>,
+<code>created:</code>, <code>updated:</code>, <code>closed:</code>,
+<code>merged:</code>, <code>comments:</code>, <code>reactions:</code>,
+<code>interactions:</code>, <code>archived:</code>, <code>draft:</code>,
+<code>review:</code>, <code>review-requested:</code>,
+<code>team-review-requested:</code>, <code>reviewed-by:</code>,
+<code>base:</code>, <code>head:</code>, <code>status:</code>,
+<code>language:</code>, <code>in:</code></td>
+<td>files changed, lines added and removed, auto-merge on: its list’s
+rows do not carry it yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Comment</td>
+<td><code>comment</code>: General, History</td>
+<td>Inside a conversation: Read as Document…, Review…, Open Discussion
+Thread</td>
+<td>None</td>
+<td>None</td>
+<td>author, date, edited, hidden, reactions, mentions me: there is no
+list of these to filter yet</td>
+</tr>
+<tr>
+<td>Review and review thread</td>
+<td>None. Review… on a pull request: its threads, Next Unresolved,
+Reply, Resolve. No Properties sheet of its own yet; the review window
+shows each thread’s file, line, state and comments.</td>
+<td>Review… on a pull request: its threads, Next Unresolved, Reply,
+Resolve</td>
+<td>None</td>
+<td>None</td>
+<td>reviewer, state, resolved, outdated, file: there is no list of these
+to filter yet</td>
+</tr>
+<tr>
+<td>Discussion</td>
+<td><code>discussion</code>: General, You, Category, Answer,
+Conversation, Poll</td>
+<td>Repository &gt; Discussions, Repository &gt; Discussions &gt; Pinned
+(spotlight)</td>
+<td><code>name:</code>, <code>updated:</code></td>
+<td>None</td>
+<td>category, answered, author, label, state, created, comments,
+upvotes: its list’s rows do not carry it yet; its Properties sheet shows
+it</td>
+</tr>
+<tr>
+<td>Discussion category</td>
+<td>None. Repository &gt; Discussions &gt; Categories, read only. GitHub
+manages categories on the web only, so there is nothing to change and no
+sheet; Find Discussions in Category lists its discussions.</td>
+<td>Repository &gt; Discussions &gt; Categories</td>
+<td><code>name:</code></td>
+<td>None</td>
+<td>format: its list’s rows do not carry it yet; its Properties sheet
+shows it</td>
+</tr>
+<tr>
+<td>Label</td>
+<td><code>label</code>: General, Usage</td>
+<td>Repository &gt; Labels</td>
+<td><code>name:</code></td>
+<td>None</td>
+<td>colour, has description, in use count: its list’s rows do not carry
+it yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Milestone</td>
+<td><code>milestone</code>: General, Progress, Items</td>
+<td>Repository &gt; Milestones</td>
+<td><code>name:</code></td>
+<td>None</td>
+<td>state, due date, overdue, has due date, progress percentage: its
+list’s rows do not carry it yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Issue type</td>
+<td><code>issue_type</code>: General</td>
+<td>its resource lists</td>
+<td><code>name:</code></td>
+<td>None</td>
+<td>enabled: its list’s rows do not carry it yet; its Properties sheet
+shows it</td>
+</tr>
+<tr>
+<td>Issue form, Markdown template, pull request template, discussion
+form</td>
+<td>None. Repository &gt; Templates: Open Template… opens its sheet in
+the template builder. Its sheet is the template builder’s (section 21),
+with a field builder and preview, not one of the Properties
+catalogue’s.</td>
+<td>Repository &gt; Templates, Organization &gt; Templates</td>
+<td><code>name:</code>, <code>repo:</code></td>
+<td>None</td>
+<td>kind, labels applied, field count, has required fields, inherited:
+its list’s rows do not carry it yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Project</td>
+<td><code>project</code>: General, README, Fields, Views, Items,
+Workflows, Status Updates, Access, Linked Repositories</td>
+<td>Projects</td>
+<td><code>owner:</code>, <code>updated:</code>, <code>name:</code></td>
+<td>None</td>
+<td>open or closed, template, linked repository: its list’s rows do not
+carry it yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Project item</td>
+<td>None. The Project sheet’s Items page; Items in a View… on a project.
+An item’s sheet is built from its project’s fields when it opens
+(project_item_sheet), so it has no fixed kind.</td>
+<td>The Project sheet’s Items page; Items in a View… on a project</td>
+<td>None</td>
+<td>None</td>
+<td>every project field, and GitHub’s project filter syntax: Items in a
+View… reads a view with its own saved filter; the item list has
+none</td>
+</tr>
+<tr>
+<td>Project field and view</td>
+<td>None. The Project sheet’s Fields and Views pages; New Field…, New
+View…, Rename and Delete on a project. Fields and views are pages of the
+Project sheet.</td>
+<td>The Project sheet’s Fields and Views pages; New Field…, New View…,
+Rename and Delete on a project</td>
+<td>None</td>
+<td>None</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Workflow</td>
+<td><code>workflow</code>: General, Runs, Triggers, Usage</td>
+<td>Repository &gt; Actions &gt; Workflows</td>
+<td><code>name:</code>, <code>state:</code>, <code>path:</code></td>
+<td>None</td>
+<td>last run state: its list’s rows do not carry it yet; its Properties
+sheet shows it</td>
+</tr>
+<tr>
+<td>Workflow run</td>
+<td><code>run</code>: General, Jobs, Artifacts, Usage</td>
+<td>Repository &gt; Actions &gt; Runs</td>
+<td><code>workflow:</code>, <code>branch:</code>, <code>event:</code>,
+<code>status:</code>, <code>conclusion:</code>, <code>created:</code>,
+<code>sha:</code></td>
+<td>None</td>
+<td>actor, duration: its list’s rows do not carry it yet; its Properties
+sheet shows it</td>
+</tr>
+<tr>
+<td>Job</td>
+<td><code>job</code>: General, Steps, Log</td>
+<td>Jobs and Logs on a run lists its jobs</td>
+<td>None</td>
+<td>None</td>
+<td>status, conclusion, runner name: there is no list of these to filter
+yet</td>
+</tr>
+<tr>
+<td>Artifact and Actions cache</td>
+<td><code>artifact</code>: General; <code>cache</code>: General</td>
+<td>Repository &gt; Actions &gt; Caches; its resource lists</td>
+<td><code>name:</code>, <code>updated:</code></td>
+<td>None</td>
+<td>size, created, expires, branch, key, ref, last used (caches): its
+list’s rows do not carry it yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Environment</td>
+<td><code>environment</code>: General, Protection, Branches and Tags,
+Secrets, Variables, Deployments</td>
+<td>Repository &gt; Settings &gt; Environments</td>
+<td><code>name:</code></td>
+<td>None</td>
+<td>has protection: its list’s rows do not carry it yet; its Properties
+sheet shows it</td>
+</tr>
+<tr>
+<td>Deployment</td>
+<td><code>deployment</code>: General, Statuses</td>
+<td>Repository &gt; Deployments and Environments</td>
+<td><code>updated:</code></td>
+<td>None</td>
+<td>environment, ref, creator, state: its list’s rows do not carry it
+yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Runner and runner group</td>
+<td><code>runner</code>: General, Labels</td>
+<td>Repository &gt; Actions &gt; Runners; its resource lists</td>
+<td><code>name:</code></td>
+<td>None</td>
+<td>status, busy, labels, OS: its list’s rows do not carry it yet; its
+Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Secret and variable</td>
+<td><code>secret</code>: General; <code>variable</code>: General</td>
+<td>its resource lists</td>
+<td><code>name:</code>, <code>updated:</code></td>
+<td>None</td>
+<td>visibility: its list’s rows do not carry it yet; its Properties
+sheet shows it</td>
+</tr>
+<tr>
+<td>Release</td>
+<td><code>release</code>: General, You, Notes, Assets, Discussion</td>
+<td>Repository &gt; Releases</td>
+<td><code>draft:</code>, <code>prerelease:</code>,
+<code>created:</code>, <code>tag:</code>, <code>name:</code></td>
+<td>None</td>
+<td>latest, author: its list’s rows do not carry it yet; its Properties
+sheet shows it</td>
+</tr>
+<tr>
+<td>Release asset</td>
+<td><code>release_asset</code>: General</td>
+<td>None</td>
+<td><code>name:</code>, <code>size:</code>, <code>downloads:</code>,
+<code>type:</code></td>
+<td>None</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Package</td>
+<td><code>package</code>: General, Versions, Access, Repository</td>
+<td>Repositories &gt; My Packages, Person &gt; Packages, Organization
+&gt; Packages</td>
+<td><code>name:</code>, <code>repo:</code>, <code>updated:</code></td>
+<td>None</td>
+<td>type, visibility, version tag: its list’s rows do not carry it yet;
+its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Person</td>
+<td><code>person</code>: General, You, Profile, Repositories, Followers,
+Following, Organizations</td>
+<td>People &gt; People I Follow, People &gt; My Followers, Search &gt;
+People and Organizations, Repository &gt; People &gt; Contributors and
+People, and 3 more</td>
+<td><code>name:</code></td>
+<td><code>location:</code>, <code>followers:</code>,
+<code>repos:</code>, <code>type:</code></td>
+<td>company, your relationship (following, follows you, blocked): its
+list’s rows do not carry it yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Organization</td>
+<td><code>organization</code>: General, You, Members, Teams, Outside
+Collaborators, Invitations, Roles, Member Privileges, Repositories,
+Actions, Webhooks, Secrets and Variables, Issue Types, Custom
+Properties, Token Requests, Audit Log, Actions Rules, Safety</td>
+<td>Repositories &gt; Organizations</td>
+<td><code>name:</code></td>
+<td>None</td>
+<td>members’ role, members’ two-factor, membership public or private,
+team: there is no list of these to filter yet</td>
+</tr>
+<tr>
+<td>Team</td>
+<td><code>team</code>: General, Members, Repositories, Projects, Child
+Teams, Code Review, Identity Provider, Danger Zone</td>
+<td>People &gt; My Teams, Organization &gt; Teams</td>
+<td><code>name:</code></td>
+<td>None</td>
+<td>privacy, parent, member, repository, role: its list’s rows do not
+carry it yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Collaborator and invitation</td>
+<td><code>collaborator</code>: General; <code>invitation</code>:
+General</td>
+<td>Needs My Attention &gt; Invitations, People &gt; People I Follow,
+People &gt; My Followers, Search &gt; People and Organizations, and 4
+more</td>
+<td><code>name:</code>, <code>repo:</code></td>
+<td>None</td>
+<td>role, source, pending: its list’s rows do not carry it yet; its
+Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Gist</td>
+<td><code>gist</code>: General, You, Files, Comments</td>
+<td>Gists &gt; My Gists</td>
+<td><code>name:</code>, <code>updated:</code></td>
+<td>None</td>
+<td>public or secret, starred, file name, language: its list’s rows do
+not carry it yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Codespace</td>
+<td><code>codespace</code>: General, Machine, Usage</td>
+<td>Repositories &gt; My Codespaces, Repository &gt; Code &gt;
+Codespaces</td>
+<td><code>repo:</code>, <code>updated:</code>, <code>name:</code></td>
+<td>None</td>
+<td>branch, state, machine: its list’s rows do not carry it yet; its
+Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Security alert</td>
+<td><code>security_alert</code>: General, Location, History, Fix</td>
+<td>Repository &gt; Security &gt; Alerts, Repository &gt; Security &gt;
+Dismissed and Resolved Alerts</td>
+<td><code>repo:</code>, <code>updated:</code></td>
+<td>None</td>
+<td>kind, severity, state, ecosystem, package, manifest, rule, tool,
+secret type, branch, created, fixed: its list’s rows do not carry it
+yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Security advisory and policy</td>
+<td>None. Repository &gt; Security &gt; Advisories and Policy; each
+advisory’s context menu. No Properties sheet yet: Publish or Close,
+Request CVE, comments and the private fork are on the advisory’s context
+menu.</td>
+<td>Search &gt; Security Advisories, Repository &gt; Security &gt;
+Advisories</td>
+<td><code>name:</code></td>
+<td>None</td>
+<td>state, severity, published: its list’s rows do not carry it yet; its
+Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Notification</td>
+<td><code>notification</code>: General, You</td>
+<td>Needs My Attention &gt; Notifications</td>
+<td><code>repo:</code>, <code>updated:</code>, <code>name:</code></td>
+<td>None</td>
+<td>reason, type, unread, participating, saved: its list’s rows do not
+carry it yet; its Properties sheet shows it</td>
+</tr>
+<tr>
+<td>Saved search, pin and favorite</td>
+<td>None. Search &gt; Saved Searches; Repositories &gt; Pinned and
+Favorites. A saved search is its query, run by Enter; Pin as Node, Unpin
+and Remove are on its context menu, so it needs no sheet.</td>
+<td>Search &gt; Saved Searches</td>
+<td><code>name:</code></td>
+<td>None</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Account</td>
+<td>None. Account &gt; Manage GitHub Accounts…, Workbench Level for This
+Account…, GitHub Permissions…, Change History…, GitHub API Rate Limit.
+An account is QUILL’s, not GitHub’s: its pages are those windows.</td>
+<td>Account &gt; Manage GitHub Accounts…, Workbench Level for This
+Account…, GitHub Permissions…, Change History…, GitHub API Rate
+Limit</td>
+<td>None</td>
+<td>None</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Webhook (beyond Appendix C)</td>
+<td><code>webhook</code>: General</td>
+<td>Repository &gt; Settings &gt; Webhooks, Organization &gt;
+Webhooks</td>
+<td><code>name:</code></td>
+<td>None</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Deploy key (beyond Appendix C)</td>
+<td><code>deploy_key</code>: General</td>
+<td>Repository &gt; Settings &gt; Deploy Keys</td>
+<td><code>name:</code></td>
+<td>None</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<!-- END GENERATED appendix-c -->
+
 <h3 id="repositories-and-code">Repositories and code</h3>
 <p><strong>Repository</strong></p>
 <ul>

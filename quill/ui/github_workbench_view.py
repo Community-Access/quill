@@ -68,6 +68,16 @@ def row_values(row: object) -> dict[str, object]:
     return {"repo": repo, "repository": repo}
 
 
+def _filters_here(node: Any) -> bool:
+    """Whether a node's qualifiers are answered over its loaded rows (not by GitHub's search)."""
+    from quill.core.workbench.tree import Scope
+
+    loader = str(getattr(node, "loader", ""))
+    if getattr(node, "scope", None) is Scope.QUERY or loader in ("items:issues", "explore:search"):
+        return False
+    return not loader.startswith(("across:", "help:"))
+
+
 class GitHubWorkbenchViewMixin(GitHubWorkbenchListOrderMixin):
     """View, Go and filters for the GitHub provider."""
 
@@ -107,10 +117,6 @@ class GitHubWorkbenchViewMixin(GitHubWorkbenchListOrderMixin):
             frame = self.frame
             return frame is not None and verb[7:] in active(frame.filter.GetValue())
         return False
-
-    def load(self, ref: Any, node: Any, query: Query) -> list[object]:
-        """A node's rows (off the UI thread), in the list's chosen column order."""
-        return self.order_loaded(node, self.load_rows(ref, node, query))  # type: ignore[attr-defined]
 
     def supports_view(self, command_id: str) -> bool:
         verb = command_id.removeprefix(_P)
@@ -194,6 +200,31 @@ class GitHubWorkbenchViewMixin(GitHubWorkbenchListOrderMixin):
         frame = self.frame
         frame.filter.ChangeValue(show_only(frame.filter.GetValue(), qualifier, hide=hide))
         frame.apply_filter()
+
+    def load(self, ref: Any, node: Any, query: Query) -> list[object]:
+        """A node's rows (off the UI thread), filtered and in the list's chosen column order.
+
+        The qualifiers this list answers are applied here (Appendix C). Issues
+        and pull requests, searches and Across Repositories filter their own
+        way; every other list is read whole and filtered over its rows.
+        """
+        rows: list[object] = self.order_loaded(
+            node,
+            self.load_rows(ref, node, query),  # type: ignore[attr-defined]
+        )
+        if not query.conditions or not _filters_here(node):
+            return rows
+        from quill.core.github.object_filters import filter_note, filter_rows
+
+        kept, unknown = filter_rows(
+            rows,
+            query.conditions,
+            lambda row: self.row_type(node, row),  # type: ignore[attr-defined]
+            list_type=node.row_type,
+        )
+        note = filter_note(len(rows), len(kept), unknown, complete=False)
+        self.local_note = f"{self.local_note} {note}".strip()
+        return kept
 
     def split_query(self, text: str) -> tuple[str, list[tuple[str, str, bool]]]:
         return local_only(text)

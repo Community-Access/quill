@@ -993,7 +993,7 @@ Keys the window answers that are not menu rows:
 - **tag**: Open, Delete Tag..., Read Tag Message, Download Source..., Commit Comments..., Compare With Previous; More: Compare With Default, Copy Link, Open on GitHub; Properties...
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub; More: Unsnooze Locally, Why?; Properties...
-- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Send Repository Dispatch..., Pin; More: Star Lists..., Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List..., Fork Workflow Settings, Fork Workflows from Private Repositories..., Languages, License, Star History, Mark Its Notifications Read, Set a Custom Property..., Compare Dependencies..., SBOM Report, Ruleset History..., Secret Scanning History, Require Sign-off on Web Commits..., Sponsor Links, Dependency Manifests, Start an Agent Task..., Agent Tasks, An Agent Task's Progress..., Automations, New Automation..., Run an Automation..., Rename an Automation..., Delete an Automation..., An Automation's History..., An Automation's Tasks..., Automation Tools and Triggers, Agent Secrets from the Organization, Agent Variables from the Organization, Allow a Blocked Secret...; Properties...
+- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Send Repository Dispatch..., Pin; More: Star Lists..., Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List..., Fork Workflow Settings, Fork Workflows from Private Repositories..., Languages, License, Star History, Mark Its Notifications Read, Set a Custom Property..., Compare Dependencies..., SBOM Report, Ruleset History..., Secret Scanning History, Sync Fork with Upstream..., Create Repository from This Template..., Delete Repository..., Require Sign-off on Web Commits..., Sponsor Links, Dependency Manifests, Start an Agent Task..., Agent Tasks, An Agent Task's Progress..., Automations, New Automation..., Run an Automation..., Rename an Automation..., Delete an Automation..., An Automation's History..., An Automation's Tasks..., Automation Tools and Triggers, Agent Secrets from the Organization, Agent Variables from the Organization, Allow a Blocked Secret...; Properties...
 - **person**: Open, Follow or Unfollow, Open on GitHub; Properties...
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
 - **gist**: Edit Gist..., Star or Unstar, Comments..., History..., Forks..., Fork Gist; More: Copy Link, Open on GitHub, Delete Gist...; Properties...
@@ -1583,7 +1583,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 | Add user access restrictions | `POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
 | Set user access restrictions | `PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
 | Rename a branch | `POST /repos/{owner}/{repo}/branches/{branch}/rename` | Yes | Properties (Alt+Enter) on Branch: Name |
-| Sync a fork branch with the upstream repository | `POST /repos/{owner}/{repo}/merge-upstream` | Yes | Navigator: Repository > owner/name > Code > Upstream |
+| Sync a fork branch with the upstream repository | `POST /repos/{owner}/{repo}/merge-upstream` | Yes | context menu > Sync Fork with Upstream... |
 | Merge a branch | `POST /repos/{owner}/{repo}/merges` | Yes | context menu > Merge Into... |
 
 #### Campaigns
@@ -2558,7 +2558,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 | --- | --- | --- | --- |
 | List organization repositories | `GET /orgs/{org}/repos` | Yes | Navigator: Organization > organization > Repositories |
 | Create an organization repository | `POST /orgs/{org}/repos` | Yes | editor GitHub menu > Create Repository... |
-| Delete a repository | `DELETE /repos/{owner}/{repo}` | Yes | Repository > Repository Actions... (Ctrl+Shift+G) |
+| Delete a repository | `DELETE /repos/{owner}/{repo}` | Yes | context menu > Delete Repository... |
 | Get a repository | `GET /repos/{owner}/{repo}` | Yes | Navigator: Repository > owner/name |
 | Update a repository | `PATCH /repos/{owner}/{repo}` | Yes | editor GitHub menu > Rename Repository... |
 | List repository activities | `GET /repos/{owner}/{repo}/activity` | Yes | Navigator: Repository > owner/name > Activity > Push Activity |
@@ -2625,7 +2625,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 | Check if vulnerability alerts are enabled for a repository | `GET /repos/{owner}/{repo}/vulnerability-alerts` | Yes | Properties (Alt+Enter) on Repository |
 | Enable vulnerability alerts | `PUT /repos/{owner}/{repo}/vulnerability-alerts` | Yes | Properties (Alt+Enter) on Repository: Dependabot alerts |
 | Download a repository archive (zip) | `GET /repos/{owner}/{repo}/zipball/{ref}` | Yes | context menu > Download Source... |
-| Create a repository using a template | `POST /repos/{template_owner}/{template_repo}/generate` | Yes | Repository > Repository Actions... (Ctrl+Shift+G) |
+| Create a repository using a template | `POST /repos/{template_owner}/{template_repo}/generate` | Yes | context menu > Create Repository from This Template... |
 | List public repositories | `GET /repositories` | Left to GitHub | Lists every repository, user, organization, gist or event on GitHub; a person works with their own and those they follow, which the Workbench lists. |
 | List repositories for the authenticated user | `GET /user/repos` | Yes | Navigator: Repositories > My Repositories |
 | Create a repository for the authenticated user | `POST /user/repos` | Yes | editor GitHub menu > Create Repository... |

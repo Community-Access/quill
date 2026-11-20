@@ -3493,117 +3493,241 @@ The keyboard adds two more:
 
 ## Appendix A: every feature and its new home
 
+Generated from the code (2026-11-19): the views from their own registries with
+the node that is each one's home, and every other row from
+`quill/core/github/appendix_ab_rows.py`, each with the refs
+`python -m quill.tools.github_appendix_reference` resolves against the tree,
+the menus, the context menus, the sheets and Workbench Options. The gate fails
+when a home disappears, and when a retired window, the editor's GitHub menu or
+a door gains something no row maps.
+
+<!-- BEGIN GENERATED appendix-a: python -m quill.tools.github_appendix_reference --write -->
+
 ### GitHub Items' views
 
-| Today | New home |
-|---|---|
-| Issues & PRs | Repository > Issues; > Pull Requests; > Issues and Pull Requests |
-| Branches | Repository > Code > Branches |
-| Commits | Repository > Code > Commits |
-| Tags | Repository > Code > Tags |
-| Releases | Repository > Releases |
-| Workflows | Repository > Actions > Workflows |
-| Workflow Runs | Repository > Actions > Runs |
-
-### GitHub Items' buttons and choices
-
-| Today | New home |
-|---|---|
-| Repository box and Load | The Repositories node; File > Open a Repository...; Open GitHub Address... |
-| Pinned... | Repositories > Pinned; Tools > Workbench Options > Repositories |
-| Favorites... | Repositories > Favorites; Item > Add to or Remove from Favorites |
-| Explore... | Gone as a window: everything is in the tree |
-| Projects... | Projects node; Repository > Projects |
-| View Upstream | Repository > Code > Upstream; Repository > View Upstream |
-| Files... | Repository > Code > Files; Repository > Browse Files |
-| Milestones... | Repository > Milestones |
-| Search box and Search | Filter box; the Search branch |
-| Open Link... | File > Open GitHub Address... (Ctrl+L) |
-| Quick filter | Filter box |
-| View choice | The tree |
-| Show choice | Issues and Pull Requests nodes; View > Show |
-| State, Sort | View > State; View > Sort |
-| List mode | View > Quick or Full list |
-| Columns... | View > Columns... (current list); Tools > Workbench Options > Lists (defaults) |
-| Back, Forward | View > Back, Forward; Backspace, Alt+Left, Alt+Right |
-| Refresh | View > Refresh (F5, Ctrl+R) |
-| View More | View > Load More |
-| Open in Browser | File > Open on GitHub; on every context menu |
-| Go To #... | File > Go to Number... |
-| Diff... | Item > File Differences...; PR context menu |
-| Review... | Item > Review...; default action for a PR |
-| Summarize | Item > Summarize Discussion |
-| Compare... | Repository > Compare Branches...; branch context menu |
-| Batch... | Item > Batch (multiple selection) |
-| Actions... | The Item menu |
-| Close | File > Close Workbench; Alt+F4 |
+| Today | New home | Loader |
+|---|---|---|
+| Issues & PRs | Repository > Issues and Pull Requests (narrowed: Repository > Issues, Repository > Pull Requests) | `items:issues` |
+| Branches | Repository > Code > Branches | `items:branches` |
+| Commits | Repository > Code > Commits | `items:commits` |
+| Tags | Repository > Code > Tags | `items:tags` |
+| Releases | Repository > Releases | `items:releases` |
+| Workflows | Repository > Actions > Workflows | `items:workflows` |
+| Workflow Runs | Repository > Actions > Runs | `items:runs` |
 
 ### Explore GitHub's views
 
-| Today | New home |
-|---|---|
-| Global issue and PR search | Search > Issues and Pull Requests |
-| Code search | Search > Code |
-| Commit search | Search > Commits |
-| Repository search | Search > Repositories |
-| My Work | Needs My Attention > Review Requests, Assigned to Me, Mentions, My Open Pull Requests, My Open Issues |
-| Attention queue | Needs My Attention > Inbox |
-| My activity feed | Needs My Attention > My Activity Feed |
-| My repositories | Repositories > My Repositories |
-| Starred repositories | Repositories > Starred |
-| Watched repositories | Repositories > Watched |
-| People I follow | People > People I Follow |
-| My followers | People > My Followers |
-| My gists | Gists > My Gists |
-| GitHub notifications | Needs My Attention > Notifications |
-| Repository chooser | The Repositories branch itself |
-| Person's repositories, public activity, followers, people followed | People > person > Repositories, Activity, Followers, Following |
-| Repository overview | Repository > Overview |
-| Repository activity | Repository > Activity |
-| Repository people | Repository > People > Contributors and People |
-| Repository forks | Repository > People > Forks |
-| Collaborators and team access | Repository > People > Collaborators and Team Access |
-| Deployments and environments | Repository > Deployments and Environments |
-| Repository health snapshot (opt-in) | Repository > Insights > Health Snapshot |
-| Repository labels | Repository > Labels |
-| GitHub Pages and builds | Repository > GitHub Pages |
-| Repository Discussions | Repository > Discussions |
-| Repository security alerts | Repository > Security > Alerts |
-| Insights: traffic and contributors | Repository > Insights > Traffic and Contributors |
-| Community profile checklist | Repository > Insights > Community Profile |
-| Actions caches | Repository > Actions > Caches |
-| Secret and variable names | Repository > Settings > Secret and Variable Names |
-| Dismissed and resolved security alerts | Repository > Security > Dismissed and Resolved Alerts |
-| Saved Searches..., Save Search | Search > Saved Searches; filter box > Save Search |
+| Today | New home | Loader |
+|---|---|---|
+| Global issue and PR search | Search > Issues and Pull Requests (narrowed: Saved search) | `explore:search` |
+| Code search | Search > Code | `explore:code_search` |
+| Commit search | Search > Commits | `explore:commit_search` |
+| Repository search | Search > Repositories | `explore:repo_search` |
+| People search | Search > People and Organizations | `explore:user_search` |
+| Topic search | Search > Topics | `explore:topic_search` |
+| My Work | Needs My Attention > Review Requests (narrowed: Needs My Attention > Assigned to Me, Needs My Attention > Mentions, Needs My Attention > My Open Pull Requests, Needs My Attention > My Open Issues) | `explore:my_work` |
+| Attention queue | Needs My Attention > Inbox | `explore:attention` |
+| My activity feed | Needs My Attention > My Activity Feed | `explore:activity` |
+| My repositories | Repositories > My Repositories | `explore:repositories` |
+| Starred repositories | Repositories > Starred | `explore:starred` |
+| Watched repositories | Repositories > Watched | `explore:watched` |
+| People I follow | People > People I Follow | `explore:following` |
+| My followers | People > My Followers | `explore:followers` |
+| My gists | Gists > My Gists | `explore:gists` |
+| GitHub notifications | Needs My Attention > Notifications | `explore:notifications` |
+| Repository chooser | Repositories | `explore:chooser` |
+| Person's profile | Person > Profile | `explore:person_profile` |
+| Sponsor a person | Person > Sponsor | `explore:person_sponsor` |
+| Person's repositories | Person > Repositories | `explore:person_repos` |
+| Person's public activity | Person > Activity | `explore:person_activity` |
+| Person's followers | Person > Followers | `explore:person_followers` |
+| People followed by person | Person > Following | `explore:person_following` |
+| Person's packages | Person > Packages | `explore:person_packages` |
+| My codespaces | Repositories > My Codespaces | `explore:my_codespaces` |
+| Repository codespaces | Repository > Code > Codespaces | `explore:repo_codespaces` |
+| Repository environments | Repository > Settings > Environments | `explore:repo_environments` |
+| Repository overview | Repository > Overview | `explore:repo_overview` |
+| Repository activity | Repository > Activity | `explore:repo_activity` |
+| Repository people | Repository > People > Contributors and People | `explore:repo_people` |
+| Repository forks | Repository > People > Forks | `explore:repo_forks` |
+| Collaborators and team access | Repository > People > Collaborators and Team Access | `explore:repo_access` |
+| Deployments and environments | Repository > Deployments and Environments | `explore:deployments` |
+| Repository health snapshot (opt-in) | Repository > Insights > Health Snapshot | `explore:metrics` |
+| Repository labels | Repository > Labels | `explore:labels` |
+| GitHub Pages and builds | Repository > GitHub Pages | `explore:pages` |
+| Repository Discussions | Repository > Discussions | `explore:discussions` |
+| Repository security alerts | Repository > Security > Alerts | `explore:security` |
+| Insights: traffic and contributors | Repository > Insights > Traffic and Contributors | `explore:insights` |
+| Community profile checklist | Repository > Insights > Community Profile | `explore:community` |
+| Commit activity as tables | Repository > Insights > Commit Activity | `explore:commit_stats` |
+| Security policy and reporting | Repository > Security > Policy | `explore:security_policy` |
+| Repository security advisories | Repository > Security > Advisories | `explore:advisories` |
+| Repository webhooks | Repository > Settings > Webhooks | `explore:webhooks` |
+| Repository deploy keys | Repository > Settings > Deploy Keys | `explore:deploy_keys` |
+| Repository autolinks | Repository > Settings > Autolinks | `explore:autolinks` |
+| Organization webhooks | Organization > Webhooks | `explore:org_webhooks` |
+| Organization packages | Organization > Packages | `explore:org_packages` |
+| Repository wiki | Repository > Wiki | `explore:wiki` |
+| GitHub Advisory Database | Search > Security Advisories | `explore:advisory_search` |
+| Actions caches | Repository > Actions > Caches | `explore:actions_caches` |
+| Secret and variable names | Repository > Settings > Secret and Variable Names | `explore:secrets` |
+| Merge queue | Repository > Merge Queue | `explore:merge_queue` |
+| Repository invitations | Needs My Attention > Invitations | `explore:invitations` |
+| My packages | Repositories > My Packages | `explore:my_packages` |
+| Star lists | Repositories > Star Lists | `explore:star_lists` |
+| My profile | People > My Profile | `explore:my_profile` |
+| My SSH and GPG keys | People > My Keys | `explore:my_keys` |
+| My sponsorships | People > Sponsorships | `explore:sponsorships` |
+| Self-hosted runners | Repository > Actions > Runners | `explore:runners` |
+| Billing and usage | People > My Billing and Usage | `explore:billing_usage` |
+| Dismissed and resolved security alerts | Repository > Security > Dismissed and Resolved Alerts | `explore:security_closed` |
+| Repository Actions Variables | Repository > Settings > Actions Variables | `explore:res_actions_variables` |
+| Repository Actions Secrets | Repository > Settings > Actions Secrets | `explore:res_actions_secrets` |
+| Repository Dependabot Secrets | Repository > Settings > Dependabot Secrets | `explore:res_dependabot_secrets` |
+| Repository Codespaces Secrets | Repository > Settings > Codespaces Secrets | `explore:res_codespaces_secrets` |
+| Repository Copilot Agent Secrets | Repository > Settings > Copilot Agent Secrets | `explore:res_agent_secrets` |
+| Repository Copilot Agent Variables | Repository > Settings > Copilot Agent Variables | `explore:res_agent_variables` |
+| Repository Artifacts | Repository > Actions > Artifacts | `explore:res_artifacts` |
+| Repository Invitations | Repository > People > Invitations | `explore:res_repo_invitations` |
+| Repository Issue Types | Repository > Settings > Issue Types | `explore:res_repo_issue_types` |
+| Organization Actions Variables | Organization > Actions Variables | `explore:res_org_actions_variables` |
+| Organization Actions Secrets | Organization > Actions Secrets | `explore:res_org_actions_secrets` |
+| Organization Dependabot Secrets | Organization > Dependabot Secrets | `explore:res_org_dependabot_secrets` |
+| Organization Codespaces Secrets | Organization > Codespaces Secrets | `explore:res_org_codespaces_secrets` |
+| Organization Copilot Agent Secrets | Organization > Copilot Agent Secrets | `explore:res_org_agent_secrets` |
+| Organization Copilot Agent Variables | Organization > Copilot Agent Variables | `explore:res_org_agent_variables` |
+| Organization Runner Groups | Organization > Runner Groups | `explore:res_runner_groups` |
+| Organization Runners | Organization > Runners | `explore:res_org_runners` |
+| Organization Larger Runners | Organization > Larger Runners | `explore:res_hosted_runners` |
+| Organization Members | Organization > Members | `explore:res_org_members` |
+| Organization Invitations | Organization > Invitations | `explore:res_org_invitations` |
+| Organization Blocked People | Organization > Blocked People | `explore:res_org_blocks` |
+| Organization Outside Collaborators | Organization > Outside Collaborators | `explore:res_outside_collaborators` |
+| Organization Security Managers | Organization > Security Managers | `explore:res_security_managers` |
+| Organization Custom Properties | Organization > Custom Properties | `explore:res_custom_properties` |
+| Organization Issue Types | Organization > Issue Types | `explore:res_org_issue_types` |
+| Organization Organization Roles | Organization > Organization Roles | `explore:res_org_roles` |
+| My Codespaces Secrets | People > My Codespaces Secrets | `explore:res_my_codespaces_secrets` |
+| Repository Code Scanning Analyses | Repository > Security > Code Scanning Analyses | `explore:res_code_scanning_analyses` |
+| Repository CodeQL Databases | Repository > Security > CodeQL Databases | `explore:res_codeql_databases` |
+| Organization Code Scanning Alerts | Organization > Code Scanning Alerts | `explore:res_org_code_scanning_alerts` |
+| Repository Organization Secrets Here | Repository > Settings > Organization Secrets Here | `explore:res_repo_org_secrets` |
+| Repository Organization Variables Here | Repository > Settings > Organization Variables Here | `explore:res_repo_org_variables` |
+| My Email Addresses | People > My Email Addresses | `explore:res_my_emails` |
+| My Social Accounts | People > My Social Accounts | `explore:res_my_social_accounts` |
+| Blocked People | People > Blocked People | `explore:res_my_blocks` |
+| My Followers | People > My Followers | `explore:res_my_followers` |
+| My Issue Types | People > My Issue Types | `explore:res_my_issue_types` |
+| My Organizations' Memberships | People > My Organizations' Memberships | `explore:res_my_org_memberships` |
+| My Issue Fields | People > My Issue Fields | `explore:res_my_issue_fields` |
+| My Installed Apps | People > My Installed Apps | `explore:res_my_installations` |
+| My Public Email Addresses | People > My Public Email Addresses | `explore:res_my_public_emails` |
+| Repositories I Watch | People > Repositories I Watch | `explore:res_my_watching` |
+| Gists I Starred | Gists > Gists I Starred | `explore:res_my_starred_gists` |
+| Organization Issue Fields | Organization > Issue Fields | `explore:res_org_issue_fields` |
+| Organization Failed Invitations | Organization > Failed Invitations | `explore:res_org_failed_invitations` |
+| Organization Public Members | Organization > Public Members | `explore:res_org_public_members` |
+| Organization Installed Apps | Organization > Installed Apps | `explore:res_org_installations` |
+| Organization Immutable Releases: Repositories | Organization > Immutable Releases: Repositories | `explore:res_org_immutable_release_repos` |
+| Organization Actions: Allowed Repositories | Organization > Actions: Allowed Repositories | `explore:res_org_actions_repos` |
+| Organization Self-hosted Runners: Allowed Repositories | Organization > Self-hosted Runners: Allowed Repositories | `explore:res_org_runner_repos` |
+| Organization Dependabot Alerts | Organization > Dependabot Alerts | `explore:res_org_dependabot_alerts` |
+| Organization Secret Scanning Alerts | Organization > Secret Scanning Alerts | `explore:res_org_secret_alerts` |
+| Organization Security Advisories | Organization > Security Advisories | `explore:res_org_advisories` |
+| Organization Recent Events | Organization > Recent Events | `explore:res_org_events` |
+| Organization Custom Property Values | Organization > Custom Property Values | `explore:res_org_property_values` |
+| Repository All Issue Comments | Repository > Activity > All Issue Comments | `explore:res_repo_issue_comments` |
+| Repository Commit Comments | Repository > Code > Commit Comments | `explore:res_commit_comments` |
+| Repository Watchers | Repository > People > Watchers | `explore:res_repo_watchers` |
+| Repository Push Activity | Repository > Activity > Push Activity | `explore:res_repo_push_activity` |
+| Repository CODEOWNERS Problems | Repository > Settings > CODEOWNERS Problems | `explore:res_codeowners_errors` |
+| Repository Rule Insights | Repository > Settings > Rule Insights | `explore:res_repo_rule_insights` |
+| Repository My Notifications Here | Repository > Activity > My Notifications Here | `explore:res_repo_my_notifications` |
+| Repository Custom Property Values | Repository > Settings > Custom Property Values | `explore:res_repo_property_values` |
+| Person's SSH Keys | Person > SSH Keys | `explore:res_person_keys` |
+| Person's GPG Keys | Person > GPG Keys | `explore:res_person_gpg_keys` |
+| Person's SSH Signing Keys | Person > SSH Signing Keys | `explore:res_person_signing_keys` |
+| Person's Social Accounts | Person > Social Accounts | `explore:res_person_social` |
+| Person's Gists | Person > Gists | `explore:res_person_gists` |
+| Person's Starred | Person > Starred | `explore:res_person_starred` |
+| Person's Watching | Person > Watching | `explore:res_person_watching` |
+| Person's Projects | Person > Projects | `explore:res_person_projects` |
+| Person's People They Follow: Activity | Person > People They Follow: Activity | `explore:res_person_feed` |
+| Licences | Repositories > Licences | `explore:res_licenses` |
+| .gitignore Templates | Repositories > .gitignore Templates | `explore:res_gitignore_templates` |
+| Codes of Conduct | Repositories > Codes of Conduct | `explore:res_codes_of_conduct` |
+| Repository Rulesets | Repository > Settings > Rulesets | `explore:res_repo_rulesets` |
+| Organization Rulesets | Organization > Rulesets | `explore:res_org_rulesets` |
+| Organization Rule Insights | Organization > Rule Insights | `explore:res_org_rule_insights` |
+| Organization Access Review: People | Organization > Access Review: People | `explore:res_access_people` |
+| Organization Access Review: Teams | Organization > Access Review: Teams | `explore:res_access_teams` |
+
+### GitHub Items' and Explore GitHub's buttons and choices
+
+| Today | New home | In the code |
+|---|---|---|
+| Repository box and Load | The Repositories node; File > Open GitHub Address... (Ctrl+L) takes owner/name. | `node:repositories`, `menu:open_address` |
+| Pinned... | Repositories > Pinned; Tools > Workbench Options > Repositories. | `node:pinned`, `prefpage:Repositories`, `row:repository.pin_repository` |
+| Favorites... | Repositories > Favorites; Item > Add to or Remove from Favorites (Ctrl+D). | `node:favorites`, `menu:favorite` |
+| Explore... | Gone as a window: each of its views is a node (above). Explore GitHub was a second window; its views are nodes. | `node:search` |
+| Projects... | The Projects node; Repository > Projects; Repository Actions... > Projects.... | `node:projects`, `node:repository.repo_projects`, `repoaction:github.workbench.projects_window` |
+| View Upstream | Repository > Code > Upstream (a fork's own node). | `node:repository.upstream` |
+| Files... | Repository > Code > Files; Go > Files (Ctrl+Shift+5); Repository Actions... > Files, History and Blame.... | `node:repository.files`, `menu:go_files`, `repoaction:github.workbench.files_window` |
+| Milestones... | Repository > Milestones; Repository Actions... > Milestones.... | `node:repository.milestones`, `repoaction:github.workbench.milestones_window` |
+| Search box and Search | The filter box (Ctrl+E); the Search branch. | `menu:filter`, `node:search` |
+| Open Link... | File > Open GitHub Address... (Ctrl+L). | `menu:open_address` |
+| Quick filter | The filter box (Ctrl+E); Edit > Filter Builder... (Ctrl+Alt+F). | `menu:filter`, `menu:filter_builder` |
+| View and Person choices | The tree: each view is a node; People > Find a Person... opens anyone's. | `node:repository.code`, `node:find_person` |
+| Show choice | The Issues, Pull Requests and Issues and Pull Requests nodes; View > Issues, Pull Requests, Both. | `node:repository.issues`, `node:repository.pulls`, `menu:show_issues`, `menu:show_prs`, `menu:show_both` |
+| State, Sort | View > Open, Closed, All; View > Newest First and the other sorts. | `menu:state_open`, `menu:state_closed`, `menu:state_all`, `menu:sort_number_desc` |
+| List mode | Tools > Workbench Options > General: the list mode. | `pref:list_mode` |
+| Columns... | View > Columns... (Ctrl+Shift+U) for this list; Tools > Workbench Options > Lists for the defaults. | `menu:columns`, `prefpage:Lists` |
+| Back, Forward | View > Back (Alt+Left, Backspace), Forward (Alt+Right). | `menu:back`, `menu:forward` |
+| Refresh | View > Refresh (F5). | `menu:refresh` |
+| View More | View > Load More (Alt+Page Down), Load All. | `menu:load_more`, `menu:load_all` |
+| Open in Browser | File > Open on GitHub (Shift+Enter); on every context menu. | `menu:open_on_github` |
+| Go To #... | File > Go to Number... (Ctrl+G). | `menu:go_to_number` |
+| Diff... | Item > File Differences... (Ctrl+Shift+D); the pull request's context menu. | `menu:diff`, `row:pull_request.diff` |
+| Review... | Review... on a pull request's context menu; its default action. | `row:pull_request.review` |
+| Summarize | Summarize Discussion on an issue's or pull request's context menu. | `row:issue.summarize`, `row:pull_request.summarize` |
+| Compare... | Repository > Compare Branches... (Ctrl+Shift+B); a branch's context menu. | `menu:compare`, `row:branch.compare` |
+| Batch... | Select several rows, then Item > Properties... (Alt+Enter) edits them together; Merge Selected... on pull requests. | `menu:properties`, `row:pull_request.merge_selected` |
+| Actions... | The Item menu, and each row's context menu (Shift+F10). | `menu:properties`, `menu:comment` |
+| Saved Searches..., Save Search | Search > Saved Searches; New Here (Ctrl+N) in a search saves it. | `node:saved_searches`, `new:search_issues`, `menu:go_saved_searches` |
+| Close | File > Close Workbench (Alt+F4). | `menu:close` |
 
 ### The editor's GitHub menu rows (Workbench Mode)
 
-| Today | New home |
-|---|---|
-| Leave Workbench Mode | Stays |
-| Inbox... | Stays: opens Needs My Attention > Inbox |
-| My Work..., Notifications... | Command ids kept, open their nodes; rows leave the menu |
-| Issues and Pull Requests... | Becomes This Repository's Issues and This Repository's Pull Requests |
-| Actions Runs... | Stays |
-| Releases..., Repository Items..., Explore GitHub... | Command ids kept, open their nodes; Open GitHub Workbench replaces the rows |
-| Open GitHub Reference..., GitHub File URL... | Open GitHub Address... |
-| Open a Repository..., Clone Repository... | Clone stays; Open a Repository moves to Workbench > File |
-| Commit to GitHub..., Sync Folder with GitHub... | Stay (QUILL only) |
-| Repository Admin submenu | Workbench > Repository > Settings, Fork, Create Repository (File > Create Repository...), Browse Organization Repositories (Repositories > Organizations), Create Release (File), Dispatch Workflow, Security Alerts |
-| Local Git submenu | Stays in the editor |
-| Codespaces submenu | Workbench > Repository > Codespaces |
-| Manage GitHub Accounts..., Open GitHub Guide | Stay |
+| Today | New home | In the code |
+|---|---|---|
+| Leave Workbench Mode | Stays. | `editor:view.github_workbench_mode` |
+| GitHub Items..., Repository Items... | Open GitHub Workbench (the same command). | `editor:file.open_github_items`, `door:file.open_github_items` |
+| Inbox... | Stays: opens Needs My Attention > Inbox. | `editor:github.workbench_inbox`, `door:github.workbench_inbox`, `node:inbox` |
+| My Work..., Notifications... | Command ids kept, each opening its node; the rows left the menu. | `editor:github.workbench_my_work`, `door:github.workbench_my_work`, `editor:github.view_notifications`, `door:github.view_notifications`, `node:notifications` |
+| Issues and Pull Requests... | This Repository's Issues and This Repository's Pull Requests. | `editor:github.workbench_issues`, `door:github.workbench_issues`, `editor:github.workbench_pulls`, `door:github.workbench_pulls` |
+| Actions Runs... | Stays: opens the repository's Actions > Runs. | `editor:github.workbench_actions_runs`, `door:github.workbench_actions_runs` |
+| Releases..., Explore GitHub... | Command ids kept, opening Releases and Search; Open GitHub Workbench replaces the rows. | `editor:github.workbench_releases`, `door:github.workbench_releases`, `editor:github.workbench_explore`, `door:github.workbench_explore` |
+| Open GitHub Reference..., GitHub File URL... | Open GitHub Address... in the editor; File > Open GitHub Address... (Ctrl+L) in the Workbench. | `editor:file.open_github_reference`, `editor:file.open_github_file_url`, `menu:open_address` |
+| Open a Repository..., Clone Repository... | Clone stays; Open a Repository is File > Open GitHub Address... (Ctrl+L) in the Workbench. | `editor:file.open_github_repository`, `editor:github.clone_repository`, `menu:open_address` |
+| Commit to GitHub..., Sync Folder with GitHub... | Stay (QUILL only). | `editor:file.github_save_back`, `editor:sync.sync_folder` |
+| Repository Admin submenu | Repository > Repository Actions... (Ctrl+Shift+G) lists every one; with the Workbench in use each opens its node or sheet page. | `editor:github.create_repository`, `editor:github.fork_repository`, `editor:github.rename_repository`, `editor:github.change_repository_visibility`, `editor:github.change_default_branch`, `editor:github.configure_branch_protection`, `editor:github.delete_branch`, `editor:github.commit_multiple_files`, `editor:github.browse_organization`, `editor:github.create_release`, `editor:github.dispatch_workflow`, `editor:github.view_security_alerts`, `door:github.create_repository`, `door:github.fork_repository`, `door:github.rename_repository`, `door:github.change_repository_visibility`, `door:github.change_default_branch`, `door:github.configure_branch_protection`, `door:github.delete_branch`, `door:github.commit_multiple_files`, `door:github.browse_organization`, `door:github.create_release`, `door:github.dispatch_workflow`, `door:github.view_security_alerts`, `repoaction:github.create_repository`, `repoaction:github.fork_repository`, `repoaction:github.rename_repository`, `repoaction:github.change_repository_visibility`, `repoaction:github.change_default_branch`, `repoaction:github.configure_branch_protection`, `repoaction:github.delete_branch`, `repoaction:github.commit_multiple_files`, `repoaction:github.browse_organization`, `repoaction:github.create_release`, `repoaction:github.dispatch_workflow`, `repoaction:github.view_security_alerts` |
+| Codespaces submenu | Repository > Code > Codespaces; Repository Actions.... | `editor:github.list_codespaces`, `editor:github.create_codespace`, `door:github.list_codespaces`, `door:github.create_codespace`, `node:repository.repo_codespaces` |
+| From This Line submenu | Stays in the editor (PRD 22.3). | `editor:github.copy_line_link`, `editor:localgit.blame_at_cursor`, `editor:github.open_line_pull`, `editor:github.open_line`, `editor:github.issue_from_selection`, `editor:github.issues_mentioning_file`, `editor:github.comment_on_line`, `editor:github.open_reference_at_cursor` |
+| Local Git submenu | Stays in the editor. | `editor:localgit.uncommitted_changes`, `editor:localgit.switch_branch`, `editor:localgit.stash_changes`, `editor:localgit.manage_stashes`, `editor:localgit.bisect_start`, `editor:localgit.bisect_reset`, `editor:localgit.resolve_conflicts`, `editor:localgit.interactive_rebase`, `editor:localgit.rebase_abort`, `editor:localgit.worktrees`, `editor:localgit.new_worktree` |
+| Manage GitHub Accounts..., Open GitHub Guide | Stay; also Account > Manage GitHub Accounts... (Ctrl+Shift+K) and Help > GitHub Workbench Guide (Ctrl+F1). | `editor:file.github_manage_accounts`, `editor:help.github_guide`, `menu:manage_accounts`, `menu:guide_chapter` |
 
 ### Preferences
 
-| Today | New home |
-|---|---|
-| Notification poll interval, sound on each check, interrupt speech (main Settings) | Tools > Workbench Options > Notifications and Inbox |
-| Queue Options..., Choose Categories..., Choose Repositories..., Save Current Filter... | Tools > Workbench Options > Notifications and Inbox; Account > Notification and Inbox Options |
-| Include read notifications | Tools > Workbench Options > Notifications and Inbox |
-| Health snapshot opt-in | Tools > Workbench Options > Privacy and opt-ins |
-| Columns, list mode, sort, state defaults | Tools > Workbench Options > General and Lists |
-| Last view, filter, selection, history (resume state) | Stays in `github_items_context.json`; cleared from Privacy and opt-ins |
+| Today | New home | In the code |
+|---|---|---|
+| Notification poll interval, sound on each check, interrupt speech | Tools > Workbench Options > Notifications and Inbox. | `pref:poll_interval_minutes`, `pref:poll_audible_tick`, `pref:poll_interrupt_speech` |
+| Queue Options... (Choose Repositories..., Choose Categories..., Save Current Filter...) | Item > Inbox Rules... (Ctrl+Alt+N); on the Inbox, the filter box (repo:, owner:) narrows by repository. Choose Categories and Save Current Filter have no Workbench home yet: the Inbox reads the choices the classic window saved. | `menu:inbox_rules`, `node:inbox`, `code:quill/ui/github_explore_queue.py#Choose Categories` |
+| Include read notifications | Tools > Workbench Options > Notifications and Inbox. | `pref:include_read_notifications` |
+| Health snapshot opt-in | Tools > Workbench Options > Privacy. | `pref:health_snapshot_opt_in` |
+| Columns, list mode, sort, state defaults | Tools > Workbench Options > General and Lists. | `pref:list_mode`, `pref:default_sort`, `pref:default_state`, `prefpage:Lists` |
+| Last view, filter, selection, history (resume state) | Kept on this computer; Tools > Workbench Options > Privacy > Forget Where I Was clears it. | `prefpage:Privacy`, `code:quill/ui/github_workbench_options.py#Forget &Where I Was` |
+
+<!-- END GENERATED appendix-a -->
 
 ## Appendix B: existing actions not covered above
 
@@ -3612,36 +3736,40 @@ menu home is decided here, and (Jeff, 2026-11-09: "all of this needs to be
 covered as well") each one also has a place on its object's Properties sheet,
 so Alt+Enter reaches every one of them.
 
-| Existing action | New home | On the Properties sheet |
-|---|---|---|
-| Set Topics... | Repository > Settings > General | Repository > General: Topics |
-| Sync Fork with Upstream... | Repository menu; Repository > Code > Upstream context menu | Repository > Fork: Sync with Upstream, with ahead and behind counts |
-| Archive Repository..., Unarchive Repository... | Repository > Settings | Repository > Danger Zone: Archived |
-| Delete Repository... | Repository > Settings (last, with its typed confirmation) | Repository > Danger Zone: Delete (tier 3) |
-| Create Repository from This Template... | Repository menu, shown only for template repositories | Repository > General: Template repository, and Use This Template... |
-| Watch Level... | Repository > Watch Level... (replaces the bare Watch and Unwatch pair on the menu bar; both stay on context menus) | Repository > You: Watch level, with custom events |
-| Use Repository | Gone: selecting the repository's node is "use" | Not needed |
-| Add Blocker..., Remove Blocker..., Add Sub-issue..., Remove Sub-issue... | Item > Relationships submenu | Issue > Relationships: parent, sub-issues in order, blocked by, blocking |
-| Next Unblocked | Go > Next Unblocked (Projects and Dependencies) | Issue > Relationships: "Unblocked" line, and Go to Next Unblocked |
-| Possible Duplicate Issues (check when filing) | Stays in New Issue...; also Item > Find Possible Duplicates | Issue > Relationships: Possible duplicates, and Close as Duplicate of... |
-| Projects and Dependencies, Edit Project Field..., Refresh Board | The Projects node (board as a list, linear order); Item > Edit Project Field... | Issue or PR > Projects: every field of every project; Project sheet (section 16.6) |
-| Compose Review..., Request Changes, Request Reviewers..., Request Copilot Review | PR context menu > Review...; Item > Review submenu | Pull request > Reviews: reviewers and teams, their states, Request, Remove, Request Copilot Review |
-| Mark Ready, convert to draft | Item > Mark Ready for Review / Convert to Draft | Pull request > General: Draft |
-| Update Branch... | Item > Update Branch... | Pull request > Branches: base, head, behind by n, Update Branch (merge or rebase) |
-| Enable Auto-Merge..., Disable Auto-Merge... | Item > Merge submenu | Pull request > Merge: auto-merge and its method |
-| Add to Merge Queue..., Remove from Merge Queue... | Item > Merge submenu | Pull request > Merge: merge queue position |
-| Check Merge Policy | Item > Merge submenu > Why Can't I Merge?; the PR's details pane | Pull request > Merge: every requirement, met or not, in words. *Built 2026-11-17:* Why Can't I Merge? on the pull request's row (`quill/core/github/merge_readiness.py`): each blocker in words with what to do, for the head commit it names; Merge asks it first and merges only that commit (REST `sha`, 409 said as "somebody pushed"); Auto-Merge... and Add to or Remove from Merge Queue... on the row too |
-| Re-request Check..., Copy Check Details | Item > Checks submenu | Pull request > Checks: each check, state, duration, Re-run, Copy Details |
-| Next Unresolved, Reply to Thread..., Copy Thread Link | Inside PR review, unchanged | Review thread sheet: file, line, state, Resolve or Reopen, Reply |
-| Pending comment edit and delete | Inside PR review, unchanged | Comment sheet: body, Edit, Delete (pending review comments) |
-| Copy Conversation, Copy Review Summary, Copy File Name, Copy Pull Request Link | Edit > Copy submenu (rows greyed where they do not apply) | Every sheet: Copy as Text, Copy Link |
-| React to Pull Request..., React to a Comment... | Item > React... | Issue, PR, comment and discussion > You: reactions, each with its count and whether it is yours |
-| Mark discussion answer, unmark answer | Discussion comment context menu | Discussion comment sheet: Answer |
-| Create milestone | Repository > Milestones node context menu > New Milestone... | Milestone sheet: title, description, due date, state, progress; New... in every milestone picker |
-| Lock Conversation... (with reason), Unlock Conversation | Item > Lock Conversation... | Issue or PR > Conversation: Locked, with reason |
-| Dependabot, code scanning and secret scanning alerts; Dismiss Alert..., Reopen Alert... | Repository > Security > Alerts (one list, a Kind column); alert context menu | Alert sheet: kind, severity, package or rule, location, state, Dismiss with reason and comment, Reopen, Assign |
-| Pull request and issue templates and forms | New Issue... and New Pull Request..., which now fill issue forms natively (section 21.7) | Repository > Templates: a sheet per template with a field builder, preview and checks (section 21) |
-| Thread subscription (Unsubscribe from Thread) | Notification context menu, unchanged | Notification and item > You: Subscribed, with reason |
+<!-- BEGIN GENERATED appendix-b: python -m quill.tools.github_appendix_reference --write -->
+
+| Existing action | New home | On the Properties sheet | In the code |
+|---|---|---|---|
+| Set Topics... | Repository Properties (Alt+Enter), General: Topics. | Repository > General: Topics | `sheet:repository.general.topics`, `sheet:repository.general.topics` |
+| Sync Fork with Upstream... | Sync Fork with Upstream... on a repository's context menu; Repository > Code > Upstream. | Repository > Fork: the fork, its parent and source | `row:repository.sync_fork`, `node:repository.upstream`, `sheet:repository.fork.parent` |
+| Archive Repository..., Unarchive Repository... | Repository Properties, Danger Zone: Archived. | Repository > Danger Zone: Archived | `sheet:repository.danger.archived`, `sheet:repository.danger.archived` |
+| Delete Repository... | Delete Repository... on a repository's context menu, with its typed confirmation (tier 3). | Repository > Danger Zone | `row:repository.delete_repository`, `sheet:repository.danger` |
+| Create Repository from This Template... | Create Repository from This Template... on a repository's context menu. | Repository > Templates: Template repository | `row:repository.use_template`, `sheet:repository.templates.is_template` |
+| Watch Level... | Watch or Unwatch on a repository's context menu; the level on its sheet. | Repository > You: Watch, with custom events | `row:repository.watch`, `sheet:repository.you.custom_watch`, `sheet:repository.you.watch`, `sheet:repository.you.custom_watch` |
+| Use Repository | Gone: selecting the repository's node is "use". Selecting a repository's node uses it. | Not needed | `node:repository.repository` |
+| Add Blocker..., Remove Blocker..., Add Sub-issue..., Remove Sub-issue... | Relationships... and Reorder Sub-issues... on an issue's context menu. | Issue > Relationships: parent, sub-issues, linked | `row:issue.relationships`, `row:issue.sub_issues`, `sheet:issue.relationships.parent`, `sheet:issue.relationships.sub_issues` |
+| Next Unblocked | Repository Actions... > Projects... (the board): Next Unblocked. | Issue > Relationships | `repoaction:github.workbench.projects_window`, `code:quill/ui/github_projects_dialog.py#&Next Unblocked`, `sheet:issue.relationships` |
+| Possible Duplicate Issues (check when filing) | Close or Reopen... closes as a duplicate of an issue named; Not a Duplicate... on an issue's context menu. Find Possible Duplicates is not built in the Workbench yet; the check when filing runs in the classic New Issue form only. | Issue > Relationships: linked | `row:issue.close_reopen`, `row:issue.not_duplicate`, `code:quill/ui/github_items_dialog_issue_templates.py#Possible Duplicate Issues`, `sheet:issue.relationships.linked` |
+| Projects and Dependencies, Edit Project Field..., Refresh Board | The Projects node; Projects... on an issue or pull request; Repository Actions... > Projects.... | Issue or pull request > Projects; the Project sheet | `node:projects`, `row:issue.projects`, `repoaction:github.workbench.projects_window`, `code:quill/ui/github_projects_dialog.py#Edit Project Field...`, `sheet:issue.projects.projects`, `sheet:project.fields` |
+| Compose Review..., Request Changes, Request Reviewers..., Request Copilot Review | Review... and Reviews... on a pull request; Ask Copilot to Review. | Pull request > Reviews: reviewers and teams | `row:pull_request.review`, `row:pull_request.manage_reviews`, `row:pull_request.copilot_code_review`, `sheet:pull_request.reviews.reviewers`, `sheet:pull_request.reviews.team_reviewers` |
+| Mark Ready, convert to draft | Pull request Properties, General: Draft; Mark Ready in Review.... | Pull request > General: Draft | `sheet:pull_request.general.draft`, `code:quill/ui/github_pr_review_dialog.py#&Mark Ready`, `sheet:pull_request.general.draft` |
+| Update Branch... | Review... on a pull request: Update Branch. | Pull request > Branches: base and head | `row:pull_request.review`, `code:quill/ui/github_pr_review_dialog.py#_update_branch`, `sheet:pull_request.branches.base` |
+| Enable Auto-Merge..., Disable Auto-Merge... | Auto-Merge... on a pull request. | Pull request > Merge: auto-merge | `row:pull_request.auto_merge`, `sheet:pull_request.merge.auto_merge` |
+| Add to Merge Queue..., Remove from Merge Queue... | Add to or Remove from Merge Queue... on a pull request. | Pull request > Merge | `row:pull_request.merge_queue`, `sheet:pull_request.merge` |
+| Check Merge Policy | Why Can't I Merge? on a pull request. | Pull request > Merge: merged | `row:pull_request.why_cant_merge`, `sheet:pull_request.merge.merged` |
+| Re-request Check..., Copy Check Details | Inside Review..., unchanged. | Pull request > Checks | `row:pull_request.review`, `code:quill/ui/github_pr_review_menus.py#Re-request Check...`, `code:quill/ui/github_pr_review_menus.py#Copy Check Details`, `sheet:pull_request.checks` |
+| Next Unresolved, Reply to Thread..., Copy Thread Link | Inside Review..., unchanged. | Pull request > Reviews: review comments | `row:pull_request.review`, `code:quill/ui/github_pr_review_dialog.py#Next &Unresolved`, `code:quill/ui/github_pr_review_menus.py#Reply to Thread...`, `code:quill/ui/github_pr_review_menus.py#Copy Thread Link`, `sheet:pull_request.reviews.review_comments` |
+| Pending comment edit and delete | Inside Review..., unchanged. | Not needed | `row:pull_request.review`, `code:quill/ui/github_pr_review_menus.py#Edit Pending Comment...`, `code:quill/ui/github_pr_review_menus.py#Delete Pending Comment...` |
+| Copy Conversation, Copy Review Summary, Copy File Name, Copy Pull Request Link | Inside Review...; Edit > Copy (Ctrl+C) and Copy Link (Ctrl+Shift+C) everywhere. | Not needed | `menu:copy`, `menu:copy_link`, `code:quill/ui/github_pr_review_menus.py#Copy Conversation`, `code:quill/ui/github_pr_review_menus.py#Copy Review Summary`, `code:quill/ui/github_pr_review_menus.py#Copy File Name`, `code:quill/ui/github_pr_review_menus.py#Copy Pull Request Link` |
+| React to Pull Request..., React to a Comment... | React... on an issue or pull request. | Issue, pull request and discussion > You: reactions | `row:issue.react`, `row:pull_request.react`, `sheet:issue.you.reactions`, `sheet:pull_request.you.reactions`, `sheet:discussion.you.reactions` |
+| Mark discussion answer, unmark answer | Open Discussion Thread: Mark as Answer. | Discussion > Answer | `row:discussion.discussion_thread`, `code:quill/ui/github_discussion_dialog.py#&Mark as Answer...`, `sheet:discussion.answer.answered_by` |
+| Create milestone | New Milestone... in every milestone picker; Repository Actions... > Milestones.... | Milestone sheet: title, description, due date, state, progress | `sheet:issue.organize.milestone`, `repoaction:github.workbench.milestones_window`, `sheet:milestone.general`, `sheet:milestone.progress` |
+| Lock Conversation... (with reason), Unlock Conversation | Lock or Unlock Conversation... on an issue. | Issue or pull request > Conversation: Locked, with reason | `row:issue.lock`, `sheet:issue.conversation.locked`, `sheet:pull_request.conversation.locked` |
+| Dependabot, code scanning and secret scanning alerts; Dismiss Alert..., Reopen Alert... | Repository > Security > Alerts; Dismiss or Reopen Alert... on an alert. | Security alert sheet: state, reason, severity, location | `node:repository.alerts`, `row:security_alert.dismiss_alert`, `sheet:security_alert.general.state`, `sheet:security_alert.location` |
+| Pull request and issue templates and forms | Repository > Templates; New Here (Ctrl+N) in Issues fills a form. | Repository > Templates | `node:repository.templates`, `row:template.open_template`, `new:issues`, `sheet:repository.templates` |
+| Thread subscription (Unsubscribe from Thread) | Unsubscribe from Thread on a notification. | Notification > You: Subscribed | `row:notification.unsubscribe`, `sheet:notification.you.subscribed` |
+
+<!-- END GENERATED appendix-b -->
 
 ## Appendix C: every object, its Properties sheet, and its filters
 
@@ -3652,6 +3780,60 @@ given the permission. **Do** is every action on the object beyond editing.
 which also has "has none" where the attribute is a list. Every entry also
 has Copy as Text, Copy Link, Open on GitHub and F1 on every field, which are
 not repeated.
+
+<!-- BEGIN GENERATED appendix-c: python -m quill.tools.github_appendix_reference --write -->
+
+### The map, from the code
+
+Generated from `quill/core/github/appendix_c_rows.py`, the sheet catalogue, the tree and `quill/core/github/object_filters.py`. Every qualifier is typed in a list's filter box. *Here* is checked over the rows the list loaded; *GitHub's search* is sent to GitHub: an issue or pull request list sends it, and so does the Search node for repositories, commits or people; *not yet* says why.
+
+| Object | Sheet: its pages | Its lists | Filters here | GitHub's search | Not yet |
+|---|---|---|---|---|---|
+| Repository | `repository`: General, You, Fork, Features, Merging, Branches and Rules, Access, Actions, Environments, Security, Pages, Webhooks, Deploy Keys, Autolinks, Secrets and Variables, Templates, Insights, Danger Zone, Actions Rules, Releases and Scanning | Repositories, Repositories > Pinned, Repositories > My Repositories, Repositories > Starred, and 7 more | `owner:`, `name:`, `updated:` | `topic:`, `language:`, `is:`, `fork:`, `archived:`, `template:`, `stars:`, `forks:`, `size:`, `license:`, `created:`, `pushed:` | open issues, has issues, has wiki, has discussions, has Pages, your role, custom properties: its list's rows do not carry it yet; its Properties sheet shows it |
+| Branch | `branch`: General, Protection, Commits | Repository > Code > Branches | `name:`, `protected:`, `ahead:`, `behind:`, `committed:`, `author:` | None | has an open pull request, merged: its list's rows do not carry it yet; its Properties sheet shows it |
+| Tag | `tag`: General, Commit, Release | Repository > Code > Tags | `name:`, `sha:` | None | date, has release, annotated: its list's rows do not carry it yet; its Properties sheet shows it |
+| Commit | `commit`: General, Files, Checks, Comments, Branches and Tags | Repository > Code > Commits | `author:`, `committed:`, `message:`, `sha:` | `committer:`, `author-date:`, `committer-date:`, `merge:` | path, branch, verified signature, check state: its list's rows do not carry it yet; its Properties sheet shows it |
+| File and folder | `file`: General, History, Code Owners | Repository > Code > Files | `name:` | None | extension, path, size, last changed: its list's rows do not carry it yet; its Properties sheet shows it |
+| Ruleset and branch protection rule | `ruleset`: General, Target, Bypass, Rules, Summary, History; `org_ruleset`: General, Target, Repositories, Bypass, Rules, Summary, History; `branch_protection`: General, Who, Summary | The Repository sheet's Branches and Rules page; Across Repositories > Rules and Branch Protection | None | None | target, enforcement, rule kind, bypass actor: there is no list of these to filter yet |
+| Issue | `issue`: General, You, Organize, Projects, Relationships, Description, Conversation, Timeline, Access | Needs My Attention > My Open Issues, Repository > Issues | None | `is:`, `reason:`, `type:`, `label:`, `milestone:`, `assignee:`, `author:`, `mentions:`, `commenter:`, `involves:`, `team:`, `project:`, `parent-issue:`, `has:`, `linked:`, `created:`, `updated:`, `closed:`, `merged:`, `comments:`, `reactions:`, `interactions:`, `archived:`, `draft:`, `review:`, `review-requested:`, `team-review-requested:`, `reviewed-by:`, `base:`, `head:`, `status:`, `language:`, `in:` | None |
+| Pull request | `pull_request`: General, You, Organize, Projects, Branches, Reviews, Checks, Merge, Files, Commits, Relationships, Description, Conversation, Timeline | Needs My Attention > Review Requests, Needs My Attention > My Open Pull Requests, Repository > Pull Requests | `conflicts:` | `is:`, `reason:`, `type:`, `label:`, `milestone:`, `assignee:`, `author:`, `mentions:`, `commenter:`, `involves:`, `team:`, `project:`, `parent-issue:`, `has:`, `linked:`, `created:`, `updated:`, `closed:`, `merged:`, `comments:`, `reactions:`, `interactions:`, `archived:`, `draft:`, `review:`, `review-requested:`, `team-review-requested:`, `reviewed-by:`, `base:`, `head:`, `status:`, `language:`, `in:` | files changed, lines added and removed, auto-merge on: its list's rows do not carry it yet; its Properties sheet shows it |
+| Comment | `comment`: General, History | Inside a conversation: Read as Document..., Review..., Open Discussion Thread | None | None | author, date, edited, hidden, reactions, mentions me: there is no list of these to filter yet |
+| Review and review thread | None. Review... on a pull request: its threads, Next Unresolved, Reply, Resolve. No Properties sheet of its own yet; the review window shows each thread's file, line, state and comments. | Review... on a pull request: its threads, Next Unresolved, Reply, Resolve | None | None | reviewer, state, resolved, outdated, file: there is no list of these to filter yet |
+| Discussion | `discussion`: General, You, Category, Answer, Conversation, Poll | Repository > Discussions, Repository > Discussions > Pinned (spotlight) | `name:`, `updated:` | None | category, answered, author, label, state, created, comments, upvotes: its list's rows do not carry it yet; its Properties sheet shows it |
+| Discussion category | None. Repository > Discussions > Categories, read only. GitHub manages categories on the web only, so there is nothing to change and no sheet; Find Discussions in Category lists its discussions. | Repository > Discussions > Categories | `name:` | None | format: its list's rows do not carry it yet; its Properties sheet shows it |
+| Label | `label`: General, Usage | Repository > Labels | `name:` | None | colour, has description, in use count: its list's rows do not carry it yet; its Properties sheet shows it |
+| Milestone | `milestone`: General, Progress, Items | Repository > Milestones | `name:` | None | state, due date, overdue, has due date, progress percentage: its list's rows do not carry it yet; its Properties sheet shows it |
+| Issue type | `issue_type`: General | its resource lists | `name:` | None | enabled: its list's rows do not carry it yet; its Properties sheet shows it |
+| Issue form, Markdown template, pull request template, discussion form | None. Repository > Templates: Open Template... opens its sheet in the template builder. Its sheet is the template builder's (section 21), with a field builder and preview, not one of the Properties catalogue's. | Repository > Templates, Organization > Templates | `name:`, `repo:` | None | kind, labels applied, field count, has required fields, inherited: its list's rows do not carry it yet; its Properties sheet shows it |
+| Project | `project`: General, README, Fields, Views, Items, Workflows, Status Updates, Access, Linked Repositories | Projects | `owner:`, `updated:`, `name:` | None | open or closed, template, linked repository: its list's rows do not carry it yet; its Properties sheet shows it |
+| Project item | None. The Project sheet's Items page; Items in a View... on a project. An item's sheet is built from its project's fields when it opens (project_item_sheet), so it has no fixed kind. | The Project sheet's Items page; Items in a View... on a project | None | None | every project field, and GitHub's project filter syntax: Items in a View... reads a view with its own saved filter; the item list has none |
+| Project field and view | None. The Project sheet's Fields and Views pages; New Field..., New View..., Rename and Delete on a project. Fields and views are pages of the Project sheet. | The Project sheet's Fields and Views pages; New Field..., New View..., Rename and Delete on a project | None | None | None |
+| Workflow | `workflow`: General, Runs, Triggers, Usage | Repository > Actions > Workflows | `name:`, `state:`, `path:` | None | last run state: its list's rows do not carry it yet; its Properties sheet shows it |
+| Workflow run | `run`: General, Jobs, Artifacts, Usage | Repository > Actions > Runs | `workflow:`, `branch:`, `event:`, `status:`, `conclusion:`, `created:`, `sha:` | None | actor, duration: its list's rows do not carry it yet; its Properties sheet shows it |
+| Job | `job`: General, Steps, Log | Jobs and Logs on a run lists its jobs | None | None | status, conclusion, runner name: there is no list of these to filter yet |
+| Artifact and Actions cache | `artifact`: General; `cache`: General | Repository > Actions > Caches; its resource lists | `name:`, `updated:` | None | size, created, expires, branch, key, ref, last used (caches): its list's rows do not carry it yet; its Properties sheet shows it |
+| Environment | `environment`: General, Protection, Branches and Tags, Secrets, Variables, Deployments | Repository > Settings > Environments | `name:` | None | has protection: its list's rows do not carry it yet; its Properties sheet shows it |
+| Deployment | `deployment`: General, Statuses | Repository > Deployments and Environments | `updated:` | None | environment, ref, creator, state: its list's rows do not carry it yet; its Properties sheet shows it |
+| Runner and runner group | `runner`: General, Labels | Repository > Actions > Runners; its resource lists | `name:` | None | status, busy, labels, OS: its list's rows do not carry it yet; its Properties sheet shows it |
+| Secret and variable | `secret`: General; `variable`: General | its resource lists | `name:`, `updated:` | None | visibility: its list's rows do not carry it yet; its Properties sheet shows it |
+| Release | `release`: General, You, Notes, Assets, Discussion | Repository > Releases | `draft:`, `prerelease:`, `created:`, `tag:`, `name:` | None | latest, author: its list's rows do not carry it yet; its Properties sheet shows it |
+| Release asset | `release_asset`: General | None | `name:`, `size:`, `downloads:`, `type:` | None | None |
+| Package | `package`: General, Versions, Access, Repository | Repositories > My Packages, Person > Packages, Organization > Packages | `name:`, `repo:`, `updated:` | None | type, visibility, version tag: its list's rows do not carry it yet; its Properties sheet shows it |
+| Person | `person`: General, You, Profile, Repositories, Followers, Following, Organizations | People > People I Follow, People > My Followers, Search > People and Organizations, Repository > People > Contributors and People, and 3 more | `name:` | `location:`, `followers:`, `repos:`, `type:` | company, your relationship (following, follows you, blocked): its list's rows do not carry it yet; its Properties sheet shows it |
+| Organization | `organization`: General, You, Members, Teams, Outside Collaborators, Invitations, Roles, Member Privileges, Repositories, Actions, Webhooks, Secrets and Variables, Issue Types, Custom Properties, Token Requests, Audit Log, Actions Rules, Safety | Repositories > Organizations | `name:` | None | members' role, members' two-factor, membership public or private, team: there is no list of these to filter yet |
+| Team | `team`: General, Members, Repositories, Projects, Child Teams, Code Review, Identity Provider, Danger Zone | People > My Teams, Organization > Teams | `name:` | None | privacy, parent, member, repository, role: its list's rows do not carry it yet; its Properties sheet shows it |
+| Collaborator and invitation | `collaborator`: General; `invitation`: General | Needs My Attention > Invitations, People > People I Follow, People > My Followers, Search > People and Organizations, and 4 more | `name:`, `repo:` | None | role, source, pending: its list's rows do not carry it yet; its Properties sheet shows it |
+| Gist | `gist`: General, You, Files, Comments | Gists > My Gists | `name:`, `updated:` | None | public or secret, starred, file name, language: its list's rows do not carry it yet; its Properties sheet shows it |
+| Codespace | `codespace`: General, Machine, Usage | Repositories > My Codespaces, Repository > Code > Codespaces | `repo:`, `updated:`, `name:` | None | branch, state, machine: its list's rows do not carry it yet; its Properties sheet shows it |
+| Security alert | `security_alert`: General, Location, History, Fix | Repository > Security > Alerts, Repository > Security > Dismissed and Resolved Alerts | `repo:`, `updated:` | None | kind, severity, state, ecosystem, package, manifest, rule, tool, secret type, branch, created, fixed: its list's rows do not carry it yet; its Properties sheet shows it |
+| Security advisory and policy | None. Repository > Security > Advisories and Policy; each advisory's context menu. No Properties sheet yet: Publish or Close, Request CVE, comments and the private fork are on the advisory's context menu. | Search > Security Advisories, Repository > Security > Advisories | `name:` | None | state, severity, published: its list's rows do not carry it yet; its Properties sheet shows it |
+| Notification | `notification`: General, You | Needs My Attention > Notifications | `repo:`, `updated:`, `name:` | None | reason, type, unread, participating, saved: its list's rows do not carry it yet; its Properties sheet shows it |
+| Saved search, pin and favorite | None. Search > Saved Searches; Repositories > Pinned and Favorites. A saved search is its query, run by Enter; Pin as Node, Unpin and Remove are on its context menu, so it needs no sheet. | Search > Saved Searches | `name:` | None | None |
+| Account | None. Account > Manage GitHub Accounts..., Workbench Level for This Account..., GitHub Permissions..., Change History..., GitHub API Rate Limit. An account is QUILL's, not GitHub's: its pages are those windows. | Account > Manage GitHub Accounts..., Workbench Level for This Account..., GitHub Permissions..., Change History..., GitHub API Rate Limit | None | None | None |
+| Webhook (beyond Appendix C) | `webhook`: General | Repository > Settings > Webhooks, Organization > Webhooks | `name:` | None | None |
+| Deploy key (beyond Appendix C) | `deploy_key`: General | Repository > Settings > Deploy Keys | `name:` | None | None |
+
+<!-- END GENERATED appendix-c -->
 
 ### Repositories and code
 

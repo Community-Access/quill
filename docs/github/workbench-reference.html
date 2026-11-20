@@ -3495,13 +3495,15 @@ Remove from Favorites, Open on GitHub, Open in Codespaces…, Rename or
 Delete Star List…, Fork Workflow Settings, Fork Workflows from Private
 Repositories…, Languages, License, Star History, Mark Its Notifications
 Read, Set a Custom Property…, Compare Dependencies…, SBOM Report,
-Ruleset History…, Secret Scanning History, Require Sign-off on Web
-Commits…, Sponsor Links, Dependency Manifests, Start an Agent Task…,
-Agent Tasks, An Agent Task’s Progress…, Automations, New Automation…,
-Run an Automation…, Rename an Automation…, Delete an Automation…, An
-Automation’s History…, An Automation’s Tasks…, Automation Tools and
-Triggers, Agent Secrets from the Organization, Agent Variables from the
-Organization, Allow a Blocked Secret…; Properties…</li>
+Ruleset History…, Secret Scanning History, Sync Fork with Upstream…,
+Create Repository from This Template…, Delete Repository…, Require
+Sign-off on Web Commits…, Sponsor Links, Dependency Manifests, Start an
+Agent Task…, Agent Tasks, An Agent Task’s Progress…, Automations, New
+Automation…, Run an Automation…, Rename an Automation…, Delete an
+Automation…, An Automation’s History…, An Automation’s Tasks…,
+Automation Tools and Triggers, Agent Secrets from the Organization,
+Agent Variables from the Organization, Allow a Blocked Secret…;
+Properties…</li>
 <li><strong>person</strong>: Open, Follow or Unfollow, Open on GitHub;
 Properties…</li>
 <li><strong>label</strong>: Find Issues with Label, Edit Label…, Delete
@@ -6551,7 +6553,7 @@ the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 <td>Sync a fork branch with the upstream repository</td>
 <td><code>POST /repos/{owner}/{repo}/merge-upstream</code></td>
 <td>Yes</td>
-<td>Navigator: Repository &gt; owner/name &gt; Code &gt; Upstream</td>
+<td>context menu &gt; Sync Fork with Upstream…</td>
 </tr>
 <tr>
 <td>Merge a branch</td>
@@ -11889,7 +11891,7 @@ it returns.</td>
 <td>Delete a repository</td>
 <td><code>DELETE /repos/{owner}/{repo}</code></td>
 <td>Yes</td>
-<td>Repository &gt; Repository Actions… (Ctrl+Shift+G)</td>
+<td>context menu &gt; Delete Repository…</td>
 </tr>
 <tr>
 <td>Get a repository</td>
@@ -12319,7 +12321,7 @@ and Team Access</td>
 <td>Create a repository using a template</td>
 <td><code>POST /repos/{template_owner}/{template_repo}/generate</code></td>
 <td>Yes</td>
-<td>Repository &gt; Repository Actions… (Ctrl+Shift+G)</td>
+<td>context menu &gt; Create Repository from This Template…</td>
 </tr>
 <tr>
 <td>List public repositories</td>
