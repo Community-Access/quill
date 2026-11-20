@@ -80,7 +80,7 @@ def _save_to(monkeypatch, path: Path | None) -> None:
 
     monkeypatch.setattr(wx, "FileDialog", Dialog)
     monkeypatch.setattr(
-        "quill.ui.github_workbench_actions.show_modal_dialog",
+        "quill.ui.github_workbench_export_list.show_modal_dialog",
         lambda _d, _t: wx.ID_OK if path is not None else wx.ID_CANCEL,
     )
 

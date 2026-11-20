@@ -3729,7 +3729,16 @@ emoji catalogue plus GitHub’s own aliases (<code>:+1:</code>,
 blocks are left as typed. The review window’s thread text is next.</li>
 <li><strong>Least privilege advisor:</strong> the token health check
 (<code>token_health.py</code>) extended to say which scopes the account
-has but the Workbench never used, and how to narrow them.</li>
+has but the Workbench never used, and how to narrow them. <em>Built
+2026-11-19</em> as Account &gt; Roles and Access &gt; Least Privilege
+Advice…, a read-only report
+(<code>quill/core/github/least_privilege.py</code>): from the kinds of
+request seen on this computer, the write gate’s tiers, Change History,
+<code>X-OAuth-Scopes</code> and a fine-grained token’s 403s
+(<code>X-Accepted-GitHub-Permissions</code>, recorded by
+<code>observed_use.py</code>), the smallest classic scopes, fine-grained
+permissions and Workbench level, then what it cannot know. It never
+changes a token.</li>
 <li><strong>Release trains:</strong> create the same release in several
 repositories, with notes drafted per repository and one preview (22.11,
 Releases).</li>

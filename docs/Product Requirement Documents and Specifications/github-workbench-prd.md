@@ -2418,6 +2418,13 @@ visible row would make JAWS repeat the row.
 - **Least privilege advisor:** the token health check (`token_health.py`)
   extended to say which scopes the account has but the Workbench never used,
   and how to narrow them.
+  *Built 2026-11-19* as Account > Roles and Access > Least Privilege Advice...,
+  a read-only report (`quill/core/github/least_privilege.py`): from the kinds
+  of request seen on this computer, the write gate's tiers, Change History,
+  `X-OAuth-Scopes` and a fine-grained token's 403s
+  (`X-Accepted-GitHub-Permissions`, recorded by `observed_use.py`), the
+  smallest classic scopes, fine-grained permissions and Workbench level, then
+  what it cannot know. It never changes a token.
 - **Release trains:** create the same release in several repositories, with
   notes drafted per repository and one preview (22.11, Releases).
 - **Artifact attestations and immutable releases:** read who built an

@@ -240,7 +240,7 @@ class DocumentWordMixin:
             self._update_title()
         # The backup, and saying so when it could not be written, is the file
         # mixin's (``DocumentFileMixin._back_up_saved``), shared with every save.
-        saved = self._back_up_saved(destination, baseline)
+        saved = self._back_up_saved(destination, baseline, changed_since=typed_since)
         self._cue_saved()
         self._announce(saved)
 
