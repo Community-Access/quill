@@ -17,10 +17,8 @@ def default_backend_signature() -> tuple[str, ...]:
     A caller that keeps an :class:`Assistant` compares this before each use and
     builds a new one when it changed, so a provider switch, or a key signed out,
     reaches every feature at once instead of at the next restart (2026-11
-    audit, gap 1). The key is compared by a short digest, never kept.
+    audit, gap 1). Only whether a key is there is compared, never the key itself.
     """
-    import hashlib
-
     parts: list[str] = []
     try:
         from quill.core.assistant_ai import (
@@ -32,9 +30,8 @@ def default_backend_signature() -> tuple[str, ...]:
             from quill.core.ai.provider_backend import provider_api_key
 
             conn = load_assistant_connection_settings()
-            key = provider_api_key(conn.provider)
-            digest = hashlib.sha256(key.encode("utf-8")).hexdigest()[:12] if key else ""
-            parts += [conn.provider, conn.host, conn.model, digest]
+            has_key = "key" if provider_api_key(conn.provider) else "no key"
+            parts += [conn.provider, conn.host, conn.model, has_key]
     except Exception:  # noqa: BLE001 - unreadable means "rebuild", never a crash
         parts.append("unreadable")
     try:
