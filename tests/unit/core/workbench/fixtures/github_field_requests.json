@@ -1,0 +1,3930 @@
+{
+ "branch.name": {
+  "refused": "Name cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "POST",
+    "/repos/owner/repo/branches/main/rename",
+    {
+     "new_name": "new words"
+    }
+   ]
+  ]
+ },
+ "branch_protection.allow_deletions": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": true,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.allow_force_pushes": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": true,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.allow_fork_syncing": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": true,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.approvals": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": {
+      "required_approving_review_count": 2
+     },
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.block_creations": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": true,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.code_owners": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": {
+      "dismiss_stale_reviews": false,
+      "require_code_owner_reviews": true,
+      "require_last_push_approval": false,
+      "required_approving_review_count": 1
+     },
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.dismiss_stale": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": {
+      "dismiss_stale_reviews": true,
+      "require_code_owner_reviews": false,
+      "require_last_push_approval": false,
+      "required_approving_review_count": 1
+     },
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.enforce_admins": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": true,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.last_push": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": {
+      "dismiss_stale_reviews": false,
+      "require_code_owner_reviews": false,
+      "require_last_push_approval": true,
+      "required_approving_review_count": 1
+     },
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.linear_history": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": true,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.lock_branch": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": true,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.resolve_threads": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": true,
+     "required_linear_history": false,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.signatures": {
+  "set": [
+   [
+    "POST",
+    "/repos/owner/repo/branches/main/protection/required_signatures",
+    {}
+   ]
+  ]
+ },
+ "branch_protection.status_checks": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": null,
+     "required_status_checks": {
+      "contexts": [
+       "one",
+       "two"
+      ],
+      "strict": false
+     },
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.strict": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "codespace.display_name": {
+  "clear": [
+   [
+    "PATCH",
+    "/user/codespaces/thing",
+    {
+     "display_name": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/user/codespaces/thing",
+    {
+     "display_name": "new words"
+    }
+   ]
+  ]
+ },
+ "collaborator.role": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/collaborators/kellylford",
+    {
+     "permission": "triage"
+    }
+   ]
+  ]
+ },
+ "comment.body": {
+  "refused": "Comment cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/comments/9",
+    {
+     "body": "new words"
+    }
+   ]
+  ]
+ },
+ "discussion.body": {
+  "clear": [
+   [
+    "GRAPHQL",
+    "mutation(updateDiscussion(input:",
+    {
+     "body": "",
+     "id": "N_1"
+    }
+   ]
+  ],
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(updateDiscussion(input:",
+    {
+     "body": "new words",
+     "id": "N_1"
+    }
+   ]
+  ]
+ },
+ "discussion.reactions": {
+  "clear": [
+   [
+    "GRAPHQL",
+    "mutation(removeReaction(input:",
+    {
+     "content": "THUMBS_UP",
+     "id": "N_1"
+    }
+   ],
+   [
+    "GRAPHQL",
+    "mutation(removeReaction(input:",
+    {
+     "content": "THUMBS_DOWN",
+     "id": "N_1"
+    }
+   ]
+  ],
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(addReaction(input:",
+    {
+     "content": "THUMBS_DOWN",
+     "id": "N_1"
+    }
+   ]
+  ]
+ },
+ "discussion.subscribed": {
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(updateSubscription(input:",
+    {
+     "id": "N_1",
+     "state": "SUBSCRIBED"
+    }
+   ]
+  ]
+ },
+ "discussion.title": {
+  "refused": "Title cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(updateDiscussion(input:",
+    {
+     "id": "N_1",
+     "title": "new words"
+    }
+   ]
+  ]
+ },
+ "discussion.upvoted": {
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation( addUpvote(input: $input) ",
+    {
+     "input": {
+      "subjectId": "N_1"
+     }
+    }
+   ]
+  ]
+ },
+ "environment.admins_bypass": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/environments/thing",
+    {
+     "can_admins_bypass": true,
+     "deployment_branch_policy": null,
+     "prevent_self_review": false,
+     "reviewers": null,
+     "wait_timer": 0
+    }
+   ]
+  ]
+ },
+ "environment.branches": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/environments/thing",
+    {
+     "can_admins_bypass": true,
+     "deployment_branch_policy": {
+      "custom_branch_policies": false,
+      "protected_branches": true
+     },
+     "prevent_self_review": false,
+     "reviewers": null,
+     "wait_timer": 0
+    }
+   ]
+  ]
+ },
+ "environment.prevent_self_review": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/environments/thing",
+    {
+     "can_admins_bypass": true,
+     "deployment_branch_policy": null,
+     "prevent_self_review": true,
+     "reviewers": null,
+     "wait_timer": 0
+    }
+   ]
+  ]
+ },
+ "environment.wait_timer": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/environments/thing",
+    {
+     "can_admins_bypass": true,
+     "deployment_branch_policy": null,
+     "prevent_self_review": false,
+     "reviewers": null,
+     "wait_timer": 0
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/environments/thing",
+    {
+     "can_admins_bypass": true,
+     "deployment_branch_policy": null,
+     "prevent_self_review": false,
+     "reviewers": null,
+     "wait_timer": 2
+    }
+   ]
+  ]
+ },
+ "gist.description": {
+  "clear": [
+   [
+    "PATCH",
+    "/gists/9",
+    {
+     "description": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/gists/9",
+    {
+     "description": "new words"
+    }
+   ]
+  ]
+ },
+ "gist.starred": {
+  "clear": [
+   [
+    "DELETE",
+    "/gists/9/star",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/gists/9/star",
+    null
+   ]
+  ]
+ },
+ "invitation.role": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/invitations/9",
+    {
+     "permissions": "triage"
+    }
+   ]
+  ]
+ },
+ "issue.assignees": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/7",
+    {
+     "assignees": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/7",
+    {
+     "assignees": [
+      "ID_first",
+      "ID_second"
+     ]
+    }
+   ]
+  ]
+ },
+ "issue.body": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/7",
+    {
+     "body": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/7",
+    {
+     "body": "new words"
+    }
+   ]
+  ]
+ },
+ "issue.issue_type": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/7",
+    {
+     "type": null
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/7",
+    {
+     "type": "second"
+    }
+   ]
+  ]
+ },
+ "issue.labels": {
+  "clear": [
+   [
+    "DELETE",
+    "/repos/owner/repo/issues/7/labels/ID_first",
+    null
+   ],
+   [
+    "DELETE",
+    "/repos/owner/repo/issues/7/labels/ID_second",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "POST",
+    "/repos/owner/repo/issues/7/labels",
+    {
+     "labels": [
+      "ID_second"
+     ]
+    }
+   ]
+  ]
+ },
+ "issue.locked": {
+  "clear": [
+   [
+    "DELETE",
+    "/repos/owner/repo/issues/7/lock",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/issues/7/lock",
+    null
+   ]
+  ]
+ },
+ "issue.milestone": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/7",
+    {
+     "milestone": null
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/7",
+    {
+     "milestone": "ID_second"
+    }
+   ]
+  ]
+ },
+ "issue.pinned": {
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(pinIssue(input:",
+    {
+     "id": "N_1"
+    }
+   ]
+  ]
+ },
+ "issue.projects": {
+  "clear": [
+   [
+    "GRAPHQL",
+    "mutation(deleteProjectV2Item(input:",
+    {
+     "item": "",
+     "project": "ID_first"
+    }
+   ],
+   [
+    "GRAPHQL",
+    "mutation(deleteProjectV2Item(input:",
+    {
+     "item": "",
+     "project": "ID_second"
+    }
+   ]
+  ],
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(addProjectV2ItemById(input:",
+    {
+     "content": "N_1",
+     "project": "ID_second"
+    }
+   ]
+  ]
+ },
+ "issue.reactions": {
+  "clear": [
+   [
+    "GRAPHQL",
+    "mutation(removeReaction(input:",
+    {
+     "content": "THUMBS_UP",
+     "id": "N_1"
+    }
+   ],
+   [
+    "GRAPHQL",
+    "mutation(removeReaction(input:",
+    {
+     "content": "THUMBS_DOWN",
+     "id": "N_1"
+    }
+   ]
+  ],
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(addReaction(input:",
+    {
+     "content": "THUMBS_DOWN",
+     "id": "N_1"
+    }
+   ]
+  ]
+ },
+ "issue.state": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/7",
+    {
+     "state": "closed",
+     "state_reason": "completed"
+    }
+   ]
+  ]
+ },
+ "issue.subscribed": {
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(updateSubscription(input:",
+    {
+     "id": "N_1",
+     "state": "SUBSCRIBED"
+    }
+   ]
+  ]
+ },
+ "issue.title": {
+  "refused": "Title cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/7",
+    {
+     "title": "new words"
+    }
+   ]
+  ]
+ },
+ "issue_type.colour": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/issue-types/9",
+    {
+     "color": null,
+     "description": "",
+     "is_enabled": true,
+     "name": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/issue-types/9",
+    {
+     "color": "blue",
+     "description": "",
+     "is_enabled": true,
+     "name": ""
+    }
+   ]
+  ]
+ },
+ "issue_type.description": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/issue-types/9",
+    {
+     "color": "gray",
+     "description": "",
+     "is_enabled": true,
+     "name": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/issue-types/9",
+    {
+     "color": "gray",
+     "description": "new words",
+     "is_enabled": true,
+     "name": ""
+    }
+   ]
+  ]
+ },
+ "issue_type.enabled": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/issue-types/9",
+    {
+     "color": "gray",
+     "description": "",
+     "is_enabled": true,
+     "name": ""
+    }
+   ]
+  ]
+ },
+ "issue_type.name": {
+  "refused": "Name cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/issue-types/9",
+    {
+     "color": "gray",
+     "description": "",
+     "is_enabled": true,
+     "name": "new words"
+    }
+   ]
+  ]
+ },
+ "label.colour": {
+  "refused": "A colour is needed: type a name such as green, or six hex digits.",
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/labels/thing",
+    {
+     "color": "00ff00"
+    }
+   ]
+  ]
+ },
+ "label.description": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/labels/thing",
+    {
+     "description": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/labels/thing",
+    {
+     "description": "new words"
+    }
+   ]
+  ]
+ },
+ "label.name": {
+  "refused": "Name cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/labels/thing",
+    {
+     "new_name": "new words"
+    }
+   ]
+  ]
+ },
+ "milestone.description": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/milestones/7",
+    {
+     "description": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/milestones/7",
+    {
+     "description": "new words"
+    }
+   ]
+  ]
+ },
+ "milestone.due": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/milestones/7",
+    {
+     "due_on": null
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/milestones/7",
+    {
+     "due_on": "2026-02-02T00:00:00Z"
+    }
+   ]
+  ]
+ },
+ "milestone.state": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/milestones/7",
+    {
+     "state": "closed"
+    }
+   ]
+  ]
+ },
+ "milestone.title": {
+  "refused": "Title cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/milestones/7",
+    {
+     "title": "new words"
+    }
+   ]
+  ]
+ },
+ "notification.subscribed": {
+  "clear": [
+   [
+    "DELETE",
+    "/notifications/threads/9/subscription",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/notifications/threads/9/subscription",
+    null
+   ]
+  ]
+ },
+ "org_ruleset.approvals": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 0,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 2,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.bypass_roles": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "bypass_actors": [],
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "bypass_actors": [
+      {
+       "actor_id": 1,
+       "actor_type": "OrganizationAdmin",
+       "bypass_mode": "always"
+      },
+      {
+       "actor_id": 5,
+       "actor_type": "RepositoryRole",
+       "bypass_mode": "always"
+      }
+     ],
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.code_owners": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": true,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.dismiss_stale": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": true,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.enforcement": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "enforcement": "evaluate",
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.exclude": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "ref_name": {
+       "exclude": []
+      }
+     },
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "ref_name": {
+       "exclude": [
+        "one",
+        "two"
+       ]
+      }
+     },
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.include": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "ref_name": {
+       "include": []
+      }
+     },
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "ref_name": {
+       "include": [
+        "one",
+        "two"
+       ]
+      }
+     },
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.last_push": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": true,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.merge_methods": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "allowed_merge_methods": [],
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "allowed_merge_methods": [
+         "merge",
+         "squash"
+        ],
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.name": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "name": "",
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "name": "new words",
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.repo_exclude": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "repository_name": {
+       "exclude": [],
+       "include": []
+      }
+     },
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "repository_name": {
+       "exclude": [
+        "one",
+        "two"
+       ],
+       "include": []
+      }
+     },
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.repo_include": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "repository_name": {
+       "exclude": [],
+       "include": []
+      }
+     },
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "repository_name": {
+       "exclude": [],
+       "include": [
+        "one",
+        "two"
+       ]
+      }
+     },
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.repo_protected": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "repository_name": {
+       "exclude": [],
+       "include": [],
+       "protected": true
+      }
+     },
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.resolve_threads": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": true
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.rules": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "type": "creation"
+      },
+      {
+       "type": "update"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.status_checks": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "required_status_checks": [],
+        "strict_required_status_checks_policy": false
+       },
+       "type": "required_status_checks"
+      }
+     ]
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "required_status_checks": [
+         {
+          "context": "one"
+         },
+         {
+          "context": "two"
+         }
+        ],
+        "strict_required_status_checks_policy": false
+       },
+       "type": "required_status_checks"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.strict": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "required_status_checks": [],
+        "strict_required_status_checks_policy": true
+       },
+       "type": "required_status_checks"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "organization.actions_repositories": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/actions/permissions",
+    {
+     "enabled_repositories": "none"
+    }
+   ]
+  ]
+ },
+ "organization.allowed_actions": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/actions/permissions",
+    {
+     "allowed_actions": "local_only"
+    }
+   ]
+  ]
+ },
+ "organization.base_permission": {
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "default_repository_permission": "read"
+    }
+   ]
+  ]
+ },
+ "organization.blog": {
+  "clear": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "blog": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "blog": "new words"
+    }
+   ]
+  ]
+ },
+ "organization.description": {
+  "clear": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "description": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "description": "new words"
+    }
+   ]
+  ]
+ },
+ "organization.email": {
+  "clear": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "email": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "email": "new words"
+    }
+   ]
+  ]
+ },
+ "organization.following": {
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation( followOrganization(input: $input) ",
+    {
+     "input": {
+      "organizationId": "N_1"
+     }
+    }
+   ]
+  ]
+ },
+ "organization.immutable_repositories": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/settings/immutable-releases",
+    {
+     "enforced_repositories": "all"
+    }
+   ]
+  ]
+ },
+ "organization.location": {
+  "clear": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "location": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "location": "new words"
+    }
+   ]
+  ]
+ },
+ "organization.members_can_create_internal_repositories": {
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "members_can_create_internal_repositories": true
+    }
+   ]
+  ]
+ },
+ "organization.members_can_create_pages": {
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "members_can_create_pages": true
+    }
+   ]
+  ]
+ },
+ "organization.members_can_create_private_repositories": {
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "members_can_create_private_repositories": true
+    }
+   ]
+  ]
+ },
+ "organization.members_can_create_public_repositories": {
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "members_can_create_public_repositories": true
+    }
+   ]
+  ]
+ },
+ "organization.members_can_fork_private_repositories": {
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "members_can_fork_private_repositories": true
+    }
+   ]
+  ]
+ },
+ "organization.name": {
+  "clear": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "name": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "name": "new words"
+    }
+   ]
+  ]
+ },
+ "organization.org_actions_approve_prs": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/actions/permissions/workflow",
+    {
+     "can_approve_pull_request_reviews": true
+    }
+   ]
+  ]
+ },
+ "organization.org_fork_approval": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/actions/permissions/fork-pr-contributor-approval",
+    {
+     "approval_policy": "first_time_contributors"
+    }
+   ]
+  ]
+ },
+ "organization.org_github_owned_allowed": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/actions/permissions/selected-actions",
+    {
+     "github_owned_allowed": true
+    }
+   ]
+  ]
+ },
+ "organization.org_interaction_limit": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/interaction-limits",
+    {
+     "expiry": "one_week",
+     "limit": "existing_users"
+    }
+   ]
+  ]
+ },
+ "organization.org_patterns_allowed": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/actions/permissions/selected-actions",
+    {
+     "patterns_allowed": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/actions/permissions/selected-actions",
+    {
+     "patterns_allowed": [
+      "one",
+      "two"
+     ]
+    }
+   ]
+  ]
+ },
+ "organization.org_retention_days": {
+  "refused": "Keep artifacts and logs for days cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/actions/permissions/artifact-and-log-retention",
+    {
+     "days": 2
+    }
+   ]
+  ]
+ },
+ "organization.org_token_permission": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/actions/permissions/workflow",
+    {
+     "default_workflow_permissions": "write"
+    }
+   ]
+  ]
+ },
+ "organization.org_verified_allowed": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/actions/permissions/selected-actions",
+    {
+     "verified_allowed": true
+    }
+   ]
+  ]
+ },
+ "organization.public_member": {
+  "clear": [
+   [
+    "DELETE",
+    "/orgs/acme/public_members/me",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/public_members/me",
+    null
+   ]
+  ]
+ },
+ "organization.self_hosted_repositories": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/actions/permissions/self-hosted-runners",
+    {
+     "enabled_repositories": "selected"
+    }
+   ]
+  ]
+ },
+ "organization.web_commit_signoff_required": {
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme",
+    {
+     "web_commit_signoff_required": true
+    }
+   ]
+  ]
+ },
+ "person.bio": {
+  "clear": [
+   [
+    "PATCH",
+    "/user",
+    {
+     "bio": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/user",
+    {
+     "bio": "new words"
+    }
+   ]
+  ]
+ },
+ "person.blocked": {
+  "clear": [
+   [
+    "DELETE",
+    "/user/blocks/kellylford",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/user/blocks/kellylford",
+    null
+   ]
+  ]
+ },
+ "person.blog": {
+  "clear": [
+   [
+    "PATCH",
+    "/user",
+    {
+     "blog": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/user",
+    {
+     "blog": "new words"
+    }
+   ]
+  ]
+ },
+ "person.company": {
+  "clear": [
+   [
+    "PATCH",
+    "/user",
+    {
+     "company": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/user",
+    {
+     "company": "new words"
+    }
+   ]
+  ]
+ },
+ "person.following": {
+  "clear": [
+   [
+    "DELETE",
+    "/user/following/kellylford",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/user/following/kellylford",
+    null
+   ]
+  ]
+ },
+ "person.hireable": {
+  "set": [
+   [
+    "PATCH",
+    "/user",
+    {
+     "hireable": true
+    }
+   ]
+  ]
+ },
+ "person.location": {
+  "clear": [
+   [
+    "PATCH",
+    "/user",
+    {
+     "location": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/user",
+    {
+     "location": "new words"
+    }
+   ]
+  ]
+ },
+ "person.name": {
+  "clear": [
+   [
+    "PATCH",
+    "/user",
+    {
+     "name": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/user",
+    {
+     "name": "new words"
+    }
+   ]
+  ]
+ },
+ "person.twitter": {
+  "clear": [
+   [
+    "PATCH",
+    "/user",
+    {
+     "twitter_username": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/user",
+    {
+     "twitter_username": "new words"
+    }
+   ]
+  ]
+ },
+ "project.closed": {
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(updateProjectV2(input:",
+    {
+     "id": "N_1",
+     "value": true
+    }
+   ]
+  ]
+ },
+ "project.public": {
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(updateProjectV2(input:",
+    {
+     "id": "N_1",
+     "value": true
+    }
+   ]
+  ]
+ },
+ "project.readme": {
+  "clear": [
+   [
+    "GRAPHQL",
+    "mutation(updateProjectV2(input:",
+    {
+     "id": "N_1",
+     "value": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(updateProjectV2(input:",
+    {
+     "id": "N_1",
+     "value": "new words"
+    }
+   ]
+  ]
+ },
+ "project.short_description": {
+  "clear": [
+   [
+    "GRAPHQL",
+    "mutation(updateProjectV2(input:",
+    {
+     "id": "N_1",
+     "value": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(updateProjectV2(input:",
+    {
+     "id": "N_1",
+     "value": "new words"
+    }
+   ]
+  ]
+ },
+ "project.title": {
+  "refused": "Title cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(updateProjectV2(input:",
+    {
+     "id": "N_1",
+     "value": "new words"
+    }
+   ]
+  ]
+ },
+ "pull_request.assignees": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/7",
+    {
+     "assignees": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/7",
+    {
+     "assignees": [
+      "ID_first",
+      "ID_second"
+     ]
+    }
+   ]
+  ]
+ },
+ "pull_request.auto_merge": {
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(enablePullRequestAutoMerge(input:",
+    {
+     "id": "N_1"
+    }
+   ]
+  ]
+ },
+ "pull_request.base": {
+  "refused": "A pull request always merges into a branch, so Into branch was left as it is.",
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/pulls/7",
+    {
+     "base": "ID_second"
+    }
+   ]
+  ]
+ },
+ "pull_request.body": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/pulls/7",
+    {
+     "body": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/pulls/7",
+    {
+     "body": "new words"
+    }
+   ]
+  ]
+ },
+ "pull_request.draft": {
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(convertPullRequestToDraft(input:",
+    {
+     "id": "N_1"
+    }
+   ]
+  ]
+ },
+ "pull_request.labels": {
+  "clear": [
+   [
+    "DELETE",
+    "/repos/owner/repo/issues/7/labels/ID_first",
+    null
+   ],
+   [
+    "DELETE",
+    "/repos/owner/repo/issues/7/labels/ID_second",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "POST",
+    "/repos/owner/repo/issues/7/labels",
+    {
+     "labels": [
+      "ID_second"
+     ]
+    }
+   ]
+  ]
+ },
+ "pull_request.locked": {
+  "clear": [
+   [
+    "DELETE",
+    "/repos/owner/repo/issues/7/lock",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/issues/7/lock",
+    null
+   ]
+  ]
+ },
+ "pull_request.maintainer_can_modify": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/pulls/7",
+    {
+     "maintainer_can_modify": true
+    }
+   ]
+  ]
+ },
+ "pull_request.milestone": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/7",
+    {
+     "milestone": null
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/issues/7",
+    {
+     "milestone": "ID_second"
+    }
+   ]
+  ]
+ },
+ "pull_request.projects": {
+  "clear": [
+   [
+    "GRAPHQL",
+    "mutation(deleteProjectV2Item(input:",
+    {
+     "item": "",
+     "project": "ID_first"
+    }
+   ],
+   [
+    "GRAPHQL",
+    "mutation(deleteProjectV2Item(input:",
+    {
+     "item": "",
+     "project": "ID_second"
+    }
+   ]
+  ],
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(addProjectV2ItemById(input:",
+    {
+     "content": "N_1",
+     "project": "ID_second"
+    }
+   ]
+  ]
+ },
+ "pull_request.reactions": {
+  "clear": [
+   [
+    "GRAPHQL",
+    "mutation(removeReaction(input:",
+    {
+     "content": "THUMBS_UP",
+     "id": "N_1"
+    }
+   ],
+   [
+    "GRAPHQL",
+    "mutation(removeReaction(input:",
+    {
+     "content": "THUMBS_DOWN",
+     "id": "N_1"
+    }
+   ]
+  ],
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(addReaction(input:",
+    {
+     "content": "THUMBS_DOWN",
+     "id": "N_1"
+    }
+   ]
+  ]
+ },
+ "pull_request.reviewers": {
+  "clear": [
+   [
+    "DELETE",
+    "/repos/owner/repo/pulls/7/requested_reviewers",
+    {
+     "reviewers": [
+      "ID_first",
+      "ID_second"
+     ]
+    }
+   ]
+  ],
+  "set": [
+   [
+    "POST",
+    "/repos/owner/repo/pulls/7/requested_reviewers",
+    {
+     "reviewers": [
+      "ID_second"
+     ]
+    }
+   ]
+  ]
+ },
+ "pull_request.state": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/pulls/7",
+    {
+     "state": "closed"
+    }
+   ]
+  ]
+ },
+ "pull_request.subscribed": {
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(updateSubscription(input:",
+    {
+     "id": "N_1",
+     "state": "SUBSCRIBED"
+    }
+   ]
+  ]
+ },
+ "pull_request.team_reviewers": {
+  "clear": [
+   [
+    "DELETE",
+    "/repos/owner/repo/pulls/7/requested_reviewers",
+    {
+     "team_reviewers": [
+      "ID_first",
+      "ID_second"
+     ]
+    }
+   ]
+  ],
+  "set": [
+   [
+    "POST",
+    "/repos/owner/repo/pulls/7/requested_reviewers",
+    {
+     "team_reviewers": [
+      "ID_second"
+     ]
+    }
+   ]
+  ]
+ },
+ "pull_request.title": {
+  "refused": "Title cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/pulls/7",
+    {
+     "title": "new words"
+    }
+   ]
+  ]
+ },
+ "release.draft": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/releases/9",
+    {
+     "draft": true
+    }
+   ]
+  ]
+ },
+ "release.latest": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/releases/9",
+    {
+     "make_latest": "true"
+    }
+   ]
+  ]
+ },
+ "release.name": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/releases/9",
+    {
+     "name": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/releases/9",
+    {
+     "name": "new words"
+    }
+   ]
+  ]
+ },
+ "release.notes": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/releases/9",
+    {
+     "body": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/releases/9",
+    {
+     "body": "new words"
+    }
+   ]
+  ]
+ },
+ "release.prerelease": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/releases/9",
+    {
+     "prerelease": true
+    }
+   ]
+  ]
+ },
+ "release.reactions": {
+  "clear": [
+   [
+    "GRAPHQL",
+    "mutation(removeReaction(input:",
+    {
+     "content": "THUMBS_UP",
+     "id": "N_1"
+    }
+   ],
+   [
+    "GRAPHQL",
+    "mutation(removeReaction(input:",
+    {
+     "content": "THUMBS_DOWN",
+     "id": "N_1"
+    }
+   ]
+  ],
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(addReaction(input:",
+    {
+     "content": "THUMBS_DOWN",
+     "id": "N_1"
+    }
+   ]
+  ]
+ },
+ "release.tag": {
+  "refused": "Tag cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/releases/9",
+    {
+     "tag_name": "new words"
+    }
+   ]
+  ]
+ },
+ "release.target": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/releases/9",
+    {
+     "target_commitish": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/releases/9",
+    {
+     "target_commitish": "new words"
+    }
+   ]
+  ]
+ },
+ "release_asset.label": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/releases/assets/6",
+    {
+     "label": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/releases/assets/6",
+    {
+     "label": "new words"
+    }
+   ]
+  ]
+ },
+ "release_asset.name": {
+  "refused": "File name cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/releases/assets/6",
+    {
+     "name": "new words"
+    }
+   ]
+  ]
+ },
+ "repository.actions_approve_prs": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/permissions/workflow",
+    {
+     "can_approve_pull_request_reviews": true
+    }
+   ]
+  ]
+ },
+ "repository.actions_enabled": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/permissions",
+    {
+     "enabled": true
+    }
+   ]
+  ]
+ },
+ "repository.allow_auto_merge": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "allow_auto_merge": true
+    }
+   ]
+  ]
+ },
+ "repository.allow_forking": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "allow_forking": true
+    }
+   ]
+  ]
+ },
+ "repository.allow_merge_commit": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "allow_merge_commit": true
+    }
+   ]
+  ]
+ },
+ "repository.allow_rebase_merge": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "allow_rebase_merge": true
+    }
+   ]
+  ]
+ },
+ "repository.allow_squash_merge": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "allow_squash_merge": true
+    }
+   ]
+  ]
+ },
+ "repository.allow_update_branch": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "allow_update_branch": true
+    }
+   ]
+  ]
+ },
+ "repository.allowed_actions": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/permissions",
+    {
+     "allowed_actions": "local_only",
+     "enabled": true
+    }
+   ]
+  ]
+ },
+ "repository.archived": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "archived": true
+    }
+   ]
+  ]
+ },
+ "repository.default_branch": {
+  "refused": "Default branch cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "default_branch": "new words"
+    }
+   ]
+  ]
+ },
+ "repository.delete_branch_on_merge": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "delete_branch_on_merge": true
+    }
+   ]
+  ]
+ },
+ "repository.description": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "description": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "description": "new words"
+    }
+   ]
+  ]
+ },
+ "repository.fork_approval": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/permissions/fork-pr-contributor-approval",
+    {
+     "approval_policy": "first_time_contributors"
+    }
+   ]
+  ]
+ },
+ "repository.github_owned_allowed": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/permissions/selected-actions",
+    {
+     "github_owned_allowed": true
+    }
+   ]
+  ]
+ },
+ "repository.has_discussions": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "has_discussions": true
+    }
+   ]
+  ]
+ },
+ "repository.has_issues": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "has_issues": true
+    }
+   ]
+  ]
+ },
+ "repository.has_projects": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "has_projects": true
+    }
+   ]
+  ]
+ },
+ "repository.has_wiki": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "has_wiki": true
+    }
+   ]
+  ]
+ },
+ "repository.homepage": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "homepage": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "homepage": "new words"
+    }
+   ]
+  ]
+ },
+ "repository.immutable_releases": {
+  "clear": [
+   [
+    "DELETE",
+    "/repos/owner/repo/immutable-releases",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/immutable-releases",
+    null
+   ]
+  ]
+ },
+ "repository.interaction_limit": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/interaction-limits",
+    {
+     "expiry": "one_week",
+     "limit": "existing_users"
+    }
+   ]
+  ]
+ },
+ "repository.is_template": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "is_template": true
+    }
+   ]
+  ]
+ },
+ "repository.merge_commit_message": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "merge_commit_message": "PR_TITLE"
+    }
+   ]
+  ]
+ },
+ "repository.merge_commit_title": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "merge_commit_title": "MERGE_MESSAGE"
+    }
+   ]
+  ]
+ },
+ "repository.name": {
+  "refused": "Name cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "name": "new words"
+    }
+   ]
+  ]
+ },
+ "repository.pages_cname": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/pages",
+    {
+     "cname": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/pages",
+    {
+     "cname": "new words"
+    }
+   ]
+  ]
+ },
+ "repository.pages_https": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/pages",
+    {
+     "https_enforced": true
+    }
+   ]
+  ]
+ },
+ "repository.patterns_allowed": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/permissions/selected-actions",
+    {
+     "patterns_allowed": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/permissions/selected-actions",
+    {
+     "patterns_allowed": [
+      "one",
+      "two"
+     ]
+    }
+   ]
+  ]
+ },
+ "repository.private_reporting": {
+  "clear": [
+   [
+    "DELETE",
+    "/repos/owner/repo/private-vulnerability-reporting",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/private-vulnerability-reporting",
+    null
+   ]
+  ]
+ },
+ "repository.push_protection": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "security_and_analysis": {
+      "secret_scanning_push_protection": {
+       "status": "enabled"
+      }
+     }
+    }
+   ]
+  ]
+ },
+ "repository.retention_days": {
+  "refused": "Keep artifacts and logs for days cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/permissions/artifact-and-log-retention",
+    {
+     "days": 2
+    }
+   ]
+  ]
+ },
+ "repository.scanning_setup": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/code-scanning/default-setup",
+    {
+     "state": "not-configured"
+    }
+   ]
+  ]
+ },
+ "repository.scanning_suite": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/code-scanning/default-setup",
+    {
+     "query_suite": "extended"
+    }
+   ]
+  ]
+ },
+ "repository.secret_scanning": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "security_and_analysis": {
+      "secret_scanning": {
+       "status": "enabled"
+      }
+     }
+    }
+   ]
+  ]
+ },
+ "repository.security_fixes": {
+  "clear": [
+   [
+    "DELETE",
+    "/repos/owner/repo/automated-security-fixes",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/automated-security-fixes",
+    null
+   ]
+  ]
+ },
+ "repository.squash_merge_commit_message": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "squash_merge_commit_message": "COMMIT_MESSAGES"
+    }
+   ]
+  ]
+ },
+ "repository.squash_merge_commit_title": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "squash_merge_commit_title": "COMMIT_OR_PR_TITLE"
+    }
+   ]
+  ]
+ },
+ "repository.starred": {
+  "clear": [
+   [
+    "DELETE",
+    "/user/starred/owner/repo",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/user/starred/owner/repo",
+    null
+   ]
+  ]
+ },
+ "repository.token_permission": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/permissions/workflow",
+    {
+     "default_workflow_permissions": "write"
+    }
+   ]
+  ]
+ },
+ "repository.topics": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/topics",
+    {
+     "names": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/topics",
+    {
+     "names": [
+      "one",
+      "two"
+     ]
+    }
+   ]
+  ]
+ },
+ "repository.verified_allowed": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/permissions/selected-actions",
+    {
+     "verified_allowed": true
+    }
+   ]
+  ]
+ },
+ "repository.visibility": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "visibility": "private"
+    }
+   ]
+  ]
+ },
+ "repository.vulnerability_alerts": {
+  "clear": [
+   [
+    "DELETE",
+    "/repos/owner/repo/vulnerability-alerts",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/vulnerability-alerts",
+    null
+   ]
+  ]
+ },
+ "repository.watch": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/subscription",
+    {
+     "ignored": false,
+     "subscribed": true
+    }
+   ]
+  ]
+ },
+ "repository.web_commit_signoff_required": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo",
+    {
+     "web_commit_signoff_required": true
+    }
+   ]
+  ]
+ },
+ "repository.workflow_access": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/permissions/access",
+    {
+     "access_level": "user"
+    }
+   ]
+  ]
+ },
+ "ruleset.approvals": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 0,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 2,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "ruleset.bypass_roles": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "bypass_actors": [],
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "bypass_actors": [
+      {
+       "actor_id": 1,
+       "actor_type": "OrganizationAdmin",
+       "bypass_mode": "always"
+      },
+      {
+       "actor_id": 5,
+       "actor_type": "RepositoryRole",
+       "bypass_mode": "always"
+      }
+     ],
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "ruleset.code_owners": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": true,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "ruleset.dismiss_stale": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": true,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "ruleset.enforcement": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "enforcement": "evaluate",
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "ruleset.exclude": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "conditions": {
+      "ref_name": {
+       "exclude": []
+      }
+     },
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "conditions": {
+      "ref_name": {
+       "exclude": [
+        "one",
+        "two"
+       ]
+      }
+     },
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "ruleset.include": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "conditions": {
+      "ref_name": {
+       "include": []
+      }
+     },
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "conditions": {
+      "ref_name": {
+       "include": [
+        "one",
+        "two"
+       ]
+      }
+     },
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "ruleset.last_push": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": true,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "ruleset.merge_methods": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "allowed_merge_methods": [],
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "allowed_merge_methods": [
+         "merge",
+         "squash"
+        ],
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "ruleset.name": {
+  "refused": "Name cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "name": "new words",
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "ruleset.resolve_threads": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": true
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "ruleset.rules": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "rules": [
+      {
+       "type": "creation"
+      },
+      {
+       "type": "update"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "ruleset.status_checks": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "required_status_checks": [],
+        "strict_required_status_checks_policy": false
+       },
+       "type": "required_status_checks"
+      }
+     ]
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "required_status_checks": [
+         {
+          "context": "one"
+         },
+         {
+          "context": "two"
+         }
+        ],
+        "strict_required_status_checks_policy": false
+       },
+       "type": "required_status_checks"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "ruleset.strict": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "required_status_checks": [],
+        "strict_required_status_checks_policy": true
+       },
+       "type": "required_status_checks"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "runner.labels": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/runners/9/labels",
+    {
+     "labels": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/runners/9/labels",
+    {
+     "labels": [
+      "one",
+      "two"
+     ]
+    }
+   ]
+  ]
+ },
+ "secret.secret_value": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/secrets/thing",
+    {
+     "encrypted_value": "<sealed>",
+     "key_id": "k1"
+    }
+   ]
+  ]
+ },
+ "security_alert.comment": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/dependabot/alerts/7",
+    {
+     "dismissed_comment": "",
+     "dismissed_reason": "tolerable_risk",
+     "state": "dismissed"
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/dependabot/alerts/7",
+    {
+     "dismissed_comment": "new words",
+     "dismissed_reason": "tolerable_risk",
+     "state": "dismissed"
+    }
+   ]
+  ]
+ },
+ "security_alert.reason": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/dependabot/alerts/7",
+    {
+     "dismissed_comment": "",
+     "dismissed_reason": "inaccurate",
+     "state": "dismissed"
+    }
+   ]
+  ]
+ },
+ "security_alert.state": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/dependabot/alerts/7",
+    {
+     "dismissed_comment": "",
+     "dismissed_reason": "tolerable_risk",
+     "state": "dismissed"
+    }
+   ]
+  ]
+ },
+ "team.description": {
+  "clear": [
+   [
+    "PATCH",
+    "/orgs/acme/teams/docs-team",
+    {
+     "description": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme/teams/docs-team",
+    {
+     "description": "new words"
+    }
+   ]
+  ]
+ },
+ "team.name": {
+  "refused": "Name cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme/teams/docs-team",
+    {
+     "name": "new words"
+    }
+   ]
+  ]
+ },
+ "team.notifications": {
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme/teams/docs-team",
+    {
+     "notification_setting": "notifications_enabled"
+    }
+   ]
+  ]
+ },
+ "team.parent": {
+  "clear": [
+   [
+    "PATCH",
+    "/orgs/acme/teams/docs-team",
+    {
+     "parent_team_id": null
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme/teams/docs-team",
+    {
+     "parent_team_id": 12
+    }
+   ]
+  ]
+ },
+ "team.privacy": {
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme/teams/docs-team",
+    {
+     "privacy": "secret"
+    }
+   ]
+  ]
+ },
+ "team.review_algorithm": {
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(updateTeamReviewAssignment(input:",
+    {
+     "algorithm": "LOAD_BALANCE",
+     "count": 1,
+     "enabled": false,
+     "id": "N_1",
+     "notify": false
+    }
+   ]
+  ]
+ },
+ "team.review_count": {
+  "refused": "How many reviewers cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(updateTeamReviewAssignment(input:",
+    {
+     "algorithm": "ROUND_ROBIN",
+     "count": 2,
+     "enabled": false,
+     "id": "N_1",
+     "notify": false
+    }
+   ]
+  ]
+ },
+ "team.review_enabled": {
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(updateTeamReviewAssignment(input:",
+    {
+     "algorithm": "ROUND_ROBIN",
+     "count": 1,
+     "enabled": true,
+     "id": "N_1",
+     "notify": false
+    }
+   ]
+  ]
+ },
+ "team.review_notify": {
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(updateTeamReviewAssignment(input:",
+    {
+     "algorithm": "ROUND_ROBIN",
+     "count": 1,
+     "enabled": false,
+     "id": "N_1",
+     "notify": true
+    }
+   ]
+  ]
+ },
+ "variable.value": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/actions/variables/thing",
+    {
+     "value": ""
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/actions/variables/thing",
+    {
+     "value": "new words"
+    }
+   ]
+  ]
+ },
+ "webhook.active": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/hooks/9",
+    {
+     "active": true,
+     "config": {}
+    }
+   ]
+  ]
+ },
+ "webhook.address": {
+  "refused": "Payload address cannot be empty on GitHub, so it was left as it is.",
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/hooks/9",
+    {
+     "config": {
+      "url": "new words"
+     }
+    }
+   ]
+  ]
+ },
+ "webhook.content_type": {
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/hooks/9",
+    {
+     "config": {
+      "content_type": "form"
+     }
+    }
+   ]
+  ]
+ },
+ "webhook.events": {
+  "clear": [
+   [
+    "PATCH",
+    "/repos/owner/repo/hooks/9",
+    {
+     "config": {},
+     "events": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/repos/owner/repo/hooks/9",
+    {
+     "config": {},
+     "events": [
+      "one",
+      "two"
+     ]
+    }
+   ]
+  ]
+ },
+ "workflow.enabled": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/workflows/9/disable",
+    null
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/actions/workflows/9/enable",
+    null
+   ]
+  ]
+ }
+}

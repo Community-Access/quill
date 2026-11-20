@@ -149,7 +149,9 @@ def test_into_branch_cannot_be_set_to_none() -> None:
     api = FakeGitHubApi()
     host = _host(api)
     change = FieldChange("base", "Into branch", "main", "")
-    host._apply_one(None, {}, [change], {}, None, True)
+    # Refused on the sheet kind alone (sheet_values.NEVER_EMPTY), before anything is read.
+    target: Any = type("Target", (), {"kind": "pull_request"})()
+    host._apply_one(target, {}, [change], {}, None, True)
     assert api.calls == []
     assert host.said == [
         "A pull request always merges into a branch, so Into branch was left as it is."
