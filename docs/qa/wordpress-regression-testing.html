@@ -1277,8 +1277,8 @@ capability check must look at <code>routes</code>.</p>
 rather than editing this section by hand. A result marked "no sign-in"
 was checked without signing in.</p>
 <ul>
-<li><strong>Date:</strong> 2026-11-20 07:45 UTC</li>
-<li><strong>Build:</strong> b7f56ac60 (wp/live-fixes)</li>
+<li><strong>Date:</strong> 2026-11-20 08:16 UTC</li>
+<li><strong>Build:</strong> 071c5b243 (wp/live-fixes)</li>
 <li><strong>Mode:</strong> signed in as quilladmin, quill-editor,
 quill-author, quill-contributor</li>
 <li><strong>Site:</strong> QUILL WordPress Test Site (<a
@@ -1288,9 +1288,13 @@ WordPress 7.1.5</li>
 Yoast SEO 28.9 (<code>yoast/v1</code>); The Events Calendar 6.18.4.1
 (<code>tribe/events/v1</code>); BITS Accessible Forms 1.0.0
 (<code>baf/v1</code>); QUILL Accessible Forms 1.0.0
-(<code>qaf/v1</code>); Abilities (version not shown)
-(<code>wp-abilities/v1</code>)</li>
-<li><strong>Results:</strong> 156 pass, 3 fail, 35 needs Jeff, 11 not
+(<code>qaf/v1</code>); Gravity Forms 3.2.3.1 (<code>gf/v2</code>); Paid
+Memberships Pro 3.9.2 (<code>pmpro/v1</code>); Redirection 5.10.1
+(<code>redirection/v1</code>); QUILL Site Types 0.1.0
+(<code>quill-site-types/v1</code>); Abilities (version not shown)
+(<code>wp-abilities/v1</code>); Advanced Custom Fields 6.8.12 (on
+<code>wp/v2</code>)</li>
+<li><strong>Results:</strong> 159 pass, 0 fail, 35 needs Jeff, 11 not
 run</li>
 </ul>
 <h3 id="site-and-routes">Site and routes</h3>
@@ -1457,10 +1461,10 @@ href="https://lp.csedesigns.com/wordpress/quill-event/open-day/">https://lp.csed
 <tr>
 <td>9.6</td>
 <td>oEmbed for /welcome/, and the proxy needs a sign-in</td>
-<td>fail</td>
+<td>pass</td>
 <td>no sign-in</td>
-<td>oEmbed said {'version': '1.0', 'provider_name': 'QUILL WordPress
-Test Site', 'provider_url': 'https://lp.csedesigns.com/wordpress',</td>
+<td>embed: rich, 'Welcome to the QUILL test site - QUILL WordPress Test
+Site'; proxy 401 signed out</td>
 </tr>
 </tbody>
 </table>
@@ -1571,7 +1575,7 @@ reconnect.</td>
 <td>Open lists drafts and the Trash</td>
 <td>pass</td>
 <td>quill-editor</td>
-<td>1 drafts, 22 in Trash; row: Things to check before publishing,
+<td>1 drafts, 43 in Trash; row: Things to check before publishing,
 Draft, last changed 20 November 2026, 1:16 AM</td>
 </tr>
 <tr>
@@ -1617,15 +1621,15 @@ Draft, last changed 20 November 2026, 1:16 AM</td>
 <td>Save Draft to Site: a draft, not public</td>
 <td>pass</td>
 <td>quill-editor</td>
-<td>draft 733; signed out: 401</td>
+<td>draft 813; signed out: 401</td>
 </tr>
 <tr>
 <td>14</td>
 <td>Publish or Update makes it public</td>
 <td>pass</td>
 <td>quill-editor</td>
-<td>published 733; <a
-href="https://lp.csedesigns.com/wordpress/quill-live-test-draft-2026-11-20-0745/">https://lp.csedesigns.com/wordpress/quill-live-test-draft-2026-11-20-0745/</a>
+<td>published 813; <a
+href="https://lp.csedesigns.com/wordpress/quill-live-test-draft-2026-11-20-0816/">https://lp.csedesigns.com/wordpress/quill-live-test-draft-2026-11-20-0816/</a>
 200</td>
 </tr>
 <tr>
@@ -1659,35 +1663,35 @@ still future, date kept</td>
 <td>pass</td>
 <td>quilladmin</td>
 <td>The copy on QUILL WordPress Test Site was changed on 20 November
-2026, 7:47 AM, after you opened it. Nothing was sent.</td>
+2026, 8:18 AM, after you opened it. Nothing was sent.</td>
 </tr>
 <tr>
 <td>119</td>
 <td>Publish Markdown as a post and a page</td>
 <td>pass</td>
 <td>quill-editor</td>
-<td>post 773, page 775: 10 blocks, published, read back, no drift</td>
+<td>post 853, page 855: 10 blocks, published, read back, no drift</td>
 </tr>
 <tr>
 <td>120</td>
 <td>Publish block markup as a post and a page</td>
 <td>pass</td>
 <td>quill-editor</td>
-<td>post 777, page 779: 8 blocks, published, read back, no drift</td>
+<td>post 857, page 859: 8 blocks, published, read back, no drift</td>
 </tr>
 <tr>
 <td>121</td>
 <td>Publish an HTML document as a post and a page</td>
 <td>pass</td>
 <td>quill-editor</td>
-<td>post 781, page 783: 10 blocks, published, read back, no drift</td>
+<td>post 861, page 863: 10 blocks, published, read back, no drift</td>
 </tr>
 <tr>
 <td>122</td>
 <td>Publish plain text as a post and a page</td>
 <td>pass</td>
 <td>quill-editor</td>
-<td>post 785, page 787: 2 blocks, published, read back, no drift</td>
+<td>post 865, page 867: 2 blocks, published, read back, no drift</td>
 </tr>
 <tr>
 <td>14</td>
@@ -1737,14 +1741,14 @@ still future, date kept</td>
 <td>Welcome has its 3 site revisions</td>
 <td>pass</td>
 <td>quill-editor</td>
-<td>6 revisions, newest 2026-11-20T07:47:12</td>
+<td>8 revisions, newest 2026-11-20T08:18:33</td>
 </tr>
 <tr>
 <td>23</td>
 <td>Move to Trash, listed, restored</td>
 <td>pass</td>
 <td>quill-editor</td>
-<td>740: trashed, listed under Trash, restored as a draft</td>
+<td>820: trashed, listed under Trash, restored as a draft</td>
 </tr>
 <tr>
 <td>21, 22</td>
@@ -1815,14 +1819,14 @@ uploaded 4 November 2026, 7:42 AM</td>
 <td>Upload a picture</td>
 <td>pass</td>
 <td>quill-editor</td>
-<td>media 742, 7 sizes made</td>
+<td>media 822, 7 sizes made</td>
 </tr>
 <tr>
 <td>28</td>
 <td>Remove from Library</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>media 744 removed for good</td>
+<td>media 824 removed for good</td>
 </tr>
 <tr>
 <td>26, 27</td>
@@ -1858,7 +1862,7 @@ tags (9.8, 9.13)</h3>
 <td>Approve, reply, spam, many at once</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>approved 86, replied 93, spam, then held as one of many</td>
+<td>approved 86, replied 100, spam, then held as one of many</td>
 </tr>
 <tr>
 <td>30</td>
@@ -2050,14 +2054,14 @@ woocommerce-placeholder.webp</td>
 <td>Edit a Picture on the Site: rotate</td>
 <td>pass</td>
 <td>quill-editor</td>
-<td>'Turn a quarter to the right': new item 743, 600 by 800</td>
+<td>'Turn a quarter to the right': new item 823, 600 by 800</td>
 </tr>
 <tr>
 <td>notes</td>
 <td>Notes on blocks: add, reply, resolve</td>
 <td>pass</td>
 <td>quill-editor</td>
-<td>note 94: replied and resolved</td>
+<td>note 101: replied and resolved</td>
 </tr>
 <tr>
 <td>introspect</td>
@@ -2145,7 +2149,7 @@ Contact Section. Blocks, in order: Columns, Column, Group, I...</td>
 <td>New Event as a draft, then changed</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>event 749: Friday 15 January 2027, 12:00 to 13:00</td>
+<td>event 829: Friday 15 January 2027, 12:00 to 13:00</td>
 </tr>
 <tr>
 <td>WooCommerce</td>
@@ -2261,7 +2265,7 @@ nothing</td>
 <td>Previous Looks: change a colour, go back</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>19 looks; 20 November 2026, 1:27 AM, 0 colours restored</td>
+<td>21 looks; 20 November 2026, 7:49 AM, 0 colours restored</td>
 </tr>
 <tr>
 <td>47</td>
@@ -2276,7 +2280,7 @@ nothing</td>
 <td>pass</td>
 <td>quilladmin</td>
 <td>Uploads: 200 KB. Themes: 13.8 MB. Plugins: 122.7 MB. WordPress
-itself: 90.8 MB. Database: 12.1 MB. Altogether: 239.6 MB. Editor: Your
+itself: 90.8 MB. Database: 12.2 MB. Altogether: 239.6 MB. Editor: Your
 account on QUILL WordPress Test Site is an Editor, which cannot see how
 much space...</td>
 </tr>
@@ -2293,7 +2297,7 @@ saved)</td>
 <td>Send This Document to WordPress</td>
 <td>needs Jeff</td>
 <td>quill-editor</td>
-<td>draft 756 titled from the heading; the picture beside the file needs
+<td>draft 836 titled from the heading; the picture beside the file needs
 the command</td>
 </tr>
 <tr>
@@ -2301,7 +2305,7 @@ the command</td>
 <td>Duplicate makes a '(copy)' draft</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>'Welcome to the test site (copy)' as draft 758 (sent with the
+<td>'Welcome to the test site (copy)' as draft 838 (sent with the
 live-test tag)</td>
 </tr>
 <tr>
@@ -2334,9 +2338,10 @@ month on QUILL WordPress Test Site, 19 December 2026, 5:00 PM.</td>
 <tr>
 <td>54</td>
 <td>What Changed lists a new comment once</td>
-<td>fail</td>
+<td>pass</td>
 <td>quill-contributor</td>
-<td>no comment change: []</td>
+<td>QUILL WordPress Test Site: 1 new comment, 1 waiting for you.; then
+nothing new</td>
 </tr>
 <tr>
 <td>43</td>
@@ -2392,15 +2397,15 @@ month on QUILL WordPress Test Site, 19 December 2026, 5:00 PM.</td>
 <td>Publish Form as Live, then Update</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>Published QUILL live test: Ask us anything (2026-11-20 07:45), form
-12, live; updated in place; 5 questions kept</td>
+<td>Published QUILL live test: Ask us anything (2026-11-20 08:16), form
+13, live; updated in place; 5 questions kept</td>
 </tr>
 <tr>
 <td>64</td>
 <td>A change on the site is seen before publishing</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>the site's copy changed at 2026-11-19 23:50:44; the title is
+<td>the site's copy changed at 2026-11-20 00:22:14; the title is
 new</td>
 </tr>
 <tr>
@@ -2409,7 +2414,7 @@ new</td>
 <td>pass</td>
 <td>quilladmin</td>
 <td>a block placed; <a
-href="https://lp.csedesigns.com/wordpress/quill-live-test-form-page-2026-11-20-0745/">https://lp.csedesigns.com/wordpress/quill-live-test-form-page-2026-11-20-0745/</a>
+href="https://lp.csedesigns.com/wordpress/quill-live-test-form-page-2026-11-20-0816/">https://lp.csedesigns.com/wordpress/quill-live-test-form-page-2026-11-20-0816/</a>
 shows the form with its questions</td>
 </tr>
 <tr>
@@ -2417,7 +2422,7 @@ shows the form with its questions</td>
 <td>Responses: two sent, listed newest first, exported, deleted</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>2 responses; first row: Response 26, 19 November, 11:50 PM, QUILL
+<td>2 responses; first row: Response 28, 20 November, 12:22 AM, QUILL
 live test 2, QUILL live test: Ask us anything...</td>
 </tr>
 <tr>
@@ -2551,11 +2556,10 @@ WordPress Test Site is not allowed to do that.</td>
 <tr>
 <td>91</td>
 <td>Watches: the first look is silent</td>
-<td>fail</td>
+<td>pass</td>
 <td>quilladmin</td>
-<td>the first look spoke: ['The Watch for new form responses could not
-read QUILL WordPress Test Site, so it skips that site: QUILL WordPress
-Test Site said: Missing parameter(s): form_id.']</td>
+<td>first look and second round silent; then: 1 new comment waiting on
+QUILL WordPress Test Site.</td>
 </tr>
 <tr>
 <td>92</td>
@@ -2570,7 +2574,7 @@ news, as draft (its Status says publish; publish it after a look)</td>
 <td>Lists: import as drafts; a contributor's page refused</td>
 <td>pass</td>
 <td>quill-editor</td>
-<td>Made Row 2: QUILL live test: import (2026-11-20 07:45), number 771.
+<td>Made Row 2: QUILL live test: import (2026-11-20 08:16), number 851.
 Skipped Row 3: nonsense is not a status WordPress knows. Skipped Row 4:
 it has no title and no content. Contributor, a page: Not made Row 2:
 Your acc...</td>
@@ -2598,7 +2602,7 @@ sitemap. That happens when it asks search engines not to ind...</td>
 <td>pass</td>
 <td>quilladmin</td>
 <td>21 content findings, 10 media findings; preview: Move QUILL live
-test: draft (2026-11-20 07:45) on QUILL WordPress Test Site to the
+test: draft (2026-11-20 08:16) on QUILL WordPress Test Site to the
 Tras...; 2 privacy rows</td>
 </tr>
 <tr>
@@ -2711,8 +2715,8 @@ quill-editor...</td>
 <td>Copy to Site: a draft copied; a contributor refused</td>
 <td>pass</td>
 <td>quill-editor</td>
-<td>Made item QUILL live test: copied (2026-11-20 07:45). It arrived as
-a draft. To a contributor: QUILL live test: page (2026-11-20 07:45):
+<td>Made item QUILL live test: copied (2026-11-20 08:16). It arrived as
+a draft. To a contributor: QUILL live test: page (2026-11-20 08:16):
 Your account on QUILL WordPress Test Site is not allowed to create this
 kind of...</td>
 </tr>
@@ -2737,7 +2741,7 @@ settings; put back plans nothing straight after</td>
 <td>Put Back from a Snapshot</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>Put back: post QUILL live test: snapshot (2026-11-20 07:45).</td>
+<td>Put back: post QUILL live test: snapshot (2026-11-20 08:16).</td>
 </tr>
 <tr>
 <td>75</td>
@@ -2797,7 +2801,7 @@ WordPress.org (10B.3)</h3>
 <td>Redirects and the 404 log; Test an Address</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>3 redirects, 14 not-found rows read; No redirect read from this site
+<td>3 redirects, 17 not-found rows read; No redirect read from this site
 matches /quill-live-test-nowhere/. Tested her...</td>
 </tr>
 <tr>
@@ -2805,7 +2809,7 @@ matches /quill-live-test-nowhere/. Tested her...</td>
 <td>Redirects: make one, trace it, delete it</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>/quill-live-test-redirect-202611200745/ leads to <a
+<td>/quill-live-test-redirect-202611200816/ leads to <a
 href="https://lp.csedesigns.com/wordpress/about/">https://lp.csedesigns.com/wordpress/about/</a>:
 /quill-live-test-redirec...; a contributor: 403</td>
 </tr>
@@ -2878,7 +2882,7 @@ updated 2026-1...</td>
 <td>Gravity Forms: build every field family, read it back</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>form 5: 18 fields read back as sent (text, textarea, email, phone,
+<td>form 8: 18 fields read back as sent (text, textarea, email, phone,
 number, select, radio, checkbox, multiselect, date, time, website, name,
 address, consent, html, section, page)</td>
 </tr>
@@ -2911,7 +2915,7 @@ that.</td>
 <td>WooCommerce: New Order, pending, for a guest</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>order 789: 1 x Large Print Guide, 2 x Braille Mug, total 36.34,
+<td>order 869: 1 x Large Print Guide, 2 x Braille Mug, total 36.34,
 pending payment, not paid; shipping address copied from billing</td>
 </tr>
 <tr>
@@ -2919,7 +2923,7 @@ pending payment, not paid; shipping address copied from billing</td>
 <td>WooCommerce: Change Items, quantity 0 removes a line</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>Shop order 789 on QUILL WordPress Test Site: Large Print Guide: 1
+<td>Shop order 869 on QUILL WordPress Test Site: Large Print Guide: 1
 becomes 3. Now: 3 x Large Print Guide; total 37.02</td>
 </tr>
 <tr>
@@ -2935,7 +2939,7 @@ and back; only the changed fields were sent</td>
 <td>WooCommerce: shipping classes, a product put in one</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>class 85 made, renamed, Large Print Guide put in it and back; 1
+<td>class 92 made, renamed, Large Print Guide put in it and back; 1
 shipping zones with 0 methods on the site</td>
 </tr>
 <tr>
@@ -3009,15 +3013,17 @@ WordPress Test Site.; an editor: 403</td>
 <td>Redirection: Redirect Groups and Import Redirects</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>QUILL live test: group (2026-11-20 07:45) renamed: 0 redirects, run
-by WordPress, turned off. Import: 1 made, 1 skipped</td>
+<td>slug change: <a
+href="https://lp.csedesigns.com/wordpress/quill-live-test-old-0816/">https://lp.csedesigns.com/wordpress/quill-live-test-old-0816/</a>
+leads...; QUILL live test: group (2026-11-20 08:16) renamed: 1 redirect,
+run by WordPress, turned off. Import: 1 made, 1 skipped</td>
 </tr>
 <tr>
 <td>139</td>
 <td>Gravity Forms: notifications and confirmations saved</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>form 7: 1 notifications (off), 2 confirmations; QUILL live test
+<td>form 10: 1 notifications (off), 2 confirmations; QUILL live test
 thanks, confirmation, shows a message, on</td>
 </tr>
 <tr>
@@ -3033,7 +3039,7 @@ wp_gf_addon_feed table does not exist.']}); QUILL lists 0 feeds</td>
 <td>Gravity Forms: a test submission and its results</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>form 7: 3 filled, 0 skipped, valid; entry 4 made and named for
+<td>form 10: 3 filled, 0 skipped, valid; entry 5 made and named for
 Ctrl+Z; 0 result rows (no quiz, poll or survey add-on); 1 notification
 previewed, turned off, so nobody was emailed</td>
 </tr>
@@ -3043,15 +3049,15 @@ previewed, turned off, so nobody was emailed</td>
 <td>pass</td>
 <td>quilladmin</td>
 <td>3 ACF fields in REST; quill_subtitle written and read back on draft
-794</td>
+874</td>
 </tr>
 <tr>
 <td>143</td>
 <td>QUILL Site Types: a type and its fields in REST</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>type qlt0745, field group qlt0745_f; item 796 keeps isbn in REST;
-stopped and qlt0745_f is defined again.</td>
+<td>type qlt0816, field group qlt0816_f; item 876 keeps isbn in REST;
+stopped and qlt0816_f is defined again.</td>
 </tr>
 <tr>
 <td>102</td>
@@ -3166,7 +3172,7 @@ undo</td>
 <td>Put back what the run changed</td>
 <td>pass</td>
 <td>quilladmin</td>
-<td>73 steps</td>
+<td>74 steps</td>
 </tr>
 <tr>
 <td>-</td>
