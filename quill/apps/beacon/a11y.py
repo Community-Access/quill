@@ -73,7 +73,11 @@ def load(data_dir: str | Path) -> A11ySettings:
 
 
 def save(data_dir: str | Path, settings: A11ySettings) -> None:
-    settings_path(data_dir).write_text(json.dumps(settings.to_dict(), indent=2), encoding="utf-8")
+    """Atomically (temp file + ``os.replace``): a write that dies part-way
+    through leaves the previous file, never an empty one."""
+    from quill.core import storage
+
+    storage.write_json_atomic(settings_path(data_dir), settings.to_dict())
 
 
 def apply_to_frame(frame, settings: A11ySettings) -> None:

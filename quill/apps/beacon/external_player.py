@@ -84,11 +84,12 @@ def load_settings(data_dir) -> PlayerSettings:
 
 def save_settings(data_dir, settings: PlayerSettings) -> bool:
     """Persist player settings. Fail-safe; returns False on write error."""
-    path = os.path.join(str(data_dir), SETTINGS_FILE)
-    try:
-        os.makedirs(str(data_dir), exist_ok=True)
-        with open(path, "w", encoding="utf-8") as fh:
-            json.dump(settings.to_dict(), fh, indent=2, ensure_ascii=False)
+    from pathlib import Path
+
+    from quill.core import storage
+
+    try:  # atomically: a failed write leaves the previous file, never an empty one
+        storage.write_json_atomic(Path(str(data_dir)) / SETTINGS_FILE, settings.to_dict())
         return True
     except OSError:
         return False
