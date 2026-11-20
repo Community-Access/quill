@@ -39,6 +39,7 @@ __all__ = [
     "TemplateSaveError",
     "copy_set",
     "copy_template",
+    "files_pull_request",
     "plan_copy",
     "plan_copy_set",
     "plan_save",
@@ -74,7 +75,7 @@ class SavePlan:
     def needs_pull_request(self) -> bool:
         return self.protected
 
-    def sentence(self, *, use_pull_request: bool) -> str:
+    def sentence(self, *, use_pull_request: bool, note: str = "") -> str:
         where = (
             f"a new branch with a pull request into {self.default_branch}"
             if use_pull_request
@@ -86,9 +87,8 @@ class SavePlan:
             if self.protected
             else ""
         )
-        return (
-            f"Saving {change} {self.path} in {self.repository} on {where}.{why} "
-            "Templates take effect only from the default branch."
+        return f"Saving {change} {self.path} in {self.repository} on {where}.{why} " + (
+            note or "Templates take effect only from the default branch."
         )
 
 
@@ -210,6 +210,7 @@ def save_template(
     expected_sha: str,
     message: str = "",
     use_pull_request: bool | None = None,
+    body: str = "",
 ) -> SaveResult:
     """Commit *text* to ``plan.path`` as *plan* decided, then read it back.
 
@@ -245,7 +246,8 @@ def save_template(
     try:
         pull_request = repo.create_pull(
             title=message,
-            body=(
+            body=body
+            or (
                 f"Changes the template `{path}`, from QUILL's GitHub Workbench. "
                 "It takes effect once merged into the default branch."
             ),
@@ -404,6 +406,61 @@ def rename_templates(
     return SaveResult(
         plan.repository,
         folder,
+        branch,
+        commit,
+        str(getattr(pull_request, "html_url", "") or ""),
+        int(getattr(pull_request, "number", 0) or 0),
+    )
+
+
+def files_pull_request(
+    repo: Any,
+    repository: str,
+    base_branch: str,
+    files: Sequence[tuple[str, str, str]],
+    *,
+    title: str,
+    body: str,
+    branch_stem: str,
+) -> SaveResult:
+    """Write ``(path, text, expected sha)`` files on a new branch and open one pull request.
+
+    Never writes to *base_branch*: the change is reviewable before anything
+    takes effect. Each file's sha on *base_branch* is checked first, so a
+    file somebody changed since it was compared stops the whole update
+    before a branch is made; each write is read back.
+    """
+    if not files:
+        raise TemplateSaveError("Nothing was chosen to update.")
+    for path, _text, expected in files:
+        current = _current_sha(repo, path, base_branch)
+        if current != expected:
+            raise TemplateSaveConflict(
+                f"{path} changed in {repository} since it was compared. Nothing was "
+                "written; compare again."
+            )
+    branch = _branch_name(branch_stem, lambda name: _branch_exists(repo, name))
+    try:
+        head = repo.get_branch(base_branch).commit.sha
+        repo.create_git_ref(f"refs/heads/{branch}", head)
+    except Exception as exc:  # noqa: BLE001
+        raise TemplateSaveError(f"Could not make the branch {branch}: {exc}") from exc
+    commit = ""
+    for path, text, expected in files:
+        commit = _write(
+            repo, path, text, f"{'Update' if expected else 'Add'} {path}", branch, expected
+        )
+        _verify(repo, path, branch, text)
+    try:
+        pull_request = repo.create_pull(title=title, body=body, head=branch, base=base_branch)
+    except Exception as exc:  # noqa: BLE001
+        raise TemplateSaveError(
+            f"Wrote {len(files)} files to the branch {branch}, but could not open the pull "
+            f"request: {exc}"
+        ) from exc
+    return SaveResult(
+        repository,
+        ", ".join(path for path, _t, _s in files),
         branch,
         commit,
         str(getattr(pull_request, "html_url", "") or ""),
