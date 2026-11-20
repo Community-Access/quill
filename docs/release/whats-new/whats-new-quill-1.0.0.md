@@ -25,7 +25,7 @@ QUILL 1.0 is the first general release. These are the newest parts; the full rel
 ## GitHub
 
 - **From the line you are on:** GitHub > From This Line copies a link to the line, says who changed it, opens its pull request, or starts an issue from your selection.
-- **The Workbench:** Export List (Ctrl+Shift+X) saves any list as Excel, CSV or Markdown. Import Issues (Ctrl+Alt+I) and New Issues from Lines (Ctrl+Alt+L) make many issues at once, after a preview.
+- **The GitHub Workbench:** one window for all of GitHub. Alt+Enter changes anything, Ctrl+Z undoes it, and Dry Run tries a command first. Help > Practice on GitHub gives you a repository to learn on.
 
 ## Say or Type a Command
 

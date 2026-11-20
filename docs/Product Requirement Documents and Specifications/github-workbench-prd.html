@@ -257,7 +257,8 @@ requirements</h1>
 <tr>
 <td>Status</td>
 <td>Accepted by Jeff, 2026-11-09, with every decision taken as
-recommended (decision 11 as he amended it). This is the accepted scope;
+recommended (decision 11 as he amended it). Built in both editors by
+2026-11-20; see “Where it stands” below. This is the accepted scope;
 current implementation status and later scope decisions are in the <a
 href="../planning/workbench-implementation-status.md">Workbench
 implementation status</a></td>
@@ -288,11 +289,145 @@ GraphQL schema (284 mutations), both read 2026-11-09</td>
 </tr>
 </tbody>
 </table>
+<h2 id="where-it-stands-2026-11-20">Where it stands (2026-11-20)</h2>
+<p>Everything in this PRD’s Parts B to D is built, in both editors,
+apart from the few rows listed under “What is left”. The GitHub
+Workbench is the one GitHub window: GitHub Items and Explore GitHub are
+retired, and every door in the editor opens the Workbench (section 11,
+Phase 6). The user’s account of it is the <a
+href="../user%20guide/github-guide/github-guide.md">GitHub Guide</a>, in
+14 chapters and an appendix, and the record of each change is
+<code>CHANGELOG.md</code>.</p>
+<h3 id="what-shipped-by-area">What shipped, by area</h3>
+<ul>
+<li><strong>The window (sections 3 to 9, Part C).</strong> A top-level
+window with a tree, a filter box, a list, details and a status bar; its
+own menu bar, with a key on every row; context menus by row type;
+Workbench Options; the Go, Say and help key families; Say or Type a
+Command (F11) and the Key Describer in the window. A dialog opened from
+it blocks only the Workbench, never the editor (GH-R-002).</li>
+<li><strong>Properties and editing (sections 15 and 16).</strong>
+Alt+Enter on every object in Appendix C, several rows at once on one
+sheet, every editable field proved by a test that reads the save back,
+Undo and Redo that read the object again first and stop when someone
+else changed it, and Change History kept 90 days. A You page on every
+sheet with a relationship.
+<!-- PR#1974 -->
+
+Issue fields edited on their own sheet page, and the rest of 16.7
+(subscribe, block, reactions, star lists, forks and pins on the You
+page).</li>
+<li><strong>Filtering (section 17).</strong> The filter box with
+GitHub’s words, Quick Filters, the Filter Builder, Sort By and Group By
+on every list, the row kept on return, and issue types and issue fields
+as typed values.
+<!-- PR#1971 -->
+
+Filters on every list, with Appendices A to C kept in step by a
+gate.</li>
+<li><strong>Permissions (section 18).</strong> GitHub Permissions with a
+one-step add; every write held to the account’s Workbench level (Read
+Only, Organize or Full) and checked once; tiers and previews; roles read
+from GitHub’s own answers, with custom roles by name; My Access Here,
+Why Can’t They?, View As Role, Compare Roles, Access Review, Bulk Access
+Changes, Access Templates, Compare Accounts, Act As Another Account and
+Least Privilege Advice. Rulesets, branch protection, organization
+people, teams and roles.</li>
+<li><strong>Templates (section 21).</strong> Issue and discussion forms
+filled natively, the Templates node and its builder, CODEOWNERS,
+FUNDING.yml and CITATION.cff as sheets, Copy to Repositories, and forms
+written as plain text in the editor.</li>
+<li><strong>Beyond parity (section 22).</strong> The API Console, Read
+as Document, Watches, GitHub from the line you are on, Export List and
+issues in from a spreadsheet or lines, plain-language batches, View As
+Role, Dry Run, the practice repository and the GitHub lessons, workflow
+authoring, Dependabot and Compare Configuration, Merge Selected, release
+evidence and attestations, Security Overview with safe alert exports,
+Dependency Review, GitHub Service Status, and Across Repositories with
+Repository Sets and every kind by name (22.11).
+<!-- PR#1963 -->
+
+Repository administration: every repository setting, Create Repository
+with every option, Transfer, Pages and Packages.
+<!-- PR#1970 -->
+
+The rule that blocks a merge, by name; Watch Readiness; Check Download…
+against a release’s digest.
+<!-- PR#1973 -->
+
+The wiki, discussion to issue to pull request, Copilot seats and
+settings, GitHub Models prompt files, github.dev, and AI drafts with
+their sources.
+<!-- PR#1967 -->
+
+Every object’s lifecycle, from making it to deleting it, proved by
+tests.</li>
+<li><strong>Accounts.</strong> Several accounts side by side, GitHub
+Enterprise Server accounts (decision 26), and Use GitHub CLI
+Sign-In….</li>
+<li><strong>Help (Part D).</strong> F1 on every node, row, field and
+command, at zero on GATE-GITHUB-HELP; Shift+F1, the glossary, Search
+Help, Help and Learning, Walk Me Through It, What Changed, QUILLBert’s
+tips, Report a Help Problem, and the generated Workbench reference.
+<!-- PR#1975 -->
+
+Alt+Enter on a GitHub reference in a document, examples from your own
+data in F1, short rows for braille, key cards and the spoken tour (Help
+&gt; Take the Tour), tips the third time a slow way is used, and Help
+&gt; Ask How…</li>
+<li><strong>Coverage (section 19).</strong> Every REST operation and
+GraphQL mutation in Appendices E and F is classified, and
+GATE-GITHUB-COVER keeps <code>missing</code> at zero: of 2,007 rows, 855
+are covered, 286 need no API call, 866 are out of scope with a reason,
+and none is planned.</li>
+</ul>
+<h3 id="decisions-after-acceptance">Decisions after acceptance</h3>
+<ol start="26" type="1">
+<li><strong>Enterprise Cloud only features are out</strong> (Jeff,
+2026-11-19: “if enterprise then do away with this”). The organization
+audit log, custom repository roles, writing custom organization roles,
+and reviewing dismissal and bypass requests were built and taken out
+again; their coverage rows are out of scope with that reason. GitHub
+Enterprise <strong>Server</strong> stays in scope as a place an account
+lives: everything for that account goes to its own server, and a feature
+the server’s GitHub lacks is named with the server’s version (section
+A5).</li>
+<li><strong>Organization-only features are tested in a test
+organization,</strong> with the test repository, once the code is
+in.</li>
+<li><strong>Documentation and live testing run side by side once the
+code is in</strong> (Jeff, 2026-11-20).</li>
+</ol>
+<h3 id="what-is-left">What is left</h3>
+<ul>
+<li><strong>Live checks waiting on people:</strong> the live run with
+<code>--create</code> and the rows marked “needs Jeff”; Read Only,
+Organize, Full and Safe Mode against GitHub; several roles and accounts,
+protected branches, organization restrictions, rate limits, private
+repositories, project fields, failure and retry; the organization-only
+features in a test organization; the Copilot cloud agent commands on a
+Copilot plan; and the timed find-the-answer sessions with people
+(GH-R-119, section 12).</li>
+<li><strong>Rows still planned</strong> (section 14 and 22.1): wiki
+pages listed inside the Workbench without cloning; Git LFS; OpenID
+Connect claims; account and organization migrations; other branches’
+merge queues; hiding whitespace in the review window itself; the AI
+image description and the table-header check in the comment
+composer.</li>
+<li><strong>Smaller defects found while writing the guide,</strong> in
+the documentation pass’s report: read notifications never shown although
+Workbench Options has the choice, Snooze recorded but not hidden, the
+Inbox’s failed-checks query not limited to you, Run Workflow on Branch
+ignoring the selected workflow, and the tier 1 “asks first” option of
+decision 13 never built.</li>
+</ul>
 <p>UX means user experience, PR means pull request, and API means the
 programming interface GitHub offers, throughout.</p>
 <h2 id="how-this-document-is-organized">How this document is
 organized</h2>
 <ul>
+<li><strong>Where it stands:</strong> what shipped by 2026-11-20,
+decisions taken after acceptance (26 to 28), and what is left.</li>
 <li><strong>Part A, the product:</strong> what it is, who it is for,
 what it must achieve, and what a great day with it sounds like.</li>
 <li><strong>Part B, the design:</strong> sections 1 to 22, the window,
@@ -391,11 +526,11 @@ own file, shared by both editors; the main Options dialog gains nothing
 (section 4.1).</li>
 </ul>
 <h3 id="a3-the-problem">A3. The problem</h3>
-<p>Section 1 records what a new user meets today, verified in the code:
-two modal windows with overlapping jobs, about 28 controls before the
-list, a context menu of 15 rows across three scopes, Codespaces offered
-on every item, F1 on 6 controls, and a GitHub menu with seven doors that
-lead to two windows. Beyond that:</p>
+<p>Section 1 records what a new user met before the Workbench, verified
+in the code on 2026-11-09: two modal windows with overlapping jobs,
+about 28 controls before the list, a context menu of 15 rows across
+three scopes, Codespaces offered on every item, F1 on 6 controls, and a
+GitHub menu with seven doors that lead to two windows. Beyond that:</p>
 <ul>
 <li><strong>Most of GitHub cannot be changed here.</strong> Labels can
 be added in a batch but not removed; there is no general way to set an
@@ -412,6 +547,7 @@ Project boards, the rulesets editor, the conflict editor, settings pages
 and the access pages are among its least accessible screens, and they
 are where the power is.</li>
 </ul>
+<p>Every one of these is answered now (“Where it stands”, above).</p>
 <h3 id="a4-goals">A4. Goals</h3>
 <ol type="1">
 <li><strong>Parity with GitHub:</strong> anything GitHub’s API lets a
@@ -439,8 +575,12 @@ open the same window; QUILL Lite is never ahead.</li>
 <li>Hosting anything. The Workbench talks only to GitHub (and, by
 consent, to githubstatus.com).</li>
 <li>GitHub Enterprise Server administration and enterprise accounts
-(Appendix F marks them out of scope). GitHub Enterprise Cloud
-organizations are in scope.</li>
+(Appendix F marks them out of scope). An account that lives on a GitHub
+Enterprise Server is in scope: the Workbench works against that server,
+and says when its GitHub is too old for something (decision 26).</li>
+<li>Features only GitHub Enterprise Cloud offers, such as the
+organization audit log and custom repository roles (decision 26).
+Organizations on github.com’s other plans are in scope.</li>
 <li>Classic Projects, which GitHub has retired.</li>
 <li>Visual charts as the only form of anything. Every insight is a table
 or a sentence first.</li>
@@ -650,8 +790,13 @@ the editor’s GitHub menu (PR 1797) stay; this PRD changes what they
 open.</p>
 <h2 id="part-b-the-design-sections-1-to-22">Part B: the design (sections
 1 to 22)</h2>
-<h2 id="1-what-a-new-user-meets-today-verified-in-the-code">1. What a
-new user meets today (verified in the code)</h2>
+<h2
+id="1-what-a-new-user-met-before-the-workbench-verified-in-the-code-2026-11-09">1.
+What a new user met before the Workbench (verified in the code,
+2026-11-09)</h2>
+<p>This is the starting point, kept as history. Every problem below is
+gone: GitHub Items and Explore GitHub are retired, and the Workbench
+replaced them (section 11, Phase 6).</p>
 <ol type="1">
 <li><p><strong>Two windows with overlapping jobs.</strong></p>
 <ul>
@@ -1294,7 +1439,9 @@ This Repository&#39;s Issues
 This Repository&#39;s Pull Requests
 Actions Runs
 -
-Open GitHub Address...
+From This Line             &gt;
+-
+Open GitHub Address...       (QUILL only)
 Clone Repository...
 -
 Commit to GitHub...          (QUILL only)
@@ -1319,6 +1466,13 @@ working copy the document is in, not about GitHub.</li>
 Tools &gt; Git and GitHub) keep their rows for one release so nobody’s
 habits break, then slim down the same way (decision 4).</li>
 </ul>
+<p><em>Built.</em> The menu above is what both editors show, with
+QUILL’s own rows left out of QUILL Lite’s and From This Line as rows in
+QUILL Lite rather than a submenu (PRD 22.3). The normal-mode homes still
+have their rows. One wording is left behind: QUILL’s <strong>File &gt;
+Open from Remote &gt; GitHub Items…</strong> opens the Workbench under
+its old name, and its Command Palette name is “Open GitHub Items…”.
+QUILL Lite’s row is <strong>File &gt; GitHub Workbench…</strong>.</p>
 <h2 id="7-f1-everywhere-and-help-that-teaches">7. F1 everywhere, and
 help that teaches</h2>
 <ul>
@@ -1561,6 +1715,12 @@ everywhere.</li>
 </ul>
 <p>Phases 7 to 11, for Properties, editing, filtering, permissions and
 coverage, are in section 20.</p>
+<p><em>Where they stand, 2026-11-20:</em> Phases 0 to 6 are done. Phase
+6 retired the old windows: <code>github_items_dialog.py</code> and
+<code>github_explore_dialog.py</code> are parked (no door opens them;
+<code>tests/unit/ui/fixtures/surface_reachability.json</code> says so),
+and every editor command that used to open them opens the Workbench at
+the matching place.</p>
 <h2 id="12-checking-it-with-people">12. Checking it with people</h2>
 <p>Before Phase 3 and again before Phase 6, run the same tasks with
 about five people: new to GitHub and experienced, screen-reader users
@@ -1621,11 +1781,16 @@ this: PyNaCl”). PyNaCl was already a core dependency
 (<code>PyNaCl&gt;=1.6.2</code>, bundled for Quillin signing), so no
 package was added. Built first in Explore GitHub on branch
 <code>feat/github-secret-values</code>: Set New Value, New Secret, New
-Variable, Edit Value and Delete, for repository and environment
-scopes.</li>
+Variable, Edit Value and Delete, for repository and environment scopes.
+Now in the Workbench’s secret lists, for repository, environment,
+organization, Dependabot, Codespaces and Copilot agent secrets, and Set
+Secret Everywhere across repositories.</li>
 <li><strong>The four tiers and their defaults</strong> (section 18.4),
 tier 1 saving at once unless Workbench Options asks first?
-Recommendation: yes.</li>
+Recommendation: yes. <em>As built:</em> tier 1 always saves at once. The
+Workbench Options choice to ask first was never added, although the
+tier’s own description still names it (<code>permissions.py</code>,
+<code>_TIER_WORDS</code>).</li>
 <li><strong>Read Only, Organize and Full per account,</strong> with Safe
 Mode making every account Read Only? Recommendation: yes.</li>
 <li><strong>Change History kept 90 days</strong> on this device by
@@ -1654,6 +1819,10 @@ yes.</li>
 </ol>
 <h2 id="14-github-features-quill-does-not-have-yet">14. GitHub features
 QUILL does not have yet</h2>
+<p><em>2026-11-20:</em> nearly every row below is built; its “Status
+today” says when and how. The rows still planned are listed under “Where
+it stands” at the top. The heading is kept because code and other plans
+cite “section 14”.</p>
 <p>Checked against the code at <code>c9da793</code> by searching
 <code>quill/core/github</code> and the GitHub UI modules for each
 feature, and against <code>docs/planning/github-roadmap.md</code> (the
@@ -1712,7 +1881,10 @@ to <code>https://github.com/owner/name.wiki.git</code> with the token in
 the child’s environment (<code>quill/core/github/wiki.py</code>). GitHub
 has no API for wiki pages, so listing and editing pages inside the
 Workbench stays planned, as “Wiki: pages listed and edited in the
-Workbench”</td>
+Workbench”. <!-- PR#1973 --> <strong>Editing built 2026-11-20:</strong>
+Edit Wiki Pages… keeps a clone in QUILL’s own folder and opens a page in
+the editor, New Wiki Page… makes one, and Publish Wiki Changes… names
+the pages and the account and asks before it pushes, never forcing</td>
 <td>Repository &gt; Wiki (pages as a list, read in details, edit in the
 editor)</td>
 </tr>
@@ -1727,12 +1899,19 @@ Accept Invitation… (Enter) and Decline Invitation… ask first
 <tr>
 <td>Edit description, website and features (issues, wiki, discussions,
 projects on or off)</td>
-<td>Rename, visibility, default branch and topics only</td>
+<td>Rename, visibility, default branch and topics only. <!-- PR#1963 -->
+<strong>Built 2026-11-20:</strong> the repository’s Properties has every
+setting GitHub takes, in the words of GitHub’s settings page: General,
+Features, merge buttons and their commit messages, and more</td>
 <td>Repository &gt; Settings &gt; General</td>
 </tr>
 <tr>
 <td>Rulesets: read them</td>
-<td>Read only inside merge readiness, with a link out</td>
+<td><strong>Built 2026-11-19, and editable:</strong> Settings &gt;
+Rulesets for a repository and Rulesets for an organization list each
+ruleset in a sentence; Alt+Enter opens its sheet, with every rule and
+setting GitHub sent, a Bypass page and, for an organization, the
+repositories it covers; Delete wants its name typed</td>
 <td>Repository &gt; Settings &gt; Rulesets (read-only list; editing
 stays on github.com)</td>
 </tr>
@@ -1767,9 +1946,9 @@ or Close Advisory… (<code>PATCH</code>, publishing wants the GHSA id
 typed), Request CVE… (<code>POST .../cve</code>), and Search &gt;
 Security Advisories (<code>GET /advisories</code> by package, CVE or
 GHSA id); <code>quill/core/github/security_advisories.py</code>,
-<code>quill/ui/github_workbench_advisories.py</code>. Advisory comments,
-temporary private forks and an organization’s advisories remain
-planned</td>
+<code>quill/ui/github_workbench_advisories.py</code>. Advisory Comments,
+Comment on Advisory…, Edit an Advisory Comment… and Make a Private Fork
+for the Fix followed; an organization’s advisories remain planned</td>
 <td>Repository &gt; Security &gt; Policy; Security &gt; Advisories
 (roadmap GX11)</td>
 </tr>
@@ -1803,8 +1982,11 @@ type and name) followed the same day</td>
 </tr>
 <tr>
 <td>Teams and organization members</td>
-<td>Out of scope by a code comment (“Organizations in, Teams out”);
-roadmap GX13 adds team permissions. Now in scope: section 18.3.3</td>
+<td><strong>Built 2026-11-19:</strong> members with their role and
+two-factor state, Members Without Two-Factor, outside collaborators,
+teams with their parent, members and repositories, Access Review: People
+and Teams, and a refusal before anything that would leave nobody to
+manage the organization (section 18.3.3)</td>
 <td>Repositories &gt; Organizations &gt; org &gt; Members, Teams; People
 &gt; My Teams</td>
 </tr>
@@ -1876,8 +2058,9 @@ clipboard and the token never said, remembered for redaction), Runner
 Labels… (<code>POST</code>/<code>DELETE .../labels</code>, only custom
 labels removable) and Remove Runner…
 (<code>DELETE .../runners/{id}</code>) followed the same day in
-<code>quill/core/github/runner_admin.py</code>. Just-in-time
-configuration and removal tokens remain planned</td>
+<code>quill/core/github/runner_admin.py</code>. Just-in-time runners
+(Just-in-Time Runner…) and removal commands (Removal Commands…, copied
+to the clipboard, never said) followed on 2026-11-18</td>
 <td>Repository &gt; Actions &gt; Runners (read-only)</td>
 </tr>
 <tr>
@@ -1961,11 +2144,13 @@ is never shown, logged, spoken or kept. Organization secrets also choose
 which repositories may use them (all, private only, or selected).</li>
 <li><strong>Billing and usage:</strong> Account &gt; Billing and Usage,
 read-only: Actions minutes, Packages and Codespaces storage, Copilot
-seats, as tables.</li>
+seats, as tables. <em>Built</em> as People &gt; My Billing and Usage,
+from GitHub’s billing report.</li>
 <li><strong>Organization audit log:</strong> Organizations &gt; org &gt;
 Audit Log, read-only and filterable by actor, action, repository and
 date (needs <code>read:audit_log</code> and an organization plan that
-offers the API).</li>
+offers the API). <em>Taken out 2026-11-19:</em> the audit log API is
+GitHub Enterprise Cloud only (decision 26).</li>
 <li><strong>SSH and GPG keys, SSH signing keys:</strong> Account &gt;
 Keys. List, add, delete. <strong>Built 2026-11-18</strong> as People
 &gt; My Keys (explore view <code>my_keys</code>, row type
@@ -2849,6 +3034,9 @@ the editor commands, lists in and out, View As Role and Compare Roles,
 Dry Run and the practice repository, then the missing GitHub features of
 22.1 as the coverage gate lists them.</li>
 </ul>
+<p><em>Where they stand, 2026-11-20:</em> Phases 7 to 13 are done, and
+Phase 14, Across Repositories, too (G1). What is left is the short list
+under “Where it stands” at the top.</p>
 <h2
 id="21-building-templates-issue-forms-pull-request-templates-and-more">21.
 Building templates: issue forms, pull request templates and more</h2>
@@ -3179,7 +3367,11 @@ you type), description, visibility, a README, a <code>.gitignore</code>
 from GitHub’s list, a license from GitHub’s list with each license
 explained in plain words, a template with or without all its branches,
 and the starting labels, milestones, rules and access from a saved
-template (section 18.3.2).</li>
+template (section 18.3.2).
+<!-- PR#1963 -->
+
+<em>Built 2026-11-20:</em> Create Repository asks every option GitHub
+takes.</li>
 <li><strong>Moving work in and out:</strong> export your account’s data
 or an organization migration archive (where the API allows) and download
 it; import issues from CSV with a preview (section 22.7); fork with only
@@ -3205,12 +3397,19 @@ Actions.</li>
 bypass requests and alert dismissal requests to review and decide;
 Copilot Autofix suggestions on code scanning alerts, applied as a pull
 request; the organization security overview as a table; dependency
-review on a pull request.</li>
+review on a pull request. <em>Where it stands, 2026-11-20:</em> Copilot
+Autofix…, Dependency Review and Security Overview (every page, worst
+first, with safe alert exports) are built. Reviewing bypass and
+dismissal requests is Enterprise Cloud only and out (decision 26).</li>
 <li><strong>Discussions, the remaining pieces:</strong> spotlight,
-category sections, and polls built in the template builder’s style.</li>
+category sections, and polls built in the template builder’s style.
+<em>Built 2026-11-19:</em> polls read as a table with Vote…, the Pinned
+place (the spotlight), and categories by section.</li>
 <li><strong>GitHub status:</strong> a status bar cell and Help &gt; Is
 GitHub Working? that read githubstatus.com (a new egress row, with
-consent).</li>
+consent). <em>Built 2026-11-18</em> as Help &gt; GitHub Service Status…
+(Ctrl+Alt+F1), read only when asked and only after consent; there is no
+status bar cell.</li>
 </ul>
 <h3 id="222-the-escape-hatch-an-api-console">22.2 The escape hatch: an
 API Console</h3>
@@ -5252,7 +5451,9 @@ network egress row: githubstatus.com (Is GitHub Working?).</p>
 decisions</h2>
 <h3 id="g1-phases">G1. Phases</h3>
 <p>Phases 0 to 6 are in section 11, Phases 7 to 13 in section 20. In one
-line each:</p>
+line each. Every phase had shipped by 2026-11-20; GitHub Items and
+Explore were retired once the Workbench did everything they did, rather
+than after a release of both.</p>
 <table>
 <thead>
 <tr>
@@ -5379,7 +5580,8 @@ its own</td>
 <tr>
 <td><code>github_items_dialog.py</code> and friends grow past their size
 budgets</td>
-<td>extract into mixins and wx-free tables; GATE-11</td>
+<td>extract into mixins and wx-free tables; GATE-11. Resolved: the old
+windows are parked</td>
 </tr>
 <tr>
 <td>Secret values need sealed-box encryption</td>
@@ -5390,7 +5592,8 @@ Jeff on 2026-11-09 (decision 12)</td>
 </table>
 <h3 id="g3-decisions">G3. Decisions</h3>
 <p>Section 13 holds decisions 1 to 21, each with a recommendation; 22 to
-25 follow. All 25 were accepted on 2026-11-09. The keyboard adds two
+25 follow. All 25 were accepted on 2026-11-09. Decisions 26 to 28, taken
+later, are under “Where it stands” at the top. The keyboard adds two
 more:</p>
 <ol start="22" type="1">
 <li><strong>Delete on an issue or pull request opens Close… with its
