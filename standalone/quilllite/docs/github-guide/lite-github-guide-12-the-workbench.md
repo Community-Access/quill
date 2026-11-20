@@ -316,6 +316,66 @@ the list. A fork whose upstream you also chose adds no issues of its own,
 because on GitHub a fork's issues are its upstream's; the status bar says so,
 and you read them once, under the upstream.
 
+### Each name across the set
+
+GitHub keeps a label, a tag or a secret inside one repository, but you think
+of them by name across many: "the bug label", "the v3.2.0 tag", "the
+NUGET_KEY secret". Across Repositories has a place for each such kind, in four
+groups:
+
+- **Planning by Name:** Labels, Milestones, Topics.
+- **Code by Name:** Tags, Branches, Rules and Branch Protection.
+- **Actions by Name:** Environments, Secrets, Variables.
+- **Settings by Name:** Webhooks, Deploy Keys, Autolinks.
+
+A row is one name, such as "v3.2.0: in 4 of 4 repositories, 4 different
+commits" or "main: in 30 of 30 repositories, default in 30, protected in 26".
+Enter shows its variants, each with the repositories that have it, and the
+repositories that lack it. A repository that could not be read, often because
+reading secrets, webhooks and keys needs admin access, is named apart and
+never counted as missing.
+
+The context menu then changes it everywhere, as far as GitHub allows. Every
+change shows a preview first, repository by repository, with what is blocked
+and why, and then one result per repository. Each target is read again just
+before it is written, so one somebody changed on GitHub meanwhile is left
+alone and named.
+
+- **Make Them the Same** (labels, milestones, rules, environments, variables,
+  webhooks): choose the winning variant. An environment's custom branch list,
+  and a team reviewer from another owner, are not copied. A webhook keeps its
+  secret.
+- **Add to Missing** (labels, milestones, topics, rulesets, variables,
+  webhooks, autolinks). A deploy key cannot be added to more: GitHub accepts
+  one key in one repository only.
+- **Release Train** (tags): make the tag, the tag's draft release, or the tag
+  and a published release, on the default branch of each repository you
+  choose. A repository that already has the tag is skipped, and its tag is
+  never moved.
+- **Set Secret Everywhere** (secrets): type the new value once. It is sealed
+  for each repository before it leaves your computer, and it is never shown,
+  kept in Change History or written to the details. No secret's old value can
+  be read, by anyone.
+- **Rename Everywhere** (labels, branches). For a branch the preview says
+  where it is the default branch, where its protection moves with it, and how
+  many open pull requests GitHub retargets.
+- **Turn On or Off Everywhere** (webhooks).
+- **Delete Everywhere** (labels, topics, tags, environments, secrets,
+  variables, webhooks, deploy keys, autolinks). A tag with a release built on
+  it is kept, with the reason.
+- **Promote to Organization** (rulesets, secrets, variables, webhooks): one
+  organization ruleset, secret or variable for the set's repositories in that
+  organization, or one organization webhook. GitHub sends an organization
+  webhook for every repository in the organization, and the preview says so.
+  Each repository's own copy is deleted only after the organization's one
+  exists, because a repository's own secret or variable wins over the
+  organization's. Labels, environments, deploy keys and autolinks have no
+  organization form in GitHub, so they are not promoted.
+
+Secrets, environments, webhooks, deploy keys and rules decide who may deploy,
+what is kept secret or where data is sent, so changing them across
+repositories needs Full in the Workbench.
+
 ## Watches, and why Ctrl+3, Ctrl+4 and Ctrl+8 go places here
 
 Watches (`Ctrl+7`) is shown but not built yet, so its key already lands on a

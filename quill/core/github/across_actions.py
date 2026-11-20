@@ -10,7 +10,8 @@ help reference read them like every other row. Five row types:
   off, could not be read or stopped at its page -- the row that keeps it from
   vanishing.
 - ``repository_set``: a named set under Repository Sets.
-- ``by_name``: a label, milestone, topic or rule set by name across the set.
+- ``by_name``: a label, milestone, topic, rule set, tag, branch, environment,
+  secret, variable, webhook, deploy key or autolink by name across the set.
 - ``fleet``: one repository's line in the Fleet.
 
 :data:`KEYLESS` is family rule 8 for these commands: every one has a key in
@@ -170,7 +171,8 @@ ACROSS_ROWS: dict[str, tuple[ActionRow, ...]] = {
             "Rename Everywhere...",
             _W,
             "push",
-            "Rename the label in every repository; a clash is shown, not merged.",
+            "Rename the label or branch in every repository; a clash is shown, not merged, "
+            "and a branch's preview says what follows from GitHub's rename.",
         ),
         _a(
             "across_merge_label",
@@ -198,15 +200,37 @@ ACROSS_ROWS: dict[str, tuple[ActionRow, ...]] = {
             "Promote to Organization...",
             _D,
             "admin",
-            "One organization ruleset for the set's repositories in that organization, then "
-            "their own copies deleted, after the preview.",
+            "One organization ruleset, secret, variable or webhook for the set's repositories "
+            "in that organization, then their own copies deleted, after the preview.",
+        ),
+        _a(
+            "across_release_train",
+            "Release Train...",
+            _W,
+            "push",
+            "Make this tag, or the tag and a release, in the repositories you choose; one "
+            "that has the tag is skipped and its tag never moved.",
+        ),
+        _a(
+            "across_set_secret",
+            "Set Secret Everywhere...",
+            _W,
+            "admin",
+            "Type one new value once; it is sealed for each repository you choose and set there.",
+        ),
+        _a(
+            "across_hooks_on_off",
+            "Turn On or Off Everywhere...",
+            _W,
+            "admin",
+            "Turn the webhook on or off in every repository that has it, after the preview.",
         ),
         _a(
             "across_delete_name",
             "Delete Everywhere...",
             _D,
             "push",
-            "Delete the label, or remove the topic, in every repository, after the preview.",
+            "Delete it, or remove the topic, in every repository that has it, after the preview.",
         ),
         _PROPERTIES,
     ),
@@ -252,6 +276,9 @@ KEYLESS: dict[str, str] = {
     f"{_P}across_close_milestone": _RARE,
     f"{_P}across_move_open": _RARE,
     f"{_P}across_promote_org": _RARE,
+    f"{_P}across_release_train": _RARE,
+    f"{_P}across_set_secret": _RARE,
+    f"{_P}across_hooks_on_off": _RARE,
     f"{_P}across_delete_name": _RARE + "; never Delete, which must not reach many repositories",
     f"{_P}across_open_repository": "Enter, the row's default, does it.",
 }
