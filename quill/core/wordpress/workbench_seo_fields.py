@@ -17,7 +17,9 @@ and only for a field the site registers for the REST API. The meta names in
 ``schema_page_type`` and ``schema_article_type``, prefixed ``_yoast_wpseo_``,
 and ``WPSEO_Primary_Term``'s ``_yoast_wpseo_primary_category``); one is used
 **only when the site's own schema for the post lists it**, so nothing is ever
-sent under a name the site has not shown. Most sites do not register them.
+sent under a name the site has not shown. Most sites do not register them:
+Yoast SEO 28.9 on the test site registers only its title, description and
+focus keyphrase for REST (2026-11-19), so all four are read only there.
 
 Where a field is not registered it is shown read only, from what the site
 does say: the canonical address and the schema types from ``yoast_head_json``
@@ -44,6 +46,7 @@ __all__ = [
     "SCHEMA_ARTICLE",
     "SCHEMA_PAGE",
     "YOAST_FIELDS",
+    "canonical_shown",
     "schema_types",
     "seo_page",
     "with_seo_page",
@@ -125,6 +128,30 @@ def schema_types(head: Mapping[str, Any]) -> tuple[str, str]:
     return page, article
 
 
+def canonical_shown(head: Mapping[str, Any]) -> str:
+    """The canonical address as ``yoast_head_json`` gives it, or why it gives none.
+
+    Yoast leaves ``canonical`` out of the head of a post search engines are told
+    not to index (the test site, which discourages search engines, answers with
+    no ``canonical`` key at all, 2026-11-19), while ``og_url`` still carries the
+    address Yoast uses; that is shown, said as such, rather than "none given".
+    """
+    canonical = str(head.get("canonical", "") or "")
+    if canonical:
+        return canonical
+    robots = head.get("robots")
+    noindex = isinstance(robots, Mapping) and str(robots.get("index", "")) == "noindex"
+    address = str(head.get("og_url", "") or "")
+    if noindex and address:
+        return (
+            f"{address}, its address; Yoast gives search engines no canonical address while "
+            "the post is not indexed"
+        )
+    if noindex:
+        return "none: Yoast gives search engines no canonical address while the post is not indexed"
+    return "none given"
+
+
 def _choices(rows: Iterable[tuple[str, str]], enum: Any) -> tuple[tuple[str, ...], tuple[str, ...]]:
     """("", values...) and their words; a registered ``enum`` limits them to what it allows."""
     allowed = {str(v) for v in enum} if isinstance(enum, list) and enum else None
@@ -191,7 +218,7 @@ def seo_page(
             )
         )
     else:
-        read_only(CANONICAL, str(head.get("canonical", "") or "") or "none given")
+        read_only(CANONICAL, canonical_shown(head))
     if is_post:
         ids = [int(i) for i in fresh.get("categories") or [] if str(i).isdigit()]
         by_id = {v: k for k, v in categories.items()}

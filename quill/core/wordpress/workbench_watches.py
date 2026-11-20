@@ -450,20 +450,48 @@ def _published(api: WordPressApi, ids: Iterable[int]) -> list[str]:
     return titles
 
 
+_MOST_FORMS = 50
+"""The most forms whose newest entry one look asks about (one request each)."""
+
+
+def _first_id(found: Any) -> int:
+    rows: Any = found.get("entries") if isinstance(found, dict) else found
+    for raw in rows if isinstance(rows, list) else []:
+        text = str(raw.get("id", "") if isinstance(raw, dict) else "")
+        return int(text) if text.isdigit() else 0
+    return 0
+
+
 def _newest_entry(api: WordPressApi, namespaces: Sequence[str]) -> int:
+    """A number that grows whenever any forms plugin on the site gets an entry.
+
+    QAF's and BAF's ``entries`` route needs a ``form_id`` (live, QAF 1.0.0: "Missing
+    parameter(s): form_id" for a list of every form's entries) and takes ``order``
+    as ``DESC``, so each form's newest entry is read; Gravity Forms sorts by its own
+    ``sorting[...]`` parameters. Each plugin numbers its entries separately, so the
+    newest of each are added together: a new entry in any of them raises the sum,
+    which is all the Watch compares.
+    """
     clean = {n.strip("/") for n in namespaces}
-    for namespace, route in (
-        ("qaf/v1", "qaf/v1/entries"),
-        ("baf/v1", "baf/v1/entries"),
-        ("gf/v2", "gf/v2/entries"),
-    ):
+    total = 0
+    for namespace in ("qaf/v1", "baf/v1"):
         if namespace not in clean:
             continue
-        found = api.get(route, per_page=1, orderby="id", order="desc")
-        rows: Any = found.get("entries") if isinstance(found, dict) else found
-        for raw in rows if isinstance(rows, list) else []:
-            return int(raw.get("id", 0) or 0)
-    return 0
+        forms = api.get(f"{namespace}/forms", per_page=100, _fields="id")
+        newest = 0
+        for raw in (forms if isinstance(forms, list) else [])[:_MOST_FORMS]:
+            form_id = str(raw.get("id", "") if isinstance(raw, dict) else "")
+            if not form_id.isdigit():
+                continue
+            found = api.get(
+                f"{namespace}/entries", form_id=int(form_id), per_page=1, orderby="id", order="DESC"
+            )
+            newest = max(newest, _first_id(found))
+        total += newest
+    if "gf/v2" in clean:
+        params = {"sorting[key]": "id", "sorting[direction]": "DESC", "paging[page_size]": 1}
+        total += _first_id(api.get("gf/v2/entries", **params))
+    return total
 
 
 def plugin_updates(api: WordPressApi) -> list[str]:

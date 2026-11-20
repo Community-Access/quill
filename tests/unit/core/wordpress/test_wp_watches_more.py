@@ -268,3 +268,30 @@ def test_the_editor_s_round_hands_the_statement_watch_its_local_check_history(tm
 def test_every_new_watch_is_offered_in_workbench_options() -> None:
     for kind in ("order", "low_stock", "certificate", "abandoned", "statement", "weekly"):
         assert kind in watches.KINDS
+
+
+def test_form_responses_ask_qaf_per_form_and_gravity_forms_by_its_own_sorting() -> None:
+    # Live (QAF 1.0.0): qaf/v1/entries needs form_id ("Missing parameter(s): form_id")
+    # and takes order as DESC; gf/v2/entries sorts by sorting[...] (3.2.3.1).
+    asked: list[tuple[str, dict[str, Any]]] = []
+    newest = {1: 30, 2: 41}
+    gravity = {"entries": [{"id": "3"}]}
+
+    class _Forms:
+        def get(self, route: str, **params: Any) -> Any:
+            asked.append((route, params))
+            if route == "qaf/v1/forms":
+                return [{"id": 1}, {"id": 2}]
+            if route == "qaf/v1/entries":
+                assert params["order"] == "DESC" and params["per_page"] == 1
+                return [{"id": newest[params["form_id"]]}]
+            if route == "gf/v2/entries":
+                assert params["sorting[direction]"] == "DESC"
+                return gravity
+            raise AssertionError(route)
+
+    site = _Forms()
+    assert watches._newest_entry(site, ["qaf/v1", "gf/v2", "wp/v2"]) == 41 + 3
+    assert [p.get("form_id") for r, p in asked if r == "qaf/v1/entries"] == [1, 2]
+    gravity["entries"] = [{"id": "4"}]  # a new Gravity Forms entry, below QAF's numbers
+    assert watches._newest_entry(site, ["qaf/v1", "gf/v2"]) == 41 + 4
