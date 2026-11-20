@@ -1940,6 +1940,14 @@ only.</td>
 here.</td>
 </tr>
 <tr>
+<td>Rulesets (<code>repository:repo_rulesets</code>)</td>
+<td>repository, settings</td>
+<td>Rulesets: every ruleset on this repository, its own and the
+organization’s. Alt+Enter opens one’s sheet: its target, every rule and
+setting, who may bypass it, and a Summary in plain words. Delete removes
+one after its name is typed.</td>
+</tr>
+<tr>
 <td>person (<code>person:person</code>)</td>
 <td>person</td>
 <td>A person: their repositories, activity, followers and who they
@@ -2129,8 +2137,10 @@ for.</td>
 <tr>
 <td>Members (<code>organization:org_members</code>)</td>
 <td>organization, organization</td>
-<td>Members: the organization’s people. Ctrl+N invites someone; Delete
-removes them.</td>
+<td>Members: the organization’s people, each an owner or a member, with
+two-factor sign-in on or off where you may see it. Ctrl+N invites
+someone; Delete removes them, after their name is typed, and never
+removes the last owner or your own ownership.</td>
 </tr>
 <tr>
 <td>Invitations (<code>organization:org_invitations</code>)</td>
@@ -2149,7 +2159,8 @@ repositories.</td>
 (<code>organization:outside_collaborators</code>)</td>
 <td>organization, organization</td>
 <td>Outside Collaborators: people with access to repositories but not
-members.</td>
+members. Delete takes away every repository they have here, after their
+name is typed.</td>
 </tr>
 <tr>
 <td>Security Managers (<code>organization:security_managers</code>)</td>
@@ -2259,8 +2270,39 @@ first.</td>
 <td>Custom Property Values
 (<code>organization:org_property_values</code>)</td>
 <td>organization, organization</td>
-<td>Custom Property Values: every repository’s custom properties in one
-list. Change a repository’s on its Properties.</td>
+<td>Custom Property Values: every repository and every custom property,
+a row a repository, with unset properties said as not set. Change a
+repository’s on its Properties, or several at once with Set
+Repositories’ Custom Property… on the organization.</td>
+</tr>
+<tr>
+<td>Rulesets (<code>organization:org_rulesets</code>)</td>
+<td>organization, organization</td>
+<td>Rulesets: the organization’s rulesets, which apply across its
+repositories. Alt+Enter opens one’s sheet, with the repositories it
+covers by name or property; Delete removes it from every repository
+after its name is typed.</td>
+</tr>
+<tr>
+<td>Rule Insights (<code>organization:org_rule_insights</code>)</td>
+<td>organization, organization</td>
+<td>Rule Insights: recent pushes the organization’s rulesets passed,
+blocked or let through, in every repository.</td>
+</tr>
+<tr>
+<td>Access Review: People (<code>organization:access_people</code>)</td>
+<td>organization, organization</td>
+<td>Access Review: People: every person and repository pair, a row each,
+with the effective role and where it comes from: being an owner, the
+base permission, a team or direct access, and the others after ‘also’.
+Filter it by a name, a role or a team; File, Export List saves it.</td>
+</tr>
+<tr>
+<td>Access Review: Teams (<code>organization:access_teams</code>)</td>
+<td>organization, organization</td>
+<td>Access Review: Teams: every team and repository pair, a row each,
+with the team’s role there and how many people it reaches. File, Export
+List saves it.</td>
 </tr>
 <tr>
 <td>Saved search (<code>pinned_search:pinned_search</code>)</td>
@@ -3360,8 +3402,9 @@ Repositories…; More: Dependabot Repository Access, Give Dependabot a
 Repository…, Take a Repository from Dependabot…, Dependabot’s Default
 Access…, Make Someone an Outside Collaborator…, Define a Custom
 Property…, Set Repositories’ Custom Property…, New Team…, Accept
-Membership, My Activity Here, Require Sign-off on Web Commits…, Follow
-Organization, Unfollow Organization, Security Overview; Properties…</li>
+Membership, Members Without Two-Factor, My Activity Here, Require
+Sign-off on Web Commits…, Follow Organization, Unfollow Organization,
+Security Overview; Properties…</li>
 <li><strong>favorite</strong>: Open, Copy Link, Open on GitHub, Add to
 or Remove from Favorites; Properties…</li>
 <li><strong>admin_action</strong>: Open; Properties…</li>
@@ -3728,7 +3771,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 851 yes, 0 planned, 290 not needed and 866 left to
+<p>In all: 853 yes, 0 planned, 288 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -6094,7 +6137,7 @@ QUILL is a writing and coding tool, not an accounts console.</td>
 </tbody>
 </table>
 <h4 id="branches">Branches</h4>
-<p>38 operations: 8 yes, 30 not needed.</p>
+<p>38 operations: 10 yes, 28 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -6127,13 +6170,13 @@ QUILL is a writing and coding tool, not an accounts console.</td>
 <td>Get branch protection</td>
 <td><code>GET /repos/{owner}/{repo}/branches/{branch}/protection</code></td>
 <td>Yes</td>
-<td>editor GitHub menu &gt; Configure Branch Protection…</td>
+<td>Properties (Alt+Enter) on Branch Protection</td>
 </tr>
 <tr>
 <td>Update branch protection</td>
 <td><code>PUT /repos/{owner}/{repo}/branches/{branch}/protection</code></td>
 <td>Yes</td>
-<td>editor GitHub menu &gt; Configure Branch Protection…</td>
+<td>Properties (Alt+Enter) on Branch Protection: Approvals needed</td>
 </tr>
 <tr>
 <td>Delete admin branch protection</td>
@@ -6180,9 +6223,9 @@ the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 <tr>
 <td>Delete commit signature protection</td>
 <td><code>DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures</code></td>
-<td>Not needed</td>
-<td>Changes one part of branch protection; the Workbench reads and sets
-the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Branch Protection: Require signed
+commits</td>
 </tr>
 <tr>
 <td>Get commit signature protection</td>
@@ -6194,9 +6237,9 @@ the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 <tr>
 <td>Create commit signature protection</td>
 <td><code>POST /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures</code></td>
-<td>Not needed</td>
-<td>Changes one part of branch protection; the Workbench reads and sets
-the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Branch Protection: Require signed
+commits</td>
 </tr>
 <tr>
 <td>Remove status check protection</td>
@@ -10421,7 +10464,7 @@ publicly</td>
 <td>Get all organization repository rulesets</td>
 <td><code>GET /orgs/{org}/rulesets</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>Navigator: Organization &gt; organization &gt; Rulesets</td>
 </tr>
 <tr>
 <td>Create an organization repository ruleset</td>
@@ -10433,7 +10476,7 @@ publicly</td>
 <td>List organization rule suites</td>
 <td><code>GET /orgs/{org}/rulesets/rule-suites</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>Navigator: Organization &gt; organization &gt; Rule Insights</td>
 </tr>
 <tr>
 <td>Get an organization rule suite</td>
@@ -10446,19 +10489,20 @@ reads the list.</td>
 <td>Delete an organization repository ruleset</td>
 <td><code>DELETE /orgs/{org}/rulesets/{ruleset_id}</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get an organization repository ruleset</td>
 <td><code>GET /orgs/{org}/rulesets/{ruleset_id}</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>Properties (Alt+Enter) on Organization Ruleset</td>
 </tr>
 <tr>
 <td>Update an organization repository ruleset</td>
 <td><code>PUT /orgs/{org}/rulesets/{ruleset_id}</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>Properties (Alt+Enter) on Organization Ruleset: Repository names to
+include</td>
 </tr>
 <tr>
 <td>Get organization ruleset history</td>
@@ -12005,8 +12049,8 @@ reads the list.</td>
 <td>Get all repository rulesets</td>
 <td><code>GET /repos/{owner}/{repo}/rulesets</code></td>
 <td>Yes</td>
-<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Branch
-Protection</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt;
+Rulesets</td>
 </tr>
 <tr>
 <td>Create a repository ruleset</td>
@@ -12044,7 +12088,7 @@ reads the list.</td>
 <td>Update a repository ruleset</td>
 <td><code>PUT /repos/{owner}/{repo}/rulesets/{ruleset_id}</code></td>
 <td>Yes</td>
-<td>Properties (Alt+Enter) on Ruleset: Approvals needed</td>
+<td>Properties (Alt+Enter) on Ruleset: Rules</td>
 </tr>
 <tr>
 <td>Get repository ruleset history</td>
@@ -12478,7 +12522,7 @@ reads the list.</td>
 <td>Update a team</td>
 <td><code>PATCH /orgs/{org}/teams/{team_slug}</code></td>
 <td>Yes</td>
-<td>Properties (Alt+Enter) on Team: Description</td>
+<td>Properties (Alt+Enter) on Team: Parent team</td>
 </tr>
 <tr>
 <td>List pending team invitations</td>

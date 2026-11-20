@@ -81,6 +81,9 @@ class Quick:
     needs: tuple[str, ...] = ()  # context keys that must be known: repo, org, key, number, login
     node: str = ""  # with kinds {"view"}: the node key it belongs to
     copies: str = ""  # the answer holds a secret: put it on the clipboard, and say this
+    # Asked just before the call, off the UI thread: a sentence refuses it (no self-lockout).
+    guard: Callable[[Any, dict[str, str]], str] | None = None
+    typed: str = ""  # a context key whose value must be typed to go ahead (tier 3)
 
     @property
     def writes(self) -> bool:
