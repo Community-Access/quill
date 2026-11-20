@@ -792,6 +792,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Sort By > Recently Updated | (submenu letter) | Order the list this way. |
 | Sort By > Least Recently Updated | (submenu letter) | Order the list this way. |
 | Sort By > Most Comments | (submenu letter) | Order the list this way. |
+| Sort By > By Column... | (submenu letter) | Order this list by one of its columns, first to last or last to first; remembered for this list. For lists other than Issues, which GitHub orders. |
 | Quick Filters > Assigned to Me | (submenu letter) | Show only items assigned to me. Checked when it is on; it combines with the others and with what you type in the filter box. |
 | Quick Filters > Assigned To... | (submenu letter) | Show only items assigned to someone you name. Checked when it is on; it combines with the others and with what you type in the filter box. |
 | Quick Filters > Opened by Me | (submenu letter) | Show only items opened by me. Checked when it is on; it combines with the others and with what you type in the filter box. |
@@ -818,6 +819,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Group By > State | (submenu letter) | Put the list's groups in the tree, one node per state. |
 | Group By > Repository | (submenu letter) | Put the list's groups in the tree, one node per repository. |
 | Group By > Review State | (submenu letter) | Put the list's groups in the tree, one node per review state. |
+| Group By > By Column... | (submenu letter) | Group this list by one of its columns, the groups as tree nodes; remembered for this list. For lists other than Issues, which group by the rows above. |
 | Columns... | Ctrl+Shift+U | Choose which columns this list shows, and their order. |
 | Back | Alt+Left | The view you were on before. Backspace too. |
 | Forward | Alt+Right | The view you went back from. |
@@ -920,6 +922,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | --- | --- | --- |
 | Workbench Options... | Ctrl+Shift+O | Where the Workbench opens, how notifications check, lists and privacy. |
 | Dry Run | Ctrl+Alt+D | Turn Dry Run on or off. While it is on, every write asks and previews as usual, then stops before sending and says what it would have sent. |
+| Plain-Language Batch... | Ctrl+Shift+S | Say a change to many issues or pull requests in words, such as close every issue labelled duplicate older than 90 days; check the exact items it found, then send them. No AI: the same words always mean the same thing. |
 | GitHub API Console... | Ctrl+Shift+J | Send any GitHub REST request or GraphQL query: completion from GitHub's API description, what it does and needs said first, the answer as a tree. |
 
 #### Window

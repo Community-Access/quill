@@ -2336,7 +2336,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## GitHub Workbench
 
-Control coverage: 384 audited sites (384 helped).
+Control coverage: 386 audited sites (386 helped).
 
 ### Every window, and what it is for
 
@@ -2950,6 +2950,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **View > Most Comments.** Order the list this way.
 
+**View > By Column....** Order this list by one of its columns, first to last or last to first; remembered for this list. For lists other than Issues, which GitHub orders.
+
 **View > Assigned to Me.** Show only items assigned to me. Checked when it is on; it combines with the others and with what you type in the filter box.
 
 **View > Assigned To....** Show only items assigned to someone you name. Checked when it is on; it combines with the others and with what you type in the filter box.
@@ -3001,6 +3003,8 @@ Control coverage: 384 audited sites (384 helped).
 **View > Repository.** Put the list's groups in the tree, one node per repository.
 
 **View > Review State.** Put the list's groups in the tree, one node per review state.
+
+**View > By Column....** Group this list by one of its columns, the groups as tree nodes; remembered for this list. For lists other than Issues, which group by the rows above.
 
 **View > Columns....** Choose which columns this list shows, and their order.
 
@@ -3149,6 +3153,8 @@ Control coverage: 384 audited sites (384 helped).
 **Tools > Workbench Options....** Where the Workbench opens, how notifications check, lists and privacy.
 
 **Tools > Dry Run.** Turn Dry Run on or off. While it is on, every write asks and previews as usual, then stops before sending and says what it would have sent.
+
+**Tools > Plain-Language Batch....** Say a change to many issues or pull requests in words, such as close every issue labelled duplicate older than 90 days; check the exact items it found, then send them. No AI: the same words always mean the same thing.
 
 **Tools > GitHub API Console....** Send any GitHub REST request or GraphQL query: completion from GitHub's API description, what it does and needs said first, the answer as a tree.
 
@@ -4411,7 +4417,7 @@ Control coverage: 384 audited sites (384 helped).
 - `self.notebook`: The sheet's pages. Ctrl+Tab moves to the next page.
 - `self.status`: When the sheet was loaded from GitHub, and what the last save did.
 - `cancel`: Close the sheet without saving. Escape does the same.
-- `ok`: Save what you changed and close the sheet. Ctrl+Enter too.
+- `ok`: Save what you changed and close the sheet. Enter and Ctrl+Enter too.
 - `apply`: Save what you changed and keep the sheet open. Ctrl+S too.
 #### WorkbenchSheetEditor (`quill/ui/workbench_sheet_editor.py`)
 
