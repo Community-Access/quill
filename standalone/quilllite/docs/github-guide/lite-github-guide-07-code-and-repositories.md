@@ -500,14 +500,53 @@ git repository of their own, with no API for the pages, so QUILL Lite works on t
 the way git does.
 
 **Repository > Wiki** in the GitHub Workbench says whether the repository's
-wiki is on. When it is, Enter opens it on GitHub to read, and **Clone Wiki...**
-(`Ctrl+Alt+W`, on the Repository menu) opens the same Clone Repository window
-as any clone, with the wiki's address already filled in, such as
-`community-access/quill.wiki`. Its pages arrive in that folder as Markdown
-files, one for each page, named after the page's title. Open one in the
-editor, change it, then commit and push with git, and GitHub shows the change
-at once. A wiki that is turned off says so, and that its administrators turn
-it on in the repository's Properties, on the Features page.
+wiki is on. When it is, Enter opens it on GitHub to read, and the Wiki row's
+context menu edits it here:
+
+- **Edit Wiki Pages...** copies the wiki to QUILL Lite's own folder the first time,
+  and brings that copy up to date after that, then lists its pages, Home
+  first. Enter on a page opens it in the editor. Change it and save it as you
+  would any file; nothing reaches GitHub yet.
+- **New Wiki Page...** asks for a title and makes the page's file, named the
+  way GitHub names one (spaces become hyphens), then opens it.
+- **Publish Wiki Changes...** says which pages changed and asks before it
+  sends them, naming the wiki and your account. It then asks for a short
+  description of the change, commits the pages with it and pushes them, and
+  everyone who can read the wiki sees them at once. When someone else changed
+  the wiki meanwhile, your change goes on top of theirs. When you both changed
+  the same lines, nothing is forced: it says so, and your edits stay
+  committed in the copy for you to compare.
+
+GitHub makes a wiki's git repository only when its first page is saved on
+the web, so a brand-new wiki says to save its Home page there once first.
+These commands use git, which Git for Windows provides. **Clone Wiki...**
+(`Ctrl+Alt+W`, on the Repository menu) is still there for the pages in a
+folder of your own choosing, to work on with git yourself. A wiki that is
+turned off says so, and that its administrators turn it on in the
+repository's Properties, on the Features page.
+
+## GitHub Models prompt files
+
+A prompt file is a `.prompt.yml` file that GitHub Models reads: the model and
+its settings, the messages with their `{{variables}}`, rows of test data,
+and the evaluators that judge each answer. **Prompt Files...** on a
+repository's row, or on the repository's own node, lists every prompt file on
+the default branch, and the details box reads the selected one as its parts:
+its name, its model, each message by role, how many test rows it has, its
+evaluators, and any problem GitHub Models would trip on, such as a variable
+no test row fills. **Open in Editor** opens the file to edit, and saving it
+there commits it, as with any file you open from GitHub.
+
+QUILL Lite does not run a prompt or an evaluation, because it has no GitHub Models
+client. Run one on the repository's Models page on GitHub, or with
+`gh models run` and `gh models eval`.
+
+## Opening github.dev
+
+**Open in github.dev** on a file of a repository, or on a pull request, opens
+GitHub's free web editor in your browser at exactly that file or pull
+request. Nothing is created and nothing costs money; a codespace, which can
+cost money, is chapter 9.
 
 ## Webhooks, deploy keys and autolinks
 

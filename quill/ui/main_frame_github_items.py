@@ -160,7 +160,7 @@ class GitHubItemsMixin:
         initial_repo = repository or self._github_items_initial_repo()
         from quill.ui.github_workbench_commands import open_in_workbench_window
 
-        open_in_workbench_window(
+        window = open_in_workbench_window(
             self.frame,
             provider,
             repository=initial_repo,
@@ -177,6 +177,9 @@ class GitHubItemsMixin:
             resolve_conflicts=self.resolve_github_pull_conflicts,
             open_document=lambda path: self.open_file(path),
         )
+        # GX15: the grounded drafts (github_workbench_drafts.py) use the same
+        # connection and consent as Summarize, asked for only when one is run.
+        window.provider.ai_drafter = self._github_ai_drafter
 
     def open_github_items_viewer_for(
         self,
@@ -233,6 +236,20 @@ class GitHubItemsMixin:
             return summarize_thread(connection, api_key, thread_text)
 
         return summarize
+
+    def _github_ai_drafter(self):
+        """Like :meth:`_github_ai_summarizer`, for a bounded, source-cited draft prompt."""
+        result = self._ai_require_connection()
+        if result is None:
+            return None
+        connection, api_key = result
+
+        def draft(prompt: str) -> str:
+            from quill.core.github.thread_summary import generate_draft
+
+            return generate_draft(connection, api_key, prompt)
+
+        return draft
 
     def _github_items_initial_repo(self) -> str:
         """The current document's ``owner/repo``, from either origin source.

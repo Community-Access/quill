@@ -819,6 +819,15 @@ and is never said or shown.
   Agent Tasks and My Automations. These need a Copilot plan with the cloud
   agent, and GitHub calls them a preview: QUILL sends only what GitHub
   documents and reads you GitHub's own answer.
+- **Copilot in an organization:** Copilot Plan, Copilot Seats, A Member's
+  Copilot Seat..., Give Copilot Seats..., Take Copilot Seats Away..., Give
+  Teams Copilot..., Take Copilot from Teams..., Copilot Usage Report, Copilot
+  Agent Access and Copilot Content Exclusions. **On a repository:** Copilot
+  Agent Configuration and Copilot Review Settings. These are Copilot
+  Business's, which an organization buys on any GitHub plan. Giving or taking
+  a seat changes what the organization pays, so you need to own the
+  organization, and each asks first, naming the people and the organization.
+  Copilot's policies are read here and changed on GitHub's site.
 - **Your emails:** Email Visibility.... **Your profile:** Interaction
   Limits, Limit Interactions... and Lift Interaction Limits.
 

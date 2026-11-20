@@ -538,6 +538,28 @@ not in the repository, so QUILL says so and leaves it to a checkout of the
 fork, or to its author. If the base merges with no conflicts, QUILL says that
 instead, and the merge is left staged, not committed.
 
+## Drafts, github.dev and Related
+
+A few more commands on a pull request's row:
+
+- **Draft Description with AI...** and **Draft Reviewer Brief with AI...**
+  send the pull request's changed files and their patches, at its head
+  commit, to the AI connection you chose in QUILL, and open the draft in the
+  editor. The draft is headed as one, lists its sources (each file at that
+  commit, and the commit itself), and says when part of the change was left
+  out because it was too long. It never claims tests ran unless the evidence
+  says so. QUILL posts nothing: paste what you keep into the description or
+  a comment.
+- **Draft Release Notes with AI...** on selected issues and pull requests
+  drafts notes from those rows only. **Draft Release Notes...** on a release
+  still drafts them without AI.
+- Without an AI connection these rows are greyed, and `Shift+F1` says why;
+  everything else works as before.
+- **Open in github.dev** opens the pull request in GitHub's free web editor,
+  in your browser; nothing is created and nothing costs money.
+- **Related...** lists the issues it closes, what mentioned it, and what its
+  text links to (chapter 8).
+
 ## Writing a new pull request
 
 In a repository's **Pull Requests**, press `Ctrl+N`. To start from a branch,

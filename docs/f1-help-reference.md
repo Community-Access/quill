@@ -3238,6 +3238,14 @@ Control coverage: 384 audited sites (384 helped).
 
 **Unlink a Pull Request.** Take a pull request off the ones that close this issue.
 
+**Related.** The issues, pull requests and discussions linked to it, and how each is linked.
+
+**Start Pull Request for This Issue.** A linked branch and a draft pull request that closes the issue; asks first.
+
+**Draft Task Breakdown with AI.** Small ordered tasks drafted by AI from the issue; opens as a draft.
+
+**Draft Release Notes with AI.** Release notes drafted by AI from the selected issues and pull requests only.
+
 **Properties.** Everything about this item on one sheet. Alt+Enter opens it from anywhere.
 
 **Review.** Read the review threads and checks, and review it.
@@ -3277,6 +3285,12 @@ Control coverage: 384 audited sites (384 helped).
 **Turn On Agent Merge.** Let Copilot merge this pull request once its checks and reviews allow.
 
 **Turn Off Agent Merge.** Stop Copilot merging this pull request.
+
+**Open in github.dev.** GitHub's free web editor, at exactly this; nothing is created.
+
+**Draft Description with AI.** A description drafted by AI from the changed files; opens as a draft.
+
+**Draft Reviewer Brief with AI.** What a reviewer should check, drafted by AI from the changed files.
 
 **Jobs and Logs.** The run's jobs, steps and logs.
 
@@ -3454,6 +3468,12 @@ Control coverage: 384 audited sites (384 helped).
 
 **Agent Variables from the Organization.** The organization's agent variables this repository may use.
 
+**Copilot Agent Configuration.** How Copilot's cloud agent is set up in this repository.
+
+**Copilot Review Settings.** Whether Copilot reviews pull requests here on its own, and how.
+
+**Prompt Files.** A repository's GitHub Models prompt files, each read as model, messages and tests.
+
 **Open.** Select the person's node in the tree.
 
 **Follow or Unfollow.** Follow them, or stop.
@@ -3495,6 +3515,8 @@ Control coverage: 384 audited sites (384 helped).
 **Edit a Comment.** Change a comment you may edit.
 
 **Delete a Comment.** Delete a comment you may delete.
+
+**Create Issue from Discussion.** An issue that links back to the discussion; asks first.
 
 **Dismiss or Reopen Alert.** Dismiss with a reason.
 
@@ -3617,6 +3639,26 @@ Control coverage: 384 audited sites (384 helped).
 **Follow Organization.** See this organization's public activity in your feed.
 
 **Unfollow Organization.** Stop seeing this organization in your feed.
+
+**Copilot Plan.** The organization's Copilot seats, who may have one, and its settings.
+
+**Copilot Seats.** Who has a Copilot seat here, through which team, and when each last used it.
+
+**A Member's Copilot Seat.** Whether one member has a Copilot seat here, and when they last used it.
+
+**Give Copilot Seats.** Give people Copilot seats in the organization; each is billed to it.
+
+**Take Copilot Seats Away.** Take people's Copilot seats away; each ends at the close of the billing cycle.
+
+**Give Teams Copilot.** Give every member of some teams a Copilot seat; each is billed to the organization.
+
+**Take Copilot from Teams.** End the Copilot seats that came through some teams.
+
+**Copilot Usage Report.** GitHub's latest 28-day Copilot usage report for the organization, as download links.
+
+**Copilot Agent Access.** Which of the organization's repositories Copilot's cloud agent may work in.
+
+**Copilot Content Exclusions.** Files Copilot is kept away from in the organization's repositories.
 
 **Open.** Open the settings dialog for this; it asks before saving.
 
@@ -3827,6 +3869,12 @@ Control coverage: 384 audited sites (384 helped).
 **Remove a Runner from This Group.** Take a runner out of this group; it goes back to the Default group.
 
 **Teams It Adds To.** The teams this invitation puts the person in when they accept.
+
+**Edit Wiki Pages.** Copy the wiki here or bring the copy up to date, list its pages, open one.
+
+**New Wiki Page.** Make a page here, then open it.
+
+**Publish Wiki Changes.** Commit the pages changed here and push them to GitHub; asks first.
 
 **Clone Wiki.** Copy its pages to a folder, to edit them.
 

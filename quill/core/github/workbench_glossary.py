@@ -76,7 +76,19 @@ GLOSSARY: dict[str, str] = {
     ),
     "Wiki": (
         "A repository's own pages of documentation, kept by GitHub as a git repository "
-        "of their own, owner/name.wiki."
+        "of their own, owner/name.wiki. Edit Wiki Pages... on the Wiki row edits them; "
+        "Publish Wiki Changes... sends them."
+    ),
+    "Prompt file": (
+        "A .prompt.yml file GitHub Models reads: a model, messages and test data. Prompt "
+        "Files... on a repository reads each as its parts."
+    ),
+    "Copilot seat": (
+        "One person's Copilot Business, paid for by an organization. Copilot Seats on an "
+        "organization lists them."
+    ),
+    "github.dev": (
+        "GitHub's free editor in the browser. Open in github.dev on a file or a pull request."
     ),
     "Sponsorship": (
         "Money you pay someone through GitHub Sponsors for their open-source work, each "

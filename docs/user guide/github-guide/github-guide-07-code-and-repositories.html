@@ -786,15 +786,52 @@ them as a git repository of their own, with no API for the pages, so
 QUILL works on them the way git does.</p>
 <p><strong>Repository &gt; Wiki</strong> in the GitHub Workbench says
 whether the repository’s wiki is on. When it is, Enter opens it on
-GitHub to read, and <strong>Clone Wiki…</strong>
-(<code>Ctrl+Alt+W</code>, on the Repository menu) opens the same Clone
-Repository window as any clone, with the wiki’s address already filled
-in, such as <code>community-access/quill.wiki</code>. Its pages arrive
-in that folder as Markdown files, one for each page, named after the
-page’s title. Open one in the editor, change it, then commit and push
-with git, and GitHub shows the change at once. A wiki that is turned off
-says so, and that its administrators turn it on in the repository’s
-Properties, on the Features page.</p>
+GitHub to read, and the Wiki row’s context menu edits it here:</p>
+<ul>
+<li><strong>Edit Wiki Pages…</strong> copies the wiki to QUILL’s own
+folder the first time, and brings that copy up to date after that, then
+lists its pages, Home first. Enter on a page opens it in the editor.
+Change it and save it as you would any file; nothing reaches GitHub
+yet.</li>
+<li><strong>New Wiki Page…</strong> asks for a title and makes the
+page’s file, named the way GitHub names one (spaces become hyphens),
+then opens it.</li>
+<li><strong>Publish Wiki Changes…</strong> says which pages changed and
+asks before it sends them, naming the wiki and your account. It then
+asks for a short description of the change, commits the pages with it
+and pushes them, and everyone who can read the wiki sees them at once.
+When someone else changed the wiki meanwhile, your change goes on top of
+theirs. When you both changed the same lines, nothing is forced: it says
+so, and your edits stay committed in the copy for you to compare.</li>
+</ul>
+<p>GitHub makes a wiki’s git repository only when its first page is
+saved on the web, so a brand-new wiki says to save its Home page there
+once first. These commands use git, which Git for Windows provides.
+<strong>Clone Wiki…</strong> (<code>Ctrl+Alt+W</code>, on the Repository
+menu) is still there for the pages in a folder of your own choosing, to
+work on with git yourself. A wiki that is turned off says so, and that
+its administrators turn it on in the repository’s Properties, on the
+Features page.</p>
+<h2 id="github-models-prompt-files">GitHub Models prompt files</h2>
+<p>A prompt file is a <code>.prompt.yml</code> file that GitHub Models
+reads: the model and its settings, the messages with their
+<code>{{variables}}</code>, rows of test data, and the evaluators that
+judge each answer. <strong>Prompt Files…</strong> on a repository’s row,
+or on the repository’s own node, lists every prompt file on the default
+branch, and the details box reads the selected one as its parts: its
+name, its model, each message by role, how many test rows it has, its
+evaluators, and any problem GitHub Models would trip on, such as a
+variable no test row fills. <strong>Open in Editor</strong> opens the
+file to edit, and saving it there commits it, as with any file you open
+from GitHub.</p>
+<p>QUILL does not run a prompt or an evaluation, because it has no
+GitHub Models client. Run one on the repository’s Models page on GitHub,
+or with <code>gh models run</code> and <code>gh models eval</code>.</p>
+<h2 id="opening-githubdev">Opening github.dev</h2>
+<p><strong>Open in github.dev</strong> on a file of a repository, or on
+a pull request, opens GitHub’s free web editor in your browser at
+exactly that file or pull request. Nothing is created and nothing costs
+money; a codespace, which can cost money, is chapter 9.</p>
 <h2 id="webhooks-deploy-keys-and-autolinks">Webhooks, deploy keys and
 autolinks</h2>
 <p>Three of a repository’s settings are lists, under <strong>Repository

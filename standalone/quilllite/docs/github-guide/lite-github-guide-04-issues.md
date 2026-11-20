@@ -381,6 +381,26 @@ Both read the description again just before saving. If somebody changed it on
 GitHub while you were choosing, nothing is saved and you are told to try
 again, so nobody's edit is lost.
 
+## From an issue to a pull request
+
+**Start Pull Request for This Issue...** on an open issue does the first
+steps of the work at once. It asks for a branch name, the one GitHub would
+suggest to start with (`42-fix-the-parser`), then says what it will do and
+asks first: make the branch from the default branch, linked to the issue as
+its Development (a branch of that name that already exists is used as it
+is); add one empty commit, "Start work on #42", when the branch has no commit
+of its own, because GitHub will not open a pull request with nothing to
+compare; and open a draft pull request whose text begins `Closes #42`, so
+merging it closes the issue. A repository without draft pull requests gets an
+ordinary one, and the sentence afterwards says so. To work on it, fetch the
+branch and switch to it, or use Start in Local Worktree.
+
+**Related...** on an issue lists the pull requests that close it, what
+mentioned it, and what its text links to (chapter 8).
+
+**Draft Task Breakdown with AI...** is QUILL's: it uses QUILL's AI
+connection. In QUILL Lite the row is greyed, and `Shift+F1` says why.
+
 ## Projects and dependencies
 
 GitHub Projects are boards that track issues and pull requests across one or

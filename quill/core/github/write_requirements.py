@@ -169,6 +169,12 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}commit_status": ("repo:write", _V),
     f"{_P}merge_queue": ("repo:write", _V),
     f"{_P}merge_selected": ("repo:write", _V),
+    # The wiki, and discussion to issue to pull request (GX12): github_workbench_collab.py.
+    f"{_P}wiki_pages": ("local", _O),
+    f"{_P}new_wiki_page": ("local", _O),
+    f"{_P}publish_wiki": ("repo:write", _V),
+    f"{_P}issue_from_discussion": ("sign_in", _V),
+    f"{_P}pull_for_issue": ("repo:write", _V),
     f"{_P}sub_issues": ("repo:triage", _O),
     f"{_P}relationships": ("repo:triage", _O),
     f"{_P}issue_fields": ("repo:triage", _O),

@@ -2,7 +2,7 @@
 
 :data:`QUICK` is :mod:`quick_table_actions`, :mod:`quick_table_repo` and
 :mod:`quick_table_org`, :mod:`quick_table_discuss`, :mod:`quick_table_projects` and
-:mod:`quick_table_agents` together. From it come the menu rows
+:mod:`quick_table_agents` and :mod:`quick_table_copilot` together. From it come the menu rows
 (:data:`QUICK_ROWS`, merged into ``item_actions``), what each write needs
 (:data:`QUICK_REQUIREMENTS`, merged into ``write_requirements``), the live
 run's reasons (:data:`QUICK_LIVE`) and the API coverage rows each answers
@@ -15,6 +15,7 @@ from quill.core.github.permissions import WriteTier
 from quill.core.github.quick_actions import Quick
 from quill.core.github.quick_table_actions import ACTIONS_QUICK
 from quill.core.github.quick_table_agents import AGENT_QUICK
+from quill.core.github.quick_table_copilot import COPILOT_QUICK
 from quill.core.github.quick_table_discuss import DISCUSS_QUICK
 from quill.core.github.quick_table_org import ORG_QUICK
 from quill.core.github.quick_table_projects import PROJECT_QUICK
@@ -30,6 +31,7 @@ QUICK: tuple[Quick, ...] = (
     *DISCUSS_QUICK,
     *PROJECT_QUICK,
     *AGENT_QUICK,
+    *COPILOT_QUICK,
 )
 
 _P = "github.workbench."

@@ -801,6 +801,29 @@ fork, not in the repository, so QUILL says so and leaves it to a
 checkout of the fork, or to its author. If the base merges with no
 conflicts, QUILL says that instead, and the merge is left staged, not
 committed.</p>
+<h2 id="drafts-githubdev-and-related">Drafts, github.dev and
+Related</h2>
+<p>A few more commands on a pull request’s row:</p>
+<ul>
+<li><strong>Draft Description with AI…</strong> and <strong>Draft
+Reviewer Brief with AI…</strong> send the pull request’s changed files
+and their patches, at its head commit, to the AI connection you chose in
+QUILL, and open the draft in the editor. The draft is headed as one,
+lists its sources (each file at that commit, and the commit itself), and
+says when part of the change was left out because it was too long. It
+never claims tests ran unless the evidence says so. QUILL posts nothing:
+paste what you keep into the description or a comment.</li>
+<li><strong>Draft Release Notes with AI…</strong> on selected issues and
+pull requests drafts notes from those rows only. <strong>Draft Release
+Notes…</strong> on a release still drafts them without AI.</li>
+<li>Without an AI connection these rows are greyed, and
+<code>Shift+F1</code> says why; everything else works as before.</li>
+<li><strong>Open in github.dev</strong> opens the pull request in
+GitHub’s free web editor, in your browser; nothing is created and
+nothing costs money.</li>
+<li><strong>Related…</strong> lists the issues it closes, what mentioned
+it, and what its text links to (chapter 8).</li>
+</ul>
 <h2 id="writing-a-new-pull-request">Writing a new pull request</h2>
 <p>In a repository’s <strong>Pull Requests</strong>, press
 <code>Ctrl+N</code>. To start from a branch, select it in Branches,

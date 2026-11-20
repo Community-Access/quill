@@ -18,7 +18,7 @@ from quill.core.error_codes import CodedError
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from quill.core.assistant_ai import AssistantConnectionSettings
 
-__all__ = ["ThreadSummaryError", "compose_thread_text", "summarize_thread"]
+__all__ = ["ThreadSummaryError", "compose_thread_text", "generate_draft", "summarize_thread"]
 
 #: Keep the prompt bounded: a monster thread is truncated middle-out so the
 #: opening post and the latest comments (where the current state lives) survive.
@@ -82,3 +82,31 @@ def summarize_thread(
     if not summary:
         raise ThreadSummaryError("The AI returned an empty summary; try again.")
     return summary
+
+
+def generate_draft(
+    connection: AssistantConnectionSettings,
+    api_key: str,
+    prompt: str,
+    *,
+    timeout_seconds: float = 90.0,
+) -> str:
+    """One grounded draft for an already bounded, source-cited *prompt* (GX15).
+
+    The prompt comes from :mod:`quill.core.github.ai_context`, which bounds the
+    evidence, names its sources and tells the model to treat it as untrusted.
+    Raises :class:`ThreadSummaryError` on a provider error or an empty reply.
+    """
+    from quill.core.assistant_ai import generate_assistant_response
+
+    if not prompt.strip():
+        raise ThreadSummaryError("There is no evidence to draft from.")
+    response, error = generate_assistant_response(
+        connection, api_key, prompt, max_tokens=1200, timeout_seconds=timeout_seconds
+    )
+    if error:
+        raise ThreadSummaryError(error)
+    draft = (response or "").strip()
+    if not draft:
+        raise ThreadSummaryError("The AI returned an empty draft; try again.")
+    return draft
