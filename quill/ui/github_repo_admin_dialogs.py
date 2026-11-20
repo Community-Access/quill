@@ -147,6 +147,10 @@ class CreateRepositoryDialog:
         panel = wx.Panel(self.dialog)
         sizer = wx.BoxSizer(wx.VERTICAL)
 
+        # The label is built first: on wxMSW it is what names the box.
+        self._problem_label = wx.StaticText(panel, label="Problem")
+        self._problem_label.Hide()
+        sizer.Add(self._problem_label, flag=wx.LEFT | wx.RIGHT | wx.TOP, border=12)
         self._problem_ctrl = wx.TextCtrl(panel, style=wx.TE_READONLY | wx.TE_MULTILINE)
         self._problem_ctrl.SetHelpText(
             "Why GitHub would refuse what is chosen, and what to change."
@@ -158,32 +162,37 @@ class CreateRepositoryDialog:
         grid = wx.FlexGridSizer(0, 2, 8, 8)
         grid.AddGrowableCol(1, 1)
 
-        def row(label: str, ctrl: Any) -> None:
-            grid.Add(wx.StaticText(panel, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
-            grid.Add(ctrl, 1, wx.EXPAND)
-
+        # Each label is built before its control: on wxMSW that is what names it.
+        grid.Add(
+            wx.StaticText(panel, label="Owner (optional; blank = your account)"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL,
+        )
         self._org_ctrl = wx.TextCtrl(panel)
         self._org_ctrl.SetHelpText(
             "An organization to create it in. Leave it empty to create it on your account."
         )
         self._org_ctrl.SetName("Owner, blank for your own account")
-        row("Owner (optional; blank = your account)", self._org_ctrl)
+        grid.Add(self._org_ctrl, 1, wx.EXPAND)
+        grid.Add(wx.StaticText(panel, label="Repository name"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._name_ctrl = wx.TextCtrl(panel)
         self._name_ctrl.SetHelpText("The new repository's name, such as my-project.")
         self._name_ctrl.SetName("Repository name")
-        row("Repository name", self._name_ctrl)
+        grid.Add(self._name_ctrl, 1, wx.EXPAND)
+        grid.Add(wx.StaticText(panel, label="Description (optional)"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._description_ctrl = wx.TextCtrl(panel)
         self._description_ctrl.SetHelpText(
             "A short sentence about what the repository is for. You can leave it empty."
         )
         self._description_ctrl.SetName("Description")
-        row("Description (optional)", self._description_ctrl)
+        grid.Add(self._description_ctrl, 1, wx.EXPAND)
+        grid.Add(wx.StaticText(panel, label="Website (optional)"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._homepage_ctrl = wx.TextCtrl(panel)
         self._homepage_ctrl.SetHelpText(
             "An address shown beside the description, such as the project's site."
         )
         self._homepage_ctrl.SetName("Website")
-        row("Website (optional)", self._homepage_ctrl)
+        grid.Add(self._homepage_ctrl, 1, wx.EXPAND)
 
         grid.Add(wx.StaticText(panel, label="Visibility"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._visibility_choice = wx.Choice(panel, choices=list(_VISIBILITY_WORDS))
@@ -192,12 +201,17 @@ class CreateRepositoryDialog:
         self._visibility_choice.SetName("Visibility")
         grid.Add(self._visibility_choice, 1, wx.EXPAND)
 
+        grid.Add(
+            wx.StaticText(panel, label="Template (optional, owner/name)"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL,
+        )
         self._template_ctrl = wx.TextCtrl(panel, value=template)
         self._template_ctrl.SetHelpText(
             "A template repository to copy, as owner/name. Leave it empty to start a new one."
         )
         self._template_ctrl.SetName("Template repository, blank to start fresh")
-        row("Template (optional, owner/name)", self._template_ctrl)
+        grid.Add(self._template_ctrl, 1, wx.EXPAND)
 
         grid.Add(wx.StaticText(panel, label=".gitignore template"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._gitignore_combo = wx.ComboBox(panel, choices=["", *GITIGNORE_TEMPLATES])
@@ -276,6 +290,7 @@ class CreateRepositoryDialog:
             return
         # Stay open and say why: focus on the Problem box reads it.
         self._problem_ctrl.SetValue(why)
+        self._problem_label.Show()
         self._problem_ctrl.Show()
         self._panel.Layout()
         self.dialog.Fit()
