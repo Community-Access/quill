@@ -34,12 +34,26 @@ x-logging: &default-logging
 services:
   redis:
     image: redis:7-alpine
-    # No persistence: everything in here is a rate-limit counter, a config
-    # cache entry or an in-flight sign-in. Losing the lot on a restart costs
-    # somebody a re-typed device code, never data.
-    command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru --save ""
+    # Durable, and never evicting (2026-11-20). This used to run with no
+    # persistence and allkeys-lru, on the reasoning that everything in here was
+    # disposable. It is not: the monthly request counters and the month's
+    # global spend are the quota and the budget cap, and losing them -- to a
+    # restart, or to eviction under memory pressure -- handed everybody a fresh
+    # month and reopened the budget. What must survive, what is rebuilt from
+    # PostgreSQL if it does not, and what may be lost is set out in README.md,
+    # "What Redis holds".
+    #
+    # - appendonly + everysec: every write is in the append-only file on the
+    #   volume below within a second, so a restart keeps it.
+    # - noeviction: when memory is full, Redis refuses new writes instead of
+    #   silently dropping a counter, and the request fails closed. Every key
+    #   this service writes carries an expiry, so the set stays small; 128 MB is
+    #   many times what it needs.
+    command: redis-server --appendonly yes --appendfsync everysec --save "" --maxmemory 128mb --maxmemory-policy noeviction
     expose:
       - "6379"
+    volumes:
+      - redis-data:/data
     restart: unless-stopped
     logging: *default-logging
 
@@ -94,6 +108,7 @@ services:
 
 volumes:
   postgres-data:
+  redis-data:
 
 networks:
   # The shared Caddy network. Declared external because it belongs to the
