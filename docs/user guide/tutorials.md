@@ -1,6 +1,6 @@
 # QUILL Tutorials
 
-Welcome. There are 74 short lessons here, about 414 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 81 short lessons here, about 459 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials...** in QUILL. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -86,12 +86,19 @@ The keys here are the ones QUILL comes with. If you have changed a key, the less
   - Fill It In Yourself (5 minutes)
   - Save it as large print or braille-ready text (4 minutes)
   - Publish it and read the responses (7 minutes)
-- **GitHub, on a practice repository**: Make a private repository to practise on, then file and close an issue, try Dry Run, review and merge a pull request, read a failed run, and delete the repository when you finish.
+- **GitHub, on a practice repository**: Make a private repository to practise on, then file and close an issue, try Dry Run, review and merge a pull request, read a failed run, triage your inbox, build and use an issue form, plan a milestone and a project, give someone access, use the API Console, and delete the repository when you finish.
   - Make a repository to practise on (5 minutes)
   - Label, comment on and close an issue (6 minutes)
   - Try a command without sending it (4 minutes)
   - Review and merge a pull request (8 minutes)
   - Read a failed run (5 minutes)
+  - Triage your inbox (6 minutes)
+  - Build an issue form (8 minutes)
+  - File an issue with a form (5 minutes)
+  - Plan a milestone (6 minutes)
+  - Organize a project board (8 minutes)
+  - Give someone access (6 minutes)
+  - Use the API Console (6 minutes)
   - Delete the practice repository (2 minutes)
 - **Coding, in the Developer profile**: Work on a folder of code with an AI: ask for a change, review every edit, allow the commands it runs, hear the test results, and undo a whole turn.
   - Your first project task (12 minutes)
@@ -2165,7 +2172,7 @@ Your form is live, and you can hear every answer it brings in. The first time yo
 
 ## GitHub, on a practice repository
 
-Make a private repository to practise on, then file and close an issue, try Dry Run, review and merge a pull request, read a failed run, and delete the repository when you finish.
+Make a private repository to practise on, then file and close an issue, try Dry Run, review and merge a pull request, read a failed run, triage your inbox, build and use an issue form, plan a milestone and a project, give someone access, use the API Console, and delete the repository when you finish.
 
 ### Make a repository to practise on
 
@@ -2311,6 +2318,262 @@ Find out why a workflow run failed, and run only what failed again.
    - You should hear: re-run
 
 What Failed is usually all you need; the jobs window has the whole log.
+
+Next: Triage your inbox.
+
+### Triage your inbox
+
+Work through what is waiting for you: read it, put it off for a day, and know which review requests are yours and which are your team's.
+
+*6 steps, about 6 minutes.*
+
+1. **Open the GitHub Workbench.** The Workbench is the window for everything on GitHub. Open it from the editor's GitHub menu, signed in with the account you want to practise in.
+   - You should hear: GitHub Workbench, and its tree.
+
+2. **Go to the inbox.** Needs My Attention gathers everything waiting on you, across GitHub. The Inbox is all of it, newest first.
+   - Keys: Ctrl+1
+   - You should hear: Inbox, and how many rows it has.
+
+3. **Look at Review Requests.** Arrow down the tree to Review Requests. A row that ends in team review request was asked of a team you are on, not of you by name, so someone else on the team may take it.
+   - Keys: Down
+   - You should hear: Review Requests.
+
+4. **Mark one read.** On a notification you have dealt with, Mark Read. It stays in the list but no longer counts as unread, here or on GitHub.
+   - Keys: Ctrl+Q
+   - You should hear: Marked read.
+
+5. **Put one off until tomorrow.** Open the context menu on a notification and choose Snooze for One Day. It leaves the list until tomorrow. Only this computer knows; GitHub is not told.
+   - Keys: Shift+F10
+   - You should hear: Snoozed here for one day. GitHub was not changed.
+
+6. **Bring it back.** Changed your mind? Unsnooze Locally, on the same menu, brings the notification back into the list now.
+   - Keys: Shift+F10
+   - You should hear: Unsnoozed here. GitHub was not changed.
+
+That is triage: read it, put it off, or open it and deal with it. Mark Done on the same menu takes a notification out of GitHub's inbox altogether.
+
+Next: Build an issue form.
+
+### Build an issue form
+
+Make an issue form, the questions people answer when they open an issue, and save it to the practice repository.
+
+*7 steps, about 8 minutes.*
+
+1. **Open the GitHub Workbench.** The Workbench is the window for everything on GitHub. Open it from the editor's GitHub menu, signed in with the account you want to practise in.
+   - You should hear: GitHub Workbench, and its tree.
+
+2. **Go to the practice repository.** Choose Practice on GitHub from the Help menu, then Open It. The tree moves to quill-practice in your account.
+   - Keys: Ctrl+Alt+P
+   - You should hear: quill-practice is ready to practise on.
+
+3. **Go to Templates.** Arrow down to Templates under the repository. It lists the issue forms and templates the repository already has.
+   - Keys: Down
+   - You should hear: Templates.
+
+4. **Start a new form.** New Here, on Templates, asks what to make. Choose Issue form, then start from Bug report, so there are questions to look at already.
+   - Keys: Ctrl+N
+   - You should hear: What to make in the repository.
+
+5. **Name the file.** Keep the name it offers, bug-report. That is the file in .github/ISSUE_TEMPLATE that GitHub reads.
+   - Keys: Enter
+   - You should hear: The form builder, with the form's questions.
+
+6. **Look through the questions.** Tab to the list of questions and arrow through them. Each says its kind (a text box, a drop-down, check boxes) and whether it is required.
+   - Keys: Tab, Down
+   - You should hear: Each question's label, its kind and whether it is required.
+
+7. **Save it.** Save commits the form to the repository's default branch. QUILL checks it first, the way GitHub would, and says anything wrong.
+   - You should hear: Saved, and the file's name.
+   - Worth knowing: Saving is a commit, so it shows in the repository's history.
+
+The next lesson fills in the form you just made.
+
+Next: File an issue with a form.
+
+### File an issue with a form
+
+Open an issue by answering a form's questions instead of writing it free.
+
+*6 steps, about 5 minutes.*
+
+1. **Open the GitHub Workbench.** The Workbench is the window for everything on GitHub. Open it from the editor's GitHub menu, signed in with the account you want to practise in.
+   - You should hear: GitHub Workbench, and its tree.
+
+2. **Go to the practice repository.** Choose Practice on GitHub from the Help menu, then Open It. The tree moves to quill-practice in your account.
+   - Keys: Ctrl+Alt+P
+   - You should hear: quill-practice is ready to practise on.
+
+3. **List the issues.** New issues are made from the Issues list, where New Here knows to make an issue.
+   - Keys: Ctrl+Shift+1
+   - You should hear: Issues, and how many are open.
+
+4. **Start a new issue.** New Here on Issues asks which form or template to use. Choose Bug report, the form from the last lesson.
+   - Keys: Ctrl+N
+   - You should hear: The forms and templates this repository has.
+
+5. **Answer the questions.** Each question is its own control, labelled as the form labels it. A required one says so. Tab moves to the next.
+   - Keys: Tab
+   - You should hear: The first question's label.
+
+6. **Send it.** When the questions are answered, OK files the issue on GitHub, with each answer under its question.
+   - Keys: Enter
+   - You should hear: Created, and the issue's number.
+   - Worth knowing: A form QUILL cannot fill is said before you start, and a blank issue is still offered.
+
+Forms make every report arrive with the same answers, in the same order.
+
+Next: Plan a milestone.
+
+### Plan a milestone
+
+Make a milestone, put issues in it and give it a due date.
+
+*8 steps, about 6 minutes.*
+
+1. **Open the GitHub Workbench.** The Workbench is the window for everything on GitHub. Open it from the editor's GitHub menu, signed in with the account you want to practise in.
+   - You should hear: GitHub Workbench, and its tree.
+
+2. **Go to the practice repository.** Choose Practice on GitHub from the Help menu, then Open It. The tree moves to quill-practice in your account.
+   - Keys: Ctrl+Alt+P
+   - You should hear: quill-practice is ready to practise on.
+
+3. **List the issues.** A milestone gathers issues towards one goal or date, so start from one of the issues.
+   - Keys: Ctrl+Shift+1
+   - You should hear: Issues, and how many are open.
+
+4. **Open its properties.** Properties shows everything about the row you are on, a page at a time, and changes what GitHub lets you change.
+   - Keys: Alt+Enter
+   - You should hear: Its properties, on the General page.
+
+5. **Make the milestone.** Go to the Organize page. Beside Milestone, New Milestone... asks for a name; type First release. It is made on GitHub and chosen at once.
+   - Keys: Ctrl+Tab
+   - You should hear: Created First release.
+
+6. **Save the issue.** OK saves the issue with its milestone. The milestone now counts it as one of its open issues.
+   - Keys: Enter
+   - You should hear: Saved.
+
+7. **Give it a due date.** Arrow to Milestones under the repository, then to First release, and open its properties. The due date is a field there; type it as year-month-day and press OK.
+   - Keys: Down, Alt+Enter
+   - You should hear: Saved.
+
+8. **See what is in it.** On the milestone, open the context menu and choose Find Issues in Milestone. It lists the milestone's issues, open and closed.
+   - Keys: Shift+F10
+   - You should hear: Issues, filtered to the milestone.
+
+Add the other issues the same way, or put one in from its Milestone... command on the issue's context menu.
+
+Next: Organize a project board.
+
+### Organize a project board
+
+Make a project for the practice repository, put an issue and an idea in it, and say how it is going.
+
+*8 steps, about 8 minutes.*
+
+1. **Open the GitHub Workbench.** The Workbench is the window for everything on GitHub. Open it from the editor's GitHub menu, signed in with the account you want to practise in.
+   - You should hear: GitHub Workbench, and its tree.
+
+2. **Go to the practice repository.** Choose Practice on GitHub from the Help menu, then Open It. The tree moves to quill-practice in your account.
+   - Keys: Ctrl+Alt+P
+   - You should hear: quill-practice is ready to practise on.
+
+3. **List the issues.** A project is made from the issue you want in it first, so it starts with something on it.
+   - Keys: Ctrl+Shift+1
+   - You should hear: Issues, and how many are open.
+
+4. **Open its properties.** Properties shows everything about the row you are on, a page at a time, and changes what GitHub lets you change.
+   - Keys: Alt+Enter
+   - You should hear: Its properties, on the General page.
+
+5. **Make the project.** Go to the Projects page. New Project... asks for a name; type Practice board. It is made in your account, linked to the repository, and checked, so OK puts this issue in it.
+   - Keys: Ctrl+Tab, Enter
+   - You should hear: Created Practice board.
+   - Worth knowing: Projects need the project permission. If GitHub refuses, Account > GitHub Permissions adds it in one step.
+
+6. **Go to the repository's projects.** Projects under the repository lists the boards it is linked to, Practice board among them.
+   - Keys: Ctrl+Shift+7
+   - You should hear: Projects, and Practice board.
+
+7. **Add an idea.** On Practice board, Add Draft Issue... puts a note on the board before it is an issue at all. Type a title; the body can stay empty.
+   - Keys: Shift+F10
+   - You should hear: Draft issue added to Practice board.
+
+8. **Say how it is going.** Post Status Update..., on the same menu, tells everyone who follows the board whether it is on track. Choose On track.
+   - Keys: Shift+F10
+   - You should hear: Practice board: status update posted.
+
+Each item's own properties set its fields, such as its Status column, and Make a Draft an Issue... turns an idea into real work.
+
+Next: Give someone access.
+
+### Give someone access
+
+See who has access, make an access template, and preview giving it to a person, without sending anything.
+
+*7 steps, about 6 minutes.*
+
+1. **Open the GitHub Workbench.** The Workbench is the window for everything on GitHub. Open it from the editor's GitHub menu, signed in with the account you want to practise in.
+   - You should hear: GitHub Workbench, and its tree.
+
+2. **Go to the practice repository.** Choose Practice on GitHub from the Help menu, then Open It. The tree moves to quill-practice in your account.
+   - Keys: Ctrl+Alt+P
+   - You should hear: quill-practice is ready to practise on.
+
+3. **See who has access.** Arrow to People, then Collaborators and Team Access. On a repository of your own, it is you, as admin.
+   - Keys: Down
+   - You should hear: Collaborators and Team Access, and you.
+
+4. **Turn Dry Run on.** Nobody else is in the practice repository, so practise the preview only. With Dry Run on, nothing is sent.
+   - Keys: Ctrl+Alt+D
+   - You should hear: Dry Run is on.
+
+5. **Make an access template.** Account > Roles and Access > Access Templates..., then New Template.... Name it Contributor and write one line: write on your-name/quill-practice.
+   - You should hear: Saved Contributor: 1 place.
+   - Worth knowing: A template can hold many lines: a role on each repository, and member of org/team for a team.
+
+6. **Preview giving it.** Account > Roles and Access > Apply Access Template..., choose Contributor, and type any login. The preview says each change in words; say No.
+   - You should hear: Invite, the login, with write access.
+
+7. **Turn Dry Run off.** The same command turns Dry Run off again, so the changes you make for real are sent.
+   - Keys: Ctrl+Alt+D
+   - You should hear: Dry Run is off.
+
+On a real repository, the same preview's Yes sends each change and says how many worked. Change History has every one.
+
+Next: Use the API Console.
+
+### Use the API Console
+
+Ask GitHub anything it has an API for, and read the answer by arrow keys.
+
+*6 steps, about 6 minutes.*
+
+1. **Open the GitHub Workbench.** The Workbench is the window for everything on GitHub. Open it from the editor's GitHub menu, signed in with the account you want to practise in.
+   - You should hear: GitHub Workbench, and its tree.
+
+2. **Go to the practice repository.** Choose Practice on GitHub from the Help menu, then Open It. The tree moves to quill-practice in your account.
+   - Keys: Ctrl+Alt+P
+   - You should hear: quill-practice is ready to practise on.
+
+3. **Open the console.** The API Console sends any GitHub request. It is for what the Workbench has no window for, or to see exactly what GitHub says.
+   - Keys: Ctrl+Shift+J
+   - You should hear: GitHub API Console.
+
+4. **Ask about the repository.** Leave Method as GET. In Path, type /repos/your-name/quill-practice. What it does names the request before anything is sent.
+   - Keys: Tab
+   - You should hear: What it does, naming the request and what it needs.
+
+5. **Send it.** Press Send. A GET only asks a question, so it goes at once, with nothing to confirm.
+   - You should hear: The answer, as a tree.
+
+6. **Read the answer.** Tab to the answer and arrow through it. Each field is a row; Right opens one that has more inside.
+   - Keys: Tab, Down, Right
+   - You should hear: Each field's name and value.
+   - Worth knowing: A request that changes something asks you to type its method first, and needs Full access for this account in the Workbench.
+
+That is the track's last new tool. The next lesson clears up.
 
 Next: Delete the practice repository.
 

@@ -977,6 +977,23 @@ def sets(run: Any) -> str:
     return "made, filtered, renamed, chosen, reloaded, deleted"
 
 
+def access_templates(run: Any) -> str:
+    from quill.core.github.access_templates import template_plan
+    from quill.ui.github_workbench_access_templates import _templates_for
+
+    name = f"{TAG} template"
+    store = _templates_for(run.items)
+    problem, _rejected = store.set_template(name, f"write on {run.repo}; triage on {run.second}")
+    _expect(not problem, problem)
+    store.save()
+    again = _templates_for(run.items)
+    plan = template_plan(again.grants(name), run.login)
+    _expect(len(plan) == 2 and all(c.method == "PUT" for c in plan), "the plan is not two adds")
+    _expect(again.delete(name), "not deleted")
+    again.save()
+    return "made, reloaded, planned (not sent), deleted"
+
+
 def api_console(run: Any) -> str:
     from quill.core.github.api_console import find_operation, is_write, load_operations
 
@@ -1343,6 +1360,8 @@ VERBS: dict[str, Scenario | str] = {
     ),
     "account_level": account_level,
     "bulk_access": "not here: needs a second GitHub account to give access to",
+    "access_templates": access_templates,
+    "apply_access_template": "not here: needs a second GitHub account to give access to",
     "access_add": "not here: needs a second GitHub account to give access to",
     "access_change": "not here: needs a second GitHub account to give access to",
     "access_remove": "not here: needs a second GitHub account to give access to",
