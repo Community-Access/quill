@@ -2,7 +2,6 @@
 
 ## 1.0.0
 
-<<<<<<< HEAD
 ### The actual result, said once, and lists that stay still in QUILL Lite and QUILL (2026-11-19)
 
 The second part of the family UX pilot (FUX-04 and FUX-06).
@@ -32,7 +31,7 @@ The second part of the family UX pilot (FUX-04 and FUX-06).
   Discarding drafts in the recovery window keeps the check you gave every other
   row and puts focus on the next one, not the first. Focus never moves and
   nothing extra is said.
-=======
+
 ### GitHub Workbench: rulesets, branch protection, members, teams and access reviews (2026-11-19)
 
 - A repository's **Rulesets** list, under its settings, and an organization's
@@ -65,7 +64,6 @@ The second part of the family UX pilot (FUX-04 and FUX-06).
   on every repository, unset ones as "not set". All three filter and export
   like any other list.
 
->>>>>>> origin/main
 ### Plans: the WordPress backlog (2026-11-19)
 
 The WordPress decisions still open have moved from the open-work list to a
