@@ -153,17 +153,27 @@ class GitHubWorkbenchTemplatesMixin:
         if kind == "chooser":
             self._open_chooser(source, path, text, sha, plan, context)
             return
-        if kind == "community_file" and filename in _SHEETS:
-            from quill.ui import github_template_sheets_dialog as sheets
+        if kind == "dependabot":
+            from quill.ui.github_config_sheets_dialog import DependabotDialog
 
+            saved = DependabotDialog(self._template_parent(), text, announce=self._say).show()
+            use_pull = bool(plan.needs_pull_request)
+        elif kind == "community_file" and filename in _SHEETS:
+            from quill.ui import github_config_sheets_dialog, github_template_sheets_dialog
+
+            sheets: Any = github_template_sheets_dialog
             extra: dict[str, Any] = {}
             if filename == "CODEOWNERS":
-                # Check Owners asks GitHub in the background (PRD 21.8).
+                sheets = github_config_sheets_dialog
+                # Check Owners asks GitHub in the background (PRD 21.8); the
+                # problems GitHub keeps for the file are read as it opens.
                 extra["check"] = lambda rules, done: self._background(
                     "check the code owners",
                     lambda: self.items.check_codeowners(source, rules),
                     done,
                 )
+                reader = getattr(self, "_codeowners_errors_reader", None)
+                extra["errors"] = reader(source) if reader is not None else None
             sheet = getattr(sheets, _SHEETS[filename])(
                 self._template_parent(), text, announce=self._say, **extra
             )

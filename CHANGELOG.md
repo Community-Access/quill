@@ -20,6 +20,26 @@
   plainly what it cannot know, such as anything done outside QUILL. It
   changes nothing.
 
+### GitHub Workbench: write workflows, Dependabot and CODEOWNERS (2026-11-19)
+
+- **Edit Workflow...** and **New Workflow...**
+  - **The editor.** It lays a workflow out as plain controls: its triggers and
+    their inputs, permissions, jobs, and each job's steps. The order jobs run
+    in is said in words ("Build runs after Test and Lint").
+  - **Checks before saving.** A "What GitHub would say" box lists anything
+    GitHub would refuse, and Save waits until the list is empty.
+  - **Saving.** Changes are saved to the default branch, or as a pull request
+    when the branch is protected. Comments at the top of the file are kept;
+    comments inside it are not, and the window says so.
+- **dependabot.yml** opens as a sheet, and **Dependabot Commands...** on a
+  Dependabot pull request posts the command you choose.
+- **CODEOWNERS** is now a table with Add, Edit, Remove and Move. GitHub's
+  errors for the file are shown with it. **Who Owns This?** on a file or folder
+  says which rule wins.
+- **Compare Configuration With Another Repository...** compares workflows,
+  templates, community files, Dependabot and CODEOWNERS with another
+  repository, and proposes the files you choose as one pull request.
+
 ### GitHub Workbench: tags, branches, secrets, webhooks and more across repositories (2026-11-20)
 
 - Across Repositories has eight more places by name, grouped by category:
@@ -81,6 +101,7 @@ The WordPress decisions still open have moved from the open-work list to a
 Backlog section in the WordPress Workbench PRD. They are which areas get
 first-class integrations, a WordPress-layer key for page commands, and a tree
 node for menu items. Rank Math staying read only is confirmed.
+
 ### GitHub Workbench: sort and group any list, keep your place, and say it in words (2026-11-19)
 
 - **Sort By and Group By on every list.** View > Sort By > By Column... and

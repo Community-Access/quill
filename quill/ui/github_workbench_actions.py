@@ -21,12 +21,10 @@ order:
    :mod:`~quill.ui.github_workbench_releases` and
    :mod:`~quill.ui.github_workbench_community`.
 
-Nothing falls back to the retired GitHub Items window. Anything that does not
-apply is greyed, and :meth:`reason` says why in a sentence: the help string of
-the greyed row and what Shift+F1 reads.
+Nothing falls back to the retired GitHub Items window. Anything that does not apply is
+greyed, and :meth:`reason` says why: the greyed row's help, and what Shift+F1 reads.
 
-Nothing here speaks on its own (GATE-13); what is said is the result of a
-write the person asked for, through the frame, so F9 can say it again.
+Nothing speaks on its own (GATE-13): what is said is a requested write's result, so F9 repeats it.
 """
 
 from __future__ import annotations
@@ -50,6 +48,7 @@ from quill.core.github.workbench_window_menu import PLACEHOLDER_COMMANDS
 from quill.ui import github_workbench_development as _development
 from quill.ui.dialog_contract import show_modal_dialog
 from quill.ui.github_workbench_across import ACROSS_REASONS, ACROSS_VERBS
+from quill.ui.github_workbench_authoring import AUTHORING_ACTIONS
 from quill.ui.github_workbench_community import (
     COMMUNITY_REASONS,
     COMMUNITY_VERBS,
@@ -125,6 +124,7 @@ REPOSITORY_ACTIONS: tuple[tuple[str, str], ...] = (
     ("Configure Branch Protection...", "github.configure_branch_protection"),
     ("Delete Branch...", "github.delete_branch"),
     ("Commit Multiple Files...", "github.commit_multiple_files"),
+    *AUTHORING_ACTIONS,
     ("Create Repository...", "github.create_repository"),
     ("Browse Organization Repositories...", "github.browse_organization"),
 )
