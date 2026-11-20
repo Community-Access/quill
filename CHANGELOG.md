@@ -93,6 +93,36 @@ what shipped.
   rows or Plain-Language Batch, and Ask Copilot to Review is on the pull
   request's row.
 
+### Settings that stick, in every app (2026-11-20)
+
+- **The newest choice is the one saved, everywhere.** QUILL Lite's fix is now
+  shared by the other apps. In Quill Inkwell, QUILL Cast, Quill Radio and
+  QUILL, an older settings save that was still running could finish after a
+  newer one and put your old choice back after a restart. Each settings file
+  is now written in the order the changes were made.
+- **Retry in Activity no longer brings back an old choice.** If a save
+  failed, a later save worked, and you then pressed Retry on the old failure,
+  the older settings were written again. Retry now leaves the newer save
+  alone.
+- **Quill Converter tells you when it cannot save your choices.** A locked or
+  read-only settings file used to be ignored, and your choices were gone at
+  the next start. Now Activity reports it with Retry and Open Folder, and
+  Converter never says it saved them.
+- **Damaged settings no longer stop Quill Inkwell or Quill Weather starting.**
+  A settings file with a value the app cannot use (an unreadable version
+  number, or a number too large to use) is copied beside itself. The app
+  starts with defaults for the values it could not read, and says once where
+  the copy is.
+- **Back Up and Restore Settings in QUILL Lite.** The startup folder stays on
+  this computer, like recent files. Restoring keeps this computer's recent
+  files, session, window size and startup folder. A backup made by QUILL or
+  another app in the family is refused, with a plain explanation, and
+  nothing is changed.
+- **Quill Radio shares your choices like QUILL Cast.** With sharing on,
+  changing *Announce dialog transitions* in Radio's Preferences now reaches
+  your other Quill apps. Radio also picks up a newer shared choice when it
+  starts, and says so.
+
 ### Plans: one list of open work, and the planning documents put right (2026-11-20)
 
 - **complete.md** says who owns what: it is the list of open work,

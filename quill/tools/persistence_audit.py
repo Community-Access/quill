@@ -289,7 +289,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/radio/recording.py::save_recording_settings": "content",
     "core/radio/recording_schedule.py::save_schedule": "content",
     "core/podcasts/subscriptions.py::save_library": "content",
-    "core/podcasts/history.py::save_history": "content",
+    "core/podcasts/history.py::_write": "content",  # save_history's write, in order
     # Item 43: which episode was selected in each feed. A convenience the
     # listener would notice losing but can rebuild by arrowing; a damaged file
     # reads as an empty memory.

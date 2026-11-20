@@ -51,6 +51,15 @@ what shipped.
   rows or Plain-Language Batch, and Ask Copilot to Review is on the pull
   request's row.
 
+### Back Up and Restore Settings keep this computer's settings (2026-11-20)
+
+The startup folder is no longer put in a backup; like recent files, it
+belongs to this computer. Restoring a backup keeps this computer's recent
+files, session, window size and startup folder. A backup made by QUILL or
+another app in the family is refused, with a plain explanation, and nothing
+is changed. Retry in Activity no longer writes an older settings save over a
+newer one.
+
 ### The setting you chose last is the one that is saved (2026-11-20)
 
 Turning a View setting on and straight back off, such as Word Wrap, could save

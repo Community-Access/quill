@@ -11,6 +11,13 @@ adds the work marked "build 2" below, together with everything recorded since
 (the Command Palette and Product Requirements doors, What's New, QUILL
 Transcribe on the QuillVille menu, and the user guide corrections).
 
+### A damaged settings file no longer stops Weather starting (2026-11-20)
+
+A settings file with a number Quill Weather cannot use, such as a refresh
+interval too large to count, used to stop the app starting. Now that value
+keeps its default, the file is copied beside itself, and Weather says once
+where the copy is.
+
 ### AI menu (2026-11-03)
 
 - **One AI menu, the same in every app** (2026-11-03). The AI menu now reads in four groups, in the same order in every QuillVille app: the ways to ask; what this app's AI does; Which AI Am I Using and Choose Your AI; and **Accounts and Usage**, a submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage and the Privacy Agreement (and, where the app has them, Connect or Sign Out and Web Searches Left). Every command keeps its key wherever it now sits.

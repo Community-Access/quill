@@ -6,6 +6,7 @@ import copy
 from typing import Any
 
 from quill.core import family_preferences as family
+from quill.core.ordered_save import take_ticket
 from quill.core.paths import app_data_dir
 from quill.core.podcasts import history as podcast_history
 from quill.ui.family_sharing import apply_preferences
@@ -23,13 +24,12 @@ def save_preferences(host: Any, changes: dict[str, object]) -> Any:
         for name in family.SHARED
         if hasattr(history, name)
     }
-    generation = int(getattr(host, "_cast_preferences_generation", 0)) + 1
-    host._cast_preferences_generation = generation
     data_dir = app_data_dir()
+    ticket = take_ticket(podcast_history.store_path(data_dir))  # numbered as copied
 
     def work() -> list[str]:
         adopted = apply_preferences("cast", snapshot, requested, data_dir=data_dir)
-        podcast_history.save_history(data_dir, snapshot)
+        podcast_history.save_history(data_dir, snapshot, ticket=ticket)
         return adopted
 
     def saved(adopted: list[str]) -> None:
@@ -49,10 +49,11 @@ def save_preferences(host: Any, changes: dict[str, object]) -> Any:
     def finish(written: Any) -> None:
         if written != host._podcast_history:
             latest = copy.deepcopy(host._podcast_history)
+            latest_ticket = take_ticket(podcast_history.store_path(data_dir))
             record_tasks.submit(
                 host,
                 "preferences",
-                lambda: podcast_history.save_history(data_dir, latest),
+                lambda: podcast_history.save_history(data_dir, latest, ticket=latest_ticket),
                 on_success=lambda _result: finish(latest),
                 failure_message=_FAILURE,
             )

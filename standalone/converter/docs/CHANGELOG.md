@@ -25,6 +25,14 @@ The first public release. The app was first built in July 2026 as an audio
 converter; that build was never published as an installer, and everything it
 had is included here.
 
+### Choices that could not be saved are reported (2026-11-20)
+
+If Quill Converter cannot write its settings file (it is locked, or the
+folder is read-only), Activity now says so with Retry and Open Folder, and
+Converter never says your choices were saved. Retry saves your choices as
+they are when you press it. Before, the failure was ignored and the choices
+were gone at the next start.
+
 ### Auphonic: history, your account, tags and more options (2026-11-07)
 
 Process with Auphonic gets the parts its first version left for later. Opening any of these windows reads only this computer; Auphonic is contacted only when you press a button that names it, and all of it is off in Safe Mode.

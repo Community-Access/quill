@@ -376,16 +376,39 @@ def snapshot_history(history: RadioHistory) -> dict[str, object]:
     })
 
 
+class TicketedSnapshot(dict[str, object]):
+    """A detached snapshot numbered when it was taken (:mod:`quill.core.ordered_save`)."""
+
+    ticket: int | None = None
+
+
+def ticketed_snapshot(data_dir: Path, history: RadioHistory) -> TicketedSnapshot:
+    """Snapshot *history* for the background writer, numbered as it is taken."""
+    from quill.core.ordered_save import take_ticket
+
+    snapshot = TicketedSnapshot(snapshot_history(history))
+    snapshot.ticket = take_ticket(_store_path(data_dir))
+    return snapshot
+
+
 def save_history_snapshot(data_dir: Path, snapshot: dict[str, object]) -> None:
-    """Persist a previously detached history snapshot atomically."""
+    """Persist a detached history snapshot atomically, in the order it was taken.
+
+    A snapshot older than one already written is dropped: the writer's last
+    queued snapshot could otherwise land after the save made once the writer
+    had closed, and put an older choice back (the family settings audit).
+    """
+    from quill.core import storage
+    from quill.core.ordered_save import ordered_write
     from quill.core.persistence_outcome import guarded_write
-    from quill.core.storage import write_json_atomic
 
     path = _store_path(data_dir)
-    guarded_write(
-        "Quill Radio's settings",
+    ordered_write(
         path,
-        lambda: write_json_atomic(path, snapshot),
+        lambda: guarded_write(
+            "Quill Radio's settings", path, lambda: storage.write_json_atomic(path, snapshot)
+        ),
+        ticket=getattr(snapshot, "ticket", None),
     )
 
 

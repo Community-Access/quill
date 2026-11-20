@@ -25,12 +25,17 @@ def queue_history_save(host: Any) -> bool:
         return False
     import copy
 
+    from quill.core.ordered_save import take_ticket
     from quill.ui.podcasts import record_tasks
 
     data_dir = app_data_dir()
     snapshot = copy.deepcopy(host._podcast_history)
+    # Numbered as it is copied, so an inline save made while this waits wins.
+    ticket = take_ticket(podcast_history.store_path(data_dir))
     record_tasks.submit(
-        host, "cast_history", lambda: podcast_history.save_history(data_dir, snapshot)
+        host,
+        "cast_history",
+        lambda: podcast_history.save_history(data_dir, snapshot, ticket=ticket),
     )
     return True
 

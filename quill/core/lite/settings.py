@@ -506,11 +506,11 @@ class Settings(DictationSettings):
         return self
 
 
-#: Settings that describe *this machine* rather than how QUILL Lite behaves, and
-#: so are left out of a portable backup (#1501). The same rule QUILL applies:
-#: a list of recent files, a restored session and an update timestamp are a
-#: record of one computer, not a configuration to carry to another.
+#: Settings that describe *this machine*, left out of a portable backup (#1501) as
+#: in QUILL: recent files, a restored session, an update timestamp, the window and
+#: the startup folder are a record of one computer, not a configuration to carry.
 LOCAL_SETTINGS: frozenset[str] = frozenset({
+    "startup_folder",
     "recent_files",
     "pinned_recent_files",
     "session_files",
@@ -533,7 +533,7 @@ def import_portable(raw: object) -> tuple[Settings, PortabilityReport]:
     import is a known state rather than a merge nobody can describe afterwards.
     """
     known = frozenset(spec.name for spec in fields(Settings))
-    values, report = portable_import(raw, known=known, local_fields=LOCAL_SETTINGS)
+    values, report = portable_import(raw, known=known, local_fields=LOCAL_SETTINGS, app="quilllite")
     settings = Settings()
     for name, value in values.items():
         coerced = _coerce(getattr(settings, name), value)

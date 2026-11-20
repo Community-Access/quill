@@ -9,6 +9,7 @@ Persisted with the usual atomic write, wx-free and strict-typed.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field, fields
 from pathlib import Path
 
@@ -157,20 +158,46 @@ def settings_path(data_dir: Path) -> Path:
 
 
 def load_settings(data_dir: Path) -> InkwellSettings:
+    from quill.core.settings_recovery import keep_damaged
     from quill.core.storage import read_json
 
-    raw = read_json(settings_path(data_dir), default={})
+    path = settings_path(data_dir)
+    raw = read_json(path, default={})
     if not isinstance(raw, dict):
         return InkwellSettings()
-    # A file from a *newer* build is read for what this build understands and
-    # never written back over: an older Inkwell that saved would silently drop
-    # every field it had never heard of, which for a settings file people share
-    # between machines is how a preference disappears with no error anywhere.
-    if int(raw.get("schema_version", SCHEMA_VERSION) or SCHEMA_VERSION) > SCHEMA_VERSION:
+    version = _schema_version(raw)
+    try:
         settings = _read_fields(raw)
+    except (TypeError, ValueError, OverflowError):
+        keep_damaged(path, app="Quill Inkwell")
+        return InkwellSettings()
+    if version is None:
+        # Unreadable rather than newer (plan.md, settings review): this used to
+        # raise while the window was being built. The fields are read, the file
+        # is kept beside itself, and the app says so once it is up.
+        keep_damaged(path, app="Quill Inkwell")
+    elif version > SCHEMA_VERSION:
+        # A file from a *newer* build is read for what this build understands
+        # and never written back over: an older Inkwell that saved would drop
+        # every field it had never heard of, silently.
         settings.read_only = True
-        return settings
-    return _read_fields(raw)
+    return settings
+
+
+def _schema_version(raw: dict) -> int | None:
+    """The file's schema version; ``None`` when it is there and unusable."""
+    value = raw.get("schema_version", SCHEMA_VERSION)
+    if value is None or value == "" or value == 0:
+        return SCHEMA_VERSION  # unstamped, as the oldest builds wrote it
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, float) and math.isfinite(value) and value.is_integer():
+        return int(value)
+    if isinstance(value, str) and value.strip().isdigit():
+        return int(value.strip())
+    return None
 
 
 def _read_fields(raw: dict) -> InkwellSettings:
@@ -209,34 +236,40 @@ def _read_fields(raw: dict) -> InkwellSettings:
     return settings
 
 
-def save_settings(data_dir: Path, settings: InkwellSettings) -> None:
+def save_settings(data_dir: Path, settings: InkwellSettings, *, ticket: int | None = None) -> None:
     """Persist, stamped with the schema version (the versioned contract).
 
     Refuses when the loaded file came from a newer build: writing would drop
-    every field this build does not know about.
+    every field this build does not know about. In snapshot order
+    (:mod:`quill.core.ordered_save`): *ticket* is the one the preference saver
+    took when it queued its snapshot, and a snapshot older than one already
+    written is dropped, so a queued write never lands after a newer toggle.
     """
-    from quill.core.storage import write_json_atomic
+    from quill.core import storage
+    from quill.core.ordered_save import ordered_write
 
     if settings.read_only:
         return
-    write_json_atomic(
-        settings_path(data_dir),
-        {
-            "schema_version": SCHEMA_VERSION,
-            "expansion_enabled": settings.expansion_enabled,
-            "injection_mode": settings.injection_mode,
-            "excluded_processes": settings.excluded_processes,
-            "paste_processes": settings.paste_processes,
-            "announce_expansions": settings.announce_expansions,
-            "start_in_tray": settings.start_in_tray,
-            "close_to_tray": settings.close_to_tray,
-            "tray_hotkey": settings.tray_hotkey,
-            "quick_insert_hotkey": settings.quick_insert_hotkey,
-            "expand_now_hotkey": settings.expand_now_hotkey,
-            "dictate_anywhere_hotkey": settings.dictate_anywhere_hotkey,
-            "dictation": dict(settings.dictation),
-        },
-    )
+    path = settings_path(data_dir)
+    ordered_write(path, lambda: storage.write_json_atomic(path, _document(settings)), ticket=ticket)
+
+
+def _document(settings: InkwellSettings) -> dict[str, object]:
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "expansion_enabled": settings.expansion_enabled,
+        "injection_mode": settings.injection_mode,
+        "excluded_processes": settings.excluded_processes,
+        "paste_processes": settings.paste_processes,
+        "announce_expansions": settings.announce_expansions,
+        "start_in_tray": settings.start_in_tray,
+        "close_to_tray": settings.close_to_tray,
+        "tray_hotkey": settings.tray_hotkey,
+        "quick_insert_hotkey": settings.quick_insert_hotkey,
+        "expand_now_hotkey": settings.expand_now_hotkey,
+        "dictate_anywhere_hotkey": settings.dictate_anywhere_hotkey,
+        "dictation": dict(settings.dictation),
+    }
 
 
 #: Settings that describe *this machine* rather than how the app behaves, and so
