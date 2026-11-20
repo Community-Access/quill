@@ -187,6 +187,7 @@ def request_json(
             raise GitHubRestError(
                 wait_message(seconds), status=exc.code, headers=error_headers, data=data
             ) from exc
+        _observe(token, method, path, exc.code, error_headers)
         raise GitHubRestError(
             str(message) or f"GitHub returned HTTP {exc.code}.",
             status=exc.code,
@@ -199,9 +200,20 @@ def request_json(
         raise GitHubRestError(f"Could not reach GitHub: {exc}") from exc
     limits.observe(response_headers)
     TOKEN_EXPIRY.observe(token, response_headers)  # the expiry warning's source
+    _observe(token, method, path, status, response_headers)
     if len(raw) > _MAX_RESPONSE_BYTES:
         raise GitHubRestError("GitHub's reply was larger than QUILL reads in one request.")
     return RestResponse(status, response_headers, _decode(raw))
+
+
+def _observe(token: str | None, method: str, path: str, status: int, headers: object) -> None:
+    """What was used, for Least Privilege Advice (observed_use); never breaks a request."""
+    try:
+        from quill.core.github.observed_use import OBSERVED_USE
+
+        OBSERVED_USE.observe_reply(token, method, path, status, headers)
+    except Exception:  # noqa: BLE001 - the record is advice, never a reason to fail
+        pass
 
 
 def rest_failure_message(action: str, exc: GitHubRestError) -> str:

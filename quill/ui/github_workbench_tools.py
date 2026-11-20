@@ -33,6 +33,7 @@ from quill.core.github.permissions import (
     scope_rows,
 )
 from quill.ui.github_workbench_access_pages import GitHubWorkbenchAccessPagesMixin
+from quill.ui.github_workbench_least_privilege import GitHubWorkbenchLeastPrivilegeMixin
 from quill.ui.github_workbench_roles import ROLE_TOOLS, GitHubWorkbenchRolesMixin
 
 __all__ = ["GitHubWorkbenchToolsMixin"]
@@ -43,11 +44,14 @@ _TOOLS = frozenset({
     "permissions",
     "change_history",
     "account_level",
+    "least_privilege",
     *ROLE_TOOLS,
 })
 
 
-class GitHubWorkbenchToolsMixin(GitHubWorkbenchAccessPagesMixin, GitHubWorkbenchRolesMixin):
+class GitHubWorkbenchToolsMixin(
+    GitHubWorkbenchAccessPagesMixin, GitHubWorkbenchLeastPrivilegeMixin, GitHubWorkbenchRolesMixin
+):
     """Filter Builder, permissions, history and access, for the GitHub provider."""
 
     items: Any

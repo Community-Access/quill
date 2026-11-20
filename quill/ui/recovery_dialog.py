@@ -289,28 +289,38 @@ def ask_recovery(parent: object, result: Triage) -> RecoveryAnswer:
         box.Bind(wx.EVT_CHECKBOX, _refresh_summary)
     _refresh_summary()
 
-    def _refill() -> None:
-        """Rebuild the rows after a discard, and put focus somewhere real.
+    #: The slots the boxes stand for, row for row (``live`` changes first).
+    shown: list[Recoverable] = list(entries)
 
-        Destroying the row that had focus is how a dialog goes silent: nothing
-        is focused, so the reader announces nothing.
+    def _refill() -> None:
+        """Take the discarded rows out, and leave the reader near where they were.
+
+        Lists that stay still (FUX-06). The rows that are left are not rebuilt:
+        each keeps the check the reader gave it, and its place. The old refill
+        destroyed every row, checked them all again and put focus on the first,
+        so the rows somebody had deliberately left unchecked came back checked
+        without a word. Focus goes to the row that took the place of the first
+        one discarded -- the next one down -- and to Not Now when none is left,
+        because destroying the focused row is how a dialog goes silent.
         """
-        for box in boxes:
-            box.Destroy()
-        boxes.clear()
-        for slot in live:
-            box = wx.CheckBox(panel, label=_label(slot))
-            box.SetValue(True)
-            set_accessible_name(box, _label(slot))
-            box.Bind(wx.EVT_CHECKBOX, _refresh_summary)
-            rows.Add(box, 0, wx.ALL, _PAD // 2)
-            boxes.append(box)
-        panel.SetSizer(rows)
+        keep = {id(slot) for slot in live}
+        first_gone = next(
+            (row for row, slot in enumerate(shown) if id(slot) not in keep), len(shown)
+        )
+        survivors: list[wx.CheckBox] = []
+        for slot, box in zip(list(shown), list(boxes), strict=False):
+            if id(slot) in keep:
+                survivors.append(box)
+            else:
+                rows.Detach(box)
+                box.Destroy()
+        boxes[:] = survivors
+        shown[:] = [slot for slot in shown if id(slot) in keep]
         panel.Layout()
         rows.Layout()
         _refresh_summary()
         if boxes:
-            boxes[0].SetFocus()
+            boxes[min(first_gone, len(boxes) - 1)].SetFocus()
         else:
             not_now.SetFocus()
 

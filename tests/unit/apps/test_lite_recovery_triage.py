@@ -12,6 +12,7 @@ from __future__ import annotations
 import os
 import time
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -40,12 +41,15 @@ class FakeApp(LiteRecoveryMixin):
         self.voice = FakeVoice()
         self.shell = None
         self.opened: list[Any] = []
+        self.fail: list[Any] = []
         self.saved = 0
         self.queued = 0
 
     def new_window(self, mode: str, recovery_slot: Any = None) -> Any:
         self.opened.append(recovery_slot)
-        return recovery_slot
+        # A window that took its work holds the slot, as DocumentFrame does.
+        failed = recovery_slot is not None and recovery_slot in self.fail
+        return SimpleNamespace(_slot=None if failed else recovery_slot)
 
     def save_settings(self) -> None:
         self.saved += 1
@@ -170,10 +174,40 @@ def test_restoring_opens_a_window_per_chosen_slot_and_says_how_many(
 
     assert len(app.opened) == 2
     said = " ".join(app.voice.said)
-    assert "Restored 2 unsaved documents" in said
+    assert "Recovered 2 unsaved documents: Untitled and Untitled." in said
     # Restoring is not saving, and a window that looks like a document is
     # exactly where that gets forgotten.
-    assert "Save each one to keep it." in said
+    assert "None of them is saved yet." in said
+
+
+def test_a_restore_that_failed_is_not_counted_as_one_that_worked(
+    store: Path, app: FakeApp, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """FUX-04: it said "Restored 2" when one of the two windows came up empty."""
+    good = _slot(store, "one", path=str(store / "notes.txt"))
+    bad = _slot(store, "two", path=str(store / "todo.txt"))
+    app.fail.append(bad)
+    _answer_with(monkeypatch, lambda r: RecoveryAnswer(restore=r.offer))
+
+    assert app._restore_pending_work() is True
+
+    said = " ".join(app.voice.said)
+    assert "Recovered 1 of 2: notes.txt." in said
+    assert "todo.txt" not in said, "the failed one already said so in its own window"
+    assert good in app.opened and bad in app.opened
+
+
+def test_one_recovered_draft_says_when_it_is_from(
+    store: Path, app: FakeApp, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _slot(store, "one", path=str(store / "notes.txt"))
+    _answer_with(monkeypatch, lambda r: RecoveryAnswer(restore=r.offer))
+
+    assert app._restore_pending_work() is True
+
+    said = " ".join(app.voice.said)
+    assert said.startswith("Recovered notes.txt, as it was today at ")
+    assert "It is not saved yet." in said
 
 
 def test_declining_keeps_everything_and_says_it_will_be_offered_again(

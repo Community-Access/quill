@@ -245,6 +245,13 @@ ROLES_SUB = MenuSub(
             help="Read Only, Organize or Full: what the Workbench may change with this "
             "account, whatever GitHub would allow.",
         ),
+        MenuRow(
+            f"{_P}least_privilege",
+            "Least &Privilege Advice...",
+            help="The smallest token scopes, fine-grained permissions and Workbench level "
+            "that cover what QUILL saw this account do here, and what it cannot know. "
+            "Changes nothing.",
+        ),
     ),
     help="Who may do what, and changing it (sections 18.2 to 18.3.2).",
 )

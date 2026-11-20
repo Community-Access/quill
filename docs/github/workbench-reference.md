@@ -932,6 +932,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Roles and Access > Compare Accounts... | (submenu letter) | Two of your signed-in accounts on this repository, side by side: each one's role and sign-in, as GitHub answered that account. |
 | Roles and Access > Act As Another Account... | (submenu letter) | One action sent as another signed-in account, such as approving your own pull request: the account is named before and after, and held to its own level. |
 | Roles and Access > Workbench Level for This Account... | (submenu letter) | Read Only, Organize or Full: what the Workbench may change with this account, whatever GitHub would allow. |
+| Roles and Access > Least Privilege Advice... | (submenu letter) | The smallest token scopes, fine-grained permissions and Workbench level that cover what QUILL saw this account do here, and what it cannot know. Changes nothing. |
 
 #### Tools
 
