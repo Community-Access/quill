@@ -294,6 +294,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         resume honors the remembered choice (ask/always/never) and the grace
         window. A marker past its grace is cleared and skipped.
         """
+        from quill.core.paths import app_data_dir
         from quill.core.radio.recording_resume import (
             load_markers,
             reconcile_temp_strays,
@@ -301,9 +302,14 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
             within_resume_grace,
         )
 
-        # 1) Reconcile temp-dir strays from a crash (R3/12, 13.6).
+        # Markers first: they say which folder each orphan was recording for.
         try:
-            moved = reconcile_temp_strays(self._radio_recording_settings)
+            markers = load_markers(app_data_dir())
+        except Exception:  # noqa: BLE001
+            markers = []
+        # 1) Reconcile temp-dir strays from a crash (R3/12, 13.6); never replaces.
+        try:
+            moved = reconcile_temp_strays(self._radio_recording_settings, markers=markers)
         except Exception:  # noqa: BLE001 - reconcile must never block launch
             moved = []
         if moved:
@@ -316,12 +322,6 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         #    (concurrent recording: there may be several). Markers past their
         #    grace window are cleared and skipped; the rest are resumed per the
         #    remembered choice, or offered in one batched prompt for "ask".
-        from quill.core.paths import app_data_dir
-
-        try:
-            markers = load_markers(app_data_dir())
-        except Exception:  # noqa: BLE001
-            markers = []
         resumable: list[tuple[object, int]] = []
         for marker in markers:
             if not getattr(marker, "stream_url", ""):
@@ -577,7 +577,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         """
         from datetime import datetime
 
-        from quill.core.radio.recording_schedule import describe_missed, missed_occurrences
+        from quill.core.radio.recording_missed import describe_missed, missed_occurrences
 
         history = self._radio_history
         now = datetime.now()

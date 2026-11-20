@@ -38,7 +38,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
-from quill.core.radio.recording_commands import RECORD_FORMATS
+from quill.core.radio.recording_commands import RECORDING_FILE_SUFFIXES
 from quill.core.speech.ffmpeg import find_ffmpeg
 from quill.stability.redaction import format_args_for_log
 from quill.stability.safe_subprocess import run_subprocess_safely
@@ -62,10 +62,7 @@ __all__ = [
 #: ``recording_commands._RAW_EXT_BY_CODEC``). Anything else is refused rather
 #: than guessed at -- an unjoinable recording kept as parts is a mild
 #: annoyance; a botched join is a lost show.
-_JOINABLE_EXTENSIONS = frozenset(
-    {f".{fmt}" for fmt in RECORD_FORMATS if fmt != "copy"}
-    | {".aac", ".opus", ".m4a", ".ac3", ".mka"}
-)
+_JOINABLE_EXTENSIONS = RECORDING_FILE_SUFFIXES
 
 #: A joined file smaller than this is not a recording, it is a stub or a
 #: container header ffmpeg wrote before failing. Never delete parts for it.

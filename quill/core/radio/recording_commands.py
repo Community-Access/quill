@@ -107,6 +107,15 @@ _RAW_FALLBACK_EXT = "mka"
 #: must look for these as well as the re-encode formats -- otherwise a raw
 #: capture is a file the app made and then cannot find.
 RAW_CAPTURE_EXTENSIONS = frozenset({*_RAW_EXT_BY_CODEC.values(), _RAW_FALLBACK_EXT})
+#: Every suffix (with its dot) a file the recorder writes can actually have: the
+#: re-encode formats plus every raw-capture container. ``"copy"`` is a mode, not
+#: an extension -- no ``.copy`` file ever exists. The one list that the
+#: Recordings window, the part joiner and crash recovery all share, so a raw
+#: ``.aac`` capture cannot be listed in one place and stranded in another.
+RECORDING_FILE_SUFFIXES = frozenset(
+    {f".{fmt}" for fmt in RECORD_FORMATS if fmt != "copy"}
+    | {f".{ext}" for ext in RAW_CAPTURE_EXTENSIONS}
+)
 
 #: ffmpeg ``-loglevel`` values Quill Radio will pass through (quill-radio #5);
 #: anything else falls back to ``"error"``. Debug mode uses ``"verbose"``.

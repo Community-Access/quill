@@ -15,7 +15,7 @@
 For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claude.log`. The commands and gates are in `CLAUDE.md`.
 
 - **Screen-reader testing** is done by Jeff's testers and is not tracked here.
-- **Where it stands (2026-11-20):** merged since 2026-11-19: #1943 to #1962, #1964 to #1966, #1968, #1969, #1972, #1976, #1977 and #1979 to #1981. Built and waiting to merge: #1963, #1967, #1970, #1971, #1973, #1974 and #1975. Rule (Jeff): nothing Enterprise Cloud only; organization-only checks run in a test organization.
+- **Where it stands (2026-11-20):** merged since 2026-11-19: #1943 to #1962, #1964 to #1966, #1968, #1969, #1972, #1976, #1977 and #1979 to #1983. Built and waiting to merge: #1963, #1967, #1970, #1971, #1973, #1974 and #1975. Rule (Jeff): nothing Enterprise Cloud only; organization-only checks run in a test organization.
 - **Next (Jeff, 2026-11-20):** the known defects in Part 0 come first, worst harm first, then the documentation pass (1.4). Screen-reader testing is a given on everything. A tester's defect report always comes first.
 - **Live testing runs alongside.** On 2026-11-19 Jeff said live testing waits until all code is done. On 2026-11-20 he changed that: the known defects are fixed while live testing goes on, and documentation and live testing run side by side once the code is in. The WordPress live run (#1976) followed that. The test site is reached over SSH (`ssh lp.csedesigns.com`, wp-cli through `~/app/wordpress-test/wpcli.sh`, which needs more PHP memory). Gravity Forms 3.2.3.1 is licensed there with its REST API v2 on.
 - **How to work here:**
@@ -40,7 +40,6 @@ The code review in `D:\quill\plan.md` found these, each confirmed by a reproduct
 ### The known defects, in order of harm
 
 - [ ] **D. Settings that do not stick** (6 left; QUILL Lite's stale save is fixed in #1979): a portable backup carries the startup folder and accepts another app's envelope; Converter loses settings-write failures silently; malformed Inkwell and Weather settings crash their loaders; Radio does not publish or adopt shared family choices.
-- [ ] **B. Windows Radio recording** (8): crash recovery can overwrite a finished recording; Stop All can miss a reconnect handing off; raw captures other than `.copy` are stranded; a continuation can exceed the concurrency cap; deadlines use local wall time; an enabled daily schedule crashes the Recordings summary; continued captures report the wrong time left; a deleted schedule can still start.
 - [ ] **G. Practice Site payload**: the built runtime is missing `tools\wp-playground-cli`, so the runtime-inventory gate fails. Ship it; do not rebaseline it away. Waits on the Windows build (Part 3).
 
 ### The wider review, after the defects
@@ -50,7 +49,7 @@ The code review in `D:\quill\plan.md` found these, each confirmed by a reproduct
 - [ ] **K. AI choices and settings people can understand**: every AI entry point says which provider and model, local or cloud, what is sent, limits, consent and fallback, before use, and never switches provider silently. Settings whose effect is not obvious (AI, privacy, accessibility, portability) show the effective value, where it comes from, and how to reset it. Fix real gaps only; no duplicate UI.
 - [ ] **L. The rest of the code audit** (plan.md Phase 3), with the "change it, use it, reopen it" checks, in three parts: L1 Cast and the rest of Windows Radio; L2 WordPress operations and the GitHub Actions workflows; L3 Beacon, Converter, Inkwell, Media Player, Social, Studio, Transcribe and Weather. Confirmed defects are fixed with tests; everything else is reported.
 
-Done and deleted here: A, WordPress local writing (#1980); C, diagnostics and help (#1981); E, the hosted AI gateway (#1977); and J, the records and design documents (the pull request that added this part).
+Done and deleted here: A, WordPress local writing (#1980); B, Windows Radio recording (#1982); C, diagnostics and help (#1981); E, the hosted AI gateway (#1977); and J, the records and design documents (the pull request that added this part).
 
 ## Part 1. The GitHub Workbench
 

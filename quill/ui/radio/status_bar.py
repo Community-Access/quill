@@ -304,6 +304,9 @@ class RadioStatusBar:
                     started_at=started,
                     minutes=int(getattr(job, "minutes", 0) or 0),
                     duration_requested=bool(getattr(job, "duration_requested", False)),
+                    ends_at=ends
+                    if isinstance(ends := getattr(job, "ends_at", None), datetime)
+                    else None,
                 )
             )
         return progress
