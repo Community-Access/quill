@@ -8,7 +8,13 @@ the host.
 
 **Product:** QUILL Media Player (in-QUILL feature **and** the standalone
 `Quill Media Player` app — see Section 9.11)
-**Status:** Approved for phased build — Phase 1 (core) shipped; UI phases in progress
+**Status:** Current authority. Phases 1 to 5 of section 16 are built and in the
+1.0.0 testing build (build 2), which is not published yet; see the
+[changelog](CHANGELOG.md). Phase 6 is in part: the Book Library (LibriVox) and
+folders opened as books are built; the cross-source shelves are not in the
+changelog. Phase 7 (protected BARD playback) waits on the BARD 2.0 contract,
+and protected BARD content is refused until then. Updated
+2026-11-20
 **Owners:** Community Access
 **Date:** 2026-08-04
 **Related:** `bard.md` (BARD 2.0 integration + Secrets/Token Manager); the user

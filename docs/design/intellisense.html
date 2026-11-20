@@ -777,14 +777,14 @@ second).</li>
 <li><label><input type="checkbox" />The Roslyn language server for C#:
 its licence still to be read; OmniSharp is the MIT
 alternative.</label></li>
-<li><label><input type="checkbox" />Layer 4 phase: bundle ripgrep
-(<code>rg.exe</code>, about 5 MB) beside Node in the shared runtime,
-pinned and SHA-256 checked like Pandoc. Read its licence (MIT or
-Unlicense) from the release first, record it in THIRD-PARTY-NOTICES and
-the component inventory, and add a network-audit note that it is local
-only. Layer 2’s project index uses it when present and falls back to the
-pure-Python walk. Ask Jeff before the first download (parent session,
-2026-11-08, with Jeff’s go-ahead).</label></li>
+<li><label><input type="checkbox" />Layer 2’s project index
+(<code>quill/core/project_names.py</code>) uses ripgrep when the runtime
+has it, and falls back to the pure-Python walk. Bundling ripgrep is done
+(see the 2026-11-08 Layer 4 entry above):
+<code>scripts/fetch_build_deps.py</code> pins it, it is in
+<code>quill/data/third_party/components.json</code> and the runtime
+inventory, and it ships as <code>toolsipgrepg.exe</code>. The index does
+not call it yet; checked 2026-11-20.</label></li>
 <li><label><input type="checkbox" />Try TypeScript 7’s native language
 server in place of typescript-language-server (no tsserver in
 7).</label></li>

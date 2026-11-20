@@ -180,7 +180,7 @@ Measured 2026-11-08: no chord near Ctrl+Shift+M is free in both editors, so the 
 
 - [ ] Problems pane P3 and P4 (P1 is PR #1798, P2 PRs #1804 and this one).
 - [ ] The Roslyn language server for C#: its licence still to be read; OmniSharp is the MIT alternative.
-- [ ] Layer 4 phase: bundle ripgrep (`rg.exe`, about 5 MB) beside Node in the shared runtime, pinned and SHA-256 checked like Pandoc. Read its licence (MIT or Unlicense) from the release first, record it in THIRD-PARTY-NOTICES and the component inventory, and add a network-audit note that it is local only. Layer 2's project index uses it when present and falls back to the pure-Python walk. Ask Jeff before the first download (parent session, 2026-11-08, with Jeff's go-ahead).
+- [ ] Layer 2's project index (`quill/core/project_names.py`) uses ripgrep when the runtime has it, and falls back to the pure-Python walk. Bundling ripgrep is done (see the 2026-11-08 Layer 4 entry above): `scripts/fetch_build_deps.py` pins it, it is in `quill/data/third_party/components.json` and the runtime inventory, and it ships as `toolsipgrepg.exe`. The index does not call it yet; checked 2026-11-20.
 - [ ] Try TypeScript 7's native language server in place of typescript-language-server (no tsserver in 7).
 - [ ] Built-in quick-fix rules, Format Document (Prettier and installed formatters), Get It for unbundled tools, rich formatting settings, and the Code Checks and Fixes window.
 - [ ] A CI job that fetches the pinned servers and runs the `lsp` corpus (ask Jeff: it changes CI).
