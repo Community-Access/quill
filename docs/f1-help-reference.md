@@ -2542,7 +2542,7 @@ Control coverage: 384 audited sites (384 helped).
 
 **Watches.** Watches: tell me when something happens. Each row is a rule: a run finishes on a repository or branch, a review arrives on a pull request, a new release, a new comment. They are checked on the notification check's interval in Workbench Options while this window is open, and each row says when it was last checked. Ctrl+N adds one, Enter edits, Delete removes. Watches never mark notifications read.
 
-**Across Repositories.** Across Repositories: the Repository Set in use, and under it its named sets, one kind of thing from every repository in the set, each name across the set, and the Fleet. Ctrl+N here edits the set's repositories.
+**Across Repositories.** Across Repositories: the Repository Set in use, and under it its named sets, one kind of thing from every repository in the set, each name across the set grouped as Planning, Code, Actions and Settings, and the Fleet. Ctrl+N here edits the set's repositories.
 
 **Repository Sets.** Repository Sets: your named lists of repositories, each chosen from a checklist, made by a filter such as org:name topic:x, or every repository you can reach. Enter uses one; Ctrl+N makes one; Delete forgets one after asking. They stay on this computer.
 
@@ -2562,16 +2562,6 @@ Control coverage: 384 audited sites (384 helped).
 
 **Security Alerts.** Security alerts from every repository in the set you may read them in.
 
-**Labels by Name.** Labels by Name: each label name across the set, where its colour and description differ and where it is missing. Make the copies the same, add it where missing, rename, merge or delete it everywhere, each with a preview and a result per repository.
-
-**Milestones by Name.** Milestones by Name: each milestone title across the set, its due dates, descriptions and progress. Make them the same, close them everywhere, move their open work to another milestone or add the missing ones, each with a preview and a result per repository.
-
-**Topics by Name.** Topics by Name: each topic across the set and the repositories that lack it. Add it to the missing or remove it everywhere, with a preview and a result per repository; each repository's other topics are kept.
-
-**Rules and Branch Protection.** Rules and Branch Protection: each ruleset by name, and each default branch's protection, compared across the set. Make them the same as the winner, add a ruleset where it is missing, or promote one to an organization ruleset; each needs admin access and shows a preview first.
-
-**Fleet.** Fleet: one line per repository in the set: the exact revision of its default branch, checks, open pull requests, latest release and alerts, and when it was read. A repository that could not be read keeps its line, with the reason.
-
 **Help and Learning.** Help and Learning: the guide, the GitHub words, the keys, what changed, and tasks in plain words that take you to the place.
 
 **Do Something.** Do Something: tasks in plain words. Enter reads one; Take Me There, on its context menu, goes to the place it is about.
@@ -2589,6 +2579,40 @@ Control coverage: 384 audited sites (384 helped).
 **Tips.** Tips: QUILLBert's tips, one short thing worth trying each. They wait here and are never pushed at you.
 
 **Ask a Person.** Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email.
+
+**Planning by Name.** Planning by Name: labels, milestones and topics, each by name across the set.
+
+**Labels by Name.** Labels by Name: each label name across the set, where its colour and description differ and where it is missing. Make the copies the same, add it where missing, rename, merge or delete it everywhere, each with a preview and a result per repository.
+
+**Milestones by Name.** Milestones by Name: each milestone title across the set, its due dates, descriptions and progress. Make them the same, close them everywhere, move their open work to another milestone or add the missing ones, each with a preview and a result per repository.
+
+**Topics by Name.** Topics by Name: each topic across the set and the repositories that lack it. Add it to the missing or remove it everywhere, with a preview and a result per repository; each repository's other topics are kept.
+
+**Code by Name.** Code by Name: tags, branches, and rules and branch protection, each by name across the set.
+
+**Tags by Name.** Tags by Name: each tag across the set and the commit it is on in each repository. Release Train makes it, or it and a release, where it is missing, and never moves an existing tag; Delete Everywhere keeps a tag a release is built on.
+
+**Branches by Name.** Branches by Name: each branch across the set, where it is the default and where it is protected. Rename Everywhere uses GitHub's rename; its preview says where the default changes, where protection moves and how many open pull requests are retargeted.
+
+**Rules and Branch Protection.** Rules and Branch Protection: each ruleset by name, and each default branch's protection, compared across the set. Make them the same as the winner, add a ruleset where it is missing, or promote one to an organization ruleset; each needs admin access and shows a preview first.
+
+**Actions by Name.** Actions by Name: environments, secrets and variables, each by name across the set. Reading them needs admin access in each repository.
+
+**Environments by Name.** Environments by Name: wait timer, reviewers, self-review and which branches may deploy, compared across the set. Make them the same as the winner, or delete one everywhere. GitHub has no organization environments.
+
+**Secrets by Name.** Secrets by Name: each Actions secret across the set, by name only, because GitHub never shows a secret's value. Set Secret Everywhere takes one new value, typed once and sealed for each repository; Promote to Organization makes one organization secret for those repositories.
+
+**Variables by Name.** Variables by Name: each Actions variable and its values across the set. Make them the same, add the missing, delete everywhere, or promote to one organization variable for those repositories.
+
+**Settings by Name.** Settings by Name: webhooks, deploy keys and autolinks, each by name across the set. Reading them needs admin access in each repository.
+
+**Webhooks by Name.** Webhooks by Name: each webhook by its address, with its events, on or off and content type. Make them the same, add the missing, turn them on or off, delete, or promote to one organization webhook, which GitHub sends for every repository in the organization. A webhook's secret is never readable.
+
+**Deploy Keys by Name.** Deploy Keys by Name: each deploy key by title, with its fingerprint and access. Delete Everywhere removes it; GitHub accepts a deploy key in one repository only, so one cannot be added to more.
+
+**Autolinks by Name.** Autolinks by Name: each autolink by its prefix, with its address. Add the missing or delete everywhere; GitHub cannot change an autolink in place.
+
+**Fleet.** Fleet: one line per repository in the set: the exact revision of its default branch, checks, open pull requests, latest release and alerts, and when it was read. A repository that could not be read keeps its line, with the reason.
 
 **People and Organizations.** Search People and Organizations: accounts whose name or login matches the filter box, such as jeff or type:org location:Tucson. Enter opens one.
 
@@ -3724,7 +3748,7 @@ Control coverage: 384 audited sites (384 helped).
 
 **Find Uses.** Search every issue and pull request with it, across the set.
 
-**Rename Everywhere.** Rename the label in every repository; a clash is shown, not merged.
+**Rename Everywhere.** Rename the label or branch in every repository; a clash is shown, not merged, and a branch's preview says what follows from GitHub's rename.
 
 **Merge Into.** Move every item to another label, then delete this one, after the preview.
 
@@ -3732,9 +3756,15 @@ Control coverage: 384 audited sites (384 helped).
 
 **Move Open Work To.** Move each repository's open items to another milestone of its own, after the preview.
 
-**Promote to Organization.** One organization ruleset for the set's repositories in that organization, then their own copies deleted, after the preview.
+**Promote to Organization.** One organization ruleset, secret, variable or webhook for the set's repositories in that organization, then their own copies deleted, after the preview.
 
-**Delete Everywhere.** Delete the label, or remove the topic, in every repository, after the preview.
+**Release Train.** Make this tag, or the tag and a release, in the repositories you choose; one that has the tag is skipped and its tag never moved.
+
+**Set Secret Everywhere.** Type one new value once; it is sealed for each repository you choose and set there.
+
+**Turn On or Off Everywhere.** Turn the webhook on or off in every repository that has it, after the preview.
+
+**Delete Everywhere.** Delete it, or remove the topic, in every repository that has it, after the preview.
 
 **Open Repository.** Select the repository's node in the tree.
 

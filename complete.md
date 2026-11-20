@@ -52,9 +52,7 @@ Each is done only with evidence: a test or a live run.
 - [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
 - [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
 - [ ] Least-privilege advice based on observed usage with honest uncertainty (attestations and immutable releases are done).
-- [ ] First-class by-name collections for every kind in product requirements document (PRD) 22.11 beyond Labels, Milestones, Topics, Rules and Branch Protection, and the Fleet; the other kinds are classified in `quill/core/github/across_scope_matrix.py`.
-- [ ] Tags, release trains and branch renames across repositories: comparison, publishing, feature-specific safeguards (topics are done).
-- [ ] Align or promote to organization, where supported: environments, secrets, variables, webhooks, keys and autolinks (rulesets and default-branch protection are done; labels cannot be promoted).
+- [ ] First-class by-name collections for the PRD 22.11 kinds still "not yet" in `quill/core/github/across_scope_matrix.py`: workflows, templates, Dependabot and CODEOWNERS, people, settings and packages.
 - [ ] Workflow/template/community/Dependabot/CODEOWNERS content: compare and update through reviewable pull requests.
 - [ ] Saved replies/favorites/watch levels/stars, alerts/packages/Pages where supported.
 - [ ] Cross-repository coverage is complete only when the corresponding single-repository operation and batch behavior are complete; read-only category views are tracked separately from multi-target writes.
@@ -62,7 +60,7 @@ Each is done only with evidence: a test or a live run.
 - [ ] GX12 collaboration/knowledge; GX13: account-aware repository switching (Compare Accounts and Act As, still open).
 - [ ] GX09: Why Can't I Merge? and Merge Selected... do not yet name the specific ruleset or CODEOWNERS rule that blocks (only the review window's Check Merge Policy does), and nothing watches a pull request to say when its readiness changes.
 - [ ] GX10: attestation signatures are not verified in QUILL (it points to gh attestation verify), and a downloaded release file is not checked against its digest.
-- [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance; GX16 category-first cross-repository browsing.
+- [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance.
 
 #### Documentation at the end of each delivery batch
 
@@ -89,6 +87,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 - [ ] Issue types and fields in an organization that has them: typed values in the Issue fields column (a date, a number, a choice), `type:Bug` and `field.priority:high` searches, the Properties Issue Fields page, "hidden from you" for an account that cannot see fields, a person's repository (`/user/issue-fields`).
 - [ ] Merge Selected... on two throwaway pull requests, and Release Evidence on `v0.0.1-quill-live`, on the test repository; Merge Selected on a queue-only branch needs an organization repository with a merge-queue ruleset; confirm GitHub's `immutable` and asset `digest` fields.
 - [ ] Rulesets, members and teams on GitHub: the organization ruleset sheet on a throwaway organization; push restrictions and signed commits surviving a branch protection save; members' two-factor as an owner and as a member; making a member an outside collaborator and removing one; a team's parent and repository changes; the team-admin guard; and Access Review: People and Teams against real permissions.
+- [ ] Across Repositories on the two test repositories: Release Train..., Set Secret Everywhere..., Turn On or Off Everywhere... (needs a webhook on both), Rename Everywhere on a throwaway branch, and Promote to Organization for a secret, a variable and a webhook in the test organization.
 - [ ] **GH-R-119:** timed find-the-answer sessions with people.
 - [ ] Plain-Language Batch on the test repository (assign, then unassign, by sentence; GitHub's search may need a moment to index a new issue), and Ctrl+Shift+S in the real window.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists.
