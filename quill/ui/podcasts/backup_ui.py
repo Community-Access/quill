@@ -102,7 +102,9 @@ def back_up_cast_data(frame: Any) -> None:
             wx.CallAfter(frame._set_status, f"Backup failed: {exc}")
             wx.CallAfter(frame._announce, f"Backup failed. {exc}")
             return
-        done = f"Backup saved to {dest.name}."
+        from quill.core.action_feedback import written_result
+
+        done = written_result("Backup saved", dest)  # the file and its folder (FUX-04)
         wx.CallAfter(frame._set_status, done)
         wx.CallAfter(frame._announce, done)
 
@@ -181,18 +183,28 @@ def _apply_restore(frame: Any, result: Any) -> None:
     and refresh the view, so the restore is live without a restart."""
     from quill.core.paths import app_data_dir
     from quill.core.podcasts import history as podcast_history
-    from quill.core.podcasts import podcasts
+
+    # ``subscriptions``, where load_library lives: the import here named a
+    # module that does not exist, so a restore that had worked on disk raised
+    # on the UI thread and ended in silence after "Restoring QUILL Cast..."
+    # (found by the FUX-04 audit, 2026-11-19).
+    from quill.core.podcasts import subscriptions
 
     data_dir = app_data_dir()
     try:
-        frame._podcast_library = podcasts.load_library(data_dir)
+        frame._podcast_library = subscriptions.load_library(data_dir)
         frame._podcast_history = podcast_history.load_history(data_dir)
         frame._reload_library_tree()
     except Exception as exc:  # noqa: BLE001 - it worked on disk; report the reload
-        frame._set_status(
+        # Said as well as shown (FUX-04): "Restoring QUILL Cast..." was the
+        # last thing spoken, and a status line nobody is looking at left the
+        # listener believing the restore had not finished.
+        partly = (
             f"Restored, but could not refresh the view ({exc}). "
             "Restart QUILL Cast to see your library."
         )
+        frame._set_status(partly)
+        frame._announce(partly)
         return
     done = f"{result.summary()} Your podcasts are back."
     frame._set_status(done)

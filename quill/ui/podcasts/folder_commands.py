@@ -132,12 +132,13 @@ def export_folder_opml(dialog: Any, folder_id: str) -> None:
         dialog._announce(f"Could not write that file: {error}.")
         return
     count = len(folder_actions.subtree_show_ids(dialog._library, folder_id))
+    from quill.core.action_feedback import written_result
     from quill.ui.outcome_report import report_outcome
 
     report_outcome(
         dialog,
         "Export Folder as OPML",
-        f"Exported {count} podcast{'' if count == 1 else 's'} to {Path(destination).name}.",
+        written_result(f"Exported {count} podcast{'' if count == 1 else 's'}", destination),
         path=destination,
     )
 

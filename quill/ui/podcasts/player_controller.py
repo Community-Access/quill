@@ -432,6 +432,7 @@ class PodcastPlayerController(
         self._start_load(self._enhanced_source, start_ms=max(0, ms))
 
     def set_rate(self, rate: float) -> None:
+        self._pending_rate = rate if rate > 0 else self._pending_rate  # `rate` is now true (FUX-04)
         if self._engine is not None:
             self._engine.set_rate(rate)
 
