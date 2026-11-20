@@ -2,6 +2,24 @@
 
 ## 1.0.0
 
+### WordPress Workbench: Gravity Forms, QAF's spam checks and PMPro tried live (2026-11-20)
+
+- **Test This Form works on a form with a phone or time field.** Its test
+  values put "555-0100" in a US phone field, which Gravity Forms refuses, and
+  left a Time field empty. It now sends "(555) 555-0100" to a US phone field
+  and a time such as "10:30 am".
+- **Discount Codes lists codes on Paid Memberships Pro 3.9.** The node looked
+  for a PMPro feature that PMPro 3.9.2 does not have, so it only ever said to
+  use wp-admin. It now lists up to 20 codes through PMPro's own search, which
+  cannot show more, and says when there may be more in wp-admin.
+- **Tried on the test site:** every Gravity Forms field type QUILL builds,
+  changing an entry's answers, Spam and Not Spam, notes, notifications and
+  confirmations, Resend Notifications, copying a form and its entries to QUILL
+  Accessible Forms and back, and the Watch; QUILL Accessible Forms' spam
+  checks with real submissions, and the move from BITS Accessible Forms;
+  Members of This Level on a site of 260 people; and reading a menu as a
+  document.
+
 ### GitHub Workbench: access templates, more tutorials, team review requests, and the Command Key in the Workbench (2026-11-20)
 
 - **Access templates.** Account > Roles and Access > Access Templates... keeps

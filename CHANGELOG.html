@@ -245,6 +245,28 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="wordpress-workbench-gravity-forms-qafs-spam-checks-and-pmpro-tried-live-2026-11-20">WordPress
+Workbench: Gravity Forms, QAF’s spam checks and PMPro tried live
+(2026-11-20)</h3>
+<ul>
+<li><strong>Test This Form works on a form with a phone or time
+field.</strong> Its test values put “555-0100” in a US phone field,
+which Gravity Forms refuses, and left a Time field empty. It now sends
+“(555) 555-0100” to a US phone field and a time such as “10:30 am”.</li>
+<li><strong>Discount Codes lists codes on Paid Memberships Pro
+3.9.</strong> The node looked for a PMPro feature that PMPro 3.9.2 does
+not have, so it only ever said to use wp-admin. It now lists up to 20
+codes through PMPro’s own search, which cannot show more, and says when
+there may be more in wp-admin.</li>
+<li><strong>Tried on the test site:</strong> every Gravity Forms field
+type QUILL builds, changing an entry’s answers, Spam and Not Spam,
+notes, notifications and confirmations, Resend Notifications, copying a
+form and its entries to QUILL Accessible Forms and back, and the Watch;
+QUILL Accessible Forms’ spam checks with real submissions, and the move
+from BITS Accessible Forms; Members of This Level on a site of 260
+people; and reading a menu as a document.</li>
+</ul>
+<h3
 id="github-workbench-access-templates-more-tutorials-team-review-requests-and-the-command-key-in-the-workbench-2026-11-20">GitHub
 Workbench: access templates, more tutorials, team review requests, and
 the Command Key in the Workbench (2026-11-20)</h3>
@@ -352,6 +374,56 @@ recovery window keeps the check you gave every other row and puts focus
 on the next one, not the first. Focus never moves and nothing extra is
 said.</li>
 </ul>
+<h3
+id="wordpress-workbench-the-shop-memberships-and-gravity-forms-tried-on-a-real-site-2026-11-20">WordPress
+Workbench: the shop, memberships and Gravity Forms tried on a real site
+(2026-11-20)</h3>
+<p>Every plugin feature built since the last live run was tried on the
+test site (WordPress 7.1.5 with WooCommerce 11.3.1, Yoast SEO 28.9, Paid
+Memberships Pro 3.9.2, Gravity Forms 3.2.3.1, QUILL Accessible Forms
+1.0.0, Advanced Custom Fields 6.8.12 and Redirection 5.10.1). What it
+found is fixed:</p>
+<ul>
+<li><strong>Edit Membership Level made a second level</strong> instead
+of changing the one you chose, because Paid Memberships Pro makes a new
+level for every POST. It now changes the level in place. After New or
+Edit Membership Level, QUILL reads the level back and names anything
+Paid Memberships Pro did not keep (its REST API drops the billing and
+expiry periods), and Ctrl+Z on a new level explains that Paid
+Memberships Pro does not allow deleting a level through its REST API,
+and where to delete it instead.</li>
+<li><strong>Members of This Level</strong> says plainly when your
+account cannot list the site’s people, and shows when each member joined
+as a date.</li>
+<li><strong>Change Items</strong> keeps a line’s price per item when you
+change its quantity. WooCommerce kept the old line total, so 3 mugs
+still cost the price of 1. A quantity of 0 does take the line off the
+order.</li>
+<li><strong>Shop Analytics</strong> says on its total row how many
+orders WooCommerce has not imported into Analytics yet, so the figures
+do not look complete when they are not.</li>
+<li><strong>Yoast SEO:</strong> where Yoast gives no canonical address
+because the site asks search engines not to index it, the SEO page says
+so and shows the post’s address, instead of “none given”.</li>
+<li><strong>Gravity Forms:</strong> Submit a Test Entry used an
+example.com address, which Gravity Forms 2.9.15 and later turn away as
+spam. It now uses one Gravity Forms accepts. Ctrl+Z now moves the test
+entry to the Trash again, because QUILL finds the entry itself when
+Gravity Forms does not say which one it made. On a site with no feed
+add-on, Feeds is empty instead of showing an error as if it were a
+feed.</li>
+<li><strong>The Watch for new form responses</strong> works with QUILL
+Accessible Forms, whose responses are listed one form at a time; before
+this it skipped the site with “Missing parameter(s): form_id”.</li>
+<li><strong>QUILL Site Types:</strong> a post type you define keeps its
+fields in the REST API. Before this, the values you saved were dropped
+without a word.</li>
+<li><strong>WP Crontrol:</strong> Open Cron Events opens WP Crontrol
+2.0’s real page.</li>
+</ul>
+<p>The live run (<code>docs/qa/wordpress-live-run.py</code>) gains tests
+127 to 143 for these features, and <code>--only</code> to run just some
+of them.</p>
 <h3
 id="github-workbench-write-workflows-dependabot-and-codeowners-2026-11-19">GitHub
 Workbench: write workflows, Dependabot and CODEOWNERS (2026-11-19)</h3>
