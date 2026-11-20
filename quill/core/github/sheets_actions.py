@@ -264,6 +264,9 @@ ARTIFACT = SheetDef(
 )
 
 
+_CACHE_PAGE = {"per_page": "100", "sort": "last_accessed_at", "direction": "desc"}
+
+
 def _cache(data: Mapping[str, Any], ident: Ident) -> dict[str, Value]:
     for row in lst(data, "actions_caches"):
         if isinstance(row, Mapping) and str(row.get("id")) == ident.get("id"):
@@ -294,6 +297,7 @@ CACHE = SheetDef(
             ),
         ),
     ),
-    (Read(_ACT + "/caches", pick=_cache),),
+    # The same page the Caches list showed, so a listed cache past GitHub's first 30 is found.
+    (Read(_ACT + "/caches", pick=_cache, query=lambda _ident: dict(_CACHE_PAGE)),),
     title=lambda ident: f"Cache {ident['id']}",
 )

@@ -31,6 +31,15 @@ class GitHubProjectField:
     kind: str
     options: tuple[tuple[str, str], ...] = ()
     iterations: tuple[tuple[str, str], ...] = ()
+    data_type: str = ""
+    """GitHub's own type (TEXT, TITLE, ASSIGNEES...): which fields a person made."""
+
+
+#: The field types a person adds to a Project; the rest (Title, Assignees, Labels...) are GitHub's.
+OWN_FIELD_TYPES = frozenset({"TEXT", "NUMBER", "DATE", "SINGLE_SELECT", "ITERATION"})
+
+#: A plain field (``ProjectV2Field``) by its data type: the three QUILL edits.
+_PLAIN_KINDS = {"TEXT": "text", "NUMBER": "number", "DATE": "date"}
 
 
 @dataclass(frozen=True, slots=True)
@@ -132,6 +141,9 @@ def project_fields(value: object) -> tuple[tuple[GitHubProjectField, ...], bool]
             "ProjectV2Field": "field",
             "ProjectV2IterationField": "iteration",
         }.get(text(typename), "field")
+        data_type = text(row.get("dataType")).upper()
+        if kind == "field":
+            kind = _PLAIN_KINDS.get(data_type, "field")
         option_key = "multiSelectOptions" if kind == "multi_select" else "options"
         option_rows = row.get(option_key)
         options = (
@@ -147,8 +159,11 @@ def project_fields(value: object) -> tuple[tuple[GitHubProjectField, ...], bool]
         iteration_connection = (
             configuration.get("iterations") if isinstance(configuration, dict) else None
         )
+        # GitHub answers a plain list; a connection's nodes are read too.
         iteration_rows = (
-            iteration_connection.get("nodes") if isinstance(iteration_connection, dict) else None
+            iteration_connection.get("nodes")
+            if isinstance(iteration_connection, dict)
+            else iteration_connection
         )
         iterations = (
             tuple(
@@ -159,7 +174,7 @@ def project_fields(value: object) -> tuple[tuple[GitHubProjectField, ...], bool]
             if isinstance(iteration_rows, list)
             else ()
         )
-        fields.append(GitHubProjectField(node_id, name, kind, options, iterations))
+        fields.append(GitHubProjectField(node_id, name, kind, options, iterations, data_type))
     return tuple(fields), bool(page.get("hasNextPage"))
 
 
@@ -297,6 +312,7 @@ __all__ = [
     "GitHubProjectField",
     "GitHubProjectItem",
     "GitHubProjectsError",
+    "OWN_FIELD_TYPES",
     "connection",
     "issue_links",
     "project",

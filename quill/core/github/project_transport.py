@@ -17,6 +17,33 @@ class _NoRedirect(HTTPRedirectHandler):
         return None
 
 
+_NOT_FOUND = "GitHub found no such Project or item, or will not show it to this account."
+_FORBIDDEN = (
+    "GitHub refused: this account may not change this Project. It needs write access to "
+    "the Project, and a sign-in with the project scope."
+)
+_SCOPES = (
+    "GitHub refused: your sign-in lacks the project scope. Sign in with GitHub again, from "
+    "Manage GitHub Accounts, to grant it."
+)
+
+_REFUSALS = (("INSUFFICIENT_SCOPES", _SCOPES), ("FORBIDDEN", _FORBIDDEN), ("NOT_FOUND", _NOT_FOUND))
+
+
+def refusal_words(errors: object) -> str:
+    """GraphQL *errors* as one plain sentence, GitHub's own words after it."""
+    rows = [row for row in errors if isinstance(row, dict)] if isinstance(errors, list) else []
+    kinds = {str(row.get("type", "")) for row in rows}
+    said = "; ".join(str(row.get("message", "")) for row in rows if row.get("message"))
+    lead = next(
+        (words for kind, words in _REFUSALS if kind in kinds),
+        "",
+    )
+    if not lead:
+        return said or "GitHub rejected the request."
+    return f"{lead} GitHub said: {said}" if said else lead
+
+
 def request_graphql(token: str, query: str, variables: dict[str, object]) -> dict[str, Any]:
     if not token.strip():
         raise GitHubProjectsError("Sign in to GitHub to view or update Projects.")
@@ -49,6 +76,8 @@ def request_graphql(token: str, query: str, variables: dict[str, object]) -> dic
             raise GitHubProjectsError(
                 hint or "GitHub denied the Projects request. Check token and organization access."
             ) from exc
+        if exc.code == 404:
+            raise GitHubProjectsError(_NOT_FOUND) from exc
         raise GitHubProjectsError(f"GitHub returned HTTP {exc.code} for Projects.") from exc
     except Exception as exc:  # noqa: BLE001 - response/network failures are user-visible
         raise GitHubProjectsError(f"GitHub Projects request failed: {exc}") from exc
@@ -56,14 +85,11 @@ def request_graphql(token: str, query: str, variables: dict[str, object]) -> dic
         raise GitHubProjectsError("GitHub returned an invalid Projects response.")
     errors = payload.get("errors")
     if errors:
-        messages = [row.get("message", "error") for row in errors if isinstance(row, dict)]
-        raise GitHubProjectsError(
-            "; ".join(str(message) for message in messages) or "GitHub rejected the request."
-        )
+        raise GitHubProjectsError(refusal_words(errors))
     data = payload.get("data")
     if not isinstance(data, dict):
         raise GitHubProjectsError("GitHub returned no Projects data.")
     return data
 
 
-__all__ = ["request_graphql"]
+__all__ = ["refusal_words", "request_graphql"]

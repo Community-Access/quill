@@ -3568,6 +3568,12 @@ Control coverage: 384 audited sites (384 helped).
 
 **Move an Item.** Put an item in another place in the Project's own order.
 
+**Archive an Item.** Hide an item from the Project's views; its field values are kept.
+
+**Restore an Archived Item.** Bring an archived item back into the Project's views, with its field values.
+
+**Remove an Item.** Take an item out of the Project. The issue or pull request stays; a draft is deleted.
+
 **Edit a Status Update.** Change a status update's status or text.
 
 **Delete a Status Update.** Delete one of this Project's status updates.

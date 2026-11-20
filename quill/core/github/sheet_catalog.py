@@ -305,8 +305,20 @@ def _install_finders() -> None:
         number = _number_at_end(attr(row, "url"))
         return Target("discussion", {"repo": repo, "number": number}) if number else None
 
+    def resource(row: object, repo: str) -> Target | None:
+        """A row of a listed setting whose object has a sheet: an artifact, a variable."""
+        spec, _, item = attr(row, "key").partition(":")
+        if not item or "/" not in repo:
+            return None
+        if spec == "artifacts":
+            return Target("artifact", {"repo": repo, "id": item, "name": attr(row, "title")})
+        if spec in ("actions_variables", "actions_secrets"):
+            return Target(spec.removeprefix("actions_")[:-1], {"repo": repo, "name": item})
+        return None
+
     add_finder(kind="security", finder=alert)
     add_finder(kind="discussion", finder=discussion)
+    add_finder(kind="resource", finder=resource)
 
 
 def target_for_node(template: str, key: str, instance: str) -> Target | None:

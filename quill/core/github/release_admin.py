@@ -20,7 +20,7 @@ from __future__ import annotations
 import json
 import mimetypes
 import os
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, BinaryIO
@@ -93,6 +93,38 @@ def parse_release(data: object) -> ReleaseRecord:
         html_url=str(data.get("html_url") or ""),
         assets=assets,
     )
+
+
+def release_data(api: Any, repo: str, tag: str) -> Mapping[str, Any]:
+    """GitHub's copy of the release for *tag*, a draft's included.
+
+    GitHub's by-tag read answers 404 for a draft (a draft has no tag yet), and
+    a draft's files name it ``untagged-...`` in their addresses; both are found
+    in the list instead. *api* is a :class:`~quill.core.github.workbench_api.GitHubApi`.
+    Raises :class:`GitHubRestError` (404 when there is no such release).
+    """
+    base = repo_path(repo)
+    try:
+        data = api.rest("GET", f"{base}/releases/tags/{quote(tag, safe='')}").data
+    except GitHubRestError as exc:
+        if exc.status != 404:
+            raise
+    else:
+        if isinstance(data, Mapping):
+            return data
+    for page in range(1, 6):
+        query = {"per_page": "100", "page": str(page)}
+        rows = api.rest("GET", f"{base}/releases", query=query).data
+        rows = rows if isinstance(rows, list) else []
+        for row in rows:
+            if not isinstance(row, Mapping):
+                continue
+            address = str(row.get("html_url") or "")
+            if str(row.get("tag_name") or "") == tag or address.endswith(f"/tag/{tag}"):
+                return row
+        if len(rows) < 100:
+            break
+    raise GitHubRestError(f"No release tagged {tag} in {repo}", status=404)
 
 
 def _call(action: str, call: Callable[[], RestResponse], expect: tuple[int, ...]) -> RestResponse:
@@ -357,4 +389,5 @@ __all__ = [
     "UploadProgress",
     "parse_release",
     "release_change_sentence",
+    "release_data",
 ]

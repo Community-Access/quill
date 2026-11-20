@@ -552,8 +552,10 @@ own list, and `Shift+F1` reads it with the keys:
   Only, Re-run Workflow, Cancel Run, View Artifacts, Combined Check Status,
   Review Pending Deployments, Approve Run from a Fork, and Delete Run.
 - **A workflow:** its Runs (Enter), and Run Workflow on Branch.
-- **A release:** its Assets (Enter), each with Download, Copy Link and Delete
-  Asset; Edit Release; Draft Release Notes; and Upload Asset.
+- **A release:** its Assets (Enter), each with Download, Copy Link,
+  Properties (to rename a file or change its label) and Delete Asset; Edit
+  Release; Draft Release Notes; and Upload Asset. A draft opens on its sheet
+  too, and deleting one says that a draft has no tag to delete.
 - **A branch:** its Commits (Enter), Compare Branches, Copy Name, and Delete
   Branch, which asks you to type the branch name.
 - **A commit or a tag:** Open, and Commit Comments, to read and write comments
@@ -811,8 +813,9 @@ and is never said or shown.
   repository:** Sponsor Links (its FUNDING.yml) and Dependency Manifests.
 - **A Project, inside:** Rename a View..., Delete a View..., Rename a
   Field..., Add an Issue Field..., Edit a Draft..., Make a Draft an
-  Issue..., Move an Item..., Edit a Status Update..., Delete a Status
-  Update..., Delete a Workflow..., Share the Project..., Link a Team... and
+  Issue..., Move an Item..., Archive an Item..., Restore an Archived
+  Item..., Remove an Item... (asks first), Edit a Status Update..., Delete a
+  Status Update..., Delete a Workflow..., Share the Project..., Link a Team... and
   Unlink a Team....
 - **Your sponsorships:** Set Up a Sponsors Profile..., New Sponsor Tier...
   and Patreon Sponsorships...; on a sponsorship, Sponsorship

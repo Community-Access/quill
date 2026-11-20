@@ -19,7 +19,8 @@ query($projectId:ID!, $after:String) {
       fields(first:100) {
         pageInfo { hasNextPage }
         nodes {
-          __typename id name
+          __typename
+          ... on ProjectV2FieldCommon { id name dataType }
           ... on ProjectV2SingleSelectField { options { id name } }
           ... on ProjectV2MultiSelectField { multiSelectOptions { id name } }
           ... on ProjectV2IterationField {
@@ -57,16 +58,24 @@ query($projectId:ID!, $after:String) {
             pageInfo { hasNextPage }
             nodes {
               __typename
-              ... on ProjectV2ItemFieldTextValue { text field { id name } }
-              ... on ProjectV2ItemFieldNumberValue { number field { id name } }
-              ... on ProjectV2ItemFieldDateValue { date field { id name } }
+              ... on ProjectV2ItemFieldTextValue {
+                text field { ... on ProjectV2FieldCommon { id name } }
+              }
+              ... on ProjectV2ItemFieldNumberValue {
+                number field { ... on ProjectV2FieldCommon { id name } }
+              }
+              ... on ProjectV2ItemFieldDateValue {
+                date field { ... on ProjectV2FieldCommon { id name } }
+              }
               ... on ProjectV2ItemFieldSingleSelectValue {
-                name optionId field { id name }
+                name optionId field { ... on ProjectV2FieldCommon { id name } }
               }
               ... on ProjectV2ItemFieldMultiSelectValue {
-                value options { id name } field { id name }
+                value options { id name } field { ... on ProjectV2FieldCommon { id name } }
               }
-              ... on ProjectV2ItemFieldIterationValue { title iterationId field { id name } }
+              ... on ProjectV2ItemFieldIterationValue {
+                title iterationId field { ... on ProjectV2FieldCommon { id name } }
+              }
             }
           }
         }

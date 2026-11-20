@@ -289,6 +289,11 @@ first, “on”, “turned off” or “turned off by GitHub after 60 days witho
 activity”, and asks before changing it. You hear “Turned on” and its
 name, or “Turned off”. The workflow’s Properties sheet has the same
 switch as its Enabled field.</p>
+<p>When GitHub refuses an Actions request, QUILL says why in words. It
+might need write access to Actions, or a log or artifact may have gone
+after the repository’s retention period. This applies to turning a
+workflow on or off, starting or re-running it, reading a job’s log and
+downloading an artifact.</p>
 <h2 id="what-failed">What Failed</h2>
 <p>This is the command to learn first. Select a failed run in
 <strong>Workflow Runs</strong> and press <code>Ctrl+Shift+W</code>, or

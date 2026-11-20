@@ -1,11 +1,11 @@
 """Release actions, and the repository's own windows, in the GitHub Workbench.
 
 GitHub PRD section 5. On a release: Assets (its files, with Download, Copy
-Link and Delete), Edit Release, Draft Release Notes, Upload Asset and Delete
-Asset. From Repository > Repository Actions: Milestones, Projects, and Files,
-History and Blame -- the windows GitHub Items opened from its view menu. Each
-is the same window or provider call GitHub Items used, parented to the
-Workbench.
+Link, Properties -- rename and label -- and Delete), Edit Release, Draft
+Release Notes, Upload Asset and Delete Asset. From Repository > Repository
+Actions: Milestones, Projects, and Files, History and Blame -- the windows
+GitHub Items opened from its view menu. Each is the same window or provider
+call GitHub Items used, parented to the Workbench.
 
 Every write asks first (publishing a draft says who is notified), runs off the
 UI thread, and says one outcome.
@@ -165,6 +165,20 @@ class GitHubWorkbenchReleasesMixin:
                 lambda i: self.frame.copy_text(assets[i].browser_download_url if i >= 0 else ""),
             ),
         ]
+
+        def properties(index: int) -> None:
+            if index < 0:
+                return
+            from quill.core.github.sheet_catalog import Target
+
+            ident = {"repo": self._repo_for(ref), "tag": release.tag, "name": assets[index].name}
+            self._open_one(Target("release_asset", ident))  # type: ignore[attr-defined]
+
+        actions.append((
+            "&Properties...",
+            "The file's sheet: rename it or change its label.",
+            properties,
+        ))
         if self.signed_in:
             actions.append(("Dele&te...", "Remove the file from the release. Asks first.", remove))
         box = WorkbenchListDialog(

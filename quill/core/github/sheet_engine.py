@@ -509,9 +509,12 @@ def save(
         try:
             _send(api, request)
         except Exception as exc:  # noqa: BLE001 - a failure is reported per field
+            # GitHub's own words, without the support code str() adds to a coded
+            # error: the reason is spoken ("Could not change name: ...").
+            reason = str(exc.args[0]) if exc.args else str(exc)
             for change in pending:
                 if change.key in request.keys:
-                    outcome.failed.append((change, str(exc)))
+                    outcome.failed.append((change, reason or "no reason was given"))
     failed_keys = {change.key for change, _reason in outcome.failed}
     after = load(api, sheet, sheet.ident_after(ident, pending)).values
     outcome.after = after

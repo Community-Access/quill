@@ -53,6 +53,12 @@ workflow's context menu says its state in words first, "on", "turned off" or
 changing it. You hear "Turned on" and its name, or "Turned off". The
 workflow's Properties sheet has the same switch as its Enabled field.
 
+When GitHub refuses an Actions request, QUILL says why in words. It might
+need write access to Actions, or a log or artifact may have gone after the
+repository's retention period. This applies to turning a workflow on or
+off, starting or re-running it, reading a job's log and downloading an
+artifact.
+
 ## What Failed
 
 This is the command to learn first. Select a failed run in **Workflow Runs**

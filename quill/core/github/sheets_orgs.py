@@ -27,7 +27,7 @@ from quill.core.github.sheet_fields import dig, ed, lst, page, patch, ro, toggle
 from quill.core.github.sheets_you import FOLLOW_ORGANIZATION, ORG_YOU_READ, sponsoring_field
 from quill.core.workbench.properties import FieldKind, SheetSpec, Value
 
-__all__ = ["ORGANIZATION", "TEAM", "TEAM_REVIEW_QUERY"]
+__all__ = ["ORGANIZATION", "TEAM", "TEAM_REVIEW_QUERY", "team_privacy"]
 
 _O, _V, _A = WriteTier.ORGANIZING, WriteTier.VISIBLE, WriteTier.ACCESS
 _K = FieldKind
@@ -71,6 +71,11 @@ def _organization(data: Mapping[str, Any]) -> dict[str, Value]:
     for key, _label in _PRIVILEGES:
         found[key] = bool(data.get(key))
     return found
+
+
+def team_privacy(row: Mapping[str, Any]) -> str:
+    """A team's visibility in the sheet's words: GitHub's "closed" is "visible"."""
+    return "visible" if row.get("privacy") == "closed" else str(row.get("privacy") or "")
 
 
 def _invitation_row(row: Mapping[str, Any]) -> str:
@@ -217,7 +222,7 @@ ORGANIZATION = SheetDef(
         ),
         Read(
             _ORG + "/teams",
-            _items("teams", lambda r: f"{r.get('name', '')}, {r.get('privacy', '')}"),
+            _items("teams", lambda r: f"{r.get('name', '')}, {team_privacy(r)}"),
             optional=True,
         ),
         Read(
@@ -311,7 +316,7 @@ def _team(data: Mapping[str, Any]) -> dict[str, Value]:
         "name": str(data.get("name") or ""),
         "slug": str(data.get("slug") or ""),
         "description": str(data.get("description") or ""),
-        "privacy": "visible" if data.get("privacy") == "closed" else "secret",
+        "privacy": team_privacy(data) or "secret",
         "parent": str(dig(data, "parent", "slug") or ""),
         "notifications": data.get("notification_setting") != "notifications_disabled",
         "members_count": int(data.get("members_count") or 0),
@@ -389,6 +394,16 @@ def _compose_review(
     return found
 
 
+def _idp_groups(data: Mapping[str, Any]) -> dict[str, Value]:
+    """GitHub answers ``{"groups": [...]}``; the sheet's field is ``idp_groups``."""
+    rows = lst(data, "groups")
+    return {
+        "idp_groups": tuple(
+            str(row.get("group_name", "")) for row in rows or () if isinstance(row, Mapping)
+        )
+    }
+
+
 def _role_rows(role: str) -> Any:
     return _items(f"{role}s", lambda r: f"{r.get('login', '')}, {role}")
 
@@ -456,23 +471,34 @@ TEAM = SheetDef(
                 ed("review_count", "How many reviewers", _K.NUMBER),
                 ed("review_notify", "Notify the whole team as well", _K.CHECK),
             ),
-            page("idp", "Identity Provider", ro("idp_groups", "Linked groups", _K.TABLE)),
+            page(
+                "idp",
+                "Identity Provider",
+                ro(
+                    "idp_groups",
+                    "Linked groups",
+                    _K.TABLE,
+                    "Only GitHub Enterprise Cloud links a team to identity provider groups; "
+                    "anywhere else this stays empty.",
+                ),
+            ),
             page(
                 "danger",
                 "Danger Zone",
                 ro(
                     "danger_note",
                     "Delete",
-                    help="Delete Team on "
-                    "the context menu deletes it, after a preview "
-                    "naming every repository that loses its access "
-                    "and the name typed. Its child teams move up.",
+                    help="Delete Team... on the context menu deletes it after asking, and "
+                    "every team inside it too. Its members keep their own access but lose "
+                    "what the team gave them.",
                 ),
             ),
         ),
     ),
     (
         Read(_TEAM, _team),
+        # An organization owner may change any team, on it or not (permissions, team:maintainer).
+        Read("/user/memberships/orgs/{org}", _membership, optional=True),
         Read(
             _TEAM + "/memberships/{me}",
             _team_role,
@@ -483,23 +509,24 @@ TEAM = SheetDef(
             _TEAM + "/members",
             _role_rows("maintainer"),
             optional=True,
-            query=lambda _i: {"role": "maintainer"},
+            query=lambda _i: {"role": "maintainer", "per_page": "100"},
         ),
         Read(
             _TEAM + "/members",
             _role_rows("member"),
             optional=True,
-            query=lambda _i: {"role": "member"},
+            query=lambda _i: {"role": "member", "per_page": "100"},
         ),
         Read(
             _TEAM + "/repos",
             _items("team_repos", lambda r: f"{r.get('full_name', '')}, {r.get('role_name', '')}"),
             optional=True,
+            query=lambda _i: {"per_page": "100"},
         ),
         Read(_TEAM + "/teams", _items("children", lambda r: str(r.get("name", ""))), optional=True),
         Read(
             _TEAM + "/team-sync/group-mappings",
-            _items("groups", lambda r: str(r.get("group_name", ""))),
+            _idp_groups,
             optional=True,
         ),
         Read(
