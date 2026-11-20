@@ -2772,6 +2772,8 @@ Control coverage: 384 audited sites (384 helped).
 
 **repository: Custom Property Values.** Custom Property Values: the organization's custom properties, as set here.
 
+**repository: Rulesets.** Rulesets: every ruleset on this repository, its own and the organization's. Alt+Enter opens one's sheet: its target, every rule and setting, who may bypass it, and a Summary in plain words. Delete removes one after its name is typed.
+
 **person: person.** A person: their repositories, activity, followers and who they follow.
 
 **person: Profile.** Profile: who this person is, their year of contributions as numbers, and what they pinned.
@@ -2836,13 +2838,13 @@ Control coverage: 384 audited sites (384 helped).
 
 **organization: Larger Runners.** Larger Runners: GitHub's bigger machines the organization pays for.
 
-**organization: Members.** Members: the organization's people. Ctrl+N invites someone; Delete removes them.
+**organization: Members.** Members: the organization's people, each an owner or a member, with two-factor sign-in on or off where you may see it. Ctrl+N invites someone; Delete removes them, after their name is typed, and never removes the last owner or your own ownership.
 
 **organization: Invitations.** Invitations: people asked to join the organization who have not answered.
 
 **organization: Blocked People.** Blocked People: who cannot take part in the organization's repositories.
 
-**organization: Outside Collaborators.** Outside Collaborators: people with access to repositories but not members.
+**organization: Outside Collaborators.** Outside Collaborators: people with access to repositories but not members. Delete takes away every repository they have here, after their name is typed.
 
 **organization: Security Managers.** Security Managers: teams that see and manage every security alert.
 
@@ -2876,7 +2878,15 @@ Control coverage: 384 audited sites (384 helped).
 
 **organization: Recent Events.** Recent Events: the organization's public activity, newest first.
 
-**organization: Custom Property Values.** Custom Property Values: every repository's custom properties in one list. Change a repository's on its Properties.
+**organization: Custom Property Values.** Custom Property Values: every repository and every custom property, a row a repository, with unset properties said as not set. Change a repository's on its Properties, or several at once with Set Repositories' Custom Property... on the organization.
+
+**organization: Rulesets.** Rulesets: the organization's rulesets, which apply across its repositories. Alt+Enter opens one's sheet, with the repositories it covers by name or property; Delete removes it from every repository after its name is typed.
+
+**organization: Rule Insights.** Rule Insights: recent pushes the organization's rulesets passed, blocked or let through, in every repository.
+
+**organization: Access Review: People.** Access Review: People: every person and repository pair, a row each, with the effective role and where it comes from: being an owner, the base permission, a team or direct access, and the others after 'also'. Filter it by a name, a role or a team; File, Export List saves it.
+
+**organization: Access Review: Teams.** Access Review: Teams: every team and repository pair, a row each, with the team's role there and how many people it reaches. File, Export List saves it.
 
 **pinned_search: Saved search.** A saved search pinned as a node: its list is the search's results, read afresh each time. Unpin Node, on its row in Saved Searches, takes the node away.
 
@@ -3619,6 +3629,8 @@ Control coverage: 384 audited sites (384 helped).
 **New Team.** Make a team in this organization.
 
 **Accept Membership.** Join this organization, when it has invited you.
+
+**Members Without Two-Factor.** Members who have not turned on two-factor sign-in. GitHub shows this to owners.
 
 **My Activity Here.** What you have done lately in this organization's repositories.
 

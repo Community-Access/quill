@@ -185,6 +185,8 @@ class SheetDef:
     """Loaded values a save needs in its ident too (a GraphQL node id, a release's id)."""
     renames: tuple[str, str] = ("", "")
     """(field, ident key): changing that field moves the object (a label's name)."""
+    derive: Callable[[Mapping[str, Value]], dict[str, Value]] | None = None
+    """Values made from several reads together (each member with their role and two-factor)."""
 
     def ident_after(self, ident: Ident, done: Sequence[FieldChange]) -> dict[str, str]:
         """*ident* after a save that may have renamed the object."""
@@ -251,6 +253,8 @@ def load(api: GitHubApi, sheet: SheetDef, ident: Ident) -> Loaded:
                     viewer[key] = bool(value)
                 else:
                     values[key] = value
+    if sheet.derive is not None:
+        values.update(sheet.derive(values))
     return Loaded(values, viewer, {}, tuple(missing))
 
 
@@ -340,7 +344,15 @@ def plan(
     if not changed:  # every field kept as theirs: an object sent whole is not sent at all
         return []
     if sheet.compose is not None:
-        whole = sheet.compose(ident, {change.key: change.after for change in changed})
+        # A picker's word becomes what the API wants (a parent team's name, its id).
+        loaded = choices or {}
+        edits: dict[str, Value] = {}
+        for change in changed:
+            value = change.after
+            if change.key in loaded and isinstance(value, str):
+                value = loaded[change.key].get(value, value)  # type: ignore[assignment]
+            edits[change.key] = value
+        whole = sheet.compose(ident, edits)
         sent = tuple(change.key for change in changed)
         return [
             Request("POST", "/graphql", body, sent, path)

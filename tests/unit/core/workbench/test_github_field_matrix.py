@@ -100,6 +100,11 @@ SAMPLES: dict[tuple[str, str], tuple[Value, Value]] = {
     ("issue_type", "colour"): ("gray", "blue"),
 }
 
+#: Pickers whose API value is not a node id string (a team's parent is its numeric id).
+PICK_IDS: dict[tuple[str, str], dict[str, object]] = {
+    ("team", "parent"): {"first": 11, "second": 12},
+}
+
 FIELDS = sorted((kind, key) for kind, sheet in SHEETS.items() for key in sheet.editable_keys())
 IDS = [f"{kind}.{key}" for kind, key in FIELDS]
 
@@ -118,7 +123,10 @@ def _choices(sheet: SheetDef, key: str) -> list[str]:
 
 def _picks(sheet: SheetDef) -> dict[str, dict[str, object]]:
     """What load_options would give: each picker's name to the value the API wants."""
-    return {key: {"first": "ID_first", "second": "ID_second"} for key in sheet.options}
+    return {
+        key: PICK_IDS.get((sheet.kind, key), {"first": "ID_first", "second": "ID_second"})
+        for key in sheet.options
+    }
 
 
 def sample(sheet: SheetDef, key: str) -> tuple[Value, Value]:

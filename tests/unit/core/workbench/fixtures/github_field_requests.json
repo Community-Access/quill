@@ -19,7 +19,10 @@
     {
      "allow_deletions": true,
      "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
      "enforce_admins": false,
+     "lock_branch": false,
      "required_conversation_resolution": false,
      "required_linear_history": false,
      "required_pull_request_reviews": null,
@@ -37,7 +40,31 @@
     {
      "allow_deletions": false,
      "allow_force_pushes": true,
+     "allow_fork_syncing": false,
+     "block_creations": false,
      "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.allow_fork_syncing": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": true,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
      "required_conversation_resolution": false,
      "required_linear_history": false,
      "required_pull_request_reviews": null,
@@ -55,7 +82,10 @@
     {
      "allow_deletions": false,
      "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
      "enforce_admins": false,
+     "lock_branch": false,
      "required_conversation_resolution": false,
      "required_linear_history": false,
      "required_pull_request_reviews": null,
@@ -71,11 +101,87 @@
     {
      "allow_deletions": false,
      "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
      "enforce_admins": false,
+     "lock_branch": false,
      "required_conversation_resolution": false,
      "required_linear_history": false,
      "required_pull_request_reviews": {
       "required_approving_review_count": 2
+     },
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.block_creations": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": true,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.code_owners": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": {
+      "dismiss_stale_reviews": false,
+      "require_code_owner_reviews": true,
+      "require_last_push_approval": false,
+      "required_approving_review_count": 1
+     },
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.dismiss_stale": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": {
+      "dismiss_stale_reviews": true,
+      "require_code_owner_reviews": false,
+      "require_last_push_approval": false,
+      "required_approving_review_count": 1
      },
      "required_status_checks": null,
      "restrictions": null
@@ -91,10 +197,39 @@
     {
      "allow_deletions": false,
      "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
      "enforce_admins": true,
+     "lock_branch": false,
      "required_conversation_resolution": false,
      "required_linear_history": false,
      "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.last_push": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": {
+      "dismiss_stale_reviews": false,
+      "require_code_owner_reviews": false,
+      "require_last_push_approval": true,
+      "required_approving_review_count": 1
+     },
      "required_status_checks": null,
      "restrictions": null
     }
@@ -109,9 +244,33 @@
     {
      "allow_deletions": false,
      "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
      "enforce_admins": false,
+     "lock_branch": false,
      "required_conversation_resolution": false,
      "required_linear_history": true,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.lock_branch": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": true,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
      "required_pull_request_reviews": null,
      "required_status_checks": null,
      "restrictions": null
@@ -127,13 +286,25 @@
     {
      "allow_deletions": false,
      "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
      "enforce_admins": false,
+     "lock_branch": false,
      "required_conversation_resolution": true,
      "required_linear_history": false,
      "required_pull_request_reviews": null,
      "required_status_checks": null,
      "restrictions": null
     }
+   ]
+  ]
+ },
+ "branch_protection.signatures": {
+  "set": [
+   [
+    "POST",
+    "/repos/owner/repo/branches/main/protection/required_signatures",
+    {}
    ]
   ]
  },
@@ -145,7 +316,10 @@
     {
      "allow_deletions": false,
      "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
      "enforce_admins": false,
+     "lock_branch": false,
      "required_conversation_resolution": false,
      "required_linear_history": false,
      "required_pull_request_reviews": null,
@@ -161,7 +335,10 @@
     {
      "allow_deletions": false,
      "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
      "enforce_admins": false,
+     "lock_branch": false,
      "required_conversation_resolution": false,
      "required_linear_history": false,
      "required_pull_request_reviews": null,
@@ -172,6 +349,27 @@
       ],
       "strict": false
      },
+     "restrictions": null
+    }
+   ]
+  ]
+ },
+ "branch_protection.strict": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/branches/main/protection",
+    {
+     "allow_deletions": false,
+     "allow_force_pushes": false,
+     "allow_fork_syncing": false,
+     "block_creations": false,
+     "enforce_admins": false,
+     "lock_branch": false,
+     "required_conversation_resolution": false,
+     "required_linear_history": false,
+     "required_pull_request_reviews": null,
+     "required_status_checks": null,
      "restrictions": null
     }
    ]
@@ -865,6 +1063,493 @@
     "PUT",
     "/notifications/threads/9/subscription",
     null
+   ]
+  ]
+ },
+ "org_ruleset.approvals": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 0,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 2,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.bypass_roles": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "bypass_actors": [],
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "bypass_actors": [
+      {
+       "actor_id": 1,
+       "actor_type": "OrganizationAdmin",
+       "bypass_mode": "always"
+      },
+      {
+       "actor_id": 5,
+       "actor_type": "RepositoryRole",
+       "bypass_mode": "always"
+      }
+     ],
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.code_owners": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": true,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.dismiss_stale": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": true,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.enforcement": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "enforcement": "evaluate",
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.exclude": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "ref_name": {
+       "exclude": []
+      }
+     },
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "ref_name": {
+       "exclude": [
+        "one",
+        "two"
+       ]
+      }
+     },
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.include": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "ref_name": {
+       "include": []
+      }
+     },
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "ref_name": {
+       "include": [
+        "one",
+        "two"
+       ]
+      }
+     },
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.last_push": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": true,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.merge_methods": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "allowed_merge_methods": [],
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "allowed_merge_methods": [
+         "merge",
+         "squash"
+        ],
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": false
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.name": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "name": "",
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "name": "new words",
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.repo_exclude": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "repository_name": {
+       "exclude": [],
+       "include": []
+      }
+     },
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "repository_name": {
+       "exclude": [
+        "one",
+        "two"
+       ],
+       "include": []
+      }
+     },
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.repo_include": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "repository_name": {
+       "exclude": [],
+       "include": []
+      }
+     },
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "repository_name": {
+       "exclude": [],
+       "include": [
+        "one",
+        "two"
+       ]
+      }
+     },
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.repo_protected": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "conditions": {
+      "repository_name": {
+       "exclude": [],
+       "include": [],
+       "protected": true
+      }
+     },
+     "rules": []
+    }
+   ]
+  ]
+ },
+ "org_ruleset.resolve_threads": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_approving_review_count": 1,
+        "required_review_thread_resolution": true
+       },
+       "type": "pull_request"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.rules": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "type": "creation"
+      },
+      {
+       "type": "update"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.status_checks": {
+  "clear": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "required_status_checks": [],
+        "strict_required_status_checks_policy": false
+       },
+       "type": "required_status_checks"
+      }
+     ]
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "required_status_checks": [
+         {
+          "context": "one"
+         },
+         {
+          "context": "two"
+         }
+        ],
+        "strict_required_status_checks_policy": false
+       },
+       "type": "required_status_checks"
+      }
+     ]
+    }
+   ]
+  ]
+ },
+ "org_ruleset.strict": {
+  "set": [
+   [
+    "PUT",
+    "/orgs/acme/rulesets/9",
+    {
+     "rules": [
+      {
+       "parameters": {
+        "required_status_checks": [],
+        "strict_required_status_checks_policy": true
+       },
+       "type": "required_status_checks"
+      }
+     ]
+    }
    ]
   ]
  },
@@ -2574,6 +3259,39 @@
    ]
   ]
  },
+ "ruleset.bypass_roles": {
+  "clear": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "bypass_actors": [],
+     "rules": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/rulesets/9",
+    {
+     "bypass_actors": [
+      {
+       "actor_id": 1,
+       "actor_type": "OrganizationAdmin",
+       "bypass_mode": "always"
+      },
+      {
+       "actor_id": 5,
+       "actor_type": "RepositoryRole",
+       "bypass_mode": "always"
+      }
+     ],
+     "rules": []
+    }
+   ]
+  ]
+ },
  "ruleset.code_owners": {
   "set": [
    [
@@ -3013,6 +3731,26 @@
     "/orgs/acme/teams/docs-team",
     {
      "notification_setting": "notifications_enabled"
+    }
+   ]
+  ]
+ },
+ "team.parent": {
+  "clear": [
+   [
+    "PATCH",
+    "/orgs/acme/teams/docs-team",
+    {
+     "parent_team_id": null
+    }
+   ]
+  ],
+  "set": [
+   [
+    "PATCH",
+    "/orgs/acme/teams/docs-team",
+    {
+     "parent_team_id": 12
     }
    ]
   ]
