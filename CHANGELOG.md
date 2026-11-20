@@ -2,6 +2,30 @@
 
 ## 1.0.0
 
+### GitHub Workbench: roles from GitHub's own answers, two accounts side by side, and gh sign-in (2026-11-20)
+
+- **My Access Here**, **Why Can't They?**, **Access Review** and **Bulk
+  Access Changes** now read what GitHub says, not a fixed table: your real
+  role (custom roles by name), the teams that give it, your organization's
+  base permission, the rules on the default branch and what your token
+  allows. Each line says where it came from. When GitHub will not say, QUILL
+  says it does not know rather than guessing. **Why Can't They?** reads the
+  person's real role and names the rule that blocks them.
+- **View As Role** and **Compare Roles** say they show GitHub's documented
+  defaults, then list who on this repository has each role.
+- When GitHub refuses a request, the message names the permission or scope it
+  asked for.
+- **Compare Accounts...** and **Act As Another Account...** under Roles and
+  Access. QUILL checks whose token it is before it shows or sends anything,
+  each account keeps its own remembered reads, and Act As is held to the
+  other account's Workbench level.
+- **Use GitHub CLI Sign-In...** in Manage GitHub Accounts adds the account
+  gh is already signed in to.
+- An account can be on a GitHub Enterprise Server: Add Token asks for the
+  server, and everything for that account goes to that server only. When the
+  server's GitHub is too old for something, QUILL says so and names its
+  version.
+
 ### GitHub Workbench: access templates, more tutorials, team review requests, and the Command Key in the Workbench (2026-11-20)
 
 - **Access templates.** Account > Roles and Access > Access Templates... keeps

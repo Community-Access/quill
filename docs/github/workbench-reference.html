@@ -3224,6 +3224,19 @@ account.</td>
 result per change.</td>
 </tr>
 <tr>
+<td>Roles and Access &gt; Compare Accounts…</td>
+<td>(submenu letter)</td>
+<td>Two of your signed-in accounts on this repository, side by side:
+each one’s role and sign-in, as GitHub answered that account.</td>
+</tr>
+<tr>
+<td>Roles and Access &gt; Act As Another Account…</td>
+<td>(submenu letter)</td>
+<td>One action sent as another signed-in account, such as approving your
+own pull request: the account is named before and after, and held to its
+own level.</td>
+</tr>
+<tr>
 <td>Roles and Access &gt; Workbench Level for This Account…</td>
 <td>(submenu letter)</td>
 <td>Read Only, Organize or Full: what the Workbench may change with this
@@ -3897,7 +3910,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 853 yes, 0 planned, 288 not needed and 866 left to
+<p>In all: 855 yes, 0 planned, 286 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -9606,7 +9619,7 @@ Plumbing.</td>
 </tbody>
 </table>
 <h4 id="meta">Meta</h4>
-<p>5 operations: 5 not needed.</p>
+<p>5 operations: 1 yes, 4 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -9627,9 +9640,8 @@ a person does. Plumbing.</td>
 <tr>
 <td>Get GitHub meta information</td>
 <td><code>GET /meta</code></td>
-<td>Not needed</td>
-<td>GitHub’s own metadata (API root, IP ranges, versions, zen); nothing
-a person does. Plumbing.</td>
+<td>Yes</td>
+<td>Account &gt; Manage GitHub Accounts… (Ctrl+Shift+K)</td>
 </tr>
 <tr>
 <td>Get Octocat</td>
@@ -9907,7 +9919,7 @@ job done on GitHub’s site.</td>
 </tbody>
 </table>
 <h4 id="organizations">Organizations</h4>
-<p>129 operations: 74 yes, 12 not needed, 43 left to github.</p>
+<p>129 operations: 75 yes, 11 not needed, 43 left to github.</p>
 <table>
 <thead>
 <tr>
@@ -10308,9 +10320,8 @@ reads the list.</td>
 <tr>
 <td>Get organization membership for a user</td>
 <td><code>GET /orgs/{org}/memberships/{username}</code></td>
-<td>Not needed</td>
-<td>Reads one member, whom the organization’s Members list already shows
-in full.</td>
+<td>Yes</td>
+<td>Account &gt; Roles and Access &gt; Why Can’t They?…</td>
 </tr>
 <tr>
 <td>Set organization membership for a user</td>
@@ -18119,414 +18130,460 @@ person. Organizations &gt; org &gt; Enterprise (Open on GitHub).</td>
 <td><code>DELETE /admin/hooks/{hook_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Delete a public key</td>
 <td><code>DELETE /admin/keys/{key_ids}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Delete a pre-receive environment</td>
 <td><code>DELETE /admin/pre-receive-environments/{pre_receive_environment_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Delete a pre-receive hook</td>
 <td><code>DELETE /admin/pre-receive-hooks/{pre_receive_hook_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Delete a personal access token</td>
 <td><code>DELETE /admin/tokens/{token_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Delete a user</td>
 <td><code>DELETE /admin/users/{username}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Delete an impersonation OAuth token</td>
 <td><code>DELETE /admin/users/{username}/authorizations</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Delete a grant</td>
 <td><code>DELETE /applications/grants/{grant_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Delete an authorization</td>
 <td><code>DELETE /authorizations/{authorization_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Remove the global announcement banner</td>
 <td><code>DELETE /enterprise/announcement</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Delete a SSH key</td>
 <td><code>DELETE /manage/v1/access/ssh</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Remove pre-receive hook enforcement for an organization</td>
 <td><code>DELETE /orgs/{org}/pre-receive-hooks/{pre_receive_hook_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Remove pre-receive hook enforcement for a repository</td>
 <td><code>DELETE /repos/{owner}/{repo}/pre-receive-hooks/{pre_receive_hook_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Demote a site administrator</td>
 <td><code>DELETE /users/{username}/site_admin</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Unsuspend a user</td>
 <td><code>DELETE /users/{username}/suspended</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>List global webhooks</td>
 <td><code>GET /admin/hooks</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get a global webhook</td>
 <td><code>GET /admin/hooks/{hook_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>List public keys</td>
 <td><code>GET /admin/keys</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>List pre-receive environments</td>
 <td><code>GET /admin/pre-receive-environments</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get a pre-receive environment</td>
 <td><code>GET /admin/pre-receive-environments/{pre_receive_environment_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get the download status for a pre-receive environment</td>
 <td><code>GET /admin/pre-receive-environments/{pre_receive_environment_id}/downloads/latest</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>List pre-receive hooks</td>
 <td><code>GET /admin/pre-receive-hooks</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get a pre-receive hook</td>
 <td><code>GET /admin/pre-receive-hooks/{pre_receive_hook_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>List personal access tokens</td>
 <td><code>GET /admin/tokens</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>List your grants</td>
 <td><code>GET /applications/grants</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get a single grant</td>
 <td><code>GET /applications/grants/{grant_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>List your authorizations</td>
 <td><code>GET /authorizations</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get a single authorization</td>
 <td><code>GET /authorizations/{authorization_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get the global announcement banner</td>
 <td><code>GET /enterprise/announcement</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>List Enterprise Live Migrations</td>
 <td><code>GET /enterprise/live-migrations</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get an Enterprise Live Migration</td>
 <td><code>GET /enterprise/live-migrations/{migration_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get license information</td>
 <td><code>GET /enterprise/settings/license</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get all statistics</td>
 <td><code>GET /enterprise/stats/all</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get comment statistics</td>
 <td><code>GET /enterprise/stats/comments</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get gist statistics</td>
 <td><code>GET /enterprise/stats/gists</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get hooks statistics</td>
 <td><code>GET /enterprise/stats/hooks</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get issue statistics</td>
 <td><code>GET /enterprise/stats/issues</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get milestone statistics</td>
 <td><code>GET /enterprise/stats/milestones</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get organization statistics</td>
 <td><code>GET /enterprise/stats/orgs</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get pages statistics</td>
 <td><code>GET /enterprise/stats/pages</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get pull request statistics</td>
 <td><code>GET /enterprise/stats/pulls</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get repository statistics</td>
 <td><code>GET /enterprise/stats/repos</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get security products statistics</td>
 <td><code>GET /enterprise/stats/security-products</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get users statistics</td>
 <td><code>GET /enterprise/stats/users</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get GitHub Actions cache usage policy for an enterprise</td>
 <td><code>GET /enterprises/{enterprise}/actions/cache/usage-policy</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get the configured SSH keys</td>
 <td><code>GET /manage/v1/access/ssh</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get the system requirement check results for configured cluster
@@ -18534,513 +18591,570 @@ nodes</td>
 <td><code>GET /manage/v1/checks/system-requirements</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get the status of services running on all cluster nodes</td>
 <td><code>GET /manage/v1/cluster/status</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get the status of a ghe-config-apply run</td>
 <td><code>GET /manage/v1/config/apply</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>List events from ghe-config-apply</td>
 <td><code>GET /manage/v1/config/apply/events</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get the enterprise license information</td>
 <td><code>GET /manage/v1/config/license</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Check a license</td>
 <td><code>GET /manage/v1/config/license/check</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get GHES node metadata for all nodes</td>
 <td><code>GET /manage/v1/config/nodes</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get the GHES settings</td>
 <td><code>GET /manage/v1/config/settings</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get the status of maintenance mode</td>
 <td><code>GET /manage/v1/maintenance</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get the status of services running on all replica nodes</td>
 <td><code>GET /manage/v1/replication/status</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get the upgrade package download status</td>
 <td><code>GET /manage/v1/upgrade/download/status</code></td>
 <td>Server 3.22 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get the upgrade status</td>
 <td><code>GET /manage/v1/upgrade/status</code></td>
 <td>Server 3.22 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get all GHES release versions for all nodes</td>
 <td><code>GET /manage/v1/version</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>List pre-receive hooks for an organization</td>
 <td><code>GET /orgs/{org}/pre-receive-hooks</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get a pre-receive hook for an organization</td>
 <td><code>GET /orgs/{org}/pre-receive-hooks/{pre_receive_hook_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get GitHub Actions cache usage policy for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/actions/cache/usage-policy</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>List pre-receive hooks for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/pre-receive-hooks</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get a pre-receive hook for a repository</td>
 <td><code>GET /repos/{owner}/{repo}/pre-receive-hooks/{pre_receive_hook_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>List repository cache replication status</td>
 <td><code>GET /repos/{owner}/{repo}/replicas/caches</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Update a global webhook</td>
 <td><code>PATCH /admin/hooks/{hook_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Update LDAP mapping for a team</td>
 <td><code>PATCH /admin/ldap/teams/{team_id}/mapping</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Update LDAP mapping for a user</td>
 <td><code>PATCH /admin/ldap/users/{username}/mapping</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Update an organization name</td>
 <td><code>PATCH /admin/organizations/{org}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Update a pre-receive environment</td>
 <td><code>PATCH /admin/pre-receive-environments/{pre_receive_environment_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Update a pre-receive hook</td>
 <td><code>PATCH /admin/pre-receive-hooks/{pre_receive_hook_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Update the username for a user</td>
 <td><code>PATCH /admin/users/{username}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Update an existing authorization</td>
 <td><code>PATCH /authorizations/{authorization_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Set the global announcement banner</td>
 <td><code>PATCH /enterprise/announcement</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Set GitHub Actions cache usage policy for an enterprise</td>
 <td><code>PATCH /enterprises/{enterprise}/actions/cache/usage-policy</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Update pre-receive hook enforcement for an organization</td>
 <td><code>PATCH /orgs/{org}/pre-receive-hooks/{pre_receive_hook_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Set GitHub Actions cache usage policy for a repository</td>
 <td><code>PATCH /repos/{owner}/{repo}/actions/cache/usage-policy</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Update pre-receive hook enforcement for a repository</td>
 <td><code>PATCH /repos/{owner}/{repo}/pre-receive-hooks/{pre_receive_hook_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Create a global webhook</td>
 <td><code>POST /admin/hooks</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Ping a global webhook</td>
 <td><code>POST /admin/hooks/{hook_id}/pings</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Sync LDAP mapping for a team</td>
 <td><code>POST /admin/ldap/teams/{team_id}/sync</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Sync LDAP mapping for a user</td>
 <td><code>POST /admin/ldap/users/{username}/sync</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Create an organization</td>
 <td><code>POST /admin/organizations</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Create a pre-receive environment</td>
 <td><code>POST /admin/pre-receive-environments</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Start a pre-receive environment download</td>
 <td><code>POST /admin/pre-receive-environments/{pre_receive_environment_id}/downloads</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Create a pre-receive hook</td>
 <td><code>POST /admin/pre-receive-hooks</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Create a user</td>
 <td><code>POST /admin/users</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Create an impersonation OAuth token</td>
 <td><code>POST /admin/users/{username}/authorizations</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Create a new authorization</td>
 <td><code>POST /authorizations</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Create an Enterprise Live Migration</td>
 <td><code>POST /enterprise/live-migrations</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Cancel an Enterprise Live Migration</td>
 <td><code>POST /enterprise/live-migrations/{migration_id}/cancel</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Cutover an Enterprise Live Migration</td>
 <td><code>POST /enterprise/live-migrations/{migration_id}/cutover</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Pause an Enterprise Live Migration</td>
 <td><code>POST /enterprise/live-migrations/{migration_id}/pause</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Resume an Enterprise Live Migration</td>
 <td><code>POST /enterprise/live-migrations/{migration_id}/resume</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Revert cutover for an Enterprise Live Migration</td>
 <td><code>POST /enterprise/live-migrations/{migration_id}/revert-cutover</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Start an Enterprise Live Migration</td>
 <td><code>POST /enterprise/live-migrations/{migration_id}/start</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Set a new SSH key</td>
 <td><code>POST /manage/v1/access/ssh</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Trigger a ghe-config-apply run</td>
 <td><code>POST /manage/v1/config/apply</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Initialize instance configuration with license and password</td>
 <td><code>POST /manage/v1/config/init</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Set the status of maintenance mode</td>
 <td><code>POST /manage/v1/maintenance</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Apply an upgrade</td>
 <td><code>POST /manage/v1/upgrade/apply</code></td>
 <td>Server 3.22 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Download an upgrade package</td>
 <td><code>POST /manage/v1/upgrade/download</code></td>
 <td>Server 3.22 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get-or-create an authorization for a specific app</td>
 <td><code>PUT /authorizations/clients/{client_id}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Get-or-create an authorization for a specific app and
@@ -19048,45 +19162,50 @@ fingerprint</td>
 <td><code>PUT /authorizations/clients/{client_id}/{fingerprint}</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Upload an enterprise license</td>
 <td><code>PUT /manage/v1/config/license</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Set settings</td>
 <td><code>PUT /manage/v1/config/settings</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Promote a user to be a site administrator</td>
 <td><code>PUT /users/{username}/site_admin</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 <tr>
 <td>Suspend a user</td>
 <td><code>PUT /users/{username}/suspended</code></td>
 <td>Server 3.18 to 3.22</td>
 <td>Left to GitHub</td>
-<td>Only on GitHub Enterprise Server, and the Workbench connects to
-GitHub.com accounts only (accounts.py refuses other hosts). Open on
-GitHub: the server’s own pages.</td>
+<td>Only on GitHub Enterprise Server, for the server’s site
+administrators: an Enterprise Server account in the Workbench reaches
+its repositories and organizations, not the server’s own administration,
+which its own pages do. Open on GitHub: the server’s own pages.</td>
 </tr>
 </tbody>
 </table>

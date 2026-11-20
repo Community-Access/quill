@@ -92,7 +92,9 @@ def fetch_job_log(token: str | None, repo: str, job_id: int, *, max_bytes: int =
         raise GitHubJobLogError("Enter a valid owner/repo before loading job logs.")
     if job_id <= 0:
         raise GitHubJobLogError("This workflow job has no GitHub job ID.")
-    url = f"https://api.github.com/repos/{repo}/actions/jobs/{job_id}/logs"
+    from quill.core.github.hosts import api_url
+
+    url = api_url(token, f"/repos/{repo}/actions/jobs/{job_id}/logs")
     headers = {"Accept": "application/vnd.github+json", "User-Agent": "QUILL-GitHub-Workbench"}
     if token:
         headers["Authorization"] = f"Bearer {token}"

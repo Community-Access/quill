@@ -9,10 +9,12 @@
   Classic Token Page, Fine-grained Steps, and Check Again.
 - **Account > Change History** (Ctrl+Shift+H): every write, before and after;
   Undo on any row GitHub allows, Copy, Save as CSV, Clear.
-- **Roles and Access:** My Access Here, View As Role, Compare Roles, Why Can't
-  They?, Access Review (the access matrix, as CSV too), Bulk Access Changes
-  (previewed, a result per change), Access Templates and Apply Access
-  Template (GH-R-068) and this account's Workbench level.
+- **Roles and Access:** this account's Workbench level here, and Access
+  Templates and Apply Access Template (GH-R-068,
+  :mod:`quill.ui.github_workbench_access_templates`); the rest (My Access
+  Here, View As Role, Compare Roles, Why Can't They?, Access Review, Bulk
+  Access Changes, Compare Accounts, Act As) is
+  :mod:`quill.ui.github_workbench_roles`, answered from GitHub's replies.
 - **Access pages:** Add..., Change Role... and Remove on a sheet's list, each
   previewed in words, refused when it would lock you out (18.4), and recorded:
   :mod:`quill.ui.github_workbench_access_pages`.
@@ -20,21 +22,10 @@
 
 from __future__ import annotations
 
-import time
 from collections.abc import Callable
 from typing import Any
 
-from quill.core.github.access import (
-    AccessRow,
-    bulk_plan,
-    compare_roles,
-    matrix_csv,
-    parse_row,
-    view_as_role,
-    why_cant_they,
-)
 from quill.core.github.permissions import (
-    REPO_ROLES,
     SCOPES,
     AccessLevel,
     classic_token_url,
@@ -46,6 +37,7 @@ from quill.core.github.permissions import (
 from quill.ui.github_workbench_access_pages import GitHubWorkbenchAccessPagesMixin
 from quill.ui.github_workbench_access_templates import GitHubWorkbenchAccessTemplatesMixin
 from quill.ui.github_workbench_least_privilege import GitHubWorkbenchLeastPrivilegeMixin
+from quill.ui.github_workbench_roles import ROLE_TOOLS, GitHubWorkbenchRolesMixin
 
 __all__ = ["GitHubWorkbenchToolsMixin"]
 
@@ -54,16 +46,11 @@ _TOOLS = frozenset({
     "filter_builder",
     "permissions",
     "change_history",
-    "my_access",
-    "view_as_role",
-    "compare_roles",
-    "why_cant_they",
-    "access_matrix",
-    "bulk_access",
     "access_templates",  # GH-R-068: github_workbench_access_templates.py
     "apply_access_template",
     "account_level",
     "least_privilege",
+    *ROLE_TOOLS,
 })
 
 
@@ -71,6 +58,7 @@ class GitHubWorkbenchToolsMixin(
     GitHubWorkbenchAccessPagesMixin,
     GitHubWorkbenchAccessTemplatesMixin,
     GitHubWorkbenchLeastPrivilegeMixin,
+    GitHubWorkbenchRolesMixin,
 ):
     """Filter Builder, permissions, history and access, for the GitHub provider."""
 
@@ -90,9 +78,6 @@ class GitHubWorkbenchToolsMixin(
             return False
         getattr(self, f"_tool_{verb}")()
         return True
-
-    def _repository(self) -> str:
-        return str(self.current_repository_name())  # type: ignore[attr-defined]
 
     # -- Teams in the tree (18.3.3, GH-R-143) -------------------------------------
 
@@ -333,115 +318,7 @@ class GitHubWorkbenchToolsMixin(
         holder["dialog"] = dialog
         dialog.show()
 
-    # -- Roles (18.2, 22.10) ------------------------------------------------------------
-
-    def _tool_my_access(self) -> None:
-        repository = self._repository()
-        if not repository:
-            self._say("Open a repository first. Ctrl+L opens one by name or link.")
-            return
-        api = self.github_api()  # type: ignore[attr-defined]
-
-        def read() -> str:
-            from quill.core.github.permissions import repo_role
-
-            data = api.rest("GET", f"/repos/{repository}").data
-            role = repo_role(data.get("permissions") if isinstance(data, dict) else None)
-            owner = (data or {}).get("owner", {}) if isinstance(data, dict) else {}
-            parts = [f"You have {role or 'no'} access to {repository}."]
-            if isinstance(owner, dict) and owner.get("type") == "Organization":
-                try:
-                    org = api.rest("GET", f"/orgs/{owner.get('login')}").data
-                    base = str((org or {}).get("default_repository_permission") or "")
-                    if base:
-                        parts.append(f"The organization's base permission is {base}.")
-                except Exception:  # noqa: BLE001 - members may not read it
-                    pass
-                parts.append("The higher one counts; a team you are on can raise it.")
-            return " ".join(parts)
-
-        self._background("read your access", read, self._say)
-
-    def _pick_role(self, title: str) -> str:
-        index = self._choose(title, "Role:", list(REPO_ROLES))
-        return REPO_ROLES[index] if index >= 0 else ""
-
-    def _tool_view_as_role(self) -> None:
-        role = self._pick_role("View As Role")
-        if role:
-            self._show_text(f"What {role} may do", "\n".join(view_as_role(role)))
-
-    def _tool_compare_roles(self) -> None:
-        low = self._pick_role("Compare Roles: the first role")
-        high = self._pick_role("Compare Roles: the second role") if low else ""
-        if low and high:
-            more = compare_roles(low, high) or compare_roles(high, low)
-            self._show_text(f"{low} and {high}", "\n".join(more) or "They may do the same.")
-
-    def _tool_why_cant_they(self) -> None:
-        person = self._ask_text("Why Can't They?", "Their login:")
-        role = self._pick_role("Their role here") if person else ""
-        abilities = view_as_role("admin")
-        index = self._choose("Why Can't They?", "What they cannot do:", abilities) if role else -1
-        if index >= 0:
-            where = self._repository() or "this repository"
-            self._say(why_cant_they(person, role, abilities[index], where))
-
-    def _show_text(self, title: str, text: str) -> None:
-        from quill.ui.github_workbench_results import show_results
-
-        show_results(self.frame.frame, title, text, copy_text=self.frame.copy_text)
-
-    def _tool_access_matrix(self) -> None:
-        org = self._ask_text("Access Review", "Organization:")
-        if not org:
-            return
-        api = self.github_api()  # type: ignore[attr-defined]
-
-        def read() -> list[tuple[str, str, str, str]]:
-            from quill.core.github.access import matrix_rows
-            from quill.core.github.sheet_rows import collaborator_row
-
-            repos = api.rest("GET", f"/orgs/{org}/repos", query={"per_page": "100"}).data or []
-            access: dict[str, list[AccessRow]] = {}
-            for repo in repos if isinstance(repos, list) else []:
-                name = str(repo.get("full_name", ""))
-                rows = (
-                    api.rest("GET", f"/repos/{name}/collaborators", query={"per_page": "100"}).data
-                    or []
-                )
-                access[name] = [parse_row(collaborator_row(r)) for r in rows if isinstance(r, dict)]
-                time.sleep(0)
-            return matrix_rows(access)
-
-        def done(rows: list[tuple[str, str, str, str]]) -> None:
-            text = matrix_csv(rows)
-            self._say(f"{len(rows)} person and repository pairs.")
-            self._show_text(
-                f"Access Review: {org}",
-                "\n".join(", ".join(r) for r in rows) or "Nobody has direct access yet.",
-            )
-            self.frame.copy_text(text)
-
-        self._background("read the access matrix", read, done)
-
-    def _tool_bulk_access(self) -> None:
-        who = self._ask_text("Bulk Access Changes", "Team slug or person's login:")
-        if not who:
-            return
-        kinds = ["team", "person"]
-        kind_index = self._choose("Bulk Access Changes", f"{who} is a:", kinds)
-        role = self._pick_role("The role to give") if kind_index >= 0 else ""
-        repos_text = (
-            self._ask_text("Bulk Access Changes", "Repositories, comma-separated (owner/name):")
-            if role
-            else ""
-        )
-        targets = [{"repo": r.strip()} for r in repos_text.split(",") if "/" in r]
-        if not targets:
-            return
-        changes = bulk_plan("repository", who, kinds[kind_index], role, targets)
-        self._run_changes(changes, "Bulk Access Changes")
+    # -- Roles (18.2): the rest is quill.ui.github_workbench_roles --------------------------
 
     def _tool_account_level(self) -> None:
         from quill.core.github.permissions import AccessStore
@@ -455,5 +332,5 @@ class GitHubWorkbenchToolsMixin(
         if index < 0:
             return
         account = self.account_name()  # type: ignore[attr-defined]
-        AccessStore.load().set(account, levels[index])
+        AccessStore.load().set(self.level_key(), levels[index])  # type: ignore[attr-defined]
         self._say(f"{account or 'This account'} is now {levels[index].label} in the Workbench.")

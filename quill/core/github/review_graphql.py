@@ -80,7 +80,7 @@ def _request(
     stop_request_if_dry("POST", "/graphql", {"query": query})
     payload = json.dumps({"query": query, "variables": variables}).encode("utf-8")
     request = Request(
-        "https://api.github.com/graphql",
+        _graphql_address(token),
         data=payload,
         headers={
             "Authorization": f"Bearer {token}",
@@ -272,3 +272,10 @@ def set_thread_resolved(token: str, node_id: str, resolved: bool) -> None:
         or returned.get("isResolved") is not resolved
     ):
         raise ReviewGraphQLError("GitHub did not confirm the thread state change.")
+
+
+def _graphql_address(token: str | None) -> str:
+    """GraphQL's address for *token*'s host: GitHub.com or its Enterprise Server."""
+    from quill.core.github.hosts import api_url
+
+    return api_url(token, "/graphql")

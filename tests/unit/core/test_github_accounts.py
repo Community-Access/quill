@@ -69,11 +69,49 @@ def test_empty_registry_stays_authoritative_after_last_account_is_removed(
     assert accounts.list_github_accounts() == []
 
 
-def test_enterprise_hosts_are_rejected_before_a_token_is_stored(store: FakeBackend) -> None:
-    with pytest.raises(accounts.GitHubAccountError, match="Enterprise"):
-        accounts.save_github_account("Alice", "enterprise-token", host="github.example.com")
+def test_an_enterprise_server_account_is_its_own_account_bound_to_its_host(
+    store: FakeBackend,
+) -> None:
+    from quill.core.github import hosts
+
+    hosts.forget_bindings()
+    dotcom = accounts.save_github_account("Alice", "dotcom-token")
+    ghes = accounts.save_github_account(
+        "Alice", "enterprise-token", host="https://GitHub.Example.com/api/v3"
+    )
+
+    assert ghes.host == "github.example.com"
+    assert ghes.id != dotcom.id  # the same login on two hosts is two accounts
+    assert ghes.level_key == "Alice@github.example.com"
+    assert dotcom.level_key == "Alice"
+    assert accounts.load_github_account_token(ghes.id) == "enterprise-token"
+    assert hosts.host_for_token("enterprise-token") == "github.example.com"
+    assert accounts.load_github_account_token(dotcom.id) == "dotcom-token"
+    assert hosts.host_for_token("dotcom-token") == "github.com"
+    hosts.forget_bindings()
+
+
+def test_a_host_that_is_not_a_server_name_is_refused_before_a_token_is_stored(
+    store: FakeBackend,
+) -> None:
+    for bad in ("http://ghe.example.com", "ghe.example.com/some/path", "user@ghe.example.com"):
+        with pytest.raises(accounts.GitHubAccountError):
+            accounts.save_github_account("Alice", "enterprise-token", host=bad)
 
     assert not store.values
+
+
+def test_an_enterprise_servers_version_is_kept_with_its_account(store: FakeBackend) -> None:
+    from quill.core.github import api_coverage, hosts
+
+    hosts.forget_bindings()
+    ghes = accounts.save_github_account("Alice", "enterprise-token", host="ghe.example.com")
+    assert accounts.update_account_state(ghes.id, server_version="3.12.4")
+    assert api_coverage.server_version_for_host("ghe.example.com") is None  # not loaded yet
+    accounts.load_github_account_token(ghes.id)
+    assert api_coverage.server_version_for_host("ghe.example.com") == "3.12.4"
+    assert api_coverage.server_version_for_host("github.com") is None
+    hosts.forget_bindings()
 
 
 def test_invalid_registry_entries_are_ignored(store: FakeBackend) -> None:
