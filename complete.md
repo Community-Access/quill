@@ -41,16 +41,13 @@ Each is done only with evidence: a test or a live run.
 - [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle.
 - [ ] Live check on the GitHub test repository: Read Only, Organize, Full and Safe Mode refuse and allow as tested, and the permission explanations (greyed rows, Shift+F1, GitHub's own refusals) match what GitHub does.
 - [ ] Verify View As Role, Compare Roles, Why Can't They?, My Access Here, access reviews and bulk changes against actual server authority.
-- [ ] Compare Accounts and one-action Act As with unambiguous identity and cache isolation.
-- [ ] Role comparison and learning workflows reach real permission evidence, not guessed privileges.
 - [ ] Wiki, and cross-linked discussion → issue → pull request workflows (saved replies and repository invitations are done).
 - [ ] Repository General/features, complete creation/template options, transfer, topics and star lists (standalone tags are done).
 - [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
-- [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
 - [ ] First-class by-name collections for the PRD 22.11 kinds still "not yet" in `quill/core/github/across_scope_matrix.py`: workflows, templates, Dependabot and CODEOWNERS, people, settings and packages.
 - [ ] Saved replies/favorites/watch levels/stars, alerts/packages/Pages where supported.
 - [ ] Cross-repository coverage is complete only when the corresponding single-repository operation and batch behavior are complete; read-only category views are tracked separately from multi-target writes.
-- [ ] GX12 collaboration/knowledge; GX13: account-aware repository switching (Compare Accounts and Act As, still open).
+- [ ] GX12 collaboration/knowledge.
 - [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance.
 
 #### Documentation at the end of each delivery batch
@@ -63,7 +60,7 @@ The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`: 82 of 100
 
 - [ ] **The rest of PRD 16.7:** a menu row for Subscribe and Block, star lists, Fork and Pin and Favorite on the You page, sponsoring a repository's owner from the repository, blocking from an organization, leaving an organization and answering an invitation, reactions on comments, and commits.
 - [ ] **GH-R-150 and 151:** more kinds under Across Repositories (see the by-name collections row above).
-- [ ] **Shoulds and Mays:** Alt+Enter on a GitHub reference in a document (036), real permission evidence for the role views (069), the branch rule tutorial (105; the ruleset and branch protection editing it needs is now in, #1961), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116) and Ask How (118).
+- [ ] **Shoulds and Mays:** Alt+Enter on a GitHub reference in a document (036), the branch rule tutorial (105; the ruleset and branch protection editing it needs is now in, #1961), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116) and Ask How (118).
 
 ### 1.4 Then: documentation as good as WordPress's
 
@@ -80,6 +77,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 - [ ] Merge Selected... on two throwaway pull requests, and Release Evidence on `v0.0.1-quill-live`, on the test repository; Merge Selected on a queue-only branch needs an organization repository with a merge-queue ruleset; confirm GitHub's `immutable` and asset `digest` fields.
 - [ ] Rulesets, members and teams on GitHub: the organization ruleset sheet on a throwaway organization; push restrictions and signed commits surviving a branch protection save; members' two-factor as an owner and as a member; making a member an outside collaborator and removing one; a team's parent and repository changes; the team-admin guard; and Access Review: People and Teams against real permissions.
 - [ ] Across Repositories on the two test repositories: Release Train..., Set Secret Everywhere..., Turn On or Off Everywhere... (needs a webhook on both), Rename Everywhere on a throwaway branch, and Promote to Organization for a secret, a variable and a webhook in the test organization.
+- [ ] Roles and accounts on GitHub: My Access Here, Why Can't They? and Access Review against real permissions (a custom role, a team grant, an outside collaborator); Bulk Access Changes on the test organization; Compare Accounts and Act As with two signed-in accounts; Use GitHub CLI Sign-In...; and an account on a GitHub Enterprise Server, if one can be borrowed.
 - [ ] **GH-R-119:** timed find-the-answer sessions with people.
 - [ ] Plain-Language Batch on the test repository (assign, then unassign, by sentence; GitHub's search may need a moment to index a new issue), and Ctrl+Shift+S in the real window.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists.

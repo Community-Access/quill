@@ -20,6 +20,59 @@
 - Attestation signatures are still checked with `gh attestation verify`:
   verifying them inside QUILL needs Sigstore, which QUILL does not ship.
 
+### Hosted AI service: accounting you can trust, and one sign-in per code (2026-11-20)
+
+These are fixes to the free AI service itself (`quill-ai-gateway/`), found
+by a review of it. Nothing changes in QUILL or QUILL Lite.
+
+- **A web search no longer costs you its search fee overnight.** The search
+  fee belongs to the service's own budget, not your monthly limit, but the
+  nightly tidy-up moved it onto you: a search that cost $0.001 counted as
+  $0.031 by morning. Each request now records both figures.
+- **Confirming a code twice makes one connection.** Pressing Confirm twice,
+  or in two tabs, used to make two accounts and use two of your network's
+  places, and only one of them ever reached QUILL.
+- **Limits survive a restart.** The service now keeps its usage counts and
+  spending on disk, and rebuilds them from its records if they are lost.
+  Before, a restart could give everybody a fresh month.
+- **Signing a computer out frees its place on the right network,** the one
+  it was connected from, not the one you are on when you sign out.
+- **A garbled answer from the AI provider is an error, and costs nothing,**
+  like any other failed request.
+- **"Reduced quota" now reduces your allowance** (25 requests a month unless
+  an administrator sets another number). Before, it changed nothing.
+- **For administrators:** the console says the money limits are estimates.
+  Requests already being answered when a limit is reached still finish, so a
+  month can end slightly above a limit, and the console shows by how much.
+  The Switches page counts its features instead of saying five. The
+  migration runbook lists all ten database migrations in order, a new
+  migration (010) adds the per-person cost figure, and a new CI workflow
+  tests every migration on a clean PostgreSQL database.
+
+### GitHub Workbench: roles from GitHub's own answers, two accounts side by side, and gh sign-in (2026-11-20)
+
+- **My Access Here**, **Why Can't They?**, **Access Review** and **Bulk
+  Access Changes** now read what GitHub says, not a fixed table: your real
+  role (custom roles by name), the teams that give it, your organization's
+  base permission, the rules on the default branch and what your token
+  allows. Each line says where it came from. When GitHub will not say, QUILL
+  says it does not know rather than guessing. **Why Can't They?** reads the
+  person's real role and names the rule that blocks them.
+- **View As Role** and **Compare Roles** say they show GitHub's documented
+  defaults, then list who on this repository has each role.
+- When GitHub refuses a request, the message names the permission or scope it
+  asked for.
+- **Compare Accounts...** and **Act As Another Account...** under Roles and
+  Access. QUILL checks whose token it is before it shows or sends anything,
+  each account keeps its own remembered reads, and Act As is held to the
+  other account's Workbench level.
+- **Use GitHub CLI Sign-In...** in Manage GitHub Accounts adds the account
+  gh is already signed in to.
+- An account can be on a GitHub Enterprise Server: Add Token asks for the
+  server, and everything for that account goes to that server only. When the
+  server's GitHub is too old for something, QUILL says so and names its
+  version.
+
 ### GitHub Workbench: access templates, more tutorials, team review requests, and the Command Key in the Workbench (2026-11-20)
 
 - **Access templates.** Account > Roles and Access > Access Templates... keeps

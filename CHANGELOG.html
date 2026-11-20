@@ -245,6 +245,97 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="github-workbench-the-rule-that-blocks-a-merge-by-name-watch-readiness-check-download-2026-11-20">GitHub
+Workbench: the rule that blocks a merge, by name; Watch Readiness; Check
+Download… (2026-11-20)</h3>
+<ul>
+<li><strong>Why Can’t I Merge? and Merge Selected… name the blocking
+rule.</strong> They say which required check failed, has not finished or
+has not reported, and which ruleset or branch protection wants it; how
+many approving reviews a rule wants against how many there are; which
+CODEOWNERS line (number and pattern) still needs an owner’s approval,
+with a changed file it covers; and which rule sends the branch through a
+merge queue. What could not be read is said at the end. GitHub’s own
+answer is never changed.</li>
+<li><strong>Watch Readiness.</strong> Watch a pull request and QUILL
+says once when it becomes able to merge and once when it stops, naming
+the blocking rules. Also in Add Watch.</li>
+<li><strong>Check Download…</strong> on a release file’s row compares
+the copy you downloaded with GitHub’s SHA-256 digest and says match, no
+match (download it again), or that GitHub has no digest for that
+file.</li>
+<li>Attestation signatures are still checked with
+<code>gh attestation verify</code>: verifying them inside QUILL needs
+Sigstore, which QUILL does not ship.</li>
+</ul>
+<h3
+id="hosted-ai-service-accounting-you-can-trust-and-one-sign-in-per-code-2026-11-20">Hosted
+AI service: accounting you can trust, and one sign-in per code
+(2026-11-20)</h3>
+<p>These are fixes to the free AI service itself
+(<code>quill-ai-gateway/</code>), found by a review of it. Nothing
+changes in QUILL or QUILL Lite.</p>
+<ul>
+<li><strong>A web search no longer costs you its search fee
+overnight.</strong> The search fee belongs to the service’s own budget,
+not your monthly limit, but the nightly tidy-up moved it onto you: a
+search that cost $0.001 counted as $0.031 by morning. Each request now
+records both figures.</li>
+<li><strong>Confirming a code twice makes one connection.</strong>
+Pressing Confirm twice, or in two tabs, used to make two accounts and
+use two of your network’s places, and only one of them ever reached
+QUILL.</li>
+<li><strong>Limits survive a restart.</strong> The service now keeps its
+usage counts and spending on disk, and rebuilds them from its records if
+they are lost. Before, a restart could give everybody a fresh
+month.</li>
+<li><strong>Signing a computer out frees its place on the right
+network,</strong> the one it was connected from, not the one you are on
+when you sign out.</li>
+<li><strong>A garbled answer from the AI provider is an error, and costs
+nothing,</strong> like any other failed request.</li>
+<li><strong>“Reduced quota” now reduces your allowance</strong> (25
+requests a month unless an administrator sets another number). Before,
+it changed nothing.</li>
+<li><strong>For administrators:</strong> the console says the money
+limits are estimates. Requests already being answered when a limit is
+reached still finish, so a month can end slightly above a limit, and the
+console shows by how much. The Switches page counts its features instead
+of saying five. The migration runbook lists all ten database migrations
+in order, a new migration (010) adds the per-person cost figure, and a
+new CI workflow tests every migration on a clean PostgreSQL
+database.</li>
+</ul>
+<h3
+id="github-workbench-roles-from-githubs-own-answers-two-accounts-side-by-side-and-gh-sign-in-2026-11-20">GitHub
+Workbench: roles from GitHub’s own answers, two accounts side by side,
+and gh sign-in (2026-11-20)</h3>
+<ul>
+<li><strong>My Access Here</strong>, <strong>Why Can’t They?</strong>,
+<strong>Access Review</strong> and <strong>Bulk Access Changes</strong>
+now read what GitHub says, not a fixed table: your real role (custom
+roles by name), the teams that give it, your organization’s base
+permission, the rules on the default branch and what your token allows.
+Each line says where it came from. When GitHub will not say, QUILL says
+it does not know rather than guessing. <strong>Why Can’t They?</strong>
+reads the person’s real role and names the rule that blocks them.</li>
+<li><strong>View As Role</strong> and <strong>Compare Roles</strong> say
+they show GitHub’s documented defaults, then list who on this repository
+has each role.</li>
+<li>When GitHub refuses a request, the message names the permission or
+scope it asked for.</li>
+<li><strong>Compare Accounts…</strong> and <strong>Act As Another
+Account…</strong> under Roles and Access. QUILL checks whose token it is
+before it shows or sends anything, each account keeps its own remembered
+reads, and Act As is held to the other account’s Workbench level.</li>
+<li><strong>Use GitHub CLI Sign-In…</strong> in Manage GitHub Accounts
+adds the account gh is already signed in to.</li>
+<li>An account can be on a GitHub Enterprise Server: Add Token asks for
+the server, and everything for that account goes to that server only.
+When the server’s GitHub is too old for something, QUILL says so and
+names its version.</li>
+</ul>
+<h3
 id="github-workbench-access-templates-more-tutorials-team-review-requests-and-the-command-key-in-the-workbench-2026-11-20">GitHub
 Workbench: access templates, more tutorials, team review requests, and
 the Command Key in the Workbench (2026-11-20)</h3>
@@ -352,6 +443,56 @@ recovery window keeps the check you gave every other row and puts focus
 on the next one, not the first. Focus never moves and nothing extra is
 said.</li>
 </ul>
+<h3
+id="wordpress-workbench-the-shop-memberships-and-gravity-forms-tried-on-a-real-site-2026-11-20">WordPress
+Workbench: the shop, memberships and Gravity Forms tried on a real site
+(2026-11-20)</h3>
+<p>Every plugin feature built since the last live run was tried on the
+test site (WordPress 7.1.5 with WooCommerce 11.3.1, Yoast SEO 28.9, Paid
+Memberships Pro 3.9.2, Gravity Forms 3.2.3.1, QUILL Accessible Forms
+1.0.0, Advanced Custom Fields 6.8.12 and Redirection 5.10.1). What it
+found is fixed:</p>
+<ul>
+<li><strong>Edit Membership Level made a second level</strong> instead
+of changing the one you chose, because Paid Memberships Pro makes a new
+level for every POST. It now changes the level in place. After New or
+Edit Membership Level, QUILL reads the level back and names anything
+Paid Memberships Pro did not keep (its REST API drops the billing and
+expiry periods), and Ctrl+Z on a new level explains that Paid
+Memberships Pro does not allow deleting a level through its REST API,
+and where to delete it instead.</li>
+<li><strong>Members of This Level</strong> says plainly when your
+account cannot list the site’s people, and shows when each member joined
+as a date.</li>
+<li><strong>Change Items</strong> keeps a line’s price per item when you
+change its quantity. WooCommerce kept the old line total, so 3 mugs
+still cost the price of 1. A quantity of 0 does take the line off the
+order.</li>
+<li><strong>Shop Analytics</strong> says on its total row how many
+orders WooCommerce has not imported into Analytics yet, so the figures
+do not look complete when they are not.</li>
+<li><strong>Yoast SEO:</strong> where Yoast gives no canonical address
+because the site asks search engines not to index it, the SEO page says
+so and shows the post’s address, instead of “none given”.</li>
+<li><strong>Gravity Forms:</strong> Submit a Test Entry used an
+example.com address, which Gravity Forms 2.9.15 and later turn away as
+spam. It now uses one Gravity Forms accepts. Ctrl+Z now moves the test
+entry to the Trash again, because QUILL finds the entry itself when
+Gravity Forms does not say which one it made. On a site with no feed
+add-on, Feeds is empty instead of showing an error as if it were a
+feed.</li>
+<li><strong>The Watch for new form responses</strong> works with QUILL
+Accessible Forms, whose responses are listed one form at a time; before
+this it skipped the site with “Missing parameter(s): form_id”.</li>
+<li><strong>QUILL Site Types:</strong> a post type you define keeps its
+fields in the REST API. Before this, the values you saved were dropped
+without a word.</li>
+<li><strong>WP Crontrol:</strong> Open Cron Events opens WP Crontrol
+2.0’s real page.</li>
+</ul>
+<p>The live run (<code>docs/qa/wordpress-live-run.py</code>) gains tests
+127 to 143 for these features, and <code>--only</code> to run just some
+of them.</p>
 <h3
 id="github-workbench-write-workflows-dependabot-and-codeowners-2026-11-19">GitHub
 Workbench: write workflows, Dependabot and CODEOWNERS (2026-11-19)</h3>

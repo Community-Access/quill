@@ -245,6 +245,26 @@ KEYS: dict[str, ConfigKey] = {
                 "is for; use that instead so the person is told plainly."
             ),
         ),
+        ConfigKey(
+            key="reduced_monthly_request_cap",
+            name="Requests per month on a reduced quota",
+            group="allowance",
+            unit="requests",
+            minimum=0,
+            maximum=10_000,
+            step=1,
+            sentence=(
+                "The monthly allowance for somebody whose status you have set to "
+                "Reduced quota, instead of the normal one. Never more than the normal "
+                "monthly limit, and a number typed on the person's own page still "
+                "wins."
+            ),
+            consequence=(
+                "Lower it and a reduced person runs out sooner; they are told their "
+                "monthly allowance is used, as anybody else is. Zero stops them "
+                "entirely, which is what the Paused status is for."
+            ),
+        ),
         _feature_cap("summarize", "Summarize"),
         _feature_cap("rewrite", "Rewrite"),
         _feature_cap("proofread", "Proofread"),
@@ -365,12 +385,15 @@ KEYS: dict[str, ConfigKey] = {
             maximum=100.0,
             step=0.01,
             sentence=(
-                "A second fence behind the request limit: one person's requests may "
-                "not cost more than this in a month, whatever happens. It should sit "
-                "comfortably above what the request limit can actually reach, so it "
-                "only ever catches something genuinely wrong."
+                "A second fence behind the request limit: once one person's recorded "
+                "cost for the month reaches this, their next request is refused. It "
+                "should sit comfortably above what the request limit can actually "
+                "reach, so it only ever catches something genuinely wrong."
             ),
             consequence=(
+                "It is an estimate, not an exact cap: a request's cost is only known "
+                "once it is answered, so the request that crosses the line, and any "
+                "already in flight at that moment, still finish and are counted. "
                 "Set it below what the monthly request limit can reach and people "
                 "will be cut off early. Set it far above and it stops being a fence "
                 "at all."
@@ -390,8 +413,10 @@ KEYS: dict[str, ConfigKey] = {
                 "alerted at 50%, 75% and 90% first."
             ),
             consequence=(
-                "This is a backstop, not a budget to spend up to. Leave room above "
-                "the worst case — if it can be reached in normal use, it will "
+                "This is a backstop, not a budget to spend up to, and not an exact "
+                "cap: requests already being answered when it is reached still finish "
+                "and are counted, so the month can end a little above it. Leave room "
+                "above the worst case — if it can be reached in normal use, it will "
                 "eventually switch the service off mid-month."
             ),
         ),

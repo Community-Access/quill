@@ -282,6 +282,7 @@
   "quill/ui/git_worktree_dialogs.py::NewWorktreeDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/git_worktree_dialogs.py::NewWorktreeDialog._browse::wx.DirDialog": "native",
   "quill/ui/git_worktree_dialogs.py::WorktreesDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/github_accounts_flow.py::GitHubAccountsFlow.ask_gh_host::wx.TextEntryDialog": "native",
   "quill/ui/github_api_console.py::GitHubApiConsole.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_api_console.py::GitHubApiConsole._allowed_to_write::wx.TextEntryDialog": "native",
   "quill/ui/github_api_console.py::GitHubApiConsole.export::wx.FileDialog": "native",

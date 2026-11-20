@@ -44,12 +44,14 @@
     <dt id="ceiling">Ceiling</dt>
     <dd>A limit on money rather than on a count. The per-person ceiling is a
       second fence behind the request cap, for the case where something has gone
-      wrong in a way the count would not catch.</dd>
+      wrong in a way the count would not catch. It is an estimate, not an exact
+      cap: requests already in flight when it is reached still finish.</dd>
 
     <dt id="budget">Budget</dt>
     <dd>The total this service may spend across everybody in a month. Reaching
       it switches hosted AI off for everyone until an admin turns it back on.
-      You are alerted at 50%, 75% and 90% first.</dd>
+      You are alerted at 50%, 75% and 90% first. Requests already in flight when
+      it is reached still finish, so a month can end a little above it.</dd>
 
     <dt id="throttle">Throttle</dt>
     <dd>A limit that slows something down rather than stopping it outright. The

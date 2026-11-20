@@ -21,7 +21,7 @@ def request_graphql(token: str, query: str, variables: dict[str, object]) -> dic
     if not token.strip():
         raise GitHubProjectsError("Sign in to GitHub to view or update Projects.")
     request = Request(
-        "https://api.github.com/graphql",
+        _graphql_address(token),
         data=json.dumps({"query": query, "variables": variables}).encode("utf-8"),
         headers={
             "Authorization": f"Bearer {token}",
@@ -67,3 +67,10 @@ def request_graphql(token: str, query: str, variables: dict[str, object]) -> dic
 
 
 __all__ = ["request_graphql"]
+
+
+def _graphql_address(token: str | None) -> str:
+    """GraphQL's address for *token*'s host: GitHub.com or its Enterprise Server."""
+    from quill.core.github.hosts import api_url
+
+    return api_url(token, "/graphql")

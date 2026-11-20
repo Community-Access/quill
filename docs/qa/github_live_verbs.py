@@ -1037,6 +1037,69 @@ def api_console(run: Any) -> str:
     )
 
 
+def roles_from_github(run: Any) -> str:
+    """My Access Here, Why Can't They? and View As Role, read from GitHub's own replies."""
+    from quill.core.github.role_reports import my_access, role_report, why_cant_they
+
+    mine = my_access(run.api, run.repo, run.login, token=_token(run), scopes_header=None)
+    _expect("(GitHub:" in mine, "My Access Here showed nothing GitHub said")
+    why = why_cant_they(run.api, run.repo, run.login, "merge pull requests", "main")
+    _expect(f"role on {run.repo}" in why, "Why Can't They? did not read the real role")
+    _expect("documented defaults" in role_report(run.api, "write", run.repo), "no source said")
+    return "every answer names the GitHub reply it came from"
+
+
+def compare_accounts(run: Any) -> str:
+    """Compare Accounts: each saved account asked with its own sign-in, on the test repository."""
+    from quill.core.github.accounts import list_github_accounts, load_github_account_token
+    from quill.core.github.role_reports import account_access
+    from quill.core.github.role_reports import compare_accounts as compare
+    from quill.core.github.workbench_api import TokenApi
+
+    accounts = [a for a in list_github_accounts() if a.host == "github.com"][:2]
+    if len(accounts) < 2:
+        raise NotHere("needs a second signed-in GitHub account in Manage GitHub Accounts")
+    found = [
+        account_access(
+            TokenApi(load_github_account_token(a.id)),
+            a.display_name,
+            a.login,
+            run.repo,
+            token=load_github_account_token(a.id),
+        )
+        for a in accounts
+    ]
+    _expect(not any(f.identity_problem for f in found), "a saved token answered as somebody else")
+    return compare(run.repo, found[0], found[1]).splitlines()[0]
+
+
+def act_as(run: Any) -> str:
+    """Act As: star the test repository as the second account, check it took, unstar it."""
+    from quill.core.github.accounts import (
+        active_github_account_id,
+        list_github_accounts,
+        load_github_account_token,
+    )
+    from quill.core.github.act_as import ACT_AS_ACTIONS, identity_problem, plan
+    from quill.core.github.workbench_api import TokenApi
+
+    active = active_github_account_id()
+    others = [a for a in list_github_accounts() if a.id != active and a.host == "github.com"]
+    if not others:
+        raise NotHere("needs a second signed-in GitHub account in Manage GitHub Accounts")
+    other = others[0]
+    api = TokenApi(load_github_account_token(other.id))
+    _expect(not identity_problem(other.login, other.host, api.rest("GET", "/user").data), "who?")
+    star = next(a for a in ACT_AS_ACTIONS if a.key == "star")
+    request = plan(star, run.repo)
+    api.rest(request.method, request.path, body=request.body)
+    try:
+        api.rest("GET", f"/user/starred/{run.repo}")  # 204 when starred; 404 raises
+    finally:
+        api.rest("DELETE", f"/user/starred/{run.repo}")
+    return f"starred and unstarred {run.repo} as {other.login}"
+
+
 def account_level(run: Any) -> str:
     from quill.core.github.permissions import AccessLevel, WriteTier, level_allows
 
@@ -1389,6 +1452,7 @@ VERBS: dict[str, Scenario | str] = {
     ),
     "account_level": account_level,
     "bulk_access": "not here: needs a second GitHub account to give access to",
+    "act_as": act_as,
     "access_templates": access_templates,
     "apply_access_template": "not here: needs a second GitHub account to give access to",
     "access_add": "not here: needs a second GitHub account to give access to",
@@ -1767,6 +1831,8 @@ FEATURES: dict[str, Scenario | str] = {
         security_policy_and_database
     ),
     "Discussions: Pinned (spotlight), Categories by section, polls as tables": discussion_places,
+    "Roles and Access from GitHub's replies: My Access Here, Why Can't They?": roles_from_github,
+    "Compare Accounts: two signed-in accounts on the test repository": compare_accounts,
     "Secrets: sealed with the owner's key, write-only, never read back (complete.md 1.3)": (
         secrets_sealed_and_write_only
     ),
