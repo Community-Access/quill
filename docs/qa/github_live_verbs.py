@@ -950,7 +950,8 @@ def watches(run: Any) -> str:
     from quill.core.github.watches import WatchStore, check_watch
 
     store = WatchStore.load(run.login)
-    watch = store.add("issue", run.repo, number=int(run.ids["issue"]))
+    # "comment" is the kind for an issue ("issue" is not one, and add() refuses it).
+    watch = store.add("comment", run.repo, number=int(run.ids["issue"]))
     checked, said = check_watch(run.api, watch)
     store.replace(checked)
     store.replace(dataclasses.replace(checked, paused=True))
@@ -959,6 +960,34 @@ def watches(run: Any) -> str:
     _expect(store.remove(watch.id), "not removed")
     store.save()
     return f"watched, checked ({len(said)} changes), paused, removed"
+
+
+def watch_readiness(run: Any) -> str:
+    """Watch Readiness on the test pull request: the first check learns, the second is quiet."""
+    from quill.core.github.watches import READY, WatchStore, check_watch
+
+    store = WatchStore.load(run.login)
+    watch = store.add(READY, run.repo, number=int(run.ids["pull"]))
+    try:
+        first, said = check_watch(run.api, watch)
+        _expect(not said and first.last_result.startswith("started watching"), first.last_result)
+        second, said = check_watch(run.api, first)
+        _expect(not said, f"said {said} with nothing changed")
+    finally:
+        store.remove(watch.id)
+        store.save()
+    return f"{first.last_result}; then {second.last_result}"
+
+
+def why_cant_merge_named(run: Any) -> str:
+    """Why Can't I Merge? with the rules named: reads the branch's rules, never writes."""
+    from quill.core.github.merge_readiness import load_readiness
+    from quill.core.github.merge_rules import name_blockers
+
+    ready = load_readiness(run.api, run.repo, int(run.ids["pull"]))
+    found = name_blockers(run.api, run.repo, ready)
+    unread = f" Unread: {', '.join(found.unread)}." if found.unread else ""
+    return f"{ready.sentence} Named: {len(found.blockers)} rules.{unread}"
 
 
 def sets(run: Any) -> str:
@@ -1433,6 +1462,7 @@ VERBS: dict[str, Scenario | str] = {
     "create_team": "not here: would change a real organization",
     "pause_watch": watches,
     "remove_watch": "with pause_watch: watched, paused, removed",
+    "watch_readiness": watch_readiness,
     "api_console": api_console,
     "across_edit_set": sets,
     "across_set_filter": "with across_edit_set",
@@ -1772,6 +1802,15 @@ FEATURES: dict[str, Scenario | str] = {
     "Viewed files in a pull request review (PRD 22.1)": review_viewed_files,
     "Open Patch in Editor: the whole change as one diff": open_patch,
     "Why Can't I Merge?, for the exact commit": why_cant_merge,
+    "Why Can't I Merge? names the ruleset, check or CODEOWNERS line (GX09)": why_cant_merge_named,
+    "Watch Readiness says when a pull request can merge, or stops (GX09)": (
+        "needs Jeff: Watch Readiness on a pull request with a required check, then let the "
+        "check pass and fail; each change is said once"
+    ),
+    "Check Download... against the release file's digest (GX10)": (
+        "needs Jeff: download a file of the test release in the browser, Check Download... "
+        "on its row says it matches; change one byte of the copy and it says it does not"
+    ),
     "Release Evidence: commit, checks, deployments, immutable, attestations (GX10)": (
         release_evidence
     ),

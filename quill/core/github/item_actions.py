@@ -169,8 +169,9 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a(
             "why_cant_merge",
             "Why Can't I Merge?",
-            help="Whether it can merge, or each reason it cannot, for the commit it is at.",
+            help="Whether it can merge, or each rule that blocks it, for the commit it is at.",
         ),
+        _a("watch_readiness", "Watch Readiness", _O, "", "Say when it can merge, or stops."),
         _a(
             "merge_selected",
             "Merge Selected...",

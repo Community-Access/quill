@@ -101,7 +101,10 @@ class GitHubWorkbenchBatchMergeMixin:
             readings: list[tuple[Any, Any]] = []
             for target in targets:
                 try:
-                    readings.append((target, load_readiness(api, target.repository, target.number)))
+                    readings.append((
+                        target,
+                        load_readiness(api, target.repository, target.number, named=True),
+                    ))
                 except Exception as exc:  # noqa: BLE001 - one unreadable never stops the rest
                     readings.append((target, exc))
             return readings

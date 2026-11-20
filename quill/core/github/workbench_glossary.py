@@ -187,8 +187,17 @@ GLOSSARY: dict[str, str] = {
     ),
     "Watch rule": (
         "A rule kept on this computer that tells you when something happens on GitHub: "
-        "a run finishes, a review arrives, a release or a comment. Under Watches. Not "
+        "a run finishes, a review arrives, a release or a comment, or a pull request "
+        "becomes able to merge or stops (Watch Readiness on its row). Under Watches. Not "
         "the same as watching a repository on GitHub, which sends notifications."
+    ),
+    "CODEOWNERS": (
+        "A file that names who owns which paths. When a rule wants a code owner's review, "
+        "Why Can't I Merge? names the line whose owners have not approved."
+    ),
+    "Digest": (
+        "A fingerprint of a file's bytes (SHA-256). Check Download... on a release file "
+        "compares your copy's with GitHub's, so you know it is the same file."
     ),
 }
 

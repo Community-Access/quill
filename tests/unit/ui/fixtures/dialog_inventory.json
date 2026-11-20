@@ -417,6 +417,7 @@
   "quill/ui/github_workbench_actions.py::GitHubWorkbenchActionsMixin._choose::wx.SingleChoiceDialog": "native",
   "quill/ui/github_workbench_actions.py::GitHubWorkbenchActionsMixin._confirm::wx.MessageDialog": "native",
   "quill/ui/github_workbench_code_scanning.py::GitHubWorkbenchCodeScanningMixin._pick_sarif::wx.FileDialog": "native",
+  "quill/ui/github_workbench_evidence.py::GitHubWorkbenchEvidenceMixin._pick_download::wx.FileDialog": "native",
   "quill/ui/github_workbench_export_list.py::export_list::wx.FileDialog": "native",
   "quill/ui/github_workbench_form_file.py::_pick_file::wx.FileDialog": "native",
   "quill/ui/github_workbench_import.py::GitHubWorkbenchImportMixin._do_import_issues::wx.FileDialog": "native",

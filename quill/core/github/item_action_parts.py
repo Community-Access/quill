@@ -58,6 +58,11 @@ ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
             "Attestations...",
             help="The file's digest and GitHub's attestations for it, such as build provenance.",
         ),
+        _a(
+            "check_download",
+            "Check Download...",
+            help="Whether the copy you downloaded matches GitHub's SHA-256 digest for the file.",
+        ),
         _a("delete_asset", "Delete Asset...", _D, "push", "Remove the file from the release."),
         _PROPERTIES,
     ),

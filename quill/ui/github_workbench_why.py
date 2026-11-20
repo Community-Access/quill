@@ -30,9 +30,9 @@ class GitHubWorkbenchWhyMixin:
         if isinstance(row, ExploreRow) and row.kind == "watch":
             from quill.core.github.why import why_watch
             from quill.core.github.workbench_prefs import github_monitor_policy
-            from quill.ui.github_workbench_watches import _store
+            from quill.ui.github_workbench_watches import watch_store
 
-            watch = _store(self.items).find(row.key)
+            watch = watch_store(self.items).find(row.key)
             if watch is not None:
                 return why_watch(watch, github_monitor_policy().poll_interval_minutes)
         if isinstance(row, ExploreRow) and row.kind == "notification":

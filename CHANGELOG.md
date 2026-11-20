@@ -208,6 +208,24 @@ what shipped.
 - The Features page shows the Sponsor button's links. GitHub's API cannot turn
   the button on or off, and its help says so.
 
+### GitHub Workbench: the rule that blocks a merge, by name; Watch Readiness; Check Download... (2026-11-20)
+
+- **Why Can't I Merge? and Merge Selected... name the blocking rule.** They
+  say which required check failed, has not finished or has not reported, and
+  which ruleset or branch protection wants it; how many approving reviews a
+  rule wants against how many there are; which CODEOWNERS line (number and
+  pattern) still needs an owner's approval, with a changed file it covers; and
+  which rule sends the branch through a merge queue. What could not be read is
+  said at the end. GitHub's own answer is never changed.
+- **Watch Readiness.** Watch a pull request and QUILL says once when it
+  becomes able to merge and once when it stops, naming the blocking rules.
+  Also in Add Watch.
+- **Check Download...** on a release file's row compares the copy you
+  downloaded with GitHub's SHA-256 digest and says match, no match (download it
+  again), or that GitHub has no digest for that file.
+- Attestation signatures are still checked with `gh attestation verify`:
+  verifying them inside QUILL needs Sigstore, which QUILL does not ship.
+
 ### Hosted AI service: accounting you can trust, and one sign-in per code (2026-11-20)
 
 These are fixes to the free AI service itself (`quill-ai-gateway/`), found
