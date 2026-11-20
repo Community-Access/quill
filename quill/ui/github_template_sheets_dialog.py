@@ -7,8 +7,8 @@
 - **FUNDING.yml**: one labelled box per sponsor platform.
 - **CITATION.cff**: title, version, DOI, release date, message, and the
   authors one per line as "Family, Given".
-- **CODEOWNERS**: the rules as text, and Who Owns This Path, which answers
-  with the rule that wins, the way GitHub decides.
+- **CODEOWNERS** is a table of its own, in
+  :mod:`quill.ui.github_config_sheets_dialog` beside the Dependabot sheet.
 
 The models are :mod:`quill.core.github.template_files`'s. Nothing is sent
 from here; each window's :attr:`result` is the text to save, and the
@@ -28,7 +28,6 @@ from quill.core.github.template_files import (
     dump_citation,
     dump_funding,
     order_renames,
-    owners_for,
     parse_chooser,
     parse_citation,
     parse_funding,
@@ -36,7 +35,7 @@ from quill.core.github.template_files import (
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
 
-__all__ = ["ChooserDialog", "CitationDialog", "CodeownersDialog", "FundingDialog"]
+__all__ = ["ChooserDialog", "CitationDialog", "FundingDialog"]
 
 
 def _error_text(exc: BaseException) -> str:
@@ -333,98 +332,3 @@ class CitationDialog(_Sheet):
         if not fields["title"].strip() or not authors:
             return None, "A citation needs a title and at least one author."
         return dump_citation(fields, authors, self.extra), ""
-
-
-class CodeownersDialog(_Sheet):
-    title = "Code Owners (CODEOWNERS)"
-
-    def __init__(
-        self,
-        parent: object,
-        text: str,
-        *,
-        announce: Callable[[str], None] | None = None,
-        check: Callable[[str, Callable[[list[Any]], None]], None] | None = None,
-    ) -> None:
-        self.text = text
-        #: Starts the owner check in the background and calls back with the
-        #: results (PRD 21.8); None where there is no repository to ask.
-        self._check = check
-        super().__init__(parent, announce)
-
-    def body(self) -> None:
-        wx = self._wx
-        self.rules = self.text_box(
-            "&Rules, one per line:",
-            self.text,
-            "A path pattern, then its owners (@person, @org/team or an email). "
-            "Lines starting with # are notes. The last matching rule wins.",
-            multiline=True,
-        )
-        self.path = self.text_box(
-            "&Who owns this path:", "", "Type a path, such as docs/guide.md, then Look Up."
-        )
-        look = wx.Button(self.dialog, label="&Look Up")
-        look.SetHelpText("Say which rule owns the path above, and its owners.")
-        look.Bind(wx.EVT_BUTTON, lambda _e: self._announce(self.look_up()))
-        self.root.Add(look, 0, wx.ALL, 8)
-        self.answer = wx.StaticText(self.dialog, label="")
-        self.answer.SetName("Who owns it")
-        self.root.Add(self.answer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
-        if self._check is not None:
-            check = wx.Button(self.dialog, label="Check &Owners")
-            check.SetHelpText(
-                "Ask GitHub whether every owner exists and can write to this "
-                "repository. GitHub skips one that cannot, without saying so."
-            )
-            check.Bind(wx.EVT_BUTTON, lambda _e: self.check_owners())
-            self.root.Add(check, 0, wx.ALL, 8)
-            self.root.Add(
-                wx.StaticText(self.dialog, label="What the check &found:"),
-                0,
-                wx.LEFT | wx.RIGHT,
-                8,
-            )
-            self.findings = wx.TextCtrl(
-                self.dialog, value="", style=wx.TE_MULTILINE | wx.TE_READONLY
-            )
-            self.findings.SetName("What the owner check found")
-            self.findings.SetHelpText(
-                "One line for each owner: whether it exists and can write, what to "
-                "fix if not, and any that could not be checked."
-            )
-            self.root.Add(self.findings, 1, wx.EXPAND | wx.ALL, 8)
-
-    def check_owners(self) -> None:
-        if self._check is None:
-            return
-        self._announce("Checking the owners with GitHub.")
-        self._check(self.rules.GetValue(), self.show_findings)
-
-    def show_findings(self, results: list[Any]) -> None:
-        from quill.core.github.codeowners_check import summary
-
-        if not self.dialog:  # closed while GitHub was answering
-            return
-        problems = [r for r in results if r.state != "ok"]
-        ordered = problems + [r for r in results if r.state == "ok"]
-        self.findings.SetValue("\n".join(r.sentence for r in ordered))
-        self._announce(summary(results))
-
-    def look_up(self) -> str:
-        path = self.path.GetValue().strip()
-        if not path:
-            return "Type a path first."
-        rule = owners_for(self.rules.GetValue(), path)
-        if rule is None:
-            said = f"No rule owns {path}; nobody is asked to review it."
-        elif not rule.owners:
-            said = f"Line {rule.line}, {rule.pattern}, owns {path} with no owners."
-        else:
-            said = f"Line {rule.line}, {rule.pattern}: {', '.join(rule.owners)} own {path}."
-        self.answer.SetLabel(said)
-        return said
-
-    def build(self) -> tuple[str | None, str]:
-        text = self.rules.GetValue()
-        return (text if text.endswith("\n") else text + "\n"), ""
