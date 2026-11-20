@@ -15,8 +15,11 @@ type's own capabilities through ``wp/v2``, so nothing here touches items.
 Deleting a definition stops registering it; posts, terms and values stay in
 the database, which is why Stop Defining can be undone by defining it again.
 
-This is the contract as the plugin's own code states it; it has not yet met
-a live WordPress (its tests run against a stand-in). Wx-free.
+This is the contract as the plugin's own code states it, and it held on the
+test site (WordPress 7.1.5, the plugin 0.1.0, 2026-11-19) with one exception:
+a post type defined with the plugin's default supports has no ``custom-fields``,
+so WordPress keeps its fields out of REST; :data:`TYPE_SUPPORTS` asks for it.
+Wx-free.
 """
 
 from __future__ import annotations
@@ -32,6 +35,7 @@ from quill.core.wordpress.workbench_edit import EditRefused
 __all__ = [
     "BUILTIN_KINDS",
     "KIND_TYPES",
+    "TYPE_SUPPORTS",
     "add_kind",
     "apply_field",
     "field_preview",
@@ -75,6 +79,13 @@ BUILTIN_KINDS = (
 )  # fmt: skip
 
 _SLUG = re.compile(r"^[a-z0-9_-]{1,20}$")
+
+TYPE_SUPPORTS = ("title", "editor", "excerpt", "revisions", "custom-fields")
+"""What a post type QUILL defines supports. ``custom-fields`` is the one that matters:
+WordPress shows a post type's registered meta in REST only when the type supports it,
+and the plugin's own default (title and editor) left a field group's fields out of
+``wp/v2/<type>`` entirely on the test site (QUILL Site Types 0.1.0, 2026-11-19), so the
+values sent were dropped without a word."""
 
 
 @dataclass(frozen=True)
@@ -184,7 +195,12 @@ def define_body(
     title = " ".join(name.split()) or clean.replace("_", " ").title()
     targets = [t.lower() for t in _words(attach)]
     if what == "type":
-        return {"slug": clean, "name": title, "singular_name": title}
+        return {
+            "slug": clean,
+            "name": title,
+            "singular_name": title,
+            "supports": list(TYPE_SUPPORTS),
+        }
     if what == "taxonomy":
         return {"slug": clean, "name": title, "object_types": targets or ["post"]}
     if not fields:

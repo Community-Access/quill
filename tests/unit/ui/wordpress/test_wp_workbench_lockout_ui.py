@@ -14,6 +14,7 @@ wx = pytest.importorskip("wx")
 
 from quill.core.wordpress import site_taxonomies as tx  # noqa: E402
 from quill.core.wordpress.site_types_plugin import NAMESPACE as QST  # noqa: E402
+from quill.core.wordpress.site_types_plugin import TYPE_SUPPORTS  # noqa: E402
 from quill.core.wordpress.sites import SiteProfile, SiteStore  # noqa: E402
 from quill.core.wordpress.workbench_actions import WORDPRESS_ACTIONS, command  # noqa: E402
 from quill.core.wordpress.workbench_admin_actions import KEYLESS  # noqa: E402
@@ -363,7 +364,12 @@ def test_ctrl_n_on_content_model_defines_a_type_after_a_preview(bench, answers) 
     assert (
         "POST",
         f"{QST}/types",
-        {"slug": "film", "name": "Films", "singular_name": "Films"},
+        {
+            "slug": "film",
+            "name": "Films",
+            "singular_name": "Films",
+            "supports": list(TYPE_SUPPORTS),
+        },
     ) in (bench.api.writes)
     bench.run(command("undo"))
     assert bench.api.writes[-1][:2] == ("DELETE", f"{QST}/types/film")

@@ -192,14 +192,33 @@ def load_feeds(ctx: SiteContext) -> list[WbRow]:
     ids = sorted(titles, key=lambda value: int(value) if value.isdigit() else 0)
     params = {f"form_ids[{i}]": form_id for i, form_id in enumerate(ids)}
     try:
-        feeds = _as_list(ctx.api.get(f"{NS}/feeds", **params))
+        feeds = _feed_list(ctx.api.get(f"{NS}/feeds", **params), ctx.name)
     except WordPressApiError as exc:
         if exc.status != 404:
             raise
         feeds = []
         for form_id in ids[:_MAX_FORMS]:
-            feeds += _as_list(ctx.api.get(f"{NS}/forms/{form_id}/feeds"))
+            feeds += _feed_list(ctx.api.get(f"{NS}/forms/{form_id}/feeds"), ctx.name)
     return [_feed_row(ctx.name, feed, titles) for feed in feeds]
+
+
+def _feed_list(answer: Any, site: str) -> list[dict[str, Any]]:
+    """The feeds in *answer*; Gravity Forms' error object is not a feed.
+
+    With no feed add-on installed the feed table does not exist, and Gravity Forms
+    answers 200 with ``{"errors": {"missing_table": [...]}}`` (3.2.3.1 on the test
+    site, 2026-11-20): that site has no feeds. Any other error object is said.
+    """
+    if isinstance(answer, Mapping) and "errors" in answer:
+        errors = answer.get("errors")
+        if isinstance(errors, Mapping) and set(errors) <= {"missing_table"}:
+            return []
+        words = "; ".join(
+            str(m) for v in (errors.values() if isinstance(errors, Mapping) else [errors])
+            for m in (v if isinstance(v, list) else [v])
+        )  # fmt: skip
+        raise WordPressApiError(f"{site} could not list Gravity Forms feeds: {words}")
+    return _as_list(answer)
 
 
 def feed_body(

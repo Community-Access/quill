@@ -75,8 +75,19 @@ _PEOPLE = [
     {"id": 2, "name": "Bo", "email": "bo@radio.example"},
     {"id": 3, "name": "Cy &amp; Di", "email": "ANN@radio.example"},
 ]
+#: pmpro/v1/get_membership_levels_for_user's shape on the test site (PMPro 3.9.2,
+#: 2026-11-19): ids as strings, ``startdate`` a Unix time in a string.
 _LEVELS = {
-    1: [{"id": 2, "name": "Gold", "startdate": "2026-01-05 10:00:00"}],
+    1: [
+        {
+            "ID": "2",
+            "id": "2",
+            "name": "Gold",
+            "status": "active",
+            "startdate": "1767607200",
+            "enddate": None,
+        }
+    ],
     2: [{"id": 3, "name": "Silver"}],
     3: [{"id": 2, "name": "Gold", "status": "active"}],
 }
@@ -90,6 +101,7 @@ def test_members_are_found_from_each_persons_levels_through_pmpro_v1() -> None:
     found = pm.find_members(api, 2, "Gold", _SITE, people=3)
     assert [m.name for m in found.members] == ["Ann", "Cy & Di"]
     assert found.members[0].line() == "Ann, ann@radio.example, since 2026-01-05"
+    assert found.members[0].since == "2026-01-05T10:00:00+00:00"
     assert found.sentence() == "Gold on Radio has 2 members."
     assert found.emails() == "ann@radio.example"  # the same address once
     users = next(p for r, p in api.asked if r == "wp/v2/users")
@@ -132,6 +144,19 @@ def test_a_site_without_the_routes_is_refused_after_the_first_person() -> None:
     with pytest.raises(WordPressApiError, match="neither the Paid Memberships Pro"):
         pm.find_members(api, 2, "Gold", _SITE)
     assert sum(route == _LEVELS_ROUTE for route, _p in api.asked) == 1
+
+
+def test_a_role_that_cannot_list_people_is_told_why_in_one_sentence() -> None:
+    # Live: an editor given pmpro_memberslist was refused wp/v2/users?context=edit (403).
+    class NoListUsers(MembersApi):
+        def iter_collection(self, route: str, params: Any = None, **kw: Any):
+            if route == "wp/v2/users":
+                raise WordPressApiError("Sorry, you are not allowed to list users.", status=403)
+            yield from super().iter_collection(route, params, **kw)
+
+    with pytest.raises(WordPressApiError, match="cannot list the site's people") as caught:
+        pm.find_members(NoListUsers(_PEOPLE, _LEVELS), 2, "Gold", _SITE)
+    assert "list_users" in str(caught.value) and caught.value.status == 403
 
 
 def test_one_unreadable_person_is_counted_not_fatal() -> None:

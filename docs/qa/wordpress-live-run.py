@@ -3,7 +3,9 @@
 
 Runs the automatable parts of ``docs/qa/wordpress-regression-testing.md`` (tests
 1 to 69, the Workbench's 70 to 109 in ``wordpress_live_workbench.py``, and
-publishing the four kinds of document, 119 to 122, in ``wordpress_live_publish.py``) and
+publishing the four kinds of document, 119 to 122, in ``wordpress_live_publish.py``;
+Gravity Forms forms built in QUILL, 123 to 126, in ``wordpress_live_gravity_build.py``;
+and the plugin features of complete.md 2.4, 127 onward, in ``wordpress_live_plugins.py``) and
 every wordpress.md 9.15 and 9.16 feature against the real test site, through
 the same core functions QUILL's commands call (``quill/core/wordpress`` and
 ``quill/core/forms``). Anything that needs a screen reader, an ear or eyes is
@@ -14,6 +16,8 @@ Run it from the repository root::
     python docs/qa/wordpress-live-run.py --public     # no sign-in at all
     python docs/qa/wordpress-live-run.py --dry-run    # signed in, writes nothing to the site
     python docs/qa/wordpress-live-run.py              # signed in, the full run
+    python docs/qa/wordpress-live-run.py --only 127,128   # just those (and the index);
+        # nothing is written to the plan, since a part is not a run
     python docs/qa/wordpress-live-run.py --second-site practice
         # the full run, plus 110 onward against the local Practice Site
         # (wordpress_live_two_sites.py; without it those are "not run")
@@ -1024,8 +1028,11 @@ def _event_permalink(ctx: Ctx) -> str:
 @check("Public content", "9.6", "oEmbed for /welcome/, and the proxy needs a sign-in")
 def _oembed(ctx: Ctx) -> str:
     raw = ctx.anon.get("oembed/1.0/embed", url=site_url("welcome/"))
+    # Yoast SEO gives oEmbed its SEO title, and the seed gives Welcome one
+    # (seed-plugins.php, 2026-11-19): "Welcome to the QUILL test site - <site>".
+    titles = (SEEDED_POSTS["welcome"], "Welcome to the QUILL test site")
     expect(
-        isinstance(raw, dict) and str(raw.get("title", "")).startswith(SEEDED_POSTS["welcome"]),
+        isinstance(raw, dict) and str(raw.get("title", "")).startswith(titles),
         f"oEmbed said {raw!r:.120}",
     )
     error = refused(lambda: ctx.anon.get("oembed/1.0/proxy", url=site_url("welcome/")))
@@ -1976,7 +1983,9 @@ def _woo(ctx: Ctx) -> str:
     from quill.core.wordpress import plugin_shop_seo as shop
 
     api = ctx.api(ADMIN)
-    rows = api.get("wc/v3/products", per_page=5)
+    # A published simple product: a draft or a variable one has no price of its own to edit.
+    found = api.get("wc/v3/products", per_page=20, status="publish", type="simple")
+    rows = [r for r in found if str(r.get("regular_price") or "")]
     orders = shop.recent_orders(api, per_page=5)
     if not rows:
         raise NotRun(f"no products on the site; {len(orders)} orders read")
@@ -2338,7 +2347,9 @@ def _what_changed(ctx: Ctx) -> str:
 
     looked = xs.LastLooked(ctx.scratch / "looked")
     sites = [("test", SITE_NAME, lambda: ctx.api(ADMIN))]
-    looked.mark(["test"], xs.utc_now() - dt.timedelta(seconds=5))
+    # Two minutes, not five seconds: the test site's clock ran about 14 seconds behind
+    # this computer's on 2026-11-20, which put the new comment "before" the last look.
+    looked.mark(["test"], xs.utc_now() - dt.timedelta(minutes=2))
     raw = ctx.api(CONTRIBUTOR).post(
         "wp/v2/comments", {"post": ctx.state.get("welcome_id"), "content": f"{TAG} comment"}
     )
@@ -2501,12 +2512,15 @@ def _load_workbench_checks() -> None:
 
     # Tests 70 to 109, then 110 to 118 (two real sites, with --second-site), then
     # 119 to 122 (Markdown, block markup, HTML and plain text, published), then
-    # 123 to 126 (Gravity Forms forms built in QUILL; skipped without gf/v2).
+    # 123 to 126 (Gravity Forms forms built in QUILL; skipped without gf/v2), then
+    # 127 onward (WooCommerce orders, Yoast, PMPro, Redirection, Gravity Forms
+    # messages and submissions, ACF and QUILL Site Types).
     for name in (
         "wordpress_live_workbench",
         "wordpress_live_two_sites",
         "wordpress_live_publish",
         "wordpress_live_gravity_build",
+        "wordpress_live_plugins",
     ):
         path = Path(__file__).with_name(f"{name}.py")
         spec = importlib.util.spec_from_file_location(name, path)
@@ -2598,6 +2612,10 @@ def _plugin_versions(ctx: Ctx, namespaces: set[str]) -> str:
         "tribe/events/v1": "The Events Calendar",
         "baf/v1": "BITS Accessible Forms",
         "qaf/v1": "QUILL Accessible Forms",
+        "gf/v2": "Gravity Forms",
+        "pmpro/v1": "Paid Memberships Pro",
+        "redirection/v1": "Redirection",
+        "quill-site-types/v1": "QUILL Site Types",
         "wp-abilities/v1": "Abilities",
     }
     versions: dict[str, str] = {}
@@ -2619,10 +2637,13 @@ def _plugin_versions(ctx: Ctx, namespaces: set[str]) -> str:
     except (OSError, URLError):
         pass
     out = []
+    acf = next((v for k, v in versions.items() if k.startswith("Advanced Custom Fields")), "")
     for namespace, name in known.items():
         if namespace in namespaces:
             version = next((v for k, v in versions.items() if k.startswith(name)), "")
             out.append(f"{name} {version or '(version not shown)'} (`{namespace}`)")
+    if acf:  # ACF has no namespace of its own: its fields ride on wp/v2 as "acf"
+        out.append(f"Advanced Custom Fields {acf} (on `wp/v2`)")
     return "; ".join(out)
 
 
@@ -2660,7 +2681,16 @@ def main(argv: list[str] | None = None) -> int:
         "practice-alone: only those, the Practice Site standing in for both (no test site, "
         "no Live run section written)",
     )
+    parser.add_argument(
+        "--only",
+        metavar="REFS",
+        help="run only these tests, by number, separated by commas (with the index, which every "
+        "test needs); implies --no-doc, since a part is not a run",
+    )
     args = parser.parse_args(argv)
+    only = {r.strip() for r in (args.only or "").split(",") if r.strip()}
+    if only:
+        args.no_doc = True
     if str(ROOT) not in sys.path:
         sys.path.insert(0, str(ROOT))
     ctx = Ctx(args)
@@ -2698,13 +2728,15 @@ def main(argv: list[str] | None = None) -> int:
         for item in CHECKS:
             if (args.public and item.who) or (alone and not item.second_site):
                 continue
+            if only and item.ref not in only and item.fn is not _index:
+                continue
             row = run_check(ctx, item)
             if row.outcome == FAIL or args.verbose:
                 print(f"[{row.outcome}] {row.area} {row.ref} {row.name}: {row.detail}")
             if item.fn is _index and row.outcome != PASS:
                 print("The REST index could not be read; nothing else can run.")
                 break
-        if not args.public and not alone:
+        if not args.public and not alone and not only:
             for area, ref, name, why in HUMAN:
                 if ctx.second is not None and (area, ref) in SECOND_SITE_COVERS:
                     continue  # done for real against the second site (110 onward)
@@ -2718,6 +2750,9 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as exc:  # noqa: BLE001
             ctx.results.add("Clean-up", "-", "Sweep", FAIL, ctx.mask(exc), ADMIN)
         shutil.rmtree(ctx.scratch, ignore_errors=True)
+    for row in ctx.results.failures():
+        if row.area == "Clean-up":  # the checks' own failures were printed as they ran
+            print(f"[{row.outcome}] {row.area}: {row.name}: {row.detail}")
     counts = ctx.results.counts()
     print(", ".join(f"{counts[o]} {o}" for o in OUTCOMES))
     if not args.no_doc:
