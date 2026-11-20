@@ -483,8 +483,8 @@ The last place in the tree is help you can walk through like any other list.
 - **The Guide** lists this book's chapters. Enter opens one.
 - **Words** is the GitHub glossary. Type a word to jump to it.
 - **Keys** has every key in the window, grouped by what it does.
-- **Tutorials** lists the GitHub lessons; **Help > Tutorials** (`Ctrl+F2`)
-  goes there. Enter walks the selected lesson here, one step at a time,
+- **Tutorials** lists the GitHub lessons; Tutorials on the Workbench's own
+  Help menu (`Ctrl+F2`) goes there. Enter walks the selected lesson here, one step at a time,
   with your keys. Each lesson uses the practice repository below.
 - **What Changed** says what is new.
 - **Ask a Person** says how to write to support@community-access.org.
