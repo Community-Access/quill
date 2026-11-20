@@ -329,6 +329,18 @@ none, so a missing permission is never mistaken for missing evidence.
 that file alone. The release's **Properties...** page says whether it is
 immutable, and a file's says its digest.
 
+**Check Download...**, on one file in a release's file list, checks the copy
+you downloaded. Download the file (Enter opens it in your browser), then
+choose **Check Download...**: an Open box starts in your Downloads folder
+with the file's name filled in. QUILL works out the SHA-256 of your copy on
+this computer and compares it with the digest GitHub has for the file, read
+fresh, and says whether it matches. A copy that does not match is said so,
+with the start of both values: do not use it, download it again. A file
+GitHub keeps no digest for (one uploaded before GitHub kept them) is said as
+not checkable, never as a match. A match says the bytes are the ones GitHub
+holds; it does not say who built them, which is what the attestations'
+signatures are for.
+
 In QUILL, **Tools > Git and GitHub > GitHub > Create Release...** makes a new
 release: a tag, an optional title, your own notes or GitHub's, and whether to
 publish it now or keep it as a draft.

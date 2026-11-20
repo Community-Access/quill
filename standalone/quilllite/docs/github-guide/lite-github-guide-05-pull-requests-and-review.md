@@ -406,12 +406,45 @@ hear either that it can merge, "#42 can merge into main, as of commit
 - A required check failed, or has not finished, named: "Required checks test
   and lint failed. Re-run or fix it." A check that failed but is not
   required is mentioned as not required, and does not stop the merge.
-- A rule on the base branch blocks it for another reason: **Check Merge
-  Policy** in the review window names the rules.
+- A rule on the base branch blocks it for another reason: the rule is
+  named, as below.
+
+Each blocking rule is said by name, so you know whom to ask or what to fix.
+QUILL reads the rules that apply to the base branch (its rulesets, and its
+branch protection when you can read it) and says:
+
+- which required check failed, has not finished, or has not reported on
+  the commit, and which ruleset wants it: "Check build, which the ruleset
+  "Protect main" requires, failed. Re-run or fix it."
+- how many approving reviews a rule wants, and how many there are;
+- when a rule wants a code owner's review, which line of the CODEOWNERS file
+  is waiting, with its pattern, who could approve, and a changed file it
+  covers: "none from @docs-team has approved: .github/CODEOWNERS line 3,
+  /docs/, owns 2 changed files, such as docs/guide.md." A team counts as
+  approved when one of its members has;
+- which rule makes the branch merge only through its merge queue.
+
+What QUILL could not read, such as branch protection without admin access,
+is said at the end, so a missing permission never sounds like "no rule".
+GitHub's answer is the one that counts: naming the rules never turns "can
+merge" into "cannot". **Merge Selected...** names the rules the same way in
+its preview, for each pull request that will not merge.
 
 It also says when auto-merge is on, and its place when the pull request is
 in the merge queue. The answer is always for one commit, which it names, so
 you know a push after you asked may change it.
+
+### Watch Readiness
+
+**Watch Readiness**, on an open pull request's context menu in the
+Workbench, adds a watch (under Watches, `Ctrl+7`) that tells you once when
+the pull request becomes able to merge, and once when it stops, naming the
+rule that blocks it then. It is checked with your other watches, on the same
+interval, and said the same way. The first check only learns where it
+stands, and while GitHub is still working out whether it can merge, nothing
+is said. You can also add one from Watches with **Add Watch...**, choosing "A
+pull request becomes able to merge, or stops being able to". The watch is
+kept on this computer only; nothing is changed on GitHub.
 
 ### Auto-merge and the merge queue
 

@@ -3246,7 +3246,9 @@ Control coverage: 384 audited sites (384 helped).
 
 **Merge.** Merge it, with the methods the repository allows.
 
-**Why Can't I Merge?.** Whether it can merge, or each reason it cannot, for the commit it is at.
+**Why Can't I Merge?.** Whether it can merge, or each rule that blocks it, for the commit it is at.
+
+**Watch Readiness.** Say when it can merge, or stops.
 
 **Merge Selected.** Merge the selected pull requests one at a time, each checked on its own, after a preview of which will merge and which will not.
 
@@ -3723,6 +3725,8 @@ Control coverage: 384 audited sites (384 helped).
 **Download.** Download the file in your browser.
 
 **Attestations.** The file's digest and GitHub's attestations for it, such as build provenance.
+
+**Check Download.** Whether the copy you downloaded matches GitHub's SHA-256 digest for the file.
 
 **Delete Asset.** Remove the file from the release.
 

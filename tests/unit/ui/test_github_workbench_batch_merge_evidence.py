@@ -82,7 +82,7 @@ def readiness(monkeypatch: pytest.MonkeyPatch) -> dict[int, list[mr.Readiness]]:
         2: [mr.Readiness(number=2, head="2222222bbb", base="main", review="REVIEW_REQUIRED")],
     }
 
-    def load(_api: Any, _repo: str, number: int) -> mr.Readiness:
+    def load(_api: Any, _repo: str, number: int, **_named: Any) -> mr.Readiness:
         queue = answers[number]
         return queue.pop(0) if len(queue) > 1 else queue[0]
 

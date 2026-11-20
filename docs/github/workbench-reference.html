@@ -3241,11 +3241,11 @@ Relationships…, Issue Fields…, Delete Issue…, Add to or Remove from
 Favorites, Link a Pull Request That Closes It…, Unlink a Pull Request…;
 Properties…</li>
 <li><strong>pull_request</strong>: Review…, File Differences…, Comment…,
-Merge…, Why Can’t I Merge?, Merge Selected…; More: Auto-Merge…,
-Reviews…, Open in a Codespace, Add to or Remove from Merge Queue…, Open
-Patch in Editor, Revert Pull Request…, Resolve Conflicts in a Worktree…,
-Copy Link, Open on GitHub, Start in Local Worktree…, Open in
-Codespaces…, Commit Comments…, View Timeline…, Read as Document…,
+Merge…, Why Can’t I Merge?, Watch Readiness; More: Merge Selected…,
+Auto-Merge…, Reviews…, Open in a Codespace, Add to or Remove from Merge
+Queue…, Open Patch in Editor, Revert Pull Request…, Resolve Conflicts in
+a Worktree…, Copy Link, Open on GitHub, Start in Local Worktree…, Open
+in Codespaces…, Commit Comments…, View Timeline…, Read as Document…,
 Summarize Discussion, React…, Labels…, Assignees…, Milestone…,
 Projects…, Edit Title…, Add to or Remove from Favorites, Re-request
 Review…, Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn
@@ -3367,7 +3367,7 @@ Delete Everywhere…; Properties…</li>
 <li><strong>fleet</strong>: Open Repository, Open on GitHub, Copy Link;
 Properties…</li>
 <li><strong>release_asset</strong>: Download, Copy Link, Attestations…,
-Delete Asset…; Properties…</li>
+Check Download…, Delete Asset…; Properties…</li>
 <li><strong>deployment</strong>: Open, Delete Deployment…, Copy Link,
 Open on GitHub; Properties…</li>
 <li><strong>discussion_section</strong>: Open Section, Open on GitHub;
@@ -3524,6 +3524,9 @@ into a link to another system.</li>
 newest commit of one set of changes. Under Code, Branches.</li>
 <li><strong>Branch protection</strong>: Rules that decide who may change
 a branch and what a change needs.</li>
+<li><strong>CODEOWNERS</strong>: A file that names who owns which paths.
+When a rule wants a code owner’s review, Why Can’t I Merge? names the
+line whose owners have not approved.</li>
 <li><strong>Cache</strong>: Files Actions keeps between runs to make
 them faster. Under Actions, Caches.</li>
 <li><strong>Check</strong>: A test or other run that reports passing or
@@ -3538,6 +3541,9 @@ Under Code, Commits.</li>
 only, for a server to clone, pull or push.</li>
 <li><strong>Deployment</strong>: Code sent to an environment, such as a
 website.</li>
+<li><strong>Digest</strong>: A fingerprint of a file’s bytes (SHA-256).
+Check Download… on a release file compares your copy’s with GitHub’s, so
+you know it is the same file.</li>
 <li><strong>Discussion</strong>: A conversation in a repository that is
 not an issue.</li>
 <li><strong>Discussion category</strong>: A kind of discussion, such as
@@ -3671,7 +3677,8 @@ secret.</li>
 repository’s activity.</li>
 <li><strong>Watch rule</strong>: A rule kept on this computer that tells
 you when something happens on GitHub: a run finishes, a review arrives,
-a release or a comment. Under Watches. Not the same as watching a
+a release or a comment, or a pull request becomes able to merge or stops
+(Watch Readiness on its row). Under Watches. Not the same as watching a
 repository on GitHub, which sends notifications.</li>
 <li><strong>Webhook</strong>: An address GitHub sends a message to when
 something happens in a repository, such as a push. Continuous

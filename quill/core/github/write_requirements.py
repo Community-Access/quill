@@ -210,6 +210,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     # Watches (PRD 22.5): this device's list only, nothing sent to GitHub.
     f"{_P}pause_watch": ("local", _O),
     f"{_P}remove_watch": ("local", _O),
+    f"{_P}watch_readiness": ("local", _O),
     # The API Console (PRD 22.2) can send any write GitHub has, so it is held
     # to the top tier: Full access in the Workbench and the method typed first.
     f"{_P}api_console": ("sign_in", _D),
