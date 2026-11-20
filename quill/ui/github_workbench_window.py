@@ -413,7 +413,7 @@ class GitHubWorkbenchProvider(
             from quill.ui.github_pr_review_dialog import GitHubPullReviewDialog
 
             GitHubPullReviewDialog(
-                frame.frame, self.items, ref.instance, row.number, announce_cb=self._announce
+                frame.frame, self.items, ref.instance, row.number, announce_cb=self._say
             ).show()
             return True
         return self.run_action(command_id, ref, row)

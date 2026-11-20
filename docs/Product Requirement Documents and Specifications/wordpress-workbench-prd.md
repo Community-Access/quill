@@ -1473,6 +1473,23 @@ The QAF items (13a.1 to 13a.3, WP-R-026 to WP-R-028) are built in
 `S:\code\qaf` and belong in its own PRD (`docs/PRD.md` there) as well; the
 Workbench side is built here.
 
+### Backlog (2026-11-19)
+
+Moved here from the open-work list by Jeff on 2026-11-19. These are not
+scheduled; each waits for a reason to start.
+
+- **First-class integrations by area.** Backups and restores, security
+  (sign-ins, two-factor, vulnerability data), caching and performance,
+  multilingual content, consent, email, newsletters, courses, event
+  attendance, analytics and social sharing each already have a disposition per
+  site. Which, if any, get a first-class integration is decided here when one
+  is wanted.
+- **A WordPress-layer key for page commands** such as Check This Page. Today
+  they have a written reason for having no key (`wordpress/menu_unbound.py`).
+- **A Workbench tree node for menu items**, beside the Menus window's Undo.
+
+Rank Math stays read only: confirmed by Jeff on 2026-11-19.
+
 ## Appendix A: every object and its Properties sheet
 
 | Object | Pages | Notes |

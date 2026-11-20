@@ -14,6 +14,9 @@ The GitHub provider's half of the bar's View and Go rows:
   Conflicts) is checked over the loaded rows and the Items cell says so,
   with Load All (Ctrl+Shift+Page Down) to be sure.
 - **Columns...** chooses the list's columns, remembered per view.
+- **Sort By and Group By > By Column...** on every other list (branches,
+  releases, runs, discussions, alerts, people...), over its loaded rows
+  (:mod:`quill.ui.github_workbench_list_order`), remembered per list.
 - **Go > Next and Previous Unread** (Ctrl+Period, Ctrl+Shift+Period), and the
   dynamic Pinned, Favorites and saved-search submenus.
 """
@@ -37,6 +40,8 @@ from quill.core.github.filter_menu import (
     toggle_words,
 )
 from quill.core.github.items_provider import GitHubItem
+from quill.core.workbench.filters import Query
+from quill.ui.github_workbench_list_order import GitHubWorkbenchListOrderMixin
 
 __all__ = ["GitHubWorkbenchViewMixin", "row_values"]
 
@@ -73,7 +78,7 @@ def _filters_here(node: Any) -> bool:
     return not loader.startswith(("across:", "help:"))
 
 
-class GitHubWorkbenchViewMixin:
+class GitHubWorkbenchViewMixin(GitHubWorkbenchListOrderMixin):
     """View, Go and filters for the GitHub provider."""
 
     items: Any
@@ -115,7 +120,14 @@ class GitHubWorkbenchViewMixin:
 
     def supports_view(self, command_id: str) -> bool:
         verb = command_id.removeprefix(_P)
-        if verb.startswith(("show_", "state_", "sort_", "group_")):
+        if verb in ("column_sort", "column_group"):
+            return self.column_list_shown()
+        if verb.startswith("sort_") or (
+            verb.startswith("group_") and verb not in ("group_none", "group_repository")
+        ):
+            # GitHub's own orders and an issue's fields: the Issues lists only.
+            return self.frame is None or self.frame.current is None or self.issue_list_shown()
+        if verb.startswith(("show_", "state_", "group_")):
             return True
         if verb.startswith("filter_"):
             return verb[7:] in _TOGGLE_KEYS or verb == "filter_clear"
@@ -137,6 +149,8 @@ class GitHubWorkbenchViewMixin:
                 self.view_choice(name)
                 self._view[name] = verb[len(name) + 1 :]
                 if name == "group":
+                    if verb == "group_none":
+                        self.clear_column_group()
                     self.apply_grouping()
                 elif name == "sort":
                     frame.reload()
@@ -152,6 +166,8 @@ class GitHubWorkbenchViewMixin:
             return True
         actions = {
             "columns": self.choose_columns,
+            "column_sort": self.sort_by_column,
+            "column_group": self.group_by_column,
             "load_more": self.load_more,
             "load_all": self.load_all,
             "next_unread": lambda: self.move_unread(1),
@@ -185,13 +201,17 @@ class GitHubWorkbenchViewMixin:
         frame.filter.ChangeValue(show_only(frame.filter.GetValue(), qualifier, hide=hide))
         frame.apply_filter()
 
-    def load(self, ref: Any, node: Any, query: Any) -> list[object]:
-        """A node's rows, with the qualifiers this list answers applied here (Appendix C).
+    def load(self, ref: Any, node: Any, query: Query) -> list[object]:
+        """A node's rows (off the UI thread), filtered and in the list's chosen column order.
 
-        Issues and pull requests, searches and Across Repositories filter their
-        own way; every other list is read whole and filtered over its rows.
+        The qualifiers this list answers are applied here (Appendix C). Issues
+        and pull requests, searches and Across Repositories filter their own
+        way; every other list is read whole and filtered over its rows.
         """
-        rows: list[object] = self.load_rows(ref, node, query)  # type: ignore[attr-defined]
+        rows: list[object] = self.order_loaded(
+            node,
+            self.load_rows(ref, node, query),  # type: ignore[attr-defined]
+        )
         if not query.conditions or not _filters_here(node):
             return rows
         from quill.core.github.object_filters import filter_note, filter_rows
@@ -271,7 +291,7 @@ class GitHubWorkbenchViewMixin:
         what = f"{len(frame.rows)} shown ({state})"
         title = f"{self.window_title(instance)} - {what}{self.title_words()}"  # type: ignore[attr-defined]
         frame.frame.SetTitle(title)
-        if self.view_choice("group") != "none":
+        if self.view_choice("group") != "none" or self.column_grouped():
             self.apply_grouping()
         if current is not None and current.key.startswith("across"):
             self.across_after_fill(frame)  # type: ignore[attr-defined]  # ] [ and Back's place
@@ -280,6 +300,11 @@ class GitHubWorkbenchViewMixin:
 
     def apply_grouping(self) -> None:
         frame = self.frame
+        if self.column_grouped():
+            node = frame.node(frame.current)
+            found = self.column_groups(node, list(frame.rows))
+            frame.show_groups([(f"{name} ({len(rows)})", rows) for name, rows in found])
+            return
         field = self.view_choice("group")
         if field == "none":
             frame.show_groups([])
